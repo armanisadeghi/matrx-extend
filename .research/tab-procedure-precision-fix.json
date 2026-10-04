@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "task": "Procedure precision repair for EXT-F-4071 through EXT-F-4086",
+  "source_commit": "099ec9de449302859fdc2b8e6566c1f259e06ce5",
+  "findings_addressed": [
+    {
+      "finding": "Disposable tab setup could omit window_id and returned window_id verification.",
+      "addressed": "Each target procedure now obtains WINDOW_ID from the active tab in the dedicated window using list_open_tabs; every setup open_new_tab input carries it and calls for returned window_id verification. The cross-window move variant likewise establishes DEST_WINDOW_ID before creating its bootstrap tab."
+    },
+    {
+      "finding": "History cases did not explicitly create the second active owned tab.",
+      "addressed": "4078 and 4079 now create a second disposable tab with explicit window_id, make it active, and target the history fixture by id."
+    },
+    {
+      "finding": "Optional and union input forms lacked reproducible variants.",
+      "addressed": "4071 adds index/window_id; 4072 adds array close alongside scalar; 4077 adds omitted tab_id/default manual-run fallback and explicitly leaves assigned-agent behavior unverified; 4081 adds cross-window move; 4083 adds create_tab_group window_id."
+    },
+    {
+      "finding": "Manual Tools runner does not prove live agent binding or role availability.",
+      "addressed": "Added explicit readiness gap to all 16 records. Preserved live_binding null/source reconciliation status and all unverified runtime outcomes."
+    }
+  ],
+  "evidence": [
+    {
+      "kind": "source read",
+      "ref": "src/lib/tools/handlers/tabs.ts: open_new_tab, close_tab, reload_tab, move_tab, create_tab_group schemas and behavior"
+    },
+    {
+      "kind": "source read",
+      "ref": "src/features/tools/ToolsView.tsx:453-461 confirms manual runner supplies assignedTabId:null"
+    },
+    {
+      "kind": "source read",
+      "ref": "src/lib/tools/handlers/_active-tab.ts: getAssignedTabId fallback behavior"
+    },
+    {
+      "kind": "structural check",
+      "ref": "Parsed the inventory and verified all 16 target cases remain procedure-ready-unverified, all member/admin/guest cells remain unverified, and each preserves an explicit live binding readiness gap."
+    },
+    {
+      "kind": "diff check",
+      "ref": "git diff --check -- docs/stabilization/inventory.json passed; no browser, tests, build, product, database, or runtime execution was performed."
+    }
+  ],
+  "files": ["docs/stabilization/inventory.json", ".research/tab-procedure-precision-fix.json"],
+  "preserved_constraints": [
+    "Dispatcher/manual-run boundary remains unresolved and out of scope.",
+    "No runtimepass or verified outcome was recorded.",
+    "Only EXT-F-4071 through EXT-F-4086 inventory objects were edited."
+  ],
+  "blob_shas": {
+    "docs/stabilization/inventory.json": "86b8ee3b1b51196b2fdc89e4da42facd074f287f"
+  }
+}

@@ -51533,6 +51533,7 @@
       "missing_items": [],
       "readiness_gaps": [
         "Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.",
+        "Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.",
         "Confirm current catalog against imported source registry before source inventory signoff"
       ],
       "applicability": {
@@ -51565,17 +51566,19 @@
             "Before any browser action, require a fresh resource permit from the authorized hosted TEST workflow and its completed run journal; this machine is currently refused for local heavy build/browser work. Do not start `pnpm dev`, a local build, or a local browser run. If the hosted admission/artifact is unavailable or refused, stop before launch and leave results unverified.",
             "Use the current authorized hosted build artifact and receipt: source SHA, dirty-source hash if applicable, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, auth/role/org state, permissions, backend identity, fixture ids and timestamp. Install/reload only after the artifact is ready; reopen the side panel and reload fixture tabs, then verify the runtime fingerprint matches that receipt (HMR alone is not acceptance).",
             "Run as a signed-in ordinary member and repeat as admin; guest is not applicable because Tools requires sign-in. Confirm the loaded manifest grants `tabs` (and `tabGroups` for group controls). These are required permissions, not optional runtime prompts.",
-            "Create/focus a dedicated disposable Chrome window and open its side panel. The first `open_new_tab` result establishes `$WINDOW_ID`; check its returned `window_id` against the window hosting the side panel. For every later setup tab, pass `window_id:$WINDOW_ID` and confirm the returned window id matches before using it. If it differs, close that fixture and recreate it in the dedicated window.",
-            "Tools → Catalog → search the exact handler name → expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
-            "Open a dedicated disposable Chrome window and its side panel. In Tools → Catalog, search `open_new_tab` and expand it.",
+            "Create/focus a dedicated disposable Chrome window and open its side panel. In `list_open_tabs`, identify the active tab in that dedicated window and record its `window_id` as `$WINDOW_ID`. Include `\"window_id\":$WINDOW_ID` on every disposable-tab setup call and verify each returned `window_id` matches before using its tab id. If any id differs, close that fixture and recreate it in the dedicated window.",
+            "Tools \u2192 Catalog \u2192 search the exact handler name \u2192 expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
+            "In Tools \u2192 Catalog, search `open_new_tab` and expand it; use `$WINDOW_ID` recorded from `list_open_tabs` for the valid test input.",
             "No seed tab is needed."
           ],
           "steps": [
             "Run the valid input exactly as shown, substituting the numeric tab/window/group id returned by the named setup action for each `$..._ID` token; do not target personal tabs.",
-            "Valid input: `{\"url\":\"https://example.com/?ext-f-4071=opened\",\"active\":false,\"pinned\":true}`.",
-            "Observe: The inline result is an object with a new `tab_id`, the same `window_id` as the disposable window, and the requested URL. The new tab appears in that window, stays in the background, and has the pinned-tab appearance.",
+            "Valid input: `{\"url\":\"https://example.com/?ext-f-4071=opened\",\"active\":false,\"pinned\":true,\"window_id\":$WINDOW_ID}`.",
+            "Observe: The inline result is an object with a new `tab_id`, the `window_id` equal to `$WINDOW_ID` as the disposable window, and the requested URL. The new tab appears in that window, stays in the background, and has the pinned-tab appearance.",
             "Run the schema-negative input `{\"url\":\"not-a-url\"}`. Expect the runner to show `Schema mismatch` and make no browser-state change.",
-            "Cleanup: Set `pinned` false on the returned tab id, then close that tab with `close_tab`; close the disposable window after its remaining test tab is safe to close."
+            "Cleanup: Set `pinned` false on the returned tab id, then close that tab with `close_tab`; close the disposable window after its remaining test tab is safe to close.",
+            "Variant: Run `{\"url\":\"https://example.com/?ext-f-4071=index\",\"window_id\":$WINDOW_ID,\"index\":0,\"active\":false}`; verify returned `window_id` equals `$WINDOW_ID` and tab index is 0. Record its tab id.",
+            "Cleanup: Unpin the primary fixture, close both owned fixture ids with `close_tab`, then close the disposable window."
           ],
           "expected": [
             "The inline result is an object with a new `tab_id`, the same `window_id` as the disposable window, and the requested URL. The new tab appears in that window, stays in the background, and has the pinned-tab appearance.",
@@ -51674,6 +51677,7 @@
       "missing_items": [],
       "readiness_gaps": [
         "Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.",
+        "Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.",
         "Confirm current catalog against imported source registry before source inventory signoff"
       ],
       "applicability": {
@@ -51706,17 +51710,18 @@
             "Before any browser action, require a fresh resource permit from the authorized hosted TEST workflow and its completed run journal; this machine is currently refused for local heavy build/browser work. Do not start `pnpm dev`, a local build, or a local browser run. If the hosted admission/artifact is unavailable or refused, stop before launch and leave results unverified.",
             "Use the current authorized hosted build artifact and receipt: source SHA, dirty-source hash if applicable, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, auth/role/org state, permissions, backend identity, fixture ids and timestamp. Install/reload only after the artifact is ready; reopen the side panel and reload fixture tabs, then verify the runtime fingerprint matches that receipt (HMR alone is not acceptance).",
             "Run as a signed-in ordinary member and repeat as admin; guest is not applicable because Tools requires sign-in. Confirm the loaded manifest grants `tabs` (and `tabGroups` for group controls). These are required permissions, not optional runtime prompts.",
-            "Create/focus a dedicated disposable Chrome window and open its side panel. The first `open_new_tab` result establishes `$WINDOW_ID`; check its returned `window_id` against the window hosting the side panel. For every later setup tab, pass `window_id:$WINDOW_ID` and confirm the returned window id matches before using it. If it differs, close that fixture and recreate it in the dedicated window.",
-            "Tools → Catalog → search the exact handler name → expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
-            "Open a dedicated disposable Chrome window. Use `open_new_tab` with `{\"url\":\"https://example.com/?ext-f-4072=close\"}` and record its returned tab id.",
-            "The recorded tab is the only target; keep the window’s other tab as the side-panel host."
+            "Create/focus a dedicated disposable Chrome window and open its side panel. In `list_open_tabs`, identify the active tab in that dedicated window and record its `window_id` as `$WINDOW_ID`. Include `\"window_id\":$WINDOW_ID` on every disposable-tab setup call and verify each returned `window_id` matches before using its tab id. If any id differs, close that fixture and recreate it in the dedicated window.",
+            "Tools \u2192 Catalog \u2192 search the exact handler name \u2192 expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
+            "Use `open_new_tab` with `{\"url\":\"https://example.com/?ext-f-4072=close\",\"window_id\":$WINDOW_ID}` and record its returned tab id.",
+            "The recorded tab is the scalar target; keep the window\u2019s other tab as the side-panel host. After the scalar case, create two array targets using `{\"url\":\"https://example.com/?ext-f-4072=array-a\",\"window_id\":$WINDOW_ID}` and `{\"url\":\"https://example.com/?ext-f-4072=array-b\",\"window_id\":$WINDOW_ID}`; verify both returned window ids match."
           ],
           "steps": [
             "Run the valid input exactly as shown, substituting the numeric tab/window/group id returned by the named setup action for each `$..._ID` token; do not target personal tabs.",
             "Valid input: `{\"tab_ids\":$TAB_ID}`.",
             "Observe: The inline result is `{\"ok\":true,\"closed\":1}` and the fixture tab disappears from the tab strip; the side-panel host stays open.",
             "Run the schema-negative input `{\"tab_ids\":[]}`. Expect the runner to show `Schema mismatch` and make no browser-state change.",
-            "Cleanup: No fixture tab remains. Close the disposable window when finished."
+            "Cleanup: No fixture tab remains. Close the disposable window when finished.",
+            "After the scalar case, run array input `{\"tab_ids\":[$TAB_ARRAY_A_ID,$TAB_ARRAY_B_ID]}`; expect `{\"ok\":true,\"closed\":2}` and both tabs disappear. Cleanup closes any remaining owned fixture tabs, then the disposable window."
           ],
           "expected": [
             "The inline result is `{\"ok\":true,\"closed\":1}` and the fixture tab disappears from the tab strip; the side-panel host stays open.",
@@ -51804,6 +51809,7 @@
       "missing_items": [],
       "readiness_gaps": [
         "Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.",
+        "Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.",
         "Confirm current catalog against imported source registry before source inventory signoff"
       ],
       "applicability": {
@@ -51836,20 +51842,20 @@
             "Before any browser action, require a fresh resource permit from the authorized hosted TEST workflow and its completed run journal; this machine is currently refused for local heavy build/browser work. Do not start `pnpm dev`, a local build, or a local browser run. If the hosted admission/artifact is unavailable or refused, stop before launch and leave results unverified.",
             "Use the current authorized hosted build artifact and receipt: source SHA, dirty-source hash if applicable, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, auth/role/org state, permissions, backend identity, fixture ids and timestamp. Install/reload only after the artifact is ready; reopen the side panel and reload fixture tabs, then verify the runtime fingerprint matches that receipt (HMR alone is not acceptance).",
             "Run as a signed-in ordinary member and repeat as admin; guest is not applicable because Tools requires sign-in. Confirm the loaded manifest grants `tabs` (and `tabGroups` for group controls). These are required permissions, not optional runtime prompts.",
-            "Create/focus a dedicated disposable Chrome window and open its side panel. The first `open_new_tab` result establishes `$WINDOW_ID`; check its returned `window_id` against the window hosting the side panel. For every later setup tab, pass `window_id:$WINDOW_ID` and confirm the returned window id matches before using it. If it differs, close that fixture and recreate it in the dedicated window.",
-            "Tools → Catalog → search the exact handler name → expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
-            "Open a dedicated disposable Chrome window. Create two fixture tabs with `open_new_tab`, using URLs `https://example.com/?ext-f-4073=a` and `https://example.com/?ext-f-4073=b`; record both returned ids.",
-            "Leave tab A active and target background tab B."
+            "Create/focus a dedicated disposable Chrome window and open its side panel. In `list_open_tabs`, identify the active tab in that dedicated window and record its `window_id` as `$WINDOW_ID`. Include `\"window_id\":$WINDOW_ID` on every disposable-tab setup call and verify each returned `window_id` matches before using its tab id. If any id differs, close that fixture and recreate it in the dedicated window.",
+            "Tools \u2192 Catalog \u2192 search the exact handler name \u2192 expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
+            "Create tab A with `open_new_tab` input `{\"url\":\"https://example.com/?ext-f-4073=a\",\"window_id\":$WINDOW_ID}`; verify its returned `window_id` matches `$WINDOW_ID`. Create tab B with `{\"url\":\"https://example.com/?ext-f-4073=b\",\"window_id\":$WINDOW_ID}`; verify its returned `window_id` matches and record both ids.",
+            "Leave tab A active and tab B in the background; target tab B."
           ],
           "steps": [
             "Run the valid input exactly as shown, substituting the numeric tab/window/group id returned by the named setup action for each `$..._ID` token; do not target personal tabs.",
             "Valid input: `{\"tab_id\":$TAB_B_ID}`.",
-            "Observe: The inline result is `{\"ok\":true,...}` with tab B’s URL/title. Chrome focuses its window and makes B active; A is unchanged.",
+            "Observe: The inline result is `{\"ok\":true,...}` with tab B\u2019s URL/title. Chrome focuses its window and makes B active; A is unchanged.",
             "Run the schema-negative input `{\"tab_id\":\"not-an-integer\"}`. Expect the runner to show `Schema mismatch` and make no browser-state change.",
             "Cleanup: Close both fixture tabs with `close_tab`, then close the disposable window."
           ],
           "expected": [
-            "The inline result is `{\"ok\":true,...}` with tab B’s URL/title. Chrome focuses its window and makes B active; A is unchanged.",
+            "The inline result is `{\"ok\":true,...}` with tab B\u2019s URL/title. Chrome focuses its window and makes B active; A is unchanged.",
             "The invalid input is refused with a visible `Schema mismatch` before the handler runs; the fixture remains in its pre-negative-test state.",
             "Cleanup leaves no test-owned tab, window, or tab group."
           ],
@@ -51934,6 +51940,7 @@
       "missing_items": [],
       "readiness_gaps": [
         "Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.",
+        "Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.",
         "Confirm current catalog against imported source registry before source inventory signoff"
       ],
       "applicability": {
@@ -51966,9 +51973,9 @@
             "Before any browser action, require a fresh resource permit from the authorized hosted TEST workflow and its completed run journal; this machine is currently refused for local heavy build/browser work. Do not start `pnpm dev`, a local build, or a local browser run. If the hosted admission/artifact is unavailable or refused, stop before launch and leave results unverified.",
             "Use the current authorized hosted build artifact and receipt: source SHA, dirty-source hash if applicable, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, auth/role/org state, permissions, backend identity, fixture ids and timestamp. Install/reload only after the artifact is ready; reopen the side panel and reload fixture tabs, then verify the runtime fingerprint matches that receipt (HMR alone is not acceptance).",
             "Run as a signed-in ordinary member and repeat as admin; guest is not applicable because Tools requires sign-in. Confirm the loaded manifest grants `tabs` (and `tabGroups` for group controls). These are required permissions, not optional runtime prompts.",
-            "Create/focus a dedicated disposable Chrome window and open its side panel. The first `open_new_tab` result establishes `$WINDOW_ID`; check its returned `window_id` against the window hosting the side panel. For every later setup tab, pass `window_id:$WINDOW_ID` and confirm the returned window id matches before using it. If it differs, close that fixture and recreate it in the dedicated window.",
-            "Tools → Catalog → search the exact handler name → expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
-            "Open a dedicated disposable Chrome window. Create one fixture tab with `open_new_tab` using `{\"url\":\"https://example.com/?ext-f-4074=duplicate\"}` and record its id.",
+            "Create/focus a dedicated disposable Chrome window and open its side panel. In `list_open_tabs`, identify the active tab in that dedicated window and record its `window_id` as `$WINDOW_ID`. Include `\"window_id\":$WINDOW_ID` on every disposable-tab setup call and verify each returned `window_id` matches before using its tab id. If any id differs, close that fixture and recreate it in the dedicated window.",
+            "Tools \u2192 Catalog \u2192 search the exact handler name \u2192 expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
+            "Create one fixture tab with `open_new_tab` using `{\"url\":\"https://example.com/?ext-f-4074=duplicate\",\"window_id\":$WINDOW_ID}` and record its id.",
             "Duplicate only that owned fixture."
           ],
           "steps": [
@@ -52068,6 +52075,7 @@
       "missing_items": [],
       "readiness_gaps": [
         "Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.",
+        "Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.",
         "Confirm current catalog against imported source registry before source inventory signoff"
       ],
       "applicability": {
@@ -52100,9 +52108,9 @@
             "Before any browser action, require a fresh resource permit from the authorized hosted TEST workflow and its completed run journal; this machine is currently refused for local heavy build/browser work. Do not start `pnpm dev`, a local build, or a local browser run. If the hosted admission/artifact is unavailable or refused, stop before launch and leave results unverified.",
             "Use the current authorized hosted build artifact and receipt: source SHA, dirty-source hash if applicable, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, auth/role/org state, permissions, backend identity, fixture ids and timestamp. Install/reload only after the artifact is ready; reopen the side panel and reload fixture tabs, then verify the runtime fingerprint matches that receipt (HMR alone is not acceptance).",
             "Run as a signed-in ordinary member and repeat as admin; guest is not applicable because Tools requires sign-in. Confirm the loaded manifest grants `tabs` (and `tabGroups` for group controls). These are required permissions, not optional runtime prompts.",
-            "Create/focus a dedicated disposable Chrome window and open its side panel. The first `open_new_tab` result establishes `$WINDOW_ID`; check its returned `window_id` against the window hosting the side panel. For every later setup tab, pass `window_id:$WINDOW_ID` and confirm the returned window id matches before using it. If it differs, close that fixture and recreate it in the dedicated window.",
-            "Tools → Catalog → search the exact handler name → expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
-            "Open a dedicated disposable Chrome window. Create a fixture tab at `https://example.com/?ext-f-4075=pin` and record its id.",
+            "Create/focus a dedicated disposable Chrome window and open its side panel. In `list_open_tabs`, identify the active tab in that dedicated window and record its `window_id` as `$WINDOW_ID`. Include `\"window_id\":$WINDOW_ID` on every disposable-tab setup call and verify each returned `window_id` matches before using its tab id. If any id differs, close that fixture and recreate it in the dedicated window.",
+            "Tools \u2192 Catalog \u2192 search the exact handler name \u2192 expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
+            "Create a fixture tab with `open_new_tab` input `{\"url\":\"https://example.com/?ext-f-4075=pin\",\"window_id\":$WINDOW_ID}` and record its id.",
             "Begin with the fixture unpinned."
           ],
           "steps": [
@@ -52202,6 +52210,7 @@
       "missing_items": [],
       "readiness_gaps": [
         "Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.",
+        "Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.",
         "Confirm current catalog against imported source registry before source inventory signoff"
       ],
       "applicability": {
@@ -52234,9 +52243,9 @@
             "Before any browser action, require a fresh resource permit from the authorized hosted TEST workflow and its completed run journal; this machine is currently refused for local heavy build/browser work. Do not start `pnpm dev`, a local build, or a local browser run. If the hosted admission/artifact is unavailable or refused, stop before launch and leave results unverified.",
             "Use the current authorized hosted build artifact and receipt: source SHA, dirty-source hash if applicable, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, auth/role/org state, permissions, backend identity, fixture ids and timestamp. Install/reload only after the artifact is ready; reopen the side panel and reload fixture tabs, then verify the runtime fingerprint matches that receipt (HMR alone is not acceptance).",
             "Run as a signed-in ordinary member and repeat as admin; guest is not applicable because Tools requires sign-in. Confirm the loaded manifest grants `tabs` (and `tabGroups` for group controls). These are required permissions, not optional runtime prompts.",
-            "Create/focus a dedicated disposable Chrome window and open its side panel. The first `open_new_tab` result establishes `$WINDOW_ID`; check its returned `window_id` against the window hosting the side panel. For every later setup tab, pass `window_id:$WINDOW_ID` and confirm the returned window id matches before using it. If it differs, close that fixture and recreate it in the dedicated window.",
-            "Tools → Catalog → search the exact handler name → expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
-            "Open a dedicated disposable Chrome window. Create a fixture tab at `https://example.com/?ext-f-4076=mute` and record its id.",
+            "Create/focus a dedicated disposable Chrome window and open its side panel. In `list_open_tabs`, identify the active tab in that dedicated window and record its `window_id` as `$WINDOW_ID`. Include `\"window_id\":$WINDOW_ID` on every disposable-tab setup call and verify each returned `window_id` matches before using its tab id. If any id differs, close that fixture and recreate it in the dedicated window.",
+            "Tools \u2192 Catalog \u2192 search the exact handler name \u2192 expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
+            "Create a fixture tab with `open_new_tab` input `{\"url\":\"https://example.com/?ext-f-4076=mute\",\"window_id\":$WINDOW_ID}` and record its id.",
             "The fixture need not play audio; this control changes its muted state."
           ],
           "steps": [
@@ -52334,6 +52343,7 @@
       "missing_items": [],
       "readiness_gaps": [
         "Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.",
+        "Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.",
         "Confirm current catalog against imported source registry before source inventory signoff"
       ],
       "applicability": {
@@ -52366,9 +52376,9 @@
             "Before any browser action, require a fresh resource permit from the authorized hosted TEST workflow and its completed run journal; this machine is currently refused for local heavy build/browser work. Do not start `pnpm dev`, a local build, or a local browser run. If the hosted admission/artifact is unavailable or refused, stop before launch and leave results unverified.",
             "Use the current authorized hosted build artifact and receipt: source SHA, dirty-source hash if applicable, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, auth/role/org state, permissions, backend identity, fixture ids and timestamp. Install/reload only after the artifact is ready; reopen the side panel and reload fixture tabs, then verify the runtime fingerprint matches that receipt (HMR alone is not acceptance).",
             "Run as a signed-in ordinary member and repeat as admin; guest is not applicable because Tools requires sign-in. Confirm the loaded manifest grants `tabs` (and `tabGroups` for group controls). These are required permissions, not optional runtime prompts.",
-            "Create/focus a dedicated disposable Chrome window and open its side panel. The first `open_new_tab` result establishes `$WINDOW_ID`; check its returned `window_id` against the window hosting the side panel. For every later setup tab, pass `window_id:$WINDOW_ID` and confirm the returned window id matches before using it. If it differs, close that fixture and recreate it in the dedicated window.",
-            "Tools → Catalog → search the exact handler name → expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
-            "Open a dedicated disposable Chrome window. Create a fixture tab at `https://example.com/?ext-f-4077=reload` and record its id and URL.",
+            "Create/focus a dedicated disposable Chrome window and open its side panel. In `list_open_tabs`, identify the active tab in that dedicated window and record its `window_id` as `$WINDOW_ID`. Include `\"window_id\":$WINDOW_ID` on every disposable-tab setup call and verify each returned `window_id` matches before using its tab id. If any id differs, close that fixture and recreate it in the dedicated window.",
+            "Tools \u2192 Catalog \u2192 search the exact handler name \u2192 expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
+            "Create a fixture tab with `open_new_tab` input `{\"url\":\"https://example.com/?ext-f-4077=reload\",\"window_id\":$WINDOW_ID}` and record its id and URL.",
             "Use the explicit id so manual-run behavior is independent of whichever tab is active."
           ],
           "steps": [
@@ -52376,7 +52386,9 @@
             "Valid input: `{\"tab_id\":$TAB_ID,\"bypass_cache\":true}`.",
             "Observe: The result is `{\"ok\":true,\"tab_id\":$TAB_ID}`. The same tab id reloads the same URL and returns to complete/loading-finished state.",
             "Run the schema-negative input `{\"tab_id\":$TAB_ID,\"bypass_cache\":\"yes\"}`. Expect the runner to show `Schema mismatch` and make no browser-state change.",
-            "Cleanup: Close the fixture tab and disposable window."
+            "Cleanup: Close the fixture tab and disposable window.",
+            "Default/manual boundary variant: make the owned fixture tab active in the disposable window and run `{\"bypass_cache\":false}` with `tab_id` omitted. The manual Tools runner supplies `assignedTabId:null`, so the handler falls back to the active tab in that current window; expect `{\"ok\":true,\"tab_id\":$TAB_ID}` and the same fixture URL after reload.",
+            "Assigned-agent-tab behavior remains unverified by this manual-run procedure; it does not prove send-time assignment pinning."
           ],
           "expected": [
             "The result is `{\"ok\":true,\"tab_id\":$TAB_ID}`. The same tab id reloads the same URL and returns to complete/loading-finished state.",
@@ -52462,6 +52474,7 @@
       "missing_items": [],
       "readiness_gaps": [
         "Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.",
+        "Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.",
         "Confirm current catalog against imported source registry before source inventory signoff"
       ],
       "applicability": {
@@ -52494,20 +52507,20 @@
             "Before any browser action, require a fresh resource permit from the authorized hosted TEST workflow and its completed run journal; this machine is currently refused for local heavy build/browser work. Do not start `pnpm dev`, a local build, or a local browser run. If the hosted admission/artifact is unavailable or refused, stop before launch and leave results unverified.",
             "Use the current authorized hosted build artifact and receipt: source SHA, dirty-source hash if applicable, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, auth/role/org state, permissions, backend identity, fixture ids and timestamp. Install/reload only after the artifact is ready; reopen the side panel and reload fixture tabs, then verify the runtime fingerprint matches that receipt (HMR alone is not acceptance).",
             "Run as a signed-in ordinary member and repeat as admin; guest is not applicable because Tools requires sign-in. Confirm the loaded manifest grants `tabs` (and `tabGroups` for group controls). These are required permissions, not optional runtime prompts.",
-            "Create/focus a dedicated disposable Chrome window and open its side panel. The first `open_new_tab` result establishes `$WINDOW_ID`; check its returned `window_id` against the window hosting the side panel. For every later setup tab, pass `window_id:$WINDOW_ID` and confirm the returned window id matches before using it. If it differs, close that fixture and recreate it in the dedicated window.",
-            "Tools → Catalog → search the exact handler name → expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
-            "Open a dedicated disposable Chrome window and a fixture tab at `https://example.com/?ext-f-4078=one`. In that fixture tab’s address bar navigate to `https://example.com/?ext-f-4078=two`; wait for load and record its tab id.",
-            "There must be one prior same-tab history entry. Keep a second disposable tab active to distinguish the target from the active tab."
+            "Create/focus a dedicated disposable Chrome window and open its side panel. In `list_open_tabs`, identify the active tab in that dedicated window and record its `window_id` as `$WINDOW_ID`. Include `\"window_id\":$WINDOW_ID` on every disposable-tab setup call and verify each returned `window_id` matches before using its tab id. If any id differs, close that fixture and recreate it in the dedicated window.",
+            "Tools \u2192 Catalog \u2192 search the exact handler name \u2192 expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
+            "Create the first history fixture with `open_new_tab` input `{\"url\":\"https://example.com/?ext-f-4078=one\",\"window_id\":$WINDOW_ID}`; verify the result window id is `$WINDOW_ID`. In that same tab navigate to `https://example.com/?ext-f-4078=two`, wait for load, and record the id. Then create a second owned tab with `{\"url\":\"https://example.com/?ext-f-4078=active\",\"window_id\":$WINDOW_ID}`; verify its returned window id matches and make it active.",
+            "The fixture must retain the specified same-tab history entry; leave the second owned tab active to distinguish history target from active tab."
           ],
           "steps": [
             "Run the valid input exactly as shown, substituting the numeric tab/window/group id returned by the named setup action for each `$..._ID` token; do not target personal tabs.",
             "Valid input: `{\"tab_id\":$TAB_ID}`.",
-            "Observe: The tool completes with `{\"ok\":true}` and the fixture tab URL changes from `...=two` to `...=one`; the other active tab does not navigate. In a dispatched-agent run with `tab_id` omitted, the optional fallback targets the turn’s assigned tab, not the newly active tab; the manual Tools runner has no assignment and uses the explicit id in this procedure.",
+            "Observe: The tool completes with `{\"ok\":true}` and the fixture tab URL changes from `...=two` to `...=one`; the other active tab does not navigate. In a dispatched-agent run with `tab_id` omitted, the optional fallback targets the turn\u2019s assigned tab, not the newly active tab; the manual Tools runner has no assignment and uses the explicit id in this procedure.",
             "Run the schema-negative input `{\"tab_id\":\"not-an-integer\"}`. Expect the runner to show `Schema mismatch` and make no browser-state change.",
             "Cleanup: Close both fixture tabs, then the disposable window."
           ],
           "expected": [
-            "The tool completes with `{\"ok\":true}` and the fixture tab URL changes from `...=two` to `...=one`; the other active tab does not navigate. In a dispatched-agent run with `tab_id` omitted, the optional fallback targets the turn’s assigned tab, not the newly active tab; the manual Tools runner has no assignment and uses the explicit id in this procedure.",
+            "The tool completes with `{\"ok\":true}` and the fixture tab URL changes from `...=two` to `...=one`; the other active tab does not navigate. In a dispatched-agent run with `tab_id` omitted, the optional fallback targets the turn\u2019s assigned tab, not the newly active tab; the manual Tools runner has no assignment and uses the explicit id in this procedure.",
             "The invalid input is refused with a visible `Schema mismatch` before the handler runs; the fixture remains in its pre-negative-test state.",
             "Cleanup leaves no test-owned tab, window, or tab group."
           ],
@@ -52590,6 +52603,7 @@
       "missing_items": [],
       "readiness_gaps": [
         "Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.",
+        "Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.",
         "Confirm current catalog against imported source registry before source inventory signoff"
       ],
       "applicability": {
@@ -52622,20 +52636,20 @@
             "Before any browser action, require a fresh resource permit from the authorized hosted TEST workflow and its completed run journal; this machine is currently refused for local heavy build/browser work. Do not start `pnpm dev`, a local build, or a local browser run. If the hosted admission/artifact is unavailable or refused, stop before launch and leave results unverified.",
             "Use the current authorized hosted build artifact and receipt: source SHA, dirty-source hash if applicable, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, auth/role/org state, permissions, backend identity, fixture ids and timestamp. Install/reload only after the artifact is ready; reopen the side panel and reload fixture tabs, then verify the runtime fingerprint matches that receipt (HMR alone is not acceptance).",
             "Run as a signed-in ordinary member and repeat as admin; guest is not applicable because Tools requires sign-in. Confirm the loaded manifest grants `tabs` (and `tabGroups` for group controls). These are required permissions, not optional runtime prompts.",
-            "Create/focus a dedicated disposable Chrome window and open its side panel. The first `open_new_tab` result establishes `$WINDOW_ID`; check its returned `window_id` against the window hosting the side panel. For every later setup tab, pass `window_id:$WINDOW_ID` and confirm the returned window id matches before using it. If it differs, close that fixture and recreate it in the dedicated window.",
-            "Tools → Catalog → search the exact handler name → expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
-            "Open a dedicated disposable Chrome window and a fixture tab at `https://example.com/?ext-f-4079=one`; navigate it to `https://example.com/?ext-f-4079=two`, then use Chrome Back so it is at `...=one`. Record its id and keep a second disposable tab active.",
-            "The fixture must have a forward history entry to `...=two`."
+            "Create/focus a dedicated disposable Chrome window and open its side panel. In `list_open_tabs`, identify the active tab in that dedicated window and record its `window_id` as `$WINDOW_ID`. Include `\"window_id\":$WINDOW_ID` on every disposable-tab setup call and verify each returned `window_id` matches before using its tab id. If any id differs, close that fixture and recreate it in the dedicated window.",
+            "Tools \u2192 Catalog \u2192 search the exact handler name \u2192 expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
+            "Create the first history fixture with `open_new_tab` input `{\"url\":\"https://example.com/?ext-f-4079=one\",\"window_id\":$WINDOW_ID}`; verify the result window id is `$WINDOW_ID`. Navigate it to `https://example.com/?ext-f-4079=two`, then use Chrome Back so it is at `...=one`; record its id. Create a second owned tab with `{\"url\":\"https://example.com/?ext-f-4079=active\",\"window_id\":$WINDOW_ID}`; verify its returned window id matches and make it active.",
+            "The fixture must retain the specified same-tab history entry; leave the second owned tab active to distinguish history target from active tab."
           ],
           "steps": [
             "Run the valid input exactly as shown, substituting the numeric tab/window/group id returned by the named setup action for each `$..._ID` token; do not target personal tabs.",
             "Valid input: `{\"tab_id\":$TAB_ID}`.",
-            "Observe: The tool completes with `{\"ok\":true}` and the fixture URL changes from `...=one` to `...=two`; the other active tab does not navigate. In a dispatched-agent run with `tab_id` omitted, the optional fallback targets the turn’s assigned tab; the manual Tools runner has no assignment and uses the explicit id here.",
+            "Observe: The tool completes with `{\"ok\":true}` and the fixture URL changes from `...=one` to `...=two`; the other active tab does not navigate. In a dispatched-agent run with `tab_id` omitted, the optional fallback targets the turn\u2019s assigned tab; the manual Tools runner has no assignment and uses the explicit id here.",
             "Run the schema-negative input `{\"tab_id\":\"not-an-integer\"}`. Expect the runner to show `Schema mismatch` and make no browser-state change.",
             "Cleanup: Close both fixture tabs and disposable window."
           ],
           "expected": [
-            "The tool completes with `{\"ok\":true}` and the fixture URL changes from `...=one` to `...=two`; the other active tab does not navigate. In a dispatched-agent run with `tab_id` omitted, the optional fallback targets the turn’s assigned tab; the manual Tools runner has no assignment and uses the explicit id here.",
+            "The tool completes with `{\"ok\":true}` and the fixture URL changes from `...=one` to `...=two`; the other active tab does not navigate. In a dispatched-agent run with `tab_id` omitted, the optional fallback targets the turn\u2019s assigned tab; the manual Tools runner has no assignment and uses the explicit id here.",
             "The invalid input is refused with a visible `Schema mismatch` before the handler runs; the fixture remains in its pre-negative-test state.",
             "Cleanup leaves no test-owned tab, window, or tab group."
           ],
@@ -52725,6 +52739,7 @@
       "missing_items": [],
       "readiness_gaps": [
         "Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.",
+        "Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.",
         "Confirm current catalog against imported source registry before source inventory signoff"
       ],
       "applicability": {
@@ -52757,20 +52772,20 @@
             "Before any browser action, require a fresh resource permit from the authorized hosted TEST workflow and its completed run journal; this machine is currently refused for local heavy build/browser work. Do not start `pnpm dev`, a local build, or a local browser run. If the hosted admission/artifact is unavailable or refused, stop before launch and leave results unverified.",
             "Use the current authorized hosted build artifact and receipt: source SHA, dirty-source hash if applicable, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, auth/role/org state, permissions, backend identity, fixture ids and timestamp. Install/reload only after the artifact is ready; reopen the side panel and reload fixture tabs, then verify the runtime fingerprint matches that receipt (HMR alone is not acceptance).",
             "Run as a signed-in ordinary member and repeat as admin; guest is not applicable because Tools requires sign-in. Confirm the loaded manifest grants `tabs` (and `tabGroups` for group controls). These are required permissions, not optional runtime prompts.",
-            "Create/focus a dedicated disposable Chrome window and open its side panel. The first `open_new_tab` result establishes `$WINDOW_ID`; check its returned `window_id` against the window hosting the side panel. For every later setup tab, pass `window_id:$WINDOW_ID` and confirm the returned window id matches before using it. If it differs, close that fixture and recreate it in the dedicated window.",
-            "Tools → Catalog → search the exact handler name → expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
-            "Open a dedicated disposable Chrome window. Create a fixture tab at `https://example.com/?ext-f-4080=zoom` and record its id.",
+            "Create/focus a dedicated disposable Chrome window and open its side panel. In `list_open_tabs`, identify the active tab in that dedicated window and record its `window_id` as `$WINDOW_ID`. Include `\"window_id\":$WINDOW_ID` on every disposable-tab setup call and verify each returned `window_id` matches before using its tab id. If any id differs, close that fixture and recreate it in the dedicated window.",
+            "Tools \u2192 Catalog \u2192 search the exact handler name \u2192 expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
+            "Create a fixture tab with `open_new_tab` input `{\"url\":\"https://example.com/?ext-f-4080=zoom\",\"window_id\":$WINDOW_ID}` and record its id.",
             "Use the explicit id even if a different tab is active."
           ],
           "steps": [
             "Run the valid input exactly as shown, substituting the numeric tab/window/group id returned by the named setup action for each `$..._ID` token; do not target personal tabs.",
             "Valid input: `{\"tab_id\":$TAB_ID,\"zoom_factor\":1.25}`.",
-            "Observe: The result is `{\"ok\":true,\"zoom_factor\":1.25}` and Chrome’s page-zoom indicator shows 125% for the fixture. In a dispatched-agent run with `tab_id` omitted, the optional fallback targets the assigned tab; manual Tools Run has no assignment and this case names the id explicitly.",
+            "Observe: The result is `{\"ok\":true,\"zoom_factor\":1.25}` and Chrome\u2019s page-zoom indicator shows 125% for the fixture. In a dispatched-agent run with `tab_id` omitted, the optional fallback targets the assigned tab; manual Tools Run has no assignment and this case names the id explicitly.",
             "Run the schema-negative input `{\"tab_id\":$TAB_ID,\"zoom_factor\":6}`. Expect the runner to show `Schema mismatch` and make no browser-state change.",
             "Cleanup: Set the fixture zoom back to `1` with `set_tab_zoom`, then close it and the disposable window."
           ],
           "expected": [
-            "The result is `{\"ok\":true,\"zoom_factor\":1.25}` and Chrome’s page-zoom indicator shows 125% for the fixture. In a dispatched-agent run with `tab_id` omitted, the optional fallback targets the assigned tab; manual Tools Run has no assignment and this case names the id explicitly.",
+            "The result is `{\"ok\":true,\"zoom_factor\":1.25}` and Chrome\u2019s page-zoom indicator shows 125% for the fixture. In a dispatched-agent run with `tab_id` omitted, the optional fallback targets the assigned tab; manual Tools Run has no assignment and this case names the id explicitly.",
             "The invalid input is refused with a visible `Schema mismatch` before the handler runs; the fixture remains in its pre-negative-test state.",
             "Cleanup leaves no test-owned tab, window, or tab group."
           ],
@@ -52863,6 +52878,7 @@
       "missing_items": [],
       "readiness_gaps": [
         "Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.",
+        "Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.",
         "Confirm current catalog against imported source registry before source inventory signoff"
       ],
       "applicability": {
@@ -52895,9 +52911,9 @@
             "Before any browser action, require a fresh resource permit from the authorized hosted TEST workflow and its completed run journal; this machine is currently refused for local heavy build/browser work. Do not start `pnpm dev`, a local build, or a local browser run. If the hosted admission/artifact is unavailable or refused, stop before launch and leave results unverified.",
             "Use the current authorized hosted build artifact and receipt: source SHA, dirty-source hash if applicable, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, auth/role/org state, permissions, backend identity, fixture ids and timestamp. Install/reload only after the artifact is ready; reopen the side panel and reload fixture tabs, then verify the runtime fingerprint matches that receipt (HMR alone is not acceptance).",
             "Run as a signed-in ordinary member and repeat as admin; guest is not applicable because Tools requires sign-in. Confirm the loaded manifest grants `tabs` (and `tabGroups` for group controls). These are required permissions, not optional runtime prompts.",
-            "Create/focus a dedicated disposable Chrome window and open its side panel. The first `open_new_tab` result establishes `$WINDOW_ID`; check its returned `window_id` against the window hosting the side panel. For every later setup tab, pass `window_id:$WINDOW_ID` and confirm the returned window id matches before using it. If it differs, close that fixture and recreate it in the dedicated window.",
-            "Tools → Catalog → search the exact handler name → expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
-            "Open a dedicated disposable Chrome window. Create tabs A and B in order with URLs `https://example.com/?ext-f-4081=a` and `https://example.com/?ext-f-4081=b`; record both ids.",
+            "Create/focus a dedicated disposable Chrome window and open its side panel. In `list_open_tabs`, identify the active tab in that dedicated window and record its `window_id` as `$WINDOW_ID`. Include `\"window_id\":$WINDOW_ID` on every disposable-tab setup call and verify each returned `window_id` matches before using its tab id. If any id differs, close that fixture and recreate it in the dedicated window.",
+            "Tools \u2192 Catalog \u2192 search the exact handler name \u2192 expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
+            "Create tab A with `open_new_tab` input `{\"url\":\"https://example.com/?ext-f-4081=a\",\"window_id\":$WINDOW_ID}`; verify its returned `window_id` matches `$WINDOW_ID`. Create tab B with `{\"url\":\"https://example.com/?ext-f-4081=b\",\"window_id\":$WINDOW_ID}`; verify its returned `window_id` matches and record both ids.",
             "Move B to the start of the same window."
           ],
           "steps": [
@@ -52905,7 +52921,8 @@
             "Valid input: `{\"tab_id\":$TAB_B_ID,\"index\":0}`.",
             "Observe: The result reports `ok:true`, the same window id and index `0`; the tab strip order is B then A.",
             "Run the schema-negative input `{\"tab_id\":$TAB_B_ID,\"index\":-2}`. Expect the runner to show `Schema mismatch` and make no browser-state change.",
-            "Cleanup: Close A and B with `close_tab`, then close the disposable window."
+            "Cleanup: Close A and B with `close_tab`, then close the disposable window.",
+            "Cross-window variant: create/focus a second disposable destination window. Use `list_open_tabs` to identify the active tab in the focused destination window and record its `window_id` as `$DEST_WINDOW_ID`. Bootstrap an owned destination tab with `open_new_tab` input `{\"url\":\"https://example.com/?ext-f-4081=destination\",\"window_id\":$DEST_WINDOW_ID}`; verify the returned window id matches `$DEST_WINDOW_ID`. Then run `{\"tab_id\":$TAB_B_ID,\"index\":0,\"window_id\":$DEST_WINDOW_ID}`; verify result window id is `$DEST_WINDOW_ID`, index 0, and A remains in `$WINDOW_ID`. Close moved B and the bootstrap tab, then close both disposable windows."
           ],
           "expected": [
             "The result reports `ok:true`, the same window id and index `0`; the tab strip order is B then A.",
@@ -53009,6 +53026,7 @@
       "missing_items": [],
       "readiness_gaps": [
         "Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.",
+        "Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.",
         "Confirm current catalog against imported source registry before source inventory signoff"
       ],
       "applicability": {
@@ -53041,20 +53059,20 @@
             "Before any browser action, require a fresh resource permit from the authorized hosted TEST workflow and its completed run journal; this machine is currently refused for local heavy build/browser work. Do not start `pnpm dev`, a local build, or a local browser run. If the hosted admission/artifact is unavailable or refused, stop before launch and leave results unverified.",
             "Use the current authorized hosted build artifact and receipt: source SHA, dirty-source hash if applicable, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, auth/role/org state, permissions, backend identity, fixture ids and timestamp. Install/reload only after the artifact is ready; reopen the side panel and reload fixture tabs, then verify the runtime fingerprint matches that receipt (HMR alone is not acceptance).",
             "Run as a signed-in ordinary member and repeat as admin; guest is not applicable because Tools requires sign-in. Confirm the loaded manifest grants `tabs` (and `tabGroups` for group controls). These are required permissions, not optional runtime prompts.",
-            "Create/focus a dedicated disposable Chrome window and open its side panel. The first `open_new_tab` result establishes `$WINDOW_ID`; check its returned `window_id` against the window hosting the side panel. For every later setup tab, pass `window_id:$WINDOW_ID` and confirm the returned window id matches before using it. If it differs, close that fixture and recreate it in the dedicated window.",
-            "Tools → Catalog → search the exact handler name → expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
-            "Open a dedicated disposable Chrome window and create a fixture tab in it at `https://example.com/?ext-f-4082=resize`; record its id and window dimensions.",
+            "Create/focus a dedicated disposable Chrome window and open its side panel. In `list_open_tabs`, identify the active tab in that dedicated window and record its `window_id` as `$WINDOW_ID`. Include `\"window_id\":$WINDOW_ID` on every disposable-tab setup call and verify each returned `window_id` matches before using its tab id. If any id differs, close that fixture and recreate it in the dedicated window.",
+            "Tools \u2192 Catalog \u2192 search the exact handler name \u2192 expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
+            "create a fixture tab in it with `open_new_tab` input `{\"url\":\"https://example.com/?ext-f-4082=resize\",\"window_id\":$WINDOW_ID}`; record its id and window dimensions.",
             "Keep a normal-sized, non-maximized disposable window; target that tab explicitly."
           ],
           "steps": [
             "Run the valid input exactly as shown, substituting the numeric tab/window/group id returned by the named setup action for each `$..._ID` token; do not target personal tabs.",
             "Valid input: `{\"tab_id\":$TAB_ID,\"width\":800,\"height\":600}`.",
-            "Observe: The result reports `ok:true`, the fixture’s window id, width `800` and height `600`; the dedicated window visibly resizes. In a dispatched-agent run with `tab_id` omitted, the optional fallback targets the assigned tab’s window; manual Tools Run has no assignment and uses this explicit id.",
+            "Observe: The result reports `ok:true`, the fixture\u2019s window id, width `800` and height `600`; the dedicated window visibly resizes. In a dispatched-agent run with `tab_id` omitted, the optional fallback targets the assigned tab\u2019s window; manual Tools Run has no assignment and uses this explicit id.",
             "Run the schema-negative input `{\"tab_id\":$TAB_ID,\"width\":0,\"height\":600}`. Expect the runner to show `Schema mismatch` and make no browser-state change.",
             "Cleanup: Restore the recorded original width/height with the same tool, close the fixture, then close the disposable window."
           ],
           "expected": [
-            "The result reports `ok:true`, the fixture’s window id, width `800` and height `600`; the dedicated window visibly resizes. In a dispatched-agent run with `tab_id` omitted, the optional fallback targets the assigned tab’s window; manual Tools Run has no assignment and uses this explicit id.",
+            "The result reports `ok:true`, the fixture\u2019s window id, width `800` and height `600`; the dedicated window visibly resizes. In a dispatched-agent run with `tab_id` omitted, the optional fallback targets the assigned tab\u2019s window; manual Tools Run has no assignment and uses this explicit id.",
             "The invalid input is refused with a visible `Schema mismatch` before the handler runs; the fixture remains in its pre-negative-test state.",
             "Cleanup leaves no test-owned tab, window, or tab group."
           ],
@@ -53167,6 +53185,7 @@
       "missing_items": [],
       "readiness_gaps": [
         "Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.",
+        "Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.",
         "Confirm current catalog against imported source registry before source inventory signoff"
       ],
       "applicability": {
@@ -53199,9 +53218,9 @@
             "Before any browser action, require a fresh resource permit from the authorized hosted TEST workflow and its completed run journal; this machine is currently refused for local heavy build/browser work. Do not start `pnpm dev`, a local build, or a local browser run. If the hosted admission/artifact is unavailable or refused, stop before launch and leave results unverified.",
             "Use the current authorized hosted build artifact and receipt: source SHA, dirty-source hash if applicable, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, auth/role/org state, permissions, backend identity, fixture ids and timestamp. Install/reload only after the artifact is ready; reopen the side panel and reload fixture tabs, then verify the runtime fingerprint matches that receipt (HMR alone is not acceptance).",
             "Run as a signed-in ordinary member and repeat as admin; guest is not applicable because Tools requires sign-in. Confirm the loaded manifest grants `tabs` (and `tabGroups` for group controls). These are required permissions, not optional runtime prompts.",
-            "Create/focus a dedicated disposable Chrome window and open its side panel. The first `open_new_tab` result establishes `$WINDOW_ID`; check its returned `window_id` against the window hosting the side panel. For every later setup tab, pass `window_id:$WINDOW_ID` and confirm the returned window id matches before using it. If it differs, close that fixture and recreate it in the dedicated window.",
-            "Tools → Catalog → search the exact handler name → expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
-            "In a dedicated disposable Chrome window create two tabs with `open_new_tab`, URLs `https://example.com/?ext-f-4083=a` and `https://example.com/?ext-f-4083=b`; record ids.",
+            "Create/focus a dedicated disposable Chrome window and open its side panel. In `list_open_tabs`, identify the active tab in that dedicated window and record its `window_id` as `$WINDOW_ID`. Include `\"window_id\":$WINDOW_ID` on every disposable-tab setup call and verify each returned `window_id` matches before using its tab id. If any id differs, close that fixture and recreate it in the dedicated window.",
+            "Tools \u2192 Catalog \u2192 search the exact handler name \u2192 expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
+            "Create tab A with `open_new_tab` input `{\"url\":\"https://example.com/?ext-f-4083=a\",\"window_id\":$WINDOW_ID}`; verify its returned `window_id` matches `$WINDOW_ID`. Create tab B with `{\"url\":\"https://example.com/?ext-f-4083=b\",\"window_id\":$WINDOW_ID}`; verify its returned `window_id` matches and record both ids.",
             "Use only those two owned tabs and the same window id."
           ],
           "steps": [
@@ -53209,7 +53228,8 @@
             "Valid input: `{\"tab_ids\":[$TAB_A_ID,$TAB_B_ID],\"title\":\"EXT-F-4083\",\"color\":\"blue\",\"collapsed\":true}`.",
             "Observe: The result contains `ok:true` and a `group_id`. Chrome shows the two tabs in one blue collapsed group titled `EXT-F-4083`; `get_tab_groups` reports exactly those tab ids, title, color and `collapsed:true`.",
             "Run the schema-negative input `{\"tab_ids\":[],\"title\":\"EXT-F-4083\"}`. Expect the runner to show `Schema mismatch` and make no browser-state change.",
-            "Cleanup: Call `remove_tabs_from_group` for both tab ids to ungroup them, close both fixture tabs and the disposable window; the empty group disappears."
+            "Cleanup: Call `remove_tabs_from_group` for both tab ids to ungroup them, close both fixture tabs and the disposable window; the empty group disappears.",
+            "Window-field variant: create a group from the same owned tabs using `{\"tab_ids\":[$TAB_A_ID,$TAB_B_ID],\"title\":\"EXT-F-4083-window\",\"window_id\":$WINDOW_ID}`; verify group membership is exactly those tabs in `$WINDOW_ID`, then ungroup them during cleanup."
           ],
           "expected": [
             "The result contains `ok:true` and a `group_id`. Chrome shows the two tabs in one blue collapsed group titled `EXT-F-4083`; `get_tab_groups` reports exactly those tab ids, title, color and `collapsed:true`.",
@@ -53306,6 +53326,7 @@
       "missing_items": [],
       "readiness_gaps": [
         "Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.",
+        "Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.",
         "Confirm current catalog against imported source registry before source inventory signoff"
       ],
       "applicability": {
@@ -53338,9 +53359,9 @@
             "Before any browser action, require a fresh resource permit from the authorized hosted TEST workflow and its completed run journal; this machine is currently refused for local heavy build/browser work. Do not start `pnpm dev`, a local build, or a local browser run. If the hosted admission/artifact is unavailable or refused, stop before launch and leave results unverified.",
             "Use the current authorized hosted build artifact and receipt: source SHA, dirty-source hash if applicable, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, auth/role/org state, permissions, backend identity, fixture ids and timestamp. Install/reload only after the artifact is ready; reopen the side panel and reload fixture tabs, then verify the runtime fingerprint matches that receipt (HMR alone is not acceptance).",
             "Run as a signed-in ordinary member and repeat as admin; guest is not applicable because Tools requires sign-in. Confirm the loaded manifest grants `tabs` (and `tabGroups` for group controls). These are required permissions, not optional runtime prompts.",
-            "Create/focus a dedicated disposable Chrome window and open its side panel. The first `open_new_tab` result establishes `$WINDOW_ID`; check its returned `window_id` against the window hosting the side panel. For every later setup tab, pass `window_id:$WINDOW_ID` and confirm the returned window id matches before using it. If it differs, close that fixture and recreate it in the dedicated window.",
-            "Tools → Catalog → search the exact handler name → expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
-            "In a dedicated disposable Chrome window create tabs A and B at `https://example.com/?ext-f-4084=a` and `...?ext-f-4084=b`; create a group containing only A via `create_tab_group` with `{\"tab_ids\":[$TAB_A_ID],\"title\":\"EXT-F-4084\",\"color\":\"green\"}`; record its returned group id.",
+            "Create/focus a dedicated disposable Chrome window and open its side panel. In `list_open_tabs`, identify the active tab in that dedicated window and record its `window_id` as `$WINDOW_ID`. Include `\"window_id\":$WINDOW_ID` on every disposable-tab setup call and verify each returned `window_id` matches before using its tab id. If any id differs, close that fixture and recreate it in the dedicated window.",
+            "Tools \u2192 Catalog \u2192 search the exact handler name \u2192 expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
+            "Create tab A using `open_new_tab` input `{\"url\":\"https://example.com/?ext-f-4084=a\",\"window_id\":$WINDOW_ID}`; verify its returned `window_id` matches `$WINDOW_ID`. Create tab B with `{\"url\":\"https://example.com/?ext-f-4084=b\",\"window_id\":$WINDOW_ID}` and verify the returned `window_id` matches. Create a group containing only A via `create_tab_group` with `{\"tab_ids\":[$TAB_A_ID],\"title\":\"EXT-F-4084\",\"color\":\"green\",\"window_id\":$WINDOW_ID}`; record group id.",
             "B starts outside the group; A is the only group member."
           ],
           "steps": [
@@ -53441,6 +53462,7 @@
       "missing_items": [],
       "readiness_gaps": [
         "Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.",
+        "Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.",
         "Confirm current catalog against imported source registry before source inventory signoff"
       ],
       "applicability": {
@@ -53473,9 +53495,9 @@
             "Before any browser action, require a fresh resource permit from the authorized hosted TEST workflow and its completed run journal; this machine is currently refused for local heavy build/browser work. Do not start `pnpm dev`, a local build, or a local browser run. If the hosted admission/artifact is unavailable or refused, stop before launch and leave results unverified.",
             "Use the current authorized hosted build artifact and receipt: source SHA, dirty-source hash if applicable, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, auth/role/org state, permissions, backend identity, fixture ids and timestamp. Install/reload only after the artifact is ready; reopen the side panel and reload fixture tabs, then verify the runtime fingerprint matches that receipt (HMR alone is not acceptance).",
             "Run as a signed-in ordinary member and repeat as admin; guest is not applicable because Tools requires sign-in. Confirm the loaded manifest grants `tabs` (and `tabGroups` for group controls). These are required permissions, not optional runtime prompts.",
-            "Create/focus a dedicated disposable Chrome window and open its side panel. The first `open_new_tab` result establishes `$WINDOW_ID`; check its returned `window_id` against the window hosting the side panel. For every later setup tab, pass `window_id:$WINDOW_ID` and confirm the returned window id matches before using it. If it differs, close that fixture and recreate it in the dedicated window.",
-            "Tools → Catalog → search the exact handler name → expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
-            "In a dedicated disposable Chrome window create tabs A and B at `https://example.com/?ext-f-4085=a` and `...?ext-f-4085=b`; group both with `create_tab_group` and record its group id.",
+            "Create/focus a dedicated disposable Chrome window and open its side panel. In `list_open_tabs`, identify the active tab in that dedicated window and record its `window_id` as `$WINDOW_ID`. Include `\"window_id\":$WINDOW_ID` on every disposable-tab setup call and verify each returned `window_id` matches before using its tab id. If any id differs, close that fixture and recreate it in the dedicated window.",
+            "Tools \u2192 Catalog \u2192 search the exact handler name \u2192 expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
+            "Create tab A using `open_new_tab` input `{\"url\":\"https://example.com/?ext-f-4085=a\",\"window_id\":$WINDOW_ID}`; verify its returned `window_id` matches `$WINDOW_ID`. Create tab B with `{\"url\":\"https://example.com/?ext-f-4085=b\",\"window_id\":$WINDOW_ID}` and verify the returned `window_id` matches. Group both with `create_tab_group` using `{\"tab_ids\":[$TAB_A_ID,$TAB_B_ID],\"window_id\":$WINDOW_ID}` and record its group id.",
             "Both fixture tabs start in the owned group."
           ],
           "steps": [
@@ -53591,6 +53613,7 @@
       "missing_items": [],
       "readiness_gaps": [
         "Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.",
+        "Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.",
         "Confirm current catalog against imported source registry before source inventory signoff"
       ],
       "applicability": {
@@ -53623,9 +53646,9 @@
             "Before any browser action, require a fresh resource permit from the authorized hosted TEST workflow and its completed run journal; this machine is currently refused for local heavy build/browser work. Do not start `pnpm dev`, a local build, or a local browser run. If the hosted admission/artifact is unavailable or refused, stop before launch and leave results unverified.",
             "Use the current authorized hosted build artifact and receipt: source SHA, dirty-source hash if applicable, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, auth/role/org state, permissions, backend identity, fixture ids and timestamp. Install/reload only after the artifact is ready; reopen the side panel and reload fixture tabs, then verify the runtime fingerprint matches that receipt (HMR alone is not acceptance).",
             "Run as a signed-in ordinary member and repeat as admin; guest is not applicable because Tools requires sign-in. Confirm the loaded manifest grants `tabs` (and `tabGroups` for group controls). These are required permissions, not optional runtime prompts.",
-            "Create/focus a dedicated disposable Chrome window and open its side panel. The first `open_new_tab` result establishes `$WINDOW_ID`; check its returned `window_id` against the window hosting the side panel. For every later setup tab, pass `window_id:$WINDOW_ID` and confirm the returned window id matches before using it. If it differs, close that fixture and recreate it in the dedicated window.",
-            "Tools → Catalog → search the exact handler name → expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
-            "In a dedicated disposable Chrome window create tabs A and B at `https://example.com/?ext-f-4086=a` and `...?ext-f-4086=b`; group them with `create_tab_group` using title `EXT-F-4086-start`, color `grey`; record group id.",
+            "Create/focus a dedicated disposable Chrome window and open its side panel. In `list_open_tabs`, identify the active tab in that dedicated window and record its `window_id` as `$WINDOW_ID`. Include `\"window_id\":$WINDOW_ID` on every disposable-tab setup call and verify each returned `window_id` matches before using its tab id. If any id differs, close that fixture and recreate it in the dedicated window.",
+            "Tools \u2192 Catalog \u2192 search the exact handler name \u2192 expand the row. Paste the exact JSON below into its test runner and click Run. Record the inline output and browser state. This is the user-initiated manual runner: it validates against the handler Zod schema and calls the handler directly, bypassing the agent dispatcher Ask/Act confirmation gate. Do not count a manual run as dispatcher-mode coverage.",
+            "Create tab A using `open_new_tab` input `{\"url\":\"https://example.com/?ext-f-4086=a\",\"window_id\":$WINDOW_ID}`; verify its returned `window_id` matches `$WINDOW_ID`. Create tab B with `{\"url\":\"https://example.com/?ext-f-4086=b\",\"window_id\":$WINDOW_ID}` and verify the returned `window_id` matches. Group them with `create_tab_group` using `{\"tab_ids\":[$TAB_A_ID,$TAB_B_ID],\"title\":\"EXT-F-4086-start\",\"color\":\"grey\",\"window_id\":$WINDOW_ID}`; record group id.",
             "The owned group must have at least one tab."
           ],
           "steps": [
