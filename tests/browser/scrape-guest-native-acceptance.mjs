@@ -7,6 +7,7 @@ import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { armBusyExpression, readBusyExpression } from './scrape-busy-observer.mjs';
+import { scrapeLayoutFailure } from './scrape-layout-guard.mjs';
 import { diagnosticCpuRate, runSupplementalCpuDiagnostic } from './scrape-page-cpu-diagnostic.mjs';
 import { recordReloadMilestone } from './scrape-reload-milestones.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
@@ -99,10 +100,19 @@ async function horizontalGeometry(panel, boundary) {
     return { viewportWidth: innerWidth, document: rect(document.documentElement), body: rect(document.body),
       outerTabs: rect(outer?.closest('[role="tablist"]')), scrapePane: rect(pane),
       resultTabs: rect(resultList), selectedTrigger: rect(selected), title: rect(title),
-      captureRow: rect(capture?.parentElement), selectedScrollableAncestors: ancestors };
+      captureRow: rect(capture?.parentElement), selectedScrollableAncestors: ancestors,
+      triggers: [...(resultList?.querySelectorAll('[role="tab"]') ?? [])]
+        .map((node) => ({ label: node.firstChild?.textContent?.trim(), rect: rect(node) })) };
   })()`,
   );
   return { boundary, at: new Date().toISOString(), geometry };
+}
+
+async function assertScrapeLayout(panel, boundary) {
+  const measurement = await horizontalGeometry(panel, boundary);
+  report.horizontal_geometry.push(measurement);
+  const failure = scrapeLayoutFailure(measurement);
+  assert.equal(failure, null, failure ?? undefined);
 }
 
 async function scrapeState(panel) {
@@ -252,7 +262,7 @@ try {
       const fastBusy = await busyObservation(panel);
       report.fast_busy_observation = fastBusy;
       report.fast_screenshot = await screenshot(panel, artifacts, 'scrape-fast-article.png');
-      report.horizontal_geometry.push(await horizontalGeometry(panel, 'after_fast_capture'));
+      await assertScrapeLayout(panel, 'after_fast_capture');
       try {
         assert.equal(fastBusy.observed, true, 'scrape_fast_busy_not_observed');
         assert.match(fastBusy.text ?? '', /Capturing/, 'scrape_fast_busy_label_not_observed');
@@ -362,7 +372,7 @@ try {
         );
         await requireResourceHealth();
         viewed[label] = state.resultText.slice(0, 300);
-        report.horizontal_geometry.push(await horizontalGeometry(panel, `after_${label}_tab`));
+        await assertScrapeLayout(panel, `after_${label}_tab`);
       }
       assert.match(viewed.Article, /Harbor Dental intake guide/);
       assert.match(viewed.Links, /Patient forms/);
@@ -388,7 +398,7 @@ try {
       report.stage = 'deep_capture';
       await requireResourceHealth();
       await resourceAction(() => click(panel, 'scrape-result-tab', 'Article'));
-      report.horizontal_geometry.push(await horizontalGeometry(panel, 'after_return_to_Article'));
+      await assertScrapeLayout(panel, 'after_return_to_Article');
       await armBusyObserver(panel, 'deep');
       await resourceAction(() =>
         click(
@@ -412,7 +422,7 @@ try {
       const deepBusy = await busyObservation(panel);
       report.deep_busy_observation = deepBusy;
       report.deep_screenshot = await screenshot(panel, artifacts, 'scrape-deep-article.png');
-      report.horizontal_geometry.push(await horizontalGeometry(panel, 'after_deep_capture'));
+      await assertScrapeLayout(panel, 'after_deep_capture');
       assert.equal(deepBusy.observed, true, 'scrape_deep_busy_not_observed');
       assert.match(deepBusy.text, /Scrolling/, 'scrape_deep_progress_not_observed');
       mark(

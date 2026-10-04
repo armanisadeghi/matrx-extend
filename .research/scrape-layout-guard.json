@@ -1,0 +1,15 @@
+{
+  "defect": "EXT-D-0118",
+  "scope": "Native Scrape acceptance now fails on measured document overflow, document displacement, a result tab list outside the viewport, missing result controls, or individual controls outside the viewport.",
+  "baseline_receipt": "/tmp/scrape-guarded-37192733619/test-results/scrape-guest-native-cee18b6c-a7bf-4e05-950f-f6860a5a13b4.json",
+  "baseline_geometry": {
+    "viewport_width": 360,
+    "document_scroll_width": 391,
+    "document_client_width": 360,
+    "result_tabs_right": 390.765625,
+    "document_scroll_left_after_links": 31,
+    "document_left_after_links": -31
+  },
+  "proof": "The focused pure guard test fails the captured overflow and displacement, passes contained six-control geometry, and fails missing or clipped controls. A future native receipt is required to verify the source fix in Chrome.",
+  "native_status": "pending"
+}
