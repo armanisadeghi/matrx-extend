@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "run_id": 37225191131,
+  "artifact_id": 11311767409,
+  "files_sha256": {
+    "browser-resource.jsonl": "2edd365e4d9746470d3cfc686b6c7f6a68a99cd87795a355b41faeaa9451bd13",
+    "guest-resource.jsonl": "f7140925d578e326a7d7da819654ae3878c05941a54c9cb6c9165ec2b59e680d",
+    "native-side-panel.png": "6664ebd93c5610925b84b5b5e0367067a334b867ddb98b1eb1972eebd1bd7796",
+    "normal-target-after-open.png": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89",
+    "package-resource.jsonl": "0260afbb85083d3686c503321a82c52d3313ccc42e0da72565d41e94b56478d4",
+    "receipt.json.txt": "35f315daaaf7920b8281edad02a131592297bfb35033683f62057cea6e4e64bf",
+    "scrape-deep-article.png": "f41bf1141a5e5f54ce7c85495a9d14648fd1b1e2cd395abc798a06c94498e454",
+    "scrape-fast-article.png": "60142eeed64b8852cafdae10f72790e34f8468b6df7dfff3ae164e3592b0e17b",
+    "scrape-restricted-error.png": "dc725d92b41381d250a2bcc9a4c193b15d5b49643856a743340c5047fd282e29"
+  },
+  "excluded_stale_nested_journals": [
+    "hosted-package-37105304739-1.jsonl",
+    "hosted-browser-37105304739-1.jsonl",
+    "hosted-guest-37105304739-1.jsonl"
+  ]
+}

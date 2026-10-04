@@ -1,0 +1,284 @@
+{
+  "schema_version": 1,
+  "task": "clipboard126-native",
+  "defect": "EXT-D-0126",
+  "scope": "One guarded hosted ARM guest-scrape-development retest; no product source, inventory, release, or defect-state edit.",
+  "pre_dispatch": {
+    "fetched_and_fast_forwarded_main": true,
+    "head_sha": "5c000b996ea14455a4a4ed5301285e532c603397",
+    "source_discriminator_commit": "4acfe298",
+    "reviewed_fix_commit": "1e46e144e6affea91d0a5a7bb8f6f5298a90e4e4",
+    "fix_ancestry_verified": true,
+    "fresh_review": ".research/clipboard126-fix-reverify.json",
+    "prior_hosted_native_run": 37222954472,
+    "no_other_active_hosted_native_run": true,
+    "frozen_artifact_unexpired": true
+  },
+  "workflow": {
+    "name": "hosted-guest-acceptance.yml",
+    "run_id": 37225191131,
+    "job_id": 111503288217,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37225191131",
+    "head_branch": "main",
+    "driver_head_sha": "5c000b996ea14455a4a4ed5301285e532c603397",
+    "runner_label": "macos-15",
+    "runner_arch": "ARM64",
+    "machine": "arm64",
+    "terminal_status": "completed",
+    "conclusion": "success",
+    "acceptance_case": "guest-scrape-development",
+    "one_launch_no_retry": true,
+    "steps": {
+      "provenance": "success",
+      "authentication": "success",
+      "indexing": "success",
+      "package_readiness": "success",
+      "package_prepare": "success",
+      "browser_readiness": "success",
+      "browser_prepare": "success",
+      "acceptance_readiness": "success",
+      "native_acceptance": "success",
+      "artifact_upload": "success"
+    }
+  },
+  "frozen_product": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.231",
+    "source_sha": "723433a7628b32fb610d3a7f36ca6b8dd5fd2b72",
+    "tree_sha256": "ae9bfe3d831a7278f0b347c1c08b8d6cec6780790c1f14813369bcf015786833",
+    "run_id": 37217066948,
+    "artifact_id": 11308203507
+  },
+  "receipt": {
+    "status": "partial",
+    "stage": "post_reload_link_controls",
+    "native_stage": "exercise_panel",
+    "failure": null,
+    "driver_failure": null,
+    "guest_account_observed": true
+  },
+  "clipboard": {
+    "verdict": "PASS_GUEST_WARM_AND_RELOAD",
+    "observations": {
+      "warm_video": {
+        "feedback": "copied",
+        "initial_read": {
+          "ok": false,
+          "code": "NotAllowedError",
+          "focused": true,
+          "visible": true
+        },
+        "read_after_scoped_grant": {
+          "ok": true,
+          "same": true,
+          "focused": true,
+          "visible": true
+        },
+        "known_fixture_equal": true,
+        "observation": {
+          "clipboardObservationStage": "read",
+          "clipboardObservationPermissionRestored": true,
+          "clipboardReadPermissionForObservation": true
+        },
+        "limitations": [],
+        "failures": []
+      },
+      "warm_links": {
+        "feedback": "copied",
+        "initial_read": {
+          "ok": false,
+          "code": "NotAllowedError",
+          "focused": true,
+          "visible": true
+        },
+        "read_after_scoped_grant": {
+          "ok": true,
+          "same": true,
+          "focused": true,
+          "visible": true
+        },
+        "known_fixture_equal": true,
+        "observation": {
+          "clipboardObservationStage": "read",
+          "clipboardObservationPermissionRestored": true,
+          "clipboardReadPermissionForObservation": true
+        },
+        "limitations": [],
+        "failures": []
+      },
+      "post_reload_video": {
+        "feedback": "copied",
+        "initial_read": {
+          "ok": false,
+          "code": "NotAllowedError",
+          "focused": true,
+          "visible": true
+        },
+        "read_after_scoped_grant": {
+          "ok": true,
+          "same": true,
+          "focused": true,
+          "visible": true
+        },
+        "known_fixture_equal": true,
+        "observation": {
+          "clipboardObservationStage": "read",
+          "clipboardObservationPermissionRestored": true,
+          "clipboardReadPermissionForObservation": true
+        },
+        "limitations": [],
+        "failures": []
+      },
+      "post_reload_links": {
+        "feedback": "copied",
+        "initial_read": {
+          "ok": false,
+          "code": "NotAllowedError",
+          "focused": true,
+          "visible": true
+        },
+        "read_after_scoped_grant": {
+          "ok": true,
+          "same": true,
+          "focused": true,
+          "visible": true
+        },
+        "known_fixture_equal": true,
+        "observation": {
+          "clipboardObservationStage": "read",
+          "clipboardObservationPermissionRestored": true,
+          "clipboardReadPermissionForObservation": true
+        },
+        "limitations": [],
+        "failures": []
+      }
+    },
+    "meaning": "Trusted Copy actions showed copied feedback and readback equality with the known owned fixture in four paths; the initial read was denied, the scoped grant permitted readback, and original permission was restored. No clipboard plaintext is retained."
+  },
+  "surrounding_cases": [
+    {
+      "id": "EXT-F-1007-T20",
+      "status": "passed",
+      "remaining": []
+    },
+    {
+      "id": "EXT-F-1007-T01",
+      "status": "partial",
+      "remaining": ["Warm/full reload lifecycle not yet exercised."]
+    },
+    {
+      "id": "EXT-F-1007-T08",
+      "status": "partial",
+      "remaining": ["Member/admin modes and normal-width verification remain unverified."]
+    },
+    {
+      "id": "EXT-F-1007-T10",
+      "status": "passed",
+      "remaining": []
+    },
+    {
+      "id": "EXT-F-1007-T11",
+      "status": "passed",
+      "remaining": []
+    },
+    {
+      "id": "EXT-F-1007-T12",
+      "status": "passed",
+      "remaining": []
+    },
+    {
+      "id": "EXT-F-1007-T13",
+      "status": "partial",
+      "remaining": ["Member/admin modes remain unverified."]
+    },
+    {
+      "id": "EXT-F-1007-T02",
+      "status": "partial",
+      "remaining": ["Deep failure retry mode and reload lifecycle remain unverified."]
+    },
+    {
+      "id": "EXT-F-1007-T14",
+      "status": "partial",
+      "remaining": [
+        "Recoverable Reload page and Try again, including deep retry mode, need a natural browser failure."
+      ]
+    }
+  ],
+  "lifecycle": {
+    "full_extension_reload_clicked": true,
+    "old_targets_retired": true,
+    "worker_replaced": true,
+    "panel_replaced": true,
+    "final_predicate": true,
+    "observed_worker_count": 1,
+    "post_reload_populated_panes": ["article", "links", "seo", "schema", "images", "video"]
+  },
+  "resource_journals": {
+    "package": {
+      "run_id": "hosted-package-37225191131-1",
+      "admitted": true,
+      "decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0,
+      "codes": [
+        "RESOURCE_JOURNAL_OPENED",
+        "RESOURCE_ADMITTED",
+        "RESOURCE_JOB_EXIT",
+        "RESOURCE_FINAL_DECISION"
+      ]
+    },
+    "browser": {
+      "run_id": "hosted-browser-37225191131-1",
+      "admitted": true,
+      "decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0,
+      "codes": [
+        "RESOURCE_JOURNAL_OPENED",
+        "RESOURCE_ADMITTED",
+        "RESOURCE_JOB_EXIT",
+        "RESOURCE_FINAL_DECISION"
+      ]
+    },
+    "guest": {
+      "run_id": "hosted-guest-37225191131-1",
+      "admitted": true,
+      "decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0,
+      "codes": [
+        "RESOURCE_JOURNAL_OPENED",
+        "RESOURCE_ADMITTED",
+        "RESOURCE_WATCH_HEALTHY",
+        "RESOURCE_WATCH_HEALTHY",
+        "RESOURCE_JOB_EXIT",
+        "RESOURCE_FINAL_DECISION"
+      ]
+    }
+  },
+  "evidence_directory": "docs/stabilization/evidence/scrape231/run37225191131",
+  "evidence_artifact_id": 11311767409,
+  "hash_manifest": "docs/stabilization/evidence/scrape231/run37225191131/hash-manifest.json",
+  "files_sha256": {
+    "browser-resource.jsonl": "2edd365e4d9746470d3cfc686b6c7f6a68a99cd87795a355b41faeaa9451bd13",
+    "guest-resource.jsonl": "f7140925d578e326a7d7da819654ae3878c05941a54c9cb6c9165ec2b59e680d",
+    "native-side-panel.png": "6664ebd93c5610925b84b5b5e0367067a334b867ddb98b1eb1972eebd1bd7796",
+    "normal-target-after-open.png": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89",
+    "package-resource.jsonl": "0260afbb85083d3686c503321a82c52d3313ccc42e0da72565d41e94b56478d4",
+    "receipt.json.txt": "35f315daaaf7920b8281edad02a131592297bfb35033683f62057cea6e4e64bf",
+    "scrape-deep-article.png": "f41bf1141a5e5f54ce7c85495a9d14648fd1b1e2cd395abc798a06c94498e454",
+    "scrape-fast-article.png": "60142eeed64b8852cafdae10f72790e34f8468b6df7dfff3ae164e3592b0e17b",
+    "scrape-restricted-error.png": "dc725d92b41381d250a2bcc9a4c193b15d5b49643856a743340c5047fd282e29"
+  },
+  "excluded_stale_nested_journals": [
+    "hosted-package-37105304739-1.jsonl",
+    "hosted-browser-37105304739-1.jsonl",
+    "hosted-guest-37105304739-1.jsonl"
+  ],
+  "limits": [
+    "Workflow success differs from overall receipt partial.",
+    "EXT-F-1007-T13 remains partial for member/admin modes; other Scrape cases retain their receipt-listed remaining work.",
+    "This one guest run establishes these four native clipboard observations, not cross-mode or whole-product health."
+  ]
+}
