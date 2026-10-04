@@ -91,5 +91,14 @@
     }
   ],
   "closure_requirement": "Causal forcing check and independent source review, followed by guarded native evidence on an exact artifact. No acceptance from unsafe or unanchored observations.",
-  "next_action": "New media action-boundary regression is source-fixed and fresh final peer accepted (.research/scrape-observation-final-peer.json). Verify actual native form-action paths in the guarded source-repair run; keep original closure evidence historical. Runs37208889373(resource refusal) and37209834721(image-group assertion) did not reach those actions. Never infer product health from guard refusal."
+  "next_action": "New media action-boundary regression is source-fixed and fresh final peer accepted (.research/scrape-observation-final-peer.json). Verify actual native form-action paths in the guarded source-repair run; keep original closure evidence historical. Runs37208889373(resource refusal) and37209834721(image-group assertion) did not reach those actions. Never infer product health from guard refusal.",
+  "retest_attempts": [
+    {
+      "at": "2026-10-04T15:06:04.877305+00:00",
+      "run_id": 37210977886,
+      "outcome": "not_executed_resource_refusal",
+      "evidence": ".research/scrape-media-repaired-native.json",
+      "root_verification": "Receipt and all3journal hashes independently matched; guest journal one RESOURCE_WATCH_UNSAFE CPU0.77, finalchild_failed/exit1/resourceInvalidfalse, nativeinputs refused with cases[]. No product or assertion verdict; state remains fixed."
+    }
+  ]
 }

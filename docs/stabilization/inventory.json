@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-04T14:48:03.367631+00:00",
+  "updated_at": "2026-10-04T15:06:04.877305+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -17433,6 +17433,17 @@
               ],
               "result": "Four real ScrapeView/store tests pass: selective removal with exact survivors/count; blank, valid and cancelled forms; link target attributes and copy-boundary delivery. Remove-all and constant-link mutants rejected.",
               "limits": "Guest/member/admin native, warm/reload, actual new-tab opening and OS clipboard remain unverified; no mode cell promoted."
+            },
+            {
+              "level": "native procedure source only; native execution pending",
+              "report": ".research/scrape-links-native-implementation.json",
+              "independent_review": ".research/scrape-links-native-peer.json",
+              "commits": [
+                "9515804d",
+                "b78b94f1"
+              ],
+              "result": "Prepared exact rendered href/text/count checks for open/copy/selective remove/blank and valid Add/Cancel, warm and populated after full reload. Fresh peer scope PARTIAL and source quality PASS;18focused checks and compile pass.",
+              "limits": "No native launch after latest startup resource refusal. Capacity resolution required; all auth-mode results unchanged."
             }
           ]
         },

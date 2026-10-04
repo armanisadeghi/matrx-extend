@@ -47,5 +47,14 @@
       "to": "fixed",
       "reason": "Repair000fb2fc passed fresh peer29813626; exact rendered group identities and failure-pane diagnostics replace case-sensitive text oracle. Native retest pending."
     }
+  ],
+  "retest_attempts": [
+    {
+      "at": "2026-10-04T15:06:04.877305+00:00",
+      "run_id": 37210977886,
+      "outcome": "not_executed_resource_refusal",
+      "evidence": ".research/scrape-media-repaired-native.json",
+      "root_verification": "Receipt and all3journal hashes independently matched; guest journal one RESOURCE_WATCH_UNSAFE CPU0.77, finalchild_failed/exit1/resourceInvalidfalse, nativeinputs refused with cases[]. No product or assertion verdict; state remains fixed."
+    }
   ]
 }
