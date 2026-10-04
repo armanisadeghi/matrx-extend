@@ -46,6 +46,8 @@ jobs:
         run: node --test scripts/test-stabilization-resource-safety-integration.mjs
       - name: Disk admission and watchdog guard decisions
         run: node --test scripts/test-stabilization-resource-disk-integration.mjs
+      - name: CPU confirmation and native action boundary
+        run: node --test scripts/test-stabilization-resource-cpu-integration.mjs
 
   checks:
     runs-on: ubuntu-latest
