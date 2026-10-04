@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "task": "scrape-media-transition-probe",
+  "defect": "EXT-D-0123",
+  "prior_run_id": 37212405505,
+  "status": "source_probe_ready_native_cause_unverified",
+  "observed_prior_failure": "The prior receipt captured Article selected with one image remaining after two successful removals. It did not identify the failed click or the moment of tab transition.",
+  "change": {
+    "native_path": "Each existing image Remove action now records phase, media kind, fixture path, selected pane and remaining fixture image paths before and after the trusted pointer call. Pointer failures stay attached to that exact action. A bounded capture of trusted pointerdown, pointerup, click, selected-tab changes, and tab/pane connectivity is collected around the click. The same minimal wrapper covers existing video and link removals.",
+    "safety": "The probe returns only fixed tab labels, known fixture paths or other/invalid markers, fixed Remove titles, event type/trust/coordinates, and bounded driver diagnostics. It leaves selected pane, target resolution, resource admission, refusals, and media mutation unchanged.",
+    "component_test": "The actual ScrapeView, design-system Tabs, and Zustand scrape store remove medium, icon, then large images in sequence. It checks exact survivors and Images selected after every removal. External page, auth, and clipboard boundaries remain mocked. Test URLs use reserved .test domains."
+  },
+  "source_results": {
+    "focused_component": "pnpm exec vitest run src/features/scrape/ScrapeView.media-controls.test.tsx --maxWorkers=1 --reporter=dot: 4 passed",
+    "mutation": "A temporary key tied to image count on the real ScrapeView Tabs caused the focused test to fail when removal remounted Tabs and selected Article. The plant tool restored the product source byte-for-byte.",
+    "interpretation": "The local component/store path did not reproduce the spontaneous Article selection. This does not verify native pointer behavior or establish the product cause."
+  },
+  "native_gap": "No native or heavy acceptance run was made in this task. The next run must inspect media_transitions for the first selected-pane change: a trusted tab event suggests pointer activation, disconnected tab/pane nodes suggest remount, and a pane change without either points toward a programmatic state change requiring further tracing.",
+  "product_change": "none"
+}

@@ -72,6 +72,7 @@ const report = {
   reload_milestones: [],
   reload_lifecycle: null,
   driver_failure: null,
+  media_transitions: [],
 };
 const mark = (id, status, evidence, remaining = []) =>
   report.cases.push({ id, status, evidence, remaining });
@@ -211,6 +212,107 @@ async function scrapeState(panel) {
   );
 }
 
+// Capture only owned fixture identities and a bounded trace around one Remove click.
+async function mediaTransitionProbe(panel, operation, action = 'snapshot') {
+  return evaluate(
+    panel,
+    `(() => {
+    const action=${JSON.stringify(action)}, operation=${JSON.stringify(operation)};
+    const key='__matrxScrapeMediaTransitionProbe';
+    const outer=document.querySelector('button[role="tab"][title="Scrape"][data-state="active"]');
+    const pane=outer&&document.getElementById(outer.getAttribute('aria-controls'));
+    const tabs=()=>[...(pane?.querySelectorAll('[role="tablist"] [role="tab"]')??[])];
+    const tabLabel=(node)=>{
+      const label=node?.firstChild?.textContent?.trim();
+      return ['Article','Images','Video','Links','SEO','Schema'].includes(label)?label:null;
+    };
+    const selected=()=>tabLabel(tabs().find(node=>node.getAttribute('aria-selected')==='true'));
+    const imagePaths=()=>{
+      const tab=tabs().find(node=>tabLabel(node)==='Images');
+      const content=tab&&document.getElementById(tab.getAttribute('aria-controls'));
+      return content ? [...content.querySelectorAll('a:has(img)')].map(node=>{
+        try { const path=new URL(node.href).pathname;
+          return ['/intake.svg','/appointment-card.svg','/clinic-icon.svg','/followup-card.svg'].includes(path)?path:'other';
+        } catch { return 'invalid'; }
+      }) : null;
+    };
+    const state=()=>({selected:selected(),imagePaths:imagePaths(),
+      imageCount:tabs().find(node=>tabLabel(node)==='Images')?.querySelector('span')?.textContent?.trim()??null,
+      panePresent:Boolean(pane?.isConnected)});
+    if(action==='start') {
+      const existing=window[key]; existing?.stop?.();
+      const firstTabs=tabs(); const events=[];
+      let lastSelected=selected(), lastSameTabs=true;
+      const record=(entry)=>{if(events.length<32) events.push({ms:Math.round(performance.now()),...entry});};
+      const pointer=(event)=>{
+        const target=event.target instanceof Element?event.target:null;
+        if(!pane?.contains(target)) return;
+        const tab=target?.closest('[role="tab"]');
+        const button=target?.closest('button[title^="Remove "]');
+        if(!tab&&!button) return;
+        record({type:event.type,trusted:event.isTrusted,x:Math.round(event.clientX),y:Math.round(event.clientY),
+          target:tab?('tab:'+tabLabel(tab)):
+            ['Remove image','Remove video','Remove link'].includes(button?.title)?button.title:'other_remove',
+          selected:selected()});
+      };
+      for(const type of ['pointerdown','pointerup','click']) document.addEventListener(type,pointer,true);
+      const observer=new MutationObserver(()=>{
+        const nextSelected=selected(), sameTabs=firstTabs.every(node=>node.isConnected);
+        if(nextSelected!==lastSelected||sameTabs!==lastSameTabs)
+          record({type:'tab_change',selected:nextSelected,sameTabs});
+        lastSelected=nextSelected; lastSameTabs=sameTabs;
+      });
+      if(pane) observer.observe(pane,{subtree:true,childList:true,attributes:true,attributeFilter:['aria-selected']});
+      window[key]={operation,events,firstTabs,firstPane:pane,stop:()=>{
+        observer.disconnect(); for(const type of ['pointerdown','pointerup','click']) document.removeEventListener(type,pointer,true);
+      }};
+      return state();
+    }
+    if(action==='stop') {
+      const probe=window[key]; probe?.stop?.(); delete window[key];
+      return {state:state(),events:probe?.events??[],operation:probe?.operation??operation,
+        tabsConnected:probe?.firstTabs?.every(node=>node.isConnected)??null,
+        paneConnected:probe?.firstPane?.isConnected??null};
+    }
+    return state();
+  })()`,
+  );
+}
+
+async function observedMediaRemoval({
+  panel,
+  phase,
+  kind,
+  href,
+  resourceAction,
+  requireResourceHealth,
+}) {
+  const path = new URL(href).pathname;
+  const operation = { phase, kind, path };
+  const entry = { operation, pre: null, post: null, events: [], pointerFailure: null };
+  report.media_transitions.push(entry);
+  await requireResourceHealth();
+  entry.pre = await mediaTransitionProbe(panel, operation, 'start');
+  try {
+    await resourceAction(() => click(panel, 'scrape-media-remove', href));
+  } catch (error) {
+    entry.pointerFailure = error?.driverFailure ?? {
+      code: String(error?.message ?? error).slice(0, 120),
+    };
+    throw error;
+  } finally {
+    try {
+      const end = await mediaTransitionProbe(panel, operation, 'stop');
+      entry.post = end.state;
+      entry.events = end.events;
+      entry.tabsConnected = end.tabsConnected;
+      entry.paneConnected = end.paneConnected;
+    } catch (error) {
+      entry.probeError = String(error?.message ?? error).slice(0, 120);
+    }
+  }
+}
+
 async function selectedMedia(panel, label, items, name) {
   if (label === 'Images') {
     await evaluate(
@@ -276,7 +378,14 @@ async function exerciseLinkControls({ panel, page, origin, phase, resourceAction
     click,
     evaluate,
   });
-  await resourceAction(() => click(panel, 'scrape-media-remove', initial[0].href));
+  await observedMediaRemoval({
+    panel,
+    phase,
+    kind: 'link',
+    href: initial[0].href,
+    resourceAction,
+    requireResourceHealth: async () => {},
+  });
   const removed = await selectedLinks(panel, [initial[1]], `${phase}_link_removed`);
   await resourceAction(() => click(panel, 'scrape-media-add-row', 'Add link'));
   await resourceAction(() => click(panel, 'scrape-media-form-action', 'Add'));
@@ -349,8 +458,14 @@ async function exerciseMediaControls({
     [images[2], [images[0]]],
     [images[0], []],
   ]) {
-    await requireResourceHealth();
-    await resourceAction(() => click(panel, 'scrape-media-remove', removed.href));
+    await observedMediaRemoval({
+      panel,
+      phase,
+      kind: 'image',
+      href: removed.href,
+      resourceAction,
+      requireResourceHealth,
+    });
     removals.push(
       await selectedMedia(
         panel,
@@ -422,7 +537,14 @@ async function exerciseMediaControls({
     click,
     evaluate,
   });
-  await resourceAction(() => click(panel, 'scrape-media-remove', videos[0].href));
+  await observedMediaRemoval({
+    panel,
+    phase,
+    kind: 'video',
+    href: videos[0].href,
+    resourceAction,
+    requireResourceHealth,
+  });
   const removedVideo = await selectedMedia(panel, 'Video', [videos[1]], `${phase}_video_removed`);
   await resourceAction(() => click(panel, 'scrape-media-add-row', 'Add video URL'));
   await resourceAction(() => click(panel, 'scrape-media-form-action', 'Add'));

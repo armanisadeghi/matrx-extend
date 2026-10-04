@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 const mocks = vi.hoisted(() => ({
   copiedText: vi.fn(),
   tab: {
-    url: 'https://fieldnotes.example/garden/seed-starting',
+    url: 'https://fieldnotes.test/garden/seed-starting',
     title: 'Starting seeds indoors',
     id: 7,
     documentId: 'seed-page',
@@ -102,22 +102,22 @@ const capture: SoupResult = {
   },
   images: [
     {
-      src: 'https://fieldnotes.example/media/seed-tray.jpg',
+      src: 'https://fieldnotes.test/media/seed-tray.jpg',
       alt: 'Seed tray',
       width: 1200,
       height: 800,
     },
     {
-      src: 'https://fieldnotes.example/media/site-mark.svg',
+      src: 'https://fieldnotes.test/media/site-mark.svg',
       alt: 'Fieldnotes',
       width: 32,
       height: 32,
     },
-    { src: 'https://fieldnotes.example/media/soil-chart.png', alt: null, width: 640, height: 480 },
+    { src: 'https://fieldnotes.test/media/soil-chart.png', alt: null, width: 640, height: 480 },
   ],
   videos: [
-    { src: 'https://video.example/watch/seedlings', poster: null, duration: 82 },
-    { src: 'https://video.example/watch/watering', poster: null, duration: 46 },
+    { src: 'https://video.test/watch/seedlings', poster: null, duration: 82 },
+    { src: 'https://video.test/watch/watering', poster: null, duration: 46 },
   ],
   audio: [],
   links: [],
@@ -177,11 +177,43 @@ describe('ScrapeView media controls', () => {
     expect(screen.getByRole('tab', { name: /Images 3/ })).toBeTruthy();
     fireEvent.click(firstElement(screen.getAllByTitle('Remove image'), 'remove image button'));
     expect(useScrapeStore.getState().current?.images.map((image) => image.src)).toEqual([
-      'https://fieldnotes.example/media/site-mark.svg',
-      'https://fieldnotes.example/media/soil-chart.png',
+      'https://fieldnotes.test/media/site-mark.svg',
+      'https://fieldnotes.test/media/soil-chart.png',
     ]);
     expect(screen.getByRole('tab', { name: /Images 2/ })).toBeTruthy();
     expect(screen.getAllByTitle('Remove image')).toHaveLength(2);
+  });
+
+  it('keeps Images selected while medium, icon, then large images are removed', async () => {
+    render(<ScrapeView />);
+    await openTab('Images');
+    const selected = () =>
+      screen.getByRole('tab', { name: /Images/ }).getAttribute('aria-selected');
+    const remove = async (src: string) => {
+      const image = document.querySelector(`img[src="${src}"]`);
+      if (!image) throw new Error(`Image missing for ${src}`);
+      const button = image.closest('.group')?.querySelector('button[title="Remove image"]');
+      if (!button) throw new Error(`Remove control missing for ${src}`);
+      await userEvent.click(button);
+    };
+    expect(selected()).toBe('true');
+    await remove('https://fieldnotes.test/media/soil-chart.png');
+    expect(useScrapeStore.getState().current?.images.map((image) => image.src)).toEqual([
+      'https://fieldnotes.test/media/seed-tray.jpg',
+      'https://fieldnotes.test/media/site-mark.svg',
+    ]);
+    expect(selected()).toBe('true');
+    await remove('https://fieldnotes.test/media/site-mark.svg');
+    expect(useScrapeStore.getState().current?.images.map((image) => image.src)).toEqual([
+      'https://fieldnotes.test/media/seed-tray.jpg',
+    ]);
+    expect(selected()).toBe('true');
+    await remove('https://fieldnotes.test/media/seed-tray.jpg');
+    expect(useScrapeStore.getState().current?.images).toEqual([]);
+    expect(selected()).toBe('true');
+    expect(screen.getByRole('tab', { name: 'Article' }).getAttribute('aria-selected')).toBe(
+      'false',
+    );
   });
 
   it('keeps a blank image draft for correction, adds a valid image, and Cancel clears another draft', async () => {
@@ -194,19 +226,19 @@ describe('ScrapeView media controls', () => {
     expect(useScrapeStore.getState().current?.images).toHaveLength(3);
     expect((src as HTMLInputElement).value).toBe('');
     fireEvent.change(src, {
-      target: { value: 'https://fieldnotes.example/media/germination.jpg' },
+      target: { value: 'https://fieldnotes.test/media/germination.jpg' },
     });
     fireEvent.change(alt, { target: { value: 'Germination tray' } });
     fireEvent.click(screen.getByRole('button', { name: 'Add' }));
     await waitFor(() => expect(useScrapeStore.getState().current?.images).toHaveLength(4));
     expect(useScrapeStore.getState().current?.images.at(-1)).toMatchObject({
-      src: 'https://fieldnotes.example/media/germination.jpg',
+      src: 'https://fieldnotes.test/media/germination.jpg',
       alt: 'Germination tray',
     });
     expect(screen.getByRole('tab', { name: /Images 4/ })).toBeTruthy();
     const draft = screen.getByPlaceholderText('https://…');
     fireEvent.change(draft, {
-      target: { value: 'https://fieldnotes.example/media/discard-this.jpg' },
+      target: { value: 'https://fieldnotes.test/media/discard-this.jpg' },
     });
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
     fireEvent.click(screen.getByRole('button', { name: 'Add image URL' }));
@@ -217,27 +249,27 @@ describe('ScrapeView media controls', () => {
   it('opens and copies the selected video URL, removes only that row, and rejects a blank add', async () => {
     render(<ScrapeView />);
     await openTab('Video');
-    const videoLink = screen.getByRole('link', { name: 'https://video.example/watch/seedlings' });
-    expect(videoLink.getAttribute('href')).toBe('https://video.example/watch/seedlings');
+    const videoLink = screen.getByRole('link', { name: 'https://video.test/watch/seedlings' });
+    expect(videoLink.getAttribute('href')).toBe('https://video.test/watch/seedlings');
     fireEvent.click(firstElement(screen.getAllByTitle('Copy video URL'), 'copy video URL button'));
     await waitFor(() =>
-      expect(mocks.copiedText).toHaveBeenCalledWith('https://video.example/watch/seedlings'),
+      expect(mocks.copiedText).toHaveBeenCalledWith('https://video.test/watch/seedlings'),
     );
     fireEvent.click(firstElement(screen.getAllByTitle('Remove video'), 'remove video button'));
     expect(useScrapeStore.getState().current?.videos.map((video) => video.src)).toEqual([
-      'https://video.example/watch/watering',
+      'https://video.test/watch/watering',
     ]);
     fireEvent.click(screen.getByRole('button', { name: 'Add video URL' }));
     const src = screen.getByPlaceholderText('https://…');
     fireEvent.click(screen.getByRole('button', { name: 'Add' }));
     expect(useScrapeStore.getState().current?.videos).toHaveLength(1);
     expect((src as HTMLInputElement).value).toBe('');
-    fireEvent.change(src, { target: { value: 'https://video.example/watch/transplanting' } });
+    fireEvent.change(src, { target: { value: 'https://video.test/watch/transplanting' } });
     fireEvent.click(screen.getByRole('button', { name: 'Add' }));
     await waitFor(() =>
       expect(useScrapeStore.getState().current?.videos.map((video) => video.src)).toEqual([
-        'https://video.example/watch/watering',
-        'https://video.example/watch/transplanting',
+        'https://video.test/watch/watering',
+        'https://video.test/watch/transplanting',
       ]),
     );
   });
