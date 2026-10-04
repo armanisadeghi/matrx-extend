@@ -10,6 +10,7 @@ import { captureLifecycleEvidence } from './profile-reload-capture.mjs';
 import { armBusyExpression, readBusyExpression } from './scrape-busy-observer.mjs';
 import { scrapeLayoutFailure } from './scrape-layout-guard.mjs';
 import { assertMediaPane } from './scrape-media-assertions.mjs';
+import { intakeImage } from './scrape-media-fixture.mjs';
 import { diagnosticCpuRate, runSupplementalCpuDiagnostic } from './scrape-page-cpu-diagnostic.mjs';
 import { recordReloadMilestone } from './scrape-reload-milestones.mjs';
 import { waitForReplacementScrapeTab } from './scrape-replacement-tab.mjs';
@@ -28,7 +29,7 @@ const firstPage = `<!doctype html><html><head><title>${article}</title>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Dentist","name":"Harbor Dental"}</script></head>
 <body><main><article><h1>${article}</h1>
 <p>New patients can review appointment timing, forms, and arrival instructions before visiting our clinic.</p>
-<img src="/intake.png" alt="New patient intake desk" width="640" height="480">
+<img src="/intake.svg" alt="New patient intake desk" width="640" height="480">
 <video src="/intake-walkthrough.mp4" preload="none"></video>
 <a href="/forms">Patient forms</a><a href="/appointments">Appointments</a>
 <div style="height:1000px"></div><section id="late"></section><div style="height:800px"></div>
@@ -143,7 +144,11 @@ async function scrapeState(panel) {
       media: visible ? {
         tabCount: selected[0]?.querySelector('span')?.textContent?.trim() ?? null,
         imageItems: [...content.querySelectorAll('a')].filter(a=>a.querySelector('img'))
-          .map(a=>({href:a.href,alt:a.querySelector('img')?.getAttribute('alt')??null})),
+          .map(a=>({href:a.href,src:a.querySelector('img')?.src??null,
+            alt:a.querySelector('img')?.getAttribute('alt')??null,
+            complete:a.querySelector('img')?.complete===true,
+            naturalWidth:a.querySelector('img')?.naturalWidth??0,
+            naturalHeight:a.querySelector('img')?.naturalHeight??0})),
         videoItems: [...content.querySelectorAll('a')]
           .filter(a=>a.parentElement?.querySelector('button[title="Remove video"]'))
           .map(a=>({href:a.href,text:a.textContent?.trim()??''})),
@@ -200,6 +205,9 @@ try {
       '/referrals': secondPage,
       '/forms': secondPage,
       '/appointments': secondPage,
+    },
+    ownedAssets: {
+      '/intake.svg': { contentType: 'image/svg+xml', body: intakeImage },
     },
     onStage: (value) => {
       report.native_stage = value;
@@ -386,11 +394,28 @@ try {
         await requireResourceHealth();
         viewed[label] = state.resultText.slice(0, 300);
         if (label === 'Images' || label === 'Video') {
-          mediaEvidence[label.toLowerCase()] = assertMediaPane(state, {
+          const mediaState =
+            label === 'Images'
+              ? await waitFor(
+                  'scrape_image_load_completed',
+                  () => scrapeState(panel),
+                  (s) =>
+                    s?.selected === 'Images' &&
+                    s.visible &&
+                    s.media?.imageItems?.[0]?.complete === true,
+                )
+              : state;
+          mediaEvidence[label.toLowerCase()] = assertMediaPane(mediaState, {
             label,
             items:
               label === 'Images'
-                ? [{ href: `${origin}/intake.png`, alt: 'New patient intake desk' }]
+                ? [
+                    {
+                      href: `${origin}/intake.svg`,
+                      src: `${origin}/intake.svg`,
+                      alt: 'New patient intake desk',
+                    },
+                  ]
                 : [
                     {
                       href: `${origin}/intake-walkthrough.mp4`,

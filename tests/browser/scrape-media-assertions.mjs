@@ -18,14 +18,32 @@ export function assertMediaPane(state, { label, items }) {
   );
   const actual = label === 'Images' ? media.imageItems : media.videoItems;
   const other = label === 'Images' ? media.videoItems : media.imageItems;
-  assert.deepEqual(actual, items, `scrape_${label}_rendered_media_mismatch`);
+  assert.deepEqual(
+    label === 'Images' ? actual.map(({ href, src, alt }) => ({ href, src, alt })) : actual,
+    items,
+    `scrape_${label}_rendered_media_mismatch`,
+  );
   assert.deepEqual(other, [], `scrape_${label}_wrong_media_in_pane`);
+  if (label === 'Images') {
+    for (const image of actual) {
+      assert.equal(image.complete, true, 'scrape_Images_image_incomplete');
+      assert.ok(
+        image.naturalWidth > 0 && image.naturalHeight > 0,
+        'scrape_Images_image_not_loaded',
+      );
+    }
+  }
   return {
     pane: label,
     state: items.length ? 'matching_content' : 'empty',
     count: actual.length,
     // A receipt needs the media identity, not the test server's ephemeral origin.
     paths: actual.map((item) => new URL(item.href).pathname),
-    ...(label === 'Images' ? { alt: actual.map((item) => item.alt) } : {}),
+    ...(label === 'Images'
+      ? {
+          alt: actual.map((item) => item.alt),
+          natural_sizes: actual.map((item) => [item.naturalWidth, item.naturalHeight]),
+        }
+      : {}),
   };
 }

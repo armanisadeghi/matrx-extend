@@ -2,18 +2,27 @@
   "schema_version": 1,
   "feature": "EXT-F-1007-T08",
   "status": "source_checked_native_unverified",
-  "change": "Guest native acceptance now checks active Images and Video panes against the owned intake fixture, then captures the media-free referral fixture and checks both empty panes. T08 remains partial pending member, admin, and reload observations.",
+  "change": "Guest native acceptance checks active Images and Video panes against the owned intake fixture, then captures the media-free referral fixture and checks both empty panes. The intake image is now served as real SVG bytes and must load with nonzero natural dimensions in the active Images pane. T08 remains partial pending a new native run, member, admin, and reload observations.",
+  "peer_finding": {
+    "review": ".research/scrape-media-peer.json",
+    "severity": "IMPORTANT",
+    "finding": "The original /intake.png route returned 404, so an href and alt could pass with a broken image tile.",
+    "addressed_by": "An exact in-memory /intake.svg route serves a valid 640x480 SVG; the driver observes the active pane image source, completed load, and positive natural width and height. Video remains a visible URL-row assertion."
+  },
   "evidence": {
     "frozen_measurement": {
       "run_id": 37199709918,
       "head": "dfb848077bcd35324cc4a4fd600be243100a3ee0"
     },
-    "focused_unit": "node --test tests/browser/scrape-media-assertions.test.mjs: 3 passed, 0 failed",
-    "negative_proof": "A constant-return replacement in a scratch copy failed the focused unit tests; the working tree helper was untouched.",
+    "focused_unit": "node --test tests/browser/scrape-media-assertions.test.mjs tests/browser/owned-fixture-server.test.mjs: 5 passed, 0 failed",
+    "negative_proof": "The focused tests reject incomplete images, zero natural width, zero natural height, wrong panes, missing/swapped media, and false empty states. The earlier scratch constant-return replacement also failed without touching the working tree helper.",
+    "http_fixture": "A local HTTP test fetched /intake.svg with 200, image/svg+xml, and the expected SVG bytes; unrelated routes returned 404.",
     "source_checks": [
       "node --check tests/browser/scrape-guest-native-acceptance.mjs",
       "node --check tests/browser/scrape-media-assertions.mjs",
-      "pnpm exec biome check tests/browser/scrape-guest-native-acceptance.mjs tests/browser/scrape-media-assertions.mjs tests/browser/scrape-media-assertions.test.mjs",
+      "node --check tests/browser/owned-fixture-server.mjs",
+      "node --check tests/browser/native-sidepanel-qa-harness.mjs",
+      "pnpm exec biome check on the seven owned browser files",
       "git diff --check"
     ],
     "native_run": null
@@ -22,6 +31,10 @@
     "tests/browser/scrape-guest-native-acceptance.mjs",
     "tests/browser/scrape-media-assertions.mjs",
     "tests/browser/scrape-media-assertions.test.mjs",
+    "tests/browser/scrape-media-fixture.mjs",
+    "tests/browser/owned-fixture-server.mjs",
+    "tests/browser/owned-fixture-server.test.mjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs",
     ".research/scrape-media-acceptance.json"
   ],
   "open_questions": [

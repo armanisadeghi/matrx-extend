@@ -26,6 +26,7 @@ import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { markBrowserAgentTraffic } from './agent-traffic.mjs';
 import { resolveBrowserRuntime } from './browser-runtime.mjs';
 import { awaitNativeResourceHealth, runNativeResourceAction } from './native-resource-boundary.mjs';
+import { serveOwnedFixture } from './owned-fixture-server.mjs';
 import { startReloadLifetimeDiagnostic } from './reload-lifetime-diagnostic.mjs';
 
 const require = createRequire(import.meta.url);
@@ -843,6 +844,7 @@ export async function runNativeSidepanelQa({
   artifactRoot = join(REPO, 'test-results'),
   publicDemoUrl,
   ownedPages,
+  ownedAssets,
   exercisePanel,
   onStage = () => {},
 } = {}) {
@@ -960,15 +962,11 @@ export async function runNativeSidepanelQa({
 
     onStage('local_server');
     server = createServer((request, response) => {
-      const pathname = new URL(request.url ?? '/', 'http://localhost').pathname;
-      const ownedPage = pathname === '/' ? null : ownedPages?.[pathname];
-      if (pathname !== '/' && !ownedPage) {
-        response.writeHead(404).end();
-        return;
-      }
-      response
-        .writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' })
-        .end(ownedPage ?? testPage(expectedExtensionId));
+      serveOwnedFixture(request, response, {
+        ownedPages,
+        ownedAssets,
+        rootPage: testPage(expectedExtensionId),
+      });
     });
     await new Promise((resolve, reject) =>
       server.listen(0, '127.0.0.1', (error) => (error ? reject(error) : resolve())),

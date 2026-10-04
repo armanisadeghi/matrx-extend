@@ -1,0 +1,2 @@
+export const intakeImage =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480"><rect width="640" height="480" fill="#dceaf1"/><rect x="80" y="290" width="480" height="110" rx="12" fill="#587e91"/><rect x="125" y="125" width="390" height="175" rx="18" fill="#fff"/><path d="M285 180h70m-35-35v70" stroke="#3b849b" stroke-width="16" stroke-linecap="round"/></svg>';
