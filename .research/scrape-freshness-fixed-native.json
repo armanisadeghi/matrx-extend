@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "purpose": "One guarded hosted native guest Scrape development acceptance after EXT-D-0121 source repair; evidence only.",
+  "driver": {
+    "workflow_run_id": 37195986118,
+    "job_id": 111417836818,
+    "head_sha": "bd64d06777656236f05fc8608317297842eed012",
+    "includes_commits": ["aaf60fc3", "6ae0a747", "06b5d2e0"],
+    "terminal_conclusion": "failure",
+    "duration": "7m15s",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37195986118",
+    "artifact_id": 11301546244,
+    "artifact_name": "hosted-guest-37195986118-1",
+    "artifact_expired": false,
+    "receipt_path": "/tmp/scrape-37195986118/hosted-guest-37195986118-1/test-results/scrape-guest-native-16b8e50e-e9dc-4a45-a2a3-db8c8a19c21d.json"
+  },
+  "target_artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.215",
+    "source_sha": "3536b5cb0bea2fb33383f2b239b8602fafb79351",
+    "tree_sha256": "ab62d0755d03e8a7f2ca0cb99e0b5037f39e75d756b14a3e2d3ad6d8cc096d08",
+    "development_run_id": 37193761291,
+    "development_artifact_id": 11299613935
+  },
+  "verdict": {
+    "overall": "FAILURE_AFTER_PARTIAL_NATIVE_OBSERVATIONS",
+    "source_freshness": "The hosted driver checkout contains aaf60fc3, 6ae0a747, and 06b5d2e0; receipt confirms the exact requested 0.2.215 development artifact provenance and tree hash.",
+    "failure": {
+      "stage": "extension_reload",
+      "code": "unique visible pointer target",
+      "driver_code": "pointer_target_not_unique",
+      "matched_target_count": 0,
+      "visible_match_count": 0,
+      "native_stage": "exercise_panel"
+    },
+    "six_tabs": {
+      "selected": ["Article", "Images", "Video", "Links", "SEO", "Schema"],
+      "selection_result": "All six tabs were selected and the test returned to Article. Matching content was explicitly true for article, links, SEO, and schema; Images and Video matching content or empty state were not established."
+    },
+    "narrow_geometry": {
+      "viewport_width_px": 360,
+      "boundaries_recorded": 10,
+      "document_scroll_width_px": 360,
+      "result_tabs_scroll_width_px": 336,
+      "result_tabs_left_px": 12,
+      "result_tabs_right_px": 348,
+      "capture_row_left_px": 12,
+      "capture_row_right_px": 348,
+      "horizontal_overflow_or_shift": "None observed at captured boundaries; geometry remained stable through fast/deep capture and all tab selection."
+    },
+    "scrape_content": {
+      "fast": "Observed disabled Capturing… state (5 samples, one disabled sample), Harbor Dental intake guide content, and lazy content absent from the fast capture.",
+      "deep": "Observed disabled Scrolling… state (11 samples, seven disabled samples); lazy content was present in the browser and deep capture."
+    },
+    "reload_timeline": {
+      "management_reload_clicked": true,
+      "old_worker_and_panel_retired": true,
+      "replacement_worker_and_panel_present": true,
+      "reload_milestones": [
+        {"name": "reload_extension", "at": "2026-10-04T10:44:59.691Z"},
+        {"name": "open_scrape_in_replacement_panel", "at": "2026-10-04T10:45:01.443Z"}
+      ],
+      "diagnosis": "Reload lifecycle and replacement-panel context boundary were observed. The run then failed in the extension_reload stage on a pointer target with zero visible matches; the intended post-reload interaction was not verified."
+    }
+  },
+  "resource_journal_assessment": {
+    "journal_path": "/tmp/scrape-37195986118/hosted-guest-37195986118-1/docs/stabilization/resource-journals/hosted-guest-37195986118-1.jsonl",
+    "run_id": "hosted-guest-37195986118-1",
+    "admitted": true,
+    "healthy_sample_at": "2026-10-04T10:44:53.791Z",
+    "sample_at_action_window": "2026-10-04T10:44:51.835Z",
+    "unsafe_or_stop_events": false,
+    "child_exit_code": 1,
+    "final_decision": "child_failed",
+    "assessment": "Admission and a fresh healthy sample preceded UI work. No resource refusal, unsafe sample, or stop event appears in the current-run journal. The child failed on its native UI pointer assertion; this does not establish that resources caused the failure."
+  },
+  "limitations": [
+    "Only one authorized hosted run was launched; no retry was made.",
+    "No overall native acceptance pass: receipt status is unverified and final stage failed.",
+    "Image/video content assertions and intended post-reload interaction remain incomplete.",
+    "Normal-width and Chrome Web Store acceptance remain unverified."
+  ]
+}
