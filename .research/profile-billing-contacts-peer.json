@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "kind": "independent_source_review",
+  "reviewed_commits": {
+    "billing_expander": "f10a5c73b69b7110c80466ad6140aad9c319ee15",
+    "contacts_procedures": "39c88f6f1de66aa51a5b39a1266700a3a79ccf17"
+  },
+  "billing_expander": {
+    "A_acceptance_verdict": "conditional_source_repair_verified_native_acceptance_unverified",
+    "B_quality_verdict": "pass_for_bounded_driver_repair",
+    "evidence": [
+      "profile-identity-employment-cases.mjs toggle now calls the imported shared click(panel, 'section', name); it still requires a unique section and post-click expanded, hidden, inert, and changed-state assertions.",
+      "settings-panel-driver.mjs section target resolution uses the visible aria-expanded button with exact text, repeated scroll and hit-tested sampling, animation and position stability, then trusted Input.dispatchMouseEvent press/release.",
+      "profile-expander-pointer.test.mjs evaluates the actual toggle source and imports the actual pointer driver. Its moving Billing target is only activated by the stable x=20 mouse release. The prior one-shot x=10 path would leave expanded false. Focused run: five tests passed."
+    ],
+    "remaining_limits": [
+      "The old native report gives only phase/section and profile_unclassified_failure, so a missed click is plausible, not established as that run's cause.",
+      "No native rerun establishes Billing recovery, later field cases, or reload behavior. Existing-row field-write authority remains separate and unverified."
+    ]
+  },
+  "contacts_procedures": {
+    "A_acceptance_verdict": "conditional_procedure_coverage_all_eight_runtime_rows_unverified",
+    "B_quality_verdict": "pass_for_source_only_correction",
+    "evidence": [
+      "T07/T08 Phones and T09/T10 Emails retain separate member/admin and warm/reload rows, each with independent product_result and cleanup_result. None is marked passed or N/A.",
+      "ProfileView source supports the listed Add, label, primary, remove, phone Number/Country code/SMS, email input, header and bottom Save/Discard, and header Back controls.",
+      "The revised protocol exercises unsaved Discard and Back-to-Chat, requires no visible save error plus full UI and owner-scoped raw readback before and after reopen/reload, and keeps product failure distinct from uncertainty and cleanup failure.",
+      "Exact [] persisted and UI state is required before each mutation; only same-run synthetic rows are removed and raw [] restoration is required. Existing private rows remain unmodified and their rows remain unverified."
+    ],
+    "remaining_limits": [
+      "No native contact driver, owner-scoped exact list readback, eligible empty fixtures, or runtime evidence exists yet; all eight rows remain unverified.",
+      "For nonempty existing lists, an exact capture/restoration method is still absent. Those cases cannot be silently reclassified as N/A or accepted through an empty-only fixture.",
+      "The edited first synthetic entry is removed before Save, matching inventory steps; persistence is verified for the surviving entry and primary state, while edit/remove behavior is observed in draft."
+    ],
+    "authorization_interpretation": "Approved readback/restoration means peer-reviewed engineering under standing user authorization, not a new human permission gate."
+  },
+  "review_scope": "Committed source and research evidence only; no browser, database, authentication, build, release, or uncommitted-work review."
+}
