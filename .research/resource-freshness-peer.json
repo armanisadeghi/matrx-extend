@@ -20,7 +20,8 @@
       "The wait re-runs requireNativeResourceHealth after each poll, preserving existing owner, run, stop, unsafe, evidence, and freshness refusal paths; it catches only stale_health.",
       "docs/stabilization/resource-policy.json and scripts/stabilization-resource.mjs are unchanged by the reviewed commit; the wait derives its 15-second bound and poll interval from the existing policy.",
       "The driver routes both requireResourceHealth and resourceAction through awaitNativeResourceHealth, so native acceptance actually uses the waiter.",
-      "The guard test includes both a refreshed-health success and timeout/unsafe refusals; the protected no-wait mutant is detected as RED."
+      "The guard test includes both a refreshed-health success and fake-clock timeout/unsafe refusals; the protected no-wait mutant is detected as RED.",
+      "Independent clock probe against the committed helper with a 15,000ms policy: a static injected clock plus a wait resolving immediately performed four polls with 0ms clock progress; only an external harness sentinel ended the probe. With a 60,000ms backward clock adjustment on poll 2 and waits advancing the injected clock by their requested amount, the helper returned fresh health after 28 polls / 42,000ms cumulative requested wait, 2.8 times the policy bound. The probe used an admitted event timestamp of 1,000ms, initial clock 20,000ms, and real temporary owner/policy/journal files."
     ],
     "findings": [
       {
@@ -33,6 +34,15 @@
   "checks": {
     "boundary_test": "PASS: node --test tests/browser/native-resource-boundary.test.mjs",
     "negative_guard": "RED as required: protected plant replaced await wait(...) with throw error; delayed-refresh action assertion failed with stale_health; source restored byte-identically.",
+    "clock_probe": {
+      "fixture": "Temporary owner.json and pending JSONL journal with one valid RESOURCE_ADMITTED event at 1,000ms; policy watchIntervalSeconds=15; no stop file; run id and owner nonce matched.",
+      "fixed_clock_reproduction": "Call awaitNativeResourceHealth with clock: () => 20000 and wait: async () => { calls++; if (calls === 4) throw new Error('HARNESS_CUTOFF') }. Observed calls=4 and fake elapsed=0ms before the external cutoff; without the sentinel, this loop has no internal progress toward deadline.",
+      "rollback_reproduction": "Start current=20000. Inject clock: () => current and wait: async ms => { calls++; requested += ms; if (calls === 2) current -= 60000; current += ms }. The helper returned healthy after calls=28 and requested=42000ms despite the 15000ms policy bound.",
+      "temporary_harness_output": [
+        "{\"case\":\"fixed-clock\",\"policyIntervalMs\":15000,\"fakeElapsedMs\":0,\"waitsBeforeHarnessCutoff\":4}",
+        "{\"case\":\"clock-rollback\",\"rollbackMs\":60000,\"policyIntervalMs\":15000,\"waitCalls\":28,\"requestedWaitMs\":42000}"
+      ]
+    },
     "native_run": "NOT RUN per assignment; previous cited run had zero UI cases."
   }
 }
