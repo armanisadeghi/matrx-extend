@@ -1605,7 +1605,11 @@ async function api(url, options = {}) {
   // Node-side fixture calls do not pass through Playwright's browser request
   // observer, so they must share the same durable journal as extension calls.
   journalVaultMutationRequest(url, options.method || 'GET', headers);
-  const response = await fetch(url, { ...options, headers });
+  // Source of truth for this header: aidream matrx_ai/agent_traffic.py (MATRX_AGENT_TRAFFIC).
+  const response = await fetch(url, {
+    ...options,
+    headers: { ...headers, 'X-Matrx-Agent-Traffic': 'vault-realbrowser-acceptance' },
+  });
   assert(response.ok, `http_${response.status}_${options.label || 'request'}`);
   return response.status === 204 ? null : response.json();
 }
@@ -4419,7 +4423,7 @@ async function materializedPassword(id) {
           try {
             const response = await fetch(url, {
               method,
-              headers,
+              headers: { ...headers, 'X-Matrx-Agent-Traffic': 'vault-realbrowser-acceptance' },
               signal: AbortSignal.timeout(15_000),
               ...(body !== undefined && { body: JSON.stringify(body) }),
             });

@@ -81,7 +81,12 @@ export async function fetchServerToolContract(name: string): Promise<unknown> {
   const response = await fetch(
     `${base.replace(/\/$/, '')}/tools/test/${encodeURIComponent(name)}`,
     {
-      headers: { Authorization: `Bearer ${token}`, 'X-Organization-Id': organization },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'X-Organization-Id': organization,
+        // Source of truth for this header: aidream matrx_ai/agent_traffic.py (MATRX_AGENT_TRAFFIC).
+        'X-Matrx-Agent-Traffic': 'server-tool-contract',
+      },
     },
   );
   if (!response.ok) throw new Error(`Server contract read failed (${response.status})`);

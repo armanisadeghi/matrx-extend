@@ -7,6 +7,8 @@ import {
   waitFor,
 } from './settings-panel-driver.mjs';
 
+import { markBrowserAgentTraffic } from './agent-traffic.mjs';
+
 const WEB_ORIGIN = 'https://www.aimatrx.com';
 
 async function extensionAuthState(panel) {
@@ -51,6 +53,7 @@ export async function signInAdminSettings({
   readCredentials,
   captureIdentity = false,
 }) {
+  await markBrowserAgentTraffic(page.context(), 'admin-settings-signin', WEB_ORIGIN);
   const web = await page.context().newPage();
   try {
     stage('admin_web_navigation');

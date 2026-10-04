@@ -1,3 +1,4 @@
+// matrx-agent-traffic: exempt page scripts fetch only its own local fixture server; matrxserver.com is a fixture origin string
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { createServer } from 'node:http';

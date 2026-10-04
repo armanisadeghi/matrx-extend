@@ -1,3 +1,4 @@
+// matrx-agent-traffic: exempt unit test over a stubbed route object; no real request leaves the process
 'use strict';
 const assert = require('node:assert/strict');
 const { createVaultSaveResponseLoss } = require('./vault-save-response-loss.cjs');
