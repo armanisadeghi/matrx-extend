@@ -12,6 +12,7 @@ import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { assertFirstSaveOwnedRow, ownedDeleteUrl } from './profile-empty-row-restoration.mjs';
 import { runProfileExecutionBoundary, runProfilePointer } from './profile-native-failure.mjs';
 import { createOwnedWriteJournal } from './profile-owned-write-journal.mjs';
+import { runProfileSaveFailureCase } from './profile-save-failure-case.mjs';
 import { panelIdentity } from './settings-native-auth-driver.mjs';
 import { signInSettings } from './settings-native-auth-driver.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
@@ -801,6 +802,7 @@ try {
       let reacquiredPanel = null;
       let reloadAttempted = false;
       let executionOperation = 'warm_profile';
+      let saveFailureReceipt = null;
       const executionError = await runProfileExecutionBoundary(
         report,
         async () => {
@@ -877,6 +879,23 @@ try {
           await caseBack(panel, original, identity.email, AUTH_MODE, 'warm');
           await caseSaveDiscard(panel, original, identity.email, AUTH_MODE, 'warm', ownedJournal);
           await caseT25(panel, original, identity.email, AUTH_MODE, 'warm');
+          if (AUTH_MODE === 'member' && ownedJournal) {
+            executionOperation = 'case_save_failure_warm';
+            saveFailureReceipt = await runProfileSaveFailureCase({
+              panel,
+              origin: new URL(ownerConfig.url).origin,
+              email: identity.email,
+              original,
+              journal: ownedJournal,
+              state,
+              fillPreferred,
+              clickProfileHeader,
+              openProfile,
+            });
+            report.cases.push(saveFailureReceipt);
+          } else if (AUTH_MODE === 'member') {
+            report.save_failure_case = { status: 'not_run_preexisting_profile_row' };
+          }
           report.stage = 'extension_reload';
           executionOperation = 'reload_extension';
           reloadAttempted = true;
@@ -944,6 +963,15 @@ try {
           if (report.first_save) {
             report.first_save.original_absence_restoration_pending = false;
             report.first_save.status = 'bounded_pass';
+          }
+          if (saveFailureReceipt) {
+            assert.equal(
+              saveFailureReceipt.status,
+              'provisional_until_runner_row_absence_verified',
+              'profile_save_failure_receipt_not_provisional',
+            );
+            saveFailureReceipt.original_absence_verified = true;
+            saveFailureReceipt.status = 'passed';
           }
         } else if (!pendingMarker) {
           report.restoration = { verified: true, original_row_preserved: true };

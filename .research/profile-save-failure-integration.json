@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "task": "profile-save-failure-integration",
+  "status": "source_integrated_native_unverified",
+  "case": "EXT-F-1004-T26 member warm only",
+  "entry": "After owned first-save row and journal exist, after warm T01/T03/T25, before extension reload.",
+  "owned_row_scope": "Preexisting member rows skip T26 explicitly; no unowned write fault is armed.",
+  "receipt": "The module returns a provisional case receipt. Only successful outer conditional DELETE plus authenticated absence read promotes it to passed.",
+  "failure": "A case error reaches the shared execution boundary, and the outer cleanup reconciles durable owned writes before attempting exact conditional deletion.",
+  "source_review": "The accepted T26 module is unchanged; only the existing runner invokes it.",
+  "verification": "Node syntax and focused Profile ownership, journal, and failure-boundary tests passed; native UI and backend writes were not run.",
+  "next_gate": "Fresh source peer review of combined runner, then root-authorized native member run."
+}
