@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task": "EXT-F-1004 admin native Profile acceptance",
+  "run_id": "profile-admin-fields-189-01",
+  "status": "blocked_before_authentication",
+  "failure": {
+    "code": "owned_cdp_endpoint_refused",
+    "phase": "browser_startup",
+    "resource_guard": "admitted_then_clean_child_failure",
+    "detail": "Owned Chrome exposed a DevTools listener, but the harness could not connect to its owned CDP endpoint (331 ms). No admin sign-in or Profile interaction began. No retry was made."
+  },
+  "artifact": {
+    "source_sha": "b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced",
+    "ci_run_id": 37164174445,
+    "artifact_id": 11288542496,
+    "version": "0.2.189",
+    "tree_sha256": "494646f6dd65399e0e7eee65fd1d9bd00ef97d173c5ceb9674de276ca12dc23a"
+  },
+  "inputs": {
+    "runner_sha256": "e427b00309ada3ba9d2e4b87047d572016f65e0237fa7ef16eaded53eec7633b",
+    "native_harness_sha256": "72e2a95b0dac2984bb933190b419a810dfca53c56c33d171ac5e75df5dda9e64",
+    "reload_account_probe_sha256": "7b582c1033b3db54fe3c0d09a2068c5b9b826f80e898e307b5f3c4612922b4fa",
+    "reviewed_readiness_harness_commit": "9eecf01c656c0d816c2c2fcaed018d3f2df5acf2"
+  },
+  "acceptance": {
+    "canonical_admin_first_party_evidence": "not_reached",
+    "extension_reload_and_strict_account_hydration": "not_reached",
+    "extended_cells": [
+      { "id": "EXT-F-1004-T06", "dimension": "warm", "status": "missing" },
+      { "id": "EXT-F-1004-T06", "dimension": "extension_reload", "status": "missing" },
+      { "id": "EXT-F-1004-T18", "dimension": "warm", "status": "missing" },
+      { "id": "EXT-F-1004-T18", "dimension": "extension_reload", "status": "missing" },
+      { "id": "EXT-F-1004-T22", "dimension": "warm", "status": "missing" },
+      { "id": "EXT-F-1004-T22", "dimension": "extension_reload", "status": "missing" }
+    ],
+    "surrounding_cases": {
+      "T02": "not_reached",
+      "T04": "not_reached",
+      "T25": "not_reached",
+      "T26": "not_reached"
+    },
+    "original_field_and_row_state": "not_read; no Profile UI action began",
+    "automatic_ui_restoration": "not_applicable; no Profile UI write began",
+    "final_original_state_readback": "not_observed"
+  },
+  "evidence": {
+    "raw_report": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-admin-fields-189-01/evidence/profile-native-profile-admin-fields-189-01.json",
+    "raw_report_sha256": "b0b2377db7f319d4c966b86c443e7f909c23d190bc59c5773fc77ee5539b52a1",
+    "resource_journal": "docs/stabilization/resource-journals/profile-admin-fields-189-01.jsonl",
+    "resource_journal_sha256": "43c76aedff0b1c230f3737e3599ab153411d30e8bca6c0204c443ecb31b086d6"
+  },
+  "scope": "One guarded admin attempt only. No member magic link, role change, source fix, local build, or release. No Profile values, credentials, or person/row identifiers recorded."
+}
