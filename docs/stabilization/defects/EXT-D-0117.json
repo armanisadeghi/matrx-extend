@@ -23,7 +23,9 @@
     ".research/scrape231-observer-retest.json",
     ".research/panel-context117-bounded-diagnosis.json",
     ".research/panel117-diagnostic-peer.json",
-    ".research/member-reopen-native-retest.json"
+    ".research/member-reopen-native-retest.json",
+    ".research/panel-context-empty-diagnosis.json",
+    ".research/panel-empty-diagnostic-peer.json"
   ],
   "transition_history": [
     {
@@ -40,7 +42,7 @@
     }
   ],
   "closure_requirement": "Demonstrate cause, independently verify repair and actual owned Store panel initialization; surrounding ownership checks must still reject foreign contexts.",
-  "next_action": "root/panel_context_empty_diagnosis owns bounded lifecycle discriminator from actual emptyURL observation; no native retry until fresh independent review. D133 repaired reopening remains unexercised.",
+  "next_action": "Diagnostic9c040f70 acceptedfreshpeer5eb92a04; one guarded changed-condition membernormal600 run37244226691 active withsamefrozen244. root/member_reopen_native_retest owns rawreceipt/boundedlogdiagnostic/3journals and exacttemporarysecretcleanup. Underlyingcause remainsunproven; originalexactcontextfailure preserved.",
   "latest_reproduction": {
     "run_id": 37243043772,
     "product_version": "0.2.244",
