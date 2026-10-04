@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-04 03:04 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T02:56:50.386861+00:00. 205 features · 761 cases · 1333 controls · 105 linked defect records.
+Generated 2026-10-04 03:14 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T03:14:28.197043+00:00. 205 features · 761 cases · 1333 controls · 106 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1209** — Pass: 72 · Partial: 66 · Fail: 4 · Unverified: 1066 · N/A: 1.
-Unverified splits into **125 explicitly marked unverified** and **941 with no result record**.
+Applicable case-by-role slots: **1209** — Pass: 72 · Partial: 68 · Fail: 4 · Unverified: 1064 · N/A: 1.
+Unverified splits into **124 explicitly marked unverified** and **940 with no result record**.
 Full feature-role pairs: **0/394**. Procedure gaps: 148 cases without steps, 147 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -15,13 +15,13 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 
 | Tab or surface | Features | Guest cases | Member cases | Admin cases | All-role case slots | Active defects |
 | --- | ---: | --- | --- | --- | --- | ---: |
-| [Development installation](#development-installation) | 1 | 0 pass · 1 partial · 1 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 1 fail · 6 unverified · 0 deferred; 0/1 full | 1 pass · 1 partial · 1 fail · 4 unverified · 0 deferred; 0/1 full | pass 1, partial 2, fail 3, unverified 15, n/a 0 | 2 |
+| [Development installation](#development-installation) | 1 | 0 pass · 1 partial · 1 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 1 fail · 6 unverified · 0 deferred; 0/1 full | 1 pass · 1 partial · 1 fail · 4 unverified · 0 deferred; 0/1 full | pass 1, partial 2, fail 3, unverified 15, n/a 0 | 3 |
 | [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 3 pass · 1 partial · 1 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 8, partial 2, fail 1, unverified 16, n/a 0 | 4 |
 | [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Navigation / shell](#navigation--shell) | 1 | 1 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 6, fail 0, unverified 17, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
 | [Settings](#settings) | 1 | 10 pass · 4 partial · 0 fail · 11 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 21 unverified · 0 deferred; 0/1 full | 14 pass · 3 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 26, partial 10, fail 0, unverified 55, n/a 1 | 0 |
-| [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 2 pass · 4 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 2, partial 7, fail 0, unverified 23, n/a 0 | 3 |
+| [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 2 pass · 6 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 2, partial 9, fail 0, unverified 21, n/a 0 | 3 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
 | [Scrape](#scrape) | 1 | 1 pass · 0 partial · 0 fail · 25 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | pass 1, partial 0, fail 0, unverified 87, n/a 0 | 2 |
@@ -68,9 +68,9 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Role status:** guest: Fail · member: Fail · admin: Fail. **Cases:** 7. **Controls:** 7.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0077, EXT-D-0090
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0077, EXT-D-0090, EXT-D-0106
 
-**Linked defects:** [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0014](defects/EXT-D-0014.json) (closed), [EXT-D-0028](defects/EXT-D-0028.json) (closed), [EXT-D-0077](defects/EXT-D-0077.json) (fixed), [EXT-D-0080](defects/EXT-D-0080.json) (closed), [EXT-D-0090](defects/EXT-D-0090.json) (fixed), [EXT-D-0099](defects/EXT-D-0099.json) (closed)
+**Linked defects:** [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0014](defects/EXT-D-0014.json) (closed), [EXT-D-0028](defects/EXT-D-0028.json) (closed), [EXT-D-0077](defects/EXT-D-0077.json) (fixed), [EXT-D-0080](defects/EXT-D-0080.json) (closed), [EXT-D-0090](defects/EXT-D-0090.json) (fixed), [EXT-D-0099](defects/EXT-D-0099.json) (closed), [EXT-D-0106](defects/EXT-D-0106.json) (triaged)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -570,7 +570,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1004-T02 admin: Back | N/A | N/A | Partial | EXT-F-1004-C01 |
 | EXT-F-1004-T03 member: Save / Discard | N/A | Pass | N/A | EXT-F-1004-C02 |
 | EXT-F-1004-T04 admin: Save / Discard | N/A | N/A | Partial | EXT-F-1004-C02 |
-| EXT-F-1004-T05 member: Identity fields | N/A | Unverified | N/A | EXT-F-1004-C03 |
+| EXT-F-1004-T05 member: Identity fields | N/A | Partial | N/A | EXT-F-1004-C03 |
 | EXT-F-1004-T06 admin: Identity fields | N/A | N/A | Unverified | EXT-F-1004-C03 |
 | EXT-F-1004-T07 member: Phones | N/A | Unverified | N/A | EXT-F-1004-C04 |
 | EXT-F-1004-T08 admin: Phones | N/A | N/A | Unverified | EXT-F-1004-C04 |
@@ -582,7 +582,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1004-T14 admin: Shipping address | N/A | N/A | Unverified | EXT-F-1004-C07 |
 | EXT-F-1004-T15 member: Billing address same as shipping | N/A | Unverified | N/A | EXT-F-1004-C08 |
 | EXT-F-1004-T16 admin: Billing address same as shipping | N/A | N/A | Unverified | EXT-F-1004-C08 |
-| EXT-F-1004-T17 member: Employment | N/A | Unverified | N/A | EXT-F-1004-C09 |
+| EXT-F-1004-T17 member: Employment | N/A | Partial | N/A | EXT-F-1004-C09 |
 | EXT-F-1004-T18 admin: Employment | N/A | N/A | Unverified | EXT-F-1004-C09 |
 | EXT-F-1004-T19 member: Emergency contacts | N/A | Unverified | N/A | EXT-F-1004-C10 |
 | EXT-F-1004-T20 admin: Emergency contacts | N/A | N/A | Unverified | EXT-F-1004-C10 |
@@ -605,8 +605,10 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: profile-member-final-189-05, Development0.2.189, source b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced, CI37164174445/artifact11288542496, 2026-10-04T01:29:17.055381+00:00, ['.research/profile-member-final-189-native.json', 'docs/stabilization/resource-journals/profile-member-final-189-05.jsonl']
 - EXT-F-1004-T04 · admin: Partial.
   Evidence / build / date recorded: profile-independent-20261003-01, receipt-bound development artifact; CI 37150495327 / artifact 11283802431 / source ac49ac2f, 2026-10-03T20:16:36Z, .research/profile-independent-acceptance.json; docs/stabilization/resource-journals/profile-independent-20261003-01.jsonl
-- EXT-F-1004-T05 · member: Unverified. Attempt failed in native test process before Identity receipt; product-vs-driver cause under D104 diagnosis. Original absence restored; no fieldpass inferred.
-  Evidence / build / date recorded: profile-fields-member-189-01, .research/profile-fields-member-native.json
+- EXT-F-1004-T05 · member: Partial.
+  Evidence / build / date recorded: profile-fields-clean-save-189-07, Frozen development189/sourceb4b9f0c4/CI37164174445/artifact11288542496, 2026-10-04T03:14:28.197043+00:00, .research/profile-fields-clean-save-native.json
+- EXT-F-1004-T17 · member: Partial.
+  Evidence / build / date recorded: profile-fields-clean-save-189-07, Frozen development189/sourceb4b9f0c4/CI37164174445/artifact11288542496, 2026-10-04T03:14:28.197043+00:00, .research/profile-fields-clean-save-native.json
 - EXT-F-1004-T21 · member: Partial.
   Evidence / build / date recorded: profile-fields-member-189-01, Exactdevelopment189/sourceb4b9f0c4/CI37164174445/artifact11288542496, 2026-10-04T02:09:46.544160+00:00, .research/profile-fields-member-native.json
 - EXT-F-1004-T25 · member: Partial.

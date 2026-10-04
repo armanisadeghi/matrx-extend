@@ -1,0 +1,41 @@
+{
+  "id": "EXT-D-0106",
+  "feature_id": "EXT-F-0001",
+  "case_ids": ["EXT-F-0001-T02"],
+  "surface": "Full extension reload in extended Profile acceptance",
+  "auth_mode": "member",
+  "title": "Extended Profile acceptance stops in reload and cannot complete owned-row cleanup",
+  "reproduction": [
+    "Use frozen189/sourceb4b9f0c4efd4e79d9910a7e8dc589f312fe8bced CI37164174445 artifact11288542496 and reviewed clean-save runner710d14bf. Exact recipe .research/profile-reload-hydration.json with PROFILE_EXTENDED_CASES=1.",
+    "Follow first-party existing member sign-in, verify zero admin assignments/device organization, execute warm Profile baseline and extended Identity/Employment saves.",
+    "Invoke strict full extension reload. Run189-07 records primary extension_reload/reload_extension generic failure; fallback cleanup records separate pointer_target_not_unique and leaves owned row."
+  ],
+  "expected": "Strict reload records retired/replacement contexts, reopens authenticated panel, verifies saved fields and completes exact owned-state restoration.",
+  "actual": "Warm Identity/Employment save/reopen succeeds; reload fails before dimension evidence. Exact inner cause not retained. Owned row was subsequently conditionally removed and root independently read zero rows.",
+  "severity": "S2 test lifecycle and cleanup blocked; product impact not established",
+  "priority": "P1 prerequisite for full Profile verification",
+  "state": "triaged",
+  "owner": "root",
+  "evidence": [
+    ".research/profile-fields-clean-save-native.json",
+    ".research/profile-owned-row-recovery-189-07.json",
+    ".research/profile-reload-failure-source.json",
+    "docs/stabilization/resource-journals/profile-fields-clean-save-189-07.jsonl"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-04T03:14:28.197043+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Independent exact-artifact native07 fails reload and cleanup; root matched raw/journal hashes."
+    },
+    {
+      "at": "2026-10-04T03:14:28.197043+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Fresh source/evidence diagnosis confirms missing lifecycle cause; previous184 worker-retirement failure is not proof for189. Ownedrow recovered under exact state and independently read absent."
+    }
+  ],
+  "next_action": "Capture allowlisted reload lifecycle code, safe context counts/booleans and transport class at actual callback; one guarded exact-artifact read-only causal run before product or timing changes.",
+  "closure_requirement": "Prove reload cause, fix and independently verify actual reload plus saved-field and automatic original-state restoration. Recovery SQL alone does not close it."
+}

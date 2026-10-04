@@ -18,5 +18,10 @@
   "owner_row_count_after": 0,
   "original_absence_restored": true,
   "unrelated_rows_changed": false,
-  "extension_reload_verified": false
+  "extension_reload_verified": false,
+  "root_independent_readback": {
+    "at": "2026-10-04T03:14:28.197043+00:00",
+    "remaining_owned_rows": 0,
+    "method": "Connected Supabase count query scoped only to owner UUID from protected run receipt; no row contents returned."
+  }
 }
