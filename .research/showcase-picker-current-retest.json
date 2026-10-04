@@ -1,0 +1,30 @@
+{
+  "defect_id": "EXT-D-0042",
+  "status": "focused-source-regression-pass; native-installed-extension-acceptance-unverified",
+  "tested_sha": "c540f36a41ea4b13ca0c3dc38b8f00ff1c46d730",
+  "branch": "main",
+  "scope": "Current-session picker detection/result and extraction; stale same-tab, same-document, same-URL session event rejection; producer identity, relay identity, and cancellation sequencing.",
+  "commands": [
+    "pnpm exec vitest run tests/unit/list-picker-session.test.ts tests/unit/list-picker-relay.test.ts tests/unit/showcase-doctor-list-handoff.test.tsx --maxWorkers=1"
+  ],
+  "evidence": {
+    "focused_tests": "3 files passed; 23 tests passed; 0 failed; duration 1.49s.",
+    "consumer_boundary": "tests/unit/showcase-doctor-list-handoff.test.tsx delivers each of ITEM_DETECTED, RESULT, and EXIT using session A after canceling A and starting B on the same tab 77, document-a, and unchanged URL. Old messages leave B active and do not stage the stale root. The same test then delivers B's RESULT, verifies extraction of Neon Nights at Area15, and proves the current session can populate and extract.",
+    "producer_boundary": "tests/unit/list-picker-session.test.ts verifies detection, result, and exit payloads retain the producing session ID; replaced-session cancellation leaves the replacement active; reinjection yields one detection and restores ordinary page clicks; and queued install/cancel/replacement start ordering preserves B.",
+    "relay_boundary": "tests/unit/list-picker-relay.test.ts verifies all three channels preserve session identity while stamping trusted sender tab/document; missing sender identity is not broadcast.",
+    "causal_negative": "Within the consumer regression, stale A and current B messages share tab, document, URL, selectors, and field payload; only session identity changes. Stale A is rejected while B remains active, then current B is accepted and extraction returns the expected real-shaped event title. This is the safe paired negative/positive check at the consumer boundary; no source mutation was made.",
+    "source_review": "ListPatternTab.fromOurPick requires matching tab_id, session_id, document_id, current page key, and current page identity before handling both detection and result. The EXIT consumer uses the same current-pick admission path. list-picker-relay preserves session_id and stamps sender identity; list-picker-session targets injections and cancellation to document and session."
+  },
+  "quality_verdict": {
+    "source_behavior": "Current focused checks establish detection/result/extraction success for B and rejection of A's three stale event channels under identical tab/document/URL identity. Producer cancellation/reinjection and relay identity checks also pass.",
+    "test_quality": "The paired same-page A/B session inputs provide a causal identity discriminator and exercise real ListPatternTab consumer logic; producer and relay tests exercise their respective real modules. These are unit boundary checks with external Chrome transport mocked, not native runtime proof.",
+    "native_acceptance_missing": "Independent installed-extension verification with real page data and actual runtime delivery: hold A's ITEM_DETECTED, RESULT, and EXIT across cancel/start B on the same tab and URL; verify all three are rejected, B's own detection/result populate and extract; defer A's cancellation until B starts and confirm B remains usable; defer/release installation across replacement; reinject the content context and confirm exactly one detection and normal page clicks after close."
+  },
+  "changed_files": [".research/showcase-picker-current-retest.json"],
+  "other_worktree_changes_observed": [
+    "docs/stabilization/COORDINATOR.md",
+    "docs/stabilization/reports/workspace-sync-guest-incident-20261003.json"
+  ],
+  "questions": [],
+  "commit_push": "Report-only commit pushed to origin/main; see enclosing Git commit for the exact SHA."
+}
