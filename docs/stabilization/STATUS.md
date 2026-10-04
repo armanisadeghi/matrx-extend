@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-04 00:54 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T00:54:21.007514+00:00. 205 features · 760 cases · 1332 controls · 101 linked defect records.
+Generated 2026-10-04 01:04 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T01:04:06.442420+00:00. 205 features · 761 cases · 1333 controls · 102 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1207** — Pass: 69 · Partial: 67 · Fail: 4 · Unverified: 1066 · N/A: 1.
-Unverified splits into **121 explicitly marked unverified** and **945 with no result record**.
+Applicable case-by-role slots: **1209** — Pass: 69 · Partial: 68 · Fail: 4 · Unverified: 1067 · N/A: 1.
+Unverified splits into **122 explicitly marked unverified** and **945 with no result record**.
 Full feature-role pairs: **0/394**. Procedure gaps: 148 cases without steps, 147 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -16,7 +16,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | Tab or surface | Features | Guest cases | Member cases | Admin cases | All-role case slots | Active defects |
 | --- | ---: | --- | --- | --- | --- | ---: |
 | [Development installation](#development-installation) | 1 | 0 pass · 1 partial · 1 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 1 fail · 6 unverified · 0 deferred; 0/1 full | 1 pass · 1 partial · 1 fail · 4 unverified · 0 deferred; 0/1 full | pass 1, partial 2, fail 3, unverified 15, n/a 0 | 2 |
-| [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 1 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | pass 7, partial 2, fail 1, unverified 15, n/a 0 | 3 |
+| [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 2 pass · 2 partial · 1 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 7, partial 3, fail 1, unverified 16, n/a 0 | 4 |
 | [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Navigation / shell](#navigation--shell) | 1 | 1 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 6, fail 0, unverified 17, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
@@ -110,11 +110,11 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Resource admission and owned job lifecycle (EXT-F-0002)
 
-**Role status:** guest: Unverified · member: Fail · admin: Partial. **Cases:** 9. **Controls:** 9.
+**Role status:** guest: Unverified · member: Fail · admin: Partial. **Cases:** 10. **Controls:** 10.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0073, EXT-D-0079, EXT-D-0083
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0073, EXT-D-0079, EXT-D-0083, EXT-D-0102
 
-**Linked defects:** [EXT-D-0025](defects/EXT-D-0025.json) (closed), [EXT-D-0051](defects/EXT-D-0051.json) (closed), [EXT-D-0056](defects/EXT-D-0056.json) (closed), [EXT-D-0060](defects/EXT-D-0060.json) (closed), [EXT-D-0072](defects/EXT-D-0072.json) (closed), [EXT-D-0073](defects/EXT-D-0073.json) (fixed), [EXT-D-0079](defects/EXT-D-0079.json) (in-fix), [EXT-D-0083](defects/EXT-D-0083.json) (fixed), [EXT-D-0098](defects/EXT-D-0098.json) (closed), [EXT-D-0101](defects/EXT-D-0101.json) (retest-pass)
+**Linked defects:** [EXT-D-0025](defects/EXT-D-0025.json) (closed), [EXT-D-0051](defects/EXT-D-0051.json) (closed), [EXT-D-0056](defects/EXT-D-0056.json) (closed), [EXT-D-0060](defects/EXT-D-0060.json) (closed), [EXT-D-0072](defects/EXT-D-0072.json) (closed), [EXT-D-0073](defects/EXT-D-0073.json) (fixed), [EXT-D-0079](defects/EXT-D-0079.json) (in-fix), [EXT-D-0083](defects/EXT-D-0083.json) (fixed), [EXT-D-0098](defects/EXT-D-0098.json) (closed), [EXT-D-0101](defects/EXT-D-0101.json) (retest-pass), [EXT-D-0102](defects/EXT-D-0102.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -127,6 +127,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-0002-T07 Native Chat acceptance distinguishes tool progress from terminal answer | Pass | Unverified | Unverified | EXT-F-0002-C07 |
 | EXT-F-0002-T08 Native fixture failure is actionable without exposing sensitive data | N/A | Fail | Partial | EXT-F-0002-C08 |
 | EXT-F-0002-T09 Persistent fixture cleanup survives write, assertion, and extension reload failures | N/A | Partial | Unverified | EXT-F-0002-C09 |
+| EXT-F-0002-T10 Authenticated Profile control readiness after reload | N/A | Partial | Unverified | EXT-F-0002-C10 |
 
 **Recorded case details and evidence:**
 
@@ -174,6 +175,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: saved-capture-escalation-create-20261001-01, docs/stabilization/reports/saved-capture-escalation-verify-20261001.json
 - EXT-F-0002-T09 · member: Partial. Realownedrow cleanup restoredoriginalabsence afterwarmwrites andpostfullreloaddriverfailure. Remainingfailurevariants notallnativelytested; sourceguards independentlycoveredstrictprogress/concurrentrefusal.
   Evidence / build / date recorded: profile-member-retest-189-01, .research/profile-member-retest189.json
+- EXT-F-0002-T10 · member: Partial. Buildercausalnativerun passes actualreadiness/reloadcases; independentfinalreview/retest pending.
+  Evidence / build / date recorded: profile-member-reload-hydration-189-04, .research/profile-reload-hydration.json
 
 **Other remaining work:** Concrete procedure and evidence required before executing each control.
 

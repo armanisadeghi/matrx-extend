@@ -1,0 +1,51 @@
+{
+  "id": "EXT-D-0102",
+  "feature_id": "EXT-F-0002",
+  "case_ids": ["EXT-F-0002-T10"],
+  "surface": "Profile native test authenticated UI readiness after reload",
+  "auth_mode": "member reproduced; authenticated runner",
+  "title": "Native Profile runner clicks account menu before authentication hydration finishes",
+  "reproduction": [
+    "Use exactdevelopment189/sourceb4b9f0c4 withrunnerbeforeb7f63d0c, existingmemberfirstpartysignin andguardedProfileprocedure recorded in .research/profile-member-retest189-next.json.",
+    "Complete nativeextensionReload; runnerverifiesnewworker/panel/runtimecontext andstoredidentity, thenimmediatelyclicksexpectedaccounttitle.",
+    "Observe0matchingaccountcontrols andpointerfailure. Underconditionobservation, persistedidentity/token/orgremainpresent whileguestAccount1 becomesexactauthenticatedaccount1 withoutanotherlogin."
+  ],
+  "expected": "WaitforconcreteauthenticatedUIreadiness afterreload withinexistingbound; failwithsafeobservations ifidentityneverrenders. Do not equate storedsession orSIDE_PANEL context withrenderedaccountcontrol.",
+  "actual": "Immediateclick racesuseAuth hydration andclassifiesnormalstartup asmissingtarget.",
+  "severity": "S3: false testfailure blocks coverage; no productsessionloss demonstrated.",
+  "priority": "P1: blocks Profile reload acceptance.",
+  "state": "fixed",
+  "owner": "profile_reload_target_repair",
+  "fix_commits": ["b7f63d0c"],
+  "evidence": [
+    ".research/profile-member-retest189-next.json",
+    ".research/profile-reload-hydration.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-04T01:04:06.442420+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Real189-02 controlfailure observed immediatelyafterfullreload."
+    },
+    {
+      "at": "2026-10-04T01:04:06.442420+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Causal189-04 observation provespersistedidentityunchanged whileguestAccounttransitions toauthenticatedmenu."
+    },
+    {
+      "at": "2026-10-04T01:04:06.442420+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Conditionreadinesswaitwithinexistingbound pluscontent-freebefore/afterobservations."
+    },
+    {
+      "at": "2026-10-04T01:04:06.442420+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Sourceb7f63d0c andnativeevidence919b0be5 passedreloadT01/T03/T25 andrestoredoriginalabsence. Freshsourcepeer/finalindependentnative stillpending."
+    }
+  ],
+  "closure_requirement": "Freshindependentsource review ofcondition/oracle andguardedexactartifact memberretest, preservingstrictreloadproof, failurebound andoriginalstatecleanup. No currentmain/fullProfileclaim."
+}
