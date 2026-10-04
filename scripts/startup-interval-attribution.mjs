@@ -94,7 +94,7 @@ export function processTimeBracket(before, after, rootPid) {
     exitedOrUnmatchedPids: [...first.keys()].filter((pid) => !last.has(pid)).sort((a, b) => a - b),
     appearedPids: [...last.keys()].filter((pid) => !first.has(pid)).sort((a, b) => a - b),
     categoryTotalsSeconds,
-    observed: observed.filter((item) => item.category !== 'otherHost'),
+    observed: observed.filter((item) => item.category !== 'otherHost' || item.cpuSecondsDelta > 0),
     otherHostObservedProcessCount: observed.filter((item) => item.category === 'otherHost').length,
     limitation:
       'ps CPU time displays centiseconds; snapshots bracket but do not equal the iostat interval. Exited, newly spawned, reparented, or PID-reused processes cannot be assigned exact interval CPU time.',

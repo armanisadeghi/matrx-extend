@@ -133,8 +133,10 @@ test('startup bracket survives durable journal publication with only scoped CPU 
   const bracket = {
     iostatStartedAt: '2026-10-04T20:02:59.757Z',
     iostatCompletedAt: '2026-10-04T20:03:00.840Z',
+    beforeStartedAt: '2026-10-04T20:02:59.740Z',
     beforeCompletedAt: '2026-10-04T20:02:59.757Z',
     afterStartedAt: '2026-10-04T20:03:00.840Z',
+    afterCompletedAt: '2026-10-04T20:03:00.856Z',
     resolutionSeconds: 0.01,
     ownedAtStart: [12669, 12803],
     ownedAtEnd: [12669, 12803],
@@ -154,6 +156,13 @@ test('startup bracket survives durable journal publication with only scoped CPU 
         cpuSecondsDelta: 0.36,
         argv: '--token=private',
         environment: 'PRIVATE=private',
+      },
+      {
+        pid: 13189,
+        executable: 'MTLCompilerService',
+        category: 'otherHost',
+        cpuSecondsDelta: 0.82,
+        argv: '--token=private',
       },
     ],
     otherHostObservedProcessCount: 523,
@@ -205,6 +214,12 @@ test('startup bracket survives durable journal publication with only scoped CPU 
         executable: 'Chromium Helper',
         category: 'ownedChromium',
         cpuSecondsDelta: 0.36,
+      },
+      {
+        pid: 13189,
+        executable: 'MTLCompilerService',
+        category: 'otherHost',
+        cpuSecondsDelta: 0.82,
       },
     ];
     assert.deepEqual(events[0].bracket, safeBracket);

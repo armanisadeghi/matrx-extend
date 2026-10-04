@@ -33,3 +33,29 @@ test('new or vanished processes are reported as a gap, never fabricated as zero 
     false,
   );
 });
+
+test('positive named other-host deltas remain observable without changing ownership', () => {
+  const before = parseProcessTimes(
+    '100 1 0:01.00 node\n901 1 0:03.00 MTLCompilerService\n902 1 0:00.00 idle-helper\n',
+  );
+  const after = parseProcessTimes(
+    '100 1 0:01.01 node\n901 1 0:03.82 MTLCompilerService\n902 1 0:00.00 idle-helper\n',
+  );
+  const bracket = processTimeBracket(before, after, 100);
+  assert.deepEqual(
+    bracket.observed.find((item) => item.pid === 901),
+    {
+      pid: 901,
+      executable: 'MTLCompilerService',
+      category: 'otherHost',
+      cpuSecondsDelta: 0.82,
+    },
+  );
+  assert.equal(
+    bracket.observed.some((item) => item.pid === 902),
+    false,
+  );
+  assert.equal(bracket.categoryTotalsSeconds.otherHost, 0.82);
+  assert.equal(bracket.otherHostObservedProcessCount, 2);
+  assert.deepEqual(bracket.ownedAtStart, [100]);
+});

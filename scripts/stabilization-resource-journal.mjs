@@ -70,7 +70,14 @@ function sanitizeStartupBracket(bracket) {
   if (!bracket || typeof bracket !== 'object' || Array.isArray(bracket))
     throw new Error('invalid startup bracket');
   const timestamps = Object.fromEntries(
-    ['iostatStartedAt', 'iostatCompletedAt', 'beforeCompletedAt', 'afterStartedAt']
+    [
+      'iostatStartedAt',
+      'iostatCompletedAt',
+      'beforeStartedAt',
+      'beforeCompletedAt',
+      'afterStartedAt',
+      'afterCompletedAt',
+    ]
       .filter((key) => Object.hasOwn(bracket, key))
       .map((key) => {
         if (!validTime(bracket[key])) throw new Error('invalid startup time');
@@ -87,7 +94,7 @@ function sanitizeStartupBracket(bracket) {
     };
   }
   if (
-    Object.keys(timestamps).length !== 4 ||
+    Object.keys(timestamps).length !== 6 ||
     Object.values(timestamps).some((value) => value === null) ||
     bracket.resolutionSeconds !== 0.01 ||
     !BRACKET_LIMITATIONS.has(bracket.limitation) ||

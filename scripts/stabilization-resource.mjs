@@ -310,8 +310,10 @@ async function sample(profileDir, attributionRootPid) {
     startupBracket = {
       iostatStartedAt,
       iostatCompletedAt,
+      beforeStartedAt: before?.at ?? null,
       beforeCompletedAt: before?.completedAt ?? null,
       afterStartedAt: after?.at ?? null,
+      afterCompletedAt: after?.completedAt ?? null,
       ...detail,
     };
     return raw;

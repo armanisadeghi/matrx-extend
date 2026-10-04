@@ -15,6 +15,7 @@ export async function runHostedStartupIntervalDiagnostic({
   sourceSha,
   runId,
   artifactId,
+  nativeRunner = runNativeSidepanelQa,
 }) {
   assert.equal(process.env.GITHUB_ACTIONS, 'true', 'hosted_startup_runner_required');
   assert.equal(process.env.RUNNER_ENVIRONMENT, 'github-hosted', 'hosted_startup_vm_required');
@@ -34,14 +35,21 @@ export async function runHostedStartupIntervalDiagnostic({
     artifactId,
     startedAt: new Date().toISOString(),
     lastNativeStage: null,
+    nativeStages: [],
+    gpuObservation: { status: 'UNKNOWN' },
     panelReadyAt: null,
     completedAt: null,
     guardJournal: `docs/stabilization/resource-journals/${process.env.MATRX_RESOURCE_RUN_ID}.jsonl`,
   };
-  const save = () => writeFile(path, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
+  let pendingSave = Promise.resolve();
+  const save = () => {
+    const snapshot = `${JSON.stringify(report, null, 2)}\n`;
+    pendingSave = pendingSave.then(() => writeFile(path, snapshot, { mode: 0o600 }));
+    return pendingSave;
+  };
   await save();
   try {
-    await runNativeSidepanelQa({
+    await nativeRunner({
       extensionDir,
       localDevReceiptPath: relocatedReceipt,
       expectedRelease: receipt,
@@ -49,6 +57,11 @@ export async function runHostedStartupIntervalDiagnostic({
       artifactRoot: outputDir,
       onStage: (stage) => {
         report.lastNativeStage = stage;
+        report.nativeStages.push({ stage, at: new Date().toISOString() });
+      },
+      onStartupGpuObservation: (observation) => {
+        report.gpuObservation = observation;
+        void save().catch(() => {});
       },
       exercisePanel: async ({ requireResourceHealth }) => {
         // This is the same pre-exercise boundary that refused the failed native

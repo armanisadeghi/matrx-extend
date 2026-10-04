@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "task": "startup-renderer-observation",
+  "status": "SOURCE_READY_NATIVE_UNVERIFIED",
+  "scope": "Diagnostic observability only. No native run, browser launch, renderer treatment, auth, threshold, resource floor, build, or release.",
+  "measurement_path": {
+    "process_bracket": "The existing ps/iostat diagnostic retains positive named otherHost deltas with PID, executable basename, category, and CPU-seconds delta. Ownership and cleanup categories are unchanged. The strict journal writer retains these rows and both start/end times for each process snapshot, the iostat interval, unmatched PID lists, and category totals.",
+    "native_stages": "The startup-resource-diagnostic report records an ISO timestamp for every existing native stage while retaining lastNativeStage. Browser spawn, panel open, panel settle, screenshot, and exercise-panel entry are separately visible.",
+    "backend": "After existing command-line, extension-worker, and spawned-profile ownership verification, the diagnostic starts exactly one SystemInfo.getInfo on the verified browser-target CDP connection before local_server. The query is not awaited in the startup sequence and uses the existing five-second CDP command deadline. The report records requested and resolved/failed times and only skiaBackendType, glRenderer, and allowlisted featureStatus values. Missing or failed backend observation is UNKNOWN; commandLine is discarded.",
+    "ordinary_acceptance": "The backend query and report callback are absent unless startup-resource-diagnostic opts in; ordinary native acceptance retains its launch arguments and resource sampling."
+  },
+  "red_green": {
+    "red": "The positive MTLCompilerService delta assertion against HEAD:scripts/startup-interval-attribution.mjs failed: observed PID 901 was undefined instead of 0.82 CPU-seconds.",
+    "green": "Twenty focused Node tests passed, including the real strict journal writer/published JSONL, report writer, backend success/failure/UNKNOWN, and native harness source guards. pnpm compile and scoped biome check passed; biome reported four pre-existing style warnings in the resource guard.",
+    "native": "UNVERIFIED. No hosted diagnostic was dispatched."
+  },
+  "invocation_contract": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "inputs": {
+      "runner_label": "macos-15",
+      "acceptance_case": "startup-resource-diagnostic",
+      "development_run_id": "37226671959",
+      "development_artifact_id": "11312153381"
+    },
+    "provenance": "Use the frozen 240 development artifact only if the current resource guard admits a single bounded diagnostic. Keep the default renderer; no treatment launch is authorized by this source work.",
+    "evidence": [
+      "docs/stabilization/resource-journals/hosted-startup-<run>-<attempt>.jsonl",
+      "startup-interval-diagnostic.json",
+      "native-sidepanel-qa-*/*.png"
+    ],
+    "interpretation": "Match journal bracket timestamps against nativeStages. Positive otherHost CPU is observed but does not prove causal independence or Chromium ownership. An absent or UNKNOWN backend cannot support a Graphite treatment decision. Never promote diagnostic output to product acceptance."
+  }
+}

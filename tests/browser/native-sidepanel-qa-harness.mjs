@@ -22,6 +22,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
+import { observeStartupGpu } from '../../scripts/startup-gpu-observation.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { markBrowserAgentTraffic } from './agent-traffic.mjs';
 import { resolveBrowserRuntime } from './browser-runtime.mjs';
@@ -890,6 +891,7 @@ export async function runNativeSidepanelQa({
   ownedAssets,
   exercisePanel,
   onStage = () => {},
+  onStartupGpuObservation,
 } = {}) {
   onStage('receipt');
   let receipt;
@@ -929,6 +931,7 @@ export async function runNativeSidepanelQa({
   let verified = false;
   let launchError;
   let startupStartedAt;
+  let gpuObservation;
   try {
     onStage('browser_spawn');
     startupStartedAt = performance.now();
@@ -1004,6 +1007,8 @@ export async function runNativeSidepanelQa({
     onStage('spawn_owner');
     requireSpawnedProfileOwner(await readlink(join(profile, 'SingletonLock')), child.pid);
     verified = true;
+
+    if (onStartupGpuObservation) gpuObservation = observeStartupGpu(cdp, onStartupGpuObservation);
 
     onStage('local_server');
     server = createServer((request, response) => {
@@ -1136,6 +1141,7 @@ export async function runNativeSidepanelQa({
     // Browser.close is intentionally absent, including for Playwright's CDP
     // connection. Only the exact ChildProcess this harness spawned is ended.
     await cdp?.detach().catch(() => {});
+    await gpuObservation;
     await new Promise((resolve) => server?.close(resolve) ?? resolve());
     await stopOwnedChild(child);
     await rm(root, { recursive: true, force: true });
