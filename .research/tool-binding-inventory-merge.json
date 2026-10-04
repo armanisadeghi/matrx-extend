@@ -16,11 +16,7 @@
     "all_feature_id_name_pairs_matched": true,
     "source_sha": "6256d7b43366e7eb337d39d892c388d5348279d6",
     "inventory_declared_source_sha": "dc64e8a1c6c0ac28ac8102dd31857bf645d72df2",
-    "live_query_scope": [
-      "tool.definition",
-      "tool.binding",
-      "tool.surface_defaults"
-    ],
+    "live_query_scope": ["tool.definition", "tool.binding", "tool.surface_defaults"],
     "query_sha256": "9dabbf865b3fba5f149f4a68da2b4ce78e967f62e312766a2e7e687764e53b1a"
   },
   "status_preservation": {
