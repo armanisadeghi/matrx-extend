@@ -1,0 +1,12 @@
+{
+  "scope": "Independent bounded retest of EXT-F-0001-T07 / EXT-D-0090 using source e932a092 and hosted release run 37180303468; no database writes or product health claim.",
+  "verdict_A_source_validator": {
+    "result": "PASS",
+    "evidence": "On the current checkout, pnpm exec tsx --test scripts/test-tool-db-row-validation.ts passed 3/3: accepts canonical records registry metadata ($envelope='args', $variants), rejects a malformed ordinary action parameter, and rejects malformed envelope/unknown metadata. The guard is behaviorally red against the pre-fix helper: its every-entry parameter validation rejects the string-valued $envelope. Source e932a092 is an ancestor of hosted candidate 996b2a173c54ebbca654e1ddf7fe6fb08e23cf57."
+  },
+  "verdict_B_exact_hosted_gate": {
+    "result": "PASS_WITH_EVIDENCE_LIMIT",
+    "evidence": "GitHub Hosted release run 37180303468 (https://github.com/armanisadeghi/matrx-extend/actions/runs/37180303468), candidate head 996b2a173c54ebbca654e1ddf7fe6fb08e23cf57, concluded success. Its 'Release through the repository contract' step succeeded; release.sh defines tool-drift as pnpm -s catalog:tools:drift:strict, and the successful release step executes required release checks. Thus this exact hosted candidate completed the strict live tool-drift gate successfully. The run artifact is matrx-extend-v0.2.205, artifact id 11294843385. No separate gate-specific log receipt was available in the narrow log extraction, so the gate verdict rests on the exact successful run plus the repository's blocking release contract, not an isolated drift stdout line."
+  },
+  "closure": "The two specified D90 closure criteria are fulfilled for source e932a092 and hosted candidate/run above. This closes only EXT-F-0001-T07 / EXT-D-0090 evidence; it makes no claim about unrelated records contract drift or native product health."
+}
