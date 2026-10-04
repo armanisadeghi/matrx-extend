@@ -13,12 +13,15 @@
   "actual": "Prior acceptance recorded no request status or error code. UI answer evidence remains valid only for its bounded claim.",
   "severity": "S2: missing failure evidence can conceal transport regressions",
   "priority": "P1: diagnose urgent signed-out Chat incident",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "root/guest_first_transport_observer",
   "evidence": [
     ".research/guest205-current-live-check.json",
     ".research/guest-incident-oct4-live-audit.json",
-    "tests/browser/guest-chat-store-acceptance.mjs"
+    "tests/browser/guest-chat-store-acceptance.mjs",
+    ".research/guest-first-transport-observer.json",
+    ".research/guest-transport-fresh-peer.json",
+    ".research/guest-transport-correction-peer.json"
   ],
   "transition_history": [
     {
@@ -38,6 +41,14 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Bounded passive first-send capture repair delegated with independent review and native proof required."
+    },
+    {
+      "at": "2026-10-04T22:23:07.955638+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Fresh5f3589d4 verified lateURLcapture, narrow optional-body protocol handling and cleanup;8 focused tests plus actual ownedCDP connector tests passed. Native pending."
     }
-  ]
+  ],
+  "fix_commits": ["954277cf", "a0f6cd50"],
+  "next_action": "root/guest205_first_transport_native owns ONE current-server exact205 hosted guest acceptance, all raw journals/receipt/cleanup; no Store installation or whole-product claim."
 }
