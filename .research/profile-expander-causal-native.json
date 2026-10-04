@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "task": "profile-expander-causal-native",
+  "run_id": "profile-expander-causal-189-05",
+  "status": "failed_at_warm_identity_save_with_verified_original_absence_restoration",
+  "scope": "One guarded extended native member Profile run; no source edits or second browser launch.",
+  "source_recipe": ".research/profile-reload-hydration.json",
+  "runner": "tests/browser/profile-native-acceptance.mjs with PROFILE_EXTENDED_CASES=1 under scripts/stabilization-resource.mjs run",
+  "artifact": {
+    "development_version": "0.2.189",
+    "source_sha": "b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced",
+    "ci_run_id": 37164174445,
+    "artifact_id": 11288542496,
+    "local_dev_receipt": "test-results/ci-artifacts/b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced/37164174445-1/local-dev-receipt.json"
+  },
+  "authority": {
+    "first_party_member_identity_verified": true,
+    "canonical_nonadmin_http_status": 200,
+    "canonical_nonadmin_rows": 0,
+    "device_organization_selected": true,
+    "original_profile_row_absent": true
+  },
+  "case_result": {
+    "warm_expand_check": "EXT-F-1004-T21 passed all eight sections and discard restoration",
+    "first_failure_case": "EXT-F-1004-T05",
+    "dimension": "warm",
+    "operation": "run",
+    "phase": "save",
+    "field": null,
+    "safe_failure_code": "profile_unclassified_failure",
+    "secondary_restoration_code": "profile_case_restoration_failed",
+    "secondary_restoration_stage": "restore_profile_ui",
+    "employment_and_reload": "not reached",
+    "diagnosis": "Identity inputs, including Birthday, passed fill and draft assertions before save. The safe report does not expose which save or journal assertion failed; it also records a later UI restoration failure. Product versus driver origin remains unknown."
+  },
+  "cleanup": {
+    "first_save_branch": "bounded_pass",
+    "original_absence_restored": true,
+    "single_use_magic_link_removed": true,
+    "private_ownership_receipt_preserved": true,
+    "private_receipt_mode": "0600"
+  },
+  "resources": {
+    "admitted": true,
+    "resource_invalid": false,
+    "runner_exit_code": 1,
+    "decision": "child_failed"
+  },
+  "evidence": {
+    "raw_report": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-expander-causal-189-05/evidence/profile-native-profile-expander-causal-189-05.json",
+    "raw_report_sha256": "fb568de8a1e4c231344a9ffa98f815b2c1edeeded8d516c36b4d12956719b24b",
+    "resource_journal": "docs/stabilization/resource-journals/profile-expander-causal-189-05.jsonl",
+    "resource_journal_sha256": "8d20d8ec555cda2ad52cc978d9493b1fa5fcfd27bf1219400cc3904793a33431"
+  },
+  "unknowns": [
+    "The exact save or owned-journal assertion behind the unclassified primary failure.",
+    "Whether Identity and Employment persist across extension reload; that phase was not reached."
+  ]
+}
