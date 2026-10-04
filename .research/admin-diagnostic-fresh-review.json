@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0108 admin first-save diagnostic correction independent review",
+  "reviewed_commit": "adeae263dc6e160d6497a2cc0e22ff36df0e85c4",
+  "verdict_a_acceptance": {
+    "status": "PASS_FOR_DIAGNOSTIC_SCOPE",
+    "evidence": [
+      "The actual first-save caller labels identity, config, pre-write owner read, private receipt, fill, Save, settle, post-write owner read and ownership verification before each operation.",
+      "The connected owner-request producer returns fixed storage, token_missing, fetch, http_status, response_json and row_shape categories; Runtime.evaluate refusal is separately labeled runtime_evaluation_failed. The execution boundary serializes only bounded category, status and cause kind fields.",
+      "The absent-row/no-marker cleanup branch reports mutation_not_attempted=true, final_readback_performed=false and verified=false; it no longer claims original-row preservation from an unperformed final read."
+    ],
+    "missing": [],
+    "extra": [],
+    "misunderstood": [],
+    "cannot_verify": [
+      "No native browser run on the changed runner; the original runtime cause and first-save persistence remain unknown. This verdict does not close EXT-D-0108 or T28."
+    ]
+  },
+  "verdict_b_quality": {
+    "status": "PASS_WITH_TEST_LIMIT",
+    "evidence": [
+      "The implementation retains the existing strict first-save identity gate, private ownership receipt, conditional deletion and failure cleanup path. It adds fixed diagnostics without raw exception messages, credentials, response bodies or row content in report fields.",
+      "The focused tests execute the extracted actual owner-request helpers through the actual Runtime.evaluate adapter and execution report boundary, including each no-secrets failure class and success. Fresh run: 36 focused tests passed.",
+      "The builder recorded RED before repair, a return-null gut check, and three targeted mutations. The new tests use source extraction because importing the top-level native runner would launch browser work."
+    ],
+    "important_findings": [],
+    "minor_findings": [
+      "The source-extracted tests do not execute the complete native runner or the later first-save phase labels. Treat their green result as diagnostic wiring evidence, not live acceptance."
+    ]
+  },
+  "original_evidence_audit": {
+    "native_report_sha256_verified": "2590b2b53d248f10cfdec2b297aaf9133170aa26d6710d20884c66f324326a5c",
+    "observed": "Original report: profile_row_existed_before=false, operation=warm_profile, execution_failure_code=profile_unclassified_failure, first_save absent, restoration originally verified=true/original_row_preserved=true.",
+    "conclusion": "It supports failure after initial UI owner read and before the first-save marker/write, but cannot identify the historical exception or prove a final absence readback. The builder's escalation states this limit accurately."
+  },
+  "review_limits": "No browser or heavy run, product edit, database/auth mutation or source change was made."
+}
