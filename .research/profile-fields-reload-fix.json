@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task": "profile-fields-reload-fix",
+  "status": "source_fixed_native_unverified",
+  "scope": {
+    "base_without_profile_extended_cases": "legitimate_bounded_base_scope",
+    "extended_with_profile_extended_cases": "mode_specific_exact_case_and_dimension_census_required",
+    "required_cases": {
+      "member": ["EXT-F-1004-T05", "EXT-F-1004-T17", "EXT-F-1004-T21"],
+      "admin": ["EXT-F-1004-T06", "EXT-F-1004-T18", "EXT-F-1004-T22"]
+    },
+    "dimensions": ["warm", "extension_reload"]
+  },
+  "fix": "Owned warm Identity and Employment saves remain in place across the actual extension reload. The new panel checks every saved field and the identity card before any edit or restoration. Employment restores before Identity so the journal's Preferred predecessor remains exact; conditional owned-row deletion follows restoration and journal reconciliation. Missing, duplicate, unverified, provisional, or unknown expected extended cells cannot yield an extended pass.",
+  "checks": {
+    "source_bound_negative_guard": "A simulated reload loses one previously saved first name while ordinary save/reopen succeeded. The actual runner reload block calls the actual field-case reload assertion and rejects before restoration. The intact value passes and restoration follows.",
+    "extended_census_negative_guard": "The actual runner verdict is partial when the Employment reload cell is missing or an expected cell is unverified; complete member cells pass, and a base-only receipt retains base scope.",
+    "node_tests": "14_passed",
+    "node_syntax": "passed",
+    "biome_focused": "passed",
+    "git_diff_check": "passed"
+  },
+  "limits": [
+    "No native Chrome execution, database write, build, release, or product edit occurred in this bounded lane.",
+    "Saved-field acceptance on preexisting admin rows remains explicitly unverified.",
+    "The report contains no private profile values, credentials, or raw browser errors."
+  ]
+}

@@ -10,6 +10,7 @@ import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs
 import { signInAdminSettings } from './admin-settings-signin.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { assertFirstSaveOwnedRow, ownedDeleteUrl } from './profile-empty-row-restoration.mjs';
+import { extendedCaseCensus } from './profile-extended-census.mjs';
 import {
   runProfileExpandersCase,
   runProfileFieldCase,
@@ -44,6 +45,7 @@ const report = {
   run_id: RUN_ID,
   started_at: new Date().toISOString(),
   status: 'unverified',
+  scope: EXTENDED_CASES ? 'extended' : 'base',
   stage: 'preflight',
   cases: [],
   artifact: null,
@@ -630,8 +632,8 @@ async function caseSaveDiscard(panel, original, email, mode, dimension, journal 
   });
 }
 
-async function runExtendedCases(panel, email, mode, dimension, ownedJournal) {
-  if (!EXTENDED_CASES) return;
+async function runExtendedCases(panel, email, mode, dimension, ownedJournal, held = []) {
+  if (!EXTENDED_CASES) return [];
   report.cases.push(await runProfileExpandersCase({ panel, mode, dimension }));
   for (const section of ['Identity', 'Employment']) {
     if (!ownedJournal) {
@@ -652,21 +654,23 @@ async function runExtendedCases(panel, email, mode, dimension, ownedJournal) {
       });
       continue;
     }
-    report.cases.push(
-      await runProfileFieldCase({
-        panel,
-        email,
-        mode,
-        dimension,
-        section,
-        ownedJournal,
-        openProfile,
-        back: (activePanel) =>
-          profilePointer(activePanel, 'title', 'Back', 'back_after_extended_case'),
-        save: (activePanel) => clickProfileHeader(activePanel, 'Save'),
-      }),
-    );
+    const fieldCase = await runProfileFieldCase({
+      panel,
+      email,
+      mode,
+      dimension,
+      section,
+      ownedJournal,
+      openProfile,
+      back: (activePanel) =>
+        profilePointer(activePanel, 'title', 'Back', 'back_after_extended_case'),
+      save: (activePanel) => clickProfileHeader(activePanel, 'Save'),
+      deferRestoration: dimension === 'warm',
+    });
+    report.cases.push(fieldCase.receipt);
+    if (dimension === 'warm') held.push(fieldCase);
   }
+  return held;
 }
 
 async function caseT25(panel, original, email, mode, dimension) {
@@ -882,6 +886,7 @@ try {
       let reloadAttempted = false;
       let executionOperation = 'warm_profile';
       let saveFailureReceipt = null;
+      let heldFieldCases = [];
       const executionError = await runProfileExecutionBoundary(
         report,
         async () => {
@@ -957,8 +962,6 @@ try {
           }
           await caseBack(panel, original, identity.email, AUTH_MODE, 'warm');
           await caseSaveDiscard(panel, original, identity.email, AUTH_MODE, 'warm', ownedJournal);
-          executionOperation = 'extended_cases_warm';
-          await runExtendedCases(panel, identity.email, AUTH_MODE, 'warm', ownedJournal);
           await caseT25(panel, original, identity.email, AUTH_MODE, 'warm');
           if (AUTH_MODE === 'member' && ownedJournal) {
             executionOperation = 'case_save_failure_warm';
@@ -977,6 +980,15 @@ try {
           } else if (AUTH_MODE === 'member') {
             report.save_failure_case = { status: 'not_run_preexisting_profile_row' };
           }
+          executionOperation = 'extended_cases_warm';
+          await runExtendedCases(
+            panel,
+            identity.email,
+            AUTH_MODE,
+            'warm',
+            ownedJournal,
+            heldFieldCases,
+          );
           report.stage = 'extension_reload';
           executionOperation = 'reload_extension';
           reloadAttempted = true;
@@ -999,6 +1011,11 @@ try {
           );
           executionOperation = 'open_profile_after_reload';
           await openProfile(reloaded.panel, identity.email);
+          executionOperation = 'verify_saved_fields_after_extension_reload';
+          for (const held of heldFieldCases) await held.verifyReload(reloaded.panel);
+          executionOperation = 'restore_saved_fields_after_extension_reload';
+          for (const held of [...heldFieldCases].reverse()) await held.restore(reloaded.panel);
+          heldFieldCases = [];
           executionOperation = 'case_back_after_reload';
           await caseBack(reloaded.panel, original, identity.email, AUTH_MODE, 'reload');
           executionOperation = 'case_save_discard_after_reload';
@@ -1011,7 +1028,13 @@ try {
             ownedJournal,
           );
           executionOperation = 'extended_cases_after_reload';
-          await runExtendedCases(reloaded.panel, identity.email, AUTH_MODE, 'reload', ownedJournal);
+          await runExtendedCases(
+            reloaded.panel,
+            identity.email,
+            AUTH_MODE,
+            'extension_reload',
+            ownedJournal,
+          );
           executionOperation = 'case_owner_read_retry_after_reload';
           await caseT25(reloaded.panel, original, identity.email, AUTH_MODE, 'reload');
         },
@@ -1045,6 +1068,12 @@ try {
         }
         if (owned) {
           report.stage = 'restore_original_absence';
+          if (heldFieldCases.length) {
+            const profileState = await state(cleanupPanel);
+            if (!profileState.back) await openProfile(cleanupPanel, identity.email);
+            for (const held of [...heldFieldCases].reverse()) await held.restore(cleanupPanel);
+            heldFieldCases = [];
+          }
           const deletion = ownedJournal ? await ownedJournal.reconcile() : { owned, version: 1 };
           await deleteOwnedProfileRow(cleanupPanel, ownerConfig, deletion.owned, deletion.version);
           report.restoration = { verified: true, original_absence_restored: true };
@@ -1091,9 +1120,12 @@ try {
     artifacts: native.artifacts,
     verified: native.verified,
   };
-  report.status = report.cases.some((entry) => entry.status === 'unverified')
-    ? 'partial'
-    : 'passed';
+  if (EXTENDED_CASES) report.extended_census = extendedCaseCensus(report.cases, [AUTH_MODE]);
+  report.status =
+    report.cases.some((entry) => entry.status !== 'passed') ||
+    (EXTENDED_CASES && !report.extended_census.complete)
+      ? 'partial'
+      : 'passed';
   report.stage = 'complete';
 } catch (error) {
   if (nativeExecutionError && error !== nativeExecutionError) {
@@ -1102,6 +1134,8 @@ try {
   }
   recordProfileFinalFailure(report, nativeExecutionError ?? error);
 } finally {
+  if (EXTENDED_CASES && !report.extended_census)
+    report.extended_census = extendedCaseCensus(report.cases, [AUTH_MODE]);
   report.finished_at = new Date().toISOString();
   await mkdir(OUTPUT_DIR ?? join(REPO, 'test-results'), { recursive: true, mode: 0o700 });
   const output = join(

@@ -212,6 +212,7 @@ export async function runProfileFieldCase({
   openProfile,
   back,
   save,
+  deferRestoration = false,
 }) {
   assert.ok(ownedJournal, 'profile_field_write_requires_owned_row_journal');
   const labels = section === 'Identity' ? IDENTITY : EMPLOYMENT;
@@ -276,21 +277,20 @@ export async function runProfileFieldCase({
   } catch (error) {
     firstError = error;
   }
-  let restoreError;
-  try {
-    await ensureOpen(panel, section);
-    const current = await sample(panel, section, labels);
+  async function restore(activePanel) {
+    await ensureOpen(activePanel, section);
+    const current = await sample(activePanel, section, labels);
     for (const [label, value] of Object.entries(original))
-      if (current.values?.[label] !== value) await fill(panel, section, label, value);
-    const restoreDraft = await sample(panel, section, labels);
+      if (current.values?.[label] !== value) await fill(activePanel, section, label, value);
+    const restoreDraft = await sample(activePanel, section, labels);
     if (restoreDraft.save_enabled) {
       await ownedJournal.save(
         preferredBefore,
         async () => {
-          await save(panel);
+          await save(activePanel);
           await waitFor(
             `${section}_restore_settled`,
-            () => sample(panel, section, labels),
+            () => sample(activePanel, section, labels),
             (s) =>
               !s?.save_enabled && Object.entries(original).every(([k, v]) => s.values?.[k] === v),
             30000,
@@ -299,27 +299,55 @@ export async function runProfileFieldCase({
         persistedFields(original),
       );
     }
-    await back(panel);
-    await openProfile(panel, email);
-    await ensureOpen(panel, section);
-    equalFields(await sample(panel, section, labels), original, `${section}_restored`);
+    await back(activePanel);
+    await openProfile(activePanel, email);
+    await ensureOpen(activePanel, section);
+    equalFields(await sample(activePanel, section, labels), original, `${section}_restored`);
     await ownedJournal.reconcile();
-  } catch (error) {
-    restoreError = error;
+  }
+  let restoreError;
+  if (firstError || !deferRestoration) {
+    try {
+      await restore(panel);
+    } catch (error) {
+      restoreError = error;
+    }
   }
   if (restoreError) throw restoreError;
   if (firstError) throw firstError;
-  return {
+  const receipt = {
     id,
     mode,
     dimension,
     branch: 'default',
-    status: 'passed',
+    status: deferRestoration ? 'provisional_until_reload_and_restoration' : 'passed',
     observed: {
       fields_checked: labels,
       save_reopen_verified: true,
-      restoration_verified: true,
+      restoration_verified: !deferRestoration,
+      reload_persistence_verified: false,
       identity_card_checked: section === 'Identity',
+    },
+  };
+  if (!deferRestoration) return { receipt };
+  return {
+    receipt,
+    async verifyReload(activePanel) {
+      await ensureOpen(activePanel, section);
+      const reloaded = await sample(activePanel, section, labels);
+      equalFields(reloaded, desired, `${section}_extension_reload`);
+      if (section === 'Identity')
+        assert.equal(
+          reloaded.card_name,
+          `${desired['First name']} ${desired['Last name']}`,
+          'identity_card_extension_reload_mismatch',
+        );
+      receipt.observed.reload_persistence_verified = true;
+    },
+    async restore(activePanel) {
+      await restore(activePanel);
+      receipt.observed.restoration_verified = true;
+      if (receipt.observed.reload_persistence_verified) receipt.status = 'passed';
     },
   };
 }
