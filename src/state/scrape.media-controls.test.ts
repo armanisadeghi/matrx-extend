@@ -88,17 +88,17 @@ afterEach(() => useScrapeStore.getState().setCurrent(null));
 describe('Scrape media edits in the in-memory capture', () => {
   it('removes the selected image while retaining other image entries and marking the capture edited', () => {
     useScrapeStore.getState().setCurrent(capture(), 'tab:seed-starting');
-    for (const src of [
+    const removals = [
       'https://fieldnotes.example/media/seed-tray.jpg',
       'https://fieldnotes.example/media/site-mark.svg',
       'https://fieldnotes.example/media/soil-chart.png',
-    ]) {
+    ];
+    for (const [index, src] of removals.entries()) {
       useScrapeStore.getState().removeImage(src);
       const state = useScrapeStore.getState();
-      expect(state.current?.images.map((image) => image.src)).not.toContain(src);
+      expect(state.current?.images.map((image) => image.src)).toEqual(removals.slice(index + 1));
       expect(state.edited).toBe(true);
     }
-    expect(useScrapeStore.getState().current?.images).toEqual([]);
   });
 
   it('removes only the selected video and retains the other playable URL', () => {
