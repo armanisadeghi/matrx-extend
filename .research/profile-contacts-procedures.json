@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "kind": "source_only_profile_contacts_procedures",
+  "status": "unverified",
+  "scope": "Procedures for EXT-F-1004-T07 through T10, derived from current source and existing inventory. No UI, account, database, build, or runtime action performed.",
+  "source_basis": {
+    "inventory": "docs/stabilization/inventory.json: EXT-F-1004-T07..T10; shared control mappings C04 Phones and C05 Emails",
+    "profile_surface": "src/features/profile/ProfileView.tsx: ProfileView header, Phones and Emails Collapsible; PhonesEditor and EmailsEditor",
+    "persistence": "src/hooks/use-user-profile.ts: profile draft/save/load behavior; ProfileView Save and Discard controls",
+    "native_runner": "tests/browser/profile-native-acceptance.mjs and tests/browser/profile-identity-employment-cases.mjs",
+    "runner_finding": "Existing native acceptance orchestrates member/admin, warm and extension_reload dimensions, Profile open/back/save, owned-write journaling, and field/expander cases. It has no phone/email editor procedure or list serialization/restoration implementation. Its existing mutable field acceptance requires an owned-row journal before writes."
+  },
+  "shared_run_protocol": {
+    "identity": "Use the existing account for the case mode only (member or admin); record account email, role evidence, device organization, build channel, extension ID/version/Loaded from path. Do not change role or account.",
+    "lifecycle": [
+      "Run warm first without a just-completed extension reload; open Profile from the avatar dropdown.",
+      "For reload dimension, use chrome://extensions to reload the same extension, record completion, reopen the surface, recheck account/role/organization, and repeat the complete case independently. Panel reopen or page refresh is not extension reload."
+    ],
+    "organization": "Record the currently selected device organization for authenticated save. If the UI cannot establish the expected identity or organization, stop that execution as unverified; do not modify organization/account settings to force a pass.",
+    "initial_snapshot": "Expand the target section. Record every item's ordered value, label, phone country_code and sms_capable where present, and is_primary state. Preserve this complete snapshot for cleanup. Record empty state explicitly.",
+    "save_and_reopen": "After exercising controls, inspect draft controls and primary marker, click Profile Save, wait until saving settles and Save is disabled/clean, navigate Back, reopen Profile, expand the section, and compare all values and flags. For reload dimension, additionally compare after extension reload.",
+    "cleanup": "Restore the exact original ordered list and every original property from the initial snapshot using the same UI controls, save, wait for settled state, Back/reopen and verify. Empty initial list must be restored to empty. Cleanup must be confirmed before pass; if a write outcome is uncertain or restoration cannot be proven, stop further mutations and report unverified with cleanup failure. Do not delete rows through direct API/DB cleanup.",
+    "failure_semantics": "Keep a separate result for each role × lifecycle dimension. Any missing control, unobserved outcome, failed save, mismatch after reopen/reload, ambiguous write, or failed cleanup is unverified/failed for that execution; missing dimension leaves the overall case unverified/partial. Record safe phase/control identifiers and sanitized error category, never credentials or raw sensitive values."
+  },
+  "cases": [
+    {
+      "id": "EXT-F-1004-T07",
+      "role": "member",
+      "control_id": "EXT-F-1004-C04",
+      "section": "Phones",
+      "dimensions": ["warm", "reload"],
+      "source_controls": [
+        { "control": "section expander", "source": "ProfileView.tsx Phones Collapsible" },
+        {
+          "control": "Add",
+          "effect": "append {value:'', label:'Mobile'}",
+          "source": "PhonesEditor ListSection onAdd"
+        },
+        {
+          "control": "label input",
+          "effect": "updates label; blank maps to null",
+          "source": "PhonesEditor ListItemCard Input"
+        },
+        {
+          "control": "primary star",
+          "effect": "sets selected phone primary and all others false",
+          "source": "PhonesEditor setPrimary / PrimaryStar"
+        },
+        {
+          "control": "remove",
+          "effect": "removes selected indexed phone",
+          "source": "PhonesEditor remove / Trash2 button"
+        },
+        {
+          "control": "Number input",
+          "effect": "updates value",
+          "source": "PhonesEditor FormRow Number / TextField"
+        },
+        {
+          "control": "Country code input",
+          "effect": "updates country_code; blank maps to null",
+          "source": "PhonesEditor FormRow Country code / TextField"
+        },
+        {
+          "control": "SMS switch",
+          "effect": "updates sms_capable boolean",
+          "source": "PhonesEditor FormRow SMS / Switch"
+        },
+        {
+          "control": "Save / Discard / Back",
+          "effect": "persists draft, resets draft, or leaves Profile",
+          "source": "ProfileView header"
+        }
+      ],
+      "procedure": [
+        "Execute shared run protocol as member and record the initial phone list.",
+        "Use Add twice. Fill the two appended entries with distinct synthetic, non-routable test strings; edit first entry label, number, country code and SMS switch to the opposite of its observed initial/default state. Do not use a real person's number.",
+        "Set the second new entry primary. Verify exactly that entry has the active primary star and the first does not. Remove the first new entry; verify it is absent while the second remains primary.",
+        "Run shared save-and-reopen comparison for the remaining synthetic entry, including label/value/country_code/sms_capable/is_primary, then shared cleanup."
+      ],
+      "acceptance": [
+        "Add, edit each exposed phone field, set primary, and remove are reflected in draft.",
+        "Saved surviving entry and all exposed properties persist after Profile close/reopen and after extension reload in the reload dimension.",
+        "Removed synthetic entry remains absent; original list is restored and verified."
+      ],
+      "validation_and_limits": "Source exposes ordinary text inputs and a boolean SMS switch; no phone-number format validator or country-code picker is present in this editor. Record browser input behavior only; do not infer server acceptance from source. Empty state text is 'No phones added'.",
+      "runner_gap": "Current native runner has no phone control sampler, click/fill/add/remove/primary/switch helpers, phone-list draft/persistence assertions, or exact list restoration. Add focused native procedure support before runtime execution; reuse its role/lifecycle orchestration and owned-write safety principles."
+    },
+    {
+      "id": "EXT-F-1004-T08",
+      "role": "admin",
+      "control_id": "EXT-F-1004-C04",
+      "section": "Phones",
+      "dimensions": ["warm", "reload"],
+      "same_procedure_as": "EXT-F-1004-T07",
+      "role_constraint": "Run independently with an existing known admin identity; all shared protocol and acceptance requirements apply.",
+      "validation_and_limits": "Same source-backed phone controls and limits as T07; no admin-specific control difference is evident in ProfileView source.",
+      "runner_gap": "Same missing phone native procedure support as T07."
+    },
+    {
+      "id": "EXT-F-1004-T09",
+      "role": "member",
+      "control_id": "EXT-F-1004-C05",
+      "section": "Emails",
+      "dimensions": ["warm", "reload"],
+      "source_controls": [
+        { "control": "section expander", "source": "ProfileView.tsx Emails Collapsible" },
+        {
+          "control": "Add",
+          "effect": "append {value:'', label:'Personal'}",
+          "source": "EmailsEditor ListSection onAdd"
+        },
+        {
+          "control": "label input",
+          "effect": "updates label; blank maps to null",
+          "source": "EmailsEditor ListItemCard Input"
+        },
+        {
+          "control": "primary star",
+          "effect": "sets selected email primary and all others false",
+          "source": "EmailsEditor setPrimary / PrimaryStar"
+        },
+        {
+          "control": "remove",
+          "effect": "removes selected indexed email",
+          "source": "EmailsEditor remove / Trash2 button"
+        },
+        {
+          "control": "Email input",
+          "effect": "updates value using input type=email",
+          "source": "EmailsEditor FormRow Email / TextField type=email"
+        },
+        {
+          "control": "Save / Discard / Back",
+          "effect": "persists draft, resets draft, or leaves Profile",
+          "source": "ProfileView header"
+        }
+      ],
+      "procedure": [
+        "Execute shared run protocol as member and record the initial email list.",
+        "Use Add twice. Enter distinct reserved example.test addresses (for example profile-run-<unique-token>-1@example.test and -2@example.test); edit the first label and address. Avoid real mailboxes.",
+        "Set the second new entry primary. Verify its star is active and the first is inactive. Remove the first; verify it is absent and second remains primary.",
+        "Run shared save-and-reopen comparison for the surviving synthetic entry, including label/value/is_primary, then shared cleanup."
+      ],
+      "acceptance": [
+        "Add, edit label/address, set primary, and remove are reflected in draft.",
+        "Saved surviving entry and exposed properties persist after Profile close/reopen and extension reload in reload dimension.",
+        "Removed synthetic entry remains absent; original list is restored and verified."
+      ],
+      "validation_and_limits": "Source sets input type=email; native browser validity can be observed, but source alone does not establish whether Save is blocked or backend persistence rejects malformed values. This case uses valid example.test addresses. Empty state text is 'No additional emails'.",
+      "runner_gap": "Current native runner has no email control sampler, click/fill/add/remove/primary helpers, email-list draft/persistence assertions, or exact list restoration. Add focused native procedure support before runtime execution; reuse role/lifecycle orchestration and owned-write safety principles."
+    },
+    {
+      "id": "EXT-F-1004-T10",
+      "role": "admin",
+      "control_id": "EXT-F-1004-C05",
+      "section": "Emails",
+      "dimensions": ["warm", "reload"],
+      "same_procedure_as": "EXT-F-1004-T09",
+      "role_constraint": "Run independently with an existing known admin identity; all shared protocol and acceptance requirements apply.",
+      "validation_and_limits": "Same source-backed email controls and limits as T09; no admin-specific control difference is evident in ProfileView source.",
+      "runner_gap": "Same missing email native procedure support as T09."
+    }
+  ],
+  "unverified_runtime_dimensions": [
+    { "case": "EXT-F-1004-T07", "role": "member", "dimension": "warm" },
+    { "case": "EXT-F-1004-T07", "role": "member", "dimension": "reload" },
+    { "case": "EXT-F-1004-T08", "role": "admin", "dimension": "warm" },
+    { "case": "EXT-F-1004-T08", "role": "admin", "dimension": "reload" },
+    { "case": "EXT-F-1004-T09", "role": "member", "dimension": "warm" },
+    { "case": "EXT-F-1004-T09", "role": "member", "dimension": "reload" },
+    { "case": "EXT-F-1004-T10", "role": "admin", "dimension": "warm" },
+    { "case": "EXT-F-1004-T10", "role": "admin", "dimension": "reload" }
+  ]
+}
