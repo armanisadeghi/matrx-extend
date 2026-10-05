@@ -1,0 +1,251 @@
+{
+  "schema_version": 1,
+  "task": "guest205-current-server-native",
+  "observed_at_utc": "2026-10-05T03:40:18Z",
+  "status": "resource_invalid",
+  "scope": "One guarded hosted macos-15 native guest-chat first answer and post-reload/new-conversation follow-up using the frozen pending Store 0.2.205 ZIP, adapted only with its public development key, against the live backend observed before dispatch.",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "run_id": 37259260097,
+    "attempt": 1,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37259260097",
+    "head_sha": "a647d5078dc4a861c707145ff5da5799700bbc8f",
+    "runner_label": "macos-15",
+    "acceptance_case": "guest-chat",
+    "inputs": {
+      "release_run_id": 37180303468,
+      "acceptance_case": "guest-chat",
+      "runner_label": "macos-15"
+    },
+    "status": "completed",
+    "conclusion": "failure",
+    "native_step": "Exercise the selected Chrome side-panel case",
+    "native_step_conclusion": "failure",
+    "native_step_exit_code": 3,
+    "artifact_id": 11324157568,
+    "artifact_name": "hosted-guest-37259260097-1",
+    "artifact_digest": "sha256:a3db1f6c30ec30ada466fb196c28c6af20d08b14d261bfaa8ffd37b31cbcb747",
+    "artifact_size_bytes": 107971,
+    "artifact_expired": false,
+    "artifact_upload_step": "success"
+  },
+  "frozen_product": {
+    "release_workflow_run_id": 37180303468,
+    "artifact_id": 11294843385,
+    "artifact_name": "matrx-extend-v0.2.205",
+    "artifact_digest": "sha256:946c9615e203fcb278c8336f81aef4f0b420eef2873c4f24d4bff786238834fc",
+    "artifact_size_bytes": 26551107,
+    "artifact_expired": false,
+    "source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "version": "0.2.205",
+    "store_zip_sha256_expected": "6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26",
+    "store_zip_sha256_reobserved": "6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26",
+    "store_zip_hash_matches": true,
+    "store_zip_manifest_version": "0.2.205",
+    "store_zip_manifest_key_present": false,
+    "release_receipt_tree_sha256": "20399f17af68ff9d40bffa93cdefe0c93b105af06f8e6cced1757323c124fd44",
+    "workflow_head_sha": "a647d5078dc4a861c707145ff5da5799700bbc8f",
+    "acceptance_workflow_run_id": 37259260097,
+    "acceptance_artifact_id": 11324157568,
+    "acceptance_artifact_name": "hosted-guest-37259260097-1",
+    "receipt_version": "0.2.205",
+    "load_kind": "native_store_zip_candidate_key_adapted",
+    "adapted_tree_sha256_expected": "de51d518f53bfd4acb420b0ab9f4f7f06a46cdc5d9b8844f7170827869a5484f",
+    "adapted_tree_sha256_in_raw_receipt": "de51d518f53bfd4acb420b0ab9f4f7f06a46cdc5d9b8844f7170827869a5484f",
+    "adapted_tree_hash_matches": true,
+    "artifact_unchanged_in_raw_receipt": true,
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "actual_store_installation": false
+  },
+  "live_backend": {
+    "endpoint": "https://server.app.matrxserver.com/health/version",
+    "before_observed_at_utc": "2026-10-05T03:23:30Z",
+    "before": {
+      "git_sha": "140626f9b332e5ce55151d84d4202fa288b4a0a8",
+      "built_at": "2026-10-05T02:47:36Z",
+      "branch": null
+    },
+    "after_observed_at_utc": "2026-10-05T03:30:40Z",
+    "after": {
+      "git_sha": "5b23b0bcc0e7ba6dd72903351ebbb66cd15f173b",
+      "built_at": "2026-10-05T03:13:19Z",
+      "branch": null
+    },
+    "identity_changed_between_observations": true,
+    "native_guest_ai_requests": [
+      {
+        "attempt": "opening",
+        "request_at_utc": "2026-10-05T03:29:50.801Z",
+        "cdp_request_id": "7528.156",
+        "status": 200,
+        "code": null
+      },
+      {
+        "attempt": "post_reload_new_conversation",
+        "request_at_utc": "2026-10-05T03:29:58.333Z",
+        "cdp_request_id": "7528.276",
+        "status": 200,
+        "code": null
+      }
+    ],
+    "request_backend_attribution": "Not captured per request; both request timestamps fall inside the before/after window, whose health endpoint identity changed."
+  },
+  "native_outcome": {
+    "raw_receipt_status": "pass",
+    "overall_run_acceptance": "invalid_resource_guard",
+    "fresh_signed_out_guest": true,
+    "chat_visible": true,
+    "guest_session_absent_after_reload": true,
+    "opening_turn_verdict": "terminal_answer",
+    "followup_turn_verdict": "terminal_answer",
+    "opening_grounded_fixture_code": true,
+    "opening_answer_matches_ordered_stages": true,
+    "followup_grounded_fixture_code": true,
+    "followup_names_fixture_heading": true,
+    "guest_ai_requests": [
+      {
+        "attempt": "opening",
+        "request_at_utc": "2026-10-05T03:29:50.801Z",
+        "cdp_request_id": "7528.156",
+        "status": 200,
+        "code": null
+      },
+      {
+        "attempt": "post_reload_new_conversation",
+        "request_at_utc": "2026-10-05T03:29:58.333Z",
+        "cdp_request_id": "7528.276",
+        "status": 200,
+        "code": null
+      }
+    ],
+    "guest_ai_transport_proven": true,
+    "product_receipt_means": "Both real guest turns completed with HTTP 200 and expected fixture-grounded markers; this does not override the invalid resource journal or workflow failure."
+  },
+  "resource_guard": {
+    "package_final": "valid",
+    "browser_final": "valid",
+    "guest_final": "invalid",
+    "guest_resource_invalid": true,
+    "trigger": {
+      "at": "2026-10-05T03:29:51.569Z",
+      "code": "RESOURCE_CPU_PENDING",
+      "reasons": [
+        "RESOURCE_CPU_BUSY",
+        "RESOURCE_CPU_HIGH_LOAD_BUSY"
+      ],
+      "cpu_busy_fraction": 0.88,
+      "one_minute_load": 2.56,
+      "logical_cpus": 3
+    },
+    "recovery_observed": false,
+    "child_exit": {
+      "at": "2026-10-05T03:30:05.178Z",
+      "exit_code": 0
+    },
+    "final_decision": {
+      "at": "2026-10-05T03:30:05.290Z",
+      "decision": "invalid",
+      "resource_invalid": true,
+      "exit_code": 3
+    },
+    "journals": {
+      "hosted-package-37259260097-1.jsonl": {
+        "final": {
+          "schema": 1,
+          "at": "2026-10-05T03:25:44.053Z",
+          "runId": "hosted-package-37259260097-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "codes": [
+          "RESOURCE_JOURNAL_OPENED",
+          "RESOURCE_ADMITTED",
+          "RESOURCE_JOB_EXIT",
+          "RESOURCE_FINAL_DECISION"
+        ]
+      },
+      "hosted-browser-37259260097-1.jsonl": {
+        "final": {
+          "schema": 1,
+          "at": "2026-10-05T03:27:46.846Z",
+          "runId": "hosted-browser-37259260097-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "codes": [
+          "RESOURCE_JOURNAL_OPENED",
+          "RESOURCE_ADMITTED",
+          "RESOURCE_JOB_EXIT",
+          "RESOURCE_FINAL_DECISION"
+        ]
+      },
+      "hosted-guest-37259260097-1.jsonl": {
+        "final": {
+          "schema": 1,
+          "at": "2026-10-05T03:30:05.290Z",
+          "runId": "hosted-guest-37259260097-1",
+          "admitted": true,
+          "resourceInvalid": true,
+          "exitCode": 3,
+          "decision": "invalid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "codes": [
+          "RESOURCE_JOURNAL_OPENED",
+          "RESOURCE_ADMITTED",
+          "RESOURCE_CPU_PENDING",
+          "RESOURCE_PROCESS_ATTRIBUTION",
+          "RESOURCE_JOB_EXIT",
+          "RESOURCE_FINAL_DECISION"
+        ]
+      }
+    },
+    "interpretation": "The guest flow produced a product receipt pass, but the resource guard observed CPU_PENDING and no recovery sample before child exit. The guard finalized invalid, so the overall run remains invalid."
+  },
+  "artifact_inventory": {
+    "uploaded_files": 11,
+    "committed_current_run_journals": 3,
+    "screenshots": 4,
+    "old_37105304739_journals_excluded": true,
+    "screenshots_visually_reviewed_safe": true,
+    "screenshots_safety": "Fresh signed-out guest UI and owned public fixture only; no credentials or account data."
+  },
+  "evidence": {
+    "directory": "docs/stabilization/evidence/guest205-current-server/run37259260097",
+    "raw_receipt_path": "docs/stabilization/evidence/guest205-current-server/run37259260097/acceptance-receipt.raw.json.txt",
+    "raw_receipt_sha256": "570544409bd6893a51ba05875f411eaadf3cc24c6784358e2a8bfb8a1a781c67",
+    "raw_receipt_byte_identical_to_download": true,
+    "formatted_receipt_semantically_identical": true,
+    "current_journals": [
+      {
+        "path": "docs/stabilization/evidence/guest205-current-server/run37259260097/resource-journals/hosted-browser-37259260097-1.jsonl",
+        "sha256": "398baad6dd7385eb9aecc8debaaa943d33597f216ddb60105494c814511eb6f9"
+      },
+      {
+        "path": "docs/stabilization/evidence/guest205-current-server/run37259260097/resource-journals/hosted-guest-37259260097-1.jsonl",
+        "sha256": "102e217727b0e24c6d549985b0183c04a28da4ce3a9fc6386d420a116eda3675"
+      },
+      {
+        "path": "docs/stabilization/evidence/guest205-current-server/run37259260097/resource-journals/hosted-package-37259260097-1.jsonl",
+        "sha256": "f9064833398fd0a4a9a13879b7f508a407007c96883e3291cde72cb912e5082d"
+      }
+    ],
+    "sha256_manifest": "docs/stabilization/evidence/guest205-current-server/run37259260097/sha256-manifest.json",
+    "sha256_manifest_entry_count": 19,
+    "frozen205_proof": "docs/stabilization/evidence/guest205-current-server/run37259260097/frozen-artifact-verification.json",
+    "backend_before_after": "docs/stabilization/evidence/guest205-current-server/run37259260097/backend-observations.json"
+  },
+  "limits": [
+    "Only one hosted run was dispatched; no retry occurred.",
+    "The overall run is invalid despite the product receipt status pass because the guest resource journal finalized invalid.",
+    "The health/version endpoint identity changed from 140626f9\u2026 before the run to 5b23b0bc\u2026 afterward. The two HTTP 200 requests occurred between these observations, and their backend SHA was not captured per request.",
+    "This was a public-key-adapted unpacked Store candidate, not an actual Web Store installation.",
+    "No whole-Chat, guest-allowance, member, backend-health, or broad release-health claim follows."
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "endpoint": "https://server.app.matrxserver.com/health/version",
+  "before_observed_at_utc": "2026-10-05T03:23:30Z",
+  "before": {
+    "git_sha": "140626f9b332e5ce55151d84d4202fa288b4a0a8",
+    "built_at": "2026-10-05T02:47:36Z",
+    "branch": null
+  },
+  "after_observed_at_utc": "2026-10-05T03:30:40Z",
+  "after": {
+    "git_sha": "5b23b0bcc0e7ba6dd72903351ebbb66cd15f173b",
+    "built_at": "2026-10-05T03:13:19Z",
+    "branch": null
+  },
+  "identity_changed_between_observations": true,
+  "native_guest_ai_requests": [
+    {
+      "attempt": "opening",
+      "request_at_utc": "2026-10-05T03:29:50.801Z",
+      "cdp_request_id": "7528.156",
+      "status": 200,
+      "code": null
+    },
+    {
+      "attempt": "post_reload_new_conversation",
+      "request_at_utc": "2026-10-05T03:29:58.333Z",
+      "cdp_request_id": "7528.276",
+      "status": 200,
+      "code": null
+    }
+  ],
+  "request_backend_attribution": "Not captured per request; both request timestamps fall inside the before/after window, whose health endpoint identity changed."
+}

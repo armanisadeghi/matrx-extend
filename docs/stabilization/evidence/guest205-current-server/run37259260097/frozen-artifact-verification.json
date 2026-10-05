@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "verification_kind": "frozen-pending-store-205-native-candidate",
+  "release": {
+    "workflow_run_id": 37180303468,
+    "artifact_id": 11294843385,
+    "artifact_name": "matrx-extend-v0.2.205",
+    "artifact_digest": "sha256:946c9615e203fcb278c8336f81aef4f0b420eef2873c4f24d4bff786238834fc",
+    "artifact_size_bytes": 26551107,
+    "artifact_expired": false,
+    "source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "version": "0.2.205",
+    "store_zip_sha256_expected": "6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26",
+    "store_zip_sha256_reobserved": "6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26",
+    "store_zip_hash_matches": true,
+    "store_zip_manifest_version": "0.2.205",
+    "store_zip_manifest_key_present": false,
+    "release_receipt_tree_sha256": "20399f17af68ff9d40bffa93cdefe0c93b105af06f8e6cced1757323c124fd44"
+  },
+  "tested_candidate": {
+    "workflow_run_id": 37259260097,
+    "workflow_head_sha": "a647d5078dc4a861c707145ff5da5799700bbc8f",
+    "acceptance_artifact_id": 11324157568,
+    "acceptance_artifact_name": "hosted-guest-37259260097-1",
+    "receipt_version": "0.2.205",
+    "load_kind": "native_store_zip_candidate_key_adapted",
+    "adapted_tree_sha256_expected": "de51d518f53bfd4acb420b0ab9f4f7f06a46cdc5d9b8844f7170827869a5484f",
+    "adapted_tree_sha256_in_raw_receipt": "de51d518f53bfd4acb420b0ab9f4f7f06a46cdc5d9b8844f7170827869a5484f",
+    "adapted_tree_hash_matches": true,
+    "artifact_unchanged_in_raw_receipt": true,
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "actual_store_installation": false
+  },
+  "provenance_limits": [
+    "The Store ZIP and release receipt were independently downloaded from the exact release run artifact and hashed on external scratch storage.",
+    "The native harness receipt reports the public-key-adapted unpacked tree hash and artifact_unchanged=true; no actual Chrome Web Store installation was tested.",
+    "The acceptance workflow itself concluded failure because the guest resource journal ended invalid; the product receipt status pass is not an overall run pass."
+  ]
+}
