@@ -34,7 +34,8 @@
     "docs/stabilization/evidence/member137/run37255333525/hash-manifest.json",
     ".research/auth-interval-causal-review.json",
     ".research/auth-interval-markers-repair.json",
-    ".research/auth-interval-markers-peer.json"
+    ".research/auth-interval-markers-peer.json",
+    ".research/member-media-native.json"
   ],
   "transition_history": [
     {
@@ -93,7 +94,7 @@
     }
   ],
   "diagnostic_commit": "427e75a4",
-  "next_action": "Preserve D133 in-fix: marker-only diagnostic no longer reproduces hidden state, but timing perturbation/intermittency remains unproven. Diagnose new result-tabs Images failure from actual evidence before any new Scrape run; do not weaken visibility or rerun unchanged.",
+  "next_action": "Explicit headed Scrape driver plus authoritative launch-mode receipt under implementation; independent review/fullCI before ONE changed-condition native run. Preserve foreground/resource gates.",
   "fix_commits": ["44005fb4", "0e8aa6c7"],
   "hosted_ci": {
     "run_id": 37242845397,
@@ -147,21 +148,17 @@
     }
   },
   "latest_controlled_retest": {
-    "run_id": 37255333525,
+    "run_id": 37261674307,
     "version": "0.2.244",
     "artifact_id": 11315305224,
     "outcome": "unverified",
     "first_hidden_phase": "member_before_web_close",
-    "transition_interval": "outside_recorded_intervals",
-    "hidden_ms": 23957.100000000093,
-    "before_health_ms": 24320.800000000047,
-    "organization_action": "skip",
     "member_and_org_verified": true,
     "viewports": [],
     "cases": [],
-    "original_proxy_error_absent": true,
     "resource_invalid": false,
-    "physical_exposure": "unmeasured"
+    "physical_exposure": "unmeasured; caller defaults to headless Chrome",
+    "report": ".research/member-media-native.json"
   },
   "first_auth_diagnostic": {
     "diagnosis_commit": "f5dc7b93",
