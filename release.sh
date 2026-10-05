@@ -421,8 +421,10 @@ mint_gate_auth() {
     log "server-contract gate session minted for organization ${AIDREAM_ORGANIZATION_ID:-?}"
 }
 
+FAILED_CHECK=""
 run_checks() {
     local row name secs rc
+    FAILED_CHECK=""
     for row in "${CHECKS[@]}"; do
         IFS='|' read -r name secs _ _ _ cmd <<< "$row"
         ( cd "$CHECK_SNAP" && eval "bounded $secs $cmd" ) > "$JOBS/check-$name.out" 2>&1
@@ -524,9 +526,62 @@ NODE
             } > "$RELEASE_LOG_DIR/diagnostics.log"
             cat "$RELEASE_LOG_DIR/diagnostics.log"
             finding "ERROR" "Checks" "$name failed (exit $rc); candidate $NEW_TAG was not published" "$cmd"
+            FAILED_CHECK="$name"
             return 1
         fi
     done
+}
+
+# ── @ai-matrx catch-up: a package published mid-release is not a stopped release ─
+# aidream publishes an @ai-matrx package every few minutes, so one can land
+# between ship.sh's sync and the matrx-packages gate (four releases in a row
+# stopped that way on 2026-10-04). When the gate's ONLY failure is a plain STALE
+# install, update, read every new CHANGELOG entry, commit the lockfile and build
+# a fresh candidate — the gate itself is unchanged and re-runs on that candidate.
+# PIN / DUPLICATE / AHEAD / upstream pin / unverifiable, a declared Consumer
+# action, or MATRX_CATCHUP_ATTEMPTS exhausted: the release stops exactly as before.
+MATRX_CATCHUP_ATTEMPTS=3
+MATRX_CATCHUPS=0
+catch_up_matrx_packages() {
+    local stale review paths=() p
+    stale="$(node "$REPO_ROOT/scripts/release-matrx-catchup.mjs" stale-only "$JOBS/check-matrx-packages.out")" || return 1
+    (( MATRX_CATCHUPS < MATRX_CATCHUP_ATTEMPTS )) || {
+        finding "ERROR" "Packages" "@ai-matrx moved again after $MATRX_CATCHUP_ATTEMPTS catch-ups in one release; stopping" "./ship.sh"
+        return 1
+    }
+    MATRX_CATCHUPS=$((MATRX_CATCHUPS + 1))
+    log "matrx-packages STALE only ($(tr '\n' ' ' <<< "$stale")) — catch-up $MATRX_CATCHUPS of $MATRX_CATCHUP_ATTEMPTS"
+    if ! ( cd "$REPO_ROOT" && bounded 600 pnpm update -r "@ai-matrx/*" --latest ) >> "$RELEASE_LOG_FILE" 2>&1; then
+        finding "ERROR" "Packages" "pnpm update of the stale @ai-matrx packages failed during catch-up" "pnpm sync:matrx-packages"
+        return 1
+    fi
+    # shellcheck disable=SC2086  # one name@version per word
+    if ! review="$(node "$REPO_ROOT/scripts/release-matrx-catchup.mjs" consumer-actions --root "$REPO_ROOT" $stale)"; then
+        while IFS= read -r p; do
+            [[ -n "$p" ]] && finding "ERROR" "Packages" "$p" "adopt it in this repo, commit, then ./ship.sh"
+        done <<< "$review"
+        return 1
+    fi
+    log "catch-up CHANGELOG review: $(tr '\n' ';' <<< "$review")"
+    for p in package.json pnpm-lock.yaml; do
+        git diff --quiet HEAD -- "$p" 2>/dev/null || paths+=("$p")
+    done
+    if [[ ${#paths[@]} -eq 0 ]]; then
+        finding "ERROR" "Packages" "pnpm update left package.json and pnpm-lock.yaml unchanged, so catch-up cannot move the candidate" "pnpm sync:matrx-packages"
+        return 1
+    fi
+    if ! quiet git commit --only -m "chore(deps): catch up @ai-matrx packages to npm latest during release
+
+$review" -- "${paths[@]}"; then
+        finding "ERROR" "Packages" "could not commit the caught-up ${paths[*]}" "git commit --only ${paths[*]}"
+        return 1
+    fi
+    LOCAL_HEAD="$(git rev-parse HEAD)"
+    unset 'FINDINGS[${#FINDINGS[@]}-1]'   # the gate's ERROR for the candidate this replaces
+    while IFS= read -r p; do
+        [[ -n "$p" ]] && finding "WARNING" "Packages" "caught up during release: $p" ""
+    done <<< "$review"
+    return 0
 }
 
 # Store FIRST, local SECOND: the last build owns .output/chrome-mv3, and the
@@ -577,7 +632,11 @@ while (( RACES < SHIP_PUSH_ATTEMPTS )); do
     JOBS="$(mktemp -d "${TMPDIR:-/tmp}/matrx-extend-release-jobs.XXXXXX")"
     SNAP_ROOTS+=("$JOBS")
     $SKIP_CATALOG || mint_gate_auth
-    run_checks || hard_stop "mandatory checks failed for $NEW_TAG — nothing was pushed"
+    if ! run_checks; then
+        # A fresh candidate on the caught-up lockfile; every check runs again on it.
+        [[ "$FAILED_CHECK" == matrx-packages ]] && catch_up_matrx_packages && continue
+        hard_stop "mandatory checks failed for $NEW_TAG — nothing was pushed"
+    fi
     mandate_scan_step
     STORE_CANDIDATE="$BUILD_SNAP/.output/${PROJECT_NAME}-${NEW_VERSION}-store.zip"
     LOCAL_CANDIDATE="$BUILD_SNAP/.output/${PROJECT_NAME}-${NEW_VERSION}-local.zip"

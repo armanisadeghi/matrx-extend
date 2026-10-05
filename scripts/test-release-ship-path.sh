@@ -16,7 +16,7 @@ SCRIPT_UNDER_TEST="${1:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/release
 SCRIPT_UNDER_TEST="$(cd "$(dirname "$SCRIPT_UNDER_TEST")" && pwd)/$(basename "$SCRIPT_UNDER_TEST")"
 HARNESS_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SANDBOX="$(mktemp -d)"
-trap 'rm -rf "$SANDBOX"' EXIT
+trap '[[ -n "${KEEP_SANDBOX:-}" ]] && echo "sandbox kept: $SANDBOX" || rm -rf "$SANDBOX"' EXIT
 
 git_q() { git -c user.name=test -c user.email=test@test -c core.hooksPath=/dev/null "$@" >/dev/null 2>&1; }
 
@@ -63,7 +63,28 @@ echo "\$*" >> "$SANDBOX/pnpm-calls"
 case " \$* " in
   *" update-api-types "*) [ -f "$SANDBOX/fail-generation" ] && exit 1 ;;
   *" catalog:tools:md "*) mkdir -p types; echo "regenerated catalog" > types/tool-catalog.md ;;
-  *" check:matrx-packages "*) [ -f "$SANDBOX/fail-matrx-packages" ] && exit 1 ;;
+  *" check:matrx-packages "*)
+    [ -f "$SANDBOX/fail-matrx-packages" ] && exit 1
+    if [ -f "$SANDBOX/pin-packages" ]; then
+      printf '\n@ai-matrx install-graph check failed:\n  - PIN: @ai-matrx/fixture is declared as "1.0.0" in dependencies of package.json.\n\n' >&2
+      exit 1
+    fi
+    if [ -f "$SANDBOX/stale-packages" ]; then
+      printf '\n@ai-matrx install-graph check failed:\n  - STALE: @ai-matrx/fixture@%s is in the graph (the repo); npm latest is 9.9.9. REMEDY: pnpm update\n\n' \
+        "\$(cat "$SANDBOX/fixture-version" 2>/dev/null || echo 1.0.0)" >&2
+      exit 1
+    fi ;;
+  *" update -r "*)
+    # A sibling package landed on npm: install it, with its CHANGELOG entry.
+    from=\$(cat "$SANDBOX/fixture-version" 2>/dev/null || echo 1.0.0)
+    to="1.0.\$(( \${from##*.} + 1 ))"
+    echo "\$to" > "$SANDBOX/fixture-version"
+    mkdir -p node_modules/@ai-matrx/fixture
+    printf '{"name":"@ai-matrx/fixture","version":"%s"}\n' "\$to" > node_modules/@ai-matrx/fixture/package.json
+    if [ -f "$SANDBOX/changelog-action" ]; then note='**Consumer action:** delete your local copy of the helper.'; else note='No consumer action.'; fi
+    printf '# Changelog\n\n## %s\n\n%s\n' "\$to" "\$note" > node_modules/@ai-matrx/fixture/CHANGELOG.md
+    echo "  /@ai-matrx/fixture@\$to:" >> pnpm-lock.yaml
+    [ -f "$SANDBOX/stale-forever" ] || rm -f "$SANDBOX/stale-packages" ;;
   *" lint "*) [ -f "$SANDBOX/fail-lint" ] && exit 1 ;;
   *" exec vitest run --maxWorkers=4 "*)
     git rev-parse HEAD >> "$SANDBOX/checked-shas"
@@ -377,7 +398,50 @@ check "checkout equals GitHub's main"                 '[[ "$(git rev-parse HEAD)
 check "ship reports its sync for ship-all"            'grep -q "ship.sh: sync exit 0, release exit" "$SANDBOX/ship-out"'
 cd "$SANDBOX/checkout"
 
+# A sibling @ai-matrx package published between the sync and the gate is STALE
+# only: the release updates, reads the new CHANGELOG entries, commits the
+# lockfile and re-runs every gate on a fresh candidate. Anything else stops.
+git_q clone "$SANDBOX/origin.git" "$SANDBOX/catchup"
+cd "$SANDBOX/catchup"
+git config user.name test; git config user.email test@test; git config core.hooksPath /dev/null
+mkdir -p scripts; cp "$HARNESS_ROOT/scripts/release-matrx-catchup.mjs" scripts/
+printf 'lockfileVersion: 9.0\n' > pnpm-lock.yaml
+git_q add pnpm-lock.yaml scripts/release-matrx-catchup.mjs; git_q commit -m "lockfile"
+run_release() { set +e; PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/$1" 2>&1; local rc=$?; set -e; return $rc; }
+updates() { grep -c '^update -r' "$SANDBOX/pnpm-calls" || true; }
+echo "release — @ai-matrx catch-up"
+CATCHUP_BASE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
+touch "$SANDBOX/pin-packages"; UPDATES_BEFORE="$(updates)"
+PIN_STATUS=0; run_release catchup-pin-out || PIN_STATUS=$?
+rm -f "$SANDBOX/pin-packages"
+check "PIN is never caught up"                         '[[ $PIN_STATUS -ne 0 && "$(updates)" == "$UPDATES_BEFORE" && "$CATCHUP_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]]'
+touch "$SANDBOX/stale-packages" "$SANDBOX/changelog-action"
+ACTION_STATUS=0; run_release catchup-action-out || ACTION_STATUS=$?
+rm -f "$SANDBOX/changelog-action"
+check "a declared Consumer action stops the release"   '[[ $ACTION_STATUS -ne 0 && "$CATCHUP_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]]'
+check "the Consumer action is named"                   'grep -q "@ai-matrx/fixture@1.0.1 Consumer action: delete your local copy" "$SANDBOX/catchup-action-out"'
+git checkout -q -- pnpm-lock.yaml
+touch "$SANDBOX/stale-packages" "$SANDBOX/stale-forever"; UPDATES_BEFORE="$(updates)"
+FOREVER_STATUS=0; run_release catchup-forever-out || FOREVER_STATUS=$?
+rm -f "$SANDBOX/stale-forever" "$SANDBOX/stale-packages"
+check "catch-up is bounded to three"                   '[[ $FOREVER_STATUS -ne 0 && $(( $(updates) - UPDATES_BEFORE )) -eq 3 && "$CATCHUP_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]]'
+check "the bound is named"                             'grep -q "moved again after 3 catch-ups" "$SANDBOX/catchup-forever-out"'
+git_q reset -q --hard origin/main
+cp "$HARNESS_ROOT/scripts/release-matrx-catchup.mjs" scripts/; printf 'lockfileVersion: 9.0\n' > pnpm-lock.yaml
+git_q add pnpm-lock.yaml scripts/release-matrx-catchup.mjs; git_q commit -m "lockfile again"
+echo 1.0.0 > "$SANDBOX/fixture-version"
+touch "$SANDBOX/stale-packages"; PKG_CHECKS_BEFORE="$(grep -c 'check:matrx-packages' "$SANDBOX/pnpm-calls")"
+CATCHUP_STATUS=0; run_release catchup-out || CATCHUP_STATUS=$?
+git fetch -q origin 2>/dev/null || true
+check "a STALE-only gate catches up and ships"         '[[ $CATCHUP_STATUS -eq 0 ]] && grep -q "  pushed" "$SANDBOX/catchup-out"'
+check "the caught-up lockfile is in the release"       'git show origin/main:pnpm-lock.yaml | grep -q "@ai-matrx/fixture@1.0.1"'
+check "the catch-up commit is in main"                 '[[ -n "$(git log --format=%s --grep="catch up @ai-matrx packages" origin/main)" ]]'
+check "the package gate ran again on the new candidate" '[[ $(( $(grep -c "check:matrx-packages" "$SANDBOX/pnpm-calls") - PKG_CHECKS_BEFORE )) -eq 2 ]]'
+check "the replaced candidate leaves no ERROR"         '! grep -q "^ERROR .*matrx-packages failed" "$SANDBOX/catchup-out"'
+cd "$SANDBOX/checkout"
+
 if [[ $FAILED -ne 0 ]]; then
+  echo "--- catch-up output ---"; tail -30 "$SANDBOX/catchup-out" 2>/dev/null
   echo "--- ship output ---"; tail -30 "$SANDBOX/ship-out" 2>/dev/null
   echo "--- failed release output ---"; tail -30 "$SANDBOX/failed-out"
   echo "--- passed release output ---"; tail -30 "$SANDBOX/passed-out"
