@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "task": "member-scrape-images-diagnosis",
+  "status": "insufficient_evidence_for_product_defect",
+  "classification": "driver_observability_defect_proven; product_or_fixture_failure_unresolved",
+  "scope": "Frozen development 0.2.244 member native Scrape run 37258276837; read-only source and receipt investigation, no browser or build launch and no production change.",
+  "artifact": {
+    "source_sha": "b81587021d689078ed428dafe3e15474a84c41e2",
+    "driver_sha": "ac7343b85f9f4daf166d76fdd6f075f6b19d9f35",
+    "ci_run_id": 37258276837,
+    "development_artifact_run_id": 37233480033,
+    "development_artifact_id": 11315305224,
+    "raw_receipt": "docs/stabilization/evidence/first-auth/run37258276837/raw/scrape-guest-native.json"
+  },
+  "observed_boundary": {
+    "stage": "result_tabs",
+    "failure_code": "scrape_Images_loaded_not_observed",
+    "known_good": [
+      "Member identity and selected organization were verified in the receipt.",
+      "The normal side panel viewport measured 600 px; fast capture completed with the expected article title and six result tabs.",
+      "Fast-capture screenshot shows an Images tab count of 3. The Images tab was selected in the timeout's last state."
+    ],
+    "unknown": [
+      "The Images pane visibility and imageItems array in the final sampled state.",
+      "Each image URL, complete flag, naturalWidth, naturalHeight, and asset response at the failure boundary.",
+      "Whether extraction, React rendering, image fetch, lazy loading, or the observer's predicate prevented acceptance."
+    ],
+    "receipt_limit": "The driver serializes the entire scrapeState into waitFor's error, then cuts the error to 300 characters; the cut occurs inside the tabs array, before selected, visible, and media fields. No Images-pane screenshot or per-image telemetry was saved at this failure."
+  },
+  "comparison": {
+    "run_id": 37251782627,
+    "source_sha": "b81587021d689078ed428dafe3e15474a84c41e2",
+    "source": "docs/stabilization/evidence/guest-scrape-normal/run37251782627/receipt.json.txt",
+    "result": "Guest normal-width run accepted the same three image paths and alts with natural sizes 640x480, 96x96, and 32x32, then continued into later cases. This proves the frozen product and fixture can work in one session, not that the member session worked."
+  },
+  "hypotheses": [
+    {
+      "cause": "Captured image entries were absent or fewer than the fixture's three.",
+      "prediction": "A safe failure summary at the same boundary reports imageItems length below 3 or missing expected paths while the selected Images pane remains visible.",
+      "outcome": "Open: tab count 3 in a prior screenshot argues against total extraction loss, but the final imageItems were not retained."
+    },
+    {
+      "cause": "Rendered image elements existed but at least one lazy image did not load within the 10-second observation window.",
+      "prediction": "The same-boundary summary reports all three expected paths, with at least one complete=false or naturalWidth=0; asset/network evidence distinguishes fetch failure from viewport scheduling.",
+      "outcome": "Open: the observer requires complete and naturalWidth>0, and the product marks image tiles loading=lazy. No final per-image values were retained."
+    },
+    {
+      "cause": "Pane or observer state did not meet the selected/visible condition despite an Images tab click.",
+      "prediction": "The same-boundary summary reports selected other than Images, visible=false, media missing, or an observer exception.",
+      "outcome": "Partly narrowed: the truncated final state shows Images tab selected; visible and media remain unavailable."
+    },
+    {
+      "cause": "The diagnostic receipt discarded decisive state even though waitFor sampled it.",
+      "prediction": "Executing the driver error path with a representative state places media after character 300, yielding a code ending inside tabs and no imageItems.",
+      "outcome": "Confirmed by source execution: waitFor emitted a 588-character error; the production report expression produced the same 300-character prefix and omitted imageItems. This is an observability defect, not proof of why the image predicate failed."
+    }
+  ],
+  "source_reproduction": {
+    "command": "node --input-type=module -e 'import {waitFor} from \"./tests/browser/settings-panel-driver.mjs\"; /* representative scrapeState with one incomplete image */ await waitFor(\"scrape_Images_loaded\", async()=>state, predicate, 0); /* catch error and apply error.message.slice(0,300) */'",
+    "result": "fullLength=588, reportCode ended at the Video tab entry, mediaInCode=false; the failure prefix matched the real receipt. This executes the real waitFor helper and the report truncation expression but does not replay the browser failure.",
+    "source_refs": [
+      "tests/browser/settings-panel-driver.mjs:14",
+      "tests/browser/scrape-guest-native-acceptance.mjs:302",
+      "tests/browser/scrape-guest-native-acceptance.mjs:505",
+      "tests/browser/scrape-guest-native-acceptance.mjs:1220",
+      "tests/browser/scrape-guest-native-acceptance.mjs:1748",
+      "tests/browser/scrape-row-observer.mjs:2",
+      "src/features/scrape/ScrapeView.tsx:885"
+    ]
+  },
+  "proposed_repair": "Driver only: on selectedMedia timeout, capture a fixed allowlisted summary from the final scrapeState (selected, visible, tabCount, imageItems count, fixture path identity, complete, naturalWidth, naturalHeight) in a structured receipt field, plus a pane screenshot and asset response status if available. Preserve the existing assertion. Rerun one member normal-width native case against the same frozen artifact; patch product only after that boundary localizes a real failure. Make the summary bounded and free of account identity or arbitrary page content.",
+  "limits": [
+    "No heavy/native/browser/build launch was permitted in this diagnostic lane.",
+    "This finding does not establish product health or defect closure for the member run.",
+    "No source change beyond this diagnosis record was authorized without a proven product root cause."
+  ]
+}
