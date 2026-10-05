@@ -13,7 +13,7 @@
   "actual": "Final sampled media state is lost when full scrapeState error text is cut to300characters. Source execution reproduces the loss; underlying member product failure remains unclassified.",
   "severity": "S2: blocks diagnosis and trustworthy member acceptance; not established product defect",
   "priority": "P2: repair evidence boundary before another member run",
-  "state": "in-fix",
+  "state": "fixed",
   "evidence": [
     ".research/first-auth-native.json",
     ".research/member-images-diagnosis.json",
@@ -58,15 +58,23 @@
       "from": "retest-fail",
       "to": "in-fix",
       "reason": "Portabletmpdir replacement passes4focusedchecks; agentinitializationENOSPC preventsfreshpeer, so independentreview andnewfullCI remainrequired."
+    },
+    {
+      "at": "2026-10-05T03:59:08.587139+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Portabletestfreshpeer541910e8 passes; correctedfullCI37261069816 success. RootreadLinuxjob111608348156 actualreceiptguard4pass0fail0skip. Onecontrollednativeauthorized, no closurebeforeactualreceipt."
     }
   ],
-  "next_action": "Fresh independent two-line portability review and corrected fullCI, then one controlled frozen244 member600 diagnostic. No native rerun before gates.",
+  "next_action": "ONE frozen244 member600 native discriminator owned byroot/member_media_native; inspect structuredmediafailure if originalfailure recurs. Productcauseunverified.",
   "fix_commits": ["f1eb6920", "403a8556"],
   "ci": {
     "initial_repair_run": 37259663717,
     "initial_repair_result": "success",
     "corrected_guard_run": 37260075556,
-    "corrected_guard_result": "failure: portable scratch path missing on Linux"
+    "corrected_guard_result": "failure: portable scratch path missing on Linux",
+    "final_corrected_run": 37261069816,
+    "final_corrected_result": "SUCCESS; actualLinuxreceiptguard4pass0fail0skip"
   },
   "portability_repair": {
     "commit": "39212f26",

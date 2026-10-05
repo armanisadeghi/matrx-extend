@@ -46,22 +46,17 @@
     "limit": "activeOrganizationPresent string-only probe returned false on current object-valued storage key; organization persistence remains unverified; not a product org defect."
   },
   "latest_dashboard_check": {
-    "observed_at_utc": "2026-10-05T02:45:21.128797+00:00",
-    "method": "Authenticated primary Package page refreshed through Chrome native UI; Pending review205, Published176, Upload disabled.",
+    "observed_at_utc": "2026-10-05T04:07:14Z",
+    "method": "Primary Package page reached after successful existing-account reauthentication; Published176, Pending205, Upload disabled.",
     "published_version": "0.2.176",
     "pending_version": "0.2.205",
     "status": "Pending review",
-    "action": "Preserve pending205. Exactcandidate205 currentbackend2e24fa85 native37247813922 passedfirst/reload groundedHTTP200; actualStoreinstallation pending. No wholeChat/allowance/newversionhealthclaim.",
-    "subsequent_refresh_window_utc": {
-      "after": "2026-10-05T03:04:44Z",
-      "before": "2026-10-05T03:13:15Z",
-      "result": "Authenticated Package refresh unchanged176published205pending; exact second not captured"
-    }
+    "action": "Preserve pending205. Exactcandidate205 currentbackend2e24fa85 native37247813922 passedfirst/reload groundedHTTP200; actualStoreinstallation pending. No wholeChat/allowance/newversionhealthclaim."
   },
   "publisher_access": {
-    "observed_at_utc": "2026-10-04T08:14:16Z",
+    "observed_at_utc": "2026-10-05T04:07:14Z",
     "state": "authenticated_dashboard_restored",
-    "evidence": "Existing Chrome Package page refreshed through native UI; exact primary item shows Pending review205, Published176, Upload new package disabled. Prior Mac passkey prompt is no longer present.",
+    "evidence": "Existing saved Google login and enrolled Vault verification restored the authenticated primary Package page; no credentials or codes retained.",
     "required_action": "None currently.",
     "limits": "Publication remains pending; no submission changed."
   },
@@ -80,9 +75,5 @@
     "overall": "resource-invalid: CPU_PENDING then childexit before recovery; no new acceptance promotion",
     "backend": "before140626f9, after5b23b0bc; deploymentchanged duringrun",
     "report": ".research/guest205-current-server-native.json"
-  },
-  "dashboard_refresh_attempt_after_last_success": {
-    "result": "CUA app-server exited before response; no newer Store status established",
-    "last_success_preserved": true
   }
 }
