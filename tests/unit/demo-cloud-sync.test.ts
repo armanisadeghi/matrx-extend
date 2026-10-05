@@ -209,7 +209,10 @@ describe('hydrate-on-sign-in', () => {
 
     await saveDemo(makeDemo(), { sync: false });
     cloudRows = [
-      rowFor(makeDemo(), { deleted_at: new Date(UPDATED + 5_000).toISOString(), updated_at: new Date(UPDATED + 5_000).toISOString() }),
+      rowFor(makeDemo(), {
+        deleted_at: new Date(UPDATED + 5_000).toISOString(),
+        updated_at: new Date(UPDATED + 5_000).toISOString(),
+      }),
     ];
 
     expect(await hydrateDemosFromCloud()).toEqual({ merged: 1, ok: true });
