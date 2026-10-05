@@ -17,7 +17,9 @@
   "state": "in-fix",
   "evidence": [
     ".research/showcase-picker-native-current.json",
-    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37270450308"
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37270450308",
+    ".research/showcase-org-diagnostic-repair.json",
+    ".research/showcase-org-diagnostic-peer.json"
   ],
   "owner": "showcase_org_failure_diagnosis",
   "transition_history": [
@@ -40,5 +42,17 @@
       "reason": "Fresh Sol assigned evidence-based repair with causal guards; no native retry"
     }
   ],
-  "closure_requirement": "Actual driver failure-path guard red then green, independent review of safe substage/observations and negative cases, full CI, then changed-condition native evidence. Do not close D42 or promote picker coverage from diagnostic tests."
+  "closure_requirement": "Actual driver failure-path guard red then green, independent review of safe substage/observations and negative cases, full CI, then changed-condition native evidence. Do not close D42 or promote picker coverage from diagnostic tests.",
+  "review": {
+    "source": "65beb08a",
+    "peer": "0cc85b41",
+    "verdict_a": "partial",
+    "verdict_b": "fail",
+    "confirmed_findings": [
+      "Real helper timeout discards last picker/storage observations",
+      "Probe arranges evidence without invoking real organization helper",
+      "Regression test absent from explicit CI list"
+    ],
+    "ruling": "Confirmed; same implementer assigned one bounded repair round. No native retry or acceptance credit."
+  }
 }
