@@ -9,6 +9,12 @@ const source = await readFile(
 );
 const openingVerdict = source.indexOf("'real guest answer must contain the page-specific code");
 const openingScreenshot = source.indexOf("'guest-chat-real-answer.png'");
+const sameSend = source.indexOf("networkWatch.arm('same_conversation_followup')");
+const sameVerdict = source.indexOf(
+  "'same conversation must produce an independent grounded assistant reply'",
+);
+const sameScreenshot = source.indexOf("'guest-chat-same-conversation-followup.png'");
+const panelReload = source.indexOf("markStage('real_panel_reload')");
 const followupVerdict = source.indexOf("'new guest conversation after reload must ground");
 const followupScreenshot = source.indexOf('        report.followup_screenshot = await capture(');
 const cleanup = source.indexOf('      } catch (error) {', followupScreenshot);
@@ -19,10 +25,30 @@ test('guest acceptance requires both offscreen HTTP observations before transpor
   const secondProof = source.indexOf(
     "requireGuestTransport(report.guest_ai_requests, 'post_reload_new_conversation')",
   );
+  const sameProof = source.indexOf(
+    "requireGuestTransport(report.guest_ai_requests, 'same_conversation_followup')",
+  );
+  const identityProof = source.indexOf(
+    'requireGuestConversationSequence(report.guest_ai_requests)',
+  );
   const proofClaim = source.indexOf('report.guest_ai_transport_proven = true');
   assert.ok(firstProof > 0 && firstProof < openingVerdict);
+  assert.ok(sameProof > sameSend && sameProof < sameVerdict);
   assert.ok(secondProof > openingScreenshot && secondProof < followupVerdict);
-  assert.ok(proofClaim > secondProof && proofClaim < cleanup);
+  assert.ok(identityProof > secondProof && identityProof < followupVerdict);
+  assert.ok(proofClaim > identityProof && proofClaim < cleanup);
+});
+
+test('guest acceptance sends and verifies an independent same-conversation turn before reload', () => {
+  assert.ok(
+    openingScreenshot < sameSend &&
+      sameSend < sameVerdict &&
+      sameVerdict < sameScreenshot &&
+      sameScreenshot < panelReload,
+    'same-conversation answer must complete before panel reload',
+  );
+  assert.match(source.slice(sameSend, sameVerdict), /fixture\.followupCode/);
+  assert.match(source.slice(sameSend, sameVerdict), /replyCount > answered\.replyCount/);
 });
 
 // Regressions caught: an owner-table GET aborts before either answer is checked,

@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "status": "source_and_guard_ready_hosted_public_crx_run_pending",
+  "scope": "fresh owned Chromium guest profile using the published Store CRX; no reusable designated guest identity was available",
+  "behavior": {
+    "opening": "real offscreen HTTP 200 POST, is_new=true, terminal grounded assistant answer with opening page code and stages",
+    "same_conversation_followup": "second real offscreen HTTP 200 POST before reload, is_new=false, same conversation fingerprint, later separate grounded assistant reply with follow-up page code and heading, guest session still absent",
+    "post_reload": "new real offscreen HTTP 200 POST, is_new=true, different conversation fingerprint, terminal grounded assistant reply after panel reload",
+    "backend": "public health/version SHA captured before and after the run; a changed observed SHA invalidates an otherwise passing result",
+    "retention": "CDP POST data is parsed transiently; only an irreversible truncated conversation fingerprint and is_new flag are retained; no guest authorization values are written"
+  },
+  "verification": {
+    "focused_node_tests": "12 passed, 0 failed",
+    "red_proof": "scratch-copy return-bypass mutant made the conversation sequence test fail with missing expected followup_must_continue_conversation exception",
+    "biome_changed_files": "pass",
+    "native_browser_or_heavy_run": "not launched by this implementation lane"
+  },
+  "limits": "The next guarded hosted public CRX acceptance must run against the current live server before same-conversation guest completion can be claimed. A fresh owned profile tests that guest scope; it does not prove preservation of an existing installed profile or allowance exhaustion."
+}

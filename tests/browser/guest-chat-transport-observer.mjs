@@ -1,6 +1,24 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 
 const CHAT_PATH = '/v2/ai/mandates/extend.browser_chat';
+const conversationFingerprint = (value) =>
+  createHash('sha256').update(value).digest('hex').slice(0, 16);
+
+function safeConversationRequest(postData) {
+  try {
+    const body = JSON.parse(postData);
+    return {
+      conversation_fingerprint:
+        typeof body.conversation_id === 'string' && body.conversation_id.length > 0
+          ? conversationFingerprint(body.conversation_id)
+          : null,
+      is_new: typeof body.is_new === 'boolean' ? body.is_new : null,
+    };
+  } catch {
+    return { conversation_fingerprint: null, is_new: null };
+  }
+}
 
 function structuredErrorCode(body, base64Encoded) {
   try {
@@ -17,6 +35,7 @@ export async function watchGuestAiRequests({ browserSession, attachOffscreen, pa
   const offscreenUrl = new URL('offscreen.html', panelTarget.url).href;
   const requests = new Map();
   const pendingCodes = new Set();
+  const pendingBodies = new Set();
   const pausedSessions = new Set();
   const targetTasks = new Set();
   const candidateSessions = new Set();
@@ -38,7 +57,11 @@ export async function watchGuestAiRequests({ browserSession, attachOffscreen, pa
   const classifyUrl = (url) =>
     !url || url === 'about:blank' ? 'provisional' : url === offscreenUrl ? 'offscreen' : 'other';
 
-  const onRequest = ({ requestId, request }, sessionId) => {
+  const onRequest = (
+    { requestId, request },
+    sessionId,
+    send = (method, params) => browserSession.send(method, params, sessionId),
+  ) => {
     counters.request_events++;
     if (request?.method === 'POST') counters.post_events++;
     try {
@@ -52,7 +75,7 @@ export async function watchGuestAiRequests({ browserSession, attachOffscreen, pa
       return;
     try {
       if (!new URL(request.url).pathname.endsWith(CHAT_PATH)) return;
-      requests.set(`${sessionId}:${requestId}`, {
+      const entry = {
         sessionId,
         record: {
           attempt: armedLabel,
@@ -60,8 +83,19 @@ export async function watchGuestAiRequests({ browserSession, attachOffscreen, pa
           cdp_request_id: requestId,
           status: null,
           code: null,
+          ...safeConversationRequest(request.postData),
         },
-      });
+      };
+      requests.set(`${sessionId}:${requestId}`, entry);
+      if (typeof request.postData !== 'string') {
+        const pending = send('Network.getRequestPostData', { requestId })
+          .then(({ postData }) => {
+            Object.assign(entry.record, safeConversationRequest(postData));
+          })
+          .catch(() => {});
+        pendingBodies.add(pending);
+        void pending.finally(() => pendingBodies.delete(pending));
+      }
     } catch {
       // Never retain unrelated URLs, headers, or request bodies.
     }
@@ -167,7 +201,9 @@ export async function watchGuestAiRequests({ browserSession, attachOffscreen, pa
 
   const existingStops = existingOffscreen
     ? [
-        existingOffscreen.on('Network.requestWillBeSent', (event) => onRequest(event, 'existing')),
+        existingOffscreen.on('Network.requestWillBeSent', (event) =>
+          onRequest(event, 'existing', existingOffscreen.send),
+        ),
         existingOffscreen.on('Network.responseReceived', (event) => onResponse(event, 'existing')),
         existingOffscreen.on('Network.loadingFinished', (event) =>
           onFinished(event, 'existing', existingOffscreen.send),
@@ -218,7 +254,7 @@ export async function watchGuestAiRequests({ browserSession, attachOffscreen, pa
       };
     },
     async settle() {
-      await Promise.all([...pendingCodes]);
+      await Promise.all([...pendingCodes, ...pendingBodies]);
       assert.equal(observerFailure, null, observerFailure ?? 'guest_transport_observer_healthy');
     },
     async stop() {
@@ -251,7 +287,7 @@ export async function watchGuestAiRequests({ browserSession, attachOffscreen, pa
       browserSession.off('Network.loadingFinished', onFinished);
       browserSession.off('Target.attachedToTarget', onAttached);
       browserSession.off('Target.targetInfoChanged', onTargetInfoChanged);
-      await Promise.all([...pendingCodes]);
+      await Promise.all([...pendingCodes, ...pendingBodies]);
       try {
         await existingOffscreen?.detachVerified();
       } catch {
@@ -267,5 +303,31 @@ export function requireGuestTransport(requests, attempt) {
   assert.ok(
     requests.some((request) => request.attempt === attempt && request.status !== null),
     `${attempt}_guest_ai_transport_unobserved`,
+  );
+}
+
+export function requireGuestConversationSequence(requests) {
+  const exactlyOne = (attempt) => {
+    const rows = requests.filter((request) => request.attempt === attempt);
+    assert.equal(rows.length, 1, `${attempt}_requires_exactly_one_offscreen_post`);
+    assert.equal(rows[0].status, 200, `${attempt}_requires_http_200`);
+    assert.ok(rows[0].conversation_fingerprint, `${attempt}_conversation_identity_unobserved`);
+    return rows[0];
+  };
+  const opening = exactlyOne('opening');
+  const same = exactlyOne('same_conversation_followup');
+  const reloaded = exactlyOne('post_reload_new_conversation');
+  assert.equal(opening.is_new, true, 'opening_must_start_new_conversation');
+  assert.equal(same.is_new, false, 'followup_must_continue_conversation');
+  assert.equal(
+    same.conversation_fingerprint,
+    opening.conversation_fingerprint,
+    'followup_must_keep_opening_conversation_identity',
+  );
+  assert.equal(reloaded.is_new, true, 'post_reload_must_start_new_conversation');
+  assert.notEqual(
+    reloaded.conversation_fingerprint,
+    opening.conversation_fingerprint,
+    'post_reload_must_use_new_conversation_identity',
   );
 }

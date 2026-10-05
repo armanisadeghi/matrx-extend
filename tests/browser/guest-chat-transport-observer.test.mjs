@@ -1,7 +1,65 @@
 import assert from 'node:assert/strict';
 import { EventEmitter } from 'node:events';
 import test from 'node:test';
-import { requireGuestTransport, watchGuestAiRequests } from './guest-chat-transport-observer.mjs';
+import {
+  requireGuestConversationSequence,
+  requireGuestTransport,
+  watchGuestAiRequests,
+} from './guest-chat-transport-observer.mjs';
+
+// Break caught: a second guest send silently starts a new conversation or
+// reuses the opening reply while the transport still returns HTTP 200.
+test('guest sequence requires one HTTP 200 POST per turn with continued then new identity', () => {
+  const opening = {
+    attempt: 'opening',
+    status: 200,
+    conversation_fingerprint: 'opening-fingerprint',
+    is_new: true,
+  };
+  const same = {
+    attempt: 'same_conversation_followup',
+    status: 200,
+    conversation_fingerprint: 'opening-fingerprint',
+    is_new: false,
+  };
+  const reloaded = {
+    attempt: 'post_reload_new_conversation',
+    status: 200,
+    conversation_fingerprint: 'reloaded-fingerprint',
+    is_new: true,
+  };
+  requireGuestConversationSequence([opening, same, reloaded]);
+  assert.throws(
+    () => requireGuestConversationSequence([opening, { ...same, is_new: true }, reloaded]),
+    /followup_must_continue_conversation/,
+  );
+  assert.throws(
+    () =>
+      requireGuestConversationSequence([
+        opening,
+        { ...same, conversation_fingerprint: 'other' },
+        reloaded,
+      ]),
+    /followup_must_keep_opening_conversation_identity/,
+  );
+  assert.throws(
+    () => requireGuestConversationSequence([opening, { ...same, status: 402 }, reloaded]),
+    /same_conversation_followup_requires_http_200/,
+  );
+  assert.throws(
+    () =>
+      requireGuestConversationSequence([
+        opening,
+        same,
+        { ...reloaded, conversation_fingerprint: 'opening-fingerprint' },
+      ]),
+    /post_reload_must_use_new_conversation_identity/,
+  );
+  assert.throws(
+    () => requireGuestConversationSequence([opening, same, same, reloaded]),
+    /same_conversation_followup_requires_exactly_one_offscreen_post/,
+  );
+});
 
 // Break caught: observing the panel CDP target records zero requests because
 // the first real stream POST is emitted by a lazily created offscreen target.
@@ -67,7 +125,11 @@ test('fresh offscreen target is observed before its first fetch, without precrea
         method: 'POST',
         url: 'https://server.invalid/v2/ai/mandates/extend.browser_chat',
         headers: { Authorization: 'Bearer do-not-retain' },
-        postData: 'prompt=do-not-retain',
+        postData: JSON.stringify({
+          conversation_id: 'conversation-private-opening',
+          is_new: true,
+          user_input: 'do-not-retain',
+        }),
       },
     },
     'offscreen-session',
@@ -105,10 +167,15 @@ test('fresh offscreen target is observed before its first fetch, without precrea
     'attempt',
     'cdp_request_id',
     'code',
+    'conversation_fingerprint',
+    'is_new',
     'request_at_utc',
     'status',
   ]);
   assert.equal(JSON.stringify(first).includes('do-not-retain'), false);
+  assert.equal(JSON.stringify(first).includes('conversation-private-opening'), false);
+  assert.equal(first[0].is_new, true);
+  assert.match(first[0].conversation_fingerprint, /^[0-9a-f]{16}$/);
 
   watch.arm('post_reload_new_conversation');
   events.emit(
@@ -157,6 +224,45 @@ test('transport proof refuses absent and statusless observations', () => {
     /post_reload_new_conversation_guest_ai_transport_unobserved/,
   );
   requireGuestTransport([{ attempt: 'opening', status: 200 }], 'opening');
+});
+
+test('large offscreen POST body is inspected transiently without retaining guest text or ID', async () => {
+  const events = new EventEmitter();
+  const watch = await watchGuestAiRequests({
+    browserSession: { on: events.on.bind(events), off: events.off.bind(events) },
+    panelTarget: { url: 'chrome-extension://abc/sidepanel.html' },
+    attachOffscreen: async () => ({
+      async send(method) {
+        if (method === 'Network.getRequestPostData')
+          return {
+            postData: JSON.stringify({
+              conversation_id: 'private-conversation',
+              is_new: false,
+              user_input: 'private-question',
+            }),
+          };
+        return {};
+      },
+      on(name, listener) {
+        events.on(name, listener);
+        return () => events.off(name, listener);
+      },
+      async detachVerified() {},
+    }),
+  });
+  watch.arm('same_conversation_followup');
+  events.emit('Network.requestWillBeSent', {
+    requestId: 'large-post',
+    request: { method: 'POST', url: 'https://server.invalid/v2/ai/mandates/extend.browser_chat' },
+  });
+  events.emit('Network.responseReceived', { requestId: 'large-post', response: { status: 200 } });
+  await watch.settle();
+  const rows = watch.snapshot();
+  assert.equal(rows[0].is_new, false);
+  assert.match(rows[0].conversation_fingerprint, /^[0-9a-f]{16}$/);
+  assert.equal(JSON.stringify(rows).includes('private-conversation'), false);
+  assert.equal(JSON.stringify(rows).includes('private-question'), false);
+  await watch.stop();
 });
 
 test('existing offscreen target is observed directly without changing target startup', async () => {

@@ -7,7 +7,11 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { classifyGuestTurn, createGuestStreamCollector } from './guest-chat-completion-oracle.mjs';
-import { requireGuestTransport, watchGuestAiRequests } from './guest-chat-transport-observer.mjs';
+import {
+  requireGuestConversationSequence,
+  requireGuestTransport,
+  watchGuestAiRequests,
+} from './guest-chat-transport-observer.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
@@ -26,7 +30,26 @@ const FIRST_QUESTION =
 const FOLLOWUP_QUESTION =
   'Read the unique follow-up check code from the article on my current tab and name the heading directly above the check codes. Include the exact code.';
 const REQUIRED_ANSWER_TERMS = ['Capture', 'Understand', 'Use'];
+const SERVER_VERSION_URL = 'https://server.app.matrxserver.com/health/version';
 const digest = (value) => createHash('sha256').update(value).digest('hex').slice(0, 16);
+
+async function safeServerVersion() {
+  try {
+    const response = await fetch(SERVER_VERSION_URL, { signal: AbortSignal.timeout(10_000) });
+    if (!response.ok) return { reachable: false, status: response.status, git_sha: null };
+    const payload = await response.json();
+    return {
+      reachable: true,
+      status: response.status,
+      git_sha:
+        typeof payload.git_sha === 'string' && /^[0-9a-f]{7,40}$/i.test(payload.git_sha)
+          ? payload.git_sha
+          : null,
+    };
+  } catch {
+    return { reachable: false, status: null, git_sha: null };
+  }
+}
 
 async function fileInventory(root) {
   const files = new Map();
@@ -62,11 +85,13 @@ let stage = 'receipt';
 const report = {
   schema_version: 1,
   scope:
-    'fresh owned guest profile; unpredictable article fixture in the owned browser tab; real Chat answer and post-reload guest follow-up',
+    'fresh owned guest profile; unpredictable article fixture in the owned browser tab; real Chat opening, same-conversation follow-up, and post-reload new conversation',
   context_rule_read_observation_scope:
     'CDP observer attaches after panel load and runs through Values chip open, both guest sends, and panel reload; it cannot establish requests before attachment',
   status: 'unverified',
   build: null,
+  server_version_before: null,
+  server_version_after: null,
   guest: null,
   chat: null,
   screenshot: null,
@@ -567,6 +592,7 @@ async function capture(panel, path) {
 }
 
 try {
+  report.server_version_before = await safeServerVersion();
   const receipt = JSON.parse(await readFile(RECEIPT, 'utf8'));
   const beforeFiles = await fileInventory(EXTENSION_DIR);
   assert.equal(hashReleaseTree(EXTENSION_DIR), receipt.treeSha256, 'loaded extension initial tree');
@@ -715,6 +741,56 @@ try {
         };
         report.screenshot = await capture(panel, join(artifacts, 'guest-chat-real-answer.png'));
 
+        markStage('same_conversation_followup_question');
+        assert.equal(
+          await readableFixturePresent(web, fixture),
+          true,
+          'same-conversation fixture must remain readable before send',
+        );
+        const sameFixtureTabId = await requireActiveFixtureTab(attachWorker, web, fixture);
+        assert.equal(sameFixtureTabId, fixtureTabId, 'same-conversation send must use opening tab');
+        networkWatch.arm('same_conversation_followup');
+        contextReadWatch.arm('same_conversation_followup_send');
+        await submitQuestion(panel, FOLLOWUP_QUESTION, 'same_conversation_followup_question');
+        markStage('real_same_conversation_followup_answer');
+        const sameTurn = await waitForTerminalAnswer(
+          panel,
+          { nonce: fixture.followupCode, fixtureHeading: fixture.title },
+          () => fixtureIdentitySnapshot(attachWorker, web, fixture, fixtureTabId),
+        );
+        report.grounding_diagnostics.same_conversation_followup = {
+          toolEvents: sameTurn.state.streamTrace?.toolEvents ?? [],
+          toolBoundaryChecks: sameTurn.toolBoundaryChecks,
+          terminal: await fixtureIdentitySnapshot(attachWorker, web, fixture, fixtureTabId, panel),
+        };
+        report.same_conversation_turn_verdict = sameTurn.verdict;
+        report.same_conversation_turn_timeline = sameTurn.timeline;
+        report.failure_observation = diagnosticState(sameTurn.state, fixture);
+        await networkWatch.settle();
+        report.guest_ai_requests = networkWatch.snapshot();
+        requireGuestTransport(report.guest_ai_requests, 'same_conversation_followup');
+        assert.ok(
+          sameTurn.verdict === 'terminal_answer' &&
+            sameTurn.state.answerContainsNonce &&
+            sameTurn.state.answerContainsFixtureHeading &&
+            sameTurn.state.replyCount > answered.replyCount &&
+            sameTurn.state.guestAccount &&
+            sameTurn.state.accessTokenAbsent &&
+            sameTurn.state.profileAbsent &&
+            sameTurn.state.organizationAbsent &&
+            !sameTurn.state.answerIsRefusal &&
+            !sameTurn.state.terminalAnswerError &&
+            !sameTurn.state.errorNotice,
+          'same conversation must produce an independent grounded assistant reply',
+        );
+        report.chat.same_conversation_followup_completed = true;
+        report.chat.same_conversation_followup_reply_count = sameTurn.state.replyCount;
+        report.chat.same_conversation_followup_contains_page_code = true;
+        report.same_conversation_screenshot = await capture(
+          panel,
+          join(artifacts, 'guest-chat-same-conversation-followup.png'),
+        );
+
         markStage('real_panel_reload');
         const oldLoader = (await panel.send('Page.getFrameTree'))?.frameTree?.frame?.loaderId;
         assert.ok(oldLoader, 'panel loader before reload');
@@ -796,6 +872,8 @@ try {
         report.guest_ai_observer = await networkWatch.diagnostics();
         report.guest_ai_requests = networkWatch.snapshot();
         requireGuestTransport(report.guest_ai_requests, 'post_reload_new_conversation');
+        requireGuestConversationSequence(report.guest_ai_requests);
+        report.chat.same_conversation_identity_verified = true;
         report.context_rule_reads = contextReadWatch.snapshot();
         assert.ok(
           followupTurn.verdict === 'terminal_answer' &&
@@ -889,6 +967,21 @@ try {
   const failure = safeFailure(error);
   report.failure_code = failure.code;
   report.failure_reason = failure.reason;
+}
+report.server_version_after = await safeServerVersion();
+report.server_version_stable =
+  Boolean(report.server_version_before?.git_sha && report.server_version_after?.git_sha) &&
+  report.server_version_before.git_sha === report.server_version_after.git_sha;
+if (
+  report.status === 'pass' &&
+  report.server_version_before?.git_sha &&
+  report.server_version_after?.git_sha &&
+  !report.server_version_stable
+) {
+  report.status = 'unverified';
+  report.failure_stage = 'server_version_after';
+  report.failure_code = 'backend_version_changed_during_acceptance';
+  report.failure_reason = 'backend_version_changed_during_acceptance';
 }
 await mkdir(dirname(OUTPUT), { recursive: true, mode: 0o700 });
 await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
