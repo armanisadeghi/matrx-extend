@@ -1,0 +1,14 @@
+{
+  "task_id": "screenshots-final-source-review-20261005",
+  "lane": "independent final source review, zero authorship",
+  "status": "source pass; native acceptance unverified",
+  "feature_ids": ["EXT-F-1009"],
+  "defect_ids": ["EXT-D-0145", "EXT-D-0146"],
+  "commit_shas": ["59617c92", "1dfb119a", "854323c7", "89c8875d"],
+  "verdict_a": "UNVERIFIED: native intermittent capture, raster output, sidepanel layout, warm/reload and anonymous public-link expiry/revoke need current artifact; stale .output 0.2.173 excluded.",
+  "verdict_b": "PASS: no blocking source findings. Root and nested-pane scroll/stitch with movement checks/restoration; gallery requests uncapped PNG; viewer reuses loaded full blob URL; canonical MediaSharePopover quick link plus documented host manager slot uses shared owner RPC grant family with organization on writes.",
+  "verification": "Fresh final source inspection includes persisted capture.truncated warning, failed-read empty-state suppression and their regression cases. Root reports 15 focused tests PASS; checked focused and compile retest journals both valid exit0. No reviewer test rerun.",
+  "queue": "e7a27ff2-b763-4a5c-a19f-1b808bb94c37 reread agent_review/verifying, owner screenshots-final-source-review-20261005, source_review_native_pending conversation event. Signed-in isolated admin UI proved; tab closed; no ready_for_human promotion.",
+  "limitations": "Pane detection covers largest fully visible pane only when root fits viewport. Surrounding app chrome is drawn once; extended side areas remain transparent. Real RPC grants and raster pixels were not exercised by reviewer.",
+  "next_action": "Root continues exact 89c8875d CI 37373109197 artifact/native acceptance; root commits this report. Owned jobs: none."
+}

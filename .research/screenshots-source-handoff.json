@@ -1,0 +1,48 @@
+{
+  "task_id": "screenshots-repair",
+  "status": "source-fixed-and-pushed; native/release pending",
+  "feature_ids": ["EXT-F-1009"],
+  "defect_ids": ["EXT-D-0145", "EXT-D-0146"],
+  "source_shas": ["1dfb119a", "59617c92", "854323c7", "89c8875d"],
+  "summary": [
+    "Shared full-page engine captures largest fully visible overflow scrolling pane when root fits viewport, restores scroll and refuses stalled movement.",
+    "Thumbnail click reuses full loaded bytes in local dialog; separate Files icon remains explicit navigation.",
+    "Canonical media/data packages supply public quick link; host manager uses canonical owner-gated grant RPCs for label/expiry/max views/revocation.",
+    "User manual captures retain PNG source resolution; persisted cloud capture truncation warning is visible."
+  ],
+  "verification": {
+    "red": "Original nested pane source produced600px instead of1500/2200; ordinary1600px control passed.",
+    "focused": "Final3files15tests pass; independent earlier3files13tests pass.",
+    "compile": "Final PASS after optional/numeric scrollTo mock overload correction.",
+    "lint": "Full pnpm lint exit0; warnings remain advisory.",
+    "independent_source": "Two fresh source reviewers found no blockers; native verdict unverified.",
+    "native": "Pending exact current artifact, real services and original reported website.",
+    "release": "No manual local build/release per workspace prohibition; canonical permitted-host release owner remains screenshots-repair.",
+    "CI": "37373109197 exact89c8875d pending at last read; automatic CI is not a release receipt."
+  },
+  "resource_journals": [
+    "screenshots-compile-20261005.jsonl",
+    "screenshots-independent-focused-20261005.jsonl",
+    "screenshots-final-focused-20261005.jsonl",
+    "screenshot-capture-green-20261005.jsonl",
+    "screenshot-capture-red-20261005.jsonl",
+    "screenshots-install-20261005.jsonl",
+    "screenshots-lint-20261005.jsonl",
+    "screenshot-capture-mutant-20261005.jsonl",
+    "screenshots-compile-retest-20261005.jsonl"
+  ],
+  "excluded_evidence": [
+    "screenshot-capture-mutant-20261005 is invalid experimental proof: literal newline parse failure; source restored identical.",
+    "Initial compile failure is a test mock type mismatch, fixed and retested."
+  ],
+  "review_url": "https://manage.aimatrx.com/administration/users/agent-review/e7a27ff2-b763-4a5c-a19f-1b808bb94c37",
+  "review_state": "agent_review/verifying; source accepted, native pending",
+  "owned_jobs": "All terminal; no owned browser tabs/processes remain.",
+  "limitations": [
+    "Original user website not supplied/observed natively.",
+    "Partially clipped/multi-pane nested layouts are outside established source regression; static side columns below frame can be transparent.",
+    "Real public grant resolution, expiry, max views and revoke remain native acceptance gates."
+  ],
+  "next_action": "Permitted-host owner verifies exact source artifact and full release gates/package catch-up, then current native capture/local viewer/anonymous share acceptance. No defect closure or shipped claim until those gates pass.",
+  "observed_at": "2026-10-05T21:03:18.990402+00:00"
+}
