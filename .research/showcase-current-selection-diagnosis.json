@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0143",
+  "status": "bounded_diagnostics_ready_native_cause_unproven",
+  "observed_native_run": 37284490515,
+  "observed_native_result": "select_B_card_failed after genuine A EXIT was rejected while B remained active on the same page with one overlay",
+  "passed_subcases": [
+    "guest Scrape visible and admin Showcase hidden",
+    "real admin sign-in and device organization identity",
+    "genuine A EXIT relayed and rejected while B remained picking",
+    "same-page cancel A and start B with one overlay"
+  ],
+  "diagnostic_boundary": "The original catch mapped all card click, scope choice, scope badge, and detection relay failures to select_B_card_failed. The driver now records the active substage and bounded page facts before and after selection, and samples again at failure. Raw page text, selectors, URLs, and error messages are excluded.",
+  "red_green": "MATRX_TEST_EXTERNAL_TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch node --test tests/browser/showcase-selection-diagnostic.test.mjs failed with inputs_failed before driver wiring and passed after wiring; both click and scope-choice probe cases traverse the actual driver catch and receipt writer.",
+  "causal_limit": "The retained run predates these diagnostics, so the first failing operation and any product defect remain unproven. No product picker change or native retry was made.",
+  "next_native_condition": "A frozen resource-valid native run of showcase-stale-admin must record selection_diagnostic.substage and bounded observations on failure, or current B detection relay and three-row extraction on success.",
+  "unverified": [
+    "current B item detection and extraction",
+    "stale A ITEM_DETECTED and RESULT after B starts",
+    "delayed A cancellation injection, deferred install, and reinjection listener count",
+    "nonadmin role gating"
+  ]
+}

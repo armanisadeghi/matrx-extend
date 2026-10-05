@@ -16,6 +16,13 @@ import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 import { runShowcaseOrganizationCheckpoint } from './showcase-organization-checkpoint.mjs';
 import { safeShowcaseOrganizationFailure } from './showcase-organization-diagnostic.mjs';
 import {
+  createShowcaseSelectionDiagnostic,
+  observeShowcaseSelection,
+  safeShowcaseSelectionFailure,
+  sampleShowcaseSelection,
+  stageShowcaseSelection,
+} from './showcase-selection-diagnostic.mjs';
+import {
   armShowcaseStaleBoundary,
   observeShowcaseRelay,
   readShowcaseRelays,
@@ -59,7 +66,9 @@ const report = {
   ],
   failure_code: null,
   organization_diagnostic: null,
+  selection_diagnostic: null,
 };
+let selectionPage = null;
 const staleBoundary = process.env.MATRX_SHOWCASE_STALE_BOUNDARY === '1';
 const stage = (value) => {
   report.stage = value;
@@ -103,6 +112,14 @@ async function chooseScopeIfNeeded(page) {
 }
 
 try {
+  if (['card_click', 'scope_choice'].includes(process.env.MATRX_SHOWCASE_DIAGNOSTIC_PROBE)) {
+    const substage = process.env.MATRX_SHOWCASE_DIAGNOSTIC_PROBE;
+    stage('select_B_card');
+    report.selection_diagnostic = createShowcaseSelectionDiagnostic();
+    stageShowcaseSelection(report.selection_diagnostic, substage);
+    observeShowcaseSelection(report.selection_diagnostic, { card_count: 3, overlay_count: 1 });
+    throw new Error('private@example.invalid');
+  }
   // A lightweight CDP-boundary probe exercises the real organization helper and receipt writer.
   if (
     ['picker', 'picker_unknown', 'storage', 'unknown'].includes(
@@ -169,6 +186,7 @@ try {
       report.native_stage = value;
     },
     exercisePanel: async ({ page, panel, reopenPanel, requireResourceHealth, resourceAction }) => {
+      selectionPage = page;
       await requireResourceHealth();
       stage('guest_gate');
       const guest = await evaluate(
@@ -310,14 +328,21 @@ try {
         one_overlay: true,
       });
       stage('select_B_card');
+      report.selection_diagnostic = createShowcaseSelectionDiagnostic();
+      await sampleShowcaseSelection(page, report.selection_diagnostic);
       await resourceAction(() => page.locator('#events article.event-card').first().click());
+      stageShowcaseSelection(report.selection_diagnostic, 'scope_choice');
+      await sampleShowcaseSelection(page, report.selection_diagnostic);
       await chooseScopeIfNeeded(page);
+      stageShowcaseSelection(report.selection_diagnostic, 'scope_badge');
+      await sampleShowcaseSelection(page, report.selection_diagnostic);
       await waitFor(
         'showcase_B_scope',
         async () => (await pickedOverlay(page)).locator('.badge').allTextContents(),
         (labels) => labels.some((label) => label.includes('3 items')),
       );
       if (boundary) {
+        stageShowcaseSelection(report.selection_diagnostic, 'detection_relay');
         const producer = await waitFor(
           'showcase_B_detection_produced',
           () => boundary.snapshot(),
@@ -434,11 +459,15 @@ try {
   report.status = 'passed_bounded';
   process.stdout.write('PASS showcase_picker_native_bounded\n');
 } catch (error) {
+  if (report.stage === 'select_B_card' && selectionPage && report.selection_diagnostic)
+    await sampleShowcaseSelection(selectionPage, report.selection_diagnostic);
   report.status = 'unverified';
   report.failure_code =
     report.stage === 'organization'
       ? safeShowcaseOrganizationFailure(error)
-      : `${report.stage}_failed`;
+      : report.stage === 'select_B_card' && report.selection_diagnostic
+        ? safeShowcaseSelectionFailure(report.selection_diagnostic, error)
+        : `${report.stage}_failed`;
   process.stderr.write(
     `UNVERIFIED showcase_picker_native stage=${report.stage} native_stage=${report.native_stage}\n`,
   );
