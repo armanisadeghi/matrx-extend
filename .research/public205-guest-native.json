@@ -22,7 +22,7 @@
     "sourceSha": "4d28d53302a516c42694c02da7ce77560ffb28cd",
     "conclusion": "success",
     "pinGuard": "All four published CRX target tests passed in the Guest transport observer regression step",
-    "sourceDeltaToHostedRun": "Only .research and docs files changed; acceptance script, workflow and approved baseline were identical"
+    "sourceDeltaToHostedRun": "Acceptance script, workflow and approved baseline were identical; intervening changes were documentation and skill instructions."
   },
   "publicCrx": {
     "version": "0.2.205",
@@ -84,5 +84,6 @@
     "nativePanelPngSha256": "13933645ed5af2e7cd63f250583c9d943dce8e16b73794509138fc1729df5cab",
     "demoTargetPngSha256": "7e0ca8a7822ea3e0be20baa972d6fcd369b3944d9d6f5e890cc991dda455df6b"
   },
-  "limit": "This is one fresh guest and post-reload new-conversation check in headless Chromium using a public CRX unpacked with the signing key added and Store verification metadata removed. It does not verify Google's Store-installed update lifecycle, preservation of an existing installed guest profile, allowance exhaustion, signed-in account paths or overall extension health. No retry was run."
+  "limit": "This is one fresh guest and post-reload new-conversation check in headless Chromium using a public CRX unpacked with the signing key added and Store verification metadata removed. It does not verify Google's Store-installed update lifecycle, preservation of an existing installed guest profile, allowance exhaustion, signed-in account paths or overall extension health. No retry was run.",
+  "rootVerification": "Independently read original guest receipt and all3current journal finalevents; bothHTTP200 groundedterminalanswers, immutable205tree, allvalid/noWATCH_UNSAFE. Viewed followupreplyPNG. Verified7retainedfilehashes and originalrawreceipthash; fullCI actualpin step4pass0fail0skip. No acceptance source/workflow delta to dispatchedSHA."
 }
