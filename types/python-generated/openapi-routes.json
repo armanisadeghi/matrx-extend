@@ -8030,6 +8030,11 @@
  "/v1/tables/{table}/rows/{row_id}/restore": {
   "post": []
  },
+ "/v1/tables/{table}/views": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/v2/ai/agent/{agent_id}": {
   "post": [
    "application/json"
