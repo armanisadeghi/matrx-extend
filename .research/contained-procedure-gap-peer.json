@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent-procedure-review",
+  "task_id": "contained-procedure-gap-20261005-peer",
+  "reviewed_artifact": ".research/contained-procedure-gap-20261005.json",
+  "reviewed_commit": "2c7df1948e68cd60fe587882ddb7ad6795f1989b",
+  "source_review": {
+    "inventory": "docs/stabilization/inventory.json",
+    "inventory_source_commit": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
+    "feature_case_controls": [
+      "EXT-F-4164",
+      "EXT-F-4164-T01",
+      "EXT-F-4164-C01",
+      "EXT-F-4164-C02",
+      "EXT-F-4164-C03"
+    ],
+    "handlers": [
+      "src/lib/tools/handlers/canonical-mergers.ts",
+      "src/lib/tools/handlers/browser-data.ts"
+    ],
+    "manual_runner": "src/features/tools/ToolsView.tsx"
+  },
+  "assessment": {
+    "procedure_coverage": "Strong, design-only coverage of the existing manual-run case's search and tree controls for member/admin. Guest false applicability matches inventory; the procedure correctly disclaims dispatcher/Ask/Act authorization because ToolsView invokes handler.run directly after Zod parsing. Runtime remains unverified.",
+    "quality": "Inputs, handler branches, returned fields, limit/count behavior, tree depth, explicit API errors, fixture isolation, warm/reload repetition, and role handling are source-consistent and executable subject to the documented receipt/resource preflight. It correctly avoids asserting an exact search total because Chrome can match folder metadata."
+  },
+  "findings": [
+    {
+      "severity": "must-fix-before-execution",
+      "location": "cases.EXT-F-4164-T01.steps[6] and shared_setup.fixture",
+      "finding": "Cleanup says delete the fixture folder and then verify its entries no longer appear in the scoped tree. Once deleted, the recorded folder ID is no longer a valid getSubTree target, so the specified verification query cannot establish cleanup; it will likely return an API error.",
+      "recommendation": "Before deletion, record the two exact fixture URLs/titles. After deleting only the fixture folder, verify absence with two exact-title/URL searches in that disposable profile (and record explicit errors separately); do not query the deleted folder ID as the cleanup oracle."
+    },
+    {
+      "severity": "wording",
+      "location": "cases.EXT-F-4164-T01.limits[3]",
+      "finding": "Calling the optional catalog query field 'schema drift' overstates what the source proves: query is optional in the action-discriminated schema, while the handler conditionally requires it only for action=search.",
+      "recommendation": "Describe this as an action-conditional requirement not represented by the current catalog schema; retain the explicit handler error assertion."
+    }
+  ],
+  "source_checks": {
+    "search": "canonical-mergers.ts validates missing query with the stated reason; browser-data.ts searches, slices to limit, reports total_match, and maps id/title/url/parent/date fields.",
+    "tree": "canonical-mergers.ts delegates folder_id/max_depth; browser-data.ts uses getSubTree for a supplied ID and trims id/title/url/date_added/children by depth. Root/subtree wrapper shape is handled without assuming browser root structure.",
+    "fixture_and_roles": "Synthetic public URLs/titles and per-profile folder IDs are appropriate. Member/admin applicability matches inventory; guest is outside this case. Fixture must be independently seeded and cleaned in each distinct profile."
+  },
+  "runtime_status": "not-run-per-review-scope",
+  "disposition": "procedure is otherwise source-accurate and runnable after cleanup oracle correction; no source or inventory edits made"
+}
