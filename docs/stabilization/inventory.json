@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-05T05:35:19.542000+00:00",
+  "updated_at": "2026-10-05T05:53:01.220136+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -1911,7 +1911,8 @@
             "EXT-D-0020",
             "EXT-D-0085",
             "EXT-D-0092",
-            "EXT-D-0116"
+            "EXT-D-0116",
+            "EXT-D-0140"
           ],
           "run_ids": [
             "release-red-001",
@@ -1934,7 +1935,7 @@
             "popup-teardown-green-002",
             "release-stabilization-027"
           ],
-          "retest_status": "pending"
+          "retest_status": "D140 source02f2b67b independently retest-pass a0e98cd1; fullCI37269797985 remainingsteps pending. No release or productUI verdict from this guard repair."
         },
         "member": {
           "test_status": "partial",
@@ -1949,7 +1950,8 @@
             "EXT-D-0020",
             "EXT-D-0085",
             "EXT-D-0092",
-            "EXT-D-0116"
+            "EXT-D-0116",
+            "EXT-D-0140"
           ],
           "run_ids": [
             "release-red-001",
@@ -1972,7 +1974,7 @@
             "popup-teardown-green-002",
             "release-stabilization-027"
           ],
-          "retest_status": "pending"
+          "retest_status": "D140 source02f2b67b independently retest-pass a0e98cd1; fullCI37269797985 remainingsteps pending. No release or productUI verdict from this guard repair."
         },
         "admin": {
           "test_status": "partial",
@@ -1986,7 +1988,8 @@
             "EXT-D-0019",
             "EXT-D-0020",
             "EXT-D-0085",
-            "EXT-D-0092"
+            "EXT-D-0092",
+            "EXT-D-0140"
           ],
           "run_ids": [
             "release-red-001",
@@ -2009,7 +2012,7 @@
             "popup-teardown-green-002",
             "release-stabilization-027"
           ],
-          "retest_status": "pending"
+          "retest_status": "D140 source02f2b67b independently retest-pass a0e98cd1; fullCI37269797985 remainingsteps pending. No release or productUI verdict from this guard repair."
         }
       },
       "readiness_gaps": [

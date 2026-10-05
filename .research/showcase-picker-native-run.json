@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0042",
+  "status": "blocked_before_native_launch; defect_open",
+  "lane": "structured native execution lane; one run only",
+  "driver": "tests/browser/showcase-picker-native-acceptance.mjs",
+  "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+  "exact_source": {
+    "sha": "3d2180f291fa45015fde9fdea57ffbe0c59080a7",
+    "branch": "main",
+    "ci_run_id": 37269340995,
+    "ci_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37269340995",
+    "conclusion": "failure"
+  },
+  "frozen_artifact_target": {
+    "product_source_sha": "5da8064bed0ffedbb0007e0c0b7eb81a730e7adf",
+    "ci_run_id": 37268578903,
+    "artifact_id": 11327423234,
+    "version": "0.2.265",
+    "sha256": "262e4efbcdd292be3f41e0b7fd180a87bc11191e9265ab211c2d5f60012de2a6",
+    "imported_or_launched": false,
+    "reason": "Required full-green source CI failed before its development artifact job; the exact artifact target was not admitted to a hosted browser run."
+  },
+  "failure": {
+    "stage": "prelaunch_ci_gate",
+    "safe_failure_code": "required_source_ci_failed_unit_test",
+    "job": "checks",
+    "step": "Unit tests",
+    "test": "tests/unit/release-gate-auth-path.test.ts > release.sh server-contract gate auth > mints a token before the strict drift check runs in the candidate loop",
+    "diagnostic": "AssertionError: expected 34438 to be less than -1 at tests/unit/release-gate-auth-path.test.ts:63. The test could not find the expected '    run_checks || hard_stop' anchor (index -1). 292 test files passed, 1 failed, 2 skipped; 2112 tests passed, 1 failed, 6 skipped.",
+    "classification": "Repository test/source contract mismatch in the release gate auth path; unrelated hosted runner/resource failure was not observed.",
+    "source_confirmation": "Root independently confirmed release.sh now contains 'if ! run_checks; then' while the test still searches for the retired 'run_checks || hard_stop' anchor.",
+    "successor_ci": {
+      "run_id": 37269570862,
+      "source_sha": "7ecc7b14b51fe71ca1d8446945fdc4b02ffa6ebb",
+      "status_at_lane_close": "in_progress",
+      "source_delta_from_required_ci": "pnpm-lock.yaml only; four lines refreshing @ai-matrx package versions",
+      "root_assessment": "This lockfile-only change cannot repair the failing release-gate-auth-path source assertion; no native launch authorized."
+    },
+    "action": "No CI rerun and no native launch. Root is routing the guard repair."
+  },
+  "hosted_run": {
+    "run_id": null,
+    "started": false,
+    "acceptance_case": "showcase-picker-admin",
+    "runner_label": "macos-15",
+    "expected_architecture": "ARM64",
+    "other_active_hosted_browser_run_check": "not performed because launch gate failed",
+    "credential_secret_name_check": {
+      "method": "listed GitHub secret names only",
+      "existing_secret": false,
+      "temporary_secret_created": false,
+      "secret_deleted": false,
+      "credential_values_read": false
+    }
+  },
+  "resources": {
+    "native_browser": "not started",
+    "resource_guard_journal": "not created",
+    "screenshots": "not created",
+    "artifact_hash_manifest": "not created",
+    "external_scratch_root": "/Volumes/Samsung2TB/code/.stabilization-scratch",
+    "scratch_used": false
+  },
+  "criteria": [
+    {
+      "id": "guest shell exposes Scrape and hides admin Showcase",
+      "status": "unverified",
+      "reason": "native flow not launched"
+    },
+    {
+      "id": "real admin sign-in and verified device organization selection",
+      "status": "unverified",
+      "reason": "native flow not launched"
+    },
+    {
+      "id": "same-page start A, cancel A, start B leaves exactly one picker overlay",
+      "status": "unverified",
+      "reason": "native flow not launched"
+    },
+    {
+      "id": "card and title selection, Done, Extract yields three fixture rows",
+      "status": "unverified",
+      "reason": "native flow not launched"
+    },
+    {
+      "id": "cancel picker then normal page button handler runs exactly once",
+      "status": "unverified",
+      "reason": "native flow not launched"
+    },
+    {
+      "id": "nonadmin role gate",
+      "status": "unverified",
+      "reason": "outside this admin and guest case"
+    },
+    {
+      "id": "held stale A ITEM_DETECTED, RESULT, or EXIT delivered after B starts",
+      "status": "unverified",
+      "reason": "driver has no native hold/release hook"
+    },
+    {
+      "id": "delayed A cancellation injection or deferred installation targeting B",
+      "status": "unverified",
+      "reason": "driver has no native hold/release hook"
+    },
+    {
+      "id": "fresh content-script module-context reinjection and exact listener count",
+      "status": "unverified",
+      "reason": "driver exercises mounted UI restart only"
+    }
+  ],
+  "decision": "No D42 closure and no inventory promotion. Root review required after the CI gate is repaired and a new authorized run lane is issued."
+}

@@ -1,0 +1,30 @@
+{
+  "defect": "EXT-D-0140",
+  "reviewed_commit": "02f2b67b7751332e118f8ec94908b5510e8784e5",
+  "verdict_a_actual_contract_coverage": {
+    "result": "PASS_WITH_LIMIT",
+    "finding": "The source-derived candidate statement slice executes the actual mint/check order. Its controlled check double requires the minted token at the run_checks boundary, so the guard covers the owner requirement that candidate auth exists before strict checks begin. The required strict drift command is independently asserted present in release.sh.",
+    "fresh_ci": "Not run; no claim about fresh CI."
+  },
+  "verdict_b_quality_false_green_risks": {
+    "result": "PASS_WITH_MINOR_SCOPE_LIMIT",
+    "finding": "The former literal 'run_checks || hard_stop' anchor is gone; this guard follows the candidate statements and is insensitive to that equivalent conditional spelling. The seam is meaningful: actual source statements run in bash, and the check double rejects missing auth.",
+    "risk": "The test stubs run_checks, so it proves the token is present at check entry but does not execute the strict drift command itself or prove the CHECKS registry still wires that command to run_checks. The separate contains assertion checks command text only. Extending that wiring coverage would improve protection against a removed/no-op strict check, but it is outside the stated auth-order defect."
+  },
+  "evidence": [
+    {
+      "command": "TMPDIR=/tmp/ext-d0140-peer pnpm exec vitest run tests/unit/release-gate-auth-path.test.ts",
+      "result": "1 file passed; 3 tests passed."
+    },
+    {
+      "mutation": "Scratch release.sh omitted '$SKIP_CATALOG || mint_gate_auth' from candidate sequence.",
+      "command": "TMPDIR=/tmp/ext-d0140-peer RELEASE_SH_UNDER_TEST=/tmp/ext-d0140-peer/release-no-mint.sh pnpm exec vitest run tests/unit/release-gate-auth-path.test.ts",
+      "result": "Expected failure: NO_AUTH at run_checks, hard stop; 1 failed, 2 passed."
+    },
+    {
+      "mutation": "Scratch release.sh moved mint_gate_auth after run_checks.",
+      "command": "TMPDIR=/tmp/ext-d0140-peer RELEASE_SH_UNDER_TEST=/tmp/ext-d0140-peer/release-late-mint.sh pnpm exec vitest run tests/unit/release-gate-auth-path.test.ts",
+      "result": "Expected failure: NO_AUTH at run_checks, hard stop; 1 failed, 2 passed."
+    }
+  ]
+}

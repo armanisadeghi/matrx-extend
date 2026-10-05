@@ -1,0 +1,38 @@
+{
+  "defect": "EXT-D-0140",
+  "scope": [
+    "tests/unit/release-gate-auth-path.test.ts",
+    ".research/release-gate-auth-guard-repair.json"
+  ],
+  "cause": "The release candidate loop still mints gate auth before run_checks, but the guard searched for the removed shell spelling 'run_checks || hard_stop'. The loop now uses 'if ! run_checks; then'.",
+  "repair": "Execute the candidate loop's source-derived check sequence with a check-boundary double that requires the minted token. The existing mint behavior tests remain intact.",
+  "code_commit": "02f2b67b",
+  "original_red": {
+    "command": "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch pnpm exec vitest run tests/unit/release-gate-auth-path.test.ts",
+    "result": "1 failed, 2 passed: line 63 expected mint index 34438 to be less than missing check index -1"
+  },
+  "corrected_green": {
+    "command": "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch pnpm exec vitest run tests/unit/release-gate-auth-path.test.ts",
+    "result": "3 passed, 0 failed"
+  },
+  "mutation_proof": [
+    {
+      "source": "/Volumes/Samsung2TB/code/.stabilization-scratch/release-no-mint.sh",
+      "change": "Removed the production candidate-loop call to mint_gate_auth from a scratch copy of release.sh.",
+      "command": "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch RELEASE_SH_UNDER_TEST=/Volumes/Samsung2TB/code/.stabilization-scratch/release-no-mint.sh pnpm exec vitest run tests/unit/release-gate-auth-path.test.ts",
+      "result": "1 failed, 2 passed; candidate check printed NO_AUTH and STOPPED: mandatory checks failed for v-test — nothing was pushed"
+    },
+    {
+      "source": "/Volumes/Samsung2TB/code/.stabilization-scratch/release-late-mint.sh",
+      "change": "Moved the production candidate-loop call to mint_gate_auth after run_checks in a scratch copy of release.sh.",
+      "command": "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch RELEASE_SH_UNDER_TEST=/Volumes/Samsung2TB/code/.stabilization-scratch/release-late-mint.sh pnpm exec vitest run tests/unit/release-gate-auth-path.test.ts",
+      "result": "1 failed, 2 passed; candidate check printed NO_AUTH and STOPPED: mandatory checks failed for v-test — nothing was pushed"
+    }
+  ],
+  "format_check": {
+    "command": "pnpm exec biome check tests/unit/release-gate-auth-path.test.ts",
+    "result": "passed"
+  },
+  "remaining": ["Fresh peer review", "Full CI"],
+  "not_run": ["Manual release", "Build", "Deployment"]
+}

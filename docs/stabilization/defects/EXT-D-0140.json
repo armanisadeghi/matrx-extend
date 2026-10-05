@@ -1,0 +1,60 @@
+{
+  "id": "EXT-D-0140",
+  "feature_id": "EXT-F-0003",
+  "case_ids": ["EXT-F-0003-T02"],
+  "title": "Release authentication-order guard rejects valid candidate-loop syntax",
+  "surface": "Release verification / CI unit gate",
+  "auth_mode": "mode-independent release infrastructure; no end-user sign-in exercised",
+  "reproduction": [
+    "Check out source3d2180f291fa45015fde9fdea57ffbe0c59080a7 with its lockfile.",
+    "Run the focused tests/unit/release-gate-auth-path.test.ts test under Vitest, or inspect CI37269340995 Unit tests.",
+    "Observe first test compares mint index34438 with checks index-1 because current release.sh invokes if ! run_checks; then rather than run_checks || hard_stop."
+  ],
+  "expected": "Guard accepts equivalent candidate-loop shell syntax while failing if gate authentication is absent or occurs after strict checks.",
+  "actual": "Source02f2b67b executes the real candidate-loop shell slice; currentvalidsyntax passes and absent/reorderedmint negative mutations reject. Freshpeer/fullCI pending; no native retry yet.",
+  "severity": "S2: blocks validated integration and release/test progression, not a proven runtime product failure",
+  "priority": "P1: restore meaningful verification before next native test",
+  "state": "retest-pass",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37269340995",
+    "tests/unit/release-gate-auth-path.test.ts",
+    "release.sh",
+    ".research/showcase-picker-native-run.json",
+    ".research/release-gate-auth-guard-repair.json",
+    ".research/release-gate-auth-peer.json"
+  ],
+  "owner": "release_gate_auth_guard_repair",
+  "transition_history": [
+    {
+      "at": "2026-10-05T05:53:01.220136+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Actual CI unit failure observed"
+    },
+    {
+      "at": "2026-10-05T05:53:01.220136+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Exact retired string lookup yields-1; production call still follows mint"
+    },
+    {
+      "at": "2026-10-05T05:53:01.220136+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol assigned actual-code red/green guard repair with absent/reordered-mint negative checks"
+    },
+    {
+      "at": "2026-10-05T05:54:47.603113+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "02f2b67b replaces brittle literalanchor with actualcandidate-loop execution; builderRED/GREEN and negativeauthmutations verified, independentretest pending"
+    },
+    {
+      "at": "2026-10-05T05:57:40.729735+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Freshpeer a0e98cd1 reran3positive tests and both absent/reorderedactualsource negative mutations. FullCI37269797985 unitstep passed; remainingCIsteps pending beforeclosure."
+    }
+  ],
+  "closure_requirement": "Focused real-code reproduction red then green; absent/reordered auth must fail; fresh independent review and full CI green. No release behavior weakening."
+}
