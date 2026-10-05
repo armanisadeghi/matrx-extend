@@ -12,6 +12,10 @@ const scrapeSource = await readFile(
   new URL('./scrape-guest-native-acceptance.mjs', import.meta.url),
   'utf8',
 );
+const authSource = await readFile(
+  new URL('./settings-native-auth-driver.mjs', import.meta.url),
+  'utf8',
+);
 
 function fixture() {
   let tick = 0;
@@ -226,6 +230,14 @@ test('missed event or phase marker cannot claim a complete interval', async () =
   reversedClock.corruptClock('1000');
   assert.deepEqual(await fourth.stop(), { status: 'unavailable', events: [] });
   assert.equal(reversedClock.listeners.size, 0);
+
+  const incompleteAuth = fixture();
+  const fifth = await startPanelTransitionRecorder(incompleteAuth.panel, {
+    requireAuthTrace: true,
+  });
+  await fifth.mark('auth_admin_before');
+  assert.deepEqual(await fifth.stop(), { status: 'unavailable', events: [] });
+  assert.equal(incompleteAuth.listeners.size, 0);
 });
 
 test('actual Scrape setup wires resource and organization pointer intervals to the real recorder', async () => {
@@ -265,7 +277,7 @@ test('actual Scrape setup wires resource and organization pointer intervals to t
           });
         return { organizationId: 'private-org' };
       },
-      { mode: 'member' },
+      { mode: 'admin' },
       report,
       assert,
       '',
@@ -324,4 +336,212 @@ test('actual Scrape setup wires resource and organization pointer intervals to t
     assert.equal(JSON.stringify(result.panel_transition).includes('private'), false);
     assert.equal(JSON.stringify(result.panel_transition).includes('37'), false);
   }
+});
+
+test('real Scrape auth caller records first member selection, skip, identity, and cleanup intervals', async () => {
+  const start = scrapeSource.indexOf('exercisePanel: async ({');
+  const end = scrapeSource.indexOf('        expectedIdentity =', start);
+  assert.ok(start >= 0 && end > start, 'authenticated setup seam missing');
+  const prefix = scrapeSource.slice(start + 'exercisePanel: '.length, end);
+  const authBody = authSource
+    .slice(authSource.indexOf('export async function signInSettings('))
+    .replace('export async function', 'async function');
+  const selectSource = authSource.slice(
+    authSource.indexOf('async function selectOrganization('),
+    authSource.indexOf('/** Select and verify'),
+  );
+  const runSetup = (source, signInSettings, report) =>
+    new Function(
+      'startPanelTransitionRecorder',
+      'traceOrganizationPointers',
+      'classifyPanelTransition',
+      'signInSettings',
+      'selectRequiredSettingsOrganization',
+      'selection',
+      'report',
+      'assert',
+      'REPO',
+      `return (${source} } return report; });`,
+    )(
+      startPanelTransitionRecorder,
+      traceOrganizationPointers,
+      classifyPanelTransition,
+      signInSettings,
+      async () => ({ organizationId: '123e4567-e89b-42d3-a456-426614174001' }),
+      { mode: 'member' },
+      report,
+      assert,
+      '',
+    );
+
+  async function scenario(selectionRequired, source = prefix, failAdmin = false) {
+    const env = fixture();
+    let selected = !selectionRequired;
+    let cleanup = 0;
+    const inputs = [];
+    const originalSend = env.panel.send;
+    Object.defineProperty(env.panel, 'send', {
+      value: async function (method, args) {
+        assert.equal(this, env.panel);
+        if (method === 'Input.dispatchMouseEvent') {
+          inputs.push(args.type);
+          if (args.type === 'mouseReleased') selected = true;
+        }
+        return originalSend.call(this, method, args);
+      },
+      writable: false,
+      configurable: false,
+    });
+    Object.freeze(env.panel);
+    const identity = { userId: '123e4567-e89b-42d3-a456-426614174000', email: 'member@matrx.test' };
+    const organizationId = '123e4567-e89b-42d3-a456-426614174001';
+    const accountIdentity = async () => ({
+      signInEnabled: true,
+      emailMatches: true,
+      profileId: identity.userId,
+      accessTokenPresent: true,
+      signOutVisible: true,
+      isAdmin: false,
+      adminRole: false,
+      organizationSelected: selected,
+      organizationPickerAvailable: true,
+      organizationLabel: selected ? "Matrx's Org" : null,
+    });
+    const deps = {
+      assert,
+      URL,
+      ORIGIN: 'https://www.aimatrx.com',
+      MEMBER_FINGERPRINT: '',
+      MEMBER_TEST_ORGANIZATION_NAME: "Matrx's Org",
+      UUID: /^[0-9a-f-]{36}$/,
+      fingerprint: () => 'opaque',
+      privateJson: async () => ({
+        action_link: 'https://www.aimatrx.com/auth/confirm?type=magiclink&token_hash=opaque',
+        email: identity.email,
+      }),
+      requireSettingsCredential: (_mode, raw) => JSON.parse(raw),
+      authenticatedWebIdentity: async () => identity,
+      waitFor: async (label, read, accept) => {
+        const value = await read();
+        assert.ok(accept(value), `${label}_rejected`);
+        return value;
+      },
+      click: async () => {},
+      openSection: async () => {},
+      approveConsent: async () => {},
+      evaluate: async () => ({ x: 97, y: 83 }),
+      accountIdentity,
+      panelIdentity: async () => ({
+        profileId: identity.userId,
+        organizationId,
+        organizationName: "Matrx's Org",
+      }),
+      verifyCurrentSettingsIdentity: async ({ panel }) => {
+        await panel.send('Input.dispatchMouseEvent', {
+          type: 'mouseMoved',
+          x: 97,
+          y: 83,
+          privateIdentity: 'do-not-record',
+        });
+        return { rendered: true };
+      },
+      observeCanonicalAdminCheck: () => ({
+        start: async () => {},
+        verify: async () => {
+          if (failAdmin) throw new Error('admin observer failed');
+          return { checked: true };
+        },
+        stop: async () => {
+          cleanup += 1;
+        },
+      }),
+      supabaseOrigin: async () => '',
+      selectOrganization: null,
+      signInAdminSettings: async () => identity,
+    };
+    deps.selectOrganization = new Function(
+      ...Object.keys(deps),
+      `${selectSource}; return selectOrganization;`,
+    )(...Object.values(deps));
+    const signInSettings = new Function(
+      ...Object.keys(deps),
+      `${authBody}; return signInSettings;`,
+    )(...Object.values(deps));
+    const web = {
+      goto: async (url) => {
+        web.current = url;
+      },
+      url: () => web.current,
+      close: async () => {},
+    };
+    const page = { context: () => ({ newPage: async () => web }), bringToFront: async () => {} };
+    const report = {};
+    const run = runSetup(source, signInSettings, report);
+    const args = {
+      panel: env.panel,
+      page,
+      observePanelVisibility: async () => {},
+      observeAuthenticatedPanel: async () => {},
+      requireResourceHealth: async () => {},
+      resourceAction: async (action) => action(),
+    };
+    if (failAdmin) await assert.rejects(run(args), /admin observer failed/);
+    else await run(args);
+    return { report, inputs, cleanup };
+  }
+
+  const selected = await scenario(true);
+  const kinds = Array.from(selected.report.panel_transition.events, (event) => event.kind);
+  assert.deepEqual(kinds.slice(0, 16), [
+    'start',
+    'auth_admin_before',
+    'auth_admin_after',
+    'auth_org_before',
+    'auth_org_select',
+    'pointer_before',
+    'pointer_after',
+    'pointer_before',
+    'pointer_after',
+    'auth_org_after',
+    'auth_identity_before',
+    'pointer_before',
+    'pointer_after',
+    'auth_identity_after',
+    'auth_cleanup_before',
+    'auth_cleanup_after',
+  ]);
+  assert.deepEqual(selected.inputs, ['mousePressed', 'mouseReleased', 'mouseMoved']);
+  assert.equal(selected.cleanup, 1);
+  assert.equal(JSON.stringify(selected.report.panel_transition).includes('do-not-record'), false);
+  assert.equal(JSON.stringify(selected.report.panel_transition).includes('97'), false);
+  const requireFirstAuthPointerCoverage = (result) => {
+    assert.equal(
+      result.report.panel_transition.events.filter((event) => event.kind === 'pointer_before')
+        .length,
+      3,
+      'first auth organization and identity pointer inputs must reach the recorder',
+    );
+  };
+  requireFirstAuthPointerCoverage(selected);
+
+  const skipped = await scenario(false);
+  const skipKinds = Array.from(skipped.report.panel_transition.events, (event) => event.kind);
+  assert.ok(skipKinds.includes('auth_org_skip'));
+  assert.equal(skipKinds.includes('auth_org_select'), false);
+  assert.deepEqual(skipped.inputs, ['mouseMoved']);
+  assert.equal(skipped.cleanup, 1);
+
+  const failed = await scenario(false, prefix, true);
+  assert.equal(failed.report.panel_transition.status, 'unavailable');
+  assert.equal(failed.report.panel_transition.interval, 'unmeasured');
+  assert.equal(failed.cleanup, 1);
+
+  const omission = prefix.replace('panel: traceOrganizationPointers(panel, transition),', 'panel,');
+  assert.notEqual(omission, prefix, 'first auth panel seam missing');
+  const omitted = await scenario(true, omission);
+  assert.deepEqual(omitted.inputs, selected.inputs, 'mutation must preserve actual inputs');
+  assert.throws(
+    () => requireFirstAuthPointerCoverage(omitted),
+    /first auth organization and identity pointer inputs must reach the recorder/,
+  );
 });

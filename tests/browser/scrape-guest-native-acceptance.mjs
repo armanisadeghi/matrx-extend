@@ -952,7 +952,9 @@ try {
       await requireResourceHealth();
       if (selection.mode !== 'guest') {
         await observePanelVisibility('before_authentication');
-        const transition = await startPanelTransitionRecorder(panel);
+        const transition = await startPanelTransitionRecorder(panel, {
+          requireAuthTrace: selection.mode === 'member',
+        });
         let authentication;
         let selectedOrganization;
         try {
@@ -961,11 +963,12 @@ try {
             signInSettings({
               mode: selection.mode,
               page,
-              panel,
+              panel: traceOrganizationPointers(panel, transition),
               repo: REPO,
               adminCredentialsFile: process.env.MATRX_PREPARE_ADMIN_CREDENTIALS_FILE,
               memberLinkFile: process.env.MATRX_REVIEWER_MAGIC_LINK_FILE,
               observeBoundary: observeAuthenticatedPanel,
+              onTrace: (phase) => transition.mark?.(phase),
               onStage: (value) => {
                 report.auth_stage = value;
               },

@@ -290,6 +290,7 @@ export async function signInSettings({
   adminCredentialsFile,
   memberLinkFile,
   onStage,
+  onTrace,
   observeBoundary = async () => {},
 }) {
   assert.ok(['admin', 'member'].includes(mode), 'd87_auth_mode_invalid');
@@ -387,15 +388,21 @@ export async function signInSettings({
         90_000,
       );
       await observeBoundary('member_oauth_completed').catch(() => {});
+      await onTrace?.('auth_admin_before');
       canonical = await adminCheck.verify(identity.userId);
+      await onTrace?.('auth_admin_after');
+      await onTrace?.('auth_org_before');
       const org = await waitFor(
         'd87_member_organization',
         () => accountIdentity(panel, email),
         (value) => value?.organizationSelected || value?.organizationPickerAvailable,
         30_000,
       );
-      if (!org.organizationSelected || org.organizationLabel !== "Matrx's Org")
-        await selectOrganization(panel);
+      const selectionRequired =
+        !org.organizationSelected || org.organizationLabel !== "Matrx's Org";
+      await onTrace?.(selectionRequired ? 'auth_org_select' : 'auth_org_skip');
+      if (selectionRequired) await selectOrganization(panel);
+      await onTrace?.('auth_org_after');
       await waitFor(
         'd87_member_organization_selected',
         () => accountIdentity(panel, email),
@@ -412,6 +419,7 @@ export async function signInSettings({
         "Matrx's Org",
         'd87_member_organization_name_unverified',
       );
+      await onTrace?.('auth_identity_before');
       const rendered = await verifyCurrentSettingsIdentity({
         panel,
         mode,
@@ -419,6 +427,7 @@ export async function signInSettings({
         profileId: identity.userId,
         organizationId: selected.organizationId,
       });
+      await onTrace?.('auth_identity_after');
       return {
         mode,
         profileId: identity.userId,
@@ -433,7 +442,9 @@ export async function signInSettings({
         rendered_identity: rendered,
       };
     } finally {
+      await onTrace?.('auth_cleanup_before');
       await adminCheck.stop();
+      await onTrace?.('auth_cleanup_after');
     }
   } finally {
     // Keep cleanup ordered even if an optional observer cannot read the browser.

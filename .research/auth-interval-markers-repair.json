@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0133",
+  "status": "INSTRUMENTATION_READY_CAUSE_UNVERIFIED",
+  "change": "Existing panel recorder now brackets member admin verification, first organization decision and pointer dispatch, rendered identity verification, and observer cleanup in the panel clock; Scrape passes its immutable-safe panel facade into the real auth caller.",
+  "proof": "Focused integration executes actual Scrape auth caller, actual member signInSettings and selectOrganization, and actual recorder for first-select, skip, and observer-error paths. An in-memory mutation of the production Scrape panel argument to the raw panel preserves input events but fails the pointer-coverage assertion; restored wiring passes. 13 focused tests and Biome check pass.",
+  "privacy": "Receipt keeps fixed phase names, clock, and visibility only; no identity, payload, coordinates, or transport error fields. Missing member markers or panel context returns unavailable/unmeasured.",
+  "limits": "No native browser run, build, release, database operation, or credential read. Event order localizes the first hide but does not establish physical exposure or cause. Product code and acceptance gates are unchanged; Store 205 remains pending."
+}

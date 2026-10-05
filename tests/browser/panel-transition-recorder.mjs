@@ -12,6 +12,16 @@ const PHASES = new Set([
   'pointer_before',
   'pointer_after',
   'after_organization',
+  'auth_admin_before',
+  'auth_admin_after',
+  'auth_org_before',
+  'auth_org_select',
+  'auth_org_skip',
+  'auth_org_after',
+  'auth_identity_before',
+  'auth_identity_after',
+  'auth_cleanup_before',
+  'auth_cleanup_after',
 ]);
 
 async function read(panel, expression) {
@@ -22,7 +32,7 @@ async function read(panel, expression) {
   }
 }
 
-export async function startPanelTransitionRecorder(panel) {
+export async function startPanelTransitionRecorder(panel, { requireAuthTrace = false } = {}) {
   const started = await read(
     panel,
     `(() => {
@@ -84,6 +94,24 @@ export async function startPanelTransitionRecorder(panel) {
         )
       )
         return { status: 'unavailable', events: [] };
+      if (requireAuthTrace) {
+        const kinds = new Set(result.map((event) => event.kind));
+        const required = [
+          'auth_admin_before',
+          'auth_admin_after',
+          'auth_org_before',
+          'auth_org_after',
+          'auth_identity_before',
+          'auth_identity_after',
+          'auth_cleanup_before',
+          'auth_cleanup_after',
+        ];
+        if (
+          !required.every((phase) => kinds.has(phase)) ||
+          kinds.has('auth_org_select') === kinds.has('auth_org_skip')
+        )
+          return { status: 'unavailable', events: [] };
+      }
       return { status: 'measured', events: result };
     },
   };
