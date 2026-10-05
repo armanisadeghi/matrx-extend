@@ -36,7 +36,7 @@ importers:
         version: 0.9.0(react@19.3.0)
       '@ai-matrx/records':
         specifier: latest
-        version: 0.71.4(react@19.3.0)
+        version: 0.72.0(react@19.3.0)
       '@ai-matrx/tap-target':
         specifier: latest
         version: 0.2.19(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -312,8 +312,8 @@ packages:
       react-native:
         optional: true
 
-  '@ai-matrx/records@0.71.4':
-    resolution: {integrity: sha512-OWa5mcEjD+iRTUeNn7Ne0yjNXYjInOreApsDNPT7WIQZ0JrkjXVv0bWcMzBnvtYWoe0zL2r14DTvGiYYkngc8g==}
+  '@ai-matrx/records@0.72.0':
+    resolution: {integrity: sha512-9SZNi6RlyWGBNRRDhiGTNDLoqk96kllNYdUS3t4FZOOnXD37MBy2IwSwb/P4ENt+Pl2EvWZhoGPAscjAI87jSA==}
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=18.0.0'
@@ -4498,7 +4498,7 @@ snapshots:
     optionalDependencies:
       react: 19.3.0
 
-  '@ai-matrx/records@0.71.4(react@19.3.0)':
+  '@ai-matrx/records@0.72.0(react@19.3.0)':
     dependencies:
       '@ai-matrx/kit': 0.22.2(react@19.3.0)
     optionalDependencies:
