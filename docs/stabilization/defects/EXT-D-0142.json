@@ -1,7 +1,10 @@
 {
   "id": "EXT-D-0142",
   "feature_id": "EXT-F-1012",
-  "case_ids": ["EXT-F-1012-T24", "EXT-F-1012-T51"],
+  "case_ids": [
+    "EXT-F-1012-T24",
+    "EXT-F-1012-T51"
+  ],
   "title": "Admin Showcase acceptance cannot select required organization option",
   "surface": "Showcase acceptance / Settings organization selection",
   "auth_mode": "admin",
@@ -11,7 +14,7 @@
     "Attempt required organization selection; actualhelper reports d87_member_organization_option_unavailable at organization_select."
   ],
   "expected": "Required approved organization can be selected and rendered/storage identity verified before Showcase controls are tested; fixture/driver mismatch must not be reported as a product pass.",
-  "actual": "Approved-fixture native37278418866 onexactdevelopment266 stillfails organization_select/d87_member_organization_option_unavailable. Earlier memberfixture mismatch wasreal butnotcompletecause. No failure-time DOM available; setup screenshotsnotcausal. Source09840157 adds safe counts/menu/filter/viewport/hit beforeselectionwithoutchangingbehavior;freshreviewpending. No retry orproductpass.",
+  "actual": "Approved-fixture native37278418866 on development266 still fails organization_select after successful admin authentication. Independent source review then proved unrelated/closed-listbox targeting and offscreen-option reachability defects in the test driver. a2656774 repairs owned-listbox scoping and stable readiness; peer edf9ee1a still rejects offscreen reachability and stubbed click coverage. Repair in progress; historical native cause remains unproven and no product case promoted.",
   "severity": "S2: blocks admin acceptance; product versus fixture/driver cause unknown",
   "priority": "P1: diagnose observed selection boundary before further Showcase testing",
   "state": "in-fix",
@@ -27,7 +30,10 @@
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/37276487004",
     ".research/org-extracted-seam-final-review.json",
     ".research/showcase-approved-org-native.json",
-    ".research/organization-picker-boundary-repair.json"
+    ".research/organization-picker-boundary-repair.json",
+    ".research/organization-boundary-fresh-review.json",
+    ".research/organization-listbox-selection-fix.json",
+    ".research/organization-listbox-final-peer.json"
   ],
   "transition_history": [
     {
@@ -77,7 +83,8 @@
     "ruling": "Do not acceptfocusedgreen ascomplete. admin_fixture_route_guard_fix owns integrationrepair; no nativebeforefullgreen.",
     "integration_followup": "f93ee0cd bindsrequiredOrganizationName in4actualdriverextractiontestseams;40targetedpass. Freshpeer/fullCIpending. Standaloneharness interruptedafter78s; priorCIharness took135s, so this is incompleteevidence, notprovenhang.",
     "integration_peer": "309e2717: separate runtimeunverified/qualitypass,40targetedpass; sourceguardintact. Accidentalexcludedharness runincomplete55pass1cancelled, nocredit; fullCIpending.",
-    "full_ci_followup": "37277311837 SUCCESS sourcef93ee0cd45f3e3232a62318e3c9afe0fd6c9f79e; original27harness0fail,25diagnostic0fail,13routes0fail, bothjobs green. Artifact11330374970 SHA f14c64f230f03aa19e14006b3ca7d51f648e422dc443acfc4851af8e746d6632. Nextnativepending."
+    "full_ci_followup": "37277311837 SUCCESS sourcef93ee0cd45f3e3232a62318e3c9afe0fd6c9f79e; original27harness0fail,25diagnostic0fail,13routes0fail, bothjobs green. Artifact11330374970 SHA f14c64f230f03aa19e14006b3ca7d51f648e422dc443acfc4851af8e746d6632. Nextnativepending.",
+    "current_source": "a2656774; full CI37281825182 success, root read job111671692995: 29 diagnostic checks,18 hosted route checks,2 stale-boundary checks passed. Source review edf9ee1a runtime unverified/quality fail: offscreen target cannot reach scroll and caller stub misses shared pointer behavior. Bounded fixer round active."
   },
   "escalation": {
     "trigger": "Repeatedresourcevalidorganization failures acrossreviewedfixturefix andmorethan30minuteswithoutoriginalflowpass",
