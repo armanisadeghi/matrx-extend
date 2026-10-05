@@ -7,6 +7,7 @@ import test from 'node:test';
 import {
   hostedProfileRoute,
   profileOrganizationConfig,
+  requireHostedAcceptanceCredential,
   stageProfileOrganizationConfig,
 } from './hosted-profile-route.mjs';
 
@@ -88,6 +89,40 @@ test('Profile organization fixture requires a private approved name', () => {
     }),
     { approved_organization_name: 'Matrx Org' },
   );
+});
+
+test('Showcase and Scrape admin routes require the approved fixture before browser setup', () => {
+  const admin = {
+    MATRX_HOSTED_ADMIN_CREDENTIALS_JSON: '{"email":"admin@admin.com","password":"opaque"}',
+  };
+  for (const acceptanceCase of ['showcase-picker-admin', 'guest-scrape-development']) {
+    const env = {
+      ...admin,
+      ...(acceptanceCase.startsWith('guest-scrape') ? { MATRX_SCRAPE_AUTH_MODE: 'admin' } : {}),
+    };
+    assert.throws(
+      () => requireHostedAcceptanceCredential(acceptanceCase, env),
+      /hosted_profile_org_secret_required/,
+    );
+    assert.doesNotThrow(() =>
+      requireHostedAcceptanceCredential(acceptanceCase, {
+        ...env,
+        MATRX_HOSTED_PROFILE_ORGANIZATION_JSON: '{"approved_organization_name":"Matrx Org"}',
+      }),
+    );
+    const preflight = spawnSync(process.execPath, ['scripts/hosted-guest-acceptance.mjs'], {
+      env: {
+        GITHUB_ACTIONS: 'true',
+        MATRX_HOSTED_PHASE: 'preflight',
+        MATRX_HOSTED_ACCEPTANCE_CASE: acceptanceCase,
+        ...env,
+      },
+      encoding: 'utf8',
+    });
+    assert.notEqual(preflight.status, 0);
+    assert.match(preflight.stderr, /hosted_profile_org_secret_required/);
+    assert.doesNotMatch(preflight.stderr, /hosted phase requires owned resource permit/);
+  }
 });
 
 test('hosted Profile stages an exclusive private organization fixture for the native driver', async () => {

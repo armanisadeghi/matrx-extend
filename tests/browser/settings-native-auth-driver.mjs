@@ -57,8 +57,11 @@ export function settingsShellReady(state, mode) {
   return state?.settingsAvailable === true && state.guest === (mode === 'guest');
 }
 
-export function settingsOrganizationSelectionRequired(value) {
-  return !value?.organizationSelected || value.organizationLabel !== MEMBER_TEST_ORGANIZATION_NAME;
+export function settingsOrganizationSelectionRequired(
+  value,
+  requiredOrganizationName = MEMBER_TEST_ORGANIZATION_NAME,
+) {
+  return !value?.organizationSelected || value.organizationLabel !== requiredOrganizationName;
 }
 
 async function privateJson(file, code) {
@@ -66,6 +69,16 @@ async function privateJson(file, code) {
   const metadata = await stat(file);
   assert.equal(metadata.mode & 0o077, 0, `${code}_file_not_private`);
   return JSON.parse(await readFile(file, 'utf8'));
+}
+
+export async function approvedAdminOrganizationName(file) {
+  const config = await privateJson(file, 'd87_approved_admin_organization');
+  const name = config?.approved_organization_name;
+  assert.ok(
+    typeof name === 'string' && name.length > 0 && name.trim() === name,
+    'd87_approved_admin_organization_invalid',
+  );
+  return name;
 }
 
 export async function panelIdentity(panel) {
@@ -204,14 +217,14 @@ async function approveConsent(context) {
   }
 }
 
-async function selectOrganization(panel) {
+async function selectOrganization(panel, requiredOrganizationName) {
   await click(panel, 'organization', '');
   const target = await evaluate(
     panel,
     `(() => {
     const visible = (el) => { const r = el.getBoundingClientRect(); const s = getComputedStyle(el); return r.width > 0 && r.height > 0 && s.display !== 'none' && s.visibility !== 'hidden'; };
     const matches = [...document.querySelectorAll('[role="option"]')]
-      .filter(visible).filter((option) => option.textContent.trim() === ${JSON.stringify(MEMBER_TEST_ORGANIZATION_NAME)});
+      .filter(visible).filter((option) => option.textContent.trim() === ${JSON.stringify(requiredOrganizationName)});
     if (matches.length !== 1) return null;
     const rect = matches[0].getBoundingClientRect();
     const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2;
@@ -240,11 +253,18 @@ export async function selectRequiredSettingsOrganization({
   mode,
   email,
   profileId,
+  requiredOrganizationName = mode === 'member' ? MEMBER_TEST_ORGANIZATION_NAME : null,
   onBranch,
   onStage,
   onObservation,
 }) {
   assert.ok(['admin', 'member'].includes(mode), 'd87_auth_mode_invalid');
+  assert.ok(
+    typeof requiredOrganizationName === 'string' &&
+      requiredOrganizationName.trim() === requiredOrganizationName &&
+      requiredOrganizationName.length > 0,
+    'd87_approved_organization_required',
+  );
   onStage?.('organization_section');
   await openSection(panel, 'Organization');
   onStage?.('organization_picker');
@@ -262,7 +282,7 @@ export async function selectRequiredSettingsOrganization({
     (value) => value?.organizationSelected || value?.organizationPickerAvailable,
     30_000,
   );
-  const selectionRequired = settingsOrganizationSelectionRequired(org);
+  const selectionRequired = settingsOrganizationSelectionRequired(org, requiredOrganizationName);
   onObservation?.({
     picker_available: org.organizationPickerAvailable === true,
     picker_has_selection: org.organizationSelected === true,
@@ -270,7 +290,7 @@ export async function selectRequiredSettingsOrganization({
   });
   await onBranch?.(selectionRequired ? 'organization_select' : 'organization_skip');
   onStage?.(selectionRequired ? 'organization_select' : 'organization_skip');
-  if (selectionRequired) await selectOrganization(panel);
+  if (selectionRequired) await selectOrganization(panel, requiredOrganizationName);
   onStage?.('organization_storage');
   onObservation?.({ storage_has_uuid: null, storage_name_matches: null });
   const selected = await waitFor(
@@ -279,20 +299,18 @@ export async function selectRequiredSettingsOrganization({
       const value = await panelIdentity(panel);
       onObservation?.({
         storage_has_uuid: value ? UUID.test(value.organizationId ?? '') : null,
-        storage_name_matches: value
-          ? value.organizationName === MEMBER_TEST_ORGANIZATION_NAME
-          : null,
+        storage_name_matches: value ? value.organizationName === requiredOrganizationName : null,
       });
       return value;
     },
     (value) =>
       UUID.test(value?.organizationId ?? '') &&
-      value?.organizationName === MEMBER_TEST_ORGANIZATION_NAME,
+      value?.organizationName === requiredOrganizationName,
     30_000,
   );
   onObservation?.({
     storage_has_uuid: UUID.test(selected.organizationId ?? ''),
-    storage_name_matches: selected.organizationName === MEMBER_TEST_ORGANIZATION_NAME,
+    storage_name_matches: selected.organizationName === requiredOrganizationName,
   });
   onStage?.('organization_rendered_identity');
   const rendered = await verifyCurrentSettingsIdentity({
@@ -302,7 +320,7 @@ export async function selectRequiredSettingsOrganization({
     profileId,
     organizationId: selected.organizationId,
     requireSelectedOrganization: true,
-    requiredOrganizationName: MEMBER_TEST_ORGANIZATION_NAME,
+    requiredOrganizationName,
   });
   onObservation?.({
     rendered_email_matches: rendered.rendered_email_matches_first_party,
@@ -441,7 +459,7 @@ export async function signInSettings({
       const selectionRequired =
         !org.organizationSelected || org.organizationLabel !== "Matrx's Org";
       await onTrace?.(selectionRequired ? 'auth_org_select' : 'auth_org_skip');
-      if (selectionRequired) await selectOrganization(panel);
+      if (selectionRequired) await selectOrganization(panel, MEMBER_TEST_ORGANIZATION_NAME);
       await onTrace?.('auth_org_after');
       await waitFor(
         'd87_member_organization_selected',

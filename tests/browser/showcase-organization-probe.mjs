@@ -5,11 +5,38 @@ const ORGANIZATION_ID = '72336a38-f816-442f-ad48-18610128fb67';
 export const probeAuth = { email: 'admin@admin.com', profileId: PROFILE_ID, admin_role: true };
 
 export function organizationProbePanel(scenario) {
+  let selected = scenario === 'selected';
+  let pressed = false;
+  let pointerClicks = 0;
   return {
-    async send(method, { expression }) {
+    get selectionClicks() {
+      return selected && scenario === 'admin_approved' ? 1 : 0;
+    },
+    async send(method, parameters) {
+      if (method === 'Input.dispatchMouseEvent') {
+        if (scenario !== 'admin_approved') throw new Error('unexpected_probe_pointer');
+        if (parameters.type === 'mousePressed') pressed = true;
+        if (parameters.type === 'mouseReleased' && pressed) {
+          pointerClicks += 1;
+          if (pointerClicks === 2) selected = true;
+          pressed = false;
+        }
+        return {};
+      }
       if (method !== 'Runtime.evaluate') throw new Error('unexpected_probe_method');
+      const { expression } = parameters;
       let value;
-      if (expression.includes('const buttons = [...document.querySelectorAll')) {
+      if (expression.includes('const kind = "organization"')) {
+        value = {
+          count: 1,
+          matchedCount: 1,
+          x: 120,
+          y: 150,
+          hitTarget: true,
+          animating: false,
+          pointerDiagnostic: {},
+        };
+      } else if (expression.includes('const buttons = [...document.querySelectorAll')) {
         value = { count: 1, expanded: 'true' };
       } else if (expression.includes("?.getAttribute('aria-expanded'))()")) {
         value = 'true';
@@ -21,17 +48,32 @@ export function organizationProbePanel(scenario) {
           roleAbsent: false,
           signOutVisible: true,
           signInEnabled: false,
-          organizationSelected: scenario !== 'picker',
-          organizationLabel: scenario !== 'picker' ? "Matrx's Org" : null,
+          organizationSelected: selected || scenario === 'storage',
+          organizationLabel: selected
+            ? scenario === 'admin_approved'
+              ? 'Matrx Org'
+              : "Matrx's Org"
+            : scenario === 'storage'
+              ? "Matrx's Org"
+              : null,
           organizationPickerAvailable: scenario !== 'picker',
         };
+      } else if (expression.includes('.filter(visible).filter((option)')) {
+        value =
+          scenario === 'admin_approved' && expression.includes('"Matrx Org"')
+            ? { x: 120, y: 150 }
+            : null;
       } else if (expression.includes('chrome.storage.local.get')) {
         value = {
           profileId: PROFILE_ID,
           accessTokenPresent: true,
           isAdmin: true,
-          organizationId: scenario === 'storage' ? null : ORGANIZATION_ID,
-          organizationName: scenario === 'storage' ? null : "Matrx's Org",
+          organizationId: scenario === 'storage' || !selected ? null : ORGANIZATION_ID,
+          organizationName: !selected
+            ? null
+            : scenario === 'admin_approved'
+              ? 'Matrx Org'
+              : "Matrx's Org",
         };
       } else {
         throw new Error('unexpected_probe_expression');

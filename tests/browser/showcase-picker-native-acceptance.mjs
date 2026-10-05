@@ -7,7 +7,11 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
-import { signInSettings } from './settings-native-auth-driver.mjs';
+import {
+  MEMBER_TEST_ORGANIZATION_NAME,
+  approvedAdminOrganizationName,
+  signInSettings,
+} from './settings-native-auth-driver.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 import { runShowcaseOrganizationCheckpoint } from './showcase-organization-checkpoint.mjs';
 import { safeShowcaseOrganizationFailure } from './showcase-organization-diagnostic.mjs';
@@ -111,6 +115,7 @@ try {
         auth: probeAuth,
         resourceAction: (action) => action(),
         report,
+        requiredOrganizationName: MEMBER_TEST_ORGANIZATION_NAME,
       }),
     );
   }
@@ -130,6 +135,9 @@ try {
     process.env.MATRX_SHOWCASE_CI_ARTIFACT_ID ?? '',
     /^[1-9][0-9]*$/,
     'showcase_ci_artifact_required',
+  );
+  const requiredOrganizationName = await approvedAdminOrganizationName(
+    process.env.MATRX_APPROVED_ADMIN_ORGANIZATION_FILE,
   );
   const receipt = JSON.parse(await readFile(receiptPath, 'utf8'));
   assert.equal(receipt.kind, 'local_dev_unpacked', 'showcase_ci_development_receipt_required');
@@ -183,7 +191,13 @@ try {
       );
       assert.equal(auth.admin_role, true, 'showcase_admin_role_unverified');
       stage('organization');
-      await runShowcaseOrganizationCheckpoint({ panel, auth, resourceAction, report });
+      await runShowcaseOrganizationCheckpoint({
+        panel,
+        auth,
+        resourceAction,
+        report,
+        requiredOrganizationName,
+      });
       passed('real_admin_signin_and_device_organization', { rendered: true });
       await resourceAction(() => reopenPanel());
       await waitFor(

@@ -4,6 +4,7 @@ import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
+import { MEMBER_TEST_ORGANIZATION_NAME } from './settings-native-auth-driver.mjs';
 import { runShowcaseOrganizationCheckpoint } from './showcase-organization-checkpoint.mjs';
 import {
   createShowcaseOrganizationDiagnostic,
@@ -100,6 +101,7 @@ test('the real organization helper completes through the shared checkpoint with 
     auth: probeAuth,
     resourceAction: (action) => action(),
     report,
+    requiredOrganizationName: MEMBER_TEST_ORGANIZATION_NAME,
   });
   assert.equal(
     organization.renderedIdentity.selected_organization_matches_stored_uuid_and_name,
@@ -122,6 +124,48 @@ test('the real organization helper completes through the shared checkpoint with 
   });
 });
 
+test('admin selection uses the approved fixture name and verifies the stored organization', async () => {
+  const panel = organizationProbePanel('admin_approved');
+  const report = { organization_diagnostic: null };
+  const organization = await runShowcaseOrganizationCheckpoint({
+    panel,
+    auth: probeAuth,
+    resourceAction: (action) => action(),
+    report,
+    requiredOrganizationName: 'Matrx Org',
+  });
+  assert.equal(panel.selectionClicks, 1);
+  assert.equal(organization.organizationName, 'Matrx Org');
+  assert.equal(report.organization_diagnostic.observations.storage_name_matches, true);
+
+  const wrongFixture = organizationProbePanel('admin_approved');
+  await assert.rejects(
+    runShowcaseOrganizationCheckpoint({
+      panel: wrongFixture,
+      auth: probeAuth,
+      resourceAction: (action) => action(),
+      report: { organization_diagnostic: null },
+      requiredOrganizationName: MEMBER_TEST_ORGANIZATION_NAME,
+    }),
+    /d87_member_organization_option_unavailable/,
+  );
+  assert.equal(wrongFixture.selectionClicks, 0);
+});
+
+test('admin selection refuses an absent approved fixture before opening Settings', async () => {
+  const panel = organizationProbePanel('admin_approved');
+  await assert.rejects(
+    runShowcaseOrganizationCheckpoint({
+      panel,
+      auth: probeAuth,
+      resourceAction: (action) => action(),
+      report: { organization_diagnostic: null },
+    }),
+    /d87_approved_organization_required/,
+  );
+  assert.equal(panel.selectionClicks, 0);
+});
+
 test('the checkpoint cannot claim an admin role from an unverified auth result', async () => {
   const report = { organization_diagnostic: null };
   await assert.rejects(
@@ -130,6 +174,7 @@ test('the checkpoint cannot claim an admin role from an unverified auth result',
       auth: { ...probeAuth, admin_role: false },
       resourceAction: (action) => action(),
       report,
+      requiredOrganizationName: MEMBER_TEST_ORGANIZATION_NAME,
     }),
     /showcase_admin_role_unverified/,
   );
