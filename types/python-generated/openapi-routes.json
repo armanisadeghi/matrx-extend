@@ -60,6 +60,11 @@
    "application/json"
   ]
  },
+ "/admin/agent-studio/from-chat": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/admin/ai-catalog/provider-models/refresh": {
   "post": [
    "application/json"
