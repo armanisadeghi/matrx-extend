@@ -71,5 +71,15 @@
   "after": "625MiBinternalfree, freshindependentreviewagent successfullyspawned. Local20GiBtestfloorstillnotmet.",
   "excluded": "No CloudKit,personaldata,browserprofile,applicationruntime,othercontributorprocess orsecuritysetting modified.",
   "limits": "Criticalcapacitynotresolvedglobally; continueexternaltempfiles/hostedheavytests. Nonewcleanerschedule.",
-  "subsequent_check": "Internalfreefellbackto114MiBwhileothermachineactivitycontinued; rootdidnotattributecause. Swapused5136.69MiB, memory-pressurefree71%. CodexSparkleupdaterhadopenexecutableandwasleftuntouched. Relocationwas temporaryrelief, notdiskhealth."
+  "subsequent_check": "Internalfreefellbackto114MiBwhileothermachineactivitycontinued; rootdidnotattributecause. Swapused5136.69MiB, memory-pressurefree71%. CodexSparkleupdaterhadopenexecutableandwasleftuntouched. Relocationwas temporaryrelief, notdiskhealth.",
+  "metadata_cache_recovery": {
+    "at": "2026-10-05T02:45:21.128797+00:00",
+    "trigger": "Fresh diagnostic agent creation failed ENOSPC again at116MiB free",
+    "action": "pnpm cache delete wildcard through package-manager metadata command; external cleanup log",
+    "cache_before_mib": 610,
+    "cache_after_mib": 449,
+    "system_free_after_mib": 286,
+    "result": "Fresh Astra diagnostic agent started; Store UI access and authenticated refresh recovered",
+    "limits": "Local20GiB test floor still fails; browser runtime cache had active processes and was untouched; no personal data or profile deletion; no schedule or threshold changed"
+  }
 }
