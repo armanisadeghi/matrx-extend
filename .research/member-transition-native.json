@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "task": "member-transition-native",
-  "status": "completed_with_unverified_failure_evidence",
+  "status": "completed_with_preflight_deviation_and_unverified_failure_evidence",
   "workflow": {
     "name": "hosted-guest-acceptance.yml",
     "run_id": 37252919339,
@@ -21,7 +21,7 @@
     "artifact_name": "hosted-guest-37252919339-1",
     "artifact_digest": "sha256:ead8a54add1798466e9271dbf9c5ab6de8c0f53210f3445739c14755d5363e77"
   },
-  "frozen_product": {
+  "actual_tested_product": {
     "kind": "ci_development_test",
     "channel": "development",
     "version": "0.2.257",
@@ -31,6 +31,23 @@
     "artifact_id": 11322000501,
     "artifact_conclusion": "success",
     "runtime_driver_equal_to_artifact_source": true
+  },
+  "preflight_deviation": {
+    "required_artifact": {
+      "version": "0.2.244",
+      "source_sha": "b81587021d689078ed428dafe3e15474a84c41e2",
+      "run_id": 37233480033,
+      "artifact_id": 11315305224
+    },
+    "actual_artifact": {
+      "version": "0.2.257",
+      "source_sha": "a745dd3175515b865e8468b72f0f796e21218139",
+      "run_id": 37251997773,
+      "artifact_id": 11322000501
+    },
+    "reason": "I selected the later successful CI artifact because the brief also cited its recorder wiring and runtime equivalence to current main. I incorrectly treated that as authorization to replace the explicitly required frozen 0.2.244 artifact and did not surface the mismatch before dispatch.",
+    "controlled_d133_comparison_valid": false,
+    "impact": "The tested package version differs from the required frozen baseline, so this run cannot establish a controlled changed-condition comparison for D133. The raw receipt, timeline, artifact identity, and hashes remain unchanged and describe the artifact actually tested."
   },
   "native_outcome": {
     "status": "unverified",
@@ -101,6 +118,7 @@
     "no_credentials_or_identity_values_recorded": true
   },
   "limits": [
+    "The native run used development artifact 0.2.257 rather than the required frozen 0.2.244 artifact; its controlled D133 comparison is invalid.",
     "Authentication reached member_extension_signin, but organization selection did not complete.",
     "Normal mode was requested at 600 px; measured panel width remained 360 px and no case viewport was recorded.",
     "Transition events and visibility timeline are preserved raw. Their order does not establish physical exposure or causality.",
