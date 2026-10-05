@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "task": "panel-host-sentinel-peer-review-ddb793d8",
+  "reviewed_commit": "ddb793d872ca49145198f0e1de8e02f7350dd4c9",
+  "reviewed_at": "2026-10-04",
+  "verdict_A_acceptance": {
+    "status": "PASS_WITH_NATIVE_ACCEPTANCE_UNRESOLVED",
+    "finding": "The host classifier now emits null when either windowId is absent, non-integer, or negative; equal usable IDs remain true and distinct usable IDs remain false. Chromium's GetSidePanelContext browser test opens an actual side panel and asserts runtime.getContexts() returns windowId -1, supporting unknown association for that value.",
+    "historical_run_boundary": "Run 37249932863 reports panel_in_root_window=false at five checkpoints, but its raw receipt retains only that boolean, not either numeric windowId. It cannot establish that this run's false came from -1 rather than a real mismatch. The later member-auth-native research entry correctly downgrades association to unknown.",
+    "native_product_acceptance": "Not verified. The receipt says the panel is visible through after_authentication, hidden at after_organization_selection, and Scrape cases/600px viewport were not reached. No post-auth native capture or product repair is claimed."
+  },
+  "verdict_B_regression_failclosed_privacy": {
+    "status": "PASS",
+    "regression_evidence": "Ran `node --test tests/browser/authenticated-panel-host.test.mjs tests/browser/panel-visibility-diagnostic.test.mjs tests/browser/settings-native-auth-driver.test.mjs`: 14 passed, 0 failed. Coverage includes matching and differing usable IDs, negative/missing IDs, refusal of fabricated measurements, preserved checkpoints, cleanup ordering, and in-memory mutations for removed sentinel guards and incorrect host equality.",
+    "forcing_function_assessment": "The test executes the production observation body/expression with external Chrome/CDP and DOM boundaries doubled. Its output varies across both expected true and false associations and unknown identifier cases; the tests are behavior assertions rather than source-symbol checks. The Chromium test is an independent oracle for the SIDE_PANEL -1 input. This is an appropriate narrow regression guard, not native visibility proof.",
+    "privacy_and_failclosed": "The observer returns an allowlisted summary, marks unsupported measurements unavailable, and suppresses transport error text. Existing tests inject private URL/content/identity and error strings and verify they do not escape. Invalid identifiers yield null instead of a false mismatch claim.",
+    "reporting_correction": "The first report wording attributed the historical run's false to -1 without its IDs being captured. Commit ebdce79e corrected this to a controlled evaluation of the real observer reproducing the sentinel defect, while explicitly saying the actual native run cannot be attributed to that sentinel. This resolves the overclaim."
+  },
+  "causal_review": {
+    "status": "SUPPORTED_WITH_NATIVE_CAUSE_UNRESOLVED",
+    "supported_from_raw_and_source": [
+      "The receipt's first hidden sampled phase is after_organization_selection; after_authentication is visible. The five member_* boundaries are also visible.",
+      "The original panel target remains the sole exact target and one SIDE_PANEL context survives. This establishes renderer/context continuity, not native exposure.",
+      "signInSettings awaits its finally cleanup (admin observer stop, web.close, page.bringToFront, and boundary callbacks) before returning. The visible after_authentication sample follows that return, so cleanup completion immediately before that sample is not itself an observed transition explanation; delayed effects remain possible.",
+      "The next resourceAction calls requireResourceHealth before organization selection. The resource journal has CPU_PENDING and CPU_RECOVERED, but no checkpoint timestamps link that interval to the visibility transition.",
+      "The source can conditionally dispatch pointer input only when organization state requires a selection. Current evidence records neither that branch nor its pointer operations."
+    ],
+    "next_discriminator_assessment": "The passive visibilitychange recorder and health/action brackets target the missing event timing; the independent native observation targets the renderer-versus-physical gap. This is the right discriminator class, but the current proposal is not yet executable as specified: page performance.now() and driver monotonic clocks have different time origins, so correlate all phase markers and visibility events in one clock domain (preferably by having the existing panel-realm recorder accept boundary markers) or document a calibrated offset and uncertainty. Ordering can establish temporal association, not causation. Also establish the native capture API, exact Chrome-window/PID correlation, runner permission, and selected-window-only privacy behavior with a synthetic blank window before relying on a real authenticated capture; otherwise the physical-state half remains unmeasured. Keep capture passive and ensure instrumentation does not focus, reopen, or gate acceptance.",
+    "source_to_native_limit": "Source and unit tests validate sentinel classification and diagnostic fail-closed behavior only; they do not establish that native Chrome kept the side panel exposed or explain the authenticated visibility transition."
+  },
+  "verification": {
+    "commands": [
+      "node --test tests/browser/authenticated-panel-host.test.mjs tests/browser/panel-visibility-diagnostic.test.mjs tests/browser/settings-native-auth-driver.test.mjs"
+    ],
+    "result": "14 passed, 0 failed",
+    "chromium_primary_source": "https://chromium.googlesource.com/chromium/src/+/refs/tags/141.0.7390.37/chrome/browser/extensions/api/runtime/runtime_apitest.cc",
+    "scope_limits": [
+      "No browser/native run, build, workflow, credential, release, or product fix was performed.",
+      "No source-pass-to-native-pass inference is made.",
+      "Three unrelated stabilization files were already dirty and left untouched."
+    ]
+  }
+}
