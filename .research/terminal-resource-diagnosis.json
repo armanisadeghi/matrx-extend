@@ -1,0 +1,20 @@
+{
+  "status": "diagnosed_expected_rejection",
+  "at": "2026-10-05T05:16:32.128799+00:00",
+  "run": 37265281346,
+  "observations": [
+    "CPU_PENDING preceded child exit0 by11ms; no recovery observed",
+    "scripts/stabilization-resource.mjs explicitly marks pending CPU invalid on child exit",
+    "scripts/test-stabilization-resource-cpu-integration.mjs explicitly expects unresolved pending exit to be invalid",
+    "Scrape caller checks resource health before returning, but cleanup continues afterward"
+  ],
+  "ruling": "No evidence of a resource-guard defect. Do not change terminal contract or promote this run. Unresolved final pressure remains invalid.",
+  "hypotheses": {
+    "lost_child_exit": "refuted: child0 retained",
+    "unexpected_guard_race": "refuted as specification violation: terminal pending invalidation is explicit and covered",
+    "pressure_during_cleanup": "consistent with timing, not independently proven"
+  },
+  "changes": "diagnosis only",
+  "verification": "source and committed run evidence inspection; no new browser run",
+  "next": "prioritize published205 guest acceptance; any later lifecycle redesign needs independent attack and actual-code red/green without weakening safety"
+}
