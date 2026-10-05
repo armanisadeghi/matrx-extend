@@ -1,0 +1,36 @@
+{
+  "reviewed_commits": [
+    "6a7ebc31 Record authenticated panel transition in renderer clock",
+    "a745dd31 Mark incomplete panel transition timelines unmeasured"
+  ],
+  "verdict_a_acceptance": {
+    "status": "PARTIAL_NATIVE_UNMEASURED",
+    "findings": [
+      "The authenticated path starts the recorder before signInSettings, wraps the real organization-selection resourceAction, marks health before/after the health wait, marks entry and the actual select/skip branch, and stops in finally after the organization checkpoint.",
+      "The organization-selection CDP mouse sends flow through the recorder proxy. The branch remains conditional; no focus, retry, reopen, or acceptance decision was added or altered by these commits.",
+      "All receipt timestamps come from performance.now() in the side-panel renderer; payload shape is limited to event kind, visibility enum, and finite milliseconds. This proves event ordering only, not native window exposure or causation.",
+      "No native acceptance was run in this lane. Physical exposure remains unmeasured, as the discriminator states."
+    ]
+  },
+  "verdict_b_quality": {
+    "status": "PASS_WITH_VERIFICATION_LIMIT",
+    "findings": [
+      "Start failure, lost renderer, failed phase marker, missing visibility event while hidden, invalid/incomplete receipt, and non-monotonic/non-finite clock fail closed to unavailable/unmeasured; stop removes listener and realm property when the realm is reachable.",
+      "Focused executable proof: node --test tests/browser/panel-transition-recorder.test.mjs — 4 passed, 0 failed. It covers resource-wait classification, actual CDP pointer dispatch brackets and privacy, lost realm, missed event/marker, and bad clock.",
+      "Broader command across recorder, visibility, reopen, settings-auth, and native harness files reached 44 passing assertions, then native-sidepanel-qa-harness.test.mjs stayed pending until 99 seconds and was interrupted (1 cancelled). It is not a green suite result.",
+      "Integration coverage is only partly executable here: source inspection confirms wiring and branch/pointer call sites, while existing transformed-source checks stub the recorder and do not exercise the complete authenticated acceptance run."
+    ]
+  },
+  "privacy_and_scope": {
+    "status": "PASS_BY_SOURCE_INSPECTION",
+    "evidence": "Recorder stores only event kind, performance.now(), and a three-value visibility enum; pointer arguments, URL, DOM, identity, and transport errors are not serialized. Changes are instrumentation around the already-existing auth and organization steps."
+  },
+  "commands": [
+    "PASS: node --test tests/browser/panel-transition-recorder.test.mjs",
+    "INCOMPLETE: node --test tests/browser/panel-transition-recorder.test.mjs tests/browser/panel-visibility-diagnostic.test.mjs tests/browser/panel-visible-reopen-repair.test.mjs tests/browser/settings-native-auth-driver.test.mjs tests/browser/native-sidepanel-qa-harness.test.mjs (44 pass, 0 fail, 1 cancelled after pending harness test timed out at 99 seconds)"
+  ],
+  "limitations": [
+    "No live/native acceptance or physical exposure measurement performed.",
+    "Broader test process did not complete cleanly; focused recorder test did."
+  ]
+}
