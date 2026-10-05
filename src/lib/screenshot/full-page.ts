@@ -27,7 +27,9 @@ interface PageMetrics {
   innerHeight: number;
   scrollWidth: number;
   scrollHeight: number;
-  devicePixelRatio: number;
+  viewportHeight: number;
+  scrollPath: number[] | null;
+  clip: { x: number; y: number; width: number; height: number } | null;
 }
 
 const TILE_SETTLE_MS = 250;
@@ -38,31 +40,100 @@ const MAX_TILES = 30;
 async function getPageMetrics(tabId: number, documentId: string): Promise<PageMetrics> {
   const [first] = await chrome.scripting.executeScript({
     target: { tabId, documentIds: [documentId] },
-    func: () => ({
-      scrollX: window.scrollX,
-      scrollY: window.scrollY,
-      innerWidth: window.innerWidth,
-      innerHeight: window.innerHeight,
-      scrollWidth: Math.max(document.documentElement.scrollWidth, document.body?.scrollWidth ?? 0),
-      scrollHeight: Math.max(
+    func: () => {
+      const viewportHeight = window.innerHeight;
+      const rootHeight = Math.max(
         document.documentElement.scrollHeight,
         document.body?.scrollHeight ?? 0,
-      ),
-      devicePixelRatio: window.devicePixelRatio || 1,
-    }),
+      );
+      let pane: HTMLElement | null = null;
+      let area = 0;
+      // App shells often scroll their main pane while the document itself fits the viewport.
+      if (rootHeight <= viewportHeight + 1) {
+        for (const element of document.querySelectorAll<HTMLElement>('*')) {
+          if (element.scrollHeight <= element.clientHeight || element.clientHeight === 0) continue;
+          const overflow = getComputedStyle(element).overflowY;
+          if (!['auto', 'scroll', 'overlay'].includes(overflow)) continue;
+          const rect = element.getBoundingClientRect();
+          if (
+            rect.top < 0 ||
+            rect.bottom > viewportHeight ||
+            rect.left < 0 ||
+            rect.right > window.innerWidth
+          )
+            continue;
+          const visibleArea = rect.width * rect.height;
+          if (visibleArea > area) {
+            pane = element;
+            area = visibleArea;
+          }
+        }
+      }
+      const scrollPath: number[] | null = pane ? [] : null;
+      if (pane && scrollPath) {
+        let node: Element = pane;
+        while (node !== document.documentElement) {
+          const parent = node.parentElement;
+          if (!parent) throw new Error('The scrolling pane was removed during screenshot capture.');
+          scrollPath.unshift(Array.from(parent.children).indexOf(node));
+          node = parent;
+        }
+      }
+      const rect = pane?.getBoundingClientRect();
+      return {
+        scrollX: pane?.scrollLeft ?? window.scrollX,
+        scrollY: pane?.scrollTop ?? window.scrollY,
+        innerWidth: window.innerWidth,
+        innerHeight: pane?.clientHeight ?? viewportHeight,
+        scrollWidth: Math.max(
+          document.documentElement.scrollWidth,
+          document.body?.scrollWidth ?? 0,
+        ),
+        scrollHeight: pane?.scrollHeight ?? rootHeight,
+        viewportHeight,
+        scrollPath,
+        clip:
+          pane && rect
+            ? {
+                x: rect.left + pane.clientLeft,
+                y: rect.top + pane.clientTop,
+                width: pane.clientWidth,
+                height: pane.clientHeight,
+              }
+            : null,
+      };
+    },
   });
   if (!first?.result) throw new Error('Failed to read page metrics');
   return first.result as PageMetrics;
 }
 
-async function setScroll(tabId: number, documentId: string, x: number, y: number): Promise<void> {
-  await chrome.scripting.executeScript({
+async function setScroll(
+  tabId: number,
+  documentId: string,
+  path: number[] | null,
+  x: number,
+  y: number,
+): Promise<number> {
+  const [first] = await chrome.scripting.executeScript({
     target: { tabId, documentIds: [documentId] },
-    func: (xv: number, yv: number) => {
-      window.scrollTo({ left: xv, top: yv, behavior: 'instant' as ScrollBehavior });
+    func: (indices: number[] | null, xv: number, yv: number) => {
+      if (indices === null) {
+        window.scrollTo({ left: xv, top: yv, behavior: 'instant' as ScrollBehavior });
+        return window.scrollY;
+      }
+      let element: Element | undefined = document.documentElement;
+      for (const index of indices) element = element?.children[index];
+      if (!(element instanceof HTMLElement))
+        throw new Error('The scrolling pane changed during screenshot capture.');
+      element.scrollTo({ left: xv, top: yv, behavior: 'instant' as ScrollBehavior });
+      return element.scrollTop;
     },
-    args: [x, y],
+    args: [path, x, y],
   });
+  if (typeof first?.result !== 'number')
+    throw new Error('Failed to scroll the page for screenshot capture.');
+  return first.result;
 }
 
 export interface FullPageCaptureResult {
@@ -92,7 +163,9 @@ export async function captureFullPage(
     scrollY: origY,
     innerHeight,
     scrollHeight,
-    devicePixelRatio: dpr,
+    scrollPath,
+    viewportHeight,
+    clip,
   } = metrics;
 
   const totalH = Math.max(scrollHeight, innerHeight);
@@ -103,6 +176,7 @@ export async function captureFullPage(
 
   const captures: Array<{ y: number; bitmap: ImageBitmap }> = [];
   let firstTileWidth = 0;
+  let imageScale = 1;
 
   try {
     for (let i = 0; i < tileCount; i++) {
@@ -112,7 +186,10 @@ export async function captureFullPage(
       const targetY =
         i === tileCount - 1 ? Math.max(0, effectiveTotalH - innerHeight) : i * innerHeight;
       const dataUrl = await captureForDocument(document, async () => {
-        await setScroll(tabId, documentId, origX, targetY);
+        const actualY = await setScroll(tabId, documentId, scrollPath, origX, targetY);
+        if (Math.abs(actualY - targetY) > 1) {
+          throw new Error('The page did not scroll to the requested screenshot position.');
+        }
         await new Promise((r) => setTimeout(r, TILE_SETTLE_MS));
         try {
           return await chrome.tabs.captureVisibleTab(winId, { format: 'png' });
@@ -125,16 +202,22 @@ export async function captureFullPage(
       });
       const blob = await fetch(dataUrl).then((r) => r.blob());
       const bitmap = await createImageBitmap(blob);
-      if (i === 0) firstTileWidth = bitmap.width;
+      if (i === 0) {
+        firstTileWidth = bitmap.width;
+        imageScale = bitmap.height / viewportHeight;
+      }
       captures.push({ y: targetY, bitmap });
 
       if (i < tileCount - 1) {
         await new Promise((r) => setTimeout(r, POST_TILE_DELAY_MS));
       }
     }
+  } catch (error) {
+    for (const capture of captures) capture.bitmap.close();
+    throw error;
   } finally {
     try {
-      await setScroll(tabId, documentId, origX, origY);
+      await setScroll(tabId, documentId, scrollPath, origX, origY);
     } catch {
       /* best-effort restore */
     }
@@ -143,12 +226,52 @@ export async function captureFullPage(
   if (captures.length === 0) throw new Error('No tiles captured');
 
   const stitchedW = firstTileWidth;
-  const stitchedH = Math.round(effectiveTotalH * dpr);
+  const cssHeight = viewportHeight + effectiveTotalH - innerHeight;
+  const stitchedH = Math.round(cssHeight * imageScale);
   const canvas = new OffscreenCanvas(stitchedW, stitchedH);
   const ctx = canvas.getContext('2d');
-  if (!ctx) throw new Error('OffscreenCanvas 2d context unavailable');
+  if (!ctx) {
+    for (const capture of captures) capture.bitmap.close();
+    throw new Error('OffscreenCanvas 2d context unavailable');
+  }
   for (const cap of captures) {
-    ctx.drawImage(cap.bitmap, 0, Math.round(cap.y * dpr));
+    if (clip) {
+      // Keep the surrounding app chrome once; only the moving pane is repeated.
+      if (cap.y === 0) ctx.drawImage(cap.bitmap, 0, 0);
+      const sx = Math.round(clip.x * imageScale);
+      const sy = Math.round(clip.y * imageScale);
+      const sw = Math.round(clip.width * imageScale);
+      const sh = Math.round(clip.height * imageScale);
+      ctx.drawImage(
+        cap.bitmap,
+        sx,
+        sy,
+        sw,
+        sh,
+        sx,
+        Math.round((clip.y + cap.y) * imageScale),
+        sw,
+        sh,
+      );
+      if (cap === captures[captures.length - 1]) {
+        const footerY = Math.round((clip.y + clip.height) * imageScale);
+        const footerH = cap.bitmap.height - footerY;
+        if (footerH > 0)
+          ctx.drawImage(
+            cap.bitmap,
+            0,
+            footerY,
+            stitchedW,
+            footerH,
+            0,
+            stitchedH - footerH,
+            stitchedW,
+            footerH,
+          );
+      }
+    } else {
+      ctx.drawImage(cap.bitmap, 0, Math.round(cap.y * imageScale));
+    }
     cap.bitmap.close();
   }
 
@@ -166,7 +289,7 @@ export async function captureFullPage(
     width: stitchedW,
     height: stitchedH,
     cssWidth: metrics.innerWidth,
-    cssHeight: effectiveTotalH,
+    cssHeight,
     tileCount: captures.length,
     truncated,
   };
