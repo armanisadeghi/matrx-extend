@@ -14,8 +14,9 @@ import {
 import { captureLifecycleEvidence } from './profile-reload-capture.mjs';
 import { armBusyExpression, readBusyExpression } from './scrape-busy-observer.mjs';
 import { scrapeLayoutFailure } from './scrape-layout-guard.mjs';
-import { assertImageGroups, assertLinkPane, assertMediaPane } from './scrape-media-assertions.mjs';
+import { assertImageGroups, assertLinkPane } from './scrape-media-assertions.mjs';
 import { intakeImage } from './scrape-media-fixture.mjs';
+import { observeSelectedMedia, retainScrapeMediaFailure } from './scrape-media-observation.mjs';
 import {
   enterMediaField,
   observeScrapeLinks,
@@ -503,32 +504,7 @@ async function observedMediaRemoval({
 }
 
 async function selectedMedia(panel, label, items, name) {
-  if (label === 'Images') {
-    await evaluate(
-      panel,
-      `(() => {
-      const outer=document.querySelector('button[role="tab"][title="Scrape"][data-state="active"]');
-      const pane=outer&&document.getElementById(outer.getAttribute('aria-controls'));
-      const tab=pane?.querySelector('[role="tablist"] [role="tab"][aria-selected="true"]');
-      const content=tab&&document.getElementById(tab.getAttribute('aria-controls'));
-      for(const image of content?.querySelectorAll('img')??[]) image.scrollIntoView({block:'center',behavior:'instant'});
-    })()`,
-    );
-  }
-  const state = await waitFor(
-    name,
-    () => scrapeState(panel),
-    (s) => {
-      const actual = label === 'Images' ? s?.media?.imageItems : s?.media?.videoItems;
-      return (
-        s?.selected === label &&
-        s.visible &&
-        actual?.length === items.length &&
-        (label !== 'Images' || actual.every((item) => item.complete && item.naturalWidth > 0))
-      );
-    },
-  );
-  return assertMediaPane(state, { label, items });
+  return observeSelectedMedia({ panel, label, items, name, evaluate, scrapeState });
 }
 
 async function mediaForm(panel) {
@@ -1746,6 +1722,7 @@ try {
 } catch (error) {
   report.status = 'unverified';
   report.failure = { stage: report.stage, code: String(error?.message ?? error).slice(0, 300) };
+  retainScrapeMediaFailure(report, error);
   if (error?.driverFailure) report.driver_failure = error.driverFailure;
   if (error?.lifecycleEvidence)
     report.reload_lifecycle_failure = captureLifecycleEvidence(error.lifecycleEvidence);

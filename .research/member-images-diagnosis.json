@@ -1,16 +1,17 @@
 {
   "schema_version": 1,
   "task": "member-scrape-images-diagnosis",
-  "status": "insufficient_evidence_for_product_defect",
-  "classification": "driver_observability_defect_proven; product_or_fixture_failure_unresolved",
-  "scope": "Frozen development 0.2.244 member native Scrape run 37258276837; read-only source and receipt investigation, no browser or build launch and no production change.",
+  "defect_id": "EXT-D-0138",
+  "status": "driver_observability_repaired; member_product_outcome_unverified",
+  "classification": "driver_observability_defect_proven_and_repaired; product_or_fixture_failure_unresolved",
+  "scope": "Frozen development 0.2.244 member native Scrape run 37258276837; receipt investigation and minimal native driver diagnostic repair, no browser or build launch and no production change.",
   "artifact": {
     "source_sha": "b81587021d689078ed428dafe3e15474a84c41e2",
     "driver_sha": "ac7343b85f9f4daf166d76fdd6f075f6b19d9f35",
     "ci_run_id": 37258276837,
     "development_artifact_run_id": 37233480033,
     "development_artifact_id": 11315305224,
-    "raw_receipt": "docs/stabilization/evidence/first-auth/run37258276837/raw/scrape-guest-native.json"
+    "raw_receipt": "docs/stabilization/evidence/first-auth/run37258276837/raw/scrape-guest-native.json.txt"
   },
   "observed_boundary": {
     "stage": "result_tabs",
@@ -65,13 +66,22 @@
       "tests/browser/scrape-guest-native-acceptance.mjs:1220",
       "tests/browser/scrape-guest-native-acceptance.mjs:1748",
       "tests/browser/scrape-row-observer.mjs:2",
+      "tests/browser/scrape-media-observation.mjs",
+      "tests/browser/scrape-media-timeout-evidence.mjs",
       "src/features/scrape/ScrapeView.tsx:885"
     ]
   },
-  "proposed_repair": "Driver only: on selectedMedia timeout, capture a fixed allowlisted summary from the final scrapeState (selected, visible, tabCount, imageItems count, fixture path identity, complete, naturalWidth, naturalHeight) in a structured receipt field, plus a pane screenshot and asset response status if available. Preserve the existing assertion. Rerun one member normal-width native case against the same frozen artifact; patch product only after that boundary localizes a real failure. Make the summary bounded and free of account identity or arbitrary page content.",
+  "implemented_repair": "The Images and Video selectedMedia waits now carry an allowlisted structured scrape_media_failure on timeout: media kind, selected tab enum, pane visibility, numeric tab count, observed and expected row counts, and up to 16 row indexes with expected fixture indexes. Images additionally include complete flags and natural dimensions. The summary omits URLs, page text and identity. The existing 10-second wait and acceptance predicates are unchanged. The outer receipt catch retains this field before its 300-character message truncation.",
+  "sibling_census": "Both Images and Video calls of the shared selectedMedia observer use the repaired boundary; other waitFor calls in this driver do not inspect media rows and were left unchanged.",
+  "proposed_next_step": "Run one member normal-width native case against the same frozen artifact and inspect scrape_media_failure if Images still times out. Asset response or a pane screenshot can be added only if that summary leaves the first failing boundary unresolved. Patch product only after a real product failure is localized.",
+  "repair_verification": {
+    "red": "Two node --test cases failed on the uninstrumented helper with the defect-specific assertion: error.scrapeMediaFailure was undefined. A scratch-copy sabotage that removes receipt retention also turned the production caller-to-receipt test red.",
+    "green": "Four cases pass through the real waitFor path; one captures an incomplete image, another distinguishes a hidden wrong pane with zero image rows, the Video sibling captures fixture indexes without leaking URL or text, and a native selectedMedia caller test carries the timeout into the receipt field.",
+    "limits": "Focused source-path test uses controlled read states; no native member rerun was allowed in this lane."
+  },
   "limits": [
     "No heavy/native/browser/build launch was permitted in this diagnostic lane.",
     "This finding does not establish product health or defect closure for the member run.",
-    "No source change beyond this diagnosis record was authorized without a proven product root cause."
+    "Only the proven driver observability defect was repaired; product source was not changed."
   ]
 }
