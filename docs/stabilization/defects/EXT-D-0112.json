@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0112",
   "feature_id": "EXT-F-2013",
-  "case_ids": [
-    "EXT-F-2013-T12"
-  ],
+  "case_ids": ["EXT-F-2013-T12"],
   "surface": "Guest Chat when the platform refuses a request at its usage limit",
   "auth_mode": "guest fingerprint",
   "title": "HTTP 402 guest usage refusal appears as a generic retryable chat failure",
