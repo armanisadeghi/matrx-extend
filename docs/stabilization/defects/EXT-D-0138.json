@@ -13,8 +13,13 @@
   "actual": "Final sampled media state is lost when full scrapeState error text is cut to300characters. Source execution reproduces the loss; underlying member product failure remains unclassified.",
   "severity": "S2: blocks diagnosis and trustworthy member acceptance; not established product defect",
   "priority": "P2: repair evidence boundary before another member run",
-  "state": "in-fix",
-  "evidence": [".research/first-auth-native.json", ".research/member-images-diagnosis.json"],
+  "state": "fixed",
+  "evidence": [
+    ".research/first-auth-native.json",
+    ".research/member-images-diagnosis.json",
+    ".research/media-evidence-peer.json",
+    ".research/media-guard-reverify.json"
+  ],
   "transition_history": [
     {
       "at": "2026-10-05T03:25:52.044793+00:00",
@@ -33,7 +38,20 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Sol owns bounded structured failure evidence repair; independent review and native retest remain required."
+    },
+    {
+      "at": "2026-10-05T03:41:50.548824+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Safe structured Images/Video timeout evidence added. First peer rejected helper-only guard; corrected actualdriver catch/writer regression passes and real retention-removal mutation fails under fresh review. Native retest remains required."
     }
   ],
-  "next_action": "Independent source-path review, CI and one changed-condition frozen244 member run after the guest lane completes; do not infer product cause from this diagnostic defect."
+  "next_action": "After corrected fullCI passes, one controlled samefrozen244 member600 native run to retain actual Images boundary if failure recurs. D138 staysfixed until native evidence, D133 remainsinfix, and no underlyingproductcause established.",
+  "fix_commits": ["f1eb6920", "403a8556"],
+  "ci": {
+    "initial_repair_run": 37259663717,
+    "initial_repair_result": "success",
+    "corrected_guard_run": 37260075556,
+    "corrected_guard_result": "in_progress at integration"
+  }
 }
