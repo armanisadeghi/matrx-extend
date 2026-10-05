@@ -16,7 +16,15 @@ const body = source.slice(
 // External Chrome protocol is doubled; the actual measurement expressions,
 // correlation, privacy projection and cleanup execute unchanged.
 async function checkHost(implementation = body) {
-  for (const changed of [false, true]) {
+  for (const { changed, panelWindowId, rootWindowId, expectedAssociation } of [
+    { changed: false, panelWindowId: 11, rootWindowId: 11, expectedAssociation: true },
+    { changed: true, panelWindowId: 22, rootWindowId: 11, expectedAssociation: false },
+    // Chromium 141 GetSidePanelContext expects windowId -1 for an opened panel.
+    { changed: false, panelWindowId: -1, rootWindowId: 11, expectedAssociation: null },
+    { changed: false, panelWindowId: -1, rootWindowId: -1, expectedAssociation: null },
+    { changed: false, panelWindowId: undefined, rootWindowId: 11, expectedAssociation: null },
+    { changed: false, panelWindowId: 11, rootWindowId: -1, expectedAssociation: null },
+  ]) {
     let hostReads = 0;
     const target = {
       disabled: changed,
@@ -30,14 +38,19 @@ async function checkHost(implementation = body) {
             chrome: {
               tabs: {
                 query: async () => [
-                  { id: 1, windowId: 11, active: !changed, url: 'http://localhost:1234/' },
+                  {
+                    id: 1,
+                    windowId: rootWindowId,
+                    active: !changed,
+                    url: 'http://localhost:1234/',
+                  },
                   { url: 'https://private.invalid/?token=secret' },
                 ],
               },
               windows: {
                 getAll: async () => [
                   {
-                    id: 11,
+                    id: rootWindowId,
                     focused: !changed,
                     state: changed ? 'minimized' : 'normal',
                     title: 'private email',
@@ -49,7 +62,7 @@ async function checkHost(implementation = body) {
                 getContexts: async () => [
                   {
                     documentUrl: 'chrome-extension://owned/sidepanel.html',
-                    windowId: changed ? 22 : 11,
+                    windowId: panelWindowId,
                     documentId: 'private-id',
                   },
                 ],
@@ -104,7 +117,7 @@ async function checkHost(implementation = body) {
         root_window_focused: !changed,
         root_window_state: changed ? 'minimized' : 'normal',
         panel_unique: true,
-        panel_in_root_window: !changed,
+        panel_in_root_window: expectedAssociation,
         focused_window_count: 1,
         window_count: changed ? 2 : 1,
       },
@@ -142,6 +155,8 @@ test('host counterfactuals fail on skipped measurement, wrong correlation and co
       `return {"native_window": {"measured": true, "state": "normal"}, "panel_host": {"measured": true, "root_unique": true, "root_active": true, "root_window_present": true, "root_window_focused": true, "root_window_state": "normal", "panel_unique": true, "panel_in_root_window": true, "focused_window_count": 1, "window_count": 1}, "scrape_hit": {"measured": true, "unique": true, "in_viewport": true, "hit": "self", "disabled": false}};`,
     ),
     body.replace('panel.windowId === root.windowId', 'true'),
+    body.replace('panel.windowId >= 0', 'true'),
+    body.replace('root.windowId >= 0', 'true'),
     body.replace('host?.focused ?? null', 'true'),
     body.replace("hit === target ? 'self'", "hit === target ? 'none'"),
     body.replace(

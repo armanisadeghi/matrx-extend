@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "task": "D133-auth-transition-causal-repair",
+  "status": "DONE_WITH_CONCERNS",
+  "outcome": "Diagnostic sentinel defect repaired; authenticated native visibility cause remains unresolved. No recovery behavior changed.",
+  "ground_truth": {
+    "run_id": 37249932863,
+    "raw_receipt": "docs/stabilization/evidence/member-auth-host/run37249932863/raw/scrape-guest-native-redacted.json",
+    "all_five_member_checkpoints": "visible",
+    "after_authentication": "visible",
+    "first_hidden": "after_organization_selection",
+    "original_context": "survives; sole exact target and SIDE_PANEL context",
+    "native_root_window": "normal, focused at all five member checkpoints",
+    "cases": 0,
+    "normal600_viewport": "not reached"
+  },
+  "confirmed_defect": {
+    "sut": "observeAuthenticatedPanelHost renderer expression",
+    "cause": "panel.windowId sentinel -1 was compared as an ordinary window identifier, reporting false rather than unknown",
+    "primary_source": "https://chromium.googlesource.com/chromium/src/+/refs/tags/141.0.7390.37/chrome/browser/extensions/api/runtime/runtime_apitest.cc",
+    "source_test": "RuntimeGetContextsSidePanelTest.GetSidePanelContext opens a real side panel and expects windowId -1",
+    "inference_limit": "Historical receipt projected only equality, so its actual numeric windowId cannot be recovered. The false field does not distinguish -1 from a real different host.",
+    "repair": "Return null for absent/noninteger/negative panel or root window IDs; preserve true for equal usable IDs and false for distinct usable IDs."
+  },
+  "verification": {
+    "red": "node --test tests/browser/authenticated-panel-host.test.mjs: new Chromium-sentinel case fails false versus null (5 pass, 1 fail)",
+    "green": "node --test tests/browser/authenticated-panel-host.test.mjs tests/browser/panel-visibility-diagnostic.test.mjs tests/browser/settings-native-auth-driver.test.mjs: 14 pass, 0 fail",
+    "in_memory_mutations": [
+      "constant first-case successful output",
+      "constant unavailable output",
+      "wrong host equality",
+      "removed panel sentinel refusal",
+      "removed root sentinel refusal",
+      "invented host focus",
+      "wrong hit classification"
+    ],
+    "bounded_siblings": "Unknown panel ID, both sentinel IDs, root-only sentinel, real matching and real different hosts; cleanup ordering/refusal and settings identity/organization guards remain green."
+  },
+  "source_boundary": [
+    "signInSettings completes canonical member proof, organization selection, rendered identity, admin observer stop, web.close, and page.bringToFront before returning.",
+    "Latest raw after_authentication is visible, so immediate synchronous cleanup effects do not explain this sample; delayed effects remain possible.",
+    "Next resourceAction awaits requireResourceHealth before invoking selectRequiredSettingsOrganization. Current journal includes CPU_PENDING then CPU_RECOVERED. No per-checkpoint timestamps associate that wait to a visibility transition.",
+    "selectRequiredSettingsOrganization opens Organization only if collapsed; selects only if required organization is absent/wrong; reads storage; then verifyCurrentSettingsIdentity opens Account/Organization only if collapsed and reads rendered identity.",
+    "Successful member sign-in already selected and verified the same organization and opened both sections. In unchanged DOM this second call is observational, but current evidence does not record the actual branch or pointer commands.",
+    "Source census in panel adapter, organization, settings and auth found no sidePanel.close, disabling setOptions or window.close call in that scope. This is not proof against delayed browser/UI effects.",
+    "Host observer queries are sequential: renderer visibility, native root window, extension APIs and hit test are not an atomic native snapshot. Document geometry and emulated hasFocus do not establish physical visibility."
+  ],
+  "hypotheses": [
+    {
+      "cause": "Deferred browser/cleanup transition while resource health waits",
+      "prediction": "A passive visibilitychange event precedes the first organization-driver operation, during the resource wait",
+      "discriminator": "Install one bounded passive visibility event recorder before auth; correlate its monotonic times with before-health/after-health/organization-entry markers, with no extra focus actions."
+    },
+    {
+      "cause": "An actual organization-driver pointer action initiates the transition",
+      "prediction": "The panel remains visible after health wait; a recorded real branch emits Input.dispatchMouseEvent before the first hidden event",
+      "discriminator": "Record only branch enum and before/after pointer operation timestamps for this one organization verification interval; no DOM text/identity."
+    },
+    {
+      "cause": "Renderer is hidden while native side panel remains physically exposed",
+      "prediction": "An OS/native Chrome-window observation at the first hidden transition still contains the owned panel frame, despite hidden renderer visibility",
+      "discriminator": "Capture the owned native browser window once at first hidden, independently of Page.captureScreenshot; require privacy-safe handling and correlation to owned process/window."
+    },
+    {
+      "cause": "Native side panel actually closes or is occluded",
+      "prediction": "Same one-shot native observation shows panel absent/occluded at the first hidden event",
+      "discriminator": "Use the same native-window evidence; do not infer from elementFromPoint or runtime context existence."
+    }
+  ],
+  "next_action": {
+    "implementation_before_launch": "Peer-review a narrowly scoped passive transition recorder plus resource-wait/actual-org-action markers and one independently owned native-window observation. The recorder must be bounded by the existing test lifetime/deadline and cleaned up; it must not focus, reopen, screenshot via CDP, retry or alter acceptance. A native-window acquisition method must first be established as available on the existing runner; otherwise physical state remains explicitly unmeasured.",
+    "why": "The existing ordinal timeline conflates a resource wait, conditionally absent UI actions, and asynchronous native changes. Another generic checkpoint or focus permutation cannot distinguish them.",
+    "authorization": "No launch performed or authorized by this report; root owns reviewed next diagnostic."
+  },
+  "limits": [
+    "No D133 product/native repair claimed; no source-only test can reproduce native WasHidden from these observations.",
+    "No native/browser/build/workflow/credential/Store/release/version command run.",
+    "No inventory, defect, coordinator, resource policy or acceptance gate edited.",
+    "No native post-auth screenshot exists; existing screenshots are initial guest target captures.",
+    "Root-window focus and static hit tests remain separate from physical panel visibility."
+  ]
+}

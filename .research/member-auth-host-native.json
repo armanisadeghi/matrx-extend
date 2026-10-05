@@ -1,0 +1,636 @@
+{
+  "schema_version": 1,
+  "task": "member-auth-host-native",
+  "status": "completed_with_failure_evidence",
+  "workflow": {
+    "name": "hosted-guest-acceptance.yml",
+    "run_id": 37249932863,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37249932863",
+    "head_sha": "ebebfa4410e363aedff1482efdc7a6a46faeb417",
+    "terminal_status": "completed",
+    "conclusion": "failure",
+    "runner_label": "macos-15",
+    "case": "guest-scrape-development",
+    "auth_mode": "member",
+    "width_mode": "normal",
+    "requested_min_panel_width_px": 600,
+    "one_launch_no_retry": true,
+    "all_setup_and_readiness_steps_passed": true,
+    "exercise_step": "failure",
+    "artifact_id": 11320457315,
+    "artifact_name": "hosted-guest-37249932863-1",
+    "artifact_digest": "sha256:9ca9acdbce978131d7e7511b7c0cb29248b8b0419279eca12bed5e05e8ea6b4a",
+    "downloaded_zip_sha256": "9ca9acdbce978131d7e7511b7c0cb29248b8b0419279eca12bed5e05e8ea6b4a",
+    "artifact_bytes": 56676
+  },
+  "frozen_product": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.244",
+    "source_sha": "b81587021d689078ed428dafe3e15474a84c41e2",
+    "tree_sha256": "3396bae6d24ddfc7e93422a12e2341983179d7b4be3eca94adaafc5316cc94e7",
+    "run_id": 37233480033,
+    "artifact_id": 11315305224,
+    "artifact_conclusion": "success",
+    "import_marker_matches_source_and_tree": true
+  },
+  "driver": {
+    "cause_escalation_commit": "bb5c4596faea2c53b3019354e31f11ac0d88398c",
+    "fresh_peer_commit": "79988b27c488a28032bff4bb0ec168305d846a29",
+    "both_ancestors_of_run_head": true,
+    "intervening_commit": "ebebfa4410e363aedff1482efdc7a6a46faeb417",
+    "intervening_change_scope": "D133 research/inventory only; diagnostic workflow and driver files unchanged"
+  },
+  "native_outcome": {
+    "status": "unverified",
+    "stage": "organization_selection",
+    "native_stage": "exercise_panel",
+    "failure": {
+      "stage": "organization_selection",
+      "code": "scrape_authenticated_panel_foreground_not_observed:false"
+    },
+    "authentication": {
+      "mode": "member",
+      "web_signed_in": true,
+      "extension_signed_in": true,
+      "admin_role": false,
+      "organization_selected": true,
+      "selected_organization_verified": true
+    },
+    "rendered_identity_checks": {
+      "rendered_email_matches_first_party": true,
+      "rendered_role_matches_mode": true,
+      "profile_matches_first_party": true,
+      "selected_organization_matches_stored_uuid_and_name": true
+    },
+    "first_observed_hidden_phase": "after_organization_selection",
+    "last_observed_visible_phase": "after_authentication",
+    "panel_visibility_timeline": [
+      {
+        "phase": "initial_settled_before_screenshots",
+        "measured": true,
+        "visibility": "visible",
+        "hasFocus": false,
+        "ready": true,
+        "width": 360,
+        "height": 373
+      },
+      {
+        "phase": "after_initial_screenshots",
+        "measured": true,
+        "visibility": "visible",
+        "hasFocus": false,
+        "ready": true,
+        "width": 360,
+        "height": 373
+      },
+      {
+        "phase": "before_authentication",
+        "measured": true,
+        "visibility": "visible",
+        "hasFocus": false,
+        "ready": true,
+        "width": 360,
+        "height": 373
+      },
+      {
+        "phase": "member_web_created",
+        "measured": true,
+        "visibility": "visible",
+        "hasFocus": false,
+        "ready": true,
+        "width": 360,
+        "height": 373,
+        "host": {
+          "native_window": {
+            "measured": true,
+            "state": "normal"
+          },
+          "panel_host": {
+            "measured": true,
+            "root_unique": true,
+            "root_active": false,
+            "root_window_present": true,
+            "root_window_focused": true,
+            "root_window_state": "normal",
+            "panel_unique": true,
+            "panel_in_root_window": false,
+            "focused_window_count": 1,
+            "window_count": 1
+          },
+          "scrape_hit": {
+            "measured": true,
+            "unique": true,
+            "in_viewport": true,
+            "hit": "descendant",
+            "disabled": false
+          }
+        }
+      },
+      {
+        "phase": "member_oauth_completed",
+        "measured": true,
+        "visibility": "visible",
+        "hasFocus": true,
+        "ready": true,
+        "width": 360,
+        "height": 373,
+        "host": {
+          "native_window": {
+            "measured": true,
+            "state": "normal"
+          },
+          "panel_host": {
+            "measured": true,
+            "root_unique": true,
+            "root_active": false,
+            "root_window_present": true,
+            "root_window_focused": true,
+            "root_window_state": "normal",
+            "panel_unique": true,
+            "panel_in_root_window": false,
+            "focused_window_count": 1,
+            "window_count": 1
+          },
+          "scrape_hit": {
+            "measured": true,
+            "unique": true,
+            "in_viewport": true,
+            "hit": "descendant",
+            "disabled": false
+          }
+        }
+      },
+      {
+        "phase": "member_before_web_close",
+        "measured": true,
+        "visibility": "visible",
+        "hasFocus": true,
+        "ready": true,
+        "width": 360,
+        "height": 373,
+        "host": {
+          "native_window": {
+            "measured": true,
+            "state": "normal"
+          },
+          "panel_host": {
+            "measured": true,
+            "root_unique": true,
+            "root_active": false,
+            "root_window_present": true,
+            "root_window_focused": true,
+            "root_window_state": "normal",
+            "panel_unique": true,
+            "panel_in_root_window": false,
+            "focused_window_count": 1,
+            "window_count": 1
+          },
+          "scrape_hit": {
+            "measured": true,
+            "unique": true,
+            "in_viewport": true,
+            "hit": "descendant",
+            "disabled": false
+          }
+        }
+      },
+      {
+        "phase": "member_after_web_close",
+        "measured": true,
+        "visibility": "visible",
+        "hasFocus": true,
+        "ready": true,
+        "width": 360,
+        "height": 373,
+        "host": {
+          "native_window": {
+            "measured": true,
+            "state": "normal"
+          },
+          "panel_host": {
+            "measured": true,
+            "root_unique": true,
+            "root_active": true,
+            "root_window_present": true,
+            "root_window_focused": true,
+            "root_window_state": "normal",
+            "panel_unique": true,
+            "panel_in_root_window": false,
+            "focused_window_count": 1,
+            "window_count": 1
+          },
+          "scrape_hit": {
+            "measured": true,
+            "unique": true,
+            "in_viewport": true,
+            "hit": "descendant",
+            "disabled": false
+          }
+        }
+      },
+      {
+        "phase": "member_after_root_activation",
+        "measured": true,
+        "visibility": "visible",
+        "hasFocus": true,
+        "ready": true,
+        "width": 360,
+        "height": 373,
+        "host": {
+          "native_window": {
+            "measured": true,
+            "state": "normal"
+          },
+          "panel_host": {
+            "measured": true,
+            "root_unique": true,
+            "root_active": true,
+            "root_window_present": true,
+            "root_window_focused": true,
+            "root_window_state": "normal",
+            "panel_unique": true,
+            "panel_in_root_window": false,
+            "focused_window_count": 1,
+            "window_count": 1
+          },
+          "scrape_hit": {
+            "measured": true,
+            "unique": true,
+            "in_viewport": true,
+            "hit": "descendant",
+            "disabled": false
+          }
+        }
+      },
+      {
+        "phase": "after_authentication",
+        "measured": true,
+        "visibility": "visible",
+        "hasFocus": true,
+        "ready": true,
+        "width": 360,
+        "height": 373
+      },
+      {
+        "phase": "after_organization_selection",
+        "measured": true,
+        "visibility": "hidden",
+        "hasFocus": true,
+        "ready": true,
+        "width": 360,
+        "height": 373
+      },
+      {
+        "phase": "before_reopen",
+        "measured": true,
+        "visibility": "hidden",
+        "hasFocus": true,
+        "ready": true,
+        "width": 360,
+        "height": 373
+      },
+      {
+        "phase": "after_root_foreground",
+        "measured": true,
+        "visibility": "hidden",
+        "hasFocus": true,
+        "ready": true,
+        "width": 360,
+        "height": 373
+      },
+      {
+        "phase": "after_trusted_open",
+        "measured": true,
+        "visibility": "hidden",
+        "hasFocus": true,
+        "ready": true,
+        "width": 360,
+        "height": 373
+      },
+      {
+        "phase": "after_target_activation",
+        "measured": true,
+        "visibility": "hidden",
+        "hasFocus": true,
+        "ready": true,
+        "width": 360,
+        "height": 373
+      }
+    ],
+    "new_member_host_hit_checkpoints": [
+      {
+        "phase": "member_web_created",
+        "measured": true,
+        "visibility": "visible",
+        "hasFocus": false,
+        "ready": true,
+        "width": 360,
+        "height": 373,
+        "host": {
+          "native_window": {
+            "measured": true,
+            "state": "normal"
+          },
+          "panel_host": {
+            "measured": true,
+            "root_unique": true,
+            "root_active": false,
+            "root_window_present": true,
+            "root_window_focused": true,
+            "root_window_state": "normal",
+            "panel_unique": true,
+            "panel_in_root_window": false,
+            "focused_window_count": 1,
+            "window_count": 1
+          },
+          "scrape_hit": {
+            "measured": true,
+            "unique": true,
+            "in_viewport": true,
+            "hit": "descendant",
+            "disabled": false
+          }
+        }
+      },
+      {
+        "phase": "member_oauth_completed",
+        "measured": true,
+        "visibility": "visible",
+        "hasFocus": true,
+        "ready": true,
+        "width": 360,
+        "height": 373,
+        "host": {
+          "native_window": {
+            "measured": true,
+            "state": "normal"
+          },
+          "panel_host": {
+            "measured": true,
+            "root_unique": true,
+            "root_active": false,
+            "root_window_present": true,
+            "root_window_focused": true,
+            "root_window_state": "normal",
+            "panel_unique": true,
+            "panel_in_root_window": false,
+            "focused_window_count": 1,
+            "window_count": 1
+          },
+          "scrape_hit": {
+            "measured": true,
+            "unique": true,
+            "in_viewport": true,
+            "hit": "descendant",
+            "disabled": false
+          }
+        }
+      },
+      {
+        "phase": "member_before_web_close",
+        "measured": true,
+        "visibility": "visible",
+        "hasFocus": true,
+        "ready": true,
+        "width": 360,
+        "height": 373,
+        "host": {
+          "native_window": {
+            "measured": true,
+            "state": "normal"
+          },
+          "panel_host": {
+            "measured": true,
+            "root_unique": true,
+            "root_active": false,
+            "root_window_present": true,
+            "root_window_focused": true,
+            "root_window_state": "normal",
+            "panel_unique": true,
+            "panel_in_root_window": false,
+            "focused_window_count": 1,
+            "window_count": 1
+          },
+          "scrape_hit": {
+            "measured": true,
+            "unique": true,
+            "in_viewport": true,
+            "hit": "descendant",
+            "disabled": false
+          }
+        }
+      },
+      {
+        "phase": "member_after_web_close",
+        "measured": true,
+        "visibility": "visible",
+        "hasFocus": true,
+        "ready": true,
+        "width": 360,
+        "height": 373,
+        "host": {
+          "native_window": {
+            "measured": true,
+            "state": "normal"
+          },
+          "panel_host": {
+            "measured": true,
+            "root_unique": true,
+            "root_active": true,
+            "root_window_present": true,
+            "root_window_focused": true,
+            "root_window_state": "normal",
+            "panel_unique": true,
+            "panel_in_root_window": false,
+            "focused_window_count": 1,
+            "window_count": 1
+          },
+          "scrape_hit": {
+            "measured": true,
+            "unique": true,
+            "in_viewport": true,
+            "hit": "descendant",
+            "disabled": false
+          }
+        }
+      },
+      {
+        "phase": "member_after_root_activation",
+        "measured": true,
+        "visibility": "visible",
+        "hasFocus": true,
+        "ready": true,
+        "width": 360,
+        "height": 373,
+        "host": {
+          "native_window": {
+            "measured": true,
+            "state": "normal"
+          },
+          "panel_host": {
+            "measured": true,
+            "root_unique": true,
+            "root_active": true,
+            "root_window_present": true,
+            "root_window_focused": true,
+            "root_window_state": "normal",
+            "panel_unique": true,
+            "panel_in_root_window": false,
+            "focused_window_count": 1,
+            "window_count": 1
+          },
+          "scrape_hit": {
+            "measured": true,
+            "unique": true,
+            "in_viewport": true,
+            "hit": "descendant",
+            "disabled": false
+          }
+        }
+      }
+    ],
+    "panel_foreground_diagnostic": {
+      "owned_root_page": true,
+      "panel_visibility": "hidden",
+      "panel_has_focus": true,
+      "original_panel_target_present": true,
+      "exact_panel_target_count": 1,
+      "original_is_only_exact_panel_target": true,
+      "side_panel_context": {
+        "contextCount": 1,
+        "sidePanelCount": 1,
+        "expectedExtensionCount": 1,
+        "exactUrlCount": 1,
+        "globalTabCount": 1,
+        "exactContextCount": 1,
+        "missingDocumentUrlCount": 0,
+        "emptyDocumentUrlCount": 0,
+        "otherExtensionUrlCount": 0,
+        "nonExtensionUrlCount": 0
+      },
+      "diagnostic_timed_out": false,
+      "outstanding_probes_after_deadline": false
+    },
+    "focus_validity": "hasFocus is recorded independently and does not establish OS foreground",
+    "viewport_validity": "normal600_not_reached; measured width remained pre-emulation 360x373",
+    "cases": [],
+    "panel_viewports": []
+  },
+  "resources": {
+    "original_current_run_journals": [
+      {
+        "path": "docs/stabilization/evidence/member-auth-host/run37249932863/resource-journals/hosted-browser-37249932863-1.jsonl",
+        "sha256": "bf9eb784cfd37fa09f8ef0a80166b8439c051ab9bb905b375a2996798621a9cf",
+        "final_decision": "valid",
+        "exit_code": 0,
+        "event_counts": {
+          "RESOURCE_ADMITTED": 1,
+          "RESOURCE_FINAL_DECISION": 1,
+          "RESOURCE_JOB_EXIT": 1,
+          "RESOURCE_JOURNAL_OPENED": 1
+        },
+        "unsafe_events": 0
+      },
+      {
+        "path": "docs/stabilization/evidence/member-auth-host/run37249932863/resource-journals/hosted-guest-37249932863-1.jsonl",
+        "sha256": "1b774f12a0b0ffcedf71020dc70928efd48497613dfd5489b19b002367a54cb4",
+        "final_decision": "child_failed",
+        "exit_code": 1,
+        "event_counts": {
+          "RESOURCE_ADMITTED": 1,
+          "RESOURCE_CPU_PENDING": 3,
+          "RESOURCE_CPU_RECOVERED": 1,
+          "RESOURCE_FINAL_DECISION": 1,
+          "RESOURCE_JOB_EXIT": 1,
+          "RESOURCE_JOURNAL_OPENED": 1,
+          "RESOURCE_PROCESS_ATTRIBUTION": 1,
+          "RESOURCE_WATCH_HEALTHY": 1
+        },
+        "unsafe_events": 0
+      },
+      {
+        "path": "docs/stabilization/evidence/member-auth-host/run37249932863/resource-journals/hosted-package-37249932863-1.jsonl",
+        "sha256": "a5d7a30b3dfda9b08c12e870e2fa26a46c2a928b63c5b54099259ebeb26b9b61",
+        "final_decision": "valid",
+        "exit_code": 0,
+        "event_counts": {
+          "RESOURCE_ADMITTED": 1,
+          "RESOURCE_FINAL_DECISION": 1,
+          "RESOURCE_JOB_EXIT": 1,
+          "RESOURCE_JOURNAL_OPENED": 1
+        },
+        "unsafe_events": 0
+      }
+    ],
+    "bounded_readiness_file": "docs/stabilization/evidence/member-auth-host/run37249932863/bounded-readiness.json",
+    "readiness_markers": [
+      "HOSTED_CREDENTIAL_PREFLIGHT_READY",
+      "HOSTED_PACKAGE_READY 1.56.1",
+      "HOSTED_BROWSER_READY 1194 browser",
+      "HOSTED_BROWSER_READY 1194 acceptance",
+      "PREPARED_DEVELOPMENT b81587021d689078ed428dafe3e15474a84c41e2 3396bae6d24ddfc7e93422a12e2341983179d7b4be3eca94adaafc5316cc94e7"
+    ]
+  },
+  "evidence": {
+    "receipt": "docs/stabilization/evidence/member-auth-host/run37249932863/raw/scrape-guest-native-redacted.json",
+    "receipt_artifact_sha256_before_identity_fingerprint_removal": "91e871159f7cc23a5a5c115dac4546e02a75988ff68a635d68764e51d4ef9574",
+    "screenshots": [
+      "docs/stabilization/evidence/member-auth-host/run37249932863/screenshots/native-side-panel.png",
+      "docs/stabilization/evidence/member-auth-host/run37249932863/screenshots/normal-target-after-open.png"
+    ],
+    "screenshots_scope": "two initial guest setup screenshots before authentication only; visually checked; no authenticated/failure screenshot",
+    "sha256": [
+      {
+        "path": "docs/stabilization/evidence/member-auth-host/run37249932863/raw/scrape-guest-native-redacted.json",
+        "sha256": "3f69eca683ab1dce491813b20829082c9b8102599f616f2258b4037f42b0ac1f",
+        "bytes": 8414
+      },
+      {
+        "path": "docs/stabilization/evidence/member-auth-host/run37249932863/bounded-readiness.json",
+        "sha256": "f2be5e9695674d3637b9e40c68f4b8cde36768216d68af7988123121dae8338d",
+        "bytes": 422
+      },
+      {
+        "path": "docs/stabilization/evidence/member-auth-host/run37249932863/screenshots/native-side-panel.png",
+        "sha256": "9b6a2a8f7271bb133a9ad3e83d6eb9187c87eccf4c707b421867a6c1f1b98be9",
+        "bytes": 25861
+      },
+      {
+        "path": "docs/stabilization/evidence/member-auth-host/run37249932863/screenshots/normal-target-after-open.png",
+        "sha256": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89",
+        "bytes": 25156
+      },
+      {
+        "path": "docs/stabilization/evidence/member-auth-host/run37249932863/resource-journals/hosted-browser-37249932863-1.jsonl",
+        "sha256": "bf9eb784cfd37fa09f8ef0a80166b8439c051ab9bb905b375a2996798621a9cf",
+        "bytes": 988
+      },
+      {
+        "path": "docs/stabilization/evidence/member-auth-host/run37249932863/resource-journals/hosted-guest-37249932863-1.jsonl",
+        "sha256": "1b774f12a0b0ffcedf71020dc70928efd48497613dfd5489b19b002367a54cb4",
+        "bytes": 4165
+      },
+      {
+        "path": "docs/stabilization/evidence/member-auth-host/run37249932863/resource-journals/hosted-package-37249932863-1.jsonl",
+        "sha256": "a5d7a30b3dfda9b08c12e870e2fa26a46c2a928b63c5b54099259ebeb26b9b61",
+        "bytes": 993
+      }
+    ]
+  },
+  "credential_cleanup": {
+    "temporary_github_secret_deleted": true,
+    "secret_list_confirmed_absent": true,
+    "local_link_file_deleted": true,
+    "local_link_file_absence_verified": true,
+    "existing_identity_and_admin_env_files_unchanged": true,
+    "no_credentials_or_identity_values_recorded": true
+  },
+  "limits": [
+    "Single hosted run; no retry or resource rerun.",
+    "after_authentication remains visible; the first measured hidden checkpoint is after_organization_selection. The five added member_* checkpoints all remained visible, while panel_in_root_window was false at each; this bounds the change without assigning an internal cause.",
+    "DOM center hit=descendant is renderer evidence only; no physical clickability or OS foreground inference.",
+    "600px emulation and Scrape cases were not reached; no post-auth screenshot was captured.",
+    "Artifact contains no source/browser/build/release/inventory/defect changes."
+  ]
+}
