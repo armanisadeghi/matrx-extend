@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** Native D42 ordinary-controls acceptance. Delayed Chrome delivery remains unverified. */
+/** Native D42 picker acceptance; opt-in EXIT hold/release crosses real Chrome runtime. */
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
@@ -15,8 +15,14 @@ import {
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 import { runShowcaseOrganizationCheckpoint } from './showcase-organization-checkpoint.mjs';
 import { safeShowcaseOrganizationFailure } from './showcase-organization-diagnostic.mjs';
+import {
+  armShowcaseStaleBoundary,
+  observeShowcaseRelay,
+  readShowcaseRelays,
+} from './showcase-stale-runtime-boundary.mjs';
 
 const REPO = resolve(import.meta.dirname, '../..');
+const EXPECTED_DEV_EXTENSION_ID = 'cihdmkcdjjckfhjpgoedmgfpoljebaml';
 const extensionDir = process.env.MATRX_SHOWCASE_EXTENSION_DIR;
 const receiptPath = process.env.MATRX_SHOWCASE_RECEIPT;
 const output =
@@ -54,6 +60,7 @@ const report = {
   failure_code: null,
   organization_diagnostic: null,
 };
+const staleBoundary = process.env.MATRX_SHOWCASE_STALE_BOUNDARY === '1';
 const stage = (value) => {
   report.stage = value;
 };
@@ -225,7 +232,19 @@ try {
         () => panelState(panel),
         (value) => value?.picking && value.cancel,
       );
+      const boundary = staleBoundary
+        ? await resourceAction(() => armShowcaseStaleBoundary(page, EXPECTED_DEV_EXTENSION_ID))
+        : null;
+      if (boundary) await resourceAction(() => observeShowcaseRelay(panel));
       stage('cancel_A');
+      if (boundary) {
+        await resourceAction(() => page.locator('#matrx-list-picker-host button#cancel').click());
+        await waitFor(
+          'showcase_A_exit_captured',
+          () => boundary.snapshot(),
+          (value) => value?.held?.length === 1 && value.held[0]?.kind === 'data:list-picker-exit',
+        );
+      }
       await resourceAction(() => click(panel, 'button-text', 'Cancel'));
       await waitFor(
         'showcase_A_cleared',
@@ -242,6 +261,50 @@ try {
         () => panelState(panel),
         (value) => value?.picking && value.cancel,
       );
+      let oldSessionId = null;
+      if (boundary) {
+        const held = await boundary.snapshot();
+        assert.equal(held.url, page.url(), 'showcase_page_changed_across_sessions');
+        assert.equal(held.held.length, 1, 'showcase_old_exit_capture_not_unique');
+        oldSessionId = held.held[0].session_id;
+        assert.match(oldSessionId, /^[0-9a-f-]{36}$/i, 'showcase_old_session_identity_missing');
+        stage('release_old_A_exit');
+        const release = await resourceAction(() => boundary.release(oldSessionId));
+        assert.deepEqual(release, { released: true, ack: true }, 'showcase_old_exit_not_delivered');
+        const stamped = await waitFor(
+          'showcase_A_stamped_relay',
+          () => readShowcaseRelays(panel),
+          (events) =>
+            events?.some(
+              (event) =>
+                event.kind === 'data:list-picker-exit' &&
+                event.session_id === oldSessionId &&
+                Number.isInteger(event.tab_id) &&
+                typeof event.document_id === 'string',
+            ),
+        );
+        const oldRelay = stamped.find(
+          (event) =>
+            event.kind === 'data:list-picker-exit' &&
+            event.session_id === oldSessionId &&
+            Number.isInteger(event.tab_id) &&
+            typeof event.document_id === 'string',
+        );
+        assert.ok(oldRelay, 'showcase_old_exit_relay_missing');
+        const afterOld = await panelState(panel);
+        assert.ok(afterOld.picking && afterOld.cancel, 'showcase_old_exit_closed_B');
+        assert.equal(
+          await page.locator('#matrx-list-picker-host').count(),
+          1,
+          'showcase_old_exit_removed_B_overlay',
+        );
+        passed('genuine_A_exit_relay_rejected_while_B_active', {
+          old_session_id: oldSessionId,
+          relay_tab_id: oldRelay.tab_id,
+          relay_document_id: oldRelay.document_id,
+          B_picking: true,
+        });
+      }
       passed('same_page_cancel_A_start_B', {
         page_unchanged: page.url().endsWith('/events'),
         one_overlay: true,
@@ -254,6 +317,58 @@ try {
         async () => (await pickedOverlay(page)).locator('.badge').allTextContents(),
         (labels) => labels.some((label) => label.includes('3 items')),
       );
+      if (boundary) {
+        const producer = await waitFor(
+          'showcase_B_detection_produced',
+          () => boundary.snapshot(),
+          (value) =>
+            value?.observed?.some(
+              (event) =>
+                event.kind === 'data:list-picker-item-detected' &&
+                event.session_id !== oldSessionId,
+            ),
+        );
+        const current = producer.observed.find(
+          (event) =>
+            event.kind === 'data:list-picker-item-detected' && event.session_id !== oldSessionId,
+        );
+        assert.match(current.session_id, /^[0-9a-f-]{36}$/i, 'showcase_B_session_identity_missing');
+        const relays = await waitFor(
+          'showcase_B_stamped_relay',
+          () => readShowcaseRelays(panel),
+          (events) =>
+            events?.some(
+              (event) =>
+                event.kind === 'data:list-picker-item-detected' &&
+                event.session_id === current.session_id &&
+                Number.isInteger(event.tab_id) &&
+                typeof event.document_id === 'string',
+            ),
+        );
+        const oldRelay = relays.find(
+          (event) =>
+            event.kind === 'data:list-picker-exit' &&
+            event.session_id === oldSessionId &&
+            Number.isInteger(event.tab_id),
+        );
+        const currentRelay = relays.find(
+          (event) =>
+            event.kind === 'data:list-picker-item-detected' &&
+            event.session_id === current.session_id &&
+            Number.isInteger(event.tab_id),
+        );
+        assert.equal(currentRelay.tab_id, oldRelay.tab_id, 'showcase_cross_tab_relay');
+        assert.equal(
+          currentRelay.document_id,
+          oldRelay.document_id,
+          'showcase_cross_document_relay',
+        );
+        passed('current_B_detection_relayed', {
+          B_session_id: current.session_id,
+          different_from_A: true,
+          same_tab_and_document_as_A: true,
+        });
+      }
       stage('select_B_field');
       await resourceAction(() => page.locator('#events article.event-card h2').first().click());
       await waitFor(
@@ -293,12 +408,13 @@ try {
         'showcase_page_click_intercepted_after_done',
       );
       passed('ordinary_page_click_after_cancel', { click_count: 1 });
+      await boundary?.close();
       await requireResourceHealth();
     },
   });
   assert.equal(native.verified, true, 'showcase_native_browser_unverified');
   report.loaded_extension = {
-    expected_id_observed: native.extensionId === 'cihdmkcdjjckfhjpgoedmgfpoljebaml',
+    expected_id_observed: native.extensionId === EXPECTED_DEV_EXTENSION_ID,
     side_panel_context: true,
   };
   assert.equal(
@@ -307,6 +423,14 @@ try {
     'showcase_loaded_identity_mismatch',
   );
   stage('complete');
+  if (staleBoundary) {
+    report.unverified_criteria = report.unverified_criteria.filter(
+      (criterion) => !criterion.includes('stale A ITEM_DETECTED, RESULT, and EXIT'),
+    );
+    report.unverified_criteria.unshift(
+      'stale A ITEM_DETECTED and RESULT held and released after B starts',
+    );
+  }
   report.status = 'passed_bounded';
   process.stdout.write('PASS showcase_picker_native_bounded\n');
 } catch (error) {

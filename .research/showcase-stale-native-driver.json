@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0042",
+  "status": "executable_native_exit_case_added_not_run",
+  "entrypoint": "MATRX_SHOWCASE_STALE_BOUNDARY=1 node tests/browser/showcase-picker-native-acceptance.mjs",
+  "artifact_and_resource_preconditions": "The existing driver still requires exact CI source/run/artifact inputs, the matching unpacked development receipt/tree, approved organization, and the native resource guard. No alternate browser attachment or bypass was added.",
+  "causal_case": [
+    "A starts through the real sidepanel control on the owned repeated-card page.",
+    "CDP selects that page's extension isolated world by exact extension ID, picker start hook, and page URL. It wraps chrome.runtime.sendMessage before A's real overlay Cancel emits EXIT; the first genuine EXIT promise and envelope remain held before Chrome delivery.",
+    "The sidepanel cancels A and starts B on the same tab/document/URL through real controls. The held envelope's captured session ID is released through the original Chrome sendMessage function.",
+    "The sidepanel's runtime observer must see A's SW-stamped relay with trusted tab/document identity, while the UI stays in B picking mode with one overlay. The fixture card click must then produce a distinct B session ID and stamped detection in that same tab/document; B's selected field must extract the three event rows."
+  ],
+  "red_ability": "A consumer that accepts the old stamped EXIT closes B, so the B-picking/overlay assertions fail before B extraction. A relay that drops or rewrites the genuine A envelope fails the stamped-relay/session checks. A producer whose current B detection is lost fails the B relay and extraction checks.",
+  "self_verification": {
+    "command": "node --test tests/browser/showcase-stale-runtime-boundary.test.mjs",
+    "result": "2 passed: held A EXIT is not delivered until release, B detection passes through, then the exact A envelope is delivered; foreign/default page context is refused.",
+    "syntax_and_format": "node --check on the driver; biome check on the driver, boundary helper, and helper test passed."
+  },
+  "native_result": "UNVERIFIED: no browser, build, heavy test, or release run in this lane because the current owned native host belongs to another agent and disk admission is constrained.",
+  "uncovered": [
+    "Delayed A ITEM_DETECTED and RESULT messages remain native-unverified.",
+    "Deferred A cancellation injection after B starts remains native-unverified.",
+    "Deferred install across replacement remains native-unverified.",
+    "Content-context reinjection, exactly one detection listener, and ordinary click restoration remain native-unverified; the existing ordinary click check is not a reinjection check.",
+    "Nonadmin role gating is not part of this new stale-event case."
+  ],
+  "closure_ruling": "Do not close D42 on the helper test or this unrun native case. A real opt-in run against a frozen artifact must pass, and the remaining D42 channels and cancellation/injection boundaries need executable native proof."
+}
