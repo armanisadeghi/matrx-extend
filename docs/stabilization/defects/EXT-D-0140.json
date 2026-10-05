@@ -63,5 +63,11 @@
       "reason": "FullCI37269797985 succeeded afterindependentpeer; rootverified actualtargeted3tests green inLinuxjob111634185103 and integrated2113pass6skip. No releasebehaviorchanged."
     }
   ],
-  "closure_requirement": "Focused real-code reproduction red then green; absent/reordered auth must fail; fresh independent review and full CI green. No release behavior weakening."
+  "closure_requirement": "Focused real-code reproduction red then green; absent/reordered auth must fail; fresh independent review and full CI green. No release behavior weakening.",
+  "concurrent_reconciliation": {
+    "held_commit": "20624633dd13",
+    "resolution": "The concurrent one-line fix changes only the exact searched command to if ! run_checks; then. Reviewed source02f2b67b executes that same candidate sequence and verifies auth at run_checks, preserving the intended ordering while avoiding the format coupling. Keep semantic guard; delete duplicate heldfile/READMEentry.",
+    "preservation": "Root verified20624633dd13 is an ancestor of main; bothversions remain in history. No product/release behavior from the other side was discarded.",
+    "verification": "Sourcecomparison plus existingfreshpeer a0e98cd1/fullCI37269797985. Live test unchanged."
+  }
 }

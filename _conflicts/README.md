@@ -23,7 +23,6 @@ agent -> Needs Arman) with ` — <question> — <what was checked> — <who>` ad
 Its files stay as they are.
 
 ## Held files
-- _conflicts/2026-10-04-230123/tests/unit/release-gate-auth-path.test.ts.held — LOCAL latest 2026-10-04 23:01; GITHUB latest 2026-10-04 22:53; LOCAL lacks 29 of GITHUB's 30 new lines; GITHUB lacks 1 of LOCAL's 1 new lines; recover: git show 20624633dd:'tests/unit/release-gate-auth-path.test.ts' / 70c0152267:'tests/unit/release-gate-auth-path.test.ts'
 
 ## Needs a manager
 
