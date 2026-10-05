@@ -16,7 +16,7 @@ SCRIPT_UNDER_TEST="${1:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/release
 SCRIPT_UNDER_TEST="$(cd "$(dirname "$SCRIPT_UNDER_TEST")" && pwd)/$(basename "$SCRIPT_UNDER_TEST")"
 HARNESS_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SANDBOX="$(mktemp -d)"
-trap '[[ -n "${KEEP_SANDBOX:-}" ]] && echo "sandbox kept: $SANDBOX" || rm -rf "$SANDBOX"' EXIT
+trap '[[ -n "${REGISTRY_PID:-}" ]] && { kill "$REGISTRY_PID" 2>/dev/null || true; wait "$REGISTRY_PID" 2>/dev/null || true; }; [[ -n "${KEEP_SANDBOX:-}" ]] && echo "sandbox kept: $SANDBOX" || rm -rf "$SANDBOX"' EXIT
 
 git_q() { git -c user.name=test -c user.email=test@test -c core.hooksPath=/dev/null "$@" >/dev/null 2>&1; }
 
@@ -47,6 +47,44 @@ mkdir -p scripts
 cp "$HARNESS_ROOT/scripts/sync-unpacked-release.mjs" scripts/sync-unpacked-release.mjs
 git_q add scripts/sync-unpacked-release.mjs; git_q commit -m "fixture sync helper"
 REAL_NODE="$(command -v node)"
+# The catch-up scenarios eventually record @ai-matrx/fixture in their lockfile.
+# Keep the real await gate in play, but point it at a disposable npm-shaped
+# registry rather than making it poll public npm for this synthetic package.
+cat > "$SANDBOX/fixture-registry.mjs" <<'STUB'
+import { createServer } from 'node:http';
+import { writeFileSync } from 'node:fs';
+
+const portFile = process.argv[2];
+const server = createServer((req, res) => {
+  const base = `http://127.0.0.1:${server.address().port}`;
+  if (req.url === '/@ai-matrx/fixture') {
+    res.setHeader('content-type', 'application/json');
+    res.end(
+      JSON.stringify({
+        'dist-tags': { latest: '1.0.1' },
+        versions: { '1.0.1': { dist: { tarball: `${base}/fixture-1.0.1.tgz` } } },
+      }),
+    );
+    return;
+  }
+  if (req.url === '/fixture-1.0.1.tgz') {
+    res.statusCode = 200;
+    res.end();
+    return;
+  }
+  res.statusCode = 404;
+  res.end();
+});
+server.listen(0, '127.0.0.1', () => writeFileSync(portFile, String(server.address().port)));
+STUB
+"$REAL_NODE" "$SANDBOX/fixture-registry.mjs" "$SANDBOX/fixture-registry-port" &
+REGISTRY_PID=$!
+for _ in {1..50}; do
+  [[ -s "$SANDBOX/fixture-registry-port" ]] && break
+  sleep 0.1
+done
+[[ -s "$SANDBOX/fixture-registry-port" ]] || { echo 'fixture registry failed to start' >&2; exit 1; }
+FIXTURE_REGISTRY="http://127.0.0.1:$(<"$SANDBOX/fixture-registry-port")"
 cat > "$SANDBOX/bin/node" <<STUB
 #!/usr/bin/env bash
 case "\$1" in
@@ -408,7 +446,7 @@ git config user.name test; git config user.email test@test; git config core.hook
 mkdir -p scripts; cp "$HARNESS_ROOT/scripts/release-matrx-catchup.mjs" "$HARNESS_ROOT/scripts/await-matrx-latest.mjs" scripts/
 printf 'lockfileVersion: 9.0\n' > pnpm-lock.yaml
 git_q add pnpm-lock.yaml scripts/release-matrx-catchup.mjs scripts/await-matrx-latest.mjs; git_q commit -m "lockfile"
-run_release() { set +e; PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/$1" 2>&1; local rc=$?; set -e; return $rc; }
+run_release() { set +e; MATRX_AWAIT_REGISTRY="$FIXTURE_REGISTRY" PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/$1" 2>&1; local rc=$?; set -e; return $rc; }
 updates() { grep -c '^update -r.*--latest' "$SANDBOX/pnpm-calls" || true; }
 echo "release — @ai-matrx catch-up"
 CATCHUP_BASE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
