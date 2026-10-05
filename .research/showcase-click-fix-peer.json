@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "reviewed_commits": ["52a3eb1f", "d7b7991e"],
+  "verdict_a_native_behavior": "PARTIAL: original failure mechanism is addressed, but changed source has no fresh native run. Receipt run37388591467 shows center hit picker_panel and left quarter card hit; helper selects the left quarter and passes it to a normal Playwright click. Actual Showcase selection remains unverified.",
+  "verdict_b_quality": "PASS for scoped fix: helper uses elementFromPoint to select a reachable interior card point, retains Playwright actionability, and rejects a fully obstructed card. No force click, DOM event dispatch, overlay removal, or weaker acceptance assertion. CI explicitly runs showcase-card-driver.test.mjs.",
+  "fresh_verification": "node --test tests/browser/showcase-card-driver.test.mjs tests/browser/showcase-selection-diagnostic.test.mjs: 6 passed, 0 failed (2026-10-05).",
+  "limitations": [
+    "The focused helper test simulates browser hit testing and click interception; it does not prove the extension's native browser path.",
+    "The nine sampled points can miss a very narrow exposed strip; the original receipt's left quarter is covered by the sampling grid."
+  ],
+  "findings": []
+}
