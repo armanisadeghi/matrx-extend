@@ -26,8 +26,8 @@ function setupPage(contentHeight: number, nested: boolean) {
     scrollWidth: { configurable: true, value: 1000 },
     clientHeight: { configurable: true, value: 600 },
   });
-  window.scrollTo = vi.fn((options: ScrollToOptions | number) => {
-    if (typeof options === 'number') return;
+  window.scrollTo = vi.fn((options?: ScrollToOptions | number, _y?: number) => {
+    if (!options || typeof options === 'number') return;
     Object.defineProperty(window, 'scrollY', {
       value: Math.min(options.top ?? 0, nested ? 0 : contentHeight - 600),
     });
@@ -42,8 +42,8 @@ function setupPage(contentHeight: number, nested: boolean) {
       scrollLeft: { configurable: true, value: 0, writable: true },
     });
     pane.getBoundingClientRect = () => new DOMRect(100, 100, 900, 500);
-    pane.scrollTo = vi.fn((options: ScrollToOptions | number) => {
-      if (typeof options !== 'number')
+    pane.scrollTo = vi.fn((options?: ScrollToOptions | number, _y?: number) => {
+      if (options && typeof options !== 'number')
         pane.scrollTop = Math.min(options.top ?? 0, contentHeight - 500);
     });
   }
