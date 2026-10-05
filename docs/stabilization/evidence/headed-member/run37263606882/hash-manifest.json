@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "run_id": 37263606882,
+  "artifact_id": 11325931066,
+  "artifact_name": "hosted-guest-37263606882-1",
+  "artifact_digest": "sha256:4e0633cf5af7c52efb04dcb2c8e0a210be97a2565d26e273951055d84e0fc928",
+  "files": {
+    "raw/scrape-member-native.json.txt": "ebd7060bd5af22411d8a3b4eab04dc6295d916e80568be9e4e5fcd5b44286819",
+    "resource-journals/hosted-package-37263606882-1.jsonl": "fe96b5e4d48b1e7d9eb789f5fe2bb0b189945d565a1d7aa5671b766fd269d3cb",
+    "resource-journals/hosted-browser-37263606882-1.jsonl": "417ee3ba2f1daf74f573626575d5500b92774af25ce4361da403c7cfdef21327",
+    "resource-journals/hosted-guest-37263606882-1.jsonl": "0159f9d534ea672927339897f568bb8e6d6887bbcf24dbb7c2ed91e3467f72b0",
+    "screenshots/native-side-panel.png": "f499d0269288e71c3a1d4c0ef8409a92fbe5e8ab1e09aa31a56293a0708f4166",
+    "screenshots/scrape-fast-article.png": "aba6ff3bf7e521e2ae805682772dabca051c92411fc46981008e85f55cfa1120",
+    "screenshots/scrape-deep-article.png": "88e0532e1f193594d8de845857cf36d63a0d945a524fd4ede2b82bb2f0c14a88",
+    "screenshots/normal-target-after-open.png": "c939d4f6417b874eefffbe4a8c9bd1cf05088fe2b42ab7a7e13c65d79a024fd2"
+  }
+}

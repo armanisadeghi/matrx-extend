@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "task": "One controlled headed member Scrape native discriminator",
+  "status": "completed_one_launch_no_retry",
+  "launch_authorized": true,
+  "outcome": "unverified_harness_failure_before_empty_media_assertions",
+  "authorization": {
+    "source": "Root confirmed full CI 37262892692 success, inspected exact frozen inputs, and explicitly authorized one run.",
+    "ci_head_sha": "58734e03c37288919e31ca27b9471364e3123160",
+    "ci_conclusion": "success",
+    "headed_guard_job_id": 111613998615,
+    "headed_guard_evidence": "3 passed, 0 failed, 0 skipped",
+    "current_relevant_bytes_match_green_ci": true
+  },
+  "inputs": {
+    "workflow": "hosted-guest-acceptance.yml",
+    "runner_label": "macos-15",
+    "acceptance_case": "guest-scrape-development",
+    "scrape_auth_mode": "member",
+    "scrape_width_mode": "normal",
+    "scrape_normal_width_px": 600,
+    "development_run_id": 37233480033,
+    "development_artifact_id": 11315305224,
+    "retry_count": 0
+  },
+  "frozen_product": {
+    "version": "0.2.244",
+    "source_sha": "b81587021d689078ed428dafe3e15474a84c41e2",
+    "tree_sha256": "3396bae6d24ddfc7e93422a12e2341983179d7b4be3eca94adaafc5316cc94e7"
+  },
+  "launch": {
+    "run_id": 37263606882,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37263606882",
+    "run_attempt": 1,
+    "workflow_head_sha": "215b1a93db466b319677323af2d1c021b7f6a19c",
+    "created_at_utc": "2026-10-05T04:27:37Z",
+    "terminal_at_utc": "2026-10-05T04:35:26Z",
+    "status": "completed",
+    "conclusion": "failure",
+    "job_id": 111615709704,
+    "artifact_id": 11325931066,
+    "artifact_digest": "sha256:4e0633cf5af7c52efb04dcb2c8e0a210be97a2565d26e273951055d84e0fc928",
+    "launch_count": 1,
+    "retry_count": 0
+  },
+  "native_mode_proof": {
+    "requested_headed": true,
+    "observed_headless": false,
+    "observed_mode": "headed",
+    "verified_by": "Browser.getBrowserCommandLine",
+    "receipt_path": "docs/stabilization/evidence/headed-member/run37263606882/raw/scrape-member-native.json.txt",
+    "required_before_case_pass": true
+  },
+  "observations": {
+    "completed_case_count": 0,
+    "partial_case_count": 8,
+    "partial_case_ids": [
+      "EXT-F-1007-T20",
+      "EXT-F-1007-T01",
+      "EXT-F-1007-T08",
+      "EXT-F-1007-T10",
+      "EXT-F-1007-T11",
+      "EXT-F-1007-T12",
+      "EXT-F-1007-T13",
+      "EXT-F-1007-T02"
+    ],
+    "first_failure_stage": "empty_media_capture",
+    "failure_code": "assertMediaPane is not defined",
+    "failure_class": "harness_unbound_reference",
+    "harness_location": "tests/browser/scrape-guest-native-acceptance.mjs calls assertMediaPane at line 1458 without importing it; the helper is defined in tests/browser/scrape-media-assertions.mjs.",
+    "authentication": {
+      "mode": "member",
+      "web_signed_in": true,
+      "extension_signed_in": true,
+      "nonadmin": true,
+      "canonical_admin_rows": 0,
+      "organization_selected_and_verified": true
+    },
+    "panel_visibility": "visible_through_member_authentication_and_organization_selection",
+    "panel_viewport": "360x454",
+    "visibility_samples": 10,
+    "visibility_last_sample_ms": 66592.7,
+    "hidden_event_observed": false,
+    "media_transitions_recorded": 45,
+    "warm_media_trace_events": 73,
+    "warm_links_trace_events": 42,
+    "media_trace_events_dropped": 0,
+    "media_trace_truncated": false,
+    "resource_journal_decisions": {
+      "package": "valid",
+      "browser": "valid",
+      "guest": "child_failed"
+    },
+    "resource_invalid": false,
+    "retry_count": 0
+  },
+  "evidence": {
+    "run_id": 37263606882,
+    "artifact_id": 11325931066,
+    "raw_receipt": "docs/stabilization/evidence/headed-member/run37263606882/raw/scrape-member-native.json.txt",
+    "resource_journals": [
+      "docs/stabilization/evidence/headed-member/run37263606882/resource-journals/hosted-package-37263606882-1.jsonl",
+      "docs/stabilization/evidence/headed-member/run37263606882/resource-journals/hosted-browser-37263606882-1.jsonl",
+      "docs/stabilization/evidence/headed-member/run37263606882/resource-journals/hosted-guest-37263606882-1.jsonl"
+    ],
+    "hash_manifest": "docs/stabilization/evidence/headed-member/run37263606882/hash-manifest.json",
+    "directory": "docs/stabilization/evidence/headed-member/run37263606882",
+    "screenshots_identity_safe": true,
+    "screenshot_scope": "fixture-only UI, fake intake content, no member email or credential material"
+  },
+  "credential_cleanup": {
+    "temporary_github_secret_deleted": true,
+    "secret_absence_confirmed": true,
+    "local_single_use_link_deleted": true,
+    "local_link_absence_confirmed": true,
+    "no_email_sent": true,
+    "no_password_changed": true
+  },
+  "limits": [
+    "No launch or credential creation before CI success and explicit root authorization.",
+    "Zero completed cases means Scrape behavior remains unverified.",
+    "No broad product health or EXT-D-0133 closure claim from this discriminator."
+  ]
+}

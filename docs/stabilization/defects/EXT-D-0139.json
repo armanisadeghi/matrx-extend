@@ -1,0 +1,50 @@
+{
+  "id": "EXT-D-0139",
+  "feature_id": "EXT-F-1007",
+  "surface": "Scrape empty media acceptance driver",
+  "auth_mode": "guest/member/admin shared branch",
+  "title": "Empty-media verification calls undefined assertMediaPane",
+  "reproduction": [
+    "Use frozen development244 artifact11315305224 with headed driver58734e03 or equivalent, member normal600, hosted run37263606882.",
+    "Complete real member sign-in and organization selection; exercise warm Scrape, then empty_media_capture.",
+    "Observe driver throws assertMediaPane is not defined before empty Images/Video assertions complete."
+  ],
+  "expected": "Empty Images and Video panes are checked through the canonical media observation validator; no undefined helper call.",
+  "actual": "Headed native run reaches empty_media_capture and fails on undefined assertMediaPane; sole call remains in production branch.",
+  "severity": "S2: acceptance blocked; not established product defect",
+  "priority": "P1: unblock controlled Scrape verification",
+  "state": "fixed",
+  "evidence": [
+    ".research/headed-member-native.json",
+    ".research/empty-media139-repair.json",
+    ".research/empty-media139-peer.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-05T04:37:14.843405+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Actual headed browser run reports undefined helper."
+    },
+    {
+      "at": "2026-10-05T04:37:14.843405+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Root source search confirms remaining assertMediaPane call with no declaration/import."
+    },
+    {
+      "at": "2026-10-05T04:37:14.843405+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol owns canonical validator repair and actual branch regression; independent review required."
+    },
+    {
+      "at": "2026-10-05T04:41:28.408323+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Canonical media observer repair618861f3 with actualemptybranch RED/GREEN; freshpeer6517a08d accepts sourceB and nativeunverifiedA,14focusedpass. FullCIandheadedretestremain."
+    }
+  ],
+  "fix_commits": ["618861f3"],
+  "next_action": "FullgreenCI including actualemptybranchguard, then ONE changed-condition frozen244 headed member600 retest; closeonlyoriginalreproduction and surroundingreload pass."
+}
