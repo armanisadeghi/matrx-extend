@@ -41,6 +41,12 @@ function fixture() {
       visibility = 'hidden';
       listeners.get('visibilitychange')?.();
     },
+    hideWithoutEvent() {
+      visibility = 'hidden';
+    },
+    corruptClock(value) {
+      runInContext(`window.__matrxPanelTransitionRecorder.events[0].ms = ${value}`, context);
+    },
   };
 }
 
@@ -119,4 +125,34 @@ test('lost renderer context is explicitly unavailable', async () => {
   assert.deepEqual(await recorder.stop(), { status: 'unavailable', events: [] });
   assert.equal(classifyPanelTransition({ status: 'unavailable', events: [] }), 'unmeasured');
   assert.equal(JSON.stringify(await recorder.stop()).includes('private'), false);
+});
+
+test('missed event or phase marker cannot claim a complete interval', async () => {
+  const missedEvent = fixture();
+  const first = await startPanelTransitionRecorder(missedEvent.panel);
+  missedEvent.hideWithoutEvent();
+  assert.equal(classifyPanelTransition(await first.stop()), 'unmeasured');
+
+  const missedMarker = fixture();
+  const second = await startPanelTransitionRecorder(missedMarker.panel);
+  const send = missedMarker.panel.send;
+  missedMarker.panel.send = async () => {
+    throw new Error('private');
+  };
+  await second.mark('before_health');
+  missedMarker.panel.send = send;
+  assert.deepEqual(await second.stop(), { status: 'unavailable', events: [] });
+  assert.equal(missedMarker.listeners.size, 0);
+
+  const badClock = fixture();
+  const third = await startPanelTransitionRecorder(badClock.panel);
+  badClock.corruptClock('Infinity');
+  assert.deepEqual(await third.stop(), { status: 'unavailable', events: [] });
+  assert.equal(badClock.listeners.size, 0);
+
+  const reversedClock = fixture();
+  const fourth = await startPanelTransitionRecorder(reversedClock.panel);
+  reversedClock.corruptClock('1000');
+  assert.deepEqual(await fourth.stop(), { status: 'unavailable', events: [] });
+  assert.equal(reversedClock.listeners.size, 0);
 });

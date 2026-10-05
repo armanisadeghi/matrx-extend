@@ -41,10 +41,11 @@ export async function startPanelTransitionRecorder(panel) {
   );
   if (started !== true) return { status: 'unavailable', events: [] };
   let stopped = false;
+  let complete = true;
   return {
     async mark(phase) {
       if (stopped || !PHASES.has(phase)) return;
-      await read(
+      const marked = await read(
         panel,
         `(() => {
         const recorder = window['${KEY}'];
@@ -53,6 +54,7 @@ export async function startPanelTransitionRecorder(panel) {
         return true;
       })()`,
       );
+      if (marked !== true) complete = false;
     },
     async stop() {
       if (stopped) return { status: 'unavailable', events: [] };
@@ -69,12 +71,16 @@ export async function startPanelTransitionRecorder(panel) {
       })()`,
       );
       if (
+        !complete ||
         !Array.isArray(result) ||
+        result[0]?.kind !== 'start' ||
+        result.at(-1)?.kind !== 'stop' ||
         !result.every(
-          (event) =>
+          (event, index) =>
             typeof event?.kind === 'string' &&
-            typeof event.ms === 'number' &&
-            ['visible', 'hidden', 'other'].includes(event.visibility),
+            Number.isFinite(event.ms) &&
+            ['visible', 'hidden', 'other'].includes(event.visibility) &&
+            (index === 0 || event.ms >= result[index - 1].ms),
         )
       )
         return { status: 'unavailable', events: [] };
@@ -106,7 +112,8 @@ export function classifyPanelTransition(result) {
   const hidden = events.findIndex(
     (event) => event.kind === 'visibilitychange' && event.visibility === 'hidden',
   );
-  if (hidden < 0) return 'no_hidden_event';
+  if (hidden < 0)
+    return events.some((event) => event.visibility === 'hidden') ? 'unmeasured' : 'no_hidden_event';
   const prior = events.slice(0, hidden).map((event) => event.kind);
   if (
     prior.includes('pointer_before') &&
