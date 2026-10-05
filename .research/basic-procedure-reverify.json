@@ -1,18 +1,9 @@
 {
   "reviewed_commit": "4918b564f2b83b9eefebc57db42307ad764b81b9",
-  "scope": ["EXT-F-4054", "EXT-F-4055", "EXT-F-4056", "EXT-F-4057", "EXT-F-4058", "EXT-F-4060"],
-  "review_method": "Independent source and diff review only; no build, browser/native run, database access, or credentials.",
-  "verdict_A_omissions": "ADDRESSED_WITH_EXPLICIT_OPEN_GAPS",
-  "verdict_A_evidence": "All six procedures now separate warm from post-full-extension-reload repeats; Chat Ask confirmation denial is a distinct segment, attempted only when the exact tool is actually advertised. EXT-F-4058 correctly remains unverified because its raw legacy Action wait_for bypasses dispatch and no supported action-tier route is established.",
-  "verdict_B_source_quality": "PASS_SOURCE_ONLY",
-  "verdict_B_evidence": "Diff/source support Tools direct-run bypass, Chat dispatcher confirmation/deny result, exact-name binding caveat, Action wait_for collision, and fixture registration/byte-hash prerequisites. No UI gate, advertised runtime tool, fixture availability, or runtime pass is invented; live binding gaps, deferred Chat coverage, and fixture prerequisites remain explicit.",
-  "source_anchors": [
-    "src/features/tools/ToolsView.tsx:448-461",
-    "src/lib/tools/dispatch.ts:823-834,1188-1190",
-    "src/features/chat/ChatView.tsx:922-934",
-    "src/lib/tools/registry.ts:140-155,238-239",
-    "docs/stabilization/PLAN.md:26-32,47",
-    "tests/browser/form-control-owned-fixture.test.mjs:74-99"
-  ],
-  "limits": "All six inventory feature states remain unverified; no product, inventory, or proposal files were changed."
+  "scope": "EXT-F-4054/4055/4056/4057/4058/4060",
+  "method": "Source/diff only; no build, native/browser run, DB, or credentials.",
+  "verdict_A": "ADDRESSED_WITH_EXPLICIT_OPEN_GAPS — all six distinguish warm and post-full-extension-reload runs; real Chat Ask confirmation-denial is separate and conditional on actual advertisement; 4058 remains open without an action-tier dispatch route.",
+  "verdict_B": "PASS_SOURCE_ONLY — source supports direct-run bypass, dispatcher denial, binding caveat, wait_for collision, fixture registration/hash prerequisites; no UI gate, advertisement, fixture availability, or runtime pass invented; live bindings, deferred Chat, fixture gaps remain.",
+  "evidence": "ToolsView.tsx:448-461; dispatch.ts:823-834,1188-1190; ChatView.tsx:922-934; registry.ts:140-155,238-239; PLAN.md:26-32,47; form-control-owned-fixture.test.mjs:74-99.",
+  "limits": "All six inventory states remain unverified; no product, inventory, or proposal edits."
 }
