@@ -22,7 +22,9 @@
     ".research/showcase-reveal-native.json",
     ".research/showcase-current-selection-diagnosis.json",
     ".research/showcase-selection-diagnostic-peer.json",
-    ".research/showcase-selection-current-native.json"
+    ".research/showcase-selection-current-native.json",
+    ".research/showcase-card-boundary-diagnosis.json",
+    ".research/showcase-pointer-peer.json"
   ],
   "transition_history": [
     {
@@ -50,6 +52,6 @@
     "ci_wiring": "27d06012; exact existing regression command33/33 pass",
     "peer": "bee50b4d: A nativeUNVERIFIED, B PASS_WITH_CONCERNS; bounded catch/receipt checks2/2 pass",
     "ruling": "Minor receipt defect_id concern refuted as scope attribution: driver tests original D42 acceptance, so retaining D42 primary identity is correct. D143 and inventory explicitly link same run/report for the new diagnostic failure. Do not replace the original acceptance scope with instrumentation scope. Synthetic probe proves wiring only; actual sampling/native outcome unverified.",
-    "next": "Bounded causal diagnosis of actual pointer/card boundary assigned; no blind native retry."
+    "next": "Source48b25d43 adds before/after pointer diagnostics; freshpeer9d32a81f qualityPASS/4focused/nativeUNVERIFIED. Wait green fullCI, then ONE guarded changed-condition native test to prove exacthitinterceptor beforeproductrepair."
   }
 }

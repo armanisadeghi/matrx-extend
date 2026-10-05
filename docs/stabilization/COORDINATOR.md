@@ -8,9 +8,11 @@ Local capacity at05:21UTC: internalvolume about116MiB free, external1.6TiB free.
 
 Root owns integration, inventory/defect transitions, Store follow-through, and the next execution decision. Continue from current inventory and defects. Preserve concurrent writers on shared `origin/main`: fetch/reconcile, commit exact paths, push, and record final workspace state in `docs/stabilization/reports/workspace-sync-guest-incident-20261003.json`. Do not end with a child or heavy job active. Source review and tests never substitute for installed UI and server behavior.
 
-## Current recovery and parallel bug work
+## Current recovery and independent bug work
 
-Access restored; run37357780854 independently queried terminalfailure. Both owned GitHub temporary secret names deleted successfully and subsequent listreturnedempty. /root/recover_showcase_terminal collecting exactartifact/diagnostics; no retry. No native run currently active. User requested independent-agent bugfixskill; /root/independent_bug_skill owns repo-local skill; root owns independent evaluations. After creation continue D143 causal repair from recovered evidence. Earlier access interruption is resolved; old ACTIVE references below describe the historical run, not a current launch.
+The reusable skill .claude/skills/matrx-extend-bugfix/SKILL.md is pushed (da86e35a), linked from CLAUDE.md/AGENTS.md and discovered through existing .agents/skills. Three fresh GREEN scenario seats passed after one of three baseline seats mistook coordinator pause for userhold; evaluation dc602822. Assigned agents continue during coordinator absence using durable claims, case/defect records, resource admission, independent retest and frequent shared-main integration. Current machine release prohibition remains binding.
+
+Access restored. Run37357780854 terminalfailure recovered8fdecab8; both owned temporary GitHub secrets deleted and listverifiedempty. Root verified originalreceipt andthree same-run journal hashes; resourceInvalidfalse, package/browservalid, guestchildfailed. Firstfailure is selection_card_click_failed / card_click:3cards1overlay, visibletrue, centerhitfalse. Cause remainsunproven; no extraction acceptance. D143 staysin-fix. Source48b25d43 adds sanitized before/afterclick geometry andhitcategories,4focusedguards withmutantRED. Fresh peer9d32a81f confirms qualityPASS/4focusedtests; nativeUNVERIFIED. Next step aftergreenCI including48b25d43 is ONE guarded changed-condition native test. No native run currentlyactive, no stagedtemporarysecrets. Earlier ACTIVE references below are historical.
 
 ## Current execution — 2026-10-05 18:45 UTC
 
