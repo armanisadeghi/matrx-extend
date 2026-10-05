@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "report_type": "independent_source_only_basic_browser_procedure_review",
+  "reviewed_commit": "0975a102",
+  "reviewed_path": ".research/basic-browser-procedures.json",
+  "scope": [
+    "EXT-F-4054 / EXT-F-4054-C01 / EXT-F-4054-T01",
+    "EXT-F-4055 / EXT-F-4055-C01 / EXT-F-4055-T01",
+    "EXT-F-4056 / EXT-F-4056-C01 / EXT-F-4056-T01",
+    "EXT-F-4057 / EXT-F-4057-C01 / EXT-F-4057-T01",
+    "EXT-F-4058 / EXT-F-4058-C01 / EXT-F-4058-T01",
+    "EXT-F-4060 / EXT-F-4060-C01 / EXT-F-4060-T01"
+  ],
+  "review_method": "Independent source and inventory inspection only; no browser/native run, build, test, database query, or credential use.",
+  "verdict_A_procedure_accuracy_and_executability": {
+    "status": "PARTIAL_SOURCE_ONLY_ALL_RUNTIME_UNVERIFIED",
+    "finding": "The valid/invalid arguments and expected handler result predicates align with current local Zod handlers. The written Catalog path reaches the target rows after selecting All handlers, and the duplicate wait_for is correctly isolated by Action tier. Procedures are not exhaustive for their declared permission and lifecycle dimensions: direct Run bypasses dispatcher authorization, no permission-denial run is specified, and steps describe one post-build/reload run instead of warm plus cold/reloaded runs. Cases needing new owned routes stay blocked until registered and byte-verified.",
+    "case_matrix": [
+      {
+        "case_id": "EXT-F-4054-T01",
+        "modes": ["member", "admin"],
+        "assessment": "PARTIAL — navigate URL and schema-negative match NavigateArgs; owned native route remains prerequisite; permission-denial and warm/cold repetitions absent."
+      },
+      {
+        "case_id": "EXT-F-4055-T01",
+        "modes": ["member", "admin"],
+        "assessment": "PARTIAL — click target, state-counter assertion, missing-element result, and selector/ref schema error match click_element and fixture; route registration remains prerequisite; permission-denial and warm/cold repetitions absent."
+      },
+      {
+        "case_id": "EXT-F-4056-T01",
+        "modes": ["member", "admin"],
+        "assessment": "PARTIAL — #keys value/events, non-editable button result, and selector/ref schema error match type_into_element and fixture; route registration remains prerequisite; permission-denial and warm/cold repetitions absent."
+      },
+      {
+        "case_id": "EXT-F-4057-T01",
+        "modes": ["member", "admin"],
+        "assessment": "PARTIAL — bottom, missing into-view target, and by-without-delta expectations match scroll_page; requiring a separate measured-overflow fixture is correct; permission-denial and warm/cold repetitions absent."
+      },
+      {
+        "case_id": "EXT-F-4058-T01",
+        "modes": ["member", "admin"],
+        "assessment": "PARTIAL — Action-tier raw wait_for schema and result expectations match the local handler; canonical agent-dispatch path is separate; permission-denial and warm/cold repetitions absent."
+      },
+      {
+        "case_id": "EXT-F-4060-T01",
+        "modes": ["member", "admin"],
+        "assessment": "PARTIAL — 50ms success, 49ms schema rejection, and reason output match SleepArgs; no page fixture is needed; warm/cold repetition absent."
+      }
+    ],
+    "common_gaps": [
+      "Inventory cases declare valid-input, invalid-input, permissions, and reload dimensions. Features 4054-4057 and 4060 also retain readiness_gaps for gated/negative permission cases. Recording effective permissions is not testing denied permission. Direct Tools Run cannot prove the dispatcher gate, as the proposal correctly disclaims; keep that separate access coverage open.",
+      "The stabilization plan requires warm and cold/reloaded runs and relevant permission-denied recovery. A completed extension reload in setup is provenance only; the case steps do not define a warm run plus second post-reload run.",
+      "Each case names the inventory's member/admin modes and the shared instruction repeats each manual case under both. This does not establish role visibility or dispatcher authorization, which are accurately disclaimed."
+    ],
+    "positive_checks": [
+      "Tools Catalog defaults to Agent surface; the proposal selects All handlers before searching. Selecting Action before opening wait_for reaches the raw action row.",
+      "Handler schemas, results, and fixture assertions align with src/lib/tools/handlers/action.ts and tests/browser/fixtures/form-controls.html.",
+      "The fixture test's ephemeral server is not native runner registration. The proposal explicitly requires registration and matching served-byte SHA-256 before those cases execute.",
+      "The proposal leaves inventory IDs, modes, bindings, and result cells untouched and claims no native pass."
+    ],
+    "status_rule": "No pass, not-applicable, or fixture-available result follows from this review. Keep every inventory cell unverified and every unregistered owned fixture unavailable until setup and execution produce evidence."
+  },
+  "verdict_B_source_and_doctrine_fidelity": {
+    "status": "SUBSTANTIALLY_ACCURATE_WITH_OPEN_COVERAGE_GAPS",
+    "finding": "Source supports the manual-run bypass, focused-tab fallback, action branches, raw duplicate wait_for row, fixture limits, and non-acceptance claims. The proposal does not weaken inventory state. It is suitable only as source-grounded proposed manual handler procedures; do not close readiness gaps or promote status from it.",
+    "evidence": [
+      "src/features/tools/ToolsView.tsx:74-75,120-137,390-462,501-544 — default/surface filters, JSON/schema rejection, direct handler.run context, permissionMode act and assignedTabId null.",
+      "src/lib/tools/handlers/_active-tab.ts:15-32 — null assignment resolves focused current-window tab.",
+      "src/lib/tools/handlers/action.ts:18-310 — handler schemas and outputs.",
+      "src/lib/tools/registry.ts:140-155,238-239 — intentional wait_for shadow and raw listAllHandlers path.",
+      "tests/browser/fixtures/form-controls.html; tests/browser/form-control-owned-fixture.test.mjs:74-99 — fixture contents and ephemeral exact-byte server test.",
+      "docs/stabilization/inventory.json — six IDs, modes, dimensions, and readiness gaps; live_binding values remain unchanged.",
+      "docs/stabilization/INVENTORY-CONTRACT.md:3,9; docs/stabilization/PLAN.md:24-32,47 — inventory, build/reload preflight, warm/cold, permission-denial, and unfinished-state rules."
+    ],
+    "limits": [
+      "No browser/native run, build, DB query, permission inspection, role outcome, or runtime result was performed.",
+      "No owned route was registered and no served-byte hash was measured by this reviewer.",
+      "No product source, inventory, or proposal file was edited."
+    ]
+  },
+  "recommendation": "Accept only as source-grounded proposed manual handler procedures. Add permission-denial coverage at the actual access door and define warm plus post-reload runs before treating the cases as exhaustive; preserve current fixture-blocked and unverified states."
+}
