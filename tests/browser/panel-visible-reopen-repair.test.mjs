@@ -67,6 +67,9 @@ async function exercise(text, initial, reply = { ok: true, result: { opened: tru
   const run = new Function(
     'signInSettings',
     'selectRequiredSettingsOrganization',
+    'startPanelTransitionRecorder',
+    'traceOrganizationPointers',
+    'classifyPanelTransition',
     'selection',
     'report',
     'assert',
@@ -78,6 +81,9 @@ async function exercise(text, initial, reply = { ok: true, result: { opened: tru
   )(
     async () => ({ mode: 'member' }),
     async () => ({}),
+    async () => ({ mark: async () => {}, stop: async () => ({ status: 'measured', events: [] }) }),
+    (value) => value,
+    () => 'no_hidden_event',
     { mode: 'member' },
     {},
     assert,

@@ -141,6 +141,9 @@ const events = [];
 const exerciseSetup = new Function(
   'signInSettings',
   'selectRequiredSettingsOrganization',
+  'startPanelTransitionRecorder',
+  'traceOrganizationPointers',
+  'classifyPanelTransition',
   'selection',
   'report',
   'assert',
@@ -151,6 +154,9 @@ const exerciseSetup = new Function(
 )(
   async () => ({ mode: 'member' }),
   async () => ({}),
+  async () => ({ mark: async () => {}, stop: async () => ({ status: 'measured', events: [] }) }),
+  (value) => value,
+  () => 'no_hidden_event',
   { mode: 'member' },
   {},
   assert,

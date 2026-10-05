@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "task": "D133-panel-transition-discriminator",
+  "status": "DONE_WITH_NATIVE_UNMEASURED",
+  "ground_truth": "Run 37249932863 shows visible after authentication and first hidden at the post-organization checkpoint; it does not timestamp the intervening CPU_PENDING recovery or record whether a second organization pointer action occurred.",
+  "change": {
+    "scope": "Scrape authenticated transition only",
+    "clock": "All visibilitychange events and phase markers use performance.now() in the same side-panel renderer realm.",
+    "intervals": [
+      "before_health",
+      "after_health",
+      "organization_entry",
+      "organization_select or organization_skip",
+      "pointer_before and pointer_after for each actual CDP mouse dispatch",
+      "after_organization"
+    ],
+    "classification": [
+      "during_resource_wait",
+      "during_pointer_dispatch",
+      "outside_recorded_intervals",
+      "no_hidden_event",
+      "unmeasured"
+    ],
+    "lifetime": "Starts before authentication and stops in finally immediately after the organization checkpoint, within the existing acceptance run and resource/driver deadlines. No new timer or retry was added.",
+    "privacy": "Receipt contains only phase enums, visibility enums, and monotonic millisecond values. No URL, DOM text, identity, coordinates, native pixels, or transport error is exported. Listener and realm property are removed on stop; lost renderer context yields explicit unavailable data."
+  },
+  "verification": {
+    "focused": "node --test tests/browser/native-sidepanel-qa-harness.test.mjs tests/browser/panel-transition-recorder.test.mjs tests/browser/panel-visibility-diagnostic.test.mjs tests/browser/panel-visible-reopen-repair.test.mjs tests/browser/settings-native-auth-driver.test.mjs: 43 passed",
+    "syntax": "node --check tests/browser/scrape-guest-native-acceptance.mjs passed",
+    "mutation_red": [
+      "Removing visibilitychange listener made both timing cases fail on missing hidden event; plant.py restored source byte-identically.",
+      "Replacing measured result with constant start event made both distinct timing cases fail; plant.py restored source byte-identically."
+    ],
+    "native_acceptance": "Not run by this lane. Renderer event order establishes temporal association only, not browser-window causation or physical exposure."
+  },
+  "native_window_feasibility": {
+    "runner": "Current hosted-guest-acceptance.yml uses macos-15 or macos-15-intel. No owned Chrome PID/window-ID correlation or Screen Recording preflight/authorization is established by this workflow.",
+    "authoritative_sources": [
+      "https://developer.apple.com/documentation/screencapturekit/capturing-screen-content-in-macos",
+      "https://developer.apple.com/documentation/screencapturekit/scshareablecontent",
+      "https://developer.apple.com/documentation/coregraphics/cgwindowlistcreate"
+    ],
+    "finding": "Apple supports a selected-window ScreenCaptureKit filter, but its sample requires Screen Recording permission and a restart after grant. Window-list APIs can return NULL outside a GUI security session. Existing runner permission and exact owned-window correlation have not been proven with a synthetic blank window; independently owned native exposure remains unmeasured. No capture subsystem was added."
+  },
+  "limits": [
+    "No product/native repair or acceptance-gate change.",
+    "No browser/native/build/workflow/credential/Store/release/version operation was performed.",
+    "If the renderer execution context is replaced during authentication, the event recorder explicitly reports unavailable rather than reconstructing a timeline."
+  ]
+}

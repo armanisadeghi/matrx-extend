@@ -235,7 +235,13 @@ async function selectOrganization(panel) {
 }
 
 /** Select and verify the approved device organization for an acceptance that requires it. */
-export async function selectRequiredSettingsOrganization({ panel, mode, email, profileId }) {
+export async function selectRequiredSettingsOrganization({
+  panel,
+  mode,
+  email,
+  profileId,
+  onBranch,
+}) {
   assert.ok(['admin', 'member'].includes(mode), 'd87_auth_mode_invalid');
   await openSection(panel, 'Organization');
   const org = await waitFor(
@@ -244,7 +250,9 @@ export async function selectRequiredSettingsOrganization({ panel, mode, email, p
     (value) => value?.organizationSelected || value?.organizationPickerAvailable,
     30_000,
   );
-  if (settingsOrganizationSelectionRequired(org)) await selectOrganization(panel);
+  const selectionRequired = settingsOrganizationSelectionRequired(org);
+  await onBranch?.(selectionRequired ? 'organization_select' : 'organization_skip');
+  if (selectionRequired) await selectOrganization(panel);
   const selected = await waitFor(
     'd87_required_organization_storage',
     () => panelIdentity(panel),

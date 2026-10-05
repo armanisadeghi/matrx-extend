@@ -6,6 +6,11 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import {
+  classifyPanelTransition,
+  startPanelTransitionRecorder,
+  traceOrganizationPointers,
+} from './panel-transition-recorder.mjs';
 import { captureLifecycleEvidence } from './profile-reload-capture.mjs';
 import { armBusyExpression, readBusyExpression } from './scrape-busy-observer.mjs';
 import { scrapeLayoutFailure } from './scrape-layout-guard.mjs';
@@ -87,6 +92,7 @@ const report = {
   authentication: null,
   panel_viewports: [],
   panel_visibility_timeline: [],
+  panel_transition: null,
 };
 let selection;
 let expectedIdentity;
@@ -946,32 +952,45 @@ try {
       await requireResourceHealth();
       if (selection.mode !== 'guest') {
         await observePanelVisibility('before_authentication');
-        report.stage = 'authentication';
-        const authentication = await resourceAction(() =>
-          signInSettings({
-            mode: selection.mode,
-            page,
-            panel,
-            repo: REPO,
-            adminCredentialsFile: process.env.MATRX_PREPARE_ADMIN_CREDENTIALS_FILE,
-            memberLinkFile: process.env.MATRX_REVIEWER_MAGIC_LINK_FILE,
-            observeBoundary: observeAuthenticatedPanel,
-            onStage: (value) => {
-              report.auth_stage = value;
-            },
-          }),
-        );
-        await observePanelVisibility('after_authentication');
-        report.stage = 'organization_selection';
-        const selectedOrganization = await resourceAction(() =>
-          selectRequiredSettingsOrganization({
-            panel,
-            mode: selection.mode,
-            email: authentication.email,
-            profileId: authentication.profileId,
-          }),
-        );
-        await observePanelVisibility('after_organization_selection');
+        const transition = await startPanelTransitionRecorder(panel);
+        let authentication;
+        let selectedOrganization;
+        try {
+          report.stage = 'authentication';
+          authentication = await resourceAction(() =>
+            signInSettings({
+              mode: selection.mode,
+              page,
+              panel,
+              repo: REPO,
+              adminCredentialsFile: process.env.MATRX_PREPARE_ADMIN_CREDENTIALS_FILE,
+              memberLinkFile: process.env.MATRX_REVIEWER_MAGIC_LINK_FILE,
+              observeBoundary: observeAuthenticatedPanel,
+              onStage: (value) => {
+                report.auth_stage = value;
+              },
+            }),
+          );
+          await observePanelVisibility('after_authentication');
+          report.stage = 'organization_selection';
+          await transition.mark?.('before_health');
+          selectedOrganization = await resourceAction(async () => {
+            await transition.mark?.('after_health');
+            await transition.mark?.('organization_entry');
+            return selectRequiredSettingsOrganization({
+              panel: traceOrganizationPointers(panel, transition),
+              mode: selection.mode,
+              email: authentication.email,
+              profileId: authentication.profileId,
+              onBranch: (branch) => transition.mark?.(branch),
+            });
+          });
+          await transition.mark?.('after_organization');
+          await observePanelVisibility('after_organization_selection');
+        } finally {
+          report.panel_transition = transition.stop ? await transition.stop() : transition;
+          report.panel_transition.interval = classifyPanelTransition(report.panel_transition);
+        }
         expectedIdentity = {
           profileId: authentication.profileId,
           email: authentication.email,
