@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import './panel-visibility-diagnostic.test.mjs';
+import './panel-visible-reopen-repair.test.mjs';
 import assert from 'node:assert/strict';
 import { EventEmitter } from 'node:events';
 import { readFile } from 'node:fs/promises';
@@ -97,6 +98,7 @@ for (const reply of [
     },
   };
   const activation = activateOwnedSidePanel({
+    panel: { send: async () => ({ result: { value: { visibility: 'hidden' } } }) },
     page,
     cdp: {
       send: async (method, args) => {

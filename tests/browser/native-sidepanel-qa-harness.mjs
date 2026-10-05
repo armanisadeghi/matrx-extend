@@ -744,10 +744,22 @@ async function observePanelVisibility(panel) {
   }
 }
 
-async function activateOwnedSidePanel({ cdp, panelTargetId, page, observe = async () => {} }) {
+async function activateOwnedSidePanel({
+  cdp,
+  panel,
+  panelTargetId,
+  page,
+  observe = async () => {},
+}) {
   // Target activation can focus a hidden SIDE_PANEL without opening it. Use
   // the same trusted input / FRONTEND_RPC route as the initial native open.
   await observe('before_reopen');
+  // Preserve the exact owned panel when authentication left it visible. The
+  // captured D133 run first became hidden during a redundant trusted open.
+  const visibility = await observePanelVisibility(panel);
+  if (!visibility.measured || !['visible', 'hidden'].includes(visibility.visibility))
+    throw new Error('native_sidepanel_visibility_unavailable_before_reopen');
+  if (visibility.visibility === 'visible') return;
   await page.bringToFront();
   await observe('after_root_foreground');
   const result = page.locator('#result');
@@ -1227,6 +1239,7 @@ export async function runNativeSidepanelQa({
             reopenPanel: () =>
               activateOwnedSidePanel({
                 cdp,
+                panel,
                 panelTargetId: panelTarget.targetId,
                 page,
                 observe: (phase) => observeVisibility(phase, panel),

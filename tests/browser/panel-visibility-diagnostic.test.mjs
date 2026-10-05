@@ -182,6 +182,7 @@ async function checkPath(source, scrape, refused = false) {
       observePanelVisibility: observe,
       reopenPanel: () =>
         activateOwnedSidePanel({
+          panel,
           page,
           panelTargetId: 'panel',
           cdp: {

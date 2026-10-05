@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "defect": "D133",
+  "status": "bounded_repair_ready_for_independent_native_verification",
+  "captured_evidence": {
+    "run": 37245836902,
+    "commit": "b15ad9e4",
+    "file": ".research/member-visibility-timeline-native.json",
+    "last_visible": "after_root_foreground",
+    "first_hidden": "after_trusted_open",
+    "interpretation": "The redundant trusted-open call interval is the first observed visible-to-hidden transition; this does not prove that chrome.sidePanel.open universally toggles visibility. Authentication, organization selection and root foreground are earlier measured visible boundaries.",
+    "viewport_limit": "Captured 360px width precedes normal-viewport emulation and is not proof of the required 600px acceptance case."
+  },
+  "repair": {
+    "sut": "activateOwnedSidePanel and actual authenticated Scrape exercisePanel setup prefix",
+    "behavior": "Measure the already attached exact owned panel before native actions. Visible returns without foreground, trusted open or activation. Hidden retains foreground, clears stale reply, requires fresh successful trusted open and activates the same target. Unavailable, failed or unsupported visibility explicitly refuses.",
+    "preserved_gates": [
+      "initial exact SIDE_PANEL context ownership",
+      "member identity and canonical nonadmin check",
+      "organization selection",
+      "post-setup document.visibilityState visible",
+      "resource health before and after setup",
+      "unchanged later viewport and resource acceptance gates"
+    ],
+    "scope": "Harness only; no extension product behavior changed."
+  },
+  "sibling_census": {
+    "command": "rg -n activateOwnedSidePanel tests/browser; rg -n reopenPanel/activatePanel tests/browser native/acceptance files",
+    "result": "One runtime call site, runNativeSidepanelQa reopenPanel facade, now passes its existing attached exact panel. Two old guard call sites updated with panel IO; new focused helper calls include it. Scrape is the sole native acceptance caller of that reopen facade. Other direct activation callers and Vault distinct lifecycle reopen helpers do not issue this redundant trusted-open sequence and are untouched."
+  },
+  "verification": {
+    "red": "node --test tests/browser/panel-visible-reopen-repair.test.mjs against pre-repair helper: 1 failed preserving-visible test, actual unchanged foreground gate reports exact panel became hidden; hidden recovery passes. Initial scaffold error corrected before this red evidence.",
+    "green": "node --test tests/browser/panel-visible-reopen-repair.test.mjs tests/browser/panel-visibility-diagnostic.test.mjs: 8 tests pass, 0 failures, 121ms.",
+    "forcing_function": "External CDP/DOM IO models captured boundary transition; real measurement expression, helper decisions and actual authenticated setup ordering execute. Outcomes differ for initially visible and hidden. Post-setup visibility reads real modeled panel state, not a manufactured always-visible result.",
+    "mutations": "Executed in memory: constant no-op helper fails hidden gate; removing visible preservation fails visible gate; constant hidden decision fails visible gate; omitted exact target activation fails hidden action contract. Existing diagnostic suite independently catches omitted phases and manufactured probe success/private fields.",
+    "integration": "New focused suite imported by existing CI native-sidepanel-qa-harness.test.mjs. Full long reload harness suite not rerun in this bounded lane.",
+    "syntax_format": "Changed JavaScript syntax and focused Biome checks run separately."
+  },
+  "limits": [
+    "No native/browser workflow, heavy test, build or release run in this lane.",
+    "Native red-to-green causal confirmation and independent peer verification remain root-owned; the seam model is a regression guard, not live Chrome proof.",
+    "No product, inventory, defect or unrelated dirty files edited."
+  ]
+}
