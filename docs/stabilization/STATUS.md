@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-05 05:57 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-05T05:53:01.220136+00:00. 205 features · 764 cases · 1335 controls · 140 linked defect records.
+Generated 2026-10-05 06:01 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-05T06:01:04.494140+00:00. 205 features · 764 cases · 1335 controls · 140 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -193,7 +193,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Next:** Run the remaining role cases in the extension and attach a result.
 
-**Linked defects:** [EXT-D-0002](defects/EXT-D-0002.json) (closed), [EXT-D-0003](defects/EXT-D-0003.json) (closed), [EXT-D-0004](defects/EXT-D-0004.json) (closed), [EXT-D-0005](defects/EXT-D-0005.json) (closed), [EXT-D-0013](defects/EXT-D-0013.json) (closed), [EXT-D-0016](defects/EXT-D-0016.json) (closed), [EXT-D-0017](defects/EXT-D-0017.json) (closed), [EXT-D-0019](defects/EXT-D-0019.json) (closed), [EXT-D-0020](defects/EXT-D-0020.json) (closed), [EXT-D-0085](defects/EXT-D-0085.json) (closed), [EXT-D-0092](defects/EXT-D-0092.json) (closed), [EXT-D-0116](defects/EXT-D-0116.json) (closed), [EXT-D-0140](defects/EXT-D-0140.json) (retest-pass)
+**Linked defects:** [EXT-D-0002](defects/EXT-D-0002.json) (closed), [EXT-D-0003](defects/EXT-D-0003.json) (closed), [EXT-D-0004](defects/EXT-D-0004.json) (closed), [EXT-D-0005](defects/EXT-D-0005.json) (closed), [EXT-D-0013](defects/EXT-D-0013.json) (closed), [EXT-D-0016](defects/EXT-D-0016.json) (closed), [EXT-D-0017](defects/EXT-D-0017.json) (closed), [EXT-D-0019](defects/EXT-D-0019.json) (closed), [EXT-D-0020](defects/EXT-D-0020.json) (closed), [EXT-D-0085](defects/EXT-D-0085.json) (closed), [EXT-D-0092](defects/EXT-D-0092.json) (closed), [EXT-D-0116](defects/EXT-D-0116.json) (closed), [EXT-D-0140](defects/EXT-D-0140.json) (closed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |

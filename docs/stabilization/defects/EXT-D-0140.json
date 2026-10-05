@@ -11,17 +11,18 @@
     "Observe first test compares mint index34438 with checks index-1 because current release.sh invokes if ! run_checks; then rather than run_checks || hard_stop."
   ],
   "expected": "Guard accepts equivalent candidate-loop shell syntax while failing if gate authentication is absent or occurs after strict checks.",
-  "actual": "Source02f2b67b executes the real candidate-loop shell slice; currentvalidsyntax passes and absent/reorderedmint negative mutations reject. Freshpeer/fullCI pending; no native retry yet.",
+  "actual": "Original retired-anchor falsefailure no longer reproduces. Actual candidate-shell guard passes3/3; absent/reorderedmint actualsource mutations fail. Freshpeer A/Bpassed and fullCI37269797985 succeeded; root read the exact3-test green unit result. This closes only the CI guard defect, not release/runtime acceptance.",
   "severity": "S2: blocks validated integration and release/test progression, not a proven runtime product failure",
   "priority": "P1: restore meaningful verification before next native test",
-  "state": "retest-pass",
+  "state": "closed",
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/37269340995",
     "tests/unit/release-gate-auth-path.test.ts",
     "release.sh",
     ".research/showcase-picker-native-run.json",
     ".research/release-gate-auth-guard-repair.json",
-    ".research/release-gate-auth-peer.json"
+    ".research/release-gate-auth-peer.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37269797985"
   ],
   "owner": "release_gate_auth_guard_repair",
   "transition_history": [
@@ -54,6 +55,12 @@
       "from": "fixed",
       "to": "retest-pass",
       "reason": "Freshpeer a0e98cd1 reran3positive tests and both absent/reorderedactualsource negative mutations. FullCI37269797985 unitstep passed; remainingCIsteps pending beforeclosure."
+    },
+    {
+      "at": "2026-10-05T06:01:04.494140+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "FullCI37269797985 succeeded afterindependentpeer; rootverified actualtargeted3tests green inLinuxjob111634185103 and integrated2113pass6skip. No releasebehaviorchanged."
     }
   ],
   "closure_requirement": "Focused real-code reproduction red then green; absent/reordered auth must fail; fresh independent review and full CI green. No release behavior weakening."
