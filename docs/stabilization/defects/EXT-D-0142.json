@@ -11,7 +11,7 @@
     "Attempt required organization selection; actualhelper reports d87_member_organization_option_unavailable at organization_select."
   ],
   "expected": "Required approved organization can be selected and rendered/storage identity verified before Showcase controls are tested; fixture/driver mismatch must not be reported as a product pass.",
-  "actual": "Confirmed fixture mismatch: independent read-only membership checks found zero active admin memberships in two active organizations with the hardcoded member fixture name. Sourceafb775b3 routes explicit approved admin fixture for Showcase and Scrape; bd328be0 repairs routeguard andCIwiring. Existing supported active-only adminfixture resolved cb534681 andprivatefile mode0600prepared. FullCI37276487004 now fails six extractedpanelguard tests because requiredOrganizationName missing fromtestseam; integrationrepair active. No nativeproductpass.",
+  "actual": "Confirmed fixture mismatch: independent read-only membership checks found zero active admin memberships in two active organizations with the hardcoded member fixture name. Sourceafb775b3 routes explicit approved admin fixture for Showcase and Scrape; bd328be0 repairs routeguard andCIwiring; f93ee0cd binds newcontext in four extractedpanelguard seams. Freshpeer309e2717 passed40targeted checks. Existing supported active-only adminfixture resolved cb534681 andprivatefile mode0600prepared. FullCI37277311837 and originalnativeorganizationselection remainpending. No productpass or closure.",
   "severity": "S2: blocks admin acceptance; product versus fixture/driver cause unknown",
   "priority": "P1: diagnose observed selection boundary before further Showcase testing",
   "state": "fixed",
