@@ -3651,3 +3651,12 @@ In Structured data or Showcase Patterns, run a saved pattern, then switch pages 
 - **Where to test:** Signed-in side panel → account menu → Profile, with the device organization selected.
 - **Steps:** Open Profile and confirm the read settles without an error. Change Preferred to a disposable value, Save, leave and reopen Profile, then restore the original value and Save. Repeat with a denied initial read and with a denied refetch after Save; restore access and use Retry. Switch signed-in accounts while a read or save is pending.
 - **Expected:** The saved value survives reopening; the original value is restored afterward. A denied read shows a visible error and Retry, with editing and every Save unavailable until loading succeeds. Retry restores the saved fields. Account changes never expose the previous person’s fields, even if their pending save finishes later. The owner read and error-state regressions are in `src/lib/supabase/user-profile.read.test.ts` and `src/features/profile/ProfileView.load-error.test.tsx`.
+
+### Screenshots: full page, local viewer and sharing
+
+- **Where:** Screenshots tab, signed-in member and admin.
+- **Capture:** On an ordinary long document and an app with a tall overflow scrolling panel, capture Visible then Full page. The latter includes the bottom content and restores the original scroll position. A blocked scroll fails visibly. Very long pages retain the existing tile-cap warning. User captures preserve PNG resolution.
+- **View:** Click a loaded thumbnail. Its full image opens immediately in the side panel, with scrolling and keyboard Close; no website tab or second image download. Close and reopen it. Scroll the gallery while it is open. The separate Files icon still opens Files.
+- **Share:** Open Share, click Copy public link, and view the copied link signed out. It grants image viewing without sign-in. Confirm clipboard/network failures stay visible. Manage all links: create an optional labelled link with expiration and view limit, copy it, then revoke it and verify anonymous access stops.
+- **Regression:** Switch page during a pending gallery read, refresh, delete/cancel, and leave/re-enter thumbnail viewport. Stale reads never restore deleted cards; viewer bytes remain alive while open and are revoked after leaving both surfaces.
+- **Evidence boundary:** Component/DOM seam checks support the source repair; native authenticated sharing/capture and Store verification require a current artifact and real services.

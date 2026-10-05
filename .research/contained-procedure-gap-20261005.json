@@ -27,7 +27,7 @@
       "Use an existing signed-in member profile and repeat with an existing signed-in admin profile. In Tools, locate chrome_bookmarks, expand its argument form, enter the JSON specified below, select Run, and record the complete inline result.",
       "ToolsView manual Run skips the permission gate. This procedure checks local handler output only; it does not establish Ask/Act dispatcher authorization or a permission-denial result. Do not alter permissions to manufacture a denial."
     ],
-    "fixture": "Use a dedicated disposable Chrome profile with a uniquely named folder `Matrx procedure fixture 20261005` and exactly two public bookmarks in it: https://example.org/?matrx-bookmark-fixture=alpha titled `Matrx Bookmark Fixture Alpha 20261005`, and https://example.org/?matrx-bookmark-fixture=beta titled `Matrx Bookmark Fixture Beta 20261005`. Create them through Chrome's bookmark UI, then record the folder ID from the returned tree. Do not use or inspect the everyday profile. After both role runs, delete only the fixture folder and verify the two fixture entries are gone."
+    "fixture": "Use a dedicated disposable Chrome profile with a uniquely named folder `Matrx procedure fixture 20261005` and exactly two public bookmarks in it: https://example.org/?matrx-bookmark-fixture=alpha titled `Matrx Bookmark Fixture Alpha 20261005`, and https://example.org/?matrx-bookmark-fixture=beta titled `Matrx Bookmark Fixture Beta 20261005`. Create them through Chrome's bookmark UI, then record the folder ID from the returned tree. Do not use or inspect the everyday profile. Before deletion, retain the exact two fixture titles and URLs. After both role runs, delete only the fixture folder, then verify each exact fixture title and URL is absent with two separate `action=search` queries in that disposable profile; do not query the deleted folder ID as the cleanup check."
   },
   "cases": {
     "EXT-F-4164-T01": {
@@ -48,7 +48,7 @@
         "Execute tree scope with {\"action\":\"tree\",\"folder_id\":\"<recorded actual fixture folder ID>\",\"max_depth\":3}. Require the returned subtree to contain exactly the two synthetic fixture URLs/titles; record actual shape and any unrelated nodes without assuming root-tree structure.",
         "Reload the extension, reopen Tools, and reload the target tab as specified in shared setup. Repeat both positive searches and the scoped tree query with the same fixture values; repeat the missing-query case.",
         "Repeat the complete warm and post-reload sequence in the existing admin profile using the same isolated fixture if that profile can access it; otherwise seed the same fixture independently and record its actual folder ID. Do not use another user's profile data.",
-        "Delete only the named fixture folder in each seeded profile and verify its two fixture entries no longer appear in the scoped tree. Record cleanup outcome."
+        "Before deletion, retain the two exact fixture titles and URLs. Delete only the named fixture folder in each seeded profile; then run separate exact-title `action=search` queries for Alpha and Beta and verify neither exact fixture title/URL appears. Do not query the deleted folder ID. Record cleanup outcome; record any API error separately rather than treating it as proof of absence."
       ],
       "expected": [
         "Search returns the matching synthetic bookmark with its exact title and URL, reports `count` no greater than the requested limit, and surfaces `total_match` as the Chrome search match count. Each synthetic query is unique to the fixture.",
@@ -76,7 +76,7 @@
       "limits": [
         "Design only; no build, browser, tool execution, or runtime pass was performed.",
         "Procedure verifies manual handler behavior; dispatcher authorization remains unverified here.",
-        "Catalog schema marks query optional while handler requires it for search; record both the observed explicit error and schema drift for later reconciliation. Do not alter inventory as part of this proposal.",
+        "The catalog schema marks query optional generally, while the handler conditionally requires it when action=search; record this action-conditional requirement not represented by the current catalog schema, along with the observed explicit handler error. Do not alter inventory as part of this proposal.",
         "Chrome bookmark search can match title/URL/folder metadata beyond the seeded node; if fixture results contain extra matching rows, record them and inspect only within the disposable profile rather than assuming exact total_match=1."
       ]
     }

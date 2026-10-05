@@ -36,7 +36,11 @@ does not create a second file store.
   persisted `extend.wbx_screenshot.file_url` is an expiring upload-time URL and
   is never treated as a durable thumbnail or destination. The current-page
   Screenshots tab resolves fresh authenticated bytes by `file_id` for previews
-  and copies/opens the durable Files route.
+  and opens the already-loaded image in a local dialog. The separate Files action
+  opens the durable route. Public sharing uses `@ai-matrx/media/share` with
+  the canonical `@ai-matrx/data/files` client. Its host link-manager slot uses
+  the owner-gated public share-link RPCs for expiration, view limits and
+  revocation; no preview or expiring upload URL is shared.
 
 ## Relationship vocabulary
 
@@ -74,7 +78,8 @@ does not create a second file store.
   server-confirmed result when it resolves later.
 - Current-page screenshot previews download authenticated bytes only when the
   card approaches the viewport, then abort and revoke their blob URL after the
-  card leaves it. Reloads use a generation token, and a successful delete
+  card leaves it and its local viewer is closed. Opening the viewer while
+  the thumbnail is loaded reuses its object URL without another byte request. Reloads use a generation token, and a successful delete
   starts an authoritative current-page reload, so an older query cannot
   overwrite a newer result or resurrect a deleted card. Query and deletion
   failures are visible; a failed read never masquerades as an empty gallery,

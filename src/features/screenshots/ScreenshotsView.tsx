@@ -24,10 +24,12 @@
  *     backwards compatibility with tool calls that fail to persist).
  */
 
+import { useBackendConfig } from '@/config/backend';
 import { ENV } from '@/config/env';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { downloadFileBytes } from '@/lib/api/routes/files';
 import { confirmDestructive } from '@/lib/destructive/confirm';
+import { getScreenshotMediaClient } from '@/lib/files/media-client';
 import { newId } from '@/lib/id';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -40,11 +42,24 @@ import {
 } from '@/lib/supabase/queries';
 import { take_screenshot } from '@/lib/tools/handlers/read';
 import { normalizeUrl } from '@/lib/url/match';
-import { Button } from '@ai-matrx/design-system';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@ai-matrx/design-system';
 // THE package formatters (`@ai-matrx/kit/format`, duplication census H1
 // 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
 // twins with no correct owner until kit became one.
 import { formatRelativeTime } from '@ai-matrx/kit/format';
+import type { MediaClient } from '@ai-matrx/media';
+import { MediaProvider } from '@ai-matrx/media/core';
+import { MediaSharePopover } from '@ai-matrx/media/share';
 import {
   AlertTriangle,
   Camera,
@@ -52,13 +67,14 @@ import {
   FileImage,
   Globe2,
   ImageOff,
-  Link2,
   Loader2,
   RefreshCw,
+  Share2,
   Trash2,
   User as UserIcon,
 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ScreenshotShareLinks } from './ScreenshotShareLinks';
 
 type LoadState = 'idle' | 'loading' | 'ready' | 'error';
 type CaptureMode = 'visible' | 'full_page';
@@ -169,9 +185,8 @@ export function ScreenshotsView() {
         const result = await take_screenshot.run(
           {
             profile: 'auto',
-            format: undefined,
-            quality: undefined,
-            max_dimension: undefined,
+            format: 'png',
+            max_dimension: 0,
             persist: true,
             capture_source: 'user',
             mode,
@@ -192,6 +207,7 @@ export function ScreenshotsView() {
           screenshot_id?: string | null;
           file_id?: string | null;
           truncated?: boolean;
+          capture?: { truncated?: boolean };
         };
         if (r.ok === false) {
           setCaptureError(r.reason ?? 'Screenshot failed');
@@ -207,10 +223,8 @@ export function ScreenshotsView() {
           // logs to console; surface a hint here so the user knows why
           // the gallery didn't refresh with a new card.
           if (!r.screenshot_id || !r.file_id) {
-            setPersistWarning(
-              'Captured, but failed to save to the gallery. Check the SW console for the error.',
-            );
-          } else if (mode === 'full_page' && r.truncated) {
+            setPersistWarning('Captured, but could not save. Try again.');
+          } else if (mode === 'full_page' && (r.truncated || r.capture?.truncated)) {
             setPersistWarning('Page exceeded the 30-screen tile cap; the bottom is cropped.');
           }
           try {
@@ -309,7 +323,7 @@ export function ScreenshotsView() {
       </div>
       {canonicalUrl && (
         <p className="px-3 text-[11px] text-muted-foreground">
-          History for this URL, including screenshots from earlier visits and reloads.
+          Screenshots from visits to this page.
         </p>
       )}
 
@@ -418,6 +432,13 @@ function ScreenshotCard({
   deletePending: boolean;
   onDelete: () => void;
 }) {
+  const backend = useBackendConfig();
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [manageOpen, setManageOpen] = useState(false);
+  const [shareNotice, setShareNotice] = useState<string | null>(null);
+  const [mediaClient, setMediaClient] = useState<MediaClient | null>(null);
+  const [mediaError, setMediaError] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewFailed, setPreviewFailed] = useState(false);
   const [previewVisible, setPreviewVisible] = useState(false);
@@ -439,9 +460,21 @@ function ScreenshotCard({
     void chrome.tabs.create({ url: canonicalFileUrl });
   }, [canonicalFileUrl]);
 
-  const copyUrl = useCallback(() => {
-    void navigator.clipboard.writeText(canonicalFileUrl).catch(() => undefined);
-  }, [canonicalFileUrl]);
+  useEffect(() => {
+    let active = true;
+    setMediaClient(null);
+    setMediaError(null);
+    void getScreenshotMediaClient()
+      .then((client) => {
+        if (active) setMediaClient(client);
+      })
+      .catch((err: unknown) => {
+        if (active) setMediaError(err instanceof Error ? err.message : 'Sharing unavailable');
+      });
+    return () => {
+      active = false;
+    };
+  }, [backend.url]);
 
   useEffect(() => {
     const target = previewTargetRef.current;
@@ -459,8 +492,9 @@ function ScreenshotCard({
     return () => observer.disconnect();
   }, []);
 
+  const needsPreview = previewVisible || viewerOpen;
   useEffect(() => {
-    if (!previewVisible) {
+    if (!needsPreview) {
       setPreviewUrl(null);
       setPreviewFailed(false);
       return;
@@ -484,16 +518,17 @@ function ScreenshotCard({
       controller.abort();
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
-  }, [previewVisible, row.file_id]);
+  }, [needsPreview, row.file_id]);
 
   return (
     <div className="group overflow-hidden rounded-md border border-border/60 bg-card text-xs">
       <button
         ref={previewTargetRef}
         type="button"
-        onClick={openFullSize}
+        onClick={() => setViewerOpen(true)}
         className="block w-full bg-muted/40 transition-opacity hover:opacity-90"
-        title="Open in Files"
+        title="View screenshot"
+        aria-label="View screenshot"
       >
         {previewUrl ? (
           <img
@@ -535,15 +570,43 @@ function ScreenshotCard({
           >
             <ExternalLink className="size-3" />
           </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            className="size-6 p-0 text-muted-foreground"
-            onClick={copyUrl}
-            title="Copy durable Files URL"
-          >
-            <Link2 className="size-3" />
-          </Button>
+          <Popover open={shareOpen} onOpenChange={setShareOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="size-6 p-0 text-muted-foreground"
+                title="Share"
+                aria-label="Share screenshot"
+              >
+                <Share2 className="size-3" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-auto max-w-[calc(100vw-24px)] p-0">
+              {mediaClient ? (
+                <MediaProvider client={mediaClient}>
+                  <MediaSharePopover
+                    context={{
+                      ref: { file_id: row.file_id, mime_type: 'image/png' },
+                      resolution: null,
+                      fileName: row.page_title ?? 'Screenshot',
+                    }}
+                    onClose={() => setShareOpen(false)}
+                    manageLinks={() => setManageOpen(true)}
+                    notify={{
+                      success: (message) => setShareNotice(message),
+                      error: (message) => setShareNotice(message),
+                    }}
+                    className="max-w-full"
+                  />
+                </MediaProvider>
+              ) : (
+                <p role="status" className="p-3">
+                  {mediaError ?? 'Loading sharing…'}
+                </p>
+              )}
+            </PopoverContent>
+          </Popover>
           <Button
             size="sm"
             variant="ghost"
@@ -556,6 +619,40 @@ function ScreenshotCard({
           </Button>
         </div>
       </div>
+      {shareNotice && (
+        <p role="status" className="px-2 py-1 text-[11px]">
+          {shareNotice}
+        </p>
+      )}
+      <Dialog open={viewerOpen} onOpenChange={setViewerOpen}>
+        <DialogContent className="flex h-[90vh] w-[calc(100vw-24px)] max-w-none flex-col gap-2 p-3">
+          <DialogHeader>
+            <DialogTitle className="truncate pr-6">{row.page_title ?? 'Screenshot'}</DialogTitle>
+            <DialogDescription>{dim ?? 'Screenshot preview'}</DialogDescription>
+          </DialogHeader>
+          <div className="min-h-0 flex-1 overflow-auto">
+            {previewUrl ? (
+              <img
+                src={previewUrl}
+                alt={row.page_title ?? 'Screenshot'}
+                className="h-auto w-full"
+              />
+            ) : (
+              <p role="status">{previewFailed ? 'Could not load image.' : 'Loading image…'}</p>
+            )}
+          </div>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setViewerOpen(false);
+              setManageOpen(true);
+            }}
+          >
+            Share
+          </Button>
+        </DialogContent>
+      </Dialog>
+      <ScreenshotShareLinks fileId={row.file_id} open={manageOpen} onOpenChange={setManageOpen} />
     </div>
   );
 }
