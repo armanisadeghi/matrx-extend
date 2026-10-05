@@ -17,5 +17,13 @@
     "EXT-F-2010-T03 Run waiting queue and observe outcomes",
     "EXT-F-2010-T04 Drive, capture, or skip one item"
   ],
-  "runtime_status": "source inventory evidence only; no runtime promotion or behavior pass claimed"
+  "runtime_status": "source inventory evidence only; no runtime promotion or behavior pass claimed",
+  "independent_correction_review": {
+    "agent": "/root/capture_wording_final_peer",
+    "commit": "c4bc5c31",
+    "procedure": "PASS",
+    "quality": "PASS",
+    "evidence": "Current source omits blank skip note and has no capture-note input; parent-to-commit comparison preserves case IDs, results, applicability, cells and runtime evidence; git diff --check clean.",
+    "runtime": "unverified"
+  }
 }
