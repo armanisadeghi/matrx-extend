@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0142",
+  "reviewed_commit": "a2656774d7816bc2c1738d46106cd9903ce9ff50",
+  "comparison_commit": "19bd9045",
+  "verdict_A_runtime": "UNVERIFIED",
+  "verdict_A_basis": "No native/browser run was authorized or performed. The prior resource-valid run 37278418866 predates failure-time DOM diagnostics and does not establish the native cause or acceptance. The approved-admin flow still requires exact fixture-name selection and verifies stored UUID, name, and rendered identity in source/tests.",
+  "verdict_B_quality": "FAIL",
+  "addressed_prior_findings": [
+    {
+      "finding": "Document-wide option matches could be selected while the Acting as picker was closed or unrelated.",
+      "status": "ADDRESSED",
+      "evidence": "observeOrganizationOption follows the unique Acting as combobox aria-controls to its open, visible role=listbox and queries only that listbox. Tests cover a closed linked listbox with a visible foreign match and an open linked listbox with a visible foreign match; both produce zero exact matches and no point. The shared organization-option pointer resolver repeats linked-open-listbox scoping and exact label resolution immediately before trusted input."
+    },
+    {
+      "finding": "A single post-click sample could confuse Radix render delay with an absent option.",
+      "status": "ADDRESSED",
+      "evidence": "waitForOrganizationOption polls within the existing 10-second bound and accepts only a repeated stable point/count signature. The controlled delayed-open test stays closed for two reads and requires two open stable reads."
+    }
+  ],
+  "new_findings": [
+    {
+      "severity": "important",
+      "location": "tests/browser/settings-native-auth-driver.mjs:231-277, 280-283; tests/browser/settings-panel-driver.mjs:254-256",
+      "finding": "A legitimate exact option outside the viewport cannot reach the shared click primitive's scrollIntoView. observeOrganizationOption returns no point unless the target center is already in the viewport; selectOrganization waits for a point before invoking click(..., 'organization-option', ...), and that click is where the shared driver performs scroll preparation. The wait therefore reaches its timeout for an approved organization that must first be scrolled into view. A point refusal does not establish that the required choice is reachable.",
+      "evidence": "The current focused test explicitly treats targetY=400 as unavailable and expects point=null. Source order proves no scroll/reveal call occurs before the wait. Settings renders every active organization as a SelectItem; parent context reports 54 active admin organizations. No native run was used to infer this caused the historical failure."
+    },
+    {
+      "severity": "important",
+      "location": "tests/browser/panel-transition-recorder.test.mjs:352-364, 440-459, 487-490",
+      "finding": "The caller transition test executes extracted auth/caller source but injects a fake click that dispatches pointer events and fake observeOrganizationOption/evaluate results. It therefore cannot fail if the shared organization-option resolver stops re-resolving, stops hit-testing, or becomes a no-op. The focused observer test exercises real observeOrganizationOption, but no test at the trusted caller seam proves the shared click responsibility end to end.",
+      "evidence": "Inspection of the actual test dependency map confirms click, evaluate, and observeOrganizationOption are replaced with stubs; the fake click dispatches mousePressed/mouseReleased unconditionally. This is a test ownership gap, not evidence that the production shared resolver is currently incorrect."
+    }
+  ],
+  "verification": {
+    "command": "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch node --test tests/browser/settings-native-auth-driver.test.mjs tests/browser/showcase-organization-diagnostic.test.mjs tests/browser/panel-transition-recorder.test.mjs scripts/hosted-profile-route.test.mjs scripts/hosted-scrape-route.test.mjs",
+    "result": "34 passed, 0 failed",
+    "notes": "The checks cover closed/foreign, open/foreign, absent, duplicate, offscreen, covered, delayed-open, fixture privacy, and identity guards. The caller seam uses faked pointer responsibilities as described above. No native/browser/heavy/build/release checks were run."
+  },
+  "limits": "Controlled DOM and source evidence establish the behavior class and remaining reachability/test gap. They do not prove the actual cause of the failure in run 37278418866. D142 remains open pending repair of the offscreen selection path, appropriate guard coverage, and a resource-valid native run."
+}
