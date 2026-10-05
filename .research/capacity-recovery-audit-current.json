@@ -1,0 +1,44 @@
+{
+  "observed_at": "2026-10-05",
+  "result": "no_safe_internal_tool_owned_candidate_at_or_above_1GiB_found",
+  "capacity": {
+    "internal_root_available": "209MiB",
+    "external_samsung2tb_available": "1.6TiB",
+    "local_heavy_test_floor": "20GiB"
+  },
+  "bounded_evidence": [
+    {
+      "path": "/Users/armanisadeghi/Library/Caches/com.openai.codex",
+      "size": "1.6GiB",
+      "decision": "excluded_active_app_update_runtime",
+      "evidence": "Allocation is Sparkle Installation; ChatGPT has live Cache.db handles and Updater has an open executable under the same cache root. Not safely classifiable as idle disposable cache."
+    },
+    {
+      "path": "/Users/armanisadeghi/Library/Caches/pnpm",
+      "size": "111MiB",
+      "decision": "below_candidate_threshold",
+      "evidence": "Prior recovery removed stale registry metadata only; no further large pnpm allocation observed."
+    },
+    {
+      "path": "/Users/armanisadeghi/Library/Caches/ms-playwright",
+      "size": "346MiB",
+      "decision": "below_candidate_threshold",
+      "evidence": "Prior headless runtime relocation is recorded; current directory remains below 1GiB and runtime cache was not changed."
+    },
+    {
+      "path": "/private/tmp",
+      "size": "91MiB",
+      "decision": "below_candidate_threshold",
+      "evidence": "Bounded top-level directory size scan; largest listed task-owned directory is 18MiB."
+    },
+    {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/test-results",
+      "size": "858MiB",
+      "decision": "external_volume_no_internal_capacity_gain",
+      "evidence": "Mostly CI artifact directories on external volume; left untouched."
+    }
+  ],
+  "method": "Read prior recovery records and disk-groom guidance; df plus one-level du scans of tool/cache, repo build-output, and /private/tmp paths; lsof on Codex cache and Sparkle Installation; no files moved or deleted.",
+  "limitations": "Disk usage can change concurrently. Canonical dev-cache groomer previously reported 0B freed; this audit found no safely actionable >=1GiB idle tool-owned allocation.",
+  "action": "read_only_audit_only"
+}
