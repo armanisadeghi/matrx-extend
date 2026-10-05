@@ -21,14 +21,13 @@ import {
 import { prepareHostedReleaseArtifact } from './hosted-release-artifact.mjs';
 import { requireHostedScrapeRoute } from './hosted-scrape-route.mjs';
 import { runHostedStartupIntervalDiagnostic } from './hosted-startup-interval-diagnostic.mjs';
+import {
+  PUBLISHED_STORE_CRX,
+  requirePublishedStoreCrxTarget,
+} from './published-store-crx-target.mjs';
 import { hashReleaseTree } from './sync-unpacked-release.mjs';
 
 const repo = resolve(fileURLToPath(new URL('..', import.meta.url)));
-const STORE_130 = Object.freeze({
-  id: 'hnfolienncfklkgmdjjmhhegglimlamg',
-  version: '0.2.130',
-  crxSha256: '9964183901e06c92c1a41e68294332bf27e3564ef0df1d860297d533829885b1',
-});
 function sha256(bytes) {
   return createHash('sha256').update(bytes).digest('hex');
 }
@@ -182,18 +181,18 @@ async function runProfile(prepared, acceptanceCase) {
 }
 
 async function preparePublishedStoreCrx(outputDir) {
-  const url = `https://clients2.google.com/service/update2/crx?response=redirect&prodversion=130.0.0.0&acceptformat=crx3&x=id%3D${STORE_130.id}%26uc`;
+  const url = `https://clients2.google.com/service/update2/crx?response=redirect&prodversion=130.0.0.0&acceptformat=crx3&x=id%3D${PUBLISHED_STORE_CRX.id}%26uc`;
   const response = await fetch(url);
   assert.equal(response.ok, true, 'official Chrome update download failed');
   const crx = Buffer.from(await response.arrayBuffer());
-  assert.equal(sha256(crx), STORE_130.crxSha256, 'published dashboard CRX SHA-256');
+  assert.equal(sha256(crx), PUBLISHED_STORE_CRX.crxSha256, 'published public CRX SHA-256');
   assert.equal(crx.toString('ascii', 0, 4), 'Cr24', 'CRX magic');
   assert.equal(crx.readUInt32LE(4), 3, 'CRX3 format');
   const zipOffset = 12 + crx.readUInt32LE(8);
   assert.ok(zipOffset > 12 && zipOffset < crx.length - 100, 'CRX ZIP offset');
   assert.equal(crx.toString('ascii', zipOffset, zipOffset + 2), 'PK', 'CRX ZIP payload');
-  const crxPath = join(outputDir, `${STORE_130.id}.crx`);
-  const zipPath = join(outputDir, `${STORE_130.id}.zip`);
+  const crxPath = join(outputDir, `${PUBLISHED_STORE_CRX.id}.crx`);
+  const zipPath = join(outputDir, `${PUBLISHED_STORE_CRX.id}.zip`);
   await writeFile(crxPath, crx, { mode: 0o600 });
   await writeFile(zipPath, crx.subarray(zipOffset), { mode: 0o600 });
   const listing = await new Promise((resolveList, reject) => {
@@ -224,9 +223,9 @@ async function preparePublishedStoreCrx(outputDir) {
   const extracted = await ownedProcess('unzip', ['-q', zipPath, '-d', extensionDir]);
   assert.equal(extracted.code, 0, 'published CRX extraction failed');
   const manifest = JSON.parse(await readFile(join(extensionDir, 'manifest.json'), 'utf8'));
-  assert.equal(manifest.version, STORE_130.version, 'published CRX version');
+  assert.equal(manifest.version, PUBLISHED_STORE_CRX.version, 'published CRX version');
   assert.equal(manifest.key, undefined, 'published CRX payload manifest must be unkeyed');
-  const signingKey = matchingCrx3RsaKey(crx, STORE_130.id);
+  const signingKey = matchingCrx3RsaKey(crx, PUBLISHED_STORE_CRX.id);
   // Chrome adds this same Store signing key during installation. The temporary
   // unpacked copy needs it to keep the primary item ID under --load-extension.
   manifest.key = signingKey.toString('base64');
@@ -245,13 +244,12 @@ async function preparePublishedStoreCrx(outputDir) {
   const treeSha256 = hashReleaseTree(extensionDir);
   const receipt = {
     kind: 'published_store_crx_unpacked',
-    version: STORE_130.version,
-    extensionId: STORE_130.id,
+    version: PUBLISHED_STORE_CRX.version,
+    extensionId: PUBLISHED_STORE_CRX.id,
     crxPath,
-    crxSha256: STORE_130.crxSha256,
+    crxSha256: PUBLISHED_STORE_CRX.crxSha256,
     treeSha256,
-    downloadSource:
-      'Google Chrome public update service; byte-identical to authenticated primary publisher Published main.crx',
+    downloadSource: 'Google Chrome public update service; verified CRX3 signing key and SHA-256',
     unpackedAdaptation:
       'Temporary manifest.key copied from CRX3 RSA signing proof; exact Store verification metadata removed for unpacked Chromium loading; original CRX unchanged',
     removedStoreMetadata,
@@ -259,7 +257,7 @@ async function preparePublishedStoreCrx(outputDir) {
   const relocatedReceipt = join(outputDir, 'published-store-crx-receipt.json');
   await writeFile(relocatedReceipt, `${JSON.stringify(receipt, null, 2)}\n`, { mode: 0o600 });
   process.stdout.write(
-    `PREPARED_PUBLISHED_STORE_CRX ${STORE_130.version} ${STORE_130.id} ${treeSha256}\n`,
+    `PREPARED_PUBLISHED_STORE_CRX ${PUBLISHED_STORE_CRX.version} ${PUBLISHED_STORE_CRX.id} ${treeSha256}\n`,
   );
   return { extensionDir, relocatedReceipt, kind: receipt.kind };
 }
@@ -482,6 +480,12 @@ assert.ok(
   ['preflight', 'package', 'browser', 'acceptance', 'startup-diagnostic'].includes(phase),
   'invalid hosted phase',
 );
+const requestedPublishedStoreCrx = process.env.MATRX_HOSTED_PUBLISHED_STORE_CRX;
+if (requestedPublishedStoreCrx)
+  await requirePublishedStoreCrxTarget(
+    requestedPublishedStoreCrx,
+    join(repo, 'config/chrome-web-store-approved-baseline.json'),
+  );
 // Hosted Profile has no durable recovery outside this disposable runner.
 // Refuse every direct phase entry before credentials, runtime, or browser setup.
 if (process.env.MATRX_HOSTED_ACCEPTANCE_CASE?.startsWith('profile-'))
@@ -546,7 +550,7 @@ const outputDirArg = process.env.MATRX_HOSTED_GUEST_OUTPUT_DIR;
 const expectedSha = process.env.MATRX_HOSTED_RELEASE_SHA;
 const devRunId = process.env.MATRX_HOSTED_DEV_RUN_ID;
 const devArtifactId = process.env.MATRX_HOSTED_DEV_ARTIFACT_ID;
-const publishedStoreCrx = process.env.MATRX_HOSTED_PUBLISHED_STORE_CRX === '0.2.130';
+const publishedStoreCrx = Boolean(requestedPublishedStoreCrx);
 const releaseMode = Boolean(artifactDirArg && expectedSha && !devRunId && !devArtifactId);
 const developmentMode = Boolean(!artifactDirArg && !expectedSha && devRunId && devArtifactId);
 if (

@@ -1,0 +1,31 @@
+{
+  "reviewedCommit": "8180e9c5909b4bde960a4462e1a0aaeb31facacc",
+  "reviewer": "published205_pin_peer",
+  "verdictA": {
+    "status": "PASS",
+    "scope": "The selected target is pinned to the intended published 0.2.205 item and digest, and the workflow token is checked against both the pin and approved baseline before setup.",
+    "evidence": [
+      "config/chrome-web-store-approved-baseline.json identifies 0.2.205 and item hnfolienncfklkgmdjjmhhegglimlamg.",
+      ".github/workflows/hosted-guest-acceptance.yml passes 0.2.205 at preflight and acceptance and describes that public CRX version.",
+      "scripts/published-store-crx-target.mjs pins version, item ID, and SHA-256; scripts/hosted-guest-acceptance.mjs checks downloaded bytes, CRX3 signing key/ID, manifest version, and adapted tree receipt.",
+      "Focused tests prove stale workflow token, baseline version, and baseline item are refused; hosted preflight refuses 0.2.130 before browser setup."
+    ],
+    "liveLimits": [
+      "No hosted/native/Store-installed acceptance was performed in this review. Workflow run 37267277216 was pending at inspection.",
+      "This verifies the code's pinned target and validation chain; it does not prove current availability from Google's update service or Store-installed lifecycle/profile behavior."
+    ]
+  },
+  "verdictB": {
+    "status": "PASS",
+    "evidence": [
+      "The 0.2.130 literal was replaced with one shared target module, removing version duplication from the download and receipt path.",
+      "Provenance checks remain in the download path: byte digest, CRX3 format/signing key matched to item ID, payload manifest version, store metadata handling, and adapted-tree hash/receipt.",
+      "The focused unit suite passed 4/4 with TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch. An initial run using the system temp volume failed two mkdtemp calls with ENOSPC; no assertions failed.",
+      "CI invokes the focused test. The target guard tests stale workflow version and baseline version/item drift."
+    ],
+    "limitations": [
+      "The guard tests do not independently mutate the pinned digest or signing-key constant; the download path's digest/signing checks remain the runtime enforcement for those values.",
+      "The implementer's recorded RED/mutation evidence was not rerun in this review lane."
+    ]
+  }
+}

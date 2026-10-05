@@ -24,7 +24,7 @@ on:
         required: false
         type: string
       published_store_crx:
-        description: Test exact published 0.2.130 CRX from Google's public update service
+        description: Test exact published 0.2.205 CRX from Google's public update service
         required: false
         default: false
         type: boolean
@@ -186,6 +186,7 @@ jobs:
         env:
           MATRX_HOSTED_PHASE: preflight
           MATRX_HOSTED_ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
+          MATRX_HOSTED_PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx == true && '0.2.205' || '' }}
           MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE: ${{ inputs.scrape_diagnostic_cpu_rate }}
           MATRX_SCRAPE_AUTH_MODE: ${{ inputs.scrape_auth_mode }}
           MATRX_SCRAPE_WIDTH_MODE: ${{ inputs.scrape_width_mode }}
@@ -246,7 +247,7 @@ jobs:
           MATRX_HOSTED_RELEASE_SHA: ${{ steps.release.outputs.source_sha }}
           MATRX_HOSTED_DEV_RUN_ID: ${{ inputs.development_run_id }}
           MATRX_HOSTED_DEV_ARTIFACT_ID: ${{ inputs.development_artifact_id }}
-          MATRX_HOSTED_PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx == true && '0.2.130' || '' }}
+          MATRX_HOSTED_PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx == true && '0.2.205' || '' }}
           MATRX_HOSTED_ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
           MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE: ${{ inputs.scrape_diagnostic_cpu_rate }}
           MATRX_SCRAPE_AUTH_MODE: ${{ inputs.scrape_auth_mode }}
