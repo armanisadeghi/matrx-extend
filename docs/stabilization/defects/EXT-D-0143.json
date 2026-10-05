@@ -12,16 +12,17 @@
     "Select first controlled event card for B. Run37284490515 ends select_B_card_failed before completing B detection/extraction."
   ],
   "expected": "Current B can detect the intended repeated cards and extract actual fixture rows after rejecting stale A EXIT; on failure, bounded diagnostics identify the failing operation without exposing secrets.",
-  "actual": "Original receipt records successful sign-in/organization identity, A EXIT rejection and same-page A-to-B replacement, then only select_B_card_failed. The catch discards the underlying reason; actual failing click/scope/observation boundary is unproven.",
+  "actual": "Run37357780854 localizes first failure to card_click: 3 cards, 1 overlay, card_visible=true, card_center_hit=false. Scope choice/badge/detection not reached; exact interception cause unproven. Resource-valid failure; temporary secrets removed and absence verified.",
   "severity": "S2: current-session acceptance blocked; product vs driver cause unknown",
   "priority": "P1: resolve observed current-session failure before further Showcase retries",
   "state": "in-fix",
-  "owner": "showcase_current_selection_diagnosis",
+  "owner": "showcase_card_boundary_diagnosis",
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/37284490515",
     ".research/showcase-reveal-native.json",
     ".research/showcase-current-selection-diagnosis.json",
-    ".research/showcase-selection-diagnostic-peer.json"
+    ".research/showcase-selection-diagnostic-peer.json",
+    ".research/showcase-selection-current-native.json"
   ],
   "transition_history": [
     {
@@ -49,6 +50,6 @@
     "ci_wiring": "27d06012; exact existing regression command33/33 pass",
     "peer": "bee50b4d: A nativeUNVERIFIED, B PASS_WITH_CONCERNS; bounded catch/receipt checks2/2 pass",
     "ruling": "Minor receipt defect_id concern refuted as scope attribution: driver tests original D42 acceptance, so retaining D42 primary identity is correct. D143 and inventory explicitly link same run/report for the new diagnostic failure. Do not replace the original acceptance scope with instrumentation scope. Synthetic probe proves wiring only; actual sampling/native outcome unverified.",
-    "next": "Wait successful full CI including50dbfc3d/27d06012; freeze artifact/source. Then one guarded stale-admin run, no unchanged retry. Original native cause remains unknown."
+    "next": "Bounded causal diagnosis of actual pointer/card boundary assigned; no blind native retry."
   }
 }
