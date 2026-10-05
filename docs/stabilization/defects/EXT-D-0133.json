@@ -13,7 +13,7 @@
   "actual": "Run37241717888 reproduces same foreground failure after successful member identity/nonadmin/org checks. Original target is present and sole exact target, exact SIDE_PANEL context1, owned roottrue; visibilityhidden with hasFocustrue. Diagnostic completes. No viewport/case result.",
   "severity": "S2: authenticated Scrape coverage blocked; product failure not established",
   "priority": "P2: resume after urgent guest Chat verification",
-  "state": "fixed",
+  "state": "in-fix",
   "evidence": [
     ".research/scrape-member-guard132-native.json",
     ".research/scrape-auth-panel-focus.json",
@@ -28,7 +28,8 @@
     ".research/member-context-diagnostic-native.json",
     ".research/member-visibility-timeline-native.json",
     ".research/panel-visible-reopen-repair.json",
-    ".research/visible-panel-repair-peer.json"
+    ".research/visible-panel-repair-peer.json",
+    ".research/member-visible-panel-native.json"
   ],
   "transition_history": [
     {
@@ -72,10 +73,22 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Native timeline isolates firsthide duringredundantopen; source0e8aa6c7 preserves measuredvisible ownedpanel andfailclosesfailedprobe. Freshpeer5caaffc4 accepts8focusedpass; realChrome600 acceptancepending."
+    },
+    {
+      "at": "2026-10-05T00:49:14.480547+00:00",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Actual37248327805 firsthidden afterauthentication; measuredhidden recovery path executes but originalexactpanel remains hidden. No600viewport/cases. Rootmatched7hashes/raw9phasereceipt/3journals,3healthywatches no unsafe."
+    },
+    {
+      "at": "2026-10-05T00:49:14.480547+00:00",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Visible-preservation repair does not solve genuinelyhidden path. Next iteration requires fresh Astra causal native-host/auth-transition investigation after repeated independentlyreviewed source fixes failed actualacceptance; no unchanged retry or gate weakening."
     }
   ],
   "diagnostic_commit": "427e75a4",
-  "next_action": "ONE frozen244/membernormal600 changed-condition native after fullCI containing0e8aa6c7 and guest37246354075 terminal. Root/member_reopen_native_retest owns. Do not infer nativepass from simulatedopen-effect guard.",
+  "next_action": "Fresh Astra low/medium escalation to diagnose hidden authenticated native panel across owned Chrome host/tab/window lifecycle; use both timelines37245836902 and37248327805. Establish actualcause before furtherrepair; sourcepeer+changedconditionnative. Do not repeat same run or substitute focus/DOMclick for actualvisiblepanel.",
   "fix_commits": ["44005fb4", "0e8aa6c7"],
   "hosted_ci": {
     "run_id": 37242845397,
@@ -84,11 +97,11 @@
     "verified": "Root read full success and actual checks job111554820121 log: native harness fresh trusted-open guard, full harness1pass0fail, guesttransport regression and resource safety pass. Native visibility pending."
   },
   "native_retest": {
-    "run_id": 37245836902,
-    "result": "Nine measured phases: visible through auth/org and root foreground; first hidden after trusted open, remains hidden after target activation. Exact original context retained; zero cases/normalviewport.",
-    "evidence_commit": "b15ad9e4",
-    "cleanup": "temporary consumed secret/link absent verified",
-    "root_verification": "All six hashes matched; actual raw timeline and three original journals read. Two healthy native watches, no unsafe; all finalresourceInvalidfalse."
+    "run_id": 37248327805,
+    "evidence_commit": "d934892e",
+    "result": "firsthidden afterauth, unchanged afterorg/rootforeground/trustedopen/activation; no viewport/cases",
+    "root_verification": "7hashes, rawtimeline,3originaljournals;3healthywatches,no unsafe;cleanupabsenceverified",
+    "context": "READYexact1 first/last,oneattempt81ms"
   },
   "visibility_diagnostic": {
     "commits": ["1379d875", "3c8daad2"],
