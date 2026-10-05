@@ -1,0 +1,74 @@
+{
+  "report_type": "shared-package-source-and-inventory-delta-audit",
+  "baseline": {
+    "extension_version": "0.2.244",
+    "source_sha": "b81587021d689078ed428dafe3e15474a84c41e2"
+  },
+  "comparison": {
+    "extension_source_sha": "fb5cf5a2fe0d3b0ed45b36b560e96bcbfa5d0a98",
+    "lockfile_resolved_versions": {
+      "@ai-matrx/agents": "0.43.34",
+      "@ai-matrx/associations": "0.13.146",
+      "@ai-matrx/design-system": "0.61.15"
+    },
+    "source_evidence_checkout": "/Volumes/Samsung2TB/code/aidream",
+    "source_evidence_limit": "Inspected committed package history/changelogs and release commits. Did not download npm tarballs or independently compare published tarball bytes. Findings describe package source/release evidence, not an independent artifact inspection."
+  },
+  "packages": [
+    {
+      "package": "@ai-matrx/agents",
+      "versions": "0.43.32 -> 0.43.34",
+      "source_refs": [
+        "aidream commit db0564bbb96402fc08a2033325112bda7184917c: /agent-studio/from-chat pipeline; generated agent_studio.chat_brief offer and mandate key; release v0.43.33 at f49d61507273b2b1b765da7fc3b31a0ac3231985",
+        "aidream commit 66619925d6c9044bf1ba02af82176decf2fb988e: regenerates API types and stream events for /agent-studio/from-chat",
+        "aidream commit 85808cddf5f39d3157c975f2cbe057ceb12f9645: additive generated API types for POST /admin/agent-studio/from-chat; release v0.43.34 at bd2af26ebcc4379a4954bdbe24cca21b8736725f",
+        "The package delta also adds one generated mandate key and additive generated offer/stream-event types. Extension MANDATE_KEYS usages are fixed existing keys; src contains no agent_studio/chat_brief/from-chat call site.",
+        "apps/shared/matrx-agents/CHANGELOG.md entries 0.43.33 and 0.43.34 say automatic changed-only republish and no consumer action required"
+      ],
+      "behavior_affected": "The package adds the server's chat-to-agent feature support: a chat brief mandate/offer, generated streamed progress/result types, and generated request/response typing for user and admin endpoints. Extension source imports agents catalog/context/transport APIs but has no call to either from-chat endpoint, no handling of those stream events, and no agent-studio UI. Its MANDATE_KEYS references resolve fixed existing keys. These additive package APIs therefore do not evidence changed extension behavior.",
+      "existing_inventory_cases": [],
+      "mapping_basis": "No matching extension endpoint caller or Agent Studio surface found in src; existing agent catalog inventory cases concern the catalog picker, not admin agent creation from chat."
+    },
+    {
+      "package": "@ai-matrx/associations",
+      "versions": "0.13.143 -> 0.13.146",
+      "source_refs": [
+        "aidream apps/shared/associations/CHANGELOG.md entries 0.13.144-0.13.146",
+        "aidream commit b2a086951203ce900c2b9a819b040512b712c0ee: adds org-chart position token and org-chart association pairs",
+        "aidream commit 7a354ec410ff72b551319b7f424406e0eb917658: position token table corrected to agent.position; changelog says consumer action none",
+        "aidream commit 4d60710845d4229313751c35689c7e164a22509a: membership replaces user as Person target; generated pair registry updated; consumer action says write org-chart person edges to membership"
+      ],
+      "behavior_affected": "Association vocabulary/pair support now models org-chart people as organization memberships, alongside team and position targets. The extension's only matched association UI is FileSourcePanel; its explicit SAVE_TARGET_TOKENS are project, task, scope, research_topic, fc_set, pc_episode, war_room, and data_store, so the new org-chart membership target is not exposed there. No org-chart UI or org_chart edge writer was found in extension source.",
+      "existing_inventory_cases": [
+        {
+          "id": "EXT-F-1007-C30",
+          "relationship": "Adjacent existing coverage for filing a landed Source in multiple registered places through FileSourcePanel; it does not cover org-chart membership edges because those are excluded from SAVE_TARGET_TOKENS."
+        }
+      ],
+      "mapping_basis": "No existing extension case maps to the newly supported org-chart target behavior; C30 is listed only to identify the adjacent association-picker case and its boundary."
+    },
+    {
+      "package": "@ai-matrx/design-system",
+      "versions": "0.61.14 -> 0.61.15",
+      "source_refs": [
+        "aidream commit c1d7a46e41c63f14f7a53f3dae80b87ea9eb27f2 changes src/pill-guard.ts and adds guard cases",
+        "apps/shared/design-system/CHANGELOG.md 0.61.15 describes clipping-aware overflow checks, transformed-ancestor/off-screen exclusions, and no consumer action",
+        "apps/shared/design-system/src/pill-guard.ts states the guard is off until a host explicitly calls enablePillGuard() from development code"
+      ],
+      "behavior_affected": "Development pill diagnostics now account for clipping ancestors, transformed/panned ancestors, and wholly off-screen pills. Extension source contains no enablePillGuard/findPillViolation call or pill-guard integration, so this diagnostic behavior is not activated in the extension by the package update.",
+      "existing_inventory_cases": [],
+      "mapping_basis": "No extension activation site or inventory case for the shared development pill guard was found."
+    }
+  ],
+  "acceptance": {
+    "shared_package_behavior_mapped_to_extension_cases": false,
+    "extension_source_or_entrypoint_delta": "The frozen delta artifact reports zero changed extension product source/entrypoint paths. This audit found no activated or newly consumed package behavior requiring an existing extension case.",
+    "decision": "The three package versions contain documented upstream changes, but the inspected behavior does not map to changed or newly exposed extension behavior. EXT-F-1007-C30 remains relevant to existing Source filing, while it does not cover org-chart membership. This source/inventory audit does not establish runtime acceptance for 0.2.258 or extend the frozen 0.2.244 acceptance."
+  },
+  "limits": [
+    "No tests, builds, browsers, native acceptance, workflows, releases, or package updates were run.",
+    "No independent npm tarball bytes/source map comparison was performed; published-package identity is represented by the extension lockfile versions and sibling release history.",
+    "No claim is made about whole-extension health or current runtime acceptance.",
+    "Pre-existing edits/untracked files were left untouched."
+  ]
+}
