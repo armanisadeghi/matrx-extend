@@ -88,8 +88,11 @@
     }
   ],
   "diagnostic_commit": "427e75a4",
-  "next_action": "Luna member_auth_host_native owns ONE frozen244/membernormal600 hosteddiagnostic, no retry. Root inspectactualauthtransition/nativewindow/host/hit evidence thenroutecausalrepair; no acceptanceweakening.",
-  "fix_commits": ["44005fb4", "0e8aa6c7"],
+  "next_action": "Fresh Astra auth_transition_causal_repair owns bounded source-causal investigation and sentinel diagnostic correction; independentpeer before any changed-condition native. No blindretry or acceptanceweakening.",
+  "fix_commits": [
+    "44005fb4",
+    "0e8aa6c7"
+  ],
   "hosted_ci": {
     "run_id": 37242845397,
     "head": "71ff4c194835327b833e3cb6192cc540bddfa494",
@@ -97,14 +100,17 @@
     "verified": "Root read full success and actual checks job111554820121 log: native harness fresh trusted-open guard, full harness1pass0fail, guesttransport regression and resource safety pass. Native visibility pending."
   },
   "native_retest": {
-    "run_id": 37248327805,
-    "evidence_commit": "d934892e",
-    "result": "firsthidden afterauth, unchanged afterorg/rootforeground/trustedopen/activation; no viewport/cases",
-    "root_verification": "7hashes, rawtimeline,3originaljournals;3healthywatches,no unsafe;cleanupabsenceverified",
-    "context": "READYexact1 first/last,oneattempt81ms"
+    "run_id": 37249932863,
+    "evidence_commit": "50bdc2ea",
+    "result": "All five member auth checkpoints and after_authentication visible; first observed hidden after_organization_selection, remains hidden through recovery. No600viewport/cases. Ordinal transition does not establish cause; resource waiting and delayed browser effects remain possible.",
+    "root_verification": "Matched all7saved payloadhashes; read14phase rawtimeline and all3originalcurrentjournals. Five added host/hit boundaries allmeasured. Native healthy\u2192CPU_PENDING\u2192CPU_RECOVERED,no unsafe,resourceInvalidfalse; child_failed. Secret/local link absence verified by collector.",
+    "limits": "panel_in_root_window false does not prove wronghost: Chromium SIDE_PANEL context uses windowId -1. Correction independently reviewed next. No postauthphysicalwindow screenshot; hasFocus emulated; DOMhit not physicalforeground."
   },
   "visibility_diagnostic": {
-    "commits": ["1379d875", "3c8daad2"],
+    "commits": [
+      "1379d875",
+      "3c8daad2"
+    ],
     "peer": "21e4d23a",
     "report": ".research/panel-visibility-escalation.json",
     "limits": "Nine bounded lifecycle observations; no native cause or product health established."
@@ -114,6 +120,14 @@
     "fresh_peer": "79988b27",
     "report": ".research/authenticated-panel-cause-escalation.json",
     "review": ".research/authenticated-host-diagnostic-peer.json",
-    "ruling": "Accept bounded instrumentation for one native discriminator; not a cause or recovery fix. Peer verifiedall5sourcecheckpoints and14focusedpass. Missing independent mutations forpage-created/OAuth-return are a limited guardcoverage gap, notobservedbehaviorfailure; nextnative mustretain all5actualcheckpoints or markmissing, neverclaimfullstageguardcoverage."
+    "ruling": "Accept bounded instrumentation for one native discriminator; not a cause or recovery fix. Peer verifiedall5sourcecheckpoints and14focusedpass. Missing independent mutations forpage-created/OAuth-return are a limited guardcoverage gap, notobservedbehaviorfailure; nextnative mustretain all5actualcheckpoints or markmissing, neverclaimfullstageguardcoverage.",
+    "actual_run": 37249932863,
+    "report_correction": "Collector initially mislabeled firsthiddenafterauth; freshAstra/root rawinspection corrected toafterorganizationselection before integration. All7finalhashes verified.",
+    "sentinel_correction": {
+      "commit": "ddb793d8",
+      "report_clarification": "ebdce79e",
+      "report": ".research/auth-transition-causal-repair.json",
+      "result": "Controlled real-source sentinel -1 previously yields false; now null. Actual native numeric IDs unrecorded, cannot attribute historicalfalse tosentinel. 14focusedbuildertests pass; independentpeer pending. No native recoveryfix."
+    }
   }
 }
