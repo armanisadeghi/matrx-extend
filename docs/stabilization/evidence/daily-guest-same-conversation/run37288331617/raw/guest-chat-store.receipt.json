@@ -1,0 +1,353 @@
+{
+  "schema_version": 1,
+  "scope": "fresh owned guest profile; unpredictable article fixture in the owned browser tab; real Chat opening, same-conversation follow-up, and post-reload new conversation",
+  "context_rule_read_observation_scope": "CDP observer attaches after panel load and runs through Values chip open, both guest sends, and panel reload; it cannot establish requests before attachment",
+  "status": "unverified",
+  "build": {
+    "version": "0.2.205",
+    "tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "receipt_kind": "published_store_crx_unpacked"
+  },
+  "server_version_before": {
+    "reachable": true,
+    "status": 200,
+    "git_sha": "d53357976b4bd29f671c2f408c9f02c9dba08c9e"
+  },
+  "server_version_after": {
+    "reachable": true,
+    "status": 200,
+    "git_sha": "d53357976b4bd29f671c2f408c9f02c9dba08c9e"
+  },
+  "guest": {
+    "fresh": true,
+    "chat_visible": true,
+    "after_reload": false,
+    "fixture_reinstalled_before_first_send": false
+  },
+  "chat": {
+    "opening_question_fingerprint": "8b0041e45eb47431",
+    "fixture_fragment_fingerprint": "4e9e7775bc385909",
+    "opening_code_fingerprint": "51415ad4274135cb",
+    "completed_reply_count": 1,
+    "answer_contains_unpredictable_page_code": true,
+    "answer_names_page_stages": true,
+    "answer_stages_in_order": true,
+    "no_login_paywall_or_error": true,
+    "followup_completed_after_reload": false
+  },
+  "screenshot": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-zCW55i/guest-chat-real-answer.png",
+  "followup_screenshot": null,
+  "failure_stage": "real_same_conversation_followup_answer",
+  "failure_code": "same_conversation_followup_guest_ai_transport_unobserved",
+  "failure_reason": "same_conversation_followup_guest_ai_transport_unobserved",
+  "stage_progress": [
+    "owned_profile",
+    "fresh_guest",
+    "owned_article_page",
+    "page_specific_fixture",
+    "guest_chat_open",
+    "guest_values_chip_open",
+    "guest_question",
+    "real_guest_answer",
+    "same_conversation_followup_question",
+    "real_same_conversation_followup_answer"
+  ],
+  "guest_ai_requests": [
+    {
+      "attempt": "opening",
+      "request_at_utc": "2026-10-05T09:17:07.036Z",
+      "cdp_request_id": "9269.156",
+      "status": 200,
+      "code": null,
+      "conversation_fingerprint": "d66d5beb29168bb4",
+      "is_new": true
+    }
+  ],
+  "guest_ai_observer": {
+    "mode": "auto_attach",
+    "counters": {
+      "attached": 14,
+      "identity_changed": 1,
+      "network_enabled": 2,
+      "request_events": 9,
+      "post_events": 1,
+      "chat_path_events": 1,
+      "response_events": 8
+    },
+    "provisional_sessions": 1,
+    "confirmed_sessions": 1,
+    "buffered_requests": 1,
+    "observer_failure": null,
+    "target_inventory": [
+      {
+        "identity": "other",
+        "auto_attached_by_observer": true,
+        "type": "service_worker"
+      },
+      {
+        "identity": "other",
+        "auto_attached_by_observer": true,
+        "type": "page"
+      },
+      {
+        "identity": "provisional",
+        "auto_attached_by_observer": true,
+        "type": "page"
+      },
+      {
+        "identity": "offscreen",
+        "auto_attached_by_observer": true,
+        "type": "other_type"
+      },
+      {
+        "identity": "other",
+        "auto_attached_by_observer": true,
+        "type": "page"
+      }
+    ]
+  },
+  "guest_ai_transport_proven": false,
+  "context_rule_reads": [],
+  "grounding_diagnostics": {
+    "before_first_send": {
+      "readableMarkerPresent": true,
+      "pageUrlMatches": true,
+      "activeTabMatchesFixture": true,
+      "activeUrlMatchesFixture": true,
+      "assignedTabMatchesFixture": null
+    },
+    "opening": {
+      "toolEvents": [
+        {
+          "name": "context",
+          "phase": "tool_started",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "context",
+          "phase": "tool_completed",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": true,
+          "resultContainsFollowupCode": true,
+          "resultContainsFixtureHeading": true
+        }
+      ],
+      "toolBoundaryChecks": [
+        {
+          "eventIndex": 1,
+          "toolName": "context",
+          "phase": "tool_started",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        },
+        {
+          "eventIndex": 2,
+          "toolName": "context",
+          "phase": "tool_completed",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        }
+      ],
+      "terminal": {
+        "readableMarkerPresent": true,
+        "pageUrlMatches": true,
+        "activeTabMatchesFixture": true,
+        "activeUrlMatchesFixture": true,
+        "assignedTabMatchesFixture": true
+      }
+    },
+    "same_conversation_followup": {
+      "toolEvents": [
+        {
+          "name": "context",
+          "phase": "tool_started",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "context",
+          "phase": "tool_completed",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": true,
+          "resultContainsFollowupCode": true,
+          "resultContainsFixtureHeading": true
+        }
+      ],
+      "toolBoundaryChecks": [
+        {
+          "eventIndex": 1,
+          "toolName": "context",
+          "phase": "tool_started",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        },
+        {
+          "eventIndex": 2,
+          "toolName": "context",
+          "phase": "tool_completed",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        }
+      ],
+      "terminal": {
+        "readableMarkerPresent": true,
+        "pageUrlMatches": true,
+        "activeTabMatchesFixture": true,
+        "activeUrlMatchesFixture": true,
+        "assignedTabMatchesFixture": true
+      }
+    }
+  },
+  "opening_turn_verdict": "terminal_answer",
+  "opening_turn_timeline": [
+    {
+      "verdict": "in_progress",
+      "runCount": 0,
+      "replyCount": 0,
+      "streaming": true
+    },
+    {
+      "verdict": "in_progress",
+      "runCount": 1,
+      "replyCount": 0,
+      "streaming": true
+    },
+    {
+      "verdict": "rendering_terminal",
+      "runCount": 1,
+      "replyCount": 0,
+      "streaming": false
+    },
+    {
+      "verdict": "terminal_answer",
+      "runCount": 1,
+      "replyCount": 1,
+      "streaming": false
+    }
+  ],
+  "failure_observation": {
+    "guestAccount": true,
+    "accessTokenAbsent": true,
+    "profileAbsent": true,
+    "organizationAbsent": true,
+    "chatVisible": true,
+    "chatSelected": true,
+    "paneVisible": true,
+    "composerVisible": true,
+    "composerLength": 0,
+    "sendEnabled": false,
+    "streaming": true,
+    "replyCount": 1,
+    "answerContainsNonce": true,
+    "answerContainsFixtureHeading": false,
+    "answerMatchesPublicStages": true,
+    "answerStagesInOrder": true,
+    "answerIsRefusal": false,
+    "terminalAnswerError": false,
+    "interruptionNotice": false,
+    "errorNotice": false,
+    "latestAssistantReply": "Reasoning\nThe unique opening check code is:\n\n[opening-code]\n\nThe three workflow stages, in order, are:\n\nCapture – Turn the open page into readable content (article text, links, media, metadata, schema).\nUnderstand – Ask questions about what is actually on the page (answers grounded in the current page).\nUse – Extract the details needed for the next task (structured rows that can be copied or reused).",
+    "visibleAlerts": [],
+    "streamTrace": {
+      "runs": [
+        {
+          "ordinal": 1,
+          "done": true,
+          "delegated": false,
+          "error": false,
+          "errorCode": null,
+          "errorStatus": null,
+          "endReason": "complete",
+          "userRequestOutcome": "success",
+          "textChunks": 21,
+          "startReplyCount": 0,
+          "doneAt": 1791191835073
+        }
+      ],
+      "continuations": 0,
+      "events": [
+        {
+          "kind": "opened",
+          "run": 1
+        },
+        {
+          "kind": "tool_started",
+          "run": 1
+        },
+        {
+          "kind": "tool_completed",
+          "run": 1
+        },
+        {
+          "kind": "user_request_success",
+          "run": 1
+        },
+        {
+          "kind": "user_request_success",
+          "run": 1
+        },
+        {
+          "kind": "end",
+          "run": 1,
+          "reason": "complete"
+        },
+        {
+          "kind": "done",
+          "run": 1
+        }
+      ],
+      "toolEvents": [
+        {
+          "name": "context",
+          "phase": "tool_started",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "context",
+          "phase": "tool_completed",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": true,
+          "resultContainsFollowupCode": true,
+          "resultContainsFixtureHeading": true
+        }
+      ]
+    }
+  },
+  "same_conversation_turn_verdict": "terminal_wrong_answer",
+  "same_conversation_turn_timeline": [
+    {
+      "verdict": "terminal_wrong_answer",
+      "runCount": 1,
+      "replyCount": 1,
+      "streaming": true
+    }
+  ],
+  "failure_screenshot": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-zCW55i/guest-chat-failure.png",
+  "server_version_stable": true
+}

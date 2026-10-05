@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-05T09:17:39Z",
+  "run": {
+    "id": 37288331617,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37288331617",
+    "workflow": "Hosted guest side-panel acceptance",
+    "event": "workflow_dispatch",
+    "branch": "main",
+    "head_sha": "aa660f3b0179d8e933c873f380fc2dd00b7731d0",
+    "started_at_utc": "2026-10-05T09:11:00Z",
+    "completed_at_utc": "2026-10-05T09:17:39Z",
+    "conclusion": "failure",
+    "selected_case": "guest-chat",
+    "selected_artifact_provenance": "published_store_crx",
+    "published_store_version": "0.2.205",
+    "store_item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "unpacked_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "run_artifact": {
+      "id": 11335522035,
+      "name": "hosted-guest-37288331617-1",
+      "size_bytes": 121144,
+      "github_zip_sha256": "6d8ff1b6c329b90a6637c04c9caceb0b8adcc72df39c8be4280b8053242935e0",
+      "expired": false
+    },
+    "ci_provenance": {
+      "run_id": 37287569731,
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37287569731",
+      "head_sha": "22bbc9118e14c9e6c4ee89dd8c6a406a93671d6d",
+      "conclusion": "success",
+      "reviewed_source_sha": "7f0a02d280376fd674c1e5923b35ec07aedd51a4",
+      "review_commit_sha": "22bbc9118e14c9e6c4ee89dd8c6a406a93671d6d",
+      "note": "The reviewed source was 7f0a02d; review and green CI were at 22bbc911. The hosted workflow itself checked out the separately recorded main head SHA above."
+    }
+  },
+  "first_failure": {
+    "stage": "real_same_conversation_followup_answer",
+    "stage_entered_at_utc": "2026-10-05T09:17:15.497Z",
+    "failure_receipt_emitted_at_utc": "2026-10-05T09:17:16.053Z",
+    "code": "same_conversation_followup_guest_ai_transport_unobserved",
+    "failure_reason": "same_conversation_followup_guest_ai_transport_unobserved",
+    "runner_failure": "native side-panel acceptance exited 1; assertion at scripts/hosted-guest-acceptance.mjs:484",
+    "last_prior_stage": "same_conversation_followup_question",
+    "receipt_verdict_detail": "The receipt labels the same-conversation turn terminal_wrong_answer, while its failure observation and timeline show replyCount=1, streaming=true, and only the opening run. No follow-up completion is recorded before the runner failure.",
+    "interpretation_limit": "The acceptance classified the follow-up transport as unobserved. Available evidence does not establish why it was unobserved or prove whether an unobserved request occurred. No product cause is assigned."
+  },
+  "reply_and_transport": {
+    "opening_turn": {
+      "request_at_utc": "2026-10-05T09:17:07.036Z",
+      "cdp_request_id": "9269.156",
+      "http_status": 200,
+      "is_new": true,
+      "conversation_fingerprint": "d66d5beb29168bb4",
+      "completed_reply_count": 1,
+      "grounded_answer_checks": "opening code present; public stages present and ordered"
+    },
+    "same_conversation_followup": {
+      "transport_proven": false,
+      "observer_saw_a_followup_post": false,
+      "completed_reply": false,
+      "reply_count_at_failure": 1,
+      "streaming_at_failure": true,
+      "latest_assistant_reply_was_opening_answer": true,
+      "conversation_fingerprint_for_followup": null,
+      "is_new_for_followup": null,
+      "exactly_one_http_200_for_each_turn": false
+    },
+    "observer_scope": "The receipt says CDP observation attached after panel load and ran through the Values chip, both guest sends, and panel reload. Its scope cannot establish requests before attachment.",
+    "receipt_failure_observation": {
+      "guest_account": true,
+      "access_token_absent": true,
+      "profile_absent": true,
+      "organization_absent": true,
+      "chat_visible_and_selected": true,
+      "composer_visible": true,
+      "answer_contains_opening_nonce": true,
+      "answer_contains_fixture_heading": false,
+      "answer_matches_public_stages_in_order": true,
+      "terminal_answer_error": false,
+      "visible_alerts": [],
+      "followup_timeline": "terminal_wrong_answer; runCount=1; replyCount=1; streaming=true"
+    }
+  },
+  "server_observation": {
+    "before": {
+      "reachable": true,
+      "http_status": 200,
+      "git_sha": "d53357976b4bd29f671c2f408c9f02c9dba08c9e",
+      "observed_at_utc": null
+    },
+    "after": {
+      "reachable": true,
+      "http_status": 200,
+      "git_sha": "d53357976b4bd29f671c2f408c9f02c9dba08c9e",
+      "observed_at_utc": null
+    },
+    "stable_sha": true,
+    "source_and_limit": "Raw receipt records both point observations and equal SHAs but omits timestamps. The adjacent peer report has one after observation at 2026-10-05T09:06:53Z and no before timestamp; it is not substituted for this run's missing timestamps."
+  },
+  "resource_validity": {
+    "package": "valid; child exit 0; resourceInvalid=false",
+    "browser": "valid; child exit 0; resourceInvalid=false",
+    "guest": "child_failed; child exit 1; admitted=true; resourceInvalid=false",
+    "overall": "The failure was not classified as a resource-invalid run."
+  },
+  "evidence_bundle": {
+    "directory": "docs/stabilization/evidence/daily-guest-same-conversation/run37288331617/",
+    "raw_receipt_sha256": "5494e3b7e8e8094f839e3f932a773fad39aefe6cfeeb6690e048d8a9c6276cb6",
+    "resource_journals": {
+      "hosted-browser-37288331617-1.jsonl": "fb2fbf06f07b7d169588ccf513fbe5dca60f2184432ee58b233c75ed37a5430c",
+      "hosted-guest-37288331617-1.jsonl": "f3f5a6404abc8d5b9e9e42c5e0c1da7353a901491de08653e17d8b9d8e14ac51",
+      "hosted-package-37288331617-1.jsonl": "0edd56f99e415ed334123ef17b835cf2075d4e9e392b66d71c113d993ee40910"
+    },
+    "screenshots_privacy_review": {
+      "result": "Reviewed all four images. They show the generic guest side panel, public fixture page, and guest-chat acceptance output; no personal account details, credentials, tokens, or private content were visible.",
+      "files": {
+        "guest-chat-failure.png": "e5053050fbadf4f7a74c65a4cc934ba0deb9f1a9c4313feaae7917f21ae3af65",
+        "guest-chat-real-answer.png": "d804b4e3f3e87fce7fb30b0a3180fe5972a7396ac9f9a9ed736d0fffc98b4d0e",
+        "native-side-panel.png": "25a538f9a2e74a332e3f517da1152582efd5da890b49c6624755c97e129e0e11",
+        "normal-target-after-open.png": "7e0ca8a7822ea3e0be20baa972d6fcd369b3944d9d6f5e890cc991dda455df6b"
+      }
+    },
+    "exact_bytes_check": "Raw receipt and the three same-run resource journals were copied from the downloaded artifact without transformation; receipt and guest journal were byte-compared with their scratch sources."
+  },
+  "conclusion": "A real public Store CRX 0.2.205 guest run completed its grounded opening answer, then failed to prove the same-conversation follow-up transport. The receipt's terminal_wrong_answer label conflicts with its one-reply, still-streaming trace: only the opening run completed before the runner assertion exited 1. Resource records are valid, and before/after server SHA values match; their exact observation times are absent from the raw receipt. The cause remains undetermined.",
+  "prohibited_followup": "No retry, browser rerun, chat/API replay, build, or release was performed."
+}
