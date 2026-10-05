@@ -37,6 +37,15 @@
     "review_commit": "ed2cfc6a",
     "correction_commit": "b3b377ec",
     "runtime": "unverified",
-    "fresh_review": "pending"
+    "fresh_review": {
+      "agent": "/root/bookmark_procedure_final_review",
+      "procedure_verdict": "pass_with_setup_comment",
+      "quality_verdict": "pass_with_setup_comment",
+      "findings_addressed": [
+        "cleanup uses search after folder deletion",
+        "conditional query requirement accurately described"
+      ],
+      "root_ruling": "No additional change required: step 6 explicitly requires independently seeded fixtures and actual folder ID when profiles cannot share the isolated fixture. Bookmarks remain profile-local; no runtime verdict or inventory promotion."
+    }
   }
 }
