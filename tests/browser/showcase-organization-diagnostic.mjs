@@ -21,6 +21,13 @@ const OBSERVATIONS = new Set([
   'rendered_role_matches',
   'rendered_profile_matches',
   'rendered_organization_matches',
+  'menu_open',
+  'visible_option_count',
+  'exact_match_count',
+  'exact_visible_match_count',
+  'target_in_viewport',
+  'target_center_hit',
+  'archive_filter',
 ]);
 const KNOWN_FAILURES = new Set([
   'Organization_section_ready_not_observed',
@@ -49,7 +56,25 @@ export function createShowcaseOrganizationDiagnostic() {
 
 export function observeShowcaseOrganization(diagnostic, values) {
   for (const [key, value] of Object.entries(values)) {
-    if (OBSERVATIONS.has(key) && (typeof value === 'boolean' || value === null)) {
+    if (!OBSERVATIONS.has(key)) continue;
+    if (key === 'archive_filter' && ['active', 'archived', 'all', 'unknown'].includes(value)) {
+      diagnostic.observations[key] = value;
+    } else if (
+      ['visible_option_count', 'exact_match_count', 'exact_visible_match_count'].includes(key) &&
+      Number.isSafeInteger(value) &&
+      value >= 0 &&
+      value <= 10000
+    ) {
+      diagnostic.observations[key] = value;
+    } else if (
+      ![
+        'archive_filter',
+        'visible_option_count',
+        'exact_match_count',
+        'exact_visible_match_count',
+      ].includes(key) &&
+      (typeof value === 'boolean' || value === null)
+    ) {
       diagnostic.observations[key] = value;
     }
   }

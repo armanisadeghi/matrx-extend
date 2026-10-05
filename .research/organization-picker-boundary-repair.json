@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0142",
+  "status": "safe_boundary_instrumentation_ready; native_cause_unproven",
+  "source_native_failure": {
+    "run_id": 37278418866,
+    "artifact_id": 11330374970,
+    "source_sha": "f93ee0cd45f3e3232a62318e3c9afe0fd6c9f79e",
+    "failure_code": "d87_member_organization_option_unavailable",
+    "stage": "organization_select",
+    "observed": "admin role verified; picker available; no selection; approved fixture had one active exact-name organization and active admin membership",
+    "missing": "No failure-time option count, exact-match count, filter state, viewport state, or hit-test result was captured. The screenshot predates exercise_panel."
+  },
+  "boundary": {
+    "source": "tests/browser/settings-native-auth-driver.mjs selectOrganization",
+    "finding": "The driver opens the Settings organization combobox and immediately returns the same failure for an absent option, duplicate option, offscreen option, or blocked center point. Settings renders active organizations as SelectItem options; admin has 54 active memberships. Offscreen position is plausible but not established as the native cause.",
+    "instrumentation": "Capture menu-open state, visible option count, exact and visible exact-name match counts, active archive filter, viewport position, and center hit before dispatching trusted input. Only fixed enums, booleans, nulls, and bounded counts enter the hosted receipt; the target name and coordinates stay in the driver. Selection still requires one visible exact match and a center hit.",
+    "selection_behavior_changed": false
+  },
+  "focused_verification": {
+    "command": "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch/tmp node --test tests/browser/settings-native-auth-driver.test.mjs tests/browser/showcase-organization-diagnostic.test.mjs",
+    "result": "13 passed, 0 failed",
+    "negative_cases": ["wrong name", "duplicate", "offscreen", "covered", "closed menu"],
+    "limits": "The controlled DOM seam validates the diagnostic distinctions and receipt allowlist. It does not reproduce the actual hosted Settings DOM or establish a causal selection repair."
+  },
+  "next_native_observation": "On a resource-valid native run of this instrumented artifact with the same approved fixture, inspect the organization_diagnostic observations at organization_select. A missing exact match calls for membership/filter or render investigation; duplicate matches need deterministic identity disambiguation; a unique offscreen or covered target needs viewport/occlusion repair through the shared trusted pointer primitive. Do not infer one of these from the old failure code alone.",
+  "privacy": "No organization labels, email, credentials, URLs, storage contents, or raw DOM text are retained."
+}

@@ -8,10 +8,85 @@ import {
   MEMBER_TEST_ORGANIZATION_NAME,
   approvedAdminOrganizationName,
   currentSettingsIdentityMatches,
+  observeOrganizationOption,
   panelIdentity,
   settingsOrganizationSelectionRequired,
   settingsShellReady,
 } from './settings-native-auth-driver.mjs';
+
+function optionPanel({ names, targetY = 70, occluded = false, menuOpen = true }) {
+  const options = names.map((name, index) => ({
+    textContent: name,
+    getBoundingClientRect: () => ({ x: 20, y: targetY + index * 20, width: 100, height: 18 }),
+    contains: () => false,
+  }));
+  const listbox = {
+    getBoundingClientRect: () => ({ x: 10, y: 10, width: 120, height: menuOpen ? 120 : 0 }),
+  };
+  const filter = { querySelectorAll: () => [{ textContent: 'Active only' }] };
+  const document = {
+    querySelectorAll: (selector) => (selector === '[role="option"]' ? options : [listbox]),
+    querySelector: () => filter,
+    elementFromPoint: (_x, y) =>
+      occluded
+        ? {}
+        : (options.find((option) => {
+            const rect = option.getBoundingClientRect();
+            return y >= rect.y && y < rect.y + rect.height;
+          }) ?? null),
+  };
+  return {
+    async send(command, { expression }) {
+      assert.equal(command, 'Runtime.evaluate');
+      const value = runInNewContext(expression, {
+        document,
+        getComputedStyle: () => ({ display: 'block', visibility: 'visible' }),
+        innerWidth: 300,
+        innerHeight: 200,
+      });
+      return { result: { value } };
+    },
+  };
+}
+
+test('option boundary distinguishes absent, duplicate, offscreen, occluded, and selectable targets', async () => {
+  const selected = await observeOrganizationOption(
+    optionPanel({ names: ['Approved', 'Other'] }),
+    'Approved',
+  );
+  assert.equal(selected.menu_open, true);
+  assert.equal(selected.visible_option_count, 2);
+  assert.equal(selected.exact_match_count, 1);
+  assert.equal(selected.exact_visible_match_count, 1);
+  assert.equal(selected.target_center_hit, true);
+  assert.deepEqual({ ...selected.point }, { x: 70, y: 79 });
+  const missing = await observeOrganizationOption(optionPanel({ names: ['Other'] }), 'Approved');
+  assert.equal(missing.exact_match_count, 0);
+  assert.equal(missing.point, null);
+  const duplicate = await observeOrganizationOption(
+    optionPanel({ names: ['Approved', 'Approved'] }),
+    'Approved',
+  );
+  assert.equal(duplicate.exact_visible_match_count, 2);
+  assert.equal(duplicate.point, null);
+  const offscreen = await observeOrganizationOption(
+    optionPanel({ names: ['Approved'], targetY: 400 }),
+    'Approved',
+  );
+  assert.equal(offscreen.target_in_viewport, false);
+  assert.equal(offscreen.point, null);
+  const covered = await observeOrganizationOption(
+    optionPanel({ names: ['Approved'], occluded: true }),
+    'Approved',
+  );
+  assert.equal(covered.target_center_hit, false);
+  assert.equal(covered.point, null);
+  const closed = await observeOrganizationOption(
+    optionPanel({ names: [], menuOpen: false }),
+    'Approved',
+  );
+  assert.equal(closed.menu_open, false);
+});
 
 test('approved admin organization is read only from a private named fixture', async () => {
   const directory = await mkdtemp(join(tmpdir(), 'settings-approved-admin-org-'));
