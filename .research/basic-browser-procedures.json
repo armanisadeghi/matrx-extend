@@ -8,7 +8,8 @@
     "handlers": "src/lib/tools/handlers/action.ts:18-310. Schemas and return values below follow these exact handlers.",
     "wait_for_collision": "src/lib/tools/registry.ts:140-155; src/lib/tools/handlers/canonical.ts:666-702; src/lib/tools/handlers/action.ts:205-243. Registry has legacy action and canonical read handlers both named wait_for; manual Tools receives raw rows. For EXT-F-4058 choose Action tier row and confirm displayed schema contains selector, ready_state, timeout_ms (not canonical tab_id/condition/target). Agent lookup is a separate last-write-wins path.",
     "fixture": "tests/browser/fixtures/form-controls.html SHA-256 685ce7a0286f9fd6330ed692db81e5c099a766cbe8aef61bb72a33e87b7d072a; tests/browser/form-control-owned-fixture.test.mjs:74-99 serves /form-controls on an ephemeral loopback server and verifies bytes/404. No native manual-runner registration is evidenced. Form page provides #state, #keys (initial value seed), #hover-target (button), #submit-test; it does not prove a scroll range.",
-    "binding_limit": ".research/tool-binding-readonly-census.json is the current exact-name metadata snapshot; absence/presence there does not prove request-time visibility or successful execution. Preserve each inventory live_binding object/status as-is."
+    "binding_limit": ".research/tool-binding-readonly-census.json is the current exact-name metadata snapshot; absence/presence there does not prove request-time visibility or successful execution. Preserve each inventory live_binding object/status as-is.",
+    "authorization_door": "The actual action-consent door is the streaming dispatcher: src/lib/tools/dispatch.ts:823-834 calls requestConfirmation for action-tier tools in Ask mode; denial returns 'User denied this action' at :1188-1190. Chat exposes Ask before acting via src/features/chat/ChatView.tsx:922-934. ToolsView.tsx:448-461 bypasses this gate and hardcodes act. Base permissions activeTab/tabs/scripting are declared in wxt.config.ts:69-72, not optional settings toggles; no per-tool revoke switch exists for these six."
   },
   "environment_provenance": {
     "required_before_execution": [
@@ -16,11 +17,11 @@
       "source commit SHA and lockfile hash",
       "WXT mode and output hash/build receipt",
       "chrome://extensions loaded extension ID, version, and Loaded from path",
-      "completed extension Reload recorded after installing that build",
       "Chrome version/profile and effective permissions (tabs, activeTab, scripting for navigation/DOM cases)",
-      "member or admin signed-in session"
+      "member or admin signed-in session",
+      "verify that the exact candidate build is initially loaded before warm run; do not click extension Reload immediately before warm run"
     ],
-    "procedure": "Build the candidate from the recorded source, load that generated development bundle unpacked, record its receipt and exact chrome://extensions identity/path, click Reload for that extension, then reopen the sidepanel and Tools > Catalog. A page refresh or panel reopen alone is not an extension reload. No build, reload, browser execution, or native pass was performed for this proposal.",
+    "procedure": "Build the candidate from the recorded source, load that generated development bundle unpacked, record its receipt and exact chrome://extensions identity/path, and run the warm cases without an immediately preceding full extension Reload. After warm outcomes, click Reload for that extension, record completion, reopen extension pages and the side panel, reload controlled target tabs, then run post-reload cases. A page refresh or panel reopen alone is not an extension reload. No build, reload, browser execution, or native pass was performed for this proposal.",
     "role_scope": "Repeat manual cases under member and admin sessions. Guest is not applicable because Tools UI is sign-in gated. This direct Run path uses act mode and does not establish Ask/Act dispatcher gates, denied-permission behavior, or agent-call role visibility."
   },
   "fixture_prerequisites": {
@@ -48,7 +49,22 @@
         "Negative: UI shows Schema mismatch from z.string().url(); navigation is not issued.",
         "No focused tab returns {ok:false,reason:'No active tab'}; do not treat this as permission denial."
       ],
-      "cleanup": "Leave tab on owned fixture or close that owned tab; never navigate externally."
+      "cleanup": "Leave tab on owned fixture or close that owned tab; never navigate externally.",
+      "run_phases": [
+        {
+          "id": "warm",
+          "repeat": "Run this case’s listed positive and negative inputs after loading the candidate build, with no immediately preceding full extension reload; record outcomes separately."
+        },
+        {
+          "id": "post_reload",
+          "repeat": "After warm outcome, click full Reload for same extension in chrome://extensions, reopen Tools and reload controlled target tab, repeat identical positive and negative inputs, and record outcomes separately."
+        }
+      ],
+      "permission_denial_reference": {
+        "feature_id": "EXT-F-4054",
+        "entry": "Chat; choose Ask before acting; if navigate_active_tab is actually advertised, request {\"url\":\"<recorded owned loopback URL>\"}, then click Deny on its confirmation card.",
+        "expected": "Tool result reports User denied this action; owned tab remains at its pre-call URL. Current exact-name metadata is absent, so this is blocked until live advertisement is observed."
+      }
     },
     {
       "feature_id": "EXT-F-4055",
@@ -68,7 +84,22 @@
         "Negative: {ok:false,reason:'No element at index 0 for selector #missing-target'}; fixture state is unchanged.",
         "Schema-negative {\"nth\":0} shows Schema mismatch: must provide either selector or ref."
       ],
-      "cleanup": "Reload owned fixture to reset counters."
+      "cleanup": "Reload owned fixture to reset counters.",
+      "run_phases": [
+        {
+          "id": "warm",
+          "repeat": "Run this case’s listed positive and negative inputs after loading the candidate build, with no immediately preceding full extension reload; record outcomes separately."
+        },
+        {
+          "id": "post_reload",
+          "repeat": "After warm outcome, click full Reload for same extension in chrome://extensions, reopen Tools and reload controlled target tab, repeat identical positive and negative inputs, and record outcomes separately."
+        }
+      ],
+      "permission_denial_reference": {
+        "feature_id": "EXT-F-4055",
+        "entry": "Chat; choose Ask before acting; if click_element is actually advertised, request {\"selector\":\"#hover-target\"}, then click Deny.",
+        "expected": "Tool result reports User denied this action; fixture click count remains unchanged. Current exact-name metadata is absent, so this is blocked until live advertisement is observed."
+      }
     },
     {
       "feature_id": "EXT-F-4056",
@@ -88,7 +119,22 @@
         "Negative: {ok:false,reason:'Element is not editable'}; no input/change events are added.",
         "Schema-negative {\"text\":\"route-731\"} shows Schema mismatch: must provide either selector or ref."
       ],
-      "cleanup": "Reload owned fixture; clears edited value and event counters."
+      "cleanup": "Reload owned fixture; clears edited value and event counters.",
+      "run_phases": [
+        {
+          "id": "warm",
+          "repeat": "Run this case’s listed positive and negative inputs after loading the candidate build, with no immediately preceding full extension reload; record outcomes separately."
+        },
+        {
+          "id": "post_reload",
+          "repeat": "After warm outcome, click full Reload for same extension in chrome://extensions, reopen Tools and reload controlled target tab, repeat identical positive and negative inputs, and record outcomes separately."
+        }
+      ],
+      "permission_denial_reference": {
+        "feature_id": "EXT-F-4056",
+        "entry": "Chat; choose Ask before acting; if type_into_element is actually advertised, request {\"selector\":\"#keys\",\"text\":\"route-731\"}, then click Deny.",
+        "expected": "Tool result reports User denied this action; #keys value and input/change counts remain unchanged. Current exact-name metadata is absent, so this is blocked until live advertisement is observed."
+      }
     },
     {
       "feature_id": "EXT-F-4057",
@@ -109,7 +155,22 @@
         "Negative: {ok:false,reason:'No element for #missing-target'}; no successful target movement is claimed.",
         "Schema permits direction alone; missing delta_y with direction by is handler-level {ok:false,reason:'delta_y required'}."
       ],
-      "cleanup": "Reload fixture or use {\"direction\":\"top\"} and confirm scrollY=0."
+      "cleanup": "Reload fixture or use {\"direction\":\"top\"} and confirm scrollY=0.",
+      "run_phases": [
+        {
+          "id": "warm",
+          "repeat": "Run this case’s listed positive and negative inputs after loading the candidate build, with no immediately preceding full extension reload; record outcomes separately."
+        },
+        {
+          "id": "post_reload",
+          "repeat": "After warm outcome, click full Reload for same extension in chrome://extensions, reopen Tools and reload controlled target tab, repeat identical positive and negative inputs, and record outcomes separately."
+        }
+      ],
+      "permission_denial_reference": {
+        "feature_id": "EXT-F-4057",
+        "entry": "Chat; choose Ask before acting; if scroll_page is actually advertised, request {\"direction\":\"bottom\"}, then click Deny.",
+        "expected": "Tool result reports User denied this action; page scroll position remains at recorded initial value. Current exact-name metadata is absent, so this is blocked until live advertisement is observed."
+      }
     },
     {
       "feature_id": "EXT-F-4058",
@@ -129,7 +190,22 @@
         "Negative: {ok:false,reason:'selector #missing-target did not appear'} after bounded timeout.",
         "Schema-negative {\"selector\":\"#state\",\"timeout_ms\":0} shows Schema mismatch because timeout_ms must be positive."
       ],
-      "cleanup": "No page mutation; close expanded tool row or reload fixture. Do not record this as canonical agent-dispatch wait_for coverage."
+      "cleanup": "No page mutation; close expanded tool row or reload fixture. Do not record this as canonical agent-dispatch wait_for coverage.",
+      "run_phases": [
+        {
+          "id": "warm",
+          "repeat": "Run this case’s listed positive and negative inputs after loading the candidate build, with no immediately preceding full extension reload; record outcomes separately."
+        },
+        {
+          "id": "post_reload",
+          "repeat": "After warm outcome, click full Reload for same extension in chrome://extensions, reopen Tools and reload controlled target tab, repeat identical positive and negative inputs, and record outcomes separately."
+        }
+      ],
+      "permission_denial_reference": {
+        "feature_id": "EXT-F-4058",
+        "entry": "No supported denial run is currently established for the requested raw legacy wait_for handler. The active canonical exact-name binding is read tier and agent lookup resolves the canonical handler; manual Action row bypasses dispatch.",
+        "expected": "Keep permission-denial cell partial/unverified. A source-backed dispatcher driver exposing this exact legacy handler through an action-tier route is a prerequisite; do not substitute canonical read wait_for or claim a confirmation denial."
+      }
     },
     {
       "feature_id": "EXT-F-4060",
@@ -149,7 +225,22 @@
         "Negative: UI shows Schema mismatch because ms minimum is 50; handler does not sleep.",
         "No fixture state or external page effect is expected."
       ],
-      "cleanup": "None beyond closing the expanded row."
+      "cleanup": "None beyond closing the expanded row.",
+      "run_phases": [
+        {
+          "id": "warm",
+          "repeat": "Run this case’s listed positive and negative inputs after loading the candidate build, with no immediately preceding full extension reload; record outcomes separately."
+        },
+        {
+          "id": "post_reload",
+          "repeat": "After warm outcome, click full Reload for same extension in chrome://extensions, reopen Tools and reload controlled target tab, repeat identical positive and negative inputs, and record outcomes separately."
+        }
+      ],
+      "permission_denial_reference": {
+        "feature_id": "EXT-F-4060",
+        "entry": "Chat; choose Ask before acting; if sleep is present in the actual selected agent roster, request {\"ms\":50,\"reason\":\"denial check\"}, then click Deny on the confirmation card.",
+        "expected": "Tool result reports User denied this action; no sleep handler result is produced. Active metadata exists in the captured census, but actual current roster/call acceptance still needs observation."
+      }
     }
   ],
   "limitations": [
@@ -157,5 +248,50 @@
     "Current controls, statuses, IDs, live_binding snapshots, result cells, and bindings in docs/stabilization/inventory.json remain untouched.",
     "Manual Tools invocation covers raw handler/schema execution only; it does not prove deployed handler visibility, agent dispatcher permission behavior, request-time DB advertisement, or native acceptance.",
     "EXT-F-4054, 4055, 4056, 4057, and 4060 remain source-listed-pending-reconciliation in the canonical inventory; EXT-F-4058 retains source-listed-procedure-needed until procedure integration and native verification are separately completed."
-  ]
+  ],
+  "execution_repetitions": {
+    "warm": "After loading the candidate build and recording its receipt/identity, reopen Tools and reload the controlled target tab if needed; do not click extension Reload immediately before this run. Execute the complete positive and negative inputs for this case; record this as the warm run.",
+    "post_reload": "After the warm run, click Reload for the same extension in chrome://extensions, record completion, reopen the sidepanel/Tools, reload the controlled target tab, and repeat the exact same positive and negative inputs; record separately as post-reload. Page refresh/panel reopen alone is not extension reload.",
+    "permission_denial": "For any supported dispatcher denial segment below, perform that segment during both phases when the exact tool is advertised. Direct Tools Run is only the handler segment and cannot produce dispatcher denial."
+  },
+  "permission_denial_coverage": {
+    "real_access_door": "Chat streaming dispatcher in Ask before acting mode; action-tier handler receives confirmation card; click Deny. Expected dispatcher failure reason is 'User denied this action' and handler is not run. This is a separate access-gate segment, never inferred from the manual Tools Run result.",
+    "exact_tool_prerequisites": "Attempt only when the selected Chat agent's current tool roster actually contains the exact tool name and the backend accepts its call. Current metadata census lacks active exact-name definitions/bindings for navigate_active_tab, click_element, type_into_element, scroll_page; that source snapshot is not request-time proof. sleep has active exact-name metadata, but runtime roster still must be observed. Do not create fake bindings, test-only toggles, or guest/admin privilege assumptions.",
+    "cases": [
+      {
+        "feature_id": "EXT-F-4054",
+        "entry": "Chat; choose Ask before acting; if navigate_active_tab is actually advertised, request {\"url\":\"<recorded owned loopback URL>\"}, then click Deny on its confirmation card.",
+        "expected": "Tool result reports User denied this action; owned tab remains at its pre-call URL. Current exact-name metadata is absent, so this is blocked until live advertisement is observed."
+      },
+      {
+        "feature_id": "EXT-F-4055",
+        "entry": "Chat; choose Ask before acting; if click_element is actually advertised, request {\"selector\":\"#hover-target\"}, then click Deny.",
+        "expected": "Tool result reports User denied this action; fixture click count remains unchanged. Current exact-name metadata is absent, so this is blocked until live advertisement is observed."
+      },
+      {
+        "feature_id": "EXT-F-4056",
+        "entry": "Chat; choose Ask before acting; if type_into_element is actually advertised, request {\"selector\":\"#keys\",\"text\":\"route-731\"}, then click Deny.",
+        "expected": "Tool result reports User denied this action; #keys value and input/change counts remain unchanged. Current exact-name metadata is absent, so this is blocked until live advertisement is observed."
+      },
+      {
+        "feature_id": "EXT-F-4057",
+        "entry": "Chat; choose Ask before acting; if scroll_page is actually advertised, request {\"direction\":\"bottom\"}, then click Deny.",
+        "expected": "Tool result reports User denied this action; page scroll position remains at recorded initial value. Current exact-name metadata is absent, so this is blocked until live advertisement is observed."
+      },
+      {
+        "feature_id": "EXT-F-4058",
+        "entry": "No supported denial run is currently established for the requested raw legacy wait_for handler. The active canonical exact-name binding is read tier and agent lookup resolves the canonical handler; manual Action row bypasses dispatch.",
+        "expected": "Keep permission-denial cell partial/unverified. A source-backed dispatcher driver exposing this exact legacy handler through an action-tier route is a prerequisite; do not substitute canonical read wait_for or claim a confirmation denial."
+      },
+      {
+        "feature_id": "EXT-F-4060",
+        "entry": "Chat; choose Ask before acting; if sleep is present in the actual selected agent roster, request {\"ms\":50,\"reason\":\"denial check\"}, then click Deny on the confirmation card.",
+        "expected": "Tool result reports User denied this action; no sleep handler result is produced. Active metadata exists in the captured census, but actual current roster/call acceptance still needs observation."
+      }
+    ],
+    "limitations": [
+      "The required base Chrome permissions for these handlers are declared in the extension manifest; this repo provides no supported per-tool toggle to revoke them. Do not invent one or treat restricted chrome:// pages as a missing-permission test.",
+      "No dispatcher denial, runtime roster visibility, or permission state was exercised during this source-only procedure edit."
+    ]
+  }
 }
