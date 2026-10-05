@@ -11,7 +11,7 @@
     "Attempt required organization selection; actualhelper reports d87_member_organization_option_unavailable at organization_select."
   ],
   "expected": "Required approved organization can be selected and rendered/storage identity verified before Showcase controls are tested; fixture/driver mismatch must not be reported as a product pass.",
-  "actual": "Approved-fixture native37278418866 on development266 still fails organization_select after successful admin authentication. Independent source review then proved unrelated/closed-listbox targeting and offscreen-option reachability defects in the test driver. a2656774 repairs owned-listbox scoping and stable readiness; peer edf9ee1a still rejects offscreen reachability and stubbed click coverage. Repair in progress; historical native cause remains unproven and no product case promoted.",
+  "actual": "Approved-fixture native37278418866 on development266 failed organization_select after successful admin authentication. Source repairs a2656774/84685099 now scope the owned listbox, wait for stable candidates, and let offscreen options reach the real shared reveal/hit/click routine. Fresh peer7d125c74 quality PASS_WITH_LIMITS,36 focused checks pass; actual native outcome and historical cause remain unverified. Latest full CI pending after tracking-format correction; no case promoted.",
   "severity": "S2: blocks admin acceptance; product versus fixture/driver cause unknown",
   "priority": "P1: diagnose observed selection boundary before further Showcase testing",
   "state": "in-fix",
@@ -30,7 +30,8 @@
     ".research/organization-picker-boundary-repair.json",
     ".research/organization-boundary-fresh-review.json",
     ".research/organization-listbox-selection-fix.json",
-    ".research/organization-listbox-final-peer.json"
+    ".research/organization-listbox-final-peer.json",
+    ".research/organization-reveal-peer.json"
   ],
   "transition_history": [
     {
@@ -81,7 +82,8 @@
     "integration_followup": "f93ee0cd bindsrequiredOrganizationName in4actualdriverextractiontestseams;40targetedpass. Freshpeer/fullCIpending. Standaloneharness interruptedafter78s; priorCIharness took135s, so this is incompleteevidence, notprovenhang.",
     "integration_peer": "309e2717: separate runtimeunverified/qualitypass,40targetedpass; sourceguardintact. Accidentalexcludedharness runincomplete55pass1cancelled, nocredit; fullCIpending.",
     "full_ci_followup": "37277311837 SUCCESS sourcef93ee0cd45f3e3232a62318e3c9afe0fd6c9f79e; original27harness0fail,25diagnostic0fail,13routes0fail, bothjobs green. Artifact11330374970 SHA f14c64f230f03aa19e14006b3ca7d51f648e422dc443acfc4851af8e746d6632. Nextnativepending.",
-    "current_source": "a2656774; full CI37281825182 success, root read job111671692995: 29 diagnostic checks,18 hosted route checks,2 stale-boundary checks passed. Source review edf9ee1a runtime unverified/quality fail: offscreen target cannot reach scroll and caller stub misses shared pointer behavior. Bounded fixer round active."
+    "current_source": "a2656774; full CI37281825182 success, root read job111671692995: 29 diagnostic checks,18 hosted route checks,2 stale-boundary checks passed. Source review edf9ee1a runtime unverified/quality fail: offscreen target cannot reach scroll and caller stub misses shared pointer behavior. Bounded fixer round active.",
+    "offscreen_followup": "84685099, independent7d125c74: prior reachability and stubbed-pointer findings addressed in controlled DOM, actual shared click exercised;36 passed. No real layout/native acceptance. FullCI37283235393 source5c9d812f pending; previous37282991002 failed only root-owned defect JSON formatting, correctedfaeac396/5c9d812f."
   },
   "escalation": {
     "trigger": "Repeatedresourcevalidorganization failures acrossreviewedfixturefix andmorethan30minuteswithoutoriginalflowpass",
