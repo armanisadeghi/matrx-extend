@@ -7,7 +7,7 @@
  * person's saved rules applied and builds the request `context` from the rows
  * with `@ai-matrx/agents/context` `buildContextWire` — the only way a request
  * gets one. Contract:
- * /Users/armanisadeghi/code/common-docs/systems/account/scopes-context/context-delivery/RULES.md
+ * /Users/armanisadeghi/code/common-docs/systems/data/scopes-context/context-delivery/RULES.md
  */
 
 import { log } from '@/lib/debug/log';

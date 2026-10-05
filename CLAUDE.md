@@ -252,7 +252,7 @@ anything · [docs/TOOLS.generated.md](./docs/TOOLS.generated.md) — tool descri
 File traffic: this extension is **not** cut over to the standalone file service — its
 `/files`, `/assets` and `/share` calls still ride the general backend base URL.
 Cross-repo system-of-record:
-[/Users/armanisadeghi/code/common-docs/systems/media/file-service/STATE.md](/Users/armanisadeghi/code/common-docs/systems/media/file-service/STATE.md)
+[/Users/armanisadeghi/code/common-docs/systems/files/file-service/STATE.md](/Users/armanisadeghi/code/common-docs/systems/files/file-service/STATE.md)
 — read it before touching this feature in ANY repo.
 
 - **Logging into any Matrx UI**: sign in as `admin@admin.com` — the password is `AI_ADMIN_PASSWORD` in the `.env` of `aidream` or `matrx-frontend` (`AI_ADMIN_USERNAME` holds the email).

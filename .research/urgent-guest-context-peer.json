@@ -27,6 +27,6 @@
     "green_resource_journal": "docs/stabilization/resource-journals/urgent-context-rules-green-03.jsonl",
     "compile_resource_journal": "docs/stabilization/resource-journals/urgent-context-rules-compile-01.jsonl",
     "tests": "src/state/context-rules.guest.test.ts",
-    "contract": "/Volumes/Samsung2TB/code/common-docs/systems/account/scopes-context/context-delivery/STATE.md"
+    "contract": "/Volumes/Samsung2TB/code/common-docs/systems/data/scopes-context/context-delivery/STATE.md"
   }
 }

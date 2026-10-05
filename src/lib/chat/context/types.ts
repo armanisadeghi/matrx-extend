@@ -56,7 +56,7 @@ export interface ContextBuildInputs {
    * strings, never objects, never content blocks) only when non-empty. The
    * server resolves the ids against the user's registered resources, names the
    * files for the agent, and injects the `google_workspace` tool for that turn.
-   * See /Users/armanisadeghi/code/common-docs/systems/apps/extension/WIRE_CONTRACT.md §2 (directive keys: /Users/armanisadeghi/code/common-docs/systems/account/scopes-context/context-delivery/RULES.md) and src/state/google-files.ts.
+   * See /Users/armanisadeghi/code/common-docs/systems/apps/extension/WIRE_CONTRACT.md §2 (directive keys: /Users/armanisadeghi/code/common-docs/systems/data/scopes-context/context-delivery/RULES.md) and src/state/google-files.ts.
    */
   googleFileIds?: string[] | null;
 }
