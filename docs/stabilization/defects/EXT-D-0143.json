@@ -19,7 +19,9 @@
   "owner": "showcase_current_selection_diagnosis",
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/37284490515",
-    ".research/showcase-reveal-native.json"
+    ".research/showcase-reveal-native.json",
+    ".research/showcase-current-selection-diagnosis.json",
+    ".research/showcase-selection-diagnostic-peer.json"
   ],
   "transition_history": [
     {
@@ -41,5 +43,12 @@
       "reason": "Bounded evidence-first diagnostic repair assigned; no blind retry"
     }
   ],
-  "closure_requirement": "Localize actual failed operation, prove causal repair with meaningful RED/GREEN and independent review, then original native flow plus B detection/extraction passes with valid resource evidence."
+  "closure_requirement": "Localize actual failed operation, prove causal repair with meaningful RED/GREEN and independent review, then original native flow plus B detection/extraction passes with valid resource evidence.",
+  "review": {
+    "source": "50dbfc3d",
+    "ci_wiring": "27d06012; exact existing regression command33/33 pass",
+    "peer": "bee50b4d: A nativeUNVERIFIED, B PASS_WITH_CONCERNS; bounded catch/receipt checks2/2 pass",
+    "ruling": "Minor receipt defect_id concern refuted as scope attribution: driver tests original D42 acceptance, so retaining D42 primary identity is correct. D143 and inventory explicitly link same run/report for the new diagnostic failure. Do not replace the original acceptance scope with instrumentation scope. Synthetic probe proves wiring only; actual sampling/native outcome unverified.",
+    "next": "Wait successful full CI including50dbfc3d/27d06012; freeze artifact/source. Then one guarded stale-admin run, no unchanged retry. Original native cause remains unknown."
+  }
 }

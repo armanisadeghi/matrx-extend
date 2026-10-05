@@ -1,0 +1,26 @@
+{
+  "observed_at": "2026-10-05T08:57:38.464720+00:00",
+  "schedule_claim": "common-docs operations/scheduled-tasks.md fallback row2026-10-05; pushedf56af78c6, MCP tool unavailable",
+  "item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+  "dashboard": {
+    "method": "Authenticated existing Chrome native UI; refreshed Package page through Reload",
+    "published_version": "0.2.205",
+    "draft_version": "0.2.205",
+    "status": "Published - public",
+    "pending_review": false,
+    "upload_enabled": true
+  },
+  "live_server": {
+    "git_sha": "0ea1950bcd3ec576aa7bac5de73224bfab46c31a",
+    "built_at": "2026-10-05T08:17:40Z",
+    "method": "GET https://server.app.matrxserver.com/health/version",
+    "meaning": "Version only, not guest acceptance"
+  },
+  "guest_acceptance": {
+    "status": "pending_same_conversation_browser_check",
+    "prior_evidence": ".research/public205-guest-native.json",
+    "gap": "Prior bounded native run tested opening plus new conversation after reload, not the explicitly required same-conversation follow-up on current backend.",
+    "next": "Implementation lane guest_same_conversation_acceptance extends existing publicCRX route; independent review and full CI before one guarded hosted run."
+  },
+  "release": "No newer successful hostedStoreartifact found; no upload or submission; development266 is not Store package. Current machine manualbuild/release restrictions retained."
+}
