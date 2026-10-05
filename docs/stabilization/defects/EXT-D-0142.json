@@ -11,14 +11,21 @@
     "Attempt required organization selection; actualhelper reports d87_member_organization_option_unavailable at organization_select."
   ],
   "expected": "Required approved organization can be selected and rendered/storage identity verified before Showcase controls are tested; fixture/driver mismatch must not be reported as a product pass.",
-  "actual": "Realadminauth passes; selection fails beforepickerflow. Receipt admin_role_verified=true,picker_available=true,picker_has_selection=false,selection_required=true. Rootcause notyetproven: helper combines optioncount/visibility/hit-testing into one refusal. All3 resourcejournals valid; guestchild exits1.",
+  "actual": "Confirmed fixture mismatch: independent read-only membership checks found zero active admin memberships in two active organizations with the hardcoded member fixture name. Sourceafb775b3 routes explicit approved admin fixture for Showcase and Scrape; bd328be0 repairs routeguard andCIwiring. Existing supported active-only adminfixture resolved cb534681 andprivatefile mode0600prepared. FullCI37276487004 now fails six extractedpanelguard tests because requiredOrganizationName missing fromtestseam; integrationrepair active. No nativeproductpass.",
   "severity": "S2: blocks admin acceptance; product versus fixture/driver cause unknown",
   "priority": "P1: diagnose observed selection boundary before further Showcase testing",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "showcase_org_selection_fix",
   "evidence": [
     ".research/showcase-org-native-retest.json",
-    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37273880772"
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37273880772",
+    ".research/showcase-org-selection-repair.json",
+    ".research/showcase-org-fixture-peer.json",
+    ".research/admin-fixture-route-guard-fix.json",
+    ".research/admin-fixture-route-final-peer.json",
+    ".research/admin-existing-fixture-resolution.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37276487004",
+    ".research/org-extracted-seam-final-review.json"
   ],
   "transition_history": [
     {
@@ -38,7 +45,23 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "FreshSol assigned evidence-based diagnosis/provenrepair; no blindnative retry"
+    },
+    {
+      "at": "2026-10-05T07:25:40.461789+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Sourceafb775b3 plusguardintegrationbd328be0/f93ee0cd; independentpeers and40focusedchecks pass. Existingfixture resolvedcb534681. FullCI/nativepending; noclosure."
     }
   ],
-  "closure_requirement": "Prove actualcause at selectionboundary, causalRED/GREEN and independentreview, fullCI, originalnativeorganizationselection passes and surrounding identity/guard checks remainvalid. No arbitrary organizationfallback or fabricated membership."
+  "closure_requirement": "Prove actualcause at selectionboundary, causalRED/GREEN and independentreview, fullCI, originalnativeorganizationselection passes and surrounding identity/guard checks remainvalid. No arbitrary organizationfallback or fabricated membership.",
+  "review": {
+    "source": "afb775b3",
+    "first_peer": "3af9cd8d: apartial/bfail missingadminroutefixture",
+    "followup": "bd328be0",
+    "fresh_peer": "ccb211b8: apartial/bpass25focused andwrongorgname/uuid negatives",
+    "full_ci": "37276487004 failed6panel-visible-reopen-repair tests: newrequiredOrganizationName not supplied to extractedclosure; rootreadchecksjob111654534091",
+    "ruling": "Do not acceptfocusedgreen ascomplete. admin_fixture_route_guard_fix owns integrationrepair; no nativebeforefullgreen.",
+    "integration_followup": "f93ee0cd bindsrequiredOrganizationName in4actualdriverextractiontestseams;40targetedpass. Freshpeer/fullCIpending. Standaloneharness interruptedafter78s; priorCIharness took135s, so this is incompleteevidence, notprovenhang.",
+    "integration_peer": "309e2717: separate runtimeunverified/qualitypass,40targetedpass; sourceguardintact. Accidentalexcludedharness runincomplete55pass1cancelled, nocredit; fullCIpending."
+  }
 }
