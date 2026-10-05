@@ -1,0 +1,18 @@
+{
+  "defect": "EXT-D-0137",
+  "observed_at": "2026-10-05T02:22:23.644101+00:00",
+  "run_id": 37254659125,
+  "head_sha": "88c6e49a1d227d236aa8b4bcf342d2db97ec8825",
+  "conclusion": "success",
+  "job_id": 111589058163,
+  "root_read_job_logs": true,
+  "focused_auth_transition_tests": {
+    "pass": 17,
+    "fail": 0
+  },
+  "native_harness_tests": {
+    "pass": 27,
+    "fail": 0
+  },
+  "scope": "Type, lint, unit, resource integration and development build green; actual immutable-method regression included. Native retest remains pending; no product health inferred."
+}
