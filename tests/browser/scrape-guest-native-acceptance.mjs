@@ -935,6 +935,7 @@ try {
       browserSession,
       reopenPanel,
       observePanelVisibility,
+      observeAuthenticatedPanel,
       panelTarget,
       inspectPanelContext,
       artifacts,
@@ -954,6 +955,7 @@ try {
             repo: REPO,
             adminCredentialsFile: process.env.MATRX_PREPARE_ADMIN_CREDENTIALS_FILE,
             memberLinkFile: process.env.MATRX_REVIEWER_MAGIC_LINK_FILE,
+            observeBoundary: observeAuthenticatedPanel,
             onStage: (value) => {
               report.auth_stage = value;
             },

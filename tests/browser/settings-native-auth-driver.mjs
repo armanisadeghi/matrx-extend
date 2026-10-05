@@ -282,6 +282,7 @@ export async function signInSettings({
   adminCredentialsFile,
   memberLinkFile,
   onStage,
+  observeBoundary = async () => {},
 }) {
   assert.ok(['admin', 'member'].includes(mode), 'd87_auth_mode_invalid');
   if (mode === 'admin') {
@@ -327,6 +328,7 @@ export async function signInSettings({
   }
   const web = await page.context().newPage();
   try {
+    await observeBoundary('member_web_created').catch(() => {});
     onStage('member_magic_link');
     const secret = requireSettingsCredential(
       'member',
@@ -376,6 +378,7 @@ export async function signInSettings({
           value.isAdmin !== true,
         90_000,
       );
+      await observeBoundary('member_oauth_completed').catch(() => {});
       canonical = await adminCheck.verify(identity.userId);
       const org = await waitFor(
         'd87_member_organization',
@@ -425,7 +428,11 @@ export async function signInSettings({
       await adminCheck.stop();
     }
   } finally {
+    // Keep cleanup ordered even if an optional observer cannot read the browser.
+    await observeBoundary('member_before_web_close').catch(() => {});
     await web.close();
+    await observeBoundary('member_after_web_close').catch(() => {});
     await page.bringToFront();
+    await observeBoundary('member_after_root_activation').catch(() => {});
   }
 }

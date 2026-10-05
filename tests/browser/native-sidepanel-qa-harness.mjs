@@ -809,6 +809,75 @@ async function observePanelVisibility(panel) {
   }
 }
 
+// This observation never activates a target. Native window state and the renderer
+// hit-test are separate evidence; neither document.hasFocus nor a hit proves OS focus.
+async function observeAuthenticatedPanelHost({ cdp, panel, rootTargetId, panelUrl, rootUrl }) {
+  const observation = {
+    native_window: { measured: false },
+    panel_host: { measured: false },
+    scrape_hit: { measured: false },
+  };
+  try {
+    const { bounds } = await cdp.send('Browser.getWindowForTarget', { targetId: rootTargetId });
+    if (['normal', 'minimized', 'maximized', 'fullscreen'].includes(bounds?.windowState))
+      observation.native_window = { measured: true, state: bounds.windowState };
+  } catch {
+    /* Unsupported native-window lookup is explicit, never a visibility verdict. */
+  }
+  try {
+    const response = await panel.send('Runtime.evaluate', {
+      expression: `(async () => {
+        const [tabs, windows, contexts] = await Promise.all([
+          chrome.tabs.query({}), chrome.windows.getAll({}),
+          chrome.runtime.getContexts({ contextTypes: ['SIDE_PANEL'] })
+        ]);
+        const roots = tabs.filter(tab => tab.url === ${JSON.stringify(rootUrl)});
+        const panels = contexts.filter(context => context.documentUrl === ${JSON.stringify(panelUrl)});
+        const root = roots.length === 1 ? roots[0] : null;
+        const host = root ? windows.find(win => win.id === root.windowId) : null;
+        const panel = panels.length === 1 ? panels[0] : null;
+        return {
+          measured: true, root_unique: roots.length === 1,
+          root_active: root?.active ?? null, root_window_present: Boolean(host),
+          root_window_focused: host?.focused ?? null,
+          root_window_state: ['normal', 'minimized', 'maximized', 'fullscreen'].includes(host?.state) ? host.state : null,
+          panel_unique: panels.length === 1,
+          panel_in_root_window: panel && root ? panel.windowId === root.windowId : null,
+          focused_window_count: windows.filter(win => win.focused).length,
+          window_count: windows.length
+        };
+      })()`,
+      awaitPromise: true,
+      returnByValue: true,
+    });
+    if (!response.exceptionDetails && response.result?.value)
+      observation.panel_host = response.result.value;
+  } catch {
+    /* Never serialize transport errors: they can contain authentication URLs. */
+  }
+  try {
+    const response = await panel.send('Runtime.evaluate', {
+      expression: `(() => {
+        const targets = [...document.querySelectorAll('button[role="tab"][title="Scrape"]')];
+        if (targets.length !== 1) return { measured: true, unique: false };
+        const target = targets[0]; const r = target.getBoundingClientRect();
+        const x = r.x + r.width / 2, y = r.y + r.height / 2;
+        const inViewport = r.width > 0 && r.height > 0 && x >= 0 && y >= 0 && x < innerWidth && y < innerHeight;
+        const hit = inViewport ? document.elementFromPoint(x, y) : null;
+        return { measured: true, unique: true, in_viewport: inViewport,
+          hit: hit === target ? 'self' : hit && target.contains(hit) ? 'descendant' : hit ? 'other' : 'none',
+          disabled: target.disabled === true };
+      })()`,
+      returnByValue: true,
+    });
+    if (!response.exceptionDetails && response.result?.value)
+      observation.scrape_hit = response.result.value;
+  } catch {
+    /* A retired renderer remains explicitly unmeasured. */
+  }
+  return observation;
+}
+
 async function activateOwnedSidePanel({
   cdp,
   panel,
@@ -1318,6 +1387,20 @@ export async function runNativeSidepanelQa({
                 observe: (phase) => observeVisibility(phase, panel),
               }),
             observePanelVisibility: (phase) => observeVisibility(phase, panel),
+            observeAuthenticatedPanel: async (phase) => {
+              if (onPanelVisibilityObservation)
+                onPanelVisibilityObservation({
+                  phase,
+                  ...(await observePanelVisibility(panel)),
+                  host: await observeAuthenticatedPanelHost({
+                    cdp,
+                    panel,
+                    rootTargetId: normalTarget.targetId,
+                    panelUrl,
+                    rootUrl: page.url(),
+                  }),
+                });
+            },
             transportFailureClass: () => cdp.failureClass,
             panelTarget,
             artifacts,
@@ -1385,6 +1468,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 }
 
 export {
+  observeAuthenticatedPanelHost,
   waitForInitialPanelReady,
   activateOwnedSidePanel,
   reloadOwnedExtension,

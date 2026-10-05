@@ -152,6 +152,7 @@ async function checkPath(source, scrape, refused = false) {
     'exercisePanel: async ({',
     '      report.panel_viewports.push({',
   ).slice('exercisePanel: '.length);
+  const authObserve = async () => {};
   const exercise = new Function(
     'signInSettings',
     'selectRequiredSettingsOrganization',
@@ -163,7 +164,8 @@ async function checkPath(source, scrape, refused = false) {
     'evaluate',
     `let expectedIdentity; return (${setup}\n});`,
   )(
-    async () => {
+    async ({ observeBoundary }) => {
+      assert.equal(observeBoundary, authObserve);
       visible = false;
       return { mode: 'member' };
     },
@@ -180,6 +182,7 @@ async function checkPath(source, scrape, refused = false) {
       page,
       panel,
       observePanelVisibility: observe,
+      observeAuthenticatedPanel: authObserve,
       reopenPanel: () =>
         activateOwnedSidePanel({
           panel,
@@ -235,6 +238,7 @@ test('actual setup preserves all nine checkpoints and stops observation after re
 });
 test('in-memory mutations cannot omit checkpoints or manufacture successful measurements', async () => {
   const mutations = [
+    [harnessSource, scrapeSource.replace('observeBoundary: observeAuthenticatedPanel,', '')],
     [
       harnessSource.replace("await observeVisibility('initial_settled_before_screenshots');", ''),
       scrapeSource,

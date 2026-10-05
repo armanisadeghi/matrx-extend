@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "task": "D133-authenticated-panel-cause-escalation",
+  "status": "DONE_WITH_CONCERNS",
+  "outcome": "Minimal missing-evidence change; native cause and recovery remain unverified.",
+  "evidence": {
+    "prior_runs": [37245836902, 37248327805],
+    "first_hidden_observations": ["after_trusted_open", "after_authentication"],
+    "original_exact_context_survives": true,
+    "native_postauth_window_evidence_previously_missing": true,
+    "source_boundary": "signInSettings creates a web tab, authenticates through OAuth, closes its web tab, and activates root; previous timeline collapsed all of these."
+  },
+  "hypotheses": [
+    {
+      "cause": "auth web-tab activation hides the panel",
+      "falsifier": "member_web_created remains visible in the original host"
+    },
+    {
+      "cause": "OAuth leaves owned Chrome window unfocused or minimized",
+      "falsifier": "member_oauth_completed root_window_focused true and native_window state normal while document hidden"
+    },
+    {
+      "cause": "closing web tab hides or moves the global panel",
+      "falsifier": "before/after_web_close preserve visibility and panel_in_root_window"
+    },
+    {
+      "cause": "root target activation hides the panel",
+      "falsifier": "member_after_root_activation remains visible"
+    },
+    {
+      "cause": "renderer visibility differs from usable control geometry",
+      "falsifier": "hidden state also has unavailable or obstructed Scrape center hit; successful DOM hit alone never establishes physical usability"
+    }
+  ],
+  "change": {
+    "product_unchanged": true,
+    "native_actions_unchanged": true,
+    "acceptance_unchanged": true,
+    "checkpoints": [
+      "member_web_created",
+      "member_oauth_completed",
+      "member_before_web_close",
+      "member_after_web_close",
+      "member_after_root_activation"
+    ],
+    "observations": [
+      "CDP owned-root native window state",
+      "Chrome root active tab/window focus and state",
+      "exact panel context association with root window",
+      "static Scrape control uniqueness, viewport membership, center hit category and disabled boolean"
+    ],
+    "privacy": "No URL, title, text, identity, window/tab/context IDs or transport error messages emitted; no authenticated screenshots taken. Queries use exact owned root URL and extension URL internally.",
+    "unavailable": "Each failed native/extension-API/renderer boundary reports measured=false independently.",
+    "worker_lifecycle": "Uses original exact panel session for extension APIs; does not depend on cached MV3 worker target surviving auth."
+  },
+  "verification": {
+    "red": "node --test tests/browser/authenticated-panel-host.test.mjs failed because observer_unavailable replaced credential_read_failed",
+    "green": "same command passed after observer refusal was isolated; actual auth cleanup still closes web before root activation",
+    "focused_suite": "14 tests pass across authenticated-panel-host, panel-visibility-diagnostic and settings-native-auth-driver",
+    "mutations": [
+      "wrong panel-host association",
+      "invented focused host",
+      "wrong hit classification",
+      "constant unmeasured response",
+      "omitted post-close observation",
+      "activation before close",
+      "Scrape drops observer wiring",
+      "constant successful first-case response fails changed native-host case"
+    ],
+    "siblings": "Admin returns before member-only observations; callers omitting optional callback retain behavior; guest and existing nine visibility checkpoints remain unchanged; exact context and resource gates untouched.",
+    "native_harness_regression": "41 tests pass, including the unchanged native harness identity, reopen and reload guard suite (137.5s)."
+  },
+  "limits": [
+    "No local or hosted browser, build, workflow, release, credential creation, inventory or defect edit.",
+    "Native cause not proven; five observations enable one root-owned frozen244 diagnostic after fresh independent review.",
+    "DOM hit is renderer evidence, not proof of OS foreground or physical clickability. Browser native state and Chrome focused-window evidence are reported separately.",
+    "No new timing budget or retries. Uses existing owned CDP command deadlines."
+  ]
+}
