@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "report_type": "contained-inventory-drift-census",
+  "status": "source-census-complete-runtime-unverified",
+  "census_scope": ["Settings", "Scrape"],
+  "inventory_path": "docs/stabilization/inventory.json",
+  "inventory_snapshot": {
+    "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
+    "updated_at": "2026-10-04T18:49:15.756937+00:00",
+    "reviewed_working_head": "02c1adff291e6fc8e957eb3094b96ceda9b770c1"
+  },
+  "reviewed_files": [
+    "docs/stabilization/inventory.json",
+    ".research/settings-inventory-delta.json",
+    "src/features/settings/SettingsView.tsx",
+    "src/features/settings/AuditKeyCard.tsx",
+    "src/features/settings/AdvancedAgentCapabilities.tsx",
+    "src/features/scrape/ScrapeView.tsx",
+    "src/features/scrape/DiagnoseCard.tsx"
+  ],
+  "method": "Compared current source to inventory snapshot commit 528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b, enumerated visible control sites in SettingsView/AuditKeyCard/AdvancedAgentCapabilities and ScrapeView/DiagnoseCard, and reconciled against feature control IDs and mode applicability in inventory.json. Snapshot-absent claims were checked against the same source paths at the snapshot commit.",
+  "coverage": {
+    "settings": {
+      "feature_id": "EXT-F-1003",
+      "inventory_control_count": 38,
+      "existing_mappings_checked": ["EXT-F-1003-C01 through EXT-F-1003-C38"],
+      "auth_applicability_evidence": {
+        "inventory_modes": {
+          "guest": "Applicable; source visibility gates determine individual controls.",
+          "member": "Applicable; source visibility gates determine individual controls.",
+          "admin": "Applicable; source visibility gates determine individual controls."
+        },
+        "source": [
+          "src/features/settings/SettingsView.tsx:249-257 (archive filter only with user)",
+          "src/features/settings/SettingsView.tsx:313-324 (archived organization rows and restoration link only when archivedOrganizations.length > 0)",
+          "src/features/settings/SettingsView.tsx:665-668 (Advanced agent capabilities gated by isAdmin)",
+          "src/features/settings/SettingsView.tsx:763-773 (Sign out for user; Sign in otherwise)"
+        ]
+      }
+    },
+    "scrape": {
+      "feature_id": "EXT-F-1007",
+      "inventory_control_count": 33,
+      "existing_mappings_checked": ["EXT-F-1007-C01 through EXT-F-1007-C33"],
+      "auth_applicability_evidence": {
+        "inventory_modes": {
+          "guest": "Applicable; surface is present, role/auth restrictions have negative access cases.",
+          "member": "Applicable; surface is present, role/auth restrictions have negative access cases.",
+          "admin": "Applicable; surface is present, role/auth restrictions have negative access cases."
+        },
+        "source": [
+          "src/features/scrape/ScrapeView.tsx:302-312 (page identity retry is not behind an auth predicate)",
+          "src/features/scrape/ScrapeView.tsx:854-869 (admin-only diagnostic launcher visibility; existing control EXT-F-1007-C15)"
+        ]
+      }
+    }
+  },
+  "findings": [
+    {
+      "status": "UNVERIFIED",
+      "surface": "Settings / Organization",
+      "existing_feature_id": "EXT-F-1003",
+      "existing_control_ids": ["EXT-F-1003-C01", "EXT-F-1003-C33"],
+      "mapping": "partially-represented; add a distinct control mapping for the restore-navigation link",
+      "proposed_control_id": "EXT-F-1003-C39",
+      "proposed_label": "Open organization management to restore archived organization",
+      "proposed_action": "When archived memberships are shown, follow the Organizations link and verify it opens the organization management page used to restore an archived organization.",
+      "source_anchors": [
+        "src/features/settings/SettingsView.tsx:313-324",
+        "src/features/settings/SettingsView.tsx:321-323"
+      ],
+      "snapshot_absence_evidence": "At inventory source commit 528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b, SettingsView.tsx contains no archived-organization restoration link; current source adds OpenUrl to ENV.FRONTEND_URL/organizations.",
+      "auth_applicability": {
+        "guest": "Not applicable: the Organization section prompts sign-in and does not render archived memberships or this link without a user (SettingsView.tsx:266-268, 313-324).",
+        "member": "Conditionally applicable when archivedOrganizations.length > 0; no role gate is present.",
+        "admin": "Conditionally applicable when archivedOrganizations.length > 0; no role gate is present."
+      },
+      "runtime_status": "UNVERIFIED; source inventory only, no browser interaction or runtime claim"
+    },
+    {
+      "status": "UNVERIFIED",
+      "surface": "Scrape / active page identity recovery",
+      "existing_feature_id": "EXT-F-1007",
+      "existing_control_ids": [],
+      "mapping": "missing-mapping",
+      "proposed_control_id": "EXT-F-1007-C34",
+      "proposed_label": "Retry active page identity check",
+      "proposed_action": "When active page identity is unavailable, use Retry page check and verify the identity check is requested again and capture availability follows its result.",
+      "source_anchors": [
+        "src/features/scrape/ScrapeView.tsx:302-312",
+        "src/features/scrape/ScrapeView.tsx:305-310",
+        "src/features/scrape/ScrapeView.tsx:393-398",
+        "src/features/scrape/ScrapeView.tsx:729-750"
+      ],
+      "snapshot_absence_evidence": "At inventory source commit 528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b, ScrapeView.tsx has no Retry page check or refreshActiveTabIdentity action; current source adds both and gates capture buttons on tab.pageKey.",
+      "auth_applicability": {
+        "guest": "Applicable; the retry is rendered on the Scrape surface without an auth predicate.",
+        "member": "Applicable; the retry is rendered on the Scrape surface without an auth predicate.",
+        "admin": "Applicable; the retry is rendered on the Scrape surface without an auth predicate."
+      },
+      "runtime_status": "UNVERIFIED; source inventory only, no browser interaction or runtime claim"
+    }
+  ],
+  "no_additional_findings": "Other reviewed visible controls map to existing EXT-F-1003-C01..C38 and EXT-F-1007-C01..C33. The Scrape historical-capture notice and retained-pane behavior are state/information behavior, not newly observed user controls. This is a bounded Settings/Scrape source census, not a whole-platform audit.",
+  "limits": [
+    "No browser/native interaction, runtime pass/fail claim, test, build, product fix, database access, or release was performed.",
+    "The inventory snapshot and remote working tree can change while other writers work; proposed IDs are suggestions for the inventory owner to reconcile before adoption.",
+    "Only Settings and Scrape source files and their inventory feature records were reviewed; no claim of global feature/control completeness."
+  ]
+}
