@@ -1,0 +1,279 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007",
+  "mode": "member",
+  "status": "unverified",
+  "artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.257",
+    "source_sha": "a745dd3175515b865e8468b72f0f796e21218139",
+    "tree_sha256": "4b2a1f4ab9b7b59e235a9b9582c8b091452afdcdcf8d4b1a10f89f50bec12a18",
+    "run_id": 37251997773,
+    "artifact_id": 11322000501
+  },
+  "guest_account_observed": false,
+  "cases": [],
+  "stage": "organization_selection",
+  "native_stage": "exercise_panel",
+  "failure": {
+    "stage": "organization_selection",
+    "code": "Organization_section_ready_not_observed:{\"transient\":\"'get' on proxy: property 'send' is a read-only and non-configurable data property on the proxy target but the proxy did not return its actual value (expected 'async send(method, params = {}) {\\n      return cdp.send(method, params, sessionId);\\n "
+  },
+  "original_busy_failure": null,
+  "cpu_diagnostic": null,
+  "horizontal_geometry": [],
+  "reload_milestones": [],
+  "reload_lifecycle": null,
+  "driver_failure": null,
+  "media_transitions": [],
+  "media_event_traces": [],
+  "authentication": null,
+  "panel_viewports": [],
+  "panel_visibility_timeline": [
+    {
+      "phase": "initial_settled_before_screenshots",
+      "measured": true,
+      "visibility": "visible",
+      "hasFocus": false,
+      "ready": true,
+      "width": 360,
+      "height": 373
+    },
+    {
+      "phase": "after_initial_screenshots",
+      "measured": true,
+      "visibility": "visible",
+      "hasFocus": false,
+      "ready": true,
+      "width": 360,
+      "height": 373
+    },
+    {
+      "phase": "before_authentication",
+      "measured": true,
+      "visibility": "visible",
+      "hasFocus": false,
+      "ready": true,
+      "width": 360,
+      "height": 373
+    },
+    {
+      "phase": "member_web_created",
+      "measured": true,
+      "visibility": "visible",
+      "hasFocus": false,
+      "ready": true,
+      "width": 360,
+      "height": 373,
+      "host": {
+        "native_window": {
+          "measured": true,
+          "state": "normal"
+        },
+        "panel_host": {
+          "measured": true,
+          "root_unique": true,
+          "root_active": false,
+          "root_window_present": true,
+          "root_window_focused": true,
+          "root_window_state": "normal",
+          "panel_unique": true,
+          "panel_in_root_window": null,
+          "focused_window_count": 1,
+          "window_count": 1
+        },
+        "scrape_hit": {
+          "measured": true,
+          "unique": true,
+          "in_viewport": true,
+          "hit": "descendant",
+          "disabled": false
+        }
+      }
+    },
+    {
+      "phase": "member_oauth_completed",
+      "measured": true,
+      "visibility": "visible",
+      "hasFocus": true,
+      "ready": true,
+      "width": 360,
+      "height": 373,
+      "host": {
+        "native_window": {
+          "measured": true,
+          "state": "normal"
+        },
+        "panel_host": {
+          "measured": true,
+          "root_unique": true,
+          "root_active": false,
+          "root_window_present": true,
+          "root_window_focused": true,
+          "root_window_state": "normal",
+          "panel_unique": true,
+          "panel_in_root_window": null,
+          "focused_window_count": 1,
+          "window_count": 1
+        },
+        "scrape_hit": {
+          "measured": true,
+          "unique": true,
+          "in_viewport": true,
+          "hit": "descendant",
+          "disabled": false
+        }
+      }
+    },
+    {
+      "phase": "member_before_web_close",
+      "measured": true,
+      "visibility": "hidden",
+      "hasFocus": true,
+      "ready": true,
+      "width": 360,
+      "height": 373,
+      "host": {
+        "native_window": {
+          "measured": true,
+          "state": "normal"
+        },
+        "panel_host": {
+          "measured": true,
+          "root_unique": true,
+          "root_active": false,
+          "root_window_present": true,
+          "root_window_focused": true,
+          "root_window_state": "normal",
+          "panel_unique": true,
+          "panel_in_root_window": null,
+          "focused_window_count": 1,
+          "window_count": 1
+        },
+        "scrape_hit": {
+          "measured": true,
+          "unique": true,
+          "in_viewport": true,
+          "hit": "descendant",
+          "disabled": false
+        }
+      }
+    },
+    {
+      "phase": "member_after_web_close",
+      "measured": true,
+      "visibility": "hidden",
+      "hasFocus": true,
+      "ready": true,
+      "width": 360,
+      "height": 373,
+      "host": {
+        "native_window": {
+          "measured": true,
+          "state": "normal"
+        },
+        "panel_host": {
+          "measured": true,
+          "root_unique": true,
+          "root_active": true,
+          "root_window_present": true,
+          "root_window_focused": true,
+          "root_window_state": "normal",
+          "panel_unique": true,
+          "panel_in_root_window": null,
+          "focused_window_count": 1,
+          "window_count": 1
+        },
+        "scrape_hit": {
+          "measured": true,
+          "unique": true,
+          "in_viewport": true,
+          "hit": "descendant",
+          "disabled": false
+        }
+      }
+    },
+    {
+      "phase": "member_after_root_activation",
+      "measured": true,
+      "visibility": "hidden",
+      "hasFocus": true,
+      "ready": true,
+      "width": 360,
+      "height": 373,
+      "host": {
+        "native_window": {
+          "measured": true,
+          "state": "normal"
+        },
+        "panel_host": {
+          "measured": true,
+          "root_unique": true,
+          "root_active": true,
+          "root_window_present": true,
+          "root_window_focused": true,
+          "root_window_state": "normal",
+          "panel_unique": true,
+          "panel_in_root_window": null,
+          "focused_window_count": 1,
+          "window_count": 1
+        },
+        "scrape_hit": {
+          "measured": true,
+          "unique": true,
+          "in_viewport": true,
+          "hit": "descendant",
+          "disabled": false
+        }
+      }
+    },
+    {
+      "phase": "after_authentication",
+      "measured": true,
+      "visibility": "hidden",
+      "hasFocus": true,
+      "ready": true,
+      "width": 360,
+      "height": 373
+    }
+  ],
+  "panel_transition": {
+    "status": "measured",
+    "events": [
+      {
+        "kind": "start",
+        "ms": 3846.0999999999767,
+        "visibility": "visible"
+      },
+      {
+        "kind": "visibilitychange",
+        "ms": 32913,
+        "visibility": "hidden"
+      },
+      {
+        "kind": "before_health",
+        "ms": 33795.69999999995,
+        "visibility": "hidden"
+      },
+      {
+        "kind": "after_health",
+        "ms": 80526.69999999995,
+        "visibility": "hidden"
+      },
+      {
+        "kind": "organization_entry",
+        "ms": 80534.69999999995,
+        "visibility": "hidden"
+      },
+      {
+        "kind": "stop",
+        "ms": 90611.79999999993,
+        "visibility": "hidden"
+      }
+    ],
+    "interval": "outside_recorded_intervals"
+  },
+  "width_mode": "normal",
+  "auth_stage": "member_extension_signin"
+}

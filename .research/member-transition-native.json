@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "task": "member-transition-native",
+  "status": "completed_with_unverified_failure_evidence",
+  "workflow": {
+    "name": "hosted-guest-acceptance.yml",
+    "run_id": 37252919339,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37252919339",
+    "head_sha": "2c04341d5bf6644cb695da5f10112f529b3e8ee9",
+    "terminal_status": "completed",
+    "conclusion": "failure",
+    "runner_label": "macos-15",
+    "case": "guest-scrape-development",
+    "auth_mode": "member",
+    "width_mode": "normal",
+    "requested_min_panel_width_px": 600,
+    "one_launch_no_retry": true,
+    "setup_and_readiness_steps_passed": true,
+    "exercise_step": "failure",
+    "artifact_id": 11321134384,
+    "artifact_name": "hosted-guest-37252919339-1",
+    "artifact_digest": "sha256:ead8a54add1798466e9271dbf9c5ab6de8c0f53210f3445739c14755d5363e77"
+  },
+  "frozen_product": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.257",
+    "source_sha": "a745dd3175515b865e8468b72f0f796e21218139",
+    "tree_sha256": "4b2a1f4ab9b7b59e235a9b9582c8b091452afdcdcf8d4b1a10f89f50bec12a18",
+    "run_id": 37251997773,
+    "artifact_id": 11322000501,
+    "artifact_conclusion": "success",
+    "runtime_driver_equal_to_artifact_source": true
+  },
+  "native_outcome": {
+    "status": "unverified",
+    "stage": "organization_selection",
+    "native_stage": "exercise_panel",
+    "failure": "Organization_section_ready_not_observed; transient Proxy invariant for read-only non-configurable send property",
+    "authentication_stage": "member_extension_signin",
+    "organization_selection_verified": false,
+    "requested_width_px": 600,
+    "measured_width_px": 360,
+    "measured_height_px": 373,
+    "width_threshold_reached": false,
+    "panel_viewports": [],
+    "cases": []
+  },
+  "panel_transition": {
+    "status": "measured",
+    "classification": "outside_recorded_intervals",
+    "full_raw_receipt": "docs/stabilization/evidence/member-transition/run37252919339/raw/scrape-guest-native.json",
+    "events": [
+      { "kind": "start", "ms": 3846.0999999999767, "visibility": "visible" },
+      { "kind": "visibilitychange", "ms": 32913, "visibility": "hidden" },
+      { "kind": "before_health", "ms": 33795.69999999995, "visibility": "hidden" },
+      { "kind": "after_health", "ms": 80526.69999999995, "visibility": "hidden" },
+      { "kind": "organization_entry", "ms": 80534.69999999995, "visibility": "hidden" },
+      { "kind": "stop", "ms": 90611.79999999993, "visibility": "hidden" }
+    ],
+    "causality": "undetermined; event ordering alone does not establish cause"
+  },
+  "resources": {
+    "original_current_run_journals": [
+      {
+        "path": "docs/stabilization/evidence/member-transition/run37252919339/raw/resource-journals/hosted-browser-37252919339-1.jsonl",
+        "sha256": "9293a69cabb1776a0ca0e8eb5068fcb9c1f9861de9f6cdbda4955b606d741497",
+        "final_decision": "valid",
+        "exit_code": 0
+      },
+      {
+        "path": "docs/stabilization/evidence/member-transition/run37252919339/raw/resource-journals/hosted-guest-37252919339-1.jsonl",
+        "sha256": "48c57ea17390082d73730728a324cb327cd6ee55a3bf14c492939812e5d5c14c",
+        "final_decision": "child_failed",
+        "exit_code": 1
+      },
+      {
+        "path": "docs/stabilization/evidence/member-transition/run37252919339/raw/resource-journals/hosted-package-37252919339-1.jsonl",
+        "sha256": "be90252f6bfeea15c16d0a2143c10db86c3ab871e9047ad4c191833d1650e968",
+        "final_decision": "valid",
+        "exit_code": 0
+      }
+    ],
+    "stale_journals_excluded": [
+      "hosted-browser-37105304739-1.jsonl",
+      "hosted-guest-37105304739-1.jsonl",
+      "hosted-package-37105304739-1.jsonl"
+    ]
+  },
+  "evidence": {
+    "hash_manifest": "docs/stabilization/evidence/member-transition/run37252919339/hash-manifest.json",
+    "screenshots_scope": "two initial setup screenshots captured before authentication only",
+    "receipt_sha256": "6cc3d72a23f035b0e3f29446f697b3edb08ddf31d04ccc6ec6c03cf406436f69"
+  },
+  "credential_cleanup": {
+    "temporary_github_secret_deleted": true,
+    "secret_list_confirmed_absent": true,
+    "local_link_file_deleted": true,
+    "local_link_file_absence_verified": true,
+    "existing_identity_and_admin_env_files_unchanged": true,
+    "no_credentials_or_identity_values_recorded": true
+  },
+  "limits": [
+    "Authentication reached member_extension_signin, but organization selection did not complete.",
+    "Normal mode was requested at 600 px; measured panel width remained 360 px and no case viewport was recorded.",
+    "Transition events and visibility timeline are preserved raw. Their order does not establish physical exposure or causality.",
+    "Exactly one native run was launched; no retry was performed."
+  ]
+}

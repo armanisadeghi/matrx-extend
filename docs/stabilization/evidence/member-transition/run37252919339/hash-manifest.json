@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "run_id": 37252919339,
+  "workflow_artifact": {
+    "artifact_id": 11321134384,
+    "name": "hosted-guest-37252919339-1",
+    "sha256": "ead8a54add1798466e9271dbf9c5ab6de8c0f53210f3445739c14755d5363e77",
+    "bytes": 56802
+  },
+  "payloads": [
+    {
+      "path": "raw/scrape-guest-native.json",
+      "sha256": "6cc3d72a23f035b0e3f29446f697b3edb08ddf31d04ccc6ec6c03cf406436f69",
+      "bytes": 7241
+    },
+    {
+      "path": "raw/resource-journals/hosted-browser-37252919339-1.jsonl",
+      "sha256": "9293a69cabb1776a0ca0e8eb5068fcb9c1f9861de9f6cdbda4955b606d741497",
+      "bytes": 985
+    },
+    {
+      "path": "raw/resource-journals/hosted-guest-37252919339-1.jsonl",
+      "sha256": "48c57ea17390082d73730728a324cb327cd6ee55a3bf14c492939812e5d5c14c",
+      "bytes": 5552
+    },
+    {
+      "path": "raw/resource-journals/hosted-package-37252919339-1.jsonl",
+      "sha256": "be90252f6bfeea15c16d0a2143c10db86c3ab871e9047ad4c191833d1650e968",
+      "bytes": 986
+    },
+    {
+      "path": "screenshots/native-side-panel.png",
+      "sha256": "c287d11852ff644d06ed43d102c0131a490961c53d6a222ac7e78a83f2e10d12",
+      "bytes": 25861,
+      "scope": "initial setup before authentication"
+    },
+    {
+      "path": "screenshots/normal-target-after-open.png",
+      "sha256": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89",
+      "bytes": 25156,
+      "scope": "initial setup before authentication"
+    }
+  ]
+}
