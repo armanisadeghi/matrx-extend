@@ -89,10 +89,7 @@
   ],
   "diagnostic_commit": "427e75a4",
   "next_action": "Implement bounded passive visibilitychange timestamps correlated in one clock domain with resource-health waits and actual organization pointer branches; establish privacy-safe owned native-window observation availability before next launch. Peer review before ONE changed-condition native. No focus permutations or acceptanceweakening.",
-  "fix_commits": [
-    "44005fb4",
-    "0e8aa6c7"
-  ],
+  "fix_commits": ["44005fb4", "0e8aa6c7"],
   "hosted_ci": {
     "run_id": 37242845397,
     "head": "71ff4c194835327b833e3cb6192cc540bddfa494",
@@ -107,10 +104,7 @@
     "limits": "panel_in_root_window false does not prove wronghost: Chromium SIDE_PANEL context uses windowId -1. Correction independently reviewed next. No postauthphysicalwindow screenshot; hasFocus emulated; DOMhit not physicalforeground."
   },
   "visibility_diagnostic": {
-    "commits": [
-      "1379d875",
-      "3c8daad2"
-    ],
+    "commits": ["1379d875", "3c8daad2"],
     "peer": "21e4d23a",
     "report": ".research/panel-visibility-escalation.json",
     "limits": "Nine bounded lifecycle observations; no native cause or product health established."
