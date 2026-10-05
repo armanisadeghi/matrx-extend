@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-05T05:24:21.217537+00:00",
+  "status": "verified_relocation",
+  "source": "~/Library/Caches/ms-playwright/chromium_headless_shell-1228",
+  "destination": "/Volumes/Samsung2TB/code/.stabilization-scratch/playwright-cache-relocation/chromium_headless_shell-1228",
+  "verification": "19 regular files SHA256 identical before removal of redundant local copy; source symlink resolves to destination; no running executable from this subdirectory before move",
+  "failure_recovered": "atomic directory rename refused ENOSPC; verified external copy retained, unused local copy removed, original path restored as symlink",
+  "internal_free_before_mib": 108,
+  "internal_free_after_mib": 300,
+  "constraints": "No active Chromium binary, Chrome profile, personal data or limits changed. Local heavy tests remain refused below20GiB."
+}
