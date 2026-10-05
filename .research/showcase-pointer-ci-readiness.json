@@ -1,0 +1,27 @@
+{
+  "observed_at": "2026-10-05T20:55:22.100864+00:00",
+  "prior_turn_classification": "progress: reusable agent workflow pushed, D143 diagnostic reviewed and evidence recovered",
+  "source": "48b25d43",
+  "peer": "9d32a81f",
+  "tag_run": {
+    "id": 37370901047,
+    "overall": "failure",
+    "checks_job": 111967473832,
+    "checks": "success",
+    "actual_diagnostic_tests": 35,
+    "failed": 0,
+    "limitation": "Resource job cancelled; no developmentartifact. Not fullCIgreen."
+  },
+  "main_push_run": {
+    "id": 37370900842,
+    "source": "915768c515e3cf6a7e803ec2dde024e64cae0eb9",
+    "resource_job": "success",
+    "checks_job": 111968376302,
+    "status": "queued",
+    "runner_labels": ["ubuntu-latest"],
+    "runner_name": "",
+    "observation": "GitHub API confirmed queued; no replacementrun launched."
+  },
+  "newer_run": 37372437258,
+  "next": "Wait originalqueuedmainrun or newer successfulmainrun includingdiagnostic; verifyartifact then ONE guardedShowcase. No temporarysecretsstaged."
+}
