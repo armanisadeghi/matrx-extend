@@ -241,9 +241,13 @@ export async function selectRequiredSettingsOrganization({
   email,
   profileId,
   onBranch,
+  onStage,
+  onObservation,
 }) {
   assert.ok(['admin', 'member'].includes(mode), 'd87_auth_mode_invalid');
+  onStage?.('organization_section');
   await openSection(panel, 'Organization');
+  onStage?.('organization_picker');
   const org = await waitFor(
     'd87_required_organization_picker',
     () => accountIdentity(panel, email),
@@ -251,8 +255,15 @@ export async function selectRequiredSettingsOrganization({
     30_000,
   );
   const selectionRequired = settingsOrganizationSelectionRequired(org);
+  onObservation?.({
+    picker_available: org.organizationPickerAvailable === true,
+    picker_has_selection: org.organizationSelected === true,
+    selection_required: selectionRequired,
+  });
   await onBranch?.(selectionRequired ? 'organization_select' : 'organization_skip');
+  onStage?.(selectionRequired ? 'organization_select' : 'organization_skip');
   if (selectionRequired) await selectOrganization(panel);
+  onStage?.('organization_storage');
   const selected = await waitFor(
     'd87_required_organization_storage',
     () => panelIdentity(panel),
@@ -261,6 +272,11 @@ export async function selectRequiredSettingsOrganization({
       value?.organizationName === MEMBER_TEST_ORGANIZATION_NAME,
     30_000,
   );
+  onObservation?.({
+    storage_has_uuid: UUID.test(selected.organizationId ?? ''),
+    storage_name_matches: selected.organizationName === MEMBER_TEST_ORGANIZATION_NAME,
+  });
+  onStage?.('organization_rendered_identity');
   const rendered = await verifyCurrentSettingsIdentity({
     panel,
     mode,
@@ -269,6 +285,12 @@ export async function selectRequiredSettingsOrganization({
     organizationId: selected.organizationId,
     requireSelectedOrganization: true,
     requiredOrganizationName: MEMBER_TEST_ORGANIZATION_NAME,
+  });
+  onObservation?.({
+    rendered_email_matches: rendered.rendered_email_matches_first_party,
+    rendered_role_matches: rendered.rendered_role_matches_mode,
+    rendered_profile_matches: rendered.profile_matches_first_party,
+    rendered_organization_matches: rendered.selected_organization_matches_stored_uuid_and_name,
   });
   assert.equal(
     Object.values(rendered).every(Boolean),
