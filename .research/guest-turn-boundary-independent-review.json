@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "3c1633a5aef6571d2cb626d46941c80ce9b176a8",
+  "defect": "EXT-D-0144",
+  "reviewer_scope": "Independent source and focused-guard review; no source authorship.",
+  "verdict_A_live_spec": {
+    "status": "UNVERIFIED",
+    "finding": "The recovered native run 37288331617 establishes that the old acceptance oracle evaluated the opening reply while the follow-up was still streaming, before any follow-up run or POST was recorded. That supports the reported oracle cause. It predates this repair and does not verify the repaired flow.",
+    "required_remaining_evidence": "A fresh public no-login native run must prove opening HTTP 200 and grounded terminal content, a separate same-conversation HTTP 200 and grounded terminal reply, then post-reload follow-up; retain actual wire and terminal evidence."
+  },
+  "verdict_B_source_quality": {
+    "status": "PASS_WITH_REACHABILITY_CAVEAT",
+    "finding": "The repair checkpoints run, reply, and tool-event counts immediately before each send. Until a post-boundary run exists, the prior completed run cannot turn its old answer into terminal_wrong_answer. A new run's failure remains terminal, and its successful answer must add a reply beyond the checkpoint and satisfy the grounding terms. Follow-up diagnostics slice tool events from the same boundary. The new oracle regression is included in CI.",
+    "reachability_caveat": "An adversarial direct classifier call with priorRunCount=1 and errorNotice=true returns terminal_error before a new run appears. This is a synthetic stale-alert input for the reported acceptance path: the opening gate requires !answered.errorNotice, the follow-up stays in the same pane, and submitQuestion does not change alert state. Inspected alert sources are conversation loadError and voice input error/warning; the reproduced successful opening does not create either, and the acceptance does not use voice input. Keep immediate error detection. No evidence found that this caveat reaches the recovered pending-turn failure.",
+    "guard_quality": "The added behavioral case places a completed opening run and reply before the boundary, checks that old history and an in-progress new stream stay in_progress, then checks distinct grounded success and wrong-answer results after a new completed run. A separate case confirms a new follow-up failure remains terminal. These are useful behavioral assertions at the classifier seam. The commit receipt reports RED-before-fix and return-expected/old-run mutations; those mutation experiments were not independently repeated in this review.",
+    "ci": "Confirmed .github/workflows/ci.yml runs guest-chat-completion-oracle.test.mjs, guest-chat-transport-observer.test.mjs, and guest-chat-store-sequence.test.mjs."
+  },
+  "independent_checks": {
+    "command": "node --test tests/browser/guest-chat-completion-oracle.test.mjs tests/browser/guest-chat-store-sequence.test.mjs tests/browser/guest-chat-transport-observer.test.mjs",
+    "result": "25 passed, 0 failed",
+    "adversarial_classifier": {
+      "old_completed_run_with_no_new_run_and_no_alert": "in_progress",
+      "old_completed_run_with_no_new_run_and_stale_alert": "terminal_error",
+      "interpretation": "The second case demonstrates the caveat above; concrete acceptance precondition and UI-source tracing did not establish it as reachable after a passing opening answer."
+    }
+  },
+  "native_browser": "Not run by this reviewer."
+}
