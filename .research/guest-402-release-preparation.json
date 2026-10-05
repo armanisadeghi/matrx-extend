@@ -46,12 +46,12 @@
     "limit": "activeOrganizationPresent string-only probe returned false on current object-valued storage key; organization persistence remains unverified; not a product org defect."
   },
   "latest_dashboard_check": {
-    "observed_at_utc": "2026-10-04T23:51:06.707024+00:00",
+    "observed_at_utc": "2026-10-05T00:21:42.545143+00:00",
     "method": "Authenticated primary Package page refreshed through Chrome native UI; Pending review205, Published176, Upload disabled.",
     "published_version": "0.2.176",
     "pending_version": "0.2.205",
     "status": "Pending review",
-    "action": "Preserve pending205. Current-server native37240870438 passed bounded guest opening/followup with actualHTTP200; actualStore installation pending."
+    "action": "Preserve pending205. Earlierbackend60081 native37240870438 passed bounded guest first/reload; latestbackend2e24fa85 run37246354075 failed initialcontext beforeanyAIrequest. Reviewed readinessrepair and fresh currentserveracceptance required; actualStoreinstallation pending."
   },
   "publisher_access": {
     "observed_at_utc": "2026-10-04T08:14:16Z",
