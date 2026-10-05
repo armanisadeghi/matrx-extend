@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0042",
+  "status": "bounded_native_driver_ready; installed_extension_run_pending; defect_open",
+  "source_unit_commit": "4f492617",
+  "source_unit_pushed": true,
+  "artifact_target": {
+    "channel": "main-push CI development",
+    "source_sha": "5da8064bed0ffedbb0007e0c0b7eb81a730e7adf",
+    "ci_run_id": 37268578903,
+    "artifact_id": 11327423234,
+    "version": "0.2.265",
+    "artifact_sha256": "262e4efbcdd292be3f41e0b7fd180a87bc11191e9265ab211c2d5f60012de2a6",
+    "source_equivalence": "No product source files changed from artifact source SHA through source-unit commit; only documentation, research, workflow, and browser runner files differ. The hosted importer and native harness still verify exact receipt, tree, manifest, loaded extension identity, and SIDE_PANEL context before controls."
+  },
+  "driver": "tests/browser/showcase-picker-native-acceptance.mjs",
+  "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+  "acceptance_criteria_executable": [
+    "Guest shell exposes Scrape as a non-chat control and does not expose admin Showcase.",
+    "Sign in as admin@admin.com using the real Settings flow, select and verify the device organization, then open Showcase List Pattern through trusted panel input.",
+    "On one repeated-card fixture page, start A, cancel A, start B without changing the page, and observe exactly one picker overlay.",
+    "Click a real card and its title field, press the picker Done control, Extract through the side panel, and observe all three fixture titles in three rows.",
+    "Start another field pick, cancel it, then click a normal page button and require its handler to run exactly once."
+  ],
+  "acceptance_criteria_unverified": [
+    "Nonadmin role gate is not in this admin and guest case.",
+    "No native hold/release hook exists for stale A ITEM_DETECTED, RESULT, or EXIT at Chrome runtime delivery; none is simulated by this driver.",
+    "No native hold/release hook exists for delayed A cancellation injection or deferred installation targeting B.",
+    "The UI restart exercises the mounted picker; a fresh content-script module-context reinjection and exact listener count remain unverified."
+  ],
+  "tests": {
+    "compile": "pnpm compile passed",
+    "format_and_lint": "pnpm exec biome check on four touched source/workflow files passed",
+    "syntax": "node --check passed for the driver and two touched runner modules",
+    "routes": "node --test scripts/hosted-scrape-route.test.mjs scripts/hosted-profile-route.test.mjs passed 12/12",
+    "causal_preflight": "Driver with no artifact inputs exited 1 and wrote an unverified receipt with inputs_failed, no passed cases, and no artifact claim.",
+    "native": "Not run locally; requires the verified CI artifact and fresh independent hosted browser run."
+  },
+  "next_invocation": {
+    "prerequisite": "Fresh independent review of 4f492617 and hosted runner admission; keep D42 in-fix regardless of bounded UI result.",
+    "workflow": "Hosted guest side-panel acceptance",
+    "inputs": {
+      "acceptance_case": "showcase-picker-admin",
+      "development_run_id": "37268578903",
+      "development_artifact_id": "11327423234",
+      "runner_label": "macos-15-intel"
+    },
+    "expected_receipt": "showcase-picker-native-*.json in the hosted run artifact; status passed_bounded means only ordinary-control criteria passed."
+  }
+}
