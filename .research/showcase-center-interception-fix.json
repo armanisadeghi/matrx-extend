@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0143",
+  "source_vs_driver": "Native driver targeting. The picker panel intentionally receives pointer events inside its fixed rectangle; outside it the host is transparent and the page card remains clickable. Product onClick accepts an actual card click. The original driver used Playwright's default center point, which the run37388591467 receipt shows was covered by picker_panel. The same receipt shows multiple card-hit interior points. Actual native success on changed source is still unverified.",
+  "original_receipt": "docs/stabilization/evidence/showcase-pointer-native/run37388591467/original-receipt.json",
+  "repair": "Scroll the same first event card into view, choose an interior point whose browser elementFromPoint is the card or descendant, and pass that position to Playwright locator.click. Refuse when no card point is reachable; Playwright retains its own actionability checks.",
+  "focused_verification": {
+    "green": "node --test tests/browser/showcase-card-driver.test.mjs tests/browser/showcase-selection-diagnostic.test.mjs: 6 passed; pnpm compile: passed",
+    "red": [
+      "Scratch-copy original default-center click mutant: reachable-card case failed while obstructed-card refusal case passed",
+      "Scratch-copy no-reachable-point mutant: reachable-card case failed",
+      "Scratch-copy accept-obstructed-point mutant: both cases failed"
+    ],
+    "mutation_method": "Source and test copied to an external-volume temporary directory; working source was not weakened."
+  },
+  "native_verdict": "UNVERIFIED: no browser run or heavy job in this implementation lane; parent owns resource-admitted native rerun and independent review."
+}
