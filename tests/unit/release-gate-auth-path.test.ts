@@ -54,13 +54,44 @@ echo "token=\${AIDREAM_API_TOKEN:-} org=\${AIDREAM_ORGANIZATION_ID:-} url=\${AID
   return spawnSync('bash', ['-c', script], { encoding: 'utf8', env });
 }
 
+function runCandidateGate() {
+  // EXT-D-0140: execute the production candidate sequence so a late or absent
+  // mint fails at the check boundary, independent of shell spelling.
+  const section = releaseSh.indexOf('# ── Validate the exact candidate');
+  const start = releaseSh.indexOf('    SNAP_ROOTS+=("$JOBS")', section);
+  const end = releaseSh.indexOf('    mandate_scan_step', start);
+  expect(section, 'release.sh has no candidate validation section').toBeGreaterThan(-1);
+  expect(start, 'candidate loop has no check setup').toBeGreaterThan(section);
+  expect(end, 'candidate loop has no post-check step').toBeGreaterThan(start);
+
+  // Execute the actual candidate-loop statements. The check double observes the
+  // token at the run_checks boundary, where the strict drift command executes.
+  const script = `set -u
+SKIP_CATALOG=false
+JOBS=/tmp/unused
+NEW_TAG=v-test
+SNAP_ROOTS=()
+FAILED_CHECK=""
+mint_gate_auth() { export AIDREAM_API_TOKEN=minted; }
+run_checks() {
+    [[ "\${AIDREAM_API_TOKEN:-}" == minted ]] || { echo NO_AUTH; return 1; }
+    echo AUTH_AT_CHECK
+}
+catch_up_matrx_packages() { return 1; }
+hard_stop() { echo "STOPPED: $*"; exit 3; }
+${releaseSh.slice(start, end)}`;
+  return spawnSync('bash', ['-c', script], {
+    encoding: 'utf8',
+    env: { PATH: process.env.PATH },
+  });
+}
+
 describe('release.sh server-contract gate auth', () => {
   it('mints a token before the strict drift check runs in the candidate loop', () => {
     expect(releaseSh).toContain('pnpm -s catalog:tools:drift:strict');
-    const mint = releaseSh.indexOf('$SKIP_CATALOG || mint_gate_auth');
-    const checks = releaseSh.indexOf('    run_checks || hard_stop');
-    expect(mint, 'the candidate loop never calls mint_gate_auth').toBeGreaterThan(-1);
-    expect(mint).toBeLessThan(checks);
+    const run = runCandidateGate();
+    expect(run.status, run.stderr || run.stdout).toBe(0);
+    expect(run.stdout).toContain('AUTH_AT_CHECK');
   });
 
   it('a local release with no caller token exports a minted token, organization and URL', () => {
