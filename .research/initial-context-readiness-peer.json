@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "f0ffbaa354a3881a1258f79c2caa59aaf811cc0f",
+  "review_scope": [
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "tests/browser/initial-panel-context-readiness.test.mjs",
+    ".research/initial-context-readiness-repair.json"
+  ],
+  "verdict_a": {
+    "status": "PARTIAL",
+    "scope": "D117 initial native context readiness only",
+    "evidence": [
+      "Captured run 37246354075 documents exact renderer/frame/runtime identity and an empty initial worker documentUrl followed by an exact context after 103 ms.",
+      "Focused command node tests/browser/initial-panel-context-readiness.test.mjs passed all 19 tests in this review.",
+      "The actual initial setup source slice waits for delayed exact readiness before settle and preserves fatal failure after a diagnostic follow-up match.",
+      "No native browser was launched; hosted Chromium readiness remains unverified."
+    ],
+    "missing": [],
+    "extra": [],
+    "misunderstood": [],
+    "cannot_verify": ["Whether this readiness repair passes in an actual native Chromium run."]
+  },
+  "verdict_b": {
+    "status": "PASS",
+    "evidence": [
+      "Reuse: repair stays at the existing native harness seam and uses existing ATTEMPTS and WAIT_MS, deriving a 15000 ms elapsed bound with no second readiness budget.",
+      "Identity: requires exact SIDE_PANEL contextType, panel documentUrl, tabId=-1, distinct normal target, and repeated presence of the same discovered exact page target before and after context reads.",
+      "Fail-closed: empty, missing, foreign, wrong-tab, wrong-type, absent, query-failed, lost/replaced target, and late exact context cases are covered; failure diagnostic runs only after fatal readiness exhaustion and cannot settle.",
+      "D133 preservation commit 0e8aa6c7 is outside this diff and the readiness edit does not touch its visible-panel reopen behavior.",
+      "Focused 19-test run passed. Builder reports compile, syntax, formatting, suite, and mutation-probe evidence; these broader checks were not repeated in this review."
+    ],
+    "limits": [
+      "The documented mutation probes were not independently replayed in this review.",
+      "An in-flight CDP command can outlast the elapsed budget under its existing command deadline, but the helper rejects its late result."
+    ]
+  }
+}
