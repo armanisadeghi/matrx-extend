@@ -126,6 +126,65 @@ function pruneRuns(all: Record<string, PersistedRunMeta>): void {
   }
 }
 
+/* ── Conversation trust ("allow for the rest of this chat") ───────── */
+
+const TRUST_KEY = 'matrx.dispatch.conversationTrust';
+/** Hard cap on conversations remembered (oldest evicted first). */
+const TRUST_MAX_CONVERSATIONS = 100;
+
+/** One remembered approval: this tool on this host. */
+export function trustEntry(toolName: string, host: string): string {
+  return `${toolName}@${host}`;
+}
+
+/**
+ * The approvals a person ticked "for the rest of this chat". Keyed by
+ * conversation, not run: every continuation after a tool result is a NEW run,
+ * so a run-scoped set forgot the choice on the very next tool call.
+ */
+export async function loadConversationTrust(conversationId: string): Promise<string[]> {
+  const store = sessionStore();
+  if (!store) return [];
+  try {
+    return (await readTrust(store))[conversationId]?.entries ?? [];
+  } catch {
+    return [];
+  }
+}
+
+export async function addConversationTrust(conversationId: string, entry: string): Promise<void> {
+  const store = sessionStore();
+  if (!store) return;
+  try {
+    const all = await readTrust(store);
+    const prev = all[conversationId]?.entries ?? [];
+    all[conversationId] = {
+      entries: prev.includes(entry) ? prev : [...prev, entry],
+      updatedAt: Date.now(),
+    };
+    const ids = Object.keys(all);
+    if (ids.length > TRUST_MAX_CONVERSATIONS) {
+      ids
+        .sort((a, b) => (all[a]?.updatedAt ?? 0) - (all[b]?.updatedAt ?? 0))
+        .slice(0, ids.length - TRUST_MAX_CONVERSATIONS)
+        .forEach((id) => delete all[id]);
+    }
+    await store.set({ [TRUST_KEY]: all });
+  } catch (err) {
+    log.warn('sw', `addConversationTrust failed for ${conversationId}`, (err as Error)?.message);
+  }
+}
+
+async function readTrust(
+  store: chrome.storage.StorageArea,
+): Promise<Record<string, { entries: string[]; updatedAt: number }>> {
+  const r = await store.get([TRUST_KEY]);
+  const raw = r[TRUST_KEY];
+  return raw && typeof raw === 'object'
+    ? (raw as Record<string, { entries: string[]; updatedAt: number }>)
+    : {};
+}
+
 /* ── Pending confirmations ────────────────────────────────────────── */
 
 let confirmMutation: Promise<unknown> = Promise.resolve();

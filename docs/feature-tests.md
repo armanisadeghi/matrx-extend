@@ -2120,6 +2120,15 @@ Every entry follows this shape:
 - **Expected:** Clicks and navigation run with no "Approve" card on any step. Switch the chip to **Ask before acting** → each action shows a card again.
 - **Edge cases worth poking:** Privileged tools still confirm in Act. With no per-agent choice, Settings → Default mode = Act also runs without cards.
 
+### "Allow this tool on <site> for the rest of this chat" is remembered
+- **What it does:** Ticking the checkbox on an approval card stops that tool asking again on that site for the rest of the chat, including on later steps and later messages.
+- **Where to test:** Side panel chat with the chip on **Ask before acting**.
+- **Steps:**
+  1. Ask the agent to open two different pages on the same site, one after another.
+  2. On the first "Approve navigate" card, tick the checkbox and click Allow.
+- **Expected:** The second navigate on that site runs with no card. A different tool, or the same tool on another site, still asks.
+- **Edge cases worth poking:** Start a new chat → it asks again. Privileged tools never show the checkbox.
+
 ### Settings preference save and retry
 - **What it does:** Settings reports a rejected preference save and offers Retry save. Overlapping changes are written in choice order so the latest selection survives reload.
 - **Where to test:** Settings → Appearance, Chat, Privacy, or Scrape in an unpacked development extension.

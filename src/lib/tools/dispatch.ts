@@ -49,14 +49,17 @@ import { markStreamInactive } from '@/lib/stream/active-runs';
 import { deliverToolResult } from '@/lib/tools/deliver-tool-result';
 import { getToolDescription, primeToolDescriptions } from '@/lib/tools/descriptions';
 import {
+  addConversationTrust,
   enqueueUndeliveredResult,
   listPendingConfirms,
+  loadConversationTrust,
   loadRunMeta,
   persistPendingConfirm,
   persistRunMeta,
   removePendingConfirm,
   takePendingConfirm,
   takeUndeliveredResults,
+  trustEntry,
 } from '@/lib/tools/dispatch-persist';
 import { allToolNames, lookup as lookupTool } from '@/lib/tools/registry';
 import { suggestSimilar } from '@/lib/tools/suggest';
@@ -77,7 +80,7 @@ interface RunMeta {
   /** Permission mode for this run, latched at start. */
   permissionMode: 'ask' | 'act';
   agentName: string | null;
-  /** Domains allowed for the rest of THIS conversation. */
+  /** `tool@host` approvals remembered for the rest of the chat (see trustEntry). */
   trustedThisConversation: Set<string>;
   /**
    * Tab the agent is pinned to for this run. Captured at message-send
@@ -1094,6 +1097,52 @@ interface ConfirmResult {
  */
 const liveConfirmWaiters = new Set<string>();
 
+function hostOf(url: string): string | null {
+  try {
+    return new URL(url).host;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * "Allow this tool on <host> for the rest of this chat" — checked against the
+ * run's own set AND the conversation's persisted set, because each
+ * continuation after a tool result is a new run with an empty run set.
+ */
+async function isTrustedForConversation(
+  toolName: string,
+  url: string,
+  ctx: ToolContext,
+  meta: RunMeta | undefined,
+): Promise<boolean> {
+  const host = hostOf(url);
+  if (!host) return false;
+  const entry = trustEntry(toolName, host);
+  if (meta?.trustedThisConversation.has(entry)) return true;
+  const conversationId = ctx.conversationId ?? meta?.conversationId ?? null;
+  if (!conversationId) return false;
+  return (await loadConversationTrust(conversationId)).includes(entry);
+}
+
+function rememberForConversation(
+  toolName: string,
+  url: string,
+  runId: string,
+  conversationId: string | null,
+  meta: RunMeta | undefined,
+): void {
+  const host = hostOf(url);
+  if (!host) return;
+  const entry = trustEntry(toolName, host);
+  if (meta) {
+    meta.trustedThisConversation.add(entry);
+    mirrorRunMeta(runId, meta);
+  }
+  const id = conversationId ?? meta?.conversationId ?? null;
+  if (id) void addConversationTrust(id, entry);
+}
+
 async function requestConfirmation(
   handler: AnyToolHandler,
   args: unknown,
@@ -1125,14 +1174,9 @@ async function requestConfirmation(
     typeof (args as { url?: unknown })?.url === 'string'
       ? ((args as { url?: string }).url as string)
       : null;
-  if (url && meta && opts.effectiveTier !== 'privileged' && opts.initiator === 'agent') {
-    try {
-      const host = new URL(url).host;
-      if (meta.trustedThisConversation.has(host)) {
-        return Promise.resolve({ allow: true });
-      }
-    } catch {
-      /* not a URL we can parse, fall through */
+  if (url && opts.effectiveTier !== 'privileged' && opts.initiator === 'agent') {
+    if (await isTrustedForConversation(handler.name, url, ctx, meta)) {
+      return { allow: true };
     }
   }
 
@@ -1176,13 +1220,8 @@ async function requestConfirmation(
     };
     const off = on<ConfirmResponse, { ack: true }>(CHANNELS.TOOL_CONFIRM_RESPONSE, (payload) => {
       if (payload.callId !== ctx.callId) return { ack: true };
-      if (payload.decision === 'allow' && payload.rememberFor === 'conversation' && url && meta) {
-        try {
-          meta.trustedThisConversation.add(new URL(url).host);
-          mirrorRunMeta(ctx.runId, meta);
-        } catch {
-          /* */
-        }
+      if (payload.decision === 'allow' && payload.rememberFor === 'conversation' && url) {
+        rememberForConversation(handler.name, url, ctx.runId, ctx.conversationId, meta);
       }
       finish({
         allow: payload.decision === 'allow',
@@ -1275,15 +1314,10 @@ async function recoverPersistedConfirm(payload: ConfirmResponse): Promise<void> 
     `confirm recovery: executing ${rec.toolName} (call ${rec.callId}) approved across an SW restart`,
   );
   const meta = await getRunMeta(rec.runId);
-  if (payload.rememberFor === 'conversation' && meta) {
+  if (payload.rememberFor === 'conversation') {
     const url = (rec.args as { url?: unknown })?.url;
     if (typeof url === 'string') {
-      try {
-        meta.trustedThisConversation.add(new URL(url).host);
-        mirrorRunMeta(rec.runId, meta);
-      } catch {
-        /* not a parseable URL */
-      }
+      rememberForConversation(rec.toolName, url, rec.runId, rec.conversationId, meta);
     }
   }
   await handleCall(handler, rec.args, ctx, meta, {
