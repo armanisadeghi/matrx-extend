@@ -1,0 +1,262 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0139 one controlled headed member Scrape retest",
+  "source_authorship": "none; bounded native retest only",
+  "status": "completed_one_launch_no_retry",
+  "authorization": {
+    "source": "Root authorized one launch after CI 37264652289 success, actual headed guard pass, publication check, and exact input review",
+    "no_retry": true
+  },
+  "inputs": {
+    "workflow": "hosted-guest-acceptance.yml",
+    "runner_label": "macos-15",
+    "acceptance_case": "guest-scrape-development",
+    "scrape_auth_mode": "member",
+    "scrape_width_mode": "normal",
+    "scrape_normal_width_px": 600,
+    "development_run_id": 37233480033,
+    "development_artifact_id": 11315305224
+  },
+  "frozen_product": {
+    "version": "0.2.244",
+    "source_sha": "b81587021d689078ed428dafe3e15474a84c41e2",
+    "tree_sha256": "3396bae6d24ddfc7e93422a12e2341983179d7b4be3eca94adaafc5316cc94e7",
+    "artifact_digest": "sha256:a32cc1fe513326b3a185971cd0093f80d5eefa712873a517b2540be693be78ae"
+  },
+  "driver": {
+    "repair_commit": "618861f35d409926f27808933a3211cc135f554b",
+    "ci_run_id": 37264652289,
+    "ci_head_sha": "5e900715ecb5326770de35df98f823ff3b41412d",
+    "ci_conclusion": "success",
+    "headed_guard_job_id": 111618959266,
+    "headed_guard_evidence": "2 passed, 0 failed, 0 skipped; headed checks also passed"
+  },
+  "preflight": {
+    "latest_eight_hosted_acceptance_runs_terminal": true,
+    "no_competing_hosted_acceptance": true,
+    "relevant_workflow_harness_resource_and_scrape_driver_match_ci": true,
+    "repair_is_ci_ancestor": true,
+    "cached_product_tree_rehashed": true,
+    "system_disk_free_bytes": 936157184,
+    "minimum_system_disk_free_bytes": 21474836480,
+    "local_heavy_work_launched": false,
+    "external_scratch_root": "/Volumes/Samsung2TB/code/.stabilization-scratch"
+  },
+  "launch": {
+    "run_id": 37265281346,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37265281346",
+    "run_attempt": 1,
+    "workflow_head_sha": "1c769276398ce5ff3e09fd040a917abf65630ee7",
+    "created_at_utc": "2026-10-05T04:51:15Z",
+    "terminal_at_utc": "2026-10-05T04:59:41Z",
+    "status": "completed",
+    "conclusion": "failure",
+    "job_id": 111620689248,
+    "artifact_id": 11326138548,
+    "artifact_digest": "sha256:5e2c1b40f8e358962eaef948875547640673a523422fa4b4f28f1809d8b01f1b",
+    "launch_count": 1,
+    "retry_count": 0
+  },
+  "native_mode_proof": {
+    "requested_mode": "headed",
+    "observed_mode": "headed",
+    "verified_by": "Browser.getBrowserCommandLine"
+  },
+  "native_outcome": {
+    "status": "partial",
+    "terminal_stage": "post_reload_link_controls",
+    "native_stage": "exercise_panel",
+    "failure": null,
+    "driver_failure": null,
+    "authentication": {
+      "web_signed_in": true,
+      "extension_signed_in": true,
+      "admin_role": false,
+      "canonical_nonadmin_user_matched": true,
+      "canonical_admin_rows": 0,
+      "organization_selected_and_verified": true
+    },
+    "empty_media_capture": {
+      "images_warm_empty_observed": true,
+      "images_reload_empty_observed": true,
+      "video_empty_observed": false,
+      "verdict": "unverified_overall_due_resource_invalidation; image empty state was observed, but video empty state was not"
+    },
+    "full_extension_reload": {
+      "management_reload_clicked": true,
+      "old_targets_retired": true,
+      "worker_replaced": true,
+      "panel_replaced": true,
+      "milestones": [
+        "reload_extension",
+        "open_scrape_in_replacement_panel",
+        "observe_replacement_scrape",
+        "replacement_scrape_observed"
+      ],
+      "post_reload_images": {
+        "pane": "Images",
+        "state": "matching_content",
+        "count": 3,
+        "paths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
+        "alt": ["New patient intake desk", "Appointment card", "Clinic icon"],
+        "natural_sizes": [[640, 480], [96, 96], [32, 32]]
+      },
+      "post_reload_video": {
+        "pane": "Video",
+        "state": "matching_content",
+        "count": 2,
+        "paths": ["/intake-walkthrough.mp4", "/referral-walkthrough.mp4"]
+      }
+    },
+    "passed_case_ids": ["EXT-F-1007-T20", "EXT-F-1007-T10", "EXT-F-1007-T11", "EXT-F-1007-T12"],
+    "partial_cases": [
+      {
+        "id": "EXT-F-1007-T01",
+        "remaining": ["guest/admin modes remain unverified by this receipt."]
+      },
+      {
+        "id": "EXT-F-1007-T08",
+        "remaining": ["guest/admin modes remain unverified by this receipt."]
+      },
+      {
+        "id": "EXT-F-1007-T13",
+        "remaining": ["guest/admin modes remain unverified by this receipt."]
+      },
+      {
+        "id": "EXT-F-1007-T02",
+        "remaining": ["Deep failure retry mode and post-reload deep capture remain unverified."]
+      },
+      {
+        "id": "EXT-F-1007-T14",
+        "remaining": [
+          "Recoverable Reload page and Try again, including deep retry mode, need a natural browser failure."
+        ]
+      }
+    ]
+  },
+  "resource_journal_decisions": {
+    "package": {
+      "decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0,
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "browser": {
+      "decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0,
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "guest": {
+      "decision": "invalid",
+      "resource_invalid": true,
+      "wrapper_exit_code": 3,
+      "code": "RESOURCE_FINAL_DECISION",
+      "cpu_events": [
+        {
+          "at": "2026-10-05T04:57:42.998Z",
+          "code": "RESOURCE_WATCH_HEALTHY",
+          "reasons": [],
+          "cpuBusyFraction": 0.47,
+          "oneMinuteLoad": 1.5,
+          "logicalCpus": 3
+        },
+        {
+          "at": "2026-10-05T04:57:59.104Z",
+          "code": "RESOURCE_CPU_PENDING",
+          "reasons": ["RESOURCE_CPU_BUSY"],
+          "cpuBusyFraction": 0.9,
+          "oneMinuteLoad": 1.47,
+          "logicalCpus": 3
+        },
+        {
+          "at": "2026-10-05T04:58:15.244Z",
+          "code": "RESOURCE_CPU_PENDING",
+          "reasons": [],
+          "cpuBusyFraction": 0.05,
+          "oneMinuteLoad": 1.37,
+          "logicalCpus": 3
+        },
+        {
+          "at": "2026-10-05T04:58:31.382Z",
+          "code": "RESOURCE_CPU_PENDING",
+          "reasons": [],
+          "cpuBusyFraction": 0.02,
+          "oneMinuteLoad": 1.61,
+          "logicalCpus": 3
+        },
+        {
+          "at": "2026-10-05T04:58:47.421Z",
+          "code": "RESOURCE_CPU_RECOVERED",
+          "reasons": [],
+          "cpuBusyFraction": 0.08,
+          "oneMinuteLoad": 1.33,
+          "logicalCpus": 3
+        },
+        {
+          "at": "2026-10-05T04:59:03.620Z",
+          "code": "RESOURCE_WATCH_HEALTHY",
+          "reasons": [],
+          "cpuBusyFraction": 0.15,
+          "oneMinuteLoad": 1.26,
+          "logicalCpus": 3
+        },
+        {
+          "at": "2026-10-05T04:59:19.819Z",
+          "code": "RESOURCE_CPU_PENDING",
+          "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
+          "cpuBusyFraction": 0.81,
+          "oneMinuteLoad": 2.64,
+          "logicalCpus": 3
+        },
+        {
+          "at": "2026-10-05T04:59:19.830Z",
+          "code": "RESOURCE_JOB_EXIT",
+          "childExitCode": 0,
+          "childSignal": null
+        }
+      ]
+    }
+  },
+  "credential_cleanup": {
+    "temporary_github_secret_deleted": true,
+    "secret_absence_confirmed": true,
+    "local_single_use_link_deleted": true,
+    "local_link_absence_confirmed": true,
+    "no_email_sent": true,
+    "no_password_changed": true
+  },
+  "evidence": {
+    "directory": "docs/stabilization/evidence/empty-media139/run37265281346",
+    "receipt_path": "docs/stabilization/evidence/empty-media139/run37265281346/raw/scrape-member-native.json.txt",
+    "receipt_source_path": "GitHub run artifact: test-results/scrape-guest-native-e4c13c6e-3fd9-4ce9-98de-91a020e6ce8e.json",
+    "receipt_redactions": [
+      "authentication.account_fingerprint omitted; no email or link was present in source receipt"
+    ],
+    "resource_journals": [
+      "hosted-package-37265281346-1.jsonl",
+      "hosted-browser-37265281346-1.jsonl",
+      "hosted-guest-37265281346-1.jsonl"
+    ],
+    "safe_screenshots": [
+      "native-side-panel.png",
+      "normal-target-after-open.png",
+      "scrape-fast-article.png",
+      "scrape-deep-article.png",
+      "scrape-restricted-error.png"
+    ],
+    "payload_count": 8,
+    "hash_manifest": "docs/stabilization/evidence/empty-media139/run37265281346/hash-manifest.json",
+    "artifact_inventory": {
+      "retained": "one redacted receipt copy, three current resource journals, five visually inspected fixture-only screenshots",
+      "excluded": ["two stale resource journals from 37105304739"]
+    }
+  },
+  "product_verdict": "D139 remains unverified as an overall native acceptance result. The headed member receipt observed the empty Images state before and after extension reload, but not an empty Video state; the runner marked the guest resource journal invalid after a final CPU_PENDING and returned exit 3 even though the native child exited 0. No case promotions.",
+  "limits": [
+    "No retry or second native launch.",
+    "No product code, build, or release edits.",
+    "The workflow failure is attributed to resource policy invalidation; the native receipt has no explicit product or driver failure.",
+    "No broad product health or unrelated defect closure claim."
+  ]
+}

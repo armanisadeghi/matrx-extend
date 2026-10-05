@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0139 headed member native retest evidence",
+  "run_id": 37265281346,
+  "artifact": {
+    "id": 11326138548,
+    "name": "hosted-guest-37265281346-1",
+    "digest": "sha256:5e2c1b40f8e358962eaef948875547640673a523422fa4b4f28f1809d8b01f1b",
+    "size_in_bytes": 197664,
+    "expired": false
+  },
+  "source_receipt": {
+    "path": "test-results/scrape-guest-native-e4c13c6e-3fd9-4ce9-98de-91a020e6ce8e.json",
+    "sha256": "3ab86eecd45b866e5e850999428c6c98cfb2069efd54663fac225bfd6c4c6d7a",
+    "copy_redaction": "authentication.account_fingerprint omitted; original source remains in the GitHub run artifact"
+  },
+  "files_sha256": {
+    "docs/stabilization/evidence/empty-media139/run37265281346/raw/scrape-member-native.json.txt": "da14bdf7b2abf0ea2c5cf3cec7dc9b8b8125d38cc6040dcfcfb4c0cb48d79cef",
+    "docs/stabilization/evidence/empty-media139/run37265281346/resource-journals/hosted-browser-37265281346-1.jsonl": "f095264f470f56c1b2dcb8daf5ffb3976bfb9211753b596dbfebc99c47bc3ff4",
+    "docs/stabilization/evidence/empty-media139/run37265281346/resource-journals/hosted-guest-37265281346-1.jsonl": "16993638483792b1a288815266d59d4830e5446e93cc82836ea6322fd2e8e439",
+    "docs/stabilization/evidence/empty-media139/run37265281346/resource-journals/hosted-package-37265281346-1.jsonl": "b4d4dd6c2e116177d940dcdf21731d1b785342557ef9436365976036c4a98049",
+    "docs/stabilization/evidence/empty-media139/run37265281346/screenshots/native-side-panel.png": "f499d0269288e71c3a1d4c0ef8409a92fbe5e8ab1e09aa31a56293a0708f4166",
+    "docs/stabilization/evidence/empty-media139/run37265281346/screenshots/normal-target-after-open.png": "c939d4f6417b874eefffbe4a8c9bd1cf05088fe2b42ab7a7e13c65d79a024fd2",
+    "docs/stabilization/evidence/empty-media139/run37265281346/screenshots/scrape-deep-article.png": "981b30047d5c423d209d47dc08cae6519a8f821230bba5c47ea8f1ad10e43bd3",
+    "docs/stabilization/evidence/empty-media139/run37265281346/screenshots/scrape-fast-article.png": "a6bb3d2171b06ae615873f3ea054d3726f7eaeda2725aaa2d65903fab504adea",
+    "docs/stabilization/evidence/empty-media139/run37265281346/screenshots/scrape-restricted-error.png": "9850accdaf64420d49361a7aebbb2585ba10c02b3a425c97a2dfa680ec87e9f0"
+  }
+}
