@@ -24,7 +24,7 @@ function payloadToRow(item: GuidanceItem): WbxGuidanceRow {
     data: p.data,
     created_at: p.created_at,
     updated_at: p.updated_at,
-    is_deleted: false,
+    deleted_at: null,
   };
 }
 
@@ -119,7 +119,7 @@ describe('guidance cloud-sync mappers', () => {
       data: {},
       created_at: new Date(CREATED).toISOString(),
       updated_at: new Date(UPDATED).toISOString(),
-      is_deleted: false,
+      deleted_at: null,
     };
     expect(rowToItem(row)).toBeNull();
   });

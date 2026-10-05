@@ -65,7 +65,7 @@ export const HighlightSchema = z.object({
   text: z.string().nullable(),
   anchor: HighlightAnchorSchema,
   metadata: z.record(z.string(), z.unknown()),
-  is_deleted: z.boolean(),
+  deleted_at: z.string().nullable(),
   created_at: z.string(),
   updated_at: z.string(),
 });
@@ -75,7 +75,7 @@ export type Highlight = z.infer<typeof HighlightSchema>;
 /** Lighter shape for list rendering (omits metadata / soft-delete flag). */
 export const HighlightListItemSchema = HighlightSchema.omit({
   metadata: true,
-  is_deleted: true,
+  deleted_at: true,
 });
 
 export type HighlightListItem = z.infer<typeof HighlightListItemSchema>;

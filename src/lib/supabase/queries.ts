@@ -1326,7 +1326,7 @@ export const WbxGuidanceRowSchema = z.object({
   created_at: z.string(),
   updated_at: z.string(),
   /** Tombstone — deletes propagate as soft-deletes so other machines can apply them. */
-  is_deleted: z.boolean().default(false),
+  deleted_at: z.string().nullable().default(null),
 });
 export type WbxGuidanceRow = z.infer<typeof WbxGuidanceRowSchema>;
 
@@ -1397,7 +1397,7 @@ export async function upsertGuidanceRow(p: SaveGuidanceRowPayload): Promise<bool
         updated_at: p.updated_at,
         // An intentional save revives a tombstoned row — the user actively
         // edited it on this machine, which outranks an older delete.
-        is_deleted: false,
+        deleted_at: null,
       },
       { onConflict: 'id' },
     );
@@ -1417,7 +1417,7 @@ export async function deleteGuidanceRow(id: string): Promise<boolean> {
   const { error } = await c
     .schema(EXTEND_SCHEMA)
     .from('wbx_guidance')
-    .update({ is_deleted: true, updated_at: new Date().toISOString() })
+    .update({ deleted_at: new Date().toISOString(), updated_at: new Date().toISOString() })
     .eq('id', id);
   if (error) {
     if (/relation .* does not exist/i.test(error.message)) return false;
@@ -1433,7 +1433,7 @@ export async function fetchAllGuidanceRows(): Promise<WbxGuidanceRow[]> {
   const { data, error } = await c
     .schema(EXTEND_SCHEMA)
     .from('wbx_guidance')
-    .select('id, domain, kind, caption, origin_url, data, created_at, updated_at, is_deleted')
+    .select('id, domain, kind, caption, origin_url, data, created_at, updated_at, deleted_at')
     .order('updated_at', { ascending: false });
   if (error) {
     if (/relation .* does not exist/i.test(error.message)) return [];
@@ -1473,7 +1473,7 @@ export const WbxDemoRowSchema = z.object({
   created_at: z.string(),
   updated_at: z.string(),
   /** Tombstone — deletes propagate as soft-deletes so other machines can apply them. */
-  is_deleted: z.boolean().default(false),
+  deleted_at: z.string().nullable().default(null),
 });
 export type WbxDemoRow = z.infer<typeof WbxDemoRowSchema>;
 
@@ -1490,7 +1490,7 @@ export interface SaveDemoRowPayload {
 }
 
 const DEMO_ROW_COLUMNS =
-  'demo_key, name, description, start_url, step_count, parameter_names, body, created_at, updated_at, is_deleted';
+  'demo_key, name, description, start_url, step_count, parameter_names, body, created_at, updated_at, deleted_at';
 
 /**
  * Upsert one demo row keyed by its client id. Actor attribution is stamped
@@ -1522,7 +1522,7 @@ export async function upsertDemoRow(p: SaveDemoRowPayload): Promise<boolean> {
         body: p.body ?? {},
         // An intentional save revives a tombstoned row — the user actively
         // re-recorded/edited it here, which outranks an older delete.
-        is_deleted: false,
+        deleted_at: null,
       },
       { onConflict: 'demo_key' },
     );
@@ -1540,7 +1540,7 @@ export async function deleteDemoRow(id: string): Promise<boolean> {
   const { error } = await c
     .schema(EXTEND_SCHEMA)
     .from('wbx_demo')
-    .update({ is_deleted: true })
+    .update({ deleted_at: new Date().toISOString() })
     .eq('demo_key', id);
   if (error) {
     if (/relation .* does not exist/i.test(error.message)) return false;

@@ -191,7 +191,7 @@ export async function hydrateGuidanceFromCloud(): Promise<{ merged: number; ok: 
   for (const row of rows) {
     // Tombstone application: a cloud delete that's newer than our local
     // copy removes it here too (deletes used to be invisible to hydrate).
-    if (row.is_deleted) {
+    if (row.deleted_at) {
       const localOfDeleted = await getGuidanceItem(row.id);
       if (localOfDeleted && new Date(row.updated_at).getTime() >= localOfDeleted.updated_at) {
         await deleteGuidanceItem(row.id, { sync: false });

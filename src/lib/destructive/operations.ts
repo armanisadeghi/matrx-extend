@@ -263,7 +263,7 @@ export const INTERNAL_ONLY: { fn: string; module: string; why: string }[] = [
  * KNOWN LIMIT OF THE DISCOVERY SCAN, stated rather than hidden: it recognises
  * a removal by its PRIMITIVE — a Supabase `.delete()`, a chrome.storage or
  * localStorage removal, the vault's HTTP DELETE. Two shapes it cannot see are
- * a soft delete (an UPDATE that sets `is_deleted`) and a store that overwrites
+ * a soft delete (an UPDATE that sets `deleted_at`) and a store that overwrites
  * its key with an empty list. Both exist here (`deleteHighlight`,
  * `useRecordingsStore.clear`) and both are registered ABOVE by hand, so the
  * call-site guard covers them; what the discovery scan cannot do is force a
