@@ -21,9 +21,9 @@
       "acceptance_meaning": "Version metadata alone does not establish changed user behavior."
     },
     "resolved_shared_package_changes": [
-      {"package": "@ai-matrx/agents", "before": "0.43.32", "after": "0.43.34"},
-      {"package": "@ai-matrx/associations", "before": "0.13.143", "after": "0.13.146"},
-      {"package": "@ai-matrx/design-system", "before": "0.61.14", "after": "0.61.15"}
+      { "package": "@ai-matrx/agents", "before": "0.43.32", "after": "0.43.34" },
+      { "package": "@ai-matrx/associations", "before": "0.13.143", "after": "0.13.146" },
+      { "package": "@ai-matrx/design-system", "before": "0.61.14", "after": "0.61.15" }
     ],
     "behavioral_classification": "Unmapped and unverified. The lockfile shows shipped shared-package changes, but this source-only audit does not establish their runtime effects or affected controls."
   },
