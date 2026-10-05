@@ -1,0 +1,9 @@
+{
+  "release_run_id": 37180303468,
+  "release_artifact_id": 11294843385,
+  "source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+  "store_zip_sha256": "6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26",
+  "observed_manifest_version": "0.2.205",
+  "store_manifest_unkeyed": true,
+  "hash_reobserved": true
+}

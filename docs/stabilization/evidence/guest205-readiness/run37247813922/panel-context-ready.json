@@ -1,0 +1,33 @@
+{
+  "code": "BROWSER_PANEL_CONTEXT_READY",
+  "at_utc": "2026-10-05T00:36:58.7175130Z",
+  "diagnostic": {
+    "first": {
+      "contextCount": 1,
+      "sidePanelCount": 1,
+      "expectedExtensionCount": 1,
+      "exactUrlCount": 1,
+      "globalTabCount": 1,
+      "exactContextCount": 1,
+      "missingDocumentUrlCount": 0,
+      "emptyDocumentUrlCount": 0,
+      "otherExtensionUrlCount": 0,
+      "nonExtensionUrlCount": 0
+    },
+    "last": {
+      "contextCount": 1,
+      "sidePanelCount": 1,
+      "expectedExtensionCount": 1,
+      "exactUrlCount": 1,
+      "globalTabCount": 1,
+      "exactContextCount": 1,
+      "missingDocumentUrlCount": 0,
+      "emptyDocumentUrlCount": 0,
+      "otherExtensionUrlCount": 0,
+      "nonExtensionUrlCount": 0
+    },
+    "attempts": 1,
+    "elapsed_ms": 373,
+    "exact_expected_appeared": true
+  }
+}

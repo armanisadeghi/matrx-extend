@@ -1,0 +1,247 @@
+{
+  "schema_version": 1,
+  "task": "guest205-readiness-native",
+  "status": "pass_bounded_guest_first_reload",
+  "observed_at_utc": "2026-10-05T00:39:37.531250+00:00",
+  "scope": "One changed-condition hosted macos-15 native signed-out guest first/reload new-conversation scenario against current server, frozen pending Store205 ZIP adapted with matching public key; no retry.",
+  "workflow": {
+    "run_id": 37247813922,
+    "run_attempt": 1,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37247813922",
+    "head_sha": "2a1c6c8f53bfabc0220a0f5fed5308e7dcedb8ad",
+    "status": "completed",
+    "conclusion": "success",
+    "runner_label": "macos-15",
+    "acceptance_case": "guest-chat",
+    "artifact_id": 11320055453,
+    "artifact_name": "hosted-guest-37247813922-1",
+    "artifact_digest": "sha256:e279996ccd29a595a3e40b79529a04557fecd7d7d1061fed2e45c9c3d96db50b",
+    "inputs": {
+      "runner_label": "macos-15",
+      "release_run_id": "37180303468",
+      "acceptance_case": "guest-chat"
+    },
+    "preflight_no_active_native": true,
+    "native_concurrency_cap": 1
+  },
+  "changed_condition": {
+    "repair_commit": "f0ffbaa354a3881a1258f79c2caa59aaf811cc0f",
+    "fresh_peer_commit": "2a1c6c8f53bfabc0220a0f5fed5308e7dcedb8ad",
+    "peer_report": ".research/initial-context-readiness-peer.json",
+    "prior_failed_run": 37246354075,
+    "prior_failure": "native_sidepanel_runtime_context_missing",
+    "prior_report_preserved": true,
+    "full_ci_run": 37247772797,
+    "full_ci_pending_at_dispatch": true,
+    "root_authorized_concurrent_test_only_native": true
+  },
+  "frozen_product": {
+    "release_run_id": 37180303468,
+    "release_artifact_id": 11294843385,
+    "source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "store_zip_sha256": "6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26",
+    "observed_manifest_version": "0.2.205",
+    "store_manifest_unkeyed": true,
+    "hash_reobserved": true,
+    "adapted_tree_sha256": "de51d518f53bfd4acb420b0ab9f4f7f06a46cdc5d9b8844f7170827869a5484f",
+    "load_kind": "native_store_zip_candidate_key_adapted",
+    "artifact_unchanged": true,
+    "actual_store_installation": false,
+    "pending_store_mutations": false
+  },
+  "live_backend": {
+    "before": {
+      "git_sha": "2e24fa8536c149663735c0cf2092cd21f5a97144",
+      "built_at": "2026-10-04T23:48:03Z",
+      "branch": null
+    },
+    "after": {
+      "git_sha": "2e24fa8536c149663735c0cf2092cd21f5a97144",
+      "built_at": "2026-10-04T23:48:03Z",
+      "branch": null
+    }
+  },
+  "panel_readiness": {
+    "raw_allowlisted_diagnostic_file": "docs/stabilization/evidence/guest205-readiness/run37247813922/panel-context-ready.json",
+    "first": {
+      "contextCount": 1,
+      "sidePanelCount": 1,
+      "expectedExtensionCount": 1,
+      "exactUrlCount": 1,
+      "globalTabCount": 1,
+      "exactContextCount": 1,
+      "missingDocumentUrlCount": 0,
+      "emptyDocumentUrlCount": 0,
+      "otherExtensionUrlCount": 0,
+      "nonExtensionUrlCount": 0
+    },
+    "last": {
+      "contextCount": 1,
+      "sidePanelCount": 1,
+      "expectedExtensionCount": 1,
+      "exactUrlCount": 1,
+      "globalTabCount": 1,
+      "exactContextCount": 1,
+      "missingDocumentUrlCount": 0,
+      "emptyDocumentUrlCount": 0,
+      "otherExtensionUrlCount": 0,
+      "nonExtensionUrlCount": 0
+    },
+    "attempts": 1,
+    "elapsed_ms": 373,
+    "exact_expected_appeared": true,
+    "observed_empty_to_exact_transition": false,
+    "interpretation": "First and last samples already exact; this run does not reproduce a delayed empty-to-exact transition. It verifies the repaired native setup path proceeds."
+  },
+  "native_outcome": {
+    "receipt_status": "pass",
+    "fresh_signed_out_guest": true,
+    "chat_visible": true,
+    "guest_session_absent_after_reload": true,
+    "guest_ai_requests": [
+      {
+        "attempt": "opening",
+        "request_at_utc": "2026-10-05T00:37:02.062Z",
+        "cdp_request_id": "17353.156",
+        "status": 200,
+        "code": null
+      },
+      {
+        "attempt": "post_reload_new_conversation",
+        "request_at_utc": "2026-10-05T00:37:10.354Z",
+        "cdp_request_id": "17353.276",
+        "status": 200,
+        "code": null
+      }
+    ],
+    "opening_turn_verdict": "terminal_answer",
+    "followup_turn_verdict": "terminal_answer",
+    "opening_answer_contains_unpredictable_code": true,
+    "opening_answer_matches_ordered_stages": true,
+    "followup_completed_after_reload": true,
+    "followup_answer_contains_unpredictable_code": true,
+    "followup_names_heading": true,
+    "no_login_paywall_or_error": true,
+    "guest_ai_transport_proven": true,
+    "owner_table_get_observations": 0,
+    "owner_table_errors_observed": 0,
+    "owner_table_observation_scope": "CDP observer attaches after panel load and runs through Values chip open, both guest sends, and panel reload; it cannot establish requests before attachment",
+    "observer_failure": null
+  },
+  "resource_guard": {
+    "package_final": "valid",
+    "browser_final": "valid",
+    "guest_final": "valid",
+    "all_resource_invalid": false,
+    "guest_watch": "RESOURCE_WATCH_HEALTHY",
+    "current_run_journals_preserved": 3,
+    "old_37105304739_journals_excluded": 3
+  },
+  "cleanup": {
+    "workflow_terminal": true,
+    "upload_artifact_step": "success",
+    "receipt_cleanup_failure_codes_present": false,
+    "observer_failure": null,
+    "observer_stop_and_web_close_awaited_by_source": true,
+    "native_harness_finally_awaits_owned_child_and_profile_cleanup": true,
+    "independent_target_detach_telemetry": false,
+    "interpretation": "Pass receipt and child success follow awaited observer/web cleanup and native harness finally cleanup. Separate termination telemetry is not persisted.",
+    "local_owned_downloads_removed": true
+  },
+  "artifact_inventory": {
+    "downloaded_total_files": 11,
+    "current_run_receipt": 1,
+    "current_run_journals": 3,
+    "screenshots": 4,
+    "old_journals_excluded": 3,
+    "screenshots_visually_reviewed_safe": true,
+    "screenshots_safety": "Fresh guest UI and owned public fixture only; no credentials/account data."
+  },
+  "raw_receipt_byte_identical_to_download": true,
+  "formatted_receipt_semantically_identical_to_raw": true,
+  "raw_journals_byte_identical_to_download": true,
+  "evidence_files": [
+    {
+      "path": "docs/stabilization/evidence/guest205-readiness/run37247813922/acceptance-receipt.json",
+      "sha256": "9c198a0b48d899bb51a032740ae436cb9cc7b2e462ade36ec2d212f98e9b1385",
+      "bytes": 10774
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-readiness/run37247813922/acceptance-receipt.raw.json.txt",
+      "sha256": "9c198a0b48d899bb51a032740ae436cb9cc7b2e462ade36ec2d212f98e9b1385",
+      "bytes": 10774
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-readiness/run37247813922/artifact-metadata.json",
+      "sha256": "f05d859db0d7b2b8c9435c5497e8281a8a8a2821bdcd6706b7ff906f5de1ba09",
+      "bytes": 789
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-readiness/run37247813922/backend-version-after.json",
+      "sha256": "a9df0539ab77c49a93439f498940d4128dbeb772a9039671c08868f4019c1dc8",
+      "bytes": 116
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-readiness/run37247813922/backend-version-before.json",
+      "sha256": "a9df0539ab77c49a93439f498940d4128dbeb772a9039671c08868f4019c1dc8",
+      "bytes": 116
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-readiness/run37247813922/frozen-artifact-verification.json",
+      "sha256": "3d7f0126951b116b7dddc5902e238b920d7a9a5e23f5a03efce5623faca10ff5",
+      "bytes": 327
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-readiness/run37247813922/panel-context-ready.json",
+      "sha256": "cf9913bc7919e2cbbf66a843cd115215e884cc5f69184dc140ac3d202032159a",
+      "bytes": 846
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-readiness/run37247813922/resource-journals/hosted-browser-37247813922-1.jsonl",
+      "sha256": "0345fd53d9575d2816ab8b0a06dfa313f033c61f11abd961fab43f649660c391",
+      "bytes": 986
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-readiness/run37247813922/resource-journals/hosted-guest-37247813922-1.jsonl",
+      "sha256": "16c0d7f1b13cc11d33c6def80e8f83d6afbc51bfe4f5e33c07a95331ab01c381",
+      "bytes": 1393
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-readiness/run37247813922/resource-journals/hosted-package-37247813922-1.jsonl",
+      "sha256": "515091c39208e98966eac479f191891bd274104a94f1fdfde0d85d4fbd240cbe",
+      "bytes": 985
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-readiness/run37247813922/screenshots/guest-chat-real-answer.png",
+      "sha256": "c19f58fde01a5c646f620790aa88769f445281221cebdb55b20203f9c6dcb9ea",
+      "bytes": 28436
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-readiness/run37247813922/screenshots/guest-chat-real-followup-answer.png",
+      "sha256": "a2848caca1a7914ea1bb1dfd287be4e2b4ce99a95472f29d76d4a10fca33c8f2",
+      "bytes": 28398
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-readiness/run37247813922/screenshots/native-side-panel.png",
+      "sha256": "d28682def0240edfa8c5d8c8a48145908f37bdc6cb05e198bab360792c69ae53",
+      "bytes": 25863
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-readiness/run37247813922/screenshots/normal-target-after-open.png",
+      "sha256": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89",
+      "bytes": 25156
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-readiness/run37247813922/workflow.json",
+      "sha256": "36308e1c308c422f71705b6985c385d0eb0e3db8c1bad62ab10647a555370d76",
+      "bytes": 5364
+    }
+  ],
+  "limits": [
+    "Bounded adapted exact205 native guest first/reload pass; not actual Store-installed acceptance.",
+    "The successful initial sample was already exact; native empty-to-exact recovery was not exercised here.",
+    "Owner-table observation begins after panel load; earlier startup traffic remains outside observer scope.",
+    "No whole Chat, allowance, member, or broad backend-health claim follows.",
+    "No source/build/release/version/Store edits or retry were performed by this lane."
+  ]
+}
