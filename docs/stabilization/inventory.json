@@ -32101,11 +32101,11 @@
         },
         {
           "id": "EXT-F-2010-C18",
-          "label": "Dismiss manual item with reason",
-          "action": "Record skip with required note",
+          "label": "Dismiss manual item with optional reason",
+          "action": "Skip the item with or without an optional note",
           "source_anchor": "src/features/capture-ladder/NeedsYourBrowserView.tsx",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Dismiss manual item with reason (Record skip with required note) on Capture side-panel in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Dismiss manual item with optional reason (Skip the item with or without an optional note) on Capture side-panel in source-applicable roles; include refusal and reload where state persists."
         },
         {
           "id": "EXT-F-2010-C20",
@@ -32253,10 +32253,10 @@
             "Signed-in member with controlled needs_drive handoff and safe test page."
           ],
           "steps": [
-            "Open it; perform page sign-in/navigation manually; enter page-specific note and capture. Repeat with another handoff and choose This one won\u2019t work with a reason. Follow a valid pickup pointer."
+            "Open it; perform page sign-in/navigation manually; capture after the person is done. Repeat with another handoff and choose This one won\u2019t work, once with an optional note and once without one. Follow a valid pickup pointer."
           ],
           "expected": [
-            "Extension leaves page actions to user until explicit capture; capture completes and updates status; skip removes only selected handoff and records note; pickup opens matching item/tab."
+            "Extension leaves page actions to user until explicit capture; capture completes and updates status; skip removes only selected handoff whether or not an optional note is supplied; pickup opens matching item/tab."
           ],
           "dimensions": [
             "member",

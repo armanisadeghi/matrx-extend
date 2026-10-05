@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-05 21:03 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-05T21:00:54.026946+00:00. 205 features · 764 cases · 1335 controls · 146 linked defect records.
+Generated 2026-10-05 23:30 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-05T21:00:54.026946+00:00. 205 features · 764 cases · 1335 controls · 146 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -1555,7 +1555,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-2010-T03 Run waiting queue and observe outcomes | N/A | Unverified | Unverified | EXT-F-2010-C02, EXT-F-2010-C09, EXT-F-2010-C08 |
 | EXT-F-2010-T04 Drive, capture, or skip one item | N/A | Unverified | Unverified | EXT-F-2010-C03, EXT-F-2010-C04, EXT-F-2010-C05, EXT-F-2010-C06, EXT-F-2010-C07 |
 
-**Controls without a mapped case:** EXT-F-2010-C10 Observe queue loading; EXT-F-2010-C11 Observe queue empty; EXT-F-2010-C12 Observe organization switch failure; EXT-F-2010-C13 Observe policy degradation note; EXT-F-2010-C14 Observe per-item running progress; EXT-F-2010-C15 Observe per-item refusal; EXT-F-2010-C16 Open manual item page; EXT-F-2010-C17 Complete manual item from opened tab; EXT-F-2010-C18 Dismiss manual item with reason; EXT-F-2010-C20 Observe pickup pointer navigation; EXT-F-2010-C21 Observe realtime disconnection
+**Controls without a mapped case:** EXT-F-2010-C10 Observe queue loading; EXT-F-2010-C11 Observe queue empty; EXT-F-2010-C12 Observe organization switch failure; EXT-F-2010-C13 Observe policy degradation note; EXT-F-2010-C14 Observe per-item running progress; EXT-F-2010-C15 Observe per-item refusal; EXT-F-2010-C16 Open manual item page; EXT-F-2010-C17 Complete manual item from opened tab; EXT-F-2010-C18 Dismiss manual item with optional reason; EXT-F-2010-C20 Observe pickup pointer navigation; EXT-F-2010-C21 Observe realtime disconnection
 
 **Other remaining work:** No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel.
 

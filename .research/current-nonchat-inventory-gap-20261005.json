@@ -2,20 +2,20 @@
   "audit_date": "2026-10-05",
   "source_baseline_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
   "current_source_sha": "9298dbd3",
-  "finding": "missing_capture_queue_action_inventory",
-  "feature": {
-    "existing_feature_id": "EXT-F-1001",
-    "name": "Navigate sidepanel tabs and recover inaccessible selection",
-    "existing_control_id": "EXT-F-1001-C02",
-    "existing_control": "Capture needs-you badge",
-    "existing_case_ids": ["EXT-F-1001-T04", "EXT-F-1001-T05", "EXT-F-1001-T06"]
-  },
-  "gap": "The inventory covers the Capture badge/navigation but omits the Capture view's queue actions: run waiting items in the browser, open a needs-drive item in a focused tab, confirm capture after the person finishes, and skip with an optional note. These are distinct user controls/procedures with direct browser and backend effects.",
+  "finding": "none",
+  "bounded_conclusion": "The proposed Capture handoff queue gap was refuted: existing feature EXT-F-2010 covers the queue actions and procedures, including EXT-F-2010-T04. The only confirmed discrepancy was wording that implied a skip note was required and an obsolete step requiring a page-specific capture note. Corrected EXT-F-2010-C18 and EXT-F-2010-T04 without changing IDs, cells, or results.",
+  "peer_evidence": "docs/stabilization/reports/capture-queue-gap-peer.json",
   "source_evidence": [
-    "src/features/capture-ladder/NeedsYourBrowserView.tsx: runAll and Run these in my browser button",
-    "src/features/capture-ladder/NeedsYourBrowserView.tsx: startDriving and Open it button",
-    "src/features/capture-ladder/NeedsYourBrowserView.tsx: finishDriving and I'm done, capture it button",
-    "src/features/capture-ladder/NeedsYourBrowserView.tsx: giveUpOn, This one won't work button, optional note textarea"
+    "src/features/capture-ladder/NeedsYourBrowserView.tsx: giveUpOn passes dismissNote.trim() || undefined, allowing skip with or without a note",
+    "src/features/capture-ladder/NeedsYourBrowserView.tsx: capture is submitted by finishDriving after the person finishes browser steps"
   ],
-  "bounded_check": "Compared the current Capture view source with all existing EXT-F-1001 controls and cases, plus inventory feature names/entrypoints for capture/browser surfaces. EXT-F-1007 is the separate current-page scrape workflow and does not cover the cross-organization needs-your-browser handoff queue. This report is source inventory evidence only; no runtime behavior is claimed."
+  "inventory_evidence": [
+    "EXT-F-2010-C02 Run all browser-safe items",
+    "EXT-F-2010-C03 Open item for manual driving",
+    "EXT-F-2010-C04 Complete manual capture",
+    "EXT-F-2010-C18 Dismiss manual item with optional reason",
+    "EXT-F-2010-T03 Run waiting queue and observe outcomes",
+    "EXT-F-2010-T04 Drive, capture, or skip one item"
+  ],
+  "runtime_status": "source inventory evidence only; no runtime promotion or behavior pass claimed"
 }
