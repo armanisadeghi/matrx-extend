@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "status": "supported_existing_fixture_with_archived_duplicate_caveat",
+  "outcome": "The established named admin test fixture resolves to one active row; the UI's active-only selector makes exact-name selection deterministic.",
+  "fixture_sources": [
+    "test-results/notes-private-config.json",
+    "test-results/files-saved-private-config.json",
+    "docs/stabilization/reports/notes-queue-review.json"
+  ],
+  "live_read_only_evidence": {
+    "candidate_exact_name_rows": 3,
+    "candidate_active_rows": 1,
+    "candidate_archived_rows": 2,
+    "candidate_admin_active_membership": true,
+    "candidate_active_memberships": 3,
+    "matrxs_org_active_exact_name_rows": 2,
+    "matrxs_org_admin_active_memberships": 0
+  },
+  "selection_contract": "Settings defaults archive filter to active; its selectable options exclude archived organizations. The admin driver requires exactly one visible exact-name option and verifies stored organization name and UUID.",
+  "private_prepared_json": "test-results/admin-profile-approved-organization-private.json (mode 0600; copied from established notes fixture; contract key approved_organization_name)",
+  "limits": "Two archived rows share the fixture name, so a future archived-inclusive selector cannot use name alone. No IDs, credentials, or organization name are included in this report. No DB writes or memberships changed."
+}
