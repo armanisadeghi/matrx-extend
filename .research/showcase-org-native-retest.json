@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0042",
+  "diagnostic_reference": "EXT-D-0141",
+  "status": "native_attempt_failed_at_organization_select; defect_open",
+  "lane": "one guarded hosted native run; no retry",
+  "source_review": {
+    "reviewed_driver_commit": "dded25ae77bcfc06d507df3a79d4a3f6cd66a563",
+    "dispatch_source_sha": "2652f16c598d1ce815d0ee4fe99bd420a8f004e9",
+    "comparison": "Hosted acceptance workflow, importer, resource guard/readiness, Showcase driver, organization helper/checkpoint, and focused diagnostic test match the frozen green-CI source. Current main differs from the artifact source only in pnpm-lock.yaml.",
+    "result": "source_equivalent"
+  },
+  "ci_artifact": {
+    "run_id": 37272977936,
+    "source_sha": "dded25ae77bcfc06d507df3a79d4a3f6cd66a563",
+    "event": "push",
+    "conclusion": "success",
+    "unit_tests_step": "success; focused organization diagnostic receipt test included",
+    "artifact_id": 11328837235,
+    "artifact_name": "matrx-extend-development-test-dded25ae77bcfc06d507df3a79d4a3f6cd66a563-37272977936-1",
+    "artifact_sha256": "9bbd023f504b358449159327e6d36b1efeefe1c65c18543eb0f2e54d66781284",
+    "version": "0.2.265",
+    "loaded_tree_sha256": "1e054cf8ec2f20aac933dbe533eb37b0f1017d50ee987b09e5847e11a07267dc",
+    "provenance": "Downloaded artifact receipt confirms exact source SHA, run ID, version, and loaded tree."
+  },
+  "hosted_run": {
+    "run_id": 37273880772,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37273880772",
+    "event": "workflow_dispatch",
+    "dispatch_source_sha": "2652f16c598d1ce815d0ee4fe99bd420a8f004e9",
+    "acceptance_case": "showcase-picker-admin",
+    "runner_label": "macos-15",
+    "runner_architecture": "ARM64",
+    "conclusion": "failure",
+    "terminal_at": "2026-10-05T06:51:20Z",
+    "hosted_result_artifact_id": 11329023319,
+    "hosted_result_artifact_name": "hosted-guest-37273880772-1",
+    "hosted_result_artifact_sha256": "bcff7e9e1dd6f5193f58130c00ea4d42f590ea8ed99f62e65d1215db05f2d30e",
+    "hosted_result_artifact_size_bytes": 62899,
+    "retry": "Not retried."
+  },
+  "preflight": {
+    "active_hosted_acceptance_runs": 0,
+    "queued_hosted_acceptance_runs": 0,
+    "pending_local_resource_journals": 0,
+    "temporary_admin_secret_present_before_lane": false,
+    "hosted_resource_guard": "Package and browser permits/readiness succeeded; guest permit admitted."
+  },
+  "organization_failure": {
+    "outer_stage": "organization",
+    "native_stage": "exercise_panel",
+    "auth_stage": "admin_extension_auth_completion",
+    "auth_stage_note": "This is the last nested auth callback label, not the failure cause. The organization checkpoint separately recorded admin_role_verified=true.",
+    "failure_code": "d87_member_organization_option_unavailable",
+    "substage": "organization_select",
+    "observations": {
+      "admin_role_verified": true,
+      "picker_available": true,
+      "picker_has_selection": false,
+      "selection_required": true
+    },
+    "interpretation": "The reviewed driver recorded that the required organization option was unavailable while the picker was present and no organization was selected. The exact underlying product or account-state cause remains unknown."
+  },
+  "criteria": [
+    {
+      "id": "guest shell exposes Scrape and hides admin Showcase",
+      "status": "pass",
+      "evidence": {
+        "scrape_visible": true,
+        "showcase_absent": true
+      }
+    },
+    {
+      "id": "real admin sign-in and admin-role verification",
+      "status": "pass",
+      "evidence": "The production auth checkpoint verified the admin role before organization selection. No identity or credential value is retained."
+    },
+    {
+      "id": "select and verify the device organization",
+      "status": "fail",
+      "evidence": "organization_select; d87_member_organization_option_unavailable; picker_available=true; picker_has_selection=false; selection_required=true."
+    },
+    {
+      "id": "Showcase picker start/cancel/restart, extraction, and normal click behavior",
+      "status": "unverified",
+      "reason": "The run stopped during organization selection."
+    },
+    {
+      "id": "stale A events, delayed cancellation, deferred installation, and fresh content-script reinjection",
+      "status": "unverified",
+      "reason": "These cases are outside this driver’s native hooks."
+    },
+    {
+      "id": "nonadmin role gate",
+      "status": "unverified",
+      "reason": "This run used the admin acceptance case."
+    }
+  ],
+  "resource_result": {
+    "package_decision": "valid",
+    "browser_decision": "valid",
+    "guest_decision": "child_failed",
+    "guest_exit_code": 1,
+    "resource_invalid": false,
+    "cpu_events": "One RESOURCE_CPU_HIGH_LOAD_BUSY pending sample recovered after subsequent clear samples; it did not invalidate the run."
+  },
+  "credential_secret_cleanup": {
+    "name": "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+    "present_before": false,
+    "created_for_this_run": true,
+    "source": "Privately parsed from aidream/.env and streamed to gh secret set over stdin. The two local paths resolve to the same mode-0600 file.",
+    "deleted_immediately_after_terminal_status": true,
+    "absence_verified_after_delete": true,
+    "credential_value_or_account_identifier_recorded": false
+  },
+  "evidence": {
+    "repository_directory": "docs/stabilization/evidence/showcase-org-native/run37273880772",
+    "files": [
+      {
+        "path": "docs/stabilization/evidence/showcase-org-native/run37273880772/receipt.json",
+        "sha256": "5d9ef4c62719422a3652ba97bfe0c8c444a139da4d0c7a8c68fc8ac18c7a1578"
+      },
+      {
+        "path": "docs/stabilization/evidence/showcase-org-native/run37273880772/hosted-package-resource.jsonl",
+        "sha256": "6f1646d4c256f339f94c5eff33dfbddaaa260519be60c747c72a00c845263f07"
+      },
+      {
+        "path": "docs/stabilization/evidence/showcase-org-native/run37273880772/hosted-browser-resource.jsonl",
+        "sha256": "f6f144c8b450a95872420d57f826db3e120f4cd4535b4ab512bd8d604249defb"
+      },
+      {
+        "path": "docs/stabilization/evidence/showcase-org-native/run37273880772/hosted-guest-resource.jsonl",
+        "sha256": "50ecc8bf24e9b005e844a45912e05c9f8b16305d66af6ba8cc9b3ab13b4bc112"
+      }
+    ],
+    "external_scratch_root": "/Volumes/Samsung2TB/code/.stabilization-scratch/showcase-picker-native-37273880772",
+    "screenshots": [
+      {
+        "name": "native-side-panel.png",
+        "sha256": "fb831ac0c77b066962b2ea35f962455d2bc162f11dbe94d369793d0a6582ca01",
+        "privacy_review": "Inspected. Guest panel shows a sign-in control and generic guest UI; no password, account email, link, or token is visible."
+      },
+      {
+        "name": "normal-target-after-open.png",
+        "sha256": "c939d4f6417b874eefffbe4a8c9bd1cf05088fe2b42ab7a7e13c65d79a024fd2",
+        "privacy_review": "Inspected. Demo fixture page and clipped generic panel-open JSON only; no password, account email, link, or token is visible."
+      }
+    ],
+    "screenshot_timing": "The harness emits its screenshot stage after panel settle and before exercise_panel. The acceptance step ran 2026-10-05T06:48:29Z–2026-10-05T06:51:13Z. Exact capture instants are not serialized; downloaded-file modification times are packaging/extraction times and are not treated as capture timestamps. These screenshots are setup evidence, not failure-time evidence.",
+    "raw_credentials_or_unfiltered_logs_included": false
+  },
+  "decision": "EXT-D-0042 remains open. This run identifies the bounded organization_select failure label and observations; it does not establish the underlying product/account-state cause or pass the Showcase picker criteria. No stabilization inventory promotion or defect closure is claimed."
+}
