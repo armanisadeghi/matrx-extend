@@ -35148,7 +35148,8 @@
           ],
           "defect_ids": [
             "EXT-D-0096",
-            "EXT-D-0097"
+            "EXT-D-0097",
+            "EXT-D-0144"
           ],
           "results": {
             "guest": {
@@ -35309,7 +35310,8 @@
             "EXT-D-0088",
             "EXT-D-0096",
             "EXT-D-0097",
-            "EXT-D-0112"
+            "EXT-D-0112",
+            "EXT-D-0144"
           ],
           "run_ids": [
             "guest-grounding-peer-native-20261001-001",

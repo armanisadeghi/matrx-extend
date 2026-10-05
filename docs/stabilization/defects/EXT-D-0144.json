@@ -1,0 +1,44 @@
+{
+  "id": "EXT-D-0144",
+  "feature_id": "EXT-F-2013",
+  "case_ids": ["EXT-F-2013-T10"],
+  "title": "Same-conversation acceptance evaluates prior turn before follow-up evidence",
+  "surface": "Guest Chat native acceptance",
+  "auth_mode": "guest",
+  "reproduction": [
+    "Load public205 CRX through guarded hosted guest-chat route at reviewed driver22bbc911; run37288331617.",
+    "Complete the opening grounded guest answer; actual offscreen POST200 and terminal success are recorded.",
+    "Send the same-conversation follow-up before reload. Observe terminal_wrong_answer evaluation with replyCount1, streaming=true, only opening run1 marked done, and no recorded follow-up POST."
+  ],
+  "expected": "The next-turn verdict waits for evidence belonging to the new turn and its separate assistant response; a completed prior turn cannot satisfy or prematurely fail the next turn.",
+  "actual": "Native run37288331617 reports same_conversation_followup_guest_ai_transport_unobserved after evaluating the old completed reply. Source/causal diagnostic investigation required; no product Chat failure inferred.",
+  "severity": "S2: blocks accurate public guest follow-up verification",
+  "priority": "P1: public no-login regression acceptance",
+  "state": "in-fix",
+  "owner": "guest_followup_turn_boundary_fix",
+  "evidence": [
+    ".research/daily-guest-same-conversation-native.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37288331617"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-05T18:17:13.324203+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Actual native receipt failure recovered after interruption"
+    },
+    {
+      "at": "2026-10-05T18:17:13.324203+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Receipt contains prior completed trace while follow-up UI still streaming; no second observed transport"
+    },
+    {
+      "at": "2026-10-05T18:17:13.324203+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Bounded causal investigation of real turn oracle assigned, no blind retry"
+    }
+  ],
+  "closure_requirement": "Meaningful prior-completed/new-pending RED-to-GREEN guard at actual oracle, fresh independent review/fullCI, native first/same-conversation/reload acceptance with valid resource and wire evidence."
+}
