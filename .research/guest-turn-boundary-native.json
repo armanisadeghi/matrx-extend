@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0144",
+  "status": "native_public_store_guest_three_turn_gates_passed",
+  "run": {
+    "run_id": 37356729984,
+    "job_id": 111920927718,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37356729984",
+    "workflow": "hosted-guest-acceptance.yml",
+    "event": "workflow_dispatch",
+    "source_sha": "03009ba0486ba583d41ece4fab8604e8b95e542c",
+    "started_at": "2026-10-05T18:32:49Z",
+    "acceptance_started_at": "2026-10-05T18:37:26Z",
+    "acceptance_completed_at": "2026-10-05T18:39:21Z",
+    "completed_at": "2026-10-05T18:39:27Z",
+    "conclusion": "success"
+  },
+  "artifact": {
+    "kind": "published_store_crx_unpacked",
+    "published_store_crx": true,
+    "version": "0.2.205",
+    "tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "unchanged_during_acceptance": true,
+    "workflow_artifact_id": 11364414644,
+    "workflow_artifact_name": "hosted-guest-37356729984-1",
+    "workflow_artifact_sha256": "d16d3f6aff968e3037179ccc5342d632fc965bfc7c3a1b98cab8691e40b41c37",
+    "workflow_artifact_bytes": 150772
+  },
+  "server_deployment": {
+    "before": {
+      "reachable": true,
+      "http_status": 200,
+      "git_sha": "624b0cee540b8d6d957ac008af8773cd285bd29c"
+    },
+    "after": {
+      "reachable": true,
+      "http_status": 200,
+      "git_sha": "624b0cee540b8d6d957ac008af8773cd285bd29c"
+    },
+    "stable": true,
+    "timestamps": "Not present in the raw receipt."
+  },
+  "guest_identity": {
+    "fresh_guest_profile": true,
+    "guest_chat_visible": true,
+    "session_absent_after_reload": true,
+    "observer_transport_proven": true,
+    "observer_scope": "CDP observer attaches after panel load and runs through Values chip open, both guest sends, and panel reload; requests before attachment are outside this observation."
+  },
+  "turns": [
+    {
+      "attempt": "opening",
+      "request_at_utc": "2026-10-05T18:38:51.229Z",
+      "http_status": 200,
+      "conversation_fingerprint": "0e117704ad76ebf2",
+      "is_new": true,
+      "terminal_verdict": "terminal_answer",
+      "grounding": {
+        "contains_unpredictable_page_code": true,
+        "names_page_stages": true,
+        "stages_in_order": true,
+        "context_marker_and_active_assigned_tab_match_fixture": true
+      }
+    },
+    {
+      "attempt": "same_conversation_followup",
+      "request_at_utc": "2026-10-05T18:38:57.866Z",
+      "http_status": 200,
+      "conversation_fingerprint": "0e117704ad76ebf2",
+      "is_new": false,
+      "identity_matches_opening": true,
+      "terminal_verdict": "terminal_answer",
+      "run_count_after_turn": 2,
+      "reply_count_after_turn": 2,
+      "grounding": {
+        "contains_unpredictable_page_code": true,
+        "context_marker_and_active_assigned_tab_match_fixture": true
+      }
+    },
+    {
+      "attempt": "post_reload_new_conversation",
+      "request_at_utc": "2026-10-05T18:39:03.571Z",
+      "http_status": 200,
+      "conversation_fingerprint": "199b1810c7ab1720",
+      "is_new": true,
+      "identity_differs_from_opening": true,
+      "terminal_verdict": "terminal_answer",
+      "grounding": {
+        "contains_unpredictable_page_code": true,
+        "names_fixture_heading": true,
+        "context_marker_and_active_assigned_tab_match_fixture": true
+      }
+    }
+  ],
+  "resource_journals": {
+    "status": "all three original same-run journals parse; each records RESOURCE_ADMITTED, child exit code 0, resourceInvalid false, and RESOURCE_FINAL_DECISION valid",
+    "files": [
+      "docs/stabilization/evidence/guest-turn-boundary-native/run37356729984/raw/resource-journals/hosted-package-37356729984-1.jsonl",
+      "docs/stabilization/evidence/guest-turn-boundary-native/run37356729984/raw/resource-journals/hosted-browser-37356729984-1.jsonl",
+      "docs/stabilization/evidence/guest-turn-boundary-native/run37356729984/raw/resource-journals/hosted-guest-37356729984-1.jsonl"
+    ],
+    "excluded_stale_artifact_journals": [
+      "hosted-package-37105304739-1.jsonl",
+      "hosted-browser-37105304739-1.jsonl",
+      "hosted-guest-37105304739-1.jsonl"
+    ]
+  },
+  "privacy_review": {
+    "raw_receipt": "Byte-preserved from the uploaded run artifact. Inspected for credentials and raw request bodies; neither is present. Request evidence uses HTTP status, boolean is_new, and one-way conversation fingerprints.",
+    "screenshots": "All five screenshots were visually inspected before retention. They show guest UI and synthetic demo fixture codes/content; no credentials, personal account data, or raw network payloads are visible.",
+    "screenshots_retained": [
+      "guest-chat-real-answer.png",
+      "guest-chat-same-conversation-followup.png",
+      "guest-chat-real-followup-answer.png",
+      "native-side-panel.png",
+      "normal-target-after-open.png"
+    ]
+  },
+  "retained_evidence": {
+    "directory": "docs/stabilization/evidence/guest-turn-boundary-native/run37356729984/",
+    "raw_receipt": "docs/stabilization/evidence/guest-turn-boundary-native/run37356729984/raw/guest-chat-store-ef185b34-0d22-4caf-b8ad-e637cd6723ee.json",
+    "hash_manifest": "docs/stabilization/evidence/guest-turn-boundary-native/run37356729984/hash-manifest.json"
+  },
+  "limits": [
+    "This run proves the three named public Store guest turn gates on the tested artifact and deployed server fingerprint. It does not prove broader extension health or other guest/member/admin cases.",
+    "The published Store CRX was unpacked and loaded in the hosted acceptance profile; this run does not prove a Chrome Web Store installation or its update/returning-guest lifecycle.",
+    "The observer cannot establish requests that occurred before CDP attachment."
+  ]
+}

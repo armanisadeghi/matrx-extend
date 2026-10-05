@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "run_id": 37356729984,
+  "workflow_artifact": {
+    "artifact_id": 11364414644,
+    "name": "hosted-guest-37356729984-1",
+    "sha256": "d16d3f6aff968e3037179ccc5342d632fc965bfc7c3a1b98cab8691e40b41c37",
+    "bytes": 150772,
+    "source_sha": "03009ba0486ba583d41ece4fab8604e8b95e542c"
+  },
+  "payloads": [
+    {
+      "path": "raw/guest-chat-store-ef185b34-0d22-4caf-b8ad-e637cd6723ee.json",
+      "sha256": "2de8c606b1c6b5854d35886a0c3416560b004904441c92c171154cb7ff73b82d",
+      "bytes": 12829
+    },
+    {
+      "path": "raw/resource-journals/hosted-browser-37356729984-1.jsonl",
+      "sha256": "31b293bd66d4a244c61694d831247937332dfd50ed1f8927168f9736ebf1ecd6",
+      "bytes": 991
+    },
+    {
+      "path": "raw/resource-journals/hosted-guest-37356729984-1.jsonl",
+      "sha256": "86f107ccf8e47f1a4195519537cc897f1b2cac71ca63f554aefa3f8cb6830aa0",
+      "bytes": 1810
+    },
+    {
+      "path": "raw/resource-journals/hosted-package-37356729984-1.jsonl",
+      "sha256": "025feebf8483cd380d546e757359ece6a632672e4338cea44f44742d280dfa14",
+      "bytes": 990
+    },
+    {
+      "path": "screenshots/guest-chat-real-answer.png",
+      "sha256": "2e0434594b9646365911eeb0f61dab31fa511ef7c634c9b7b99b4f96592df230",
+      "bytes": 26137
+    },
+    {
+      "path": "screenshots/guest-chat-real-followup-answer.png",
+      "sha256": "608390cec0cd742d363ee2855c33d986204384ce8f0d9efa4752e6eaa52a1edc",
+      "bytes": 27236
+    },
+    {
+      "path": "screenshots/guest-chat-same-conversation-followup.png",
+      "sha256": "5dcc4142a5bdf9c2de91064944253bb7c6f6df39e2ed5622c459bf48f45539b9",
+      "bytes": 28381
+    },
+    {
+      "path": "screenshots/native-side-panel.png",
+      "sha256": "25a538f9a2e74a332e3f517da1152582efd5da890b49c6624755c97e129e0e11",
+      "bytes": 26834
+    },
+    {
+      "path": "screenshots/normal-target-after-open.png",
+      "sha256": "970ae5ac62c9cdf9c951d332bf061b1c38b5d01aa19792217c04b12bc618a189",
+      "bytes": 36707
+    }
+  ],
+  "integrity_checks": {
+    "receipt_byte_identical_to_downloaded_source": true,
+    "same_run_resource_journals_valid": 3,
+    "screenshots_visually_reviewed": 5
+  }
+}
