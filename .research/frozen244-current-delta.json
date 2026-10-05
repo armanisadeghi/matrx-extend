@@ -1,0 +1,78 @@
+{
+  "report_type": "frozen-development-artifact-current-production-delta-audit",
+  "audit_scope": "Source and existing inventory audit only. No tests, builds, browsers, native acceptance, workflow dispatch, release, or product-source edits.",
+  "baseline": {
+    "development_version": "0.2.244",
+    "source_sha": "b81587021d689078ed428dafe3e15474a84c41e2",
+    "frozen_acceptance_status": "Retain only the bounded acceptance already recorded for the frozen 0.2.244 artifact; this audit does not extend it."
+  },
+  "comparison": {
+    "ref": "origin/main",
+    "fetched_sha": "fb5cf5a2fe0d3b0ed45b36b560e96bcbfa5d0a98",
+    "comparison_frozen_at_fetch": true,
+    "diff_method": "git tree diff from baseline SHA to fetched origin/main SHA"
+  },
+  "production_delta": {
+    "extension_source_or_entrypoint_paths_changed": [],
+    "manifest_or_runtime_configuration_paths_changed": [],
+    "extension_version": {
+      "before": "0.2.244",
+      "after": "0.2.258",
+      "acceptance_meaning": "Version metadata alone does not establish changed user behavior."
+    },
+    "resolved_shared_package_changes": [
+      {"package": "@ai-matrx/agents", "before": "0.43.32", "after": "0.43.34"},
+      {"package": "@ai-matrx/associations", "before": "0.13.143", "after": "0.13.146"},
+      {"package": "@ai-matrx/design-system", "before": "0.61.14", "after": "0.61.15"}
+    ],
+    "behavioral_classification": "Unmapped and unverified. The lockfile shows shipped shared-package changes, but this source-only audit does not establish their runtime effects or affected controls."
+  },
+  "existing_inventory_mapping": {
+    "exact_case_ids": [],
+    "exact_control_ids": [],
+    "reason": "No extension source, entrypoint, manifest, or runtime-configuration path changed. The three shared-package updates have no behavior-level mapping established by the available diff; assigning existing cases would imply unsupported coverage."
+  },
+  "acceptance_decision": {
+    "changed_non_chat_contained_user_behavior_proven": false,
+    "current_0_2_258_acceptance": "Not established by this audit. Do not transfer 0.2.244 acceptance to 0.2.258 based on version or documentation/test changes.",
+    "required_to_resolve": "Identify the actual behavior changes in the three resolved shared packages, map each to existing inventory case/control IDs, then use an exact current-source development artifact for the affected contained cases."
+  },
+  "ci_development_artifact_provenance": {
+    "comparison_sha_run": {
+      "run_id": 37252977771,
+      "status_at_audit": "pending",
+      "conclusion": null,
+      "artifact_metadata_available": false
+    },
+    "closest_completed_success": {
+      "run_id": 37252309149,
+      "source_sha": "d60b55c9d0a7c1bcabca9fd0cc7d2fb071b2ba40",
+      "source_version": "0.2.257",
+      "status": "completed",
+      "conclusion": "success",
+      "artifact_metadata": {
+        "name": "matrx-extend-development-test-d60b55c9d0a7c1bcabca9fd0cc7d2fb071b2ba40-37252309149-1",
+        "size_bytes": 13478931,
+        "expired": false,
+        "created_at": "2026-10-05T01:47:36Z"
+      },
+      "provenance_limit": "Metadata only; artifact not downloaded. This artifact is for 0.2.257 at a different source SHA, not the comparison SHA or 0.2.258."
+    }
+  },
+  "change_class_counts_from_diff": {
+    "research_evidence_added_or_changed": 63,
+    "stabilization_docs_or_inventory_changed": 125,
+    "tests_changed": 21,
+    "scripts_changed": 7,
+    "types_or_catalog_changed": 4,
+    "agent_instruction_files_changed": 4,
+    "repository_configuration_files_changed": 1,
+    "package_manifest_or_lock_changed": 2,
+    "product_source_paths_changed": 0
+  },
+  "limits": [
+    "No behavior-level changelog/source audit of the three shared packages was completed.",
+    "No product acceptance or whole-feature health claim is made.",
+    "Pre-existing edits in .research/guest-402-release-preparation.json and docs/stabilization/reports/workspace-sync-guest-incident-20261003.json were preserved and are outside this artifact."
+  ]
+}
