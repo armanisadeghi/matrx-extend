@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "review_target": "39212f26474e745d644c3e6e9d95a29368b6b71d",
+  "reviewer": "independent portability peer",
+  "A_source_and_hosted_limits": {
+    "source_verdict": "pass",
+    "source_findings": [
+      "The test now imports tmpdir from node:os and passes join(tmpdir(), 'media-receipt-') to mkdtemp.",
+      "Compared with the preceding version, this replaces only the hardcoded macOS scratch prefix; no assertions, test cases, or product behavior changed.",
+      "The prefix remains unique under mkdtemp and the generated receipt stays inside its temporary directory, which the existing finally cleanup removes."
+    ],
+    "local_focused_test": {
+      "command": "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch node --test tests/browser/scrape-media-timeout-evidence.test.mjs",
+      "result": "4 passed, 0 failed, 0 skipped"
+    },
+    "portable_default_probe": {
+      "command": "env -u TMPDIR node -e \"import('node:os').then(({tmpdir})=>console.log(tmpdir()))\"",
+      "result": "/tmp"
+    },
+    "hosted_limits": [
+      "Linux hosted CI has not yet rerun against this repair.",
+      "This review is limited to the focused test and source portability; it is not native product acceptance."
+    ]
+  },
+  "B_quality_verdicts": {
+    "overall": "accept",
+    "assertions_unchanged": true,
+    "temporary_directory_portable": true,
+    "quality_notes": [
+      "node:os tmpdir honors the platform's normal temporary-directory selection, including TMPDIR on this POSIX host.",
+      "The focused run wrote outside the repository to the requested external scratch location."
+    ],
+    "remaining_gate": "Corrected Linux CI run"
+  }
+}
