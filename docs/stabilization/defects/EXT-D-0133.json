@@ -88,7 +88,7 @@
     }
   ],
   "diagnostic_commit": "427e75a4",
-  "next_action": "Fresh Astra auth_transition_causal_repair owns bounded source-causal investigation and sentinel diagnostic correction; independentpeer before any changed-condition native. No blindretry or acceptanceweakening.",
+  "next_action": "Implement bounded passive visibilitychange timestamps correlated in one clock domain with resource-health waits and actual organization pointer branches; establish privacy-safe owned native-window observation availability before next launch. Peer review before ONE changed-condition native. No focus permutations or acceptanceweakening.",
   "fix_commits": [
     "44005fb4",
     "0e8aa6c7"
@@ -127,7 +127,8 @@
       "commit": "ddb793d8",
       "report_clarification": "ebdce79e",
       "report": ".research/auth-transition-causal-repair.json",
-      "result": "Controlled real-source sentinel -1 previously yields false; now null. Actual native numeric IDs unrecorded, cannot attribute historicalfalse tosentinel. 14focusedbuildertests pass; independentpeer pending. No native recoveryfix."
+      "result": "Controlled real-source sentinel -1 previously yields false; now null. Actualnative numericIDsunrecorded, cannotattribute historicalfalse tosentinel. Independent14focusedtests pass; broaderCI pending. No native recoveryfix.",
+      "fresh_peer": "eb0a3448"
     }
   }
 }
