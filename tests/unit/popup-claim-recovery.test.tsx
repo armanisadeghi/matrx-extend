@@ -87,6 +87,9 @@ describe('popup capture claim recovery', () => {
   afterEach(async () => {
     // Stop effects/subscriptions before clearing the session rows.
     cleanup();
+    // App starts view imports from effects; let them finish before Vitest tears
+    // down this environment, including when the full suite runs in parallel.
+    await vi.dynamicImportSettled();
     const { POPUP_LAUNCH_INTENT_KEY } = await import('@/lib/panel/launch-intent');
     const rows = await chrome.storage.session.get(null);
     await chrome.storage.session.remove(
