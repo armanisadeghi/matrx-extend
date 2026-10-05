@@ -90,18 +90,23 @@ export async function startPanelTransitionRecorder(panel) {
 }
 
 export function traceOrganizationPointers(panel, recorder) {
-  return new Proxy(panel, {
-    get(target, key) {
-      if (key !== 'send') return Reflect.get(target, key);
-      return async (method, args) => {
-        if (method !== 'Input.dispatchMouseEvent') return target.send(method, args);
-        await recorder.mark?.('pointer_before');
-        try {
-          return await target.send(method, args);
-        } finally {
-          await recorder.mark?.('pointer_after');
-        }
-      };
+  const send = async (...args) => {
+    const dispatch = () => Reflect.apply(Reflect.get(panel, 'send', panel), panel, args);
+    if (args[0] !== 'Input.dispatchMouseEvent') return dispatch();
+    await recorder.mark?.('pointer_before');
+    try {
+      return await dispatch();
+    } finally {
+      await recorder.mark?.('pointer_after');
+    }
+  };
+  // A connection can own a frozen send property. Proxying that object would make
+  // replacement of send violate the Proxy get invariant.
+  return new Proxy(Object.create(null), {
+    get(_facade, key) {
+      if (key === 'send') return send;
+      const value = Reflect.get(panel, key, panel);
+      return typeof value === 'function' ? value.bind(panel) : value;
     },
   });
 }

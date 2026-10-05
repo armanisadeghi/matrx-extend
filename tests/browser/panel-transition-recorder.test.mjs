@@ -122,6 +122,71 @@ test('actual pointer dispatch brackets hidden transition and strips input detail
   assert.equal(env.listeners.size, 0);
 });
 
+test('immutable connection delegates with its original receiver and brackets only pointer dispatch', async () => {
+  const env = fixture();
+  const recorder = await startPanelTransitionRecorder(env.panel);
+  const originalSend = env.panel.send;
+  const calls = [];
+  Object.defineProperty(env.panel, 'send', {
+    value: async function (method, args) {
+      assert.equal(this, env.panel);
+      calls.push([method, args]);
+      if (method === 'Input.dispatchMouseEvent' && args.type === 'mouseReleased')
+        throw new Error('pointer transport error');
+      if (method === 'Input.dispatchMouseEvent') env.hide();
+      if (method === 'Input.dispatchKeyEvent') throw new Error('original transport error');
+      return originalSend.call(this, method, args);
+    },
+    writable: false,
+    configurable: false,
+  });
+  Object.defineProperty(env.panel, 'connectionId', {
+    value() {
+      assert.equal(this, env.panel);
+      return 'panel-session';
+    },
+    writable: false,
+    configurable: false,
+  });
+  Object.freeze(env.panel);
+  const instrumented = traceOrganizationPointers(env.panel, recorder);
+  assert.equal(instrumented.connectionId(), 'panel-session');
+  assert.deepEqual(await instrumented.send('Page.enable', { enabled: true }), { ok: true });
+  await assert.rejects(
+    instrumented.send('Input.dispatchKeyEvent', { type: 'keyDown' }),
+    /original transport error/,
+  );
+  await instrumented.send('Input.dispatchMouseEvent', { type: 'mousePressed', x: 37, y: 59 });
+  await assert.rejects(
+    instrumented.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: 37, y: 59 }),
+    /pointer transport error/,
+  );
+  const result = await recorder.stop();
+  assert.deepEqual(
+    calls.map(([method]) => method).filter((method) => method !== 'Runtime.evaluate'),
+    [
+      'Page.enable',
+      'Input.dispatchKeyEvent',
+      'Input.dispatchMouseEvent',
+      'Input.dispatchMouseEvent',
+    ],
+  );
+  assert.deepEqual(
+    Array.from(result.events, (event) => event.kind),
+    [
+      'start',
+      'pointer_before',
+      'visibilitychange',
+      'pointer_after',
+      'pointer_before',
+      'pointer_after',
+      'stop',
+    ],
+  );
+  assert.equal(classifyPanelTransition(result), 'during_pointer_dispatch');
+  assert.equal(Object.getOwnPropertyDescriptor(env.panel, 'send').configurable, false);
+});
+
 test('lost renderer context is explicitly unavailable', async () => {
   const env = fixture();
   const recorder = await startPanelTransitionRecorder(env.panel);
@@ -210,6 +275,7 @@ test('actual Scrape setup wires resource and organization pointer intervals to t
       if (scenario === 'pointer_dispatch' && method === 'Input.dispatchMouseEvent') env.hide();
       return originalSend(method, args);
     };
+    if (scenario === 'pointer_dispatch') Object.freeze(env.panel);
     const result = await run({
       panel: env.panel,
       page: {},

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0133",
+  "scope": "native member transition test driver",
+  "source_receipt": "docs/stabilization/evidence/member-transition/run37252919339/raw/scrape-guest-native.json",
+  "cause": "traceOrganizationPointers proxied the real panel and replaced its non-configurable, non-writable own send property in the get trap, violating the JavaScript Proxy invariant before organization selection could send a command.",
+  "repair": "The recorder proxies an independent facade, delegates commands and other methods to the original panel receiver, and brackets only mouse dispatches with pointer markers.",
+  "red_proof": {
+    "command": "node --test tests/browser/panel-transition-recorder.test.mjs",
+    "result": "two failures before repair: immutable panel receiver mismatch and actual Scrape wiring Proxy invariant"
+  },
+  "green_proof": {
+    "command": "node --test tests/browser/panel-transition-recorder.test.mjs",
+    "result": "6 passed, 0 failed after repair; includes frozen panel, original receiver and errors, non-mouse delegation, pointer markers, and actual Scrape setup wiring"
+  },
+  "sibling_census": "The only panel/connection send-intercepting Proxy in tests/browser is traceOrganizationPointers; no sibling wrapper has the same invariant pattern.",
+  "limits": "Focused local test proof only. No native run or browser acceptance was performed in this repair lane."
+}
