@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { join, resolve } from 'node:path';
 import test from 'node:test';
-import { observeSelectedMedia, retainScrapeMediaFailure } from './scrape-media-observation.mjs';
 import { waitForScrapeMedia } from './scrape-media-timeout-evidence.mjs';
 
 const expected = [
@@ -128,43 +130,38 @@ test('video timeout retains row identity only as fixture indexes', async () => {
   );
 });
 
-test('native selectedMedia caller carries a safe image timeout into the receipt', async () => {
-  const last = state([
-    { src: expected[0].src, complete: true, naturalWidth: 640, naturalHeight: 480 },
-    { src: expected[1].src, complete: false, naturalWidth: 0, naturalHeight: 0 },
-    { src: expected[2].src, complete: true, naturalWidth: 32, naturalHeight: 32 },
-  ]);
-  const report = { stage: 'result_tabs', failure: null };
-  const panel = {};
-  let scrolled = false;
+test('native driver writes the media timeout boundary into its real receipt', async () => {
+  const directory = await mkdtemp('/Volumes/Samsung2TB/code/.stabilization-scratch/media-receipt-');
+  const output = join(directory, 'receipt.json');
   try {
-    await observeSelectedMedia({
-      panel,
-      label: 'Images',
-      items: expected,
-      name: 'scrape_Images_loaded',
-      evaluate: async (receivedPanel, expression) => {
-        assert.equal(receivedPanel, panel);
-        assert.match(expression, /scrollIntoView/);
-        scrolled = true;
+    const result = spawnSync(
+      process.execPath,
+      [resolve(import.meta.dirname, 'scrape-guest-native-acceptance.mjs')],
+      {
+        env: {
+          ...process.env,
+          MATRX_SCRAPE_RECEIPT_SELF_TEST: '1',
+          MATRX_SCRAPE_RECEIPT_SELF_TEST_OUTPUT: output,
+        },
+        encoding: 'utf8',
       },
-      scrapeState: async (receivedPanel) => {
-        assert.equal(receivedPanel, panel);
-        return last;
-      },
-      timeoutMs: 0,
-    });
-    assert.fail('selectedMedia unexpectedly accepted an incomplete image');
-  } catch (error) {
-    report.failure = { stage: report.stage, code: String(error.message).slice(0, 300) };
-    retainScrapeMediaFailure(report, error);
+    );
+    assert.equal(result.status, 1, result.stderr);
+    const report = JSON.parse(await readFile(output, 'utf8'));
+    assert.equal(report.diagnostic_self_test, true);
+    assert.equal(report.status, 'unverified');
+    assert.equal(report.artifact, null);
+    assert.equal(report.stage, 'result_tabs');
+    assert.match(report.failure.code, /^scrape_Images_loaded_not_observed:/);
+    assert.equal(report.failure.code.includes('imageItems'), false);
+    assert.ok(report.scrape_media_failure, 'scrape_media_failure_missing');
+    assert.equal(report.scrape_media_failure.kind, 'Images');
+    assert.equal(report.scrape_media_failure.observedCount, 3);
+    assert.equal(report.scrape_media_failure.items[1].complete, false);
+    assert.equal(report.scrape_media_failure.items[1].expectedIndex, 1);
+    assert.equal(JSON.stringify(report.scrape_media_failure).includes('Private'), false);
+    assert.equal(JSON.stringify(report.scrape_media_failure).includes('localhost'), false);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
   }
-  assert.equal(scrolled, true);
-  assert.equal(report.failure.stage, 'result_tabs');
-  assert.match(report.failure.code, /^scrape_Images_loaded_not_observed:/);
-  assert.equal(report.failure.code.includes('imageItems'), false);
-  assert.ok(report.scrape_media_failure, 'scrape_media_failure_missing');
-  assert.equal(report.scrape_media_failure.items[1].complete, false);
-  assert.equal(report.scrape_media_failure.items[1].expectedIndex, 1);
-  assert.equal(JSON.stringify(report.scrape_media_failure).includes(last.resultText), false);
 });

@@ -75,8 +75,8 @@
   "sibling_census": "Both Images and Video calls of the shared selectedMedia observer use the repaired boundary; other waitFor calls in this driver do not inspect media rows and were left unchanged.",
   "proposed_next_step": "Run one member normal-width native case against the same frozen artifact and inspect scrape_media_failure if Images still times out. Asset response or a pane screenshot can be added only if that summary leaves the first failing boundary unresolved. Patch product only after a real product failure is localized.",
   "repair_verification": {
-    "red": "Two node --test cases failed on the uninstrumented helper with the defect-specific assertion: error.scrapeMediaFailure was undefined. A scratch-copy sabotage that removes receipt retention also turned the production caller-to-receipt test red.",
-    "green": "Four cases pass through the real waitFor path; one captures an incomplete image, another distinguishes a hidden wrong pane with zero image rows, the Video sibling captures fixture indexes without leaking URL or text, and a native selectedMedia caller test carries the timeout into the receipt field.",
+    "red": "Two node --test cases failed on the uninstrumented helper with the defect-specific assertion: error.scrapeMediaFailure was undefined. An in-memory Node loader sabotage removed retainScrapeMediaFailure from the actual native driver's top-level catch; the spawned-driver receipt test failed with scrape_media_failure_missing.",
+    "green": "Four cases pass through the real waitFor path; one captures an incomplete image, another distinguishes a hidden wrong pane with zero image rows, the Video sibling captures fixture indexes without leaking URL or text, and a spawned native driver self-test executes its actual selectedMedia wrapper, top-level catch and receipt writer without launching a browser. The generated receipt is explicitly diagnostic_self_test, unverified, artifact null and exits 1.",
     "limits": "Focused source-path test uses controlled read states; no native member rerun was allowed in this lane."
   },
   "limits": [

@@ -43,7 +43,10 @@ const EXTENSION_DIR = process.env.MATRX_SCRAPE_EXTENSION_DIR;
 const RECEIPT = process.env.MATRX_SCRAPE_RECEIPT;
 const ARTIFACT_CHANNEL = process.env.MATRX_SCRAPE_ARTIFACT_CHANNEL;
 const DIAGNOSTIC_RATE = diagnosticCpuRate(process.env.MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE);
-const OUTPUT = join(REPO, 'test-results', `scrape-guest-native-${randomUUID()}.json`);
+const RECEIPT_SELF_TEST = process.env.MATRX_SCRAPE_RECEIPT_SELF_TEST === '1';
+const OUTPUT = RECEIPT_SELF_TEST
+  ? process.env.MATRX_SCRAPE_RECEIPT_SELF_TEST_OUTPUT
+  : join(REPO, 'test-results', `scrape-guest-native-${randomUUID()}.json`);
 const article = 'Harbor Dental intake guide';
 const lazy = 'After the patient scrolls, the appointment preparation checklist appears.';
 const walkthroughVideo = await readFile(
@@ -503,8 +506,16 @@ async function observedMediaRemoval({
   );
 }
 
-async function selectedMedia(panel, label, items, name) {
-  return observeSelectedMedia({ panel, label, items, name, evaluate, scrapeState });
+async function selectedMedia(panel, label, items, name, dependencies = {}) {
+  return observeSelectedMedia({
+    panel,
+    label,
+    items,
+    name,
+    evaluate: dependencies.evaluate ?? evaluate,
+    scrapeState: dependencies.scrapeState ?? scrapeState,
+    ...(dependencies.timeoutMs !== undefined && { timeoutMs: dependencies.timeoutMs }),
+  });
 }
 
 async function mediaForm(panel) {
@@ -851,6 +862,41 @@ async function exerciseMediaControls({
 }
 
 try {
+  if (RECEIPT_SELF_TEST) {
+    assert.ok(OUTPUT, 'scrape_receipt_self_test_output_required');
+    report.stage = 'result_tabs';
+    report.diagnostic_self_test = true;
+    const fixture = [
+      { src: 'http://localhost/intake.svg' },
+      { src: 'http://localhost/appointment-card.svg' },
+      { src: 'http://localhost/clinic-icon.svg' },
+    ];
+    await selectedMedia({}, 'Images', fixture, 'scrape_Images_loaded', {
+      evaluate: async () => null,
+      scrapeState: async () => ({
+        ready: true,
+        title: 'Harbor Dental intake guide',
+        resultText: 'Private page text must not enter diagnostic evidence',
+        tabs: ['Article', 'Images', 'Video', 'Links', 'SEO', 'Schema'].map((label) => ({
+          label,
+          selected: label === 'Images',
+        })),
+        selected: 'Images',
+        visible: true,
+        media: {
+          tabCount: '3',
+          imageItems: fixture.map((item, index) => ({
+            src: item.src,
+            complete: index !== 1,
+            naturalWidth: index === 1 ? 0 : 32,
+            naturalHeight: index === 1 ? 0 : 32,
+          })),
+        },
+      }),
+      timeoutMs: 0,
+    });
+    throw new Error('scrape_receipt_self_test_did_not_timeout');
+  }
   selection = scrapeNativeSelection(process.env);
   report.mode = selection.mode;
   report.width_mode = selection.widthMode;
