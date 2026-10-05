@@ -1476,6 +1476,11 @@
    "application/json"
   ]
  },
+ "/cms/publish-check": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/cms/validate": {
   "post": [
    "application/json"
