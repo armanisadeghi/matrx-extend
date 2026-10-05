@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0042",
+  "audit_kind": "bounded current-source and evidence audit",
+  "audited_at": "2026-10-04",
+  "audited_head": "015cfba66cb23063825a323dd2a711ee04138995",
+  "status": "source_repair_present; focused unit evidence historical; installed-extension acceptance open",
+  "current_implementation_evidence": [
+    {
+      "claim": "ListPatternTab invalidates local session state before dispatching a cancellation targeted to the captured tab, document, and session; incoming rebroadcasts must match current tab/session/document/page identity.",
+      "source": [
+        "src/features/showcase/tabs/ListPatternTab.tsx:105-128",
+        "src/features/showcase/tabs/ListPatternTab.tsx:185-198"
+      ]
+    },
+    {
+      "claim": "A per-tab promise queue serializes install/start/cancel, injections target the initiating document, and cancellation carries the session ID.",
+      "source": [
+        "src/lib/data-pattern/list-picker-session.ts:19-33",
+        "src/lib/data-pattern/list-picker-session.ts:36-61",
+        "src/lib/data-pattern/list-picker-session.ts:64-77"
+      ]
+    },
+    {
+      "claim": "The worker relays the three picker channels while preserving session identity and stamping trusted sender tab/document identity.",
+      "source": ["src/lib/data-pattern/list-picker-relay.ts:4-17"]
+    },
+    {
+      "claim": "Reinjected picker contexts tear down the old context/listeners; picker start and cancellation are session-targeted.",
+      "source": [
+        "src/lib/data-pattern/list-picker.ts:45-56",
+        "src/lib/data-pattern/list-picker.ts:112-128",
+        "src/lib/data-pattern/list-picker.ts:181-194"
+      ]
+    }
+  ],
+  "acceptance_targets": {
+    "verified_by_existing_recorded_unit_run": [
+      "Stale A ITEM_DETECTED, RESULT, and EXIT are rejected by the ListPatternTab consumer after cancel A/start B with same tab, document, and URL; B remains active.",
+      "B's own result is accepted and Extract produces the Neon Nights fixture row.",
+      "Producer payloads retain session IDs; targeted cancel preserves a replacement; reinjection emits one detection and restores ordinary clicks; deferred install/cancel/start queue ordering preserves replacement.",
+      "Relay retains session ID, overwrites forged tab/document with trusted sender identity, and refuses missing sender identity."
+    ],
+    "evidence": ".research/showcase-picker-current-retest.json",
+    "recorded_test_sha": "c540f36a41ea4b13ca0c3dc38b8f00ff1c46d730",
+    "recorded_command": "pnpm exec vitest run tests/unit/list-picker-session.test.ts tests/unit/list-picker-relay.test.ts tests/unit/showcase-doctor-list-handoff.test.tsx --maxWorkers=1",
+    "recorded_result": "3 files, 23 tests passed; this is a historical focused test result, not rerun at audited HEAD.",
+    "still_open": [
+      "Current audited HEAD has not been tested in this audit; do not infer the historical test result covers later integration changes.",
+      "Chrome runtime delivery is mocked in unit tests. No installed-extension, real page, or UI outcome is verified.",
+      "Native delayed cancellation while B is active, deferred install across replacement, and reinjection listener teardown remain to be exercised together against the current installed artifact.",
+      "EXT-D-0042 remains in-fix per docs/stabilization/defects/EXT-D-0042.json and is still listed as a next action in docs/stabilization/STATUS.md."
+    ]
+  },
+  "next_decisive_test": {
+    "name": "Current frozen installed-extension A-to-B lifecycle acceptance",
+    "why_decisive": "It crosses the real Chrome content-script, service-worker relay, and sidepanel boundaries that the passing unit checks mock, while proving both stale-session rejection and current-session extraction on real repeated-card data.",
+    "procedure": [
+      "Build from audited HEAD 015cfba66cb23063825a323dd2a711ee04138995 using the repository's existing stabilization resource guard and freeze the resulting development artifact before opening Chrome.",
+      "Load/reload exactly that frozen unpacked artifact in the intended Chrome profile; record extension version, source SHA, artifact directory/tree hash, and build receipt. Confirm the browser-loaded artifact matches the frozen receipt and contains the current ListPatternTab and picker code before interacting.",
+      "Open Showcase → List Pattern on a regular page with repeated event cards. Start picker A and pause its outgoing ITEM_DETECTED, RESULT, and EXIT separately at the runtime-delivery boundary. Cancel A, start B without changing tab or URL, then release each held A message separately. Each must leave B active and its builder/config unchanged.",
+      "With B still active, defer A's cancellation injection until B has started, then release it. B must remain usable. Select a repeated card with B, select a field, press Done, and Extract; require current B data in the rows.",
+      "While a pick is active, reinject the picker content context and click one card; require exactly one detection. Close/cancel the picker and click a normal page link/button; require ordinary page interaction to resume.",
+      "Record each observed action/result against the frozen artifact receipt. Preserve the run transcript and a concise evidence artifact; classify any unexercised delivery channel or failed precondition as unverified, and keep D42 open until the whole acceptance succeeds."
+    ],
+    "preconditions": [
+      "Healthy admission from the existing browser/resource guard immediately before browser work; no bypass or threshold change.",
+      "A regular repeated-card page and a Chrome profile with the extension installed and controllable.",
+      "A reliable runtime-boundary hold/release mechanism for each outbound picker channel and cancellation injection. If the existing native harness cannot delay these events, the test cannot decisively cover D42; report that limitation rather than substituting mocked delivery for native proof.",
+      "A frozen development build from the audited source SHA, with exact extension version, output path, artifact/tree hash, build command/receipt, and confirmation the loaded extension is that artifact. Any source change after freezing requires a new build/receipt and restart of this test."
+    ],
+    "existing_procedure_basis": [
+      "docs/stabilization/defects/EXT-D-0042.json reproduction and closure_requirement",
+      "docs/feature-tests.md Showcase — List Pattern replacement sessions (EXT-D-0042)",
+      ".research/showcase-picker-current-retest.json native_acceptance_missing"
+    ]
+  },
+  "scope_limits": [
+    "Source/evidence inspection only; no test, browser, build, or release was run.",
+    "No UI pass is claimed.",
+    "No product source or existing test was changed."
+  ]
+}
