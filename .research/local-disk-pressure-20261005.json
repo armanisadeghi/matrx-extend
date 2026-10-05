@@ -1,0 +1,75 @@
+{
+  "observed_at": "2026-10-05T02:11:02.361602+00:00",
+  "incident": "Internalvolume117MiBfree; shellheredoc andagentlockcreationENOSPC. Externalvolume1.6TiBfree.",
+  "canonical_groomer": "dev-caches dryrun andapply completed; uv/brew/unavailable simulatormaintenance succeeded,reported0Bfreed. No runtime/browser/userdata deletion.",
+  "relocation": [
+    {
+      "source": "/private/tmp/guest205-release-37180303468",
+      "preserved_at": "/Volumes/Samsung2TB/code/.stabilization-scratch/disk-pressure-20261005/guest205-release-37180303468",
+      "files": 4,
+      "bytes": 26983396,
+      "verified": "source and destination manifests equal; original path retained as symlink"
+    },
+    {
+      "source": "/private/tmp/published176-ndjson-kernel",
+      "preserved_at": "/Volumes/Samsung2TB/code/.stabilization-scratch/disk-pressure-20261005/published176-ndjson-kernel",
+      "files": 411,
+      "bytes": 49696075,
+      "verified": "source and destination manifests equal; original path retained as symlink"
+    },
+    {
+      "source": "/private/tmp/prepare-artifact-11268886169",
+      "preserved_at": "/Volumes/Samsung2TB/code/.stabilization-scratch/disk-pressure-20261005/prepare-artifact-11268886169",
+      "files": 541,
+      "bytes": 58967126,
+      "verified": "source and destination manifests equal; original path retained as symlink"
+    },
+    {
+      "source": "/private/tmp/d87-raw-audit",
+      "preserved_at": "/Volumes/Samsung2TB/code/.stabilization-scratch/disk-pressure-20261005/d87-raw-audit",
+      "files": 550,
+      "bytes": 59028423,
+      "verified": "source and destination manifests equal; original path retained as symlink"
+    },
+    {
+      "source": "/private/tmp/matrx-frozen-11315305224",
+      "preserved_at": "/Volumes/Samsung2TB/code/.stabilization-scratch/disk-pressure-20261005/matrx-frozen-11315305224",
+      "files": 541,
+      "bytes": 59357157,
+      "verified": "source and destination manifests equal; original path retained as symlink"
+    },
+    {
+      "source": "/private/tmp/scrape-dev-artifact37210977886",
+      "preserved_at": "/Volumes/Samsung2TB/code/.stabilization-scratch/disk-pressure-20261005/scrape-dev-artifact37210977886",
+      "files": 541,
+      "bytes": 59271810,
+      "verified": "source and destination manifests equal; original path retained as symlink"
+    },
+    {
+      "source": "/private/tmp/scrape-frozen-artifact-11315305224",
+      "preserved_at": "/Volumes/Samsung2TB/code/.stabilization-scratch/disk-pressure-20261005/scrape-frozen-artifact-11315305224",
+      "files": 541,
+      "bytes": 59357157,
+      "verified": "source and destination manifests equal; original path retained as symlink"
+    },
+    {
+      "source": "/private/tmp/scrape231-dev-37217066948",
+      "preserved_at": "/Volumes/Samsung2TB/code/.stabilization-scratch/disk-pressure-20261005/scrape231-dev-37217066948",
+      "files": 541,
+      "bytes": 59272789,
+      "verified": "source and destination manifests equal; original path retained as symlink"
+    },
+    {
+      "source": "/private/tmp/member176-release-11267544261",
+      "preserved_at": "/Volumes/Samsung2TB/code/.stabilization-scratch/disk-pressure-20261005/member176-release-11267544261",
+      "files": 543,
+      "bytes": 85829471,
+      "verified": "source and destination manifests equal; original path retained as symlink"
+    }
+  ],
+  "verification": "Everyselectedtaskownedfolder hadno lsofopenhandles orerrors; source/destination manifests matched before originalcopy removal; oldpathsretainedassymlinks.",
+  "after": "625MiBinternalfree, freshindependentreviewagent successfullyspawned. Local20GiBtestfloorstillnotmet.",
+  "excluded": "No CloudKit,personaldata,browserprofile,applicationruntime,othercontributorprocess orsecuritysetting modified.",
+  "limits": "Criticalcapacitynotresolvedglobally; continueexternaltempfiles/hostedheavytests. Nonewcleanerschedule.",
+  "subsequent_check": "Internalfreefellbackto114MiBwhileothermachineactivitycontinued; rootdidnotattributecause. Swapused5136.69MiB, memory-pressurefree71%. CodexSparkleupdaterhadopenexecutableandwasleftuntouched. Relocationwas temporaryrelief, notdiskhealth."
+}

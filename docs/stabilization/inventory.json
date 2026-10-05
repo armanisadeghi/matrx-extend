@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-05T01:45:35.094250+00:00",
+  "updated_at": "2026-10-05T02:11:02.361602+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -18546,9 +18546,10 @@
             "37218903375",
             "37221586281",
             "37222954472",
-            "37225191131"
+            "37225191131",
+            "37251782627"
           ],
-          "retest_status": "partial: guest warm/full-reload media/link Copy now verified on231; D126 observer closed. Other Scrape controls, normal-width/member/admin and natural error recovery remain. Product fixes still await eligible Store release."
+          "retest_status": "partial: development244 guest warm/full-reload controls verified with600px SIDE_PANEL viewport emulation; no physicalresizeclaim. Naturalerrorrecovery, deepretry/postreloaddeep and exhaustiveemptystates remain. Member/admin unverified; Store205 predates laterproductfixes."
         },
         "member": {
           "test_status": "unverified",
@@ -18562,14 +18563,17 @@
             "EXT-D-0131",
             "EXT-D-0132",
             "EXT-D-0135",
-            "EXT-D-0133"
+            "EXT-D-0133",
+            "EXT-D-0137"
           ],
           "run_ids": [
             "incoming-sources-001",
             "37227042493",
-            "37237361053"
+            "37237361053",
+            "37249932863",
+            "37252919339"
           ],
-          "retest_status": "unverified: run37237361053 verified member identity/org but failed panel visibility before viewport or Scrape cases; D133 open."
+          "retest_status": "unverified: D133hiddenpanel unresolved onfrozen244. Later37252919339 used257 contrarybrief andhitintroduceddiagnosticProxyfailureD137; invalidcontrolledcomparison, zeroviewport/cases."
         },
         "admin": {
           "test_status": "unverified",
