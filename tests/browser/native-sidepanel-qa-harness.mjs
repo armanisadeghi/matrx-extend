@@ -379,14 +379,79 @@ async function ownedEndpoint(profile) {
   return { port: Number(port), browserPath };
 }
 
-async function waitForPanelTarget(cdp, panelUrl) {
-  for (let attempt = 0; attempt < ATTEMPTS; attempt += 1) {
-    const { targetInfos } = await cdp.send('Target.getTargets');
-    const target = targetInfos.find((entry) => entry.type === 'page' && entry.url === panelUrl);
-    if (target) return target;
-    await wait(WAIT_MS);
+async function waitForInitialPanelReady({
+  cdp,
+  panelUrl,
+  serviceWorkerTargetId,
+  normalTargetId,
+  attempts = ATTEMPTS,
+  waitBetween = () => wait(WAIT_MS),
+  clock = Date.now,
+}) {
+  const started = clock();
+  const budgetMs = attempts * WAIT_MS;
+  let panelTarget;
+  let contexts = [];
+  let first = null;
+  let last = null;
+  let attempt = 0;
+  const requirePinnedTarget = (targetInfos) => {
+    if (
+      !targetInfos.some(
+        (entry) =>
+          entry.targetId === panelTarget.targetId &&
+          entry.type === 'page' &&
+          entry.url === panelUrl,
+      )
+    )
+      throw new Error('native_sidepanel_owned_target_lost');
+  };
+  try {
+    for (attempt = 1; attempt <= attempts && clock() - started < budgetMs; attempt += 1) {
+      const { targetInfos } = await cdp.send('Target.getTargets');
+      if (panelTarget) requirePinnedTarget(targetInfos);
+      else
+        panelTarget = targetInfos.find((entry) => entry.type === 'page' && entry.url === panelUrl);
+      if (panelTarget) {
+        if (panelTarget.targetId === normalTargetId)
+          throw new Error('native_sidepanel_target_not_distinct');
+        contexts = await sidePanelContexts(cdp, serviceWorkerTargetId);
+        const observation = panelContextDiagnostic(contexts, panelUrl);
+        first ??= observation;
+        last = observation;
+        // A matching runtime context must not rescue a destroyed or replaced target.
+        requirePinnedTarget((await cdp.send('Target.getTargets')).targetInfos);
+        if (clock() - started < budgetMs && observation.exactContextCount > 0) {
+          requireSidePanelContext(contexts, panelUrl);
+          return {
+            panelTarget,
+            contextBoundary: {
+              first,
+              last,
+              attempts: attempt,
+              elapsed_ms: clock() - started,
+              exact_expected_appeared: true,
+            },
+          };
+        }
+      }
+      if (attempt < attempts && clock() - started < budgetMs) await waitBetween();
+    }
+    throw new Error(
+      panelTarget ? 'native_sidepanel_runtime_context_missing' : 'native_sidepanel_target_missing',
+    );
+  } catch (error) {
+    error.contextBoundary = {
+      first,
+      last,
+      attempts: Math.min(attempt, attempts),
+      elapsed_ms: clock() - started,
+      exact_expected_appeared: false,
+    };
+    error.panelTarget = panelTarget;
+    error.panelContexts = contexts;
+    throw error;
   }
-  throw new Error('native_sidepanel_target_missing');
 }
 
 async function waitForExpectedExtension(cdp, extensionId) {
@@ -1189,17 +1254,25 @@ export async function runNativeSidepanelQa({
     if (!normalTarget) throw new Error('native_sidepanel_normal_target_missing');
     const panelUrl = `chrome-extension://${expectedExtensionId}/sidepanel.html`;
     onStage('panel_target');
-    const panelTarget = await waitForPanelTarget(cdp, panelUrl);
-    if (panelTarget.targetId === normalTarget.targetId)
-      throw new Error('native_sidepanel_target_not_distinct');
+    let panelTarget;
     onStage('panel_context');
-    const contexts = await sidePanelContexts(cdp, extensionWorker.targetId);
     try {
-      requireSidePanelContext(contexts, panelUrl);
-    } catch (error) {
+      const readiness = await waitForInitialPanelReady({
+        cdp,
+        panelUrl,
+        serviceWorkerTargetId: extensionWorker.targetId,
+        normalTargetId: normalTarget.targetId,
+      });
+      panelTarget = readiness.panelTarget;
       process.stderr.write(
-        `BROWSER_PANEL_CONTEXT_FAILURE ${JSON.stringify(await panelContextFailureDiagnostic({ contexts, panelUrl, readContexts: () => sidePanelContexts(cdp, extensionWorker.targetId), readDocument: () => panelDocumentDiagnostic({ cdp, panelTargetId: panelTarget.targetId, panelUrl }) }))}\n`,
+        `BROWSER_PANEL_CONTEXT_READY ${JSON.stringify(readiness.contextBoundary)}\n`,
       );
+    } catch (error) {
+      if (error.message === 'native_sidepanel_runtime_context_missing') {
+        process.stderr.write(
+          `BROWSER_PANEL_CONTEXT_FAILURE ${JSON.stringify(await panelContextFailureDiagnostic({ contexts: error.panelContexts, panelUrl, readContexts: () => sidePanelContexts(cdp, extensionWorker.targetId), readDocument: () => panelDocumentDiagnostic({ cdp, panelTargetId: error.panelTarget.targetId, panelUrl }) }))}\n`,
+        );
+      }
       throw error;
     }
     onStage('panel_settle');
@@ -1312,6 +1385,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 }
 
 export {
+  waitForInitialPanelReady,
   activateOwnedSidePanel,
   reloadOwnedExtension,
   isSettledGuestPanel,

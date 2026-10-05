@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "task": "D117 initial native context readiness repair",
+  "status": "locally_verified_native_unverified",
+  "cause": {
+    "captured_run": 37246354075,
+    "diagnostic": "docs/stabilization/evidence/guest205-current-server/run37246354075/panel-context-diagnostic.json",
+    "initial_empty_document_url_count": 1,
+    "frame_exact_url": true,
+    "renderer_exact_url": true,
+    "renderer_runtime_identity_exact": true,
+    "renderer_exact_context_count": 1,
+    "worker_followup_exact_context_count": 1,
+    "worker_followup_elapsed_ms": 103,
+    "conclusion": "Initial worker context sampling can precede runtime context URL readiness despite an already committed exact owned renderer."
+  },
+  "repair": {
+    "seam": "waitForInitialPanelReady called by runNativeSidepanelQa before settling",
+    "behavior": "Target discovery and exact SIDE_PANEL/documentUrl/tabId=-1 readiness share the former target discovery polling budget. Pin the discovered exact owned page target and verify it before and after each owned worker context read. Later matching contexts pass only before budget expiry and while that same target remains present at the exact URL.",
+    "bounds": "Existing ATTEMPTS and WAIT_MS provide both attempt ceiling and derived elapsed budget; no new timeout constants or fresh readiness budget after discovery. Owned CDP retains its existing per-command deadline.",
+    "identity": "Existing spawned process/profile/extension verification remains prerequisite; normal root target is refused; replacement or foreign target cannot rescue an exact runtime context.",
+    "evidence": "Success emits only first/last context URL-shape counts, attempts, elapsed milliseconds and exact-match boolean. Exhausted readiness remains fatal even when failure-only diagnostic follow-up later matches.",
+    "scope": "No D133/auth/resource/scenario/product/reload code changes."
+  },
+  "verification": {
+    "focused_command": "node tests/browser/initial-panel-context-readiness.test.mjs",
+    "focused_result": "19 guards passed",
+    "actual_seam": "Real imported readiness helper with external CDP/time doubles; actual runNativeSidepanelQa initial setup source slice executes real helper. Renderer settle IO and failure diagnostic are doubled only to assert ordering and unchanged fatal verdict.",
+    "forcing_function_reds": [
+      "Original immediate context refusal kills captured delayed-match guard",
+      "Return-constant helper gut check killed",
+      "Dropped owned-target refusal killed",
+      "Elapsed budget bypass killed",
+      "Empty-context acceptance killed",
+      "Dropped actual caller readiness work killed"
+    ],
+    "mutation_safety": "All six plant.py probes restored native harness byte-identically; no mutation committed.",
+    "compile": "pnpm compile exit 0",
+    "syntax": "node --check native-sidepanel-qa-harness.mjs exit 0",
+    "format": "pnpm exec biome check all three owned test/harness files exit 0",
+    "full_suite": "node --test tests/browser/native-sidepanel-qa-harness.test.mjs exit 0: 27 tests passed plus existing top-level native reload/identity guards; duration 137064 ms",
+    "independent_review": "Parent owns fresh peer review; not claimed in this lane"
+  },
+  "limits": [
+    "No native browser launch, build, release, workflow or live acceptance run performed in this lane.",
+    "Doubled CDP tests prove readiness orchestration and fail-closed guards, not hosted Chromium acceptance.",
+    "An already outstanding CDP query retains the existing command deadline; elapsed budget prevents further polling and late acceptance, not interruption of that query.",
+    "Failure diagnostic remains diagnostic only and can observe a later match without changing the fatal exhausted-budget result."
+  ],
+  "owned_files": [
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "tests/browser/native-sidepanel-qa-harness.test.mjs",
+    "tests/browser/initial-panel-context-readiness.test.mjs",
+    ".research/initial-context-readiness-repair.json"
+  ]
+}
