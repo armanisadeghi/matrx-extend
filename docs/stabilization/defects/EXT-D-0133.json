@@ -88,7 +88,7 @@
     }
   ],
   "diagnostic_commit": "427e75a4",
-  "next_action": "Fresh Astra low/medium escalation to diagnose hidden authenticated native panel across owned Chrome host/tab/window lifecycle; use both timelines37245836902 and37248327805. Establish actualcause before furtherrepair; sourcepeer+changedconditionnative. Do not repeat same run or substitute focus/DOMclick for actualvisiblepanel.",
+  "next_action": "Luna member_auth_host_native owns ONE frozen244/membernormal600 hosteddiagnostic, no retry. Root inspectactualauthtransition/nativewindow/host/hit evidence thenroutecausalrepair; no acceptanceweakening.",
   "fix_commits": ["44005fb4", "0e8aa6c7"],
   "hosted_ci": {
     "run_id": 37242845397,
@@ -108,5 +108,12 @@
     "peer": "21e4d23a",
     "report": ".research/panel-visibility-escalation.json",
     "limits": "Nine bounded lifecycle observations; no native cause or product health established."
+  },
+  "auth_host_diagnostic": {
+    "commit": "bb5c4596",
+    "fresh_peer": "79988b27",
+    "report": ".research/authenticated-panel-cause-escalation.json",
+    "review": ".research/authenticated-host-diagnostic-peer.json",
+    "ruling": "Accept bounded instrumentation for one native discriminator; not a cause or recovery fix. Peer verifiedall5sourcecheckpoints and14focusedpass. Missing independent mutations forpage-created/OAuth-return are a limited guardcoverage gap, notobservedbehaviorfailure; nextnative mustretain all5actualcheckpoints or markmissing, neverclaimfullstageguardcoverage."
   }
 }
