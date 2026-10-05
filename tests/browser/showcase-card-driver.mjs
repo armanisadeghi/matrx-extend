@@ -24,6 +24,6 @@ export async function clickReachableShowcaseCard(card) {
     return null;
   });
   if (!position) throw new Error('showcase_card_no_reachable_pointer_point');
-  // Playwright still checks visibility, stability, and interception at this point.
+  // Playwright still checks element readiness, stability, and interception at this point.
   await card.click({ position });
 }
