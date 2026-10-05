@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-05T18:43:31.038094+00:00",
+  "updated_at": "2026-10-05T21:00:54.026946+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -20524,13 +20524,13 @@
         },
         {
           "id": "EXT-F-1009-C04",
-          "label": "Open screenshot in Files",
-          "action": "Click thumbnail and Open in Files button."
+          "label": "View loaded screenshot locally and open Files",
+          "action": "Click loaded thumbnail for immediate local viewer; close/reopen; use separate Files button."
         },
         {
           "id": "EXT-F-1009-C05",
-          "label": "Copy durable Files URL",
-          "action": "Click Copy durable Files URL; test clipboard rejection."
+          "label": "Public screenshot sharing and link management",
+          "action": "Copy public link with canonical share control; manage expiration, maximum views and revocation; test service and clipboard refusal."
         },
         {
           "id": "EXT-F-1009-C06",
@@ -20677,7 +20677,7 @@
             "Signed in with active organization; navigate a controlled regular web URL with a persisted screenshot row when needed."
           ],
           "steps": [
-            "Capture Full page; test unsupported page, persistence failure and tile cap."
+            "Capture Full page on an ordinary long document and a full-height overflow scrolling panel; verify bottom marker, restored scroll, blocked movement, persistence failure and tile cap."
           ],
           "expected": [
             "Tall image persists; failure is shown; persistence warning distinguishes captured-but-not-saved; cap warning notes crop."
@@ -20700,12 +20700,13 @@
             }
           },
           "defect_ids": [
-            "EXT-D-0036"
+            "EXT-D-0036",
+            "EXT-D-0145"
           ]
         },
         {
           "id": "EXT-F-1009-T04",
-          "title": "Open screenshot in Files",
+          "title": "View loaded screenshot locally and open Files",
           "modes": [
             "member",
             "admin"
@@ -20717,10 +20718,10 @@
             "Signed in with active organization; navigate a controlled regular web URL with a persisted screenshot row when needed."
           ],
           "steps": [
-            "Click thumbnail and Open in Files button."
+            "Click loaded thumbnail; inspect local full image without second download or website navigation; close/reopen; use separate Files button."
           ],
           "expected": [
-            "Canonical Files URL opens in a new tab."
+            "Loaded image opens immediately in the extension; separate Files button opens durable Files route."
           ],
           "dimensions": [
             "warm",
@@ -20730,7 +20731,8 @@
           "defect_ids": [
             "EXT-D-0033",
             "EXT-D-0034",
-            "EXT-D-0035"
+            "EXT-D-0035",
+            "EXT-D-0146"
           ],
           "results": {
             "admin": {
@@ -20748,7 +20750,7 @@
         },
         {
           "id": "EXT-F-1009-T05",
-          "title": "Copy durable Files URL",
+          "title": "Public screenshot sharing and link management",
           "modes": [
             "member",
             "admin"
@@ -20760,10 +20762,10 @@
             "Signed in with active organization; navigate a controlled regular web URL with a persisted screenshot row when needed."
           ],
           "steps": [
-            "Click Copy durable Files URL; test clipboard rejection."
+            "Open canonical Share; copy public link; view signed out; manage expiry/view limits; revoke; exercise clipboard and service rejection."
           ],
           "expected": [
-            "Canonical file URL is copied when clipboard succeeds; click never changes gallery row."
+            "Public link anonymously grants viewing; revocation/expiry/limits stop access; failures visible; no private preview/upload URL copied."
           ],
           "dimensions": [
             "warm",
@@ -20772,7 +20774,8 @@
           ],
           "defect_ids": [
             "EXT-D-0033",
-            "EXT-D-0034"
+            "EXT-D-0034",
+            "EXT-D-0146"
           ],
           "results": {
             "admin": {
@@ -20868,7 +20871,10 @@
               ],
               "evidence": "docs/stabilization/runs/screenshot-capture-dev094-002.json"
             }
-          }
+          },
+          "defect_ids": [
+            "EXT-D-0146"
+          ]
         },
         {
           "id": "EXT-F-1009-T08",

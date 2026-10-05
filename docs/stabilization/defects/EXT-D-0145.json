@@ -1,0 +1,91 @@
+{
+  "id": "EXT-D-0145",
+  "feature_id": "EXT-F-1009",
+  "case_ids": ["EXT-F-1009-T03"],
+  "title": "Full-page capture misses overflow scrolling panes",
+  "surface": "Screenshots",
+  "auth_mode": "member/admin",
+  "state": "fixed",
+  "owner": "screenshots-repair",
+  "priority": "P1",
+  "severity": "S2",
+  "reported_by": "Arman, current chat",
+  "reproduction": [
+    "Open Screenshots on a long page using a nested overflow scrolling pane.",
+    "Capture Full page; inspect image height."
+  ],
+  "expected": "Capture all scrollable content, restore original position, and never silently return only viewport as full page.",
+  "actual": "The engine measured and scrolled only window/document; full-height app layouts keep page overflow in a nested pane.",
+  "cause": "The engine measured and scrolled only window/document; full-height app layouts keep page overflow in a nested pane.",
+  "allowed_files": ["src/lib/screenshot/full-page.ts", "tests/unit/screenshot-full-page.test.ts"],
+  "evidence": [
+    ".research/screenshots-independent-review.json",
+    "docs/stabilization/resource-journals/screenshots-final-focused-20261005.jsonl",
+    "docs/stabilization/resource-journals/screenshots-compile-retest-20261005.jsonl",
+    "docs/stabilization/resource-journals/screenshot-capture-red-20261005.jsonl",
+    "docs/stabilization/resource-journals/screenshot-capture-green-20261005.jsonl",
+    ".research/screenshots-final-source-review.json",
+    ".research/screenshots-source-handoff.json",
+    "docs/stabilization/resource-journals/screenshots-lint-20261005.jsonl"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-05T20:50:46.810476+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "User report and current source investigation."
+    },
+    {
+      "at": "2026-10-05T20:50:46.810476+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Cause localized in owned source paths; native reported page not yet reproduced."
+    },
+    {
+      "at": "2026-10-05T20:50:46.810476+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Bounded source repairs and regression checks underway."
+    },
+    {
+      "at": "2026-10-05T21:00:54.026946+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source repair pushed with independent component/source review and final15 focused tests/typecheck pass; native acceptance and release unverified."
+    }
+  ],
+  "closure_requirement": "Independent source review, meaningful regression checks and real native capture/view/share acceptance on exact artifact. Store/native release acceptance remains separate.",
+  "next_action": "Permitted release owner: verify exact pushed screenshot source and package catch-up, required release gates; build/release through canonical workflow. On exact artifact reproduce long document and full-height scrolling pane, local thumbnail byte reuse, clipboard failure and real anonymous link create/expiry/max-views/revoke. Do not close until native criteria pass.",
+  "fix_shas": ["1dfb119a", "59617c92", "854323c7", "89c8875d"],
+  "review_queue_id": "e7a27ff2-b763-4a5c-a19f-1b808bb94c37",
+  "verification": {
+    "source": "15 focused tests pass; typecheck passes; valid resource journals. Initial typecheck caught scroll mock overload mismatch; final typecheck passed after correction.",
+    "native": "unverified",
+    "release": "pending permitted machine; no local build/version/release attempted",
+    "original_reported_page": "not supplied or observed in native browser",
+    "owned_jobs": "All terminal; no owned browser tabs/processes remain.",
+    "lint": "Full pnpm lint PASS with existing advisory warnings; finalized valid journal."
+  },
+  "limitations": [
+    "Only largest fully visible overflow pane selected when root fits viewport; clipped/multi-pane layouts need native acceptance.",
+    "Static app frame appears once; below-sidebar columns may be transparent.",
+    "Invalid mutation literal-newline parse failure excluded from proof; source restored identical."
+  ],
+  "context": {
+    "roles": ["member", "admin"],
+    "organization": "Explicit device selection required for writes and authenticated backend calls; reads are not active-org filters.",
+    "permissions": "Existing activeTab/host scripting and capture permissions; no added permissions.",
+    "source_sha": "89c8875d",
+    "native_build_receipt": null
+  },
+  "preconditions": [
+    "Signed in, selected organization on device, active regular web page.",
+    "For pane regression: document fits viewport and main overflow pane contains additional lower content."
+  ],
+  "cause_sibling_census": [
+    "All take_screenshot full_page callers use shared captureFullPage; agent and manual screenshot paths inherit repair.",
+    "Screenshots thumbnail already holds full blob bytes; separate Files icon retains explicit website navigation.",
+    "Persisted cloud and inline captures expose truncation differently; tab now reads both forms."
+  ],
+  "release_owner": "screenshots-repair on a permitted release host / canonical automatic pipeline"
+}

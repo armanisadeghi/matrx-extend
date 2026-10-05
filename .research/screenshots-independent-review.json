@@ -1,0 +1,71 @@
+{
+  "task_id": "screenshots-independent-review-20261005",
+  "lane": "independent reviewer, zero authorship",
+  "status": "independent focused tests and source review pass; native pending",
+  "feature_ids": ["EXT-F-1009"],
+  "defect_ids": ["EXT-D-0145", "EXT-D-0146"],
+  "reviewed_commit_shas": [
+    "1dfb119a2ae3746e5fd4d163fd0eb69bf1cf4c87",
+    "59617c9206d7b3503d1bd17991f2303761228dd8"
+  ],
+  "reviewed_working_paths": [
+    "src/lib/screenshot/full-page.ts",
+    "src/features/screenshots/ScreenshotsView.tsx",
+    "src/features/screenshots/ScreenshotShareLinks.tsx",
+    "src/features/screenshots/ScreenshotsView.test.tsx",
+    "src/features/screenshots/ScreenshotShareLinks.test.tsx",
+    "tests/unit/screenshot-full-page.test.ts"
+  ],
+  "user_requirements": [
+    "Full page includes content below viewport reliably",
+    "Loaded screenshot opens immediately in extension using existing full image bytes",
+    "Canonical sharing with quick public link and full link-management options"
+  ],
+  "verdict_a": {
+    "verdict": "unverified",
+    "reason": "No admitted native browser run on an artifact containing current working changes. Source and simulated component tests cannot establish original live intermittent symptom is fixed."
+  },
+  "verdict_b": {
+    "verdict": "pass with acceptance limitations",
+    "blockers": [],
+    "evidence": [
+      "ScreenshotCard thumbnail opens local Dialog and dialog image uses exact previewUrl already held by thumbnail. needsPreview boolean remains true through visible thumbnail opening viewer, avoiding effect restart and download.",
+      "Full page helper discovers largest fully visible overflow scrolling pane when document itself fits viewport, stitches its content, measures actual bitmap scale, verifies scroll movement, and restores original position.",
+      "Canonical @ai-matrx/media/share MediaSharePopover supplies quick public link; package documented manageLinks callback expressly permits host-owned full manager. New manager uses owner-gated public RPCs and binds selected organization to writes.",
+      "Media client uses canonical @ai-matrx/data/files client, extension credential policy, selected backend and required authenticated organization header.",
+      "Focused tests assert real injected DOM scrolling behavior, original position restoration, honest failure when scroll does not move, local URL reuse, clipboard failure, grant create/revoke and selected organization binding. Share manager RPCs are mocked; no real server link proof.",
+      "Independently executed three focused files:13 tests passed; resource final decision valid exit0. Latest link manager source preserves read error without presenting a false No share links claim; no read-failure-specific regression test exists in inspected manager test file."
+    ]
+  },
+  "findings": [],
+  "acceptance_limits": [
+    {
+      "severity": "minor",
+      "file": "src/lib/screenshot/full-page.ts",
+      "lines": [239, 273],
+      "description": "Nested pane stitch draws surrounding app chrome once, repeats only pane interior and appends footer. Sidebar regions below initial viewport remain transparent. No lower pane content loss inferred; actual visual result must be inspected natively."
+    },
+    {
+      "severity": "important verification limitation",
+      "file": "src/lib/screenshot/full-page.ts",
+      "lines": [52, 71],
+      "description": "Pane detection covers largest fully visible overflow pane only when root fits viewport. It does not prove all multi-pane or partially clipped nested layouts. User exact problematic page was not reproduced; do not assert universal reliability or close native defect based on these guards."
+    }
+  ],
+  "runtime_verification": {
+    "independent_tests_run": true,
+    "run_id": "screenshots-independent-focused-20261005",
+    "command": "node scripts/stabilization-resource.mjs run --run-id screenshots-independent-focused-20261005 --profile-dir /Volumes/Samsung2TB/code/matrx-extend -- pnpm exec vitest run --maxWorkers=1 src/features/screenshots/ScreenshotsView.test.tsx src/features/screenshots/ScreenshotShareLinks.test.tsx tests/unit/screenshot-full-page.test.ts",
+    "test_files_passed": 3,
+    "tests_passed": 13,
+    "tests_failed": 0,
+    "exit_code": 0,
+    "resource_decision": "valid",
+    "resource_invalid": false,
+    "journal": "docs/stabilization/resource-journals/screenshots-independent-focused-20261005.jsonl",
+    "limits": "DOM scroll tests mock Chrome capture and canvas; share tests mock RPC and clipboard. No actual pixel rasterization, anonymous public link opening, native layout, or current installed artifact proof."
+  },
+  "owned_jobs": [],
+  "next_action": "Coordinate admitted focused test rerun, bind native original + neighboring cases to artifact and real account/org, inspect nested-pane output and anonymously open copied public link including expiry and revoke.",
+  "updated_at": "2026-10-05T20:55:24.988739+00:00"
+}

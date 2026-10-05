@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-05 18:43 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-05T18:43:31.038094+00:00. 205 features · 764 cases · 1335 controls · 144 linked defect records.
+Generated 2026-10-05 21:03 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-05T21:00:54.026946+00:00. 205 features · 764 cases · 1335 controls · 146 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -8,7 +8,7 @@ A feature is fully verified for a role only when every applicable case explicitl
 
 Applicable case-by-role slots: **1219** — Pass: 85 · Partial: 78 · Fail: 2 · Unverified: 1053 · N/A: 1.
 Unverified splits into **129 explicitly marked unverified** and **924 with no result record**.
-Full feature-role pairs: **0/396**. Procedure gaps: 92 cases without steps, 92 without expected outcomes, 28 without control links.
+Full feature-role pairs: **0/396**. Procedure gaps: 91 cases without steps, 91 without expected outcomes, 28 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
 ## Tab and surface overview
@@ -26,7 +26,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
 | [Scrape](#scrape) | 1 | 6 pass · 5 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 8 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 32 unverified · 0 deferred; 0/1 full | pass 6, partial 13, fail 0, unverified 72, n/a 0 | 8 |
 | [SEO](#seo) | 1 | 0 pass · 5 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | pass 0, partial 5, fail 0, unverified 37, n/a 0 | 0 |
-| [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 4 |
+| [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 6 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
 | [Guidance](#guidance) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 46, n/a 0 | 1 |
 | [Showcase](#showcase) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 1 pass · 28 partial · 0 fail · 29 unverified · 0 deferred; 0/1 full | pass 1, partial 28, fail 0, unverified 29, n/a 0 | 12 |
@@ -942,17 +942,17 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 9. **Controls:** 9.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0036, EXT-D-0038, EXT-D-0059, EXT-D-0082
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0036, EXT-D-0038, EXT-D-0059, EXT-D-0082, EXT-D-0145, EXT-D-0146
 
-**Linked defects:** [EXT-D-0030](defects/EXT-D-0030.json) (closed), [EXT-D-0031](defects/EXT-D-0031.json) (closed), [EXT-D-0032](defects/EXT-D-0032.json) (closed), [EXT-D-0033](defects/EXT-D-0033.json) (closed), [EXT-D-0034](defects/EXT-D-0034.json) (closed), [EXT-D-0035](defects/EXT-D-0035.json) (closed), [EXT-D-0036](defects/EXT-D-0036.json) (fixed), [EXT-D-0037](defects/EXT-D-0037.json) (closed), [EXT-D-0038](defects/EXT-D-0038.json) (fixed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0082](defects/EXT-D-0082.json) (fixed)
+**Linked defects:** [EXT-D-0030](defects/EXT-D-0030.json) (closed), [EXT-D-0031](defects/EXT-D-0031.json) (closed), [EXT-D-0032](defects/EXT-D-0032.json) (closed), [EXT-D-0033](defects/EXT-D-0033.json) (closed), [EXT-D-0034](defects/EXT-D-0034.json) (closed), [EXT-D-0035](defects/EXT-D-0035.json) (closed), [EXT-D-0036](defects/EXT-D-0036.json) (fixed), [EXT-D-0037](defects/EXT-D-0037.json) (closed), [EXT-D-0038](defects/EXT-D-0038.json) (fixed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0082](defects/EXT-D-0082.json) (fixed), [EXT-D-0145](defects/EXT-D-0145.json) (fixed), [EXT-D-0146](defects/EXT-D-0146.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
 | EXT-F-1009-T01 Refresh screenshot gallery | N/A | Unverified | Unverified | EXT-F-1009-C01 |
 | EXT-F-1009-T02 Visible screenshot capture | N/A | Unverified | Unverified | EXT-F-1009-C02 |
 | EXT-F-1009-T03 Full-page screenshot capture | N/A | Unverified | Unverified | EXT-F-1009-C03 |
-| EXT-F-1009-T04 Open screenshot in Files | N/A | Unverified | Unverified | EXT-F-1009-C04 |
-| EXT-F-1009-T05 Copy durable Files URL | N/A | Unverified | Unverified | EXT-F-1009-C05 |
+| EXT-F-1009-T04 View loaded screenshot locally and open Files | N/A | Unverified | Unverified | EXT-F-1009-C04 |
+| EXT-F-1009-T05 Public screenshot sharing and link management | N/A | Unverified | Unverified | EXT-F-1009-C05 |
 | EXT-F-1009-T06 Delete screenshot confirmation and outcome | N/A | Unverified | Unverified | EXT-F-1009-C06 |
 | EXT-F-1009-T07 Preview lazy-load and failed image | N/A | Unverified | Unverified | EXT-F-1009-C07 |
 | EXT-F-1009-T08 Screenshot gallery loading/empty/error states | N/A | Unverified | Unverified | EXT-F-1009-C08 |
@@ -3869,7 +3869,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4164-T01 Controlled manual execution: chrome_bookmarks | N/A | Unverified | Unverified | EXT-F-4164-C01, EXT-F-4164-C02, EXT-F-4164-C03 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Execute reviewed bookmark procedure in member/admin profiles; dispatcher permission and runtime role behavior remain unverified; Confirm current catalog against imported source registry before source inventory signoff
 
 
 ### chrome_history (EXT-F-4165)

@@ -1,0 +1,90 @@
+{
+  "id": "EXT-D-0146",
+  "feature_id": "EXT-F-1009",
+  "case_ids": ["EXT-F-1009-T04", "EXT-F-1009-T05", "EXT-F-1009-T07"],
+  "title": "Screenshot previews leave the extension and sharing is absent",
+  "surface": "Screenshots",
+  "auth_mode": "member/admin",
+  "state": "fixed",
+  "owner": "screenshots-repair",
+  "priority": "P1",
+  "severity": "S2",
+  "reported_by": "Arman, current chat",
+  "reproduction": [
+    "Load a saved screenshot thumbnail.",
+    "Click thumbnail; observe website tab creation.",
+    "Inspect card actions for public sharing."
+  ],
+  "expected": "Immediately view loaded full image locally; expose canonical public sharing and link management.",
+  "actual": "Thumbnail click always created a Files website tab despite having full local preview bytes; the link button copied a private Files route without a public share grant.",
+  "cause": "Thumbnail click always created a Files website tab despite having full local preview bytes; the link button copied a private Files route without a public share grant.",
+  "allowed_files": [
+    "src/features/screenshots/ScreenshotsView.tsx",
+    "src/features/screenshots/ScreenshotShareLinks.tsx",
+    "src/features/screenshots/ScreenshotsView.test.tsx",
+    "src/lib/files/media-client.ts"
+  ],
+  "evidence": [
+    ".research/screenshots-independent-review.json",
+    "docs/stabilization/resource-journals/screenshots-final-focused-20261005.jsonl",
+    "docs/stabilization/resource-journals/screenshots-compile-retest-20261005.jsonl",
+    ".research/screenshots-final-source-review.json",
+    ".research/screenshots-source-handoff.json",
+    "docs/stabilization/resource-journals/screenshots-lint-20261005.jsonl"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-05T20:50:46.810476+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "User report and current source investigation."
+    },
+    {
+      "at": "2026-10-05T20:50:46.810476+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Cause localized in owned source paths; native reported page not yet reproduced."
+    },
+    {
+      "at": "2026-10-05T20:50:46.810476+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Bounded source repairs and regression checks underway."
+    },
+    {
+      "at": "2026-10-05T21:00:54.026946+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source repair pushed with independent component/source review and final15 focused tests/typecheck pass; native acceptance and release unverified."
+    }
+  ],
+  "closure_requirement": "Independent source review, meaningful regression checks and real native capture/view/share acceptance on exact artifact. Store/native release acceptance remains separate.",
+  "next_action": "Permitted release owner: verify exact pushed screenshot source and package catch-up, required release gates; build/release through canonical workflow. On exact artifact reproduce long document and full-height scrolling pane, local thumbnail byte reuse, clipboard failure and real anonymous link create/expiry/max-views/revoke. Do not close until native criteria pass.",
+  "fix_shas": ["1dfb119a", "59617c92", "854323c7", "89c8875d"],
+  "review_queue_id": "e7a27ff2-b763-4a5c-a19f-1b808bb94c37",
+  "verification": {
+    "source": "15 focused tests pass; typecheck passes; valid resource journals. Initial typecheck caught scroll mock overload mismatch; final typecheck passed after correction.",
+    "native": "unverified",
+    "release": "pending permitted machine; no local build/version/release attempted",
+    "original_reported_page": "not supplied or observed in native browser",
+    "owned_jobs": "All terminal; no owned browser tabs/processes remain.",
+    "lint": "Full pnpm lint PASS with existing advisory warnings; finalized valid journal."
+  },
+  "context": {
+    "roles": ["member", "admin"],
+    "organization": "Explicit device selection required for writes and authenticated backend calls; reads are not active-org filters.",
+    "permissions": "Existing activeTab/host scripting and capture permissions; no added permissions.",
+    "source_sha": "89c8875d",
+    "native_build_receipt": null
+  },
+  "preconditions": [
+    "Signed in, selected organization on device, active regular web page.",
+    "For pane regression: document fits viewport and main overflow pane contains additional lower content."
+  ],
+  "cause_sibling_census": [
+    "All take_screenshot full_page callers use shared captureFullPage; agent and manual screenshot paths inherit repair.",
+    "Screenshots thumbnail already holds full blob bytes; separate Files icon retains explicit website navigation.",
+    "Persisted cloud and inline captures expose truncation differently; tab now reads both forms."
+  ],
+  "release_owner": "screenshots-repair on a permitted release host / canonical automatic pipeline"
+}
