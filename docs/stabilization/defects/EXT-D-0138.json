@@ -1,0 +1,39 @@
+{
+  "id": "EXT-D-0138",
+  "feature_id": "EXT-F-1007",
+  "surface": "Scrape native acceptance diagnostics",
+  "auth_mode": "member; shared driver affects guest/admin",
+  "title": "Images timeout discards decisive image and pane state",
+  "reproduction": [
+    "Use frozen development244 artifact11315305224 with driverac7343b8, member normal600, hosted run37258276837.",
+    "Complete member authentication, open owned intake fixture, fast capture, then select Images.",
+    "On scrape_Images_loaded timeout inspect acceptance receipt: failure code truncates inside tabs before image rows and pane visibility; media traces are empty."
+  ],
+  "expected": "Failed acceptance retains bounded credential-free structured state sufficient to distinguish missing rows, wrong/hidden pane and unloaded images.",
+  "actual": "Final sampled media state is lost when full scrapeState error text is cut to300characters. Source execution reproduces the loss; underlying member product failure remains unclassified.",
+  "severity": "S2: blocks diagnosis and trustworthy member acceptance; not established product defect",
+  "priority": "P2: repair evidence boundary before another member run",
+  "state": "in-fix",
+  "evidence": [".research/first-auth-native.json", ".research/member-images-diagnosis.json"],
+  "transition_history": [
+    {
+      "at": "2026-10-05T03:25:52.044793+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Actual receipt lacks decisive timeout state."
+    },
+    {
+      "at": "2026-10-05T03:25:52.044793+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Executed source truncation path reproduces evidence loss."
+    },
+    {
+      "at": "2026-10-05T03:25:52.044793+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol owns bounded structured failure evidence repair; independent review and native retest remain required."
+    }
+  ],
+  "next_action": "Independent source-path review, CI and one changed-condition frozen244 member run after the guest lane completes; do not infer product cause from this diagnostic defect."
+}
