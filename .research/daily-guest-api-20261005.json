@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-05T08:59:46.095Z",
+  "status": "not_run_no_approved_designated_guest",
+  "scope": "Authorized API-only current-server guest Chat check; no Chat API request was sent.",
+  "server": {
+    "health_endpoint": "https://server.app.matrxserver.com/health/version",
+    "before": {
+      "checked_at_utc": "2026-10-05T08:59:45.784Z",
+      "http_status": 200,
+      "git_sha": "0ea1950bcd3ec576aa7bac5de73224bfab46c31a",
+      "built_at_utc": "2026-10-05T08:17:40Z"
+    },
+    "after": {
+      "checked_at_utc": "2026-10-05T08:59:46.095Z",
+      "http_status": 200,
+      "git_sha": "0ea1950bcd3ec576aa7bac5de73224bfab46c31a",
+      "built_at_utc": "2026-10-05T08:17:40Z"
+    },
+    "sha_unchanged": true
+  },
+  "guest_chat": {
+    "first_message_stage": "not_attempted",
+    "same_conversation_followup_stage": "not_attempted",
+    "assistant_reply_content_assertion": "not_observed",
+    "successful_terminal_completion_assertion": "not_observed",
+    "http_status": null,
+    "reason": "Repository review found only prior source-derived probes using ephemeral guest fingerprints and native acceptance flows that create a fresh guest. No approved reusable designated test guest or supported reusable API probe/config was present. Creating an identity or resetting allowance was explicitly out of scope."
+  },
+  "prior_evidence_reviewed": [
+    ".research/published176-live-guest-api.json",
+    ".research/published176-live-guest-api-repair.json",
+    ".research/guest-live-incident-server.json",
+    ".research/guest-incident-oct4-live-audit.json",
+    ".research/guest205-current-server-retest.json"
+  ],
+  "limits": [
+    "The health endpoint confirms the server build only; it does not establish guest Chat behavior.",
+    "This is an API-only evidence lane; no browser or native UI acceptance was performed.",
+    "No new guest identity was created, no allowance or billing state was changed, and no credentials or raw configuration were read or recorded."
+  ]
+}
