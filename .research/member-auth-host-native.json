@@ -628,7 +628,7 @@
   },
   "limits": [
     "Single hosted run; no retry or resource rerun.",
-    "after_authentication remains visible; the first measured hidden checkpoint is after_organization_selection. The five added member_* checkpoints all remained visible, while panel_in_root_window was false at each; this bounds the change without assigning an internal cause.",
+    "after_authentication remains visible; the first measured hidden checkpoint is after_organization_selection. The five added member_* checkpoints all remained visible. panel_in_root_window=false is inconclusive because Chromium can report windowId=-1 for a physically opened SIDE_PANEL; association is unknown, and this value does not establish that the panel was outside the root window.",
     "DOM center hit=descendant is renderer evidence only; no physical clickability or OS foreground inference.",
     "600px emulation and Scrape cases were not reached; no post-auth screenshot was captured.",
     "Artifact contains no source/browser/build/release/inventory/defect changes."
