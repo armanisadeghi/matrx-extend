@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task": "D133-authenticated-host-diagnostic-peer",
+  "reviewed_commit": "bb5c4596",
+  "verdict": {
+    "diagnostic_adequacy": "bounded_localization_evidence_added; native cause and recovery remain unverified",
+    "quality_doctrine": "sound privacy projection, independent measurements, and cleanup ordering; narrow stage-guard gap"
+  },
+  "evidence": {
+    "focused_command": "node --test tests/browser/authenticated-panel-host.test.mjs tests/browser/panel-visibility-diagnostic.test.mjs tests/browser/settings-native-auth-driver.test.mjs",
+    "focused_result": "14 passed, 0 failed",
+    "checkpoints_in_production": [
+      "member_web_created",
+      "member_oauth_completed",
+      "member_before_web_close",
+      "member_after_web_close",
+      "member_after_root_activation"
+    ],
+    "measurements": "native CDP window state, Chrome root/window focus and side-panel context association, and Scrape control center hit/geometry are separate; unavailable boundaries stay measured=false",
+    "privacy": "tab/window/context IDs, URLs, titles, page content, and transport error text are not projected; no authenticated screenshots added",
+    "worker_lifecycle": "observes through the attached original panel target and Chrome APIs; no cached MV3 worker target needed",
+    "cleanup": "web close then root activation remain ordered even if optional observations fail; auth failure remains the surfaced failure",
+    "observed_failure": "run 37248327805 first recorded hidden visibility after authentication; current observations can distinguish later boundaries but do not prove which transition caused it"
+  },
+  "limitations": [
+    "The native/host/hit evidence remains synthetic-test verified; no new browser run was performed or requested.",
+    "Tests assert close/activation checkpoints and host observer behavior, but do not independently assert member_web_created and member_oauth_completed callback coverage against mutations.",
+    "The diagnostic labels a host API failure unmeasured; it intentionally does not interpret missing measurement as a cause."
+  ],
+  "recommendation": "Accept this as an evidence-instrumentation improvement, not as a diagnosis or recovery fix. Keep the next frozen native run as the causal discriminator; optionally add mutations for the page-created and OAuth-return callback stages before relying on these guards as complete stage coverage."
+}
