@@ -1,0 +1,228 @@
+{
+  "schema_version": 1,
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "workflow_file": ".github/workflows/hosted-guest-acceptance.yml",
+    "run_id": 37251782627,
+    "job_id": 111580741588,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37251782627",
+    "event": "workflow_dispatch",
+    "runner": {
+      "label": "macos-15",
+      "architecture": "ARM64"
+    },
+    "actual_head_sha": "9a134e46a26e9a26f44ab28b563f4895c371c181",
+    "conclusion": "success",
+    "artifact_id": 11320509399,
+    "artifact_name": "hosted-guest-37251782627-1",
+    "artifact_expired": false
+  },
+  "input_parameters": {
+    "acceptance_case": "guest-scrape-development",
+    "scrape_auth_mode": "guest",
+    "scrape_width_mode": "normal",
+    "scrape_normal_width_px": 600,
+    "development_run_id": 37233480033,
+    "development_artifact_id": 11315305224,
+    "agent_supplied_credentials": false
+  },
+  "frozen_product": {
+    "version": "0.2.244",
+    "source_sha": "b81587021d689078ed428dafe3e15474a84c41e2",
+    "tree_sha256": "3396bae6d24ddfc7e93422a12e2341983179d7b4be3eca94adaafc5316cc94e7",
+    "development_run_id": 37233480033,
+    "development_artifact_id": 11315305224
+  },
+  "driver_provenance": {
+    "reviewed_driver_sha": "6bf907c48168dd466ab68b71926c840878b2ae1a",
+    "actual_run_head_sha": "9a134e46a26e9a26f44ab28b563f4895c371c181",
+    "ci_run_id": 37251355828,
+    "ci_head_sha": "b2c3ea95d0e445fe5e9d778790d7e3f4307218e7",
+    "ci_conclusion": "success",
+    "equivalent_paths_at_dispatch": [
+      ".github/workflows/hosted-guest-acceptance.yml",
+      "scripts/",
+      "tests/browser/"
+    ],
+    "equivalence_method": "git diff --quiet between reviewed driver SHA and origin/main at dispatch; exit 0",
+    "workflow_checkout_completed_at": "2026-10-05T01:32:06Z",
+    "current_origin_main_at_collection": "acb37ef313572ef9630d6c45720c0a12c9a868f5",
+    "main_commits_after_dispatch": [
+      {
+        "sha": "6a7ebc31ea13d9cbf9b4d0b2080e9eeb140fc3ce",
+        "at": "2026-10-04T18:33:30-07:00",
+        "subject": "Record authenticated panel transition in renderer clock"
+      },
+      {
+        "sha": "f2d03c33b8341671c7d606820f08a3ca93a07599",
+        "at": "2026-10-04T18:33:34-07:00",
+        "subject": "Merge remote-tracking branch 'origin/main'"
+      },
+      {
+        "sha": "a745dd3175515b865e8468b72f0f796e21218139",
+        "at": "2026-10-04T18:35:09-07:00",
+        "subject": "Mark incomplete panel transition timelines unmeasured"
+      },
+      {
+        "sha": "50534b1bce7711d2060aff0ddc8d6a7f7dcbd18a",
+        "at": "2026-10-04T18:39:12-07:00",
+        "subject": "Record independent panel transition review"
+      },
+      {
+        "sha": "d60b55c9d0a7c1bcabca9fd0cc7d2fb071b2ba40",
+        "at": "2026-10-04T18:39:54-07:00",
+        "subject": "Clarify panel transition review evidence"
+      },
+      {
+        "sha": "503eff553990346537f57ef0189b0ad7c2ab0951",
+        "at": "2026-10-04T18:42:01-07:00",
+        "subject": "Prove Scrape transition recorder wiring at executed setup seam"
+      },
+      {
+        "sha": "acb37ef313572ef9630d6c45720c0a12c9a868f5",
+        "at": "2026-10-04T18:44:20-07:00",
+        "subject": "EXT-D-0133 enforce independently verified transition guards in CI"
+      }
+    ],
+    "checkout_limit": "GitHub Actions checked out actual_head_sha 9a134e46 before the listed commits landed; this run did not execute those later source changes."
+  },
+  "receipt_summary": {
+    "status": "partial",
+    "stage": "post_reload_link_controls",
+    "native_stage": "exercise_panel",
+    "failure": null,
+    "driver_failure": null,
+    "guest_account_observed": true,
+    "guest_storage_empty": true,
+    "panel_viewports": [
+      {
+        "phase": "warm",
+        "mode": "normal",
+        "mechanism": "owned_SIDE_PANEL_CDP_viewport_emulation",
+        "observed_px": 600,
+        "minimum_px": 600
+      },
+      {
+        "phase": "reload",
+        "mode": "normal",
+        "mechanism": "owned_SIDE_PANEL_CDP_viewport_emulation",
+        "observed_px": 600,
+        "minimum_px": 600
+      }
+    ],
+    "panel_visibility_timeline": [
+      {
+        "phase": "initial_settled_before_screenshots",
+        "measured": true,
+        "visibility": "visible",
+        "hasFocus": false,
+        "ready": true,
+        "width": 360,
+        "height": 373
+      },
+      {
+        "phase": "after_initial_screenshots",
+        "measured": true,
+        "visibility": "visible",
+        "hasFocus": false,
+        "ready": true,
+        "width": 360,
+        "height": 373
+      }
+    ],
+    "cases": [
+      {
+        "id": "EXT-F-1007-T20",
+        "status": "passed",
+        "remaining": []
+      },
+      {
+        "id": "EXT-F-1007-T01",
+        "status": "partial",
+        "remaining": ["member/admin modes remain unverified by this receipt."]
+      },
+      {
+        "id": "EXT-F-1007-T08",
+        "status": "partial",
+        "remaining": ["member/admin modes remain unverified by this receipt."]
+      },
+      {
+        "id": "EXT-F-1007-T10",
+        "status": "passed",
+        "remaining": []
+      },
+      {
+        "id": "EXT-F-1007-T11",
+        "status": "passed",
+        "remaining": []
+      },
+      {
+        "id": "EXT-F-1007-T12",
+        "status": "passed",
+        "remaining": []
+      },
+      {
+        "id": "EXT-F-1007-T13",
+        "status": "partial",
+        "remaining": ["member/admin modes remain unverified by this receipt."]
+      },
+      {
+        "id": "EXT-F-1007-T02",
+        "status": "partial",
+        "remaining": ["Deep failure retry mode and post-reload deep capture remain unverified."]
+      },
+      {
+        "id": "EXT-F-1007-T14",
+        "status": "partial",
+        "remaining": [
+          "Recoverable Reload page and Try again, including deep retry mode, need a natural browser failure."
+        ]
+      }
+    ]
+  },
+  "resources": {
+    "package": {
+      "run_id": "hosted-package-37251782627-1",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 0
+    },
+    "browser": {
+      "run_id": "hosted-browser-37251782627-1",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 0
+    },
+    "guest": {
+      "run_id": "hosted-guest-37251782627-1",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 0,
+      "healthy_watches": 3
+    },
+    "stale_journals_excluded": [
+      "hosted-browser-37105304739-1.jsonl",
+      "hosted-guest-37105304739-1.jsonl",
+      "hosted-package-37105304739-1.jsonl"
+    ]
+  },
+  "cleanup": {
+    "evidence": "Guest job completed successfully after uploading its native result. All three owned resource wrappers recorded childExitCode 0 and a valid final decision.",
+    "harness_finally_contract": "tests/browser/native-sidepanel-qa-harness.mjs detaches its owned CDP client, closes the owned fixture server, stops its exact spawned child, and removes its temporary root.",
+    "retry": false
+  },
+  "files_sha256": {
+    "receipt.json.txt": "64d143de0674f2e548b153ea3194bd7044493d6c6121267b6fa84285f7f09a0f",
+    "package-resource.jsonl": "150d6c2bdb75048eb6d6a288efc026a76ed363e95d82831814614a46c8a0f884",
+    "browser-resource.jsonl": "0329a6613f8f89beb6a472a6b0b7f82bd0d3650dcfedb0c821a992ae6ea98163",
+    "guest-resource.jsonl": "c783c483fda15c305ee42072f15a0e7872ff061fb5c18cf597bfc7bcf70da821",
+    "native-side-panel.png": "952280c37ddcb00a2e48ef0743c746d844c7afec05ea21f873a52a55ffba6764",
+    "normal-target-after-open.png": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89",
+    "scrape-fast-article.png": "15ebdcf1d0e01f822705f5473cc0db5add93ac11166830333ed4b948f6083d01",
+    "scrape-deep-article.png": "515146c5d06f4d20423c34d2cadfc22dd3723d23d9f111c0f559399de7ca9f89",
+    "scrape-restricted-error.png": "5c6ee2c1e35fbe59bd4b9b711be9bce24792b07c7eebdb8ce941b3938179f277"
+  }
+}

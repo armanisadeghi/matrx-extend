@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "run_id": 37251782627,
+  "evidence_directory": "docs/stabilization/evidence/guest-scrape-normal/run37251782627",
+  "files_sha256": {
+    "receipt.json.txt": "64d143de0674f2e548b153ea3194bd7044493d6c6121267b6fa84285f7f09a0f",
+    "package-resource.jsonl": "150d6c2bdb75048eb6d6a288efc026a76ed363e95d82831814614a46c8a0f884",
+    "browser-resource.jsonl": "0329a6613f8f89beb6a472a6b0b7f82bd0d3650dcfedb0c821a992ae6ea98163",
+    "guest-resource.jsonl": "c783c483fda15c305ee42072f15a0e7872ff061fb5c18cf597bfc7bcf70da821",
+    "native-side-panel.png": "952280c37ddcb00a2e48ef0743c746d844c7afec05ea21f873a52a55ffba6764",
+    "normal-target-after-open.png": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89",
+    "scrape-fast-article.png": "15ebdcf1d0e01f822705f5473cc0db5add93ac11166830333ed4b948f6083d01",
+    "scrape-deep-article.png": "515146c5d06f4d20423c34d2cadfc22dd3723d23d9f111c0f559399de7ca9f89",
+    "scrape-restricted-error.png": "5c6ee2c1e35fbe59bd4b9b711be9bce24792b07c7eebdb8ce941b3938179f277"
+  }
+}
