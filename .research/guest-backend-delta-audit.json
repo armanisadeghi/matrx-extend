@@ -1,0 +1,36 @@
+{
+  "title": "Guest first/reload acceptance: deployed backend delta audit",
+  "audited_at": "2026-10-04",
+  "deployment_observation": {
+    "version_endpoint": "https://server.app.matrxserver.com/health/version",
+    "deployed_commit": "9e81998819b073202e5aacc42faed8e4c8fe329c",
+    "built_at": "2026-10-04T23:17:09Z",
+    "prior_guest_acceptance_commit": "60081efa8181e700443cbfe53bcf3b984e2a2af0",
+    "prior_observed_acceptance": "Exact Store 205 guest first/reload and native 37240870438 passed at the prior commit; this audit does not rerun them."
+  },
+  "ancestry_and_scope": {
+    "is_prior_commit_ancestor": true,
+    "deployed_commit_subject": "ship-all 2026-10-04_16-13-34",
+    "range_summary": "34 changed paths; 903 insertions and 113 deletions.",
+    "guest_agent_start_auth_org_quota_chat_execution_contract_changed": false,
+    "basis": [
+      "The range does not change aidream/services/conversation_context, aidream/api/routers/ai.py, aidream/services/agent_service, aidream/services/organizations/effective_org.py, or aidream/api/middleware.",
+      "The only conversation-related existing-code delta is extraction of the own-chat text reader in aidream/services/distillation/chat_import.py; its owner check, visible/non-deleted message selection, role filtering, user-authored text projection, assistant text extraction, and ordering are moved into a shared function. Existing distillation now calls that function.",
+      "The added /agent-studio/from-chat route is mounted behind require_authenticated. Its request accepts a conversation_id, then checks caller identity, resolves the request organization, and reads only the caller's own conversation. It is an additive signed-in feature, not a guest chat-start path."
+    ]
+  },
+  "canonical_contracts_consulted": [
+    "/Users/armanisadeghi/code/common-docs/systems/agents/conversation-start-contract/FEATURE.md",
+    "/Users/armanisadeghi/code/common-docs/systems/apps/extension/WIRE_CONTRACT.md",
+    "/Users/armanisadeghi/code/common-docs/systems/apps/extension/STATE.md"
+  ],
+  "acceptance_implications": {
+    "guest_first_reload": "The source delta gives no evidence of a regression to the existing fingerprint guest start/reload contract. Prior observed Store/native acceptance remains valid evidence for the earlier SHA only; it is not a runtime pass claim for this deployment.",
+    "required_follow_up": "If acceptance is required for the currently deployed backend, repeat the exact Store 205 guest first/reload scenario against the current build. Keep the native 37240870438 lane separately attributable; do not infer either from ancestry or this source audit.",
+    "bounded_risk": "The newly added signed-in Agent Studio endpoint and the shared own-conversation reader have no runtime coverage established by this audit. The reader has a broader consumer surface, but the moved selection/projection logic appears behavior-preserving in the reviewed diff. No source evidence here establishes live auth, organization resolution, quota, provider, or chat execution behavior."
+  },
+  "limitations": [
+    "Read-only source and git audit; no tests, browser run, build, deployment action, or backend mutation was performed.",
+    "The deployed SHA/build timestamp are the supplied public version observation; no second runtime probe was made."
+  ]
+}
