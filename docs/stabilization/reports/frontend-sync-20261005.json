@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "task": "Bounded ai-matrx generated database-type synchronization",
+  "observed_at": "2026-10-05",
+  "repository": "/Volumes/Samsung2TB/code/ai-matrx",
+  "initial_state": {
+    "local_head": "fc8042da0cdd0846caa384b8a2ffaa22b84b69a1",
+    "initial_dirty_paths": [
+      "packages/chat/src/host/db-types.ts",
+      "types/database.types.ts"
+    ],
+    "pnpm_lock_state": "Clean in the live checkout; its stash blob already matched origin/main.",
+    "dirty_file_mtime": "Both live generated type files: 2026-10-04 22:04:34 -0700.",
+    "held_stash_sha": "c5585898f9e95bdb64ba097aaac92575f503f54e",
+    "origin_main_at_first_fetch": "0709424dcd"
+  },
+  "reconciliation": {
+    "result": "All three held changes are present on origin/main; no duplicate commit was needed.",
+    "type_commit_on_main": "0485a90f04 chore(db-types): remove retired scope RPCs",
+    "lockfile_commits_on_main": [
+      "760a00555e deps: @ai-matrx/agents 0.44.2 (docs-only republish)",
+      "0b940977cb deps: @ai-matrx/design-system 0.61.20 (docs-only republish)",
+      "d060548234 FTS-2b item 2: the approval card names a standard row by its token's registry noun (a contact), not the word frozen in the payload; associations 0.13.148"
+    ],
+    "final_origin_main": "adb2932d71bbef7dfcfd7c7ddf4f9bf12bdcd7b2",
+    "final_local_head": "adb2932d71bbef7dfcfd7c7ddf4f9bf12bdcd7b2",
+    "final_ahead_behind": "0/0"
+  },
+  "stash_judgment": {
+    "stash_paths": [
+      "packages/chat/src/host/db-types.ts",
+      "pnpm-lock.yaml",
+      "types/database.types.ts"
+    ],
+    "comparison": "Each stash tree blob SHA equals its corresponding origin/main blob SHA; its two generated-type deletions match commit 0485a90f04, and the dependency lock update is already on main.",
+    "stash_ref_at_cleanup": "Absent; git stash list was empty and refs/stash no longer resolved when exact-SHA cleanup was attempted. The stash contents had already been verified present on main. No stash was force-dropped.",
+    "stash_commit_object": "c5585898f9e95bdb64ba097aaac92575f503f54e"
+  },
+  "checks": {
+    "retired_rpc_migration": "migrations/LEDGER.json records scopesw2b_seven_old_scope_readers_nobody_calls_are_gone applied at 2026-10-05 04:50:17.031918+00.",
+    "migration_intent": "The migration drops the seven retired RPCs and states production census found no product callers.",
+    "source_call_search": "No app/components/features/lib/packages product caller found outside generated type files; remaining matches are migration history, cutover instrumentation, and an ESLint comment.",
+    "merge_tree": "Clean merge-tree of the held snapshot onto the first fetched origin/main. The remote advanced during the bounded push attempt and a concurrent main update then contained the same changes.",
+    "push_attempt": "The first exact candidate push was rejected non-fast-forward after origin/main advanced. Refreshed origin showed commit 0485a90f04 already carried the type changes; did not retry a duplicate push.",
+    "final_checkout": "Clean; local main equals origin/main.",
+    "branches_worktrees_open_prs": "One local branch (main), one checkout, no open PRs.",
+    "tests": "No heavy tests or builds run; validation used exact blob comparisons, migration ledger/code review, and product-source caller search."
+  },
+  "open_items": [],
+  "root_verification": "All three held stash path blob hashes independently compared equal to origin/main; local checkout clean0/0 and stash list empty."
+}
