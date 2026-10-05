@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0142",
+  "reviewed_commit": "846850998863ccd7149356c5572ac8d03d8a0e06",
+  "verdict_A_runtime_spec": "UNVERIFIED",
+  "verdict_A_evidence": {
+    "offscreen_selection_finding": "ADDRESSED_IN_CONTROLLED_DOM_SPEC",
+    "trusted_caller_finding": "ADDRESSED_IN_CONTROLLED_DOM_SPEC",
+    "exact_identity": "Existing selector path still uses the approved fixture name; selectRequiredSettingsOrganization verifies stored UUID/name and rendered identity (settings-native-auth-driver.mjs:288-366). The showcase diagnostic checks selected rendered identity against stored UUID and name.",
+    "basis": "The actual selectOrganization calls waitForOrganizationOption and then the imported shared click(panel, 'organization-option', name). The shared click pointer sample scrolls the matched target into view, re-resolves the linked open listbox and exact option on each sample, checks clipping and elementFromPoint hits, waits for stable samples, and only then dispatches mousePressed/mouseReleased (settings-panel-driver.mjs:113-195, 245-280, 445-515). The focused controlled DOM seam exercises this actual caller plus shared click. No browser/native run was authorized or performed, so runtime outcome is unverified, not a failure closure.",
+    "unverified": ["Real Settings viewport/scroll container behavior", "Native/browser selection and persisted live UUID/name/rendered identity", "Cause of the original native failure"]
+  },
+  "verdict_B_quality": "PASS_WITH_LIMITS",
+  "verdict_B_evidence": {
+    "prior_offscreen_finding": "The option wait now accepts one stable exact owned candidate even when target_in_viewport is false; the shared click path performs viewport preparation before pointer acceptance.",
+    "prior_caller_stub_finding": "The new test imports the real selectOrganization and shared click. It asserts the scroll preparation occurred and exact press/release pairs were dispatched after reveal, then checks foreign, duplicate, and closed-listbox candidates dispatch no input.",
+    "no_op_mutation": "The same acceptance helper is first run with an async no-op selector and the test requires that run to reject; this demonstrates the event/scroll assertions detect a skipped selection. Existing guard code also has in-memory constant-return and missing-mount mutations.",
+    "regressions_seen": [],
+    "limitations": "DOM doubles model scrollIntoView by changing the option's coordinates and do not reproduce browser layout, nested scrolling, or real trusted-input behavior. No separate plant.py mutation of the shared click helper was run in this verifier lane."
+  },
+  "verification": {
+    "command": "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch node --test tests/browser/settings-native-auth-driver.test.mjs tests/browser/showcase-organization-diagnostic.test.mjs tests/browser/panel-transition-recorder.test.mjs scripts/hosted-profile-route.test.mjs scripts/hosted-scrape-route.test.mjs",
+    "result": "36 passed, 0 failed",
+    "test_duration_ms": 11438
+  },
+  "conclusion": "Both prior findings are addressed by source and focused controlled-DOM evidence. This supports the intended path and guard structure; it does not prove the real browser outcome or close D142.",
+  "commit": null
+}
