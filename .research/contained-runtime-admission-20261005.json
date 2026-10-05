@@ -3,7 +3,7 @@
   "report_id": "contained-runtime-admission-20261005",
   "date": "2026-10-05",
   "scope": "Read-only admission for one non-Chat native test using an existing receipt-bound artifact and isolated signed-in profile; no browser, build, test, credential, or personal-data access.",
-  "verdict": "RESOURCE_ADMISSION_UNVERIFIED; ARTIFACT_AND_PROFILE_NOT_YET_PREPARED",
+  "verdict": "ARTIFACT_READY_BROWSER_ACCESS_UNAVAILABLE",
   "candidate": {
     "preferred_surface": "EXT-F-4164 chrome_bookmarks",
     "reason": "Inventory procedure is self-contained and limits reads to synthetic public bookmarks in an isolated profile; an existing settings-native procedure is the fallback.",
@@ -34,5 +34,22 @@
     "guard_ownership_or_permit": "No fresh guard preflight was run; current admission and permit ownership are UNVERIFIED."
   },
   "resource_policy_interpretation": "A historical stop marker records an earlier unsafe observation, not the host's current health. The unchanged guard's recoverHold path requires three healthy samples before its 60-second preflight; only that guard can establish present admission. No thresholds or stop state were changed by this reconnaissance.",
-  "next_action": "Run the unchanged shared guard's fresh preflight. If it admits, import the already-successful 0.2.289 CI artifact and verify its matching receipt/tree, then prepare or identify a disposable isolated signed-in profile and re-evaluate test eligibility. Do not build or start the browser test during preparation."
+  "next_action": "Run the unchanged shared guard's fresh preflight. If it admits, import the already-successful 0.2.289 CI artifact and verify its matching receipt/tree, then prepare or identify a disposable isolated signed-in profile and re-evaluate test eligibility. Do not build or start the browser test during preparation.",
+  "followup": {
+    "at": "2026-10-05T21:07:47.081164+00:00",
+    "preflight": "contained-preflight-20261005-2110b",
+    "verdict": "admitted check only, no persistent browser permit",
+    "journal": "docs/stabilization/resource-journals/contained-preflight-20261005-2110b.jsonl",
+    "metrics": {
+      "cpuBusyAverage": 0.26857142857142857,
+      "availableMemoryGiB": 9.12,
+      "systemFreeGiB": 25.739978790283203
+    },
+    "initial_attempt": "2110 refused missing empty profile directory; directory created, changed-condition2110b valid",
+    "import": "test-results/ci-artifacts/5df905a8189119939f5b2be821adec15c1bd0e95/37355629310-1",
+    "import_result": "DEVELOPMENT_TEST_IMPORTED exact_pushed_commit_only",
+    "source_comparison": "No changes from artifact SHA to current HEAD in canonical-mergers.ts, browser-data.ts, ToolsView.tsx; not a whole-source equivalence claim",
+    "browser_inventory_result": "CUA Chrome inventory returned User unavailable; no UI action or test performed",
+    "next": "When browser access available, fresh guarded browser permit and isolated signed-in profile; verify installed imported identity, then execute reviewed bookmark procedure. Showcase requires newer green artifact with pointer diagnostic."
+  }
 }
