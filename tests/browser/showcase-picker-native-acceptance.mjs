@@ -13,9 +13,9 @@ import {
   signInSettings,
 } from './settings-native-auth-driver.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
+import { clickReachableShowcaseCard } from './showcase-card-driver.mjs';
 import { runShowcaseOrganizationCheckpoint } from './showcase-organization-checkpoint.mjs';
 import { safeShowcaseOrganizationFailure } from './showcase-organization-diagnostic.mjs';
-import { clickReachableShowcaseCard } from './showcase-card-driver.mjs';
 import {
   createShowcaseSelectionDiagnostic,
   observeShowcaseSelection,
