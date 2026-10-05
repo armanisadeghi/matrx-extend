@@ -6988,6 +6988,19 @@
    "application/json"
   ]
  },
+ "/seo/sites/{site_id}/domain-connections/check": {
+  "post": []
+ },
+ "/seo/sites/{site_id}/domain-connections/connect": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/domain-connections/refresh": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/seo/sites/{site_id}/gsc/search-performance/sync": {
   "post": [
    "application/json"
@@ -7084,6 +7097,16 @@
  },
  "/seo/sites/{site_id}/schedule-status": {
   "get": []
+ },
+ "/seo/sites/{site_id}/search-console/properties": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/search-console/sitemaps": {
+  "post": [
+   "application/json"
+  ]
  },
  "/seo/sites/{site_id}/serp-prospecting": {
   "post": [
