@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "defect_reference": "EXT-D-0141",
+  "reviewed_commits": [
+    "65beb08afab388ff414e8655ccd7ca291f48a92c",
+    "f89cc89ecc60721d0889455434bd42f28085fb03"
+  ],
+  "prior_findings": [
+    {
+      "finding": "Native helper timeout discarded its last picker/storage observations.",
+      "status": "ADDRESSED",
+      "evidence": "The helper reports each sampled value before waitFor acceptance and seeds unknown observations as null. Focused receipt test observes picker false, picker unknown/null, and storage false after timeout through the real helper and checkpoint."
+    },
+    {
+      "finding": "Receipt probe manufactured diagnostics without invoking the actual helper/callback chain.",
+      "status": "ADDRESSED",
+      "evidence": "The diagnostic probe calls runShowcaseOrganizationCheckpoint, which calls selectRequiredSettingsOrganization with stage/observation callbacks; acceptance script's actual catch and receipt writer produce the asserted JSON. Selected organization success and unverified admin-role failure also exercise the checkpoint."
+    },
+    {
+      "finding": "Focused diagnostic test was absent from CI's explicit list.",
+      "status": "ADDRESSED",
+      "evidence": ".github/workflows/ci.yml explicitly includes tests/browser/showcase-organization-diagnostic.test.mjs in the node --test command."
+    }
+  ],
+  "verdict_a": {
+    "status": "PARTIAL",
+    "diagnostic_outcome": "The bounded diagnostic behavior requested by EXT-D-0141 is demonstrated at the helper-to-acceptance-receipt seam, including timeout last observations and safe fixed failure labels.",
+    "runtime_limits": [
+      "No native/browser acceptance run was performed in this review; the panel is a controlled CDP-boundary double.",
+      "The original hosted run's actual organization failure remains unknown; no product-pass conclusion follows from these guards."
+    ]
+  },
+  "verdict_b": {
+    "status": "PASS",
+    "evidence": [
+      "The diagnostic test traverses the production helper and checkpoint, then launches the acceptance script and asserts the receipt's fixed stage, error code, and exact allowlisted observations.",
+      "The suite exercises picker timeout, unknown picker read, storage timeout, unknown error redaction, selected-organization completion, and rejection of an unverified admin role.",
+      "Unknown callback fields, arbitrary stages, and arbitrary error messages are excluded from the serialized diagnostic shape."
+    ],
+    "limitations": [
+      "I did not independently rerun the reported source mutations; the currently committed behavioral assertions do force the expected receipt fields through the real callback chain.",
+      "No fresh native evidence was available or produced."
+    ]
+  },
+  "verification": {
+    "command": "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch node --test tests/browser/showcase-organization-diagnostic.test.mjs tests/browser/settings-native-auth-driver.test.mjs",
+    "result": "9 passed, 0 failed",
+    "ci_inspection": "The focused diagnostic test is listed in .github/workflows/ci.yml."
+  },
+  "unrelated_workspace_changes": [
+    "docs/stabilization/defects/EXT-D-0141.json",
+    "docs/stabilization/reports/workspace-sync-guest-incident-20261003.json"
+  ]
+}
