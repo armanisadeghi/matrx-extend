@@ -16,7 +16,7 @@
   },
   "confirmed_defect": {
     "sut": "observeAuthenticatedPanelHost renderer expression",
-    "cause": "panel.windowId sentinel -1 was compared as an ordinary window identifier, reporting false rather than unknown",
+    "cause": "Controlled evaluation of the real observer source reproduces windowId -1 being compared as an ordinary identifier and returning false rather than unknown. The actual native run did not record numeric window IDs, so its false result cannot be attributed to this sentinel.",
     "primary_source": "https://chromium.googlesource.com/chromium/src/+/refs/tags/141.0.7390.37/chrome/browser/extensions/api/runtime/runtime_apitest.cc",
     "source_test": "RuntimeGetContextsSidePanelTest.GetSidePanelContext opens a real side panel and expects windowId -1",
     "inference_limit": "Historical receipt projected only equality, so its actual numeric windowId cannot be recovered. The false field does not distinguish -1 from a real different host.",
