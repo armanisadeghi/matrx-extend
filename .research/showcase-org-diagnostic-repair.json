@@ -14,7 +14,7 @@
     "screenshots": "initial harness captures; no failure-time inference"
   },
   "confirmed_driver_cause": "The Showcase native driver's top-level catch discarded the caught exception and retained only organization_failed. The organization helper had no fixed substage or bounded observation callback, so the receipt could not distinguish picker, selection, storage, or rendered-identity failure.",
-  "repair": "The shared organization helper now emits fixed substage names and safe boolean observations. The Showcase driver retains those in its receipt and maps only allowlisted error labels to a failure code. Unknown messages and resource refusal details remain bounded. No product behavior, retry, or timeout changed.",
+  "repair": "The shared organization helper emits fixed substage names and safe boolean observations on every picker and storage sample, including the last sample before a timeout. A missing sample remains null rather than false. The Showcase checkpoint binds those callbacks to the production receipt, verifies the admin-role result before recording it, and maps only allowlisted error labels to a failure code. Unknown messages and resource refusal details remain bounded. No product behavior, retry, or timeout changed.",
   "safe_diagnostic_fields": [
     "organization_diagnostic.substage",
     "organization_diagnostic.observations",
@@ -22,19 +22,27 @@
   ],
   "red_green": {
     "original_receipt_red": "An assertion for organization_diagnostic.substage against the hosted run receipt failed with organization_substage_missing.",
-    "mutation_red": "Replacing the stage callback assignment with a constant resource_gate via forcing-function-tests/plant.py made the real driver receipt test fail; plant.py restored identical bytes.",
-    "green": "The real driver catch/writer probe passed distinct picker, storage, and unknown-error cases; settings-native-auth-driver tests passed."
+    "mutation_red": "Replacing the stage callback assignment with a constant resource_gate, replacing each timeout sample with null, and dropping the checkpoint's observation callback each made the real driver receipt test fail; plant.py restored identical bytes after each mutation.",
+    "green": "The actual organization helper and shared checkpoint passed picker false, picker unknown, storage false, and selected-organization cases. The failure cases passed through the production driver's catch and receipt writer; settings-native-auth-driver tests passed."
   },
   "verification": [
     "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch node --test tests/browser/showcase-organization-diagnostic.test.mjs",
     "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch node --test tests/browser/settings-native-auth-driver.test.mjs",
-    "pnpm exec biome check tests/browser/settings-native-auth-driver.mjs tests/browser/showcase-organization-diagnostic.mjs tests/browser/showcase-picker-native-acceptance.mjs tests/browser/showcase-organization-diagnostic.test.mjs",
+    "pnpm exec biome check tests/browser/settings-native-auth-driver.mjs tests/browser/showcase-organization-checkpoint.mjs tests/browser/showcase-organization-probe.mjs tests/browser/showcase-organization-diagnostic.mjs tests/browser/showcase-picker-native-acceptance.mjs tests/browser/showcase-organization-diagnostic.test.mjs .research/showcase-org-diagnostic-repair.json",
     "node --check tests/browser/showcase-picker-native-acceptance.mjs",
     "node --check tests/browser/settings-native-auth-driver.mjs"
   ],
   "open": [
     "The original run's exact organization failure cannot be recovered from its bounded receipt or setup screenshots.",
     "A future authorized native run on the changed driver is required to identify the actual integration cause; no native retry occurred in this lane.",
-    "Independent review remains with the parent coordinator."
-  ]
+    "Independent re-verification remains with the parent coordinator."
+  ],
+  "review_followup": {
+    "review": ".research/showcase-org-diagnostic-peer.json",
+    "findings_addressed": [
+      "The timeout read now publishes bounded last-sampled picker/storage booleans; a failed read remains null.",
+      "The receipt test runs the real organization helper via the same checkpoint used by native acceptance, and no-op callback mutations fail it.",
+      "The focused diagnostic test is in CI's explicit browser-test list."
+    ]
+  }
 }

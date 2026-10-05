@@ -248,9 +248,17 @@ export async function selectRequiredSettingsOrganization({
   onStage?.('organization_section');
   await openSection(panel, 'Organization');
   onStage?.('organization_picker');
+  onObservation?.({ picker_available: null, picker_has_selection: null });
   const org = await waitFor(
     'd87_required_organization_picker',
-    () => accountIdentity(panel, email),
+    async () => {
+      const value = await accountIdentity(panel, email);
+      onObservation?.({
+        picker_available: value?.organizationPickerAvailable ?? null,
+        picker_has_selection: value?.organizationSelected ?? null,
+      });
+      return value;
+    },
     (value) => value?.organizationSelected || value?.organizationPickerAvailable,
     30_000,
   );
@@ -264,9 +272,19 @@ export async function selectRequiredSettingsOrganization({
   onStage?.(selectionRequired ? 'organization_select' : 'organization_skip');
   if (selectionRequired) await selectOrganization(panel);
   onStage?.('organization_storage');
+  onObservation?.({ storage_has_uuid: null, storage_name_matches: null });
   const selected = await waitFor(
     'd87_required_organization_storage',
-    () => panelIdentity(panel),
+    async () => {
+      const value = await panelIdentity(panel);
+      onObservation?.({
+        storage_has_uuid: value ? UUID.test(value.organizationId ?? '') : null,
+        storage_name_matches: value
+          ? value.organizationName === MEMBER_TEST_ORGANIZATION_NAME
+          : null,
+      });
+      return value;
+    },
     (value) =>
       UUID.test(value?.organizationId ?? '') &&
       value?.organizationName === MEMBER_TEST_ORGANIZATION_NAME,

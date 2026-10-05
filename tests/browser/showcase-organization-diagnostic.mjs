@@ -43,13 +43,13 @@ const POINTER_FAILURES = new Set([
 export function createShowcaseOrganizationDiagnostic() {
   return {
     substage: 'resource_gate',
-    observations: { admin_role_verified: true },
+    observations: {},
   };
 }
 
 export function observeShowcaseOrganization(diagnostic, values) {
   for (const [key, value] of Object.entries(values)) {
-    if (OBSERVATIONS.has(key) && typeof value === 'boolean') {
+    if (OBSERVATIONS.has(key) && (typeof value === 'boolean' || value === null)) {
       diagnostic.observations[key] = value;
     }
   }

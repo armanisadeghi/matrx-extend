@@ -7,18 +7,10 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
-import {
-  panelIdentity,
-  selectRequiredSettingsOrganization,
-  signInSettings,
-} from './settings-native-auth-driver.mjs';
+import { signInSettings } from './settings-native-auth-driver.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
-import {
-  createShowcaseOrganizationDiagnostic,
-  observeShowcaseOrganization,
-  safeShowcaseOrganizationFailure,
-  stageShowcaseOrganization,
-} from './showcase-organization-diagnostic.mjs';
+import { runShowcaseOrganizationCheckpoint } from './showcase-organization-checkpoint.mjs';
+import { safeShowcaseOrganizationFailure } from './showcase-organization-diagnostic.mjs';
 
 const REPO = resolve(import.meta.dirname, '../..');
 const extensionDir = process.env.MATRX_SHOWCASE_EXTENSION_DIR;
@@ -100,24 +92,26 @@ async function chooseScopeIfNeeded(page) {
 }
 
 try {
-  // A lightweight probe exercises the real receipt catch/writer without starting Chrome.
-  if (['picker', 'storage', 'unknown'].includes(process.env.MATRX_SHOWCASE_DIAGNOSTIC_PROBE)) {
+  // A lightweight CDP-boundary probe exercises the real organization helper and receipt writer.
+  if (
+    ['picker', 'picker_unknown', 'storage', 'unknown'].includes(
+      process.env.MATRX_SHOWCASE_DIAGNOSTIC_PROBE,
+    )
+  ) {
     stage('organization');
-    report.organization_diagnostic = createShowcaseOrganizationDiagnostic();
     const probe = process.env.MATRX_SHOWCASE_DIAGNOSTIC_PROBE;
-    stageShowcaseOrganization(
-      report.organization_diagnostic,
-      probe === 'storage' ? 'organization_storage' : 'organization_picker',
+    if (probe === 'unknown')
+      throw new Error('private@example.invalid https://private.invalid/token');
+    const { organizationProbePanel, probeAuth, withFastProbeClock } = await import(
+      './showcase-organization-probe.mjs'
     );
-    observeShowcaseOrganization(report.organization_diagnostic, {
-      picker_available: probe !== 'picker',
-    });
-    throw new Error(
-      probe === 'picker'
-        ? 'd87_required_organization_picker_not_observed:{"private":"hidden"}'
-        : probe === 'storage'
-          ? 'd87_required_organization_storage_not_observed:{"token":"hidden"}'
-          : 'private@example.invalid https://private.invalid/token',
+    await withFastProbeClock(() =>
+      runShowcaseOrganizationCheckpoint({
+        panel: organizationProbePanel(probe),
+        auth: probeAuth,
+        resourceAction: (action) => action(),
+        report,
+      }),
     );
   }
   stage('inputs');
@@ -189,27 +183,7 @@ try {
       );
       assert.equal(auth.admin_role, true, 'showcase_admin_role_unverified');
       stage('organization');
-      report.organization_diagnostic = createShowcaseOrganizationDiagnostic();
-      const organization = await resourceAction(() =>
-        selectRequiredSettingsOrganization({
-          panel,
-          mode: 'admin',
-          email: auth.email,
-          profileId: auth.profileId,
-          onStage: (value) => stageShowcaseOrganization(report.organization_diagnostic, value),
-          onObservation: (value) =>
-            observeShowcaseOrganization(report.organization_diagnostic, value),
-        }),
-      );
-      stageShowcaseOrganization(report.organization_diagnostic, 'organization_identity_read');
-      const identity = await panelIdentity(panel);
-      stageShowcaseOrganization(report.organization_diagnostic, 'organization_identity_compare');
-      assert.equal(identity.profileId, auth.profileId, 'showcase_profile_changed');
-      assert.equal(
-        identity.organizationId,
-        organization.organizationId,
-        'showcase_organization_changed',
-      );
+      await runShowcaseOrganizationCheckpoint({ panel, auth, resourceAction, report });
       passed('real_admin_signin_and_device_organization', { rendered: true });
       await resourceAction(() => reopenPanel());
       await waitFor(
