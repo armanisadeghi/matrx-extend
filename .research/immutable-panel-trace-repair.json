@@ -1,8 +1,9 @@
 {
   "schema_version": 1,
-  "defect": "EXT-D-0133",
+  "defect": "EXT-D-0137",
   "scope": "native member transition test driver",
   "source_receipt": "docs/stabilization/evidence/member-transition/run37252919339/raw/scrape-guest-native.json",
+  "interpretation": "The immutable-send Proxy failure is a test-driver defect independent of the original hidden-panel behavior tracked as EXT-D-0133. The native run used version 0.2.257 rather than the required 0.2.244, so it is not a controlled comparison for EXT-D-0133.",
   "cause": "traceOrganizationPointers proxied the real panel and replaced its non-configurable, non-writable own send property in the get trap, violating the JavaScript Proxy invariant before organization selection could send a command.",
   "repair": "The recorder proxies an independent facade, delegates commands and other methods to the original panel receiver, and brackets only mouse dispatches with pointer markers.",
   "red_proof": {
