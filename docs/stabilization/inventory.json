@@ -71175,7 +71175,7 @@
       "inventory_status": "source-listed-pending-reconciliation",
       "missing_items": [],
       "readiness_gaps": [
-        "Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required",
+        "Execute reviewed bookmark procedure in member/admin profiles; dispatcher permission and runtime role behavior remain unverified",
         "Confirm current catalog against imported source registry before source inventory signoff"
       ],
       "applicability": {
@@ -71205,18 +71205,50 @@
             "member",
             "admin"
           ],
-          "design_status": "needed",
+          "design_status": "procedure-ready-unverified",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Follow docs/stabilization/PLAN.md resource admission and build/import preflight. Select a current imported development artifact from its receipt set, not by folder name. Verify ci-receipt.json, provenance.json, import-status.json, local-dev-receipt.json agree on source SHA, workflow run/attempt, artifact ID/digest, extension ID/version, and tree hash; compare the loaded chrome-mv3 tree to the receipt. Stop if any identity/hash differs.",
+            "Record chrome://version profile path and chrome://extensions extension ID/version/Loaded from path. Load the receipt-bound chrome-mv3 folder if needed; reload the extension, close/reopen the side panel, then reload the selected tab. Run the case once warm and once after that reload; do not change account role between runs.",
+            "Use an existing signed-in member profile and repeat with an existing signed-in admin profile. In Tools, locate chrome_bookmarks, expand its argument form, enter the JSON specified below, select Run, and record the complete inline result.",
+            "ToolsView manual Run skips the permission gate. This procedure checks local handler output only; it does not establish Ask/Act dispatcher authorization or a permission-denial result. Do not alter permissions to manufacture a denial.",
+            "Use a dedicated disposable Chrome profile with a uniquely named folder `Matrx procedure fixture 20261005` and exactly two public bookmarks in it: https://example.org/?matrx-bookmark-fixture=alpha titled `Matrx Bookmark Fixture Alpha 20261005`, and https://example.org/?matrx-bookmark-fixture=beta titled `Matrx Bookmark Fixture Beta 20261005`. Create them through Chrome's bookmark UI, then record the folder ID from the returned tree. Do not use or inspect the everyday profile. Before deletion, retain the exact two fixture titles and URLs. After both role runs, delete only the fixture folder, then verify each exact fixture title and URL is absent with two separate `action=search` queries in that disposable profile; do not query the deleted folder ID as the cleanup check.",
+            "Complete shared build/profile/reload setup and record the fresh artifact receipt and runtime identity.",
+            "Seed the isolated profile with exactly the two named synthetic bookmarks; retain their actual Chrome folder ID for the tree query.",
+            "Use an existing signed-in member, then an existing signed-in admin profile; never promote or modify roles."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Warm member run: in Tools execute `chrome_bookmarks` with {\"action\":\"search\",\"query\":\"Matrx Bookmark Fixture Alpha 20261005\",\"limit\":10}. Record inline JSON.",
+            "Require the result to include the exact alpha title and alpha URL, with `count` equal to the returned `bookmarks` array length and no more than 10. Execute {\"action\":\"search\",\"query\":\"Matrx Bookmark Fixture Beta 20261005\",\"limit\":10} and require the beta fixture title and URL.",
+            "Exercise the source-defined search missing-argument error with {\"action\":\"search\"}; record the returned error. Do not count the catalog's optional `query` schema as proof this branch succeeds: handler source explicitly returns `{ok:false, reason:\"'query' required for search\"}`.",
+            "Execute tree scope with {\"action\":\"tree\",\"folder_id\":\"<recorded actual fixture folder ID>\",\"max_depth\":3}. Require the returned subtree to contain exactly the two synthetic fixture URLs/titles; record actual shape and any unrelated nodes without assuming root-tree structure.",
+            "Reload the extension, reopen Tools, and reload the target tab as specified in shared setup. Repeat both positive searches and the scoped tree query with the same fixture values; repeat the missing-query case.",
+            "Repeat the complete warm and post-reload sequence in the existing admin profile using the same isolated fixture if that profile can access it; otherwise seed the same fixture independently and record its actual folder ID. Do not use another user's profile data.",
+            "Before deletion, retain the two exact fixture titles and URLs. Delete only the named fixture folder in each seeded profile; then run separate exact-title `action=search` queries for Alpha and Beta and verify neither exact fixture title/URL appears. Do not query the deleted folder ID. Record cleanup outcome; record any API error separately rather than treating it as proof of absence."
+          ],
+          "expected": [
+            "Search returns the matching synthetic bookmark with its exact title and URL, reports `count` no greater than the requested limit, and surfaces `total_match` as the Chrome search match count. Each synthetic query is unique to the fixture.",
+            "Tree action queries the specified folder subtree and maps nodes to id/title/url/date_added/children, respecting max_depth; the two seeded fixture bookmarks appear. No assertion is made about browser root folder structure.",
+            "Search without query returns the explicit handler error requiring `query`; it does not silently return a successful empty result.",
+            "Unavailable Chrome bookmarks capability or Chrome API rejection is recorded as an explicit error/failure, never converted into a pass. A missing/deleted folder ID is not replaced with a guessed ID and is not a success.",
+            "After extension reload, the same fixture results remain observable. Cleanup removes only the dedicated fixture folder and its children."
+          ],
           "dimensions": [
             "valid-input",
             "invalid-input",
             "permissions",
-            "reload"
+            "reload",
+            "warm",
+            "search-alpha",
+            "search-beta",
+            "missing-query-error",
+            "scoped-tree",
+            "extension-reload",
+            "cleanup"
+          ],
+          "procedure_evidence": [
+            ".research/contained-procedure-gap-20261005.json",
+            ".research/contained-procedure-gap-peer.json",
+            ".research/showcase-pointer-ci-readiness.json"
           ]
         }
       ],
