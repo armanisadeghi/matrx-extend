@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0138",
+  "reviewer_lane": "fresh independent scoped re-verification",
+  "reviewed_commits": [
+    "f1eb69207afe8c8abc3bcf3d62da6b1cd98475c0",
+    "403a85564f8a398b567d1ff9857d7baca11c4d6a"
+  ],
+  "finding_resolution": [
+    {
+      "finding": "IMPORTANT: the committed timeout evidence test called retainScrapeMediaFailure in its own catch and did not guard the production native driver's top-level catch-to-receipt wiring.",
+      "status": "ADDRESSED",
+      "evidence": "The corrected test spawns scrape-guest-native-acceptance.mjs in receipt self-test mode and reads the actual JSON written by the driver's production top-level catch and receipt writer. The receipt contains bounded Images state and excludes page text and fixture URLs. Removing the actual production retainScrapeMediaFailure(report, error) call made this test fail with the defect-specific scrape_media_failure_missing assertion. The production file was restored in the same command and verified clean."
+    },
+    {
+      "finding": "New breakage introduced by the correction.",
+      "status": "NONE_FOUND_IN_SCOPED_DIFF",
+      "evidence": "Reviewed the full f1eb6920..403a8556 driver/test diff. Receipt self-test branches before native selection or runNativeSidepanelQa; its report explicitly sets diagnostic_self_test=true, status=unverified, artifact=null, and exits 1. No native/browser run occurred. The Images predicate and default 10000 ms observer timeout are unchanged; timeoutMs=0 is supplied only to force the controlled diagnostic fixture through the existing boundary."
+    }
+  ],
+  "verdict_a": {
+    "status": "PARTIAL",
+    "scope": "EXT-D-0138 source boundary and receipt wiring only. This is not native product acceptance.",
+    "targets": [
+      {
+        "target": "A real driver timeout retains allowlisted safe Images boundary state in the serialized receipt.",
+        "status": "PASS_SOURCE_GUARD",
+        "evidence": "node --test tests/browser/scrape-media-timeout-evidence.test.mjs passed 4/4. The spawned actual-driver self-test read its output receipt and checked kind, count, incomplete image state, fixture index, and absence of private page text and localhost URL data."
+      },
+      {
+        "target": "The production retention wiring guard fails when retainScrapeMediaFailure is removed from the actual top-level catch.",
+        "status": "PASS_RED_GREEN",
+        "evidence": "With only that production call temporarily removed, the focused suite failed at the spawned-driver receipt test with scrape_media_failure_missing. The call was restored immediately; the source is clean."
+      },
+      {
+        "target": "Frozen-artifact native member Images/Video behavior and receipt.",
+        "status": "CANNOT_VERIFY",
+        "evidence": "No native/browser/build launch was performed. The self-test uses controlled fixture state and is explicitly marked unverified with artifact=null; it does not claim native success."
+      }
+    ],
+    "open_limits": [
+      "Whether the frozen-artifact member product now passes the original real Images timeout scenario remains unverified.",
+      "Whether a real member Video timeout writes its production receipt boundary was not exercised by the Images-only driver self-test."
+    ]
+  },
+  "verdict_b": {
+    "status": "PASS",
+    "evidence": [
+      "The guard crosses the real production caller, top-level catch, and receipt writer; the required wiring-removal mutant is defect-specifically red.",
+      "Safe evidence remains structured and allowlisted; URLs and page text are excluded from the asserted receipt state.",
+      "The correction leaves existing media selection predicates and default observation timing unchanged."
+    ],
+    "checks": [
+      {
+        "command": "node --test tests/browser/scrape-media-timeout-evidence.test.mjs",
+        "result": "PASS: 4 tests"
+      },
+      {
+        "command": "Same-command temporary removal of production retainScrapeMediaFailure(report, error), then focused test suite",
+        "result": "EXPECTED RED: spawned-driver receipt assertion failed with scrape_media_failure_missing; source restored and verified clean"
+      }
+    ],
+    "limitations": [
+      "No native/browser/build checks were run by this source-only verifier.",
+      "Self-test evidence is diagnostic source-path proof, not a native pass."
+    ]
+  }
+}
