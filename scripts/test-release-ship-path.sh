@@ -405,9 +405,9 @@ cd "$SANDBOX/checkout"
 git_q clone "$SANDBOX/origin.git" "$SANDBOX/catchup"
 cd "$SANDBOX/catchup"
 git config user.name test; git config user.email test@test; git config core.hooksPath /dev/null
-mkdir -p scripts; cp "$HARNESS_ROOT/scripts/release-matrx-catchup.mjs" scripts/
+mkdir -p scripts; cp "$HARNESS_ROOT/scripts/release-matrx-catchup.mjs" "$HARNESS_ROOT/scripts/await-matrx-latest.mjs" scripts/
 printf 'lockfileVersion: 9.0\n' > pnpm-lock.yaml
-git_q add pnpm-lock.yaml scripts/release-matrx-catchup.mjs; git_q commit -m "lockfile"
+git_q add pnpm-lock.yaml scripts/release-matrx-catchup.mjs scripts/await-matrx-latest.mjs; git_q commit -m "lockfile"
 run_release() { set +e; PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/$1" 2>&1; local rc=$?; set -e; return $rc; }
 updates() { grep -c '^update -r.*--latest' "$SANDBOX/pnpm-calls" || true; }
 echo "release — @ai-matrx catch-up"
@@ -428,8 +428,8 @@ rm -f "$SANDBOX/stale-forever" "$SANDBOX/stale-packages"
 check "catch-up is bounded to three"                   '[[ $FOREVER_STATUS -ne 0 && $(( $(updates) - UPDATES_BEFORE )) -eq 3 && "$CATCHUP_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]]'
 check "the bound is named"                             'grep -q "moved again after 3 catch-ups" "$SANDBOX/catchup-forever-out"'
 git_q reset -q --hard origin/main
-cp "$HARNESS_ROOT/scripts/release-matrx-catchup.mjs" scripts/; printf 'lockfileVersion: 9.0\n' > pnpm-lock.yaml
-git_q add pnpm-lock.yaml scripts/release-matrx-catchup.mjs; git_q commit -m "lockfile again"
+cp "$HARNESS_ROOT/scripts/release-matrx-catchup.mjs" "$HARNESS_ROOT/scripts/await-matrx-latest.mjs" scripts/; printf 'lockfileVersion: 9.0\n' > pnpm-lock.yaml
+git_q add pnpm-lock.yaml scripts/release-matrx-catchup.mjs scripts/await-matrx-latest.mjs; git_q commit -m "lockfile again"
 echo 1.0.0 > "$SANDBOX/fixture-version"
 touch "$SANDBOX/stale-packages"; PKG_CHECKS_BEFORE="$(grep -c 'check:matrx-packages' "$SANDBOX/pnpm-calls")"
 CATCHUP_STATUS=0; run_release catchup-out || CATCHUP_STATUS=$?
