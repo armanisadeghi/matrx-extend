@@ -221,12 +221,12 @@
     "ci": {
       "run_id": 37257449869,
       "head": "4918b564",
-      "status": "in_progress",
-      "active_step": "Guest transport observer regression",
+      "status": "completed",
       "resource_job": "success",
-      "current_driver_byte_equivalent": true
+      "current_driver_byte_equivalent": true,
+      "conclusion": "success"
     },
-    "next_action": "After exact driver fullCIgreen, ONE root-input-checked frozen244 membernormal600 auth-interval native discriminator; keep productrun37233480033 artifact11315305224 separate fromdriverCI. Firsthide ordering does not prove cause/physicalexposure.",
+    "next_action": "FullCIgreen and independent review verified. ONE root-input-checked frozen244 membernormal600 auth-interval native discriminator; keep productrun37233480033 artifact11315305224 separate fromdriverCI. Firsthide ordering does not prove cause/physicalexposure.",
     "owned_workers_terminal": true,
     "native_launched_this_turn": false,
     "store": "Authenticated refreshed176published205pending, no mutation; latest check timestamp in guest-402-release-preparation.json",

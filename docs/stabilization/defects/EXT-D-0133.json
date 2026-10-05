@@ -93,7 +93,7 @@
     }
   ],
   "diagnostic_commit": "427e75a4",
-  "next_action": "Finish independent first-auth marker review and fullCI before ONE root-input-checked frozen244 native discriminator. Keep same product244/sourceb815/CI37233480033/artifact11315305224. No action/retry/focus/gate changes. First hidden ordering localizes but does not prove cause or physical exposure; no Scrape passes until actual cases run.",
+  "next_action": "Independent marker review and fullCI passed. Run ONE root-input-checked frozen244 native discriminator. Keep same product244/sourceb815/CI37233480033/artifact11315305224. No action/retry/focus/gate changes. First hidden ordering localizes but does not prove cause or physical exposure; no Scrape passes until actual cases run.",
   "fix_commits": ["44005fb4", "0e8aa6c7"],
   "hosted_ci": {
     "run_id": 37242845397,
@@ -170,7 +170,7 @@
     "proof": "Actual-source first-select/skip/error integration and real-caller wrapper-omission mutation; 13 focused tests pass. Browser cause still unconfirmed.",
     "independent_review": "76bd0754: PASS source scope and independent seven focused recorder tests including real-caller omission mutation; native unverified",
     "ci_run_id": 37257449869,
-    "ci_status": "in_progress on4918b564; original90f35ab8 CI was cancelled before execution",
+    "ci_status": "completed SUCCESS on4918b564; root verified terminal result and current driver byte-equivalence",
     "native_status": "not_launched"
   }
 }
