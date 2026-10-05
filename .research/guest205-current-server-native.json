@@ -129,10 +129,7 @@
     "trigger": {
       "at": "2026-10-05T03:29:51.569Z",
       "code": "RESOURCE_CPU_PENDING",
-      "reasons": [
-        "RESOURCE_CPU_BUSY",
-        "RESOURCE_CPU_HIGH_LOAD_BUSY"
-      ],
+      "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
       "cpu_busy_fraction": 0.88,
       "one_minute_load": 2.56,
       "logical_cpus": 3
