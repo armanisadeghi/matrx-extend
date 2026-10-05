@@ -14,13 +14,16 @@
   "actual": "The diagnostic wrapper throws on property access, preventing organization verification. Earlier tests used a writable fake send property and missed the real session descriptor.",
   "severity": "S2: native verification is blocked by test infrastructure; no product defect established",
   "priority": "P1: repair the introduced diagnostic before another native test",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root/immutable_panel_trace_repair",
   "evidence": [
     ".research/member-transition-native.json",
     "docs/stabilization/evidence/member-transition/run37252919339/raw/scrape-guest-native.json",
     ".research/immutable-panel-trace-repair.json",
-    ".research/immutable-panel-trace-peer.json"
+    ".research/immutable-panel-trace-peer.json",
+    ".research/immutable-panel-ci-retest.json",
+    ".research/member137-native.json",
+    "docs/stabilization/evidence/member137/run37255333525/hash-manifest.json"
   ],
   "transition_history": [
     {
@@ -43,6 +46,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Separate facade repairs frozen send invariant. Independent6focusedpass; restoredbadwrapper4pass2failonimmutablemethod andrealScrapeseam. Native retestpending."
+    },
+    {
+      "at": "2026-10-05T02:35:20.271661+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Root inspected exact244 native37255333525: original Proxy invariant absent; member/nonadmin/org checks complete; recorder includes health, organization_skip, after_organization and stop. Original three journals finalized, no unsafe/resourceInvalid. Independent immutable-method regression and fullCI17 focused tests passed."
+    },
+    {
+      "at": "2026-10-05T02:35:20.271661+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original introduced driver defect no longer reproduces and surrounding recorder/org verification works. Closure is instrumentation-only; D133 and all unreached Scrape cases remain unresolved."
     }
   ],
   "closure_requirements": [
@@ -51,5 +66,16 @@
   ],
   "fix_commits": ["fcc63580", "85484aab"],
   "independent_peer": "90e6c965",
-  "next_action": "One checked frozen244 changed-condition membernormal600 native. Root independently inspect exactdispatch productrun/artifact/source fields before launch. D137onlyclosesafteroriginalProxyreprogone andsurroundingdriverbehaviorverified; D133separate."
+  "next_action": "None for D137. Continue D133 causal investigation without weakening visibility acceptance; actual pointer branch native coverage remains outside this read-only organization_skip run.",
+  "native_retest": {
+    "run_id": 37255333525,
+    "artifact_version": "0.2.244",
+    "product_source": "b81587021d689078ed428dafe3e15474a84c41e2",
+    "product_artifact_id": 11315305224,
+    "driver_head": "8e9a0fadd0d7435519a6135431474c4b789584e9",
+    "original_proxy_invariant_absent": true,
+    "organization_verified": true,
+    "recorder_complete": true,
+    "scope": "Read-only organization_skip branch exercised; actual pointer forwarding independently covered by descriptor-faithful regression. D133 visibility still fails before viewport/cases."
+  }
 }

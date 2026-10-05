@@ -29,7 +29,9 @@
     ".research/member-visibility-timeline-native.json",
     ".research/panel-visible-reopen-repair.json",
     ".research/visible-panel-repair-peer.json",
-    ".research/member-visible-panel-native.json"
+    ".research/member-visible-panel-native.json",
+    ".research/member137-native.json",
+    "docs/stabilization/evidence/member137/run37255333525/hash-manifest.json"
   ],
   "transition_history": [
     {
@@ -88,7 +90,7 @@
     }
   ],
   "diagnostic_commit": "427e75a4",
-  "next_action": "Finish independent EXT-D-0137 facade review; then ONE verifiedfrozen244 native retest after exactdispatchproductinputs are independently checked beforelaunch. D133 remainsin-fix; no controlledcomparison orphysicalexposure conclusion from257run.",
+  "next_action": "Investigate operations between member_oauth_completed and member_before_web_close against exact244 trace. Hidden event precedes later resource wait and read-only organization_skip; these later intervals do not explain first hide in this run. No native retry until a falsifiable changed condition or physical-exposure oracle is independently reviewed. Never equate emulated hasFocus/DOM hit with physical panel exposure.",
   "fix_commits": ["44005fb4", "0e8aa6c7"],
   "hosted_ci": {
     "run_id": 37242845397,
@@ -140,5 +142,22 @@
       "result": "IntroducedProxyinvariantD137 blocksorganizationverification. Hiddenbeforewebclose andbeforesecondhealthinterval observed, but productversionchanged, causalityunproven; zero600/cases.",
       "root_verification": "All6payloadhashes/bytes,raw10phasetimeline+6events,3originaljournals checked. 2healthy,CPU_PENDINGrecovered,no unsafe;secret/linkabsenceverified."
     }
+  },
+  "latest_controlled_retest": {
+    "run_id": 37255333525,
+    "version": "0.2.244",
+    "artifact_id": 11315305224,
+    "outcome": "unverified",
+    "first_hidden_phase": "member_before_web_close",
+    "transition_interval": "outside_recorded_intervals",
+    "hidden_ms": 23957.100000000093,
+    "before_health_ms": 24320.800000000047,
+    "organization_action": "skip",
+    "member_and_org_verified": true,
+    "viewports": [],
+    "cases": [],
+    "original_proxy_error_absent": true,
+    "resource_invalid": false,
+    "physical_exposure": "unmeasured"
   }
 }
