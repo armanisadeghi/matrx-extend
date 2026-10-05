@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0137",
+  "task": "one hosted native retest of the repaired panel-transition recorder",
+  "status": "D137 driver retest passes; native acceptance remains unverified because D133 panel visibility still fails",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "file": ".github/workflows/hosted-guest-acceptance.yml",
+    "run_id": 37255333525,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37255333525",
+    "head_sha": "8e9a0fadd0d7435519a6135431474c4b789584e9",
+    "terminal_status": "completed",
+    "conclusion": "failure",
+    "acceptance_case": "guest-scrape-development",
+    "scrape_auth_mode": "member",
+    "scrape_width_mode": "normal",
+    "requested_normal_width_px": 600,
+    "launch_count": 1,
+    "acceptance_started_at_utc": "2026-10-05T02:30:05Z",
+    "acceptance_completed_at_utc": "2026-10-05T02:32:48Z",
+    "acceptance_duration_seconds": 163,
+    "readiness_steps": "all successful",
+    "acceptance_step": "failure",
+    "artifact_upload": "success"
+  },
+  "frozen_product": {
+    "kind": "ci_development_test",
+    "version": "0.2.244",
+    "source_sha": "b81587021d689078ed428dafe3e15474a84c41e2",
+    "tree_sha256": "3396bae6d24ddfc7e93422a12e2341983179d7b4be3eca94adaafc5316cc94e7",
+    "development_run_id": 37233480033,
+    "development_artifact_id": 11315305224,
+    "development_artifact_digest": "sha256:a32cc1fe513326b3a185971cd0093f80d5eefa712873a517b2540be693be78ae"
+  },
+  "driver": {
+    "repair_commit": "fcc63580af3e8163ae74e9c66f2c7db224e15022",
+    "green_ci_run_id": 37254659125,
+    "green_ci_head_sha": "88c6e49a1d227d236aa8b4bcf342d2db97ec8825",
+    "green_ci_conclusion": "success",
+    "hosted_workflow_and_browser_driver_match_green_ci": true,
+    "immutable_send_proxy_invariant_error_observed": false,
+    "transition_recorder_status": "measured",
+    "transition_event_kinds": [
+      "start",
+      "visibilitychange",
+      "before_health",
+      "after_health",
+      "organization_entry",
+      "organization_skip",
+      "after_organization",
+      "stop"
+    ],
+    "retest_verdict": "pass for the repaired immutable-send Proxy and usable transition recorder",
+    "closure_decision": "parent owns the defect ledger; this evidence does not promote D133 or Scrape coverage"
+  },
+  "native_outcome": {
+    "status": "unverified",
+    "stage": "organization_selection",
+    "failure_code": "scrape_authenticated_panel_foreground_not_observed:false",
+    "member_authentication": "passed",
+    "canonical_nonadmin_check": {
+      "matched_current_extension_user": true,
+      "http_status": 200,
+      "returned_rows": 0
+    },
+    "organization_selection": "selected and verified",
+    "panel_transition": "hidden",
+    "first_hidden_timeline_phase": "member_before_web_close",
+    "first_hidden_visibility_event_ms": 23957.1,
+    "health_observation_ms": 24320.8,
+    "organization_skip_ms": 65026.6,
+    "visibility_timeline_phase_count": 14,
+    "full_visibility_timeline_preserved_in": "acceptance-receipt.raw.json.txt",
+    "requested_width_observed": false,
+    "observed_diagnostic_viewport_px": [360, 373],
+    "panel_viewports": [],
+    "scrape_cases_completed": 0,
+    "physical_panel_exposure_inferred_from_emulated_focus": false,
+    "interpretation": "The fixed recorder executed and captured its lifecycle without the immutable-send invariant failure. The member side-panel target was focused but reported hidden after member OAuth, before the 600 px measurement or Scrape cases. This preserves the D133 failure; it does not establish a product acceptance pass or physical exposure."
+  },
+  "resource_journals": {
+    "package": { "decision": "valid", "exit_code": 0, "resource_invalid": false },
+    "browser": { "decision": "valid", "exit_code": 0, "resource_invalid": false },
+    "guest": {
+      "decision": "child_failed",
+      "exit_code": 1,
+      "resource_invalid": false,
+      "cpu_pending_samples": 3,
+      "recovered": true,
+      "unsafe_sample": false
+    }
+  },
+  "credential_cleanup": {
+    "temporary_github_secret_deleted": true,
+    "secret_list_confirmed_absent": true,
+    "local_single_use_link_deleted": true,
+    "local_link_absence_confirmed": true,
+    "no_email_sent": true,
+    "no_password_changed": true,
+    "no_auth_link_or_identity_values_recorded": true
+  },
+  "evidence": {
+    "artifact_id": 11322522236,
+    "artifact_name": "hosted-guest-37255333525-1",
+    "artifact_expired": false,
+    "artifact_size_bytes": 56930,
+    "artifact_digest": "sha256:a1fc94c941a8a8880d7bd81f9951d2e2845c4a984d9712bde56467822f973826",
+    "receipt_path": "docs/stabilization/evidence/member137/run37255333525/acceptance-receipt.raw.json.txt",
+    "journal_directory": "docs/stabilization/evidence/member137/run37255333525/resource-journals",
+    "hash_manifest_path": "docs/stabilization/evidence/member137/run37255333525/hash-manifest.json"
+  },
+  "limits": [
+    "No Scrape cases completed and no normal-width viewport measurement was recorded.",
+    "Hidden visibility with focus does not establish physical panel exposure.",
+    "No defect ledger, feature coverage, Store, or product-health promotion is claimed."
+  ]
+}

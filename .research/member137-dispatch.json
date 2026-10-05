@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0137 native retest evidence",
+  "launch_authorized": true,
+  "authorization": {
+    "source": "root explicitly authorized exactly one hosted native retest with this input dictionary",
+    "authorized_at_utc": "2026-10-05T02:24:23Z",
+    "no_retry": true
+  },
+  "workflow": "hosted-guest-acceptance.yml",
+  "inputs": {
+    "runner_label": "macos-15",
+    "development_run_id": "37233480033",
+    "development_artifact_id": "11315305224",
+    "acceptance_case": "guest-scrape-development",
+    "scrape_auth_mode": "member",
+    "scrape_width_mode": "normal",
+    "scrape_normal_width_px": "600"
+  },
+  "frozen_product": {
+    "version": "0.2.244",
+    "source_sha": "b81587021d689078ed428dafe3e15474a84c41e2",
+    "tree_sha256": "3396bae6d24ddfc7e93422a12e2341983179d7b4be3eca94adaafc5316cc94e7",
+    "development_run_id": "37233480033",
+    "development_artifact_id": "11315305224"
+  },
+  "driver": {
+    "required_commit": "fcc63580af3e8163ae74e9c66f2c7db224e15022",
+    "ci_run_id": "37254659125",
+    "ci_head_sha": "88c6e49a1d227d236aa8b4bcf342d2db97ec8825",
+    "ci_conclusion": "success"
+  },
+  "native_run_preflight": {
+    "active_hosted_acceptance_run": false,
+    "reviewer_secret_initially_absent": true,
+    "frozen_product_run_success": true,
+    "frozen_product_artifact_unexpired": true,
+    "frozen_product_artifact_digest": "sha256:a32cc1fe513326b3a185971cd0093f80d5eefa712873a517b2540be693be78ae",
+    "observed_active_workflow": "CI",
+    "preserve_pending_store_0_2_205": true
+  },
+  "native_run": {
+    "run_id": "37255333525",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37255333525",
+    "head_sha": "8e9a0fadd0d7435519a6135431474c4b789584e9",
+    "terminal_status": "completed",
+    "conclusion": "failure",
+    "failure_code": "scrape_authenticated_panel_foreground_not_observed:false",
+    "artifact_id": "11322522236",
+    "artifact_digest": "sha256:a1fc94c941a8a8880d7bd81f9951d2e2845c4a984d9712bde56467822f973826",
+    "acceptance_status": "unverified",
+    "preserved_evidence": ".research/member137-native.json",
+    "temporary_secret_absent": true,
+    "local_link_absent": true,
+    "retry_count": 0
+  }
+}

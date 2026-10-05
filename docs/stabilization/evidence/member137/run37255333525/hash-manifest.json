@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "workflow_run_id": 37255333525,
+  "workflow_artifact": {
+    "id": 11322522236,
+    "name": "hosted-guest-37255333525-1",
+    "digest": "sha256:a1fc94c941a8a8880d7bd81f9951d2e2845c4a984d9712bde56467822f973826",
+    "size_bytes": 56930,
+    "expired": false
+  },
+  "preserved_files": [
+    {
+      "path": "acceptance-receipt.raw.json.txt",
+      "bytes": 9467,
+      "sha256": "e3d0342c012ee48ba316a38833f653a70255d00b64d608181c6aca1fac95c725",
+      "source": "hosted artifact; original sanitized native receipt copied byte-for-byte"
+    },
+    {
+      "path": "resource-journals/hosted-package-37255333525-1.jsonl",
+      "bytes": 1000,
+      "sha256": "424670d3dfbb174c0db1707867089c151c8947290844dc164ee1a507189c7ccc",
+      "source": "hosted artifact; current run id only"
+    },
+    {
+      "path": "resource-journals/hosted-browser-37255333525-1.jsonl",
+      "bytes": 991,
+      "sha256": "dabd5d58fb36b21756c2cac99d02a0cff4f73e70aa2381e5172c6decb0c759a0",
+      "source": "hosted artifact; current run id only"
+    },
+    {
+      "path": "resource-journals/hosted-guest-37255333525-1.jsonl",
+      "bytes": 4356,
+      "sha256": "7fddac4e2c5f5b3bf8a4a45ad6febc91618c758cd911df2826ea6d19d5c64907",
+      "source": "hosted artifact; current run id only"
+    }
+  ],
+  "exclusions": [
+    "Three older resource journals in the artifact belong to run 37105304739 and are excluded.",
+    "Screenshots are not included in this retained evidence set."
+  ]
+}

@@ -1,0 +1,375 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007",
+  "mode": "member",
+  "status": "unverified",
+  "artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.244",
+    "source_sha": "b81587021d689078ed428dafe3e15474a84c41e2",
+    "tree_sha256": "3396bae6d24ddfc7e93422a12e2341983179d7b4be3eca94adaafc5316cc94e7",
+    "run_id": 37233480033,
+    "artifact_id": 11315305224
+  },
+  "guest_account_observed": false,
+  "cases": [],
+  "stage": "organization_selection",
+  "native_stage": "exercise_panel",
+  "failure": {
+    "stage": "organization_selection",
+    "code": "scrape_authenticated_panel_foreground_not_observed:false"
+  },
+  "original_busy_failure": null,
+  "cpu_diagnostic": null,
+  "horizontal_geometry": [],
+  "reload_milestones": [],
+  "reload_lifecycle": null,
+  "driver_failure": null,
+  "media_transitions": [],
+  "media_event_traces": [],
+  "authentication": {
+    "mode": "member",
+    "account_fingerprint": "3d6137db6c081c07",
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "admin_role": false,
+    "canonical_nonadmin_check": {
+      "matched_current_extension_user": true,
+      "http_status": 200,
+      "returned_rows": 0
+    },
+    "organization_selected": true,
+    "selected_organization_verified": true,
+    "rendered_identity": {
+      "rendered_email_matches_first_party": true,
+      "rendered_role_matches_mode": true,
+      "profile_matches_first_party": true,
+      "selected_organization_matches_stored_uuid_and_name": true
+    }
+  },
+  "panel_viewports": [],
+  "panel_visibility_timeline": [
+    {
+      "phase": "initial_settled_before_screenshots",
+      "measured": true,
+      "visibility": "visible",
+      "hasFocus": false,
+      "ready": true,
+      "width": 360,
+      "height": 373
+    },
+    {
+      "phase": "after_initial_screenshots",
+      "measured": true,
+      "visibility": "visible",
+      "hasFocus": false,
+      "ready": true,
+      "width": 360,
+      "height": 373
+    },
+    {
+      "phase": "before_authentication",
+      "measured": true,
+      "visibility": "visible",
+      "hasFocus": false,
+      "ready": true,
+      "width": 360,
+      "height": 373
+    },
+    {
+      "phase": "member_web_created",
+      "measured": true,
+      "visibility": "visible",
+      "hasFocus": false,
+      "ready": true,
+      "width": 360,
+      "height": 373,
+      "host": {
+        "native_window": {
+          "measured": true,
+          "state": "normal"
+        },
+        "panel_host": {
+          "measured": true,
+          "root_unique": true,
+          "root_active": false,
+          "root_window_present": true,
+          "root_window_focused": true,
+          "root_window_state": "normal",
+          "panel_unique": true,
+          "panel_in_root_window": null,
+          "focused_window_count": 1,
+          "window_count": 1
+        },
+        "scrape_hit": {
+          "measured": true,
+          "unique": true,
+          "in_viewport": true,
+          "hit": "descendant",
+          "disabled": false
+        }
+      }
+    },
+    {
+      "phase": "member_oauth_completed",
+      "measured": true,
+      "visibility": "visible",
+      "hasFocus": true,
+      "ready": true,
+      "width": 360,
+      "height": 373,
+      "host": {
+        "native_window": {
+          "measured": true,
+          "state": "normal"
+        },
+        "panel_host": {
+          "measured": true,
+          "root_unique": true,
+          "root_active": false,
+          "root_window_present": true,
+          "root_window_focused": true,
+          "root_window_state": "normal",
+          "panel_unique": true,
+          "panel_in_root_window": null,
+          "focused_window_count": 1,
+          "window_count": 1
+        },
+        "scrape_hit": {
+          "measured": true,
+          "unique": true,
+          "in_viewport": true,
+          "hit": "descendant",
+          "disabled": false
+        }
+      }
+    },
+    {
+      "phase": "member_before_web_close",
+      "measured": true,
+      "visibility": "hidden",
+      "hasFocus": true,
+      "ready": true,
+      "width": 360,
+      "height": 373,
+      "host": {
+        "native_window": {
+          "measured": true,
+          "state": "normal"
+        },
+        "panel_host": {
+          "measured": true,
+          "root_unique": true,
+          "root_active": false,
+          "root_window_present": true,
+          "root_window_focused": true,
+          "root_window_state": "normal",
+          "panel_unique": true,
+          "panel_in_root_window": null,
+          "focused_window_count": 1,
+          "window_count": 1
+        },
+        "scrape_hit": {
+          "measured": true,
+          "unique": true,
+          "in_viewport": true,
+          "hit": "descendant",
+          "disabled": false
+        }
+      }
+    },
+    {
+      "phase": "member_after_web_close",
+      "measured": true,
+      "visibility": "hidden",
+      "hasFocus": true,
+      "ready": true,
+      "width": 360,
+      "height": 373,
+      "host": {
+        "native_window": {
+          "measured": true,
+          "state": "normal"
+        },
+        "panel_host": {
+          "measured": true,
+          "root_unique": true,
+          "root_active": true,
+          "root_window_present": true,
+          "root_window_focused": true,
+          "root_window_state": "normal",
+          "panel_unique": true,
+          "panel_in_root_window": null,
+          "focused_window_count": 1,
+          "window_count": 1
+        },
+        "scrape_hit": {
+          "measured": true,
+          "unique": true,
+          "in_viewport": true,
+          "hit": "descendant",
+          "disabled": false
+        }
+      }
+    },
+    {
+      "phase": "member_after_root_activation",
+      "measured": true,
+      "visibility": "hidden",
+      "hasFocus": true,
+      "ready": true,
+      "width": 360,
+      "height": 373,
+      "host": {
+        "native_window": {
+          "measured": true,
+          "state": "normal"
+        },
+        "panel_host": {
+          "measured": true,
+          "root_unique": true,
+          "root_active": true,
+          "root_window_present": true,
+          "root_window_focused": true,
+          "root_window_state": "normal",
+          "panel_unique": true,
+          "panel_in_root_window": null,
+          "focused_window_count": 1,
+          "window_count": 1
+        },
+        "scrape_hit": {
+          "measured": true,
+          "unique": true,
+          "in_viewport": true,
+          "hit": "descendant",
+          "disabled": false
+        }
+      }
+    },
+    {
+      "phase": "after_authentication",
+      "measured": true,
+      "visibility": "hidden",
+      "hasFocus": true,
+      "ready": true,
+      "width": 360,
+      "height": 373
+    },
+    {
+      "phase": "after_organization_selection",
+      "measured": true,
+      "visibility": "hidden",
+      "hasFocus": true,
+      "ready": true,
+      "width": 360,
+      "height": 373
+    },
+    {
+      "phase": "before_reopen",
+      "measured": true,
+      "visibility": "hidden",
+      "hasFocus": true,
+      "ready": true,
+      "width": 360,
+      "height": 373
+    },
+    {
+      "phase": "after_root_foreground",
+      "measured": true,
+      "visibility": "hidden",
+      "hasFocus": true,
+      "ready": true,
+      "width": 360,
+      "height": 373
+    },
+    {
+      "phase": "after_trusted_open",
+      "measured": true,
+      "visibility": "hidden",
+      "hasFocus": true,
+      "ready": true,
+      "width": 360,
+      "height": 373
+    },
+    {
+      "phase": "after_target_activation",
+      "measured": true,
+      "visibility": "hidden",
+      "hasFocus": true,
+      "ready": true,
+      "width": 360,
+      "height": 373
+    }
+  ],
+  "panel_transition": {
+    "status": "measured",
+    "events": [
+      {
+        "kind": "start",
+        "ms": 3252.9000000000233,
+        "visibility": "visible"
+      },
+      {
+        "kind": "visibilitychange",
+        "ms": 23957.100000000093,
+        "visibility": "hidden"
+      },
+      {
+        "kind": "before_health",
+        "ms": 24320.800000000047,
+        "visibility": "hidden"
+      },
+      {
+        "kind": "after_health",
+        "ms": 65013.40000000002,
+        "visibility": "hidden"
+      },
+      {
+        "kind": "organization_entry",
+        "ms": 65017,
+        "visibility": "hidden"
+      },
+      {
+        "kind": "organization_skip",
+        "ms": 65026.60000000009,
+        "visibility": "hidden"
+      },
+      {
+        "kind": "after_organization",
+        "ms": 65036.70000000007,
+        "visibility": "hidden"
+      },
+      {
+        "kind": "stop",
+        "ms": 65038.5,
+        "visibility": "hidden"
+      }
+    ],
+    "interval": "outside_recorded_intervals"
+  },
+  "width_mode": "normal",
+  "auth_stage": "member_extension_signin",
+  "panel_foreground_diagnostic": {
+    "owned_root_page": true,
+    "panel_visibility": "hidden",
+    "panel_has_focus": true,
+    "original_panel_target_present": true,
+    "exact_panel_target_count": 1,
+    "original_is_only_exact_panel_target": true,
+    "side_panel_context": {
+      "contextCount": 1,
+      "sidePanelCount": 1,
+      "expectedExtensionCount": 1,
+      "exactUrlCount": 1,
+      "globalTabCount": 1,
+      "exactContextCount": 1,
+      "missingDocumentUrlCount": 0,
+      "emptyDocumentUrlCount": 0,
+      "otherExtensionUrlCount": 0,
+      "nonExtensionUrlCount": 0
+    },
+    "diagnostic_timed_out": false,
+    "outstanding_probes_after_deadline": false
+  }
+}
