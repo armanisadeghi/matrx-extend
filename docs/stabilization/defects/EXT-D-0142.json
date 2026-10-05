@@ -1,0 +1,44 @@
+{
+  "id": "EXT-D-0142",
+  "feature_id": "EXT-F-1012",
+  "case_ids": ["EXT-F-1012-T24", "EXT-F-1012-T51"],
+  "title": "Admin Showcase acceptance cannot select required organization option",
+  "surface": "Showcase acceptance / Settings organization selection",
+  "auth_mode": "admin",
+  "reproduction": [
+    "Use successfulmain-pushCI37272977936 development265 source dded25ae artifact11328837235 with reviewed showcase-picker-admin case.",
+    "Sign in through realadmin Settings flow; run37273880772 verifies admin role, available picker, no selectedorganization.",
+    "Attempt required organization selection; actualhelper reports d87_member_organization_option_unavailable at organization_select."
+  ],
+  "expected": "Required approved organization can be selected and rendered/storage identity verified before Showcase controls are tested; fixture/driver mismatch must not be reported as a product pass.",
+  "actual": "Realadminauth passes; selection fails beforepickerflow. Receipt admin_role_verified=true,picker_available=true,picker_has_selection=false,selection_required=true. Rootcause notyetproven: helper combines optioncount/visibility/hit-testing into one refusal. All3 resourcejournals valid; guestchild exits1.",
+  "severity": "S2: blocks admin acceptance; product versus fixture/driver cause unknown",
+  "priority": "P1: diagnose observed selection boundary before further Showcase testing",
+  "state": "in-fix",
+  "owner": "showcase_org_selection_fix",
+  "evidence": [
+    ".research/showcase-org-native-retest.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37273880772"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-05T06:53:57.849170+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Actual guarded nativefailure"
+    },
+    {
+      "at": "2026-10-05T06:53:57.849170+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Exact organization_select refusal captured; no productcause assumed"
+    },
+    {
+      "at": "2026-10-05T06:53:57.849170+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "FreshSol assigned evidence-based diagnosis/provenrepair; no blindnative retry"
+    }
+  ],
+  "closure_requirement": "Prove actualcause at selectionboundary, causalRED/GREEN and independentreview, fullCI, originalnativeorganizationselection passes and surrounding identity/guard checks remainvalid. No arbitrary organizationfallback or fabricated membership."
+}

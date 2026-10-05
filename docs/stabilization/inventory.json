@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-05T06:16:55.926855+00:00",
+  "updated_at": "2026-10-05T06:53:57.849170+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -25070,7 +25070,8 @@
             "EXT-D-0054",
             "EXT-D-0055",
             "EXT-D-0078",
-            "EXT-D-0141"
+            "EXT-D-0141",
+            "EXT-D-0142"
           ],
           "run_ids": [
             "showcase-live-discovery-001",
@@ -25101,7 +25102,8 @@
         "Installed .108 real-calendar retest: Doctor handoff and seeded/fresh scope selection now work; title+href extraction249rows had matching sampled records and navigation cleared state. T04/T24/T29/T45/T51 remain partial; full rows beyond200, alternate-scope extraction, persistence and other dimensions still pending. No localhost UI was used.",
         "T53-T55 and C44-C45 added for EXT-D-0041 Network matcher/replay identity follow-up. These are unverified planning coverage only; no admin, guest, or member result was promoted. Guest/member denial remains the existing T38 case. Network evidence may record only sanitized fixed fields and local-producer digest presence; never raw request payload, credentials, or headers.",
         "Installed .109 D48 live run: one actual GET capture was saved, reopened from Patterns and interactively replayed with all four visible response values matching; recognized/unknown synthetic query-key masking controls were observed and the real matcher restored before save. T50/T53/T58 are partial only; no credential-bearing pattern was persisted or inspected, and D48 remains open pending full installed privacy acceptance.",
-        "2026-10-05 native37270450308 passed guest gate and admin authentication but failed at organization; EXT-D-0141 tracks missing exact failure diagnostics. No picker cases ran and no coverage was promoted. Resource evidence valid; temporary credentials removed."
+        "2026-10-05 native37270450308 passed guest gate and admin authentication but failed at organization; EXT-D-0141 tracks missing exact failure diagnostics. No picker cases ran and no coverage was promoted. Resource evidence valid; temporary credentials removed.",
+        "Native37273880772 resourcevalid failure identifies organization_select/required option unavailable. D141 diagnostic loss closed; D142 actual selection failure under diagnosis. No Showcase controls ran; no case promotion."
       ]
     },
     {

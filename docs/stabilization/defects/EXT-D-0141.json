@@ -11,17 +11,18 @@
     "Compare the actual driver sequence: organization begins only after signInSettings resolves and admin_role assertion passes; caught exception details and last safe organization observations are absent."
   ],
   "expected": "Receipt identifies the failed organization boundary with a fixed safe failure code, substage and bounded observations sufficient to distinguish driver, fixture and product failures without leaking credentials.",
-  "actual": "Source repair65beb08a plus f89cc89e retains bounded organization substage, allowlisted reason and last sampled boolean/null observations through the actual helper and receipt writer. Builder targeted9tests pass; sample/callback mutations fail. Fresh independent reverify, full CI and changed-condition native evidence remain pending. Original runtime cause remains unknown.",
+  "actual": "Diagnostic loss repaired and independently verified. Native37273880772 now retains exact organization_select substage, d87_member_organization_option_unavailable code and four safe booleans after real admin sign-in; root read original receipt and all3 current journals, resourceInvalidfalse. This closes diagnostic loss only; the selection failure is EXT-D-0142 and Showcase remains unverified.",
   "severity": "S2: blocks trustworthy diagnosis and acceptance; runtime product root cause remains unknown",
   "priority": "P1: repair evidence before another native attempt",
-  "state": "fixed",
+  "state": "closed",
   "evidence": [
     ".research/showcase-picker-native-current.json",
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/37270450308",
     ".research/showcase-org-diagnostic-repair.json",
     ".research/showcase-org-diagnostic-peer.json",
     ".research/showcase-org-diagnostic-final-peer.json",
-    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37272977936"
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37272977936",
+    ".research/showcase-org-native-retest.json"
   ],
   "owner": "showcase_org_failure_diagnosis",
   "transition_history": [
@@ -48,6 +49,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "f89cc89e addresses confirmed review gaps; fresh peer and full CI/native evidence pending"
+    },
+    {
+      "at": "2026-10-05T06:53:57.849170+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent causal guards/fullCI plus actualnative37273880772 retains formerlylost failure detail; rootverifiedoriginalreceipt SHA5d9ef4c62719422a3652ba97bfe0c8c444a139da4d0c7a8c68fc8ac18c7a1578 and3validresourcejournals"
+    },
+    {
+      "at": "2026-10-05T06:53:57.849170+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original missingdiagnostics defect repaired; separate observedorganizationselectionfailure trackedD142, no productcoveragepromotion"
     }
   ],
   "closure_requirement": "Actual driver failure-path guard red then green, independent review of safe substage/observations and negative cases, full CI, then changed-condition native evidence. Do not close D42 or promote picker coverage from diagnostic tests.",
