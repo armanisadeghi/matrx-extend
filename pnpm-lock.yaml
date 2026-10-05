@@ -15,7 +15,7 @@ importers:
     dependencies:
       '@ai-matrx/agents':
         specifier: latest
-        version: 0.43.35(@supabase/supabase-js@2.117.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 0.44.1(@supabase/supabase-js@2.117.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@ai-matrx/associations':
         specifier: latest
         version: 0.13.146(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -236,8 +236,8 @@ packages:
   '@1natsu/wait-element@4.2.0':
     resolution: {integrity: sha512-Om0Q+WE9mNrpY4AwMTvkFiYHv8VM7TML3PvOqXy+w6kAjLjKhGYHYX+305+a6J8RVpds9s7IF2Z5aOPYwULFNw==}
 
-  '@ai-matrx/agents@0.43.35':
-    resolution: {integrity: sha512-hkZZ1okEgaiiNmxRtqWcLe1c3J5UsvCKOBgUHcAncZY69bSMhdSNCdbOApqtZqVKmO2Ls5J+LCAm2jhxBA0CEw==}
+  '@ai-matrx/agents@0.44.1':
+    resolution: {integrity: sha512-KTWSVyom8QmTG1F8Af/UcM1f6LHRDsNv8bwbbCbFePBzyvkJFVNRG7hlOa1y5gW87XsRcfOJNvSPu43KbUYOyg==}
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=18.0.0'
@@ -4392,7 +4392,7 @@ snapshots:
       defu: 6.1.7
       many-keys-map: 3.0.3
 
-  '@ai-matrx/agents@0.43.35(@supabase/supabase-js@2.117.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@ai-matrx/agents@0.44.1(@supabase/supabase-js@2.117.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
     dependencies:
       '@ai-matrx/associations': 0.13.146(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@ai-matrx/content-ir': 0.20.1
