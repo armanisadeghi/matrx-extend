@@ -205,13 +205,15 @@ export function classifyGuestTurn({
   runs,
   assistantText,
   replyCount,
+  priorRunCount = 0,
+  priorReplyCount = 0,
   expectedTerms,
   orderedTerms = [],
   errorNotice,
   terminalAnswerError = false,
   now = Date.now(),
 }) {
-  const latest = runs.at(-1);
+  const latest = runs.length > priorRunCount ? runs.at(-1) : null;
   if (
     errorNotice ||
     latest?.userRequestOutcome === 'failed' ||
@@ -229,9 +231,9 @@ export function classifyGuestTurn({
   if (['error', 'failed', 'cancelled'].includes(latest.endReason)) return 'terminal_error';
   const terminal = latest.userRequestOutcome === 'success' || latest.endReason === 'complete';
   if (!terminal) return 'in_progress';
-  if (replyCount <= latest.startReplyCount && now - latest.doneAt < 700)
-    return 'rendering_terminal';
-  if (replyCount <= latest.startReplyCount || !assistantText.trim()) return 'terminal_empty_answer';
+  const priorReplyFloor = Math.max(latest.startReplyCount, priorReplyCount);
+  if (replyCount <= priorReplyFloor && now - latest.doneAt < 700) return 'rendering_terminal';
+  if (replyCount <= priorReplyFloor || !assistantText.trim()) return 'terminal_empty_answer';
   if (terminalAnswerError) return 'terminal_error';
   let after = -1;
   const inOrder = orderedTerms.every((term) => {

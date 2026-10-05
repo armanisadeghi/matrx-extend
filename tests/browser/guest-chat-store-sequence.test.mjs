@@ -40,8 +40,13 @@ test('guest acceptance requires both offscreen HTTP observations before transpor
 });
 
 test('guest acceptance sends and verifies an independent same-conversation turn before reload', () => {
+  const boundary = source.indexOf(
+    'const sameConversationBoundary = await guestTurnBoundary(panel)',
+  );
   assert.ok(
     openingScreenshot < sameSend &&
+      boundary > openingScreenshot &&
+      boundary < sameSend &&
       sameSend < sameVerdict &&
       sameVerdict < sameScreenshot &&
       sameScreenshot < panelReload,
@@ -49,6 +54,8 @@ test('guest acceptance sends and verifies an independent same-conversation turn 
   );
   assert.match(source.slice(sameSend, sameVerdict), /fixture\.followupCode/);
   assert.match(source.slice(sameSend, sameVerdict), /replyCount > answered\.replyCount/);
+  assert.match(source.slice(sameSend, sameVerdict), /sameConversationBoundary,/);
+  assert.match(source.slice(0, openingVerdict), /\.\.\.turnBoundary/);
 });
 
 // Regressions caught: an owner-table GET aborts before either answer is checked,

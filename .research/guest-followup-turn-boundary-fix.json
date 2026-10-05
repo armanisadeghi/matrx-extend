@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0144",
+  "status": "source_repaired_focused_guards_pass_native_recheck_pending",
+  "source_receipt": "/Volumes/Samsung2TB/code/.stabilization-scratch/daily-guest-same-conversation/matrx-extend/matrx-extend/test-results/guest-chat-store-9cf1b01c-7ec4-4831-8a98-94f33e3d85cd.json",
+  "observed_boundary": {
+    "opening": "HTTP 200 POST and grounded terminal reply; one completed traced run and one rendered reply",
+    "followup": "at first poll after submit, one completed traced run and one rendered reply remained; streaming was true; follow-up POST unobserved",
+    "first_bad_classification": "the full-history classifier treated the prior opening run and reply as terminal_wrong_answer for the new question before a follow-up run appeared",
+    "runtime_causality_limit": "The receipt proves an acceptance-oracle error at the pending-turn boundary; it does not establish whether the follow-up transport or product later succeeds."
+  },
+  "repair": "Checkpoint run, reply, and tool-event counts immediately before every send; a prior completed run cannot finish the new verdict; later new-run success, wrong answer, and error remain terminal as appropriate. Follow-up grounding diagnostics include only tool events after the checkpoint.",
+  "guards": {
+    "red_before_fix": "node --test tests/browser/guest-chat-completion-oracle.test.mjs failed: terminal_wrong_answer versus expected in_progress",
+    "green_after_fix": "25 passed, 0 failed across guest completion oracle, store sequence, and transport observer",
+    "return_expected_mutation": "plant.py replaced the classifier decision with terminal_answer; the focused suite failed on pending and error cases, then restored the file byte-identically",
+    "old_run_mutation": "plant.py restored runs.at(-1) without the run checkpoint; the captured pending-turn regression failed, then restored the file byte-identically",
+    "ci": "the guest completion oracle test is explicitly included in the CI guest observer step"
+  },
+  "preserved_gates": "Independent HTTP status/conversation identity, terminal grounded content, guest auth absence, owner-table GET, and browser resource checks remain required by the acceptance path.",
+  "limits": "No native browser or hosted public CRX run was performed in this lane. The root owner will run independent live verification."
+}

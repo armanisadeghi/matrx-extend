@@ -207,11 +207,21 @@ async function installStreamTrace(panel, fixture, fixtureTabId) {
   assert.equal(installed, true, 'guest stream trace installed before send');
 }
 
-async function waitForTerminalAnswer(panel, expected, probeToolBoundary = null) {
+async function guestTurnBoundary(panel) {
+  const state = await observe(panel);
+  assert.ok(state.streamTrace, 'guest stream trace must exist before sending a question');
+  return {
+    priorRunCount: state.streamTrace.runs.length,
+    priorReplyCount: state.replyCount,
+    priorToolEventCount: state.streamTrace.toolEvents.length,
+  };
+}
+
+async function waitForTerminalAnswer(panel, expected, turnBoundary, probeToolBoundary = null) {
   let last = null;
   const timeline = [];
   const toolBoundaryChecks = [];
-  let observedToolEvents = 0;
+  let observedToolEvents = turnBoundary.priorToolEventCount;
   const deadline = Date.now() + 180_000;
   while (Date.now() < deadline) {
     const state = await observe(panel, { ...expected, diagnostics: true });
@@ -235,6 +245,7 @@ async function waitForTerminalAnswer(panel, expected, probeToolBoundary = null) 
       runs: state.streamTrace?.runs ?? [],
       assistantText: state.latestReplyText ?? '',
       replyCount: state.replyCount,
+      ...turnBoundary,
       expectedTerms: answerTerms,
       orderedTerms: expected.fixtureHeading ? [] : REQUIRED_ANSWER_TERMS,
       errorNotice: state.errorNotice,
@@ -253,7 +264,13 @@ async function waitForTerminalAnswer(panel, expected, probeToolBoundary = null) 
         streaming: state.streaming,
       });
     }
-    last = { state, verdict, timeline, toolBoundaryChecks };
+    last = {
+      state,
+      verdict,
+      timeline,
+      toolBoundaryChecks,
+      toolEvents: toolEvents.slice(turnBoundary.priorToolEventCount),
+    };
     if (verdict.startsWith('terminal_')) return last;
     await new Promise((resolveWait) => setTimeout(resolveWait, 100));
   }
@@ -695,16 +712,20 @@ try {
           fixtureTabId,
         );
         await installStreamTrace(panel, fixture, fixtureTabId);
+        const openingBoundary = await guestTurnBoundary(panel);
         networkWatch.arm('opening');
         contextReadWatch.arm('opening_send');
         await submitQuestion(panel, FIRST_QUESTION, 'opening_question');
 
         markStage('real_guest_answer');
-        const openingTurn = await waitForTerminalAnswer(panel, { nonce: fixture.openingCode }, () =>
-          fixtureIdentitySnapshot(attachWorker, web, fixture, fixtureTabId),
+        const openingTurn = await waitForTerminalAnswer(
+          panel,
+          { nonce: fixture.openingCode },
+          openingBoundary,
+          () => fixtureIdentitySnapshot(attachWorker, web, fixture, fixtureTabId),
         );
         report.grounding_diagnostics.opening = {
-          toolEvents: openingTurn.state.streamTrace?.toolEvents ?? [],
+          toolEvents: openingTurn.toolEvents,
           toolBoundaryChecks: openingTurn.toolBoundaryChecks,
           terminal: await fixtureIdentitySnapshot(attachWorker, web, fixture, fixtureTabId, panel),
         };
@@ -749,6 +770,7 @@ try {
         );
         const sameFixtureTabId = await requireActiveFixtureTab(attachWorker, web, fixture);
         assert.equal(sameFixtureTabId, fixtureTabId, 'same-conversation send must use opening tab');
+        const sameConversationBoundary = await guestTurnBoundary(panel);
         networkWatch.arm('same_conversation_followup');
         contextReadWatch.arm('same_conversation_followup_send');
         await submitQuestion(panel, FOLLOWUP_QUESTION, 'same_conversation_followup_question');
@@ -756,10 +778,11 @@ try {
         const sameTurn = await waitForTerminalAnswer(
           panel,
           { nonce: fixture.followupCode, fixtureHeading: fixture.title },
+          sameConversationBoundary,
           () => fixtureIdentitySnapshot(attachWorker, web, fixture, fixtureTabId),
         );
         report.grounding_diagnostics.same_conversation_followup = {
-          toolEvents: sameTurn.state.streamTrace?.toolEvents ?? [],
+          toolEvents: sameTurn.toolEvents,
           toolBoundaryChecks: sameTurn.toolBoundaryChecks,
           terminal: await fixtureIdentitySnapshot(attachWorker, web, fixture, fixtureTabId, panel),
         };
@@ -845,16 +868,18 @@ try {
           followupFixtureTabId,
         );
         await installStreamTrace(panel, fixture, followupFixtureTabId);
+        const postReloadBoundary = await guestTurnBoundary(panel);
         await submitQuestion(panel, FOLLOWUP_QUESTION, 'followup_question');
 
         markStage('real_guest_followup_answer');
         const followupTurn = await waitForTerminalAnswer(
           panel,
           { nonce: fixture.followupCode, fixtureHeading: fixture.title },
+          postReloadBoundary,
           () => fixtureIdentitySnapshot(attachWorker, web, fixture, followupFixtureTabId),
         );
         report.grounding_diagnostics.followup = {
-          toolEvents: followupTurn.state.streamTrace?.toolEvents ?? [],
+          toolEvents: followupTurn.toolEvents,
           toolBoundaryChecks: followupTurn.toolBoundaryChecks,
           terminal: await fixtureIdentitySnapshot(
             attachWorker,

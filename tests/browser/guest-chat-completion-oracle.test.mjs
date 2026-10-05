@@ -256,6 +256,81 @@ test('opening answer must list the page stages in order', () => {
   );
 });
 
+test('a completed prior turn cannot terminate a pending same-conversation follow-up', () => {
+  let replies = 0;
+  const collector = createGuestStreamCollector({ replyCount: () => replies, now: () => 1000 });
+  collector.accept(
+    streamEvent('opening-run', 'completion', { operation: 'user_request', status: 'success' }),
+  );
+  collector.accept(streamEvent('opening-run', 'end', { reason: 'complete' }));
+  collector.accept(streamMessage('opening-run', 'done'));
+  replies = 1;
+  const boundary = { priorRunCount: collector.snapshot().runs.length, priorReplyCount: replies };
+  const common = {
+    ...boundary,
+    assistantText: 'C82F4A: Capture, Understand, Use.',
+    replyCount: replies,
+    expectedTerms: ['FOLLOW-92', 'Fixture heading'],
+    errorNotice: false,
+    now: 2000,
+  };
+  assert.equal(classifyGuestTurn({ ...common, runs: collector.snapshot().runs }), 'in_progress');
+  collector.accept(streamMessage('followup-run', 'text', { content: 'reading page' }));
+  assert.equal(classifyGuestTurn({ ...common, runs: collector.snapshot().runs }), 'in_progress');
+  collector.accept(
+    streamEvent('followup-run', 'completion', { operation: 'user_request', status: 'success' }),
+  );
+  collector.accept(streamEvent('followup-run', 'end', { reason: 'complete' }));
+  collector.accept(streamMessage('followup-run', 'done'));
+  replies = 2;
+  assert.equal(
+    classifyGuestTurn({
+      ...common,
+      runs: collector.snapshot().runs,
+      replyCount: replies,
+      assistantText: 'FOLLOW-92 under Fixture heading.',
+    }),
+    'terminal_answer',
+  );
+  assert.equal(
+    classifyGuestTurn({
+      ...common,
+      runs: collector.snapshot().runs,
+      replyCount: replies,
+      assistantText: 'The page is ready.',
+    }),
+    'terminal_wrong_answer',
+  );
+});
+
+test('a newly completed follow-up error is terminal despite an older successful answer', () => {
+  let replies = 0;
+  const collector = createGuestStreamCollector({ replyCount: () => replies, now: () => 1000 });
+  collector.accept(
+    streamEvent('opening-run', 'completion', { operation: 'user_request', status: 'success' }),
+  );
+  collector.accept(streamEvent('opening-run', 'end', { reason: 'complete' }));
+  collector.accept(streamMessage('opening-run', 'done'));
+  replies = 1;
+  collector.accept(
+    streamEvent('followup-run', 'completion', { operation: 'user_request', status: 'failed' }),
+  );
+  collector.accept(streamEvent('followup-run', 'end', { reason: 'complete' }));
+  collector.accept(streamMessage('followup-run', 'done'));
+  assert.equal(
+    classifyGuestTurn({
+      runs: collector.snapshot().runs,
+      priorRunCount: 1,
+      priorReplyCount: 1,
+      assistantText: 'C82F4A: Capture, Understand, Use.',
+      replyCount: 1,
+      expectedTerms: ['FOLLOW-92'],
+      errorNotice: false,
+    }),
+    'terminal_error',
+  );
+});
+
 test('uncoded 409 remains pending while another delegated tool resolves', () => {
   let replies = 0;
   const collector = createGuestStreamCollector({ replyCount: () => replies, now: () => 1000 });
