@@ -27,11 +27,13 @@
   "verification": {
     "full_harness_before_fail_closed_tightening": "node --test tests/browser/native-sidepanel-qa-harness.test.mjs tests/browser/panel-transition-recorder.test.mjs tests/browser/panel-visibility-diagnostic.test.mjs tests/browser/panel-visible-reopen-repair.test.mjs tests/browser/settings-native-auth-driver.test.mjs: 43 passed",
     "focused_after_fail_closed_tightening": "node --test tests/browser/panel-transition-recorder.test.mjs tests/browser/panel-visibility-diagnostic.test.mjs tests/browser/panel-visible-reopen-repair.test.mjs tests/browser/settings-native-auth-driver.test.mjs: 17 passed",
+    "focused_after_executed_wiring_guard": "node --test tests/browser/panel-transition-recorder.test.mjs tests/browser/panel-visibility-diagnostic.test.mjs tests/browser/panel-visible-reopen-repair.test.mjs tests/browser/settings-native-auth-driver.test.mjs: 18 passed",
     "syntax": "node --check tests/browser/scrape-guest-native-acceptance.mjs passed",
     "mutation_red": [
       "Removing visibilitychange listener made both timing cases fail on missing hidden event; plant.py restored source byte-identically.",
       "Replacing measured result with constant start event made both distinct timing cases fail; plant.py restored source byte-identically.",
-      "Removing failed-marker tracking, missed-hidden-event detection, or monotonic ordering each failed the actual recorder test; each plant.py mutation restored source byte-identically."
+      "Removing failed-marker tracking, missed-hidden-event detection, or monotonic ordering each failed the actual recorder test; each plant.py mutation restored source byte-identically.",
+      "Executed Scrape setup with the real recorder and external CDP/DOM boundary. Five separate plant.py mutations removed before_health, after_health, organization_entry, the organization branch callback, or the actual pointer proxy; each made the integration test RED for the interval or exact event sequence and restored source byte-identically."
     ],
     "native_acceptance": "Not run by this lane. Renderer event order establishes temporal association only, not browser-window causation or physical exposure."
   },

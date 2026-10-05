@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { test } from 'node:test';
 import { createContext, runInContext } from 'node:vm';
 import {
@@ -6,6 +7,11 @@ import {
   startPanelTransitionRecorder,
   traceOrganizationPointers,
 } from './panel-transition-recorder.mjs';
+
+const scrapeSource = await readFile(
+  new URL('./scrape-guest-native-acceptance.mjs', import.meta.url),
+  'utf8',
+);
 
 function fixture() {
   let tick = 0;
@@ -155,4 +161,101 @@ test('missed event or phase marker cannot claim a complete interval', async () =
   reversedClock.corruptClock('1000');
   assert.deepEqual(await fourth.stop(), { status: 'unavailable', events: [] });
   assert.equal(reversedClock.listeners.size, 0);
+});
+
+test('actual Scrape setup wires resource and organization pointer intervals to the real recorder', async () => {
+  const start = scrapeSource.indexOf('exercisePanel: async ({');
+  const end = scrapeSource.indexOf('        expectedIdentity =', start);
+  assert.ok(start >= 0 && end > start, 'authenticated setup seam missing');
+  const prefix = scrapeSource.slice(start + 'exercisePanel: '.length, end);
+  const exercise = new Function(
+    'startPanelTransitionRecorder',
+    'traceOrganizationPointers',
+    'classifyPanelTransition',
+    'signInSettings',
+    'selectRequiredSettingsOrganization',
+    'selection',
+    'report',
+    'assert',
+    'REPO',
+    `return (${prefix} } return report; });`,
+  );
+  for (const scenario of ['resource_wait', 'pointer_dispatch']) {
+    const env = fixture();
+    const report = {};
+    let actions = 0;
+    const run = exercise(
+      startPanelTransitionRecorder,
+      traceOrganizationPointers,
+      classifyPanelTransition,
+      async () => ({ mode: 'member', email: 'private@example.test', profileId: 'private-id' }),
+      async ({ panel, onBranch }) => {
+        await onBranch(scenario === 'resource_wait' ? 'organization_skip' : 'organization_select');
+        if (scenario === 'pointer_dispatch')
+          await panel.send('Input.dispatchMouseEvent', {
+            type: 'mousePressed',
+            x: 37,
+            y: 59,
+            privateIdentity: 'secret',
+          });
+        return { organizationId: 'private-org' };
+      },
+      { mode: 'member' },
+      report,
+      assert,
+      '',
+    );
+    const originalSend = env.panel.send;
+    env.panel.send = async (method, args) => {
+      if (scenario === 'pointer_dispatch' && method === 'Input.dispatchMouseEvent') env.hide();
+      return originalSend(method, args);
+    };
+    const result = await run({
+      panel: env.panel,
+      page: {},
+      observePanelVisibility: async () => {},
+      observeAuthenticatedPanel: async () => {},
+      requireResourceHealth: async () => {},
+      resourceAction: async (action) => {
+        actions += 1;
+        if (scenario === 'resource_wait' && actions === 2) env.hide();
+        return action();
+      },
+    });
+    assert.equal(actions, 2);
+    assert.equal(result.panel_transition.status, 'measured');
+    assert.equal(
+      result.panel_transition.interval,
+      scenario === 'resource_wait' ? 'during_resource_wait' : 'during_pointer_dispatch',
+    );
+    assert.deepEqual(
+      Array.from(result.panel_transition.events, (event) => event.kind),
+      scenario === 'resource_wait'
+        ? [
+            'start',
+            'before_health',
+            'visibilitychange',
+            'after_health',
+            'organization_entry',
+            'organization_skip',
+            'after_organization',
+            'stop',
+          ]
+        : [
+            'start',
+            'before_health',
+            'after_health',
+            'organization_entry',
+            'organization_select',
+            'pointer_before',
+            'visibilitychange',
+            'pointer_after',
+            'after_organization',
+            'stop',
+          ],
+    );
+    assert.equal(env.listeners.size, 0);
+    assert.equal(JSON.stringify(result.panel_transition).includes('private'), false);
+    assert.equal(JSON.stringify(result.panel_transition).includes('37'), false);
+  }
 });
