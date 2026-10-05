@@ -1,0 +1,29 @@
+{
+  "audit_date": "2026-10-05",
+  "source_baseline_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
+  "current_source_sha": "9298dbd3",
+  "finding": "none",
+  "bounded_conclusion": "The proposed Capture handoff queue gap was refuted: existing feature EXT-F-2010 covers the queue actions and procedures, including EXT-F-2010-T04. The only confirmed discrepancy was wording that implied a skip note was required and an obsolete step requiring a page-specific capture note. Corrected EXT-F-2010-C18 and EXT-F-2010-T04 without changing IDs, cells, or results.",
+  "peer_evidence": "docs/stabilization/reports/capture-queue-gap-peer.json",
+  "source_evidence": [
+    "src/features/capture-ladder/NeedsYourBrowserView.tsx: giveUpOn passes dismissNote.trim() || undefined, allowing skip with or without a note",
+    "src/features/capture-ladder/NeedsYourBrowserView.tsx: capture is submitted by finishDriving after the person finishes browser steps"
+  ],
+  "inventory_evidence": [
+    "EXT-F-2010-C02 Run all browser-safe items",
+    "EXT-F-2010-C03 Open item for manual driving",
+    "EXT-F-2010-C04 Complete manual capture",
+    "EXT-F-2010-C18 Dismiss manual item with optional reason",
+    "EXT-F-2010-T03 Run waiting queue and observe outcomes",
+    "EXT-F-2010-T04 Drive, capture, or skip one item"
+  ],
+  "runtime_status": "source inventory evidence only; no runtime promotion or behavior pass claimed",
+  "independent_correction_review": {
+    "agent": "/root/capture_wording_final_peer",
+    "commit": "c4bc5c31",
+    "procedure": "PASS",
+    "quality": "PASS",
+    "evidence": "Current source omits blank skip note and has no capture-note input; parent-to-commit comparison preserves case IDs, results, applicability, cells and runtime evidence; git diff --check clean.",
+    "runtime": "unverified"
+  }
+}

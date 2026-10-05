@@ -1,0 +1,27 @@
+{
+  "review": "independent source inventory audit",
+  "A_coverage_verdict": "Gap claim is false: EXT-F-2010 already inventories the Capture handoff queue; its controls do not belong under EXT-F-1001 navigation/badge.",
+  "existing_controls": [
+    "EXT-F-2010-C02 batch run",
+    "C03 open focused tab",
+    "C04 manual capture",
+    "C05 optional skip note",
+    "C06 dismiss",
+    "C07 pickup navigation",
+    "C08-C09 state/progress"
+  ],
+  "applicability": "Inventory and SIDEPANEL_TAB_AUDIENCE source say guest=false, member=true, admin=true; the view is signed-in gated. Backend authorization/runtime behavior is not claimed.",
+  "exact_missing_controls": [],
+  "suggested_existing_destination": "Keep these controls/cases in EXT-F-2010; do not duplicate them in EXT-F-1001.",
+  "B_quality_verdict": "Coverage exists, but control/case wording needs reconciliation before treating it as exhaustive high-quality procedure.",
+  "quality_findings": [
+    "EXT-F-2010-C18 says skip note is required, while source textarea is optional and dismissHandoff omits blank note.",
+    "EXT-F-2010-T04 says enter a page-specific note and capture; source exposes capture and optional skip note, not a capture-note control."
+  ],
+  "evidence": [
+    "docs/stabilization/inventory.json EXT-F-2010-C01-C21/T01-T04",
+    "src/features/capture-ladder/NeedsYourBrowserView.tsx",
+    "src/config/sidepanel-visibility.ts"
+  ],
+  "runtime_claim": false
+}

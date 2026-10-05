@@ -13,6 +13,7 @@ import {
   signInSettings,
 } from './settings-native-auth-driver.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
+import { clickReachableShowcaseCard } from './showcase-card-driver.mjs';
 import { runShowcaseOrganizationCheckpoint } from './showcase-organization-checkpoint.mjs';
 import { safeShowcaseOrganizationFailure } from './showcase-organization-diagnostic.mjs';
 import {
@@ -330,7 +331,9 @@ try {
       stage('select_B_card');
       report.selection_diagnostic = createShowcaseSelectionDiagnostic();
       await sampleShowcaseSelection(page, report.selection_diagnostic, 'before_click');
-      await resourceAction(() => page.locator('#events article.event-card').first().click());
+      await resourceAction(() =>
+        clickReachableShowcaseCard(page.locator('#events article.event-card').first()),
+      );
       stageShowcaseSelection(report.selection_diagnostic, 'scope_choice');
       await sampleShowcaseSelection(page, report.selection_diagnostic);
       await chooseScopeIfNeeded(page);

@@ -24,7 +24,8 @@
     ".research/showcase-selection-diagnostic-peer.json",
     ".research/showcase-selection-current-native.json",
     ".research/showcase-card-boundary-diagnosis.json",
-    ".research/showcase-pointer-peer.json"
+    ".research/showcase-pointer-peer.json",
+    "docs/stabilization/evidence/showcase-pointer-native/run37388591467/original-receipt.json"
   ],
   "transition_history": [
     {
@@ -52,6 +53,21 @@
     "ci_wiring": "27d06012; exact existing regression command33/33 pass",
     "peer": "bee50b4d: A nativeUNVERIFIED, B PASS_WITH_CONCERNS; bounded catch/receipt checks2/2 pass",
     "ruling": "Minor receipt defect_id concern refuted as scope attribution: driver tests original D42 acceptance, so retaining D42 primary identity is correct. D143 and inventory explicitly link same run/report for the new diagnostic failure. Do not replace the original acceptance scope with instrumentation scope. Synthetic probe proves wiring only; actual sampling/native outcome unverified.",
-    "next": "Source48b25d43 adds before/after pointer diagnostics; freshpeer9d32a81f qualityPASS/4focused/nativeUNVERIFIED. Wait green fullCI, then ONE guarded changed-condition native test to prove exacthitinterceptor beforeproductrepair."
+    "next": "Determine source-vs-driver repair with red/green real actionability semantics, fresh peer, then same native scope."
+  },
+  "current_native": {
+    "run_id": 37388591467,
+    "version": "0.2.305",
+    "source_sha": "7aace278d7db2849dd33e23ecfd546e893e8fa53",
+    "artifact_id": 11380143956,
+    "receipt": "docs/stabilization/evidence/showcase-pointer-native/run37388591467/original-receipt.json",
+    "receipt_sha256": "1a7a9762170527872f25e058188c660862f6f633ae78c7d9995f1c9d993a4a0c",
+    "failure": "select_B_card / card_click / selection_card_click_failed",
+    "observed": "Card center inside viewport hits picker_panel; card rect x8,y79.875,w585,h65.90625 overlaps panel x239,y16,w346,h110. Five sampled interior points hit card, four hit panel.",
+    "limits": "Before-click sample only; no after-failure sample. Obstruction observed, causal repair still requires reproduction and independent retest.",
+    "resource": "Package/browser valid; acceptance child_failed exit1 resourceInvalidfalse; root independently read all final decisions and hashes.",
+    "secrets": "Both owned temporary GHsecret names deleted, absence root-verified.",
+    "owner": "showcase_center_interception_fix",
+    "next": "Determine source-vs-driver repair with red/green real actionability semantics, fresh peer, then same native scope."
   }
 }
