@@ -277,9 +277,11 @@ export const usePilotChatStore = create<PilotChatState>()(
         set((s) => ({
           permissionMode: { ...s.permissionMode, [agentId]: mode },
         })),
+      // Resume / rejoin runs carry no agent id — resolve through the selected
+      // agent so a per-agent 'ask' the chip shows is honored on continuations.
       getPermissionMode: (agentId) => {
-        if (!agentId) return 'act';
-        return get().permissionMode[agentId] ?? 'act';
+        const id = agentId ?? get().selectedAgentId;
+        return (id ? get().permissionMode[id] : undefined) ?? 'act';
       },
       reset: () => set({ messages: [], draft: '', isStreaming: false, streamInterruption: null }),
     }),

@@ -2111,6 +2111,15 @@ Every entry follows this shape:
 - **Edge cases worth poking:** Privileged-tier tools still confirm even in act
   mode (unchanged). First-run with no setting persisted → defaults to ask.
 
+### "Act without asking" holds for the whole chat turn
+- **What it does:** With the chat header set to "Act without asking", no approval card appears for action tools — including every tool call after the first tool round, after reopening a paused chat, and when the mode comes from Settings → Default mode.
+- **Where to test:** Side panel chat, header lightning chip.
+- **Steps:**
+  1. Pick an agent, set the chip to **Act without asking**.
+  2. Ask for a multi-step task (e.g. "read this page, click the first link, then navigate to another page").
+- **Expected:** Clicks and navigation run with no "Approve" card on any step. Switch the chip to **Ask before acting** → each action shows a card again.
+- **Edge cases worth poking:** Privileged tools still confirm in Act. With no per-agent choice, Settings → Default mode = Act also runs without cards.
+
 ### Settings preference save and retry
 - **What it does:** Settings reports a rejected preference save and offers Retry save. Overlapping changes are written in choice order so the latest selection survives reload.
 - **Where to test:** Settings → Appearance, Chat, Privacy, or Scrape in an unpacked development extension.

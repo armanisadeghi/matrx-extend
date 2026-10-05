@@ -4,6 +4,7 @@ import type { ProviderRetryState } from '@/lib/stream/provider-retry';
 import type { ToolProgressUpdate } from '@/lib/tools/types';
 import { useGoogleFilesStore } from '@/state/google-files';
 import { useHighlightStore } from '@/state/highlights';
+import { useSettingsStore } from '@/state/settings';
 import { useToolInbox } from '@/state/tool-inbox';
 import type { ComputeTargetRef } from '@/types/compute-target';
 import { create } from 'zustand';
@@ -546,9 +547,16 @@ export const useChatStore = create<ChatState>()(
         set((s) => ({
           permissionMode: { ...s.permissionMode, [agentId]: mode },
         })),
+      // The ONE resolver for the mode a run latches — it must match what the
+      // header chip shows (ChatView: per-agent choice ?? Settings default).
+      // Resume / rejoin / cold-resume runs carry no agent id; they belong to the
+      // selected agent's conversation, so they resolve through it. Returning a
+      // hard 'ask' for them forced approval cards on every tool call after the
+      // first round even with "Act without asking" selected.
       getPermissionMode: (agentId) => {
-        if (!agentId) return 'ask';
-        return get().permissionMode[agentId] ?? 'ask';
+        const id = agentId ?? get().selectedAgentId;
+        const explicit = id ? get().permissionMode[id] : undefined;
+        return explicit ?? useSettingsStore.getState().defaultPermissionMode;
       },
       setBoundComputeTarget: (boundComputeTarget) => set({ boundComputeTarget }),
       reset: () => set({ messages: [], draft: '', isStreaming: false, streamInterruption: null }),
