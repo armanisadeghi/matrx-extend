@@ -280,7 +280,9 @@ describe('PasswordGenerator', () => {
     await generate();
     fireEvent.click(screen.getByRole('button', { name: 'Reveal generated value' }));
     const value = document.querySelector('code')?.textContent ?? '';
-    expect(/^(?:[A-Z][a-z]* ){6}[A-Z][a-z]*[0-9]$/.test(value)).toBe(true);
+    // The EFF large wordlist carries four hyphenated words (drop-down, felt-tip,
+    // t-shirt, yo-yo), so a word is lowercase letters and hyphens after its capital.
+    expect(/^(?:[A-Z][a-z-]* ){6}[A-Z][a-z-]*[0-9]$/.test(value)).toBe(true);
   });
 
   it('uses the installed engine defaults at the documented 64-bit floor', () => {
