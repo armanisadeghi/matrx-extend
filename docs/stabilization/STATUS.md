@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-05 00:59 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-05T00:59:52.093680+00:00. 205 features · 764 cases · 1335 controls · 136 linked defect records.
+Generated 2026-10-05 01:46 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-05T01:45:35.094250+00:00. 205 features · 764 cases · 1335 controls · 136 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -851,30 +851,30 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Recorded case details and evidence:**
 
-- EXT-F-1007-T01 · guest: Partial. Exact development231 guest ARM: Fast capture and post-reload repopulated article observed. Raw early case remaining note is stale; no exhaustive case promotion from that discrepancy.
-  Evidence / build / date recorded: 37222954472, .research/scrape231-recapture-native.json
-- EXT-F-1007-T02 · guest: Partial. Exact development231 guest ARM: Unsaved-edit Cancel preserves edits; explicit confirmation starts Scrolling and lazy-content deep result. Natural deep-retry failure and deep capture after reload remain unverified.
-  Evidence / build / date recorded: 37222954472, .research/scrape231-recapture-native.json
+- EXT-F-1007-T01 · guest: Partial. Frozen development244 guest ARM: Fast busy disable and real capture before/after full reload verified. Case expected error recovery is not exhausted; T14 natural recovery remains unverified.
+  Evidence / build / date recorded: 37251782627, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T01:45:35.094250+00:00, .research/guest-scrape-normal-native.json
+- EXT-F-1007-T02 · guest: Partial. Frozen development244 guest ARM: Warm deep capture and unsaved-edit confirmation verified; deep failure retry and post-reload deep capture remain unverified.
+  Evidence / build / date recorded: 37251782627, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T01:45:35.094250+00:00, .research/guest-scrape-normal-native.json
 - EXT-F-1007-T03 · guest: Partial. Trusted exact dialog Cancel retained edited state/idle deep button; second request confirmed Re-capture and deep mode completed. Evidence is native script assertion contract plus subsequent deep result; no separate dialog screenshot. Other auth/mode variants unverified.
   Evidence / build / date recorded: 37222954472, .research/scrape231-recapture-native.json
 - EXT-F-1007-T05 · guest: Unverified.
   Evidence / build / date recorded: render-retest-001, docs/stabilization/runs/render-retest-001.json
 - EXT-F-1007-T06 · guest: Pass. pass_cancel_discarded_draft_and_recapture_cleanup
   Evidence / build / date recorded: render-retest-001, docs/stabilization/runs/render-retest-001.json
-- EXT-F-1007-T08 · guest: Partial. Exact development231 guest ARM: All result panes populated before and after reload; normal width unverified.
-  Evidence / build / date recorded: 37222954472, .research/scrape231-recapture-native.json
-- EXT-F-1007-T10 · guest: Pass. Exact development231 guest ARM: Three exact image removals through empty and valid replacement image/alt verified warm and after full reload.
-  Evidence / build / date recorded: 37222954472, .research/scrape231-recapture-native.json
-- EXT-F-1007-T11 · guest: Pass. Exact development231 guest ARM: Blank image rejected, valid URL/alt added, Cancel cleared form warm and after full reload.
-  Evidence / build / date recorded: 37222954472, .research/scrape231-recapture-native.json
-- EXT-F-1007-T12 · guest: Pass. Exact frozen development231 guest ARM, warm and full extension reload: Open, exact remove/add identities, blank rejection and valid forms; trusted Copy feedback copied, exact fixture equality true after scoped read grant, permission restored. T13 raw receipt partial is solely other auth modes, which remain separately unverified.
-  Evidence / build / date recorded: 37225191131, .research/clipboard126-native.json
-- EXT-F-1007-T13 · guest: Pass. Exact frozen development231 guest ARM, warm and full extension reload: Open, exact remove/add identities, blank rejection and valid forms; trusted Copy feedback copied, exact fixture equality true after scoped read grant, permission restored. T13 raw receipt partial is solely other auth modes, which remain separately unverified.
-  Evidence / build / date recorded: 37225191131, .research/clipboard126-native.json
-- EXT-F-1007-T14 · guest: Partial. Exact development231 guest ARM: Restricted-page error/Dismiss exercised. Recoverable Reload/Try again and deep-retry path remain unverified.
-  Evidence / build / date recorded: 37222954472, .research/scrape231-recapture-native.json
-- EXT-F-1007-T20 · guest: Pass. Exact development231 guest ARM: Original and replacement panel navigation/reload observed; worker retired/replaced and sole running replacement; empty capture state verified.
-  Evidence / build / date recorded: 37222954472, .research/scrape231-recapture-native.json
+- EXT-F-1007-T08 · guest: Partial. Frozen development244 guest ARM: All six populated panes verified warm and after full reload; image/video empty states verified. Normal600 viewport emulation now observed, but exhaustive per-pane empty-state coverage remains unverified.
+  Evidence / build / date recorded: 37251782627, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T01:45:35.094250+00:00, .research/guest-scrape-normal-native.json
+- EXT-F-1007-T10 · guest: Pass. Frozen development244 guest ARM: Exact image removals through empty state warm and after full reload verified.
+  Evidence / build / date recorded: 37251782627, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T01:45:35.094250+00:00, .research/guest-scrape-normal-native.json
+- EXT-F-1007-T11 · guest: Pass. Frozen development244 guest ARM: Blank image rejection, valid URL/alt addition and Cancel clearing verified warm and after full reload.
+  Evidence / build / date recorded: 37251782627, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T01:45:35.094250+00:00, .research/guest-scrape-normal-native.json
+- EXT-F-1007-T12 · guest: Pass. Frozen development244 guest ARM: Video Open/return, exact remove/add, blank rejection, Copy feedback and exact clipboard equality after observation-only scoped grant restored; warm and reload verified.
+  Evidence / build / date recorded: 37251782627, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T01:45:35.094250+00:00, .research/guest-scrape-normal-native.json
+- EXT-F-1007-T13 · guest: Pass. Frozen development244 guest ARM: Link Open/Copy/remove/blank rejection/add/Cancel verified warm and reload; exact clipboard equality after scoped read grant and permission restoration. Raw partial refers solely to other auth modes, separately unverified.
+  Evidence / build / date recorded: 37251782627, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T01:45:35.094250+00:00, .research/guest-scrape-normal-native.json
+- EXT-F-1007-T14 · guest: Partial. Frozen development244 guest ARM: Restricted-page error/Dismiss verified; natural recoverable Reload/Try again/deep retry remain unverified.
+  Evidence / build / date recorded: 37251782627, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T01:45:35.094250+00:00, .research/guest-scrape-normal-native.json
+- EXT-F-1007-T20 · guest: Pass. Frozen development244 guest ARM: Initial and full-reload empty state verified; original worker/panel retired and exact replacements observed.
+  Evidence / build / date recorded: 37251782627, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T01:45:35.094250+00:00, .research/guest-scrape-normal-native.json
 
 **Other remaining work:** Source landing, refusal/retry, organization authorization, and server persistence require live member/admin evidence; guest Save must show sign-in remedy while retaining the device-local capture. Endpoint/RLS behavior is a runtime readiness gap, not a source-census blocker.; D59 document identity: candidate a021ae82 remains partial; guarded peer a702ba6c passes narrow capture tests/compile but finds mixed-document Diagnose bundle and refresh status race. Native guest/member/admin retest pending; reports/scrape-document-peer.json.
 

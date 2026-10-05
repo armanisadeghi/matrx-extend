@@ -88,7 +88,7 @@
     }
   ],
   "diagnostic_commit": "427e75a4",
-  "next_action": "Implement bounded passive visibilitychange timestamps correlated in one clock domain with resource-health waits and actual organization pointer branches; establish privacy-safe owned native-window observation availability before next launch. Peer review before ONE changed-condition native. No focus permutations or acceptanceweakening.",
+  "next_action": "Luna member_transition_native owns ONE frozen244/membernormal600 diagnostic after runtimeequivalence+concurrency+privatecredentialpreflight; collecttiming/classification andall5hostcheckpoints, finaljournals/cleanup. No retry orcausalityinferencefromorderingalone.",
   "fix_commits": ["44005fb4", "0e8aa6c7"],
   "hosted_ci": {
     "run_id": 37242845397,
@@ -124,5 +124,13 @@
       "result": "Controlled real-source sentinel -1 previously yields false; now null. Actualnative numericIDsunrecorded, cannotattribute historicalfalse tosentinel. Independent14focusedtests pass; broaderCI pending. No native recoveryfix.",
       "fresh_peer": "eb0a3448"
     }
+  },
+  "transition_diagnostic": {
+    "commits": ["6a7ebc31", "a745dd31", "503eff55"],
+    "fresh_peer": ".research/panel-transition-wiring-reverify.json",
+    "peer_integration_commit": "acb37ef3",
+    "evidence": "Focused18pass, independentrealrecorder5pass andexactCItrio16pass; omittedproductionorganization_entry marker mutationRED/restoredidentical.",
+    "ci": "37251997773 SUCCESS at a745dd31; rootreadactual27nativeharnesspasses/resource/type/lint/unit/build. NewCItrioaddedacb37ef3 pendinghostedconfirmation.",
+    "limits": "Samepanelperformance.now clock and actualpointer/healthmarkers; passiveeventorderingtemporalonly. Incomplete/lostcontextunmeasured. Nativephysicalcaptureunproven, no acceptanceweakening."
   }
 }

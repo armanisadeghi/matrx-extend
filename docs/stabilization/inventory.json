@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-05T00:59:52.093680+00:00",
+  "updated_at": "2026-10-05T01:45:35.094250+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -1230,8 +1230,9 @@
           "defect_ids": [
             "EXT-D-0025",
             "EXT-D-0051",
-            "EXT-D-0056"
-          , "EXT-D-0119"],
+            "EXT-D-0056",
+            "EXT-D-0119"
+          ],
           "run_ids": [],
           "retest_status": "partial: EXT-D-0025 and EXT-D-0051 passed; remaining infrastructure cases unverified"
         },
@@ -10194,188 +10195,189 @@
           ]
         },
         {
-        "id": "EXT-F-1004-T05",
-        "title": "member: Identity fields",
-        "modes": [
-          "member"
-        ],
-        "control_ids": [
-          "EXT-F-1004-C03"
-        ],
-        "preconditions": [
-          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
-          "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
-          "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
-          "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
-          "Run independently as existing known member; do not change role or account."
-        ],
-        "steps": [
-          "Expand Identity. Change First name, Middle, Last name, Preferred, Suffix, Pronouns, and Birthday to distinct synthetic values (birthday in a valid YYYY-MM-DD date).",
-          "Verify Save becomes enabled, click Save, and wait for loading to finish.",
-          "Reopen Profile and compare each field and identity card name to the saved values; restore original values and save."
-        ],
-        "expected": [
-          "Edited legal/preferred names, suffix, pronouns and birthday appear in the saved profile after reload.",
-          "Each changed identity field and the identity card display saved values after reload/reopen; restoration can be saved."
-        ],
-        "dimensions": [
-          "warm",
-          "reload"
-        ],
-        "source_anchors": [
-          "src/features/profile/ProfileView.tsx:100-148",
-          "src/hooks/use-user-profile.ts:87-100"
-        ],
-        "procedure_readiness": "ready",
-        "procedure_gaps": [],
-        "procedure_execution_matrix": [
-          {
-            "mode": "member",
-            "lifecycle_dimension": "warm",
-            "branch": "default",
-            "inventory_dimensions": [
-              "warm",
-              "reload"
-            ],
-            "observed_outcome": "Independent frozen189 member run verified actual warm/reload controls, saved-field persistence where applicable, normal UI value restoration and exact original row absence. Root matched raw90c2e27e and journale20fe07c hashes. No latest-main or Store installation claim.",
-            "evidence_refs": [
-              ".research/profile-fields-reload-fixed-native.json",
-              "docs/stabilization/resource-journals/profile-fields-reload-fixed-189-08.jsonl"
-            ],
-            "status": "pass",
-            "readiness": "ready"
+          "id": "EXT-F-1004-T05",
+          "title": "member: Identity fields",
+          "modes": [
+            "member"
+          ],
+          "control_ids": [
+            "EXT-F-1004-C03"
+          ],
+          "preconditions": [
+            "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
+            "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
+            "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
+            "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
+            "Run independently as existing known member; do not change role or account."
+          ],
+          "steps": [
+            "Expand Identity. Change First name, Middle, Last name, Preferred, Suffix, Pronouns, and Birthday to distinct synthetic values (birthday in a valid YYYY-MM-DD date).",
+            "Verify Save becomes enabled, click Save, and wait for loading to finish.",
+            "Reopen Profile and compare each field and identity card name to the saved values; restore original values and save."
+          ],
+          "expected": [
+            "Edited legal/preferred names, suffix, pronouns and birthday appear in the saved profile after reload.",
+            "Each changed identity field and the identity card display saved values after reload/reopen; restoration can be saved."
+          ],
+          "dimensions": [
+            "warm",
+            "reload"
+          ],
+          "source_anchors": [
+            "src/features/profile/ProfileView.tsx:100-148",
+            "src/hooks/use-user-profile.ts:87-100"
+          ],
+          "procedure_readiness": "ready",
+          "procedure_gaps": [],
+          "procedure_execution_matrix": [
+            {
+              "mode": "member",
+              "lifecycle_dimension": "warm",
+              "branch": "default",
+              "inventory_dimensions": [
+                "warm",
+                "reload"
+              ],
+              "observed_outcome": "Independent frozen189 member run verified actual warm/reload controls, saved-field persistence where applicable, normal UI value restoration and exact original row absence. Root matched raw90c2e27e and journale20fe07c hashes. No latest-main or Store installation claim.",
+              "evidence_refs": [
+                ".research/profile-fields-reload-fixed-native.json",
+                "docs/stabilization/resource-journals/profile-fields-reload-fixed-189-08.jsonl"
+              ],
+              "status": "pass",
+              "readiness": "ready"
+            },
+            {
+              "mode": "member",
+              "lifecycle_dimension": "reload",
+              "branch": "default",
+              "inventory_dimensions": [
+                "warm",
+                "reload"
+              ],
+              "observed_outcome": "Independent frozen189 member run verified actual warm/reload controls, saved-field persistence where applicable, normal UI value restoration and exact original row absence. Root matched raw90c2e27e and journale20fe07c hashes. No latest-main or Store installation claim.",
+              "evidence_refs": [
+                ".research/profile-fields-reload-fixed-native.json",
+                "docs/stabilization/resource-journals/profile-fields-reload-fixed-189-08.jsonl"
+              ],
+              "status": "pass",
+              "readiness": "ready"
+            }
+          ],
+          "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
+          "procedure_review": {
+            "proposal_commit": "22994d49",
+            "peer_commit": "2c318798",
+            "report": ".research/popup-profile-acceptance-peer.json",
+            "scope": "Source-reviewed procedure only; no runtime acceptance."
           },
-          {
-            "mode": "member",
-            "lifecycle_dimension": "reload",
-            "branch": "default",
-            "inventory_dimensions": [
-              "warm",
-              "reload"
-            ],
-            "observed_outcome": "Independent frozen189 member run verified actual warm/reload controls, saved-field persistence where applicable, normal UI value restoration and exact original row absence. Root matched raw90c2e27e and journale20fe07c hashes. No latest-main or Store installation claim.",
-            "evidence_refs": [
-              ".research/profile-fields-reload-fixed-native.json",
-              "docs/stabilization/resource-journals/profile-fields-reload-fixed-189-08.jsonl"
-            ],
-            "status": "pass",
-            "readiness": "ready"
-          }
-        ],
-        "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
-        "procedure_review": {
-          "proposal_commit": "22994d49",
-          "peer_commit": "2c318798",
-          "report": ".research/popup-profile-acceptance-peer.json",
-          "scope": "Source-reviewed procedure only; no runtime acceptance."
+          "defect_ids": [
+            "EXT-D-0104",
+            "EXT-D-0105"
+          ],
+          "results": {
+            "member": {
+              "status": "pass",
+              "run_id": "profile-fields-reload-fixed-189-08",
+              "evidence": ".research/profile-fields-reload-fixed-native.json",
+              "detail": "Independent frozen189 member run verified actual warm/reload controls, saved-field persistence where applicable, normal UI value restoration and exact original row absence. Root matched raw90c2e27e and journale20fe07c hashes. No latest-main or Store installation claim.",
+              "build_variant": "Frozen development189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
+              "verified_at": "2026-10-04T03:52:44.728959+00:00"
+            }
+          },
+          "previous_results": [
+            {
+              "mode": "member",
+              "status": "partial",
+              "run_id": "profile-fields-clean-save-189-07",
+              "evidence": ".research/profile-fields-clean-save-native.json",
+              "verified_substeps": [
+                "Seven Identity fields including Birthday saved and reopened with exact values."
+              ],
+              "remaining_criteria": [
+                "Full extension reload exact-value verification.",
+                "Normal UI restoration; this run required conditional owned-row recovery after reload failure."
+              ],
+              "recovery_evidence": ".research/profile-owned-row-recovery-189-07.json",
+              "build_variant": "Frozen development189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
+              "verified_at": "2026-10-04T03:14:28.197043+00:00"
+            }
+          ]
         },
-        "defect_ids": [
-          "EXT-D-0104",
-          "EXT-D-0105"
-        ],
-        "results": {
-          "member": {
-            "status": "pass",
-            "run_id": "profile-fields-reload-fixed-189-08",
-            "evidence": ".research/profile-fields-reload-fixed-native.json",
-            "detail": "Independent frozen189 member run verified actual warm/reload controls, saved-field persistence where applicable, normal UI value restoration and exact original row absence. Root matched raw90c2e27e and journale20fe07c hashes. No latest-main or Store installation claim.",
-            "build_variant": "Frozen development189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
-            "verified_at": "2026-10-04T03:52:44.728959+00:00"
-          }
-        },
-        "previous_results": [
-          {
-            "mode": "member",
-            "status": "partial",
-            "run_id": "profile-fields-clean-save-189-07",
-            "evidence": ".research/profile-fields-clean-save-native.json",
-            "verified_substeps": [
-              "Seven Identity fields including Birthday saved and reopened with exact values."
-            ],
-            "remaining_criteria": [
-              "Full extension reload exact-value verification.",
-              "Normal UI restoration; this run required conditional owned-row recovery after reload failure."
-            ],
-            "recovery_evidence": ".research/profile-owned-row-recovery-189-07.json",
-            "build_variant": "Frozen development189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
-            "verified_at": "2026-10-04T03:14:28.197043+00:00"
-          }
-        ]
-      },
         {
-        "id": "EXT-F-1004-T06",
-        "title": "admin: Identity fields",
-        "modes": [
-          "admin"
-        ],
-        "control_ids": [
-          "EXT-F-1004-C03"
-        ],
-        "preconditions": [
-          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
-          "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
-          "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
-          "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
-          "Run independently as existing known admin; do not change role or account."
-        ],
-        "steps": [
-          "Expand Identity. Change First name, Middle, Last name, Preferred, Suffix, Pronouns, and Birthday to distinct synthetic values (birthday in a valid YYYY-MM-DD date).",
-          "Verify Save becomes enabled, click Save, and wait for loading to finish.",
-          "Reopen Profile and compare each field and identity card name to the saved values; restore original values and save."
-        ],
-        "expected": [
-          "Edited legal/preferred names, suffix, pronouns and birthday appear in the saved profile after reload.",
-          "Each changed identity field and the identity card display saved values after reload/reopen; restoration can be saved."
-        ],
-        "dimensions": [
-          "warm",
-          "reload"
-        ],
-        "source_anchors": [
-          "src/features/profile/ProfileView.tsx:100-148",
-          "src/hooks/use-user-profile.ts:87-100"
-        ],
-        "procedure_readiness": "ready",
-        "procedure_gaps": [],
-        "procedure_execution_matrix": [
-          {
-            "mode": "admin",
-            "lifecycle_dimension": "warm",
-            "branch": "default",
-            "inventory_dimensions": [
-              "warm",
-              "reload"
-            ],
-            "observed_outcome": null,
-            "evidence_refs": [],
-            "status": "unverified",
-            "readiness": "ready"
+          "id": "EXT-F-1004-T06",
+          "title": "admin: Identity fields",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1004-C03"
+          ],
+          "preconditions": [
+            "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
+            "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
+            "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
+            "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
+            "Run independently as existing known admin; do not change role or account."
+          ],
+          "steps": [
+            "Expand Identity. Change First name, Middle, Last name, Preferred, Suffix, Pronouns, and Birthday to distinct synthetic values (birthday in a valid YYYY-MM-DD date).",
+            "Verify Save becomes enabled, click Save, and wait for loading to finish.",
+            "Reopen Profile and compare each field and identity card name to the saved values; restore original values and save."
+          ],
+          "expected": [
+            "Edited legal/preferred names, suffix, pronouns and birthday appear in the saved profile after reload.",
+            "Each changed identity field and the identity card display saved values after reload/reopen; restoration can be saved."
+          ],
+          "dimensions": [
+            "warm",
+            "reload"
+          ],
+          "source_anchors": [
+            "src/features/profile/ProfileView.tsx:100-148",
+            "src/hooks/use-user-profile.ts:87-100"
+          ],
+          "procedure_readiness": "ready",
+          "procedure_gaps": [],
+          "procedure_execution_matrix": [
+            {
+              "mode": "admin",
+              "lifecycle_dimension": "warm",
+              "branch": "default",
+              "inventory_dimensions": [
+                "warm",
+                "reload"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "ready"
+            },
+            {
+              "mode": "admin",
+              "lifecycle_dimension": "reload",
+              "branch": "default",
+              "inventory_dimensions": [
+                "warm",
+                "reload"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "ready"
+            }
+          ],
+          "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
+          "procedure_review": {
+            "proposal_commit": "22994d49",
+            "peer_commit": "2c318798",
+            "report": ".research/popup-profile-acceptance-peer.json",
+            "scope": "Source-reviewed procedure only; no runtime acceptance."
           },
-          {
-            "mode": "admin",
-            "lifecycle_dimension": "reload",
-            "branch": "default",
-            "inventory_dimensions": [
-              "warm",
-              "reload"
-            ],
-            "observed_outcome": null,
-            "evidence_refs": [],
-            "status": "unverified",
-            "readiness": "ready"
-          }
-        ],
-        "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
-        "procedure_review": {
-          "proposal_commit": "22994d49",
-          "peer_commit": "2c318798",
-          "report": ".research/popup-profile-acceptance-peer.json",
-          "scope": "Source-reviewed procedure only; no runtime acceptance."
+          "defect_ids": [
+            "EXT-D-0108",
+            "EXT-D-0114"
+          ]
         },
-        "defect_ids": [
-          "EXT-D-0108", "EXT-D-0114"
-        ]
-      },
         {
           "id": "EXT-F-1004-T07",
           "title": "member: Phones",
@@ -10503,11 +10505,11 @@
               "For reload dimension, use chrome://extensions to reload the same extension, record completion, reopen the surface, recheck account/role/organization, and repeat the complete case independently. Panel reopen or page refresh is not extension reload."
             ],
             "organization": "Record the currently selected device organization for authenticated save. If the UI cannot establish the expected identity or organization, stop that execution as unverified; do not modify organization/account settings to force a pass.",
-            "preflight_and_fixture": "Before EACH role × lifecycle run, obtain an approved, owner-scoped, read-only exact JSON capture of the target persisted list and compare it with the expanded UI. A UI snapshot cannot see notes or distinguish absent, null, and false optional keys. Mutation is eligible only when that raw list is exactly [] and the UI shows its empty state, with an approved owner-scoped exact-list readback available after writes. Treat this as an empty owned fixture; only same-run synthetic entries may be removed. If the list contains any existing row, is unreadable, disagrees with the UI, or lacks an exact readback path, make no mutation and mark the product row unverified. A separately approved exact capture and restoration method would be required to test a nonempty list; this procedure supplies none. Never clear, delete, reorder, or change existing private rows to create a fixture.",
+            "preflight_and_fixture": "Before EACH role \u00d7 lifecycle run, obtain an approved, owner-scoped, read-only exact JSON capture of the target persisted list and compare it with the expanded UI. A UI snapshot cannot see notes or distinguish absent, null, and false optional keys. Mutation is eligible only when that raw list is exactly [] and the UI shows its empty state, with an approved owner-scoped exact-list readback available after writes. Treat this as an empty owned fixture; only same-run synthetic entries may be removed. If the list contains any existing row, is unreadable, disagrees with the UI, or lacks an exact readback path, make no mutation and mark the product row unverified. A separately approved exact capture and restoration method would be required to test a nonempty list; this procedure supplies none. Never clear, delete, reorder, or change existing private rows to create a fixture.",
             "discard_and_back": "Before the committed test, create one synthetic unsaved draft change, inspect it, click Discard, and assert the entire target draft list and raw persisted list still equal the empty baseline. Both header and bottom action bars contain Save and Discard; identify which instance was exercised. Click Back and assert the Chat surface is visible; reopen Profile, expand the target section, and confirm the empty list before starting the committed phase.",
             "save_and_reopen": "After exercising controls, compare the COMPLETE ordered draft list with expected original [] plus the surviving synthetic entry, including all exposed values and flags. Click a named header or bottom Save and wait for saving to settle. While still in Profile, require no visible profile.error/save error and compare the complete displayed list, then obtain an independent approved owner-scoped raw readback of the entire persisted list. A disabled Save button alone proves nothing. Click Back and assert Chat is visible; reopen Profile and compare the complete list again. For reload dimension, additionally reload the extension, recheck identity/organization, reopen Profile, and compare the complete list and raw readback again. A rejected save or reproducible wrong list is fail; an unreadable/ambiguous write is unverified.",
             "cleanup": "Only for an eligible empty owned fixture, remove the surviving same-run synthetic entry through the UI, Save, require no visible save error, and verify both full UI list and approved owner-scoped raw readback equal exact []. Reopen Profile and repeat the UI comparison; repeat after extension reload for reload rows. Never use a blanket clear, direct API/DB delete, or delete any pre-existing row. If a write is ambiguous, stop further mutation until an approved owner-scoped read-only reconciliation establishes exactly what was written; report cleanup_result unverified until empty restoration is proven. If cleanup is attempted and demonstrably fails, report cleanup_result failed. Do not claim cleanup from the UI alone.",
-            "failure_semantics": "Record product_result pass/fail/unverified and cleanup_result restored/failed/unverified separately for every role × lifecycle row. Reproducibly missing control, save error/rejection, failed Discard or Back assertion, or verified draft/persistence mismatch is product fail, even if cleanup later succeeds. Missing identity/organization, unavailable exact-state capture/readback, uncertain write, or an unexecuted dimension is unverified, never pass. Preserve any product failure alongside cleanup failure. Overall acceptance requires all eight product rows pass and all eight cleanup results restored; any failed row fails acceptance, otherwise any unverified row leaves acceptance unverified. Record safe phase/control identifiers and sanitized error category, never credentials or raw sensitive values."
+            "failure_semantics": "Record product_result pass/fail/unverified and cleanup_result restored/failed/unverified separately for every role \u00d7 lifecycle row. Reproducibly missing control, save error/rejection, failed Discard or Back assertion, or verified draft/persistence mismatch is product fail, even if cleanup later succeeds. Missing identity/organization, unavailable exact-state capture/readback, uncertain write, or an unexecuted dimension is unverified, never pass. Preserve any product failure alongside cleanup failure. Overall acceptance requires all eight product rows pass and all eight cleanup results restored; any failed row fails acceptance, otherwise any unverified row leaves acceptance unverified. Record safe phase/control identifiers and sanitized error category, never credentials or raw sensitive values."
           },
           "execution_prerequisites": [
             "Existing member and admin identities on the intended device, verified organization, and same extension build for warm/reload; no account or organization changes to manufacture eligibility.",
@@ -10644,11 +10646,11 @@
               "For reload dimension, use chrome://extensions to reload the same extension, record completion, reopen the surface, recheck account/role/organization, and repeat the complete case independently. Panel reopen or page refresh is not extension reload."
             ],
             "organization": "Record the currently selected device organization for authenticated save. If the UI cannot establish the expected identity or organization, stop that execution as unverified; do not modify organization/account settings to force a pass.",
-            "preflight_and_fixture": "Before EACH role × lifecycle run, obtain an approved, owner-scoped, read-only exact JSON capture of the target persisted list and compare it with the expanded UI. A UI snapshot cannot see notes or distinguish absent, null, and false optional keys. Mutation is eligible only when that raw list is exactly [] and the UI shows its empty state, with an approved owner-scoped exact-list readback available after writes. Treat this as an empty owned fixture; only same-run synthetic entries may be removed. If the list contains any existing row, is unreadable, disagrees with the UI, or lacks an exact readback path, make no mutation and mark the product row unverified. A separately approved exact capture and restoration method would be required to test a nonempty list; this procedure supplies none. Never clear, delete, reorder, or change existing private rows to create a fixture.",
+            "preflight_and_fixture": "Before EACH role \u00d7 lifecycle run, obtain an approved, owner-scoped, read-only exact JSON capture of the target persisted list and compare it with the expanded UI. A UI snapshot cannot see notes or distinguish absent, null, and false optional keys. Mutation is eligible only when that raw list is exactly [] and the UI shows its empty state, with an approved owner-scoped exact-list readback available after writes. Treat this as an empty owned fixture; only same-run synthetic entries may be removed. If the list contains any existing row, is unreadable, disagrees with the UI, or lacks an exact readback path, make no mutation and mark the product row unverified. A separately approved exact capture and restoration method would be required to test a nonempty list; this procedure supplies none. Never clear, delete, reorder, or change existing private rows to create a fixture.",
             "discard_and_back": "Before the committed test, create one synthetic unsaved draft change, inspect it, click Discard, and assert the entire target draft list and raw persisted list still equal the empty baseline. Both header and bottom action bars contain Save and Discard; identify which instance was exercised. Click Back and assert the Chat surface is visible; reopen Profile, expand the target section, and confirm the empty list before starting the committed phase.",
             "save_and_reopen": "After exercising controls, compare the COMPLETE ordered draft list with expected original [] plus the surviving synthetic entry, including all exposed values and flags. Click a named header or bottom Save and wait for saving to settle. While still in Profile, require no visible profile.error/save error and compare the complete displayed list, then obtain an independent approved owner-scoped raw readback of the entire persisted list. A disabled Save button alone proves nothing. Click Back and assert Chat is visible; reopen Profile and compare the complete list again. For reload dimension, additionally reload the extension, recheck identity/organization, reopen Profile, and compare the complete list and raw readback again. A rejected save or reproducible wrong list is fail; an unreadable/ambiguous write is unverified.",
             "cleanup": "Only for an eligible empty owned fixture, remove the surviving same-run synthetic entry through the UI, Save, require no visible save error, and verify both full UI list and approved owner-scoped raw readback equal exact []. Reopen Profile and repeat the UI comparison; repeat after extension reload for reload rows. Never use a blanket clear, direct API/DB delete, or delete any pre-existing row. If a write is ambiguous, stop further mutation until an approved owner-scoped read-only reconciliation establishes exactly what was written; report cleanup_result unverified until empty restoration is proven. If cleanup is attempted and demonstrably fails, report cleanup_result failed. Do not claim cleanup from the UI alone.",
-            "failure_semantics": "Record product_result pass/fail/unverified and cleanup_result restored/failed/unverified separately for every role × lifecycle row. Reproducibly missing control, save error/rejection, failed Discard or Back assertion, or verified draft/persistence mismatch is product fail, even if cleanup later succeeds. Missing identity/organization, unavailable exact-state capture/readback, uncertain write, or an unexecuted dimension is unverified, never pass. Preserve any product failure alongside cleanup failure. Overall acceptance requires all eight product rows pass and all eight cleanup results restored; any failed row fails acceptance, otherwise any unverified row leaves acceptance unverified. Record safe phase/control identifiers and sanitized error category, never credentials or raw sensitive values."
+            "failure_semantics": "Record product_result pass/fail/unverified and cleanup_result restored/failed/unverified separately for every role \u00d7 lifecycle row. Reproducibly missing control, save error/rejection, failed Discard or Back assertion, or verified draft/persistence mismatch is product fail, even if cleanup later succeeds. Missing identity/organization, unavailable exact-state capture/readback, uncertain write, or an unexecuted dimension is unverified, never pass. Preserve any product failure alongside cleanup failure. Overall acceptance requires all eight product rows pass and all eight cleanup results restored; any failed row fails acceptance, otherwise any unverified row leaves acceptance unverified. Record safe phase/control identifiers and sanitized error category, never credentials or raw sensitive values."
           },
           "execution_prerequisites": [
             "Existing member and admin identities on the intended device, verified organization, and same extension build for warm/reload; no account or organization changes to manufacture eligibility.",
@@ -10775,11 +10777,11 @@
               "For reload dimension, use chrome://extensions to reload the same extension, record completion, reopen the surface, recheck account/role/organization, and repeat the complete case independently. Panel reopen or page refresh is not extension reload."
             ],
             "organization": "Record the currently selected device organization for authenticated save. If the UI cannot establish the expected identity or organization, stop that execution as unverified; do not modify organization/account settings to force a pass.",
-            "preflight_and_fixture": "Before EACH role × lifecycle run, obtain an approved, owner-scoped, read-only exact JSON capture of the target persisted list and compare it with the expanded UI. A UI snapshot cannot see notes or distinguish absent, null, and false optional keys. Mutation is eligible only when that raw list is exactly [] and the UI shows its empty state, with an approved owner-scoped exact-list readback available after writes. Treat this as an empty owned fixture; only same-run synthetic entries may be removed. If the list contains any existing row, is unreadable, disagrees with the UI, or lacks an exact readback path, make no mutation and mark the product row unverified. A separately approved exact capture and restoration method would be required to test a nonempty list; this procedure supplies none. Never clear, delete, reorder, or change existing private rows to create a fixture.",
+            "preflight_and_fixture": "Before EACH role \u00d7 lifecycle run, obtain an approved, owner-scoped, read-only exact JSON capture of the target persisted list and compare it with the expanded UI. A UI snapshot cannot see notes or distinguish absent, null, and false optional keys. Mutation is eligible only when that raw list is exactly [] and the UI shows its empty state, with an approved owner-scoped exact-list readback available after writes. Treat this as an empty owned fixture; only same-run synthetic entries may be removed. If the list contains any existing row, is unreadable, disagrees with the UI, or lacks an exact readback path, make no mutation and mark the product row unverified. A separately approved exact capture and restoration method would be required to test a nonempty list; this procedure supplies none. Never clear, delete, reorder, or change existing private rows to create a fixture.",
             "discard_and_back": "Before the committed test, create one synthetic unsaved draft change, inspect it, click Discard, and assert the entire target draft list and raw persisted list still equal the empty baseline. Both header and bottom action bars contain Save and Discard; identify which instance was exercised. Click Back and assert the Chat surface is visible; reopen Profile, expand the target section, and confirm the empty list before starting the committed phase.",
             "save_and_reopen": "After exercising controls, compare the COMPLETE ordered draft list with expected original [] plus the surviving synthetic entry, including all exposed values and flags. Click a named header or bottom Save and wait for saving to settle. While still in Profile, require no visible profile.error/save error and compare the complete displayed list, then obtain an independent approved owner-scoped raw readback of the entire persisted list. A disabled Save button alone proves nothing. Click Back and assert Chat is visible; reopen Profile and compare the complete list again. For reload dimension, additionally reload the extension, recheck identity/organization, reopen Profile, and compare the complete list and raw readback again. A rejected save or reproducible wrong list is fail; an unreadable/ambiguous write is unverified.",
             "cleanup": "Only for an eligible empty owned fixture, remove the surviving same-run synthetic entry through the UI, Save, require no visible save error, and verify both full UI list and approved owner-scoped raw readback equal exact []. Reopen Profile and repeat the UI comparison; repeat after extension reload for reload rows. Never use a blanket clear, direct API/DB delete, or delete any pre-existing row. If a write is ambiguous, stop further mutation until an approved owner-scoped read-only reconciliation establishes exactly what was written; report cleanup_result unverified until empty restoration is proven. If cleanup is attempted and demonstrably fails, report cleanup_result failed. Do not claim cleanup from the UI alone.",
-            "failure_semantics": "Record product_result pass/fail/unverified and cleanup_result restored/failed/unverified separately for every role × lifecycle row. Reproducibly missing control, save error/rejection, failed Discard or Back assertion, or verified draft/persistence mismatch is product fail, even if cleanup later succeeds. Missing identity/organization, unavailable exact-state capture/readback, uncertain write, or an unexecuted dimension is unverified, never pass. Preserve any product failure alongside cleanup failure. Overall acceptance requires all eight product rows pass and all eight cleanup results restored; any failed row fails acceptance, otherwise any unverified row leaves acceptance unverified. Record safe phase/control identifiers and sanitized error category, never credentials or raw sensitive values."
+            "failure_semantics": "Record product_result pass/fail/unverified and cleanup_result restored/failed/unverified separately for every role \u00d7 lifecycle row. Reproducibly missing control, save error/rejection, failed Discard or Back assertion, or verified draft/persistence mismatch is product fail, even if cleanup later succeeds. Missing identity/organization, unavailable exact-state capture/readback, uncertain write, or an unexecuted dimension is unverified, never pass. Preserve any product failure alongside cleanup failure. Overall acceptance requires all eight product rows pass and all eight cleanup results restored; any failed row fails acceptance, otherwise any unverified row leaves acceptance unverified. Record safe phase/control identifiers and sanitized error category, never credentials or raw sensitive values."
           },
           "execution_prerequisites": [
             "Existing member and admin identities on the intended device, verified organization, and same extension build for warm/reload; no account or organization changes to manufacture eligibility.",
@@ -10906,11 +10908,11 @@
               "For reload dimension, use chrome://extensions to reload the same extension, record completion, reopen the surface, recheck account/role/organization, and repeat the complete case independently. Panel reopen or page refresh is not extension reload."
             ],
             "organization": "Record the currently selected device organization for authenticated save. If the UI cannot establish the expected identity or organization, stop that execution as unverified; do not modify organization/account settings to force a pass.",
-            "preflight_and_fixture": "Before EACH role × lifecycle run, obtain an approved, owner-scoped, read-only exact JSON capture of the target persisted list and compare it with the expanded UI. A UI snapshot cannot see notes or distinguish absent, null, and false optional keys. Mutation is eligible only when that raw list is exactly [] and the UI shows its empty state, with an approved owner-scoped exact-list readback available after writes. Treat this as an empty owned fixture; only same-run synthetic entries may be removed. If the list contains any existing row, is unreadable, disagrees with the UI, or lacks an exact readback path, make no mutation and mark the product row unverified. A separately approved exact capture and restoration method would be required to test a nonempty list; this procedure supplies none. Never clear, delete, reorder, or change existing private rows to create a fixture.",
+            "preflight_and_fixture": "Before EACH role \u00d7 lifecycle run, obtain an approved, owner-scoped, read-only exact JSON capture of the target persisted list and compare it with the expanded UI. A UI snapshot cannot see notes or distinguish absent, null, and false optional keys. Mutation is eligible only when that raw list is exactly [] and the UI shows its empty state, with an approved owner-scoped exact-list readback available after writes. Treat this as an empty owned fixture; only same-run synthetic entries may be removed. If the list contains any existing row, is unreadable, disagrees with the UI, or lacks an exact readback path, make no mutation and mark the product row unverified. A separately approved exact capture and restoration method would be required to test a nonempty list; this procedure supplies none. Never clear, delete, reorder, or change existing private rows to create a fixture.",
             "discard_and_back": "Before the committed test, create one synthetic unsaved draft change, inspect it, click Discard, and assert the entire target draft list and raw persisted list still equal the empty baseline. Both header and bottom action bars contain Save and Discard; identify which instance was exercised. Click Back and assert the Chat surface is visible; reopen Profile, expand the target section, and confirm the empty list before starting the committed phase.",
             "save_and_reopen": "After exercising controls, compare the COMPLETE ordered draft list with expected original [] plus the surviving synthetic entry, including all exposed values and flags. Click a named header or bottom Save and wait for saving to settle. While still in Profile, require no visible profile.error/save error and compare the complete displayed list, then obtain an independent approved owner-scoped raw readback of the entire persisted list. A disabled Save button alone proves nothing. Click Back and assert Chat is visible; reopen Profile and compare the complete list again. For reload dimension, additionally reload the extension, recheck identity/organization, reopen Profile, and compare the complete list and raw readback again. A rejected save or reproducible wrong list is fail; an unreadable/ambiguous write is unverified.",
             "cleanup": "Only for an eligible empty owned fixture, remove the surviving same-run synthetic entry through the UI, Save, require no visible save error, and verify both full UI list and approved owner-scoped raw readback equal exact []. Reopen Profile and repeat the UI comparison; repeat after extension reload for reload rows. Never use a blanket clear, direct API/DB delete, or delete any pre-existing row. If a write is ambiguous, stop further mutation until an approved owner-scoped read-only reconciliation establishes exactly what was written; report cleanup_result unverified until empty restoration is proven. If cleanup is attempted and demonstrably fails, report cleanup_result failed. Do not claim cleanup from the UI alone.",
-            "failure_semantics": "Record product_result pass/fail/unverified and cleanup_result restored/failed/unverified separately for every role × lifecycle row. Reproducibly missing control, save error/rejection, failed Discard or Back assertion, or verified draft/persistence mismatch is product fail, even if cleanup later succeeds. Missing identity/organization, unavailable exact-state capture/readback, uncertain write, or an unexecuted dimension is unverified, never pass. Preserve any product failure alongside cleanup failure. Overall acceptance requires all eight product rows pass and all eight cleanup results restored; any failed row fails acceptance, otherwise any unverified row leaves acceptance unverified. Record safe phase/control identifiers and sanitized error category, never credentials or raw sensitive values."
+            "failure_semantics": "Record product_result pass/fail/unverified and cleanup_result restored/failed/unverified separately for every role \u00d7 lifecycle row. Reproducibly missing control, save error/rejection, failed Discard or Back assertion, or verified draft/persistence mismatch is product fail, even if cleanup later succeeds. Missing identity/organization, unavailable exact-state capture/readback, uncertain write, or an unexecuted dimension is unverified, never pass. Preserve any product failure alongside cleanup failure. Overall acceptance requires all eight product rows pass and all eight cleanup results restored; any failed row fails acceptance, otherwise any unverified row leaves acceptance unverified. Record safe phase/control identifiers and sanitized error category, never credentials or raw sensitive values."
           },
           "execution_prerequisites": [
             "Existing member and admin identities on the intended device, verified organization, and same extension build for warm/reload; no account or organization changes to manufacture eligibility.",
@@ -11351,182 +11353,183 @@
           }
         },
         {
-        "id": "EXT-F-1004-T17",
-        "title": "member: Employment",
-        "modes": [
-          "member"
-        ],
-        "control_ids": [
-          "EXT-F-1004-C09"
-        ],
-        "preconditions": [
-          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
-          "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
-          "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
-          "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
-          "Run independently as existing known member; do not change role or account."
-        ],
-        "steps": [
-          "Expand Employment; set Company and Title to unique synthetic values.",
-          "Save, reopen Profile, verify both values, then restore original values and save."
-        ],
-        "expected": [
-          "Company and title values persist after reload.",
-          "Company and Title values persist after reopening and restore successfully."
-        ],
-        "dimensions": [
-          "warm",
-          "reload"
-        ],
-        "source_anchors": [
-          "src/features/profile/ProfileView.tsx:206-221",
-          "src/hooks/use-user-profile.ts:87-100"
-        ],
-        "procedure_readiness": "ready",
-        "procedure_gaps": [],
-        "procedure_execution_matrix": [
-          {
-            "mode": "member",
-            "lifecycle_dimension": "warm",
-            "branch": "default",
-            "inventory_dimensions": [
-              "warm",
-              "reload"
-            ],
-            "observed_outcome": "Independent frozen189 member run verified actual warm/reload controls, saved-field persistence where applicable, normal UI value restoration and exact original row absence. Root matched raw90c2e27e and journale20fe07c hashes. No latest-main or Store installation claim.",
-            "evidence_refs": [
-              ".research/profile-fields-reload-fixed-native.json",
-              "docs/stabilization/resource-journals/profile-fields-reload-fixed-189-08.jsonl"
-            ],
-            "status": "pass",
-            "readiness": "ready"
+          "id": "EXT-F-1004-T17",
+          "title": "member: Employment",
+          "modes": [
+            "member"
+          ],
+          "control_ids": [
+            "EXT-F-1004-C09"
+          ],
+          "preconditions": [
+            "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
+            "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
+            "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
+            "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
+            "Run independently as existing known member; do not change role or account."
+          ],
+          "steps": [
+            "Expand Employment; set Company and Title to unique synthetic values.",
+            "Save, reopen Profile, verify both values, then restore original values and save."
+          ],
+          "expected": [
+            "Company and title values persist after reload.",
+            "Company and Title values persist after reopening and restore successfully."
+          ],
+          "dimensions": [
+            "warm",
+            "reload"
+          ],
+          "source_anchors": [
+            "src/features/profile/ProfileView.tsx:206-221",
+            "src/hooks/use-user-profile.ts:87-100"
+          ],
+          "procedure_readiness": "ready",
+          "procedure_gaps": [],
+          "procedure_execution_matrix": [
+            {
+              "mode": "member",
+              "lifecycle_dimension": "warm",
+              "branch": "default",
+              "inventory_dimensions": [
+                "warm",
+                "reload"
+              ],
+              "observed_outcome": "Independent frozen189 member run verified actual warm/reload controls, saved-field persistence where applicable, normal UI value restoration and exact original row absence. Root matched raw90c2e27e and journale20fe07c hashes. No latest-main or Store installation claim.",
+              "evidence_refs": [
+                ".research/profile-fields-reload-fixed-native.json",
+                "docs/stabilization/resource-journals/profile-fields-reload-fixed-189-08.jsonl"
+              ],
+              "status": "pass",
+              "readiness": "ready"
+            },
+            {
+              "mode": "member",
+              "lifecycle_dimension": "reload",
+              "branch": "default",
+              "inventory_dimensions": [
+                "warm",
+                "reload"
+              ],
+              "observed_outcome": "Independent frozen189 member run verified actual warm/reload controls, saved-field persistence where applicable, normal UI value restoration and exact original row absence. Root matched raw90c2e27e and journale20fe07c hashes. No latest-main or Store installation claim.",
+              "evidence_refs": [
+                ".research/profile-fields-reload-fixed-native.json",
+                "docs/stabilization/resource-journals/profile-fields-reload-fixed-189-08.jsonl"
+              ],
+              "status": "pass",
+              "readiness": "ready"
+            }
+          ],
+          "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
+          "procedure_review": {
+            "proposal_commit": "22994d49",
+            "peer_commit": "2c318798",
+            "report": ".research/popup-profile-acceptance-peer.json",
+            "scope": "Source-reviewed procedure only; no runtime acceptance."
           },
-          {
-            "mode": "member",
-            "lifecycle_dimension": "reload",
-            "branch": "default",
-            "inventory_dimensions": [
-              "warm",
-              "reload"
-            ],
-            "observed_outcome": "Independent frozen189 member run verified actual warm/reload controls, saved-field persistence where applicable, normal UI value restoration and exact original row absence. Root matched raw90c2e27e and journale20fe07c hashes. No latest-main or Store installation claim.",
-            "evidence_refs": [
-              ".research/profile-fields-reload-fixed-native.json",
-              "docs/stabilization/resource-journals/profile-fields-reload-fixed-189-08.jsonl"
-            ],
-            "status": "pass",
-            "readiness": "ready"
-          }
-        ],
-        "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
-        "procedure_review": {
-          "proposal_commit": "22994d49",
-          "peer_commit": "2c318798",
-          "report": ".research/popup-profile-acceptance-peer.json",
-          "scope": "Source-reviewed procedure only; no runtime acceptance."
+          "results": {
+            "member": {
+              "status": "pass",
+              "run_id": "profile-fields-reload-fixed-189-08",
+              "evidence": ".research/profile-fields-reload-fixed-native.json",
+              "detail": "Independent frozen189 member run verified actual warm/reload controls, saved-field persistence where applicable, normal UI value restoration and exact original row absence. Root matched raw90c2e27e and journale20fe07c hashes. No latest-main or Store installation claim.",
+              "build_variant": "Frozen development189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
+              "verified_at": "2026-10-04T03:52:44.728959+00:00"
+            }
+          },
+          "previous_results": [
+            {
+              "mode": "member",
+              "status": "partial",
+              "run_id": "profile-fields-clean-save-189-07",
+              "evidence": ".research/profile-fields-clean-save-native.json",
+              "verified_substeps": [
+                "Company and Title saved and reopened with exact values."
+              ],
+              "remaining_criteria": [
+                "Full extension reload exact-value verification.",
+                "Normal UI restoration; this run required conditional owned-row recovery after reload failure."
+              ],
+              "recovery_evidence": ".research/profile-owned-row-recovery-189-07.json",
+              "build_variant": "Frozen development189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
+              "verified_at": "2026-10-04T03:14:28.197043+00:00"
+            }
+          ]
         },
-        "results": {
-          "member": {
-            "status": "pass",
-            "run_id": "profile-fields-reload-fixed-189-08",
-            "evidence": ".research/profile-fields-reload-fixed-native.json",
-            "detail": "Independent frozen189 member run verified actual warm/reload controls, saved-field persistence where applicable, normal UI value restoration and exact original row absence. Root matched raw90c2e27e and journale20fe07c hashes. No latest-main or Store installation claim.",
-            "build_variant": "Frozen development189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
-            "verified_at": "2026-10-04T03:52:44.728959+00:00"
-          }
-        },
-        "previous_results": [
-          {
-            "mode": "member",
-            "status": "partial",
-            "run_id": "profile-fields-clean-save-189-07",
-            "evidence": ".research/profile-fields-clean-save-native.json",
-            "verified_substeps": [
-              "Company and Title saved and reopened with exact values."
-            ],
-            "remaining_criteria": [
-              "Full extension reload exact-value verification.",
-              "Normal UI restoration; this run required conditional owned-row recovery after reload failure."
-            ],
-            "recovery_evidence": ".research/profile-owned-row-recovery-189-07.json",
-            "build_variant": "Frozen development189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
-            "verified_at": "2026-10-04T03:14:28.197043+00:00"
-          }
-        ]
-      },
         {
-        "id": "EXT-F-1004-T18",
-        "title": "admin: Employment",
-        "modes": [
-          "admin"
-        ],
-        "control_ids": [
-          "EXT-F-1004-C09"
-        ],
-        "preconditions": [
-          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
-          "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
-          "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
-          "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
-          "Run independently as existing known admin; do not change role or account."
-        ],
-        "steps": [
-          "Expand Employment; set Company and Title to unique synthetic values.",
-          "Save, reopen Profile, verify both values, then restore original values and save."
-        ],
-        "expected": [
-          "Company and title values persist after reload.",
-          "Company and Title values persist after reopening and restore successfully."
-        ],
-        "dimensions": [
-          "warm",
-          "reload"
-        ],
-        "source_anchors": [
-          "src/features/profile/ProfileView.tsx:206-221",
-          "src/hooks/use-user-profile.ts:87-100"
-        ],
-        "procedure_readiness": "ready",
-        "procedure_gaps": [],
-        "procedure_execution_matrix": [
-          {
-            "mode": "admin",
-            "lifecycle_dimension": "warm",
-            "branch": "default",
-            "inventory_dimensions": [
-              "warm",
-              "reload"
-            ],
-            "observed_outcome": null,
-            "evidence_refs": [],
-            "status": "unverified",
-            "readiness": "ready"
+          "id": "EXT-F-1004-T18",
+          "title": "admin: Employment",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1004-C09"
+          ],
+          "preconditions": [
+            "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
+            "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
+            "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
+            "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
+            "Run independently as existing known admin; do not change role or account."
+          ],
+          "steps": [
+            "Expand Employment; set Company and Title to unique synthetic values.",
+            "Save, reopen Profile, verify both values, then restore original values and save."
+          ],
+          "expected": [
+            "Company and title values persist after reload.",
+            "Company and Title values persist after reopening and restore successfully."
+          ],
+          "dimensions": [
+            "warm",
+            "reload"
+          ],
+          "source_anchors": [
+            "src/features/profile/ProfileView.tsx:206-221",
+            "src/hooks/use-user-profile.ts:87-100"
+          ],
+          "procedure_readiness": "ready",
+          "procedure_gaps": [],
+          "procedure_execution_matrix": [
+            {
+              "mode": "admin",
+              "lifecycle_dimension": "warm",
+              "branch": "default",
+              "inventory_dimensions": [
+                "warm",
+                "reload"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "ready"
+            },
+            {
+              "mode": "admin",
+              "lifecycle_dimension": "reload",
+              "branch": "default",
+              "inventory_dimensions": [
+                "warm",
+                "reload"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "ready"
+            }
+          ],
+          "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
+          "procedure_review": {
+            "proposal_commit": "22994d49",
+            "peer_commit": "2c318798",
+            "report": ".research/popup-profile-acceptance-peer.json",
+            "scope": "Source-reviewed procedure only; no runtime acceptance."
           },
-          {
-            "mode": "admin",
-            "lifecycle_dimension": "reload",
-            "branch": "default",
-            "inventory_dimensions": [
-              "warm",
-              "reload"
-            ],
-            "observed_outcome": null,
-            "evidence_refs": [],
-            "status": "unverified",
-            "readiness": "ready"
-          }
-        ],
-        "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
-        "procedure_review": {
-          "proposal_commit": "22994d49",
-          "peer_commit": "2c318798",
-          "report": ".research/popup-profile-acceptance-peer.json",
-          "scope": "Source-reviewed procedure only; no runtime acceptance."
+          "defect_ids": [
+            "EXT-D-0108",
+            "EXT-D-0114"
+          ]
         },
-        "defect_ids": [
-          "EXT-D-0108", "EXT-D-0114"
-        ]
-      },
         {
           "id": "EXT-F-1004-T19",
           "title": "member: Emergency contacts",
@@ -11674,112 +11677,112 @@
           }
         },
         {
-        "id": "EXT-F-1004-T21",
-        "title": "member: Profile section expanders",
-        "modes": [
-          "member"
-        ],
-        "control_ids": [
-          "EXT-F-1004-C11"
-        ],
-        "preconditions": [
-          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
-          "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
-          "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
-          "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
-          "Run independently as existing known member; do not change role or account."
-        ],
-        "steps": [
-          "For Identity, Phones, Emails, Web, Shipping address, Billing address, Employment, and Emergency contacts: note open/closed state. Toggle each section closed then open using its label.",
-          "Change a synthetic Preferred value before toggling Identity closed/open; confirm draft value remains and Unsaved changes stays visible. Click Discard."
-        ],
-        "expected": [
-          "Each selected section opens/closes without losing current draft.",
-          "Each section opens/closes from its label; toggling does not lose the current draft; Discard restores loaded value."
-        ],
-        "dimensions": [
-          "warm",
-          "reload"
-        ],
-        "source_anchors": [
-          "src/features/profile/ProfileView.tsx:100-225"
-        ],
-        "procedure_readiness": "ready",
-        "procedure_gaps": [],
-        "procedure_execution_matrix": [
-          {
-            "mode": "member",
-            "lifecycle_dimension": "warm",
-            "branch": "default",
-            "inventory_dimensions": [
-              "warm",
-              "reload"
-            ],
-            "observed_outcome": "Independent frozen189 member run verified actual warm/reload controls, saved-field persistence where applicable, normal UI value restoration and exact original row absence. Root matched raw90c2e27e and journale20fe07c hashes. No latest-main or Store installation claim.",
-            "evidence_refs": [
-              ".research/profile-fields-reload-fixed-native.json",
-              "docs/stabilization/resource-journals/profile-fields-reload-fixed-189-08.jsonl"
-            ],
-            "status": "pass",
-            "readiness": "ready"
-          },
-          {
-            "mode": "member",
-            "lifecycle_dimension": "reload",
-            "branch": "default",
-            "inventory_dimensions": [
-              "warm",
-              "reload"
-            ],
-            "observed_outcome": "Independent frozen189 member run verified actual warm/reload controls, saved-field persistence where applicable, normal UI value restoration and exact original row absence. Root matched raw90c2e27e and journale20fe07c hashes. No latest-main or Store installation claim.",
-            "evidence_refs": [
-              ".research/profile-fields-reload-fixed-native.json",
-              "docs/stabilization/resource-journals/profile-fields-reload-fixed-189-08.jsonl"
-            ],
-            "status": "pass",
-            "readiness": "ready"
-          }
-        ],
-        "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
-        "procedure_review": {
-          "proposal_commit": "22994d49",
-          "peer_commit": "2c318798",
-          "report": ".research/popup-profile-acceptance-peer.json",
-          "scope": "Source-reviewed procedure only; no runtime acceptance."
-        },
-        "results": {
-          "member": {
-            "status": "pass",
-            "run_id": "profile-fields-reload-fixed-189-08",
-            "evidence": ".research/profile-fields-reload-fixed-native.json",
-            "detail": "Independent frozen189 member run verified actual warm/reload controls, saved-field persistence where applicable, normal UI value restoration and exact original row absence. Root matched raw90c2e27e and journale20fe07c hashes. No latest-main or Store installation claim.",
-            "build_variant": "Frozen development189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
-            "verified_at": "2026-10-04T03:52:44.728959+00:00"
-          }
-        },
-        "previous_results": [
-          {
-            "mode": "member",
-            "status": "partial",
-            "run_id": "profile-fields-member-189-01",
-            "evidence": ".research/profile-fields-member-native.json",
-            "verified_substeps": [
-              "All eight sections opened/closed through controls; draft persisted across Identity toggles and Discard restored baseline."
-            ],
-            "remaining_criteria": [
-              "Full extension reload dimension remains unverified."
-            ],
-            "build_variant": "Exactdevelopment189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
-            "verified_at": "2026-10-04T02:09:46.544160+00:00",
-            "latest_attempt": {
-              "run_id": "profile-fields-member-189-04",
-              "status": "unverified",
-              "evidence": ".research/profile-d104-independent-native.json",
-              "detail": "Latest warm expander operation failed before receipt; internal cause lost. Earlier bounded warm pass retained as historical evidence, not current repeatability. Reload unverified; exact original absence restored."
+          "id": "EXT-F-1004-T21",
+          "title": "member: Profile section expanders",
+          "modes": [
+            "member"
+          ],
+          "control_ids": [
+            "EXT-F-1004-C11"
+          ],
+          "preconditions": [
+            "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
+            "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
+            "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
+            "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
+            "Run independently as existing known member; do not change role or account."
+          ],
+          "steps": [
+            "For Identity, Phones, Emails, Web, Shipping address, Billing address, Employment, and Emergency contacts: note open/closed state. Toggle each section closed then open using its label.",
+            "Change a synthetic Preferred value before toggling Identity closed/open; confirm draft value remains and Unsaved changes stays visible. Click Discard."
+          ],
+          "expected": [
+            "Each selected section opens/closes without losing current draft.",
+            "Each section opens/closes from its label; toggling does not lose the current draft; Discard restores loaded value."
+          ],
+          "dimensions": [
+            "warm",
+            "reload"
+          ],
+          "source_anchors": [
+            "src/features/profile/ProfileView.tsx:100-225"
+          ],
+          "procedure_readiness": "ready",
+          "procedure_gaps": [],
+          "procedure_execution_matrix": [
+            {
+              "mode": "member",
+              "lifecycle_dimension": "warm",
+              "branch": "default",
+              "inventory_dimensions": [
+                "warm",
+                "reload"
+              ],
+              "observed_outcome": "Independent frozen189 member run verified actual warm/reload controls, saved-field persistence where applicable, normal UI value restoration and exact original row absence. Root matched raw90c2e27e and journale20fe07c hashes. No latest-main or Store installation claim.",
+              "evidence_refs": [
+                ".research/profile-fields-reload-fixed-native.json",
+                "docs/stabilization/resource-journals/profile-fields-reload-fixed-189-08.jsonl"
+              ],
+              "status": "pass",
+              "readiness": "ready"
+            },
+            {
+              "mode": "member",
+              "lifecycle_dimension": "reload",
+              "branch": "default",
+              "inventory_dimensions": [
+                "warm",
+                "reload"
+              ],
+              "observed_outcome": "Independent frozen189 member run verified actual warm/reload controls, saved-field persistence where applicable, normal UI value restoration and exact original row absence. Root matched raw90c2e27e and journale20fe07c hashes. No latest-main or Store installation claim.",
+              "evidence_refs": [
+                ".research/profile-fields-reload-fixed-native.json",
+                "docs/stabilization/resource-journals/profile-fields-reload-fixed-189-08.jsonl"
+              ],
+              "status": "pass",
+              "readiness": "ready"
             }
-          }
-        ]
-      },
+          ],
+          "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
+          "procedure_review": {
+            "proposal_commit": "22994d49",
+            "peer_commit": "2c318798",
+            "report": ".research/popup-profile-acceptance-peer.json",
+            "scope": "Source-reviewed procedure only; no runtime acceptance."
+          },
+          "results": {
+            "member": {
+              "status": "pass",
+              "run_id": "profile-fields-reload-fixed-189-08",
+              "evidence": ".research/profile-fields-reload-fixed-native.json",
+              "detail": "Independent frozen189 member run verified actual warm/reload controls, saved-field persistence where applicable, normal UI value restoration and exact original row absence. Root matched raw90c2e27e and journale20fe07c hashes. No latest-main or Store installation claim.",
+              "build_variant": "Frozen development189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
+              "verified_at": "2026-10-04T03:52:44.728959+00:00"
+            }
+          },
+          "previous_results": [
+            {
+              "mode": "member",
+              "status": "partial",
+              "run_id": "profile-fields-member-189-01",
+              "evidence": ".research/profile-fields-member-native.json",
+              "verified_substeps": [
+                "All eight sections opened/closed through controls; draft persisted across Identity toggles and Discard restored baseline."
+              ],
+              "remaining_criteria": [
+                "Full extension reload dimension remains unverified."
+              ],
+              "build_variant": "Exactdevelopment189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
+              "verified_at": "2026-10-04T02:09:46.544160+00:00",
+              "latest_attempt": {
+                "run_id": "profile-fields-member-189-04",
+                "status": "unverified",
+                "evidence": ".research/profile-d104-independent-native.json",
+                "detail": "Latest warm expander operation failed before receipt; internal cause lost. Earlier bounded warm pass retained as historical evidence, not current repeatability. Reload unverified; exact original absence restored."
+              }
+            }
+          ]
+        },
         {
           "id": "EXT-F-1004-T22",
           "title": "admin: Profile section expanders",
@@ -12183,7 +12186,7 @@
           ],
           "expected": [
             "Loading ends and visible error identifies profile load failure; saved data is not presented as an empty profile.",
-            "Loading ends with the visible “Could not load your profile: …” error; a failed read is not silently presented as a successful empty profile. After restoring service, reopening Profile starts a fresh load.",
+            "Loading ends with the visible \u201cCould not load your profile: \u2026\u201d error; a failed read is not silently presented as a successful empty profile. After restoring service, reopening Profile starts a fresh load.",
             "After an initial read failure, Profile presents a prominent non-editable error state; no blank editable form or Save action is available.",
             "After an identity change whose read fails, no field from the previous identity's draft is displayed or saved."
           ],
@@ -12914,297 +12917,297 @@
           }
         },
         {
-        "id": "EXT-F-1004-T28",
-        "title": "First profile save names active organization and existing profile stays filed",
-        "control_ids": [
-          "EXT-F-1004-C02",
-          "EXT-F-1004-C17"
-        ],
-        "modes": [
-          "member",
-          "admin"
-        ],
-        "preconditions": [
-          "Use a disposable profile with no existing row and a principal belonging to two organizations; then use a separate existing profile filed in the other organization.",
-          "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
-          "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
-          "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
-          "Execute each mode row only after the role-specific identity and both required profile-row fixtures are verified privately; no account or row provisioning is part of this procedure."
-        ],
-        "steps": [
-          "Before touching the extension, privately verify the existing designated test identity, member/admin role, membership in two organizations, and pre-existing profile fixtures: one principal with no user_form_profile row and one with an existing row filed under org A. Do not expose identifiers, credentials, or personal data in evidence. If either role-specific fixture or its approved access path is unavailable, leave that role\u2019s matrix rows unverified.",
-          "On the existing no-row fixture, set device organization A, save a synthetic Preferred value, and use an authorized read-only observation to confirm organization_id A.",
-          "On the existing row fixture, confirm row organization A; switch device organization to B, edit a synthetic field and save; confirm the row stays filed under A.",
-          "On a pre-existing no-row fixture with device organization unset, attempt Save; record whether the resolver holds/presents the organization picker and confirm no write until a choice is made. Restore any changed synthetic values/selection under the existing fixture protocol."
-        ],
-        "expected": [
-          "First save explicitly uses A.",
-          "Saving the existing row retains A and does not move it to B.",
-          "Without an active organization, no profile write occurs and the user receives the resolver remedy.",
-          "New row uses explicit active device organization A. Existing row retains A after device selection changes to B. Without an active organization, no profile write occurs until a user selects one. No account, membership, role, or profile fixture is created or rotated by this procedure."
-        ],
-        "dimensions": [
-          "warm",
-          "reload",
-          "organization-unset",
-          "organization-switch"
-        ],
-        "source_anchors": [
-          "src/hooks/use-user-profile.ts:87-100",
-          "src/lib/supabase/user-profile.ts",
-          "src/lib/org/active-org.ts"
-        ],
-        "procedure_readiness": "requires_fixture",
-        "procedure_gaps": [
-          "The case requires controlled disposable database rows and membership in two organizations. Existing profile repository semantics may be server-owned; check current user-profile module/database contract before executing."
-        ],
-        "procedure_execution_matrix": [
-          {
-            "mode": "member",
-            "lifecycle_dimension": "warm",
-            "branch": "new-row-with-device-org-A",
-            "inventory_dimensions": [
-              "warm",
-              "reload",
-              "organization-unset",
-              "organization-switch"
-            ],
-            "observed_outcome": "Independent guarded member observation passed this bounded branch on frozen b4/189; original row absence restored and authenticated-read verified.",
-            "evidence_refs": [
-              ".research/profile-member-final-189-native.json",
-              "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl"
-            ],
-            "status": "pass",
-            "readiness": "requires_fixture"
+          "id": "EXT-F-1004-T28",
+          "title": "First profile save names active organization and existing profile stays filed",
+          "control_ids": [
+            "EXT-F-1004-C02",
+            "EXT-F-1004-C17"
+          ],
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "preconditions": [
+            "Use a disposable profile with no existing row and a principal belonging to two organizations; then use a separate existing profile filed in the other organization.",
+            "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
+            "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
+            "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
+            "Execute each mode row only after the role-specific identity and both required profile-row fixtures are verified privately; no account or row provisioning is part of this procedure."
+          ],
+          "steps": [
+            "Before touching the extension, privately verify the existing designated test identity, member/admin role, membership in two organizations, and pre-existing profile fixtures: one principal with no user_form_profile row and one with an existing row filed under org A. Do not expose identifiers, credentials, or personal data in evidence. If either role-specific fixture or its approved access path is unavailable, leave that role\u2019s matrix rows unverified.",
+            "On the existing no-row fixture, set device organization A, save a synthetic Preferred value, and use an authorized read-only observation to confirm organization_id A.",
+            "On the existing row fixture, confirm row organization A; switch device organization to B, edit a synthetic field and save; confirm the row stays filed under A.",
+            "On a pre-existing no-row fixture with device organization unset, attempt Save; record whether the resolver holds/presents the organization picker and confirm no write until a choice is made. Restore any changed synthetic values/selection under the existing fixture protocol."
+          ],
+          "expected": [
+            "First save explicitly uses A.",
+            "Saving the existing row retains A and does not move it to B.",
+            "Without an active organization, no profile write occurs and the user receives the resolver remedy.",
+            "New row uses explicit active device organization A. Existing row retains A after device selection changes to B. Without an active organization, no profile write occurs until a user selects one. No account, membership, role, or profile fixture is created or rotated by this procedure."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "organization-unset",
+            "organization-switch"
+          ],
+          "source_anchors": [
+            "src/hooks/use-user-profile.ts:87-100",
+            "src/lib/supabase/user-profile.ts",
+            "src/lib/org/active-org.ts"
+          ],
+          "procedure_readiness": "requires_fixture",
+          "procedure_gaps": [
+            "The case requires controlled disposable database rows and membership in two organizations. Existing profile repository semantics may be server-owned; check current user-profile module/database contract before executing."
+          ],
+          "procedure_execution_matrix": [
+            {
+              "mode": "member",
+              "lifecycle_dimension": "warm",
+              "branch": "new-row-with-device-org-A",
+              "inventory_dimensions": [
+                "warm",
+                "reload",
+                "organization-unset",
+                "organization-switch"
+              ],
+              "observed_outcome": "Independent guarded member observation passed this bounded branch on frozen b4/189; original row absence restored and authenticated-read verified.",
+              "evidence_refs": [
+                ".research/profile-member-final-189-native.json",
+                "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl"
+              ],
+              "status": "pass",
+              "readiness": "requires_fixture"
+            },
+            {
+              "mode": "member",
+              "lifecycle_dimension": "warm",
+              "branch": "existing-row-org-A-after-device-switch-to-B",
+              "inventory_dimensions": [
+                "warm",
+                "reload",
+                "organization-unset",
+                "organization-switch"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "requires_fixture"
+            },
+            {
+              "mode": "member",
+              "lifecycle_dimension": "warm",
+              "branch": "new-row-without-device-org",
+              "inventory_dimensions": [
+                "warm",
+                "reload",
+                "organization-unset",
+                "organization-switch"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "requires_fixture"
+            },
+            {
+              "mode": "member",
+              "lifecycle_dimension": "reload",
+              "branch": "new-row-with-device-org-A",
+              "inventory_dimensions": [
+                "warm",
+                "reload",
+                "organization-unset",
+                "organization-switch"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "requires_fixture"
+            },
+            {
+              "mode": "member",
+              "lifecycle_dimension": "reload",
+              "branch": "existing-row-org-A-after-device-switch-to-B",
+              "inventory_dimensions": [
+                "warm",
+                "reload",
+                "organization-unset",
+                "organization-switch"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "requires_fixture"
+            },
+            {
+              "mode": "member",
+              "lifecycle_dimension": "reload",
+              "branch": "new-row-without-device-org",
+              "inventory_dimensions": [
+                "warm",
+                "reload",
+                "organization-unset",
+                "organization-switch"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "requires_fixture"
+            },
+            {
+              "mode": "admin",
+              "lifecycle_dimension": "warm",
+              "branch": "new-row-with-device-org-A",
+              "inventory_dimensions": [
+                "warm",
+                "reload",
+                "organization-unset",
+                "organization-switch"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "requires_fixture"
+            },
+            {
+              "mode": "admin",
+              "lifecycle_dimension": "warm",
+              "branch": "existing-row-org-A-after-device-switch-to-B",
+              "inventory_dimensions": [
+                "warm",
+                "reload",
+                "organization-unset",
+                "organization-switch"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "requires_fixture"
+            },
+            {
+              "mode": "admin",
+              "lifecycle_dimension": "warm",
+              "branch": "new-row-without-device-org",
+              "inventory_dimensions": [
+                "warm",
+                "reload",
+                "organization-unset",
+                "organization-switch"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "requires_fixture"
+            },
+            {
+              "mode": "admin",
+              "lifecycle_dimension": "reload",
+              "branch": "new-row-with-device-org-A",
+              "inventory_dimensions": [
+                "warm",
+                "reload",
+                "organization-unset",
+                "organization-switch"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "requires_fixture"
+            },
+            {
+              "mode": "admin",
+              "lifecycle_dimension": "reload",
+              "branch": "existing-row-org-A-after-device-switch-to-B",
+              "inventory_dimensions": [
+                "warm",
+                "reload",
+                "organization-unset",
+                "organization-switch"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "requires_fixture"
+            },
+            {
+              "mode": "admin",
+              "lifecycle_dimension": "reload",
+              "branch": "new-row-without-device-org",
+              "inventory_dimensions": [
+                "warm",
+                "reload",
+                "organization-unset",
+                "organization-switch"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "requires_fixture"
+            }
+          ],
+          "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
+          "procedure_review": {
+            "proposal_commit": "22994d49",
+            "peer_commit": "2c318798",
+            "report": ".research/popup-profile-acceptance-peer.json",
+            "scope": "Source-reviewed procedure only; no runtime acceptance."
           },
-          {
-            "mode": "member",
-            "lifecycle_dimension": "warm",
-            "branch": "existing-row-org-A-after-device-switch-to-B",
-            "inventory_dimensions": [
-              "warm",
-              "reload",
-              "organization-unset",
-              "organization-switch"
-            ],
-            "observed_outcome": null,
-            "evidence_refs": [],
-            "status": "unverified",
-            "readiness": "requires_fixture"
+          "required_fixture": "Pre-existing disposable member/admin principals and profile-row fixtures must be verified before execution. The designated non-admin test principal test@test.com has prior read-only membership evidence in docs/stabilization/reports/member-access-probe.json, but its extension OAuth access and the required absent/existing user_form_profile rows are not established here. Verify identity and fixture metadata privately without reading or recording secrets; do not create accounts, rotate credentials, change memberships, or write to live profiles. If pre-existing fixtures cannot be verified, keep every row unverified.",
+          "results": {
+            "member": {
+              "status": "partial",
+              "run_id": "profile-member-final-189-05",
+              "build_variant": "Development0.2.189, source b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced, CI37164174445/artifact11288542496",
+              "verified_substeps": [
+                "First real UI Save created a test-owned row with the explicit active device organization; original absence restored."
+              ],
+              "remaining_criteria": [
+                "Organization switch/unset, reload first-save and admin branches remain unverified."
+              ],
+              "evidence": [
+                ".research/profile-member-final-189-native.json",
+                "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl"
+              ],
+              "verified_at": "2026-10-04T01:29:17.055381+00:00"
+            }
           },
-          {
-            "mode": "member",
-            "lifecycle_dimension": "warm",
-            "branch": "new-row-without-device-org",
-            "inventory_dimensions": [
-              "warm",
-              "reload",
-              "organization-unset",
-              "organization-switch"
-            ],
-            "observed_outcome": null,
-            "evidence_refs": [],
-            "status": "unverified",
-            "readiness": "requires_fixture"
-          },
-          {
-            "mode": "member",
-            "lifecycle_dimension": "reload",
-            "branch": "new-row-with-device-org-A",
-            "inventory_dimensions": [
-              "warm",
-              "reload",
-              "organization-unset",
-              "organization-switch"
-            ],
-            "observed_outcome": null,
-            "evidence_refs": [],
-            "status": "unverified",
-            "readiness": "requires_fixture"
-          },
-          {
-            "mode": "member",
-            "lifecycle_dimension": "reload",
-            "branch": "existing-row-org-A-after-device-switch-to-B",
-            "inventory_dimensions": [
-              "warm",
-              "reload",
-              "organization-unset",
-              "organization-switch"
-            ],
-            "observed_outcome": null,
-            "evidence_refs": [],
-            "status": "unverified",
-            "readiness": "requires_fixture"
-          },
-          {
-            "mode": "member",
-            "lifecycle_dimension": "reload",
-            "branch": "new-row-without-device-org",
-            "inventory_dimensions": [
-              "warm",
-              "reload",
-              "organization-unset",
-              "organization-switch"
-            ],
-            "observed_outcome": null,
-            "evidence_refs": [],
-            "status": "unverified",
-            "readiness": "requires_fixture"
-          },
-          {
-            "mode": "admin",
-            "lifecycle_dimension": "warm",
-            "branch": "new-row-with-device-org-A",
-            "inventory_dimensions": [
-              "warm",
-              "reload",
-              "organization-unset",
-              "organization-switch"
-            ],
-            "observed_outcome": null,
-            "evidence_refs": [],
-            "status": "unverified",
-            "readiness": "requires_fixture"
-          },
-          {
-            "mode": "admin",
-            "lifecycle_dimension": "warm",
-            "branch": "existing-row-org-A-after-device-switch-to-B",
-            "inventory_dimensions": [
-              "warm",
-              "reload",
-              "organization-unset",
-              "organization-switch"
-            ],
-            "observed_outcome": null,
-            "evidence_refs": [],
-            "status": "unverified",
-            "readiness": "requires_fixture"
-          },
-          {
-            "mode": "admin",
-            "lifecycle_dimension": "warm",
-            "branch": "new-row-without-device-org",
-            "inventory_dimensions": [
-              "warm",
-              "reload",
-              "organization-unset",
-              "organization-switch"
-            ],
-            "observed_outcome": null,
-            "evidence_refs": [],
-            "status": "unverified",
-            "readiness": "requires_fixture"
-          },
-          {
-            "mode": "admin",
-            "lifecycle_dimension": "reload",
-            "branch": "new-row-with-device-org-A",
-            "inventory_dimensions": [
-              "warm",
-              "reload",
-              "organization-unset",
-              "organization-switch"
-            ],
-            "observed_outcome": null,
-            "evidence_refs": [],
-            "status": "unverified",
-            "readiness": "requires_fixture"
-          },
-          {
-            "mode": "admin",
-            "lifecycle_dimension": "reload",
-            "branch": "existing-row-org-A-after-device-switch-to-B",
-            "inventory_dimensions": [
-              "warm",
-              "reload",
-              "organization-unset",
-              "organization-switch"
-            ],
-            "observed_outcome": null,
-            "evidence_refs": [],
-            "status": "unverified",
-            "readiness": "requires_fixture"
-          },
-          {
-            "mode": "admin",
-            "lifecycle_dimension": "reload",
-            "branch": "new-row-without-device-org",
-            "inventory_dimensions": [
-              "warm",
-              "reload",
-              "organization-unset",
-              "organization-switch"
-            ],
-            "observed_outcome": null,
-            "evidence_refs": [],
-            "status": "unverified",
-            "readiness": "requires_fixture"
-          }
-        ],
-        "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
-        "procedure_review": {
-          "proposal_commit": "22994d49",
-          "peer_commit": "2c318798",
-          "report": ".research/popup-profile-acceptance-peer.json",
-          "scope": "Source-reviewed procedure only; no runtime acceptance."
-        },
-        "required_fixture": "Pre-existing disposable member/admin principals and profile-row fixtures must be verified before execution. The designated non-admin test principal test@test.com has prior read-only membership evidence in docs/stabilization/reports/member-access-probe.json, but its extension OAuth access and the required absent/existing user_form_profile rows are not established here. Verify identity and fixture metadata privately without reading or recording secrets; do not create accounts, rotate credentials, change memberships, or write to live profiles. If pre-existing fixtures cannot be verified, keep every row unverified.",
-        "results": {
-          "member": {
-            "status": "partial",
-            "run_id": "profile-member-final-189-05",
-            "build_variant": "Development0.2.189, source b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced, CI37164174445/artifact11288542496",
-            "verified_substeps": [
-              "First real UI Save created a test-owned row with the explicit active device organization; original absence restored."
-            ],
-            "remaining_criteria": [
-              "Organization switch/unset, reload first-save and admin branches remain unverified."
-            ],
-            "evidence": [
-              ".research/profile-member-final-189-native.json",
-              "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl"
-            ],
-            "verified_at": "2026-10-04T01:29:17.055381+00:00"
-          }
-        },
-        "previous_results": [
-          {
-            "mode": "member",
-            "status": "partial",
-            "run_id": "profile-member-native-next-04",
-            "build_variant": "receipt-bound development 0.2.184; CI37159097093/artifact11286822448/source9dfb5911",
-            "verified_substeps": [
-              "Real member first Save created its owner row with the selected device organization. Original absence was later restored through verified guarded conditional owner cleanup."
-            ],
-            "remaining_criteria": [
-              "True extension reload was not established.",
-              "All other unverified execution-matrix branches remain required."
-            ],
-            "evidence": ".research/profile-member-bounded-owner-verification.json",
-            "verified_at": "2026-10-03T23:14:01.024268+00:00"
-          },
-          {
-            "mode": "member",
-            "status": "partial",
-            "run_id": "profile-member-retest-189-01",
-            "build_variant": "receipt-bound development0.2.189; CI37164174445/artifact11288542496/sourceb4b9f0c4",
-            "verified_substeps": [
-              "Real member first Save created its owner row with the selected device organization. Original absence was later restored through verified guarded conditional owner cleanup."
-            ],
-            "remaining_criteria": [
-              "Reload-mode Profile cases remain unverified: genuineextensionreloadpassed butsubsequentdriverclickfailed.",
-              "All other unverified execution-matrix branches remain required."
-            ],
-            "evidence": ".research/profile-member-retest189.json",
-            "verified_at": "2026-10-04T00:35:54.125394+00:00"
-          }
-        ],
-        "defect_ids": [
-          "EXT-D-0108"
-        ]
-      }
+          "previous_results": [
+            {
+              "mode": "member",
+              "status": "partial",
+              "run_id": "profile-member-native-next-04",
+              "build_variant": "receipt-bound development 0.2.184; CI37159097093/artifact11286822448/source9dfb5911",
+              "verified_substeps": [
+                "Real member first Save created its owner row with the selected device organization. Original absence was later restored through verified guarded conditional owner cleanup."
+              ],
+              "remaining_criteria": [
+                "True extension reload was not established.",
+                "All other unverified execution-matrix branches remain required."
+              ],
+              "evidence": ".research/profile-member-bounded-owner-verification.json",
+              "verified_at": "2026-10-03T23:14:01.024268+00:00"
+            },
+            {
+              "mode": "member",
+              "status": "partial",
+              "run_id": "profile-member-retest-189-01",
+              "build_variant": "receipt-bound development0.2.189; CI37164174445/artifact11288542496/sourceb4b9f0c4",
+              "verified_substeps": [
+                "Real member first Save created its owner row with the selected device organization. Original absence was later restored through verified guarded conditional owner cleanup."
+              ],
+              "remaining_criteria": [
+                "Reload-mode Profile cases remain unverified: genuineextensionreloadpassed butsubsequentdriverclickfailed.",
+                "All other unverified execution-matrix branches remain required."
+              ],
+              "evidence": ".research/profile-member-retest189.json",
+              "verified_at": "2026-10-04T00:35:54.125394+00:00"
+            }
+          ],
+          "defect_ids": [
+            "EXT-D-0108"
+          ]
+        }
       ],
       "cells": {
         "guest": {
@@ -17061,29 +17064,38 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37222954472",
-              "evidence": ".research/scrape231-recapture-native.json",
-              "detail": "Exact development231 guest ARM: Fast capture and post-reload repopulated article observed. Raw early case remaining note is stale; no exhaustive case promotion from that discrepancy.",
+              "run_id": "37251782627",
+              "evidence": ".research/guest-scrape-normal-native.json",
+              "detail": "Frozen development244 guest ARM: Fast busy disable and real capture before/after full reload verified. Case expected error recovery is not exhausted; T14 natural recovery remains unverified.",
+              "build_variant": "development0.2.244/sourceb8158702/CI37233480033/artifact11315305224",
+              "viewport": "owned SIDE_PANEL CDP viewport emulation600px warm/reload; initialphysicalmeasurement360x373; no physicalresize claim",
+              "verified_at": "2026-10-05T01:45:35.094250+00:00",
               "historical_result": {
                 "status": "partial",
-                "run_id": "37221586281",
-                "evidence": ".research/scrape231-context-diagnostic-native.json",
-                "detail": "Exact development231 guest ARM: Fast capture disabled busy button, expected article and lazy-content absence observed; reload not reached.",
+                "run_id": "37222954472",
+                "evidence": ".research/scrape231-recapture-native.json",
+                "detail": "Exact development231 guest ARM: Fast capture and post-reload repopulated article observed. Raw early case remaining note is stale; no exhaustive case promotion from that discrepancy.",
                 "historical_result": {
                   "status": "partial",
-                  "run_id": "37195986118",
-                  "evidence": ".research/scrape-freshness-fixed-native.json",
-                  "detail": "Healthy exact development215 run observed disabled Capturing and real article/no lazy content; same original busy fix remains working. Full-duration/retry and replacement-panel recovery remain unverified. Store205 predates busy/layoutfixes.",
+                  "run_id": "37221586281",
+                  "evidence": ".research/scrape231-context-diagnostic-native.json",
+                  "detail": "Exact development231 guest ARM: Fast capture disabled busy button, expected article and lazy-content absence observed; reload not reached.",
                   "historical_result": {
-                    "status": "unverified",
-                    "run_id": "render-retest-001",
-                    "evidence": "docs/stabilization/runs/render-retest-001.json",
-                    "verified_substeps": [
-                      "Capture produced a 16-word article and result tabs were visible."
-                    ],
-                    "remaining_criteria": [
-                      "Observe busy-button disable/progress while capture runs and exercise error recovery actions."
-                    ]
+                    "status": "partial",
+                    "run_id": "37195986118",
+                    "evidence": ".research/scrape-freshness-fixed-native.json",
+                    "detail": "Healthy exact development215 run observed disabled Capturing and real article/no lazy content; same original busy fix remains working. Full-duration/retry and replacement-panel recovery remain unverified. Store205 predates busy/layoutfixes.",
+                    "historical_result": {
+                      "status": "unverified",
+                      "run_id": "render-retest-001",
+                      "evidence": "docs/stabilization/runs/render-retest-001.json",
+                      "verified_substeps": [
+                        "Capture produced a 16-word article and result tabs were visible."
+                      ],
+                      "remaining_criteria": [
+                        "Observe busy-button disable/progress while capture runs and exercise error recovery actions."
+                      ]
+                    }
                   }
                 }
               }
@@ -17117,24 +17129,33 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37222954472",
-              "evidence": ".research/scrape231-recapture-native.json",
-              "detail": "Exact development231 guest ARM: Unsaved-edit Cancel preserves edits; explicit confirmation starts Scrolling and lazy-content deep result. Natural deep-retry failure and deep capture after reload remain unverified.",
+              "run_id": "37251782627",
+              "evidence": ".research/guest-scrape-normal-native.json",
+              "detail": "Frozen development244 guest ARM: Warm deep capture and unsaved-edit confirmation verified; deep failure retry and post-reload deep capture remain unverified.",
+              "build_variant": "development0.2.244/sourceb8158702/CI37233480033/artifact11315305224",
+              "viewport": "owned SIDE_PANEL CDP viewport emulation600px warm/reload; initialphysicalmeasurement360x373; no physicalresize claim",
+              "verified_at": "2026-10-05T01:45:35.094250+00:00",
               "historical_result": {
-                "status": "fail",
-                "run_id": "37221586281",
-                "evidence": ".research/scrape231-context-diagnostic-native.json",
-                "detail": "After warm media edits, Scroll & capture expected deep result not observed. D125 source diagnosis pending; no product cause established from assertion. Four healthy resource watches.",
+                "status": "partial",
+                "run_id": "37222954472",
+                "evidence": ".research/scrape231-recapture-native.json",
+                "detail": "Exact development231 guest ARM: Unsaved-edit Cancel preserves edits; explicit confirmation starts Scrolling and lazy-content deep result. Natural deep-retry failure and deep capture after reload remain unverified.",
                 "historical_result": {
-                  "status": "partial",
-                  "run_id": "37195986118",
-                  "evidence": ".research/scrape-freshness-fixed-native.json",
-                  "detail": "Healthy exact development215 run observed disabled Scrolling plus lazy content in real page/capture; narrow layoutcontained. Deepretry and replacement-panel recovery remainunverified.",
+                  "status": "fail",
+                  "run_id": "37221586281",
+                  "evidence": ".research/scrape231-context-diagnostic-native.json",
+                  "detail": "After warm media edits, Scroll & capture expected deep result not observed. D125 source diagnosis pending; no product cause established from assertion. Four healthy resource watches.",
                   "historical_result": {
-                    "status": "unverified",
-                    "run_id": "render-retest-001",
-                    "detail": "unverified_short_static_fixture_identical_output_inconclusive",
-                    "evidence": "docs/stabilization/runs/render-retest-001.json"
+                    "status": "partial",
+                    "run_id": "37195986118",
+                    "evidence": ".research/scrape-freshness-fixed-native.json",
+                    "detail": "Healthy exact development215 run observed disabled Scrolling plus lazy content in real page/capture; narrow layoutcontained. Deepretry and replacement-panel recovery remainunverified.",
+                    "historical_result": {
+                      "status": "unverified",
+                      "run_id": "render-retest-001",
+                      "detail": "unverified_short_static_fixture_identical_output_inconclusive",
+                      "evidence": "docs/stabilization/runs/render-retest-001.json"
+                    }
                   }
                 }
               }
@@ -17330,21 +17351,30 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37222954472",
-              "evidence": ".research/scrape231-recapture-native.json",
-              "detail": "Exact development231 guest ARM: All result panes populated before and after reload; normal width unverified.",
+              "run_id": "37251782627",
+              "evidence": ".research/guest-scrape-normal-native.json",
+              "detail": "Frozen development244 guest ARM: All six populated panes verified warm and after full reload; image/video empty states verified. Normal600 viewport emulation now observed, but exhaustive per-pane empty-state coverage remains unverified.",
+              "build_variant": "development0.2.244/sourceb8158702/CI37233480033/artifact11315305224",
+              "viewport": "owned SIDE_PANEL CDP viewport emulation600px warm/reload; initialphysicalmeasurement360x373; no physicalresize claim",
+              "verified_at": "2026-10-05T01:45:35.094250+00:00",
               "historical_result": {
                 "status": "partial",
-                "run_id": "37221586281",
-                "evidence": ".research/scrape231-context-diagnostic-native.json",
-                "detail": "Exact development231 guest ARM: All six result panes had matching content; image/video empty states exercised later; reload unverified.",
+                "run_id": "37222954472",
+                "evidence": ".research/scrape231-recapture-native.json",
+                "detail": "Exact development231 guest ARM: All result panes populated before and after reload; normal width unverified.",
                 "historical_result": {
                   "status": "partial",
-                  "run_id": "37205211642",
-                  "evidence": ".research/startup-attributed-native.json",
-                  "detail": "Guest warm capture selected all6tabs with matching content; image loaded640x480, video URLrow matched, media-free recapture showed image/videoempty states. Globalreload and emptyScrape renderingpassed, but data-pane capture/assertions afterreload, normalwidth and othermodes remainunverified. No video playbackclaim.",
-                  "build_variant": "Frozen development215/source3536b5cb/CI37193761291/artifact11299613935",
-                  "verified_at": "2026-10-04T13:30:38.711263+00:00"
+                  "run_id": "37221586281",
+                  "evidence": ".research/scrape231-context-diagnostic-native.json",
+                  "detail": "Exact development231 guest ARM: All six result panes had matching content; image/video empty states exercised later; reload unverified.",
+                  "historical_result": {
+                    "status": "partial",
+                    "run_id": "37205211642",
+                    "evidence": ".research/startup-attributed-native.json",
+                    "detail": "Guest warm capture selected all6tabs with matching content; image loaded640x480, video URLrow matched, media-free recapture showed image/videoempty states. Globalreload and emptyScrape renderingpassed, but data-pane capture/assertions afterreload, normalwidth and othermodes remainunverified. No video playbackclaim.",
+                    "build_variant": "Frozen development215/source3536b5cb/CI37193761291/artifact11299613935",
+                    "verified_at": "2026-10-04T13:30:38.711263+00:00"
+                  }
                 }
               }
             }
@@ -17435,22 +17465,31 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "37222954472",
-              "evidence": ".research/scrape231-recapture-native.json",
-              "detail": "Exact development231 guest ARM: Three exact image removals through empty and valid replacement image/alt verified warm and after full reload.",
+              "run_id": "37251782627",
+              "evidence": ".research/guest-scrape-normal-native.json",
+              "detail": "Frozen development244 guest ARM: Exact image removals through empty state warm and after full reload verified.",
+              "build_variant": "development0.2.244/sourceb8158702/CI37233480033/artifact11315305224",
+              "viewport": "owned SIDE_PANEL CDP viewport emulation600px warm/reload; initialphysicalmeasurement360x373; no physicalresize claim",
+              "verified_at": "2026-10-05T01:45:35.094250+00:00",
               "historical_result": {
-                "status": "partial",
-                "run_id": "37221586281",
-                "evidence": ".research/scrape231-context-diagnostic-native.json",
-                "detail": "Exact development231 guest ARM: Three selective image removals reached empty and exact follow-up image/alt was added; full reload remains.",
+                "status": "pass",
+                "run_id": "37222954472",
+                "evidence": ".research/scrape231-recapture-native.json",
+                "detail": "Exact development231 guest ARM: Three exact image removals through empty and valid replacement image/alt verified warm and after full reload.",
                 "historical_result": {
                   "status": "partial",
-                  "build": "development0.2.215/source3536b5cb",
-                  "run_id": "37214124282",
-                  "evidence": [
-                    ".research/scrape-transition-native-diagnostic.json"
-                  ],
-                  "detail": "Warm native medium/icon/large removals verified with exact before/after identities, trusted pointer events, Images retained and count3\u21922\u21921\u2192empty. Later control sequence failed with Article selected; earlier third-removal inference refuted. Fullreload and otherroles unverified."
+                  "run_id": "37221586281",
+                  "evidence": ".research/scrape231-context-diagnostic-native.json",
+                  "detail": "Exact development231 guest ARM: Three selective image removals reached empty and exact follow-up image/alt was added; full reload remains.",
+                  "historical_result": {
+                    "status": "partial",
+                    "build": "development0.2.215/source3536b5cb",
+                    "run_id": "37214124282",
+                    "evidence": [
+                      ".research/scrape-transition-native-diagnostic.json"
+                    ],
+                    "detail": "Warm native medium/icon/large removals verified with exact before/after identities, trusted pointer events, Images retained and count3\u21922\u21921\u2192empty. Later control sequence failed with Article selected; earlier third-removal inference refuted. Fullreload and otherroles unverified."
+                  }
                 }
               }
             }
@@ -17497,19 +17536,28 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "37222954472",
-              "evidence": ".research/scrape231-recapture-native.json",
-              "detail": "Exact development231 guest ARM: Blank image rejected, valid URL/alt added, Cancel cleared form warm and after full reload.",
+              "run_id": "37251782627",
+              "evidence": ".research/guest-scrape-normal-native.json",
+              "detail": "Frozen development244 guest ARM: Blank image rejection, valid URL/alt addition and Cancel clearing verified warm and after full reload.",
+              "build_variant": "development0.2.244/sourceb8158702/CI37233480033/artifact11315305224",
+              "viewport": "owned SIDE_PANEL CDP viewport emulation600px warm/reload; initialphysicalmeasurement360x373; no physicalresize claim",
+              "verified_at": "2026-10-05T01:45:35.094250+00:00",
               "historical_result": {
-                "status": "partial",
-                "run_id": "37221586281",
-                "evidence": ".research/scrape231-context-diagnostic-native.json",
-                "detail": "Exact development231 guest ARM: Blank image rejected, valid URL/alt added, Cancel cleared form; full reload remains.",
+                "status": "pass",
+                "run_id": "37222954472",
+                "evidence": ".research/scrape231-recapture-native.json",
+                "detail": "Exact development231 guest ARM: Blank image rejected, valid URL/alt added, Cancel cleared form warm and after full reload.",
                 "historical_result": {
                   "status": "partial",
-                  "evidence": ".research/scrape231-arm-native.json",
-                  "run_id": "37218903375",
-                  "detail": "Healthy exact231 ARM warm Add image blank/valid+alt/Cancel sequence completed; full reload and other roles unverified."
+                  "run_id": "37221586281",
+                  "evidence": ".research/scrape231-context-diagnostic-native.json",
+                  "detail": "Exact development231 guest ARM: Blank image rejected, valid URL/alt added, Cancel cleared form; full reload remains.",
+                  "historical_result": {
+                    "status": "partial",
+                    "evidence": ".research/scrape231-arm-native.json",
+                    "run_id": "37218903375",
+                    "detail": "Healthy exact231 ARM warm Add image blank/valid+alt/Cancel sequence completed; full reload and other roles unverified."
+                  }
                 }
               }
             }
@@ -17556,24 +17604,33 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "37225191131",
-              "evidence": ".research/clipboard126-native.json",
-              "detail": "Exact frozen development231 guest ARM, warm and full extension reload: Open, exact remove/add identities, blank rejection and valid forms; trusted Copy feedback copied, exact fixture equality true after scoped read grant, permission restored. T13 raw receipt partial is solely other auth modes, which remain separately unverified.",
+              "run_id": "37251782627",
+              "evidence": ".research/guest-scrape-normal-native.json",
+              "detail": "Frozen development244 guest ARM: Video Open/return, exact remove/add, blank rejection, Copy feedback and exact clipboard equality after observation-only scoped grant restored; warm and reload verified.",
+              "build_variant": "development0.2.244/sourceb8158702/CI37233480033/artifact11315305224",
+              "viewport": "owned SIDE_PANEL CDP viewport emulation600px warm/reload; initialphysicalmeasurement360x373; no physicalresize claim",
+              "verified_at": "2026-10-05T01:45:35.094250+00:00",
               "historical_result": {
-                "status": "partial",
-                "run_id": "37222954472",
-                "evidence": ".research/scrape231-recapture-native.json",
-                "detail": "Exact development231 guest ARM: Open-return retains Video; exact removal/addition identities warm and after reload. Clipboard readback unavailable (D126), so partial.",
+                "status": "pass",
+                "run_id": "37225191131",
+                "evidence": ".research/clipboard126-native.json",
+                "detail": "Exact frozen development231 guest ARM, warm and full extension reload: Open, exact remove/add identities, blank rejection and valid forms; trusted Copy feedback copied, exact fixture equality true after scoped read grant, permission restored. T13 raw receipt partial is solely other auth modes, which remain separately unverified.",
                 "historical_result": {
                   "status": "partial",
-                  "run_id": "37221586281",
-                  "evidence": ".research/scrape231-context-diagnostic-native.json",
-                  "detail": "Exact development231 guest ARM: Video Open returned correctly; exact removal/addition survivors observed. Copy click occurred but readback unavailable (panel_runtime_exception); full reload remains.",
+                  "run_id": "37222954472",
+                  "evidence": ".research/scrape231-recapture-native.json",
+                  "detail": "Exact development231 guest ARM: Open-return retains Video; exact removal/addition identities warm and after reload. Clipboard readback unavailable (D126), so partial.",
                   "historical_result": {
                     "status": "partial",
-                    "evidence": ".research/scrape231-arm-native.json",
-                    "run_id": "37218903375",
-                    "detail": "Healthy exact231 ARM returns to Video after Open; Copy receives trusted click. Remove intake leaves visually correct referral row/count1, but structured observer empty causes D124 assertion failure. Clipboard/full video forms/reload unverified."
+                    "run_id": "37221586281",
+                    "evidence": ".research/scrape231-context-diagnostic-native.json",
+                    "detail": "Exact development231 guest ARM: Video Open returned correctly; exact removal/addition survivors observed. Copy click occurred but readback unavailable (panel_runtime_exception); full reload remains.",
+                    "historical_result": {
+                      "status": "partial",
+                      "evidence": ".research/scrape231-arm-native.json",
+                      "run_id": "37218903375",
+                      "detail": "Healthy exact231 ARM returns to Video after Open; Copy receives trusted click. Remove intake leaves visually correct referral row/count1, but structured observer empty causes D124 assertion failure. Clipboard/full video forms/reload unverified."
+                    }
                   }
                 }
               }
@@ -17632,19 +17689,28 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "37225191131",
-              "evidence": ".research/clipboard126-native.json",
-              "detail": "Exact frozen development231 guest ARM, warm and full extension reload: Open, exact remove/add identities, blank rejection and valid forms; trusted Copy feedback copied, exact fixture equality true after scoped read grant, permission restored. T13 raw receipt partial is solely other auth modes, which remain separately unverified.",
+              "run_id": "37251782627",
+              "evidence": ".research/guest-scrape-normal-native.json",
+              "detail": "Frozen development244 guest ARM: Link Open/Copy/remove/blank rejection/add/Cancel verified warm and reload; exact clipboard equality after scoped read grant and permission restoration. Raw partial refers solely to other auth modes, separately unverified.",
+              "build_variant": "development0.2.244/sourceb8158702/CI37233480033/artifact11315305224",
+              "viewport": "owned SIDE_PANEL CDP viewport emulation600px warm/reload; initialphysicalmeasurement360x373; no physicalresize claim",
+              "verified_at": "2026-10-05T01:45:35.094250+00:00",
               "historical_result": {
-                "status": "partial",
-                "run_id": "37222954472",
-                "evidence": ".research/scrape231-recapture-native.json",
-                "detail": "Exact development231 guest ARM: Open, selective removal, blank/valid Add and Cancel have exact rows/counts warm and after reload. Clipboard readback unavailable (D126), so partial.",
+                "status": "pass",
+                "run_id": "37225191131",
+                "evidence": ".research/clipboard126-native.json",
+                "detail": "Exact frozen development231 guest ARM, warm and full extension reload: Open, exact remove/add identities, blank rejection and valid forms; trusted Copy feedback copied, exact fixture equality true after scoped read grant, permission restored. T13 raw receipt partial is solely other auth modes, which remain separately unverified.",
                 "historical_result": {
                   "status": "partial",
-                  "run_id": "37221586281",
-                  "evidence": ".research/scrape231-context-diagnostic-native.json",
-                  "detail": "Exact development231 guest ARM: Link Open, selective Remove, blank/valid Add and Cancel reached expected identities/counts. Copy readback unavailable (panel_runtime_exception); full reload/member/admin remain."
+                  "run_id": "37222954472",
+                  "evidence": ".research/scrape231-recapture-native.json",
+                  "detail": "Exact development231 guest ARM: Open, selective removal, blank/valid Add and Cancel have exact rows/counts warm and after reload. Clipboard readback unavailable (D126), so partial.",
+                  "historical_result": {
+                    "status": "partial",
+                    "run_id": "37221586281",
+                    "evidence": ".research/scrape231-context-diagnostic-native.json",
+                    "detail": "Exact development231 guest ARM: Link Open, selective Remove, blank/valid Add and Cancel reached expected identities/counts. Copy readback unavailable (panel_runtime_exception); full reload/member/admin remain."
+                  }
                 }
               }
             }
@@ -17677,14 +17743,23 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37222954472",
-              "evidence": ".research/scrape231-recapture-native.json",
-              "detail": "Exact development231 guest ARM: Restricted-page error/Dismiss exercised. Recoverable Reload/Try again and deep-retry path remain unverified.",
+              "run_id": "37251782627",
+              "evidence": ".research/guest-scrape-normal-native.json",
+              "detail": "Frozen development244 guest ARM: Restricted-page error/Dismiss verified; natural recoverable Reload/Try again/deep retry remain unverified.",
+              "build_variant": "development0.2.244/sourceb8158702/CI37233480033/artifact11315305224",
+              "viewport": "owned SIDE_PANEL CDP viewport emulation600px warm/reload; initialphysicalmeasurement360x373; no physicalresize claim",
+              "verified_at": "2026-10-05T01:45:35.094250+00:00",
               "historical_result": {
                 "status": "partial",
-                "evidence": ".research/scrape-freshness-fixed-native.json",
-                "run_id": "37195986118",
-                "detail": "Healthy exactdevelopment215 observed restrictedchrome://settings norecoveryactions andDismiss; recoverableReload/Tryagain/deepretryunverified."
+                "run_id": "37222954472",
+                "evidence": ".research/scrape231-recapture-native.json",
+                "detail": "Exact development231 guest ARM: Restricted-page error/Dismiss exercised. Recoverable Reload/Try again and deep-retry path remain unverified.",
+                "historical_result": {
+                  "status": "partial",
+                  "evidence": ".research/scrape-freshness-fixed-native.json",
+                  "run_id": "37195986118",
+                  "detail": "Healthy exactdevelopment215 observed restrictedchrome://settings norecoveryactions andDismiss; recoverableReload/Tryagain/deepretryunverified."
+                }
               }
             }
           },
@@ -17866,21 +17941,30 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "37222954472",
-              "evidence": ".research/scrape231-recapture-native.json",
-              "detail": "Exact development231 guest ARM: Original and replacement panel navigation/reload observed; worker retired/replaced and sole running replacement; empty capture state verified.",
+              "run_id": "37251782627",
+              "evidence": ".research/guest-scrape-normal-native.json",
+              "detail": "Frozen development244 guest ARM: Initial and full-reload empty state verified; original worker/panel retired and exact replacements observed.",
+              "build_variant": "development0.2.244/sourceb8158702/CI37233480033/artifact11315305224",
+              "viewport": "owned SIDE_PANEL CDP viewport emulation600px warm/reload; initialphysicalmeasurement360x373; no physicalresize claim",
+              "verified_at": "2026-10-05T01:45:35.094250+00:00",
               "historical_result": {
-                "status": "partial",
-                "run_id": "37221586281",
-                "evidence": ".research/scrape231-context-diagnostic-native.json",
-                "detail": "Exact development231 guest ARM: Initial empty panel and exact fixture observed; full reload not reached.",
+                "status": "pass",
+                "run_id": "37222954472",
+                "evidence": ".research/scrape231-recapture-native.json",
+                "detail": "Exact development231 guest ARM: Original and replacement panel navigation/reload observed; worker retired/replaced and sole running replacement; empty capture state verified.",
                 "historical_result": {
-                  "status": "pass",
-                  "run_id": "37205211642",
-                  "evidence": ".research/startup-attributed-native.json",
-                  "detail": "Exact development215 genuine guest initialempty, navigation clearing priorcapture, prere-loadempty, actual fullreload and replacementScrape empty/capture-enabled normalpage with expectedtitle. Root matched receipt and3healthyjournals.",
-                  "build_variant": "Frozen development215/source3536b5cb/CI37193761291/artifact11299613935",
-                  "verified_at": "2026-10-04T13:30:38.711263+00:00"
+                  "status": "partial",
+                  "run_id": "37221586281",
+                  "evidence": ".research/scrape231-context-diagnostic-native.json",
+                  "detail": "Exact development231 guest ARM: Initial empty panel and exact fixture observed; full reload not reached.",
+                  "historical_result": {
+                    "status": "pass",
+                    "run_id": "37205211642",
+                    "evidence": ".research/startup-attributed-native.json",
+                    "detail": "Exact development215 genuine guest initialempty, navigation clearing priorcapture, prere-loadempty, actual fullreload and replacementScrape empty/capture-enabled normalpage with expectedtitle. Root matched receipt and3healthyjournals.",
+                    "build_variant": "Frozen development215/source3536b5cb/CI37193761291/artifact11299613935",
+                    "verified_at": "2026-10-04T13:30:38.711263+00:00"
+                  }
                 }
               }
             }
@@ -36623,7 +36707,7 @@
       "name": "Generate and use credentials",
       "surface": "Vault password generator",
       "entry_points": [
-        "Tools tab → Vault password generator"
+        "Tools tab \u2192 Vault password generator"
       ],
       "controls": [
         {
@@ -52088,7 +52172,7 @@
       "missing_items": [],
       "readiness_gaps": [
         "Confirm current catalog against imported source registry before source inventory signoff",
-        "Native runner route gap: the checked-in owned fixture is source-checked, but `/form-controls` is only served on the test’s ephemeral server. Register it in the owning native runner through `ownedPages`, then record the actual URL and verify served-byte SHA-256 before execution.",
+        "Native runner route gap: the checked-in owned fixture is source-checked, but `/form-controls` is only served on the test\u2019s ephemeral server. Register it in the owning native runner through `ownedPages`, then record the actual URL and verify served-byte SHA-256 before execution.",
         "Agent-dispatch Ask/Act confirmation and missing-permission refusal remain unverified; manual Tools Run bypasses dispatcher gate.",
         "Live tool.binding advertisement and actual request-time member/admin availability remain unresolved by the local runner."
       ],
@@ -52122,15 +52206,15 @@
             "Before browser action, require fresh admission and current healthy resource samples for this active owned run from the authorized hosted TEST workflow. Do not require a completed run journal before launch: create/update the run journal as the run proceeds and complete/review it after execution and cleanup. If admission is refused, required samples are unhealthy or stale, or the active run is not covered by its permit, stop before opening the fixture; leave result cells unverified.",
             "Use a current authorized hosted build receipt with source/dirty-source, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, role/org state, permissions and timestamp. Install/reload per docs/stabilization/PLAN.md; reopen side panel and reload target tab, then verify runtime fingerprint. HMR alone is insufficient.",
             "Execute as signed-in ordinary member and repeat as admin; guest is inapplicable because the Tools UI requires sign-in. Confirm the active tab is the dedicated disposable fixture tab and loaded manifest grants activeTab+scripting. The manual runner calls the local handler directly with permissionMode act, bypassing dispatcher Ask/Act confirmation.",
-            "The owned fixture already exists at `tests/browser/fixtures/form-controls.html` (SHA-256 `685ce7a0286f9fd6330ed692db81e5c099a766cbe8aef61bb72a33e87b7d072a`); do not create or stage a duplicate. The test-only `/form-controls` route uses an ephemeral server and is not registered for native acceptance. Before execution, register this page as `ownedPages[\"/form-controls\"]` in the owning native runner, start that run’s owned fixture server, record the exact full URL including its actual port, and verify the served bytes match the listed SHA-256. Do not begin browser interaction until route registration and URL/hash evidence are ready.",
-            "In Tools → Catalog, select Internal delegates or All handlers, then search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
+            "The owned fixture already exists at `tests/browser/fixtures/form-controls.html` (SHA-256 `685ce7a0286f9fd6330ed692db81e5c099a766cbe8aef61bb72a33e87b7d072a`); do not create or stage a duplicate. The test-only `/form-controls` route uses an ephemeral server and is not registered for native acceptance. Before execution, register this page as `ownedPages[\"/form-controls\"]` in the owning native runner, start that run\u2019s owned fixture server, record the exact full URL including its actual port, and verify the served bytes match the listed SHA-256. Do not begin browser interaction until route registration and URL/hash evidence are ready.",
+            "In Tools \u2192 Catalog, select Internal delegates or All handlers, then search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
             "The live binding census is independent from source availability: preserve the exact-name mapping findings in live_binding; do not infer role availability from member/admin manual-run modes.",
-            "Target semantics: Tools → Catalog → Run binds the handler context to the currently focused tab in the user window (assignedTabId is null for this manual path). For a separate dispatched agent acceptance, select/record the agent’s assigned tab and verify the handler acts on that same assigned tab; do not treat this manual case as assigned-tab coverage."
+            "Target semantics: Tools \u2192 Catalog \u2192 Run binds the handler context to the currently focused tab in the user window (assignedTabId is null for this manual path). For a separate dispatched agent acceptance, select/record the agent\u2019s assigned tab and verify the handler acts on that same assigned tab; do not treat this manual case as assigned-tab coverage."
           ],
           "steps": [
             "Open the owned fixture page in the active tab and verify #keys reads `seed`; focus it using the page itself before opening Tools.",
             "Valid input: `{\"keys\":\"Q\",\"selector\":\"#keys\",\"delay_ms\":0}`.",
-            "In Tools → Catalog, set Surface to `Internal delegates` (or `All handlers`).",
+            "In Tools \u2192 Catalog, set Surface to `Internal delegates` (or `All handlers`).",
             "Search `press_keys`; paste the valid input exactly and click Run.",
             "Compare inline result, visible input value, and event counters with expected.",
             "Run the schema-negative input exactly; verify no page event or value change. Negative input: `{\"keys\":\"\"}`.",
@@ -52250,7 +52334,7 @@
       "missing_items": [],
       "readiness_gaps": [
         "Confirm current catalog against imported source registry before source inventory signoff",
-        "Native runner route gap: the checked-in owned fixture is source-checked, but `/form-controls` is only served on the test’s ephemeral server. Register it in the owning native runner through `ownedPages`, then record the actual URL and verify served-byte SHA-256 before execution.",
+        "Native runner route gap: the checked-in owned fixture is source-checked, but `/form-controls` is only served on the test\u2019s ephemeral server. Register it in the owning native runner through `ownedPages`, then record the actual URL and verify served-byte SHA-256 before execution.",
         "Agent-dispatch Ask/Act confirmation and missing-permission refusal remain unverified; manual Tools Run bypasses dispatcher gate.",
         "Live tool.binding advertisement and actual request-time member/admin availability remain unresolved by the local runner."
       ],
@@ -52284,15 +52368,15 @@
             "Before browser action, require fresh admission and current healthy resource samples for this active owned run from the authorized hosted TEST workflow. Do not require a completed run journal before launch: create/update the run journal as the run proceeds and complete/review it after execution and cleanup. If admission is refused, required samples are unhealthy or stale, or the active run is not covered by its permit, stop before opening the fixture; leave result cells unverified.",
             "Use a current authorized hosted build receipt with source/dirty-source, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, role/org state, permissions and timestamp. Install/reload per docs/stabilization/PLAN.md; reopen side panel and reload target tab, then verify runtime fingerprint. HMR alone is insufficient.",
             "Execute as signed-in ordinary member and repeat as admin; guest is inapplicable because the Tools UI requires sign-in. Confirm the active tab is the dedicated disposable fixture tab and loaded manifest grants activeTab+scripting. The manual runner calls the local handler directly with permissionMode act, bypassing dispatcher Ask/Act confirmation.",
-            "The owned fixture already exists at `tests/browser/fixtures/form-controls.html` (SHA-256 `685ce7a0286f9fd6330ed692db81e5c099a766cbe8aef61bb72a33e87b7d072a`); do not create or stage a duplicate. The test-only `/form-controls` route uses an ephemeral server and is not registered for native acceptance. Before execution, register this page as `ownedPages[\"/form-controls\"]` in the owning native runner, start that run’s owned fixture server, record the exact full URL including its actual port, and verify the served bytes match the listed SHA-256. Do not begin browser interaction until route registration and URL/hash evidence are ready.",
-            "In Tools → Catalog, select Internal delegates or All handlers, then search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
+            "The owned fixture already exists at `tests/browser/fixtures/form-controls.html` (SHA-256 `685ce7a0286f9fd6330ed692db81e5c099a766cbe8aef61bb72a33e87b7d072a`); do not create or stage a duplicate. The test-only `/form-controls` route uses an ephemeral server and is not registered for native acceptance. Before execution, register this page as `ownedPages[\"/form-controls\"]` in the owning native runner, start that run\u2019s owned fixture server, record the exact full URL including its actual port, and verify the served bytes match the listed SHA-256. Do not begin browser interaction until route registration and URL/hash evidence are ready.",
+            "In Tools \u2192 Catalog, select Internal delegates or All handlers, then search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
             "The live binding census is independent from source availability: preserve the exact-name mapping findings in live_binding; do not infer role availability from member/admin manual-run modes.",
-            "Target semantics: Tools → Catalog → Run binds the handler context to the currently focused tab in the user window (assignedTabId is null for this manual path). For a separate dispatched agent acceptance, select/record the agent’s assigned tab and verify the handler acts on that same assigned tab; do not treat this manual case as assigned-tab coverage."
+            "Target semantics: Tools \u2192 Catalog \u2192 Run binds the handler context to the currently focused tab in the user window (assignedTabId is null for this manual path). For a separate dispatched agent acceptance, select/record the agent\u2019s assigned tab and verify the handler acts on that same assigned tab; do not treat this manual case as assigned-tab coverage."
           ],
           "steps": [
             "Open the owned fixture and confirm the visible event counters are zero.",
             "Valid input: `{\"selector\":\"#hover-target\"}`.",
-            "In Tools → Catalog, set Surface to `Internal delegates` (or `All handlers`).",
+            "In Tools \u2192 Catalog, set Surface to `Internal delegates` (or `All handlers`).",
             "Search `hover_element`; paste the valid input exactly and click Run.",
             "Observe inline result and the three event counters; this handler dispatches synthetic events and does not certify physical pointer hover or CSS :hover.",
             "Run the schema-negative input; verify no counters change. Negative input: `{}`.",
@@ -52412,7 +52496,7 @@
       "missing_items": [],
       "readiness_gaps": [
         "Confirm current catalog against imported source registry before source inventory signoff",
-        "Native runner route gap: the checked-in owned fixture is source-checked, but `/form-controls` is only served on the test’s ephemeral server. Register it in the owning native runner through `ownedPages`, then record the actual URL and verify served-byte SHA-256 before execution.",
+        "Native runner route gap: the checked-in owned fixture is source-checked, but `/form-controls` is only served on the test\u2019s ephemeral server. Register it in the owning native runner through `ownedPages`, then record the actual URL and verify served-byte SHA-256 before execution.",
         "Agent-dispatch Ask/Act confirmation and missing-permission refusal remain unverified; manual Tools Run bypasses dispatcher gate.",
         "Live tool.binding advertisement and actual request-time member/admin availability remain unresolved by the local runner."
       ],
@@ -52446,15 +52530,15 @@
             "Before browser action, require fresh admission and current healthy resource samples for this active owned run from the authorized hosted TEST workflow. Do not require a completed run journal before launch: create/update the run journal as the run proceeds and complete/review it after execution and cleanup. If admission is refused, required samples are unhealthy or stale, or the active run is not covered by its permit, stop before opening the fixture; leave result cells unverified.",
             "Use a current authorized hosted build receipt with source/dirty-source, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, role/org state, permissions and timestamp. Install/reload per docs/stabilization/PLAN.md; reopen side panel and reload target tab, then verify runtime fingerprint. HMR alone is insufficient.",
             "Execute as signed-in ordinary member and repeat as admin; guest is inapplicable because the Tools UI requires sign-in. Confirm the active tab is the dedicated disposable fixture tab and loaded manifest grants activeTab+scripting. The manual runner calls the local handler directly with permissionMode act, bypassing dispatcher Ask/Act confirmation.",
-            "The owned fixture already exists at `tests/browser/fixtures/form-controls.html` (SHA-256 `685ce7a0286f9fd6330ed692db81e5c099a766cbe8aef61bb72a33e87b7d072a`); do not create or stage a duplicate. The test-only `/form-controls` route uses an ephemeral server and is not registered for native acceptance. Before execution, register this page as `ownedPages[\"/form-controls\"]` in the owning native runner, start that run’s owned fixture server, record the exact full URL including its actual port, and verify the served bytes match the listed SHA-256. Do not begin browser interaction until route registration and URL/hash evidence are ready.",
-            "In Tools → Catalog, select Internal delegates or All handlers, then search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
+            "The owned fixture already exists at `tests/browser/fixtures/form-controls.html` (SHA-256 `685ce7a0286f9fd6330ed692db81e5c099a766cbe8aef61bb72a33e87b7d072a`); do not create or stage a duplicate. The test-only `/form-controls` route uses an ephemeral server and is not registered for native acceptance. Before execution, register this page as `ownedPages[\"/form-controls\"]` in the owning native runner, start that run\u2019s owned fixture server, record the exact full URL including its actual port, and verify the served bytes match the listed SHA-256. Do not begin browser interaction until route registration and URL/hash evidence are ready.",
+            "In Tools \u2192 Catalog, select Internal delegates or All handlers, then search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
             "The live binding census is independent from source availability: preserve the exact-name mapping findings in live_binding; do not infer role availability from member/admin manual-run modes.",
-            "Target semantics: Tools → Catalog → Run binds the handler context to the currently focused tab in the user window (assignedTabId is null for this manual path). For a separate dispatched agent acceptance, select/record the agent’s assigned tab and verify the handler acts on that same assigned tab; do not treat this manual case as assigned-tab coverage."
+            "Target semantics: Tools \u2192 Catalog \u2192 Run binds the handler context to the currently focused tab in the user window (assignedTabId is null for this manual path). For a separate dispatched agent acceptance, select/record the agent\u2019s assigned tab and verify the handler acts on that same assigned tab; do not treat this manual case as assigned-tab coverage."
           ],
           "steps": [
             "Open the owned fixture and verify #other-focus is focused before the call.",
             "Valid input: `{\"selector\":\"#focus-target\"}`.",
-            "In Tools → Catalog, set Surface to `Internal delegates` (or `All handlers`).",
+            "In Tools \u2192 Catalog, set Surface to `Internal delegates` (or `All handlers`).",
             "Search `focus_element`; paste the valid input exactly and click Run.",
             "Observe inline result and fixture active-element display.",
             "Run the schema-negative input; verify activeElement remains #focus-target. Negative input: `{}`.",
@@ -52570,7 +52654,7 @@
       "missing_items": [],
       "readiness_gaps": [
         "Confirm current catalog against imported source registry before source inventory signoff",
-        "Native runner route gap: the checked-in owned fixture is source-checked, but `/form-controls` is only served on the test’s ephemeral server. Register it in the owning native runner through `ownedPages`, then record the actual URL and verify served-byte SHA-256 before execution.",
+        "Native runner route gap: the checked-in owned fixture is source-checked, but `/form-controls` is only served on the test\u2019s ephemeral server. Register it in the owning native runner through `ownedPages`, then record the actual URL and verify served-byte SHA-256 before execution.",
         "Agent-dispatch Ask/Act confirmation and missing-permission refusal remain unverified; manual Tools Run bypasses dispatcher gate.",
         "Live tool.binding advertisement and actual request-time member/admin availability remain unresolved by the local runner."
       ],
@@ -52604,15 +52688,15 @@
             "Before browser action, require fresh admission and current healthy resource samples for this active owned run from the authorized hosted TEST workflow. Do not require a completed run journal before launch: create/update the run journal as the run proceeds and complete/review it after execution and cleanup. If admission is refused, required samples are unhealthy or stale, or the active run is not covered by its permit, stop before opening the fixture; leave result cells unverified.",
             "Use a current authorized hosted build receipt with source/dirty-source, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, role/org state, permissions and timestamp. Install/reload per docs/stabilization/PLAN.md; reopen side panel and reload target tab, then verify runtime fingerprint. HMR alone is insufficient.",
             "Execute as signed-in ordinary member and repeat as admin; guest is inapplicable because the Tools UI requires sign-in. Confirm the active tab is the dedicated disposable fixture tab and loaded manifest grants activeTab+scripting. The manual runner calls the local handler directly with permissionMode act, bypassing dispatcher Ask/Act confirmation.",
-            "The owned fixture already exists at `tests/browser/fixtures/form-controls.html` (SHA-256 `685ce7a0286f9fd6330ed692db81e5c099a766cbe8aef61bb72a33e87b7d072a`); do not create or stage a duplicate. The test-only `/form-controls` route uses an ephemeral server and is not registered for native acceptance. Before execution, register this page as `ownedPages[\"/form-controls\"]` in the owning native runner, start that run’s owned fixture server, record the exact full URL including its actual port, and verify the served bytes match the listed SHA-256. Do not begin browser interaction until route registration and URL/hash evidence are ready.",
-            "In Tools → Catalog, select Internal delegates or All handlers, then search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
+            "The owned fixture already exists at `tests/browser/fixtures/form-controls.html` (SHA-256 `685ce7a0286f9fd6330ed692db81e5c099a766cbe8aef61bb72a33e87b7d072a`); do not create or stage a duplicate. The test-only `/form-controls` route uses an ephemeral server and is not registered for native acceptance. Before execution, register this page as `ownedPages[\"/form-controls\"]` in the owning native runner, start that run\u2019s owned fixture server, record the exact full URL including its actual port, and verify the served bytes match the listed SHA-256. Do not begin browser interaction until route registration and URL/hash evidence are ready.",
+            "In Tools \u2192 Catalog, select Internal delegates or All handlers, then search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
             "The live binding census is independent from source availability: preserve the exact-name mapping findings in live_binding; do not infer role availability from member/admin manual-run modes.",
-            "Target semantics: Tools → Catalog → Run binds the handler context to the currently focused tab in the user window (assignedTabId is null for this manual path). For a separate dispatched agent acceptance, select/record the agent’s assigned tab and verify the handler acts on that same assigned tab; do not treat this manual case as assigned-tab coverage."
+            "Target semantics: Tools \u2192 Catalog \u2192 Run binds the handler context to the currently focused tab in the user window (assignedTabId is null for this manual path). For a separate dispatched agent acceptance, select/record the agent\u2019s assigned tab and verify the handler acts on that same assigned tab; do not treat this manual case as assigned-tab coverage."
           ],
           "steps": [
             "Open the owned fixture and click #blur-target so it is active; verify fixture log says focused.",
             "Valid input: `{\"selector\":\"#blur-target\"}`.",
-            "In Tools → Catalog, set Surface to `Internal delegates` (or `All handlers`).",
+            "In Tools \u2192 Catalog, set Surface to `Internal delegates` (or `All handlers`).",
             "Search `blur_element`; paste the valid input exactly and click Run.",
             "Observe `{ok:true}` and the fixture blur/active-element log.",
             "Run the handler-level negative input exactly; observe `ok:false` and no extra blur on fixture controls. Negative input: `{\"selector\":\"#missing-target\"}`.",
@@ -52732,7 +52816,7 @@
       "missing_items": [],
       "readiness_gaps": [
         "Confirm current catalog against imported source registry before source inventory signoff",
-        "Native runner route gap: the checked-in owned fixture is source-checked, but `/form-controls` is only served on the test’s ephemeral server. Register it in the owning native runner through `ownedPages`, then record the actual URL and verify served-byte SHA-256 before execution.",
+        "Native runner route gap: the checked-in owned fixture is source-checked, but `/form-controls` is only served on the test\u2019s ephemeral server. Register it in the owning native runner through `ownedPages`, then record the actual URL and verify served-byte SHA-256 before execution.",
         "Agent-dispatch Ask/Act confirmation and missing-permission refusal remain unverified; manual Tools Run bypasses dispatcher gate.",
         "Live tool.binding advertisement and actual request-time member/admin availability remain unresolved by the local runner."
       ],
@@ -52766,15 +52850,15 @@
             "Before browser action, require fresh admission and current healthy resource samples for this active owned run from the authorized hosted TEST workflow. Do not require a completed run journal before launch: create/update the run journal as the run proceeds and complete/review it after execution and cleanup. If admission is refused, required samples are unhealthy or stale, or the active run is not covered by its permit, stop before opening the fixture; leave result cells unverified.",
             "Use a current authorized hosted build receipt with source/dirty-source, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, role/org state, permissions and timestamp. Install/reload per docs/stabilization/PLAN.md; reopen side panel and reload target tab, then verify runtime fingerprint. HMR alone is insufficient.",
             "Execute as signed-in ordinary member and repeat as admin; guest is inapplicable because the Tools UI requires sign-in. Confirm the active tab is the dedicated disposable fixture tab and loaded manifest grants activeTab+scripting. The manual runner calls the local handler directly with permissionMode act, bypassing dispatcher Ask/Act confirmation.",
-            "The owned fixture already exists at `tests/browser/fixtures/form-controls.html` (SHA-256 `685ce7a0286f9fd6330ed692db81e5c099a766cbe8aef61bb72a33e87b7d072a`); do not create or stage a duplicate. The test-only `/form-controls` route uses an ephemeral server and is not registered for native acceptance. Before execution, register this page as `ownedPages[\"/form-controls\"]` in the owning native runner, start that run’s owned fixture server, record the exact full URL including its actual port, and verify the served bytes match the listed SHA-256. Do not begin browser interaction until route registration and URL/hash evidence are ready.",
-            "In Tools → Catalog, select Internal delegates or All handlers, then search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
+            "The owned fixture already exists at `tests/browser/fixtures/form-controls.html` (SHA-256 `685ce7a0286f9fd6330ed692db81e5c099a766cbe8aef61bb72a33e87b7d072a`); do not create or stage a duplicate. The test-only `/form-controls` route uses an ephemeral server and is not registered for native acceptance. Before execution, register this page as `ownedPages[\"/form-controls\"]` in the owning native runner, start that run\u2019s owned fixture server, record the exact full URL including its actual port, and verify the served bytes match the listed SHA-256. Do not begin browser interaction until route registration and URL/hash evidence are ready.",
+            "In Tools \u2192 Catalog, select Internal delegates or All handlers, then search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
             "The live binding census is independent from source availability: preserve the exact-name mapping findings in live_binding; do not infer role availability from member/admin manual-run modes.",
-            "Target semantics: Tools → Catalog → Run binds the handler context to the currently focused tab in the user window (assignedTabId is null for this manual path). For a separate dispatched agent acceptance, select/record the agent’s assigned tab and verify the handler acts on that same assigned tab; do not treat this manual case as assigned-tab coverage."
+            "Target semantics: Tools \u2192 Catalog \u2192 Run binds the handler context to the currently focused tab in the user window (assignedTabId is null for this manual path). For a separate dispatched agent acceptance, select/record the agent\u2019s assigned tab and verify the handler acts on that same assigned tab; do not treat this manual case as assigned-tab coverage."
           ],
           "steps": [
             "Open the owned fixture and verify contextmenu count is zero.",
             "Valid input: `{\"selector\":\"#context-target\"}`.",
-            "In Tools → Catalog, set Surface to `Internal delegates` (or `All handlers`).",
+            "In Tools \u2192 Catalog, set Surface to `Internal delegates` (or `All handlers`).",
             "Search `right_click_element`; paste the valid input exactly and click Run.",
             "Observe inline result and the fixture-recorded event/button values; do not treat a native menu as expected.",
             "Run schema-negative input; verify count does not change. Negative input: `{}`.",
@@ -52904,7 +52988,7 @@
       "missing_items": [],
       "readiness_gaps": [
         "Confirm current catalog against imported source registry before source inventory signoff",
-        "Native runner route gap: the checked-in owned fixture is source-checked, but `/form-controls` is only served on the test’s ephemeral server. Register it in the owning native runner through `ownedPages`, then record the actual URL and verify served-byte SHA-256 before execution.",
+        "Native runner route gap: the checked-in owned fixture is source-checked, but `/form-controls` is only served on the test\u2019s ephemeral server. Register it in the owning native runner through `ownedPages`, then record the actual URL and verify served-byte SHA-256 before execution.",
         "Agent-dispatch Ask/Act confirmation and missing-permission refusal remain unverified; manual Tools Run bypasses dispatcher gate.",
         "Live tool.binding advertisement and actual request-time member/admin availability remain unresolved by the local runner."
       ],
@@ -52938,15 +53022,15 @@
             "Before browser action, require fresh admission and current healthy resource samples for this active owned run from the authorized hosted TEST workflow. Do not require a completed run journal before launch: create/update the run journal as the run proceeds and complete/review it after execution and cleanup. If admission is refused, required samples are unhealthy or stale, or the active run is not covered by its permit, stop before opening the fixture; leave result cells unverified.",
             "Use a current authorized hosted build receipt with source/dirty-source, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, role/org state, permissions and timestamp. Install/reload per docs/stabilization/PLAN.md; reopen side panel and reload target tab, then verify runtime fingerprint. HMR alone is insufficient.",
             "Execute as signed-in ordinary member and repeat as admin; guest is inapplicable because the Tools UI requires sign-in. Confirm the active tab is the dedicated disposable fixture tab and loaded manifest grants activeTab+scripting. The manual runner calls the local handler directly with permissionMode act, bypassing dispatcher Ask/Act confirmation.",
-            "The owned fixture already exists at `tests/browser/fixtures/form-controls.html` (SHA-256 `685ce7a0286f9fd6330ed692db81e5c099a766cbe8aef61bb72a33e87b7d072a`); do not create or stage a duplicate. The test-only `/form-controls` route uses an ephemeral server and is not registered for native acceptance. Before execution, register this page as `ownedPages[\"/form-controls\"]` in the owning native runner, start that run’s owned fixture server, record the exact full URL including its actual port, and verify the served bytes match the listed SHA-256. Do not begin browser interaction until route registration and URL/hash evidence are ready.",
-            "In Tools → Catalog, select Internal delegates or All handlers, then search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
+            "The owned fixture already exists at `tests/browser/fixtures/form-controls.html` (SHA-256 `685ce7a0286f9fd6330ed692db81e5c099a766cbe8aef61bb72a33e87b7d072a`); do not create or stage a duplicate. The test-only `/form-controls` route uses an ephemeral server and is not registered for native acceptance. Before execution, register this page as `ownedPages[\"/form-controls\"]` in the owning native runner, start that run\u2019s owned fixture server, record the exact full URL including its actual port, and verify the served bytes match the listed SHA-256. Do not begin browser interaction until route registration and URL/hash evidence are ready.",
+            "In Tools \u2192 Catalog, select Internal delegates or All handlers, then search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
             "The live binding census is independent from source availability: preserve the exact-name mapping findings in live_binding; do not infer role availability from member/admin manual-run modes.",
-            "Target semantics: Tools → Catalog → Run binds the handler context to the currently focused tab in the user window (assignedTabId is null for this manual path). For a separate dispatched agent acceptance, select/record the agent’s assigned tab and verify the handler acts on that same assigned tab; do not treat this manual case as assigned-tab coverage."
+            "Target semantics: Tools \u2192 Catalog \u2192 Run binds the handler context to the currently focused tab in the user window (assignedTabId is null for this manual path). For a separate dispatched agent acceptance, select/record the agent\u2019s assigned tab and verify the handler acts on that same assigned tab; do not treat this manual case as assigned-tab coverage."
           ],
           "steps": [
             "Open the owned fixture and verify Alpha is selected and counters are zero.",
             "Valid input: `{\"selector\":\"#choice\",\"value\":\"beta\"}`.",
-            "In Tools → Catalog, set Surface to `Internal delegates` (or `All handlers`).",
+            "In Tools \u2192 Catalog, set Surface to `Internal delegates` (or `All handlers`).",
             "Search `select_dropdown_option`; paste the valid input exactly and click Run.",
             "Observe inline result, selected option, and input/change counters.",
             "Run the no-match handler-level negative; verify current selection remains Beta and counters do not change. Negative input: `{\"selector\":\"#choice\",\"value\":\"missing\"}`.",
@@ -53072,7 +53156,7 @@
       "missing_items": [],
       "readiness_gaps": [
         "Confirm current catalog against imported source registry before source inventory signoff",
-        "Native runner route gap: the checked-in owned fixture is source-checked, but `/form-controls` is only served on the test’s ephemeral server. Register it in the owning native runner through `ownedPages`, then record the actual URL and verify served-byte SHA-256 before execution.",
+        "Native runner route gap: the checked-in owned fixture is source-checked, but `/form-controls` is only served on the test\u2019s ephemeral server. Register it in the owning native runner through `ownedPages`, then record the actual URL and verify served-byte SHA-256 before execution.",
         "Agent-dispatch Ask/Act confirmation and missing-permission refusal remain unverified; manual Tools Run bypasses dispatcher gate.",
         "Live tool.binding advertisement and actual request-time member/admin availability remain unresolved by the local runner."
       ],
@@ -53106,15 +53190,15 @@
             "Before browser action, require fresh admission and current healthy resource samples for this active owned run from the authorized hosted TEST workflow. Do not require a completed run journal before launch: create/update the run journal as the run proceeds and complete/review it after execution and cleanup. If admission is refused, required samples are unhealthy or stale, or the active run is not covered by its permit, stop before opening the fixture; leave result cells unverified.",
             "Use a current authorized hosted build receipt with source/dirty-source, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, role/org state, permissions and timestamp. Install/reload per docs/stabilization/PLAN.md; reopen side panel and reload target tab, then verify runtime fingerprint. HMR alone is insufficient.",
             "Execute as signed-in ordinary member and repeat as admin; guest is inapplicable because the Tools UI requires sign-in. Confirm the active tab is the dedicated disposable fixture tab and loaded manifest grants activeTab+scripting. The manual runner calls the local handler directly with permissionMode act, bypassing dispatcher Ask/Act confirmation.",
-            "The owned fixture already exists at `tests/browser/fixtures/form-controls.html` (SHA-256 `685ce7a0286f9fd6330ed692db81e5c099a766cbe8aef61bb72a33e87b7d072a`); do not create or stage a duplicate. The test-only `/form-controls` route uses an ephemeral server and is not registered for native acceptance. Before execution, register this page as `ownedPages[\"/form-controls\"]` in the owning native runner, start that run’s owned fixture server, record the exact full URL including its actual port, and verify the served bytes match the listed SHA-256. Do not begin browser interaction until route registration and URL/hash evidence are ready.",
-            "In Tools → Catalog, select Internal delegates or All handlers, then search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
+            "The owned fixture already exists at `tests/browser/fixtures/form-controls.html` (SHA-256 `685ce7a0286f9fd6330ed692db81e5c099a766cbe8aef61bb72a33e87b7d072a`); do not create or stage a duplicate. The test-only `/form-controls` route uses an ephemeral server and is not registered for native acceptance. Before execution, register this page as `ownedPages[\"/form-controls\"]` in the owning native runner, start that run\u2019s owned fixture server, record the exact full URL including its actual port, and verify the served bytes match the listed SHA-256. Do not begin browser interaction until route registration and URL/hash evidence are ready.",
+            "In Tools \u2192 Catalog, select Internal delegates or All handlers, then search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
             "The live binding census is independent from source availability: preserve the exact-name mapping findings in live_binding; do not infer role availability from member/admin manual-run modes.",
-            "Target semantics: Tools → Catalog → Run binds the handler context to the currently focused tab in the user window (assignedTabId is null for this manual path). For a separate dispatched agent acceptance, select/record the agent’s assigned tab and verify the handler acts on that same assigned tab; do not treat this manual case as assigned-tab coverage."
+            "Target semantics: Tools \u2192 Catalog \u2192 Run binds the handler context to the currently focused tab in the user window (assignedTabId is null for this manual path). For a separate dispatched agent acceptance, select/record the agent\u2019s assigned tab and verify the handler acts on that same assigned tab; do not treat this manual case as assigned-tab coverage."
           ],
           "steps": [
             "Open the owned fixture and verify #consent-test is unchecked.",
             "Valid input: `{\"selector\":\"#consent-test\",\"checked\":true}`.",
-            "In Tools → Catalog, set Surface to `Internal delegates` (or `All handlers`).",
+            "In Tools \u2192 Catalog, set Surface to `Internal delegates` (or `All handlers`).",
             "Search `set_checkbox`; paste the valid input exactly and click Run.",
             "Observe inline result, checked state, and fixture events.",
             "Run schema-negative input; verify checkbox stays checked and counters do not change. Negative input: `{\"selector\":\"#consent-test\"}`.",
@@ -53244,7 +53328,7 @@
       "missing_items": [],
       "readiness_gaps": [
         "Confirm current catalog against imported source registry before source inventory signoff",
-        "Native runner route gap: the checked-in owned fixture is source-checked, but `/form-controls` is only served on the test’s ephemeral server. Register it in the owning native runner through `ownedPages`, then record the actual URL and verify served-byte SHA-256 before execution.",
+        "Native runner route gap: the checked-in owned fixture is source-checked, but `/form-controls` is only served on the test\u2019s ephemeral server. Register it in the owning native runner through `ownedPages`, then record the actual URL and verify served-byte SHA-256 before execution.",
         "Agent-dispatch Ask/Act confirmation and missing-permission refusal remain unverified; manual Tools Run bypasses dispatcher gate.",
         "Live tool.binding advertisement and actual request-time member/admin availability remain unresolved by the local runner."
       ],
@@ -53278,15 +53362,15 @@
             "Before browser action, require fresh admission and current healthy resource samples for this active owned run from the authorized hosted TEST workflow. Do not require a completed run journal before launch: create/update the run journal as the run proceeds and complete/review it after execution and cleanup. If admission is refused, required samples are unhealthy or stale, or the active run is not covered by its permit, stop before opening the fixture; leave result cells unverified.",
             "Use a current authorized hosted build receipt with source/dirty-source, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, role/org state, permissions and timestamp. Install/reload per docs/stabilization/PLAN.md; reopen side panel and reload target tab, then verify runtime fingerprint. HMR alone is insufficient.",
             "Execute as signed-in ordinary member and repeat as admin; guest is inapplicable because the Tools UI requires sign-in. Confirm the active tab is the dedicated disposable fixture tab and loaded manifest grants activeTab+scripting. The manual runner calls the local handler directly with permissionMode act, bypassing dispatcher Ask/Act confirmation.",
-            "The owned fixture already exists at `tests/browser/fixtures/form-controls.html` (SHA-256 `685ce7a0286f9fd6330ed692db81e5c099a766cbe8aef61bb72a33e87b7d072a`); do not create or stage a duplicate. The test-only `/form-controls` route uses an ephemeral server and is not registered for native acceptance. Before execution, register this page as `ownedPages[\"/form-controls\"]` in the owning native runner, start that run’s owned fixture server, record the exact full URL including its actual port, and verify the served bytes match the listed SHA-256. Do not begin browser interaction until route registration and URL/hash evidence are ready.",
-            "In Tools → Catalog, select Internal delegates or All handlers, then search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
+            "The owned fixture already exists at `tests/browser/fixtures/form-controls.html` (SHA-256 `685ce7a0286f9fd6330ed692db81e5c099a766cbe8aef61bb72a33e87b7d072a`); do not create or stage a duplicate. The test-only `/form-controls` route uses an ephemeral server and is not registered for native acceptance. Before execution, register this page as `ownedPages[\"/form-controls\"]` in the owning native runner, start that run\u2019s owned fixture server, record the exact full URL including its actual port, and verify the served bytes match the listed SHA-256. Do not begin browser interaction until route registration and URL/hash evidence are ready.",
+            "In Tools \u2192 Catalog, select Internal delegates or All handlers, then search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
             "The live binding census is independent from source availability: preserve the exact-name mapping findings in live_binding; do not infer role availability from member/admin manual-run modes.",
-            "Target semantics: Tools → Catalog → Run binds the handler context to the currently focused tab in the user window (assignedTabId is null for this manual path). For a separate dispatched agent acceptance, select/record the agent’s assigned tab and verify the handler acts on that same assigned tab; do not treat this manual case as assigned-tab coverage."
+            "Target semantics: Tools \u2192 Catalog \u2192 Run binds the handler context to the currently focused tab in the user window (assignedTabId is null for this manual path). For a separate dispatched agent acceptance, select/record the agent\u2019s assigned tab and verify the handler acts on that same assigned tab; do not treat this manual case as assigned-tab coverage."
           ],
           "steps": [
             "Open the owned fixture and verify A selected and event count zero.",
             "Valid input: `{\"selector\":\"#radio-a\",\"value\":\"b\"}`.",
-            "In Tools → Catalog, set Surface to `Internal delegates` (or `All handlers`).",
+            "In Tools \u2192 Catalog, set Surface to `Internal delegates` (or `All handlers`).",
             "Search `set_radio`; paste the valid input exactly and click Run.",
             "Observe inline result, group selection, and fixture change count.",
             "Run the no-match handler-level negative; verify the selected radio remains B. Negative input: `{\"selector\":\"#radio-a\",\"value\":\"missing\"}`.",
@@ -53425,7 +53509,7 @@
       "missing_items": [],
       "readiness_gaps": [
         "Confirm current catalog against imported source registry before source inventory signoff",
-        "Native runner route gap: the checked-in owned fixture is source-checked, but `/form-controls` is only served on the test’s ephemeral server. Register it in the owning native runner through `ownedPages`, then record the actual URL and verify served-byte SHA-256 before execution.",
+        "Native runner route gap: the checked-in owned fixture is source-checked, but `/form-controls` is only served on the test\u2019s ephemeral server. Register it in the owning native runner through `ownedPages`, then record the actual URL and verify served-byte SHA-256 before execution.",
         "Agent-dispatch Ask/Act confirmation and missing-permission refusal remain unverified; manual Tools Run bypasses dispatcher gate.",
         "Live tool.binding advertisement and actual request-time member/admin availability remain unresolved by the local runner."
       ],
@@ -53459,15 +53543,15 @@
             "Before browser action, require fresh admission and current healthy resource samples for this active owned run from the authorized hosted TEST workflow. Do not require a completed run journal before launch: create/update the run journal as the run proceeds and complete/review it after execution and cleanup. If admission is refused, required samples are unhealthy or stale, or the active run is not covered by its permit, stop before opening the fixture; leave result cells unverified.",
             "Use a current authorized hosted build receipt with source/dirty-source, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, role/org state, permissions and timestamp. Install/reload per docs/stabilization/PLAN.md; reopen side panel and reload target tab, then verify runtime fingerprint. HMR alone is insufficient.",
             "Execute as signed-in ordinary member and repeat as admin; guest is inapplicable because the Tools UI requires sign-in. Confirm the active tab is the dedicated disposable fixture tab and loaded manifest grants activeTab+scripting. The manual runner calls the local handler directly with permissionMode act, bypassing dispatcher Ask/Act confirmation.",
-            "The owned fixture already exists at `tests/browser/fixtures/form-controls.html` (SHA-256 `685ce7a0286f9fd6330ed692db81e5c099a766cbe8aef61bb72a33e87b7d072a`); do not create or stage a duplicate. The test-only `/form-controls` route uses an ephemeral server and is not registered for native acceptance. Before execution, register this page as `ownedPages[\"/form-controls\"]` in the owning native runner, start that run’s owned fixture server, record the exact full URL including its actual port, and verify the served bytes match the listed SHA-256. Do not begin browser interaction until route registration and URL/hash evidence are ready.",
-            "In Tools → Catalog, search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
+            "The owned fixture already exists at `tests/browser/fixtures/form-controls.html` (SHA-256 `685ce7a0286f9fd6330ed692db81e5c099a766cbe8aef61bb72a33e87b7d072a`); do not create or stage a duplicate. The test-only `/form-controls` route uses an ephemeral server and is not registered for native acceptance. Before execution, register this page as `ownedPages[\"/form-controls\"]` in the owning native runner, start that run\u2019s owned fixture server, record the exact full URL including its actual port, and verify the served bytes match the listed SHA-256. Do not begin browser interaction until route registration and URL/hash evidence are ready.",
+            "In Tools \u2192 Catalog, search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
             "The live binding census is independent from source availability: preserve the exact-name mapping findings in live_binding; do not infer role availability from member/admin manual-run modes.",
-            "Target semantics: Tools → Catalog → Run binds the handler context to the currently focused tab in the user window (assignedTabId is null for this manual path). For a separate dispatched agent acceptance, select/record the agent’s assigned tab and verify the handler acts on that same assigned tab; do not treat this manual case as assigned-tab coverage."
+            "Target semantics: Tools \u2192 Catalog \u2192 Run binds the handler context to the currently focused tab in the user window (assignedTabId is null for this manual path). For a separate dispatched agent acceptance, select/record the agent\u2019s assigned tab and verify the handler acts on that same assigned tab; do not treat this manual case as assigned-tab coverage."
           ],
           "steps": [
             "Open the owned fixture and verify submit count is zero and the form submit listener prevents default/network.",
             "Valid input: `{\"selector\":\"#submit-test\",\"via_button\":true}`.",
-            "Search `submit_form` in Tools → Catalog; run exact valid input.",
+            "Search `submit_form` in Tools \u2192 Catalog; run exact valid input.",
             "Observe inline result, fixture submit count, submitter id, and payload; confirm page did not navigate or send a request.",
             "Run no-form handler-level negative `{\"selector\":\"#missing-form\"}`; verify count remains one.",
             "Cleanup: Reload the owned fixture page to reset submit count (only after recording); close only the owned fixture tab/window."
