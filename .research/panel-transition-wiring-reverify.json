@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task": "independent reverify of authenticated panel-transition recorder wiring",
+  "reviewed_head": "503eff553990346537f57ef0189b0ad7c2ab0951",
+  "verdict_a_acceptance": {
+    "status": "PASS_WITH_NATIVE_UNMEASURED",
+    "evidence": "The actual Scrape authenticated setup body is extracted and executed with the production startPanelTransitionRecorder, traceOrganizationPointers, and classifyPanelTransition functions. Its two distinct scenarios report during_resource_wait and during_pointer_dispatch with distinct event sequences."
+  },
+  "verdict_b_quality": {
+    "status": "PASS_WITH_VERIFICATION_LIMIT",
+    "evidence": "node --test tests/browser/panel-transition-recorder.test.mjs: 5 passed. plant.py removed the production organization_entry marker; the focused integration assertion failed specifically because the event was absent. plant.py restored the file with identical SHA-256. The test asserts computed events from real recorder code, not a stubbed receipt or constant result."
+  },
+  "actual_output_discriminator": "For resource wait: hidden event precedes after_health, then organization_entry and organization_skip; no pointer event. For pointer dispatch: organization_select, pointer_before, hidden event, pointer_after. Both classification and full event order are asserted.",
+  "privacy_cleanup": "Receipt projection contains event kind, visibility enum, and renderer performance.now values only. The integration checks absence of private fixture strings and pointer coordinate value; recorder tests confirm listener cleanup, lost renderer refusal, missed marker refusal, invalid clock refusal, and pointer arguments are not serialized.",
+  "limits": [
+    "Controlled vm panel, clock, auth selection, and resource actions provide the test environment; the production recorder, integration body, pointer proxy, classification, and resulting event array are real.",
+    "This proves integration wiring and mutation sensitivity, not native side-panel exposure or causation. No native acceptance was performed.",
+    "No additional mutation was needed; the omitted organization_entry marker was the independent real-marker mutation."
+  ],
+  "commands": [
+    "PASS: node --test tests/browser/panel-transition-recorder.test.mjs — 5 passed",
+    "PASS: node --test tests/browser/authenticated-panel-host.test.mjs tests/browser/settings-native-auth-driver.test.mjs tests/browser/panel-transition-recorder.test.mjs — 16 passed",
+    "PASS: forcing-function-tests/plant.py omitted organization_entry — focused test RED on missing event, source SHA restored byte-identically"
+  ],
+  "ci_review": "Reviewed the uncommitted .github/workflows/ci.yml addition at line 158: node --test tests/browser/authenticated-panel-host.test.mjs tests/browser/settings-native-auth-driver.test.mjs tests/browser/panel-transition-recorder.test.mjs. It fills the authenticated host/auth-driver/new recorder import gap after the existing native harness command. Ran this exact line locally: 16 passed, 0 failed. Existing CI run 37251997773 predates this line and does not verify it.",
+  "scope": "Only this report was written. Existing guest collector edits and unrelated shared working-tree changes were preserved."
+}
