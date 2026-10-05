@@ -25,7 +25,8 @@
     ".research/member-panel-hidden-repair.json",
     ".research/member-panel-reopen-peer.json",
     ".research/member-reopen-native-retest.json",
-    ".research/member-context-diagnostic-native.json"
+    ".research/member-context-diagnostic-native.json",
+    ".research/member-visibility-timeline-native.json"
   ],
   "transition_history": [
     {
@@ -66,7 +67,7 @@
     }
   ],
   "diagnostic_commit": "427e75a4",
-  "next_action": "Reviewed bounded visibility diagnostic1379d875, guard3c8daad2, freshpeer21e4d23a. One frozen244 membernormal600 native run after CI37245429379 success; preserve all acceptance gates. hasFocus is emulated by pinned Playwright, not independent foreground proof.",
+  "next_action": "Sol panel_visible_reopen_repair owns bounded sequence repair using observed visible-before-open/hidden-after-open. Preserve existing visibility/context/auth/resource assertions; freshpeer and changed-condition native required.",
   "fix_commits": ["44005fb4"],
   "hosted_ci": {
     "run_id": 37242845397,
@@ -75,11 +76,11 @@
     "verified": "Root read full success and actual checks job111554820121 log: native harness fresh trusted-open guard, full harness1pass0fail, guesttransport regression and resource safety pass. Native visibility pending."
   },
   "native_retest": {
-    "run_id": 37244226691,
-    "result": "D133 retest-fail: repaired reopening did not restore observedvisibility; originalsoleexacttarget/contextpresent. No nativecases/width.",
-    "evidence_commit": "8a5c0ffd",
-    "cleanup": "temporary consumedsecret/link absentverified",
-    "root_verification": "Sevenhashes, actualreceipt andthreecurrentjournals; twohealthywatches no unsafe; initialguest screenshots do notshowpostauthfailure."
+    "run_id": 37245836902,
+    "result": "Nine measured phases: visible through auth/org and root foreground; first hidden after trusted open, remains hidden after target activation. Exact original context retained; zero cases/normalviewport.",
+    "evidence_commit": "b15ad9e4",
+    "cleanup": "temporary consumed secret/link absent verified",
+    "root_verification": "All six hashes matched; actual raw timeline and three original journals read. Two healthy native watches, no unsafe; all finalresourceInvalidfalse."
   },
   "visibility_diagnostic": {
     "commits": ["1379d875", "3c8daad2"],
