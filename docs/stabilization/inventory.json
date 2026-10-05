@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-05T02:35:50.942231+00:00",
+  "updated_at": "2026-10-05T03:01:16.788995+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -51145,18 +51145,51 @@
             "member",
             "admin"
           ],
-          "design_status": "needed",
+          "design_status": "partial",
           "preconditions": [
             "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Controlled owned target and no unauthorized external effects",
+            "resource permit",
+            "source commit SHA and lockfile hash",
+            "WXT mode and output hash/build receipt",
+            "chrome://extensions loaded extension ID, version, and Loaded from path",
+            "Chrome version/profile and effective permissions (tabs, activeTab, scripting for navigation/DOM cases)",
+            "member or admin signed-in session",
+            "verify that the exact candidate build is initially loaded before warm run; do not click extension Reload immediately before warm run",
+            "Repeat manual cases under member and admin sessions. Guest is not applicable because Tools UI is sign-in gated. This direct Run path uses act mode and does not establish Ask/Act dispatcher gates, denied-permission behavior, or agent-call role visibility.",
+            "Owned loopback fixture route registered in the native runner; capture actual URL/hash first.",
+            "Start only after owned-run admission/resource permit. Keep the exact controlled fixture tab focused when clicking Run; capture the exact tab URL and served-byte SHA-256. Reset/reload fixture between cases. The current fixture route is test-only ephemeral; a native run must first register tests/browser/fixtures/form-controls.html as ownedPages['/form-controls'] in its owned fixture server and record actual loopback URL plus matching served-byte SHA-256. Until then cases requiring this page are not executable."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Follow current machine restrictions and the authorized development build path; obtain the recorded candidate artifact before any execution.",
+            "Build the candidate from the recorded source, load that generated development bundle unpacked, record its receipt and exact chrome://extensions identity/path, and run the warm cases without an immediately preceding full extension Reload. After warm outcomes, click Reload for that extension, record completion, reopen extension pages and the side panel, reload controlled target tabs, then run post-reload cases. A page refresh or panel reopen alone is not an extension reload. No build, reload, browser execution, or native pass was performed for this proposal.",
+            "Warm phase: After loading the candidate build and recording its receipt/identity, reopen Tools and reload the controlled target tab if needed; do not click extension Reload immediately before this run. Execute the complete positive and negative inputs for this case; record this as the warm run.",
+            "Focus the owned fixture tab, open Tools > Catalog, choose All handlers, search navigate_active_tab and open it.",
+            "Positive JSON: {\"url\":\"<exact recorded owned loopback URL>\"}; replace placeholder with that exact URL before Run.",
+            "After navigation completes, reopen Tools if needed and inspect result.",
+            "Negative JSON: {\"url\":\"not-a-url\"}; Run to exercise schema rejection.",
+            "Post-reload phase: After the warm run, click Reload for the same extension in chrome://extensions, record completion, reopen the sidepanel/Tools, reload the controlled target tab, and repeat the exact same positive and negative inputs; record separately as post-reload. Page refresh/panel reopen alone is not extension reload.",
+            "Separate permission-denial segment (deferred until supported live Chat route exists; never inferred from manual Tools Run): Chat; choose Ask before acting; if navigate_active_tab is actually advertised, request {\"url\":\"<recorded owned loopback URL>\"}, then click Deny on its confirmation card.",
+            "Repeat the supported denial segment during both phases; preserve blocked/unverified status when exact live tool is unavailable.",
+            "Cleanup: Leave tab on owned fixture or close that owned tab; never navigate externally."
+          ],
+          "expected": [
+            "Positive: result object has url equal to the owned URL, title equal to fixture title, status complete (handler waits for completion then reads tab).",
+            "Negative: UI shows Schema mismatch from z.string().url(); navigation is not issued.",
+            "No focused tab returns {ok:false,reason:'No active tab'}; do not treat this as permission denial.",
+            "Tool result reports User denied this action; owned tab remains at its pre-call URL. Current exact-name metadata is absent, so this is blocked until live advertisement is observed.",
+            "Manual handler results do not prove dispatcher authorization, live tool advertisement, or assigned agent-tab behavior. Record member/admin and warm/post-reload outcomes separately; absent fixture or exact live route remains unverified."
+          ],
           "dimensions": [
             "valid-input",
             "invalid-input",
             "permissions",
             "reload"
+          ],
+          "procedure_sources": [
+            ".research/basic-browser-procedures.json",
+            ".research/basic-browser-procedures-peer.json",
+            ".research/basic-procedure-reverify.json"
           ]
         }
       ],
@@ -51289,18 +51322,50 @@
             "member",
             "admin"
           ],
-          "design_status": "needed",
+          "design_status": "partial",
           "preconditions": [
             "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Controlled owned target and no unauthorized external effects",
+            "resource permit",
+            "source commit SHA and lockfile hash",
+            "WXT mode and output hash/build receipt",
+            "chrome://extensions loaded extension ID, version, and Loaded from path",
+            "Chrome version/profile and effective permissions (tabs, activeTab, scripting for navigation/DOM cases)",
+            "member or admin signed-in session",
+            "verify that the exact candidate build is initially loaded before warm run; do not click extension Reload immediately before warm run",
+            "Repeat manual cases under member and admin sessions. Guest is not applicable because Tools UI is sign-in gated. This direct Run path uses act mode and does not establish Ask/Act dispatcher gates, denied-permission behavior, or agent-call role visibility.",
+            "Registered /form-controls fixture above; inspect #state output; reload fixture before each independent check.",
+            "Start only after owned-run admission/resource permit. Keep the exact controlled fixture tab focused when clicking Run; capture the exact tab URL and served-byte SHA-256. Reset/reload fixture between cases. The current fixture route is test-only ephemeral; a native run must first register tests/browser/fixtures/form-controls.html as ownedPages['/form-controls'] in its owned fixture server and record actual loopback URL plus matching served-byte SHA-256. Until then cases requiring this page are not executable."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Follow current machine restrictions and the authorized development build path; obtain the recorded candidate artifact before any execution.",
+            "Build the candidate from the recorded source, load that generated development bundle unpacked, record its receipt and exact chrome://extensions identity/path, and run the warm cases without an immediately preceding full extension Reload. After warm outcomes, click Reload for that extension, record completion, reopen extension pages and the side panel, reload controlled target tabs, then run post-reload cases. A page refresh or panel reopen alone is not an extension reload. No build, reload, browser execution, or native pass was performed for this proposal.",
+            "Warm phase: After loading the candidate build and recording its receipt/identity, reopen Tools and reload the controlled target tab if needed; do not click extension Reload immediately before this run. Execute the complete positive and negative inputs for this case; record this as the warm run.",
+            "Focus fixture tab; Tools > Catalog > All handlers; search click_element and open it.",
+            "Positive JSON: {\"selector\":\"#hover-target\"}; Run once.",
+            "Negative JSON: {\"selector\":\"#missing-target\"}; Run once.",
+            "Post-reload phase: After the warm run, click Reload for the same extension in chrome://extensions, record completion, reopen the sidepanel/Tools, reload the controlled target tab, and repeat the exact same positive and negative inputs; record separately as post-reload. Page refresh/panel reopen alone is not extension reload.",
+            "Separate permission-denial segment (deferred until supported live Chat route exists; never inferred from manual Tools Run): Chat; choose Ask before acting; if click_element is actually advertised, request {\"selector\":\"#hover-target\"}, then click Deny.",
+            "Repeat the supported denial segment during both phases; preserve blocked/unverified status when exact live tool is unavailable.",
+            "Cleanup: Reload owned fixture to reset counters."
+          ],
+          "expected": [
+            "Positive: {ok:true,tag:'button',text:'Hover target'} and fixture #state click counter for hover-target increases by one.",
+            "Negative: {ok:false,reason:'No element at index 0 for selector #missing-target'}; fixture state is unchanged.",
+            "Schema-negative {\"nth\":0} shows Schema mismatch: must provide either selector or ref.",
+            "Tool result reports User denied this action; fixture click count remains unchanged. Current exact-name metadata is absent, so this is blocked until live advertisement is observed.",
+            "Manual handler results do not prove dispatcher authorization, live tool advertisement, or assigned agent-tab behavior. Record member/admin and warm/post-reload outcomes separately; absent fixture or exact live route remains unverified."
+          ],
           "dimensions": [
             "valid-input",
             "invalid-input",
             "permissions",
             "reload"
+          ],
+          "procedure_sources": [
+            ".research/basic-browser-procedures.json",
+            ".research/basic-browser-procedures-peer.json",
+            ".research/basic-procedure-reverify.json"
           ]
         }
       ],
@@ -51442,18 +51507,50 @@
             "member",
             "admin"
           ],
-          "design_status": "needed",
+          "design_status": "partial",
           "preconditions": [
             "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Controlled owned target and no unauthorized external effects",
+            "resource permit",
+            "source commit SHA and lockfile hash",
+            "WXT mode and output hash/build receipt",
+            "chrome://extensions loaded extension ID, version, and Loaded from path",
+            "Chrome version/profile and effective permissions (tabs, activeTab, scripting for navigation/DOM cases)",
+            "member or admin signed-in session",
+            "verify that the exact candidate build is initially loaded before warm run; do not click extension Reload immediately before warm run",
+            "Repeat manual cases under member and admin sessions. Guest is not applicable because Tools UI is sign-in gated. This direct Run path uses act mode and does not establish Ask/Act dispatcher gates, denied-permission behavior, or agent-call role visibility.",
+            "Registered /form-controls fixture above; #keys begins as seed and #state reports its value and events.",
+            "Start only after owned-run admission/resource permit. Keep the exact controlled fixture tab focused when clicking Run; capture the exact tab URL and served-byte SHA-256. Reset/reload fixture between cases. The current fixture route is test-only ephemeral; a native run must first register tests/browser/fixtures/form-controls.html as ownedPages['/form-controls'] in its owned fixture server and record actual loopback URL plus matching served-byte SHA-256. Until then cases requiring this page are not executable."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Follow current machine restrictions and the authorized development build path; obtain the recorded candidate artifact before any execution.",
+            "Build the candidate from the recorded source, load that generated development bundle unpacked, record its receipt and exact chrome://extensions identity/path, and run the warm cases without an immediately preceding full extension Reload. After warm outcomes, click Reload for that extension, record completion, reopen extension pages and the side panel, reload controlled target tabs, then run post-reload cases. A page refresh or panel reopen alone is not an extension reload. No build, reload, browser execution, or native pass was performed for this proposal.",
+            "Warm phase: After loading the candidate build and recording its receipt/identity, reopen Tools and reload the controlled target tab if needed; do not click extension Reload immediately before this run. Execute the complete positive and negative inputs for this case; record this as the warm run.",
+            "Focus fixture tab; Tools > Catalog > All handlers; search type_into_element and open it.",
+            "Positive JSON: {\"selector\":\"#keys\",\"text\":\"route-731\",\"clear\":true,\"dispatch_events\":true}; Run once.",
+            "Negative JSON: {\"selector\":\"#hover-target\",\"text\":\"route-731\"}; Run once.",
+            "Post-reload phase: After the warm run, click Reload for the same extension in chrome://extensions, record completion, reopen the sidepanel/Tools, reload the controlled target tab, and repeat the exact same positive and negative inputs; record separately as post-reload. Page refresh/panel reopen alone is not extension reload.",
+            "Separate permission-denial segment (deferred until supported live Chat route exists; never inferred from manual Tools Run): Chat; choose Ask before acting; if type_into_element is actually advertised, request {\"selector\":\"#keys\",\"text\":\"route-731\"}, then click Deny.",
+            "Repeat the supported denial segment during both phases; preserve blocked/unverified status when exact live tool is unavailable.",
+            "Cleanup: Reload owned fixture; clears edited value and event counters."
+          ],
+          "expected": [
+            "Positive: {ok:true,tag:'input'}; #state keys becomes route-731 and #keys input/change counters each increase by one.",
+            "Negative: {ok:false,reason:'Element is not editable'}; no input/change events are added.",
+            "Schema-negative {\"text\":\"route-731\"} shows Schema mismatch: must provide either selector or ref.",
+            "Tool result reports User denied this action; #keys value and input/change counts remain unchanged. Current exact-name metadata is absent, so this is blocked until live advertisement is observed.",
+            "Manual handler results do not prove dispatcher authorization, live tool advertisement, or assigned agent-tab behavior. Record member/admin and warm/post-reload outcomes separately; absent fixture or exact live route remains unverified."
+          ],
           "dimensions": [
             "valid-input",
             "invalid-input",
             "permissions",
             "reload"
+          ],
+          "procedure_sources": [
+            ".research/basic-browser-procedures.json",
+            ".research/basic-browser-procedures-peer.json",
+            ".research/basic-procedure-reverify.json"
           ]
         }
       ],
@@ -51594,18 +51691,52 @@
             "member",
             "admin"
           ],
-          "design_status": "needed",
+          "design_status": "partial",
           "preconditions": [
             "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Controlled owned target and no unauthorized external effects",
+            "resource permit",
+            "source commit SHA and lockfile hash",
+            "WXT mode and output hash/build receipt",
+            "chrome://extensions loaded extension ID, version, and Loaded from path",
+            "Chrome version/profile and effective permissions (tabs, activeTab, scripting for navigation/DOM cases)",
+            "member or admin signed-in session",
+            "verify that the exact candidate build is initially loaded before warm run; do not click extension Reload immediately before warm run",
+            "Repeat manual cases under member and admin sessions. Guest is not applicable because Tools UI is sign-in gated. This direct Run path uses act mode and does not establish Ask/Act dispatcher gates, denied-permission behavior, or agent-call role visibility.",
+            "Dedicated owned scroll fixture with verified overflow and a stable bottom target is required; existing form-controls page is insufficiently tall by contract.",
+            "Start only after owned-run admission/resource permit. Keep the exact controlled fixture tab focused when clicking Run; capture the exact tab URL and served-byte SHA-256. Reset/reload fixture between cases. The current fixture route is test-only ephemeral; a native run must first register tests/browser/fixtures/form-controls.html as ownedPages['/form-controls'] in its owned fixture server and record actual loopback URL plus matching served-byte SHA-256. Until then cases requiring this page are not executable.",
+            "A separate controlled page with measured document height greater than the browser viewport is required; current form-controls fixture has no guaranteed scroll overflow. Add/register an owned scroll fixture with a stable element near the bottom before executing EXT-F-4057."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Follow current machine restrictions and the authorized development build path; obtain the recorded candidate artifact before any execution.",
+            "Build the candidate from the recorded source, load that generated development bundle unpacked, record its receipt and exact chrome://extensions identity/path, and run the warm cases without an immediately preceding full extension Reload. After warm outcomes, click Reload for that extension, record completion, reopen extension pages and the side panel, reload controlled target tabs, then run post-reload cases. A page refresh or panel reopen alone is not an extension reload. No build, reload, browser execution, or native pass was performed for this proposal.",
+            "Warm phase: After loading the candidate build and recording its receipt/identity, reopen Tools and reload the controlled target tab if needed; do not click extension Reload immediately before this run. Execute the complete positive and negative inputs for this case; record this as the warm run.",
+            "Focus registered owned scroll fixture tab; verify document height exceeds viewport and record initial scrollY.",
+            "Open Tools > Catalog > All handlers; search scroll_page and open it.",
+            "Positive JSON: {\"direction\":\"bottom\"}; Run and inspect result plus page position.",
+            "Negative JSON: {\"direction\":\"into-view\",\"selector\":\"#missing-target\"}; Run.",
+            "Post-reload phase: After the warm run, click Reload for the same extension in chrome://extensions, record completion, reopen the sidepanel/Tools, reload the controlled target tab, and repeat the exact same positive and negative inputs; record separately as post-reload. Page refresh/panel reopen alone is not extension reload.",
+            "Separate permission-denial segment (deferred until supported live Chat route exists; never inferred from manual Tools Run): Chat; choose Ask before acting; if scroll_page is actually advertised, request {\"direction\":\"bottom\"}, then click Deny.",
+            "Repeat the supported denial segment during both phases; preserve blocked/unverified status when exact live tool is unavailable.",
+            "Cleanup: Reload fixture or use {\"direction\":\"top\"} and confirm scrollY=0."
+          ],
+          "expected": [
+            "Positive: {ok:true,scrollY:<number>} and window position is at document bottom (within browser scroll clamping).",
+            "Negative: {ok:false,reason:'No element for #missing-target'}; no successful target movement is claimed.",
+            "Schema permits direction alone; missing delta_y with direction by is handler-level {ok:false,reason:'delta_y required'}.",
+            "Tool result reports User denied this action; page scroll position remains at recorded initial value. Current exact-name metadata is absent, so this is blocked until live advertisement is observed.",
+            "Manual handler results do not prove dispatcher authorization, live tool advertisement, or assigned agent-tab behavior. Record member/admin and warm/post-reload outcomes separately; absent fixture or exact live route remains unverified."
+          ],
           "dimensions": [
             "valid-input",
             "invalid-input",
             "permissions",
             "reload"
+          ],
+          "procedure_sources": [
+            ".research/basic-browser-procedures.json",
+            ".research/basic-browser-procedures-peer.json",
+            ".research/basic-procedure-reverify.json"
           ]
         }
       ],
@@ -51755,20 +51886,51 @@
             "member",
             "admin"
           ],
-          "design_status": "needed",
+          "design_status": "partial",
           "preconditions": [
             "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Controlled owned target and no unauthorized external effects",
+            "resource permit",
+            "source commit SHA and lockfile hash",
+            "WXT mode and output hash/build receipt",
+            "chrome://extensions loaded extension ID, version, and Loaded from path",
+            "Chrome version/profile and effective permissions (tabs, activeTab, scripting for navigation/DOM cases)",
+            "member or admin signed-in session",
+            "verify that the exact candidate build is initially loaded before warm run; do not click extension Reload immediately before warm run",
+            "Repeat manual cases under member and admin sessions. Guest is not applicable because Tools UI is sign-in gated. This direct Run path uses act mode and does not establish Ask/Act dispatcher gates, denied-permission behavior, or agent-call role visibility.",
+            "Registered /form-controls fixture above. Choose the duplicate-name Action-tier raw row with schema selector/ready_state/timeout_ms; do not select canonical Read row with tab_id/condition/target.",
+            "Start only after owned-run admission/resource permit. Keep the exact controlled fixture tab focused when clicking Run; capture the exact tab URL and served-byte SHA-256. Reset/reload fixture between cases. The current fixture route is test-only ephemeral; a native run must first register tests/browser/fixtures/form-controls.html as ownedPages['/form-controls'] in its owned fixture server and record actual loopback URL plus matching served-byte SHA-256. Until then cases requiring this page are not executable."
           ],
-          "steps": [],
+          "steps": [
+            "Follow current machine restrictions and the authorized development build path; obtain the recorded candidate artifact before any execution.",
+            "Build the candidate from the recorded source, load that generated development bundle unpacked, record its receipt and exact chrome://extensions identity/path, and run the warm cases without an immediately preceding full extension Reload. After warm outcomes, click Reload for that extension, record completion, reopen extension pages and the side panel, reload controlled target tabs, then run post-reload cases. A page refresh or panel reopen alone is not an extension reload. No build, reload, browser execution, or native pass was performed for this proposal.",
+            "Warm phase: After loading the candidate build and recording its receipt/identity, reopen Tools and reload the controlled target tab if needed; do not click extension Reload immediately before this run. Execute the complete positive and negative inputs for this case; record this as the warm run.",
+            "Focus fixture tab; Tools > Catalog > All handlers; set tier Action; search wait_for; open the row whose displayed schema has selector, ready_state, timeout_ms.",
+            "Positive JSON: {\"selector\":\"#state\",\"timeout_ms\":1000}; Run.",
+            "Negative JSON: {\"selector\":\"#missing-target\",\"timeout_ms\":300}; Run.",
+            "Post-reload phase: After the warm run, click Reload for the same extension in chrome://extensions, record completion, reopen the sidepanel/Tools, reload the controlled target tab, and repeat the exact same positive and negative inputs; record separately as post-reload. Page refresh/panel reopen alone is not extension reload.",
+            "Separate permission-denial segment (deferred until supported live Chat route exists; never inferred from manual Tools Run): No supported denial run is currently established for the requested raw legacy wait_for handler. The active canonical exact-name binding is read tier and agent lookup resolves the canonical handler; manual Action row bypasses dispatch.",
+            "Repeat the supported denial segment during both phases; preserve blocked/unverified status when exact live tool is unavailable.",
+            "Cleanup: No page mutation; close expanded tool row or reload fixture. Do not record this as canonical agent-dispatch wait_for coverage."
+          ],
           "expected": [
-            "The selected manual handler runs its displayed input schema against the controlled target; separately verify canonical agent-dispatch routing under EXT-F-4156."
+            "The selected manual handler runs its displayed input schema against the controlled target; separately verify canonical agent-dispatch routing under EXT-F-4156.",
+            "Positive: {ok:true,waited_ms:<nonnegative number>} because #state already exists.",
+            "Negative: {ok:false,reason:'selector #missing-target did not appear'} after bounded timeout.",
+            "Schema-negative {\"selector\":\"#state\",\"timeout_ms\":0} shows Schema mismatch because timeout_ms must be positive.",
+            "Keep permission-denial cell partial/unverified. A source-backed dispatcher driver exposing this exact legacy handler through an action-tier route is a prerequisite; do not substitute canonical read wait_for or claim a confirmation denial.",
+            "Manual handler results do not prove dispatcher authorization, live tool advertisement, or assigned agent-tab behavior. Record member/admin and warm/post-reload outcomes separately; absent fixture or exact live route remains unverified."
           ],
           "dimensions": [
             "valid-input",
             "invalid-input",
             "permissions",
             "reload"
+          ],
+          "procedure_sources": [
+            ".research/basic-browser-procedures.json",
+            ".research/basic-browser-procedures-peer.json",
+            ".research/basic-procedure-reverify.json"
           ]
         }
       ],
@@ -52054,18 +52216,49 @@
             "member",
             "admin"
           ],
-          "design_status": "needed",
+          "design_status": "partial",
           "preconditions": [
             "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Controlled owned target and no unauthorized external effects",
+            "resource permit",
+            "source commit SHA and lockfile hash",
+            "WXT mode and output hash/build receipt",
+            "chrome://extensions loaded extension ID, version, and Loaded from path",
+            "Chrome version/profile and effective permissions (tabs, activeTab, scripting for navigation/DOM cases)",
+            "member or admin signed-in session",
+            "verify that the exact candidate build is initially loaded before warm run; do not click extension Reload immediately before warm run",
+            "Repeat manual cases under member and admin sessions. Guest is not applicable because Tools UI is sign-in gated. This direct Run path uses act mode and does not establish Ask/Act dispatcher gates, denied-permission behavior, or agent-call role visibility.",
+            "No page fixture required; Tools UI remains sign-in gated and direct manual Run does not require active tab."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Follow current machine restrictions and the authorized development build path; obtain the recorded candidate artifact before any execution.",
+            "Build the candidate from the recorded source, load that generated development bundle unpacked, record its receipt and exact chrome://extensions identity/path, and run the warm cases without an immediately preceding full extension Reload. After warm outcomes, click Reload for that extension, record completion, reopen extension pages and the side panel, reload controlled target tabs, then run post-reload cases. A page refresh or panel reopen alone is not an extension reload. No build, reload, browser execution, or native pass was performed for this proposal.",
+            "Warm phase: After loading the candidate build and recording its receipt/identity, reopen Tools and reload the controlled target tab if needed; do not click extension Reload immediately before this run. Execute the complete positive and negative inputs for this case; record this as the warm run.",
+            "Open Tools > Catalog > All handlers; search sleep and open it.",
+            "Positive JSON: {\"ms\":50,\"reason\":\"bounded procedure\"}; Run and record start/end from the UI observer without imposing a tight timing bound.",
+            "Negative JSON: {\"ms\":49}; Run.",
+            "Post-reload phase: After the warm run, click Reload for the same extension in chrome://extensions, record completion, reopen the sidepanel/Tools, reload the controlled target tab, and repeat the exact same positive and negative inputs; record separately as post-reload. Page refresh/panel reopen alone is not extension reload.",
+            "Separate permission-denial segment (deferred until supported live Chat route exists; never inferred from manual Tools Run): Chat; choose Ask before acting; if sleep is present in the actual selected agent roster, request {\"ms\":50,\"reason\":\"denial check\"}, then click Deny on the confirmation card.",
+            "Repeat the supported denial segment during both phases; preserve blocked/unverified status when exact live tool is unavailable.",
+            "Cleanup: None beyond closing the expanded row."
+          ],
+          "expected": [
+            "Positive: {ok:true,slept_ms:<number at least 50>,reason:'bounded procedure'}; elapsed time may exceed 50ms due to scheduling.",
+            "Negative: UI shows Schema mismatch because ms minimum is 50; handler does not sleep.",
+            "No fixture state or external page effect is expected.",
+            "Tool result reports User denied this action; no sleep handler result is produced. Active metadata exists in the captured census, but actual current roster/call acceptance still needs observation.",
+            "Manual handler results do not prove dispatcher authorization, live tool advertisement, or assigned agent-tab behavior. Record member/admin and warm/post-reload outcomes separately; absent fixture or exact live route remains unverified."
+          ],
           "dimensions": [
             "valid-input",
             "invalid-input",
             "permissions",
             "reload"
+          ],
+          "procedure_sources": [
+            ".research/basic-browser-procedures.json",
+            ".research/basic-browser-procedures-peer.json",
+            ".research/basic-procedure-reverify.json"
           ]
         }
       ],
