@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "defects": ["EXT-D-0142", "EXT-D-0042"],
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "run_id": 37284490515,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37284490515",
+    "workflow_source_sha": "d6c0cf3e446f045ad2f388584d0b169e53edf1c5",
+    "acceptance_case": "showcase-stale-admin",
+    "runner_label": "macos-15",
+    "terminal_status": "failure",
+    "started_at": "2026-10-05T08:34:49Z",
+    "terminal_at": "2026-10-05T08:41:48Z",
+    "native_exercise_started_at": "2026-10-05T08:39:26Z",
+    "native_exercise_ended_at": "2026-10-05T08:41:38Z"
+  },
+  "development_artifact": {
+    "ci_run_id": 37283516703,
+    "ci_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37283516703",
+    "artifact_id": 11333477364,
+    "artifact_name": "matrx-extend-development-test-6e8b8b96753bb81a2b2e7a30f63a2d9706bd2ae9-37283516703-1",
+    "source_sha": "6e8b8b96753bb81a2b2e7a30f63a2d9706bd2ae9",
+    "version": "0.2.266",
+    "tree_sha256": "b476277fd72415309de621eb04fcc2ef845eb31669fc6299cdc1ebd9595d5054",
+    "github_artifact_digest": "sha256:c8f02af10c09b9051483383212ff1e7271bb5797a467a92449a75bc6c2d4953e",
+    "ci_conclusion": "success",
+    "current_source_delta": "Only .research/capacity-recovery-audit-current.json differs from the CI source; production, package, test, and workflow paths are unchanged."
+  },
+  "ci_affected_checks": {
+    "result": "pass",
+    "native_driver_and_diagnostic_tests": "31 passed, 0 failed; includes settings-native-auth-driver, showcase-organization-diagnostic, showcase-stale-runtime-boundary, and panel-transition-recorder",
+    "hosted_showcase_route_tests": "18 passed, 0 failed",
+    "resource_safety_tests": "5 passed, 0 failed",
+    "build_artifact": "Development artifact built, provenance recorded, uploaded, and independently verified by GitHub run/artifact metadata, downloaded zip digest, manifest, version, and complete output tree hash."
+  },
+  "native_result": {
+    "resource_verdict": "package and browser valid; guest child failed; resourceInvalid=false",
+    "failure_stage": "select_B_card",
+    "failure_code": "select_B_card_failed",
+    "native_stage": "exercise_panel",
+    "passed_cases": [
+      "guest_nonchat_control_and_showcase_gate",
+      "real_admin_signin_and_device_organization",
+      "genuine_A_exit_relay_rejected_while_B_active",
+      "same_page_cancel_A_start_B"
+    ],
+    "organization_diagnostic": {
+      "substage": "organization_identity_compare",
+      "admin_role_verified": true,
+      "picker_available": true,
+      "picker_has_selection": false,
+      "selection_required": true,
+      "menu_open": true,
+      "visible_option_count": 55,
+      "exact_match_count": 1,
+      "exact_visible_match_count": 1,
+      "target_in_viewport": false,
+      "target_center_hit": false,
+      "archive_filter": "unknown",
+      "storage_has_uuid": true,
+      "storage_name_matches": true,
+      "rendered_email_matches": true,
+      "rendered_role_matches": true,
+      "rendered_profile_matches": true,
+      "rendered_organization_matches": true
+    },
+    "interpretation_limit": "The device organization case is marked pass, while the bounded diagnostic snapshot has mixed picker and storage/rendered-identity signals. No root cause is inferred. The stale EXIT relay was rejected while B remained active; the subsequent B-card selection failed. D142 and D42 remain open; no coverage ledger transition is claimed.",
+    "still_unverified": [
+      "Showcase B-card selection, scoped rows, extraction, and normal page click",
+      "stale A ITEM_DETECTED and RESULT paths",
+      "delayed cancellation injection",
+      "deferred installation",
+      "new content-script context reinjection and listener count",
+      "nonadmin role gate"
+    ]
+  },
+  "secret_cleanup": {
+    "temporary_secret_names_absent_before_creation": true,
+    "deleted_immediately_after_terminal_status": true,
+    "both_names_absent_after_cleanup": true,
+    "values_or_account_identifiers_retained": false
+  },
+  "retained_files": {
+    "receipt.json": "55cc65879996b86a18a5b85b96fb72db8a05b8aea39356e9c909c1e6c82ff80a",
+    "hosted-package-resource.jsonl": "68469f0ba5ae06cf9d651bdbbb18fc2679fa7c16b1142f5b3195a0519f44d8d5",
+    "hosted-browser-resource.jsonl": "397868abca9922c906b6c8ee2409afacbf8dba10d37db3a757e26d49fbff173f",
+    "hosted-guest-resource.jsonl": "6ff2671235500076307fa165b15cc82cfde26766d92bd5469489347af8cdba8b",
+    "native-side-panel.png": "99bce056c3ceafd192bf6a16ade1299621807c7a363ab3c98e1d910dc04cb4b9",
+    "normal-target-after-open.png": "c939d4f6417b874eefffbe4a8c9bd1cf05088fe2b42ab7a7e13c65d79a024fd2"
+  },
+  "screenshot_review": "Both retained images were visually inspected and contain only the generic guest side panel and demo article/open-panel response. They were captured before the native exercise and are setup evidence, not failure-time evidence.",
+  "external_raw_scratch": "/Volumes/Samsung2TB/code/.stabilization-scratch/showcase-reveal-native/run37284490515"
+}

@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "task": "One guarded hosted native retest of D142 and D42 EXIT case",
+  "status": "one_native_run_terminal; no_retry",
+  "run_id": 37284490515,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37284490515",
+  "case": "showcase-stale-admin",
+  "runner": "macos-15",
+  "terminal_result": "failure at select_B_card (select_B_card_failed), after four earlier bounded cases passed",
+  "resource_result": "package and browser valid; guest child failed; resourceInvalid=false",
+  "artifact": {
+    "ci_run_id": 37283516703,
+    "artifact_id": 11333477364,
+    "source_sha": "6e8b8b96753bb81a2b2e7a30f63a2d9706bd2ae9",
+    "version": "0.2.266",
+    "tree_sha256": "b476277fd72415309de621eb04fcc2ef845eb31669fc6299cdc1ebd9595d5054",
+    "github_digest": "sha256:c8f02af10c09b9051483383212ff1e7271bb5797a467a92449a75bc6c2d4953e"
+  },
+  "passed": [
+    "Guest gate: Scrape visible and admin Showcase hidden.",
+    "Real admin sign-in and device organization case marked pass.",
+    "Genuine A EXIT relay was released while B was active and rejected; B remained picking.",
+    "A was cancelled and B started on the same page with one overlay."
+  ],
+  "organization_observations": {
+    "admin_role_verified": true,
+    "picker_available": true,
+    "picker_has_selection": false,
+    "selection_required": true,
+    "visible_option_count": 55,
+    "exact_match_count": 1,
+    "exact_visible_match_count": 1,
+    "target_in_viewport": false,
+    "target_center_hit": false,
+    "storage_has_uuid": true,
+    "storage_name_matches": true,
+    "rendered_email_matches": true,
+    "rendered_role_matches": true,
+    "rendered_profile_matches": true,
+    "rendered_organization_matches": true
+  },
+  "verdict_limits": "Organization status and diagnostic signals conflict; do not infer D142 closure or root cause. The EXIT path has one native bounded pass, not full D42 closure. B-card selection and later showcase actions failed or were not reached; ITEM/RESULT, injected cancellation, deferred install, reinjection/listener count, and nonadmin gating remain unverified. No retry or inventory/defect edit.",
+  "secret_cleanup": "Both ephemeral repository secret names were absent before creation, deleted immediately after terminal status, and confirmed absent afterward. No credential values or account identifiers were retained.",
+  "evidence_directory": "docs/stabilization/evidence/showcase-reveal-native/run37284490515",
+  "raw_external_scratch": "/Volumes/Samsung2TB/code/.stabilization-scratch/showcase-reveal-native/run37284490515"
+}

@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0042",
+  "status": "unverified",
+  "stage": "select_B_card",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "source_sha": "6e8b8b96753bb81a2b2e7a30f63a2d9706bd2ae9",
+    "run_id": 37283516703,
+    "artifact_id": 11333477364,
+    "tree_sha256": "b476277fd72415309de621eb04fcc2ef845eb31669fc6299cdc1ebd9595d5054",
+    "version": "0.2.266"
+  },
+  "cases": [
+    {
+      "id": "guest_nonchat_control_and_showcase_gate",
+      "status": "pass",
+      "evidence": {
+        "scrape_visible": true,
+        "showcase_absent": true
+      }
+    },
+    {
+      "id": "real_admin_signin_and_device_organization",
+      "status": "pass",
+      "evidence": {
+        "rendered": true
+      }
+    },
+    {
+      "id": "genuine_A_exit_relay_rejected_while_B_active",
+      "status": "pass",
+      "evidence": {
+        "old_session_id": "83db7dae-1b0f-4c47-93ad-2aa2d8f0fd9f",
+        "relay_tab_id": 193029950,
+        "relay_document_id": "106E87CA52F17609F19C0A632A2E1ABB",
+        "B_picking": true
+      }
+    },
+    {
+      "id": "same_page_cancel_A_start_B",
+      "status": "pass",
+      "evidence": {
+        "page_unchanged": true,
+        "one_overlay": true
+      }
+    }
+  ],
+  "unverified_criteria": [
+    "stale A ITEM_DETECTED, RESULT, and EXIT held and released after B starts",
+    "delayed A cancellation injection after B starts",
+    "deferred installation across replacement",
+    "new content-script context reinjection and exact listener count",
+    "nonadmin role gating"
+  ],
+  "failure_code": "select_B_card_failed",
+  "organization_diagnostic": {
+    "substage": "organization_identity_compare",
+    "observations": {
+      "admin_role_verified": true,
+      "picker_available": true,
+      "picker_has_selection": false,
+      "selection_required": true,
+      "menu_open": true,
+      "visible_option_count": 55,
+      "exact_match_count": 1,
+      "exact_visible_match_count": 1,
+      "target_in_viewport": false,
+      "target_center_hit": false,
+      "archive_filter": "unknown",
+      "storage_has_uuid": true,
+      "storage_name_matches": true,
+      "rendered_email_matches": true,
+      "rendered_role_matches": true,
+      "rendered_profile_matches": true,
+      "rendered_organization_matches": true
+    }
+  },
+  "auth_stage": "admin_extension_auth_completion"
+}
