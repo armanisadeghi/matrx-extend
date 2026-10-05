@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-05T09:06:28.329612+00:00",
+  "updated_at": "2026-10-05T18:43:31.038094+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -35153,10 +35153,10 @@
           ],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": "37267858358",
-              "evidence": ".research/public205-guest-native.json",
-              "detail": "Google public0.2.205 CRX, verified hash/identity and immutable adapted unpacked tree, completed fresh signed-out and post-panel-reload grounded answers; both realHTTP200; all3resourcejournals valid with zero unsafeevents. Headless nativeSIDE_PANEL; not actualStoreinstalled lifecycle or exhaustiveChat. Same-conversation follow-up and current-backend pair explicitly remain unverified; source7f0a02d2 awaits fresh independent review/full CI/guarded browser run. Existing first+reload proof retained, no new pass."
+              "status": "pass",
+              "run_id": "37356729984",
+              "evidence": ".research/guest-turn-boundary-native.json",
+              "detail": "Bounded public0.2.205 adaptedunpackedCRX: opening, SAME-conversation follow-up and post-reload newconversation all actualHTTP200, distinctgrounded terminal_answer; wire samefingerprint/is_new=false then newfingerprint/is_new=true. Before/afterserver624b0cee540b8d6d957ac008af8773cd285bd29c stable; exactartifactunchanged and all3journalsvalid. Rootreadoriginalreceipt,alljournals,followupscreenshot. Not actualStoreinstalled/returningallowance or wholeChat."
             }
           },
           "defect_verification": {
@@ -35218,6 +35218,16 @@
               },
               "superseded_at": "2026-10-05T09:06:28.329612+00:00",
               "reason": "Explicit daily first-message plus SAME-conversation follow-up requirement added; preserve prior bounded reload evidence."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37267858358",
+                "evidence": ".research/public205-guest-native.json",
+                "detail": "Google public0.2.205 CRX, verified hash/identity and immutable adapted unpacked tree, completed fresh signed-out and post-panel-reload grounded answers; both realHTTP200; all3resourcejournals valid with zero unsafeevents. Headless nativeSIDE_PANEL; not actualStoreinstalled lifecycle or exhaustiveChat. Same-conversation follow-up and current-backend pair explicitly remain unverified; source7f0a02d2 awaits fresh independent review/full CI/guarded browser run. Existing first+reload proof retained, no new pass."
+              },
+              "superseded_at": "2026-10-05T18:43:31.038094+00:00"
             }
           ]
         },
@@ -35319,9 +35329,10 @@
             "urgent-context-rules-fixed-ci-01",
             "37239792825",
             "37240870438",
-            "37267858358"
+            "37267858358",
+            "37356729984"
           ],
-          "retest_status": "0.2.205 published-public04:43UTC Oct5. PublicCRX run37267858358 verifies fresh and post-reload guest HTTP200 groundedanswers under valid resources. Candidate205 separately passed returning exhaustedguest402 remedy/noRetry. ActualStoreinstalled lifecycle/returningprofile and broaderChat remain open; guestcell remainspartial."
+          "retest_status": "T10 bounded publicCRX205 first/same-conversation/reload pass37356729984 server624b0cee. D144oracleclosed. ActualStoreinstalled/returningguest lifecycle and broaderChat remainunverified; wholefeatureguestcell remains partial."
         },
         "member": {
           "test_status": "unverified",

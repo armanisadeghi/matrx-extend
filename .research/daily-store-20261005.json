@@ -18,12 +18,14 @@
     "meaning": "Version only, not guest acceptance"
   },
   "guest_acceptance": {
-    "status": "opening_pass_followup_unverified_acceptance_defect_in_fix",
-    "evidence": ".research/daily-guest-same-conversation-native.json",
-    "run_id": 37288331617,
-    "server_sha_before_and_after": "d53357976b4bd29f671c2f408c9f02c9dba08c9e",
-    "gap": "Follow-up was judged against the prior completed turn while streaming; no follow-up wire or terminal reply established. EXT-D-0144 tracks the acceptance defect. No product regression inferred.",
-    "next": "Reviewed repair3c1633a5, freshpeer5df905a8, fullCI37355629310 green; live one guarded publicCRX205 run37356729984 source03009ba0. No result yet."
+    "status": "bounded_browser_pass",
+    "run_id": 37356729984,
+    "evidence": ".research/guest-turn-boundary-native.json",
+    "public_version": "0.2.205",
+    "server_sha_before_and_after": "624b0cee540b8d6d957ac008af8773cd285bd29c",
+    "verified": "First, same-conversation and post-reload newconversation actualHTTP200,groundedterminalreply; samewireID/is_new=false; all3resourcejournalsvalid",
+    "limits": "Headless adaptedunpacked publicCRX, not actualStoreinstalled lifecycle/returningguest or overallhealth",
+    "next": "Containedsurface Showcase diagnostic native37357780854 active. D144 closes with reviewed source+CI+native."
   },
   "release": "No newer successful hosted Store artifact found at 18:16 UTC; no upload or submission. Machine manual build/release restrictions retained.",
   "current_server_version_only": {

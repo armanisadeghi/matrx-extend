@@ -14,13 +14,14 @@
   "actual": "Confirmed oracle boundary: full-history classifier used the completed opening run before a new follow-up run existed. Product follow-up outcome remains unverified.",
   "severity": "S2: blocks accurate public guest follow-up verification",
   "priority": "P1: public no-login regression acceptance",
-  "state": "fixed",
+  "state": "closed",
   "owner": "guest_followup_turn_boundary_fix",
   "evidence": [
     ".research/daily-guest-same-conversation-native.json",
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/37288331617",
     ".research/guest-followup-turn-boundary-fix.json",
-    ".research/guest-turn-boundary-independent-review.json"
+    ".research/guest-turn-boundary-independent-review.json",
+    ".research/guest-turn-boundary-native.json"
   ],
   "transition_history": [
     {
@@ -46,8 +47,26 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Source3c1633a5 checkpoints each send; causal RED then25GREEN; independent reviewer5df905a8 source PASS/native UNVERIFIED. FullCI and native retest pending."
+    },
+    {
+      "at": "2026-10-05T18:43:09.834503+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Native37356729984 reproduces prior-run/pending-new-run boundary as in_progress, then reaches distinct new-run terminal_answer; first/same/reload all actualHTTP200/grounded terminal, valid journals."
+    },
+    {
+      "at": "2026-10-05T18:43:09.834503+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original reproduction and surrounding first/reload cases pass; source3c1633a5, independent5df905a8, greenCI37355629310; rootread originalreceipt,threejournals and actualfollowupscreenshot."
     }
   ],
   "closure_requirement": "Meaningful prior-completed/new-pending RED-to-GREEN guard at actual oracle, fresh independent review/fullCI, native first/same-conversation/reload acceptance with valid resource and wire evidence.",
-  "review_ruling": "Synthetic preexisting global alert remains fail-fast. Reviewer found it unreachable on the successful-opening acceptance path: opening gate requires no alert and no voice/load operation occurs between sends. Retain real send error detection; no speculative suppression."
+  "review_ruling": "Synthetic preexisting global alert remains fail-fast. Reviewer found it unreachable on the successful-opening acceptance path: opening gate requires no alert and no voice/load operation occurs between sends. Retain real send error detection; no speculative suppression.",
+  "verification": {
+    "run_id": 37356729984,
+    "public_version": "0.2.205",
+    "server_sha": "624b0cee540b8d6d957ac008af8773cd285bd29c",
+    "scope": "Oracle defect closed; no full Chat/product or actual Store-installed lifecycle claim."
+  }
 }
