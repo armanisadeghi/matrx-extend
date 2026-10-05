@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
-  "state": "submitted_pending_review",
+  "state": "published_pending_installed_acceptance",
   "defect_id": "EXT-D-0112",
   "classification": "routine bug fix; approved manifest policy surface unchanged",
-  "published_version": "0.2.176",
-  "pending_version": "0.2.205",
+  "published_version": "0.2.205",
+  "pending_version": null,
   "pending_candidate_defect": "0.2.181 review cancelled only after its 403-only guest allowance classifier was shown to miss the deployed HTTP 402 refusal; version size was not a reason.",
   "candidate": {
     "version": "0.2.205",
@@ -46,12 +46,14 @@
     "limit": "activeOrganizationPresent string-only probe returned false on current object-valued storage key; organization persistence remains unverified; not a product org defect."
   },
   "latest_dashboard_check": {
-    "observed_at_utc": "2026-10-05T04:07:14Z",
-    "method": "Primary Package page reached after successful existing-account reauthentication; Published176, Pending205, Upload disabled.",
-    "published_version": "0.2.176",
-    "pending_version": "0.2.205",
-    "status": "Pending review",
-    "action": "Preserve pending205. Exactcandidate205 currentbackend2e24fa85 native37247813922 passedfirst/reload groundedHTTP200; actualStoreinstallation pending. No wholeChat/allowance/newversionhealthclaim."
+    "observed_at_utc": "2026-10-05T04:43:13Z",
+    "method": "Authenticated primary Package page refreshed through Chrome native UI.",
+    "status": "Published - public",
+    "published_version": "0.2.205",
+    "draft_version": "0.2.205",
+    "pending_version": null,
+    "upload_new_package_enabled": true,
+    "action": "Verify actual installed update and returning guest behavior; no overall health claim."
   },
   "publisher_access": {
     "observed_at_utc": "2026-10-05T04:07:14Z",
@@ -75,5 +77,11 @@
     "overall": "resource-invalid: CPU_PENDING then childexit before recovery; no new acceptance promotion",
     "backend": "before140626f9, after5b23b0bc; deploymentchanged duringrun",
     "report": ".research/guest205-current-server-native.json"
+  },
+  "publication": {
+    "observed_at_utc": "2026-10-05T04:43:13Z",
+    "status": "Published - public",
+    "version": "0.2.205",
+    "installed_check": "Chrome extension details:0.2.205, sourceChromeWebStore, disabledstatepreserved. Returningguestdata notcleared; functionalcheck deferredwhilelocalsystemdiskbelow20GiBfloor."
   }
 }
