@@ -1,1 +1,166 @@
-{"conclusion":"failure","createdAt":"2026-10-05T03:23:37Z","databaseId":37259260097,"headSha":"a647d5078dc4a861c707145ff5da5799700bbc8f","jobs":[{"completedAt":"2026-10-05T03:30:13Z","conclusion":"failure","databaseId":111602806596,"name":"guest","startedAt":"2026-10-05T03:23:47Z","status":"completed","steps":[{"completedAt":"2026-10-05T03:23:49Z","conclusion":"success","name":"Set up job","number":1,"startedAt":"2026-10-05T03:23:47Z","status":"completed"},{"completedAt":"2026-10-05T03:23:54Z","conclusion":"success","name":"Run actions/checkout@v4","number":2,"startedAt":"2026-10-05T03:23:49Z","status":"completed"},{"completedAt":"2026-10-05T03:23:55Z","conclusion":"success","name":"Run actions/setup-node@v4","number":3,"startedAt":"2026-10-05T03:23:54Z","status":"completed"},{"completedAt":"2026-10-05T03:24:00Z","conclusion":"success","name":"Require a successful published release artifact","number":4,"startedAt":"2026-10-05T03:23:55Z","status":"completed"},{"completedAt":"2026-10-05T03:24:00Z","conclusion":"success","name":"Require exactly one artifact provenance mode","number":5,"startedAt":"2026-10-05T03:24:00Z","status":"completed"},{"completedAt":"2026-10-05T03:24:00Z","conclusion":"success","name":"Require selected authentication before browser setup","number":6,"startedAt":"2026-10-05T03:24:00Z","status":"completed"},{"completedAt":"2026-10-05T03:24:01Z","conclusion":"success","name":"Disable indexing on the disposable hosted VM","number":7,"startedAt":"2026-10-05T03:24:00Z","status":"completed"},{"completedAt":"2026-10-05T03:24:34Z","conclusion":"success","name":"Wait for measured package readiness","number":8,"startedAt":"2026-10-05T03:24:01Z","status":"completed"},{"completedAt":"2026-10-05T03:25:57Z","conclusion":"success","name":"Prepare pinned browser driver under an owned permit","number":9,"startedAt":"2026-10-05T03:24:34Z","status":"completed"},{"completedAt":"2026-10-05T03:26:30Z","conclusion":"success","name":"Wait for measured browser readiness","number":10,"startedAt":"2026-10-05T03:25:57Z","status":"completed"},{"completedAt":"2026-10-05T03:27:53Z","conclusion":"success","name":"Prepare full Chromium under a fresh owned permit","number":11,"startedAt":"2026-10-05T03:26:30Z","status":"completed"},{"completedAt":"2026-10-05T03:28:27Z","conclusion":"success","name":"Wait for measured acceptance readiness","number":12,"startedAt":"2026-10-05T03:27:53Z","status":"completed"},{"completedAt":"2026-10-05T03:30:06Z","conclusion":"failure","name":"Exercise the selected Chrome side-panel case","number":13,"startedAt":"2026-10-05T03:28:27Z","status":"completed"},{"completedAt":"2026-10-05T03:30:06Z","conclusion":"skipped","name":"Measure owned Chromium startup during the existing guard interval","number":14,"startedAt":"2026-10-05T03:30:06Z","status":"completed"},{"completedAt":"2026-10-05T03:30:08Z","conclusion":"success","name":"Upload browser result and native-panel screenshots","number":15,"startedAt":"2026-10-05T03:30:06Z","status":"completed"},{"completedAt":"2026-10-05T03:30:08Z","conclusion":"skipped","name":"Post Run actions/setup-node@v4","number":29,"startedAt":"2026-10-05T03:30:08Z","status":"completed"},{"completedAt":"2026-10-05T03:30:08Z","conclusion":"success","name":"Post Run actions/checkout@v4","number":30,"startedAt":"2026-10-05T03:30:08Z","status":"completed"},{"completedAt":"2026-10-05T03:30:10Z","conclusion":"success","name":"Complete job","number":31,"startedAt":"2026-10-05T03:30:08Z","status":"completed"}],"url":"https://github.com/armanisadeghi/matrx-extend/actions/runs/37259260097/job/111602806596"}],"status":"completed","updatedAt":"2026-10-05T03:30:14Z","url":"https://github.com/armanisadeghi/matrx-extend/actions/runs/37259260097"}
+{
+  "conclusion": "failure",
+  "createdAt": "2026-10-05T03:23:37Z",
+  "databaseId": 37259260097,
+  "headSha": "a647d5078dc4a861c707145ff5da5799700bbc8f",
+  "jobs": [
+    {
+      "completedAt": "2026-10-05T03:30:13Z",
+      "conclusion": "failure",
+      "databaseId": 111602806596,
+      "name": "guest",
+      "startedAt": "2026-10-05T03:23:47Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completedAt": "2026-10-05T03:23:49Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "startedAt": "2026-10-05T03:23:47Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-05T03:23:54Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@v4",
+          "number": 2,
+          "startedAt": "2026-10-05T03:23:49Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-05T03:23:55Z",
+          "conclusion": "success",
+          "name": "Run actions/setup-node@v4",
+          "number": 3,
+          "startedAt": "2026-10-05T03:23:54Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-05T03:24:00Z",
+          "conclusion": "success",
+          "name": "Require a successful published release artifact",
+          "number": 4,
+          "startedAt": "2026-10-05T03:23:55Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-05T03:24:00Z",
+          "conclusion": "success",
+          "name": "Require exactly one artifact provenance mode",
+          "number": 5,
+          "startedAt": "2026-10-05T03:24:00Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-05T03:24:00Z",
+          "conclusion": "success",
+          "name": "Require selected authentication before browser setup",
+          "number": 6,
+          "startedAt": "2026-10-05T03:24:00Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-05T03:24:01Z",
+          "conclusion": "success",
+          "name": "Disable indexing on the disposable hosted VM",
+          "number": 7,
+          "startedAt": "2026-10-05T03:24:00Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-05T03:24:34Z",
+          "conclusion": "success",
+          "name": "Wait for measured package readiness",
+          "number": 8,
+          "startedAt": "2026-10-05T03:24:01Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-05T03:25:57Z",
+          "conclusion": "success",
+          "name": "Prepare pinned browser driver under an owned permit",
+          "number": 9,
+          "startedAt": "2026-10-05T03:24:34Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-05T03:26:30Z",
+          "conclusion": "success",
+          "name": "Wait for measured browser readiness",
+          "number": 10,
+          "startedAt": "2026-10-05T03:25:57Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-05T03:27:53Z",
+          "conclusion": "success",
+          "name": "Prepare full Chromium under a fresh owned permit",
+          "number": 11,
+          "startedAt": "2026-10-05T03:26:30Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-05T03:28:27Z",
+          "conclusion": "success",
+          "name": "Wait for measured acceptance readiness",
+          "number": 12,
+          "startedAt": "2026-10-05T03:27:53Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-05T03:30:06Z",
+          "conclusion": "failure",
+          "name": "Exercise the selected Chrome side-panel case",
+          "number": 13,
+          "startedAt": "2026-10-05T03:28:27Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-05T03:30:06Z",
+          "conclusion": "skipped",
+          "name": "Measure owned Chromium startup during the existing guard interval",
+          "number": 14,
+          "startedAt": "2026-10-05T03:30:06Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-05T03:30:08Z",
+          "conclusion": "success",
+          "name": "Upload browser result and native-panel screenshots",
+          "number": 15,
+          "startedAt": "2026-10-05T03:30:06Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-05T03:30:08Z",
+          "conclusion": "skipped",
+          "name": "Post Run actions/setup-node@v4",
+          "number": 29,
+          "startedAt": "2026-10-05T03:30:08Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-05T03:30:08Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@v4",
+          "number": 30,
+          "startedAt": "2026-10-05T03:30:08Z",
+          "status": "completed"
+        },
+        {
+          "completedAt": "2026-10-05T03:30:10Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 31,
+          "startedAt": "2026-10-05T03:30:08Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37259260097/job/111602806596"
+    }
+  ],
+  "status": "completed",
+  "updatedAt": "2026-10-05T03:30:14Z",
+  "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37259260097"
+}
