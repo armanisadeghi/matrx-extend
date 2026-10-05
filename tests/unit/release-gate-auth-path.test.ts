@@ -58,7 +58,7 @@ describe('release.sh server-contract gate auth', () => {
   it('mints a token before the strict drift check runs in the candidate loop', () => {
     expect(releaseSh).toContain('pnpm -s catalog:tools:drift:strict');
     const mint = releaseSh.indexOf('$SKIP_CATALOG || mint_gate_auth');
-    const checks = releaseSh.indexOf('    run_checks || hard_stop');
+    const checks = releaseSh.indexOf('    if ! run_checks; then');
     expect(mint, 'the candidate loop never calls mint_gate_auth').toBeGreaterThan(-1);
     expect(mint).toBeLessThan(checks);
   });
