@@ -1975,28 +1975,6 @@
  "/crowdcast/public/status": {
   "get": []
  },
- "/cutover/final-switch/capabilities": {
-  "get": []
- },
- "/cutover/final-switch/copy-again": {
-  "post": []
- },
- "/cutover/final-switch/press": {
-  "post": [
-   "application/json"
-  ]
- },
- "/cutover/final-switch/undo": {
-  "post": [
-   "application/json"
-  ]
- },
- "/cutover/organizations/{organization_id}/copy-again": {
-  "post": []
- },
- "/cutover/tables/{table_id}/copy-again": {
-  "post": []
- },
  "/cx/conversations": {
   "get": []
  },
@@ -2945,6 +2923,21 @@
   ]
  },
  "/google-integrations/ads/report": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/business-profile/accounts/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/business-profile/locations/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/business-profile/reviews/preview": {
   "post": [
    "application/json"
   ]
@@ -8004,6 +7997,11 @@
   ],
   "delete": []
  },
+ "/v1/tables/{table}/comments": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/v1/tables/{table}/rows": {
   "get": [],
   "post": [
@@ -8029,6 +8027,12 @@
  },
  "/v1/tables/{table}/rows/{row_id}/restore": {
   "post": []
+ },
+ "/v1/tables/{table}/templates": {
+  "post": [
+   "application/json"
+  ],
+  "get": []
  },
  "/v1/tables/{table}/views": {
   "post": [

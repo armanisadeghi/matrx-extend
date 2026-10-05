@@ -7,7 +7,7 @@
 > common-docs/systems/agents/agent-tools/STATE.md).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-10-05T04:28:43.741Z
+Generated: 2026-10-05T07:00:07.212Z
 Total tools: 82
 
 ## ai
@@ -710,7 +710,7 @@ Actions:
 - entity_read / entity_write: platform records such as contacts
 - guide: arguments and examples for any action
 One call per intent, never one per field or row: {"action": "table_propose", "args": {"name": "Field Crews", "fields": [{"name": "region", "type": "text"}, {"name": "day rate", "type": "currency"}]}}; {"action": "record_write", "args": {"table_id": "<id>", "records": [{"region": "North", "day_rate": 1200}, {...}]}}; {"action": "record_read", "args": {"table_id": "<id>"}}.
-Reads span every organization the person belongs to. Tell the person `where.say` exactly. If an answer says `awaiting_approval`, say it did NOT happen, name the approvers, and stop.
+Reads span every organization the person belongs to. Tell the person `where.say` exactly. If an answer says `awaiting_approval`, name the change in ONE sentence ("The caption for <post> is waiting for your approval.") and stop; you are told when they decide.
 
 **Parameters:** `args` (object); `action` (string, required) = ["table_list","metadata_search","record_read","record_aggregate","record_write","record_delete","record_history","record_restore_version","field_propose","table_propose","form_propose","booking_propose","import_propose","dashboard_propose","pipeline_propose","document_propose","checklist_propose","capture_propose","enrich_propose","portal_propose","signature_request","subscription_propose","entity_read","entity_write","guide"]
 
