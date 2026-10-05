@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0137",
+  "lane": "independent verifier; zero source authorship",
+  "reviewed_commit": "fcc63580af3e8163ae74e9c66f2c7db224e15022",
+  "source_receipt": "docs/stabilization/evidence/member-transition/run37252919339/raw/scrape-guest-native.json",
+  "verdict_a_acceptance": {
+    "result": "PARTIAL",
+    "evidence": [
+      "The raw hosted receipt records the original immutable-send Proxy invariant error at organization selection before guest authentication or scrape cases; it is a driver failure.",
+      "The receipt says artifact version 0.2.257 while the acceptance target was 0.2.244, so it cannot establish a controlled result for EXT-D-0133.",
+      "No changed-condition native run was performed in this verification lane; native closure remains unverified."
+    ],
+    "d133_visibility": "unresolved and outside this repair; do not claim native acceptance"
+  },
+  "verdict_b_doctrine_quality": {
+    "result": "PASS for local repair and regression guard",
+    "descriptor_faithful_mutation": {
+      "method": "Copied the recorder, focused test, settings-panel driver, and acceptance driver under /Volumes/Samsung2TB/code/.stabilization-scratch; restored a Proxy whose target is the panel and whose get trap substitutes the wrapped send.",
+      "result": "Expected RED: 4 passed, 2 failed. The immutable frozen panel regression failed with the send read-only/non-configurable invariant in the actual Scrape setup seam; the frozen-method receiver test also failed."
+    },
+    "fixed_focused_test": {
+      "command": "node --test tests/browser/panel-transition-recorder.test.mjs",
+      "result": "6 passed, 0 failed"
+    },
+    "review": [
+      "The facade has a separate extensible target, so it does not mutate or proxy the original panel object.",
+      "send uses Reflect.apply with the original panel receiver and forwards the same argument list; the focused test checks receiver, successful result, rejection propagation, non-mouse calls, and pointer markers around mouse dispatches.",
+      "Other methods are read from and bound to the original panel receiver, including an immutable method; the test exercises that behavior.",
+      "Recorder output contains only event kind, elapsed time, and visibility. Tests confirm coordinates and private marker values do not enter the result, and unavailable renderer/marker/timeline conditions fail closed as unmeasured."
+    ],
+    "acceptance_weakening": "None found in the repair diff. It changes only the tracing facade and adds focused regression coverage; the acceptance path still uses the same organization selection call and subsequent assertions.",
+    "privacy": "PASS for the inspected trace path and focused assertions; no payload, coordinates, identity, or transport error is recorded.",
+    "sibling_census": "Verified repair report's claim: traceOrganizationPointers is the only send-intercepting Proxy in tests/browser; related Proxy search found no sibling wrapper with this invariant pattern."
+  },
+  "limits": [
+    "Local focused tests and descriptor-faithful mutation only; no browser, native panel, or real member account run.",
+    "Current focused tests check forwarded method/results and original receiver but do not assert strict identity preservation of the argument object or promise object. The implementation passes original args unchanged and preserves resolved/rejected behavior; strict promise identity is not provided by an async wrapper."
+  ]
+}
