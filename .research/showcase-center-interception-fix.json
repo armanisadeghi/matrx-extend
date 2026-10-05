@@ -11,7 +11,9 @@
       "Scratch-copy no-reachable-point mutant: reachable-card case failed",
       "Scratch-copy accept-obstructed-point mutant: both cases failed"
     ],
-    "mutation_method": "Source and test copied to an external-volume temporary directory; working source was not weakened."
+    "mutation_method": "Source and test copied to an external-volume temporary directory; working source was not weakened.",
+    "compile_qualification": "Implementer confirmed pnpm compile ran without resource-guard journal. Its reported pass is only a local observation; it is not accepted as admitted campaign verification. Full CI and native retest remain required."
   },
-  "native_verdict": "UNVERIFIED: no browser run or heavy job in this implementation lane; parent owns resource-admitted native rerun and independent review."
+  "native_verdict": "UNVERIFIED: no native browser run in implementation lane. Prior compile observation was unguarded; see qualification. Parent owns guarded native rerun.",
+  "independent_review": ".research/showcase-click-fix-peer.json: focused6/6, nativePARTIAL/qualityPASS. Subsequent b75d519d only reorders imports and passes owned-file Biome check."
 }
