@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0133",
+  "status": "HARNESS_MODE_MISMATCH_CONFIRMED_RUNTIME_CAUSE_UNPROVEN",
+  "finding": "Scrape native acceptance silently inherits headed=false and launches --headless=new. Comparable authenticated Settings and Audit drivers explicitly pass headed:true. This is a concrete harness condition to correct before another foreground acceptance attempt; it does not prove that headless mode caused the hidden transition.",
+  "scope": "Report only. No source edits, browser launch, credentials, package change, build, release, or acceptance promotion.",
+  "evidence": {
+    "run_id": 37261674307,
+    "driver_sha": "327fd549f10199e45eb104c1a8df79be31e8c3d9",
+    "frozen_product_version": "0.2.244",
+    "frozen_product_source": "b81587021d689078ed428dafe3e15474a84c41e2",
+    "raw_receipt": "docs/stabilization/evidence/member-media/run37261674307/raw/scrape-member-native.json.txt",
+    "raw_sha256": "297fdbadc4380a61890b1e2b48a370c36519e4aca196619d85f92865a33ffb0c",
+    "source_identity": "git diff exact driver SHA against current native harness, Scrape driver, hosted runner and workflow produced no differences.",
+    "source_proof": [
+      "tests/browser/scrape-guest-native-acceptance.mjs:935 calls runNativeSidepanelQa with no headed option.",
+      "tests/browser/native-sidepanel-qa-harness.mjs:1144 defaults headed=false; line1206 appends --headless=new.",
+      "No workflow or runner environment override supplies headed.",
+      "Executed the actual extracted spawn argument array in Node without launching: false includes --headless=new, true excludes it; asserted actual caller has no headed option.",
+      "Earlier run37258276837 driver ac7343b8 has the same omitted option/default/launch flag."
+    ],
+    "native_vs_renderer": "Viewed native-side-panel.png: 360x373 guest panel content, no Chrome frame or toolbar. captureTarget uses Page.captureScreenshot against individual targets. Browser.getWindowForTarget returning normal and chrome.windows focused booleans do not establish physical window exposure in this headless invocation. document.hasFocus may be emulated by attached Playwright; retain document.visibilityState gate.",
+    "resources": "Read all three original final journal decisions: browser valid, package valid, acceptance child_failed exit1; all resourceInvalid=false. CPU_PENDING recovered. Resource safety did not invalidate this run.",
+    "timing": {
+      "organization_return_ms": 28036.79999999993,
+      "first_hidden_ms": 28150.399999999907,
+      "delay_after_return_ms": 113.6,
+      "identity_before_ms": 28672,
+      "cleanup_before_ms": 28693,
+      "before_health_ms": 28863.399999999907,
+      "after_health_ms": 68049.79999999993
+    },
+    "comparison": "Prior run37258276837 executes auth_org_select and the same four organization mouse dispatches while remaining visible. Latest first hidden precedes identity verification, cleanup, web closure, root activation and the long health wait. Those later actions cannot originate this run's first hide; delayed native processing of earlier actions is still possible.",
+    "outcome": "Original sole exact SIDE_PANEL context survives hidden, including after trusted open and activation. Zero cases/viewports/media observations. Neither product failure nor recovery is established."
+  },
+  "ranked_hypotheses": [
+    {
+      "cause": "Headless host lifecycle differs from the intended visible Chrome acceptance environment.",
+      "prediction": "Explicit headed launch, verified from actual command line, permits the same frozen member flow to retain foreground; persistence falsifies it as a sufficient repair.",
+      "test": "One changed-condition hosted run after source guard and independent review; no unchanged rerun."
+    },
+    {
+      "cause": "Delayed organization selection/dropdown native lifecycle also occurs headed.",
+      "prediction": "Headed run still hides shortly after selection despite verified physical owner window.",
+      "test": "If headed run fails, retain pre-recovery process-owned window evidence; do not add another pointer marker loop."
+    },
+    {
+      "cause": "Foreground observation sees a surviving renderer whose native host has closed or switched.",
+      "prediction": "Physical browser frame shows panel absent while renderer target remains, or shows panel present despite hidden document state.",
+      "test": "Only a headed owned-window observation can separate these; current target PNG cannot."
+    }
+  ],
+  "proposed_change": {
+    "files": [
+      "tests/browser/scrape-guest-native-acceptance.mjs",
+      "tests/browser/native-sidepanel-qa-harness.mjs",
+      "focused native launch-mode guard"
+    ],
+    "implementation": "Pass headed:true explicitly in Scrape acceptance. At existing Browser.getBrowserCommandLine ownership verification, assert a requested headed run has no --headless or --headless=* argument; emit only requested mode, observed headless boolean and match verdict. Never emit full command line or profile path. Do not change the default for every caller.",
+    "feasibility": "Uses existing headed option, existing owned Chrome executable, existing hosted macos-15 runner and existing CDP command. No new runtime, permission, screenshot entitlement or browser approval is required by this code change; actual hosted GUI availability remains a runtime preflight observation, not assumed proof.",
+    "guards": "Execute actual caller-to-spawn seam and command-line verifier with controlled process transport. Omit headed:true and inject --headless=new into observed argv as separate mutants: both must fail. Check unrelated headless callers retain supported mode. No source-string-only test as completion.",
+    "native_test": "Keep product244/artifact11315305224, member identity/org, browser/runtime, width, resource limits and visibility/context gates fixed. Verify observed headed=true before authentication. One controlled run; successful auth foreground is a D133 discriminator, not completed Scrape acceptance. Reach existing media assertions only if foreground passes.",
+    "if_still_hidden": "Stop before any hidden-panel acceptance click. Smallest missing observation becomes the spawned Chrome process-owned browser frame with toolbar/panel boundary before recovery, plus existing renderer visibility. Current Page.captureScreenshot is insufficient. Validate any OS window-capture capability on the owned fixture first; if unavailable, report unmeasured rather than adding permissions or claiming native exposure.",
+    "toolbar_recovery": "A trusted native toolbar close/reopen is a reasonable next intervention only after a headed window and visible toolbar affordance are actually identified. Current trusted fixture open already returns success without restoring the renderer in headless mode. Do not add another open/activate loop, native coordinate guess or DOM click of a hidden panel. Keep it out of the single-variable headed experiment."
+  },
+  "siblings": {
+    "explicit_headed": [
+      "settings-d87-native-acceptance.mjs:351",
+      "settings-desktop-native-acceptance.mjs:466",
+      "audit-key-native-acceptance.mjs:189"
+    ],
+    "class_finding": "The shared default allows callers named native acceptance to run headless. Other omitted/conditional callers exist, but their physical foreground contracts were not audited in this lane; no blanket claim of defects or broad change."
+  },
+  "limits": [
+    "No native causal reproduction or repaired acceptance is claimed.",
+    "The mode conclusion is proven by exact driver source and executed launch-array evaluation, not a preserved historical full command-line receipt.",
+    "No native window screenshot mechanism was implemented or assumed to have permissions.",
+    "No change to product, D133 state, Store or coverage."
+  ]
+}
