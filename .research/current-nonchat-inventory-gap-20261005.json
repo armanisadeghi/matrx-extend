@@ -1,0 +1,21 @@
+{
+  "audit_date": "2026-10-05",
+  "source_baseline_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
+  "current_source_sha": "9298dbd3",
+  "finding": "missing_capture_queue_action_inventory",
+  "feature": {
+    "existing_feature_id": "EXT-F-1001",
+    "name": "Navigate sidepanel tabs and recover inaccessible selection",
+    "existing_control_id": "EXT-F-1001-C02",
+    "existing_control": "Capture needs-you badge",
+    "existing_case_ids": ["EXT-F-1001-T04", "EXT-F-1001-T05", "EXT-F-1001-T06"]
+  },
+  "gap": "The inventory covers the Capture badge/navigation but omits the Capture view's queue actions: run waiting items in the browser, open a needs-drive item in a focused tab, confirm capture after the person finishes, and skip with an optional note. These are distinct user controls/procedures with direct browser and backend effects.",
+  "source_evidence": [
+    "src/features/capture-ladder/NeedsYourBrowserView.tsx: runAll and Run these in my browser button",
+    "src/features/capture-ladder/NeedsYourBrowserView.tsx: startDriving and Open it button",
+    "src/features/capture-ladder/NeedsYourBrowserView.tsx: finishDriving and I'm done, capture it button",
+    "src/features/capture-ladder/NeedsYourBrowserView.tsx: giveUpOn, This one won't work button, optional note textarea"
+  ],
+  "bounded_check": "Compared the current Capture view source with all existing EXT-F-1001 controls and cases, plus inventory feature names/entrypoints for capture/browser surfaces. EXT-F-1007 is the separate current-page scrape workflow and does not cover the cross-organization needs-your-browser handoff queue. This report is source inventory evidence only; no runtime behavior is claimed."
+}
