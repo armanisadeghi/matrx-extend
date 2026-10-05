@@ -842,7 +842,12 @@ async function observeAuthenticatedPanelHost({ cdp, panel, rootTargetId, panelUr
           root_window_focused: host?.focused ?? null,
           root_window_state: ['normal', 'minimized', 'maximized', 'fullscreen'].includes(host?.state) ? host.state : null,
           panel_unique: panels.length === 1,
-          panel_in_root_window: panel && root ? panel.windowId === root.windowId : null,
+          // SIDE_PANEL contexts can report windowId -1 even when physically open.
+          // A sentinel or missing identifier cannot establish a different host.
+          panel_in_root_window: panel && root &&
+            Number.isInteger(panel.windowId) && panel.windowId >= 0 &&
+            Number.isInteger(root.windowId) && root.windowId >= 0
+              ? panel.windowId === root.windowId : null,
           focused_window_count: windows.filter(win => win.focused).length,
           window_count: windows.length
         };
