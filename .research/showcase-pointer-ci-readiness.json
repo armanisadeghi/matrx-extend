@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-10-05T20:55:22.100864+00:00",
+  "observed_at": "2026-10-05T21:00:26.747681+00:00",
   "prior_turn_classification": "progress: reusable agent workflow pushed, D143 diagnostic reviewed and evidence recovered",
   "source": "48b25d43",
   "peer": "9d32a81f",
@@ -17,11 +17,26 @@
     "source": "915768c515e3cf6a7e803ec2dde024e64cae0eb9",
     "resource_job": "success",
     "checks_job": 111968376302,
-    "status": "queued",
+    "status": "completed_failure",
     "runner_labels": ["ubuntu-latest"],
     "runner_name": "",
-    "observation": "GitHub API confirmed queued; no replacementrun launched."
+    "observation": "Authoritative job annotation: runner acquisition failed. No code test executed in this job; not a product failure.",
+    "checks_conclusion": "cancelled",
+    "annotation": "The job was not acquired by Runner of type hosted even after multiple attempts"
   },
   "newer_run": 37372437258,
-  "next": "Wait originalqueuedmainrun or newer successfulmainrun includingdiagnostic; verifyartifact then ONE guardedShowcase. No temporarysecretsstaged."
+  "next": "Observe latest automatic main-push CI; require complete green artifact before native. Do not blindly redispatch obsolete run.",
+  "latest_auto_main_run": {
+    "id": 37373109197,
+    "source": "89c8875dbc104f188931495e658c71cc13836d7c",
+    "status": "pending"
+  },
+  "newer_run_status": "37372437258 checks queued; resource guard succeeded",
+  "procedure_work": {
+    "proposal_commit": "2c7df194",
+    "review_commit": "ed2cfc6a",
+    "correction_commit": "b3b377ec",
+    "runtime": "unverified",
+    "fresh_review": "pending"
+  }
 }
