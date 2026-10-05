@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "artifact_type": "inventory-case-procedure-patch",
+  "task_id": "contained-procedure-gap-20261005",
+  "patch_id": "contained-procedure-gap-20261005",
+  "source": {
+    "source_inventory": "docs/stabilization/inventory.json",
+    "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
+    "scope": "Design-only executable procedure for one existing Chrome-local, non-Chat/non-Pilot case. No inventory, coordinator, source, or runtime result changes.",
+    "source_files_reviewed": [
+      "docs/stabilization/PLAN.md",
+      "docs/stabilization/inventory.json",
+      ".research/tool-procedures-next-batch.json",
+      "src/features/tools/ToolsView.tsx",
+      "src/lib/tools/handlers/canonical-mergers.ts",
+      "src/lib/tools/handlers/browser-data.ts",
+      "types/tool-catalog.json"
+    ]
+  },
+  "selectedFeatureIDs": ["EXT-F-4164"],
+  "shared_setup": {
+    "build_profile_reload": [
+      "Follow docs/stabilization/PLAN.md resource admission and build/import preflight. Select a current imported development artifact from its receipt set, not by folder name. Verify ci-receipt.json, provenance.json, import-status.json, local-dev-receipt.json agree on source SHA, workflow run/attempt, artifact ID/digest, extension ID/version, and tree hash; compare the loaded chrome-mv3 tree to the receipt. Stop if any identity/hash differs.",
+      "Record chrome://version profile path and chrome://extensions extension ID/version/Loaded from path. Load the receipt-bound chrome-mv3 folder if needed; reload the extension, close/reopen the side panel, then reload the selected tab. Run the case once warm and once after that reload; do not change account role between runs."
+    ],
+    "manual_surface": [
+      "Use an existing signed-in member profile and repeat with an existing signed-in admin profile. In Tools, locate chrome_bookmarks, expand its argument form, enter the JSON specified below, select Run, and record the complete inline result.",
+      "ToolsView manual Run skips the permission gate. This procedure checks local handler output only; it does not establish Ask/Act dispatcher authorization or a permission-denial result. Do not alter permissions to manufacture a denial."
+    ],
+    "fixture": "Use a dedicated disposable Chrome profile with a uniquely named folder `Matrx procedure fixture 20261005` and exactly two public bookmarks in it: https://example.org/?matrx-bookmark-fixture=alpha titled `Matrx Bookmark Fixture Alpha 20261005`, and https://example.org/?matrx-bookmark-fixture=beta titled `Matrx Bookmark Fixture Beta 20261005`. Create them through Chrome's bookmark UI, then record the folder ID from the returned tree. Do not use or inspect the everyday profile. After both role runs, delete only the fixture folder and verify the two fixture entries are gone."
+  },
+  "cases": {
+    "EXT-F-4164-T01": {
+      "feature_id": "EXT-F-4164",
+      "title": "Controlled manual execution: chrome_bookmarks",
+      "control_ids": ["EXT-F-4164-C01", "EXT-F-4164-C02", "EXT-F-4164-C03"],
+      "modes": ["member", "admin"],
+      "design_status": "procedure-ready-unverified",
+      "preconditions": [
+        "Complete shared build/profile/reload setup and record the fresh artifact receipt and runtime identity.",
+        "Seed the isolated profile with exactly the two named synthetic bookmarks; retain their actual Chrome folder ID for the tree query.",
+        "Use an existing signed-in member, then an existing signed-in admin profile; never promote or modify roles."
+      ],
+      "steps": [
+        "Warm member run: in Tools execute `chrome_bookmarks` with {\"action\":\"search\",\"query\":\"Matrx Bookmark Fixture Alpha 20261005\",\"limit\":10}. Record inline JSON.",
+        "Require the result to include the exact alpha title and alpha URL, with `count` equal to the returned `bookmarks` array length and no more than 10. Execute {\"action\":\"search\",\"query\":\"Matrx Bookmark Fixture Beta 20261005\",\"limit\":10} and require the beta fixture title and URL.",
+        "Exercise the source-defined search missing-argument error with {\"action\":\"search\"}; record the returned error. Do not count the catalog's optional `query` schema as proof this branch succeeds: handler source explicitly returns `{ok:false, reason:\"'query' required for search\"}`.",
+        "Execute tree scope with {\"action\":\"tree\",\"folder_id\":\"<recorded actual fixture folder ID>\",\"max_depth\":3}. Require the returned subtree to contain exactly the two synthetic fixture URLs/titles; record actual shape and any unrelated nodes without assuming root-tree structure.",
+        "Reload the extension, reopen Tools, and reload the target tab as specified in shared setup. Repeat both positive searches and the scoped tree query with the same fixture values; repeat the missing-query case.",
+        "Repeat the complete warm and post-reload sequence in the existing admin profile using the same isolated fixture if that profile can access it; otherwise seed the same fixture independently and record its actual folder ID. Do not use another user's profile data.",
+        "Delete only the named fixture folder in each seeded profile and verify its two fixture entries no longer appear in the scoped tree. Record cleanup outcome."
+      ],
+      "expected": [
+        "Search returns the matching synthetic bookmark with its exact title and URL, reports `count` no greater than the requested limit, and surfaces `total_match` as the Chrome search match count. Each synthetic query is unique to the fixture.",
+        "Tree action queries the specified folder subtree and maps nodes to id/title/url/date_added/children, respecting max_depth; the two seeded fixture bookmarks appear. No assertion is made about browser root folder structure.",
+        "Search without query returns the explicit handler error requiring `query`; it does not silently return a successful empty result.",
+        "Unavailable Chrome bookmarks capability or Chrome API rejection is recorded as an explicit error/failure, never converted into a pass. A missing/deleted folder ID is not replaced with a guessed ID and is not a success.",
+        "After extension reload, the same fixture results remain observable. Cleanup removes only the dedicated fixture folder and its children."
+      ],
+      "dimensions": [
+        "warm",
+        "search-alpha",
+        "search-beta",
+        "missing-query-error",
+        "scoped-tree",
+        "extension-reload",
+        "cleanup"
+      ],
+      "auth_notes": "Inventory applicability: guest=false because Tools UI requires sign-in; the inventory assigns guest negative access to the Tools UI feature. Member=true and admin=true. Manual Run skips permission gates, so no guest denial or dispatcher authorization claim is made by this case.",
+      "source_evidence": [
+        "docs/stabilization/inventory.json: EXT-F-4164 and EXT-F-4164-T01",
+        "src/lib/tools/handlers/canonical-mergers.ts: bookmarks action dispatch and required query error",
+        "src/lib/tools/handlers/browser-data.ts: search result fields, tree/subtree selection, depth trimming and unavailable-API response",
+        ".research/tool-procedures-next-batch.json: receipt-bound build/reload and isolated browser-data fixture procedure"
+      ],
+      "limits": [
+        "Design only; no build, browser, tool execution, or runtime pass was performed.",
+        "Procedure verifies manual handler behavior; dispatcher authorization remains unverified here.",
+        "Catalog schema marks query optional while handler requires it for search; record both the observed explicit error and schema drift for later reconciliation. Do not alter inventory as part of this proposal.",
+        "Chrome bookmark search can match title/URL/folder metadata beyond the seeded node; if fixture results contain extra matching rows, record them and inspect only within the disposable profile rather than assuming exact total_match=1."
+      ]
+    }
+  },
+  "ambiguities_and_limits": [
+    "Guest applicability remains as currently inventoried; guest access denial is outside this case and belongs to the Tools UI access case.",
+    "The proposal names only existing feature/case/control IDs and does not assign test status or claim acceptance evidence.",
+    "Fixture folder ID is intentionally captured at execution time; no fabricated ID or fixture output is asserted."
+  ]
+}
