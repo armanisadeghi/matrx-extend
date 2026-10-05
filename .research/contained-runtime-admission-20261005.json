@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "report_id": "contained-runtime-admission-20261005",
+  "date": "2026-10-05",
+  "scope": "Read-only admission for one non-Chat native test using an existing receipt-bound artifact and isolated signed-in profile; no browser, build, test, credential, or personal-data access.",
+  "verdict": "NOT_ADMISSIBLE_NOW",
+  "candidate": {
+    "preferred_surface": "EXT-F-4164 chrome_bookmarks",
+    "reason": "Inventory procedure is self-contained and limits reads to synthetic public bookmarks in an isolated profile; an existing settings-native procedure is the fallback.",
+    "remote_artifact_lead": {
+      "ci_run": "37355629310",
+      "artifact_id": "11365111042",
+      "version": "0.2.289",
+      "availability": "Parent coordinator reports successful CI artifact, 13.4 MB; not present in the local filesystem and no download was initiated."
+    },
+    "local_artifact": {
+      "receipt": "test-results/source-dev-build-089-takeover-20260927.json",
+      "version": "0.2.89",
+      "observed_at": "2026-09-27T07:58:10.145Z",
+      "assessment": "Too old to establish suitability against current source; the referenced unpacked output/tree was not established as present or current."
+    }
+  },
+  "blockers": [
+    "No locally available receipt-bound artifact for the reported 0.2.289 candidate; source/artifact equivalence and the exact test runner's receipt gate cannot be confirmed without the prohibited download or a new build.",
+    "No current metadata binds an isolated signed-in profile to the candidate procedure. Scratch contains historical profile directories, but their auth state and suitability are not inferred from names; current Chrome processes are running and were left untouched.",
+    "The host resource stop directory contains an unresolved stop marker for run installed205-guest-20261005-1828, reason RESOURCE_CPU_HIGH_LOAD_BUSY, healthySamples=0. This is an explicit unsafe stop state; no launch is admissible until the shared guard records recovery and grants the permit."
+  ],
+  "current_observations": {
+    "checkout_head": "e427fd9f28bf56f5fd8c588d268bd971605d43b4",
+    "internal_free_disk_gib": 26,
+    "external_free_disk_gib": 1638,
+    "resource_stop_marker_mtime": "2026-10-05T11:27:02-07:00",
+    "resource_stop_marker_run": "installed205-guest-20261005-1828",
+    "chrome_processes_observed": true,
+    "guard_ownership_or_permit": "No active permit ownership was established; stop state prevents treating absence of an active test process as admission."
+  },
+  "decision": "Do not execute bookmarks or Settings now. Resume only after the unchanged guard clears the unsafe stop state, the existing CI artifact is already locally present with a matching receipt/tree, and a disposable isolated signed-in profile is affirmatively identified for the chosen test. No threshold or inventory changes."
+}
