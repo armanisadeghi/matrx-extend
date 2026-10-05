@@ -13,7 +13,7 @@
   "actual": "Run37241717888 reproduces same foreground failure after successful member identity/nonadmin/org checks. Original target is present and sole exact target, exact SIDE_PANEL context1, owned roottrue; visibilityhidden with hasFocustrue. Diagnostic completes. No viewport/case result.",
   "severity": "S2: authenticated Scrape coverage blocked; product failure not established",
   "priority": "P2: resume after urgent guest Chat verification",
-  "state": "in-fix",
+  "state": "fixed",
   "evidence": [
     ".research/scrape-member-guard132-native.json",
     ".research/scrape-auth-panel-focus.json",
@@ -94,10 +94,16 @@
       "from": "retest-fail",
       "to": "in-fix",
       "reason": "Visible-preservation repair does not solve genuinelyhidden path. Next iteration requires fresh Astra causal native-host/auth-transition investigation after repeated independentlyreviewed source fixes failed actualacceptance; no unchanged retry or gate weakening."
+    },
+    {
+      "at": "2026-10-05T04:26:35.199719+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Explicitheadedrepair58734e03 freshpeer accepted and fullCI37262892692 passed. Runtimecause/cure unproven; oneheadedfrozen244 runauthorized."
     }
   ],
   "diagnostic_commit": "427e75a4",
-  "next_action": "Explicit headed Scrape driver plus authoritative launch-mode receipt under implementation; independent review/fullCI before ONE changed-condition native run. Preserve foreground/resource gates.",
+  "next_action": "Fix D139 with peer/fullCI then verify original foreground and surrounding full-reload behavior; no unchanged retry.",
   "fix_commits": ["44005fb4", "0e8aa6c7"],
   "hosted_ci": {
     "run_id": 37242845397,
@@ -151,17 +157,26 @@
     }
   },
   "latest_controlled_retest": {
-    "run_id": 37261674307,
+    "run_id": 37263606882,
     "version": "0.2.244",
     "artifact_id": 11315305224,
-    "outcome": "unverified",
-    "first_hidden_phase": "member_before_web_close",
+    "outcome": "eight partial cases; D139 blocks reload",
+    "first_hidden_phase": null,
     "member_and_org_verified": true,
     "viewports": [],
-    "cases": [],
+    "cases": [
+      "EXT-F-1007-T20",
+      "EXT-F-1007-T01",
+      "EXT-F-1007-T08",
+      "EXT-F-1007-T10",
+      "EXT-F-1007-T11",
+      "EXT-F-1007-T12",
+      "EXT-F-1007-T13",
+      "EXT-F-1007-T02"
+    ],
     "resource_invalid": false,
-    "physical_exposure": "unmeasured; caller defaults to headless Chrome",
-    "report": ".research/member-media-native.json"
+    "physical_exposure": "Actual headed launch verified; no physical window-frame capture",
+    "report": ".research/headed-member-native.json"
   },
   "first_auth_diagnostic": {
     "diagnosis_commit": "f5dc7b93",
@@ -189,8 +204,9 @@
     "independent_review": "cd33c4cd",
     "report": ".research/headed-launch-peer.json",
     "focused_tests": "3 passed; omitted headed and production mismatch rejected",
-    "runtime": "unverified; fullCI then one controlled headed run required",
+    "runtime": "37263606882 actual headed command line, visible auth/org and warm Scrape; failure moved to unrelated undefined empty-media assertion D139. Full reload not reached; bounded improvement only.",
     "ci_run": 37262892692,
-    "ci_status": "pending"
+    "ci_status": "completed success",
+    "ci_guard": "Root read Linux job111613998615: actual launch guard3pass0fail0skip"
   }
 }

@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-05 03:44 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-05T03:24:31.466984+00:00. 205 features · 764 cases · 1335 controls · 138 linked defect records.
+Generated 2026-10-05 04:38 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-05T04:38:29.178906+00:00. 205 features · 764 cases · 1335 controls · 139 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1219** — Pass: 85 · Partial: 72 · Fail: 2 · Unverified: 1059 · N/A: 1.
-Unverified splits into **129 explicitly marked unverified** and **930 with no result record**.
+Applicable case-by-role slots: **1219** — Pass: 85 · Partial: 78 · Fail: 2 · Unverified: 1053 · N/A: 1.
+Unverified splits into **129 explicitly marked unverified** and **924 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 92 cases without steps, 92 without expected outcomes, 28 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -24,7 +24,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
-| [Scrape](#scrape) | 1 | 6 pass · 5 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 2 partial · 0 fail · 30 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 32 unverified · 0 deferred; 0/1 full | pass 6, partial 7, fail 0, unverified 78, n/a 0 | 7 |
+| [Scrape](#scrape) | 1 | 6 pass · 5 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 8 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 32 unverified · 0 deferred; 0/1 full | pass 6, partial 13, fail 0, unverified 72, n/a 0 | 8 |
 | [SEO](#seo) | 1 | 0 pass · 5 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | pass 0, partial 5, fail 0, unverified 37, n/a 0 | 0 |
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 4 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
@@ -810,25 +810,25 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Role status:** guest: Partial · member: Partial · admin: Unverified. **Cases:** 32. **Controls:** 34.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0022, EXT-D-0059, EXT-D-0118, EXT-D-0127, EXT-D-0128, EXT-D-0133, EXT-D-0138
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0022, EXT-D-0059, EXT-D-0118, EXT-D-0127, EXT-D-0128, EXT-D-0133, EXT-D-0138, EXT-D-0139
 
-**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0018](defects/EXT-D-0018.json) (closed), [EXT-D-0022](defects/EXT-D-0022.json) (fixed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0115](defects/EXT-D-0115.json) (retest-pass), [EXT-D-0118](defects/EXT-D-0118.json) (fixed), [EXT-D-0122](defects/EXT-D-0122.json) (closed), [EXT-D-0123](defects/EXT-D-0123.json) (retest-pass), [EXT-D-0124](defects/EXT-D-0124.json) (closed), [EXT-D-0125](defects/EXT-D-0125.json) (closed), [EXT-D-0126](defects/EXT-D-0126.json) (closed), [EXT-D-0127](defects/EXT-D-0127.json) (fixed), [EXT-D-0128](defects/EXT-D-0128.json) (fixed), [EXT-D-0129](defects/EXT-D-0129.json) (closed), [EXT-D-0130](defects/EXT-D-0130.json) (closed), [EXT-D-0131](defects/EXT-D-0131.json) (closed), [EXT-D-0132](defects/EXT-D-0132.json) (closed), [EXT-D-0133](defects/EXT-D-0133.json) (in-fix), [EXT-D-0135](defects/EXT-D-0135.json) (closed), [EXT-D-0137](defects/EXT-D-0137.json) (closed), [EXT-D-0138](defects/EXT-D-0138.json) (in-fix)
+**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0018](defects/EXT-D-0018.json) (closed), [EXT-D-0022](defects/EXT-D-0022.json) (fixed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0115](defects/EXT-D-0115.json) (retest-pass), [EXT-D-0118](defects/EXT-D-0118.json) (fixed), [EXT-D-0122](defects/EXT-D-0122.json) (closed), [EXT-D-0123](defects/EXT-D-0123.json) (retest-pass), [EXT-D-0124](defects/EXT-D-0124.json) (closed), [EXT-D-0125](defects/EXT-D-0125.json) (closed), [EXT-D-0126](defects/EXT-D-0126.json) (closed), [EXT-D-0127](defects/EXT-D-0127.json) (fixed), [EXT-D-0128](defects/EXT-D-0128.json) (fixed), [EXT-D-0129](defects/EXT-D-0129.json) (closed), [EXT-D-0130](defects/EXT-D-0130.json) (closed), [EXT-D-0131](defects/EXT-D-0131.json) (closed), [EXT-D-0132](defects/EXT-D-0132.json) (closed), [EXT-D-0133](defects/EXT-D-0133.json) (fixed), [EXT-D-0135](defects/EXT-D-0135.json) (closed), [EXT-D-0137](defects/EXT-D-0137.json) (closed), [EXT-D-0138](defects/EXT-D-0138.json) (fixed), [EXT-D-0139](defects/EXT-D-0139.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
 | EXT-F-1007-T01 Fast capture | Partial | Partial | Unverified | EXT-F-1007-C01 |
-| EXT-F-1007-T02 Deep capture | Partial | Unverified | Unverified | EXT-F-1007-C02 |
+| EXT-F-1007-T02 Deep capture | Partial | Partial | Unverified | EXT-F-1007-C02 |
 | EXT-F-1007-T03 Recapture unsaved edits guard | Partial | Unverified | Unverified | EXT-F-1007-C03 |
 | EXT-F-1007-T04 Save capture as a Source | Unverified | Unverified | Unverified | EXT-F-1007-C04, EXT-F-1007-C21 |
 | EXT-F-1007-T05 Article markdown edit/apply | Unverified | Unverified | Unverified | EXT-F-1007-C05 |
 | EXT-F-1007-T06 Article markdown cancel | Pass | Unverified | Unverified | EXT-F-1007-C06 |
 | EXT-F-1007-T07 Article scroll sync | Unverified | Unverified | Unverified | EXT-F-1007-C07 |
-| EXT-F-1007-T08 Scrape result tabs | Partial | Unverified | Unverified | EXT-F-1007-C08 |
+| EXT-F-1007-T08 Scrape result tabs | Partial | Partial | Unverified | EXT-F-1007-C08 |
 | EXT-F-1007-T09 Copy capture and section data | Unverified | Unverified | Unverified | EXT-F-1007-C09 |
-| EXT-F-1007-T10 Remove image | Pass | Unverified | Unverified | EXT-F-1007-C10 |
-| EXT-F-1007-T11 Add image URL validation | Pass | Unverified | Unverified | EXT-F-1007-C11 |
-| EXT-F-1007-T12 Video actions | Pass | Unverified | Unverified | EXT-F-1007-C12 |
-| EXT-F-1007-T13 Link actions | Pass | Unverified | Unverified | EXT-F-1007-C13 |
+| EXT-F-1007-T10 Remove image | Pass | Partial | Unverified | EXT-F-1007-C10 |
+| EXT-F-1007-T11 Add image URL validation | Pass | Partial | Unverified | EXT-F-1007-C11 |
+| EXT-F-1007-T12 Video actions | Pass | Partial | Unverified | EXT-F-1007-C12 |
+| EXT-F-1007-T13 Link actions | Pass | Partial | Unverified | EXT-F-1007-C13 |
 | EXT-F-1007-T14 Capture error recovery | Partial | Unverified | Unverified | EXT-F-1007-C14 |
 | EXT-F-1007-T15 Admin capture diagnostics gate | Unverified | Unverified | Unverified | EXT-F-1007-C15 |
 | EXT-F-1007-T16 Diagnose Missing/Unwanted picker | Unverified | Unverified | Unverified | EXT-F-1007-C16 |
@@ -853,10 +853,12 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 - EXT-F-1007-T01 · guest: Partial. Frozen development244 guest ARM: Fast busy disable and real capture before/after full reload verified. Case expected error recovery is not exhausted; T14 natural recovery remains unverified.
   Evidence / build / date recorded: 37251782627, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T01:45:35.094250+00:00, .research/guest-scrape-normal-native.json
-- EXT-F-1007-T01 · member: Partial. Frozen244 member: warm fast capture, busy disabled, expected article and absent lazy content observed. Full reload, post-reload capture and error recovery remain unverified. Later Images assertion failed; no whole-Scrape pass.
-  Evidence / build / date recorded: 37258276837, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T03:24:31.466984+00:00, .research/first-auth-native.json
+- EXT-F-1007-T01 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Full extension reload and post-reload capture not yet exercised. Empty-media harness failure stops later acceptance.
+  Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
 - EXT-F-1007-T02 · guest: Partial. Frozen development244 guest ARM: Warm deep capture and unsaved-edit confirmation verified; deep failure retry and post-reload deep capture remain unverified.
   Evidence / build / date recorded: 37251782627, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T01:45:35.094250+00:00, .research/guest-scrape-normal-native.json
+- EXT-F-1007-T02 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Deep failure retry mode and post-reload deep capture remain unverified. Empty-media harness failure stops later acceptance.
+  Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
 - EXT-F-1007-T03 · guest: Partial. Trusted exact dialog Cancel retained edited state/idle deep button; second request confirmed Re-capture and deep mode completed. Evidence is native script assertion contract plus subsequent deep result; no separate dialog screenshot. Other auth/mode variants unverified.
   Evidence / build / date recorded: 37222954472, .research/scrape231-recapture-native.json
 - EXT-F-1007-T05 · guest: Unverified.
@@ -865,20 +867,30 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: render-retest-001, docs/stabilization/runs/render-retest-001.json
 - EXT-F-1007-T08 · guest: Partial. Frozen development244 guest ARM: All six populated panes verified warm and after full reload; image/video empty states verified. Normal600 viewport emulation now observed, but exhaustive per-pane empty-state coverage remains unverified.
   Evidence / build / date recorded: 37251782627, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T01:45:35.094250+00:00, .research/guest-scrape-normal-native.json
+- EXT-F-1007-T08 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Image and video empty states and reload lifecycle need full observation. Empty-media harness failure stops later acceptance.
+  Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
 - EXT-F-1007-T10 · guest: Pass. Frozen development244 guest ARM: Exact image removals through empty state warm and after full reload verified.
   Evidence / build / date recorded: 37251782627, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T01:45:35.094250+00:00, .research/guest-scrape-normal-native.json
+- EXT-F-1007-T10 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Repeat controls after full extension reload. Empty-media harness failure stops later acceptance.
+  Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
 - EXT-F-1007-T11 · guest: Pass. Frozen development244 guest ARM: Blank image rejection, valid URL/alt addition and Cancel clearing verified warm and after full reload.
   Evidence / build / date recorded: 37251782627, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T01:45:35.094250+00:00, .research/guest-scrape-normal-native.json
+- EXT-F-1007-T11 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Repeat controls after full extension reload. Empty-media harness failure stops later acceptance.
+  Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
 - EXT-F-1007-T12 · guest: Pass. Frozen development244 guest ARM: Video Open/return, exact remove/add, blank rejection, Copy feedback and exact clipboard equality after observation-only scoped grant restored; warm and reload verified.
   Evidence / build / date recorded: 37251782627, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T01:45:35.094250+00:00, .research/guest-scrape-normal-native.json
+- EXT-F-1007-T12 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Repeat controls after full extension reload; verify native link and clipboard outcomes. Empty-media harness failure stops later acceptance.
+  Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
 - EXT-F-1007-T13 · guest: Pass. Frozen development244 guest ARM: Link Open/Copy/remove/blank rejection/add/Cancel verified warm and reload; exact clipboard equality after scoped read grant and permission restoration. Raw partial refers solely to other auth modes, separately unverified.
   Evidence / build / date recorded: 37251782627, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T01:45:35.094250+00:00, .research/guest-scrape-normal-native.json
+- EXT-F-1007-T13 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Repeat controls after full extension reload; guest/admin modes remain unverified by this receipt. Empty-media harness failure stops later acceptance.
+  Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
 - EXT-F-1007-T14 · guest: Partial. Frozen development244 guest ARM: Restricted-page error/Dismiss verified; natural recoverable Reload/Try again/deep retry remain unverified.
   Evidence / build / date recorded: 37251782627, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T01:45:35.094250+00:00, .research/guest-scrape-normal-native.json
 - EXT-F-1007-T20 · guest: Pass. Frozen development244 guest ARM: Initial and full-reload empty state verified; original worker/panel retired and exact replacements observed.
   Evidence / build / date recorded: 37251782627, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T01:45:35.094250+00:00, .research/guest-scrape-normal-native.json
-- EXT-F-1007-T20 · member: Partial. Frozen244 member: initial empty Scrape on owned intake fixture observed. Navigation and reload lifecycle remain unverified.
-  Evidence / build / date recorded: 37258276837, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T03:24:31.466984+00:00, .research/first-auth-native.json
+- EXT-F-1007-T20 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Navigation and reload lifecycle remain to be exercised. Empty-media harness failure stops later acceptance.
+  Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
 
 **Other remaining work:** Source landing, refusal/retry, organization authorization, and server persistence require live member/admin evidence; guest Save must show sign-in remedy while retaining the device-local capture. Endpoint/RLS behavior is a runtime readiness gap, not a source-census blocker.; D59 document identity: candidate a021ae82 remains partial; guarded peer a702ba6c passes narrow capture tests/compile but finds mixed-document Diagnose bundle and refresh status race. Native guest/member/admin retest pending; reports/scrape-document-peer.json.
 
