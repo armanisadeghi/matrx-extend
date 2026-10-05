@@ -34,7 +34,7 @@ const TABLE = 'wbx_highlight';
 
 const LIST_COLUMNS =
   'id, created_by, conversation_id, mode, url, domain, page_title, color, text, anchor, created_at, updated_at';
-const FULL_COLUMNS = `${LIST_COLUMNS}, metadata, is_deleted`;
+const FULL_COLUMNS = `${LIST_COLUMNS}, metadata, deleted_at`;
 
 function parseList(rows: unknown[] | null): HighlightListItem[] {
   const out: HighlightListItem[] = [];
@@ -55,7 +55,7 @@ export async function listMyHighlights(limit = 500): Promise<HighlightListItem[]
     .schema('extend')
     .from(TABLE)
     .select(LIST_COLUMNS)
-    .eq('is_deleted', false)
+    .is('deleted_at', null)
     .order('updated_at', { ascending: false })
     .limit(limit);
   if (error) {
@@ -73,7 +73,7 @@ export async function listHighlightsForUrl(url: string): Promise<HighlightListIt
     .from(TABLE)
     .select(LIST_COLUMNS)
     .eq('url', url)
-    .eq('is_deleted', false)
+    .is('deleted_at', null)
     .order('created_at', { ascending: false });
   if (error) {
     console.warn('[highlights] listHighlightsForUrl error', error.message);
@@ -90,7 +90,7 @@ export async function listHighlightsForDomain(domain: string): Promise<Highlight
     .from(TABLE)
     .select(LIST_COLUMNS)
     .eq('domain', domain)
-    .eq('is_deleted', false)
+    .is('deleted_at', null)
     .order('created_at', { ascending: false });
   if (error) {
     console.warn('[highlights] listHighlightsForDomain error', error.message);
@@ -109,7 +109,7 @@ export async function listHighlightsForConversation(
     .from(TABLE)
     .select(LIST_COLUMNS)
     .eq('conversation_id', conversationId)
-    .eq('is_deleted', false)
+    .is('deleted_at', null)
     .order('created_at', { ascending: false });
   if (error) {
     console.warn('[highlights] listHighlightsForConversation error', error.message);
@@ -143,7 +143,7 @@ export async function getHighlightsByIds(ids: string[]): Promise<Highlight[]> {
     .from(TABLE)
     .select(FULL_COLUMNS)
     .in('id', ids)
-    .eq('is_deleted', false);
+    .is('deleted_at', null);
   if (error) {
     console.warn('[highlights] getHighlightsByIds error', error.message);
     return [];
@@ -215,7 +215,7 @@ export async function createHighlight(
     anchor: input.anchor ?? {},
     // CONVERGE: C-7 — caller-supplied metadata written with no reserved-key guard; metadata is system-only — declared 2026-09-10, Data Doctrine §3.2. Register: /projects/data-doctrine-adoption/REGISTER.md#DD-060
     metadata: input.metadata ?? {},
-    is_deleted: false,
+    deleted_at: null,
   };
   const { data, error } = await c
     .schema('extend')
@@ -278,7 +278,7 @@ export async function deleteHighlight(id: string): Promise<void> {
   const { data, error } = await c
     .schema('extend')
     .from(TABLE)
-    .update({ is_deleted: true, updated_at: new Date().toISOString() })
+    .update({ deleted_at: new Date().toISOString(), updated_at: new Date().toISOString() })
     .eq('id', id)
     .select('id');
   if (error || !data || data.length === 0) failDbCall(site, error);
@@ -307,7 +307,7 @@ export async function clearHighlightsForUrl(url: string): Promise<number> {
     .from(TABLE)
     .select('id')
     .eq('url', url)
-    .eq('is_deleted', false);
+    .is('deleted_at', null);
   if (readError) failDbCall({ ...site, operation: 'select' }, readError);
   if (!existing || existing.length === 0) return 0;
 
@@ -315,7 +315,7 @@ export async function clearHighlightsForUrl(url: string): Promise<number> {
   const { data, error } = await c
     .schema('extend')
     .from(TABLE)
-    .update({ is_deleted: true, updated_at: new Date().toISOString() })
+    .update({ deleted_at: new Date().toISOString(), updated_at: new Date().toISOString() })
     .in('id', ids)
     .select('id');
   if (error || !data || data.length < ids.length) failDbCall(site, error);

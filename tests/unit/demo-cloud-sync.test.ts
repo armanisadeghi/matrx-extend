@@ -92,7 +92,7 @@ function rowFor(demo: Demo, over: Partial<WbxDemoRow> = {}): WbxDemoRow {
     // Server clock — deliberately unrelated to the client timestamps in `body`.
     created_at: '2026-08-09T10:00:02.000Z',
     updated_at: '2026-08-09T11:30:04.000Z',
-    is_deleted: false,
+    deleted_at: null,
     ...over,
   };
 }
@@ -209,7 +209,7 @@ describe('hydrate-on-sign-in', () => {
 
     await saveDemo(makeDemo(), { sync: false });
     cloudRows = [
-      rowFor(makeDemo(), { is_deleted: true, updated_at: new Date(UPDATED + 5_000).toISOString() }),
+      rowFor(makeDemo(), { deleted_at: new Date(UPDATED + 5_000).toISOString(), updated_at: new Date(UPDATED + 5_000).toISOString() }),
     ];
 
     expect(await hydrateDemosFromCloud()).toEqual({ merged: 1, ok: true });
@@ -234,7 +234,7 @@ describe('on-miss repair', () => {
   it('returns null for an unknown id and for a tombstoned one', async () => {
     const { getDemoOrHydrate } = await import('@/lib/demos/cloud-sync');
     expect(await getDemoOrHydrate('demo_nope')).toBeNull();
-    cloudRows = [rowFor(makeDemo(), { is_deleted: true })];
+    cloudRows = [rowFor(makeDemo(), { deleted_at: '2026-08-09T12:00:00.000Z' })];
     expect(await getDemoOrHydrate('demo_login')).toBeNull();
   });
 

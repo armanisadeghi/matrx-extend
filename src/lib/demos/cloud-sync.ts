@@ -129,7 +129,7 @@ export async function hydrateDemosFromCloud(): Promise<{ merged: number; ok: boo
   const { getDemo, saveDemo, deleteDemo } = await import('@/lib/demos/storage');
   let merged = 0;
   for (const row of rows) {
-    if (row.is_deleted) {
+    if (row.deleted_at) {
       // Tombstone application. The column timestamp is the only clock we have
       // for a delete (nothing writes a body on delete), so compare against it.
       const local = await getDemo(row.demo_key);
@@ -166,7 +166,7 @@ export async function getDemoOrHydrate(id: string): Promise<Demo | null> {
   try {
     const { fetchDemoRow } = await import('@/lib/supabase/queries');
     const row = await fetchDemoRow(id);
-    if (!row || row.is_deleted) return null;
+    if (!row || row.deleted_at) return null;
     const demo = rowToDemo(row);
     if (!demo) return null;
     await saveDemo(demo, { sync: false });
