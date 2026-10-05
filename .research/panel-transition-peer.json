@@ -17,8 +17,8 @@
     "findings": [
       "Start failure, lost renderer, failed phase marker, missing visibility event while hidden, invalid/incomplete receipt, and non-monotonic/non-finite clock fail closed to unavailable/unmeasured; stop removes listener and realm property when the realm is reachable.",
       "Focused executable proof: node --test tests/browser/panel-transition-recorder.test.mjs — 4 passed, 0 failed. It covers resource-wait classification, actual CDP pointer dispatch brackets and privacy, lost realm, missed event/marker, and bad clock.",
-      "Broader command across recorder, visibility, reopen, settings-auth, and native harness files reached 44 passing assertions, then native-sidepanel-qa-harness.test.mjs stayed pending until 99 seconds and was interrupted (1 cancelled). It is not a green suite result.",
-      "Integration coverage is only partly executable here: source inspection confirms wiring and branch/pointer call sites, while existing transformed-source checks stub the recorder and do not exercise the complete authenticated acceptance run."
+      "Broader command across recorder, visibility, reopen, settings-auth, and native harness files reached 44 passing assertions; reviewer interrupted the pending process at 99 seconds, before the known approximately 137.5-second normal completion. Result is incomplete, not an established stall.",
+      "Integration-mutation verdict: NOT PROVEN. Source inspection confirms the real acceptance path wiring and pointer call sites, but the executed transformed-source tests stub the recorder; no executed mutation proves the full authenticated acceptance integration fails when its recorder wiring/markers are removed."
     ]
   },
   "privacy_and_scope": {
@@ -27,10 +27,11 @@
   },
   "commands": [
     "PASS: node --test tests/browser/panel-transition-recorder.test.mjs",
-    "INCOMPLETE: node --test tests/browser/panel-transition-recorder.test.mjs tests/browser/panel-visibility-diagnostic.test.mjs tests/browser/panel-visible-reopen-repair.test.mjs tests/browser/settings-native-auth-driver.test.mjs tests/browser/native-sidepanel-qa-harness.test.mjs (44 pass, 0 fail, 1 cancelled after pending harness test timed out at 99 seconds)"
+    "INCOMPLETE: node --test tests/browser/panel-transition-recorder.test.mjs tests/browser/panel-visibility-diagnostic.test.mjs tests/browser/panel-visible-reopen-repair.test.mjs tests/browser/settings-native-auth-driver.test.mjs tests/browser/native-sidepanel-qa-harness.test.mjs (44 pass, 0 fail observed before reviewer interruption at 99 seconds; known normal completion is approximately 137.5 seconds; no final result)"
   ],
   "limitations": [
     "No live/native acceptance or physical exposure measurement performed.",
-    "Broader test process did not complete cleanly; focused recorder test did."
+    "Broad test process was interrupted at 99 seconds before its known approximately 137.5-second normal completion; final result is unknown.",
+    "End-to-end authenticated acceptance wiring lacks an executed integration mutation proof; source inspection alone does not establish that regression guard."
   ]
 }
