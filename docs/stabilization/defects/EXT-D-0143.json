@@ -1,0 +1,45 @@
+{
+  "id": "EXT-D-0143",
+  "feature_id": "EXT-F-1012",
+  "case_ids": ["EXT-F-1012-T24", "EXT-F-1012-T51"],
+  "title": "Native Showcase selection fails after session replacement without causal diagnostics",
+  "surface": "Showcase List Pattern / native acceptance",
+  "auth_mode": "admin",
+  "reproduction": [
+    "Use main-push CI37283516703 artifact11333477364, source6e8b8b96, development0.2.266; build/import/reload follows hosted-guest-acceptance workflow.",
+    "Run showcase-stale-admin on macos-15 with the approved existing organization fixture and real admin sign-in.",
+    "Hold genuine A EXIT, cancel A, start B on the same page, deliver A EXIT through real Chrome runtime; confirm B stays picking with one overlay.",
+    "Select first controlled event card for B. Run37284490515 ends select_B_card_failed before completing B detection/extraction."
+  ],
+  "expected": "Current B can detect the intended repeated cards and extract actual fixture rows after rejecting stale A EXIT; on failure, bounded diagnostics identify the failing operation without exposing secrets.",
+  "actual": "Original receipt records successful sign-in/organization identity, A EXIT rejection and same-page A-to-B replacement, then only select_B_card_failed. The catch discards the underlying reason; actual failing click/scope/observation boundary is unproven.",
+  "severity": "S2: current-session acceptance blocked; product vs driver cause unknown",
+  "priority": "P1: resolve observed current-session failure before further Showcase retries",
+  "state": "in-fix",
+  "owner": "showcase_current_selection_diagnosis",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37284490515",
+    ".research/showcase-reveal-native.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-05T08:45:51.409027+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Actual guarded browser failure observed"
+    },
+    {
+      "at": "2026-10-05T08:45:51.409027+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Raw receipt identifies select_B_card after successful identity and stale EXIT; source confirms reason discarded"
+    },
+    {
+      "at": "2026-10-05T08:45:51.409027+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Bounded evidence-first diagnostic repair assigned; no blind retry"
+    }
+  ],
+  "closure_requirement": "Localize actual failed operation, prove causal repair with meaningful RED/GREEN and independent review, then original native flow plus B detection/extraction passes with valid resource evidence."
+}
