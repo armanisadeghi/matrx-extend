@@ -354,10 +354,7 @@ test('real Scrape auth caller records first member selection, skip, identity, an
       authSource.indexOf('export async function waitForOrganizationOption('),
       authSource.indexOf('/** Select and verify'),
     )
-    .replace(
-      'export async function waitForOrganizationOption',
-      'async function waitForOrganizationOption',
-    );
+    .replaceAll('export async function', 'async function');
   const runSetup = (source, signInSettings, report) =>
     new Function(
       'startPanelTransitionRecorder',
@@ -454,6 +451,7 @@ test('real Scrape auth caller records first member selection, skip, identity, an
         visible_option_count: 1,
         exact_match_count: 1,
         point: { x: 97, y: 83 },
+        candidate: { x: 97, y: 83 },
       }),
       accountIdentity,
       panelIdentity: async () => ({

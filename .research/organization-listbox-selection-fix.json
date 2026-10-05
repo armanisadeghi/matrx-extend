@@ -4,21 +4,23 @@
   "scope": "Controlled Settings organization selector repair; native outcome remains unverified",
   "cause": "The option probe searched document-wide role=option nodes and accepted a hit even when the Acting as listbox was closed or unrelated. The selector also sampled once immediately after opening the trigger.",
   "red": "The new controlled DOM negative failed before the repair: a visible Approved option outside a closed organization listbox produced exact_visible_match_count=1 and a selectable point.",
-  "repair": "Resolve the unique Acting as combobox, follow its aria-controls link to an open visible listbox, and count only its options. Require one exact and visible match. Poll the linked menu until a hit-tested target has stable position and counts across consecutive observations, then use the shared bounded trusted pointer click path, which re-resolves and hit-tests the associated option immediately before input.",
+  "repair": "Resolve the unique Acting as combobox, follow its aria-controls link to an open visible listbox, and count only its options. Require one exact and visible match. Poll the linked menu until the owned candidate has stable geometry and counts across consecutive observations. The shared bounded trusted pointer path then scrolls that option into view, re-resolves it through the linked listbox, and requires a stable hit before input.",
+  "offscreen_followup_red": "A legitimate exact owned option at y=400 timed out with menu_open=true, exact_visible_match_count=1, target_in_viewport=false. The wait never called the shared pointer path that could reveal it.",
+  "offscreen_followup_green": "The same option passes stable owned-candidate readiness; an executed DOM seam using the real selectOrganization and real shared click scrolls, re-resolves, hit-tests, and dispatches trusted input. Foreign, duplicate, and closed-listbox matches produce zero option input events.",
   "safety": "Failure observations remain bounded and omit target names and coordinates. Admin selection still requires a private approved fixture, and success still verifies the stored UUID, exact organization name, and rendered identity.",
   "verification": {
     "command": "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch node --test tests/browser/settings-native-auth-driver.test.mjs tests/browser/showcase-organization-diagnostic.test.mjs tests/browser/panel-transition-recorder.test.mjs scripts/hosted-profile-route.test.mjs scripts/hosted-scrape-route.test.mjs",
-    "result": "34 passed, 0 failed after final no-op guard addition and formatting",
+    "result": "36 passed, 0 failed after offscreen follow-up",
     "negative_cases": [
       "closed linked listbox with visible foreign matching option",
       "open linked listbox with visible foreign matching option",
       "absent option",
       "duplicate option",
-      "offscreen target",
+      "offscreen target is delegated to the shared reveal path",
       "covered target"
     ],
     "delayed_case": "The controlled linked listbox stays closed for two samples, opens on the third, and requires another stable sample before returning a target.",
-    "source_extraction": "The Scrape first-auth transition guard now extracts the real wait helper with selectOrganization; the guard passed after the dependency repair."
+    "source_extraction": "The Scrape first-auth transition guard extracts both exported wait and selector helpers. A separate executed DOM seam runs the actual selector and shared pointer implementation, including a no-op selector gut check and foreign/duplicate refusal."
   },
   "limits": "No browser or native run was performed. The original 37278418866 failure predates failure-time DOM instrumentation, so this repair does not establish its native cause or close D142."
 }

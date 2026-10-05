@@ -73,6 +73,7 @@ export function organizationProbePanel(scenario) {
                 target_center_hit: true,
                 archive_filter: 'active',
                 point: { x: 120, y: 150 },
+                candidate: { x: 120, y: 150 },
               }
             : {
                 menu_open: true,
@@ -83,6 +84,7 @@ export function organizationProbePanel(scenario) {
                 target_center_hit: null,
                 archive_filter: 'active',
                 point: null,
+                candidate: null,
               };
       } else if (expression.includes('chrome.storage.local.get')) {
         value = {

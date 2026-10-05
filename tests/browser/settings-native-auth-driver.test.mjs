@@ -10,10 +10,12 @@ import {
   currentSettingsIdentityMatches,
   observeOrganizationOption,
   panelIdentity,
+  selectOrganization,
   settingsOrganizationSelectionRequired,
   settingsShellReady,
   waitForOrganizationOption,
 } from './settings-native-auth-driver.mjs';
+import { click } from './settings-panel-driver.mjs';
 
 function optionPanel({
   names,
@@ -24,19 +26,40 @@ function optionPanel({
   openAfter = 0,
 }) {
   let reads = 0;
+  let scrollCount = 0;
+  let currentY = targetY;
+  const events = [];
+  const rect = (x, y, width, height) => ({
+    x,
+    y,
+    width,
+    height,
+    left: x,
+    top: y,
+    right: x + width,
+    bottom: y + height,
+  });
   const isOpen = () => menuOpen && reads >= openAfter;
   const options = names.map((name, index) => ({
     textContent: name,
-    getBoundingClientRect: () => ({ x: 20, y: targetY + index * 20, width: 100, height: 18 }),
+    getBoundingClientRect: () => rect(20, currentY + index * 20, 100, 18),
     contains: () => false,
+    closest: () => null,
+    getAnimations: () => [],
+    scrollIntoView: () => {
+      scrollCount += 1;
+      currentY = 70;
+    },
+    parentElement: null,
   }));
   const listbox = {
     getAttribute: (name) =>
       name === 'role' ? 'listbox' : name === 'data-state' ? (isOpen() ? 'open' : 'closed') : null,
     querySelectorAll: (selector) => (selector === '[role="option"]' ? options : []),
-    getBoundingClientRect: () => ({ x: 10, y: 10, width: 120, height: isOpen() ? 120 : 0 }),
+    getBoundingClientRect: () => rect(10, 10, 120, isOpen() ? 120 : 0),
   };
   const trigger = {
+    textContent: 'Choose…',
     getAttribute: (name) =>
       name === 'aria-controls'
         ? 'organization-menu'
@@ -45,6 +68,12 @@ function optionPanel({
             ? 'true'
             : 'false'
           : null,
+    getBoundingClientRect: () => rect(20, 20, 100, 18),
+    contains: () => false,
+    closest: () => null,
+    getAnimations: () => [],
+    scrollIntoView: () => {},
+    parentElement: null,
   };
   const label = {
     textContent: 'Acting as',
@@ -52,7 +81,7 @@ function optionPanel({
   };
   const foreignOptions = foreignNames.map((name) => ({
     textContent: name,
-    getBoundingClientRect: () => ({ x: 20, y: 70, width: 100, height: 18 }),
+    getBoundingClientRect: () => rect(20, 70, 100, 18),
     contains: () => false,
   }));
   const filter = { querySelectorAll: () => [{ textContent: 'Active only' }] };
@@ -65,21 +94,37 @@ function optionPanel({
           : [listbox],
     getElementById: (id) => (id === 'organization-menu' ? listbox : null),
     querySelector: () => filter,
-    elementFromPoint: (_x, y) =>
+    elementFromPoint: (x, y) =>
       occluded
         ? {}
         : ([...foreignOptions, ...options].find((option) => {
             const rect = option.getBoundingClientRect();
-            return y >= rect.y && y < rect.y + rect.height;
-          }) ?? null),
+            return x >= rect.x && x < rect.right && y >= rect.y && y < rect.bottom;
+          }) ?? (x >= 20 && x < 120 && y >= 20 && y < 38 ? trigger : null)),
   };
   return {
-    async send(command, { expression }) {
+    events,
+    get scrollCount() {
+      return scrollCount;
+    },
+    async send(command, parameters) {
+      if (command === 'Input.dispatchMouseEvent') {
+        events.push(parameters);
+        return {};
+      }
       assert.equal(command, 'Runtime.evaluate');
+      const { expression } = parameters;
       reads += 1;
       const value = runInNewContext(expression, {
         document,
-        getComputedStyle: () => ({ display: 'block', visibility: 'visible' }),
+        getComputedStyle: () => ({
+          display: 'block',
+          visibility: 'visible',
+          overflowX: 'visible',
+          overflowY: 'visible',
+          position: 'static',
+          pointerEvents: 'auto',
+        }),
         innerWidth: 300,
         innerHeight: 200,
       });
@@ -107,6 +152,46 @@ test('organization selection waits for its associated menu to render and settle'
     /menu_open/,
   );
   await requiresObservation(waitForOrganizationOption);
+});
+
+test('an owned offscreen option becomes eligible for the shared pointer reveal path', async () => {
+  const samples = [];
+  await waitForOrganizationOption(
+    optionPanel({ names: ['Approved'], targetY: 400 }),
+    'Approved',
+    (sample) => samples.push(sample),
+  );
+  assert.equal(samples.at(-1).exact_visible_match_count, 1);
+  assert.equal(samples.at(-1).target_in_viewport, false);
+});
+
+test('the actual selector reveals and hit-tests its owned offscreen option before trusted input', async () => {
+  const run = async (selector) => {
+    const panel = optionPanel({ names: ['Approved'], targetY: 400 });
+    await selector(panel, 'Approved');
+    assert.ok(panel.scrollCount >= 3, 'the shared pointer path must reveal and resample');
+    assert.deepEqual(
+      panel.events.map((event) => event.type),
+      ['mousePressed', 'mouseReleased', 'mousePressed', 'mouseReleased'],
+    );
+    assert.equal(panel.events[2].y, 79);
+  };
+  await assert.rejects(
+    run(async () => {}),
+    { code: 'ERR_ASSERTION' },
+  );
+  await run(selectOrganization);
+  for (const panel of [
+    optionPanel({ names: ['Other'], foreignNames: ['Approved'] }),
+    optionPanel({ names: ['Approved', 'Approved'] }),
+    optionPanel({ names: [], menuOpen: false, foreignNames: ['Approved'] }),
+  ]) {
+    await assert.rejects(
+      click(panel, 'organization-option', 'Approved'),
+      /unique visible pointer target/,
+    );
+    assert.equal(panel.events.length, 0);
+  }
 });
 
 test('option boundary distinguishes absent, duplicate, offscreen, occluded, and selectable targets', async () => {

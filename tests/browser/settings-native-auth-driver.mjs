@@ -251,6 +251,7 @@ export async function observeOrganizationOption(panel, requiredOrganizationName)
       target_center_hit: target ? Boolean(hit && (hit === target || target.contains(hit))) : null,
       archive_filter: filterText === 'Active only' ? 'active' : filterText === 'Archived only' ? 'archived' : filterText === 'Active + archived' ? 'all' : 'unknown',
       point: target && inViewport && hit && (hit === target || target.contains(hit)) ? { x, y } : null,
+      candidate: target ? { x, y } : null,
     };
   })()`,
   );
@@ -263,12 +264,12 @@ export async function waitForOrganizationOption(panel, requiredOrganizationName,
     'd87_member_organization_option_unavailable',
     async () => {
       const observed = await observeOrganizationOption(panel, requiredOrganizationName);
-      const { point, ...safeObservation } = observed;
+      const { point, candidate, ...safeObservation } = observed;
       onObservation?.(safeObservation);
-      const signature = point
-        ? `${point.x}:${point.y}:${observed.visible_option_count}:${observed.exact_match_count}`
+      const signature = candidate
+        ? `${candidate.x}:${candidate.y}:${observed.visible_option_count}:${observed.exact_match_count}`
         : null;
-      stablePoint = signature && signature === previousPoint ? point : null;
+      stablePoint = signature && signature === previousPoint ? candidate : null;
       previousPoint = signature;
       return safeObservation;
     },
@@ -277,7 +278,7 @@ export async function waitForOrganizationOption(panel, requiredOrganizationName,
   return stablePoint;
 }
 
-async function selectOrganization(panel, requiredOrganizationName, onObservation) {
+export async function selectOrganization(panel, requiredOrganizationName, onObservation) {
   await click(panel, 'organization', '');
   await waitForOrganizationOption(panel, requiredOrganizationName, onObservation);
   await click(panel, 'organization-option', requiredOrganizationName);
