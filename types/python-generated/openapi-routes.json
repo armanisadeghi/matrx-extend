@@ -633,6 +633,11 @@
  "/ai/agents/{agent_id}/portable/summary": {
   "get": []
  },
+ "/ai/agents/{agent_id}/realtime-session": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/ai/agents/{agent_id}/realtime-tools": {
   "post": [
    "application/json"
@@ -6918,6 +6923,9 @@
   "post": [
    "application/json"
   ]
+ },
+ "/seo/sites/{site_id}/brand-search": {
+  "post": []
  },
  "/seo/sites/{site_id}/broken-link-prospecting": {
   "post": [
