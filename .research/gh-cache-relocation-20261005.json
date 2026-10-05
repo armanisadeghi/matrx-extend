@@ -1,0 +1,9 @@
+{
+  "source": "/Users/armanisadeghi/.cache/gh",
+  "external_copy": "/Volumes/Samsung2TB/code/.stabilization-scratch/gh-cache-relocation-20261005",
+  "files": 175,
+  "bytes": 11242797,
+  "all_sha256_equal_before_removal": true,
+  "source_symlink_preserved": true,
+  "scope": "GitHub CLI cache only; initial symlink ENOSPC recovered after registry metadata archival; auth config unchanged"
+}
