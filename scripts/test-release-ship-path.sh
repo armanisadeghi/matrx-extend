@@ -74,6 +74,7 @@ case " \$* " in
         "\$(cat "$SANDBOX/fixture-version" 2>/dev/null || echo 1.0.0)" >&2
       exit 1
     fi ;;
+  *" update -r "*" --depth Infinity"*) echo transitive >> "$SANDBOX/depth-passes" ;;
   *" update -r "*)
     # A sibling package landed on npm: install it, with its CHANGELOG entry.
     from=\$(cat "$SANDBOX/fixture-version" 2>/dev/null || echo 1.0.0)
@@ -408,7 +409,7 @@ mkdir -p scripts; cp "$HARNESS_ROOT/scripts/release-matrx-catchup.mjs" scripts/
 printf 'lockfileVersion: 9.0\n' > pnpm-lock.yaml
 git_q add pnpm-lock.yaml scripts/release-matrx-catchup.mjs; git_q commit -m "lockfile"
 run_release() { set +e; PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/$1" 2>&1; local rc=$?; set -e; return $rc; }
-updates() { grep -c '^update -r' "$SANDBOX/pnpm-calls" || true; }
+updates() { grep -c '^update -r.*--latest' "$SANDBOX/pnpm-calls" || true; }
 echo "release — @ai-matrx catch-up"
 CATCHUP_BASE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
 touch "$SANDBOX/pin-packages"; UPDATES_BEFORE="$(updates)"
@@ -434,6 +435,7 @@ touch "$SANDBOX/stale-packages"; PKG_CHECKS_BEFORE="$(grep -c 'check:matrx-packa
 CATCHUP_STATUS=0; run_release catchup-out || CATCHUP_STATUS=$?
 git fetch -q origin 2>/dev/null || true
 check "a STALE-only gate catches up and ships"         '[[ $CATCHUP_STATUS -eq 0 ]] && grep -q "  pushed" "$SANDBOX/catchup-out"'
+check "the catch-up also moves transitives"            '[[ -s "$SANDBOX/depth-passes" ]]'
 check "the caught-up lockfile is in the release"       'git show origin/main:pnpm-lock.yaml | grep -q "@ai-matrx/fixture@1.0.1"'
 check "the catch-up commit is in main"                 '[[ -n "$(git log --format=%s --grep="catch up @ai-matrx packages" origin/main)" ]]'
 check "the package gate ran again on the new candidate" '[[ $(( $(grep -c "check:matrx-packages" "$SANDBOX/pnpm-calls") - PKG_CHECKS_BEFORE )) -eq 2 ]]'
