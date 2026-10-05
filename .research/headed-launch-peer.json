@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "58734e03c37288919e31ca27b9471364e3123160",
+  "verdict_a": {
+    "status": "PASS_WITH_RUNTIME_UNVERIFIED",
+    "claims": {
+      "explicitly_headed_scrape": {
+        "status": "PASS",
+        "evidence": "tests/browser/scrape-guest-native-acceptance.mjs passes headed: true to runNativeSidepanelQa."
+      },
+      "mismatch_refused_before_acceptance_even_without_callback": {
+        "status": "PASS",
+        "evidence": "native-sidepanel-qa-harness.mjs unconditionally checks Browser.getBrowserCommandLine before extension acceptance; callback is optional and invoked only after the check."
+      },
+      "redacted_requested_observed_receipt": {
+        "status": "PASS",
+        "evidence": "The observer emits only requested_mode, observed_mode, and verified_by; Scrape stores it as report.browser_launch in its mode-0600 output JSON."
+      },
+      "caller_omission_and_production_mismatch_tests": {
+        "status": "PASS",
+        "evidence": "Focused test asserts the actual caller has headed true and that an omitted prefix loses it; production seam test requires mismatch rejection and proves the observation callback is not reached."
+      },
+      "ci_executes_tests": {
+        "status": "PASS",
+        "evidence": ".github/workflows/ci.yml directly runs node --test tests/browser/scrape-headed-launch.test.mjs."
+      },
+      "other_headless_callers": {
+        "status": "PASS",
+        "evidence": "runNativeSidepanelQa defaults headed=false and continues adding --headless=new; explicit-headed interactive siblings retain their own setting."
+      }
+    },
+    "runtime": "UNVERIFIED: no headed Chrome acceptance run was performed; this does not establish recovery from repeated D133 failures."
+  },
+  "verdict_b": {
+    "status": "PASS_WITH_TEST_SCOPE_LIMIT",
+    "quality": "The check invokes the real exported mode predicate and extracts the production launch seam, with a real CDP method assertion and callback-order observation. Caller source mutation is evaluated in memory; the existing required-headed assertion would fail if the actual caller omitted the option.",
+    "limitations": [
+      "The seam test supplies a no-op ownership guard, so it isolates display-mode ordering and does not re-prove profile ownership.",
+      "No mutation suite/return-expected gut check or independent live browser acceptance was run in this verifier lane."
+    ],
+    "binding_docs": "The requested cross-repo clients/extension STATE.md and WIRE_CONTRACT.md were not present at the supplied common-docs paths or the available matrx-common-docs checkout; review proceeded against repo instructions and the commit."
+  },
+  "focused_test": {
+    "command": "node --test tests/browser/scrape-headed-launch.test.mjs",
+    "result": "3 passed, 0 failed"
+  },
+  "scope": "Independent verification only; no shared source files changed."
+}

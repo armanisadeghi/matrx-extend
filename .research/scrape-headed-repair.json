@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "scope": "Scrape native acceptance browser display mode",
+  "finding": "The Scrape runner omitted headed, while runNativeSidepanelQa defaults headed to false and adds --headless=new. A foreground visibility assertion therefore ran in a headless browser.",
+  "change": "Scrape requests headed Chrome; the shared harness checks the owned browser's CDP command line before panel acceptance and records only requested and observed display modes.",
+  "guard": "The CI test evaluates the actual Scrape caller prefix and confirms that deleting headed fails. It executes the production CDP verification seam with matching and mismatching command lines, checking that only a matching launch reaches the receipt callback.",
+  "sibling_review": "Debug Log Controls already requests headed. Other native callers were inspected for explicit physical foreground requirements; no sibling source was changed in this lane.",
+  "limits": "This repairs the false headless foreground premise. It does not establish that the repeated D133 browser failure is cured; that requires a headed native acceptance run and independent review."
+}

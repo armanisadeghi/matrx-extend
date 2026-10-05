@@ -35,7 +35,10 @@
     ".research/auth-interval-causal-review.json",
     ".research/auth-interval-markers-repair.json",
     ".research/auth-interval-markers-peer.json",
-    ".research/member-media-native.json"
+    ".research/member-media-native.json",
+    ".research/panel-lifecycle-escalation.json",
+    ".research/scrape-headed-repair.json",
+    ".research/headed-launch-peer.json"
   ],
   "transition_history": [
     {
@@ -180,5 +183,14 @@
     "resource_invalid": false,
     "physical_exposure": "unmeasured",
     "d133_resolved": false
+  },
+  "headed_launch_repair": {
+    "commit": "58734e03",
+    "independent_review": "cd33c4cd",
+    "report": ".research/headed-launch-peer.json",
+    "focused_tests": "3 passed; omitted headed and production mismatch rejected",
+    "runtime": "unverified; fullCI then one controlled headed run required",
+    "ci_run": 37262892692,
+    "ci_status": "pending"
   }
 }
