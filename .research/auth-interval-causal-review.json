@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0133",
+  "status": "TESTABLE_DISCRIMINATOR_READY_NOT_CAUSE_CONFIRMED",
+  "outcome": "Executed source proof confirms that first member organization selection occurs inside the untraced authentication interval. One bounded instrumentation experiment can distinguish first organization input, rendered-identity input, observer cleanup, and asynchronous/read-only intervals. Native cause and physical exposure remain unverified.",
+  "evidence": {
+    "run_id": 37255333525,
+    "driver_sha": "8e9a0fadd0d7435519a6135431474c4b789584e9",
+    "product_version": "0.2.244",
+    "product_source": "b81587021d689078ed428dafe3e15474a84c41e2",
+    "source_comparison": "git diff against exact driver SHA returned no differences for auth driver, transition recorder, Scrape driver or native harness.",
+    "sha256": {
+      "tests/browser/settings-native-auth-driver.mjs": "5f52017cb6618891fe5097ba81659897a93359f25037a2a3a4148624a803c62f",
+      "tests/browser/panel-transition-recorder.mjs": "7bbe76499db71a19b466794541dd83ca8ba6b068f8e12437cfba2428a40a20d4",
+      "tests/browser/scrape-guest-native-acceptance.mjs": "b4513ced6ba9644fd0dae3d74f7dfb5f34ccfa0c40f978a2629fa2dce8f57bbb",
+      "docs/stabilization/evidence/member137/run37255333525/acceptance-receipt.raw.json.txt": "e3d0342c012ee48ba316a38833f653a70255d00b64d608181c6aca1fac95c725"
+    },
+    "observations": [
+      "Raw receipt member_oauth_completed visible; member_before_web_close hidden. All auth/identity/nonadmin/org verification succeeds.",
+      "First visibilitychange hidden at 23957.1 ms precedes before_health 24320.8 ms and second organization_skip 65026.6 ms. This excludes only those later intervals as first-hide boundaries.",
+      "Original sole exact target and exact SIDE_PANEL context survive; one focused normal native window. Panel host association null, not false; no positive window ID association was measured.",
+      "Initial screenshots finish before visible before_authentication checkpoint. Web-tab creation and OAuth-completed snapshots are visible; closing web and root activation happen after first observed hidden.",
+      "Repeated earlier runs move the first-hidden checkpoint; temporal snapshots and modeled browser transitions do not establish a deterministic cause."
+    ]
+  },
+  "confirmed_missing_seam": {
+    "source": "tests/browser/settings-native-auth-driver.mjs:389-440",
+    "sequence": [
+      "observe member_oauth_completed",
+      "adminCheck.verify (observed request-map wait)",
+      "accountIdentity org-read wait",
+      "conditional first selectOrganization: combobox click plus option press/release",
+      "selected account/storage reads",
+      "verifyCurrentSettingsIdentity: openSection Account and Organization may themselves click when collapsed",
+      "adminCheck.stop: unregister listeners, Network.setCacheDisabled(false), Network.disable",
+      "observe member_before_web_close"
+    ],
+    "gap": "Scrape passes raw panel to signInSettings at line961 and only wraps panel for selectRequiredSettingsOrganization at line982. First org branch is not recorded. A later skip cannot identify which branch or pointers ran during signInSettings. The earlier visibility observation is not timestamped in the recorder either.",
+    "design_ruling": "Two organization-selection layers obscure action ownership. Keep acceptance checks for this diagnostic; do not remove selection or duplicate checks as an unproven repair. Move passive tracing to the actual first caller boundary.",
+    "oracle_ruling": "Keep document.visibilityState and exact context gates. hasFocus and DOM hit do not prove physical exposure; sole surviving target establishes identity, not native visibility. Neither successful sidePanel.open nor a mocked visible outcome is recovery proof."
+  },
+  "lightweight_proof": {
+    "command": "node /Volumes/Samsung2TB/code/.stabilization-scratch/auth-interval-causal-review/proof.mjs",
+    "result": "PASS four cases, no browser launched",
+    "sut": "Actual extracted post-OAuth member orchestration and selectOrganization function; actual startPanelTransitionRecorder and traceOrganizationPointers. External account/DOM/Chrome IO controlled; no visibility transition simulated.",
+    "results": [
+      {
+        "selection_required": true,
+        "wrapped": false,
+        "actual_option_inputs": ["mousePressed", "mouseReleased"],
+        "recorded_pointer_events": 0
+      },
+      {
+        "selection_required": true,
+        "wrapped": true,
+        "actual_option_inputs": ["mousePressed", "mouseReleased"],
+        "recorded_pointer_events": 4
+      },
+      {
+        "selection_required": false,
+        "wrapped": false,
+        "actual_option_inputs": [],
+        "recorded_pointer_events": 0
+      },
+      {
+        "selection_required": false,
+        "wrapped": true,
+        "actual_option_inputs": [],
+        "recorded_pointer_events": 0
+      }
+    ],
+    "constant_mutant": "Executed scratch constant selectOrganization returning {}: RED at selected-organization acceptance assertion. Original source never changed.",
+    "scaffold_failure": "Initial cross-VM array strict comparison failed despite identical contents; converted observed array to host Array and reran. Not counted as defect RED.",
+    "limits": "This proves routing and missing recorder coverage only. It does not prove branch choice in run37255333525 or browser click/native visibility behavior. Combobox click and rendered identity verifier are controlled dependencies in this scaffold, not independently verified."
+  },
+  "ranked_falsifiable_hypotheses": [
+    {
+      "rank": 1,
+      "cause": "First organization selection input inside signInSettings coincides with panel hiding.",
+      "prediction": "Recorded auth_org_select and first hidden event in its input interval, before auth_org_after; no earlier hidden event.",
+      "falsifier": "auth_org_skip or first hidden before auth_org_before or after auth_org_after.",
+      "status": "Plausible; native branch unmeasured, not established cause."
+    },
+    {
+      "rank": 2,
+      "cause": "verifyCurrentSettingsIdentity opens a collapsed section and that input coincides with hiding.",
+      "prediction": "First hidden between auth_identity_before/after, with actual pointer marks from openSection.",
+      "falsifier": "Hidden earlier, or identity interval has no input.",
+      "status": "Current helper can dispatch input despite being named verify; exact run action unknown."
+    },
+    {
+      "rank": 3,
+      "cause": "Observer lifecycle/CDP teardown coincides with hiding.",
+      "prediction": "Panel stays visible through auth_cleanup_before; hidden first appears before auth_cleanup_after, without pointer dispatch.",
+      "falsifier": "Hidden before cleanup marker or still visible after cleanup.",
+      "status": "Network cleanup actually sends protocol commands; API-level causal effect not claimed."
+    },
+    {
+      "rank": 4,
+      "cause": "Delayed native host/lifecycle transition, unrelated to synchronous panel pointer dispatch.",
+      "prediction": "First hidden falls in admin read-wait/org read-only interval or outside the marked input/cleanup intervals; target remains present.",
+      "falsifier": "Temporal localization inside a pointer interval does not fully falsify delayed-event causation; it lowers this ranking but still needs independent causal intervention.",
+      "status": "Retain asynchronous confound; one instrumented run localizes, never certifies causality."
+    }
+  ],
+  "next_discriminating_experiment": {
+    "count": 1,
+    "name": "Trace first post-OAuth auth interval on exact frozen244",
+    "owner": "Root integration/runtime authority after independent review",
+    "single_changed_condition": "Passive marker coverage at existing auth caller; keep product, actions, browser version, identity, width request, resource budget, acceptance gates and cleanup sequence identical.",
+    "bounded_diff": [
+      {
+        "file": "tests/browser/panel-transition-recorder.mjs",
+        "change": "Extend PHASES with auth_admin_before/after, auth_org_before, auth_org_select/skip, auth_org_after, auth_identity_before/after, auth_cleanup_before/after (10 fixed labels). Do not broaden emitted payload."
+      },
+      {
+        "file": "tests/browser/settings-native-auth-driver.mjs",
+        "change": "Add optional onTrace callback. After member_oauth_completed observer, mark around adminCheck.verify. Mark auth_org_before before first accountIdentity wait; bracket the existing conditional selection with select/skip branch mark and auth_org_after immediately after selectOrganization returns. Mark before/after verifyCurrentSettingsIdentity. In existing finally, mark before/after adminCheck.stop. Do not change conditional or pointer ordering."
+      },
+      {
+        "file": "tests/browser/scrape-guest-native-acceptance.mjs",
+        "change": "Pass panel: traceOrganizationPointers(panel, transition) and onTrace: phase => transition.mark?.(phase) to signInSettings. Existing second selection and recorder stop unchanged. Existing facade binds on/send safely for frozen transport."
+      }
+    ],
+    "bounded_cost": "Nine marker evaluations on the success path (one of select/skip), plus two existing proxy marks per actual dispatched input; no extra waits, retries, screenshots, credentials, product mutation, or new recorder framework. Optional markers must remain passive and unavailable on recording loss.",
+    "readout": "First hidden event relative to same performance.now markers picks actual first-selection, identity, cleanup, or read-only interval. Pointer markers include mouseMoved as well as press/release; retain kind boundaries without coordinates or text. If hide precedes auth_admin_before, gap is narrowed to OAuth-observation interval, not invented as organization failure.",
+    "decision": "Do not advance acceptance or claim cause from ordering alone. A first-org skip falsifies selection-input explanation for that run. A first-hidden read-only interval falsifies synchronous pointer-origin explanation for that run. Loss/incomplete markers yields unmeasured. Physical exposure remains separately unmeasured.",
+    "preflight": "Root should add focused real auth-caller wiring coverage, with select and skip inputs and omission mutants, before authorizing this single native run. Existing scratch proof demonstrates the intended seam, not complete integration."
+  },
+  "failed_attempts_disposition": {
+    "44005fb4": "Trusted reopen did not restore actual hidden panel. Do not treat its model-green tests as native proof. Recommend removing the recovery-only extra trusted-open/activation sequence once root captures the first-hide discriminator; it executes after failure and cannot explain this first transition. Do not change it during the single-variable diagnostic.",
+    "0e8aa6c7": "Visible-preservation avoids redundant opens but did not repair hidden path. Retain its non-mutating visible guard only as a scoped behavior, not a D133 fix; no wider claims.",
+    "D137": "Keep immutable-send facade repair: separate confirmed instrumentation defect, not failed D133 recovery.",
+    "diagnostics": "Keep exact identity and visibility gates and useful raw observations. Do not roll back proven independent safeguards merely because D133 is unresolved. No code removed in this lane."
+  },
+  "limits": [
+    "No browser/native/heavy test/build/release dispatched; no credential read or database mutation.",
+    "Only report added to repository; scratch proof occupies external approved scratch path.",
+    "No acceptance, product, ledger, coverage or Store promotion.",
+    "No independent physical-window observation; document visibility is not dismissed.",
+    "Canonical clients/extension doc path was absent; existing common-docs/systems/apps/extension/STATE.md read instead.",
+    "No public Chrome claims beyond source/artifact observations; external web lookup unnecessary for this seam finding."
+  ]
+}
