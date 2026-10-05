@@ -23745,9 +23745,10 @@
               "run_id": "showcase-installed-d45-001",
               "evidence": [
                 "docs/stabilization/runs/showcase-installed-d43-001.json",
-                "docs/stabilization/runs/showcase-installed-d45-001.json"
+                "docs/stabilization/runs/showcase-installed-d45-001.json",
+                ".research/showcase-reveal-native.json"
               ],
-              "detail": "The .109 live run exercised Restart and Done. Same-scope Done appended event_datetime while preserving the two existing fields and yielded 249 rows. A changed nested scope with zero fields committed its root/item selectors, left Extract disabled, and cleared the old preview; Cancel retained the original scope and preview. Partial D45 substeps only; the broader picker flow and reload/error dimensions remain unverified.",
+              "detail": "The .109 live run exercised Restart and Done. Same-scope Done appended event_datetime while preserving the two existing fields and yielded 249 rows. A changed nested scope with zero fields committed its root/item selectors, left Extract disabled, and cleared the old preview; Cancel retained the original scope and preview. Partial D45 substeps only; the broader picker flow and reload/error dimensions remain unverified. Native37284490515 additionally verifies admin organization selection and genuine old EXIT rejection after same-page A-to-B replacement. New B card selection fails (D143); detection/extraction and broader case dimensions remain unverified. No full-case promotion.",
               "prior_run_ids": [
                 "showcase-installed-d43-001"
               ]
@@ -24660,9 +24661,10 @@
               "run_id": "showcase-installed-d45-001",
               "evidence": [
                 "docs/stabilization/runs/showcase-installed-d43-001.json",
-                "docs/stabilization/runs/showcase-installed-d45-001.json"
+                "docs/stabilization/runs/showcase-installed-d45-001.json",
+                ".research/showcase-reveal-native.json"
               ],
-              "detail": "The .109 live run kept the outer #wideeventsList / div.wideeventwrapper scope and existing fields when Canceling a nested-scope pick; same-scope Done appended event_datetime and extracted 249 rows. Explicitly Done-ing a selected nested scope with zero fields adopted that scope and cleared the prior preview. Partial evidence for scope retention, field addition, and scope choice; Doctor-seeded flow, actual extraction from the alternate nested scope, and full rows remain unverified.",
+              "detail": "The .109 live run kept the outer #wideeventsList / div.wideeventwrapper scope and existing fields when Canceling a nested-scope pick; same-scope Done appended event_datetime and extracted 249 rows. Explicitly Done-ing a selected nested scope with zero fields adopted that scope and cleared the prior preview. Partial evidence for scope retention, field addition, and scope choice; Doctor-seeded flow, actual extraction from the alternate nested scope, and full rows remain unverified. Native37284490515 additionally verifies admin organization selection and genuine old EXIT rejection after same-page A-to-B replacement. New B card selection fails (D143); detection/extraction and broader case dimensions remain unverified. No full-case promotion.",
               "prior_run_ids": [
                 "showcase-installed-d43-001"
               ]
@@ -25085,7 +25087,8 @@
             "showcase-d49-final-acceptance-20260928",
             "showcase-d50-native-20260928",
             "showcase-tables-native-20260928",
-            "prepare-denial-probe-20261002-01"
+            "prepare-denial-probe-20261002-01",
+            "showcase-reveal-native-37284490515"
           ],
           "retest_status": "fail"
         }

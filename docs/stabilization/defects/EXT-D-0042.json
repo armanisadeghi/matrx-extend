@@ -21,7 +21,8 @@
     "src/lib/data-pattern/list-picker.ts",
     "src/lib/background/bootstrap.ts",
     "src/entrypoints/list-picker.content.ts",
-    ".research/showcase-picker-current-retest.json"
+    ".research/showcase-picker-current-retest.json",
+    ".research/showcase-reveal-native.json"
   ],
   "severity": "S2: a superseded picker may overwrite the current extraction definition or terminate the current pick",
   "priority": "P1: Showcase reliable detection and extraction lifecycle",
@@ -48,5 +49,5 @@
     }
   ],
   "closure_requirement": "Prove the delayed old-session boundary red before repair, then prove current-session detection and extraction plus old-session rejection green. Check identity through every SW relay, delayed cancellation, pending injection, and cross-context listener teardown. Run changed types and obtain independent installed-extension verification against real page data before closure.",
-  "verification_status": "Independent current source retest on c540f36a passed 23/23 checks across picker producer, relay and real consumer boundaries: same-page stale A ITEM_DETECTED/RESULT/EXIT rejected, current B result accepted and extraction succeeds; cancellation/reinjection sequencing passes. Evidence .research/showcase-picker-current-retest.json. Chrome transport remains mocked; exact installed-extension delayed delivery/cancellation/injection acceptance remains unverified. Keep in-fix; no whole-feature or current native pass."
+  "verification_status": "Native37284490515 on exact development266 source6e8b8b96 proves genuine A EXIT held/released through stamped Chrome relay while B remains picking with one overlay. Admin identity and same-page cancellation/restart pass. B-card selection then fails (D143), so required current-B positive detection/extraction and full original race acceptance remain incomplete. ITEM_DETECTED/RESULT, delayed cancellation, deferred installation and reinjection still native-unverified. Original23 controlled source checks remain bounded evidence only."
 }
