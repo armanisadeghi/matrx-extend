@@ -8,9 +8,10 @@ Local capacity at05:21UTC: internalvolume about116MiB free, external1.6TiB free.
 
 Root owns integration, inventory/defect transitions, Store follow-through, and the next execution decision. Continue from current inventory and defects. Preserve concurrent writers on shared `origin/main`: fetch/reconcile, commit exact paths, push, and record final workspace state in `docs/stabilization/reports/workspace-sync-guest-incident-20261003.json`. Do not end with a child or heavy job active. Source review and tests never substitute for installed UI and server behavior.
 
-## Current execution — October 05, 06:03 UTC
+## Current execution — October 05, 06:16 UTC
 
-**Active contained test:** ONE headed Showcase picker adminrun37270450308, newcasefrom4f492617 reviewed3d2180f2. FullCI37269797985 success(source02f2b67b) and frozen development265 artifact11327403636 digestc9b2ff8cef45ee181a57727b1f0ac2a80dd7e911a2650b929d06189bd701b788. Currentdriver/wiringbytes identical; disposableauth viaownedtemporaryGitHubsecret, executor /root/showcase_picker_native_run owns terminalcleanup. No rerun afterfailure. Existingprelaunchreport .research/showcase-picker-native-run.json retainsfailedCI; nextresult .research/showcase-picker-native-current.json. D42remainsopen: thisdriver covers ordinarycontrols only; delayedoldmessages/cancel/injection/reinjection stillunverified.
+**Contained test failed, diagnosis active:** ONE headed Showcase picker admin run37270450308 ended at organization after successful real admin sign-in and role assertion. Resource guard recovered; child_failed with resourceInvalid:false. The exact organization substep is unknown; auth_stage is stale and screenshots are setup captures, not failure captures. Collector5adb9a5e records provenance and temporary-secret deletion/verified absence. No retry or coverage promotion. EXT-D-0141 assigned to /root/showcase_org_failure_diagnosis (Sol medium,80-call budget) to repair proven diagnostic loss and investigate evidence; no guessed product fix. D42 remains open. Frozen development265 source02f2b67b, fullCI37269797985, artifact11327403636.
+
 
 **D140 closed:** concurrentreleasecatchup changed check-call syntax and broke anexactstringguard. Source02f2b67b executes actualcandidate-shell boundary,3focusedpass; absent/reorderedmint eachfail. Freshpeer a0e98cd1 reproducednegatives. FullCI37269797985 green; rootreadLinux111634185103 exact3testpass +2113pass6skip. No releaseorcredentialbehaviorchanged. Defect/inventory5f495d9a.
 
