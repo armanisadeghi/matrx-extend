@@ -58,11 +58,21 @@ test('Scrape auth mode requires matching staged credential before browser setup'
         }),
       /d87_member_fingerprint_mismatch/,
     );
-    requireHostedAcceptanceCredential(acceptanceCase, {
+    const adminEnv = {
       MATRX_SCRAPE_AUTH_MODE: 'admin',
       MATRX_HOSTED_ADMIN_CREDENTIALS_JSON: JSON.stringify({
         email: 'admin@admin.com',
         password: 'private',
+      }),
+    };
+    assert.throws(
+      () => requireHostedAcceptanceCredential(acceptanceCase, adminEnv),
+      /hosted_profile_org_secret_required/,
+    );
+    requireHostedAcceptanceCredential(acceptanceCase, {
+      ...adminEnv,
+      MATRX_HOSTED_PROFILE_ORGANIZATION_JSON: JSON.stringify({
+        approved_organization_name: 'Matrx Org',
       }),
     });
     assert.throws(

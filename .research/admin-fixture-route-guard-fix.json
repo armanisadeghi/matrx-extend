@@ -1,0 +1,14 @@
+{
+  "defect_id": "EXT-D-0142",
+  "source_review": "afb775b3e5d72709900e54b8cd7a175af4b235de",
+  "finding": "Hosted Scrape route test's successful admin call omitted the required approved organization fixture.",
+  "fix": "The route test now expects a missing fixture to fail and supplies a named approved organization in its successful admin call for both Scrape cases. CI explicitly runs both hosted route suites.",
+  "sibling_census": "All direct requireHostedAcceptanceCredential calls in scripts/*.test.mjs were reviewed; the hosted Profile route tests already supply the fixture for successful Showcase and Scrape admin calls.",
+  "verification": {
+    "focused_suite": "25/25 passed: showcase organization diagnostic, settings native auth driver, hosted Profile route, and hosted Scrape route",
+    "ci_target": "Guest transport observer regression step runs hosted-profile-route.test.mjs and hosted-scrape-route.test.mjs via node --test",
+    "biome": "pnpm exec biome check scripts/hosted-scrape-route.test.mjs passed",
+    "diff_check": "git diff --check passed"
+  },
+  "limits": "No native browser acceptance, build, or release run in this fixer lane."
+}
