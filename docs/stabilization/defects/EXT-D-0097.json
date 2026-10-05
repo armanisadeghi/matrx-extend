@@ -33,6 +33,14 @@
       "reason": "Exact 0.2.181 Store ZIP candidate passed bounded native guest allowance retest and independent evidence review; Google accepted submission and shows Pending review. Published 0.2.176 remains the defective package."
     }
   ],
-  "current_work": "Exact 0.2.205 candidate passed fresh and returning exhausted-guest acceptance, including a second live HTTP 402 after panel reload and New chat. It is Pending review with automatic publication enabled; 0.2.176 remains Published. Verify the actual Store-installed 0.2.205 after publication before closure. The user’s original unspecified error text remains unestablished.",
-  "closure_requirement": "After Google publishes 0.2.205, verify the actual Store-installed build: a fresh guest can chat and an allowance-used returning guest sees the specific free-signup remedy with no Retry. Preserve configured allowance and guest profile data."
+  "current_work": "Exact 0.2.205 candidate passed fresh and returning exhausted-guest acceptance, including a second live HTTP 402 after panel reload and New chat. It is Pending review with automatic publication enabled; 0.2.176 remains Published. Verify the actual Store-installed 0.2.205 after publication before closure. The user\u2019s original unspecified error text remains unestablished.",
+  "closure_requirement": "After Google publishes 0.2.205, verify the actual Store-installed build: a fresh guest can chat and an allowance-used returning guest sees the specific free-signup remedy with no Retry. Preserve configured allowance and guest profile data.",
+  "publication": {
+    "observed_at_utc": "2026-10-05T04:43:13Z",
+    "version": "0.2.205",
+    "dashboard": "Published - public",
+    "installed_version": "0.2.205 Chrome Web Store source observed after Chrome Update; disabledstatepreserved",
+    "payload": "Official CRX matches submitted application bytes; .research/published205-crx-readiness.json",
+    "limit": "Actual installed guest/returning runtime unverified; local system disk below20GiB admission floor. No defect closure."
+  }
 }
