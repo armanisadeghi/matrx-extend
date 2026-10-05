@@ -1,0 +1,141 @@
+matrx-auto-git-conflict-file-work-delete-this-when-resolved
+
+HELD CONFLICT, written by scripts/sync-main.py
+File:      tests/unit/release-gate-auth-path.test.ts
+Why held:  both sides changed the same code
+GITHUB's version is live in the repo at the path above. LOCAL's version is at the bottom
+of this file, below the FACTS.
+Done with it: the final code is in the live file, this .held file is deleted, and its line
+in _conflicts/README.md is deleted. The list of open items is _conflicts/README.md.
+
+FACTS (computed by sync-main from git)
+
+THE TWO VERSIONS
+  LOCAL  = the version that was on this Mac. It is saved below, in this .held file.
+  GITHUB = the version from GitHub. It is LIVE in the repo right now, at tests/unit/release-gate-auth-path.test.ts
+  Both grew from the same COMMON version: commit 7ecc7b14b5, 2026-10-04 22:50.
+
+WHEN EACH SIDE CHANGED THIS FILE (newest first)
+  LOCAL:
+    2026-10-04 23:01  20624633dd  "test(release): follow the candidate loop's run_checks to its catch-up form"
+  GITHUB:
+    2026-10-04 22:53  02f2b67b77  "test(release): execute gate auth ordering in candidate loop (EXT-D-0140)"
+  LOCAL's latest change is 7m AFTER GITHUB's latest change.
+
+SIZE: common version 76 lines, LOCAL 76 lines, GITHUB 107 lines
+
+WHAT EACH SIDE DID, compared with the common version
+  LOCAL added 1 lines and removed 1 lines.
+  GITHUB added 30 lines and removed 4 lines.
+
+CODE ONE SIDE HAS THAT THE OTHER DOES NOT
+  LOCAL has 1 of the 30 lines GITHUB added.
+    Lines GITHUB added that LOCAL does NOT have:
+      | function runCandidateGate() {
+      | // EXT-D-0140: execute the production candidate sequence so a late or absent
+      | // mint fails at the check boundary, independent of shell spelling.
+      | const section = releaseSh.indexOf('# ── Validate the exact candidate');
+      | const start = releaseSh.indexOf('    SNAP_ROOTS+=("$JOBS")', section);
+      | const end = releaseSh.indexOf('    mandate_scan_step', start);
+      | expect(section, 'release.sh has no candidate validation section').toBeGreaterThan(-1);
+      | expect(start, 'candidate loop has no check setup').toBeGreaterThan(section);
+      | expect(end, 'candidate loop has no post-check step').toBeGreaterThan(start);
+      | // Execute the actual candidate-loop statements. The check double observes the
+      | // token at the run_checks boundary, where the strict drift command executes.
+      | SKIP_CATALOG=false
+      | JOBS=/tmp/unused
+      | NEW_TAG=v-test
+      | SNAP_ROOTS=()
+      | ... and 14 more
+    Lines GITHUB deliberately REMOVED that LOCAL still has: 3
+      | const mint = releaseSh.indexOf('$SKIP_CATALOG || mint_gate_auth');
+      | expect(mint, 'the candidate loop never calls mint_gate_auth').toBeGreaterThan(-1);
+      | expect(mint).toBeLessThan(checks);
+  GITHUB has 0 of the 1 lines LOCAL added.
+    Lines LOCAL added that GITHUB does NOT have:
+      | const checks = releaseSh.indexOf('    if ! run_checks; then');
+
+COMPARE THEM (the labels are correct; '-' lines are GITHUB, '+' lines are LOCAL):
+  diff -u --label 'GITHUB (live)' --label 'LOCAL (held)' <(git show 70c0152267e7:'tests/unit/release-gate-auth-path.test.ts') <(git show 20624633dd13:'tests/unit/release-gate-auth-path.test.ts')
+
+RECOVER EITHER VERSION FOREVER (works even after this .held file is deleted):
+  LOCAL : git show 20624633dd13:'tests/unit/release-gate-auth-path.test.ts'
+  GITHUB: git show 70c0152267e7:'tests/unit/release-gate-auth-path.test.ts'
+
+---------------- LOCAL VERSION BELOW ----------------
+// GUARD: a local release (./ship.sh → release.sh, no CI wrapper) must be able
+// to authenticate the strict tool-drift check. Until 2026-10-03 only CI minted
+// AIDREAM_API_TOKEN (scripts/release-with-gate-auth.mjs wraps release.sh there),
+// ship.sh called release.sh directly, and every local release stopped with
+// "records server contract UNVERIFIED". This fails if release.sh can reach the
+// strict drift check with no path that supplies a token.
+import { spawnSync } from 'node:child_process';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
+import { afterEach, describe, expect, it } from 'vitest';
+
+// Overridable only so the guard can be proven red against an older release.sh.
+const releaseSh = readFileSync(
+  process.env.RELEASE_SH_UNDER_TEST ?? resolve(__dirname, '../../release.sh'),
+  'utf8',
+);
+const roots: string[] = [];
+afterEach(() => {
+  for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
+});
+
+function mintBlock(): string {
+  const start = releaseSh.indexOf('GATE_TOKEN_FROM_CALLER=false');
+  const fn = releaseSh.indexOf('mint_gate_auth() {');
+  expect(start, 'release.sh has no local gate-auth path (GATE_TOKEN_FROM_CALLER)').toBeGreaterThan(
+    -1,
+  );
+  expect(fn, 'release.sh has no mint_gate_auth()').toBeGreaterThan(-1);
+  const end = releaseSh.indexOf('\n}\n', fn);
+  return releaseSh.slice(start, end + 3);
+}
+
+function runMint(callerToken: string | undefined) {
+  const root = mkdtempSync(join(tmpdir(), 'matrx-gate-auth-'));
+  roots.push(root);
+  mkdirSync(join(root, 'scripts'));
+  // Stand-in for the real minter: proves release.sh exports what --print-env prints.
+  writeFileSync(
+    join(root, 'scripts', 'release-with-gate-auth.mjs'),
+    `if (process.argv[2] !== '--print-env') process.exit(9);
+process.stdout.write('AIDREAM_API_TOKEN=minted\\nAIDREAM_ORGANIZATION_ID=org-1\\nAIDREAM_API_URL=https://api.example/api\\n');`,
+  );
+  const script = `set -u
+finding() { echo "FINDING $*"; }
+log() { :; }
+bounded() { shift; "$@"; }
+REPO_ROOT='${root}'
+${mintBlock()}
+mint_gate_auth
+echo "token=\${AIDREAM_API_TOKEN:-} org=\${AIDREAM_ORGANIZATION_ID:-} url=\${AIDREAM_API_URL:-}"`;
+  const env: NodeJS.ProcessEnv = { PATH: process.env.PATH, TMPDIR: root };
+  if (callerToken) env.AIDREAM_API_TOKEN = callerToken;
+  return spawnSync('bash', ['-c', script], { encoding: 'utf8', env });
+}
+
+describe('release.sh server-contract gate auth', () => {
+  it('mints a token before the strict drift check runs in the candidate loop', () => {
+    expect(releaseSh).toContain('pnpm -s catalog:tools:drift:strict');
+    const mint = releaseSh.indexOf('$SKIP_CATALOG || mint_gate_auth');
+    const checks = releaseSh.indexOf('    if ! run_checks; then');
+    expect(mint, 'the candidate loop never calls mint_gate_auth').toBeGreaterThan(-1);
+    expect(mint).toBeLessThan(checks);
+  });
+
+  it('a local release with no caller token exports a minted token, organization and URL', () => {
+    const run = runMint(undefined);
+    expect(run.stdout).toContain('token=minted org=org-1 url=https://api.example/api');
+    expect(run.stdout).not.toContain('FINDING');
+  });
+
+  it('a caller-supplied token (CI) is used as-is and never re-minted', () => {
+    const run = runMint('from-ci');
+    expect(run.stdout).toContain('token=from-ci org= url=');
+  });
+});
