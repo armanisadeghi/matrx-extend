@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0042",
+  "status": "native_attempt_failed_at_organization_stage; defect_open",
+  "lane": "one guarded hosted native run; no retry",
+  "prior_prelaunch_record": ".research/showcase-picker-native-run.json",
+  "driver": "tests/browser/showcase-picker-native-acceptance.mjs",
+  "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+  "driver_source_review": {
+    "green_ci_source_sha": "02f2b67b7751332e118f8ec94908b5510e8784e5",
+    "hosted_dispatch_source_sha": "7ae5e8b2e9cbe06eb1aa116a26ebb4c5a4f91d64",
+    "comparison": "Workflow, hosted importer, native acceptance driver, native harness, and auth driver are unchanged from the green CI source at the dispatched commit. Current main also contains no changes to those files.",
+    "result": "source_equivalent"
+  },
+  "green_ci_artifact": {
+    "ci_run_id": 37269797985,
+    "ci_source_sha": "02f2b67b7751332e118f8ec94908b5510e8784e5",
+    "ci_conclusion": "success",
+    "artifact_id": 11327403636,
+    "artifact_name": "matrx-extend-development-test-02f2b67b7751332e118f8ec94908b5510e8784e5-37269797985-1",
+    "artifact_sha256": "c9b2ff8cef45ee181a57727b1f0ac2a80dd7e911a2650b929d06189bd701b788",
+    "version": "0.2.265",
+    "loaded_tree_sha256": "f4385a2a307003fed1f71944b7cfc637205d22172318f68b327dde747f0c11b1",
+    "provenance": "Hosted importer report confirms exact CI source, run, artifact, tree, and version."
+  },
+  "hosted_run": {
+    "run_id": 37270450308,
+    "attempt": 1,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37270450308",
+    "dispatch_source_sha": "7ae5e8b2e9cbe06eb1aa116a26ebb4c5a4f91d64",
+    "event": "workflow_dispatch",
+    "acceptance_case": "showcase-picker-admin",
+    "runner_label": "macos-15",
+    "runner_architecture": "ARM64",
+    "other_active_hosted_browser_runs_before_dispatch": 0,
+    "conclusion": "failure",
+    "duration": "7m31s",
+    "hosted_result_artifact_id": 11328173435,
+    "hosted_result_artifact_name": "hosted-guest-37270450308-1",
+    "hosted_result_artifact_sha256": "5621b1898b7e7552b5906963896463a5655e972c03809d1b1ac129b6d5523823"
+  },
+  "failure": {
+    "outer_stage": "organization",
+    "failure_code": "organization_failed",
+    "native_stage": "exercise_panel",
+    "last_nested_auth_stage": "admin_extension_auth_completion",
+    "auth_stage_note": "This is only the last nested callback value. The driver assigns outer stage organization after signInSettings returns and the admin-role assertion passes; the nested value is stale and is not the failure cause.",
+    "boundary_result": "Admin role assertion passed. The subsequent required organization selection/verification operation failed. Its exact internal substep is unknown because the driver intentionally discards the caught exception and records only the outer stage.",
+    "screenshot_timing": "The saved screenshots are harness setup captures; they do not show the state at failure time and are not used to infer the failure.",
+    "retry": "Not retried, per one-attempt instruction."
+  },
+  "criteria": [
+    {
+      "id": "Guest shell exposes Scrape and hides admin Showcase",
+      "status": "pass",
+      "evidence": "Driver recorded scrape_visible=true and showcase_absent=true."
+    },
+    {
+      "id": "Real admin sign-in and admin role verification",
+      "status": "pass",
+      "evidence": "signInSettings returned and the driver's auth.admin_role assertion passed. No account identifier is retained."
+    },
+    {
+      "id": "Select and verify the device organization",
+      "status": "fail",
+      "evidence": "Run failed within the organization stage; internal substep is not available in the bounded receipt."
+    },
+    {
+      "id": "Open Showcase List Pattern through trusted panel input",
+      "status": "unverified",
+      "reason": "Run stopped during organization selection."
+    },
+    {
+      "id": "Start A, cancel A, start B on the same page and observe one picker",
+      "status": "unverified",
+      "reason": "Picker flow did not run."
+    },
+    {
+      "id": "Select a card and title, press Done, Extract three fixture rows",
+      "status": "unverified",
+      "reason": "Picker flow did not run."
+    },
+    {
+      "id": "Cancel another pick and verify one ordinary page click",
+      "status": "unverified",
+      "reason": "Picker flow did not run."
+    },
+    {
+      "id": "Nonadmin role gate",
+      "status": "unverified",
+      "reason": "Outside this admin and guest case."
+    },
+    {
+      "id": "Held stale A ITEM_DETECTED, RESULT, or EXIT delivered after B starts",
+      "status": "unverified",
+      "reason": "Driver has no native hold/release hook."
+    },
+    {
+      "id": "Delayed A cancellation injection or deferred installation targeting B",
+      "status": "unverified",
+      "reason": "Driver has no native hold/release hook."
+    },
+    {
+      "id": "Fresh content-script context reinjection and exact listener count",
+      "status": "unverified",
+      "reason": "Driver exercises mounted UI restart only."
+    }
+  ],
+  "resource_result": {
+    "journal_opened": true,
+    "cpu_busy_sample": "RESOURCE_CPU_PENDING",
+    "recovery": "RESOURCE_CPU_RECOVERED after clear samples",
+    "final_decision": "child_failed",
+    "resource_invalid": false,
+    "runner_exit_code": 1,
+    "interpretation": "The resource guard recovered and did not invalidate evidence; the acceptance child failure ended the run."
+  },
+  "credential_secret_cleanup": {
+    "name": "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+    "was_absent_before_lane": true,
+    "created_for_this_run": true,
+    "source": "Privately read from the aidream .env in a child process and sent to gh secret set over stdin.",
+    "deleted_immediately_after_terminal_status": true,
+    "absence_verified_after_delete": true,
+    "credential_value_or_account_identifier_recorded": false
+  },
+  "evidence": {
+    "external_scratch_root": "/Volumes/Samsung2TB/code/.stabilization-scratch/showcase-picker-native-37270450308",
+    "raw_receipt": "/Volumes/Samsung2TB/code/.stabilization-scratch/showcase-picker-native-37270450308/artifact/_temp/showcase-picker-native-37270450308-1.json",
+    "resource_events_extracted_from_hosted_log": "/Volumes/Samsung2TB/code/.stabilization-scratch/showcase-picker-native-37270450308/resource-guard-events-observed.log",
+    "hash_manifest": "/Volumes/Samsung2TB/code/.stabilization-scratch/showcase-picker-native-37270450308/evidence-hash-manifest.json",
+    "screenshots": [
+      {
+        "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/showcase-picker-native-37270450308/artifact/_temp/guest-acceptance/native-sidepanel-qa-JzVM5t/native-side-panel.png",
+        "sha256": "f499d0269288e71c3a1d4c0ef8409a92fbe5e8ab1e09aa31a56293a0708f4166",
+        "privacy_review": "Inspected; no password, link, or account identifier visible. Setup capture only."
+      },
+      {
+        "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/showcase-picker-native-37270450308/artifact/_temp/guest-acceptance/native-sidepanel-qa-JzVM5t/normal-target-after-open.png",
+        "sha256": "c939d4f6417b874eefffbe4a8c9bd1cf05088fe2b42ab7a7e13c65d79a024fd2",
+        "privacy_review": "Inspected; contains only the demo fixture and a clipped generic response, with no password, link, or account identifier. Setup capture only."
+      }
+    ],
+    "repository_commit_policy": "Only this safe summary report is committed. Raw receipt, resource events, hash manifest, and inspected screenshots remain under external scratch."
+  },
+  "decision": "D42 remains open. No stabilization inventory promotion or closure; root reviews the organization-stage failure and decides any next lane."
+}

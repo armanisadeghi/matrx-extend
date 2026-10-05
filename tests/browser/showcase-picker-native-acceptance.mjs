@@ -13,6 +13,12 @@ import {
   signInSettings,
 } from './settings-native-auth-driver.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
+import {
+  createShowcaseOrganizationDiagnostic,
+  observeShowcaseOrganization,
+  safeShowcaseOrganizationFailure,
+  stageShowcaseOrganization,
+} from './showcase-organization-diagnostic.mjs';
 
 const REPO = resolve(import.meta.dirname, '../..');
 const extensionDir = process.env.MATRX_SHOWCASE_EXTENSION_DIR;
@@ -50,6 +56,7 @@ const report = {
     'nonadmin role gating',
   ],
   failure_code: null,
+  organization_diagnostic: null,
 };
 const stage = (value) => {
   report.stage = value;
@@ -93,6 +100,26 @@ async function chooseScopeIfNeeded(page) {
 }
 
 try {
+  // A lightweight probe exercises the real receipt catch/writer without starting Chrome.
+  if (['picker', 'storage', 'unknown'].includes(process.env.MATRX_SHOWCASE_DIAGNOSTIC_PROBE)) {
+    stage('organization');
+    report.organization_diagnostic = createShowcaseOrganizationDiagnostic();
+    const probe = process.env.MATRX_SHOWCASE_DIAGNOSTIC_PROBE;
+    stageShowcaseOrganization(
+      report.organization_diagnostic,
+      probe === 'storage' ? 'organization_storage' : 'organization_picker',
+    );
+    observeShowcaseOrganization(report.organization_diagnostic, {
+      picker_available: probe !== 'picker',
+    });
+    throw new Error(
+      probe === 'picker'
+        ? 'd87_required_organization_picker_not_observed:{"private":"hidden"}'
+        : probe === 'storage'
+          ? 'd87_required_organization_storage_not_observed:{"token":"hidden"}'
+          : 'private@example.invalid https://private.invalid/token',
+    );
+  }
   stage('inputs');
   assert.ok(extensionDir && receiptPath, 'showcase_exact_artifact_inputs_required');
   assert.match(
@@ -162,15 +189,21 @@ try {
       );
       assert.equal(auth.admin_role, true, 'showcase_admin_role_unverified');
       stage('organization');
+      report.organization_diagnostic = createShowcaseOrganizationDiagnostic();
       const organization = await resourceAction(() =>
         selectRequiredSettingsOrganization({
           panel,
           mode: 'admin',
           email: auth.email,
           profileId: auth.profileId,
+          onStage: (value) => stageShowcaseOrganization(report.organization_diagnostic, value),
+          onObservation: (value) =>
+            observeShowcaseOrganization(report.organization_diagnostic, value),
         }),
       );
+      stageShowcaseOrganization(report.organization_diagnostic, 'organization_identity_read');
       const identity = await panelIdentity(panel);
+      stageShowcaseOrganization(report.organization_diagnostic, 'organization_identity_compare');
       assert.equal(identity.profileId, auth.profileId, 'showcase_profile_changed');
       assert.equal(
         identity.organizationId,
@@ -288,9 +321,12 @@ try {
   stage('complete');
   report.status = 'passed_bounded';
   process.stdout.write('PASS showcase_picker_native_bounded\n');
-} catch {
+} catch (error) {
   report.status = 'unverified';
-  report.failure_code = `${report.stage}_failed`;
+  report.failure_code =
+    report.stage === 'organization'
+      ? safeShowcaseOrganizationFailure(error)
+      : `${report.stage}_failed`;
   process.stderr.write(
     `UNVERIFIED showcase_picker_native stage=${report.stage} native_stage=${report.native_stage}\n`,
   );
