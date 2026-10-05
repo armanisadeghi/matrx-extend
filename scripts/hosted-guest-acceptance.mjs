@@ -323,6 +323,12 @@ async function run(prepared, artifactMode) {
   }
   const memberLinkPath = join(dirname(relocatedReceipt), 'member-magic-link-private.json');
   const adminCredentialsPath = join(runtimeDir, 'prepare-admin-credentials-private.json');
+  const approvedAdminOrganizationPath = join(
+    runtimeDir,
+    'approved-admin-organization-private.json',
+  );
+  const needsApprovedAdminOrganization =
+    acceptanceCase === 'showcase-picker-admin' || (scrapeRoute && scrapeSelection.mode === 'admin');
   let adminCredentialsCreated = false;
   if (
     acceptanceCase === 'member-chat' ||
@@ -354,6 +360,8 @@ async function run(prepared, artifactMode) {
     await writeFile(adminCredentialsPath, JSON.stringify(parsed), { mode: 0o600, flag: 'wx' });
     adminCredentialsCreated = true;
   }
+  if (needsApprovedAdminOrganization)
+    await stageProfileOrganizationConfig(approvedAdminOrganizationPath, process.env);
   const childEnv = {
     ...process.env,
     // Acceptance must consume the same runtime this wrapper just verified.
@@ -364,6 +372,9 @@ async function run(prepared, artifactMode) {
     MATRX_SCRAPE_ARTIFACT_CHANNEL: scrapeRoute?.channel,
     MATRX_SCRAPE_AUTH_MODE: scrapeSelection?.mode,
     MATRX_SCRAPE_WIDTH_MODE: scrapeSelection?.widthMode,
+    ...(needsApprovedAdminOrganization
+      ? { MATRX_APPROVED_ADMIN_ORGANIZATION_FILE: approvedAdminOrganizationPath }
+      : {}),
     ...(acceptanceCase === 'showcase-picker-admin'
       ? {
           MATRX_SHOWCASE_EXTENSION_DIR: extensionDir,
@@ -438,6 +449,7 @@ async function run(prepared, artifactMode) {
   };
   childEnv.MATRX_HOSTED_MEMBER_LINK_JSON = undefined;
   childEnv.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON = undefined;
+  childEnv.MATRX_HOSTED_PROFILE_ORGANIZATION_JSON = undefined;
   childEnv.MATRX_REVIEWER_CREDENTIALS_FILE = undefined;
   try {
     const child = spawn(
@@ -488,6 +500,7 @@ async function run(prepared, artifactMode) {
     )
       await unlink(memberLinkPath);
     if (adminCredentialsCreated) await unlink(adminCredentialsPath);
+    if (needsApprovedAdminOrganization) await unlink(approvedAdminOrganizationPath);
   }
 }
 

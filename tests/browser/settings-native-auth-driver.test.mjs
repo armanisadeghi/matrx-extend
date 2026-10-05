@@ -1,13 +1,33 @@
 import assert from 'node:assert/strict';
+import { chmod, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
 import {
   MEMBER_TEST_ORGANIZATION_NAME,
+  approvedAdminOrganizationName,
   currentSettingsIdentityMatches,
   panelIdentity,
   settingsOrganizationSelectionRequired,
   settingsShellReady,
 } from './settings-native-auth-driver.mjs';
+
+test('approved admin organization is read only from a private named fixture', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'settings-approved-admin-org-'));
+  const fixture = join(directory, 'approved.json');
+  try {
+    await writeFile(fixture, '{"approved_organization_name":"Matrx Org"}', { mode: 0o600 });
+    assert.equal(await approvedAdminOrganizationName(fixture), 'Matrx Org');
+    await chmod(fixture, 0o644);
+    await assert.rejects(
+      approvedAdminOrganizationName(fixture),
+      /d87_approved_admin_organization_file_not_private/,
+    );
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
 
 function readinessContract(check) {
   // The headed D87 reload had guest=false while no Settings control was mounted.

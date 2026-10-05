@@ -68,7 +68,12 @@ export function requireHostedAcceptanceCredential(acceptanceCase, env) {
     if (scrapeMode === 'admin' || acceptanceCase === 'showcase-picker-admin')
       requireSettingsCredential('admin', env.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON);
   }
-  if (acceptanceCase === 'profile-admin') profileOrganizationConfig(env);
+  if (
+    acceptanceCase === 'profile-admin' ||
+    acceptanceCase === 'showcase-picker-admin' ||
+    scrapeMode === 'admin'
+  )
+    profileOrganizationConfig(env);
   // The native journal is private and fsynced, but its hosted VM is disposable.
   // A write cannot start until each intent is durably recoverable elsewhere.
   if (acceptanceCase === 'profile-admin' || acceptanceCase === 'profile-member')

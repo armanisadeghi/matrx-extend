@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0142",
+  "status": "source_repair_verified_native_pending",
+  "observed_native_run": {
+    "run_id": 37273880772,
+    "source_sha": "dded25ae77bcfc06d507df3a79d4a3f6cd66a563",
+    "ci_run_id": 37272977936,
+    "ci_artifact_id": 11328837235,
+    "stage": "organization",
+    "substage": "organization_select",
+    "failure_code": "d87_member_organization_option_unavailable",
+    "safe_observations": {
+      "admin_role_verified": true,
+      "picker_available": true,
+      "picker_has_selection": false,
+      "selection_required": true
+    }
+  },
+  "cause": "The shared organization helper selected the member-only fixture name Matrx's Org for both member and admin acceptance. The hosted Showcase route signs in as admin@admin.com. A read-only live membership check found no undeleted admin membership in either active organization with that name, so that option cannot be offered to the admin picker.",
+  "live_read": {
+    "project": "brsgrqvjdzwihsvnfqkf",
+    "interface": "connected Supabase execute_sql; read only",
+    "tables": ["auth.users", "iam.memberships", "iam.organizations"],
+    "predicate": "admin@admin.com; organization membership container; expected name Matrx's Org; unarchived organization; undeleted membership",
+    "active_organizations_with_expected_name": 2,
+    "admin_memberships_with_expected_name": 0,
+    "admin_memberships_in_active_organizations": 54,
+    "raw_rows_or_identifiers_retained": false
+  },
+  "repair": "Require an explicit approved organization fixture for admin acceptance, stage it privately through the existing hosted Profile fixture parser, and pass its name into the shared organization selector and storage/rendered-identity verification. The member route retains its existing named fixture. Showcase and Scrape admin are both covered; missing fixture fails hosted preflight before browser setup.",
+  "sibling_census": {
+    "shared_helper_callers": ["Showcase admin", "Scrape admin/member"],
+    "member_sign_in_internal_selector": "Uses the member fixture by design.",
+    "other_native_drivers": "Separate organization selection implementations do not call this helper; no change claimed."
+  },
+  "verification": {
+    "focused_tests": "node --test showcase-organization-diagnostic.test.mjs settings-native-auth-driver.test.mjs hosted-profile-route.test.mjs",
+    "hardcoded_member_mutation": "RED at d87_member_organization_option_unavailable when the real helper's option name is replaced with the old member constant; plant.py restored identical bytes.",
+    "constant_return_mutation": "RED at showcase_organization_changed when the helper returns a fabricated success without selecting the UI; plant.py restored identical bytes.",
+    "native": "Not run in this lane; root owns guarded native retest."
+  },
+  "open": [
+    "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON is referenced by the workflow but absent from the current repository Actions secret listing; the required approved admin fixture must be available to the next hosted run.",
+    "The source repair does not certify native Showcase or Scrape behavior until each exact artifact is exercised on the real picker."
+  ]
+}

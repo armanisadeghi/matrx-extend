@@ -30,7 +30,7 @@ import { recordReloadMilestone } from './scrape-reload-milestones.mjs';
 import { waitForReplacementScrapeTab } from './scrape-replacement-tab.mjs';
 import { observeScrapeRows } from './scrape-row-observer.mjs';
 import {
-  MEMBER_TEST_ORGANIZATION_NAME,
+  approvedAdminOrganizationName,
   panelIdentity,
   selectRequiredSettingsOrganization,
   signInSettings,
@@ -899,6 +899,10 @@ try {
     throw new Error('scrape_receipt_self_test_did_not_timeout');
   }
   selection = scrapeNativeSelection(process.env);
+  const requiredOrganizationName =
+    selection.mode === 'admin'
+      ? await approvedAdminOrganizationName(process.env.MATRX_APPROVED_ADMIN_ORGANIZATION_FILE)
+      : undefined;
   report.mode = selection.mode;
   report.width_mode = selection.widthMode;
   assert.ok(EXTENSION_DIR && RECEIPT, 'scrape_exact_artifact_inputs_required');
@@ -1012,6 +1016,7 @@ try {
               mode: selection.mode,
               email: authentication.email,
               profileId: authentication.profileId,
+              requiredOrganizationName,
               onBranch: (branch) => transition.mark?.(branch),
             });
           });
@@ -1561,7 +1566,7 @@ try {
               profileId: expectedIdentity.profileId,
               organizationId: expectedIdentity.organizationId,
               requireSelectedOrganization: true,
-              requiredOrganizationName: MEMBER_TEST_ORGANIZATION_NAME,
+              requiredOrganizationName: expectedIdentity.organizationName,
             }),
           );
           assert.equal(

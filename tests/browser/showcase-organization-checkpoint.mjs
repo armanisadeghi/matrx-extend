@@ -9,7 +9,13 @@ import {
   stageShowcaseOrganization,
 } from './showcase-organization-diagnostic.mjs';
 
-export async function runShowcaseOrganizationCheckpoint({ panel, auth, resourceAction, report }) {
+export async function runShowcaseOrganizationCheckpoint({
+  panel,
+  auth,
+  resourceAction,
+  report,
+  requiredOrganizationName,
+}) {
   report.organization_diagnostic = createShowcaseOrganizationDiagnostic();
   const diagnostic = report.organization_diagnostic;
   assert.equal(auth.admin_role, true, 'showcase_admin_role_unverified');
@@ -20,6 +26,7 @@ export async function runShowcaseOrganizationCheckpoint({ panel, auth, resourceA
       mode: 'admin',
       email: auth.email,
       profileId: auth.profileId,
+      requiredOrganizationName,
       onStage: (value) => stageShowcaseOrganization(diagnostic, value),
       onObservation: (value) => observeShowcaseOrganization(diagnostic, value),
     }),
