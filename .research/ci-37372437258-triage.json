@@ -1,0 +1,18 @@
+{
+  "run_id": 37372437258,
+  "job_id": 111973535216,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37372437258",
+  "failed_head_sha": "59617c9206d7b3503d1bd17991f2303761228dd8",
+  "classification": "test-source type error",
+  "first_failing_step": "Typecheck (pnpm compile)",
+  "causal_evidence": [
+    "Dependencies installed successfully; the Typecheck step exited 1 before later checks ran.",
+    "TypeScript TS2322 points to tests/unit/screenshot-full-page.test.ts lines 29 and 45: vi.fn scrollTo mocks require an options argument, but the DOM scrollTo overload accepts no argument.",
+    "The failing SHA contains both required-argument mock definitions. Commit 854323c7c74c5fc62e23f6f6c50872c7c6929883 changes both to optional options and accepts the numeric x/y overload."
+  ],
+  "infrastructure_failure": false,
+  "formatting_failure": false,
+  "current_main_assessment": "The exact type incompatibility is corrected in source on origin/main at 5aacc6c8812acde67101711b8a8607df5358bb27. CI success for that SHA was not yet available at triage time.",
+  "next_action": "Wait for the checks job on run 37373279084 for main SHA 5aacc6c8812acde67101711b8a8607df5358bb27. If Typecheck passes, no separate repair is needed for this failure; if it fails, triage its first error separately.",
+  "source_change_in_this_triage": false
+}
