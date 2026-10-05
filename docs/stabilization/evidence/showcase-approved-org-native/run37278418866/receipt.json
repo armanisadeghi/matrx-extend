@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0042",
+  "status": "unverified",
+  "stage": "organization",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "source_sha": "f93ee0cd45f3e3232a62318e3c9afe0fd6c9f79e",
+    "run_id": 37277311837,
+    "artifact_id": 11330374970,
+    "tree_sha256": "8634f2a3b0dc70f9ae3230ad93c55dc5b42163a8a2fae993aea1a68cb5504a1a",
+    "version": "0.2.266"
+  },
+  "cases": [
+    {
+      "id": "guest_nonchat_control_and_showcase_gate",
+      "status": "pass",
+      "evidence": {
+        "scrape_visible": true,
+        "showcase_absent": true
+      }
+    }
+  ],
+  "unverified_criteria": [
+    "stale A ITEM_DETECTED, RESULT, and EXIT held and released after B starts",
+    "delayed A cancellation injection after B starts",
+    "deferred installation across replacement",
+    "new content-script context reinjection and exact listener count",
+    "nonadmin role gating"
+  ],
+  "failure_code": "d87_member_organization_option_unavailable",
+  "organization_diagnostic": {
+    "substage": "organization_select",
+    "observations": {
+      "admin_role_verified": true,
+      "picker_available": true,
+      "picker_has_selection": false,
+      "selection_required": true
+    }
+  },
+  "auth_stage": "admin_extension_auth_completion"
+}
