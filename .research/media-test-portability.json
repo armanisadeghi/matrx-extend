@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0138",
+  "status": "portable_test_fixed_focused_pass_independent_review_pending",
+  "failure": {
+    "ci_run": 37260075556,
+    "job": 111605469950,
+    "error": "ENOENT mkdtemp hardcoded /Volumes/Samsung2TB/code/.stabilization-scratch on Linux"
+  },
+  "change": "Use node:os tmpdir() and path.join; local invocation supplies external TMPDIR. No assertions or product behavior changed.",
+  "verification": {
+    "command": "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch node --test tests/browser/scrape-media-timeout-evidence.test.mjs",
+    "result": "4 passed,0 failed,0 skipped"
+  },
+  "owner_execution_reason": "Fresh Sol spawn and existing agent continuation both failed to initialize writer lock with ENOSPC. Orchestrator applied the two-line mechanical portability repair as last resort; fresh review remains required.",
+  "limits": [
+    "Corrected Linux CI pending",
+    "Fresh independent review of portability change pending",
+    "No native product acceptance"
+  ]
+}

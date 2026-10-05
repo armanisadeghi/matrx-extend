@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import test from 'node:test';
 import { waitForScrapeMedia } from './scrape-media-timeout-evidence.mjs';
@@ -131,7 +132,7 @@ test('video timeout retains row identity only as fixture indexes', async () => {
 });
 
 test('native driver writes the media timeout boundary into its real receipt', async () => {
-  const directory = await mkdtemp('/Volumes/Samsung2TB/code/.stabilization-scratch/media-receipt-');
+  const directory = await mkdtemp(join(tmpdir(), 'media-receipt-'));
   const output = join(directory, 'receipt.json');
   try {
     const result = spawnSync(
