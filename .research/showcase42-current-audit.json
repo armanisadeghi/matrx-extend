@@ -56,9 +56,9 @@
     "name": "Current frozen installed-extension A-to-B lifecycle acceptance",
     "why_decisive": "It crosses the real Chrome content-script, service-worker relay, and sidepanel boundaries that the passing unit checks mock, while proving both stale-session rejection and current-session extraction on real repeated-card data.",
     "procedure": [
-      "Build from audited HEAD 015cfba66cb23063825a323dd2a711ee04138995 using the repository's existing stabilization resource guard and freeze the resulting development artifact before opening Chrome.",
-      "Load/reload exactly that frozen unpacked artifact in the intended Chrome profile; record extension version, source SHA, artifact directory/tree hash, and build receipt. Confirm the browser-loaded artifact matches the frozen receipt and contains the current ListPatternTab and picker code before interacting.",
-      "Open Showcase → List Pattern on a regular page with repeated event cards. Start picker A and pause its outgoing ITEM_DETECTED, RESULT, and EXIT separately at the runtime-delivery boundary. Cancel A, start B without changing tab or URL, then release each held A message separately. Each must leave B active and its builder/config unchanged.",
+      "Obtain a successful main-push CI development artifact built from audited source SHA 015cfba66cb23063825a323dd2a711ee04138995 (or prove the consumed code is byte-for-byte/source-equivalent to that SHA); do not direct a manual build in this checkout.",
+      "Freeze the CI artifact before opening Chrome and record the CI run, source SHA, artifact hash, extension version, and artifact identity. Confirm the browser-loaded unpacked extension matches that exact artifact before interacting.",
+      "Open Showcase \u2192 List Pattern on a regular page with repeated event cards. Start picker A and pause its outgoing ITEM_DETECTED, RESULT, and EXIT separately at the runtime-delivery boundary. Cancel A, start B without changing tab or URL, then release each held A message separately. Each must leave B active and its builder/config unchanged.",
       "With B still active, defer A's cancellation injection until B has started, then release it. B must remain usable. Select a repeated card with B, select a field, press Done, and Extract; require current B data in the rows.",
       "While a pick is active, reinject the picker content context and click one card; require exactly one detection. Close/cancel the picker and click a normal page link/button; require ordinary page interaction to resume.",
       "Record each observed action/result against the frozen artifact receipt. Preserve the run transcript and a concise evidence artifact; classify any unexercised delivery channel or failed precondition as unverified, and keep D42 open until the whole acceptance succeeds."
@@ -66,18 +66,21 @@
     "preconditions": [
       "Healthy admission from the existing browser/resource guard immediately before browser work; no bypass or threshold change.",
       "A regular repeated-card page and a Chrome profile with the extension installed and controllable.",
-      "A reliable runtime-boundary hold/release mechanism for each outbound picker channel and cancellation injection. If the existing native harness cannot delay these events, the test cannot decisively cover D42; report that limitation rather than substituting mocked delivery for native proof.",
-      "A frozen development build from the audited source SHA, with exact extension version, output path, artifact/tree hash, build command/receipt, and confirmation the loaded extension is that artifact. Any source change after freezing requires a new build/receipt and restart of this test."
+      "An existing authorized native runtime-boundary hold/release mechanism for each outbound picker channel and cancellation injection must be identified first. None was found in this bounded audit; until then readiness is BLOCKED_HARNESS and this procedure is not executable as a decisive test. Do not substitute mocked delivery for native proof.",
+      "Successful main-push CI development artifact from the audited source SHA, or evidence the consumed code is equivalent; record CI run, source SHA, artifact hash, extension version, output identity, and confirm the loaded extension matches. Any source change after artifact creation requires a new CI artifact/receipt and restart of this test."
     ],
     "existing_procedure_basis": [
       "docs/stabilization/defects/EXT-D-0042.json reproduction and closure_requirement",
-      "docs/feature-tests.md Showcase — List Pattern replacement sessions (EXT-D-0042)",
+      "docs/feature-tests.md Showcase \u2014 List Pattern replacement sessions (EXT-D-0042)",
       ".research/showcase-picker-current-retest.json native_acceptance_missing"
-    ]
+    ],
+    "readiness": "BLOCKED_HARNESS",
+    "readiness_reason": "No existing native runtime-boundary hold/release mechanism was identified in the inspected D42 procedure, feature test, or retained retest report. Therefore this is an acceptance target/procedure outline, not yet an executable decisive test. Identify an existing authorized native mechanism before scheduling the acceptance run."
   },
   "scope_limits": [
     "Source/evidence inspection only; no test, browser, build, or release was run.",
     "No UI pass is claimed.",
-    "No product source or existing test was changed."
+    "No product source or existing test was changed.",
+    "The native acceptance procedure is not executable yet: no native hold/release harness was identified; readiness is BLOCKED_HARNESS."
   ]
 }
