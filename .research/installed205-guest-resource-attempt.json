@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-10-05T18:27:55.354937+00:00",
+  "run_id": "installed205-guest-20261005-1828",
+  "target": "actual Chrome Web Store installation hnfolienncfklkgmdjjmhhegglimlamg",
+  "version": "0.2.205",
+  "observed_source": "Chrome Web Store",
+  "actions": [
+    "Resource guard admitted after full preflight",
+    "Observed extension disabled at version0.2.205 with sourceChromeWebStore",
+    "Enabled existing extension for acceptance, no new permissions",
+    "Opened public reviewer page; no Chat message sent",
+    "Stopped UI work during CPU_PENDING; Ctrl-C confirmed stop after RESOURCE_WATCH_UNSAFE"
+  ],
+  "result": "resource_invalid_no_functional_acceptance",
+  "journal": "docs/stabilization/resource-journals/installed205-guest-20261005-1828.jsonl",
+  "resource_details": "Disk passed30.28GiB; high-load CPU crossed threshold during UI setup. Process attribution showed Spotlight mds/mds_stores among main CPU users. No operating-system processes terminated or protections changed.",
+  "remaining_state": "Existing extension remains enabled; guest storage untouched; owned extensions and demo tabs remain open. No cleanup UI action after unsafe stop.",
+  "claim_limit": "Version/source observation only; no guest reply or allowance-path result. Not a product defect."
+}

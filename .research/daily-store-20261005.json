@@ -8,7 +8,8 @@
     "draft_version": "0.2.205",
     "status": "Published - public",
     "pending_review": false,
-    "upload_enabled": true
+    "upload_enabled": true,
+    "last_refreshed_at_utc": "2026-10-05T18:16:00Z"
   },
   "live_server": {
     "git_sha": "0ea1950bcd3ec576aa7bac5de73224bfab46c31a",
@@ -17,10 +18,12 @@
     "meaning": "Version only, not guest acceptance"
   },
   "guest_acceptance": {
-    "status": "pending_same_conversation_browser_check",
-    "prior_evidence": ".research/public205-guest-native.json",
-    "gap": "Prior bounded native run tested opening plus new conversation after reload, not the explicitly required same-conversation follow-up on current backend.",
-    "next": "Implementation lane guest_same_conversation_acceptance extends existing publicCRX route; independent review and full CI before one guarded hosted run."
+    "status": "opening_pass_followup_unverified_acceptance_defect_in_fix",
+    "evidence": ".research/daily-guest-same-conversation-native.json",
+    "run_id": 37288331617,
+    "server_sha_before_and_after": "d53357976b4bd29f671c2f408c9f02c9dba08c9e",
+    "gap": "Follow-up was judged against the prior completed turn while streaming; no follow-up wire or terminal reply established. EXT-D-0144 tracks the acceptance defect. No product regression inferred.",
+    "next": "Independent review of turn-boundary repair3c1633a5, green CI, then one guarded public CRX run."
   },
-  "release": "No newer successful hostedStoreartifact found; no upload or submission; development266 is not Store package. Current machine manualbuild/release restrictions retained."
+  "release": "No newer successful hosted Store artifact found at 18:16 UTC; no upload or submission. Machine manual build/release restrictions retained."
 }
