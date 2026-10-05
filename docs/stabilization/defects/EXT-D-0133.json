@@ -13,7 +13,7 @@
   "actual": "Run37241717888 reproduces same foreground failure after successful member identity/nonadmin/org checks. Original target is present and sole exact target, exact SIDE_PANEL context1, owned roottrue; visibilityhidden with hasFocustrue. Diagnostic completes. No viewport/case result.",
   "severity": "S2: authenticated Scrape coverage blocked; product failure not established",
   "priority": "P2: resume after urgent guest Chat verification",
-  "state": "in-fix",
+  "state": "fixed",
   "evidence": [
     ".research/scrape-member-guard132-native.json",
     ".research/scrape-auth-panel-focus.json",
@@ -26,7 +26,9 @@
     ".research/member-panel-reopen-peer.json",
     ".research/member-reopen-native-retest.json",
     ".research/member-context-diagnostic-native.json",
-    ".research/member-visibility-timeline-native.json"
+    ".research/member-visibility-timeline-native.json",
+    ".research/panel-visible-reopen-repair.json",
+    ".research/visible-panel-repair-peer.json"
   ],
   "transition_history": [
     {
@@ -64,11 +66,17 @@
       "from": "retest-fail",
       "to": "in-fix",
       "reason": "Escalated to separateAstra low after trusted-reopen sourcefix failed actualnative. Cause or oracle validity must be established before another fix/run."
+    },
+    {
+      "at": "2026-10-05T00:15:52.382794+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Native timeline isolates firsthide duringredundantopen; source0e8aa6c7 preserves measuredvisible ownedpanel andfailclosesfailedprobe. Freshpeer5caaffc4 accepts8focusedpass; realChrome600 acceptancepending."
     }
   ],
   "diagnostic_commit": "427e75a4",
-  "next_action": "Sol panel_visible_reopen_repair owns bounded sequence repair using observed visible-before-open/hidden-after-open. Preserve existing visibility/context/auth/resource assertions; freshpeer and changed-condition native required.",
-  "fix_commits": ["44005fb4"],
+  "next_action": "ONE frozen244/membernormal600 changed-condition native after fullCI containing0e8aa6c7 and guest37246354075 terminal. Root/member_reopen_native_retest owns. Do not infer nativepass from simulatedopen-effect guard.",
+  "fix_commits": ["44005fb4", "0e8aa6c7"],
   "hosted_ci": {
     "run_id": 37242845397,
     "head": "71ff4c194835327b833e3cb6192cc540bddfa494",

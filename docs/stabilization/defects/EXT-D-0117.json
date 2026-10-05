@@ -3,7 +3,7 @@
   "feature_id": "EXT-F-0002",
   "case_ids": ["EXT-F-0002-T08"],
   "surface": "Hosted side-panel acceptance initialization",
-  "auth_mode": "all; new member-intended run failed before authentication",
+  "auth_mode": "all; reproduced before guest/member case execution",
   "title": "Exact Store acceptance cannot confirm side-panel runtime context after panel opening",
   "reproduction": [
     "Dispatch hosted-guest-acceptance.yml guest-scrape with release_run_id37180303468 at workflow head3c173006ebb6d5ee6ca767db84340234252580f4.",
@@ -11,10 +11,10 @@
     "Native setup opens the panel then fails native_sidepanel_runtime_context_missing at panel_context; receipt has no guest observation or cases."
   ],
   "expected": "Owned panel is confirmed through its exact extension runtime context before guest test actions; failures retain safe causal evidence.",
-  "actual": "Panel initialization fails before product case execution; cause and product impact remain unknown.",
+  "actual": "Run37246354075 initial SIDE_PANEL has empty documentURL; exact liveframe/renderer and identity alreadymatch, followup103ms yields exactcontext1 empty0. Setup fails on initial sample before anyguestrequest.",
   "severity": "S2: acceptance blocked; product impact unestablished",
   "priority": "P1: restore trustworthy Store acceptance",
-  "state": "triaged",
+  "state": "in-fix",
   "owner": "hosted_chrome_startup",
   "evidence": [
     ".research/guest-scrape-diagnostic-native.json",
@@ -26,7 +26,8 @@
     ".research/member-reopen-native-retest.json",
     ".research/panel-context-empty-diagnosis.json",
     ".research/panel-empty-diagnostic-peer.json",
-    ".research/member-context-diagnostic-native.json"
+    ".research/member-context-diagnostic-native.json",
+    ".research/guest205-current-server-retest.json"
   ],
   "transition_history": [
     {
@@ -40,10 +41,16 @@
       "from": "open",
       "to": "triaged",
       "reason": "Failure isolated to missing exact runtime context after successful owned panel opening. Safe count diagnostics81fb09a8 independently reviewed480041bd; underlying cause remains unknown."
+    },
+    {
+      "at": "2026-10-05T00:20:57.757242+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "New bounded frame/runtime evidence proves initial context sampling precedes exact registration; rootverified10hashes, rawreceipt, diagnostic and3journals. Sol initial_context_readiness_repair owns bounded exact-readiness repair; no gate weakening."
     }
   ],
   "closure_requirement": "Demonstrate cause, independently verify repair and actual owned Store panel initialization; surrounding ownership checks must still reject foreign contexts.",
-  "next_action": "New37244226691 initialexactcontextpasses naturally; failure-onlydocumentprobe notinvoked and D117cause stillunproven. Do notcloseintermittency fromone successfulinitialization. Reuse reviewed9c040f70 probe on next actualfailure; D133 escalation is active.",
+  "next_action": "Review bounded readiness repair, focused red\u2192green and freshpeer, then actual frozenStore205guestfirst/reload before memberretst. Currentserver2e24fa85 chat stillunexercised by failedrun.",
   "latest_reproduction": {
     "run_id": 37243043772,
     "product_version": "0.2.244",
