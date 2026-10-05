@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0143",
+  "run_id": 37357780854,
+  "workflow": "Hosted guest side-panel acceptance",
+  "job": "guest",
+  "run_status": "completed",
+  "run_conclusion": "failure",
+  "run_head_sha": "c120fbb65dbe2ec1ff32dbd3e1e7c84a1332ea6e",
+  "run_started_at": "2026-10-05T18:41:06Z",
+  "run_completed_at": "2026-10-05T18:49:03Z",
+  "first_failure": {
+    "native_stage": "exercise_panel",
+    "stage": "select_B_card",
+    "substage": "card_click",
+    "receipt_failure_code": "selection_card_click_failed",
+    "bounded_observations": {
+      "card_count": 3,
+      "overlay_count": 1,
+      "card_visible": true,
+      "card_center_hit": false,
+      "scope_choice_count": 0,
+      "three_card_choice_count": 0,
+      "badge_three_items": false
+    },
+    "interpretation": "The driver failed at its card-click boundary before any scope-choice, badge, or detection-relay step. The evidence localizes the failed operation but does not establish why the visible card center was not hit or whether the cause is in the driver or product."
+  },
+  "passed_before_failure": [
+    "guest Scrape visible and Showcase absent",
+    "real admin sign-in and device organization identity rendered",
+    "genuine A EXIT relayed and rejected while B remained picking",
+    "same-page cancel A and start B with one overlay"
+  ],
+  "resource_journals": [
+    {
+      "run_id": "hosted-package-37357780854-1",
+      "file": "hosted-package-37357780854-1.jsonl",
+      "sha256": "89c779af07fdbc4faeb14c696958c99fdc2f6a408317c52253acb2ed1ad18601",
+      "final_decision": "valid",
+      "resource_invalid": false,
+      "child_exit_code": 0
+    },
+    {
+      "run_id": "hosted-browser-37357780854-1",
+      "file": "hosted-browser-37357780854-1.jsonl",
+      "sha256": "8d85d89db23806a7c5e4193b5d4ed5430e60505021c941b2c74057feab46d7bc",
+      "final_decision": "valid",
+      "resource_invalid": false,
+      "child_exit_code": 0
+    },
+    {
+      "run_id": "hosted-guest-37357780854-1",
+      "file": "hosted-guest-37357780854-1.jsonl",
+      "sha256": "30b69c13b73f82656ae55dab47aab98dd85c7f9b2aee11b1a39b0983dc3d7e3f",
+      "final_decision": "child_failed",
+      "resource_invalid": false,
+      "child_exit_code": 1,
+      "watchdog": "One CPU_PENDING interval recovered through CPU_RECOVERED and later WATCH_HEALTHY events; no unsafe terminal resource decision."
+    }
+  ],
+  "excluded_artifact_journals": [
+    "hosted-browser-37105304739-1.jsonl",
+    "hosted-guest-37105304739-1.jsonl",
+    "hosted-package-37105304739-1.jsonl"
+  ],
+  "artifact_provenance": {
+    "native_result_artifact_id": 11365148943,
+    "native_result_artifact_name": "hosted-guest-37357780854-1",
+    "native_result_artifact_sha256": "e742f82fb545e3c022bb5d16a0a920499182b4f8d7c94e0bb4a3ca230cddf057",
+    "native_result_artifact_created_at": "2026-10-05T18:48:59Z",
+    "receipt": "docs/stabilization/evidence/showcase-selection-current-native/run37357780854/original-receipt.json",
+    "receipt_sha256": "12744695f395a13ddf63bc450a30235cbf9cf40689451b714b3eb6b7c94fb01c",
+    "development_source_sha": "5df905a8189119939f5b2be821adec15c1bd0e95",
+    "development_ci_run_id": 37355629310,
+    "development_ci_conclusion": "success",
+    "development_artifact_id": 11365111042,
+    "development_artifact_sha256": "c39a16603b3eb0641f25b13e6bf08722204c31cc500f7abf976ec9b411e1d1a7",
+    "development_artifact_tree_sha256": "6c1f5a74af610329728d139133584a141b4d518c42709a88e308f3da09a83df6",
+    "development_version": "0.2.289",
+    "github_run_log_sha256": "4e580abe8a8a16aa2583f726787931570661c4caf96c6258b08fc77882159ca0"
+  },
+  "screenshot_review": {
+    "privacy_inspected": true,
+    "native_side_panel": "Shows the guest panel at its baseline state; no account identifier or credential visible.",
+    "normal_target": "Shows the public demo article and its panel-open control; no account identifier or credential visible.",
+    "limitation": "Neither screenshot captures the admin Showcase selection failure."
+  },
+  "redaction": "The original receipt is retained byte-for-byte and contains no credential or account identifier. Hosted logs displayed secret environment values as GitHub's masked *** tokens; raw logs remain in external scratch and only their SHA-256 is recorded here.",
+  "unverified": [
+    "cause of card_center_hit=false",
+    "current B detection and extraction",
+    "stale A ITEM_DETECTED and RESULT handling after B starts",
+    "delayed A cancellation injection, deferred installation, reinjection listener count",
+    "nonadmin role gating"
+  ],
+  "secrets": "Root confirmed both owned ephemeral GitHub secrets were deleted and absent. This collector made no secret changes."
+}

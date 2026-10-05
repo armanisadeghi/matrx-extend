@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0042",
+  "status": "unverified",
+  "stage": "select_B_card",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "source_sha": "5df905a8189119939f5b2be821adec15c1bd0e95",
+    "run_id": 37355629310,
+    "artifact_id": 11365111042,
+    "tree_sha256": "6c1f5a74af610329728d139133584a141b4d518c42709a88e308f3da09a83df6",
+    "version": "0.2.289"
+  },
+  "cases": [
+    {
+      "id": "guest_nonchat_control_and_showcase_gate",
+      "status": "pass",
+      "evidence": {
+        "scrape_visible": true,
+        "showcase_absent": true
+      }
+    },
+    {
+      "id": "real_admin_signin_and_device_organization",
+      "status": "pass",
+      "evidence": {
+        "rendered": true
+      }
+    },
+    {
+      "id": "genuine_A_exit_relay_rejected_while_B_active",
+      "status": "pass",
+      "evidence": {
+        "old_session_id": "066682bf-542f-41a3-8b06-ca7bdcf2d37f",
+        "relay_tab_id": 885986689,
+        "relay_document_id": "AE18FCB43F69A9A76B56CF3F66FEB205",
+        "B_picking": true
+      }
+    },
+    {
+      "id": "same_page_cancel_A_start_B",
+      "status": "pass",
+      "evidence": {
+        "page_unchanged": true,
+        "one_overlay": true
+      }
+    }
+  ],
+  "unverified_criteria": [
+    "stale A ITEM_DETECTED, RESULT, and EXIT held and released after B starts",
+    "delayed A cancellation injection after B starts",
+    "deferred installation across replacement",
+    "new content-script context reinjection and exact listener count",
+    "nonadmin role gating"
+  ],
+  "failure_code": "selection_card_click_failed",
+  "organization_diagnostic": {
+    "substage": "organization_identity_compare",
+    "observations": {
+      "admin_role_verified": true,
+      "picker_available": true,
+      "picker_has_selection": false,
+      "selection_required": true,
+      "menu_open": true,
+      "visible_option_count": 58,
+      "exact_match_count": 1,
+      "exact_visible_match_count": 1,
+      "target_in_viewport": false,
+      "target_center_hit": false,
+      "archive_filter": "unknown",
+      "storage_has_uuid": true,
+      "storage_name_matches": true,
+      "rendered_email_matches": true,
+      "rendered_role_matches": true,
+      "rendered_profile_matches": true,
+      "rendered_organization_matches": true
+    }
+  },
+  "selection_diagnostic": {
+    "substage": "card_click",
+    "observations": {
+      "card_count": 3,
+      "overlay_count": 1,
+      "card_visible": true,
+      "card_center_hit": false,
+      "scope_choice_count": 0,
+      "three_card_choice_count": 0,
+      "badge_three_items": false
+    }
+  },
+  "auth_stage": "admin_extension_auth_completion"
+}
