@@ -1449,15 +1449,14 @@ try {
       for (const label of ['Images', 'Video']) {
         await requireResourceHealth();
         await resourceAction(() => click(panel, 'scrape-result-tab', label));
-        const state = await waitFor(
-          `scrape_empty_${label}_tab`,
-          () => scrapeState(panel),
-          (s) => s?.selected === label && s.visible && typeof s.resultText === 'string',
-        );
         await requireResourceHealth();
-        mediaEvidence[`${label.toLowerCase()}_empty`] = assertMediaPane(state, {
+        mediaEvidence[`${label.toLowerCase()}_empty`] = await observeSelectedMedia({
+          panel,
           label,
           items: [],
+          name: `scrape_empty_${label}_tab`,
+          evaluate,
+          scrapeState,
         });
       }
       const t08 = report.cases.find((c) => c.id === 'EXT-F-1007-T08');

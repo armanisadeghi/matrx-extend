@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0139",
+  "scope": "Scrape native acceptance empty-media capture",
+  "cause": "The media observation refactor removed the driver's assertMediaPane import but left one direct call in the later empty-media loop. The headed member run reached that loop and failed with ReferenceError before either empty pane could be recorded.",
+  "sibling_review": "The direct-call census found only this driver reference. Populated Images and Video already used observeSelectedMedia, and the shared validator still tests empty panes for both labels.",
+  "red": "Before the driver edit, node --test tests/browser/scrape-empty-media-branch.test.mjs failed in the extracted production loop with ReferenceError: assertMediaPane is not defined.",
+  "green": "After the edit, the same guard passed for both empty panes and rejected populated Images, populated Video, and a hidden Images pane. The focused media assertions and timeout receipt suite also passed (14 tests total).",
+  "change": "The production empty-media loop now uses observeSelectedMedia and its existing strict assertMediaPane validator, retaining per-tab resource health and gated click checks.",
+  "limit": "No headed native browser run or release was performed in this repair lane; the next collector run must verify the full live path."
+}
