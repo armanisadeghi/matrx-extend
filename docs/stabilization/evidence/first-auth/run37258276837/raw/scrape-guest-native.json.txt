@@ -1,0 +1,800 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007",
+  "mode": "member",
+  "status": "unverified",
+  "artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.244",
+    "source_sha": "b81587021d689078ed428dafe3e15474a84c41e2",
+    "tree_sha256": "3396bae6d24ddfc7e93422a12e2341983179d7b4be3eca94adaafc5316cc94e7",
+    "run_id": 37233480033,
+    "artifact_id": 11315305224
+  },
+  "guest_account_observed": false,
+  "cases": [
+    {
+      "id": "EXT-F-1007-T20",
+      "status": "partial",
+      "evidence": {
+        "initial_empty": true,
+        "initial_url": "http://localhost:49193/intake"
+      },
+      "remaining": [
+        "Navigation and reload lifecycle remain to be exercised."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T01",
+      "status": "partial",
+      "evidence": {
+        "url": "http://localhost:49193/intake",
+        "busy_disabled": true,
+        "article_title": "Harbor Dental intake guide",
+        "lazy_content_absent": true,
+        "result_tabs": [
+          "Article",
+          "Images",
+          "Video",
+          "Links",
+          "SEO",
+          "Schema"
+        ]
+      },
+      "remaining": [
+        "Full extension reload and post-reload capture not yet exercised."
+      ]
+    }
+  ],
+  "stage": "result_tabs",
+  "native_stage": "exercise_panel",
+  "failure": {
+    "stage": "result_tabs",
+    "code": "scrape_Images_loaded_not_observed:{\"ready\":true,\"title\":\"Harbor Dental intake guide\",\"empty\":false,\"fast\":[{\"disabled\":false,\"text\":\"Re-capture\"}],\"deep\":[{\"disabled\":false,\"text\":\"Scroll & capture\"}],\"tabs\":[{\"label\":\"Article\",\"selected\":false},{\"label\":\"Images\",\"selected\":true},{\"label\":\"Video\",\"s"
+  },
+  "original_busy_failure": null,
+  "cpu_diagnostic": null,
+  "horizontal_geometry": [
+    {
+      "boundary": "after_fast_capture",
+      "at": "2026-10-05T03:16:10.299Z",
+      "geometry": {
+        "viewportWidth": 600,
+        "document": {
+          "left": 0,
+          "right": 600,
+          "width": 600,
+          "scrollLeft": 0,
+          "scrollWidth": 600,
+          "clientWidth": 600
+        },
+        "body": {
+          "left": 0,
+          "right": 600,
+          "width": 600,
+          "scrollLeft": 0,
+          "scrollWidth": 600,
+          "clientWidth": 600
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 528,
+          "width": 520,
+          "scrollLeft": 0,
+          "scrollWidth": 520,
+          "clientWidth": 520
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 600,
+          "width": 600,
+          "scrollLeft": 0,
+          "scrollWidth": 600,
+          "clientWidth": 600
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 588,
+          "width": 576,
+          "scrollLeft": 0,
+          "scrollWidth": 576,
+          "clientWidth": 576
+        },
+        "selectedTrigger": {
+          "left": 12,
+          "right": 69.921875,
+          "width": 57.921875,
+          "scrollLeft": 0,
+          "scrollWidth": 58,
+          "clientWidth": 58
+        },
+        "title": {
+          "left": 12,
+          "right": 520,
+          "width": 508,
+          "scrollLeft": 0,
+          "scrollWidth": 508,
+          "clientWidth": 508
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 588,
+          "width": 576,
+          "scrollLeft": 0,
+          "scrollWidth": 576,
+          "clientWidth": 576
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 217.90625,
+              "width": 65.65625,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 221.90625,
+              "right": 284.65625,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 288.65625,
+              "right": 333.03125,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 337.03125,
+              "right": 403.328125,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    },
+    {
+      "boundary": "after_Article_tab",
+      "at": "2026-10-05T03:16:10.475Z",
+      "geometry": {
+        "viewportWidth": 600,
+        "document": {
+          "left": 0,
+          "right": 600,
+          "width": 600,
+          "scrollLeft": 0,
+          "scrollWidth": 600,
+          "clientWidth": 600
+        },
+        "body": {
+          "left": 0,
+          "right": 600,
+          "width": 600,
+          "scrollLeft": 0,
+          "scrollWidth": 600,
+          "clientWidth": 600
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 528,
+          "width": 520,
+          "scrollLeft": 0,
+          "scrollWidth": 520,
+          "clientWidth": 520
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 600,
+          "width": 600,
+          "scrollLeft": 0,
+          "scrollWidth": 600,
+          "clientWidth": 600
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 588,
+          "width": 576,
+          "scrollLeft": 0,
+          "scrollWidth": 576,
+          "clientWidth": 576
+        },
+        "selectedTrigger": {
+          "left": 12,
+          "right": 69.921875,
+          "width": 57.921875,
+          "scrollLeft": 0,
+          "scrollWidth": 58,
+          "clientWidth": 58
+        },
+        "title": {
+          "left": 12,
+          "right": 520,
+          "width": 508,
+          "scrollLeft": 0,
+          "scrollWidth": 508,
+          "clientWidth": 508
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 588,
+          "width": 576,
+          "scrollLeft": 0,
+          "scrollWidth": 576,
+          "clientWidth": 576
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 217.90625,
+              "width": 65.65625,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 221.90625,
+              "right": 284.65625,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 288.65625,
+              "right": 333.03125,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 337.03125,
+              "right": 403.328125,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "reload_milestones": [],
+  "reload_lifecycle": null,
+  "driver_failure": null,
+  "media_transitions": [],
+  "media_event_traces": [],
+  "authentication": {
+    "mode": "member",
+    "account_fingerprint": "3d6137db6c081c07",
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "admin_role": false,
+    "canonical_nonadmin_check": {
+      "matched_current_extension_user": true,
+      "http_status": 200,
+      "returned_rows": 0
+    },
+    "organization_selected": true,
+    "selected_organization_verified": true,
+    "rendered_identity": {
+      "rendered_email_matches_first_party": true,
+      "rendered_role_matches_mode": true,
+      "profile_matches_first_party": true,
+      "selected_organization_matches_stored_uuid_and_name": true
+    }
+  },
+  "panel_viewports": [
+    {
+      "phase": "warm",
+      "mode": "normal",
+      "mechanism": "owned_SIDE_PANEL_CDP_viewport_emulation",
+      "observed_px": 600,
+      "minimum_px": 600
+    }
+  ],
+  "panel_visibility_timeline": [
+    {
+      "phase": "initial_settled_before_screenshots",
+      "measured": true,
+      "visibility": "visible",
+      "hasFocus": false,
+      "ready": true,
+      "width": 360,
+      "height": 373
+    },
+    {
+      "phase": "after_initial_screenshots",
+      "measured": true,
+      "visibility": "visible",
+      "hasFocus": false,
+      "ready": true,
+      "width": 360,
+      "height": 373
+    },
+    {
+      "phase": "before_authentication",
+      "measured": true,
+      "visibility": "visible",
+      "hasFocus": false,
+      "ready": true,
+      "width": 360,
+      "height": 373
+    },
+    {
+      "phase": "member_web_created",
+      "measured": true,
+      "visibility": "visible",
+      "hasFocus": false,
+      "ready": true,
+      "width": 360,
+      "height": 373,
+      "host": {
+        "native_window": {
+          "measured": true,
+          "state": "normal"
+        },
+        "panel_host": {
+          "measured": true,
+          "root_unique": true,
+          "root_active": false,
+          "root_window_present": true,
+          "root_window_focused": true,
+          "root_window_state": "normal",
+          "panel_unique": true,
+          "panel_in_root_window": null,
+          "focused_window_count": 1,
+          "window_count": 1
+        },
+        "scrape_hit": {
+          "measured": true,
+          "unique": true,
+          "in_viewport": true,
+          "hit": "descendant",
+          "disabled": false
+        }
+      }
+    },
+    {
+      "phase": "member_oauth_completed",
+      "measured": true,
+      "visibility": "visible",
+      "hasFocus": true,
+      "ready": true,
+      "width": 360,
+      "height": 373,
+      "host": {
+        "native_window": {
+          "measured": true,
+          "state": "normal"
+        },
+        "panel_host": {
+          "measured": true,
+          "root_unique": true,
+          "root_active": false,
+          "root_window_present": true,
+          "root_window_focused": true,
+          "root_window_state": "normal",
+          "panel_unique": true,
+          "panel_in_root_window": null,
+          "focused_window_count": 1,
+          "window_count": 1
+        },
+        "scrape_hit": {
+          "measured": true,
+          "unique": true,
+          "in_viewport": true,
+          "hit": "descendant",
+          "disabled": false
+        }
+      }
+    },
+    {
+      "phase": "member_before_web_close",
+      "measured": true,
+      "visibility": "visible",
+      "hasFocus": true,
+      "ready": true,
+      "width": 360,
+      "height": 373,
+      "host": {
+        "native_window": {
+          "measured": true,
+          "state": "normal"
+        },
+        "panel_host": {
+          "measured": true,
+          "root_unique": true,
+          "root_active": false,
+          "root_window_present": true,
+          "root_window_focused": true,
+          "root_window_state": "normal",
+          "panel_unique": true,
+          "panel_in_root_window": null,
+          "focused_window_count": 1,
+          "window_count": 1
+        },
+        "scrape_hit": {
+          "measured": true,
+          "unique": true,
+          "in_viewport": true,
+          "hit": "descendant",
+          "disabled": false
+        }
+      }
+    },
+    {
+      "phase": "member_after_web_close",
+      "measured": true,
+      "visibility": "visible",
+      "hasFocus": true,
+      "ready": true,
+      "width": 360,
+      "height": 373,
+      "host": {
+        "native_window": {
+          "measured": true,
+          "state": "normal"
+        },
+        "panel_host": {
+          "measured": true,
+          "root_unique": true,
+          "root_active": true,
+          "root_window_present": true,
+          "root_window_focused": true,
+          "root_window_state": "normal",
+          "panel_unique": true,
+          "panel_in_root_window": null,
+          "focused_window_count": 1,
+          "window_count": 1
+        },
+        "scrape_hit": {
+          "measured": true,
+          "unique": true,
+          "in_viewport": true,
+          "hit": "descendant",
+          "disabled": false
+        }
+      }
+    },
+    {
+      "phase": "member_after_root_activation",
+      "measured": true,
+      "visibility": "visible",
+      "hasFocus": true,
+      "ready": true,
+      "width": 360,
+      "height": 373,
+      "host": {
+        "native_window": {
+          "measured": true,
+          "state": "normal"
+        },
+        "panel_host": {
+          "measured": true,
+          "root_unique": true,
+          "root_active": true,
+          "root_window_present": true,
+          "root_window_focused": true,
+          "root_window_state": "normal",
+          "panel_unique": true,
+          "panel_in_root_window": null,
+          "focused_window_count": 1,
+          "window_count": 1
+        },
+        "scrape_hit": {
+          "measured": true,
+          "unique": true,
+          "in_viewport": true,
+          "hit": "descendant",
+          "disabled": false
+        }
+      }
+    },
+    {
+      "phase": "after_authentication",
+      "measured": true,
+      "visibility": "visible",
+      "hasFocus": true,
+      "ready": true,
+      "width": 360,
+      "height": 373
+    },
+    {
+      "phase": "after_organization_selection",
+      "measured": true,
+      "visibility": "visible",
+      "hasFocus": true,
+      "ready": true,
+      "width": 360,
+      "height": 373
+    },
+    {
+      "phase": "before_reopen",
+      "measured": true,
+      "visibility": "visible",
+      "hasFocus": true,
+      "ready": true,
+      "width": 360,
+      "height": 373
+    }
+  ],
+  "panel_transition": {
+    "status": "measured",
+    "events": [
+      {
+        "kind": "start",
+        "ms": 4108.099999999977,
+        "visibility": "visible"
+      },
+      {
+        "kind": "pointer_before",
+        "ms": 24465.800000000047,
+        "visibility": "visible"
+      },
+      {
+        "kind": "pointer_after",
+        "ms": 24483.599999999977,
+        "visibility": "visible"
+      },
+      {
+        "kind": "pointer_before",
+        "ms": 24491.599999999977,
+        "visibility": "visible"
+      },
+      {
+        "kind": "pointer_after",
+        "ms": 24515.400000000023,
+        "visibility": "visible"
+      },
+      {
+        "kind": "pointer_before",
+        "ms": 24959.5,
+        "visibility": "visible"
+      },
+      {
+        "kind": "pointer_after",
+        "ms": 24965.300000000047,
+        "visibility": "visible"
+      },
+      {
+        "kind": "pointer_before",
+        "ms": 24966.300000000047,
+        "visibility": "visible"
+      },
+      {
+        "kind": "pointer_after",
+        "ms": 24977,
+        "visibility": "visible"
+      },
+      {
+        "kind": "pointer_before",
+        "ms": 25175.20000000007,
+        "visibility": "visible"
+      },
+      {
+        "kind": "pointer_after",
+        "ms": 25186.70000000007,
+        "visibility": "visible"
+      },
+      {
+        "kind": "pointer_before",
+        "ms": 25187.70000000007,
+        "visibility": "visible"
+      },
+      {
+        "kind": "pointer_after",
+        "ms": 25203.599999999977,
+        "visibility": "visible"
+      },
+      {
+        "kind": "auth_admin_before",
+        "ms": 27109.099999999977,
+        "visibility": "visible"
+      },
+      {
+        "kind": "auth_admin_after",
+        "ms": 27122.5,
+        "visibility": "visible"
+      },
+      {
+        "kind": "auth_org_before",
+        "ms": 27125.5,
+        "visibility": "visible"
+      },
+      {
+        "kind": "auth_org_select",
+        "ms": 27231.400000000023,
+        "visibility": "visible"
+      },
+      {
+        "kind": "pointer_before",
+        "ms": 27404.20000000007,
+        "visibility": "visible"
+      },
+      {
+        "kind": "pointer_after",
+        "ms": 27483.099999999977,
+        "visibility": "visible"
+      },
+      {
+        "kind": "pointer_before",
+        "ms": 27483.800000000047,
+        "visibility": "visible"
+      },
+      {
+        "kind": "pointer_after",
+        "ms": 27488.599999999977,
+        "visibility": "visible"
+      },
+      {
+        "kind": "pointer_before",
+        "ms": 27496,
+        "visibility": "visible"
+      },
+      {
+        "kind": "pointer_after",
+        "ms": 27518.599999999977,
+        "visibility": "visible"
+      },
+      {
+        "kind": "pointer_before",
+        "ms": 27519.400000000023,
+        "visibility": "visible"
+      },
+      {
+        "kind": "pointer_after",
+        "ms": 27534.800000000047,
+        "visibility": "visible"
+      },
+      {
+        "kind": "auth_org_after",
+        "ms": 27535.599999999977,
+        "visibility": "visible"
+      },
+      {
+        "kind": "auth_identity_before",
+        "ms": 27754.099999999977,
+        "visibility": "visible"
+      },
+      {
+        "kind": "auth_identity_after",
+        "ms": 27765.599999999977,
+        "visibility": "visible"
+      },
+      {
+        "kind": "auth_cleanup_before",
+        "ms": 27766.300000000047,
+        "visibility": "visible"
+      },
+      {
+        "kind": "auth_cleanup_after",
+        "ms": 27769,
+        "visibility": "visible"
+      },
+      {
+        "kind": "before_health",
+        "ms": 27881.5,
+        "visibility": "visible"
+      },
+      {
+        "kind": "after_health",
+        "ms": 27884.800000000047,
+        "visibility": "visible"
+      },
+      {
+        "kind": "organization_entry",
+        "ms": 27885.5,
+        "visibility": "visible"
+      },
+      {
+        "kind": "organization_skip",
+        "ms": 27890.20000000007,
+        "visibility": "visible"
+      },
+      {
+        "kind": "after_organization",
+        "ms": 27896.300000000047,
+        "visibility": "visible"
+      },
+      {
+        "kind": "stop",
+        "ms": 27897.400000000023,
+        "visibility": "visible"
+      }
+    ],
+    "interval": "no_hidden_event"
+  },
+  "width_mode": "normal",
+  "auth_stage": "member_extension_signin",
+  "fast_busy_observation": {
+    "observed": true,
+    "text": "Capturing…",
+    "samples": 6,
+    "matchingButtons": 1,
+    "buttonReplacements": 0,
+    "disabledSamples": 1,
+    "disabledMutationRecords": 2,
+    "observedAtMs": 29755.900000000023,
+    "observationBasis": "current_owned_visible_dom"
+  },
+  "fast_screenshot": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-RjYBcE/scrape-fast-article.png"
+}

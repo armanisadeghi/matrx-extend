@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0133 controlled first-auth discriminator",
+  "status": "completed",
+  "workflow": "hosted-guest-acceptance.yml",
+  "launch_authorized": true,
+  "authorization": {
+    "source": "One launch is authorized by the parent task only after independent inspection of this prepared input record",
+    "no_retry": true
+  },
+  "inputs": {
+    "runner_label": "macos-15",
+    "development_run_id": "37233480033",
+    "development_artifact_id": "11315305224",
+    "acceptance_case": "guest-scrape-development",
+    "scrape_auth_mode": "member",
+    "scrape_width_mode": "normal",
+    "scrape_normal_width_px": "600"
+  },
+  "frozen_product": {
+    "version": "0.2.244",
+    "source_sha": "b81587021d689078ed428dafe3e15474a84c41e2",
+    "tree_sha256": "3396bae6d24ddfc7e93422a12e2341983179d7b4be3eca94adaafc5316cc94e7",
+    "development_run_id": "37233480033",
+    "development_artifact_id": "11315305224"
+  },
+  "driver": {
+    "commit": "90f35ab89fca071877bb15b9281509ac148b5549",
+    "independent_review_commit": "76bd0754",
+    "full_ci_run_id": "37257449869",
+    "full_ci_head_sha": "4918b564",
+    "full_ci_conclusion": "success"
+  },
+  "constraints": {
+    "one_native_launch_only": true,
+    "preflight_must_confirm_no_active_hosted_acceptance": true,
+    "preserve_store_0_2_205_pending": true,
+    "no_code_fixes_or_acceptance_weakening": true,
+    "external_scratch_root": "/Volumes/Samsung2TB/code/.stabilization-scratch",
+    "cleanup_temporary_github_secret_and_local_magic_link_immediately_after_terminal": true,
+    "preserve_raw_receipt_three_current_journals_and_hash_manifest": true,
+    "report_zero_cases_as_unverified": true
+  },
+  "launch": {
+    "run_id": "37258276837",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37258276837",
+    "run_attempt": 1,
+    "workflow_head_sha": "ac7343b85f9f4daf166d76fdd6f075f6b19d9f35",
+    "created_at_utc": "2026-10-05T03:09:32Z",
+    "launch_count": 1
+  },
+  "provenance_check": {
+    "relevant_workflow_and_driver_files_match_reviewed_commit": true,
+    "reviewed_commit": "90f35ab89fca071877bb15b9281509ac148b5549",
+    "compared_paths": [
+      ".github/workflows/hosted-guest-acceptance.yml",
+      "scripts/hosted-guest-acceptance.mjs",
+      "tests/browser/scrape-guest-native-acceptance.mjs",
+      "tests/browser/settings-native-auth-driver.mjs",
+      "tests/browser/panel-transition-recorder.mjs"
+    ]
+  },
+  "native_run": {
+    "run_id": "37258276837",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37258276837",
+    "head_sha": "ac7343b85f9f4daf166d76fdd6f075f6b19d9f35",
+    "terminal_status": "completed",
+    "conclusion": "failure",
+    "acceptance_status": "unverified",
+    "failure_code": "scrape_Images_loaded_not_observed",
+    "artifact_id": "11323662676",
+    "artifact_digest": "sha256:5a144ac109a80acfd0446107ef9e6ba666e4918ec019dbfb68bb61ce7100b7b1",
+    "report_path": ".research/first-auth-native.json",
+    "retry_count": 0
+  },
+  "cleanup": {
+    "temporary_github_secret_deleted": true,
+    "secret_absence_confirmed": true,
+    "local_single_use_link_deleted": true,
+    "local_link_absence_confirmed": true
+  }
+}

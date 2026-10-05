@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "run_id": 37258276837,
+  "workflow_artifact": {
+    "artifact_id": 11323662676,
+    "name": "hosted-guest-37258276837-1",
+    "sha256": "5a144ac109a80acfd0446107ef9e6ba666e4918ec019dbfb68bb61ce7100b7b1",
+    "bytes": 89668
+  },
+  "payloads": [
+    {
+      "path": "raw/scrape-guest-native.json.txt",
+      "sha256": "2d897f44c49f9be55a6c1fc835fc8df307a26dfd651c2c49bc390f1f701292c4",
+      "bytes": 20037
+    },
+    {
+      "path": "raw/resource-journals/hosted-browser-37258276837-1.jsonl",
+      "sha256": "f9b83af6686ba67a360b7b8554609f5b8d7a6e122af3b53afc1285512ae48213",
+      "bytes": 968
+    },
+    {
+      "path": "raw/resource-journals/hosted-guest-37258276837-1.jsonl",
+      "sha256": "299a6e9fd0e5b9f8e97f3da3ba41932c52aa5b35c15f02a64cbb0b37bd93819e",
+      "bytes": 2234
+    },
+    {
+      "path": "raw/resource-journals/hosted-package-37258276837-1.jsonl",
+      "sha256": "eade7c91e62a5a55dc093fcbc4daeafa5c01df53a172e653a86fa9867339b7ee",
+      "bytes": 1001
+    },
+    {
+      "path": "screenshots/scrape-fast-article.png",
+      "sha256": "72f07d3eae1832d333f2a66d2bba8f7ebe216a8f9ddc675052ddf776cfe03420",
+      "bytes": 32624
+    }
+  ]
+}
