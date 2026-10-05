@@ -416,6 +416,14 @@
    "application/json"
   ]
  },
+ "/agent-factory/builds": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/agent-factory/builds/{build_id}": {
+  "get": []
+ },
  "/agent-iteration/commit-choice": {
   "post": [
    "application/json"
