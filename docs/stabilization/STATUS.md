@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-05 03:01 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-05T03:01:16.788995+00:00. 205 features · 764 cases · 1335 controls · 137 linked defect records.
+Generated 2026-10-05 03:24 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-05T03:24:31.466984+00:00. 205 features · 764 cases · 1335 controls · 137 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1219** — Pass: 85 · Partial: 70 · Fail: 2 · Unverified: 1061 · N/A: 1.
-Unverified splits into **129 explicitly marked unverified** and **932 with no result record**.
+Applicable case-by-role slots: **1219** — Pass: 85 · Partial: 72 · Fail: 2 · Unverified: 1059 · N/A: 1.
+Unverified splits into **129 explicitly marked unverified** and **930 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 92 cases without steps, 92 without expected outcomes, 28 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -24,7 +24,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
-| [Scrape](#scrape) | 1 | 6 pass · 5 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 32 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 32 unverified · 0 deferred; 0/1 full | pass 6, partial 5, fail 0, unverified 80, n/a 0 | 6 |
+| [Scrape](#scrape) | 1 | 6 pass · 5 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 2 partial · 0 fail · 30 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 32 unverified · 0 deferred; 0/1 full | pass 6, partial 7, fail 0, unverified 78, n/a 0 | 6 |
 | [SEO](#seo) | 1 | 0 pass · 5 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | pass 0, partial 5, fail 0, unverified 37, n/a 0 | 0 |
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 4 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
@@ -808,7 +808,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Capture and manage current page scrape (EXT-F-1007)
 
-**Role status:** guest: Partial · member: Unverified · admin: Unverified. **Cases:** 32. **Controls:** 34.
+**Role status:** guest: Partial · member: Partial · admin: Unverified. **Cases:** 32. **Controls:** 34.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0022, EXT-D-0059, EXT-D-0118, EXT-D-0127, EXT-D-0128, EXT-D-0133
 
@@ -816,7 +816,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-1007-T01 Fast capture | Partial | Unverified | Unverified | EXT-F-1007-C01 |
+| EXT-F-1007-T01 Fast capture | Partial | Partial | Unverified | EXT-F-1007-C01 |
 | EXT-F-1007-T02 Deep capture | Partial | Unverified | Unverified | EXT-F-1007-C02 |
 | EXT-F-1007-T03 Recapture unsaved edits guard | Partial | Unverified | Unverified | EXT-F-1007-C03 |
 | EXT-F-1007-T04 Save capture as a Source | Unverified | Unverified | Unverified | EXT-F-1007-C04, EXT-F-1007-C21 |
@@ -835,7 +835,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1007-T17 Diagnose result actions | Unverified | Unverified | Unverified | EXT-F-1007-C17 |
 | EXT-F-1007-T18 Highlight regions handoff | Unverified | Unverified | Unverified | EXT-F-1007-C18 |
 | EXT-F-1007-T19 Add current page to project | Unverified | Unverified | Unverified | EXT-F-1007-C19 |
-| EXT-F-1007-T20 No current capture empty state | Pass | Unverified | Unverified | EXT-F-1007-C20 |
+| EXT-F-1007-T20 No current capture empty state | Pass | Partial | Unverified | EXT-F-1007-C20 |
 | EXT-F-1007-T21 Save a capture as a Source and follow its success state | N/A | Unverified | Unverified | EXT-F-1007-C04, EXT-F-1007-C21 |
 | EXT-F-1007-T22 Retain and retry a refused or unreachable save | Unverified | Unverified | Unverified | EXT-F-1007-C04, EXT-F-1007-C22, EXT-F-1007-C23 |
 | EXT-F-1007-T23 Discard an unsaved capture only after confirmation | Unverified | Unverified | Unverified | EXT-F-1007-C22, EXT-F-1007-C24 |
@@ -853,6 +853,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 - EXT-F-1007-T01 · guest: Partial. Frozen development244 guest ARM: Fast busy disable and real capture before/after full reload verified. Case expected error recovery is not exhausted; T14 natural recovery remains unverified.
   Evidence / build / date recorded: 37251782627, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T01:45:35.094250+00:00, .research/guest-scrape-normal-native.json
+- EXT-F-1007-T01 · member: Partial. Frozen244 member: warm fast capture, busy disabled, expected article and absent lazy content observed. Full reload, post-reload capture and error recovery remain unverified. Later Images assertion failed; no whole-Scrape pass.
+  Evidence / build / date recorded: 37258276837, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T03:24:31.466984+00:00, .research/first-auth-native.json
 - EXT-F-1007-T02 · guest: Partial. Frozen development244 guest ARM: Warm deep capture and unsaved-edit confirmation verified; deep failure retry and post-reload deep capture remain unverified.
   Evidence / build / date recorded: 37251782627, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T01:45:35.094250+00:00, .research/guest-scrape-normal-native.json
 - EXT-F-1007-T03 · guest: Partial. Trusted exact dialog Cancel retained edited state/idle deep button; second request confirmed Re-capture and deep mode completed. Evidence is native script assertion contract plus subsequent deep result; no separate dialog screenshot. Other auth/mode variants unverified.
@@ -875,6 +877,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: 37251782627, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T01:45:35.094250+00:00, .research/guest-scrape-normal-native.json
 - EXT-F-1007-T20 · guest: Pass. Frozen development244 guest ARM: Initial and full-reload empty state verified; original worker/panel retired and exact replacements observed.
   Evidence / build / date recorded: 37251782627, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T01:45:35.094250+00:00, .research/guest-scrape-normal-native.json
+- EXT-F-1007-T20 · member: Partial. Frozen244 member: initial empty Scrape on owned intake fixture observed. Navigation and reload lifecycle remain unverified.
+  Evidence / build / date recorded: 37258276837, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T03:24:31.466984+00:00, .research/first-auth-native.json
 
 **Other remaining work:** Source landing, refusal/retry, organization authorization, and server persistence require live member/admin evidence; guest Save must show sign-in remedy while retaining the device-local capture. Endpoint/RLS behavior is a runtime readiness gap, not a source-census blocker.; D59 document identity: candidate a021ae82 remains partial; guarded peer a702ba6c passes narrow capture tests/compile but finds mixed-document Diagnose bundle and refresh status race. Native guest/member/admin retest pending; reports/scrape-document-peer.json.
 

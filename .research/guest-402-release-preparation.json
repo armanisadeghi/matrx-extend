@@ -51,7 +51,12 @@
     "published_version": "0.2.176",
     "pending_version": "0.2.205",
     "status": "Pending review",
-    "action": "Preserve pending205. Exactcandidate205 currentbackend2e24fa85 native37247813922 passedfirst/reload groundedHTTP200; actualStoreinstallation pending. No wholeChat/allowance/newversionhealthclaim."
+    "action": "Preserve pending205. Exactcandidate205 currentbackend2e24fa85 native37247813922 passedfirst/reload groundedHTTP200; actualStoreinstallation pending. No wholeChat/allowance/newversionhealthclaim.",
+    "subsequent_refresh_window_utc": {
+      "after": "2026-10-05T03:04:44Z",
+      "before": "2026-10-05T03:13:15Z",
+      "result": "Authenticated Package refresh unchanged176published205pending; exact second not captured"
+    }
   },
   "publisher_access": {
     "observed_at_utc": "2026-10-04T08:14:16Z",
@@ -60,5 +65,11 @@
     "required_action": "None currently.",
     "limits": "Publication remains pending; no submission changed."
   },
-  "current_server_evidence": ".research/guest205-readiness-native.json"
+  "current_server_evidence": ".research/guest205-readiness-native.json",
+  "current_backend_source_audit": {
+    "health_sha": "c79ac05f44010430f509f27427a1663c4960a06f",
+    "built_at": "2026-10-05T02:17:51Z",
+    "report": ".research/guest-backend-delta-c79.json",
+    "scope": "Specific guest router and org resolver unchanged; context/reader/dependency indirect runtime effects unverified. Prior205 guest pass remains bound to2e24fa85. Current-backend guest acceptance remains pending."
+  }
 }

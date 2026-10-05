@@ -93,7 +93,7 @@
     }
   ],
   "diagnostic_commit": "427e75a4",
-  "next_action": "Independent marker review and fullCI passed. Run ONE root-input-checked frozen244 native discriminator. Keep same product244/sourceb815/CI37233480033/artifact11315305224. No action/retry/focus/gate changes. First hidden ordering localizes but does not prove cause or physical exposure; no Scrape passes until actual cases run.",
+  "next_action": "Preserve D133 in-fix: marker-only diagnostic no longer reproduces hidden state, but timing perturbation/intermittency remains unproven. Diagnose new result-tabs Images failure from actual evidence before any new Scrape run; do not weaken visibility or rerun unchanged.",
   "fix_commits": ["44005fb4", "0e8aa6c7"],
   "hosted_ci": {
     "run_id": 37242845397,
@@ -171,6 +171,17 @@
     "independent_review": "76bd0754: PASS source scope and independent seven focused recorder tests including real-caller omission mutation; native unverified",
     "ci_run_id": 37257449869,
     "ci_status": "completed SUCCESS on4918b564; root verified terminal result and current driver byte-equivalence",
-    "native_status": "not_launched"
+    "native_status": "37258276837 completed: all sampled auth visibility visible; reached member600 warm capture, then Images assertion failed. No causal closure."
+  },
+  "latest_first_auth_observation": {
+    "run_id": 37258276837,
+    "interval": "no_hidden_event",
+    "viewport_px": 600,
+    "viewport_mechanism": "owned SIDE_PANEL CDP emulation",
+    "actual_partial_cases": ["EXT-F-1007-T20", "EXT-F-1007-T01"],
+    "terminal_failure": "scrape_Images_loaded_not_observed",
+    "resource_invalid": false,
+    "physical_exposure": "unmeasured",
+    "d133_resolved": false
   }
 }
