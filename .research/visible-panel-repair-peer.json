@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "subject": "D133 panel visible reopen repair",
+  "reviewed_commit": "0e8aa6c7",
+  "evidence": {
+    "source": [
+      "tests/browser/native-sidepanel-qa-harness.mjs activateOwnedSidePanel now probes visibility from the attached panel session before bringToFront, trusted open, or target activation; it returns for visible, refuses unmeasured/unsupported states, and retains the hidden recovery sequence.",
+      "runNativeSidepanelQa passes the exact already-owned panel session and target id to the helper.",
+      "tests/browser/scrape-guest-native-acceptance.mjs retains the member identity/mode check, organization selection and verification, resource-health checks before and after setup, and the post-reopen visible-state gate. The setup still uses the existing authenticated setup path."
+    ],
+    "focused_tests": {
+      "command": "node --test tests/browser/panel-visible-reopen-repair.test.mjs tests/browser/panel-visibility-diagnostic.test.mjs",
+      "result": "8 passed, 0 failed, 112.857 ms",
+      "observed": [
+        "Visible setup skips foreground/open/activation and reaches the same visibility and resource gates.",
+        "Hidden setup foregrounds, clears stale reply, trusted-opens, activates the exact target, then reaches the same gates.",
+        "Unavailable/failed visibility refuses native action; refused open rejects.",
+        "Mutations for omitted helper work, omitted target activation, unconditional reopening, and constant visibility decision are rejected."
+      ]
+    },
+    "limits": [
+      "No native/browser run was performed in this independent review. Native behavior and end-to-end D133 resolution remain unproven.",
+      "The focused test doubles the external open effect by changing modeled visibility; this proves the helper decision and setup ordering, not Chrome's actual sidePanel.open behavior.",
+      "The captured 360px pre-emulation timeline does not establish the 600px viewport acceptance condition."
+    ]
+  },
+  "verdict_a": {
+    "source_readiness": "PASS",
+    "native_acceptance": "NOT VERIFIED",
+    "rationale": "The source seam preserves the existing authenticated setup gates and skips redundant native actions only when the exact attached panel reports visible. The hidden path remains intact and measured. This is readiness for native verification, not acceptance evidence."
+  },
+  "verdict_b": {
+    "doctrine_quality": "PASS_WITH_LIMIT",
+    "rationale": "The implementation reuses the existing panel visibility probe and reopen helper, changes only the QA harness, and refuses silently unavailable measurements. The focused seam guard distinguishes visible and hidden outcomes and includes meaningful mutation checks. Its external browser behavior is modeled, so it cannot substitute for native red-to-green confirmation.",
+    "findings": []
+  },
+  "worktree": "Unrelated pre-existing dirty paths docs/stabilization/reports/workspace-sync-guest-incident-20261003.json and docs/stabilization/evidence/guest205-current-server/ were left untouched."
+}
