@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "subject": "EXT-D-0143 diagnostic patch 50dbfc3d",
+  "verdicts": {
+    "A_runtime": {
+      "status": "UNVERIFIED",
+      "evidence": [
+        "The reported native run 37284490515 predates this patch.",
+        "No browser/native run was performed in this peer audit.",
+        "The next native failure will carry a useful substage (card_click, scope_choice, scope_badge, or detection_relay) plus allowlisted counts/boolean observations; this is sufficient to localize the failing boundary, though not necessarily the underlying historical cause.",
+        "A successful stale-admin run still needs to verify B detection/extraction separately."
+      ]
+    },
+    "B_quality": {
+      "status": "PASS_WITH_CONCERNS",
+      "findings": [
+        {
+          "severity": "minor",
+          "finding": "The acceptance receipt's hard-coded defect_id remains EXT-D-0042, while the reviewed defect and diagnostic report identify EXT-D-0143. A new receipt from this driver can be mislabeled.",
+          "evidence": "tests/browser/showcase-picker-native-acceptance.mjs report initialization; docs/stabilization/defects/EXT-D-0143.json id"
+        }
+      ],
+      "passed_checks": [
+        "Probe enters the actual acceptance driver's top-level catch and finally receipt writer, sets status unverified and process exitCode 1, and exposes only the safe category rather than the synthetic raw error.",
+        "Production samples only fixed-key counts and booleans; count values are range/type checked and unknown keys, strings, URLs, selectors and error text are discarded.",
+        "Probe assertions verify distinct click/scope failure codes and receipt observations; they do not assert a passing native outcome or promote scope.",
+        "Resource boundary refusal is mapped to a safe category. Sampling failure is contained and leaves observations absent rather than replacing the original failure."
+      ],
+      "limits": [
+        "Probe injects before browser setup and supplies synthetic counts; it proves driver catch/receipt integration and mapping, not DOM sampling or native selection behavior.",
+        "The original error object is intentionally not persisted or printed; the failure remains visible through unverified status, nonzero exit and stage-specific code."
+      ]
+    }
+  },
+  "verification": {
+    "command": "MATRX_TEST_EXTERNAL_TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch node --test tests/browser/showcase-selection-diagnostic.test.mjs",
+    "result": "2 passed, 0 failed",
+    "biome": "pnpm exec biome check passed; 1 file checked, no fixes applied"
+  }
+}
