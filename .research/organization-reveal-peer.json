@@ -8,7 +8,11 @@
     "trusted_caller_finding": "ADDRESSED_IN_CONTROLLED_DOM_SPEC",
     "exact_identity": "Existing selector path still uses the approved fixture name; selectRequiredSettingsOrganization verifies stored UUID/name and rendered identity (settings-native-auth-driver.mjs:288-366). The showcase diagnostic checks selected rendered identity against stored UUID and name.",
     "basis": "The actual selectOrganization calls waitForOrganizationOption and then the imported shared click(panel, 'organization-option', name). The shared click pointer sample scrolls the matched target into view, re-resolves the linked open listbox and exact option on each sample, checks clipping and elementFromPoint hits, waits for stable samples, and only then dispatches mousePressed/mouseReleased (settings-panel-driver.mjs:113-195, 245-280, 445-515). The focused controlled DOM seam exercises this actual caller plus shared click. No browser/native run was authorized or performed, so runtime outcome is unverified, not a failure closure.",
-    "unverified": ["Real Settings viewport/scroll container behavior", "Native/browser selection and persisted live UUID/name/rendered identity", "Cause of the original native failure"]
+    "unverified": [
+      "Real Settings viewport/scroll container behavior",
+      "Native/browser selection and persisted live UUID/name/rendered identity",
+      "Cause of the original native failure"
+    ]
   },
   "verdict_B_quality": "PASS_WITH_LIMITS",
   "verdict_B_evidence": {
