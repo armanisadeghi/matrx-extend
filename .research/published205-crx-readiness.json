@@ -1,0 +1,66 @@
+{
+  "scope": "Read-only provenance and readiness audit for public Store 0.2.205 CRX; no hosted or installed-extension acceptance run",
+  "observedAtUtc": "2026-10-05T04:47:43Z",
+  "primaryItemId": "hnfolienncfklkgmdjjmhhegglimlamg",
+  "approvedBaselineAtObservation": {
+    "publishedVersion": "0.2.205",
+    "publishedSourceCommit": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "source": "config/chrome-web-store-approved-baseline.json; concurrent root edit was read, not modified"
+  },
+  "officialPublicUpdate": {
+    "request": "https://clients2.google.com/service/update2/crx?response=redirect&prodversion=130.0.0.0&acceptformat=crx3&x=id%3Dhnfolienncfklkgmdjjmhhegglimlamg%26uc",
+    "httpStatus": 200,
+    "finalHost": "clients2.googleusercontent.com",
+    "finalFilename": "HNFOLIENNCFKLKGMDJJMHHEGGLIMLAMG_0_2_205_0.crx",
+    "scratchCrxPath": "/Volumes/Samsung2TB/code/.stabilization-scratch/published205-crx-readiness/public-update.crx",
+    "crxBytes": 13501459,
+    "crxSha256": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23",
+    "crxMagic": "Cr24",
+    "crxFormat": 3,
+    "zipOffset": 1322,
+    "embeddedZipBytes": 13500137,
+    "embeddedZipSha256": "1023bc0fcf2673eadf203ccea4116c9d119502e03de20ba6ea8a0c11af9a727a",
+    "matchingCrx3RsaKeyExtensionId": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "matchingCrx3RsaKeySha256": "7d5eb84dd25aba6c399c77466b8cb0c671705da55cebb72308a6f933a2ed1503",
+    "manifestVersion": "0.2.205",
+    "manifestKeyPresent": false,
+    "zipEntries": 528,
+    "regularFiles": 527,
+    "originalUnpackedTreeSha256": "01353e54a8b3d0d38b97ef39a895cbd4f975b404fece27d52464c10498663e31",
+    "verifiedContents": {
+      "path": "_metadata/verified_contents.json",
+      "bytes": 71325,
+      "sha256": "e2ae733c184e432a5ed722945b0f571b6c7866f0017ece2885df6d4f9ea48010"
+    },
+    "checks": "scripts/crx3-identity.mjs matched the CRX3 RSA public key to the primary item ID; embedded ZIP signature and safe paths verified before extraction; manifest version verified"
+  },
+  "submittedStoreZip": {
+    "hostedRunId": 37180303468,
+    "artifactId": 11294843385,
+    "artifactName": "matrx-extend-v0.2.205",
+    "scratchPath": "/Volumes/Samsung2TB/code/.stabilization-scratch/published205-crx-readiness/hosted-release/.output/matrx-extend-0.2.205-store.zip",
+    "sha256": "6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26",
+    "receiptSourceSha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "fileComparison": {
+      "submittedRegularFiles": 526,
+      "commonRegularFiles": 526,
+      "byteIdenticalCommonFiles": 525,
+      "changedCommonFiles": ["manifest.json"],
+      "changedManifestKeys": ["update_url"],
+      "crxManifestUpdateUrl": "https://clients2.google.com/service/update2/crx",
+      "crxOnlyFiles": ["_metadata/verified_contents.json"],
+      "submittedOnlyFiles": []
+    },
+    "relationship": "The public CRX has the same 525 non-manifest submitted files byte for byte. Google added only update_url to manifest.json and one verification metadata file. The CRX and uploaded ZIP are therefore related payloads, not byte-identical archives."
+  },
+  "hostedReadiness": {
+    "currentBlock": "scripts/hosted-guest-acceptance.mjs pins STORE_130 version and CRX SHA-256 and accepts MATRX_HOSTED_PUBLISHED_STORE_CRX only as 0.2.130; .github/workflows/hosted-guest-acceptance.yml still describes and passes 0.2.130.",
+    "minimalChangeProposal": [
+      "Replace STORE_130 with a pinned public 0.2.205 tuple: primary ID, version 0.2.205, CRX SHA-256 7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23.",
+      "Before download, require the pinned tuple's ID and version to equal config/chrome-web-store-approved-baseline.json published itemId and publishedVersion; refuse a stale or future target. Keep the existing CRX SHA, CRX3 key/ID, ZIP path, manifest version, immutable original CRX, metadata-removal receipt and tree checks.",
+      "Change workflow_dispatch published_store_crx description and the MATRX_HOSTED_PUBLISHED_STORE_CRX true value from 0.2.130 to 0.2.205. Keep its exactly-one-provenance-mode validation.",
+      "Add a causal guard that fails when the workflow's published version token, script pin and approved baseline version diverge; exercise both matching and stale-baseline cases before a hosted run."
+    ],
+    "notRun": "No hosted guest acceptance or browser was launched in this evidence lane. The Store CRX unpacked mode adapts the signed payload for Chromium and does not prove Google's installed extension lifecycle or preserved returning-guest state."
+  }
+}
