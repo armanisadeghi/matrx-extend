@@ -5437,6 +5437,11 @@
           "id": "EXT-F-1003-C38",
           "label": "Retry public key export",
           "action": "Recover an unsuccessful public-key copy without false copied feedback or private-key exposure."
+        },
+        {
+          "id": "EXT-F-1003-C39",
+          "label": "Open Organizations to restore an archived organization",
+          "action": "Open the configured frontend Organizations page from the archived membership section; navigation does not itself restore or switch organizations."
         }
       ],
       "source_anchors": [
@@ -9284,6 +9289,54 @@
               "release_scope": "Exact CI development artifact, not frozen Store package or full extension-update lifecycle."
             }
           }
+        },
+        {
+          "id": "EXT-F-1003-T92",
+          "title": "Archived organization management link and guest visibility",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1003-C39"
+          ],
+          "preconditions": [
+            "Under an admitted resource permit, build current development source, record source/lock/output and extension ID/version, reload exact unpacked output and affected content tabs, then verify guest/member/admin identity before testing. Do not use stale output.",
+            "Use an owned account with an existing disposable archived membership; do not archive a real organization to construct this fixture. Source entry: SettingsView.tsx archivedOrganizations / OpenUrl."
+          ],
+          "steps": [
+            "Open Settings and the Organization group while signed out; inspect whether archived membership names or the restoration link are shown.",
+            "For member and admin independently, use the existing archive-status filter to show an owned archived membership, then activate Open Organizations to restore an archived organization.",
+            "Verify the new tab targets the configured frontend /organizations page; record actual access/error behavior. Return to Settings and compare active organization and archive state without performing a restoration."
+          ],
+          "expected": [
+            "Guest shows the sign-in state without archived membership details or restoration action. Signed-in accounts with an archived membership can open the configured Organizations destination. Navigation alone does not restore an organization or change the active organization."
+          ],
+          "dimensions": [
+            "guest-negative-access",
+            "archived-membership",
+            "external-navigation",
+            "no-write"
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "detail": "Source census only; current-build native acceptance and owned fixture setup pending."
+            },
+            "member": {
+              "status": "unverified",
+              "detail": "Source census only; current-build native acceptance and owned fixture setup pending."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "Source census only; current-build native acceptance and owned fixture setup pending."
+            }
+          },
+          "source_evidence": ".research/contained-inventory-drift-census.json",
+          "readiness_gaps": [
+            "Owned archived membership fixture and actual destination acceptance remain unverified."
+          ]
         }
       ],
       "cells": {
@@ -16907,6 +16960,11 @@
           "label": "Suppress duplicate save action for held URL",
           "action": "When the Unsaved card owns a URL, only its retry action can save it.",
           "source_anchor": "src/features/scrape/UnsavedCapturesCard.tsx"
+        },
+        {
+          "id": "EXT-F-1007-C34",
+          "label": "Retry page check",
+          "action": "Request active page identity again when pageKey is unavailable; capture availability must follow the resolved identity."
         }
       ],
       "source_anchors": [
@@ -18321,6 +18379,57 @@
               "detail": "Current-source procedure awaits receipt-bound native execution."
             }
           }
+        },
+        {
+          "id": "EXT-F-1007-T32",
+          "title": "Retry unavailable active page identity without stale capture",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C34",
+            "EXT-F-1007-C01",
+            "EXT-F-1007-C02"
+          ],
+          "preconditions": [
+            "Under an admitted resource permit, build current development source, record source/lock/output and extension ID/version, reload exact unpacked output and affected content tabs, then verify guest/member/admin identity before testing. Do not use stale output.",
+            "Use an owned page and controlled identity-transport failure in an isolated native test profile. The exact fault-injection fixture is still required; do not count a component double as native proof."
+          ],
+          "steps": [
+            "Make the owned current page identity unavailable; open Scrape and observe Retry page check plus capture availability.",
+            "Keep the transport failing and click Retry page check; verify another identity lookup occurs, the failure remains explicit, and stale identity does not enable capture.",
+            "Restore identity transport and retry; verify capture becomes available only for the exact current document.",
+            "Navigate the owned tab to a second document while lookup is pending; ensure a late first-document reply cannot enable capture for the wrong document."
+          ],
+          "expected": [
+            "Retry performs another real identity lookup. Unresolved or stale identity cannot enable Fast or Deep capture; a successfully resolved current document can. The action applies without an auth-role gate."
+          ],
+          "dimensions": [
+            "identity-unavailable",
+            "retry",
+            "late-response",
+            "document-change"
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "detail": "Source census only; current-build native acceptance and owned fixture setup pending."
+            },
+            "member": {
+              "status": "unverified",
+              "detail": "Source census only; current-build native acceptance and owned fixture setup pending."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "Source census only; current-build native acceptance and owned fixture setup pending."
+            }
+          },
+          "source_evidence": ".research/contained-inventory-drift-census.json",
+          "readiness_gaps": [
+            "Exact owned native identity-transport fault fixture and late-response control remain to be implemented before execution."
+          ]
         }
       ],
       "cells": {
