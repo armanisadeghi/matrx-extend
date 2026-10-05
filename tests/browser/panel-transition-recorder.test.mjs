@@ -252,6 +252,7 @@ test('actual Scrape setup wires resource and organization pointer intervals to t
     'signInSettings',
     'selectRequiredSettingsOrganization',
     'selection',
+    'requiredOrganizationName',
     'report',
     'assert',
     'REPO',
@@ -266,7 +267,8 @@ test('actual Scrape setup wires resource and organization pointer intervals to t
       traceOrganizationPointers,
       classifyPanelTransition,
       async () => ({ mode: 'member', email: 'private@example.test', profileId: 'private-id' }),
-      async ({ panel, onBranch }) => {
+      async ({ panel, onBranch, requiredOrganizationName: selectedName }) => {
+        assert.equal(selectedName, 'Matrx Org');
         await onBranch(scenario === 'resource_wait' ? 'organization_skip' : 'organization_select');
         if (scenario === 'pointer_dispatch')
           await panel.send('Input.dispatchMouseEvent', {
@@ -278,6 +280,7 @@ test('actual Scrape setup wires resource and organization pointer intervals to t
         return { organizationId: 'private-org' };
       },
       { mode: 'admin' },
+      'Matrx Org',
       report,
       assert,
       '',
@@ -358,6 +361,7 @@ test('real Scrape auth caller records first member selection, skip, identity, an
       'signInSettings',
       'selectRequiredSettingsOrganization',
       'selection',
+      'requiredOrganizationName',
       'report',
       'assert',
       'REPO',
@@ -369,6 +373,7 @@ test('real Scrape auth caller records first member selection, skip, identity, an
       signInSettings,
       async () => ({ organizationId: '123e4567-e89b-42d3-a456-426614174001' }),
       { mode: 'member' },
+      undefined,
       report,
       assert,
       '',

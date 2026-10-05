@@ -10,5 +10,11 @@
     "biome": "pnpm exec biome check scripts/hosted-scrape-route.test.mjs passed",
     "diff_check": "git diff --check passed"
   },
-  "limits": "No native browser acceptance, build, or release run in this fixer lane."
+  "ci_followup": {
+    "failure": "Full CI 37276487004 exposed an extracted Scrape setup closure with no requiredOrganizationName binding in panel seam tests.",
+    "repair": "Four extracted-driver setups now receive the missing closure value; the admin recorder case asserts its named fixture is forwarded to organization selection. The production organization requirement remains intact.",
+    "census": "All four test files extracting exercisePanel were inspected and updated: panel-visible-reopen-repair, panel-visibility-diagnostic, panel-transition-recorder, and native-sidepanel-qa-harness.",
+    "focused": "40/40 passed across three impacted node:test files and the original 25 focused tests."
+  },
+  "limits": "Standalone native-sidepanel-qa-harness script did not finish within 78 seconds in local run; its corrected extracted setup path executed and passed, but the whole script remains unverified here. No native browser acceptance, build, or release run in this fixer lane."
 }
