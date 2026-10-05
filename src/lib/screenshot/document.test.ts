@@ -59,9 +59,9 @@ describe('screenshot document boundary', () => {
   });
 
   it('restores the initiating document scroll after a full-page tile detects a reload', async () => {
-    const executeScript = vi.fn(async (request: { args?: number[] }) =>
+    const executeScript = vi.fn(async (request: { args?: [number[] | null, number, number] }) =>
       request.args
-        ? [{ result: undefined }]
+        ? [{ result: request.args[2] }]
         : [
             {
               result: {
@@ -71,7 +71,9 @@ describe('screenshot document boundary', () => {
                 innerHeight: 600,
                 scrollWidth: 800,
                 scrollHeight: 1200,
-                devicePixelRatio: 1,
+                viewportHeight: 600,
+                scrollPath: null,
+                clip: null,
               },
             },
           ],
@@ -86,7 +88,7 @@ describe('screenshot document boundary', () => {
     const scrollCalls = executeScript.mock.calls.filter(([request]) => !!request.args);
     expect(scrollCalls.at(-1)?.[0]).toMatchObject({
       target: { tabId: 18, documentIds: [first.documentId] },
-      args: [7, 43],
+      args: [null, 7, 43],
     });
   });
 });
