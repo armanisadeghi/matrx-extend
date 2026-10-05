@@ -349,10 +349,15 @@ test('real Scrape auth caller records first member selection, skip, identity, an
   const authBody = authSource
     .slice(authSource.indexOf('export async function signInSettings('))
     .replace('export async function', 'async function');
-  const selectSource = authSource.slice(
-    authSource.indexOf('async function selectOrganization('),
-    authSource.indexOf('/** Select and verify'),
-  );
+  const selectSource = authSource
+    .slice(
+      authSource.indexOf('export async function waitForOrganizationOption('),
+      authSource.indexOf('/** Select and verify'),
+    )
+    .replace(
+      'export async function waitForOrganizationOption',
+      'async function waitForOrganizationOption',
+    );
   const runSetup = (source, signInSettings, report) =>
     new Function(
       'startPanelTransitionRecorder',
@@ -427,14 +432,29 @@ test('real Scrape auth caller records first member selection, skip, identity, an
       requireSettingsCredential: (_mode, raw) => JSON.parse(raw),
       authenticatedWebIdentity: async () => identity,
       waitFor: async (label, read, accept) => {
-        const value = await read();
+        let value;
+        for (let attempt = 0; attempt < 3; attempt += 1) {
+          value = await read();
+          if (accept(value)) return value;
+        }
         assert.ok(accept(value), `${label}_rejected`);
         return value;
       },
-      click: async () => {},
+      click: async (panel, kind) => {
+        if (kind === 'organization' || kind === 'title' || kind === 'button') return;
+        assert.equal(kind, 'organization-option');
+        await panel.send('Input.dispatchMouseEvent', { type: 'mousePressed', x: 97, y: 83 });
+        await panel.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: 97, y: 83 });
+      },
       openSection: async () => {},
       approveConsent: async () => {},
       evaluate: async () => ({ x: 97, y: 83 }),
+      observeOrganizationOption: async () => ({
+        menu_open: true,
+        visible_option_count: 1,
+        exact_match_count: 1,
+        point: { x: 97, y: 83 },
+      }),
       accountIdentity,
       panelIdentity: async () => ({
         profileId: identity.userId,

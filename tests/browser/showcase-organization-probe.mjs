@@ -26,7 +26,10 @@ export function organizationProbePanel(scenario) {
       if (method !== 'Runtime.evaluate') throw new Error('unexpected_probe_method');
       const { expression } = parameters;
       let value;
-      if (expression.includes('const kind = "organization"')) {
+      if (
+        expression.includes('const kind = "organization"') ||
+        expression.includes('const kind = "organization-option"')
+      ) {
         value = {
           count: 1,
           matchedCount: 1,

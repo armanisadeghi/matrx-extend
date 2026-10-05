@@ -12,25 +12,63 @@ import {
   panelIdentity,
   settingsOrganizationSelectionRequired,
   settingsShellReady,
+  waitForOrganizationOption,
 } from './settings-native-auth-driver.mjs';
 
-function optionPanel({ names, targetY = 70, occluded = false, menuOpen = true }) {
+function optionPanel({
+  names,
+  targetY = 70,
+  occluded = false,
+  menuOpen = true,
+  foreignNames = [],
+  openAfter = 0,
+}) {
+  let reads = 0;
+  const isOpen = () => menuOpen && reads >= openAfter;
   const options = names.map((name, index) => ({
     textContent: name,
     getBoundingClientRect: () => ({ x: 20, y: targetY + index * 20, width: 100, height: 18 }),
     contains: () => false,
   }));
   const listbox = {
-    getBoundingClientRect: () => ({ x: 10, y: 10, width: 120, height: menuOpen ? 120 : 0 }),
+    getAttribute: (name) =>
+      name === 'role' ? 'listbox' : name === 'data-state' ? (isOpen() ? 'open' : 'closed') : null,
+    querySelectorAll: (selector) => (selector === '[role="option"]' ? options : []),
+    getBoundingClientRect: () => ({ x: 10, y: 10, width: 120, height: isOpen() ? 120 : 0 }),
   };
+  const trigger = {
+    getAttribute: (name) =>
+      name === 'aria-controls'
+        ? 'organization-menu'
+        : name === 'aria-expanded'
+          ? isOpen()
+            ? 'true'
+            : 'false'
+          : null,
+  };
+  const label = {
+    textContent: 'Acting as',
+    parentElement: { parentElement: { querySelectorAll: () => [trigger] } },
+  };
+  const foreignOptions = foreignNames.map((name) => ({
+    textContent: name,
+    getBoundingClientRect: () => ({ x: 20, y: 70, width: 100, height: 18 }),
+    contains: () => false,
+  }));
   const filter = { querySelectorAll: () => [{ textContent: 'Active only' }] };
   const document = {
-    querySelectorAll: (selector) => (selector === '[role="option"]' ? options : [listbox]),
+    querySelectorAll: (selector) =>
+      selector === 'span'
+        ? [label]
+        : selector === '[role="option"]'
+          ? [...options, ...foreignOptions]
+          : [listbox],
+    getElementById: (id) => (id === 'organization-menu' ? listbox : null),
     querySelector: () => filter,
     elementFromPoint: (_x, y) =>
       occluded
         ? {}
-        : (options.find((option) => {
+        : ([...foreignOptions, ...options].find((option) => {
             const rect = option.getBoundingClientRect();
             return y >= rect.y && y < rect.y + rect.height;
           }) ?? null),
@@ -38,6 +76,7 @@ function optionPanel({ names, targetY = 70, occluded = false, menuOpen = true })
   return {
     async send(command, { expression }) {
       assert.equal(command, 'Runtime.evaluate');
+      reads += 1;
       const value = runInNewContext(expression, {
         document,
         getComputedStyle: () => ({ display: 'block', visibility: 'visible' }),
@@ -48,6 +87,27 @@ function optionPanel({ names, targetY = 70, occluded = false, menuOpen = true })
     },
   };
 }
+
+test('organization selection waits for its associated menu to render and settle', async () => {
+  const requiresObservation = async (selector) => {
+    const samples = [];
+    const point = await selector(
+      optionPanel({ names: ['Approved'], openAfter: 3 }),
+      'Approved',
+      (sample) => samples.push(sample),
+    );
+    assert.equal(samples[0].menu_open, false);
+    assert.equal(samples[1].menu_open, false);
+    assert.equal(samples.at(-1).menu_open, true);
+    assert.ok(samples.filter((sample) => sample.menu_open).length >= 2);
+    assert.deepEqual({ ...point }, { x: 70, y: 79 });
+  };
+  await assert.rejects(
+    requiresObservation(async () => ({ x: 70, y: 79 })),
+    /menu_open/,
+  );
+  await requiresObservation(waitForOrganizationOption);
+});
 
 test('option boundary distinguishes absent, duplicate, offscreen, occluded, and selectable targets', async () => {
   const selected = await observeOrganizationOption(
@@ -86,6 +146,21 @@ test('option boundary distinguishes absent, duplicate, offscreen, occluded, and 
     'Approved',
   );
   assert.equal(closed.menu_open, false);
+  assert.equal(closed.point, null);
+  const closedForeign = await observeOrganizationOption(
+    optionPanel({ names: [], menuOpen: false, foreignNames: ['Approved'] }),
+    'Approved',
+  );
+  assert.equal(closedForeign.menu_open, false);
+  assert.equal(closedForeign.exact_visible_match_count, 0);
+  assert.equal(closedForeign.point, null);
+  const openForeign = await observeOrganizationOption(
+    optionPanel({ names: ['Other'], foreignNames: ['Approved'] }),
+    'Approved',
+  );
+  assert.equal(openForeign.menu_open, true);
+  assert.equal(openForeign.exact_visible_match_count, 0);
+  assert.equal(openForeign.point, null);
 });
 
 test('approved admin organization is read only from a private named fixture', async () => {

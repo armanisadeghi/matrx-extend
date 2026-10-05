@@ -222,11 +222,18 @@ export async function observeOrganizationOption(panel, requiredOrganizationName)
     panel,
     `(() => {
     const visible = (el) => { const r = el.getBoundingClientRect(); const s = getComputedStyle(el); return r.width > 0 && r.height > 0 && s.display !== 'none' && s.visibility !== 'hidden'; };
-    const options = [...document.querySelectorAll('[role="option"]')];
+    const labels = [...document.querySelectorAll('span')].filter((el) => el.textContent.trim() === 'Acting as');
+    const triggers = labels.flatMap((el) => [...el.parentElement.parentElement.querySelectorAll('button[role="combobox"]')]);
+    const trigger = triggers.length === 1 ? triggers[0] : null;
+    const menuId = trigger?.getAttribute('aria-controls');
+    const menu = menuId ? document.getElementById(menuId) : null;
+    const menuOpen = trigger?.getAttribute('aria-expanded') === 'true' &&
+      menu?.getAttribute('role') === 'listbox' && menu.getAttribute('data-state') === 'open' && visible(menu);
+    const options = menuOpen ? [...menu.querySelectorAll('[role="option"]')] : [];
     const exact = options.filter((option) => option.textContent.trim() === ${JSON.stringify(requiredOrganizationName)});
     const visibleOptions = options.filter(visible);
     const visibleExact = exact.filter(visible);
-    const target = visibleExact.length === 1 ? visibleExact[0] : null;
+    const target = exact.length === 1 && visibleExact.length === 1 ? visibleExact[0] : null;
     const rect = target?.getBoundingClientRect();
     const x = rect ? rect.x + rect.width / 2 : null;
     const y = rect ? rect.y + rect.height / 2 : null;
@@ -236,7 +243,7 @@ export async function observeOrganizationOption(panel, requiredOrganizationName)
     const pressed = [...(filter?.querySelectorAll('button[aria-pressed="true"]') ?? [])];
     const filterText = pressed.length === 1 ? pressed[0].textContent.trim() : '';
     return {
-      menu_open: [...document.querySelectorAll('[role="listbox"]')].some((menu) => visible(menu)),
+      menu_open: Boolean(menuOpen),
       visible_option_count: visibleOptions.length,
       exact_match_count: exact.length,
       exact_visible_match_count: visibleExact.length,
@@ -249,24 +256,31 @@ export async function observeOrganizationOption(panel, requiredOrganizationName)
   );
 }
 
+export async function waitForOrganizationOption(panel, requiredOrganizationName, onObservation) {
+  let previousPoint = null;
+  let stablePoint = null;
+  await waitFor(
+    'd87_member_organization_option_unavailable',
+    async () => {
+      const observed = await observeOrganizationOption(panel, requiredOrganizationName);
+      const { point, ...safeObservation } = observed;
+      onObservation?.(safeObservation);
+      const signature = point
+        ? `${point.x}:${point.y}:${observed.visible_option_count}:${observed.exact_match_count}`
+        : null;
+      stablePoint = signature && signature === previousPoint ? point : null;
+      previousPoint = signature;
+      return safeObservation;
+    },
+    () => stablePoint !== null,
+  );
+  return stablePoint;
+}
+
 async function selectOrganization(panel, requiredOrganizationName, onObservation) {
   await click(panel, 'organization', '');
-  const observed = await observeOrganizationOption(panel, requiredOrganizationName);
-  const { point: target, ...safeObservation } = observed;
-  onObservation?.(safeObservation);
-  assert.ok(target, 'd87_member_organization_option_unavailable');
-  await panel.send('Input.dispatchMouseEvent', {
-    type: 'mousePressed',
-    ...target,
-    button: 'left',
-    clickCount: 1,
-  });
-  await panel.send('Input.dispatchMouseEvent', {
-    type: 'mouseReleased',
-    ...target,
-    button: 'left',
-    clickCount: 1,
-  });
+  await waitForOrganizationOption(panel, requiredOrganizationName, onObservation);
+  await click(panel, 'organization-option', requiredOrganizationName);
 }
 
 /** Select and verify the approved device organization for an acceptance that requires it. */
