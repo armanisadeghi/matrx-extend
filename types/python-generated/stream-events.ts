@@ -4838,6 +4838,11 @@ export interface ContextInputPart {
   editable?: boolean | null;
 }
 
+export interface BlockStateRef {
+  id: string;
+  state_version: number;
+}
+
 export interface RemarkAnswer {
   question: string;
   answer: string | boolean | number | string[];
@@ -4857,6 +4862,7 @@ export interface RemarkItem {
   id?: string | null;
   handle?: string | null;
   thread?: RemarkThreadEntry[] | null;
+  block_state_ref?: BlockStateRef | null;
   metadata?: Record<string, unknown>;
 }
 
@@ -5330,6 +5336,29 @@ const MESSAGE_PART_SCHEMA: MessagePartJsonSchema = {
         "kind"
       ],
       "title": "AudioMediaPart",
+      "type": "object"
+    },
+    "BlockStateRef": {
+      "additionalProperties": false,
+      "description": "A pointer to the ``platform.block_states`` row a remark was made from (remarks B6).\n\nThe remark keeps its rendered content (``answers`` / ``body``) — that is what the model\nreads — and this reference rides beside it so the database can advance the row's\n``sent_version`` in the SAME transaction that stores the person's message\n(trigger ``_block_state_mark_sent`` on ``chat.message``). ``state_version`` is the row's\n``state_version`` at the moment the chip was sent; a send never moves the marker back.",
+      "properties": {
+        "id": {
+          "maxLength": 36,
+          "minLength": 36,
+          "title": "Id",
+          "type": "string"
+        },
+        "state_version": {
+          "minimum": 1,
+          "title": "State Version",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "state_version"
+      ],
+      "title": "BlockStateRef",
       "type": "object"
     },
     "CodeExecPart": {
@@ -7350,6 +7379,17 @@ const MESSAGE_PART_SCHEMA: MessagePartJsonSchema = {
           ],
           "default": null,
           "title": "Thread"
+        },
+        "block_state_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BlockStateRef"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         },
         "metadata": {
           "additionalProperties": true,

@@ -416,6 +416,9 @@
    "application/json"
   ]
  },
+ "/agent-factory/agents/{agent_id}/first-runs": {
+  "post": []
+ },
  "/agent-factory/builds": {
   "post": [
    "application/json"
@@ -423,6 +426,9 @@
  },
  "/agent-factory/builds/{build_id}": {
   "get": []
+ },
+ "/agent-factory/builds/{build_id}/keep": {
+  "post": []
  },
  "/agent-iteration/commit-choice": {
   "post": [
