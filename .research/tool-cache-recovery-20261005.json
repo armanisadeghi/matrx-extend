@@ -1,0 +1,19 @@
+{
+  "scope": "rebuildable pnpm registry metadata only; no package dependency or active runtime deletion",
+  "archived": [
+    {
+      "source": "/Users/armanisadeghi/Library/Caches/pnpm/metadata-v1.3",
+      "preserved_copy": "/Volumes/Samsung2TB/code/.stabilization-scratch/pnpm-stale-metadata-20261005/metadata-v1.3",
+      "bytes": 22698110,
+      "files": 81,
+      "all_hashes_equal": true
+    },
+    {
+      "source": "/Users/armanisadeghi/Library/Caches/pnpm/metadata-full-v1.3",
+      "preserved_copy": "/Volumes/Samsung2TB/code/.stabilization-scratch/pnpm-stale-metadata-20261005/metadata-full-v1.3",
+      "bytes": 125794261,
+      "files": 199,
+      "all_hashes_equal": true
+    }
+  ]
+}

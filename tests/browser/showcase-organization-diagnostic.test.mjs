@@ -137,19 +137,24 @@ test('admin selection uses the approved fixture name and verifies the stored org
   assert.equal(panel.selectionClicks, 1);
   assert.equal(organization.organizationName, 'Matrx Org');
   assert.equal(report.organization_diagnostic.observations.storage_name_matches, true);
+  assert.equal(report.organization_diagnostic.observations.exact_visible_match_count, 1);
+  assert.equal(report.organization_diagnostic.observations.target_center_hit, true);
 
   const wrongFixture = organizationProbePanel('admin_approved');
+  const wrongReport = { organization_diagnostic: null };
   await assert.rejects(
     runShowcaseOrganizationCheckpoint({
       panel: wrongFixture,
       auth: probeAuth,
       resourceAction: (action) => action(),
-      report: { organization_diagnostic: null },
+      report: wrongReport,
       requiredOrganizationName: MEMBER_TEST_ORGANIZATION_NAME,
     }),
     /d87_member_organization_option_unavailable/,
   );
   assert.equal(wrongFixture.selectionClicks, 0);
+  assert.equal(wrongReport.organization_diagnostic.observations.exact_match_count, 0);
+  assert.equal(wrongReport.organization_diagnostic.observations.archive_filter, 'active');
 });
 
 test('admin selection refuses an absent approved fixture before opening Settings', async () => {
@@ -188,6 +193,9 @@ test('bounded callbacks reject unknown fields, arbitrary stages and raw error me
     picker_available: true,
     email: 'private@example.invalid',
     storage_has_uuid: 'private',
+    visible_option_count: -1,
+    exact_match_count: 10001,
+    archive_filter: 'private',
   });
   assert.deepEqual(diagnostic, {
     substage: 'resource_gate',

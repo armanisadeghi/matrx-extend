@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0142",
+  "reviewed_source": "09840157",
+  "verdict_A_runtime": "UNVERIFIED",
+  "verdict_A_basis": "The resource-valid native run 37278418866 predates the new diagnostic. It proves admin role and fixture membership, then stops at organization_select without a failure-time DOM sample. No new native run was authorized in this lane, so the actual cause and picker acceptance remain open.",
+  "verdict_B_quality": "FAIL",
+  "findings": [
+    {
+      "severity": "important",
+      "location": "tests/browser/settings-native-auth-driver.mjs:225-249",
+      "finding": "The option probe counts document-wide role=option nodes and derives point from one matching node without requiring a visible listbox or membership in the open listbox. A controlled DOM negative returned menu_open=false together with an exact visible match, target_center_hit=true, and a non-null point. The caller dispatches trusted input whenever point is non-null. Thus an option outside the active menu can be reported and clicked as the organization choice; counts cannot be interpreted as the actual open picker inventory.",
+      "repro": "In-memory Runtime.evaluate boundary with one Approved option, zero-size listbox, and elementFromPoint returning that option: menu_open=false, exact_visible_match_count=1, target_center_hit=true, point_available=true. The existing fixture's closed-menu case has no options and misses this negative."
+    },
+    {
+      "severity": "important",
+      "location": "tests/browser/settings-native-auth-driver.mjs:252-258",
+      "finding": "After the trusted trigger click, selection samples the menu once. It never waits for the Radix content to mount/open or for option geometry to settle. A menu_open=false, zero-option sample is therefore ambiguous between a transient render and a genuinely absent option. This is a source-proven diagnostic limit, not the established cause of the old native failure."
+    }
+  ],
+  "passed_checks": [
+    "13 focused tests passed, including absent, duplicate, offscreen, covered, closed-menu, fixture, checkpoint, and receipt cases.",
+    "The checkpoint connects the real selector callbacks to the native receipt writer; substage and bounded diagnostic fields survive the catch path.",
+    "The receipt allowlist admits fixed stages, enums, booleans/nulls, and bounded counts; the target label and pointer coordinates remain in the driver.",
+    "Settings renders active organizations as SelectItem options and verifies selection against a stored UUID and exact approved name."
+  ],
+  "next_native_observation": "After scoping the probe to the visibly open organization listbox and waiting for that listbox to reach a stable open state, run the exact approved fixture on a resource-valid native artifact. Capture the failure-time menu state, option/exact counts, archive filter, viewport and hit categories, and storage/rendered identity outcome in the actual receipt. A missing exact match then points to data/filter/render; a duplicate to identity disambiguation; a unique offscreen or covered target to pointer preparation. Do not infer any of these from run 37278418866.",
+  "limits": "No native/browser session, source edit, release, or D142 closure was performed. The controlled DOM negative proves a boundary bug class; it does not establish that this class caused the earlier native failure."
+}

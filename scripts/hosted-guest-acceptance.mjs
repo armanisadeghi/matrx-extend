@@ -20,6 +20,7 @@ import {
 } from './hosted-profile-route.mjs';
 import { prepareHostedReleaseArtifact } from './hosted-release-artifact.mjs';
 import { requireHostedScrapeRoute } from './hosted-scrape-route.mjs';
+import { hostedShowcaseRoute } from './hosted-showcase-route.mjs';
 import { runHostedStartupIntervalDiagnostic } from './hosted-startup-interval-diagnostic.mjs';
 import {
   PUBLISHED_STORE_CRX,
@@ -281,6 +282,7 @@ async function run(prepared, artifactMode) {
       'member-chat',
       'prepare-stale-results',
       'showcase-picker-admin',
+      'showcase-stale-admin',
       'profile-admin',
       'profile-member',
     ].includes(acceptanceCase),
@@ -315,7 +317,7 @@ async function run(prepared, artifactMode) {
     );
   const scrapeRoute = requireHostedScrapeRoute(acceptanceCase, artifactMode, prepared);
   const scrapeSelection = scrapeRoute ? scrapeNativeSelection(process.env) : null;
-  if (acceptanceCase === 'prepare-stale-results' || acceptanceCase === 'showcase-picker-admin')
+  if (acceptanceCase === 'prepare-stale-results' || acceptanceCase.startsWith('showcase-'))
     assert.equal(kind, 'ci_development_test', 'Native case requires exact CI development receipt');
   if (acceptanceCase === 'profile-admin' || acceptanceCase === 'profile-member') {
     await runProfile(prepared, acceptanceCase);
@@ -327,8 +329,13 @@ async function run(prepared, artifactMode) {
     runtimeDir,
     'approved-admin-organization-private.json',
   );
+  const showcaseRoute = hostedShowcaseRoute(acceptanceCase, prepared, {
+    temp: process.env.RUNNER_TEMP,
+    runId: process.env.GITHUB_RUN_ID,
+    attempt: process.env.GITHUB_RUN_ATTEMPT,
+  });
   const needsApprovedAdminOrganization =
-    acceptanceCase === 'showcase-picker-admin' || (scrapeRoute && scrapeSelection.mode === 'admin');
+    Boolean(showcaseRoute) || (scrapeRoute && scrapeSelection.mode === 'admin');
   let adminCredentialsCreated = false;
   if (
     acceptanceCase === 'member-chat' ||
@@ -344,7 +351,7 @@ async function run(prepared, artifactMode) {
   }
   if (
     acceptanceCase === 'prepare-stale-results' ||
-    acceptanceCase === 'showcase-picker-admin' ||
+    showcaseRoute ||
     (scrapeRoute && scrapeSelection.mode === 'admin') ||
     acceptanceCase === 'settings-persistence-admin' ||
     acceptanceCase === 'audit-key-admin' ||
@@ -375,19 +382,7 @@ async function run(prepared, artifactMode) {
     ...(needsApprovedAdminOrganization
       ? { MATRX_APPROVED_ADMIN_ORGANIZATION_FILE: approvedAdminOrganizationPath }
       : {}),
-    ...(acceptanceCase === 'showcase-picker-admin'
-      ? {
-          MATRX_SHOWCASE_EXTENSION_DIR: extensionDir,
-          MATRX_SHOWCASE_RECEIPT: relocatedReceipt,
-          MATRX_SHOWCASE_CI_SOURCE_SHA: prepared.sourceSha,
-          MATRX_SHOWCASE_CI_RUN_ID: String(prepared.runId),
-          MATRX_SHOWCASE_CI_ARTIFACT_ID: String(prepared.artifactId),
-          MATRX_SHOWCASE_OUTPUT: join(
-            process.env.RUNNER_TEMP,
-            `showcase-picker-native-${process.env.GITHUB_RUN_ID}-${process.env.GITHUB_RUN_ATTEMPT}.json`,
-          ),
-        }
-      : {}),
+    ...(showcaseRoute?.env ?? { MATRX_SHOWCASE_STALE_BOUNDARY: undefined }),
     ...(scrapeRoute?.channel === 'development'
       ? {
           MATRX_SCRAPE_CI_SOURCE_SHA: prepared.sourceSha,
@@ -423,7 +418,7 @@ async function run(prepared, artifactMode) {
       ? { MATRX_REVIEWER_MAGIC_LINK_FILE: memberLinkPath }
       : {}),
     ...(acceptanceCase === 'prepare-stale-results' ||
-    acceptanceCase === 'showcase-picker-admin' ||
+    showcaseRoute ||
     (scrapeRoute && scrapeSelection.mode === 'admin') ||
     acceptanceCase === 'settings-persistence-admin' ||
     acceptanceCase === 'audit-key-admin' ||
@@ -467,8 +462,8 @@ async function run(prepared, artifactMode) {
                   ? 'tests/browser/audit-key-native-acceptance.mjs'
                   : acceptanceCase.startsWith('settings-persistence')
                     ? 'tests/browser/settings-d87-native-acceptance.mjs'
-                    : acceptanceCase === 'showcase-picker-admin'
-                      ? 'tests/browser/showcase-picker-native-acceptance.mjs'
+                    : showcaseRoute
+                      ? showcaseRoute.driver
                       : acceptanceCase === 'prepare-stale-results'
                         ? 'tests/browser/prepare-stale-result-native-acceptance.mjs'
                         : acceptanceCase === 'member-chat'

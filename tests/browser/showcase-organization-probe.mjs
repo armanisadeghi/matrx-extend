@@ -26,7 +26,10 @@ export function organizationProbePanel(scenario) {
       if (method !== 'Runtime.evaluate') throw new Error('unexpected_probe_method');
       const { expression } = parameters;
       let value;
-      if (expression.includes('const kind = "organization"')) {
+      if (
+        expression.includes('const kind = "organization"') ||
+        expression.includes('const kind = "organization-option"')
+      ) {
         value = {
           count: 1,
           matchedCount: 1,
@@ -58,11 +61,29 @@ export function organizationProbePanel(scenario) {
               : null,
           organizationPickerAvailable: scenario !== 'picker',
         };
-      } else if (expression.includes('.filter(visible).filter((option)')) {
+      } else if (expression.includes('const visibleExact = exact.filter(visible)')) {
         value =
           scenario === 'admin_approved' && expression.includes('"Matrx Org"')
-            ? { x: 120, y: 150 }
-            : null;
+            ? {
+                menu_open: true,
+                visible_option_count: 2,
+                exact_match_count: 1,
+                exact_visible_match_count: 1,
+                target_in_viewport: true,
+                target_center_hit: true,
+                archive_filter: 'active',
+                point: { x: 120, y: 150 },
+              }
+            : {
+                menu_open: true,
+                visible_option_count: 1,
+                exact_match_count: 0,
+                exact_visible_match_count: 0,
+                target_in_viewport: null,
+                target_center_hit: null,
+                archive_filter: 'active',
+                point: null,
+              };
       } else if (expression.includes('chrome.storage.local.get')) {
         value = {
           profileId: PROFILE_ID,

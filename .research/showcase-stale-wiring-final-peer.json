@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "task": "Independent scoped re-verification of EXT-D-0042 helper 10f47d24 and hosted wiring 138568a5",
+  "reviewer_authorship": "Zero product or test authorship; read-only source review plus focused tests and scratch-copy mutation runs.",
+  "prior_finding": {
+    "finding": "Hosted showcase route did not opt in to the stale runtime boundary.",
+    "status": "ADDRESSED",
+    "evidence": "scripts/hosted-showcase-route.mjs returns the existing showcase-picker-native-acceptance.mjs driver and sets MATRX_SHOWCASE_STALE_BOUNDARY=1 only for showcase-stale-admin; hosted-guest-acceptance spreads that route's env into the exact native child invocation. The ordinary showcase-picker-admin route supplies undefined for the flag, overriding any inherited opt-in. The route test asserts both behaviors."
+  },
+  "verdict_A_requested_behavior": {
+    "status": "PASS_WITH_NATIVE_LIMIT",
+    "evidence": [
+      "The workflow offers showcase-stale-admin and restricts it to the CI development artifact path. Hosted route preparation retains exact development receipt, source SHA, run ID, artifact ID, and output identity; the route helper validates those fields and shares the same admin approved-organization and credential preflight as ordinary Showcase admin.",
+      "The stale branch enters the same owned native driver. That driver arms the real extension isolated world only after A starts, captures the producer's actual EXIT envelope and arguments before Chrome delivery, waits for A's local cancellation and B's active picker, then releases the captured envelope through the original bound runtime API. It observes the sidepanel relay, requires stamped tab/document identity, checks B remains picking with one overlay, then verifies a different B detection and the three fixture rows.",
+      "Resource-action wrapper remains around navigation, clicks, and CDP actions. Existing expected extension identity, owned fixture navigation, receipt validation, and admin organization guard remain in the driver. No browser/native execution was performed, so the real Chrome chain and output artifact remain unverified."
+    ],
+    "open_scope": "This EXIT case does not cover stale ITEM_DETECTED or RESULT, delayed cancellation injection, deferred installation, reinjection/listener cleanup, or nonadmin role gating. Do not close D42."
+  },
+  "verdict_B_quality": {
+    "status": "PASS_WITH_LIMITS",
+    "findings": [
+      {
+        "severity": "Minor",
+        "location": ".github/workflows/ci.yml:161",
+        "finding": "CI runs the hosted route tests but does not explicitly run tests/browser/showcase-stale-runtime-boundary.test.mjs; Vitest excludes that .mjs file. The helper's session-preserving hold/release behavior therefore relies on the native hosted case for continuous regression coverage, which has not yet run.",
+        "evidence": "CI's explicit node --test route list includes hosted-showcase-route.test.mjs only; vitest.config.ts includes tests/unit/**/*.test.ts and TSX only."
+      }
+    ],
+    "checks": [
+      "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch node --test scripts/hosted-profile-route.test.mjs scripts/hosted-scrape-route.test.mjs scripts/hosted-showcase-route.test.mjs tests/browser/showcase-stale-runtime-boundary.test.mjs: 20 passed, 0 failed.",
+      "Scratch-copy mutation replacing EXIT capture with immediate delivery failed at the held-before-delivery assertion; scratch-copy mutation bypassing session identity failed at wrong-session release. Both mutants were restored in scratch and detected by the test.",
+      "Helper retains the original bound sendMessage and captured args; release invokes original(message, ...args), settles the held promise with the original reply, and only removes a held envelope after kind/session match. Wrong-session release leaves it held. The production picker uses the Promise form with no callback; callback args are forwarded in source but not independently exercised by the focused test.",
+      "No-op ordinary-route environment value removes an inherited stale opt-in at the Node child-process env boundary; wrong artifact identity and missing approved credential/organization fixture are rejected before resource admission/browser setup."
+    ],
+    "limitations": [
+      "No browser/native run, build, release, or full suite.",
+      "The held-envelope test is an in-memory VM/runtime stub and does not establish Chrome delivery, service-worker stamping, panel observation, or extraction."
+    ]
+  }
+}

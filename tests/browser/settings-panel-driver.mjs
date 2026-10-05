@@ -192,6 +192,17 @@ export async function click(panel, kind, label) {
     else if (kind === 'organization') candidates = [...document.querySelectorAll('span')]
       .filter((el) => el.textContent.trim() === 'Acting as')
       .flatMap((el) => [...el.parentElement.parentElement.querySelectorAll('button[role="combobox"]')]);
+    else if (kind === 'organization-option') candidates = [...document.querySelectorAll('span')]
+      .filter((el) => el.textContent.trim() === 'Acting as')
+      .flatMap((el) => [...el.parentElement.parentElement.querySelectorAll('button[role="combobox"]')])
+      .filter((trigger) => trigger.getAttribute('aria-expanded') === 'true')
+      .flatMap((trigger) => {
+        const id = trigger.getAttribute('aria-controls');
+        const menu = id ? document.getElementById(id) : null;
+        return menu?.getAttribute('role') === 'listbox' && menu.getAttribute('data-state') === 'open'
+          ? [...menu.querySelectorAll('[role="option"]')] : [];
+      })
+      .filter((el) => el.textContent.trim() === label);
     else if (kind === 'capture-no-workspace-dismiss') candidates = [...document.querySelectorAll('[role="alert"]')]
       .filter((el) => el.querySelector('.font-medium')?.textContent.trim() === 'Capture list unavailable'
         && el.querySelector('p')?.textContent.includes('no workspace is selected, so the request was never sent'))

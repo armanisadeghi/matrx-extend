@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0142",
+  "scope": "Controlled Settings organization selector repair; native outcome remains unverified",
+  "cause": "The option probe searched document-wide role=option nodes and accepted a hit even when the Acting as listbox was closed or unrelated. The selector also sampled once immediately after opening the trigger.",
+  "red": "The new controlled DOM negative failed before the repair: a visible Approved option outside a closed organization listbox produced exact_visible_match_count=1 and a selectable point.",
+  "repair": "Resolve the unique Acting as combobox, follow its aria-controls link to an open visible listbox, and count only its options. Require one exact and visible match. Poll the linked menu until a hit-tested target has stable position and counts across consecutive observations, then use the shared bounded trusted pointer click path, which re-resolves and hit-tests the associated option immediately before input.",
+  "safety": "Failure observations remain bounded and omit target names and coordinates. Admin selection still requires a private approved fixture, and success still verifies the stored UUID, exact organization name, and rendered identity.",
+  "verification": {
+    "command": "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch node --test tests/browser/settings-native-auth-driver.test.mjs tests/browser/showcase-organization-diagnostic.test.mjs tests/browser/panel-transition-recorder.test.mjs scripts/hosted-profile-route.test.mjs scripts/hosted-scrape-route.test.mjs",
+    "result": "34 passed, 0 failed after final no-op guard addition and formatting",
+    "negative_cases": [
+      "closed linked listbox with visible foreign matching option",
+      "open linked listbox with visible foreign matching option",
+      "absent option",
+      "duplicate option",
+      "offscreen target",
+      "covered target"
+    ],
+    "delayed_case": "The controlled linked listbox stays closed for two samples, opens on the third, and requires another stable sample before returning a target.",
+    "source_extraction": "The Scrape first-auth transition guard now extracts the real wait helper with selectOrganization; the guard passed after the dependency repair."
+  },
+  "limits": "No browser or native run was performed. The original 37278418866 failure predates failure-time DOM instrumentation, so this repair does not establish its native cause or close D142."
+}

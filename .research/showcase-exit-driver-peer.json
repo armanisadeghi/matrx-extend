@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task": "Independent review of 10f47d24 EXT-D-0042 stale EXIT boundary",
+  "reviewer_authorship": "Source review and focused helper verification only; no product/test edits.",
+  "verdict_A_native_proof": {
+    "status": "NOT_EXECUTABLE_THROUGH_AUTHORIZED_HOSTED_ROUTE; native result unverified",
+    "finding": {
+      "severity": "Important",
+      "location": "scripts/hosted-guest-acceptance.mjs:378-386",
+      "code": "hosted_route_does_not_enable_stale_boundary",
+      "evidence": "The showcase child environment supplies artifact, receipt, run identity, and output, but never sets MATRX_SHOWCASE_STALE_BOUNDARY=1. The new driver enables arm/release only when that variable is exactly 1 (tests/browser/showcase-picker-native-acceptance.mjs:63), so the existing hosted showcase-picker-admin workflow silently runs the old ordinary-control path and cannot produce this decisive case. Workflow case selection is wired, boundary opt-in is not.",
+      "impact": "A hosted acceptance can pass without holding or delivering any stale EXIT; it does not verify the requested native condition."
+    },
+    "source_criteria": [
+      "When explicitly enabled, the driver wraps the isolated world's real chrome.runtime.sendMessage, captures A's actual EXIT message plus its args, waits until B is picking, and releases that same envelope through the original bound runtime API.",
+      "It observes the sidepanel's runtime relay, checks session and stamped tab/document identity, asserts B remains picking with one overlay, then checks a different B detection on the same tab/document and extracts all three fixture rows. These assertions appear capable of catching the stale EXIT consumer regression in the real native chain.",
+      "Exact artifact receipt/tree/version/ID and owned resource-action checks remain in the existing native harness."
+    ],
+    "native_execution": "Not run: review lane forbids local native execution; hosted route wiring is insufficient to claim this new case was exercised.",
+    "remaining_scope": "Even if wired and passing, this is EXIT-only. ITEM_DETECTED, RESULT, delayed cancellation injection, deferred installation, reinjection/listener cleanup, and nonadmin role gating remain open; do not close D42."
+  },
+  "verdict_B_test_quality": {
+    "status": "PASS_WITH_LIMITS",
+    "findings": [],
+    "checks": [
+      "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch node --test tests/browser/showcase-stale-runtime-boundary.test.mjs — 2 passed.",
+      "node --check on the edited native driver and new helper — passed.",
+      "The helper test proves hold-before-delivery and release ordering only against an in-memory VM/runtime stub; it does not prove Chrome delivery, service-worker stamping, panel observation, or extraction."
+    ],
+    "limits": [
+      "No browser/native run, build, or release run performed.",
+      "No mutation test of the new real-chain assertions performed; helper's simulated assertion path alone is not decisive proof."
+    ]
+  }
+}

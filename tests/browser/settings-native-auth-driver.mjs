@@ -217,34 +217,70 @@ async function approveConsent(context) {
   }
 }
 
-async function selectOrganization(panel, requiredOrganizationName) {
-  await click(panel, 'organization', '');
-  const target = await evaluate(
+export async function observeOrganizationOption(panel, requiredOrganizationName) {
+  return evaluate(
     panel,
     `(() => {
     const visible = (el) => { const r = el.getBoundingClientRect(); const s = getComputedStyle(el); return r.width > 0 && r.height > 0 && s.display !== 'none' && s.visibility !== 'hidden'; };
-    const matches = [...document.querySelectorAll('[role="option"]')]
-      .filter(visible).filter((option) => option.textContent.trim() === ${JSON.stringify(requiredOrganizationName)});
-    if (matches.length !== 1) return null;
-    const rect = matches[0].getBoundingClientRect();
-    const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2;
-    const hit = document.elementFromPoint(x, y);
-    return hit === matches[0] || matches[0].contains(hit) ? { x, y } : null;
+    const labels = [...document.querySelectorAll('span')].filter((el) => el.textContent.trim() === 'Acting as');
+    const triggers = labels.flatMap((el) => [...el.parentElement.parentElement.querySelectorAll('button[role="combobox"]')]);
+    const trigger = triggers.length === 1 ? triggers[0] : null;
+    const menuId = trigger?.getAttribute('aria-controls');
+    const menu = menuId ? document.getElementById(menuId) : null;
+    const menuOpen = trigger?.getAttribute('aria-expanded') === 'true' &&
+      menu?.getAttribute('role') === 'listbox' && menu.getAttribute('data-state') === 'open' && visible(menu);
+    const options = menuOpen ? [...menu.querySelectorAll('[role="option"]')] : [];
+    const exact = options.filter((option) => option.textContent.trim() === ${JSON.stringify(requiredOrganizationName)});
+    const visibleOptions = options.filter(visible);
+    const visibleExact = exact.filter(visible);
+    const target = exact.length === 1 && visibleExact.length === 1 ? visibleExact[0] : null;
+    const rect = target?.getBoundingClientRect();
+    const x = rect ? rect.x + rect.width / 2 : null;
+    const y = rect ? rect.y + rect.height / 2 : null;
+    const inViewport = x !== null && y !== null && x >= 0 && y >= 0 && x < innerWidth && y < innerHeight;
+    const hit = inViewport ? document.elementFromPoint(x, y) : null;
+    const filter = document.querySelector('[aria-label="Filter organizations by archive status"]');
+    const pressed = [...(filter?.querySelectorAll('button[aria-pressed="true"]') ?? [])];
+    const filterText = pressed.length === 1 ? pressed[0].textContent.trim() : '';
+    return {
+      menu_open: Boolean(menuOpen),
+      visible_option_count: visibleOptions.length,
+      exact_match_count: exact.length,
+      exact_visible_match_count: visibleExact.length,
+      target_in_viewport: target ? inViewport : null,
+      target_center_hit: target ? Boolean(hit && (hit === target || target.contains(hit))) : null,
+      archive_filter: filterText === 'Active only' ? 'active' : filterText === 'Archived only' ? 'archived' : filterText === 'Active + archived' ? 'all' : 'unknown',
+      point: target && inViewport && hit && (hit === target || target.contains(hit)) ? { x, y } : null,
+    };
   })()`,
   );
-  assert.ok(target, 'd87_member_organization_option_unavailable');
-  await panel.send('Input.dispatchMouseEvent', {
-    type: 'mousePressed',
-    ...target,
-    button: 'left',
-    clickCount: 1,
-  });
-  await panel.send('Input.dispatchMouseEvent', {
-    type: 'mouseReleased',
-    ...target,
-    button: 'left',
-    clickCount: 1,
-  });
+}
+
+export async function waitForOrganizationOption(panel, requiredOrganizationName, onObservation) {
+  let previousPoint = null;
+  let stablePoint = null;
+  await waitFor(
+    'd87_member_organization_option_unavailable',
+    async () => {
+      const observed = await observeOrganizationOption(panel, requiredOrganizationName);
+      const { point, ...safeObservation } = observed;
+      onObservation?.(safeObservation);
+      const signature = point
+        ? `${point.x}:${point.y}:${observed.visible_option_count}:${observed.exact_match_count}`
+        : null;
+      stablePoint = signature && signature === previousPoint ? point : null;
+      previousPoint = signature;
+      return safeObservation;
+    },
+    () => stablePoint !== null,
+  );
+  return stablePoint;
+}
+
+async function selectOrganization(panel, requiredOrganizationName, onObservation) {
+  await click(panel, 'organization', '');
+  await waitForOrganizationOption(panel, requiredOrganizationName, onObservation);
+  await click(panel, 'organization-option', requiredOrganizationName);
 }
 
 /** Select and verify the approved device organization for an acceptance that requires it. */
@@ -290,7 +326,7 @@ export async function selectRequiredSettingsOrganization({
   });
   await onBranch?.(selectionRequired ? 'organization_select' : 'organization_skip');
   onStage?.(selectionRequired ? 'organization_select' : 'organization_skip');
-  if (selectionRequired) await selectOrganization(panel, requiredOrganizationName);
+  if (selectionRequired) await selectOrganization(panel, requiredOrganizationName, onObservation);
   onStage?.('organization_storage');
   onObservation?.({ storage_has_uuid: null, storage_name_matches: null });
   const selected = await waitFor(
