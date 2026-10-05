@@ -8,9 +8,9 @@ Local capacity at05:21UTC: internalvolume about116MiB free, external1.6TiB free.
 
 Root owns integration, inventory/defect transitions, Store follow-through, and the next execution decision. Continue from current inventory and defects. Preserve concurrent writers on shared `origin/main`: fetch/reconcile, commit exact paths, push, and record final workspace state in `docs/stabilization/reports/workspace-sync-guest-incident-20261003.json`. Do not end with a child or heavy job active. Source review and tests never substitute for installed UI and server behavior.
 
-## Access interruption — recovery required
+## Current recovery and parallel bug work
 
-The latest permission change restricts networking, makes .git read-only, and denies Chrome computer control. GitHub run lookup and both owned secret deletions failed connecting to api.github.com. No agents remain live. Run37357780854 was last observed exercising Showcase; terminal status and evidence are UNKNOWN, not passed. Recover that exact run before any retry. Delete owned GitHub secrets MATRX_PROFILE_APPROVED_ORGANIZATION_JSON and MATRX_PREPARE_ADMIN_CREDENTIALS_JSON and verify absence when access is restored. Both deletions were attempted after interruption and failed; never claim cleanup. Existing pushed guest result remains valid; no newer submission occurred. This checkpoint edit is local and cannot be committed/pushed under current permissions. Prior execution details below are historical.
+Access restored; run37357780854 independently queried terminalfailure. Both owned GitHub temporary secret names deleted successfully and subsequent listreturnedempty. /root/recover_showcase_terminal collecting exactartifact/diagnostics; no retry. No native run currently active. User requested independent-agent bugfixskill; /root/independent_bug_skill owns repo-local skill; root owns independent evaluations. After creation continue D143 causal repair from recovered evidence. Earlier access interruption is resolved; old ACTIVE references below describe the historical run, not a current launch.
 
 ## Current execution — 2026-10-05 18:45 UTC
 
