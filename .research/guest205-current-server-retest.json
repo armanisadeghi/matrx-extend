@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "task": "guest205-current-server-retest",
+  "observed_at_utc": "2026-10-05T00:18:27.754462+00:00",
+  "status": "failed_setup_guest_unverified",
+  "scope": "One exact frozen Store 0.2.205 adapted ZIP hosted macos-15 native guest first/reload check; no retry.",
+  "workflow": {
+    "run_id": 37246354075,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37246354075",
+    "head_sha": "73363dd5df5902b6808532d0988890b887af19d2",
+    "status": "completed",
+    "conclusion": "failure",
+    "runner_label": "macos-15",
+    "acceptance_case": "guest-chat",
+    "attempts": 1,
+    "artifact_id": 11319127637,
+    "artifact_digest": "sha256:d5fe756911fbd078dd9e02659d65411baafc9fce90f9dc85f5af6e99118f2ba1",
+    "inputs": {
+      "runner_label": "macos-15",
+      "release_run_id": "37180303468",
+      "acceptance_case": "guest-chat"
+    },
+    "preflight_no_active_native": true,
+    "prior_member_run": 37245836902
+  },
+  "driver": {
+    "reviewed_commits": ["1379d875", "3c8daad2", "666ecc45"],
+    "review_commits": ["21e4d23a", "d811d909"],
+    "guest_driver_and_scripts_unchanged_from_reviewed_cpu_head": true,
+    "selected_head_later_changes": "test/report changes and v0.2.253 metadata; frozen artifact selected independently"
+  },
+  "frozen_product": {
+    "release_run_id": 37180303468,
+    "release_artifact_id": 11294843385,
+    "source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "store_zip_sha256": "6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26",
+    "zip_digest_reobserved_from_download": true,
+    "manifest_version_observed_from_zip": "0.2.205",
+    "store_manifest_unkeyed": true,
+    "adapted_tree_sha256": "de51d518f53bfd4acb420b0ab9f4f7f06a46cdc5d9b8844f7170827869a5484f",
+    "adaptation": "Only matching local ZIP public manifest.key; workflow preparation verifies both ZIP hashes and immutable original Store ZIP.",
+    "load_kind": "native_store_zip_candidate_key_adapted",
+    "post_scenario_unchanged_check_reached": false,
+    "actual_store_installation": false,
+    "pending_store_mutations": false
+  },
+  "live_backend": {
+    "before": {
+      "git_sha": "2e24fa8536c149663735c0cf2092cd21f5a97144",
+      "built_at": "2026-10-04T23:48:03Z",
+      "branch": null
+    },
+    "after": {
+      "git_sha": "2e24fa8536c149663735c0cf2092cd21f5a97144",
+      "built_at": "2026-10-04T23:48:03Z",
+      "branch": null
+    },
+    "brief_version": "9e81998819b073202e5aacc42faed8e4c8fe329c",
+    "attribution": "Public backend advanced before launch; same 2e24fa85 before and after bounded run."
+  },
+  "native_outcome": {
+    "receipt_status": "unverified",
+    "failure_stage": "owned_profile",
+    "failure_code": "native_sidepanel_runtime_context_missing",
+    "stage_progress": ["owned_profile"],
+    "first_question_exercised": false,
+    "post_reload_new_conversation_exercised": false,
+    "guest_ai_requests": [],
+    "guest_ai_transport_proven": false,
+    "http_error_observed": false,
+    "grounded_terminal_answer": "unverified; scenario never reached",
+    "owner_table_reads": [],
+    "owner_table_error_claim": "unverified; observer not attached",
+    "screenshots": []
+  },
+  "panel_context_failure": {
+    "diagnostic_file": "docs/stabilization/evidence/guest205-current-server/run37246354075/panel-context-diagnostic.json",
+    "interpretation": "Initial runtime context has empty document URL; the live frame and renderer already match the exact expected URL and identity, and the diagnostic follow-up finds the matching runtime context after 103 ms. Assertion fails on initial sample; diagnostics do not convert failure into pass."
+  },
+  "resource_guard": {
+    "package_final": "valid",
+    "browser_final": "valid",
+    "guest_final": "child_failed",
+    "all_resource_invalid": false,
+    "raw_current_run_journals": 3,
+    "old_37105304739_journals_excluded": 3
+  },
+  "cleanup": {
+    "workflow_terminal": true,
+    "upload_artifact_step": "success",
+    "native_finally_source": "tests/browser/native-sidepanel-qa-harness.mjs:1294 awaits CDP detach (errors caught), fixture server close, owned child stop, owned root removal before exception propagates.",
+    "primary_failure_preserved_after_finally": true,
+    "independent_native_detach_or_child_termination_telemetry": false,
+    "interpretation": "Harness finally awaited owned cleanup before unverified receipt and child exit. No separate persisted per-resource termination receipt. Disposable hosted job is terminal; no active native run remains.",
+    "local_owned_downloads_removed": true
+  },
+  "artifact_inventory": {
+    "downloaded_total_files": 7,
+    "receipt_files": 1,
+    "current_run_journals": 3,
+    "screenshots": 0,
+    "older_journals_excluded": 3
+  },
+  "evidence_files": [
+    {
+      "path": "docs/stabilization/evidence/guest205-current-server/run37246354075/acceptance-receipt.json",
+      "sha256": "98f86478241e3c1a76ca6793e968bfff51c04785351046a104b31b2729ec48df",
+      "bytes": 1031
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-current-server/run37246354075/acceptance-receipt.raw.json.txt",
+      "sha256": "e8036cfb28a33c7301083fa58b5174ef7741b6e936b995c6e22adec2de92732c",
+      "bytes": 1039
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-current-server/run37246354075/artifact-metadata.json",
+      "sha256": "513640c4f5c6210d429cef6bfd50c21908eab87238d3dc510dc86d8723b538c3",
+      "bytes": 787
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-current-server/run37246354075/backend-version-after.json",
+      "sha256": "a9df0539ab77c49a93439f498940d4128dbeb772a9039671c08868f4019c1dc8",
+      "bytes": 116
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-current-server/run37246354075/backend-version-before.json",
+      "sha256": "a9df0539ab77c49a93439f498940d4128dbeb772a9039671c08868f4019c1dc8",
+      "bytes": 116
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-current-server/run37246354075/panel-context-diagnostic.json",
+      "sha256": "24c448523a21208eae4f72fcb037e5ce30c249f2ad1c02bcf13b3e996a0393a4",
+      "bytes": 1393
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-current-server/run37246354075/resource-journals/hosted-browser-37246354075-1.jsonl",
+      "sha256": "92926ffd382653e2b602144c4b6f918c3495d98080e0c93fe8000db1a9dfdbb7",
+      "bytes": 986
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-current-server/run37246354075/resource-journals/hosted-guest-37246354075-1.jsonl",
+      "sha256": "6c9fa63c3de5bf6b95a2f757f3379f1e4135e78f3419cc6a0706320ebba0a2e2",
+      "bytes": 984
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-current-server/run37246354075/resource-journals/hosted-package-37246354075-1.jsonl",
+      "sha256": "c231e6828720351e4e3ebb7ef362efdfc348b4549e22adafbc009bd0ee828231",
+      "bytes": 988
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-current-server/run37246354075/workflow.json",
+      "sha256": "c9e38f29284173b558f2edb3a7a35265b6e248b68e436e1e52530d4e09b970e9",
+      "bytes": 5364
+    }
+  ],
+  "limits": [
+    "This run is a setup failure, not a guest Chat or current-backend pass/fail.",
+    "Neither first request nor reload new conversation reached; no HTTP status or grounded answer can be attributed.",
+    "Owner-table traffic before observer attachment is unverified.",
+    "Adapted frozen ZIP acceptance is not actual Store-installed acceptance.",
+    "No retry, browser local run, release, build, version bump, or Store mutation was performed by this lane."
+  ],
+  "raw_receipt_byte_identical_to_download": true,
+  "raw_receipt_file": "docs/stabilization/evidence/guest205-current-server/run37246354075/acceptance-receipt.raw.json.txt",
+  "formatted_receipt_semantically_identical_to_raw": true,
+  "raw_journals_byte_identical_to_download": true
+}

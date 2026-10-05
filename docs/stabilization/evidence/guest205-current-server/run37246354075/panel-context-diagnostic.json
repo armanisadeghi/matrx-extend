@@ -1,0 +1,54 @@
+{
+  "code": "BROWSER_PANEL_CONTEXT_FAILURE",
+  "at_utc": "2026-10-05T00:15:09.5887290Z",
+  "diagnostic": {
+    "contextCount": 1,
+    "sidePanelCount": 1,
+    "expectedExtensionCount": 0,
+    "exactUrlCount": 0,
+    "globalTabCount": 1,
+    "exactContextCount": 0,
+    "missingDocumentUrlCount": 0,
+    "emptyDocumentUrlCount": 1,
+    "otherExtensionUrlCount": 0,
+    "nonExtensionUrlCount": 0,
+    "document": {
+      "frame": {
+        "present": true,
+        "exactUrl": true,
+        "emptyUrl": false,
+        "loaderPresent": true,
+        "navigationError": false
+      },
+      "renderer": {
+        "exactUrl": true,
+        "emptyUrl": false,
+        "readyState": "interactive",
+        "runtimeIdentityExact": true,
+        "contextQueryAvailable": true,
+        "sidePanelCount": 1,
+        "emptyContextUrlCount": 0,
+        "exactContextCount": 1
+      },
+      "queryFailed": false
+    },
+    "followUp": {
+      "side_panel_count": 1,
+      "exact_expected_count": 1,
+      "elapsed_ms": 103
+    },
+    "followUpShape": {
+      "contextCount": 1,
+      "sidePanelCount": 1,
+      "expectedExtensionCount": 1,
+      "exactUrlCount": 1,
+      "globalTabCount": 1,
+      "exactContextCount": 1,
+      "missingDocumentUrlCount": 0,
+      "emptyDocumentUrlCount": 0,
+      "otherExtensionUrlCount": 0,
+      "nonExtensionUrlCount": 0
+    },
+    "followUpQueryFailed": false
+  }
+}

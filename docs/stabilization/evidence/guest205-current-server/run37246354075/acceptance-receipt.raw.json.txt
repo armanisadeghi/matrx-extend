@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "scope": "fresh owned guest profile; unpredictable article fixture in the owned browser tab; real Chat answer and post-reload guest follow-up",
+  "context_rule_read_observation_scope": "CDP observer attaches after panel load and runs through Values chip open, both guest sends, and panel reload; it cannot establish requests before attachment",
+  "status": "unverified",
+  "build": {
+    "version": "0.2.205",
+    "tree_sha256": "de51d518f53bfd4acb420b0ab9f4f7f06a46cdc5d9b8844f7170827869a5484f",
+    "receipt_kind": "native_store_zip_candidate_key_adapted"
+  },
+  "guest": null,
+  "chat": null,
+  "screenshot": null,
+  "followup_screenshot": null,
+  "failure_stage": "owned_profile",
+  "failure_code": "native_sidepanel_runtime_context_missing",
+  "failure_reason": "native_sidepanel_runtime_context_missing",
+  "stage_progress": [
+    "owned_profile"
+  ],
+  "guest_ai_requests": [],
+  "guest_ai_observer": null,
+  "guest_ai_transport_proven": false,
+  "context_rule_reads": [],
+  "grounding_diagnostics": {}
+}
