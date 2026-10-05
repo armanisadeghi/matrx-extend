@@ -551,7 +551,7 @@ catch_up_matrx_packages() {
     }
     MATRX_CATCHUPS=$((MATRX_CATCHUPS + 1))
     log "matrx-packages STALE only ($(tr '\n' ' ' <<< "$stale")) — catch-up $MATRX_CATCHUPS of $MATRX_CATCHUP_ATTEMPTS"
-    if ! ( cd "$REPO_ROOT" && bounded 600 pnpm update -r "@ai-matrx/*" --latest ) >> "$RELEASE_LOG_FILE" 2>&1; then
+    if ! ( cd "$REPO_ROOT" && bounded 600 pnpm update -r "@ai-matrx/*" --latest && bounded 600 pnpm update -r "@ai-matrx/*" --depth Infinity ) >> "$RELEASE_LOG_FILE" 2>&1; then
         finding "ERROR" "Packages" "pnpm update of the stale @ai-matrx packages failed during catch-up" "pnpm sync:matrx-packages"
         return 1
     fi
