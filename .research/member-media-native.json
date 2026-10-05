@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0138",
+  "task": "one controlled frozen 0.2.244 member Scrape native discriminator",
+  "status": "unverified",
+  "run": {
+    "run_id": 37261674307,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37261674307",
+    "run_attempt": 1,
+    "workflow": "Hosted guest side-panel acceptance",
+    "workflow_file": ".github/workflows/hosted-guest-acceptance.yml",
+    "head_branch": "main",
+    "head_sha": "327fd549f10199e45eb104c1a8df79be31e8c3d9",
+    "green_ci_comparison_head_sha": "1e44a68a3a3807db4598bda6a13cda99fa38f9a4",
+    "relevant_driver_workflow_and_resource_paths_byte_equivalent_to_green_ci": true,
+    "job_id": 111610024728,
+    "created_at_utc": "2026-10-05T04:00:29Z",
+    "acceptance_started_at_utc": "2026-10-05T04:05:19Z",
+    "acceptance_completed_at_utc": "2026-10-05T04:08:03Z",
+    "completed_at_utc": "2026-10-05T04:08:09Z",
+    "conclusion": "failure",
+    "acceptance_duration_seconds": 164
+  },
+  "inputs": {
+    "runner_label": "macos-15",
+    "acceptance_case": "guest-scrape-development",
+    "scrape_auth_mode": "member",
+    "scrape_width_mode": "normal",
+    "scrape_normal_width_px": 600,
+    "development_run_id": 37233480033,
+    "development_artifact_id": 11315305224
+  },
+  "frozen_product": {
+    "version": "0.2.244",
+    "source_sha": "b81587021d689078ed428dafe3e15474a84c41e2",
+    "tree_sha256": "3396bae6d24ddfc7e93422a12e2341983179d7b4be3eca94adaafc5316cc94e7",
+    "development_artifact_digest": "sha256:a32cc1fe513326b3a185971cd0093f80d5eefa712873a517b2540be693be78ae"
+  },
+  "native_outcome": {
+    "status": "unverified",
+    "native_stage": "exercise_panel",
+    "failure_stage": "organization_selection",
+    "failure_code": "scrape_authenticated_panel_foreground_not_observed:false",
+    "authentication_stage": "member_extension_signin",
+    "member_authentication": {
+      "web_signed_in": true,
+      "extension_signed_in": true,
+      "admin_role": false,
+      "canonical_nonadmin_check_matched_current_extension_user": true,
+      "canonical_nonadmin_check_http_status": 200,
+      "canonical_nonadmin_check_returned_rows": 0,
+      "organization_selected": true,
+      "selected_organization_verified": true,
+      "rendered_email_matches_first_party": true,
+      "rendered_role_matches_mode": true,
+      "profile_matches_first_party": true,
+      "selected_organization_matches_stored_identity": true,
+      "identity_values_recorded": false
+    },
+    "panel_foreground_diagnostic": {
+      "owned_root_page": true,
+      "panel_visibility_at_diagnostic": "hidden",
+      "panel_has_focus": true,
+      "original_panel_target_present": true,
+      "exact_panel_target_count": 1,
+      "original_is_only_exact_panel_target": true,
+      "expected_side_panel_context_count": 1,
+      "expected_extension_count": 1,
+      "exact_url_count": 1,
+      "diagnostic_timed_out": false,
+      "outstanding_probes_after_deadline": false
+    },
+    "panel_visibility_timeline": {
+      "sample_count": 14,
+      "hidden_samples": 9,
+      "visible_samples": 5,
+      "transition_status": "measured",
+      "transition_interval": "outside_recorded_intervals",
+      "transition_event_count": 37,
+      "causal_interpretation": "not established"
+    },
+    "normal_width_observation": {
+      "requested_mode": "normal",
+      "requested_minimum_px": 600,
+      "panel_viewport_samples": 0,
+      "width_verified": false
+    },
+    "launch_mode": {
+      "extension_surface": "SIDE_PANEL",
+      "headed_option_source_default": false,
+      "chromium_headless_flag_source_default": "--headless=new",
+      "evidence_basis": "Fresh source review found the Scrape caller omits headed and the harness defaults false, which adds --headless=new.",
+      "actual_process_arguments_captured": false,
+      "physical_desktop_panel_exposure": false
+    },
+    "cases": [],
+    "completed_case_count": 0,
+    "media_failure_evidence": {
+      "media_transition_count": 0,
+      "media_event_trace_count": 0,
+      "images_or_video_boundary_reached": false,
+      "images_or_video_failure_code": null
+    },
+    "physical_panel_exposure_claimed": false,
+    "cause_claimed": false
+  },
+  "resource_journals": {
+    "package": {
+      "run_id": "hosted-package-37261674307-1",
+      "decision": "valid",
+      "resource_invalid": false,
+      "unsafe_event_observed": false
+    },
+    "browser": {
+      "run_id": "hosted-browser-37261674307-1",
+      "decision": "valid",
+      "resource_invalid": false,
+      "unsafe_event_observed": false
+    },
+    "guest": {
+      "run_id": "hosted-guest-37261674307-1",
+      "decision": "child_failed",
+      "resource_invalid": false,
+      "cpu_pending_recovered": true,
+      "unsafe_event_observed": false
+    }
+  },
+  "credential_cleanup": {
+    "temporary_github_secret_deleted": true,
+    "secret_absence_confirmed": true,
+    "local_single_use_link_deleted": true,
+    "local_link_absence_confirmed": true,
+    "no_email_sent": true,
+    "no_password_changed": true,
+    "identity_or_auth_link_values_recorded": false
+  },
+  "screenshots": [
+    {
+      "path": "docs/stabilization/evidence/member-media/run37261674307/screenshots/native-side-panel.png",
+      "dimensions_px": "360x373",
+      "visible_facts": "Extension side panel displays the guest header, sign-in and sign-up controls, assistant prompt chips, and an empty composer.",
+      "timing_limit": "Image timing relative to the verified member authentication and failure is not established; it does not override the receipt's auth booleans or prove the final failure state."
+    },
+    {
+      "path": "docs/stabilization/evidence/member-media/run37261674307/screenshots/normal-target-after-open.png",
+      "dimensions_px": "377x417",
+      "visible_facts": "Owned Research brief fixture page with its Open panel control and development bridge response; no personal identity data is visible.",
+      "timing_limit": "This page image does not establish a 600 px panel viewport or show Images/Video results."
+    }
+  ],
+  "evidence": {
+    "artifact_id": 11324662296,
+    "artifact_name": "hosted-guest-37261674307-1",
+    "artifact_expired": false,
+    "artifact_bytes": 57910,
+    "artifact_digest": "sha256:6f6bcdf2e2a54ca8142f8d19d158f6d5e09924031341c8e0ae8523713ab2744a",
+    "raw_receipt_path": "docs/stabilization/evidence/member-media/run37261674307/raw/scrape-member-native.json.txt",
+    "resource_journal_directory": "docs/stabilization/evidence/member-media/run37261674307/raw/resource-journals",
+    "hash_manifest_path": "docs/stabilization/evidence/member-media/run37261674307/hash-manifest.json"
+  },
+  "limits": [
+    "The run failed before Scrape result tabs; no Images or Video timeout boundary was exercised, so EXT-D-0138 remains unverified.",
+    "No Scrape case completed; zero cases are verified.",
+    "The panel visibility timeline contains both hidden and visible samples, while the recorded transition interval is outside the recorded intervals; this does not establish a cause or close EXT-D-0133.",
+    "The member auth checks passed, but the foreground diagnostic reported the panel hidden despite focus and one exact original panel target; the cause remains undetermined.",
+    "Requested normal width was not observed because the report has no panel viewport samples.",
+    "Fresh source review indicates the SIDE_PANEL browser launch defaults headless; actual process arguments were not captured, so no physical desktop panel exposure is claimed.",
+    "A screenshot showing the guest header is preserved with an explicit timing limitation; it does not establish the final native panel state."
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0138 one controlled member Scrape native discriminator",
+  "status": "completed_one_launch_no_retry",
+  "workflow": "hosted-guest-acceptance.yml",
+  "launch_authorized": true,
+  "authorization": {
+    "source": "Root independently confirmed full CI success and inspected/approved exact frozen inputs for one launch.",
+    "no_retry": true,
+    "credential_creation_before_approval": false
+  },
+  "inputs": {
+    "runner_label": "macos-15",
+    "development_run_id": "37233480033",
+    "development_artifact_id": "11315305224",
+    "acceptance_case": "guest-scrape-development",
+    "scrape_auth_mode": "member",
+    "scrape_width_mode": "normal",
+    "scrape_normal_width_px": "600"
+  },
+  "frozen_product": {
+    "version": "0.2.244",
+    "source_sha": "b81587021d689078ed428dafe3e15474a84c41e2",
+    "tree_sha256": "3396bae6d24ddfc7e93422a12e2341983179d7b4be3eca94adaafc5316cc94e7",
+    "development_run_id": "37233480033",
+    "development_artifact_id": "11315305224",
+    "reference_dispatch": ".research/first-auth-dispatch.json",
+    "reference_native": ".research/first-auth-native.json"
+  },
+  "diagnostic_target": {
+    "defect_id": "EXT-D-0138",
+    "purpose": "Capture bounded, credential-free Images/Video timeout state through the actual native driver's top-level catch and receipt writer.",
+    "prior_failure_run_id": 37258276837,
+    "prior_failure_code": "scrape_Images_loaded_not_observed",
+    "source_fix_commits": [
+      "f1eb69207afe8c8abc3bcf3d62da6b1cd98475c0",
+      "403a85564f8a398b567d1ff9857d7baca11c4d6a",
+      "39212f26474e745d644c3e6e9d95a29368b6b71d"
+    ],
+    "fresh_reviews": [
+      ".research/media-guard-reverify.json",
+      ".research/media-portability-peer.json"
+    ],
+    "interpretation_limit": "Native evidence may show recurrence; do not infer product cause from event order or claim D133 closure from a visible trace."
+  },
+  "ci_gate": {
+    "required_full_ci_run_id": 37261069816,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37261069816",
+    "observed_status": "completed",
+    "observed_conclusion": "success",
+    "head_sha": "1e44a68a3a3807db4598bda6a13cda99fa38f9a4",
+    "created_at_utc": "2026-10-05T03:51:10Z",
+    "verified_job_id": 111608348156,
+    "verified_job_evidence": "Actual-driver media receipt guard: 4 passed, 0 failed, 0 skipped.",
+    "dispatch_condition": "Satisfied; root confirmed green CI and independently inspected exact inputs."
+  },
+  "constraints": {
+    "one_native_launch_only": true,
+    "preflight_must_confirm_no_active_hosted_acceptance": true,
+    "no_product_code_or_build_or_release_or_store_edits": true,
+    "no_acceptance_weakening": true,
+    "external_scratch_root": "/Volumes/Samsung2TB/code/.stabilization-scratch",
+    "all_tmpdir_downloads_and_external_cache_use_external_scratch": true,
+    "skip_heavy_local_work_if_system_disk_free_below_minimumFreeDiskGiB": true,
+    "minimumFreeDiskGiB": 20,
+    "system_disk_free_bytes_observed": 922746880,
+    "local_heavy_work_launched": false,
+    "cleanup_temporary_github_secret_and_local_magic_link_immediately_after_terminal": true,
+    "preserve_raw_receipt_three_current_journals_and_hash_manifest": true,
+    "preserve_raw_json_as_json_txt": true,
+    "format_regular_json_reports_before_hash_manifest": true,
+    "focused_biome_check_owned_changes_before_commit": true,
+    "report_zero_cases_as_unverified": true,
+    "no_retry": true
+  },
+  "preflight": {
+    "no_active_hosted_acceptance": true,
+    "checked_workflow_runs": "latest 20 hosted acceptance runs; all terminal before dispatch",
+    "artifact_metadata_verified_unexpired": true,
+    "artifact_digest": "sha256:a32cc1fe513326b3a185971cd0093f80d5eefa712873a517b2540be693be78ae",
+    "artifact_receipt_verified": true,
+    "artifact_provenance_verified": true,
+    "temporary_secret_was_absent_before_creation": true,
+    "fresh_link_validation": "existing reviewer fingerprint, confirmed account, zero admin rows, one active Matrx's Org membership"
+  },
+  "launch": {
+    "run_id": 37261674307,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37261674307",
+    "run_attempt": 1,
+    "workflow_head_sha": "327fd549f10199e45eb104c1a8df79be31e8c3d9",
+    "created_at_utc": "2026-10-05T04:00:29Z",
+    "launch_count": 1,
+    "status_at_observation": "completed",
+    "conclusion": "failure",
+    "terminal_at_utc": "2026-10-05T04:08:09Z",
+    "job_id": 111610024728,
+    "artifact_id": 11324662296,
+    "artifact_digest": "sha256:6f6bcdf2e2a54ca8142f8d19d158f6d5e09924031341c8e0ae8523713ab2744a",
+    "failure_stage": "organization_selection",
+    "failure_code": "scrape_authenticated_panel_foreground_not_observed:false",
+    "completed_case_count": 0,
+    "retry_count": 0
+  },
+  "credential_cleanup": {
+    "temporary_github_secret_deleted": true,
+    "secret_absence_confirmed": true,
+    "local_single_use_link_deleted": true,
+    "local_link_absence_confirmed": true,
+    "no_email_sent": true,
+    "no_password_changed": true
+  },
+  "evidence": {
+    "report_path": ".research/member-media-native.json",
+    "evidence_directory": "docs/stabilization/evidence/member-media/run37261674307",
+    "raw_receipt_preserved_as_json_txt": true,
+    "three_current_resource_journals_preserved": true,
+    "hash_manifest_path": "docs/stabilization/evidence/member-media/run37261674307/hash-manifest.json"
+  }
+}

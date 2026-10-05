@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "run_id": 37261674307,
+  "workflow": "hosted-guest-37261674307-1",
+  "workflow_head_sha": "327fd549f10199e45eb104c1a8df79be31e8c3d9",
+  "source_artifact": {
+    "artifact_id": 11324662296,
+    "name": "hosted-guest-37261674307-1",
+    "sha256": "6f6bcdf2e2a54ca8142f8d19d158f6d5e09924031341c8e0ae8523713ab2744a",
+    "bytes": 57910
+  },
+  "payloads": [
+    {
+      "path": "raw/scrape-member-native.json.txt",
+      "sha256": "297fdbadc4380a61890b1e2b48a370c36519e4aca196619d85f92865a33ffb0c",
+      "bytes": 12803
+    },
+    {
+      "path": "raw/resource-journals/hosted-package-37261674307-1.jsonl",
+      "sha256": "f3996e69c1916ca0671ab51257cb85d772fe2fc0af84f84b0344b1d5103c9c57",
+      "bytes": 1004
+    },
+    {
+      "path": "raw/resource-journals/hosted-browser-37261674307-1.jsonl",
+      "sha256": "4effaccf2ef81dd9f0110054196e2f8079c8837f7cf426c711a95e3d62b17aea",
+      "bytes": 985
+    },
+    {
+      "path": "raw/resource-journals/hosted-guest-37261674307-1.jsonl",
+      "sha256": "f5a598e6421bb2c64e3eb01bc4181b742950049fb9fa55ca214d9a93166cb3cd",
+      "bytes": 8376
+    },
+    {
+      "path": "screenshots/native-side-panel.png",
+      "sha256": "c0533711da45bce42705f1719265a5eb6c692220af7ac729e9b990bade97d34e",
+      "bytes": 25860
+    },
+    {
+      "path": "screenshots/normal-target-after-open.png",
+      "sha256": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89",
+      "bytes": 25156
+    }
+  ]
+}
