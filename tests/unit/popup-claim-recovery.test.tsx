@@ -85,10 +85,6 @@ describe('popup capture claim recovery', () => {
   });
 
   afterEach(async () => {
-    // Vitest globals are disabled, so RTL cannot register automatic cleanup.
-    // Drain App's lazy pre-warm before teardown. Without this barrier, its
-    // ChatView import can resume after Vitest disposes the jsdom environment.
-    await vi.dynamicImportSettled();
     // Stop effects/subscriptions before clearing the session rows.
     cleanup();
     const { POPUP_LAUNCH_INTENT_KEY } = await import('@/lib/panel/launch-intent');
@@ -124,8 +120,9 @@ describe('popup capture claim recovery', () => {
     useSidepanelTabStore.getState().setTab('chat');
     const { App } = await import('@/entrypoints/sidepanel/App');
     render(<App />);
-    // App pre-warms the active view without awaiting its dynamic import. Drain
-    // that precise import before the test can tear down its environment.
+    // App starts these imports from effects without awaiting them. Resolve the
+    // exact modules before teardown instead of waiting for unrelated dynamic imports.
+    await import('@/lib/auth/identity');
     await import('@/features/chat/ChatView');
 
     const alert = await screen.findByRole('alert');
