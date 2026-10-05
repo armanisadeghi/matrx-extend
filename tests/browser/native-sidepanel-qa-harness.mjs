@@ -162,6 +162,18 @@ function requireOwnedCommandLine(commandLine, profile) {
     throw new Error('native_sidepanel_unowned_debugging_refused');
 }
 
+function requireBrowserDisplayMode(commandLine, headed) {
+  const args = commandLine?.arguments;
+  if (!Array.isArray(args)) throw new Error('native_sidepanel_command_line_missing');
+  const headless = args.some((arg) => /^--headless(?:=|$)/.test(arg));
+  if (headless === headed) throw new Error('native_sidepanel_display_mode_mismatch');
+  return Object.freeze({
+    requested_mode: headed ? 'headed' : 'headless',
+    observed_mode: headless ? 'headless' : 'headed',
+    verified_by: 'Browser.getBrowserCommandLine',
+  });
+}
+
 function requireExpectedExtension(targetInfos, extensionId) {
   const prefix = `chrome-extension://${extensionId}/`;
   const serviceWorker = targetInfos.find(
@@ -1156,6 +1168,7 @@ export async function runNativeSidepanelQa({
   onStage = () => {},
   onStartupGpuObservation,
   onPanelVisibilityObservation,
+  onBrowserLaunchObservation,
 } = {}) {
   onStage('receipt');
   let receipt;
@@ -1259,6 +1272,8 @@ export async function runNativeSidepanelQa({
     const commandLine = await cdp.send('Browser.getBrowserCommandLine');
     onStage('command_line_verify');
     requireOwnedCommandLine(commandLine, profile);
+    const browserLaunch = requireBrowserDisplayMode(commandLine, headed);
+    onBrowserLaunchObservation?.(browserLaunch);
     let extensionWorker;
     try {
       onStage('extension_worker');
@@ -1481,6 +1496,7 @@ export {
   requireReleaseReceipt,
   requireExpectedExtension,
   requireOwnedCommandLine,
+  requireBrowserDisplayMode,
   requireSidePanelContext,
   observeSidePanelContext,
   requireSpawnedProfileOwner,

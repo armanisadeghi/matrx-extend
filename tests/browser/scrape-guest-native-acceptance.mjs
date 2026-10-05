@@ -96,6 +96,7 @@ const report = {
   authentication: null,
   panel_viewports: [],
   panel_visibility_timeline: [],
+  browser_launch: null,
   panel_transition: null,
 };
 let selection;
@@ -933,6 +934,7 @@ try {
         : (receipt.artifactId ?? null),
   };
   await runNativeSidepanelQa({
+    headed: true,
     extensionDir: EXTENSION_DIR,
     ...(ARTIFACT_CHANNEL === 'development'
       ? { localDevReceiptPath: RECEIPT }
@@ -954,6 +956,9 @@ try {
       '/consultation.mp4': { contentType: 'video/mp4', body: walkthroughVideo },
     },
     onPanelVisibilityObservation: (value) => report.panel_visibility_timeline.push(value),
+    onBrowserLaunchObservation: (value) => {
+      report.browser_launch = value;
+    },
     onStage: (value) => {
       report.native_stage = value;
     },
