@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0143",
+  "case_ids": ["EXT-F-1012-T24", "EXT-F-1012-T51"],
+  "workflow": "Hosted guest side-panel acceptance",
+  "acceptance_case": "showcase-stale-admin",
+  "runner_label": "macos-15",
+  "run_id": 37388591467,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37388591467",
+  "run_head_sha": "4ae67d17ff0fc99c752ea9cce72df22fef17fc42",
+  "run_conclusion": "failure",
+  "completed_at": "2026-10-05T23:35:09Z",
+  "ci_source": {
+    "run_id": 37387462883,
+    "conclusion": "success",
+    "head_sha": "7aace278d7db2849dd33e23ecfd546e893e8fa53",
+    "checks": "success",
+    "resource_guard_integration": "success",
+    "artifact_id": 11380143956,
+    "artifact_sha256": "1833eab8e769811b0b35333e0a8a62ed9fe0eaa919c61cfbde3829a240a4dbf8",
+    "artifact_tree_sha256": "42eb54eaed3336fe3e4651622766e7c89ee3091484e90ec2e804572a8a34bfb1",
+    "development_version": "0.2.305",
+    "reviewed_pointer_commit": "48b25d43",
+    "reviewed_pointer_commit_in_source": true,
+    "workflow_driver_and_lockfile_unchanged_from_source": true
+  },
+  "result_artifact": {
+    "id": 11380109442,
+    "name": "hosted-guest-37388591467-1",
+    "sha256": "bcc7cee5c8c0667c922ecbb89a0a72fdb9e94752b8d0809f39f8ca364d4748ab",
+    "created_at": "2026-10-05T23:35:06Z"
+  },
+  "original_receipt": {
+    "file": "docs/stabilization/evidence/showcase-pointer-native/run37388591467/original-receipt.json",
+    "sha256": "1a7a9762170527872f25e058188c660862f6f633ae78c7d9995f1c9d993a4a0c",
+    "byte_for_byte": true
+  },
+  "resource_journals": [
+    {
+      "file": "docs/stabilization/evidence/showcase-pointer-native/run37388591467/hosted-package-37388591467-1.jsonl",
+      "sha256": "9a8645dbc59b078ebd78266ed38381e89e887d5dfb06fd802d83e71a6b2e0651",
+      "final_decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    {
+      "file": "docs/stabilization/evidence/showcase-pointer-native/run37388591467/hosted-browser-37388591467-1.jsonl",
+      "sha256": "613a00b911f3af5378dfb64d585fd071d671c0d5c477a7daab611fcffa0402f8",
+      "final_decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    {
+      "file": "docs/stabilization/evidence/showcase-pointer-native/run37388591467/hosted-guest-37388591467-1.jsonl",
+      "sha256": "b884a2098ce67356088c8bba9910d956ae23e76949c0288d5ba0ed3765f6d441",
+      "final_decision": "child_failed",
+      "resource_invalid": false,
+      "exit_code": 1
+    }
+  ],
+  "resource_verdict": "package and browser valid; guest child_failed exit 1 with resourceInvalid false",
+  "first_failure": {
+    "native_stage": "exercise_panel",
+    "stage": "select_B_card",
+    "substage": "card_click",
+    "code": "selection_card_click_failed",
+    "observations": {
+      "card_count": 3,
+      "overlay_count": 1,
+      "card_visible": true,
+      "card_center_hit": false,
+      "scope_choice_count": 0,
+      "three_card_choice_count": 0,
+      "badge_three_items": false
+    },
+    "before_click": {
+      "viewport": {
+        "width": 601,
+        "height": 498
+      },
+      "card_rect": {
+        "x": 8,
+        "y": 79.875,
+        "width": 585,
+        "height": 65.90625
+      },
+      "picker_panel_rect": {
+        "x": 239,
+        "y": 16,
+        "width": 346,
+        "height": 110
+      },
+      "center_in_viewport": true,
+      "center_hit_kind": "picker_panel",
+      "interior_hit_kinds": [
+        "card",
+        "picker_panel",
+        "picker_panel",
+        "card",
+        "picker_panel",
+        "picker_panel",
+        "card",
+        "card",
+        "card"
+      ]
+    },
+    "card_center": {
+      "x": 300.5,
+      "y": 112.828125
+    },
+    "causal_boundary": "The picker panel geometrically covers the first card center; elementFromPoint at that in-viewport center resolves to picker_panel before Playwright clicks. Card-interior samples outside the panel resolve to card. The centered native click fails before scope choice, B detection, or extraction.",
+    "after_failure_sample": "absent; outer catch runs after native browser wrapper has closed the page"
+  },
+  "passed_before_failure": [
+    "guest_nonchat_control_and_showcase_gate",
+    "real_admin_signin_and_device_organization",
+    "genuine_A_exit_relay_rejected_while_B_active",
+    "same_page_cancel_A_start_B"
+  ],
+  "native_verdict": "D143 failure localized to picker-panel interception of the driver centered card click; current B detection and extraction unverified",
+  "unverified": [
+    "stale A ITEM_DETECTED, RESULT, and EXIT held and released after B starts",
+    "delayed A cancellation injection after B starts",
+    "deferred installation across replacement",
+    "new content-script context reinjection and exact listener count",
+    "nonadmin role gating",
+    "Current B card selection, detection, and three-row extraction",
+    "Driver remedy and product behavior after a click at an unobstructed card point"
+  ],
+  "temporary_secrets": {
+    "names": ["MATRX_PROFILE_APPROVED_ORGANIZATION_JSON", "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON"],
+    "staged_only_for_run": true,
+    "deleted_at_terminal": true,
+    "absence_verified": true
+  },
+  "log_sha256": "f47fe81ecdcaf86d87feddc7889b13171022ad20f097492345ea86fbe714a42e",
+  "next_causal_action": "Repair the native driver to click an in-viewport card point verified by elementFromPoint as card, with a guard that fails on the centered blocked click and passes at an exposed point. Then independently review and run ONE guarded native retest from a fresh green artifact; keep D143 open until B detection and three-row extraction pass."
+}
