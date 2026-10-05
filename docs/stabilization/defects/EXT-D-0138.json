@@ -19,7 +19,8 @@
     ".research/member-images-diagnosis.json",
     ".research/media-evidence-peer.json",
     ".research/media-guard-reverify.json",
-    ".research/media-test-portability.json"
+    ".research/media-test-portability.json",
+    ".research/media-portability-peer.json"
   ],
   "transition_history": [
     {
@@ -66,5 +67,12 @@
     "initial_repair_result": "success",
     "corrected_guard_run": 37260075556,
     "corrected_guard_result": "failure: portable scratch path missing on Linux"
+  },
+  "portability_repair": {
+    "commit": "39212f26",
+    "independent_peer": "541910e8",
+    "focused_tests": "4pass0fail0skip",
+    "ci_run": 37260659876,
+    "ci_result": "failed lint on unrelated new guest evidence JSON formatting before full test completion; collector correction underway"
   }
 }
