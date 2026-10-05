@@ -1,0 +1,17 @@
+{
+  "review": "EXT-D-0136",
+  "reviewer": "independent CPU startup synchronization peer",
+  "A_outcome_scope_evidence": {
+    "scope": "CPU integration wrapper synchronization only; production guard and native boundary unchanged",
+    "actual_seam": "The real stabilization-resource.mjs child emits RESOURCE_ADMITTED before owner writes; test invokes requireNativeResourceHealth and runNativeResourceAction from tests/browser/native-resource-boundary.mjs.",
+    "green": "node --test scripts/test-stabilization-resource-cpu-integration.mjs: 2 passed, 0 failed, 19.566s; both normal and paused-writer paths completed.",
+    "startup_order": "RESOURCE_WATCH_HEALTHY is emitted from the watchdog after child setup and owner writes; test requires that exact readiness code before parsing nonce, and fails on unsafe watch.",
+    "red_evidence": "Builder evidence in .research/cpu-journal-parse-repair.json records scratch-copy mutation removing readiness wait -> SyntaxError Unexpected end of JSON input, and constant owner -> NATIVE_RESOURCE_BOUNDARY_REFUSED:wrong_run. Not independently replayed in this review.",
+    "siblings": "Disk integration reads owner after RESOURCE_WATCH_UNSAFE; safety integration only stats owner.json. Neither repeats the CPU admission-time parse."
+  },
+  "B_quality_doctrine": {
+    "finding": "The paused writer holds the actual writer after truncation, proves the empty-file defect, and releases only as readiness wait begins. Same forcing case covers recovered, confirmed, pending-exit; cleanup kills and awaits child in finally.",
+    "limits": "This is an actual local wrapper/native-boundary integration seam with deterministic host measurements; it does not establish hosted macOS/CI behavior. Red claims are recorded builder evidence, not independently repeated.",
+    "verdict": "PASS for requested source scope and green reproduction; recorded red proof is plausible and specific, with replay deferred."
+  }
+}
