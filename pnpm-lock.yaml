@@ -25,12 +25,18 @@ importers:
       '@ai-matrx/content-ir-react':
         specifier: latest
         version: 0.21.0(react@19.3.0)
+      '@ai-matrx/data':
+        specifier: latest
+        version: 0.18.37(@supabase/supabase-js@2.117.2)(react@19.3.0)
       '@ai-matrx/design-system':
         specifier: latest
         version: 0.68.9(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@ai-matrx/kit':
         specifier: latest
         version: 0.22.2(react@19.3.0)
+      '@ai-matrx/media':
+        specifier: latest
+        version: 0.8.0(@supabase/supabase-js@2.117.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@ai-matrx/realtime':
         specifier: latest
         version: 0.9.0(react@19.3.0)
@@ -299,6 +305,19 @@ packages:
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=18.0.0'
+
+  '@ai-matrx/media@0.8.0':
+    resolution: {integrity: sha512-jx+EH53JAEjbDR+RKu8N8Y4R4VZB1Bsw+iVilCrygkGCH+EfF+ZdV6pWx5rnFo46Ju8vR2S2++xCMXYabmHCHQ==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      next: '>=14.0.0'
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
+    peerDependenciesMeta:
+      next:
+        optional: true
+      react-dom:
+        optional: true
 
   '@ai-matrx/realtime@0.9.0':
     resolution: {integrity: sha512-dMOkkn7cAtg6IDZYj5ek8+hWdhAjut2x9Hs7ehI4bnVxqP5B4Zcu3FmlLG3sn9wZQPGLfPtBmXi+KEZ6vD8M3g==}
@@ -4493,6 +4512,25 @@ snapshots:
       jsqr: 1.4.0
       marked: 18.0.14
       react: 19.3.0
+
+  '@ai-matrx/media@0.8.0(@supabase/supabase-js@2.117.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+    dependencies:
+      '@ai-matrx/agents': 0.45.4(@supabase/supabase-js@2.117.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@ai-matrx/associations': 0.13.150(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@ai-matrx/data': 0.18.37(@supabase/supabase-js@2.117.2)(react@19.3.0)
+      '@ai-matrx/design-system': 0.68.9(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@ai-matrx/kit': 0.22.2(react@19.3.0)
+      react: 19.3.0
+      tailwind-merge: 3.7.0
+    optionalDependencies:
+      react-dom: 19.3.0(react@19.3.0)
+    transitivePeerDependencies:
+      - '@supabase/supabase-js'
+      - '@types/react'
+      - '@types/react-dom'
+      - react-native
+      - react-native-svg
+      - recharts
 
   '@ai-matrx/realtime@0.9.0(react@19.3.0)':
     optionalDependencies:
