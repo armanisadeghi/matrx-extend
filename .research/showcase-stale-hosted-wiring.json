@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0042",
+  "status": "hosted_stale_exit_case_launchable_native_unverified",
+  "workflow_case": "showcase-stale-admin",
+  "dispatch": {
+    "driver": "tests/browser/showcase-picker-native-acceptance.mjs",
+    "stale_case_env": "MATRX_SHOWCASE_STALE_BOUNDARY=1",
+    "ordinary_case": "showcase-picker-admin clears inherited stale opt-in",
+    "artifact": "exact CI development artifact, receipt, source SHA, run ID, and artifact ID",
+    "fixture": "admin credential and approved organization secret required in hosted preflight"
+  },
+  "verification": {
+    "command": "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch node --test scripts/hosted-profile-route.test.mjs scripts/hosted-scrape-route.test.mjs scripts/hosted-showcase-route.test.mjs tests/browser/showcase-stale-runtime-boundary.test.mjs",
+    "result": "20 passed",
+    "negative_cases": "wrong artifact identity, missing approved fixture, ordinary opt-in isolation, wrong-session/no-op EXIT release, and foreign/default context refused"
+  },
+  "native_result": "UNVERIFIED: no browser, build, heavy test, or release run in this disk-constrained lane",
+  "remaining_scope": "Stale ITEM_DETECTED and RESULT, deferred cancellation/install, reinjection/listener cleanup, and nonadmin role gate remain open; this wiring does not close D42."
+}

@@ -80,9 +80,10 @@ export async function armShowcaseStaleBoundary(page, extensionId) {
       assert.match(sessionId, /^[0-9a-f-]{36}$/i, 'showcase_captured_session_id_invalid');
       return run(`(async () => {
         const s = globalThis.__showcaseD42Boundary;
-        const held = s.held.shift();
+        const held = s.held[0];
         if (!held || held.message.kind !== ${JSON.stringify(EXIT)} ||
             held.message.payload?.session_id !== ${JSON.stringify(sessionId)}) return { released: false };
+        s.held.shift();
         try {
           const reply = await s.original(held.message, ...held.args);
           held.resolve(reply);

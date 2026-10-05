@@ -158,7 +158,7 @@ jobs:
           node --test tests/browser/native-sidepanel-qa-harness.test.mjs
           node --test tests/browser/scrape-headed-launch.test.mjs
           node --test tests/browser/authenticated-panel-host.test.mjs tests/browser/settings-native-auth-driver.test.mjs tests/browser/showcase-organization-diagnostic.test.mjs tests/browser/panel-transition-recorder.test.mjs
-          node --test scripts/hosted-profile-route.test.mjs scripts/hosted-scrape-route.test.mjs
+          node --test scripts/hosted-profile-route.test.mjs scripts/hosted-scrape-route.test.mjs scripts/hosted-showcase-route.test.mjs
           node --test tests/browser/scrape-media-timeout-evidence.test.mjs
           node --test tests/browser/scrape-empty-media-branch.test.mjs
           node tests/browser/vault-owned-cdp.test.cjs

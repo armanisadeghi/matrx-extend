@@ -57,31 +57,48 @@ test('captured A EXIT stays outside Chrome until released; B detection passes th
   assert.deepEqual((await boundary.snapshot()).held, [{ kind: oldExit.kind, session_id: a }]);
   await runtime.sendMessage(currentDetection);
   assert.deepEqual(delivered, [currentDetection]);
+  assert.deepEqual(await boundary.release(b), { released: false });
+  assert.deepEqual((await boundary.snapshot()).held, [{ kind: oldExit.kind, session_id: a }]);
+  assert.deepEqual(delivered, [currentDetection]);
   assert.deepEqual(await boundary.release(a), { released: true, ack: true });
   assert.deepEqual(await heldPromise, { ack: true });
+  assert.deepEqual(delivered, [currentDetection, oldExit]);
+  assert.deepEqual(await boundary.release(a), { released: false });
   assert.deepEqual(delivered, [currentDetection, oldExit]);
   await boundary.close();
 });
 
-test('refuses a page without the owned extension picker world', async () => {
-  const cdp = new EventEmitter();
-  cdp.send = async (method) => {
-    if (method === 'Runtime.enable')
-      queueMicrotask(() =>
-        cdp.emit('Runtime.executionContextCreated', {
-          context: { id: 1, auxData: { isDefault: true, frameId: 'page' } },
-        }),
-      );
-    return {};
-  };
-  await assert.rejects(
-    armShowcaseStaleBoundary(
-      {
-        url: () => 'http://localhost/events',
-        context: () => ({ newCDPSession: async () => cdp }),
-      },
-      'cihdmkcdjjckfhjpgoedmgfpoljebaml',
-    ),
-    /showcase_picker_isolated_context_missing/,
-  );
+test('refuses default or foreign extension picker worlds', async () => {
+  for (const world of ['default', 'foreign-extension']) {
+    const cdp = new EventEmitter();
+    cdp.send = async (method) => {
+      if (method === 'Runtime.enable')
+        queueMicrotask(() =>
+          cdp.emit('Runtime.executionContextCreated', {
+            context: { id: 1, auxData: { isDefault: world === 'default', frameId: 'page' } },
+          }),
+        );
+      if (method === 'Runtime.evaluate')
+        return {
+          result: {
+            value: {
+              id: 'different-extension',
+              picker: 'function',
+              url: 'http://localhost/events',
+            },
+          },
+        };
+      return {};
+    };
+    await assert.rejects(
+      armShowcaseStaleBoundary(
+        {
+          url: () => 'http://localhost/events',
+          context: () => ({ newCDPSession: async () => cdp }),
+        },
+        'cihdmkcdjjckfhjpgoedmgfpoljebaml',
+      ),
+      /showcase_picker_isolated_context_missing/,
+    );
+  }
 });
