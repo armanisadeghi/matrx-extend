@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-10-05T21:00:26.747681+00:00",
+  "observed_at": "2026-10-05T21:09:14.040738+00:00",
   "prior_turn_classification": "progress: reusable agent workflow pushed, D143 diagnostic reviewed and evidence recovered",
   "source": "48b25d43",
   "peer": "9d32a81f",
@@ -47,5 +47,22 @@
       ],
       "root_ruling": "No additional change required: step 6 explicitly requires independently seeded fixtures and actual folder ID when profiles cannot share the isolated fixture. Bookmarks remain profile-local; no runtime verdict or inventory promotion."
     }
+  },
+  "current_wait": {
+    "run_id": 37373225587,
+    "checks_job_id": 111975444584,
+    "status": "queued",
+    "runner_name": "",
+    "resource_job": "success",
+    "platform_incident": {
+      "id": "3q1yb5m7ltvb",
+      "url": "https://www.githubstatus.com/incidents/3q1yb5m7ltvb",
+      "status": "investigating",
+      "impact": "critical",
+      "last_update": "2026-10-05T20:47:22.560Z",
+      "scope": "GitHub-hosted runner assignment delays and failures across configurations"
+    },
+    "inference": "Matches observed unassigned runner; does not excuse historical TypeScript failure37372437258, separately corrected and recorded.",
+    "next": "Wait on this authoritative live run or its terminal result; no duplicate launch and no gate weakening. Local alternative artifact ready, Chrome CUA unavailable; resource preflight passed. See contained-runtime-admission-20261005.json."
   }
 }
