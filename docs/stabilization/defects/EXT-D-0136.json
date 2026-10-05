@@ -3,21 +3,23 @@
   "feature_id": "EXT-F-0002",
   "surface": "Testing infrastructure",
   "auth_mode": "all (auth-independent)",
-  "title": "CPU integration test reads incomplete JSON during active journal write",
+  "title": "CPU integration test reads incomplete owner metadata during startup rewrite",
   "reproduction": [
     "Run CI resource-guard-integration CPU confirmation and native action boundary step; failure observed in run37245082188 job111561549168.",
     "Inspect runScenario at scripts/test-stabilization-resource-cpu-integration.mjs:154: JSON.parse throws Unexpected end of JSON input while test is running.",
-    "Exact causal trigger and deterministic reproduction are assigned to implementation lane; preserve this observed failure."
+    "Exact causal trigger and deterministic reproduction are assigned to implementation lane; preserve this observed failure.",
+    "Deterministic isolated real-wrapper test pauses startup owner writer after truncation. Removing first-watch readiness reproduces exact SyntaxError; corrected test passes. See .research/cpu-journal-parse-repair.json."
   ],
   "expected": "Resource integration test reads complete evidence and determines the actual guard outcome.",
-  "actual": "Integration test aborts with SyntaxError before an outcome can be verified.",
+  "actual": "Test parses heavy/owner.json after admission but before startup rewrites finish; empty JSON causes SyntaxError before CPU stimulus.",
   "severity": "S2: verification infrastructure failure; no product failure established",
   "priority": "P1: restore green release verification",
-  "state": "open",
+  "state": "fixed",
   "owner": "root/cpu_journal_parse_repair",
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/37245082188",
-    ".research/cpu-journal-parse-repair.json"
+    ".research/cpu-journal-parse-repair.json",
+    ".research/cpu-owner-read-peer.json"
   ],
   "transition_history": [
     {
@@ -25,6 +27,26 @@
       "to": "open",
       "reason": "Observed raw CI job log; causal race remains to be verified.",
       "from": null
+    },
+    {
+      "at": "2026-10-04T23:59:18.932174+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Deterministic actual-wrapper mutation reproduces observed exact error; startup owner writer race established."
+    },
+    {
+      "at": "2026-10-04T23:59:18.932174+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Repair666ecc45 awaits independent peer and hosted verification; production guard unchanged."
+    },
+    {
+      "at": "2026-10-05T00:00:40.199305+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Independent peerd811d909 reran actualwrapper test2/2pass and checked siblingcensus. Builder deterministicred andconstantownermutation evidence retained; hosted CI pending."
     }
-  ]
+  ],
+  "fix_commits": ["666ecc45"],
+  "next_action": "Await automatic hosted CI exercising repaired startup test; do not infer product or full resource lifecycle coverage."
 }

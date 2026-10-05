@@ -66,7 +66,7 @@
     }
   ],
   "diagnostic_commit": "427e75a4",
-  "next_action": "root/panel_visibility_escalation owns boundedactualcause/oracle diagnosis; no unchanged rerun or acceptanceweakening. D117 independentintermittency remainsopen.",
+  "next_action": "Reviewed bounded visibility diagnostic1379d875, guard3c8daad2, freshpeer21e4d23a. One frozen244 membernormal600 native run after CI37245429379 success; preserve all acceptance gates. hasFocus is emulated by pinned Playwright, not independent foreground proof.",
   "fix_commits": ["44005fb4"],
   "hosted_ci": {
     "run_id": 37242845397,
@@ -80,5 +80,11 @@
     "evidence_commit": "8a5c0ffd",
     "cleanup": "temporary consumedsecret/link absentverified",
     "root_verification": "Sevenhashes, actualreceipt andthreecurrentjournals; twohealthywatches no unsafe; initialguest screenshots do notshowpostauthfailure."
+  },
+  "visibility_diagnostic": {
+    "commits": ["1379d875", "3c8daad2"],
+    "peer": "21e4d23a",
+    "report": ".research/panel-visibility-escalation.json",
+    "limits": "Nine bounded lifecycle observations; no native cause or product health established."
   }
 }
