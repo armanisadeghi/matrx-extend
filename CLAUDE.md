@@ -42,6 +42,8 @@ Matter Expert: `/Users/armanisadeghi/code/common-docs/systems/ai-dream-platform/
 🚨 **Cross-repo system-of-record: `/Users/armanisadeghi/code/common-docs/systems/clients/extension/` — read it before touching this feature in ANY repo.** `STATE.md` (what exists) · `CHANNELS.md` (every cross-repo channel) · `WIRE_CONTRACT.md` · `ARCHITECTURE.md` · `DECISIONS.md` · `HANDOFF.md` · `CHROME-WEB-STORE.md`. Nothing in this repo restates them.
 - Outbound work to a sibling → invoke `connect-aidream` · `connect-local` · `connect-frontend`.
 
+Independent bug-fix agents: use [.claude/skills/matrx-extend-bugfix/SKILL.md](.claude/skills/matrx-extend-bugfix/SKILL.md) for ownership, tests, shared-main integration, and release follow-through when the coordinator is unavailable.
+
 ## Shared checkout — many concurrent writers is NORMAL
 
 Arman plus dozens of agents edit this checkout simultaneously; `origin/main` is the only sync
