@@ -1,0 +1,67 @@
+{
+  "title": "Guest first/reload: pinned backend source-impact audit",
+  "schema_version": 1,
+  "audited_at": "2026-10-05",
+  "deployment_observation": {
+    "current_health_commit": "c79ac05f44010430f509f27427a1663c4960a06f",
+    "current_health_built_at": "2026-10-05T02:17:51Z",
+    "exact_store_candidate": "205",
+    "native_guest_workflow": 37247813922,
+    "native_guest_workflow_conclusion": "success",
+    "native_guest_backend_commit": "2e24fa8536c149663735c0cf2092cd21f5a97144",
+    "native_guest_backend_built_at": "2026-10-04T23:48:03Z"
+  },
+  "comparison": {
+    "base_sha": "2e24fa8536c149663735c0cf2092cd21f5a97144",
+    "target_sha": "c79ac05f44010430f509f27427a1663c4960a06f",
+    "paths_changed": 49,
+    "conclusion": "No direct guest first/reload contract change is visible in the pinned backend source delta. This source audit does not extend workflow 37247813922's runtime pass to c79ac05f."
+  },
+  "guest_path_assessment": {
+    "key_guest_contract_files_unchanged": [
+      "aidream/api/routers/ai.py",
+      "aidream/api/middleware/",
+      "aidream/services/conversation_context/",
+      "aidream/services/agent_service/",
+      "aidream/services/organizations/effective_org.py"
+    ],
+    "source_basis": [
+      "Guest start/auth, organization resolution, quota, and chat execution sources above are unchanged across the exact SHA range.",
+      "The only changed existing conversation-data reader is aidream/services/distillation/chat_import.py: own-conversation reading delegates to a shared reader; row ownership enforcement for the ordinary caller, visible/non-deleted message selection, text projection, and ordering remain in the moved logic.",
+      "The added /agent-studio/from-chat endpoint is mounted with require_authenticated. It is signed-in additive functionality, not the guest chat-start or reload route.",
+      "The admin Agent Studio route and reader's admin-only owner bypass are separate from guest request handling."
+    ],
+    "changed_paths_with_plausible_but_indirect_relevance": [
+      {
+        "path": "aidream/services/distillation/chat_import.py",
+        "assessment": "Shared own-chat text-reader extraction; no guest-path caller found in this delta. Could merit coverage of its signed-in consumers, not a guest transport regression signal."
+      },
+      {
+        "path": "aidream/services/conversation_context/source_attribution.py",
+        "assessment": "Adds the agent-studio source feature token; attribution vocabulary only."
+      },
+      {
+        "path": "pyproject.toml and uv.lock",
+        "assessment": "Runtime dependency snapshots move matrx-ai 0.5.467→0.5.468 and matrx-files 0.2.253→0.2.254 among other package bumps. No source evidence ties these updates to guest request assembly; source audit cannot rule out runtime effects."
+      }
+    ],
+    "unrelated_to_guest_contract_delta_groups": [
+      "Table API schema/value support for relations, files, derived columns, and views",
+      "People MCP tables/agents tools and instructions",
+      "Admin Agent Studio route, service, and feature documentation",
+      "Records UI and design-system table changes",
+      "Mandate reference manifest and table-store changes",
+      "Package metadata and lockfile version bumps outside the guest request path"
+    ]
+  },
+  "acceptance_implications": {
+    "prior_runtime_evidence": "The exact Store candidate 205 native guest first/reload workflow 37247813922 passed against 2e24fa8536c149663735c0cf2092cd21f5a97144 only.",
+    "precise_follow_up": "If current-backend acceptance is needed, rerun only the same exact Store-205 native guest first/reload scenario against c79ac05f44010430f509f27427a1663c4960a06f, recording before/after version endpoint observations. Keep candidate 205 and workflow identity attached to the result; do not widen the run to account/member/table acceptance.",
+    "claim_boundary": "The source delta supports low direct guest-path change risk, not a runtime pass claim or an all-health conclusion."
+  },
+  "limitations": [
+    "Read-only diff/source audit of exactly the supplied backend SHAs; no latest-HEAD chasing.",
+    "No tests, browser/native run, build, DB, credentials, backend mutation, or deployment action was performed.",
+    "The supplied current health SHA/build observation was not independently probed."
+  ]
+}
