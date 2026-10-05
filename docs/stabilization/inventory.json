@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-05T04:38:29.178906+00:00",
+  "updated_at": "2026-10-05T05:35:19.542000+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -35134,9 +35134,9 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "37106907229",
-              "evidence": ".research/candidate176-guest-acceptance.json",
-              "detail": "Exact release0.2.176 guest first/reload grounded answers, all resource phases valid, artifact unchanged after interaction. Hosted unpacked receipt-bound acceptance; not Google-installed lifecycle or exhaustive Chat. Original startup schema incident EXT-D-0088 closed with separate published130 functional and nonadmin surrounding evidence."
+              "run_id": "37267858358",
+              "evidence": ".research/public205-guest-native.json",
+              "detail": "Google public0.2.205 CRX, verified hash/identity and immutable adapted unpacked tree, completed fresh signed-out and post-panel-reload grounded answers; both realHTTP200; all3resourcejournals valid with zero unsafeevents. Headless nativeSIDE_PANEL; not actualStoreinstalled lifecycle or exhaustiveChat."
             }
           },
           "defect_verification": {
@@ -35253,7 +35253,7 @@
               "status": "fail",
               "run_id": "urgent-live-guest-20261004-01",
               "evidence": ".research/urgent-live-guest-20261004.json",
-              "detail": "Published Store-installed 0.2.176 failed with generic service error and Retry at 05:29:10 UTC October 4, correlated with live HTTP 402. Exact hosted-release 0.2.205 candidate passed four fresh guest answers, first 402 remedy/no Retry, and returning exhausted-guest panel reload/New chat with second distinct live 402 and same remedy. Candidate submitted Pending review at 05:57 UTC with automatic publication; actual Store-installed 0.2.205 acceptance remains open.",
+              "detail": "Historical Store-installed176 failed genericerror/Retry at liveHTTP402. Exact205candidate passed fresh/returning exhaustedguest remedy/noRetry;205 is now published. Public205CRX fresh/reload answers passed37267858358 but this did not exercise allowance402 or actualStoreinstalledprofile; retain open installed-acceptance requirement.",
               "candidate_result": {
                 "version": "0.2.205",
                 "status": "pass",
@@ -35262,7 +35262,7 @@
                   ".research/guest-returning-final-acceptance.json",
                   ".research/guest-402-release-preparation.json"
                 ],
-                "scope": "Exact Store ZIP loaded unpacked with only public manifest key adapted; fresh and returning exhausted-guest live HTTP 402 paths passed. Published and Store-installed verification pending."
+                "scope": "ExactStoreZIP unpacked with publickey adaptation; fresh/returning exhaustedguest402 passed.205 published; actualStoreinstalledverification remains open."
               }
             }
           }
@@ -35286,9 +35286,10 @@
             "hosted-guest-controlled-20261003",
             "urgent-context-rules-fixed-ci-01",
             "37239792825",
-            "37240870438"
+            "37240870438",
+            "37267858358"
           ],
-          "retest_status": "Published 0.2.176 returning-guest HTTP 402 failure remains. Exact candidate 0.2.205 passed fresh and returning exhausted-guest native acceptance, including a second live HTTP 402 after panel reload and New chat; submitted Pending review at 05:57 UTC October 4 with automatic publication. Current-server exact205 run37240870438 also verifies opening and post-reload real HTTP200 plus grounded answers; prior37239792825 failed transport observation. Actual Store-installed acceptance and broader Chat remain open."
+          "retest_status": "0.2.205 published-public04:43UTC Oct5. PublicCRX run37267858358 verifies fresh and post-reload guest HTTP200 groundedanswers under valid resources. Candidate205 separately passed returning exhaustedguest402 remedy/noRetry. ActualStoreinstalled lifecycle/returningprofile and broaderChat remain open; guestcell remainspartial."
         },
         "member": {
           "test_status": "unverified",

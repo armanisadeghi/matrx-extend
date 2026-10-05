@@ -59,12 +59,13 @@ export function requireHostedAcceptanceCredential(acceptanceCase, env) {
       'settings-persistence-admin',
       'desktop-settings-admin',
       'audit-key-admin',
+      'showcase-picker-admin',
       'profile-admin',
     ].includes(acceptanceCase) ||
     scrapeMode === 'admin'
   ) {
     assert.ok(env.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON, 'hosted_admin_secret_required');
-    if (scrapeMode === 'admin')
+    if (scrapeMode === 'admin' || acceptanceCase === 'showcase-picker-admin')
       requireSettingsCredential('admin', env.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON);
   }
   if (acceptanceCase === 'profile-admin') profileOrganizationConfig(env);

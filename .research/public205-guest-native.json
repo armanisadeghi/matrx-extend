@@ -1,0 +1,89 @@
+{
+  "scope": "One guarded hosted guest-chat check of Google's public 0.2.205 CRX, adapted to an owned unpacked Chromium profile",
+  "result": "PASS_FOR_BOUNDED_HOSTED_GUEST_CASE",
+  "run": {
+    "workflowUrl": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37267858358",
+    "runId": 37267858358,
+    "artifactId": 11327007234,
+    "artifactName": "hosted-guest-37267858358-1",
+    "sourceSha": "cc494d9d764882493bfd2142d7ec243ec469b119",
+    "status": "completed",
+    "conclusion": "success",
+    "inputs": {
+      "runner_label": "macos-15",
+      "published_store_crx": true,
+      "acceptance_case": "guest-chat"
+    },
+    "browser": "Full Chromium revision 1194, Playwright core 1.56.1; existing native harness defaulted to --headless=new",
+    "preflight": "Provenance mode and published 0.2.205 target checks passed before browser setup"
+  },
+  "prerequisiteCi": {
+    "runId": 37267443888,
+    "sourceSha": "4d28d53302a516c42694c02da7ce77560ffb28cd",
+    "conclusion": "success",
+    "pinGuard": "All four published CRX target tests passed in the Guest transport observer regression step",
+    "sourceDeltaToHostedRun": "Acceptance script, workflow and approved baseline were identical; intervening changes were documentation and skill instructions."
+  },
+  "publicCrx": {
+    "version": "0.2.205",
+    "extensionId": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "sha256PinnedAndVerifiedByPreparation": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23",
+    "preparedTreeSha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "receiptKind": "published_store_crx_unpacked",
+    "artifactUnchangedThroughGuestCheck": true,
+    "preparationLog": "PREPARED_PUBLISHED_STORE_CRX 0.2.205 hnfolienncfklkgmdjjmhhegglimlamg 08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "provenanceReport": ".research/published205-crx-readiness.json"
+  },
+  "guestResult": {
+    "originalReportSha256": "16faefcac8163c00dce5d39ba77ca7b96a312efeb52eef59695d3536e567d25c",
+    "originalReportPathInArtifact": "test-results/guest-chat-store-17afacbf-4ab3-4262-a94a-59652eb38dbd.json",
+    "status": "pass",
+    "freshGuest": true,
+    "guestChatVisible": true,
+    "postReloadNewConversation": true,
+    "sessionAbsentAfterReload": true,
+    "openingHttpStatus": 200,
+    "followupHttpStatus": 200,
+    "openingVerdict": "terminal_answer",
+    "followupVerdict": "terminal_answer",
+    "openingContainsUnpredictablePageCode": true,
+    "openingNamesPageStagesInOrder": true,
+    "followupContainsUnpredictablePageCode": true,
+    "followupNamesFixtureHeading": true,
+    "transportProven": true,
+    "failureStage": null,
+    "failureCode": null,
+    "failureReason": null
+  },
+  "resourceJournals": {
+    "hosted-package-37267858358-1.jsonl": {
+      "sha256": "45000a6338c14363520f56f5d2daefea27f1a7df133a640c87535f833bc210fb",
+      "finalDecision": "valid",
+      "resourceInvalid": false,
+      "exitCode": 0
+    },
+    "hosted-browser-37267858358-1.jsonl": {
+      "sha256": "a78a30dbdc3082654f0a24e83054a0f01b4906f919bbbd2cdc397d96e5b90087",
+      "finalDecision": "valid",
+      "resourceInvalid": false,
+      "exitCode": 0
+    },
+    "hosted-guest-37267858358-1.jsonl": {
+      "sha256": "9cc32b1f27d159e10e6e677439008264c2ea24b2020fb17c1916308f5c6fdcf1",
+      "finalDecision": "valid",
+      "resourceInvalid": false,
+      "exitCode": 0
+    },
+    "watchUnsafeEvents": 0
+  },
+  "retainedEvidence": {
+    "directory": "docs/stabilization/evidence/public205-guest-native/run37267858358",
+    "contents": "Three exact current-run resource journals and four viewed screenshots copied byte for byte from the uploaded artifact. No account identifiers were visible in the images.",
+    "guestAnswerPngSha256": "c7d447a01849c6e5c7d6a8b4ea0935c3b6f3069df20dfecc58dfce4bc81cdd11",
+    "guestFollowupPngSha256": "6e7255c1e0f8aa2d9421bf6c9db9d5ab6c304c3fd45a27ea53ef7b8fe74f3c15",
+    "nativePanelPngSha256": "13933645ed5af2e7cd63f250583c9d943dce8e16b73794509138fc1729df5cab",
+    "demoTargetPngSha256": "7e0ca8a7822ea3e0be20baa972d6fcd369b3944d9d6f5e890cc991dda455df6b"
+  },
+  "limit": "This is one fresh guest and post-reload new-conversation check in headless Chromium using a public CRX unpacked with the signing key added and Store verification metadata removed. It does not verify Google's Store-installed update lifecycle, preservation of an existing installed guest profile, allowance exhaustion, signed-in account paths or overall extension health. No retry was run.",
+  "rootVerification": "Independently read original guest receipt and all3current journal finalevents; bothHTTP200 groundedterminalanswers, immutable205tree, allvalid/noWATCH_UNSAFE. Viewed followupreplyPNG. Verified7retainedfilehashes and originalrawreceipthash; fullCI actualpin step4pass0fail0skip. No acceptance source/workflow delta to dispatchedSHA."
+}

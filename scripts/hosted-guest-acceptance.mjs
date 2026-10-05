@@ -280,6 +280,7 @@ async function run(prepared, artifactMode) {
       'audit-key-admin',
       'member-chat',
       'prepare-stale-results',
+      'showcase-picker-admin',
       'profile-admin',
       'profile-member',
     ].includes(acceptanceCase),
@@ -314,8 +315,8 @@ async function run(prepared, artifactMode) {
     );
   const scrapeRoute = requireHostedScrapeRoute(acceptanceCase, artifactMode, prepared);
   const scrapeSelection = scrapeRoute ? scrapeNativeSelection(process.env) : null;
-  if (acceptanceCase === 'prepare-stale-results')
-    assert.equal(kind, 'ci_development_test', 'Prepare requires exact CI development receipt');
+  if (acceptanceCase === 'prepare-stale-results' || acceptanceCase === 'showcase-picker-admin')
+    assert.equal(kind, 'ci_development_test', 'Native case requires exact CI development receipt');
   if (acceptanceCase === 'profile-admin' || acceptanceCase === 'profile-member') {
     await runProfile(prepared, acceptanceCase);
     return;
@@ -337,6 +338,7 @@ async function run(prepared, artifactMode) {
   }
   if (
     acceptanceCase === 'prepare-stale-results' ||
+    acceptanceCase === 'showcase-picker-admin' ||
     (scrapeRoute && scrapeSelection.mode === 'admin') ||
     acceptanceCase === 'settings-persistence-admin' ||
     acceptanceCase === 'audit-key-admin' ||
@@ -362,6 +364,19 @@ async function run(prepared, artifactMode) {
     MATRX_SCRAPE_ARTIFACT_CHANNEL: scrapeRoute?.channel,
     MATRX_SCRAPE_AUTH_MODE: scrapeSelection?.mode,
     MATRX_SCRAPE_WIDTH_MODE: scrapeSelection?.widthMode,
+    ...(acceptanceCase === 'showcase-picker-admin'
+      ? {
+          MATRX_SHOWCASE_EXTENSION_DIR: extensionDir,
+          MATRX_SHOWCASE_RECEIPT: relocatedReceipt,
+          MATRX_SHOWCASE_CI_SOURCE_SHA: prepared.sourceSha,
+          MATRX_SHOWCASE_CI_RUN_ID: String(prepared.runId),
+          MATRX_SHOWCASE_CI_ARTIFACT_ID: String(prepared.artifactId),
+          MATRX_SHOWCASE_OUTPUT: join(
+            process.env.RUNNER_TEMP,
+            `showcase-picker-native-${process.env.GITHUB_RUN_ID}-${process.env.GITHUB_RUN_ATTEMPT}.json`,
+          ),
+        }
+      : {}),
     ...(scrapeRoute?.channel === 'development'
       ? {
           MATRX_SCRAPE_CI_SOURCE_SHA: prepared.sourceSha,
@@ -397,6 +412,7 @@ async function run(prepared, artifactMode) {
       ? { MATRX_REVIEWER_MAGIC_LINK_FILE: memberLinkPath }
       : {}),
     ...(acceptanceCase === 'prepare-stale-results' ||
+    acceptanceCase === 'showcase-picker-admin' ||
     (scrapeRoute && scrapeSelection.mode === 'admin') ||
     acceptanceCase === 'settings-persistence-admin' ||
     acceptanceCase === 'audit-key-admin' ||
@@ -439,11 +455,13 @@ async function run(prepared, artifactMode) {
                   ? 'tests/browser/audit-key-native-acceptance.mjs'
                   : acceptanceCase.startsWith('settings-persistence')
                     ? 'tests/browser/settings-d87-native-acceptance.mjs'
-                    : acceptanceCase === 'prepare-stale-results'
-                      ? 'tests/browser/prepare-stale-result-native-acceptance.mjs'
-                      : acceptanceCase === 'member-chat'
-                        ? 'tests/browser/reviewer-chat-store-acceptance.mjs'
-                        : 'tests/browser/guest-chat-store-acceptance.mjs',
+                    : acceptanceCase === 'showcase-picker-admin'
+                      ? 'tests/browser/showcase-picker-native-acceptance.mjs'
+                      : acceptanceCase === 'prepare-stale-results'
+                        ? 'tests/browser/prepare-stale-result-native-acceptance.mjs'
+                        : acceptanceCase === 'member-chat'
+                          ? 'tests/browser/reviewer-chat-store-acceptance.mjs'
+                          : 'tests/browser/guest-chat-store-acceptance.mjs',
         ),
       ],
       {

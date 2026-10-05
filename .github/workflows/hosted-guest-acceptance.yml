@@ -47,6 +47,7 @@ on:
           - audit-key-admin
           - member-chat
           - prepare-stale-results
+          - showcase-picker-admin
           - profile-admin
           - profile-member
           - startup-resource-diagnostic
@@ -170,7 +171,7 @@ jobs:
           if [[ "$ACCEPTANCE_CASE" == settings-persistence || "$ACCEPTANCE_CASE" == settings-persistence-admin || "$ACCEPTANCE_CASE" == settings-persistence-member || "$ACCEPTANCE_CASE" == desktop-settings-guest || "$ACCEPTANCE_CASE" == desktop-settings-member || "$ACCEPTANCE_CASE" == desktop-settings-admin || "$ACCEPTANCE_CASE" == audit-key-admin || "$ACCEPTANCE_CASE" == profile-admin || "$ACCEPTANCE_CASE" == profile-member || "$ACCEPTANCE_CASE" == startup-resource-diagnostic ]]; then
             [[ -z "$RELEASE_RUN_ID" && -n "$DEVELOPMENT_RUN_ID" && -n "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
           fi
-          if [[ "$ACCEPTANCE_CASE" == prepare-stale-results ]]; then
+          if [[ "$ACCEPTANCE_CASE" == prepare-stale-results || "$ACCEPTANCE_CASE" == showcase-picker-admin ]]; then
             [[ -z "$RELEASE_RUN_ID" && -n "$DEVELOPMENT_RUN_ID" && -n "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
           fi
           if [[ "$PUBLISHED_STORE_CRX" == true ]]; then
@@ -293,6 +294,7 @@ jobs:
             test-results/audit-key-native-*.json
             test-results/reviewer-chat-store-*.json
             test-results/prepare-stale-result-native-*.json
+            ${{ runner.temp }}/showcase-picker-native-*.json
             test-results/profile-native-hosted-profile-*.json
             test-results/native-sidepanel-qa-*/*.png
             ${{ runner.temp }}/guest-acceptance/startup-interval-diagnostic.json
