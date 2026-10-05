@@ -1,7 +1,7 @@
 /**
  * THE PERSON'S CONTEXT RULES, the chip's rows, and each turn's receipt.
  *
- * Contract: /Users/armanisadeghi/code/common-docs/systems/account/scopes-context/context-delivery/RULES.md §3, §5, §6.
+ * Contract: /Users/armanisadeghi/code/common-docs/systems/data/scopes-context/context-delivery/RULES.md §3, §5, §6.
  *
  * Saved rules live in ONE home — `users.user_surface_state`, feature
  * `context_rules`, one row per surface key — the same rows the web app writes

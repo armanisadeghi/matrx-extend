@@ -1,7 +1,7 @@
 /**
  * THE ONE DOOR for a request's `context` — and the rows the chip shows.
  *
- * Contract: /Users/armanisadeghi/code/common-docs/systems/account/scopes-context/context-delivery/RULES.md
+ * Contract: /Users/armanisadeghi/code/common-docs/systems/data/scopes-context/context-delivery/RULES.md
  *
  * `buildChatContext` (v2-bundled / v1-flat) collects every value the page,
  * the chat and the extension know about. This file turns each of those values
