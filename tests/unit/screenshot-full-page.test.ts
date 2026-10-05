@@ -26,12 +26,12 @@ function setupPage(contentHeight: number, nested: boolean) {
     scrollWidth: { configurable: true, value: 1000 },
     clientHeight: { configurable: true, value: 600 },
   });
-  window.scrollTo = vi.fn((options: ScrollToOptions | number) => {
-    if (typeof options === 'number') return;
+  window.scrollTo = vi.fn((options?: ScrollToOptions | number, y?: number) => {
+    const point = typeof options === 'number' ? { left: options, top: y ?? 0 } : (options ?? {});
     Object.defineProperty(window, 'scrollY', {
-      value: Math.min(options.top ?? 0, nested ? 0 : contentHeight - 600),
+      value: Math.min(point.top ?? 0, nested ? 0 : contentHeight - 600),
     });
-    Object.defineProperty(window, 'scrollX', { value: options.left ?? 0 });
+    Object.defineProperty(window, 'scrollX', { value: point.left ?? 0 });
   });
   if (pane) {
     Object.defineProperties(pane, {
@@ -42,9 +42,9 @@ function setupPage(contentHeight: number, nested: boolean) {
       scrollLeft: { configurable: true, value: 0, writable: true },
     });
     pane.getBoundingClientRect = () => new DOMRect(100, 100, 900, 500);
-    pane.scrollTo = vi.fn((options: ScrollToOptions | number) => {
-      if (typeof options !== 'number')
-        pane.scrollTop = Math.min(options.top ?? 0, contentHeight - 500);
+    pane.scrollTo = vi.fn((options?: ScrollToOptions | number, y?: number) => {
+      const point = typeof options === 'number' ? { left: options, top: y ?? 0 } : (options ?? {});
+      pane.scrollTop = Math.min(point.top ?? 0, contentHeight - 500);
     });
   }
   const tiles: number[] = [];
