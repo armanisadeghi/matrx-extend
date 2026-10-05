@@ -1,0 +1,21 @@
+{
+  "reviewed_commit": "afb775b3e5d72709900e54b8cd7a175af4b235de",
+  "defect_id": "EXT-D-0142",
+  "verdict_a": {
+    "status": "PARTIAL",
+    "native": "Not verified: no hosted/native run or configured approved admin fixture was available in this review. Existing ledger also says the Actions secret is absent.",
+    "source_paths": "Showcase and Scrape admin both read the explicit private fixture before native browser setup; the selected name is checked against stored identity and rendered identity. Member mode retains its named fixture. Missing hosted fixture is refused during preflight.",
+    "data_evidence": "The source ledger reports read-only Supabase membership counts showing zero active admin memberships in the old member fixture name; raw rows/identifiers were not retained. I did not repeat the live query."
+  },
+  "verdict_b": {
+    "status": "FAIL",
+    "finding": "Important — scripts/hosted-scrape-route.test.mjs:61 supplies admin credentials without the now-required org fixture, so node --test scripts/hosted-scrape-route.test.mjs fails with hosted_profile_org_secret_required. Reproduced twice. The guard change is correct, but this existing route test must be reconciled before the focused route suite is green.",
+    "positive_checks": "No arbitrary first-org/default or raw secret logging found in reviewed flow. Profile durable-recovery refusal remains covered and passed. Workflow passes MATRX_PROFILE_APPROVED_ORGANIZATION_JSON into preflight and acceptance."
+  },
+  "verification": {
+    "passed": "node --test tests/browser/showcase-organization-diagnostic.test.mjs tests/browser/settings-native-auth-driver.test.mjs scripts/hosted-profile-route.test.mjs (21/21)",
+    "failed": "node --test scripts/hosted-scrape-route.test.mjs (3/4; stale fixture omission above)",
+    "combined": "Combined run: 24 pass, 1 fail, same route-test failure.",
+    "native": "Not run per review scope."
+  }
+}
