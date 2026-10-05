@@ -23,7 +23,13 @@
     "run_id": 37288331617,
     "server_sha_before_and_after": "d53357976b4bd29f671c2f408c9f02c9dba08c9e",
     "gap": "Follow-up was judged against the prior completed turn while streaming; no follow-up wire or terminal reply established. EXT-D-0144 tracks the acceptance defect. No product regression inferred.",
-    "next": "Independent review of turn-boundary repair3c1633a5, green CI, then one guarded public CRX run."
+    "next": "Reviewed repair3c1633a5, freshpeer5df905a8, fullCI37355629310 green; live one guarded publicCRX205 run37356729984 source03009ba0. No result yet."
   },
-  "release": "No newer successful hosted Store artifact found at 18:16 UTC; no upload or submission. Machine manual build/release restrictions retained."
+  "release": "No newer successful hosted Store artifact found at 18:16 UTC; no upload or submission. Machine manual build/release restrictions retained.",
+  "current_server_version_only": {
+    "at": "2026-10-05T18:34:14.517355+00:00",
+    "git_sha": "bb9ffa14ec78bcbc38bd92af36638720dd9fb4b7",
+    "built_at": "2026-10-05T17:58:49Z",
+    "limit": "Endpoint-only observation, not guest acceptance"
+  }
 }
