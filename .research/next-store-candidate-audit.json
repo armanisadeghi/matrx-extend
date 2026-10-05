@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "scope": "Read-only next Chrome Web Store candidate audit; no upload, build, browser session, release, workflow dispatch, or product edit.",
+  "observed_at_utc": "2026-10-05",
+  "origin_main_at_audit": "1c769276398ce5ff3e09fd040a917abf65630ee7",
+  "published_baseline": {
+    "version": "0.2.205",
+    "source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "evidence": [
+      ".research/guest-402-release-preparation.json",
+      ".research/published205-crx-readiness.json",
+      "config/chrome-web-store-approved-baseline.json"
+    ]
+  },
+  "result": {
+    "eligible_next_candidate_found": false,
+    "reason": "The newest successful hosted release artifact on the origin/main ancestry is 0.2.205, already published as the approved baseline. No successful release artifact newer than 0.2.205 was found. The next older successful release artifact is 0.2.181, below the published version and documented as superseded/cancelled.",
+    "candidate_freeze": "Do not freeze or submit a next candidate from the current artifact inventory. Re-audit after a successful release artifact with version greater than 0.2.205 exists."
+  },
+  "newest_successful_release_artifact": {
+    "version": "0.2.205",
+    "source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "hosted_release_run_id": 37180303468,
+    "run_head_sha": "996b2a173c54ebbca654e1ddf7fe6fb08e23cf57",
+    "run_event": "workflow_dispatch to Hosted release workflow; automated repository release pipeline, not a manual/local build",
+    "run_conclusion": "success",
+    "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37180303468",
+    "artifact_id": 11294843385,
+    "artifact_name": "matrx-extend-v0.2.205",
+    "artifact_archive_digest": "sha256:946c9615e203fcb278c8336f81aef4f0b420eef2873c4f24d4bff786238834fc",
+    "store_zip_sha256": "6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26",
+    "artifact_source_is_ancestor_of_origin_main": true,
+    "artifact_source_relation": "Store ZIP receipt source is the approved baseline source SHA; hosted run checked out main and emitted/tagged that source candidate.",
+    "provenance": ".research/guest-402-release-preparation.json and .research/published205-crx-readiness.json"
+  },
+  "release_gate_outcomes": {
+    "hosted_release_job": "success",
+    "strict_release_contract": "success; release record reports 2,071 tests passed and 5 skipped",
+    "typescript_compile": "passed within strict release contract; individual command output not separately extracted in this audit",
+    "unit_tests": "passed within strict release contract; individual command output not separately extracted in this audit",
+    "schema_routing": "passed within strict release contract; individual command output not separately extracted in this audit",
+    "tool_registry_drift": "passed within strict release contract; individual command output not separately extracted in this audit",
+    "migration_ledger": "passed within strict release contract; individual command output not separately extracted in this audit",
+    "store_package_validation_and_risk_gate": "published-package evidence verifies exact ZIP hash, no development manifest key or toolbar popup, and policy surface equal to approved baseline; individual risk-gate log output not separately extracted in this audit",
+    "scope_limit": "Green release gates establish package/release checks, not complete guest and non-admin acceptance or broad product health."
+  },
+  "manifest_comparison": {
+    "comparison": "Emitted 0.2.205 Store ZIP manifest policy surface versus approved 0.2.205 baseline",
+    "version": "0.2.205 equals published version; therefore not a next-version candidate",
+    "name_short_name_description": "identical",
+    "required_permissions": "identical",
+    "optional_permissions": "identical",
+    "host_permissions": "identical",
+    "CSP_and_background_sidepanel_action": "identical",
+    "externally_connectable_web_accessible_resources_content_scripts": "identical",
+    "other_manifest_only_fields": "Store build includes generated action icons/options UI; approved baseline policy surface does not declare changes to those fields. No policy surface delta is identified.",
+    "evidence": "The exact hosted Store ZIP was already available in stabilization scratch and its manifest was read; .research/published205-crx-readiness.json records the exact Store ZIP SHA and byte comparison against the official public CRX. No second candidate download was made."
+  },
+  "audience_switchboard": {
+    "source_comparison": "src/config/sidepanel-visibility.ts at published source 2f68bc4f and current origin/main are byte-identical.",
+    "everyone": ["chat", "scrape", "data", "seo", "settings"],
+    "signed_in_non_admin": [
+      "tasks",
+      "agenda",
+      "lists",
+      "saved-captures",
+      "capture",
+      "highlight",
+      "guidance",
+      "notes",
+      "files",
+      "screenshots",
+      "vault",
+      "tools",
+      "profile"
+    ],
+    "admin_only": ["pilot", "showcase", "broker", "debug"],
+    "delta_vs_approved_205": "none"
+  },
+  "acceptance_gaps": {
+    "guest": "No successful functional acceptance of the actual Chrome Web Store-installed 0.2.205 copy is recorded. Adapted exact-ZIP unpacked guest runs passed bounded first/reload Chat checks, but do not establish Store-installed lifecycle acceptance. Current-server/returning guest verification has outstanding incomplete or resource-invalid attempts; do not promote them to acceptance.",
+    "signed_in_non_admin": "The member205-org exact-artifact attempt was refused before product execution by disk/swap resource preflight; organization persistence and identity/role-selected organization remain unverified. Earlier exact-ZIP non-admin Chat evidence is bounded and does not close this acceptance gap.",
+    "admin": "Admin access is not valid evidence for guest or non-admin acceptance and is not needed to resolve the stated gaps."
+  },
+  "historical_next_older_success": {
+    "version": "0.2.181",
+    "run_id": 37155938434,
+    "artifact_id": 11286485029,
+    "source_sha": "bcf1d1615e90f873cada20209eae7ddce742ecf4",
+    "store_zip_sha256": "b816f01b1f2bbc3c5dae378415c701f2e73233e18998af6adc72fa2b87ab987c",
+    "disposition": "Superseded and review cancelled after its HTTP-403-only guest allowance handling missed the deployed HTTP 402 response; version below published 0.2.205. Not eligible.",
+    "evidence": ".research/store181-candidate-provenance.json"
+  },
+  "workspace_safety": "Concurrent edits were observed in docs/stabilization and left untouched."
+}
