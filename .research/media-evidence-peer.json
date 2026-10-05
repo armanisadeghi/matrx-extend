@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0138",
+  "reviewer_lane": "independent peer verification",
+  "reviewed_commits": ["f1eb69207afe8c8abc3bcf3d62da6b1cd98475c0"],
+  "verdict_a": {
+    "status": "PARTIAL",
+    "scope": "Only the EXT-D-0138 media timeout evidence boundary in the committed source. No native/browser run or frozen-artifact member acceptance was performed.",
+    "targets": [
+      {
+        "target": "An Images timeout retains decisive safe structured state in the serialized receipt.",
+        "status": "PASS_SOURCE_PATH",
+        "evidence": "Executed observeSelectedMedia against a controlled incomplete-image state, then executed the actual catch and final receipt-writer fragments extracted from tests/browser/scrape-guest-native-acceptance.mjs. The persisted temporary receipt retained selected/visible/count/item completion/dimensions and omitted page text."
+      },
+      {
+        "target": "A Video timeout records bounded fixture-index evidence without leaking hrefs or link text.",
+        "status": "PASS_SOURCE_TEST",
+        "evidence": "node --test tests/browser/scrape-media-timeout-evidence.test.mjs passed all four cases, including the Video index-only assertion."
+      },
+      {
+        "target": "The actual frozen development 0.2.244 member native acceptance receipt and underlying product outcome.",
+        "status": "CANNOT_VERIFY",
+        "evidence": "No native/browser/build launch was performed in this source-only verifier lane. The temporary receipt proof executes the committed caller/catch/writer fragments with controlled read state, not the full acceptance process."
+      }
+    ],
+    "missing_extra_misunderstood": {
+      "missing": [
+        "Full native receipt written by the acceptance process after a real member Images timeout."
+      ],
+      "extra": [],
+      "misunderstood": []
+    },
+    "cannot_verify": [
+      "Whether a real frozen-artifact member run now writes this field under the original failure condition.",
+      "Whether Images or Video fail in the member product, fixture, or environment; the repair does not classify that outcome."
+    ]
+  },
+  "verdict_b": {
+    "status": "FAIL",
+    "findings": [
+      {
+        "severity": "IMPORTANT",
+        "finding": "The committed `native selectedMedia caller carries a safe image timeout into the receipt` test manually calls retainScrapeMediaFailure from its own test catch. It does not execute or assert the production top-level catch/writer wiring, so deleting `retainScrapeMediaFailure(report, error)` from scrape-guest-native-acceptance.mjs leaves all four committed tests green.",
+        "evidence": "Verified in scratch: extracted and executed the actual production catch and writer with the actual observer; the receipt contained scrape_media_failure. Then removed only the production retention call from that extracted catch. The receipt assertion failed with scrape_media_failure_missing. The committed focused suite itself does not run that production catch, so this mutant is not guarded in CI."
+      }
+    ],
+    "positives": [
+      "The repair reuses the existing waitFor and assertMediaPane path; Images and Video share the bounded observer.",
+      "The original selection predicate and 10-second default remain intact. The 100 ms polling behavior remains owned by the existing waitFor.",
+      "The structured summary allowlists media kind, known selected-tab enum, pane visibility, numeric tab count, row counts, fixture indexes, and image load dimensions; it omits URLs and page text.",
+      "The focused tests fail under an executed return-expected mutation of summarizeMediaBoundary; all four cases went red in a scratch copy."
+    ],
+    "tests_run": [
+      {
+        "command": "node --test tests/browser/scrape-media-timeout-evidence.test.mjs",
+        "result": "PASS: 4 tests"
+      },
+      {
+        "command": "Scratch copy mutation: replace summarizeMediaBoundary with return expected; rerun focused test file.",
+        "result": "PASS: all 4 tests failed as expected"
+      },
+      {
+        "command": "Scratch source-path exercise: actual observeSelectedMedia + extracted production catch/writer; then omit retainScrapeMediaFailure(report, error).",
+        "result": "PASS: positive receipt retained safe field; omitted-wiring receipt assertion failed"
+      }
+    ],
+    "limits": [
+      "No production source was edited by the verifier.",
+      "No full release checks, native/browser runs, builds, or product-health conclusions."
+    ]
+  }
+}
