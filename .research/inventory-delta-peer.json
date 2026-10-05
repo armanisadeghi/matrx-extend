@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "report_type": "inventory-delta-peer-review",
+  "reviewed_at": "2026-10-04",
+  "reviewed_head": "506785dca6c67cb1b3b531dcee44dd79fc78bde9",
+  "scope": [
+    "EXT-F-1003-C39 / EXT-F-1003-T92",
+    "EXT-F-1007-C34 / EXT-F-1007-T32",
+    "docs/stabilization/inventory.json and generated stabilization views"
+  ],
+  "verdict_a_scope_accuracy_and_readiness_limits": {
+    "verdict": "ACCURATE_WITH_EXPLICIT_RUNTIME_GAPS",
+    "findings": [
+      {
+        "case_id": "EXT-F-1003-T92",
+        "evidence": "SettingsView.tsx renders archived organization names and an OpenUrl to ENV.FRONTEND_URL/organizations only when archivedOrganizations.length > 0 (source lines 313-324). The Organization section is signed-in gated (census anchor lines 266-268).",
+        "assessment": "C39 accurately names the archived-membership management link. T92 correctly checks guest absence and member/admin presence, then treats navigation as no-write behavior; its expected result does not claim restoration or active-organization change. The owned disposable archived-membership fixture and actual destination behavior remain unverified."
+      },
+      {
+        "case_id": "EXT-F-1007-T32",
+        "evidence": "ScrapeView.tsx shows Retry page check when tab.pageKey is absent (lines 302-312), disables both capture actions while pageKey is absent (lines 729-750), and hides stale capture as current unless captured and active page keys match (lines 90-101). refreshActiveTabIdentity in src/hooks/use-active-tab.ts performs a fresh tabs/frame lookup and uses sequence checks to discard stale replies (lines 52-105).",
+        "assessment": "C34/T32 accurately represent retry, unavailable identity, stale capture protection and document-change race criteria. The exact native transport-failure fixture and late-response execution remain unverified; the procedure expressly excludes component doubles as native proof."
+      }
+    ],
+    "acceptance_boundary": "Source mapping only. No native/browser acceptance or runtime pass is established."
+  },
+  "verdict_b_consistency_and_quality": {
+    "verdict": "CONSISTENT_NO_DUPLICATE_CONTROLS",
+    "evidence": [
+      "EXT-F-1003 has 39 unique controls and 92 unique cases; C39 and T92 each occur once.",
+      "EXT-F-1007 has 34 unique controls and 32 unique cases; C34 and T32 each occur once.",
+      "T92 references C39; T32 references C34 plus existing Fast/Deep capture controls C01/C02, matching the actions whose availability is under test.",
+      "Both cases retain unverified results for guest, member and admin. Generated CHECKLIST.md, STATUS.md and STATUS.html show both as Unverified; no pass or partial promotion was found."
+    ],
+    "quality_note": "T92 step wording about opening Organizations 'to restore' is bounded by its expected behavior and final no-write comparison; the procedure explicitly says navigation alone does not restore."
+  },
+  "limits": [
+    "Review was source/inventory/generated-view only; no browser, native harness, tests, or builds were run.",
+    "Concurrent native harness edits were excluded."
+  ]
+}
