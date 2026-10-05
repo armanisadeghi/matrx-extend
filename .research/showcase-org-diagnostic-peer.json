@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "defect_reference": "EXT-D-0141",
+  "reviewed_commit": "65beb08afab388ff414e8655ccd7ca291f48a92c",
+  "verdict_a": {
+    "status": "PARTIAL",
+    "finding": "For failures after a callback has run, the acceptance catch preserves the last allowlisted substage and maps known labels while dropping raw error contents. The native organization helper does not emit its last picker/storage booleans on waitFor timeout, so the original timed failure remains opaque beyond stage/code.",
+    "evidence": {
+      "real_helper_timeout": "Called selectRequiredSettingsOrganization with a panel double that kept the Organization section open and returned organizationSelected=false and organizationPickerAvailable=false. It timed out after 30037 ms with d87_required_organization_picker_not_observed:\"true\"; callbacks were stages [organization_section, organization_picker], observations [].",
+      "receipt_probe": "Three probe cases produced expected safe stage/code/receipt and no injected private, hidden, or token text in receipt; this probe manually sets diagnostic stage and picker_available before throwing.",
+      "native_flow": "No native acceptance run; actual product cause remains unknown."
+    },
+    "limits": [
+      "The helper mock does not establish browser integration behavior.",
+      "Admin role true in the diagnostic constructor is a fixed assignment; no admin sign-in occurs in the probe."
+    ]
+  },
+  "verdict_b": {
+    "status": "FAIL",
+    "findings": [
+      {
+        "severity": "Important",
+        "location": "tests/browser/showcase-picker-native-acceptance.mjs:102-121; tests/browser/showcase-organization-diagnostic.test.mjs:14-47",
+        "finding": "The test manufactures substage, observations, and the error, then exercises only the outer catch/writer. It never invokes selectRequiredSettingsOrganization or its callbacks. A dropped/misordered callback in the real acceptance chain can leave the test green; the test therefore does not prove its headline claim that the actual helper diagnostics persist."
+      },
+      {
+        "severity": "Minor",
+        "location": ".github/workflows/ci.yml:154-163",
+        "finding": "CI's explicit browser-test list runs settings-native-auth-driver.test.mjs but omits showcase-organization-diagnostic.test.mjs, so the receipt probe and its security negatives do not execute in normal CI."
+      },
+      {
+        "severity": "Important",
+        "location": "tests/browser/settings-native-auth-driver.mjs:251-261",
+        "finding": "Picker observations are emitted only after waitFor succeeds. On the observed timeout path, picker_available=false and picker_has_selection=false are discarded; only the substage and safe failure code survive. This misses the requested last-observed-booleans behavior for the known nested timeout boundary."
+      }
+    ],
+    "positive_evidence": "Allowlisted stages/boolean fields and error labels bound diagnostic output. Raw unknown error text is not serialized. Resource refusal is reduced to a fixed label and no retry, permission bypass, or product-flow change was found."
+  },
+  "verification": {
+    "command": "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch node --test tests/browser/showcase-organization-diagnostic.test.mjs tests/browser/settings-native-auth-driver.test.mjs",
+    "result": "7 passed, 0 failed",
+    "ci_coverage": "Inspected .github/workflows/ci.yml explicit list; new diagnostic test is absent."
+  },
+  "workspace_note": "Pre-existing unrelated dirty file docs/stabilization/reports/workspace-sync-guest-incident-20261003.json was left untouched.",
+  "required_followup": "Strengthen an acceptance-seam test so it invokes the actual organization helper with controlled panel responses and verifies callback-to-receipt propagation on both success and timeout; emit safe boolean observations for the last accepted timeout sample; add the focused test to CI's explicit list. Native rerun remains separate and is not claimed."
+}
