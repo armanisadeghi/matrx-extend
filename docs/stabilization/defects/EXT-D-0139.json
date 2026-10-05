@@ -46,5 +46,21 @@
     }
   ],
   "fix_commits": ["618861f3"],
-  "next_action": "FullgreenCI including actualemptybranchguard, then ONE changed-condition frozen244 headed member600 retest; closeonlyoriginalreproduction and surroundingreload pass."
+  "next_action": "FullgreenCI including actualemptybranchguard, then ONE changed-condition frozen244 headed member600 retest; closeonlyoriginalreproduction and surroundingreload pass.",
+  "native_attempt": {
+    "run_id": 37265281346,
+    "report": ".research/empty-media139-native.json",
+    "status": "resource-invalid; no acceptance promotion",
+    "driver_child_exit_code": 0,
+    "wrapper_exit_code": 3,
+    "terminal_state": "CPU_PENDING without observed recovery; resourceInvalid true",
+    "raw_observations": "Actualheaded, empty media and fullreload reached; rawcasepasses remain invalidated",
+    "next_action": "Diagnose final CPU_PENDING/child-exit lifecycle using original journal; preserve thresholds and irreversibleunsafe history. No unchanged rerun."
+  },
+  "ci": {
+    "run_id": 37264652289,
+    "status": "success",
+    "head_sha": "5e900715ecb5326770de35df98f823ff3b41412d",
+    "root_read_actual_empty_branch_guard": "2 passed,0 failed,0 skipped inLinuxjob111618959266"
+  }
 }

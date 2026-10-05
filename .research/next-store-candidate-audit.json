@@ -16,14 +16,15 @@
   "result": {
     "eligible_next_candidate_found": false,
     "reason": "The newest successful hosted release artifact on the origin/main ancestry is 0.2.205, already published as the approved baseline. No successful release artifact newer than 0.2.205 was found. The next older successful release artifact is 0.2.181, below the published version and documented as superseded/cancelled.",
-    "candidate_freeze": "Do not freeze or submit a next candidate from the current artifact inventory. Re-audit after a successful release artifact with version greater than 0.2.205 exists."
+    "candidate_freeze": "Do not freeze or submit a next candidate from the current artifact inventory. Re-audit after a successful release artifact with version greater than 0.2.205 exists.",
+    "scope_limit": "Existing hosted release workflow artifacts were audited. Version-only commits and development CI bundles are not Store packages. Unpublished local outputs on other machines were not inspected."
   },
   "newest_successful_release_artifact": {
     "version": "0.2.205",
     "source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
     "hosted_release_run_id": 37180303468,
     "run_head_sha": "996b2a173c54ebbca654e1ddf7fe6fb08e23cf57",
-    "run_event": "workflow_dispatch to Hosted release workflow; automated repository release pipeline, not a manual/local build",
+    "run_event": "workflow_dispatch to Hosted release; historical remote run, not initiated by this audit",
     "run_conclusion": "success",
     "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37180303468",
     "artifact_id": 11294843385,
