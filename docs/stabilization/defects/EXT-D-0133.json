@@ -88,7 +88,7 @@
     }
   ],
   "diagnostic_commit": "427e75a4",
-  "next_action": "Luna member_transition_native owns ONE frozen244/membernormal600 diagnostic after runtimeequivalence+concurrency+privatecredentialpreflight; collecttiming/classification andall5hostcheckpoints, finaljournals/cleanup. No retry orcausalityinferencefromorderingalone.",
+  "next_action": "Finish independent EXT-D-0137 facade review; then ONE verifiedfrozen244 native retest after exactdispatchproductinputs are independently checked beforelaunch. D133 remainsin-fix; no controlledcomparison orphysicalexposure conclusion from257run.",
   "fix_commits": ["44005fb4", "0e8aa6c7"],
   "hosted_ci": {
     "run_id": 37242845397,
@@ -130,7 +130,15 @@
     "fresh_peer": ".research/panel-transition-wiring-reverify.json",
     "peer_integration_commit": "acb37ef3",
     "evidence": "Focused18pass, independentrealrecorder5pass andexactCItrio16pass; omittedproductionorganization_entry marker mutationRED/restoredidentical.",
-    "ci": "37251997773 SUCCESS at a745dd31; rootreadactual27nativeharnesspasses/resource/type/lint/unit/build. NewCItrioaddedacb37ef3 pendinghostedconfirmation.",
-    "limits": "Samepanelperformance.now clock and actualpointer/healthmarkers; passiveeventorderingtemporalonly. Incomplete/lostcontextunmeasured. Nativephysicalcaptureunproven, no acceptanceweakening."
+    "ci": "37252795311 SUCCESS at2c04341d; rootreadactualnewCItrio16pass0fail plusexisting27harness/resource/type/lint/unit/build.",
+    "limits": "Samepanelperformance.now clock and actualpointer/healthmarkers; passiveeventorderingtemporalonly. Incomplete/lostcontextunmeasured. Nativephysicalcaptureunproven, no acceptanceweakening.",
+    "native_attempt": {
+      "run_id": 37252919339,
+      "actual_product": "development257/a745dd31/artifact11322000501",
+      "required_product": "development244/b8158702/artifact11315305224",
+      "controlled_comparison": "INVALID: runner selected driverCI artifact instead of requiredproductartifact; collector correctedfa668575, rawpreserved",
+      "result": "IntroducedProxyinvariantD137 blocksorganizationverification. Hiddenbeforewebclose andbeforesecondhealthinterval observed, but productversionchanged, causalityunproven; zero600/cases.",
+      "root_verification": "All6payloadhashes/bytes,raw10phasetimeline+6events,3originaljournals checked. 2healthy,CPU_PENDINGrecovered,no unsafe;secret/linkabsenceverified."
+    }
   }
 }

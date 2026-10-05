@@ -1,0 +1,55 @@
+{
+  "id": "EXT-D-0137",
+  "feature_id": "EXT-F-1007",
+  "surface": "Authenticated Scrape test instrumentation",
+  "auth_mode": "member; admin wrapper sibling requires verification",
+  "title": "Pointer tracing proxy violates immutable CDP session method contract",
+  "reproduction": [
+    "Use diagnostic driver 2c04341d with traceOrganizationPointers from 6a7ebc31/a745dd31 and the real immutable native panel session.",
+    "Run member guest-scrape-development acceptance as hosted run 37252919339. Actual product was development0.2.257/sourcea745dd31/artifact11322000501, not the requested frozen244; preserve this provenance discrepancy.",
+    "After sign-in, organization verification reads traced panel.send. Its own original method is non-configurable and non-writable; the Proxy get trap returns a different function.",
+    "Observe Organization_section_ready_not_observed containing the JavaScript Proxy invariant failure before viewport measurement or any Scrape cases. A controlled regression must use the same immutable descriptor, not a writable fake session."
+  ],
+  "expected": "Passive tracing delegates to the original immutable CDP session without changing receiver, payload, return values, errors, or acceptance behavior.",
+  "actual": "The diagnostic wrapper throws on property access, preventing organization verification. Earlier tests used a writable fake send property and missed the real session descriptor.",
+  "severity": "S2: native verification is blocked by test infrastructure; no product defect established",
+  "priority": "P1: repair the introduced diagnostic before another native test",
+  "state": "fixed",
+  "owner": "root/immutable_panel_trace_repair",
+  "evidence": [
+    ".research/member-transition-native.json",
+    "docs/stabilization/evidence/member-transition/run37252919339/raw/scrape-guest-native.json",
+    ".research/immutable-panel-trace-repair.json",
+    ".research/immutable-panel-trace-peer.json"
+  ],
+  "transition_history": [
+    {
+      "from": null,
+      "to": "open",
+      "reason": "Actual native receipt reproduces immutable-method Proxy failure."
+    },
+    {
+      "from": "open",
+      "to": "triaged",
+      "reason": "Failure is introduced by instrumentation, distinct from unresolved original D133 visibility failure."
+    },
+    {
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol owns descriptor-faithful regression and receiver-preserving facade repair; independent review and native retest pending."
+    },
+    {
+      "at": "2026-10-05T02:12:16.455794+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Separate facade repairs frozen send invariant. Independent6focusedpass; restoredbadwrapper4pass2failonimmutablemethod andrealScrapeseam. Native retestpending."
+    }
+  ],
+  "closure_requirements": [
+    "Descriptor-faithful original failure reproduced, repaired, and independently checked, including real wiring and forwarding/error cases.",
+    "Changed-condition native retest no longer fails with the Proxy invariant and surrounding instrumentation works; retain unrelated D133 failure if still present."
+  ],
+  "fix_commits": ["fcc63580", "85484aab"],
+  "independent_peer": "90e6c965",
+  "next_action": "One checked frozen244 changed-condition membernormal600 native. Root independently inspect exactdispatch productrun/artifact/source fields before launch. D137onlyclosesafteroriginalProxyreprogone andsurroundingdriverbehaviorverified; D133separate."
+}
