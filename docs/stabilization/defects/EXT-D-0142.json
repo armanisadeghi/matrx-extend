@@ -11,7 +11,7 @@
     "Attempt required organization selection; actualhelper reports d87_member_organization_option_unavailable at organization_select."
   ],
   "expected": "Required approved organization can be selected and rendered/storage identity verified before Showcase controls are tested; fixture/driver mismatch must not be reported as a product pass.",
-  "actual": "Confirmed fixture mismatch: independent read-only membership checks found zero active admin memberships in two active organizations with the hardcoded member fixture name. Sourceafb775b3 routes explicit approved admin fixture for Showcase and Scrape; bd328be0 repairs routeguard andCIwiring; f93ee0cd binds newcontext in four extractedpanelguard seams. Freshpeer309e2717 passed40targeted checks. Existing supported active-only adminfixture resolved cb534681 andprivatefile mode0600prepared. FullCI37277311837 and originalnativeorganizationselection remainpending. No productpass or closure.",
+  "actual": "Confirmed fixture mismatch: independent read-only membership checks found zero active admin memberships in two active organizations with the hardcoded member fixture name. Sourceafb775b3 routes explicit approved admin fixture for Showcase and Scrape; bd328be0 repairs routeguard andCIwiring; f93ee0cd binds newcontext in four extractedpanelguard seams. Freshpeer309e2717 passed40targeted checks. Existing supported active-only adminfixture resolved cb534681 andprivatefile mode0600prepared. FullCI37277311837 is green; rootverified the previouslyfailing27-test harness group plus25diagnostic and13hostedroute tests all0fail in job111657105661. Originalnativeorganizationselection remainspending. No productpass or closure.",
   "severity": "S2: blocks admin acceptance; product versus fixture/driver cause unknown",
   "priority": "P1: diagnose observed selection boundary before further Showcase testing",
   "state": "fixed",
@@ -62,6 +62,7 @@
     "full_ci": "37276487004 failed6panel-visible-reopen-repair tests: newrequiredOrganizationName not supplied to extractedclosure; rootreadchecksjob111654534091",
     "ruling": "Do not acceptfocusedgreen ascomplete. admin_fixture_route_guard_fix owns integrationrepair; no nativebeforefullgreen.",
     "integration_followup": "f93ee0cd bindsrequiredOrganizationName in4actualdriverextractiontestseams;40targetedpass. Freshpeer/fullCIpending. Standaloneharness interruptedafter78s; priorCIharness took135s, so this is incompleteevidence, notprovenhang.",
-    "integration_peer": "309e2717: separate runtimeunverified/qualitypass,40targetedpass; sourceguardintact. Accidentalexcludedharness runincomplete55pass1cancelled, nocredit; fullCIpending."
+    "integration_peer": "309e2717: separate runtimeunverified/qualitypass,40targetedpass; sourceguardintact. Accidentalexcludedharness runincomplete55pass1cancelled, nocredit; fullCIpending.",
+    "full_ci_followup": "37277311837 SUCCESS sourcef93ee0cd45f3e3232a62318e3c9afe0fd6c9f79e; original27harness0fail,25diagnostic0fail,13routes0fail, bothjobs green. Artifact11330374970 SHA f14c64f230f03aa19e14006b3ca7d51f648e422dc443acfc4851af8e746d6632. Nextnativepending."
   }
 }
