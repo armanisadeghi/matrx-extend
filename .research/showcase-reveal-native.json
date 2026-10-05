@@ -39,7 +39,7 @@
     "rendered_profile_matches": true,
     "rendered_organization_matches": true
   },
-  "verdict_limits": "Organization status and diagnostic signals conflict; do not infer D142 closure or root cause. The EXIT path has one native bounded pass, not full D42 closure. B-card selection and later showcase actions failed or were not reached; ITEM/RESULT, injected cancellation, deferred install, reinjection/listener count, and nonadmin gating remain unverified. No retry or inventory/defect edit.",
+  "verdict_limits": "Organization diagnostic fields accumulate across phases: the picker was initially required/unselected and the exact option was offscreen; the shared reveal/click path then selected it and stored/rendered identity checks matched. This supports the original D142 selection retest, with closure owned by the coordinator. The EXIT path has one native bounded pass, not full D42 closure. B-card selection and later showcase actions failed or were not reached; ITEM/RESULT, injected cancellation, deferred install, reinjection/listener count, and nonadmin gating remain unverified. No retry or inventory/defect edit.",
   "secret_cleanup": "Both ephemeral repository secret names were absent before creation, deleted immediately after terminal status, and confirmed absent afterward. No credential values or account identifiers were retained.",
   "evidence_directory": "docs/stabilization/evidence/showcase-reveal-native/run37284490515",
   "raw_external_scratch": "/Volumes/Samsung2TB/code/.stabilization-scratch/showcase-reveal-native/run37284490515"

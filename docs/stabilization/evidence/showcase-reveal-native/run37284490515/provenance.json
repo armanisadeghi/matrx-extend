@@ -64,7 +64,7 @@
       "rendered_profile_matches": true,
       "rendered_organization_matches": true
     },
-    "interpretation_limit": "The device organization case is marked pass, while the bounded diagnostic snapshot has mixed picker and storage/rendered-identity signals. No root cause is inferred. The stale EXIT relay was rejected while B remained active; the subsequent B-card selection failed. D142 and D42 remain open; no coverage ledger transition is claimed.",
+    "interpretation_limit": "Observations accumulate across phases: before selection the picker was required and unselected, with one exact option outside the viewport; after the shared reveal/click path, the device organization case passed and stored plus rendered identity checks matched. This supports the original D142 selection retest, without inferring why the subsequent B-card click failed. The stale EXIT relay was rejected while B remained active. D42 remains open and no coverage ledger transition is claimed.",
     "still_unverified": [
       "Showcase B-card selection, scoped rows, extraction, and normal page click",
       "stale A ITEM_DETECTED and RESULT paths",
