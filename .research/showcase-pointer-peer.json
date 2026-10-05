@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0143",
+  "reviewed_commit": "48b25d43",
+  "review": "The diagnostic records the before-click and after-failure samples through the actual page.evaluate callback. It preserves bounded viewport/card/picker rectangles, center viewport status, center hit category, and up to nine clipped interior hit categories. The category allowlist prevents page text or raw errors from entering the added pointer receipt. The focused test exercises the callback with controlled document and shadow-root hit testing and verifies receipt sanitization/plumbing.",
+  "interpretation": "The earlier visible-card plus center-hit-false receipt proves only that the center was outside the card subtree at sampling time. It does not identify the hit target or establish that the picker caused the click failure. New samples can distinguish picker-panel interception, another element, off-viewport/clipped geometry, and a changed hit boundary after failure; they still do not establish native click behavior without a native run.",
+  "behavior": "No product behavior changed; the commit edits the native acceptance diagnostic, its helper, its focused tests, and the diagnosis record.",
+  "verification": {
+    "command": "node --test tests/browser/showcase-selection-diagnostic.test.mjs",
+    "result": "4 passed",
+    "limits": "Controlled callback and receipt tests only. No native Chrome run, source fix, or product behavior verified."
+  },
+  "native_followup": "Remains open: inspect before_click and after_failure samples from an admitted native run before selecting a cause or changing click coordinates/layout."
+}
