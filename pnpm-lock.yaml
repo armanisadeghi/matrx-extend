@@ -36,7 +36,7 @@ importers:
         version: 0.9.0(react@19.3.0)
       '@ai-matrx/records':
         specifier: latest
-        version: 0.72.23(react@19.3.0)
+        version: 0.73.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@ai-matrx/tap-target':
         specifier: latest
         version: 0.2.19(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -312,8 +312,8 @@ packages:
       react-native:
         optional: true
 
-  '@ai-matrx/records@0.72.23':
-    resolution: {integrity: sha512-dbKu9Trks/b/XHiI8TGZiK+2ut7IHrpCcFuemsz3l0b5sEk435MZMaOo/gNXty0THWAoQ6K71XpaOlqvo7Pykg==}
+  '@ai-matrx/records@0.73.0':
+    resolution: {integrity: sha512-jaNmF6MtqoH2dzGXCP68qTi9vAeM//Wg0zLHvGWyJPlKcwtu+5rHMu7UI4IIAkkHdOY3m3yJRzhWkCQBsgr8SA==}
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=18.0.0'
@@ -4498,11 +4498,17 @@ snapshots:
     optionalDependencies:
       react: 19.3.0
 
-  '@ai-matrx/records@0.72.23(react@19.3.0)':
+  '@ai-matrx/records@0.73.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
     dependencies:
+      '@ai-matrx/design-system': 0.68.2(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@ai-matrx/kit': 0.22.2(react@19.3.0)
     optionalDependencies:
       react: 19.3.0
+    transitivePeerDependencies:
+      - '@types/react'
+      - '@types/react-dom'
+      - react-dom
+      - recharts
 
   '@ai-matrx/tap-target@0.2.19(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
     dependencies:
