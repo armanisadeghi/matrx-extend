@@ -1,0 +1,18 @@
+{
+  "reviewed_commit": "4918b564f2b83b9eefebc57db42307ad764b81b9",
+  "scope": ["EXT-F-4054", "EXT-F-4055", "EXT-F-4056", "EXT-F-4057", "EXT-F-4058", "EXT-F-4060"],
+  "review_method": "Independent source and diff review only; no build, browser/native run, database access, or credentials.",
+  "verdict_A_omissions": "ADDRESSED_WITH_EXPLICIT_OPEN_GAPS",
+  "verdict_A_evidence": "All six procedures now separate warm from post-full-extension-reload repeats; Chat Ask confirmation denial is a distinct segment, attempted only when the exact tool is actually advertised. EXT-F-4058 correctly remains unverified because its raw legacy Action wait_for bypasses dispatch and no supported action-tier route is established.",
+  "verdict_B_source_quality": "PASS_SOURCE_ONLY",
+  "verdict_B_evidence": "Diff/source support Tools direct-run bypass, Chat dispatcher confirmation/deny result, exact-name binding caveat, Action wait_for collision, and fixture registration/byte-hash prerequisites. No UI gate, advertised runtime tool, fixture availability, or runtime pass is invented; live binding gaps, deferred Chat coverage, and fixture prerequisites remain explicit.",
+  "source_anchors": [
+    "src/features/tools/ToolsView.tsx:448-461",
+    "src/lib/tools/dispatch.ts:823-834,1188-1190",
+    "src/features/chat/ChatView.tsx:922-934",
+    "src/lib/tools/registry.ts:140-155,238-239",
+    "docs/stabilization/PLAN.md:26-32,47",
+    "tests/browser/form-control-owned-fixture.test.mjs:74-99"
+  ],
+  "limits": "All six inventory feature states remain unverified; no product, inventory, or proposal files were changed."
+}
