@@ -1,0 +1,22 @@
+{
+  "scope": "Published 0.2.205 public CRX acceptance pin and baseline/workflow guard; no hosted or installed-extension acceptance in this lane",
+  "observedAtUtc": "2026-10-05T05:20:00Z",
+  "sourceCommit": "8180e9c5909b4bde960a4462e1a0aaeb31facacc",
+  "sourceStatus": "Pushed to origin/main",
+  "publicCrxSha256": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23",
+  "primaryItemId": "hnfolienncfklkgmdjjmhhegglimlamg",
+  "version": "0.2.205",
+  "changes": [
+    "scripts/published-store-crx-target.mjs owns the pinned version, item ID and independently observed public CRX digest; it rejects workflow token, approved baseline version or item ID drift.",
+    "scripts/hosted-guest-acceptance.mjs checks the selected target before hosted credentials or browser setup, then retains the original CRX hash, CRX3 signing-key/ID, ZIP safety, manifest version, adapted-tree and receipt checks.",
+    ".github/workflows/hosted-guest-acceptance.yml passes 0.2.205 in preflight and acceptance and names the current public CRX.",
+    ".github/workflows/ci.yml runs the focused causal guard automatically."
+  ],
+  "verification": {
+    "redBeforeFix": "Stale approved-baseline test failed with Missing expected rejection when the provisional target reader ignored baseline contents.",
+    "greenAfterFix": "4/4 focused node tests passed, including real hosted-script preflight refusal for 0.2.130; node syntax checks and Biome checks passed for touched JavaScript.",
+    "scratchOnlyConstantReturnMutation": "Three target tests failed against a scratch-only implementation that always returned the pinned target; repository source was not mutated.",
+    "notRun": "No heavy build, release, native browser, hosted workflow dispatch or Google Store installed-extension test."
+  },
+  "remainingBoundary": "The existing guest harness defaults to Chromium --headless=new and prepares a published_store_crx_unpacked receipt by adding the verified public key and removing Store verification metadata from a temporary copy. A future successful run would verify that adapted public payload in its owned harness, not Chrome's Store-installed lifecycle or preservation of a returning guest's installed profile state."
+}
