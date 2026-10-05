@@ -237,14 +237,46 @@
       }
     ],
     "sha256_manifest": "docs/stabilization/evidence/guest205-current-server/run37259260097/sha256-manifest.json",
-    "sha256_manifest_entry_count": 19,
+    "sha256_manifest_entry_count": 25,
     "frozen205_proof": "docs/stabilization/evidence/guest205-current-server/run37259260097/frozen-artifact-verification.json",
-    "backend_before_after": "docs/stabilization/evidence/guest205-current-server/run37259260097/backend-observations.json"
+    "backend_before_after": "docs/stabilization/evidence/guest205-current-server/run37259260097/backend-observations.json",
+    "formatted_metadata_raw_sources": [
+      {
+        "path": "docs/stabilization/evidence/guest205-current-server/run37259260097/artifact-metadata.json.raw.json.txt",
+        "sha256": "31665ca62218b0237fbcf36035bbc777e6bfa7114c5bfee411b89edaeb840e97",
+        "formatted_path": "docs/stabilization/evidence/guest205-current-server/run37259260097/artifact-metadata.json"
+      },
+      {
+        "path": "docs/stabilization/evidence/guest205-current-server/run37259260097/backend-version-after.json.raw.json.txt",
+        "sha256": "38a5b61d641d7595d50e37925c3ef81424aa55496bbace767b987aef46172bba",
+        "formatted_path": "docs/stabilization/evidence/guest205-current-server/run37259260097/backend-version-after.json"
+      },
+      {
+        "path": "docs/stabilization/evidence/guest205-current-server/run37259260097/backend-version-before.json.raw.json.txt",
+        "sha256": "1174e6152ca9741e7b4b4c090572d5e435b69302b4e8e661043cea04549cf35e",
+        "formatted_path": "docs/stabilization/evidence/guest205-current-server/run37259260097/backend-version-before.json"
+      },
+      {
+        "path": "docs/stabilization/evidence/guest205-current-server/run37259260097/release-artifact-metadata.json.raw.json.txt",
+        "sha256": "ef2b14fa9a6f0327ba999692ac6a813ba4d8a966402f210ff4f10c36db436c65",
+        "formatted_path": "docs/stabilization/evidence/guest205-current-server/run37259260097/release-artifact-metadata.json"
+      },
+      {
+        "path": "docs/stabilization/evidence/guest205-current-server/run37259260097/release-receipt.json.raw.json.txt",
+        "sha256": "c90752544003303f5ce0d240c1806ccd27a84cbba0a93b5a477c0d9d661518bb",
+        "formatted_path": "docs/stabilization/evidence/guest205-current-server/run37259260097/release-receipt.json"
+      },
+      {
+        "path": "docs/stabilization/evidence/guest205-current-server/run37259260097/workflow.json.raw.json.txt",
+        "sha256": "7450f2e54fe073a46dc8eb2111c46c3b03b4db66f7e5df87f4b48133416d5daa",
+        "formatted_path": "docs/stabilization/evidence/guest205-current-server/run37259260097/workflow.json"
+      }
+    ]
   },
   "limits": [
     "Only one hosted run was dispatched; no retry occurred.",
     "The overall run is invalid despite the product receipt status pass because the guest resource journal finalized invalid.",
-    "The health/version endpoint identity changed from 140626f9\u2026 before the run to 5b23b0bc\u2026 afterward. The two HTTP 200 requests occurred between these observations, and their backend SHA was not captured per request.",
+    "The health/version endpoint identity changed from 140626f9… before the run to 5b23b0bc… afterward. The two HTTP 200 requests occurred between these observations, and their backend SHA was not captured per request.",
     "This was a public-key-adapted unpacked Store candidate, not an actual Web Store installation.",
     "No whole-Chat, guest-allowance, member, backend-health, or broad release-health claim follows."
   ]

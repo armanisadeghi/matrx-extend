@@ -1,0 +1,21 @@
+{
+  "sourceSha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+  "version": "0.2.205",
+  "publishState": "pushed",
+  "storeZip": {
+    "path": "/home/runner/work/matrx-extend/matrx-extend/matrx-extend/.output/matrx-extend-0.2.205-store.zip",
+    "sha256": "6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26"
+  },
+  "localZip": {
+    "path": "/home/runner/work/matrx-extend/matrx-extend/matrx-extend/.output/matrx-extend-0.2.205-local.zip",
+    "sha256": "4b51354fc7d1bfae69e2d304995dc165d8a151b5d52744cf955b87f7854ceb69"
+  },
+  "sourcePath": "/tmp/matrx-extend-release.KtBNYM/matrx-extend/.output/chrome-mv3",
+  "destinationPath": "/home/runner/work/matrx-extend/matrx-extend/matrx-extend/.output/chrome-mv3-dev",
+  "destinationPaths": [
+    "/home/runner/work/matrx-extend/matrx-extend/matrx-extend/.output/chrome-mv3-dev",
+    "/home/runner/work/matrx-extend/matrx-extend/matrx-extend/.output/chrome-mv3"
+  ],
+  "treeSha256": "20399f17af68ff9d40bffa93cdefe0c93b105af06f8e6cced1757323c124fd44",
+  "fileCount": 539
+}
