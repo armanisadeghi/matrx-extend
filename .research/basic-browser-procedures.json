@@ -1,0 +1,161 @@
+{
+  "status": "proposal_source_checked_native_unverified",
+  "scope": ["EXT-F-4054", "EXT-F-4055", "EXT-F-4056", "EXT-F-4057", "EXT-F-4058", "EXT-F-4060"],
+  "purpose": "Concrete manual Tools procedures for the six requested inventory cases. Proposal only; do not copy result cells or promote runtime status from this file.",
+  "source_evidence": {
+    "manual_path": "src/features/tools/ToolsView.tsx:74-75,120-137,350-463; src/lib/tools/registry.ts:238-239. Tools > Catalog starts on Agent surface; choose All handlers, filter Action where needed, open the exact row, enter JSON, Run. Local argsSchema validates first; direct handler.run gets permissionMode=act and assignedTabId=null, so browser handlers target the currently focused tab.",
+    "assigned_tab": "src/lib/tools/handlers/_active-tab.ts:15-32. With assignedTabId=null, focused current-window tab is resolved; an agent's latched assigned tab behavior is not exercised.",
+    "handlers": "src/lib/tools/handlers/action.ts:18-310. Schemas and return values below follow these exact handlers.",
+    "wait_for_collision": "src/lib/tools/registry.ts:140-155; src/lib/tools/handlers/canonical.ts:666-702; src/lib/tools/handlers/action.ts:205-243. Registry has legacy action and canonical read handlers both named wait_for; manual Tools receives raw rows. For EXT-F-4058 choose Action tier row and confirm displayed schema contains selector, ready_state, timeout_ms (not canonical tab_id/condition/target). Agent lookup is a separate last-write-wins path.",
+    "fixture": "tests/browser/fixtures/form-controls.html SHA-256 685ce7a0286f9fd6330ed692db81e5c099a766cbe8aef61bb72a33e87b7d072a; tests/browser/form-control-owned-fixture.test.mjs:74-99 serves /form-controls on an ephemeral loopback server and verifies bytes/404. No native manual-runner registration is evidenced. Form page provides #state, #keys (initial value seed), #hover-target (button), #submit-test; it does not prove a scroll range.",
+    "binding_limit": ".research/tool-binding-readonly-census.json is the current exact-name metadata snapshot; absence/presence there does not prove request-time visibility or successful execution. Preserve each inventory live_binding object/status as-is."
+  },
+  "environment_provenance": {
+    "required_before_execution": [
+      "resource permit",
+      "source commit SHA and lockfile hash",
+      "WXT mode and output hash/build receipt",
+      "chrome://extensions loaded extension ID, version, and Loaded from path",
+      "completed extension Reload recorded after installing that build",
+      "Chrome version/profile and effective permissions (tabs, activeTab, scripting for navigation/DOM cases)",
+      "member or admin signed-in session"
+    ],
+    "procedure": "Build the candidate from the recorded source, load that generated development bundle unpacked, record its receipt and exact chrome://extensions identity/path, click Reload for that extension, then reopen the sidepanel and Tools > Catalog. A page refresh or panel reopen alone is not an extension reload. No build, reload, browser execution, or native pass was performed for this proposal.",
+    "role_scope": "Repeat manual cases under member and admin sessions. Guest is not applicable because Tools UI is sign-in gated. This direct Run path uses act mode and does not establish Ask/Act dispatcher gates, denied-permission behavior, or agent-call role visibility."
+  },
+  "fixture_prerequisites": {
+    "shared": "Start only after owned-run admission/resource permit. Keep the exact controlled fixture tab focused when clicking Run; capture the exact tab URL and served-byte SHA-256. Reset/reload fixture between cases. The current fixture route is test-only ephemeral; a native run must first register tests/browser/fixtures/form-controls.html as ownedPages['/form-controls'] in its owned fixture server and record actual loopback URL plus matching served-byte SHA-256. Until then cases requiring this page are not executable.",
+    "scroll": "A separate controlled page with measured document height greater than the browser viewport is required; current form-controls fixture has no guaranteed scroll overflow. Add/register an owned scroll fixture with a stable element near the bottom before executing EXT-F-4057.",
+    "navigate": "Requires an already registered owned fixture route and exact run-specific URL; navigate only between owned loopback pages, never an external site. The extension panel may need reopening after navigation."
+  },
+  "procedures": [
+    {
+      "feature_id": "EXT-F-4054",
+      "case_id": "EXT-F-4054-T01",
+      "name": "navigate_active_tab",
+      "inventory_status": "source-listed-pending-reconciliation",
+      "control_id": "EXT-F-4054-C01",
+      "modes": ["member", "admin"],
+      "fixture": "Owned loopback fixture route registered in the native runner; capture actual URL/hash first.",
+      "steps": [
+        "Focus the owned fixture tab, open Tools > Catalog, choose All handlers, search navigate_active_tab and open it.",
+        "Positive JSON: {\"url\":\"<exact recorded owned loopback URL>\"}; replace placeholder with that exact URL before Run.",
+        "After navigation completes, reopen Tools if needed and inspect result.",
+        "Negative JSON: {\"url\":\"not-a-url\"}; Run to exercise schema rejection."
+      ],
+      "expected": [
+        "Positive: result object has url equal to the owned URL, title equal to fixture title, status complete (handler waits for completion then reads tab).",
+        "Negative: UI shows Schema mismatch from z.string().url(); navigation is not issued.",
+        "No focused tab returns {ok:false,reason:'No active tab'}; do not treat this as permission denial."
+      ],
+      "cleanup": "Leave tab on owned fixture or close that owned tab; never navigate externally."
+    },
+    {
+      "feature_id": "EXT-F-4055",
+      "case_id": "EXT-F-4055-T01",
+      "name": "click_element",
+      "inventory_status": "source-listed-pending-reconciliation",
+      "control_id": "EXT-F-4055-C01",
+      "modes": ["member", "admin"],
+      "fixture": "Registered /form-controls fixture above; inspect #state output; reload fixture before each independent check.",
+      "steps": [
+        "Focus fixture tab; Tools > Catalog > All handlers; search click_element and open it.",
+        "Positive JSON: {\"selector\":\"#hover-target\"}; Run once.",
+        "Negative JSON: {\"selector\":\"#missing-target\"}; Run once."
+      ],
+      "expected": [
+        "Positive: {ok:true,tag:'button',text:'Hover target'} and fixture #state click counter for hover-target increases by one.",
+        "Negative: {ok:false,reason:'No element at index 0 for selector #missing-target'}; fixture state is unchanged.",
+        "Schema-negative {\"nth\":0} shows Schema mismatch: must provide either selector or ref."
+      ],
+      "cleanup": "Reload owned fixture to reset counters."
+    },
+    {
+      "feature_id": "EXT-F-4056",
+      "case_id": "EXT-F-4056-T01",
+      "name": "type_into_element",
+      "inventory_status": "source-listed-pending-reconciliation",
+      "control_id": "EXT-F-4056-C01",
+      "modes": ["member", "admin"],
+      "fixture": "Registered /form-controls fixture above; #keys begins as seed and #state reports its value and events.",
+      "steps": [
+        "Focus fixture tab; Tools > Catalog > All handlers; search type_into_element and open it.",
+        "Positive JSON: {\"selector\":\"#keys\",\"text\":\"route-731\",\"clear\":true,\"dispatch_events\":true}; Run once.",
+        "Negative JSON: {\"selector\":\"#hover-target\",\"text\":\"route-731\"}; Run once."
+      ],
+      "expected": [
+        "Positive: {ok:true,tag:'input'}; #state keys becomes route-731 and #keys input/change counters each increase by one.",
+        "Negative: {ok:false,reason:'Element is not editable'}; no input/change events are added.",
+        "Schema-negative {\"text\":\"route-731\"} shows Schema mismatch: must provide either selector or ref."
+      ],
+      "cleanup": "Reload owned fixture; clears edited value and event counters."
+    },
+    {
+      "feature_id": "EXT-F-4057",
+      "case_id": "EXT-F-4057-T01",
+      "name": "scroll_page",
+      "inventory_status": "source-listed-pending-reconciliation",
+      "control_id": "EXT-F-4057-C01",
+      "modes": ["member", "admin"],
+      "fixture": "Dedicated owned scroll fixture with verified overflow and a stable bottom target is required; existing form-controls page is insufficiently tall by contract.",
+      "steps": [
+        "Focus registered owned scroll fixture tab; verify document height exceeds viewport and record initial scrollY.",
+        "Open Tools > Catalog > All handlers; search scroll_page and open it.",
+        "Positive JSON: {\"direction\":\"bottom\"}; Run and inspect result plus page position.",
+        "Negative JSON: {\"direction\":\"into-view\",\"selector\":\"#missing-target\"}; Run."
+      ],
+      "expected": [
+        "Positive: {ok:true,scrollY:<number>} and window position is at document bottom (within browser scroll clamping).",
+        "Negative: {ok:false,reason:'No element for #missing-target'}; no successful target movement is claimed.",
+        "Schema permits direction alone; missing delta_y with direction by is handler-level {ok:false,reason:'delta_y required'}."
+      ],
+      "cleanup": "Reload fixture or use {\"direction\":\"top\"} and confirm scrollY=0."
+    },
+    {
+      "feature_id": "EXT-F-4058",
+      "case_id": "EXT-F-4058-T01",
+      "name": "wait_for",
+      "inventory_status": "source-listed-procedure-needed",
+      "control_id": "EXT-F-4058-C01",
+      "modes": ["member", "admin"],
+      "fixture": "Registered /form-controls fixture above. Choose the duplicate-name Action-tier raw row with schema selector/ready_state/timeout_ms; do not select canonical Read row with tab_id/condition/target.",
+      "steps": [
+        "Focus fixture tab; Tools > Catalog > All handlers; set tier Action; search wait_for; open the row whose displayed schema has selector, ready_state, timeout_ms.",
+        "Positive JSON: {\"selector\":\"#state\",\"timeout_ms\":1000}; Run.",
+        "Negative JSON: {\"selector\":\"#missing-target\",\"timeout_ms\":300}; Run."
+      ],
+      "expected": [
+        "Positive: {ok:true,waited_ms:<nonnegative number>} because #state already exists.",
+        "Negative: {ok:false,reason:'selector #missing-target did not appear'} after bounded timeout.",
+        "Schema-negative {\"selector\":\"#state\",\"timeout_ms\":0} shows Schema mismatch because timeout_ms must be positive."
+      ],
+      "cleanup": "No page mutation; close expanded tool row or reload fixture. Do not record this as canonical agent-dispatch wait_for coverage."
+    },
+    {
+      "feature_id": "EXT-F-4060",
+      "case_id": "EXT-F-4060-T01",
+      "name": "sleep",
+      "inventory_status": "source-listed-pending-reconciliation",
+      "control_id": "EXT-F-4060-C01",
+      "modes": ["member", "admin"],
+      "fixture": "No page fixture required; Tools UI remains sign-in gated and direct manual Run does not require active tab.",
+      "steps": [
+        "Open Tools > Catalog > All handlers; search sleep and open it.",
+        "Positive JSON: {\"ms\":50,\"reason\":\"bounded procedure\"}; Run and record start/end from the UI observer without imposing a tight timing bound.",
+        "Negative JSON: {\"ms\":49}; Run."
+      ],
+      "expected": [
+        "Positive: {ok:true,slept_ms:<number at least 50>,reason:'bounded procedure'}; elapsed time may exceed 50ms due to scheduling.",
+        "Negative: UI shows Schema mismatch because ms minimum is 50; handler does not sleep.",
+        "No fixture state or external page effect is expected."
+      ],
+      "cleanup": "None beyond closing the expanded row."
+    }
+  ],
+  "limitations": [
+    "No native/browser/manual run, build, extension reload, or role outcome is claimed.",
+    "Current controls, statuses, IDs, live_binding snapshots, result cells, and bindings in docs/stabilization/inventory.json remain untouched.",
+    "Manual Tools invocation covers raw handler/schema execution only; it does not prove deployed handler visibility, agent dispatcher permission behavior, request-time DB advertisement, or native acceptance.",
+    "EXT-F-4054, 4055, 4056, 4057, and 4060 remain source-listed-pending-reconciliation in the canonical inventory; EXT-F-4058 retains source-listed-procedure-needed until procedure integration and native verification are separately completed."
+  ]
+}
