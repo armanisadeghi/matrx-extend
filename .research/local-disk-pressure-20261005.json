@@ -89,6 +89,14 @@
     "before_cache_size": "1.3GiB ~/.npm/_cacache",
     "after_cache_exists": false,
     "after_df": "120MiB immediately; no material free-space recovery established",
-    "limits": "No personal caches/profile/application data removed; still below20GiB local-heavy-test floor."
+    "limits": "No personal caches/profile/application data removed; still below20GiB local-heavy-test floor.",
+    "later_location_check": "~/.npm is a symlink to external Samsung DeveloperData/npm-cache; explains absent internal recovery. Cache is disposable, no installed package changes."
+  },
+  "registry_metadata_recovery": {
+    "action": "Removed only internal pnpm metadata-v1.3 and metadata-full-v1.3 registry download caches (338MiB measured); package store, dlx and installed dependencies preserved",
+    "disk_before": "114MiB",
+    "disk_after": "488MiB",
+    "result": "Fresh peer agent initialized successfully afterward",
+    "limits": "Still below20GiB localheavytestfloor"
   }
 }
