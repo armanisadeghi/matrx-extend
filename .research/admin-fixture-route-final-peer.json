@@ -1,0 +1,12 @@
+{
+  "defect_id": "EXT-D-0142",
+  "reviewed_commits": "afb775b3 + bd328be0",
+  "verdict_a": "PARTIAL — hosted/native Showcase and Scrape acceptance not run.",
+  "verdict_b": "PASS — prior Important route-test omission is fixed and guarded.",
+  "evidence": "25/25 focused tests pass; wrong admin organization name and UUID rejected.",
+  "orchestration": "CI secret reaches preflight/acceptance; private fixture reaches Showcase and admin Scrape.",
+  "identity": "Drivers verify stored UUID/name and rendered identity; Scrape repeats after reload.",
+  "unchanged": "Scrape member avoids admin fixture; Profile admin/member refuse before browser setup.",
+  "negative": "Missing fixture fails preflight; tests reject wrong selection and identity mismatch.",
+  "limits": "No hosted/native browser, live DB query, build, or release run."
+}
