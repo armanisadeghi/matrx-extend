@@ -13,8 +13,12 @@
   "actual": "Headed native run reaches empty_media_capture and fails on undefined assertMediaPane; sole call remains in production branch.",
   "severity": "S2: acceptance blocked; not established product defect",
   "priority": "P1: unblock controlled Scrape verification",
-  "state": "in-fix",
-  "evidence": [".research/headed-member-native.json"],
+  "state": "fixed",
+  "evidence": [
+    ".research/headed-member-native.json",
+    ".research/empty-media139-repair.json",
+    ".research/empty-media139-peer.json"
+  ],
   "transition_history": [
     {
       "at": "2026-10-05T04:37:14.843405+00:00",
@@ -33,6 +37,14 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Sol owns canonical validator repair and actual branch regression; independent review required."
+    },
+    {
+      "at": "2026-10-05T04:41:28.408323+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Canonical media observer repair618861f3 with actualemptybranch RED/GREEN; freshpeer6517a08d accepts sourceB and nativeunverifiedA,14focusedpass. FullCIandheadedretestremain."
     }
-  ]
+  ],
+  "fix_commits": ["618861f3"],
+  "next_action": "FullgreenCI including actualemptybranchguard, then ONE changed-condition frozen244 headed member600 retest; closeonlyoriginalreproduction and surroundingreload pass."
 }
