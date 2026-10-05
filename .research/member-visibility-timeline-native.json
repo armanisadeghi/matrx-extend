@@ -1,0 +1,338 @@
+{
+  "schema_version": 1,
+  "task": "member-visibility-timeline-native",
+  "workflow": {
+    "name": "hosted-guest-acceptance.yml",
+    "run_id": 37245836902,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37245836902",
+    "head_sha": "d811d909057e686ab24555f46272b364721af383",
+    "terminal_status": "completed",
+    "conclusion": "failure",
+    "runner_label": "macos-15",
+    "case": "guest-scrape-development",
+    "auth_mode": "member",
+    "width_mode": "normal",
+    "requested_min_panel_width_px": 600,
+    "one_launch_no_retry": true,
+    "artifact_id": 11319535853,
+    "artifact_name": "hosted-guest-37245836902-1",
+    "artifact_digest": "sha256:5f20ee6761f62d7e7554a287c8304eaf8944d415e04416bff5c7c68f0df6e5c9",
+    "downloaded_zip_sha256": "5f20ee6761f62d7e7554a287c8304eaf8944d415e04416bff5c7c68f0df6e5c9",
+    "steps": {
+      "Set up job": "success",
+      "Run actions/checkout@v4": "success",
+      "Run actions/setup-node@v4": "success",
+      "Require a successful published release artifact": "skipped",
+      "Require exactly one artifact provenance mode": "success",
+      "Require selected authentication before browser setup": "success",
+      "Disable indexing on the disposable hosted VM": "success",
+      "Wait for measured package readiness": "success",
+      "Prepare pinned browser driver under an owned permit": "success",
+      "Wait for measured browser readiness": "success",
+      "Prepare full Chromium under a fresh owned permit": "success",
+      "Wait for measured acceptance readiness": "success",
+      "Exercise the selected Chrome side-panel case": "failure",
+      "Measure owned Chromium startup during the existing guard interval": "skipped",
+      "Upload browser result and native-panel screenshots": "success",
+      "Post Run actions/setup-node@v4": "skipped",
+      "Post Run actions/checkout@v4": "success",
+      "Complete job": "success"
+    }
+  },
+  "frozen_product": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.244",
+    "source_sha": "b81587021d689078ed428dafe3e15474a84c41e2",
+    "tree_sha256": "3396bae6d24ddfc7e93422a12e2341983179d7b4be3eca94adaafc5316cc94e7",
+    "run_id": 37233480033,
+    "artifact_id": 11315305224
+  },
+  "driver": {
+    "D133_repair_commit": "44005fb4",
+    "visibility_diagnostic_commit": "1379d875",
+    "visibility_guard_commit": "3c8daad2",
+    "visibility_peer_commit": "21e4d23a",
+    "diagnostic_guard_peer_on_main_before_launch": true,
+    "required_ci_run": 37245429379,
+    "required_ci_head": "3c8daad29e1177a2efb60fee18f8963d7a9dc313",
+    "required_ci_conclusion": "success",
+    "required_ci_both_jobs_success_before_launch": true
+  },
+  "native_outcome": {
+    "status": "unverified",
+    "stage": "organization_selection",
+    "native_stage": "exercise_panel",
+    "failure": {
+      "stage": "organization_selection",
+      "code": "scrape_authenticated_panel_foreground_not_observed:false"
+    },
+    "authentication": {
+      "mode": "member",
+      "account_fingerprint": "3d6137db6c081c07",
+      "web_signed_in": true,
+      "extension_signed_in": true,
+      "admin_role": false,
+      "canonical_nonadmin_check": {
+        "matched_current_extension_user": true,
+        "http_status": 200,
+        "returned_rows": 0
+      },
+      "organization_selected": true,
+      "selected_organization_verified": true,
+      "rendered_identity": {
+        "rendered_email_matches_first_party": true,
+        "rendered_role_matches_mode": true,
+        "profile_matches_first_party": true,
+        "selected_organization_matches_stored_uuid_and_name": true
+      }
+    },
+    "initial_exact_panel_context": "passed",
+    "D133_reopen_boundary_reached": true,
+    "D133_reopen_callback": "returned_without_refusal_before_foreground_gate",
+    "panel_visibility_timeline": [
+      {
+        "phase": "initial_settled_before_screenshots",
+        "measured": true,
+        "visibility": "visible",
+        "hasFocus": false,
+        "ready": true,
+        "width": 360,
+        "height": 373
+      },
+      {
+        "phase": "after_initial_screenshots",
+        "measured": true,
+        "visibility": "visible",
+        "hasFocus": false,
+        "ready": true,
+        "width": 360,
+        "height": 373
+      },
+      {
+        "phase": "before_authentication",
+        "measured": true,
+        "visibility": "visible",
+        "hasFocus": false,
+        "ready": true,
+        "width": 360,
+        "height": 373
+      },
+      {
+        "phase": "after_authentication",
+        "measured": true,
+        "visibility": "visible",
+        "hasFocus": true,
+        "ready": true,
+        "width": 360,
+        "height": 373
+      },
+      {
+        "phase": "after_organization_selection",
+        "measured": true,
+        "visibility": "visible",
+        "hasFocus": true,
+        "ready": true,
+        "width": 360,
+        "height": 373
+      },
+      {
+        "phase": "before_reopen",
+        "measured": true,
+        "visibility": "visible",
+        "hasFocus": true,
+        "ready": true,
+        "width": 360,
+        "height": 373
+      },
+      {
+        "phase": "after_root_foreground",
+        "measured": true,
+        "visibility": "visible",
+        "hasFocus": true,
+        "ready": true,
+        "width": 360,
+        "height": 373
+      },
+      {
+        "phase": "after_trusted_open",
+        "measured": true,
+        "visibility": "hidden",
+        "hasFocus": true,
+        "ready": true,
+        "width": 360,
+        "height": 373
+      },
+      {
+        "phase": "after_target_activation",
+        "measured": true,
+        "visibility": "hidden",
+        "hasFocus": true,
+        "ready": true,
+        "width": 360,
+        "height": 373
+      }
+    ],
+    "first_observed_hidden_phase": "after_trusted_open",
+    "last_observed_visible_phase": "after_root_foreground",
+    "focus_validity": "visibility_gate_failed_hidden; hasFocus_true_does_not_establish_physical_foreground",
+    "panel_foreground_diagnostic": {
+      "owned_root_page": true,
+      "panel_visibility": "hidden",
+      "panel_has_focus": true,
+      "original_panel_target_present": true,
+      "exact_panel_target_count": 1,
+      "original_is_only_exact_panel_target": true,
+      "side_panel_context": {
+        "contextCount": 1,
+        "sidePanelCount": 1,
+        "expectedExtensionCount": 1,
+        "exactUrlCount": 1,
+        "globalTabCount": 1,
+        "exactContextCount": 1,
+        "missingDocumentUrlCount": 0,
+        "emptyDocumentUrlCount": 0,
+        "otherExtensionUrlCount": 0,
+        "nonExtensionUrlCount": 0
+      },
+      "diagnostic_timed_out": false,
+      "outstanding_probes_after_deadline": false
+    },
+    "viewport_validity": "normal600_not_reached; diagnostic360x373_is_pre_emulation_only",
+    "cases": [],
+    "panel_viewports": [],
+    "classification": "original_panel_visible_through_auth_org_and_root_foreground_then_hidden_after_trusted_open",
+    "D133_verdict": "failed_changed_condition_foreground_gate"
+  },
+  "resources": {
+    "current_original_journals": [
+      {
+        "phase": "package",
+        "journal": "docs/stabilization/evidence/member-visibility-timeline/run37245836902/resource-journals/hosted-package-37245836902-1.jsonl",
+        "final": {
+          "schema": 1,
+          "at": "2026-10-05T00:03:20.788Z",
+          "runId": "hosted-package-37245836902-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "event_counts": {
+          "RESOURCE_ADMITTED": 1,
+          "RESOURCE_FINAL_DECISION": 1,
+          "RESOURCE_JOB_EXIT": 1,
+          "RESOURCE_JOURNAL_OPENED": 1
+        },
+        "unsafe_events": 0,
+        "child_duration_seconds": 1.647
+      },
+      {
+        "phase": "browser",
+        "journal": "docs/stabilization/evidence/member-visibility-timeline/run37245836902/resource-journals/hosted-browser-37245836902-1.jsonl",
+        "final": {
+          "schema": 1,
+          "at": "2026-10-05T00:05:26.876Z",
+          "runId": "hosted-browser-37245836902-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "event_counts": {
+          "RESOURCE_ADMITTED": 1,
+          "RESOURCE_FINAL_DECISION": 1,
+          "RESOURCE_JOB_EXIT": 1,
+          "RESOURCE_JOURNAL_OPENED": 1
+        },
+        "unsafe_events": 0,
+        "child_duration_seconds": 11.104
+      },
+      {
+        "phase": "guest",
+        "journal": "docs/stabilization/evidence/member-visibility-timeline/run37245836902/resource-journals/hosted-guest-37245836902-1.jsonl",
+        "final": {
+          "schema": 1,
+          "at": "2026-10-05T00:07:58.371Z",
+          "runId": "hosted-guest-37245836902-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 1,
+          "decision": "child_failed",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "event_counts": {
+          "RESOURCE_ADMITTED": 1,
+          "RESOURCE_FINAL_DECISION": 1,
+          "RESOURCE_JOB_EXIT": 1,
+          "RESOURCE_JOURNAL_OPENED": 1,
+          "RESOURCE_WATCH_HEALTHY": 2
+        },
+        "unsafe_events": 0,
+        "child_duration_seconds": 45.965
+      }
+    ],
+    "pending_current_journals": [],
+    "unsafe_current_events": 0,
+    "guard_final_decisions": "package_valid_browser_valid_guest_child_failed_all_resourceInvalid_false",
+    "artifact_historical_journals_excluded": [
+      "hosted-package-37105304739-1.jsonl",
+      "hosted-browser-37105304739-1.jsonl",
+      "hosted-guest-37105304739-1.jsonl"
+    ],
+    "watch_evidence": "Native acceptance periodic healthy watch counts are preserved in event_counts. Package/browser child runs under15-second interval have admission/final decisions without periodic watch evidence."
+  },
+  "evidence": {
+    "raw_receipt": "docs/stabilization/evidence/member-visibility-timeline/run37245836902/raw/scrape-guest-native-bafae1ab-7ce0-41ef-9922-e124956c64e1.json",
+    "screenshots": [
+      "docs/stabilization/evidence/member-visibility-timeline/run37245836902/screenshots/native-side-panel.png",
+      "docs/stabilization/evidence/member-visibility-timeline/run37245836902/screenshots/normal-target-after-open.png"
+    ],
+    "screenshots_scope": "two_initial_guest_panel_setup_screenshots_before_member_auth; no post-auth or failure screenshot uploaded",
+    "screenshots_privacy": "visually_checked_no_credentials_or_member_identity",
+    "hashes": [
+      {
+        "path": "docs/stabilization/evidence/member-visibility-timeline/run37245836902/raw/scrape-guest-native-bafae1ab-7ce0-41ef-9922-e124956c64e1.json",
+        "sha256": "5833de05d262618942d599f4af652a8e757fce60a478edda9c3120516a3dacab"
+      },
+      {
+        "path": "docs/stabilization/evidence/member-visibility-timeline/run37245836902/resource-journals/hosted-browser-37245836902-1.jsonl",
+        "sha256": "553f6ef82a36573f97d05b2937e567b8a1148f8290cf5400c9f1ce4e77e4100d"
+      },
+      {
+        "path": "docs/stabilization/evidence/member-visibility-timeline/run37245836902/resource-journals/hosted-guest-37245836902-1.jsonl",
+        "sha256": "a9aeccf681fefc1d680e9541523e219c207fca5bae5ba159f928acfc77393940"
+      },
+      {
+        "path": "docs/stabilization/evidence/member-visibility-timeline/run37245836902/resource-journals/hosted-package-37245836902-1.jsonl",
+        "sha256": "e17d8b54a19f9934415cda5cc2524405bba492e67a8d3716230b8b9466541cad"
+      },
+      {
+        "path": "docs/stabilization/evidence/member-visibility-timeline/run37245836902/screenshots/native-side-panel.png",
+        "sha256": "c0533711da45bce42705f1719265a5eb6c692220af7ac729e9b990bade97d34e"
+      },
+      {
+        "path": "docs/stabilization/evidence/member-visibility-timeline/run37245836902/screenshots/normal-target-after-open.png",
+        "sha256": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89"
+      }
+    ]
+  },
+  "credential_cleanup": {
+    "temporary_consumed_repository_secret": "MATRX_REVIEWER_MAGIC_LINK_JSON",
+    "temporary_github_secret_deleted": true,
+    "secret_list_confirmed_absent": true,
+    "local_link_file_deleted": true,
+    "local_link_file_absence_verified": true,
+    "identity_file_unchanged": true,
+    "no_credentials_auth_urls_identity_values_or_raw_logs_recorded": true
+  },
+  "limits": [
+    "One changed-condition launch after required CI success; no retry, local browser, build, release, manual version change or child agent.",
+    "No source, inventory or defect edits; root owns independent verification and classification.",
+    "Frozen product manifest244/source/tree match prior runs; changed driver only.",
+    "No normal600 viewport, Scrape cases, physicalforeground proof or Store205 publication health established.",
+    "Backend identity was not emitted in this raw receipt; root independently observed backend9e81998819b073202e5aacc42faed8e4c8fe329c before run but that is not an acceptance request correlation."
+  ]
+}
