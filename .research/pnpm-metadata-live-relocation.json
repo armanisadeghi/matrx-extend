@@ -1,0 +1,23 @@
+{
+  "at": "2026-10-05T09:05:28.058989+00:00",
+  "scope": "Regenerated pnpm registry metadata only; no dependencies/dlx/runtime/personal data",
+  "preflight": "lsof +D both exact directories returned no open handles",
+  "records": [
+    {
+      "cache": "metadata-full-v1.3",
+      "files": 86,
+      "bytes": 34462431,
+      "hash_equality": true,
+      "original_path_symlink": true,
+      "external_target": "/Volumes/Samsung2TB/code/.stabilization-scratch/pnpm-metadata-live-20261005/metadata-full-v1.3"
+    },
+    {
+      "cache": "metadata-v1.3",
+      "files": 140,
+      "bytes": 26439748,
+      "hash_equality": true,
+      "original_path_symlink": true,
+      "external_target": "/Volumes/Samsung2TB/code/.stabilization-scratch/pnpm-metadata-live-20261005/metadata-v1.3"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-05T06:53:57.849170+00:00",
+  "updated_at": "2026-10-05T09:06:28.329612+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -35122,7 +35122,7 @@
         },
         {
           "id": "EXT-F-2013-T10",
-          "title": "Public guest Chat sends page-grounded answers before and after reload",
+          "title": "Public guest Chat first reply, same-conversation follow-up, and new conversation after reload",
           "modes": [
             "guest"
           ],
@@ -35134,12 +35134,17 @@
             "Build under resource guard, record immutable receipt, load fresh isolated profile with exact unpacked build; verify no account token/profile/organization."
           ],
           "steps": [
-            "Open controlled ordinary page with unpredictable visible marker.",
-            "Open Chat and ask for that page marker; require real matching assistant answer.",
-            "Reload the side panel and send a second question; require another matching answer."
+            "Use the authorized guarded artifact import/build-and-reload cycle and record exact extension version/source/tree plus live server SHA before the run.",
+            "Open controlled ordinary page with unpredictable visible markers.",
+            "Open Chat signed out and ask for the opening page marker; require matching assistant content and successful terminal completion over the real offscreen request.",
+            "Send a distinct follow-up without starting a new conversation or reloading; require separate matching assistant content and terminal completion. Verify actual wire conversation identity equals the opening request and is_new=false.",
+            "Reload the side panel, create a new conversation, and send the existing reload question; require another matching terminal answer and a different actual wire conversation identity with is_new=true.",
+            "Record live server SHA after the run, resource journals and exact artifact identity; attribute server revision only when before/after are equal."
           ],
           "expected": [
-            "Chat remains visible and usable without login; real responses ground in current page; no private account state is carried into guest."
+            "Chat remains visible and usable without login; actual first, same-conversation follow-up and post-reload answers match the controlled current page. No account auth state is introduced.",
+            "Each request independently completes successfully; a prior assistant response cannot satisfy a later assertion; guest IDs/auth values and raw request bodies never enter evidence.",
+            "API-only health or reply evidence is distinguished from actual browser acceptance; development/unpacked evidence is not labeled Store-installed lifecycle."
           ],
           "defect_ids": [
             "EXT-D-0096",
@@ -35147,10 +35152,10 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
+              "status": "partial",
               "run_id": "37267858358",
               "evidence": ".research/public205-guest-native.json",
-              "detail": "Google public0.2.205 CRX, verified hash/identity and immutable adapted unpacked tree, completed fresh signed-out and post-panel-reload grounded answers; both realHTTP200; all3resourcejournals valid with zero unsafeevents. Headless nativeSIDE_PANEL; not actualStoreinstalled lifecycle or exhaustiveChat."
+              "detail": "Google public0.2.205 CRX, verified hash/identity and immutable adapted unpacked tree, completed fresh signed-out and post-panel-reload grounded answers; both realHTTP200; all3resourcejournals valid with zero unsafeevents. Headless nativeSIDE_PANEL; not actualStoreinstalled lifecycle or exhaustiveChat. Same-conversation follow-up and current-backend pair explicitly remain unverified; source7f0a02d2 awaits fresh independent review/full CI/guarded browser run. Existing first+reload proof retained, no new pass."
             }
           },
           "defect_verification": {
@@ -35201,6 +35206,17 @@
                 "detail": "Bounded development175 controlledarticle native firstreply and reloadfollowup; actual unpredictable codes observed. Not Store130/publicdemo/Records/fullChat."
               },
               "superseded_at": "2026-10-03T08:17:48.179147+00:00"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "37267858358",
+                "evidence": ".research/public205-guest-native.json",
+                "detail": "Google public0.2.205 CRX, verified hash/identity and immutable adapted unpacked tree, completed fresh signed-out and post-panel-reload grounded answers; both realHTTP200; all3resourcejournals valid with zero unsafeevents. Headless nativeSIDE_PANEL; not actualStoreinstalled lifecycle or exhaustiveChat."
+              },
+              "superseded_at": "2026-10-05T09:06:28.329612+00:00",
+              "reason": "Explicit daily first-message plus SAME-conversation follow-up requirement added; preserve prior bounded reload evidence."
             }
           ]
         },
