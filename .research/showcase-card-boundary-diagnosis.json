@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0143",
+  "source_run_id": 37357780854,
+  "status": "causal_origin_unproven",
+  "first_proven_failure_boundary": "The native Playwright action on the first #events article.event-card failed before scope choice. The receipt shows three cards, one picker host, a nonzero card rectangle, and elementFromPoint at the card center outside the card subtree. It does not identify the hit element or prove that the picker panel obstructed the action.",
+  "corroboration": "Run 37284490515 also ended at select_B_card after the same-page A-to-B replacement, but its receipt did not record the failing operation.",
+  "hypotheses": [
+    {
+      "candidate": "The picker panel covers the Playwright click point.",
+      "discriminating_observation": "Before-click center_hit_kind is picker_panel and card/panel rectangles intersect at the center."
+    },
+    {
+      "candidate": "The card center is outside the viewport or clipped.",
+      "discriminating_observation": "Before-click center_in_viewport is false or all interior hit kinds are none while card geometry is nonzero."
+    },
+    {
+      "candidate": "Another page element covers the card or the layout changes during actionability checks.",
+      "discriminating_observation": "Before-click hit kind is other_element, or before-click and after-failure hit kinds/rectangles differ."
+    }
+  ],
+  "instrumentation": "Native receipt now preserves sanitized viewport/card/picker-panel rectangles and center/interior hit categories before the click and after failure. The receipt keeps only fixed categories and bounded numbers; no page text or raw Playwright error is stored.",
+  "focused_verification": {
+    "command": "node --test tests/browser/showcase-selection-diagnostic.test.mjs",
+    "result": "4 passed",
+    "scope": "The actual page sampling callback was exercised with controlled DOM hit testing, plus receipt plumbing and allowlist. A scratch mutation dropping the pointer recording made the focused assertion fail. No native Chrome run or product behavior verified."
+  },
+  "next_action": "On an admitted native run using the changed driver, inspect before_click and after_failure pointer samples. Confirm the first causal boundary before changing driver click coordinates or picker layout; then prove a red/green behavioral guard against that cause."
+}

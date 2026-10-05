@@ -329,7 +329,7 @@ try {
       });
       stage('select_B_card');
       report.selection_diagnostic = createShowcaseSelectionDiagnostic();
-      await sampleShowcaseSelection(page, report.selection_diagnostic);
+      await sampleShowcaseSelection(page, report.selection_diagnostic, 'before_click');
       await resourceAction(() => page.locator('#events article.event-card').first().click());
       stageShowcaseSelection(report.selection_diagnostic, 'scope_choice');
       await sampleShowcaseSelection(page, report.selection_diagnostic);
@@ -460,7 +460,7 @@ try {
   process.stdout.write('PASS showcase_picker_native_bounded\n');
 } catch (error) {
   if (report.stage === 'select_B_card' && selectionPage && report.selection_diagnostic)
-    await sampleShowcaseSelection(selectionPage, report.selection_diagnostic);
+    await sampleShowcaseSelection(selectionPage, report.selection_diagnostic, 'after_failure');
   report.status = 'unverified';
   report.failure_code =
     report.stage === 'organization'
