@@ -1263,7 +1263,7 @@
       },
       "readiness_gaps": [
         "Concrete procedure and evidence required before executing each control.",
-        "EXT-D-0136: actual CPU integration CI failed parsing incomplete JSON; repair and independent retest pending."
+        "EXT-D-0136 closed: startup owner metadata race repaired; independent actual-wrapper retest and hostedCI37245762934 pass. No product coverage promoted."
       ]
     },
     {

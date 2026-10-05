@@ -14,7 +14,7 @@
   "actual": "Test parses heavy/owner.json after admission but before startup rewrites finish; empty JSON causes SyntaxError before CPU stimulus.",
   "severity": "S2: verification infrastructure failure; no product failure established",
   "priority": "P1: restore green release verification",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root/cpu_journal_parse_repair",
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/37245082188",
@@ -45,8 +45,27 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Independent peerd811d909 reran actualwrapper test2/2pass and checked siblingcensus. Builder deterministicred andconstantownermutation evidence retained; hosted CI pending."
+    },
+    {
+      "at": "2026-10-05T00:05:43.969601+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Freshpeer d811d909 reran actualwrapper2/2pass; hostedCI37245762934 atd811d909 fullSUCCESS. Root independently read job111563248268: originaltemporaltest and pausedstartupwriter bothpass2/2,zero failures."
+    },
+    {
+      "at": "2026-10-05T00:05:43.969601+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original owner-read failure has deterministic regression and independent local/hosted proof; bounded test-only fix, no productcoverage promoted."
     }
   ],
   "fix_commits": ["666ecc45"],
-  "next_action": "Await automatic hosted CI exercising repaired startup test; do not infer product or full resource lifecycle coverage."
+  "next_action": "Monitor future CI; no production resource semantics changed.",
+  "hosted_ci": {
+    "run_id": 37245762934,
+    "job_id": 111563248268,
+    "head": "d811d909057e686ab24555f46272b364721af383",
+    "conclusion": "success",
+    "root_verified": "Actual log includes original temporal and paused-owner-startup tests,2pass0fail."
+  }
 }
