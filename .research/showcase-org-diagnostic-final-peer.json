@@ -37,16 +37,30 @@
       "The suite exercises picker timeout, unknown picker read, storage timeout, unknown error redaction, selected-organization completion, and rejection of an unverified admin role.",
       "Unknown callback fields, arbitrary stages, and arbitrary error messages are excluded from the serialized diagnostic shape."
     ],
-    "limitations": [
-      "I did not independently rerun the reported source mutations; the currently committed behavioral assertions do force the expected receipt fields through the real callback chain.",
-      "No fresh native evidence was available or produced."
-    ]
+    "limitations": ["No fresh native evidence was available or produced."]
   },
   "verification": {
     "command": "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch node --test tests/browser/showcase-organization-diagnostic.test.mjs tests/browser/settings-native-auth-driver.test.mjs",
     "result": "9 passed, 0 failed",
     "ci_inspection": "The focused diagnostic test is listed in .github/workflows/ci.yml."
   },
+  "independent_negative_verification": [
+    {
+      "mutation": "Disconnect the checkpoint onStage callback (onStage: () => {}).",
+      "result": "RED: expected organization_picker but receipt retained resource_gate.",
+      "restore": "plant.py restored byte-identical checkpoint (SHA-256 3219a49c900d635828f5ebf8c992ab595107fa45deeeecc87d43fd2802ab793a)."
+    },
+    {
+      "mutation": "Replace dynamic checkpoint stage forwarding with constant resource_gate.",
+      "result": "RED: expected organization_picker but receipt retained resource_gate.",
+      "restore": "plant.py restored byte-identical checkpoint (same SHA-256)."
+    },
+    {
+      "mutation": "Disconnect the checkpoint onObservation callback (onObservation: () => {}).",
+      "result": "RED: expected picker_available=false and picker_has_selection=false, but both sampled fields were absent; selected-organization assertions also failed for missing observations.",
+      "restore": "plant.py restored byte-identical checkpoint (same SHA-256)."
+    }
+  ],
   "unrelated_workspace_changes": [
     "docs/stabilization/defects/EXT-D-0141.json",
     "docs/stabilization/reports/workspace-sync-guest-incident-20261003.json"
