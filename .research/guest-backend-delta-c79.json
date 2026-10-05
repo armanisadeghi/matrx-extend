@@ -15,19 +15,16 @@
     "base_sha": "2e24fa8536c149663735c0cf2092cd21f5a97144",
     "target_sha": "c79ac05f44010430f509f27427a1663c4960a06f",
     "paths_changed": 49,
-    "conclusion": "No direct guest first/reload contract change is visible in the pinned backend source delta. This source audit does not extend workflow 37247813922's runtime pass to c79ac05f."
+    "conclusion": "The explicitly checked guest start router and organization resolver are unchanged in the pinned backend diff. Other changed conversation-context/reader code and dependency snapshots leave indirect runtime effects unverified. This source audit does not extend workflow 37247813922's runtime pass to c79ac05f."
   },
   "guest_path_assessment": {
     "key_guest_contract_files_unchanged": [
       "aidream/api/routers/ai.py",
-      "aidream/api/middleware/",
-      "aidream/services/conversation_context/",
-      "aidream/services/agent_service/",
       "aidream/services/organizations/effective_org.py"
     ],
     "source_basis": [
-      "Guest start/auth, organization resolution, quota, and chat execution sources above are unchanged across the exact SHA range.",
-      "The only changed existing conversation-data reader is aidream/services/distillation/chat_import.py: own-conversation reading delegates to a shared reader; row ownership enforcement for the ordinary caller, visible/non-deleted message selection, text projection, and ordering remain in the moved logic.",
+      "The pinned diff name-status shows no changes to aidream/api/routers/ai.py or aidream/services/organizations/effective_org.py, the guest start router and organization resolver explicitly checked in this audit.",
+      "The backend delta does change aidream/services/conversation_context/source_attribution.py and aidream/services/distillation/chat_import.py. The former adds the agent-studio attribution token; the latter extracts the own-conversation reader. Their indirect or transitive effects on guest behavior were not runtime-verified.",
       "The added /agent-studio/from-chat endpoint is mounted with require_authenticated. It is signed-in additive functionality, not the guest chat-start or reload route.",
       "The admin Agent Studio route and reader's admin-only owner bypass are separate from guest request handling."
     ],
@@ -57,7 +54,7 @@
   "acceptance_implications": {
     "prior_runtime_evidence": "The exact Store candidate 205 native guest first/reload workflow 37247813922 passed against 2e24fa8536c149663735c0cf2092cd21f5a97144 only.",
     "precise_follow_up": "If current-backend acceptance is needed, rerun only the same exact Store-205 native guest first/reload scenario against c79ac05f44010430f509f27427a1663c4960a06f, recording before/after version endpoint observations. Keep candidate 205 and workflow identity attached to the result; do not widen the run to account/member/table acceptance.",
-    "claim_boundary": "The source delta supports low direct guest-path change risk, not a runtime pass claim or an all-health conclusion."
+    "claim_boundary": "The source delta shows no direct change to the checked guest start router or organization resolver, but does not establish transitive guest-path behavior or a runtime pass; no all-health conclusion follows."
   },
   "limitations": [
     "Read-only diff/source audit of exactly the supplied backend SHAs; no latest-HEAD chasing.",
