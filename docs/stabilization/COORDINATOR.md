@@ -2,11 +2,15 @@
 
 ## Read first
 
-The stabilization goal remains active. The canonical coverage ledger is `docs/stabilization/inventory.json`; generated views are `docs/stabilization/STATUS.md` and `docs/stabilization/CHECKLIST.md`. Individual defects and closure requirements are in `docs/stabilization/defects/EXT-D-*.json`; receipts, resource journals, and reviews are in `.research/`, `docs/stabilization/runs/`, and `docs/stabilization/reports/`. Git retains previous checkpoints. Do not infer whole-feature or whole-extension health from a bounded pass or source fix. Regenerate the linked status for current coverage counts and verification state; its current artifact summary may lag later evidence.
+The stabilization campaign remains incomplete and this heartbeat is executing its authorized work. The app goal registry currently reports blocked (observed this turn); the goal tool cannot resume that registry state, and no completion is claimed. The canonical coverage ledger is `docs/stabilization/inventory.json`; generated views are `docs/stabilization/STATUS.md` and `docs/stabilization/CHECKLIST.md`. Individual defects and closure requirements are in `docs/stabilization/defects/EXT-D-*.json`; receipts, resource journals, and reviews are in `.research/`, `docs/stabilization/runs/`, and `docs/stabilization/reports/`. Git retains previous checkpoints. Do not infer whole-feature or whole-extension health from a bounded pass or source fix. Regenerate the linked status for current coverage counts and verification state; its current artifact summary may lag later evidence.
 
 Local capacity at05:21UTC: internalvolume about116MiB free, external1.6TiB free. Newagent lock creation twicefailedENOSPC, later recovered aftertoolownedpnpmmetadatacleanup. Canonicaldev-cachegroom freed0B. Alltempfiles external; no localheavy/browserlaunch. No personalcache orChromeuserdata removed.
 
 Root owns integration, inventory/defect transitions, Store follow-through, and the next execution decision. Continue from current inventory and defects. Preserve concurrent writers on shared `origin/main`: fetch/reconcile, commit exact paths, push, and record final workspace state in `docs/stabilization/reports/workspace-sync-guest-incident-20261003.json`. Do not end with a child or heavy job active. Source review and tests never substitute for installed UI and server behavior.
+
+## Access interruption — recovery required
+
+The latest permission change restricts networking, makes .git read-only, and denies Chrome computer control. GitHub run lookup and both owned secret deletions failed connecting to api.github.com. No agents remain live. Run37357780854 was last observed exercising Showcase; terminal status and evidence are UNKNOWN, not passed. Recover that exact run before any retry. Delete owned GitHub secrets MATRX_PROFILE_APPROVED_ORGANIZATION_JSON and MATRX_PREPARE_ADMIN_CREDENTIALS_JSON and verify absence when access is restored. Both deletions were attempted after interruption and failed; never claim cleanup. Existing pushed guest result remains valid; no newer submission occurred. This checkpoint edit is local and cannot be committed/pushed under current permissions. Prior execution details below are historical.
 
 ## Current execution — 2026-10-05 18:45 UTC
 

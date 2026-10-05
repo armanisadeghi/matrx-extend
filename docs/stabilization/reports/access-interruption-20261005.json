@@ -1,0 +1,126 @@
+{
+  "observed_at": "2026-10-05T18:50:21.293527+00:00",
+  "remote_refresh": "Unavailable: restricted network. All remote refs below are cached, not freshly verified.",
+  "pending_run": 37357780854,
+  "pending_secret_cleanup": [
+    "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON",
+    "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON"
+  ],
+  "last_verified_guest_run": 37356729984,
+  "local_only": [
+    "docs/stabilization/COORDINATOR.md",
+    "docs/stabilization/reports/access-interruption-20261005.json"
+  ],
+  "repositories": [
+    {
+      "repo": "workspace",
+      "cached_origin_main": "0276d4dcabef2d7d43fcfd0bd395050621971f5a",
+      "cached_last_update": "2026-10-02T11:10:20-07:00",
+      "files_since_baseline": 0,
+      "head": "0276d4dcabef2d7d43fcfd0bd395050621971f5a",
+      "dirty": "",
+      "ahead_behind_cached": "0\t0",
+      "stashes": "",
+      "remote_unmerged": ""
+    },
+    {
+      "repo": "aidream",
+      "cached_origin_main": "01ac29fc7baa56903f100e5f1c7a102c6d29191a",
+      "cached_last_update": "2026-10-05T11:16:17-07:00",
+      "files_since_baseline": 1182,
+      "head": "01ac29fc7baa56903f100e5f1c7a102c6d29191a",
+      "dirty": "",
+      "ahead_behind_cached": "0\t0",
+      "stashes": "",
+      "remote_unmerged": ""
+    },
+    {
+      "repo": "ai-matrx",
+      "cached_origin_main": "697eff124ed42fef97ad3b556eaba0f62dfefde8",
+      "cached_last_update": "2026-10-05T11:23:35-07:00",
+      "files_since_baseline": 4645,
+      "head": "697eff124ed42fef97ad3b556eaba0f62dfefde8",
+      "dirty": "",
+      "ahead_behind_cached": "0\t0",
+      "stashes": "",
+      "remote_unmerged": "origin/recovery/ai-matrx-held-generated-types-20261005\norigin/recovery/ai-matrx-held-live-types-20261005"
+    },
+    {
+      "repo": "matrx-extend",
+      "cached_origin_main": "e6e6e584b11e829b320c86214ae8bf9fbc021881",
+      "cached_last_update": "2026-10-05T11:45:00-07:00",
+      "files_since_baseline": 72,
+      "head": "e6e6e584b11e829b320c86214ae8bf9fbc021881",
+      "dirty": "M docs/stabilization/COORDINATOR.md",
+      "ahead_behind_cached": "0\t0",
+      "stashes": "",
+      "remote_unmerged": ""
+    },
+    {
+      "repo": "matrx-local",
+      "cached_origin_main": "5f5162da605370949a6d108a680f889d73a067c0",
+      "cached_last_update": "2026-10-05T11:18:22-07:00",
+      "files_since_baseline": 11,
+      "head": "5f5162da605370949a6d108a680f889d73a067c0",
+      "dirty": "",
+      "ahead_behind_cached": "0\t0",
+      "stashes": "",
+      "remote_unmerged": ""
+    },
+    {
+      "repo": "matrx-sandbox",
+      "cached_origin_main": "71ee0d8b5f51f1583d01b9fd0ff21a6ab7a23a09",
+      "cached_last_update": "2026-10-05T10:19:27-07:00",
+      "files_since_baseline": 2,
+      "head": "71ee0d8b5f51f1583d01b9fd0ff21a6ab7a23a09",
+      "dirty": "",
+      "ahead_behind_cached": "0\t0",
+      "stashes": "",
+      "remote_unmerged": ""
+    },
+    {
+      "repo": "matrx-ship",
+      "cached_origin_main": "e5e2ab8960eede8f5ec725bfa6c676b1a2fc476e",
+      "cached_last_update": "2026-10-05T11:14:48-07:00",
+      "files_since_baseline": 4,
+      "head": "e5e2ab8960eede8f5ec725bfa6c676b1a2fc476e",
+      "dirty": "",
+      "ahead_behind_cached": "0\t0",
+      "stashes": "",
+      "remote_unmerged": ""
+    },
+    {
+      "repo": "my-matrx",
+      "cached_origin_main": "0f05c284b031cf161420c72b7db5dc54aa14a527",
+      "cached_last_update": "2026-10-03T03:08:37-07:00",
+      "files_since_baseline": 0,
+      "head": "0f05c284b031cf161420c72b7db5dc54aa14a527",
+      "dirty": "",
+      "ahead_behind_cached": "0\t0",
+      "stashes": "",
+      "remote_unmerged": ""
+    },
+    {
+      "repo": "matrx-common-docs",
+      "cached_origin_main": "696878e135a292c7416c541970dfb3ad1b759530",
+      "cached_last_update": "2026-10-05T11:44:27-07:00",
+      "files_since_baseline": 44,
+      "head": "696878e135a292c7416c541970dfb3ad1b759530",
+      "dirty": "",
+      "ahead_behind_cached": "0\t0",
+      "stashes": "",
+      "remote_unmerged": ""
+    },
+    {
+      "repo": "matrx-package-template",
+      "cached_origin_main": "2e16e0246dd3a3caf514bcdf931d9fbe46fe61ea",
+      "cached_last_update": "2026-10-03T13:19:13-07:00",
+      "files_since_baseline": 0,
+      "head": "2e16e0246dd3a3caf514bcdf931d9fbe46fe61ea",
+      "dirty": "",
+      "ahead_behind_cached": "0\t0",
+      "stashes": "",
+      "remote_unmerged": ""
+    }
+  ]
+}
