@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "90f35ab89fca071877bb15b9281509ac148b5549",
+  "verdict_a": {
+    "result": "PASS_SOURCE_SCOPE",
+    "basis": "Auth instrumentation brackets canonical admin verification, the first organization decision and selection/skip, rendered identity verification, and observer cleanup at the existing member auth caller. Guest/admin mode behavior and acceptance decisions are unchanged; pointer facade preserves the original receiver and input arguments.",
+    "limit": "The original native failure, physical panel exposure, and causal relationship remain unverified."
+  },
+  "verdict_b": {
+    "result": "PASS_FOCUSED_SOURCE_PROOF",
+    "basis": "Independently ran the seven focused recorder tests from an external scratch copy; selected and skipped member organization paths, observer error, fixed-field receipt privacy, marker loss, frozen receiver, and the actual Scrape caller omission mutant were exercised. The omission mutant preserved actual pointer inputs and failed the pointer-coverage assertion. Focused Biome check passed.",
+    "limit": "Controlled IO/source harness only; no native browser or product runtime evidence."
+  },
+  "findings": []
+}
