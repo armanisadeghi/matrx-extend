@@ -14,7 +14,7 @@
   "actual": "Run37246354075 initial SIDE_PANEL has empty documentURL; exact liveframe/renderer and identity alreadymatch, followup103ms yields exactcontext1 empty0. Setup fails on initial sample before anyguestrequest.",
   "severity": "S2: acceptance blocked; product impact unestablished",
   "priority": "P1: restore trustworthy Store acceptance",
-  "state": "in-fix",
+  "state": "closed",
   "owner": "hosted_chrome_startup",
   "evidence": [
     ".research/guest-scrape-diagnostic-native.json",
@@ -27,7 +27,10 @@
     ".research/panel-context-empty-diagnosis.json",
     ".research/panel-empty-diagnostic-peer.json",
     ".research/member-context-diagnostic-native.json",
-    ".research/guest205-current-server-retest.json"
+    ".research/guest205-current-server-retest.json",
+    ".research/initial-context-readiness-repair.json",
+    ".research/initial-context-readiness-peer.json",
+    ".research/guest205-readiness-native.json"
   ],
   "transition_history": [
     {
@@ -47,10 +50,28 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "New bounded frame/runtime evidence proves initial context sampling precedes exact registration; rootverified10hashes, rawreceipt, diagnostic and3journals. Sol initial_context_readiness_repair owns bounded exact-readiness repair; no gate weakening."
+    },
+    {
+      "at": "2026-10-05T00:30:46.344040+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Sourcef0ffbaa3 exactownedcontextreadiness withinexistingdiscoverybudget; freshpeer2a1c6c8f independently19focusedpass. Builderfull27testharness/compilegreen. ActualChromeawaitingchangedconditionrun."
+    },
+    {
+      "at": "2026-10-05T00:40:50.057390+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independentpeer2a1c6c8f focused19pass, fullCI37247772797 SUCCESS, actualexactStore205 native37247813922 passessetup+first/reloadguestanswers. Rootmatched15hashes/readrawreceipt/3validjournals/READY+followupscreenshot. Delayed-match originalrepro coveredcontrolledguard; nativefirstsamplealreadyexact1, notclaimedphysicalempty\u2192exact."
+    },
+    {
+      "at": "2026-10-05T00:40:50.057390+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Bounded initialization race repaired with unchanged ownership/deadline refusals, causalpriornativeevidence and independentguard/nativeacceptance. Productcoverageoutsideguestscenario remainsunverified."
     }
   ],
   "closure_requirement": "Demonstrate cause, independently verify repair and actual owned Store panel initialization; surrounding ownership checks must still reject foreign contexts.",
-  "next_action": "Review bounded readiness repair, focused red\u2192green and freshpeer, then actual frozenStore205guestfirst/reload before memberretst. Currentserver2e24fa85 chat stillunexercised by failedrun.",
+  "next_action": "Monitor future native startup; do not broaden bounded closure into all Chrome lifecycle or product health.",
   "latest_reproduction": {
     "run_id": 37243043772,
     "product_version": "0.2.244",
@@ -64,5 +85,13 @@
     "head": "5eb92a0455a8b0b71ae43fd639550ed9a35e08c1",
     "conclusion": "success",
     "scope": "Includes9c040f70 diagnostic; no actualemptyURLnativeprobe in subsequentrun."
+  },
+  "fix_commit": "f0ffbaa3",
+  "native_retest": {
+    "run_id": 37247813922,
+    "evidence_commit": "44f54276",
+    "context": "first and last exact1, attempts1 elapsed373ms; no empty-to-exact transition in this run",
+    "guest": "first/reload actualHTTP200 groundedterminal answers; backend2e24fa85 before/after",
+    "root_verification": "15hashes, actualreceipt,3originaljournals allvalid, followupscreenshot guestbadge+answer"
   }
 }

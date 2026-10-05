@@ -51,7 +51,7 @@
     "published_version": "0.2.176",
     "pending_version": "0.2.205",
     "status": "Pending review",
-    "action": "Preserve pending205. Earlierbackend60081 native37240870438 passed bounded guest first/reload; latestbackend2e24fa85 run37246354075 failed initialcontext beforeanyAIrequest. Reviewed readinessrepair and fresh currentserveracceptance required; actualStoreinstallation pending."
+    "action": "Preserve pending205. Exactcandidate205 currentbackend2e24fa85 native37247813922 passedfirst/reload groundedHTTP200; actualStoreinstallation pending. No wholeChat/allowance/newversionhealthclaim."
   },
   "publisher_access": {
     "observed_at_utc": "2026-10-04T08:14:16Z",
@@ -60,5 +60,5 @@
     "required_action": "None currently.",
     "limits": "Publication remains pending; no submission changed."
   },
-  "current_server_evidence": ".research/guest205-discovery-native.json"
+  "current_server_evidence": ".research/guest205-readiness-native.json"
 }
