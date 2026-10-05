@@ -71,5 +71,18 @@
     "built_at": "2026-10-05T02:17:51Z",
     "report": ".research/guest-backend-delta-c79.json",
     "scope": "Specific guest router and org resolver unchanged; context/reader/dependency indirect runtime effects unverified. Prior205 guest pass remains bound to2e24fa85. Current-backend guest acceptance remains pending."
+  },
+  "latest_attempted_guest_recheck": {
+    "run_id": 37259260097,
+    "candidate": "exact pending205 public-key-adapted ZIP",
+    "scenario_status": "raw receipt pass; NOT accepted overall",
+    "observed_requests": "opening and post-reload new-conversation HTTP200 terminalanswers",
+    "overall": "resource-invalid: CPU_PENDING then childexit before recovery; no new acceptance promotion",
+    "backend": "before140626f9, after5b23b0bc; deploymentchanged duringrun",
+    "report": ".research/guest205-current-server-native.json"
+  },
+  "dashboard_refresh_attempt_after_last_success": {
+    "result": "CUA app-server exited before response; no newer Store status established",
+    "last_success_preserved": true
   }
 }

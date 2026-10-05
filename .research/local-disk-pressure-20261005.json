@@ -81,5 +81,14 @@
     "system_free_after_mib": 286,
     "result": "Fresh Astra diagnostic agent started; Store UI access and authenticated refresh recovered",
     "limits": "Local20GiB test floor still fails; browser runtime cache had active processes and was untouched; no personal data or profile deletion; no schedule or threshold changed"
+  },
+  "npm_metadata_cache_cleanup": {
+    "observed_at": "2026-10-05T03:34Z approximate",
+    "trigger": "CUA app-server exited; internal df115MiB available",
+    "action": "npm cache clean --force with external TMPDIR/logs; installed packages untouched",
+    "before_cache_size": "1.3GiB ~/.npm/_cacache",
+    "after_cache_exists": false,
+    "after_df": "120MiB immediately; no material free-space recovery established",
+    "limits": "No personal caches/profile/application data removed; still below20GiB local-heavy-test floor."
   }
 }
