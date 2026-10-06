@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "450fdaac",
+  "scope": "Independent source-only review of .research/capture-controls-reconcile-20261006.json; no product, inventory, database, browser, build, or runtime changes.",
+  "verdict_a_spec_source_completeness": {
+    "status": "partial",
+    "reason": "C08 and C10 are absent from the current Tasks implementation, and the cited history does not show that either control was removed. Keeping their IDs unlinked and runtime-unverified is justified. Calling them historically unsupported or not applicable is premature: the initial 2026-09-25 inventory affirmatively lists both, while the available source does not establish the owner's intent before that snapshot. Preserve them as unresolved inventory-versus-source gaps until that intent is established. Fixture prerequisites are useful source constraints, not runtime readiness or proof that fixtures exist."
+  },
+  "verdict_b_quality_evidence": {
+    "status": "fail",
+    "reason": "The report's retry fixture and cleanup assertions adopt the client comment that Retry reappears after queue refresh, but the backend code currently excludes the pending status that Retry writes. The minimum fixture count is an assumption for disjoint rows, not a sufficient runnable fixture plan. No live behavior or role access was checked."
+  },
+  "findings": [
+    {
+      "severity": "Important",
+      "location": ".research/capture-controls-reconcile-20261006.json:t01_fixture_prerequisites.queue_row_contract/cleanup",
+      "finding": "Retry does not immediately reappear in the extension queue on the inspected backend path. apply_user_verdict maps retry to pending and returns a derived next_level; get_extension_scrape_queue includes ordinary rows only with scrape_status thin/failed and server_gave_up. A subsequent server attempt may change state, but neither the verdict endpoint nor queue refresh does so in the inspected path.",
+      "evidence": [
+        "/Volumes/Samsung2TB/code/aidream/research/multisource.py:154-167,281-327,627-692",
+        "/Volumes/Samsung2TB/code/aidream/aidream/api/routers/research.py:2194-2205",
+        "src/features/tasks/TasksView.tsx:582-605",
+        "docs/stabilization/inventory.json:28682-28683,28703"
+      ],
+      "action": "Describe Retry as setting pending and disappearing from the current queue pending another server attempt, unless a real runtime run proves a different orchestration path. Correct the T01 expected result and do not count a queue refresh alone as a requeue pass."
+    },
+    {
+      "severity": "Important",
+      "location": ".research/capture-controls-reconcile-20261006.json:controls[0-1].proposed_disposition",
+      "finding": "Current absence plus no discovered removal does not establish that two explicitly inventoried controls were never required. Treating C08/C10 as not applicable could hide unmet requirements from the exhaustive inventory, even with IDs retained.",
+      "evidence": [
+        "docs/stabilization/inventory.json:28459-28490,28775-28788",
+        "git show 76ba1292:docs/stabilization/inventory.json (C08/C10 already present 2026-09-25)",
+        "src/features/tasks/TasksView.tsx:806-840,1339-1428",
+        "src/features/tasks/QueueToolbar.tsx:97-107,217-225",
+        "git blame src/features/tasks/TasksView.tsx:1339-1428 (PasteRow introduced 2026-04-30 without Cancel)"
+      ],
+      "action": "Retain both IDs unlinked and uncovered, with source-absent and owner-intent-unresolved status. Classify them as unsupported historical entries only after finding an owner ruling or another authoritative requirement record that rejects those controls."
+    },
+    {
+      "severity": "Minor",
+      "location": ".research/capture-controls-reconcile-20261006.json:t01_fixture_prerequisites.minimum_disjoint_fixture_set",
+      "finding": "Fifteen is a disjoint row count for enumerated branches, but count alone does not guarantee two accessible topics, role-specific visibility, required history, compatible domain policies, or a natural thin response. The report largely states these qualifications elsewhere; the number should not become a readiness gate.",
+      "evidence": [
+        "docs/stabilization/inventory.json:28666-28683",
+        "/Volumes/Samsung2TB/code/aidream/research/multisource.py:197-230,281-327"
+      ],
+      "action": "Keep 15 labeled as a planning lower bound and require per-row fixture identifiers, bucket and topic membership, access by role, reset owner, and observed branch preconditions before executing T01."
+    }
+  ],
+  "confirmed_source_observations": [
+    "C08: TasksView derives Run's level from the server bucket; QueueToolbar's capture-level controls group/filter rows, and the documented ladder derives next_level from attempt history.",
+    "C10: PasteRow has a textarea and Submit paste, with no open/close state or Cancel control; not submitting is a no-submit observation, not coverage of a cancel action.",
+    "The backend distinguishes ordinary thin/failed server-gave-up rows from parked gated_login/low_value rows; parked items are put in separate buckets and assigned next_level 3.",
+    "Successful paste and terminal verdicts leave the queue; safe test execution needs disposable rows and a named restoration owner."
+  ],
+  "unresolved_intent": "Whether Arman wanted a per-source capture-level picker and a paste-editor Cancel control before the initial stabilization inventory is not answered by current code, feature-test documentation, or inspected history.",
+  "verification_limits": "Source and commit-history inspection only. No runtime, fixture provisioning, member/admin access, role/organization behavior, natural thin response, tests, or deployment verification."
+}
