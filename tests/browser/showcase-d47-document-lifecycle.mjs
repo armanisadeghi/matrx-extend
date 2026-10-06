@@ -46,6 +46,7 @@ let probeWorker;
 let probeInstalled = false;
 let activePanel;
 let saveObservation = null;
+let patternsObservation = null;
 const stage = (value) => {
   report.stage = value;
 };
@@ -118,6 +119,32 @@ async function readSaveObservation(panel, recipe) {
           /organization|organisation/i.test(error) ? 'organization' :
           /append|row/i.test(error) ? 'append' :
           /save pattern|failed to save/i.test(error) ? 'save' : 'other'
+      };
+    })()`,
+  );
+}
+async function readPatternsObservation(panel, recipe, host) {
+  return evaluate(
+    panel,
+    `(() => {
+      const tab = [...document.querySelectorAll('[role="tablist"] [role="tab"]')]
+        .find(el => el.textContent.trim() === 'Patterns');
+      const pane = tab ? document.getElementById(tab.getAttribute('aria-controls') ?? '') : null;
+      const active = tab?.getAttribute('data-state') === 'active' &&
+        pane?.getAttribute('data-state') === 'active';
+      const names = [...(active ? pane.querySelectorAll('span.truncate.text-sm.font-medium') : [])];
+      const error = active ? pane.querySelector('.text-destructive')?.textContent.trim() ?? '' : '';
+      return {
+        active: Boolean(active),
+        host_matches: active ? pane.textContent.includes('All saved patterns for ' + ${JSON.stringify(host)}) : null,
+        exact_row_visible: names.some(name => name.textContent.trim() === ${JSON.stringify(recipe)}),
+        row_count: names.length,
+        loading: active ? Boolean(pane.querySelector('button[title="Refresh"] .animate-spin')) : null,
+        empty_state: active ? pane.textContent.includes('No saved patterns for this host yet.') : null,
+        error_present: Boolean(error),
+        error_kind: !error ? null :
+          /could not load saved patterns/i.test(error) ? 'load' :
+          /database|permission|unauthorized|not authenticated/i.test(error) ? 'database_or_auth' : 'other'
       };
     })()`,
   );
@@ -406,11 +433,28 @@ try {
       );
       saveObservation.terminal = saveState.saved_summary_visible ? 'summary' : 'popover_closed';
       stage('verify_persisted_recipe');
+      await waitFor(
+        'save_popover_closed',
+        () => readSaveObservation(panel, recipe),
+        (state) => state?.popover_visible === false,
+      );
       await trustedPanelClick(panel, '[role="tablist"] [role="tab"]', 'Patterns');
+      const fixtureHost = new URL(origin).host;
+      await waitFor(
+        'patterns_active',
+        async () => {
+          patternsObservation = await readPatternsObservation(panel, recipe, fixtureHost);
+          return patternsObservation;
+        },
+        (state) => state?.active === true,
+      );
       await waitFor(
         'saved_recipe_visible',
-        () => panelText(panel),
-        (value) => value?.includes(recipe),
+        async () => {
+          patternsObservation = await readPatternsObservation(panel, recipe, fixtureHost);
+          return patternsObservation;
+        },
+        (state) => state?.exact_row_visible === true && state?.host_matches === true,
       );
       stage('arm_old_document');
       await control(origin, 'arm');
@@ -537,6 +581,7 @@ try {
     saved_result: report.saved_result,
     trace_assessment: report.trace_assessment ?? null,
     save_observation: saveObservation,
+    patterns_observation: patternsObservation,
     native_stage: report.native_stage ?? null,
     auth_stage: report.auth_stage ?? null,
   };

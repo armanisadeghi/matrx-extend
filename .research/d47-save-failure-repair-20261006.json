@@ -3,7 +3,7 @@
   "case_id": "EXT-F-1012-T57",
   "defect_id": "EXT-D-0047",
   "run_id": 37526204746,
-  "status": "driver_name_entry_repaired_native_retest_required",
+  "status": "save_persisted_list_boundary_unverified",
   "artifact": {
     "source_sha": "b6ec3615f0e0f917fb787a8ce82849a682017550",
     "artifact_id": 11440764124,
@@ -34,13 +34,33 @@
     "save_click_executed": false,
     "native_resource_verdict": "admitted_child_failed_resource_valid"
   },
-  "determination": "The first receipt cannot distinguish a rejected, pending, successful-but-missed, or interrupted save. The second run proves a driver failure before Save: the open form had an enabled button but the entered name did not equal the generated recipe. Source shows NetworkTab supplies a nonempty default name. The driver clicked the input with a one-shot point and sent Meta+A without the explicit selectAll command or virtual key code used by the established input helpers; the second receipt does not isolate focus versus selection versus React update as the failed substep. No product D47 pass or failure follows from either run.",
-  "change": "The driver uses the shared hit-tested pointer helper to focus the save-name input, records and requires observed focus, sends the established platform-specific selectAll key sequence with virtual key code and explicit command, inserts text through CDP, and waits for the exact generated name before Save. It retains the pre-click name assertion and bounded safe save observation. A success banner or popover close only prompts a durable Patterns row check; replay clicks Run pattern within that exact row.",
+  "third_run_evidence": {
+    "run_id": 37532036039,
+    "receipt": ".research/d47-input-native-20261006/37532036039/receipt.json",
+    "failure_stage": "verify_persisted_recipe",
+    "before_click_name_matches": true,
+    "save_button_enabled": true,
+    "success_summary_visible": true,
+    "exact_pattern_row_observed": false,
+    "native_resource_verdict": "admitted_child_failed_resource_valid",
+    "narrow_live_database_read": {
+      "project": "brsgrqvjdzwihsvnfqkf",
+      "time_window_utc": "2026-10-06T21:17:30Z/2026-10-06T21:18:05Z",
+      "matching_campaign_rows": 1,
+      "saved_at_utc": "2026-10-06T21:17:53.82677Z",
+      "domain": "127.0.0.1:49184",
+      "name_matches_generated_shape": true,
+      "kind_network_capture": true,
+      "created_by_present": true
+    }
+  },
+  "determination": "Run 37532036039 proves exact-name input and Save success UI. A narrow read-only query found one campaign-owned network pattern persisted at the same run time with the generated-name shape. Thus persistence succeeded, while the side-panel read-after-write observation failed. The receipt has no active Patterns-tab, host, loading, row-count, or error state, so it cannot distinguish a missed tab switch, a pending/failed list fetch, a domain mismatch, or an unreadable row. Source shows the driver clicked Patterns immediately while SaveAsPattern's success popover remains open for 1200 ms, and it waited on whole-document text without confirming tab activation. This is a proven observability gap, not proof that the popover caused the miss. D47 replay and lifecycle remain unverified.",
+  "change": "The driver already uses a hit-tested click and explicit selectAll to enter the exact save name, then scopes replay to its row. It now waits for the Save popover to close before switching tabs, requires the Patterns tab and pane to become active, and waits for the exact named row on the expected fixture host. During the live wait it retains only bounded tab, host-match, loading, row-count, empty-state, and categorized-error facts for the failure receipt; it does not log names or raw errors.",
   "verification": {
-    "syntax": "node --check passed for the D47 driver and shared panel helper after name-entry repair",
-    "format_and_lint": "targeted Biome check passed for the D47 driver, shared panel helper, and report after name-entry repair",
+    "syntax": "node --check tests/browser/showcase-d47-document-lifecycle.mjs passed after list-boundary change",
+    "format_and_lint": "targeted Biome check passed for D47 driver and report after list-boundary change",
     "compile": "d47-save-diagnostic-20261006: resource admitted and valid; pnpm compile passed before final JavaScript-only oracle change",
     "native": "not_run_in_this_lane"
   },
-  "next_action": "After independent source review, run the exact D47 hosted native case once with frozen product artifact 11440764124 (v0.2.325) and current driver workflow. Confirm focused input, exact name, persisted pattern, replay and lifecycle trace. No product edit is justified by these receipts."
+  "next_action": "After independent source review, run the exact D47 hosted native case once with frozen product artifact 11440764124 (v0.2.325) and current driver workflow. Read diagnostics.patterns_observation if the row is still absent and repair the proved UI/list boundary. No product edit is justified by the current receipt alone."
 }
