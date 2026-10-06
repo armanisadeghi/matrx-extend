@@ -13,6 +13,7 @@ import {
   selectOrImportNativeTarget,
   verifyImportedNativeEvidence,
 } from './current-test-artifact.mjs';
+import { lockedHostedTypeScript } from './hosted-driver-dependencies.mjs';
 import {
   hostedProfileRoute,
   requireHostedAcceptanceCredential,
@@ -374,6 +375,9 @@ async function run(prepared, artifactMode) {
     ...process.env,
     // Acceptance must consume the same runtime this wrapper just verified.
     MATRX_PLAYWRIGHT_MODULE: join(packageDir, 'index.mjs'),
+    ...(acceptanceCase === 'showcase-d47-admin'
+      ? { MATRX_TYPESCRIPT_MODULE: hostedTypeScriptPath }
+      : {}),
     MATRX_GUEST_CHAT_EXTENSION_DIR: extensionDir,
     MATRX_SCRAPE_EXTENSION_DIR: extensionDir,
     MATRX_SCRAPE_RECEIPT: relocatedReceipt,
@@ -535,6 +539,9 @@ const runtimeDir = resolve(process.env.MATRX_HOSTED_BROWSER_RUNTIME_DIR ?? '');
 assert.ok(process.env.MATRX_HOSTED_BROWSER_RUNTIME_DIR && process.env.PLAYWRIGHT_BROWSERS_PATH);
 const packageDir = join(runtimeDir, 'node_modules/playwright-core');
 if (phase === 'package') {
+  const packages = ['playwright-core@1.56.1'];
+  if (process.env.MATRX_HOSTED_ACCEPTANCE_CASE === 'showcase-d47-admin')
+    packages.push(await lockedHostedTypeScript(repo));
   const installed = await ownedProcess('npm', [
     'install',
     '--prefix',
@@ -543,13 +550,41 @@ if (phase === 'package') {
     '--ignore-scripts',
     '--no-audit',
     '--no-fund',
-    'playwright-core@1.56.1',
+    ...packages,
   ]);
   assert.equal(installed.code, 0, 'pinned Playwright core install failed');
 }
 const runtimePackage = JSON.parse(await readFile(join(packageDir, 'package.json'), 'utf8'));
 assert.equal(runtimePackage.version, '1.56.1', 'runtime version mismatch');
+const hostedTypeScriptPath = join(runtimeDir, 'node_modules/typescript/lib/typescript.js');
+if (process.env.MATRX_HOSTED_ACCEPTANCE_CASE === 'showcase-d47-admin') {
+  const expected = await lockedHostedTypeScript(repo);
+  const installed = JSON.parse(
+    await readFile(join(runtimeDir, 'node_modules/typescript/package.json'), 'utf8'),
+  );
+  assert.equal(
+    `typescript@npm:${installed.name}@${installed.version}`,
+    expected,
+    'hosted_typescript_version_mismatch',
+  );
+  await access(hostedTypeScriptPath);
+}
 if (phase === 'package') {
+  if (process.env.MATRX_HOSTED_ACCEPTANCE_CASE === 'showcase-d47-admin') {
+    const checked = await ownedProcess(
+      process.execPath,
+      [join(repo, 'tests/browser/showcase-d47-document-lifecycle.mjs')],
+      {
+        cwd: repo,
+        env: {
+          ...process.env,
+          MATRX_TYPESCRIPT_MODULE: hostedTypeScriptPath,
+          MATRX_D47_IMPORT_PREFLIGHT: '1',
+        },
+      },
+    );
+    assert.equal(checked.code, 0, 'hosted_d47_driver_import_failed');
+  }
   console.log('HOSTED_PACKAGE_READY', runtimePackage.version);
   process.exit(0);
 }

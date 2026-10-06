@@ -1,13 +1,13 @@
 # Stabilization checklist
 
-Generated 2026-10-06 22:09 UTC from inventory.json, defect records, and the current coverage audit. Inventory updated 2026-10-06T21:17:01.793354+00:00.
+Generated 2026-10-06 23:47 UTC from inventory.json, defect records, and the current coverage audit. Inventory updated 2026-10-06T23:47:41.410701+00:00.
 
 ## Current truth
 
 - Scope: 205 feature records, 767 cases, 1349 controls, 1224 applicable case-role slots.
 - Case results: pass 85, partial 78, fail 2, unverified 1058, n/a 1; 134 explicitly unverified and 924 with no result record. Missing results count as unverified, including later-wave surfaces.
 - Fully verified feature-role pairs: 0/396 under the rule that every applicable case passes and every control maps to a case.
-- Procedure gaps: 91 missing steps; 91 missing expected outcomes; 27 missing control links.
+- Procedure gaps: 82 missing steps; 82 missing expected outcomes; 27 missing control links.
 - Defect states: closed 91, retest-pass 6, fixed 40, in-fix 6, open 1. A fixed or closed defect is not a feature-level UI pass.
 
 ## Current-build evidence
@@ -19,13 +19,13 @@ Generated 2026-10-06 22:09 UTC from inventory.json, defect records, and the curr
 
 ## Inventory freshness review
 
-Since inventory source `528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b`, **285 `src/` paths changed** through `ed2790d953196f472bd39cb27785ad45a63a68fe`. A direct path-anchor comparison matched 34 and left 251 without an exact inventory anchor.
+Since inventory source `528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b`, **285 `src/` paths changed** through `d33b0cc2409b3850821a3c94713b6542a5b11c7e`. A direct path-anchor comparison matched 34 and left 251 without an exact inventory anchor.
 A direct anchor miss is only a census-review hint. Feature inventory anchors are not an exhaustive dependency graph, so it does not prove an omitted feature or behavior.
 
 ## Next test priorities
 
 - **Coverage model / all contained surfaces** — 0 of 396 applicable feature-role pairs meet the full-verification rule. The inventory records 85 pass, 134 explicit unverified, 78 partial, 2 fail, 1 not applicable, and 924 slots with no result. A pass retains its original build boundary. Next: Continue recording bounded runs by exact build and role; do not infer whole-feature health from a repaired defect or scoped pass.
-- **Executable test procedures** — 91 cases lack steps, 91 lack expected outcomes, and 27 lack control links. The registered-executor surface has 173 cases; its live catalog parity does not prove runtime behavior. Next: Design each missing case from the live advertised tool contract and safe real fixtures before execution.
+- **Executable test procedures** — 82 cases lack steps, 82 lack expected outcomes, and 27 lack control links. The registered-executor surface has 173 cases; its live catalog parity does not prove runtime behavior. Next: Design each missing case from the live advertised tool contract and safe real fixtures before execution.
 - **Current install and native breadth** — Strict exact 0.2.176 release gates passed and the frozen published artifact has bounded native guest acceptance. The separate 0.2.177 development artifact is provenance-verified, with native acceptance not run. Guest Chat grounding/reload, signed-in non-admin Chat, admin Files error/Retry and admin Saved captures selection race have narrow native passes. Personal Chrome reload, broad guest/member/admin sidepanel/content-script/service-worker/offscreen coverage and signout privacy remain unverified. Next: Bind native runs to current artifact receipt, real user surface and persona; preserve admission guard.
 - **Notes, Files, Saved captures** — Notes D61/D62/D63/D67/D68 have scoped exact139 admin native verification; feature/member breadth remains open. On exact173, D64 Files admin read-error/Retry passed for Library and Screenshots, and D65 Saved captures admin last-click race passed for late success and late failure. Member behavior, full search/pagination/edit/delete controls and full feature cases remain unverified. Next: Run the remaining current-build member and admin controls; do not count the exact-ID backend test-fixture cleanup as Saved captures UI deletion coverage.
 - **Showcase / data / document identity** — Showcase has 59 cases: admin 1 pass, 26 partial, 3 unverified, 28 no-result; D54 is fixed with partial native dimensions, while D42/D47/D58/D59 remain among the active in-fix defect records, with build/native or shared document-identity consumer gaps documented. Next: Resume from their latest defect reports/checkpoint; avoid using historical artifact a8670bf7 as proof for newer corrections.

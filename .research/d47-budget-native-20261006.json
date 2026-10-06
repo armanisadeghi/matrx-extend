@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "lane": "one guarded hosted native retest after reviewed terminal-budget driver repair",
+  "status": "unverified",
+  "run_id": 37546403812,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37546403812",
+  "workflow_head_sha": "1858170dc02daedf4297c1a20a3257cd11a742c8",
+  "workflow_head_delta_from_artifact_source": {
+    "artifact_source_sha": "fa2720fcf21ba5476e81d13f3b4454020bb3bf54",
+    "allowed_workflow_driver_sha": "2728cabf423bf1147c0bd34761df1cda883aa434",
+    "driver_repair_in_workflow_checkout": true,
+    "workflow_head_docs_only_after_driver_repair": true,
+    "product_sources_match_artifact": true,
+    "lockfile_matches_artifact": true,
+    "current_lockfile_sha256": "fa5fb0b1997dc8fc8e0a09060b18337ad50a065ea09bd06b0f3a0a122cf48d04"
+  },
+  "conclusion": "failure",
+  "failed_step": "Exercise the selected Chrome side-panel case",
+  "failure_boundary": {
+    "stage": "driver_module_load",
+    "code": "ERR_MODULE_NOT_FOUND_typescript",
+    "classification": "The hosted acceptance entrypoint failed importing typescript from tests/browser/showcase-d47-terminal-budget.mjs before the D47 browser driver or replay path initialized. This is a test-runner setup failure; no product behavior was observed."
+  },
+  "source_and_artifact": {
+    "product_fix_ancestors": [
+      "86046a88b37f155fa38e69ed5fb239c74a8d4101",
+      "f0d9040159be0f607aa7a0808107aee25c566bd7",
+      "c12a0e9f4c970375465e905f7f760e4ce8ab56eb"
+    ],
+    "ci_run_id": 37545299309,
+    "ci_conclusion": "success",
+    "ci_head_sha": "fa2720fcf21ba5476e81d13f3b4454020bb3bf54",
+    "artifact_id": 11449894309,
+    "artifact_name": "matrx-extend-development-test-fa2720fcf21ba5476e81d13f3b4454020bb3bf54-37545299309-1",
+    "artifact_digest": "sha256:d2698dbac49a82dbc7b940dfee02e8dce3efe0f9adfa48861b371b5a0e8494ac",
+    "artifact_version": "0.2.332",
+    "tree_sha256": "d10fad71bbc3b1501d2027596b87754cf2f19350586c32f3636dba37da5c67b3",
+    "ci_receipt_sha256": "e526d512ca2e5d9594b35305d2b49e46b97b702906f46576dc42fab11f71f7c5",
+    "provenance_sha256": "ad2f9861667681e82419df4240d1098557a1061ba56d226bb253117070c38d2b",
+    "artifact_import_verdict": "exact_pushed_commit_only",
+    "lockfile_sha256": "fa5fb0b1997dc8fc8e0a09060b18337ad50a065ea09bd06b0f3a0a122cf48d04",
+    "lockfile_matches_current_main": true,
+    "eligible_store": false
+  },
+  "native_observation": {
+    "case_driver_initialized": false,
+    "browser_acceptance_started": false,
+    "authentication_flow_observed": false,
+    "recipe_saved": null,
+    "trusted_run_input": null,
+    "fixture_packet_observed": false,
+    "event_order_temporally_anchored_to_run": null,
+    "elapsed_terminal_samples": [],
+    "saved_terminal_result": null,
+    "verdicts": {
+      "current_saved_replay": "unverified",
+      "delayed_old_binding": "unverified",
+      "cancellation": "unverified"
+    },
+    "screenshots": {
+      "produced": false,
+      "privacy_review": "not_applicable; failure occurred before the D47 browser driver initialized"
+    }
+  },
+  "run_timing": {
+    "workflow_started_at": "2026-10-06T23:24:50Z",
+    "workflow_completed_at": "2026-10-06T23:31:02Z",
+    "workflow_elapsed_seconds": 372,
+    "acceptance_step_started_at": "2026-10-06T23:29:32Z",
+    "failure_observed_at": "2026-10-06T23:30:47Z",
+    "acceptance_step_elapsed_seconds": 75,
+    "terminal_wait_started": false,
+    "terminal_budget_elapsed_samples_available": false
+  },
+  "resource_verdict": {
+    "local_admission": "not_run; no local heavy/browser job was launched",
+    "hosted_remote_guards": {
+      "single_hosted_acceptance_run": true,
+      "workflow_concurrency_group": "hosted-guest-side-panel",
+      "phases": {
+        "package": {
+          "run_id": "hosted-package-37546403812-1",
+          "decision": "valid",
+          "admitted": true,
+          "resource_invalid": false,
+          "exit_code": 0,
+          "available_memory_gib": 6.02,
+          "required_memory_gib": 4,
+          "one_minute_load": 13.8,
+          "logical_cpus": 3,
+          "journal": ".research/d47-budget-native-20261006/37546403812/resource-journals/hosted-package-37546403812-1.jsonl",
+          "journal_sha256": "b3e5c88ee267c2b058daf6e80e86a43492f4e7a725081987adbd6dd98d0c8199"
+        },
+        "browser": {
+          "run_id": "hosted-browser-37546403812-1",
+          "decision": "valid",
+          "admitted": true,
+          "resource_invalid": false,
+          "exit_code": 0,
+          "available_memory_gib": 5.95,
+          "required_memory_gib": 4,
+          "one_minute_load": 3.53,
+          "logical_cpus": 3,
+          "journal": ".research/d47-budget-native-20261006/37546403812/resource-journals/hosted-browser-37546403812-1.jsonl",
+          "journal_sha256": "fe7f0f16763945c1123d133598cfd49508dddc4fe057589122fdf69130022136"
+        },
+        "acceptance": {
+          "run_id": "hosted-guest-37546403812-1",
+          "decision": "child_failed",
+          "admitted": true,
+          "resource_invalid": false,
+          "exit_code": 1,
+          "available_memory_gib_at_admission": 5.88,
+          "required_memory_gib": 4,
+          "one_minute_load": 1.49,
+          "logical_cpus": 3,
+          "journal": ".research/d47-budget-native-20261006/37546403812/resource-journals/hosted-guest-37546403812-1.jsonl",
+          "journal_sha256": "7d11a6b8ad87621165835080826e5a5ba5d111b7e444fcce0511634e79ab6b58"
+        }
+      }
+    }
+  },
+  "temporary_secrets": {
+    "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON": {
+      "staged": true,
+      "deleted_at_terminal": true,
+      "absence_verified": true
+    },
+    "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON": {
+      "staged": true,
+      "deleted_at_terminal": true,
+      "absence_verified": true
+    },
+    "secret_values_recorded": false
+  },
+  "artifact": {
+    "id": 11451350250,
+    "name": "hosted-guest-37546403812-1",
+    "digest": "sha256:066638f4ba35604173a9463bfded539a0759cb4a05d06691f435a06aeb77f0f6",
+    "size_bytes": 4704,
+    "contents": [
+      "three resource journals for run 37546403812",
+      "no D47 result JSON",
+      "no screenshots"
+    ],
+    "stale_journals_excluded": [
+      "hosted-package-37105304739-1.jsonl",
+      "hosted-browser-37105304739-1.jsonl",
+      "hosted-guest-37105304739-1.jsonl"
+    ]
+  },
+  "failure_evidence": {
+    "sanitized_observation": ".research/d47-budget-native-20261006/37546403812/driver-failure.json",
+    "screenshots_or_native_receipt": "not produced"
+  },
+  "evidence_hashes": {
+    "37546403812/driver-failure.json": "b297f768987f4bafdf7bc545d68f465e76a7eca809b451e38db3fd2afa5d8a03",
+    "resource-journals/hosted-package-37546403812-1.jsonl": "b3e5c88ee267c2b058daf6e80e86a43492f4e7a725081987adbd6dd98d0c8199",
+    "resource-journals/hosted-browser-37546403812-1.jsonl": "fe7f0f16763945c1123d133598cfd49508dddc4fe057589122fdf69130022136",
+    "resource-journals/hosted-guest-37546403812-1.jsonl": "7d11a6b8ad87621165835080826e5a5ba5d111b7e444fcce0511634e79ab6b58"
+  },
+  "next_action": "No retry in this lane. Fix hosted D47 driver dependency resolution and obtain a fresh authorized native admission in a separate reviewed task. Preserve D47/T57 as unverified; no product acceptance or defect closure is supported by this run."
+}

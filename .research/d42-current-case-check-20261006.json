@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0042",
+  "status": "source_ready_native_unverified",
+  "scope": "Read-only source readiness for one contained current native A-to-B EXIT case; no browser, test, service, build, or release was run.",
+  "candidate": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "runner_label": "macos-15",
+    "acceptance_case": "showcase-stale-admin",
+    "development_run_id": "37545299309",
+    "development_artifact_id": "11449894309",
+    "release_run_id": "",
+    "published_store_crx": false,
+    "source_sha": "fa2720fcf21ba5476e81d13f3b4454020bb3bf54",
+    "version": "0.2.332",
+    "tree_sha256": "d10fad71bbc3b1501d2027596b87754cf2f19350586c32f3636dba37da5c67b3",
+    "eligibility": "Recorded successful main-push CI development artifact, not Store eligible. The workflow requires the exact run and artifact IDs; the importer must verify GitHub metadata, source/receipt/tree, manifest version and development extension identity at execution. This inspection did not requery GitHub or reimport the artifact.",
+    "sources": [
+      ".research/d47-budget-native-20261006.json",
+      "docs/stabilization/COORDINATOR.md",
+      "scripts/current-test-artifact.mjs",
+      "scripts/hosted-showcase-route.mjs"
+    ]
+  },
+  "entrypoint": "workflow_dispatch hosted-guest-acceptance.yml with the inputs above; hosted route runs tests/browser/showcase-picker-native-acceptance.mjs with MATRX_SHOWCASE_STALE_BOUNDARY=1",
+  "driver_readiness": {
+    "verdict": "source_runnable_no_demonstrated_selector_or_test_boundary_obstruction",
+    "source_comparison": "git diff --name-only fa2720fc..HEAD shows no change to D42 picker product files, the D42 acceptance driver or its helpers; artifact package.json says 0.2.332. This is source comparison, not current native proof.",
+    "selector_check": "The current ListPatternTab renders Pick an example item, Picking on page…, Cancel, one selected field, Pick more fields and Extract. list-picker.ts creates data-scope-choice, .badge with N items, .picked-item, and #done/#cancel; the driver uses those selectors and the reviewed reachable card/field click helper. The prior D143 frozen 0.2.307 run passed all seven checkpoints with this driver lineage.",
+    "sources": [
+      "src/features/showcase/tabs/ListPatternTab.tsx",
+      "src/lib/data-pattern/list-picker.ts",
+      "tests/browser/showcase-picker-native-acceptance.mjs",
+      "tests/browser/showcase-completion-diagnostic.mjs",
+      "tests/browser/showcase-card-driver.mjs",
+      "docs/stabilization/defects/EXT-D-0143.json"
+    ]
+  },
+  "contained_native_assertions": [
+    "On an owned /events fixture with three event cards, sign in as real admin and select the approved device organization; guest Showcase absence is also checked.",
+    "Start A, intercept the genuine overlay EXIT in the extension isolated world before Chrome delivery, cancel A in the side panel, then start B on the same page and require one overlay and B picking state.",
+    "Release A's captured EXIT through the original chrome.runtime.sendMessage; require a service-worker-stamped relay with A session/tab/document identity and require B still picking with one overlay.",
+    "Click a reachable B card, choose the three-card scope if offered, require a distinct B detection session and stamped relay on the same tab/document as A.",
+    "Click B's title field, Done, and Extract; require one selected field, three rows and all three fixture titles. Repick, cancel via overlay, then require an ordinary page click count of one."
+  ],
+  "coverage_limits": [
+    "The current contained case holds and releases only A EXIT. The original D42 reproduction separately requires held A ITEM_DETECTED and RESULT after B starts; neither is covered.",
+    "B RESULT is checked through builder and extracted rows, and the diagnostic samples raw/stamped relay state, but the pass path does not explicitly assert the B RESULT relay session/tab/document identity.",
+    "Deferred A cancellation injection after B starts and deferred installation across replacement are not exercised.",
+    "Repick Cancel and ordinary clicking do not inject a second content context or count detection listeners; reinjection cleanup remains unverified.",
+    "The guest gate is checked, but nonadmin signed-in role gating is not exercised.",
+    "The frozen 0.2.307 D143 pass supports its own artifact only; no current 0.2.332 native D42 pass is claimed."
+  ],
+  "sources": [
+    "docs/stabilization/defects/EXT-D-0042.json",
+    "docs/stabilization/defects/EXT-D-0143.json",
+    ".research/showcase-repick-native-final.json",
+    "tests/browser/showcase-picker-native-acceptance.mjs",
+    "tests/browser/showcase-stale-runtime-boundary.mjs",
+    ".github/workflows/hosted-guest-acceptance.yml"
+  ]
+}

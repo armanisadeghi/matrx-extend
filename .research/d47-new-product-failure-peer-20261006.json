@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "review_kind": "independent read-only review of guarded native run 37544119052",
+  "status": "DONE_WITH_CONCERNS",
+  "artifact": {
+    "source_sha": "bb62b2dfafad160de32ced456f86bf5b7ea9e216",
+    "version": "0.2.332",
+    "run_id": 37544119052,
+    "receipt": ".research/d47-new-product-native-20261006/37544119052/receipt.json",
+    "summary": ".research/d47-new-product-native-20261006.json",
+    "prior_reports": [
+      ".research/d47-terminal-diagnosis-20261006.json",
+      ".research/d47-owned-reload-fix-20261006.json"
+    ]
+  },
+  "verdict_A_actual_acceptance": {
+    "native_case": "FAIL: the exact saved current result was not observed within the driver's deadline, so D47/T57 is not accepted or closed",
+    "underlying_product_behavior": "UNVERIFIED: this receipt cannot distinguish a late successful result from capture/core/port failure or UI rejection",
+    "observed_positive_controls": [
+      "The saved summary and exact saved row appeared before the trusted Run click; the click hit its intended control.",
+      "The fixture recorded two page loads and target requests, current HTTP 200 response sent, and the held old response finishing after release.",
+      "The new main-frame execution context differed from the old context; the passive observer saw a new binding handshake and one current payload packet in that context."
+    ],
+    "not_proved": [
+      "The passive binding event is not proof the core emitted the event after commit, matched the saved pattern, parsed rows, or completed cleanup.",
+      "Neither worker result/error nor saved-operation port delivery nor React state transition is in the receipt.",
+      "The visible saved row before Run is not a post-run result, and the after-run Patterns pane was loading with zero rows. Independent database persistence was not observed.",
+      "The old response finished on the server; this does not prove its old binding was suppressed by the capture core or that cancellation passed."
+    ]
+  },
+  "verdict_B_evidence_and_quality": {
+    "rating": "PARTIAL",
+    "strengths": "Artifact identity, resource admission, trusted click, fixture lifecycle, and current-context binding provenance are recorded; the resource guards were valid.",
+    "gaps": [
+      "The driver asserts panel text before reading the passive trace; at this failure it retained only a sanitized code, not the last polled text, event timestamps, worker port terminal, or live pageKey/run sequence.",
+      "The failure-path worker probe and panel re-read were unavailable, and probe cleanup reported remove_failed.",
+      "The pre-click saved UI has no independent database persistence proof.",
+      "The tested 0.2.332 artifact predates a later lockfile-only main change, so this is evidence for the identified artifact, not every later checkout."
+    ],
+    "quality_inference": "Source-level and unit-test repair evidence is meaningful, but it cannot convert this failed native result into acceptance. The failure also cannot by itself refute the owned-reload UI fix."
+  },
+  "earliest_missing_observable_boundary": {
+    "known": "A current response packet reached Chrome's Runtime.bindingCalled observer in the new context.",
+    "first_unobserved": "Whether document-network-capture.ts accepted and emitted that packet after its frame-commit and identity gates to runNetworkCapturePattern.consumeEvent.",
+    "downstream_unobserved": "Matched event and timer expiry, close/cleanup document ID, worker data_patterns result/error, saved-operation port send/receive/disconnect, and panel isCurrent/result visibility.",
+    "temporal_limit": "The recorded binding order is local to the passive probe; no timestamp anchors packet, capture arm/window expiry, port result, and UI wait deadline to the trusted Run click."
+  },
+  "ranked_falsifiable_hypotheses": [
+    {
+      "rank": 1,
+      "hypothesis": "The acceptance driver times out before the intentionally bounded capture can settle.",
+      "basis": "settings-panel-driver waitFor defaults to 10000 ms; the saved-result call uses that default. runNetworkCapturePattern defaults its matching window to 20000 ms after onArmed and does not conclude a successful match until that window ends and close completes. The receipt lacks timing anchors to establish overlap.",
+      "prediction": "With timestamped observation, the driver deadline occurs before capture window expiry or close/port terminal; a valid current-row result arrives later without a product change.",
+      "falsifier": "The capture window and worker/port terminal finish before the driver's deadline, yet the exact panel result is absent."
+    },
+    {
+      "rank": 2,
+      "hypothesis": "The packet reaches the passive observer but fails a core commit, identity, matcher, or cleanup gate.",
+      "basis": "The observer sees raw binding traffic; the receipt has no core consumeEvent, matched identity, cleanup ID, or terminal result.",
+      "prediction": "Core telemetry shows no accepted matched event, or a specific close/identity failure; worker returns a retryable error or remains unsettled even after the capture window.",
+      "falsifier": "Core emits and matches the current event, closes with a verified replay document ID, and worker returns the current row."
+    },
+    {
+      "rank": 3,
+      "hypothesis": "A current worker result reaches the panel but the repaired UI drops or hides it during page identity/list refresh state changes.",
+      "basis": "The earlier source had an owned-reload invalidation bug and the new UI uses run sequence, replay document, and resultPageKey guards; none of these transitions were observed live. The pane was loading at failure.",
+      "prediction": "The worker and port deliver a current row before the deadline, but panel provenance or visibility state rejects it; panel never shows the exact Last run and row.",
+      "falsifier": "No current worker/port result reaches the panel, or the panel displays the exact result after a later settle."
+    },
+    {
+      "rank": 4,
+      "hypothesis": "The saved-operation port disconnects or the worker fails to reply after core completion.",
+      "basis": "The receipt retains neither port message nor disconnect event; the port is the required bridge between worker and panel.",
+      "prediction": "Core returns rows and a replay document ID, but the port sends no result, disconnects, or the panel sees a transport error.",
+      "falsifier": "The port delivers the worker result before the UI state decision."
+    }
+  ],
+  "one_bounded_next_diagnostic": {
+    "action": "Read the already-produced hosted job log and receipt once for monotonic or wall-clock anchors at capture arm, current packet, capture-window expiry, worker/port terminal, and the driver deadline. Compare the intervals with the source's 10-second driver wait and 20-second capture window; do not launch another native run.",
+    "decision_rule": "If the existing log anchors the driver deadline before capture expiry, the timing mismatch explains this observed timeout; if a worker/port terminal precedes the deadline, localize to the panel; if a core failure precedes it, localize to core/cleanup. If the log has no such anchors, record that this lightweight diagnostic cannot prove a cause from this run.",
+    "future_instrumentation_if_evidence_absent": "For any separately authorized future native admission, persist sanitized monotonic timestamps and run identity at core event emit/match, close/document ID, worker result/error, port send/receive/disconnect, panel provenance decision, and panel exact result. Observe through one full capture window plus bounded cleanup; keep fixture and product behavior constant.",
+    "scope": "This reviewer did not rerun the browser, alter product code, or claim acceptance."
+  },
+  "lightweight_log_check_performed": {
+    "source": "gh run view 37544119052 --log, guest job",
+    "observed": "The log anchors browser readiness at 23:06:53Z and the sanitized UNVERIFIED saved_terminal_result line at 23:07:56Z; it does not log capture arm, current packet, capture expiry, worker/port terminal, or the driver's deadline separately.",
+    "conclusion": "The existing hosted log cannot prove which ranked hypothesis caused this run. No further native admission was attempted."
+  }
+}

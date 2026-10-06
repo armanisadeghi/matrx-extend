@@ -1,0 +1,14 @@
+{
+  "run_id": 37546403812,
+  "job_id": 112551350503,
+  "step": "Exercise the selected Chrome side-panel case",
+  "step_started_at": "2026-10-06T23:29:32Z",
+  "failure_observed_at": "2026-10-06T23:30:47Z",
+  "failure_code": "ERR_MODULE_NOT_FOUND",
+  "missing_package": "typescript",
+  "importing_module": "tests/browser/showcase-d47-terminal-budget.mjs",
+  "acceptance_exit_code": 1,
+  "resource_decision": "child_failed",
+  "resource_invalid": false,
+  "sanitization": "No credential values, recipe text, page content, DOM text, or exception payload beyond the module error were retained."
+}

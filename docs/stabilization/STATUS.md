@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-06 22:09 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-06T21:17:01.793354+00:00. 205 features · 767 cases · 1349 controls · 146 linked defect records.
+Generated 2026-10-06 23:47 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-06T23:47:41.410701+00:00. 205 features · 767 cases · 1349 controls · 147 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -8,7 +8,7 @@ A feature is fully verified for a role only when every applicable case explicitl
 
 Applicable case-by-role slots: **1224** — Pass: 85 · Partial: 78 · Fail: 2 · Unverified: 1058 · N/A: 1.
 Unverified splits into **134 explicitly marked unverified** and **924 with no result record**.
-Full feature-role pairs: **0/396**. Procedure gaps: 91 cases without steps, 91 without expected outcomes, 27 without control links.
+Full feature-role pairs: **0/396**. Procedure gaps: 82 cases without steps, 82 without expected outcomes, 27 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
 ## Tab and surface overview
@@ -51,7 +51,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Tools Smart tests](#tools-smart-tests) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
 | [Tools Recorder](#tools-recorder) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
 | [Vault password generator](#vault-password-generator) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 6, n/a 0 | 0 |
-| [Tools / registered executor](#tools--registered-executor) | 169 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 154 unverified · 0 deferred; 0/150 full | 0 pass · 0 partial · 0 fail · 173 unverified · 0 deferred; 0/169 full | pass 0, partial 0, fail 0, unverified 327, n/a 0 | 4 |
+| [Tools / registered executor](#tools--registered-executor) | 169 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 154 unverified · 0 deferred; 0/150 full | 0 pass · 0 partial · 0 fail · 173 unverified · 0 deferred; 0/169 full | pass 0, partial 0, fail 0, unverified 327, n/a 0 | 5 |
 
 Role counts include only case-role combinations listed in each case. The all-role column includes every applicable recorded or unrecorded slot. Open each feature for case evidence, defects, and next action.
 
@@ -2309,13 +2309,15 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 **Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 1. **Controls:** 1.
 
-**Next:** Run the remaining role cases in the extension and attach a result.
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0147
+
+**Linked defects:** [EXT-D-0147](defects/EXT-D-0147.json) (triaged)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
 | EXT-F-4045-T01 Controlled manual execution: ai_check_availability | N/A | Unverified | Unverified | EXT-F-4045-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification.
 
 
 ### ai_summarize (EXT-F-4046)
@@ -2328,7 +2330,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4046-T01 Controlled manual execution: ai_summarize | N/A | Unverified | Unverified | EXT-F-4046-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification.
 
 
 ### ai_classify (EXT-F-4047)
@@ -2341,7 +2343,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4047-T01 Controlled manual execution: ai_classify | N/A | Unverified | Unverified | EXT-F-4047-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification.
 
 
 ### ai_extract_json (EXT-F-4048)
@@ -2354,7 +2356,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4048-T01 Controlled manual execution: ai_extract_json | N/A | Unverified | Unverified | EXT-F-4048-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification.
 
 
 ### ai_translate (EXT-F-4049)
@@ -2367,7 +2369,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4049-T01 Controlled manual execution: ai_translate | N/A | Unverified | Unverified | EXT-F-4049-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification.
 
 
 ### ai_detect_language (EXT-F-4050)
@@ -2380,7 +2382,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4050-T01 Controlled manual execution: ai_detect_language | N/A | Unverified | Unverified | EXT-F-4050-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification.
 
 
 ### ai_proofread (EXT-F-4051)
@@ -2393,7 +2395,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4051-T01 Controlled manual execution: ai_proofread | N/A | Unverified | Unverified | EXT-F-4051-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification.
 
 
 ### ai_describe_image (EXT-F-4052)
@@ -2406,7 +2408,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4052-T01 Controlled manual execution: ai_describe_image | N/A | Unverified | Unverified | EXT-F-4052-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification.
 
 
 ### ai_check_prompt_injection (EXT-F-4053)
@@ -2419,7 +2421,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4053-T01 Controlled manual execution: ai_check_prompt_injection | N/A | Unverified | Unverified | EXT-F-4053-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification.
 
 
 ### navigate_active_tab (EXT-F-4054)

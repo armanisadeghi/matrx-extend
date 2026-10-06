@@ -1,0 +1,25 @@
+{
+  "status": "nine_procedures_integrated_runtime_unverified",
+  "cases": [
+    "EXT-F-4045-T01",
+    "EXT-F-4046-T01",
+    "EXT-F-4047-T01",
+    "EXT-F-4048-T01",
+    "EXT-F-4049-T01",
+    "EXT-F-4050-T01",
+    "EXT-F-4051-T01",
+    "EXT-F-4052-T01",
+    "EXT-F-4053-T01"
+  ],
+  "proposal_commit": "70d423e5",
+  "initial_review": "6e999464",
+  "fixture_fix_review": "682bc758",
+  "assertions": [
+    "All feature cells, controls, applicability and stable IDs unchanged",
+    "All nontarget features unchanged",
+    "Nine previously empty procedures now source-reviewed",
+    "Capability unavailable never substitutes for positive functionality",
+    "No runtime pass or scope-complete promotion"
+  ],
+  "scope_complete": false
+}

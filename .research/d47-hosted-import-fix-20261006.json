@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "scope": "Hosted D47 acceptance module-load setup repair",
+  "observed_failure": {
+    "run_id": 37546403812,
+    "stage": "driver_module_load",
+    "code": "ERR_MODULE_NOT_FOUND_typescript",
+    "product_observed": false
+  },
+  "confirmed_cause": "The hosted workflow installs only playwright-core in a temporary runtime and does not install checkout dependencies. The D47 entry imports a source helper that resolved a bare typescript import from that checkout. Local source guards ran with the full node_modules tree, so they missed the hosted boundary.",
+  "repair": "For the D47 case, the package phase installs the exact TypeScript 6 alias version recorded for the root importer in pnpm-lock.yaml, verifies the installed name and version, and passes its absolute module path to the driver. The package phase imports the actual D47 entry before the browser phase; an import failure stops setup before Chromium download. Other cases keep their existing runtime.",
+  "guard": {
+    "command": "node scripts/stabilization-resource.mjs run --run-id d47-hosted-import-source-20261006-3 -- node --test scripts/hosted-driver-dependencies.test.mjs",
+    "journal": "docs/stabilization/resource-journals/d47-hosted-import-source-20261006-3.jsonl",
+    "resource_decision": "valid",
+    "result": "1 passed, 0 failed",
+    "red": "In a copied checkout with no node_modules, the actual D47 entry rejects at import with ERR_MODULE_NOT_FOUND naming typescript.js before any browser work.",
+    "green": "After installing Playwright and the exact lock-derived TypeScript alias into an isolated temporary runtime, the same entry prints HOSTED_D47_DRIVER_IMPORT_READY and exits 0.",
+    "limits": "This guard proves module loading and dependency resolution, not native browser behavior."
+  },
+  "static_checks": "node --check for touched modules, Biome check for five touched code files, git diff --check",
+  "other_imports": "Bare package imports in neighboring browser scripts belong to separate cases or local source tests; this fix targets the only newly introduced D47 runtime import. No product code changed.",
+  "remaining": "Fresh source review and separately authorized hosted native run. D47/T57 product acceptance remains unverified."
+}
