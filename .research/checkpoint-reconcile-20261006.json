@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-06",
+  "scope": "Resume-checkpoint reconciliation only; no product, browser, database, build, test, release, or Store action.",
+  "checkpoint": "docs/stabilization/COORDINATOR.md",
+  "initial_execution_state": {
+    "active_native_or_heavy_job": false,
+    "evidence": "No active runner/collector was present in the assigned starting context; no job was launched in this lane."
+  },
+  "reconciled_facts": {
+    "D143": "CLOSED for the driver-specific reproduction on frozen 0.2.307; native run 37395727468 passed seven bounded checkpoints with valid resource journals. Newer 0.2.309 and remaining D42 dimensions are outside that proof.",
+    "D42": "IN-FIX; remaining event-channel, cancellation, deferred installation, reinjection/listener cleanup, and nonadmin criteria remain open.",
+    "D47": "IN-FIX; delayed matching old-document response with higher old sequence remains native-unverified.",
+    "store": "Published/draft 0.2.205, public, no pending review; no newer eligible Store ZIP. Main 0.2.322 artifact is development-only.",
+    "guest": "Run 37511772063 child receipt observed three HTTP 200 answers, but final resource guard invalidated the whole run; no overall acceptance pass."
+  },
+  "access_and_admission": {
+    "approved_fixture_path": "test-results/admin-profile-approved-organization-private.json",
+    "approved_fixture_mode": "0600",
+    "ephemeral_secret_names": [
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON",
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON"
+    ],
+    "handling": "Values were not read or recorded. Use only for an admitted approved native admin lane; remove both secrets immediately at terminal and verify absence.",
+    "machine_restrictions": "No manual build/release/deploy or local heavy/browser work below the 20 GiB free-space floor; latest audited internal free space was 209 MiB. Hosted heavy work is one at a time and requires a valid resource guard."
+  },
+  "active_lanes": {
+    "d47_native_boundary": "Bounded native D47 T57 case implementation/proof only; no browser launch from this lane.",
+    "inventory_oct6_current_source": "Read-only current-source census.",
+    "integration_owner": "Root."
+  },
+  "authoritative_references": [
+    "docs/stabilization/inventory.json",
+    "docs/stabilization/defects/EXT-D-0042.json",
+    "docs/stabilization/defects/EXT-D-0047.json",
+    "docs/stabilization/defects/EXT-D-0143.json",
+    "docs/stabilization/runs/showcase-repick-native-37395727468.json",
+    ".research/daily-store-20261006.json",
+    ".research/daily-guest-stable-server-20261006.json",
+    ".research/daily-release-inventory-20261006.json",
+    ".research/capacity-recovery-audit-current.json"
+  ],
+  "unverified": [
+    "Whole-feature and whole-extension coverage remain incomplete per canonical inventory.",
+    "D143 does not prove current 0.2.309 behavior or close D42.",
+    "D42 remaining criteria and D47 delayed old-document boundary remain unverified.",
+    "No newer Store package or valid overall guest acceptance is established."
+  ],
+  "workspace": "Preserve concurrent shared-main changes; commit/push only the two assigned exact paths."
+}
