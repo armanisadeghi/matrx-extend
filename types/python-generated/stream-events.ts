@@ -380,6 +380,7 @@ export interface AgentStudioFromChatProgressData {
   step: "reading" | "briefing" | "building" | "proving";
   says: string;
   build_id?: string | null;
+  proof_cases?: number | null;
 }
 
 export interface AgentStudioBriefVariable {
