@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0047",
+  "lane": "fresh zero-authorship bounded source reverify; no tests, browser, build, database, or product edits",
+  "reviewed_commits": [
+    "86046a88",
+    "f0d90401",
+    "c12a0e9f"
+  ],
+  "prior_finding": {
+    "source": ".research/d47-owned-reload-peer-20261006.json",
+    "status": "ADDRESSED for distinguishable pre-commit navigation replacement",
+    "evidence": "The approved initial loaderId is read from Page.getFrameTree and passed as Page.reload's loaderId precondition (document-network-capture.ts:459-520). The first accepted main-frame Page.frameStartedNavigating must be a same-URL reload or reloadBypassingCache with a fresh loaderId; an external differentDocument start is rejected, whether it precedes the reload start or follows it before commit (:288-318). A repeated start with the same loader and URL is allowed. Page.frameNavigated must commit that accepted loaderId and URL before buffered events are delivered (:321-353, :207-211). The two new nonce-attested same-URL negative cases assert failure and zero delivered events (document-network-capture.test.ts:374-404); the owned reload test repeats the accepted start and retains old/current context isolation (:198-254).",
+    "qualification": "CDP does not return a command navigation ID for Page.reload. If an independent manual reload with the same URL and reload navigationType wins the first start, loader/type alone cannot establish command causation. This is a stated protocol limit, not a reproduced regression or a claim of native acceptance."
+  },
+  "verdict_a": {
+    "source": "PASS for the specified distinguishable replacement sequences and retained owned-reload behavior",
+    "native": "UNVERIFIED",
+    "reason": "The source and controlled fixtures now reject the two pre-commit external navigation orders while retaining a nonce-attested owned reload. No installed build exercising these commits was observed in this review. EXT-D-0047 remains in-fix; the original T57 native prior-document and public-site acceptance requirements remain open.",
+    "next_native_cases": [
+      "Run a saved Network recipe from a new installed build on a public page with an initial-load request; record the real terminal outcome, matched current rows, and honest retrigger guidance when an initial request is missed.",
+      "Exercise a distinguishable same-URL external navigation before first commit and confirm terminal refusal, no current row, no Last run success, and no saved history success; retain an ordinary owned reload as the positive control.",
+      "Finish the original T57 delayed prior-document higher-sequence and stale-only acceptance route under the separately recorded architectural ruling; do not infer old binding delivery from silence."
+    ]
+  },
+  "verdict_b": {
+    "quality": "PASS within source-review scope, with an explicit protocol and evidence limit",
+    "evidence": "The repair stays in the shared capture core. The seven c12a0e9f fixture edits return a Chrome replay document ID distinct from the CDP context key, provide dispatcher onReplayDocument/current-frame identity, or restore the active-tab snapshot mock. They do not remove the missing-document refusal (network-replay-integrity.test.ts:104-117) or the downstream current-document checks (run-interactive.ts:394-410; data-patterns.ts:297-310; DataView.tsx:350-364; PatternsTab.tsx:163-177). The connected discovery fixture now includes initial/start/commit loader IDs. No identity assertion was weakened in the reviewed test diff.",
+    "red_green": "The committed RED resource journal records an admitted child exit 1 before the source patch; the builder report records both new negative cases failing while 12 surrounding tests passed. The final full-unit journal records admitted exit 0, and the builder report gives 299 files and 2146 tests passed, two files and five tests skipped. The compile journal records admitted exit 0. This reviewer did not run commands and the journals do not themselves contain individual Vitest case output or counts.",
+    "remaining_limit": "The new negative tests prove capture-core onFailure and no onEvent under controlled CDP events. Native UI refusal and history behavior still require the installed-build case. The existing separate DataView and PatternsTab owner guards were not changed by these commits; this review found no new divergence."
+  },
+  "recommended_status": "SOURCE_REVIEW_PASS_NATIVE_UNVERIFIED_DO_NOT_CLOSE"
+}
