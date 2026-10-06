@@ -29,8 +29,8 @@
       ".research/d47-native-boundary-20261006.json"
     ],
     "next_action": "Run the controlled route under a coordinated exact-development-artifact native permit, with real admin sign-in and saved recipe; observe whether the old response reaches Runtime.bindingCalled after the new document begins. A canceled old request or current-only saved output does not close the adversarial branch.",
-    "status": "implementation_and_independent_source_review_complete; native execution pending",
-    "implementation_agent": "d47_native_boundary"
+    "status": "native driver implementation; no browser launch admitted",
+    "implementation_agent": "d47_browser_driver_oct6"
   },
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
   "verification_status": "Current independentevidencepeer e7a67bcd confirms initialrequest timing and documentidentity controlled regressions (including meaningful identitymutation), plus bounded installed initialHN capture and saved10row replay on8b0f8adc/9ea6687b. Delayed matching prior-document response with higher old sequence is still nativeUNVERIFIED; T57 and original D47 closure remain incomplete. No current runtime was run by evidencepeer.",
@@ -64,5 +64,13 @@
     "limitation": "Real HTTP route proves old/current response scheduling and matching URL/method/body, but neither server status nor a current-only UI row proves an old Chrome binding callback reached the extension after navigation.",
     "independent_review": ".research/d47-lifecycle-fresh-review-20261006.json",
     "review_verdict": "HTTP scheduling/lifecycle accepted after independent3testguard; actual old-context delivery and saved UI output unverified"
+  },
+  "acceptance_ruling": {
+    "date": "2026-10-06",
+    "owner": "root",
+    "decision": "Accept architectural exclusion as one separately labeled native proof mechanism only after the positive observations and causal guards in the independent ruling pass. Keep original current-document-only output invariant, initial-load/public-site replay, higher-old-sequence injected-event guard, both response orders, stale-only refusal, and surrounding cleanup coverage. No closure or status promotion now.",
+    "reason": "Actual producer experiment and source ownership show the ordinary old request cannot acquire the new per-run binding. Requiring the removed producer route to reappear is not a valid native test; missing events alone remain insufficient.",
+    "cost_if_wrong": "Could falsely certify stale-data isolation; require current binding handshake and packet positive controls, main-frame/context ordering, real old request lifecycle, recipe-specific terminal output, public-site native replay and meaningful old-event mutation regression before closure.",
+    "evidence": ".research/d47-acceptance-architecture-ruling-20261006.json"
   }
 }

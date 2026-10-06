@@ -24960,7 +24960,8 @@
               ],
               "detail": "Independent e7a67bcd evidenceaudit: initialrequest capture and actualsaved10row replay are natively proven on8b0f8adc/9ea6687b; controlled documentidentity regression has meaningful downstreammutationproof. Native delayedmatchingoldresponse after navigation (higheroldsequence) remains missing, so T57unverified and D47notclosed. General navigationcancel and repeatedHNsuccess cannot replace this adversarialprovenance case."
             }
-          }
+          },
+          "proof_ruling": "2026-10-06 root technical ruling: see .research/d47-acceptance-architecture-ruling-20261006.json. A native architectural-exclusion trace with positively observed current binding/packet, exact contexts, old request lifecycle and terminal saved result may supplement delivered-stale-event causal guards. Neither cancellation alone nor current-only rows nor empty event arrays prove exclusion. Retain public-site same-artifact replay, both response orders, higher old sequence, stale-only refusal and cleanup; no existing result is promoted."
         },
         {
           "id": "EXT-F-1012-T58",
