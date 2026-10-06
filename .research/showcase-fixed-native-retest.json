@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "task_id": "showcase-fixed-native-retest",
+  "lane": "independent native retest",
+  "model": "gpt-6.1-sol",
+  "status": "original_card_boundary_pass; broader_native_case_failed",
+  "feature_ids": ["EXT-F-1012"],
+  "defect_ids": ["EXT-D-0143", "EXT-D-0042"],
+  "summary": "Fresh fixed-driver artifact passed the original covered card-selection boundary and relayed current B detection. The same hosted case stopped at select_B_field before B picked-item completion or three-row extraction.",
+  "ci": {
+    "run_id": 37390160862,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37390160862",
+    "status": "completed",
+    "conclusion": "success",
+    "source_sha": "b75d519d9c21e0d24b4f7368347f0951f2fae03b",
+    "named_driver_test": "showcase-card-driver.test.mjs included in successful Guest transport observer regression; picker-covering-center and fully-obstructed-card subtests passed",
+    "artifact_id": 11381061534,
+    "artifact_digest_sha256": "2b8a621b90cec6b95fcb74fd968784f45d63999bbed0c13ff208805bc99e6bdc",
+    "artifact_tree_sha256": "2f294e953a13d202ad0153fb91a0810d848cbb77c4ad6f025dcd539975faf9ab",
+    "version": "0.2.306",
+    "frozen_receipt": "docs/stabilization/evidence/showcase-fixed-native/run37390800503/ci-build-receipt.json",
+    "frozen_receipt_sha256": "c80de92f44a437e7a9f1e10d50f11e0861ea30364e35473a55b6fffe0c6d03ee"
+  },
+  "first_attempt": {
+    "run_id": 37390800503,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37390800503",
+    "conclusion": "failure",
+    "stage": "Require selected authentication before browser setup",
+    "assertion": "d87_admin_identity_required: actual undefined; expected admin@admin.com",
+    "cause": "Own temporary credential fixture used username instead of required email key. No package/browser/native steps ran; excluded from product verdict.",
+    "retry_condition": "Restaged same authorized credential with email/password schema after verifying both temporary secret names absent."
+  },
+  "native_retest": {
+    "run_id": 37390906047,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37390906047",
+    "runner_label": "macos-15",
+    "workflow_head_sha": "c0ef7924f82e77781dcb13eb8ca1490f26c5b55c",
+    "acceptance_case": "showcase-stale-admin",
+    "conclusion": "failure",
+    "artifact_source_sha": "b75d519d9c21e0d24b4f7368347f0951f2fae03b",
+    "passed": [
+      "guest_nonchat_control_and_showcase_gate",
+      "real_admin_signin_and_device_organization",
+      "genuine_A_exit_relay_rejected_while_B_active",
+      "same_page_cancel_A_start_B",
+      "current_B_detection_relayed"
+    ],
+    "first_failure": {
+      "stage": "select_B_field",
+      "native_stage": "exercise_panel",
+      "failure_code": "select_B_field_failed",
+      "scope": "The stage contains the first h2 Playwright click and a wait for one picked item; receipt does not distinguish which operation failed. No field hit geometry was captured.",
+      "card_boundary": "Card selection and current B detection succeeded, unlike original run37388591467 select_B_card failure.",
+      "selection_observations": {
+        "card_count": 3,
+        "overlay_count": 1,
+        "badge_three_items": true,
+        "card_center_hit": false,
+        "picker_panel_over_original_card_center": true
+      }
+    },
+    "unverified": [
+      "B field selection completion",
+      "B three-row extraction",
+      "stale A ITEM_DETECTED/RESULT/EXIT held and released after B starts",
+      "delayed A cancellation injection after B starts",
+      "deferred installation across replacement",
+      "new content-script context reinjection and exact listener count",
+      "nonadmin role gate"
+    ],
+    "resource": {
+      "package": {
+        "decision": "valid",
+        "resourceInvalid": false,
+        "exitCode": 0
+      },
+      "browser": {
+        "decision": "valid",
+        "resourceInvalid": false,
+        "exitCode": 0
+      },
+      "guest": {
+        "decision": "child_failed",
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "watch_recovered_after_initial_cpu_pending": true
+      }
+    }
+  },
+  "evidence": {
+    "directory": "docs/stabilization/evidence/showcase-fixed-native/run37390906047",
+    "original_receipt_in_private_scratch_sha256": "925a8993257a597fd495a2cf613d3b630ee2a37f693c45404ed8fe8e0bdf0d30",
+    "hosted_result_artifact_id": 11381172739,
+    "hosted_result_artifact_digest_sha256": "54e462cf6b4eecd3319c4196917440b0bae3cc9a240c1c855e94723ef1bde915",
+    "files": [
+      {
+        "path": "docs/stabilization/evidence/showcase-fixed-native/run37390906047/sanitized-receipt.json",
+        "sha256": "deb6a57fdc46154b6a1cda96eee92a9474d9ac8dd79d6fb7830483cdea09dd86"
+      },
+      {
+        "path": "docs/stabilization/evidence/showcase-fixed-native/run37390906047/hosted-package-37390906047-1.jsonl",
+        "sha256": "2ac19742f9d88c92ea8e47b68033e34fc299c8cbbc1884bff1f4f86805f28b22"
+      },
+      {
+        "path": "docs/stabilization/evidence/showcase-fixed-native/run37390906047/hosted-browser-37390906047-1.jsonl",
+        "sha256": "5b5c672d75376dfa5d242d8e4142d139411a0d95bc010df7104ac4a81b82c35f"
+      },
+      {
+        "path": "docs/stabilization/evidence/showcase-fixed-native/run37390906047/hosted-guest-37390906047-1.jsonl",
+        "sha256": "77643cbebb695f12cf641b6f7d8fe026b82710d455bc1c481772e44a7f1ff722"
+      }
+    ],
+    "screenshots": "Retained only in private external scratch; not used to infer the failing field operation."
+  },
+  "temporary_secrets": {
+    "names": ["MATRX_PROFILE_APPROVED_ORGANIZATION_JSON", "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON"],
+    "absent_before_each_staging": true,
+    "deleted_immediately_after_each_terminal_run": true,
+    "absence_verified_after_each_delete": true
+  },
+  "limitations": [
+    "The original D143 card regression is fixed in this native run, but the full showcase-stale-admin case is not passing.",
+    "The select_B_field failure does not prove center-point interception; no field pointer sample or failed-operation detail exists.",
+    "No further native retry was launched."
+  ],
+  "next_action": "Instrument select_B_field with bounded before/after hit and picked-item observations, then repair the confirmed failing operation and independently retest the full case from a fresh green artifact. Keep broader D42 and three-row extraction open."
+}
