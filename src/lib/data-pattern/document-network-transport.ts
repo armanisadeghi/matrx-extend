@@ -18,7 +18,7 @@ interface Options extends Request {
   onFailure: (error: Error) => void;
 }
 interface Capture {
-  close: () => Promise<void>;
+  close: () => Promise<string | null>;
 }
 type SavedPatternRunner = (
   patternId: string,
@@ -85,12 +85,12 @@ async function startOwned(options: Options): Promise<Capture> {
     // The core still observes abort and releases any late-created lease/script.
     const capture = await Promise.race([starting, interrupted]);
     controller.signal.removeEventListener('abort', interrupt);
-    let closing: Promise<void> | undefined;
+    let closing: Promise<string | null> | undefined;
     return {
       close: () =>
         (closing ??= (async () => {
           try {
-            await capture.close();
+            return await capture.close();
           } finally {
             release();
           }

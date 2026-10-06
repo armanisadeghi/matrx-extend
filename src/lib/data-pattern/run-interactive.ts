@@ -42,6 +42,8 @@ import type { ExtractedRow } from './types';
 export interface InteractiveRunOptions {
   /** Live progress notes for the UI ("Reloading page…", "Listening…"). */
   onProgress?: (note: string) => void;
+  /** Service-worker attestation of the document produced by an approved replay. */
+  onReplayDocument?: (documentId: string) => void;
   /** Interactive response window; Network setup is separately bounded by the same budget. */
   timeoutMs?: number;
   signal?: AbortSignal;
@@ -369,37 +371,40 @@ export async function runNetworkCapturePattern(
     let matchCount = 0;
     const captureId = crypto.randomUUID();
     const captureAbort = new AbortController();
-    let capture: Promise<{ close: () => Promise<void> }> | null = null;
+    let capture: Promise<{ close: () => Promise<string | null> }> | null = null;
     let captureReady = false;
     let finished = false;
 
     const cleanup: Array<() => void> = [];
-    const finish = (fn: () => void) => {
+    const finish = (fn: (documentId: string | null) => void) => {
       if (finished) return;
       finished = true;
       for (const c of cleanup) c();
       if (!captureReady) captureAbort.abort();
       void (async () => {
         try {
-          await (await capture)?.close();
+          const documentId = (await (await capture)?.close()) ?? null;
+          fn(documentId);
         } catch (error) {
           reject(new NetworkNoMatchError(error instanceof Error ? error.message : String(error)));
-          return;
         }
-        fn();
       })();
     };
 
     const concludeWithMatches = () => {
       const event = latest;
       if (!event) return;
-      finish(() => {
+      finish((documentId) => {
         try {
+          if (!documentId)
+            throw new Error('Chrome could not verify the replay document. Run again.');
           if (event.body_truncated)
             throw new Error(
               'The matched response was truncated. Capture a smaller response or narrow the request on the page, then save it again.',
             );
-          resolve(rowsFromBody(event.body, key_path));
+          const rows = rowsFromBody(event.body, key_path);
+          opts.onReplayDocument?.(documentId);
+          resolve(rows);
         } catch (e) {
           reject(e instanceof Error ? e : new Error(String(e)));
         }
@@ -560,6 +565,7 @@ export async function runSavedPattern(
       const result = (await openSavedPatternOperation(pattern.id, tabId, opts)) as {
         ok: boolean;
         rows?: ExtractedRow[];
+        replay_document_id?: string;
         reason?: string;
         retryable?: boolean;
       };
@@ -568,6 +574,9 @@ export async function runSavedPattern(
           throw new NetworkNoMatchError(result.reason ?? 'Replay did not match.');
         throw new Error(result.reason ?? 'Saved replay failed.');
       }
+      if (!result.replay_document_id)
+        throw new Error('Replay returned no document identity. Run again.');
+      opts.onReplayDocument?.(result.replay_document_id);
       return result.rows ?? [];
     }
     return runNetworkCapturePattern(pattern.config, tabId, opts);

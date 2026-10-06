@@ -1,6 +1,10 @@
 import { CopyMenu } from '@/components/CopyMenu';
 import { PageIdentityNotice } from '@/components/PageIdentityNotice';
-import { isCurrentPageIdentity, useActiveTab } from '@/hooks/use-active-tab';
+import {
+  getActiveTabIdentitySnapshot,
+  isCurrentPageIdentity,
+  useActiveTab,
+} from '@/hooks/use-active-tab';
 import { useAuth } from '@/hooks/use-auth';
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { rowsToTsv, stringifyJson, wrapForAgent, wrapJsonForAgent } from '@/lib/clipboard/copy';
@@ -49,6 +53,12 @@ export function DataView() {
   const pageKey = tab.pageKey ?? '';
   const currentPage = useRef(pageKey);
   const runSequence = useRef(0);
+  const replayOwner = useRef<{
+    sequence: number;
+    tabId: number;
+    url: string;
+    documentId: string | null;
+  } | null>(null);
   const saveSequence = useRef(0);
   const savePhase = useRef<'idle' | 'organization' | 'write' | 'refresh'>('idle');
   currentPage.current = pageKey;
@@ -67,7 +77,13 @@ export function DataView() {
   const visibleError = error ?? (belongsToPage ? runError : null);
 
   useEffect(() => {
-    runSequence.current += 1;
+    const owner = replayOwner.current;
+    const replayStillOnRoute =
+      owner?.sequence === runSequence.current && tab.id === owner.tabId && tab.url === owner.url;
+    if (!replayStillOnRoute) {
+      runSequence.current += 1;
+      replayOwner.current = null;
+    }
     saveSequence.current += 1;
     const interruptedSave = savePhase.current;
     savePhase.current = 'idle';
@@ -78,9 +94,9 @@ export function DataView() {
     setPicking(false);
     setPickedFields([]);
     setPickedPageKey(null);
-    setRunSource(null);
+    if (!replayStillOnRoute) setRunSource(null);
     setRows(null);
-    setRunning(false);
+    if (!replayStillOnRoute) setRunning(false);
     setRunError(null);
     setRunNote(null);
     setRunInfo(null);
@@ -92,10 +108,14 @@ export function DataView() {
           ? 'Page changed while the previous pattern was saving. Check saved patterns before retrying on this page.'
           : null,
     );
-    return () => {
+  }, [pageKey, tab.id, tab.url]);
+  useEffect(
+    () => () => {
       runSequence.current += 1;
-    };
-  }, [pageKey]);
+      replayOwner.current = null;
+    },
+    [],
+  );
 
   const host = (() => {
     try {
@@ -323,10 +343,25 @@ export function DataView() {
   const handleRun = async (pattern: ExtractionPattern) => {
     if (!tab.id || !tab.documentId || !tab.pageKey) return;
     const sequence = ++runSequence.current;
+    replayOwner.current =
+      pattern.kind === 'network_capture' && tab.url
+        ? { sequence, tabId: tab.id, url: tab.url, documentId: null }
+        : null;
     const isCurrent = () =>
-      currentPage.current === pageKey &&
       runSequence.current === sequence &&
-      isCurrentPageIdentity(pageKey);
+      (replayOwner.current?.sequence === sequence
+        ? (() => {
+            const owner = replayOwner.current;
+            const current = getActiveTabIdentitySnapshot();
+            return (
+              current.id === owner.tabId &&
+              current.url === owner.url &&
+              current.identityStatus === 'ready' &&
+              Boolean(current.pageKey) &&
+              (!owner.documentId || current.documentId === owner.documentId)
+            );
+          })()
+        : currentPage.current === pageKey && isCurrentPageIdentity(pageKey));
     const source = { pageKey, url: tab.url, title: tab.title, patternName: pattern.name };
     setRunSource(source);
     setRunning(true);
@@ -340,10 +375,17 @@ export function DataView() {
         onProgress: (note) => {
           if (isCurrent()) setRunNote(note);
         },
+        onReplayDocument: (documentId) => {
+          if (replayOwner.current?.sequence === sequence)
+            replayOwner.current.documentId = documentId;
+        },
         initiation: 'user',
         documentId: tab.documentId,
       });
       if (!isCurrent()) return;
+      if (replayOwner.current?.sequence === sequence) {
+        setRunSource({ ...source, pageKey: getActiveTabIdentitySnapshot().pageKey ?? '' });
+      }
       setRows(data);
       const outcome = classifySavedRun(pattern, source.url ?? '', data);
       setRunInfo(outcome.message);
@@ -357,6 +399,9 @@ export function DataView() {
       }
     } catch (err) {
       if (!isCurrent()) return;
+      if (replayOwner.current?.sequence === sequence) {
+        setRunSource({ ...source, pageKey: getActiveTabIdentitySnapshot().pageKey ?? '' });
+      }
       if (err instanceof NetworkNoMatchError) {
         setRunError(err.message);
       } else {
@@ -373,6 +418,7 @@ export function DataView() {
       if (isCurrent()) {
         setRunning(false);
         setRunNote(null);
+        replayOwner.current = null;
       }
     }
   };

@@ -1,4 +1,8 @@
-import { isCurrentPageIdentity, useActiveTab } from '@/hooks/use-active-tab';
+import {
+  getActiveTabIdentitySnapshot,
+  isCurrentPageIdentity,
+  useActiveTab,
+} from '@/hooks/use-active-tab';
 import { urlMatchesPattern } from '@/lib/data-pattern/matcher';
 import { NetworkNoMatchError, runSavedPattern } from '@/lib/data-pattern/run-interactive';
 import { classifySavedRun } from '@/lib/data-pattern/saved-run-outcome';
@@ -70,6 +74,12 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
   const previousPageKey = useRef(pageKey);
   const loadSeq = useRef(0);
   const runSeq = useRef(0);
+  const replayOwner = useRef<{
+    seq: number;
+    tabId: number;
+    url: string;
+    documentId: string | null;
+  } | null>(null);
   currentPageKey.current = pageKey;
 
   const host = (() => {
@@ -98,29 +108,40 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
       if (seq === loadSeq.current && currentPageKey.current === pageKey) setLoading(false);
     }
   }, [host, pageKey]);
+  const refreshCurrent = useRef(refresh);
+  refreshCurrent.current = refresh;
 
   useEffect(() => {
     if (previousPageKey.current === pageKey) return;
     previousPageKey.current = pageKey;
     loadSeq.current += 1;
-    runSeq.current += 1;
+    const owner = replayOwner.current;
+    const replayStillOnRoute =
+      owner?.seq === runSeq.current && tab.id === owner.tabId && tab.url === owner.url;
+    if (!replayStillOnRoute) {
+      runSeq.current += 1;
+      replayOwner.current = null;
+    }
     setPatternSnapshot(null);
     setLoading(false);
     setLoadError(null);
-    setRunningId(null);
-    setRunNote(null);
+    if (!replayStillOnRoute) {
+      setRunningId(null);
+      setRunNote(null);
+    }
     setRunError(null);
     setRunInfo(null);
     setRows(null);
     setResultSource(null);
     setActiveName(null);
     setResultPageKey(null);
-  }, [pageKey]);
+  }, [pageKey, tab.id, tab.url]);
 
   useEffect(
     () => () => {
       loadSeq.current += 1;
       runSeq.current += 1;
+      replayOwner.current = null;
     },
     [],
   );
@@ -135,10 +156,25 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
     if (!tab.id || !tab.documentId || !tab.pageKey) return;
     const runPageKey = pageKey;
     const seq = ++runSeq.current;
+    replayOwner.current =
+      p.kind === 'network_capture' && tab.url
+        ? { seq, tabId: tab.id, url: tab.url, documentId: null }
+        : null;
     const isCurrent = () =>
       seq === runSeq.current &&
-      currentPageKey.current === runPageKey &&
-      isCurrentPageIdentity(runPageKey);
+      (replayOwner.current?.seq === seq
+        ? (() => {
+            const owner = replayOwner.current;
+            const current = getActiveTabIdentitySnapshot();
+            return (
+              current.id === owner.tabId &&
+              current.url === owner.url &&
+              current.identityStatus === 'ready' &&
+              Boolean(current.pageKey) &&
+              (!owner.documentId || current.documentId === owner.documentId)
+            );
+          })()
+        : currentPageKey.current === runPageKey && isCurrentPageIdentity(runPageKey));
     const onSavedRoute = urlMatchesPattern(tab.url ?? '', p);
     const sourceAtRun = { url: tab.url, title: tab.title };
     setRunningId(p.id);
@@ -155,10 +191,16 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
         onProgress: (note) => {
           if (isCurrent()) setRunNote(note);
         },
+        onReplayDocument: (documentId) => {
+          if (replayOwner.current?.seq === seq) replayOwner.current.documentId = documentId;
+        },
         initiation: 'user',
         documentId: tab.documentId,
       });
       if (!isCurrent()) return;
+      if (replayOwner.current?.seq === seq)
+        setResultPageKey(getActiveTabIdentitySnapshot().pageKey);
+      setActiveName(p.name);
       setRows(data);
       setResultSource(sourceAtRun);
       const outcome = classifySavedRun(p, tab.url ?? '', data);
@@ -173,6 +215,8 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
       }
     } catch (err) {
       if (!isCurrent()) return;
+      if (replayOwner.current?.seq === seq)
+        setResultPageKey(getActiveTabIdentitySnapshot().pageKey);
       if (err instanceof NetworkNoMatchError) {
         // Circumstantial — the page may just not have fired that API on
         // reload. Guidance only; don't mark the pattern broken.
@@ -191,7 +235,8 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
       if (isCurrent()) {
         setRunningId(null);
         setRunNote(null);
-        void refresh();
+        replayOwner.current = null;
+        void refreshCurrent.current();
       }
     }
   };

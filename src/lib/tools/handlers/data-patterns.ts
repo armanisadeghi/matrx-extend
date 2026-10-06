@@ -277,11 +277,15 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
       };
       try {
         if (!(await pageIsCurrent())) return pageChanged;
+        const replayEvidence: { documentId: string | null } = { documentId: null };
         // 'auto': an AGENT called this tool. The person's gesture was the
         // parent chat send, already attested there; this nested AI run is the
         // model's decision, not a second human action.
         const rows = await runSavedPattern(pattern, tabId, {
           onProgress: (note) => ctx.reportProgress?.(note),
+          onReplayDocument: (id) => {
+            replayEvidence.documentId = id;
+          },
           initiation: ctx.localInvocation ? 'user' : 'auto',
           ...(documentId && { documentId }),
           ...(prepared && {
@@ -291,6 +295,19 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
           }),
         });
         if (!(await pageIsCurrent())) return pageChanged;
+        const replayFrame =
+          pattern.kind === 'network_capture' && ctx.localInvocation
+            ? await chrome.webNavigation.getFrame({ tabId, frameId: 0 })
+            : null;
+        if (
+          pattern.kind === 'network_capture' &&
+          ctx.localInvocation &&
+          (!replayEvidence.documentId ||
+            replayFrame?.documentId !== replayEvidence.documentId ||
+            replayFrame.errorOccurred ||
+            replayFrame.url !== tab.url)
+        )
+          return pageChanged;
         const outcome = classifySavedRun(pattern, tab.url ?? '', rows);
         const updateError =
           !ctx.localInvocation && outcome.kind === 'matched'
@@ -308,6 +325,10 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
           row_count: rows.length,
           rows: rows.slice(0, limit),
           truncated: rows.length > limit,
+          ...(replayEvidence.documentId &&
+            ctx.localInvocation && {
+              replay_document_id: replayEvidence.documentId,
+            }),
         };
       } catch (err) {
         if (!(await pageIsCurrent())) return pageChanged;

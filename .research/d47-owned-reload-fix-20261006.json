@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0047",
+  "status": "SOURCE_FIX_READY_FOR_INDEPENDENT_REVIEW_RUNTIME_UNVERIFIED",
+  "finding": "Both saved Run UIs invalidated a Network replay when its own approved reload changed pageKey; the capture core already proves the new document through a nonce-bound cleanup probe.",
+  "change": "Carry the capture-proven document ID through the worker result and accept saved rows only while the same run, tab, URL and proven new document remain current; preserve ordinary navigation, unmount, cancellation and newer-run guards.",
+  "red": "Diagnostic unguarded real saved-UI test failed 4/4 on owned old→null→new pageKey before repair; guarded d47-owned-focused-20261006 failed 1/24 on missing exact Last run label after rows returned. Both defects were fixed.",
+  "green": "Guarded d47-owned-tests-final-20261006 valid: 43/43 across saved UI, capture, Showcase provenance and Data health; guarded d47-owned-compile-final-20261006 valid; guarded catalog and docs tools valid.",
+  "resource_journals": "docs/stabilization/resource-journals/d47-owned-{focused,tests-final,compile,compile-final,catalog,docs-tools}-20261006.jsonl",
+  "compile_failure_correction": "First guarded compile failed TS2698 on callback-mutated local narrowing; a mutable evidence object fixed it and final guarded compile passed.",
+  "tests": "document-network-saved-ui, saved-run-data-view-health, showcase-patterns-replay-provenance, document-network-capture",
+  "risk": "No installed-browser acceptance for this new source; frozen 0.2.325 receipt does not prove the worker terminal result. Require independent review and a new frozen-product browser run before D47 closure.",
+  "commit": "This report is committed with the source fix."
+}

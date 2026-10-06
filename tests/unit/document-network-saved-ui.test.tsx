@@ -8,10 +8,12 @@ const h = vi.hoisted(() => ({
   admin: true,
   group: -1,
   tabId: 37,
-  document: 'original-document',
+  document: 'original-document' as string | null,
   url: 'https://calendar.invalid/calendar',
   releases: new Set<() => void>(),
   nextScriptId: 0,
+  rerender: null as null | (() => void),
+  terminal: null as null | Record<string, unknown>,
 }));
 vi.mock('@/lib/messaging/native', () => ({
   on: (kind: string, fn: (p: any) => unknown) => {
@@ -94,11 +96,18 @@ vi.mock('@/hooks/use-active-tab', () => ({
     url: h.url,
     title: 'Calendar',
     documentId: h.document,
-    identityStatus: 'ready',
+    identityStatus: h.document ? 'ready' : 'resolving',
     identityError: null,
     pageKey: h.document,
   }),
-  isCurrentPageIdentity: () => true,
+  isCurrentPageIdentity: (key: string | null) => key !== null && key === h.document,
+  getActiveTabIdentitySnapshot: () => ({
+    id: h.tabId,
+    url: h.url,
+    documentId: h.document,
+    pageKey: h.document,
+    identityStatus: h.document ? 'ready' : 'resolving',
+  }),
 }));
 vi.mock('@/lib/destructive/confirm', () => ({ confirmDestructive: vi.fn() }));
 import { SavedReplayApprovalHost } from '@/features/showcase/SavedReplayApprovalHost';
@@ -128,15 +137,19 @@ afterEach(async () => {
   vi.clearAllTimers();
   vi.useRealTimers();
   vi.clearAllMocks();
+  h.document = 'original-document';
+  h.rerender = null;
+  h.terminal = null;
 });
 it.each([
-  ['responsive cleanup', 37, false, false, false],
-  ['rejected owned debugger detach', 38, false, false, true],
-  ['stalled hook removal', 39, true, false, false],
-  ['stalled owned debugger detach', 40, false, true, false],
+  ['responsive cleanup', 37, false, false, false, false],
+  ['rejected owned debugger detach', 38, false, false, true, false],
+  ['stalled hook removal', 39, true, false, false, false],
+  ['stalled owned debugger detach', 40, false, true, false, false],
+  ['unrelated same-route navigation', 41, false, false, false, true],
 ])(
   'saved UI handles %s after a full window without showing old-document rows',
-  async (_name, tabId, stallCleanup, stallDetach, rejectDetach) => {
+  async (_name, tabId, stallCleanup, stallDetach, rejectDetach, replaceDocument) => {
     vi.useFakeTimers();
     // CDP client ownership is intentionally process-scoped by tab. Each
     // parameterized case replaces its Chrome boundary, so reuse of tab 37
@@ -241,6 +254,8 @@ it.each([
       }
       if (method === 'Page.reload') {
         expect(registered).toBe(true);
+        h.document = null;
+        h.rerender?.();
         context(2, 'new');
         // Mirror the document-start main-world hook: the capture core will
         // only authorize its nonce-pinned cleanup after this CDP handshake.
@@ -272,6 +287,16 @@ it.each([
         packet(1, 'STALE_DOCUMENT_ROW', 999);
         packet(2, 'CURRENT_DOCUMENT_ROW', 1);
         emit('Page.frameNavigated', { frame: { id: 'main', url: h.url } });
+        h.document = 'replay-document';
+        h.rerender?.();
+        if (replaceDocument) {
+          h.document = null;
+          h.rerender?.();
+          context(3, 'unrelated-document');
+          emit('Page.frameNavigated', { frame: { id: 'main', url: h.url } });
+          h.document = 'unrelated-document';
+          h.rerender?.();
+        }
       }
       return {};
     });
@@ -287,6 +312,7 @@ it.each([
         onDetach: { addListener: vi.fn(), removeListener: vi.fn() },
       },
       tabs: { get: async () => ({ id: tabId, groupId: 1, url: h.url }) },
+      webNavigation: { getFrame: async () => ({ documentId: h.document, url: h.url }) },
       scripting: {
         executeScript: async (details: { args?: unknown[] }) => {
           const hookCall = details.args?.length === 2;
@@ -300,16 +326,27 @@ it.each([
       },
     });
     startToolDispatcher({ defaultPermissionMode: () => 'act' });
-    registerDocumentNetworkCaptureHost(runLocalSavedPattern);
+    registerDocumentNetworkCaptureHost(async (...args) => {
+      const terminal = await runLocalSavedPattern(...args);
+      h.terminal = terminal as Record<string, unknown>;
+      return terminal;
+    });
     const drain = async () => {
       for (let i = 0; i < 100; i++) await Promise.resolve();
     };
-    render(
+    const view = render(
       <>
         <PatternsTab />
         <SavedReplayApprovalHost signedIn />
       </>,
     );
+    h.rerender = () =>
+      view.rerender(
+        <>
+          <PatternsTab />
+          <SavedReplayApprovalHost signedIn />
+        </>,
+      );
     await act(drain);
     fireEvent.click(screen.getByTitle('Run pattern'));
     await vi.dynamicImportSettled();
@@ -361,7 +398,7 @@ it.each([
       await vi.advanceTimersByTimeAsync(20000);
       await drain();
     });
-    if (stallCleanup || stallDetach || rejectDetach) {
+    if (stallCleanup || stallDetach || rejectDetach || replaceDocument) {
       await act(async () => {
         // Close has its own timeout. This is a separate budget from the
         // matching window, so a deliberately stalled Chrome acknowledgement
@@ -370,9 +407,14 @@ it.each([
         await drain();
       });
       expect(screen.queryByText('CURRENT_DOCUMENT_ROW')).toBeNull();
-      expect(screen.getByText(/Chrome did not confirm removal/)).toBeTruthy();
+      if (!replaceDocument) expect(screen.getByText(/Chrome did not confirm removal/)).toBeTruthy();
       expect(bumpPatternRun).not.toHaveBeenCalled();
-    } else expect(screen.getByText('CURRENT_DOCUMENT_ROW')).toBeTruthy();
+    } else {
+      expect(h.terminal?.replay_document_id).toBe('replay-document');
+      expect(h.terminal?.rows).toEqual([{ title: 'CURRENT_DOCUMENT_ROW' }]);
+      expect(screen.getByText('CURRENT_DOCUMENT_ROW')).toBeTruthy();
+      expect(screen.getByText('Last run: Events')).toBeTruthy();
+    }
     expect(screen.queryByText('STALE_DOCUMENT_ROW')).toBeNull();
     expect(detach).toHaveBeenCalledOnce();
     if (rejectDetach) {

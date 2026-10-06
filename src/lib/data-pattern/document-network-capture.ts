@@ -36,7 +36,7 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
   let scriptId: string | null = null;
   let bindingAdded = false;
   let closed = false;
-  let closePromise: Promise<void> | null = null;
+  let closePromise: Promise<string | null> | null = null;
   let settleSetup!: () => void;
   const setupSettled = new Promise<void>((resolve) => {
     settleSetup = resolve;
@@ -104,7 +104,7 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
     void cleanupTargetPromise.catch(() => undefined);
   };
 
-  const close = (): Promise<void> => {
+  const close = (): Promise<string | null> => {
     if (closePromise) return closePromise;
     closed = true;
     early.length = 0;
@@ -172,6 +172,7 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
         if (timer !== undefined) clearTimeout(timer);
         chrome.debugger.onEvent.removeListener(onEvent);
       }
+      return replayDocumentReplaced ? null : (cleanupTarget?.documentId ?? null);
     })();
     return closePromise;
   };

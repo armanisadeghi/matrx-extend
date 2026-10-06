@@ -27,6 +27,10 @@ const mocks = vi.hoisted(() => ({
 vi.mock('@/hooks/use-active-tab', () => ({
   useActiveTab: () => ({ ...mocks.page }),
   isCurrentPageIdentity: (key: string) => key === mocks.page.pageKey,
+  getActiveTabIdentitySnapshot: () => ({
+    ...mocks.page,
+    identityStatus: mocks.page.pageKey ? 'ready' : 'resolving',
+  }),
   refreshActiveTabIdentity: mocks.retryIdentity,
 }));
 vi.mock('@/hooks/use-auth', () => ({
@@ -165,6 +169,43 @@ it('still marks DataView healthy after a matching nonempty run', async () => {
   await waitFor(() => expect(mocks.bumpRun).toHaveBeenCalledWith(pattern.id, 'ok', 1));
   expect(await screen.findByText(/Real calendar event/)).toBeTruthy();
 });
+
+it.each([
+  ['replay-document', true],
+  ['unrelated-document', false],
+] as const)(
+  'shows an owned Network reload only for its attested document (%s)',
+  async (currentDocument, accepted) => {
+    const replayPattern = {
+      ...pattern,
+      kind: 'network_capture',
+      config: { url_filter: 'https://electronic.vegas/api/events' },
+    } satisfies ExtractionPattern;
+    let finish!: (rows: Record<string, unknown>[]) => void;
+    mocks.fetchPatterns.mockResolvedValue([replayPattern]);
+    mocks.runSaved.mockImplementation(
+      (_pattern, _tabId, opts) =>
+        new Promise((resolve) => {
+          finish = (rows) => {
+            opts.onReplayDocument('replay-document');
+            resolve(rows);
+          };
+        }),
+    );
+    const view = render(<DataView />);
+    await screen.findAllByText('Calendar events');
+    await userEvent.click(screen.getByRole('button', { name: 'Extract' }));
+    mocks.page.documentId = '';
+    mocks.page.pageKey = '';
+    view.rerender(<DataView />);
+    mocks.page.documentId = currentDocument;
+    mocks.page.pageKey = `page-${currentDocument}`;
+    view.rerender(<DataView />);
+    await act(async () => finish([{ title: 'Current calendar event' }]));
+    expect(Boolean(screen.queryByText(/Current calendar event/))).toBe(accepted);
+    expect(mocks.bumpRun).toHaveBeenCalledTimes(accepted ? 1 : 0);
+  },
+);
 
 it('keeps extracted rows and reports saved history failure in DataView', async () => {
   mocks.fetchPatterns.mockResolvedValue([pattern]);
