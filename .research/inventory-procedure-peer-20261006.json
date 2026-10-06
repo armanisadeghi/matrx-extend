@@ -10,25 +10,40 @@
       "severity": "important",
       "kind": "procedure-to-inventory mismatch",
       "finding": "The expected section says guest access is covered by an existing EXT-F-2002 guest/access case. The canonical feature has only EXT-F-2002-T01, whose modes are member/admin; there is no guest case. Guest is feature-level not applicable, so the proposal must not claim guest coverage. Either remove the coverage claim and leave the negative guest case explicitly outside this case, or identify the actual separate case if one exists.",
-      "evidence": ["docs/stabilization/inventory.json: EXT-F-2002.cases (only T01; modes member/admin)", "docs/stabilization/inventory.json: EXT-F-2002.applicability.guest", "src/config/sidepanel-visibility.ts: tasks audience signed-in"]
+      "evidence": [
+        "docs/stabilization/inventory.json: EXT-F-2002.cases (only T01; modes member/admin)",
+        "docs/stabilization/inventory.json: EXT-F-2002.applicability.guest",
+        "src/config/sidepanel-visibility.ts: tasks audience signed-in"
+      ]
     },
     {
       "severity": "important",
       "kind": "procedure-to-inventory mismatch",
       "finding": "C08 is inventoried as a per-queued-source capture-intensity picker, but the proposal assigns it to capture-level filtering/grouping. Current QueueToolbar exposes a capture-level filter and group-mode toggle; neither chooses an item's capture intensity. The exception acknowledges the product/source mismatch, but mapping filter behavior to C08 would still create false coverage. Keep C08 explicitly uncovered/source-mismatched pending inventory reconciliation; a filter/group smoke step may be retained only as unlinked context.",
-      "evidence": ["docs/stabilization/inventory.json: EXT-F-2002-C08", "src/features/tasks/QueueToolbar.tsx: group-mode toggle and Capture level filter", "src/features/tasks/queue-view.ts: QueueFilters.buckets and group mode"]
+      "evidence": [
+        "docs/stabilization/inventory.json: EXT-F-2002-C08",
+        "src/features/tasks/QueueToolbar.tsx: group-mode toggle and Capture level filter",
+        "src/features/tasks/queue-view.ts: QueueFilters.buckets and group mode"
+      ]
     },
     {
       "severity": "important",
       "kind": "inventory coverage gap",
       "finding": "The actual ResolveMenu verdict catalog has six actions: accept_as_is, content_mismatch, gated, dead_link, ignored, and conditional retry. The inventory's C06 names only accept/gated/dead-link/retry and has no controls for content_mismatch or ignored. The proposal exercises the four named actions, so it must not imply coverage of the complete current verdict catalog; reconcile/add inventory control IDs separately if full UI control coverage is intended.",
-      "evidence": ["src/features/tasks/verdicts.tsx: VERDICT_OPTIONS", "src/features/tasks/TasksView.tsx: ResolveMenu and includeRetry", "docs/stabilization/inventory.json: EXT-F-2002-C06 and C14-C17"]
+      "evidence": [
+        "src/features/tasks/verdicts.tsx: VERDICT_OPTIONS",
+        "src/features/tasks/TasksView.tsx: ResolveMenu and includeRetry",
+        "docs/stabilization/inventory.json: EXT-F-2002-C06 and C14-C17"
+      ]
     },
     {
       "severity": "minor",
       "kind": "execution prerequisite",
       "finding": "The procedure is not independently runnable until campaign-owned disposable queue sources and cleanup ownership exist. It requests separate sources for many branches but provides no concrete fixture IDs or provisioning route; its limits correctly leave those branches unverified. Do not treat the proposed steps as an executable receipt until those controlled records are actually available.",
-      "evidence": [".research/inventory-procedure-gap-20261006.json: preconditions[2] and limits[2]", "docs/stabilization/INVENTORY-CONTRACT.md: concrete controlled-data prerequisites"]
+      "evidence": [
+        ".research/inventory-procedure-gap-20261006.json: preconditions[2] and limits[2]",
+        "docs/stabilization/INVENTORY-CONTRACT.md: concrete controlled-data prerequisites"
+      ]
     }
   ],
   "confirmed_procedure_details": [
