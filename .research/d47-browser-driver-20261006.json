@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "scope": "Executable hosted development-artifact native sidepanel route for real admin saved Network replay against owned HTTP fixture",
+  "source_finding": {
+    "old_callback_reachability": "The fixture's old request starts before saved replay arms. Current capture installs networkTapMain only through Page.addScriptToEvaluateOnNewDocument immediately before Page.reload. The old page therefore has no binding-producing tap. Chrome also destroys its execution context on full reload; old HTTP server finish alone cannot establish an old Runtime.bindingCalled event.",
+    "user_invariant": "A prior document's response cannot satisfy or overwrite a run for the new document. The driver requires a recipe-specific current result, current binding handshake and response in the same context, old-context identity and destruction, and old HTTP lifecycle. A missing positive control or an old binding payload refuses the bounded verdict."
+  },
+  "driver": {
+    "path": "tests/browser/showcase-d47-document-lifecycle.mjs",
+    "hosted_case": "showcase-d47-admin",
+    "route": "scripts/hosted-showcase-route.mjs",
+    "source_guards": "scripts/hosted-showcase-route.test.mjs",
+    "artifact_requirements": "Exact imported CI development source SHA, run ID, artifact ID and tree hash; real admin credentials and device organization via existing hosted route; no injected auth or service response."
+  },
+  "verification": {
+    "source_syntax": "node --check tests/browser/showcase-d47-document-lifecycle.mjs passed",
+    "format": "Biome check --write on changed JavaScript passed",
+    "focused_route_test": "Initial guard refusal added the exact route test to allowedCommands. Admitted run d47-driver-route-20261006c failed 6/7 because the new case was missing from requireHostedAcceptanceCredential's explicit admin list; scripts/hosted-profile-route.mjs was corrected. Changed-cause guarded retest d47-driver-route-20261006d passed 7/7 with a valid resource journal. The earlier admitted run d47-driver-route-20261006b had the same preflight failure, but its tool handle was lost after admission so the first complete TAP came from c.",
+    "native": "Not launched. Fresh source peer review and root admission precede any hosted native run."
+  },
+  "limits": [
+    "No T57 pass or D47 closure from source work.",
+    "Owned local fixture is supplemental; current-artifact public-site positive replay remains pending.",
+    "Original removed-producer old callback cannot be required to reappear; actual native context and event trace plus causal guards must support architectural exclusion.",
+    "Cancellation and other modes remain unverified here."
+  ]
+}

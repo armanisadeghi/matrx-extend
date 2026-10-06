@@ -38,6 +38,15 @@ test('ordinary case clears inherited stale opt-in and unrelated cases have no sh
   assert.equal(hostedShowcaseRoute('guest-chat', prepared, runner), null);
 });
 
+test('D47 route binds the exact CI development artifact to its own native result', () => {
+  const route = hostedShowcaseRoute('showcase-d47-admin', prepared, runner);
+  assert.equal(route.driver, 'tests/browser/showcase-d47-document-lifecycle.mjs');
+  assert.equal(route.env.MATRX_SHOWCASE_OUTPUT, '/private/results/showcase-d47-native-42-1.json');
+  assert.equal(route.env.MATRX_SHOWCASE_CI_SOURCE_SHA, prepared.sourceSha);
+  assert.equal(route.env.MATRX_SHOWCASE_STALE_BOUNDARY, undefined);
+  assert.equal(route.env.MATRX_SHOWCASE_EXTENSION_DIR, prepared.extensionDir);
+});
+
 test('stale route refuses wrong artifact identity before child dispatch', () => {
   for (const change of [
     { kind: 'published_store_crx_unpacked' },
@@ -86,4 +95,26 @@ test('approved stale preflight reaches credential-ready without resource or brow
   });
   assert.equal(result.status, 0, result.stderr);
   assert.match(result.stdout, /HOSTED_CREDENTIAL_PREFLIGHT_READY/);
+});
+
+test('D47 preflight requires real admin credentials and device organization', () => {
+  for (const [removed, expected] of [
+    ['MATRX_HOSTED_ADMIN_CREDENTIALS_JSON', /hosted_admin_secret_required/],
+    ['MATRX_HOSTED_PROFILE_ORGANIZATION_JSON', /hosted_profile_org_secret_required/],
+  ]) {
+    const env = { ...credentials };
+    delete env[removed];
+    const result = spawnSync(process.execPath, ['scripts/hosted-guest-acceptance.mjs'], {
+      env: {
+        GITHUB_ACTIONS: 'true',
+        MATRX_HOSTED_PHASE: 'preflight',
+        MATRX_HOSTED_ACCEPTANCE_CASE: 'showcase-d47-admin',
+        ...env,
+      },
+      encoding: 'utf8',
+    });
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, expected);
+    assert.doesNotMatch(result.stderr, /hosted phase requires owned resource permit/);
+  }
 });

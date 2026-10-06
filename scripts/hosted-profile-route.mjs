@@ -61,6 +61,7 @@ export function requireHostedAcceptanceCredential(acceptanceCase, env) {
       'audit-key-admin',
       'showcase-picker-admin',
       'showcase-stale-admin',
+      'showcase-d47-admin',
       'profile-admin',
     ].includes(acceptanceCase) ||
     scrapeMode === 'admin'

@@ -283,6 +283,7 @@ async function run(prepared, artifactMode) {
       'prepare-stale-results',
       'showcase-picker-admin',
       'showcase-stale-admin',
+      'showcase-d47-admin',
       'profile-admin',
       'profile-member',
     ].includes(acceptanceCase),
