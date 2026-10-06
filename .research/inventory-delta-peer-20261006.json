@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "report_type": "inventory-delta-peer-review",
+  "reviewed_at": "2026-10-06",
+  "proposal": ".research/inventory-current-delta-20261006.json",
+  "canonical_inventory": "docs/stabilization/inventory.json",
+  "review_scope": "Source and inventory fit only. No behavior, browser, tests, build, database, credential, or canonical inventory edits.",
+  "A_coverage_fit": {
+    "verdict": "accept with corrections",
+    "EXT-F-2011": {
+      "verdict": "accept C53/C54 and T10/T11",
+      "basis": "Current FillDeviceSetupCard renders two distinct step-up actions when status is off: account-password registration and passkey approval/claim. Vault is a signed-in sidepanel surface and EXT-F-2011 already applies to member and admin; C01-C52/T01-T09 contain no device-enrollment equivalent. Password input is cleared before the async request, matching the proposed secret-handling coverage.",
+      "correction": "Keep results unverified. The proposed actions are source-visible procedures, not proven UI behavior or auth-mode results. Case wording should say input is cleared before the request is sent (source does this), and avoid implying that the passkey claim succeeds absent runtime evidence."
+    },
+    "EXT-F-1012": {
+      "verdict": "accept a distinct host control/case, revise placement and scope wording",
+      "basis": "C01-C49/T01-T59 have no coverage for SavedReplayApprovalHost's subscribe-before-hydrate reconciliation, expiration notice/removal, or deny-on-unmount. The host is mounted at the shared sidepanel root inside AuthGate, and its source listens for extension-origin local pending confirmations across signed-in panel locations. T60 can remain admin-only for a saved network replay because data-pattern preparation carries cdp_attach.admin_only into the privileged operation requirements; this does not establish that the shared host itself is Showcase-only or unavailable to members.",
+      "correction": "Do not justify member inapplicability solely by EXT-F-1012/T38's Showcase audience denial. State the separate source basis: saved network replay's privileged cdp_attach requirement is admin-only, while the shared confirmation host is signed-in. Consider assigning the generic host control to the shared sidepanel/confirmation feature if one exists; otherwise describe C50 as local prepared-operation confirmation host and keep T60 bounded to saved replay host lifecycle. Page-load discovery also uses local prepared operations; keep its discovery behavior in T59 and avoid implying T60 tests that workflow or replay outcome."
+    },
+    "existing_reconciliations": "Accept reuse of C34 for shared PageIdentityNotice and C05 for ScreenshotShareLinks. Accept retaining T57 as unverified: T59's pass does not establish delayed old-document response isolation."
+  },
+  "B_evidence_quality": {
+    "verdict": "source-only evidence is appropriately labeled, with provenance caveats",
+    "observed": "The named source components and mount points exist in the current checkout. Inventory contains Vault through T09 and Showcase through C49/T59, so the proposed IDs are not duplicates in the inspected canonical file. No runtime result is justified by source inspection.",
+    "limitations": [
+      "The delta records inventory snapshot 528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b and audited source SHA 9db45d37930e70092dd4be6829e12e1d27aea472; current checkout HEAD is da9287873f4d80cea79e386f566776ffa88adeaf. This review inspected the current checkout and did not certify those historical source comparisons.",
+      "Global inventory census/native visibility remains explicitly pending; this peer review cannot certify whole-product completeness.",
+      "Shared checkout has unrelated dirty files; none were changed by this review."
+    ],
+    "no_passes_added": true
+  },
+  "source_basis": [
+    "src/features/vault/FillDeviceSetupCard.tsx",
+    "src/features/vault/VaultView.tsx",
+    "src/features/showcase/SavedReplayApprovalHost.tsx",
+    "src/entrypoints/sidepanel/App.tsx",
+    "src/lib/tools/handlers/data-patterns.ts",
+    "src/lib/tools/handlers/cdp.ts",
+    "src/config/sidepanel-visibility.ts",
+    "docs/stabilization/inventory.json"
+  ]
+}
