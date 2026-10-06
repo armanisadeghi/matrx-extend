@@ -36,7 +36,7 @@ importers:
         version: 0.23.0(react@19.3.0)
       '@ai-matrx/media':
         specifier: latest
-        version: 0.9.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 0.9.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@ai-matrx/realtime':
         specifier: latest
         version: 0.9.0(react@19.3.0)
@@ -324,8 +324,8 @@ packages:
     peerDependencies:
       react: '>=18.0.0'
 
-  '@ai-matrx/media@0.9.0':
-    resolution: {integrity: sha512-YXjE4e9rEKjn7esW62mjU4nv728kiIKxzENGhtT20FH7XxP7ng4OEY03F7pKAp5RYoWJcwPgbdO+JZvUuOd/yg==}
+  '@ai-matrx/media@0.9.1':
+    resolution: {integrity: sha512-NLH5MaqbUIjb6jc/HYIQmk/sGkgfXe8y9fvvdj0F2lTdjnI4hHfnfYobHka2BR1/916Ljc9C+p9MXp7S11elXA==}
     engines: {node: '>=20'}
     peerDependencies:
       '@reduxjs/toolkit': '>=2.0.0'
@@ -5315,7 +5315,7 @@ snapshots:
       marked: 18.0.14
       react: 19.3.0
 
-  '@ai-matrx/media@0.9.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@ai-matrx/media@0.9.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
     dependencies:
       '@ai-matrx/agents': 0.47.1(@supabase/supabase-js@2.117.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@ai-matrx/associations': 0.13.152(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
