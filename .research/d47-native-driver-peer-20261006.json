@@ -3,7 +3,10 @@
   "case_id": "EXT-F-1012-T57",
   "defect_id": "EXT-D-0047",
   "lane": "fresh independent source and acceptance-readiness review; no product or driver authorship",
-  "reviewed_commits": ["8479652c86dd4b1cf7fa5d518729b599382ec01f", "598570ca8e2b6a184e57086e442e0ef24199e8a3"],
+  "reviewed_commits": [
+    "8479652c86dd4b1cf7fa5d518729b599382ec01f",
+    "598570ca8e2b6a184e57086e442e0ef24199e8a3"
+  ],
   "ruling": ".research/d47-acceptance-architecture-ruling-20261006.json",
   "verdict_A_native_actual_outcome": {
     "status": "UNVERIFIED_AND_NOT_READY_FOR_FIRST_HOSTED_RUN",
