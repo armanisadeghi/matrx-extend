@@ -1,0 +1,303 @@
+{
+  "schema_version": 1,
+  "run_id": 37548083191,
+  "job_id": 112556830638,
+  "run_attempt": 1,
+  "status": "unverified_resource_invalid",
+  "driver_status": "unverified",
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "workflow_head_sha": "6bae5624c668e00bb299723130a986d764f43348",
+  "artifact": {
+    "source_sha": "fa2720fcf21ba5476e81d13f3b4454020bb3bf54",
+    "run_id": 37545299309,
+    "artifact_id": 11449894309,
+    "tree_sha256": "d10fad71bbc3b1501d2027596b87754cf2f19350586c32f3636dba37da5c67b3",
+    "version": "0.2.332"
+  },
+  "driver": {
+    "stage": "saved_terminal_result",
+    "failure_code": "saved_terminal_result_failed",
+    "failure": {
+      "name": "Error",
+      "stage": "saved_terminal_result",
+      "message_code": "saved_current_result_not_observed"
+    },
+    "native_stage": "exercise_panel",
+    "auth_stage": "admin_extension_auth_completion",
+    "probe_cleanup": ["remove_failed"],
+    "live_failure_boundary": {
+      "stage": "saved_terminal_result",
+      "probe": "captured_before_detach"
+    },
+    "verdicts": {
+      "current_saved_replay": "unverified",
+      "delayed_old_binding": "unverified",
+      "cancellation": "unverified"
+    }
+  },
+  "stage_observations": [
+    {
+      "stage": "native",
+      "elapsed_ms": 211.46383300000002
+    },
+    {
+      "stage": "signin",
+      "elapsed_ms": 13263.032958
+    },
+    {
+      "stage": "organization",
+      "elapsed_ms": 23647.86675
+    },
+    {
+      "stage": "capture_seed",
+      "elapsed_ms": 26573.776
+    },
+    {
+      "stage": "select_seed_response",
+      "elapsed_ms": 47382.973791
+    },
+    {
+      "stage": "save_recipe",
+      "elapsed_ms": 47463.620749999995
+    },
+    {
+      "stage": "verify_persisted_recipe",
+      "elapsed_ms": 48680.145458
+    },
+    {
+      "stage": "arm_old_document",
+      "elapsed_ms": 50014.088790999995
+    },
+    {
+      "stage": "old_context_identity",
+      "elapsed_ms": 50149.109
+    },
+    {
+      "stage": "worker_observer",
+      "elapsed_ms": 50170.625041
+    },
+    {
+      "stage": "saved_replay",
+      "elapsed_ms": 50175.200583
+    },
+    {
+      "stage": "saved_approval",
+      "elapsed_ms": 51226.100957999995
+    },
+    {
+      "stage": "current_http",
+      "elapsed_ms": 51636.145958
+    },
+    {
+      "stage": "release_old_http",
+      "elapsed_ms": 51859.160082999995
+    },
+    {
+      "stage": "saved_terminal_result",
+      "elapsed_ms": 51867.570457999995
+    }
+  ],
+  "terminal_budget": {
+    "capture_window_ms": 20000,
+    "cleanup_ms": 20000,
+    "delivery_ms": 10000,
+    "poll_ms": 100,
+    "timeout_ms": 50000,
+    "source_sha256": {
+      "runner": "ec8af7d4e75da1997c2dcb3064b8484fe26bae4d1d3413b56bebd3e88fd93046",
+      "core": "c65b4678be7e49829f4f346926d9ff9dbdce8b7b8506be23565abf644dba3596",
+      "handler": "fa1eb3990d5611c597004b23999829d42d3833a6765f79d3865bedc8267d62cb",
+      "panelDriver": "a2c9d3f1f98151d678e57ea8909fc6a9fbe4e2851d59f1fd3811a901168d904f"
+    },
+    "anchor": "after_current_http_response"
+  },
+  "terminal_observation": {
+    "sample_count": 445,
+    "started_at_elapsed_ms": 51867.585458,
+    "budget_ms": 50000,
+    "first_sample": {
+      "elapsed_ms": 498.00762499999837,
+      "remaining_ms": 49501.97887500001,
+      "exact_recipe": false,
+      "current_row": false,
+      "old_row": false,
+      "running": false,
+      "error_present": false,
+      "observation_unavailable": false
+    },
+    "last_sample": {
+      "elapsed_ms": 50006.386416999994,
+      "remaining_ms": 0,
+      "exact_recipe": false,
+      "current_row": true,
+      "old_row": false,
+      "running": false,
+      "error_present": false,
+      "observation_unavailable": false
+    }
+  },
+  "saved_recipe_observation": {
+    "terminal": "summary",
+    "focus": {
+      "popover_visible": true,
+      "name_matches": false,
+      "name_focused": true,
+      "save_button_present": true,
+      "save_button_disabled": false,
+      "saving_indicator": false,
+      "saved_summary_visible": false,
+      "error_present": false,
+      "error_kind": null
+    },
+    "last": {
+      "popover_visible": true,
+      "name_matches": true,
+      "name_focused": false,
+      "save_button_present": true,
+      "save_button_disabled": false,
+      "saving_indicator": false,
+      "saved_summary_visible": true,
+      "error_present": false,
+      "error_kind": null
+    }
+  },
+  "patterns_observation": {
+    "active": true,
+    "host_matches": true,
+    "exact_row_visible": false,
+    "row_count": 0,
+    "loading": true,
+    "empty_state": false,
+    "error_present": false,
+    "error_kind": null
+  },
+  "target_observation": {
+    "stage": "saved_replay",
+    "phase": "mouse_released",
+    "state": {
+      "patterns_active": true,
+      "host_matches": true,
+      "selector_count": 7030,
+      "exact_match_count": 1,
+      "visible_count": 1,
+      "enabled_count": 1,
+      "exact_row_count": 1,
+      "row_title_count": 1,
+      "row_stored_title_count": 0,
+      "center_hits_target": true
+    }
+  },
+  "organization_observation": {
+    "admin_role_verified": true,
+    "picker_available": true,
+    "picker_has_selection": false,
+    "selection_required": true,
+    "storage_has_uuid": true,
+    "storage_name_matches": true,
+    "rendered_email_matches": true,
+    "rendered_role_matches": true,
+    "rendered_profile_matches": true,
+    "rendered_organization_matches": true
+  },
+  "fixture_lifecycle": {
+    "release_http_status": 200,
+    "before_release": {
+      "phase": "armed",
+      "page_loads": 2,
+      "target_requests": 2,
+      "old_pending": true,
+      "old_response_aborted": false,
+      "old_response_finished": false,
+      "old_response_released": false,
+      "old_release_prestate": null,
+      "old_release_outcome": null,
+      "current_response_sent": true
+    },
+    "after_release": {
+      "phase": "armed",
+      "page_loads": 2,
+      "target_requests": 2,
+      "old_pending": false,
+      "old_response_aborted": false,
+      "old_response_finished": true,
+      "old_response_released": true,
+      "old_release_prestate": "pending",
+      "old_release_outcome": "server_finished",
+      "current_response_sent": true
+    }
+  },
+  "contexts": [
+    {
+      "order": 1,
+      "kind": "context_created",
+      "tab_present": true,
+      "context": "old",
+      "unique_id_present": true,
+      "frame_id_present": true,
+      "same_frame_as_old": true
+    },
+    {
+      "order": 2,
+      "kind": "contexts_cleared",
+      "tab_present": true
+    },
+    {
+      "order": 3,
+      "kind": "frame_navigated",
+      "tab_present": true,
+      "current_fixture": true
+    },
+    {
+      "order": 4,
+      "kind": "context_created",
+      "tab_present": true,
+      "context": "current",
+      "unique_id_present": true,
+      "frame_id_present": true,
+      "same_frame_as_old": true
+    }
+  ],
+  "binding_events": [
+    {
+      "order": 5,
+      "context": "current",
+      "handshake": true,
+      "target_packet": false,
+      "request_body_key": "other",
+      "status": null,
+      "request_sequence": null,
+      "current_payload": false,
+      "old_payload": false
+    },
+    {
+      "order": 6,
+      "context": "current",
+      "handshake": false,
+      "target_packet": true,
+      "request_body_key": "none",
+      "status": 200,
+      "request_sequence": 1,
+      "current_payload": true,
+      "old_payload": false
+    }
+  ],
+  "interpretation_limits": {
+    "current_binding_positive_control_observed": true,
+    "old_binding_payload_observed": false,
+    "old_context_callback_delivery": "unverified; context cleared and current context observed, but no old binding packet was captured",
+    "cancellation": "unverified; old server response finished after the current response and no abort was observed",
+    "current_saved_replay": "unverified; the driver case-sensitive exact_recipe predicate remained false, while the final sample had current_row=true. Visible label text was not retained, so these booleans do not establish whether the recipe label was rendered."
+  },
+  "resource_phases": {
+    "package": "valid",
+    "browser": "valid",
+    "acceptance": "invalid; resourceInvalid=true; exit_code=3"
+  },
+  "screenshots": {
+    "privacy_reviewed": true,
+    "reviewed_count": 2,
+    "included": false,
+    "reason": "Both same-run images show generic panel/setup content and no D47 saved-result or lifecycle evidence."
+  }
+}
