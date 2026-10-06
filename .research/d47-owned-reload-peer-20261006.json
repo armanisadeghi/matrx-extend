@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0047",
+  "reviewed_commit": "86046a88",
+  "lane": "fresh independent source review; no native/browser acceptance",
+  "verdict_a": {
+    "source": "PARTIAL: the owned-reload positive path and post-acceptance replacement guard are source-tested; pre-first-commit same-URL external navigation is not causally excluded",
+    "native": "UNVERIFIED: the frozen 0.2.325 receipt lacks the worker terminal and panel result; no installed-browser check of this source was run",
+    "evidence": [
+      "A nonce-bound MAIN-world probe yields a Chrome documentId from the accepted new execution context; close returns that ID only if the context was not replaced. The worker compares it with the current top frame, and both saved UIs compare it with the active-tab snapshot before showing rows.",
+      "The same capture core sets documentContext from the first new default main-frame context after reloadIssued and commits the first matching-URL Page.frameNavigated. It does not distinguish the reload command's navigation from a user-initiated same-URL navigation that supplants it before first commit. The nonce proves which document was captured, not why that document navigated.",
+      "The new unrelated same-route test creates context 3 only after context 2, its response, and the first frame commit. It proves post-acceptance replacement rejection, not the pre-commit substitution case."
+    ]
+  },
+  "verdict_b": {
+    "quality": "FAIL / IMPORTANT: navigation ownership is inferred from timing and URL, so an unrelated same-URL document can be attested and accepted if it is the first committed document after Page.reload. This is a source-supported race hypothesis requiring a forcing regression and causal gate before the source can be trusted.",
+    "finding_refs": [
+      "src/lib/data-pattern/document-network-capture.ts:44-49,258-298",
+      "src/lib/data-pattern/document-network-capture.ts:75-100,107-175",
+      "src/lib/tools/handlers/data-patterns.ts:297-330",
+      "src/features/showcase/tabs/PatternsTab.tsx:163-177,194-204",
+      "src/features/data/DataView.tsx:350-364,378-389",
+      "tests/unit/document-network-saved-ui.test.tsx:255-299,401-418"
+    ],
+    "test_gap": "Add a controlled case where Page.reload is requested, then an independent same-URL top-frame navigation replaces it before the first new document commits; let that later document emit a valid hook nonce and matching response. The terminal result, current row, Last run, and saved history must all reject that external navigation. Keep the existing positive owned reload and post-commit replacement cases as controls.",
+    "duplication": "PatternsTab and DataView separately implement the same replayOwner/isCurrent guard. No behavioral divergence was found in this diff, but the ownership policy should have one shared source before expanding its cases.",
+    "red_proof": "The builder's original-behavior current-row RED was an unguarded diagnostic; its guarded RED covered only the exact Last run label. I did not count either as an independent guarded mutation of old invalidation."
+  },
+  "independent_check": {
+    "command": "pnpm exec vitest run --maxWorkers=1 tests/unit/document-network-saved-ui.test.tsx tests/unit/saved-run-data-view-health.test.tsx tests/unit/showcase-patterns-replay-provenance.test.tsx tests/unit/document-network-capture.test.ts",
+    "resource_run_id": "d47-owned-peer-focused-20261006-01",
+    "journal": "docs/stabilization/resource-journals/d47-owned-peer-focused-20261006-01.jsonl",
+    "result": "resource-valid; 4 files and 43 tests passed; exit 0",
+    "limits": "The positive controlled fixture doubles Chrome/CDP and cannot establish installed-browser acceptance or an external first-navigation race. No source mutation was run during this review."
+  },
+  "recommended_status": "SOURCE_REVIEW_ACTION_REQUIRED_NATIVE_UNVERIFIED"
+}
