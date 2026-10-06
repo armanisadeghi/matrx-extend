@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "lane": "independent zero-authorship save-probe review",
+  "reviewed_commits": ["17e000ec", "f4b80048"],
+  "verdict_a_actual_native_outcome": {
+    "status": "UNVERIFIED",
+    "evidence": ".research/d47-first-native-20261006/37526204746/receipt.json",
+    "finding": "Run 37526204746 stopped at save_recipe with recipe_saved_not_observed. It has no saved_result, fixture lifecycle, binding events, or replay verdict. The original receipt cannot distinguish a rejected, pending, successful-but-missed, or otherwise interrupted save; no product D47 pass or failure follows."
+  },
+  "verdict_b_scoped_readiness": {
+    "status": "PARTIAL",
+    "save_boundary": "The amended driver checks that the unique UUID recipe name entered the popover and that Save is enabled, observes save state before teardown, and requires that name to appear in the Patterns tab after its live fetch. Popover disappearance or a transient success banner alone cannot advance to replay. A save error or missing persisted row remains an unverified driver stage failure with sanitized diagnostics.",
+    "remaining_finding": "Replay still calls click(panel, 'title', 'Run pattern') without scoping to the newly named row. PatternsTab renders one identically titled Run pattern button per saved pattern on the same host. The shared click helper requires one visible candidate, so a prior saved pattern can stop the run at saved_replay even after the new recipe was proved persisted. This is a driver-targeting gap, not a product conclusion.",
+    "source_evidence": [
+      "tests/browser/showcase-d47-document-lifecycle.mjs:368-393",
+      "tests/browser/showcase-d47-document-lifecycle.mjs:425",
+      "tests/browser/settings-panel-driver.mjs:113-157",
+      "src/features/showcase/tabs/PatternsTab.tsx:272-280",
+      "src/features/showcase/tabs/PatternsTab.tsx:437-449",
+      "src/lib/supabase/queries.ts:905-922",
+      "src/features/showcase/components/SaveAsPattern.tsx:180-244"
+    ],
+    "verification": "Read-only source and original receipt review; node --check and targeted biome check passed. No native rerun, browser test, build, or product edit in this lane."
+  },
+  "next_step": "Scope the Run pattern click to the exact visible row bearing the freshly generated recipe name, then run one bounded hosted native case against frozen product artifact 11440764124 (v0.2.325). Inspect the new save observation, live Patterns row, replay packet, and lifecycle trace. Keep the outcome unverified until that run supplies the evidence."
+}
