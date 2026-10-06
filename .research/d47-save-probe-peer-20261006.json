@@ -49,5 +49,20 @@
       "tests/browser/profile-native-acceptance.mjs existing CDP selectAll convention"
     ],
     "verification": "Read-only source and receipt review; targeted syntax and lint checks. No native run, build, product edit, or new acceptance claim."
+  },
+  "scoped_reverify_8f2d6a43": {
+    "verdict_a_actual_native_outcome": "UNVERIFIED: run 37532036039 passed exact-name input and showed a Save success summary, then timed out before observing the named row in Patterns. Replay, binding and lifecycle evidence are absent. The narrow live database read found one matching-shape campaign pattern at the run time, supporting likely persistence, but the committed receipt lacks the literal generated name and cannot conclusively identify that row as this save. It does not prove the list failure cause.",
+    "verdict_b_driver_quality": "PASS for scoped readiness to one bounded native retest. The driver waits for SaveAsPattern's delayed success popover closure before the tab click; it then requires the Patterns trigger and controlled pane to be active, and requires an exact new-name row on the expected fixture host before replay. The list is fetched through the canonical fetchPatternsForDomain(host) path. Neither popover closure, tab activation, nor host header alone satisfies the persisted recipe gate.",
+    "output_assurance_and_privacy": "Failure diagnostics retain bounded booleans, row count, loading and categorized error, not recipe names, raw errors, URLs or record contents. The new observation is local to this driver; the shared click helper is unchanged. An absent active pane, host mismatch, load error, or missing exact row remains an unverified failure rather than a pass.",
+    "new_breakage": "None found in the scoped source review. The prior run cannot prove popover interception; waiting for closure removes that plausible race and the added pane observations can distinguish the next failure boundary.",
+    "evidence": [
+      ".research/d47-input-native-20261006/37532036039/receipt.json",
+      "8f2d6a43 tests/browser/showcase-d47-document-lifecycle.mjs save_popover_closed and readPatternsObservation",
+      "src/features/showcase/components/SaveAsPattern.tsx delayed close after success",
+      "src/features/showcase/tabs/PatternsTab.tsx active refresh and rendered rows",
+      "src/lib/supabase/queries.ts fetchPatternsForDomain"
+    ],
+    "verification": "Read-only source and receipt review plus targeted syntax and lint. No native run, build, or runtime edit in this lane.",
+    "next_step": "One bounded hosted native retest using frozen product artifact 11440764124 is ready. Inspect patterns_observation on failure; keep D47 product verdict unverified until replay and lifecycle evidence exist."
   }
 }
