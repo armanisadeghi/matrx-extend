@@ -156,10 +156,11 @@ async function trustedPanelClick(
   text = null,
   patternName = null,
   expectedHost = null,
+  semanticTitle = null,
 ) {
   return trustedD47PanelClick(
     panel,
-    { selector, text, patternName, expectedHost },
+    { selector, text, patternName, expectedHost, semanticTitle },
     (observation) => {
       report.target_observation = { stage: report.stage, ...observation };
     },
@@ -498,7 +499,14 @@ try {
         stage('saved_replay');
         // The earlier row observation predates page.reload and its document identity reset.
         patternsObservation = await readPatternsObservation(panel, recipe, fixtureHost);
-        await trustedPanelClick(panel, 'button[title="Run pattern"]', null, recipe, fixtureHost);
+        await trustedPanelClick(
+          panel,
+          'button[title], button[data-matrx-title]',
+          null,
+          recipe,
+          fixtureHost,
+          'Run pattern',
+        );
         stage('saved_approval');
         await allow(panel);
         stage('current_http');

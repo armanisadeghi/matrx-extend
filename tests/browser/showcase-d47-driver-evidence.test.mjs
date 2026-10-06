@@ -197,18 +197,22 @@ async function targetHarness({ state = 'ready', fail = null, mutate = null } = {
   button.scrollIntoView = () => {};
   document.elementFromPoint = () =>
     state === 'occluded' ? document.body : button.querySelector('svg');
-  if (state === 'disabled' || state === 'becomes-ready') button.disabled = true;
+  if (['disabled', 'becomes-ready', 'stored-disabled'].includes(state)) button.disabled = true;
   if (state === 'wrong-host')
     document.getElementById('patterns-pane').firstChild.textContent =
       'All saved patterns for another-host';
   if (state === 'inactive')
     document.getElementById('patterns-pane').setAttribute('data-state', 'inactive');
-  if (state === 'stored-title') {
+  if (state.startsWith('stored-')) {
     button.setAttribute('data-matrx-title', button.title);
     button.removeAttribute('title');
   }
+  if (state === 'stored-wrong') button.setAttribute('data-matrx-title', 'Rename');
+  if (state === 'stored-native-mismatch') button.setAttribute('title', 'Rename');
+  if (state === 'stored-native-empty') button.setAttribute('title', '');
+  if (state === 'native-precedence') button.setAttribute('data-matrx-title', 'Rename');
   if (state === 'missing') button.remove();
-  if (state === 'duplicate') {
+  if (state === 'duplicate' || state === 'stored-duplicate') {
     const clone = button.cloneNode(true);
     clone.getBoundingClientRect = button.getBoundingClientRect;
     button.after(clone);
@@ -237,7 +241,8 @@ async function targetHarness({ state = 'ready', fail = null, mutate = null } = {
         },
       },
       {
-        selector: 'button[title="Run pattern"]',
+        selector: 'button[title], button[data-matrx-title]',
+        semanticTitle: 'Run pattern',
         patternName: 'Concert listing',
         expectedHost: '127.0.0.1:4179',
       },
@@ -257,7 +262,13 @@ async function assertTargetCases(mutate = null) {
     ['ready', [1, 1, 1, 1, 1, 0]],
     ['disabled', [1, 1, 1, 0, 1, 0]],
     ['hidden', [1, 1, 0, 0, 1, 0]],
-    ['stored-title', [0, 0, 0, 0, 1, 1]],
+    ['stored-title', [1, 1, 1, 1, 1, 1]],
+    ['stored-disabled', [1, 1, 1, 0, 1, 1]],
+    ['stored-duplicate', [2, 2, 2, 2, 1, 2]],
+    ['stored-wrong', [1, 0, 0, 0, 1, 0]],
+    ['stored-native-mismatch', [1, 0, 0, 0, 1, 1]],
+    ['stored-native-empty', [1, 0, 0, 0, 1, 1]],
+    ['native-precedence', [1, 1, 1, 1, 1, 0]],
     ['missing', [0, 0, 0, 0, 1, 0]],
     ['duplicate', [2, 2, 2, 2, 1, 0]],
     ['wrong-recipe', [1, 0, 0, 0, 0, 0]],
@@ -279,10 +290,13 @@ async function assertTargetCases(mutate = null) {
     );
     assert.deepEqual(
       result.inputs,
-      state === 'ready' ? ['mousePressed', 'mouseReleased'] : [],
+      ['ready', 'stored-title', 'native-precedence'].includes(state)
+        ? ['mousePressed', 'mouseReleased']
+        : [],
       `trusted dispatch: ${state}`,
     );
-    if (state === 'ready') assert.equal(result.error, undefined);
+    if (['ready', 'stored-title', 'native-precedence'].includes(state))
+      assert.equal(result.error, undefined);
     else assert.match(result.error.message, /^panel_target_ready_not_observed:/);
     assert.equal(JSON.stringify(result.records).includes('Concert listing'), false);
   }
@@ -339,4 +353,27 @@ test('Run waits for fresh exact host and enabled row without dispatching to a st
     if (state === 'occluded') assert.equal(refused.records.at(-1).state.center_hits_target, false);
     else assert.equal(refused.records.at(-1).state.host_matches, false);
   }
+});
+
+test('semantic title guard kills title-only lookup and reversed native-title precedence in memory', async () => {
+  await assert.rejects(
+    () =>
+      assertTargetCases((source) =>
+        source.replace(
+          "el.getAttribute('title') ?? el.getAttribute('data-matrx-title')",
+          "el.getAttribute('title')",
+        ),
+      ),
+    /target classification: stored-title/,
+  );
+  await assert.rejects(
+    () =>
+      assertTargetCases((source) =>
+        source.replace(
+          "el.getAttribute('title') ?? el.getAttribute('data-matrx-title')",
+          "el.getAttribute('data-matrx-title') ?? el.getAttribute('title')",
+        ),
+      ),
+    /target classification: stored-native-mismatch/,
+  );
 });

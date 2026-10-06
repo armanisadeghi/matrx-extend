@@ -16,7 +16,8 @@
     "The saved_replay stage calls trustedPanelClick; its only AssertionError is point.count !== 1 before either Input.dispatchMouseEvent. This receipt identifies a nonunique actionable target, not a mouse transport or product replay failure.",
     "The helper collapsed absent, hidden, disabled, wrong-row and duplicate targets to count; it then discarded even count. sanitizeD47Failure rejected panel_target_not_unique, producing unclassified_error.",
     "runNativeSidepanelQa detaches the exercise panel in finally before the caller outer catch; consequently panel and probe diagnostic reads in that outer catch were unavailable.",
-    "The exact-row readiness observation preceded page.reload. useActiveTab withholds page identity on navigation; PatternsTab invalidates its page-key snapshot and refetches. Therefore that observation cannot prove the post-reload Run target is ready."
+    "The exact-row readiness observation preceded page.reload. useActiveTab withholds page identity on navigation; PatternsTab invalidates its page-key snapshot and refetches. Therefore that observation cannot prove the post-reload Run target is ready.",
+    "Independent review proved the strict native-title selector excludes a valid hovered Run control: the canonical shared driver resolves (title ?? data-matrx-title). This is a source-proven targeting class, not proof of the original native failure cause."
   ],
   "hypotheses": [
     {
@@ -29,7 +30,7 @@
       "rank": 2,
       "cause": "Run title relocated by shared tooltip",
       "prediction": "Exact row exists with row_stored_title_count positive and row_title_count zero.",
-      "live_verdict": "Unmeasured; no selector fallback added."
+      "live_verdict": "Original native state unmeasured. Source-proven valid stored-title state now supported using canonical native-title precedence; guards reject stale/mismatched stored labels."
     },
     {
       "rank": 3,
@@ -47,17 +48,17 @@
   "changes": [
     "Extract real DOM target observation and trusted CDP action into driver-evidence helper; no product source edits.",
     "Before Run, resample Patterns after reload. During bounded existing waitFor polling, require active Patterns pane, exact host including delimiter, exact recipe and one visible enabled target contained in that pane, then a positive center hit test. Dispatch exactly one press/release pair.",
-    "Keep original selector; no synthetic click, selector fallback, extended timeout, fixture bypass or acceptance weakening.",
+    "Use the canonical semantic title contract (title ?? data-matrx-title) === Run pattern, preserving native title precedence including empty title. This is exact label matching under the unchanged row/host/pane/unique-enabled/hit bounds, not a broad fallback. No synthetic click, timeout extension, fixture bypass or acceptance weakening.",
     "Persist privacy-safe counts/booleans and target/press/release phase synchronously at the live boundary. No recipe literals, raw DOM, input values, URLs, exception strings or screenshots in added diagnostic.",
     "Wrap exercise callback to retain existing allowlisted passive probe contexts/bindings before harness detaches, including failures in approval/current HTTP/terminal/evidence sibling steps.",
     "Same trusted helper covers Network tab, discovery response and Patterns tab clicks as well as saved Run; approval uses existing settings-panel-driver."
   ],
   "verification": {
-    "command": "node scripts/stabilization-resource.mjs run --run-id d47-run-boundary-source-20261006-2 -- node --test tests/browser/showcase-d47-driver-evidence.test.mjs",
-    "journal": "docs/stabilization/resource-journals/d47-run-boundary-source-20261006-2.jsonl",
+    "command": "node scripts/stabilization-resource.mjs run --run-id d47-run-title-source-20261006-1 -- node --test tests/browser/showcase-d47-driver-evidence.test.mjs",
+    "journal": "docs/stabilization/resource-journals/d47-run-title-source-20261006-1.jsonl",
     "decision": "valid",
     "resource_invalid": false,
-    "tests_passed": 9,
+    "tests_passed": 10,
     "first_guard": "d47-run-boundary-source-20261006-1: 3 new tests failed because happy-dom omits browser default visibility; explicit visible fixture corrected. Not claimed as original native RED.",
     "sut": "actual DOM observer + trusted click state machine; happy-dom DOM and external geometry/CDP simulated, selector/classification/wait/dispatch logic real",
     "cases": [
@@ -72,10 +73,49 @@
       "disabled then enabled",
       "wrong host",
       "inactive pane",
-      "occluded center"
+      "occluded center",
+      "stored title clicks successfully",
+      "stored disabled refuses",
+      "stored duplicate refuses",
+      "stored wrong label refuses",
+      "native mismatched title overrides stored Run",
+      "native empty title overrides stored Run",
+      "native Run overrides stale stored label"
     ],
-    "mutations": "Executed in memory: constant-success observer and bypassed-disabled filter both cause the disabled classification assertion to fail; no shared source mutation.",
-    "formatting": "pnpm exec biome format --write on all changed source/test/report files; git diff --check"
+    "mutations": "Executed in memory: constant-success observer and bypassed-disabled filter both cause the disabled classification assertion to fail; no shared source mutation. Added in-memory title-only lookup and reversed native-title precedence mutations; both must be detected by exact semantic-title assertions.",
+    "formatting": "pnpm exec biome format --write on all changed source/test/report files; git diff --check",
+    "initial_readiness_guard": {
+      "command": "node scripts/stabilization-resource.mjs run --run-id d47-run-boundary-source-20261006-2 -- node --test tests/browser/showcase-d47-driver-evidence.test.mjs",
+      "journal": "docs/stabilization/resource-journals/d47-run-boundary-source-20261006-2.jsonl",
+      "decision": "valid",
+      "resource_invalid": false,
+      "tests_passed": 9,
+      "first_guard": "d47-run-boundary-source-20261006-1: 3 new tests failed because happy-dom omits browser default visibility; explicit visible fixture corrected. Not claimed as original native RED.",
+      "sut": "actual DOM observer + trusted click state machine; happy-dom DOM and external geometry/CDP simulated, selector/classification/wait/dispatch logic real",
+      "cases": [
+        "unique ready",
+        "disabled",
+        "hidden",
+        "stored title",
+        "missing control",
+        "duplicate",
+        "wrong recipe",
+        "evaluation/press/release transport failure",
+        "disabled then enabled",
+        "wrong host",
+        "inactive pane",
+        "occluded center",
+        "stored title clicks successfully",
+        "stored disabled refuses",
+        "stored duplicate refuses",
+        "stored wrong label refuses",
+        "native mismatched title overrides stored Run",
+        "native empty title overrides stored Run",
+        "native Run overrides stale stored label"
+      ],
+      "mutations": "Executed in memory: constant-success observer and bypassed-disabled filter both cause the disabled classification assertion to fail; no shared source mutation.",
+      "formatting": "pnpm exec biome format --write on all changed source/test/report files; git diff --check"
+    }
   },
   "limits": [
     "Original native cause among missing/disabled/duplicate/hidden/title remains unknown; the old receipt cannot recover it.",

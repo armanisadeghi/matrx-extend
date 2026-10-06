@@ -118,10 +118,15 @@ export function observeD47PanelTarget({
   text = null,
   patternName = null,
   expectedHost = null,
+  semanticTitle = null,
 }) {
   const candidates = [...document.querySelectorAll(selector)];
   const exact = candidates.filter(
     (el) =>
+      // Same title contract as settings-panel-driver: a present native title
+      // wins even when empty; the tooltip's stored title is used only if absent.
+      (semanticTitle === null ||
+        (el.getAttribute('title') ?? el.getAttribute('data-matrx-title')) === semanticTitle) &&
       (text === null || el.textContent.trim() === text) &&
       (patternName === null ||
         [
@@ -161,7 +166,7 @@ export function observeD47PanelTarget({
     visible_count: visible.length,
     enabled_count: enabled.length,
     exact_row_count: rows.length,
-    // Detect the shared tooltip's native-title relocation without changing the selector.
+    // Preserve native/stored title counts independently of semantic matching.
     row_title_count: rows.reduce(
       (n, row) =>
         n + (row.closest('div.group')?.querySelectorAll('button[title="Run pattern"]').length ?? 0),
