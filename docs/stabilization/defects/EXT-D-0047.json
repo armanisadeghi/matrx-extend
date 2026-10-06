@@ -28,8 +28,8 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Execution owner may dispatch exactly one showcase-d47-admin hosted test against frozen artifact11440764124 with reviewed Run-readiness driver. Require fresh preflight, same-run resource journals and immediate owned-secret cleanup. No second attempt without diagnosis and root admission. Native saved replay and public-site/surrounding cases remain unverified.",
-    "status": "CI37536759731 succeeded; one guarded final-reviewed driver retest conditionally admitted after fresh credential/resource preflight.",
+    "next_action": "Monitor existing native run37537634304 to terminal; collect same-run journals/live diagnostics, remove owned ephemeral secrets immediately, independently review actual replay and provenance evidence. No second run is authorized.",
+    "status": "One guarded native retest running:37537634304 after CI37536759731 success and valid credential/resource preflight.",
     "implementation_agent": "completed: d47_run_boundary_escalation",
     "execution_agent": "d47_input_native_retest",
     "native_run_id": 37534454354,
@@ -53,7 +53,8 @@
     "run_boundary_repair_commit": "0917cc61",
     "run_boundary_review_commit": "5425d283",
     "run_boundary_review": ".research/d47-run-readiness-peer-20261006.json",
-    "pending_ci_run_id": 37536759731
+    "pending_ci_run_id": 37536759731,
+    "active_native_run_id": 37537634304
   },
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
   "verification_status": "Current independentevidencepeer e7a67bcd confirms initialrequest timing and documentidentity controlled regressions (including meaningful identitymutation), plus bounded installed initialHN capture and saved10row replay on8b0f8adc/9ea6687b. Delayed matching prior-document response with higher old sequence is still nativeUNVERIFIED; T57 and original D47 closure remain incomplete. No current runtime was run by evidencepeer.",
