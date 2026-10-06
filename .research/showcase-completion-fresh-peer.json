@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "9ffd06d354f83b51faec517d0f03285c97185f78",
+  "verdict_a_actual_behavior": {
+    "status": "PARTIAL_NATIVE_UNVERIFIED",
+    "evidence": "The old native receipt for run 37393464824 proves B detection and one picked field, then ends at ambiguous done_B_failed. The new driver splits Done click, overlay detach, builder readiness, Extract, and row readiness, but has not yet run natively against the frozen 0.2.307 artifact.",
+    "field_and_rows": "Source ListPatternTab and ResultPreview apply uppercase CSS to their count headings. The corrected case-insensitive whole-line predicates accept 1 SELECTED FIELD and 3 ROWS while rejecting 11/0 fields and 13/0 rows. The active List Pattern pane and enabled Extract are still required; the native three correct rows remain unverified."
+  },
+  "verdict_b_quality": {
+    "status": "PASS_WITH_DIAGNOSTIC_LIMIT",
+    "evidence": "Focused node tests pass (3/3). Action errors rethrow; before/after samples stay inside the native exercise lifetime; stored diagnostics contain booleans and counts, not row contents or private exception text. No product files changed.",
+    "finding": "result_raw is read from a sidepanel chrome.runtime.onMessage observer that sees only messages delivered through the relay. Therefore false means no matching unstamped message was observed there, not that the page failed to emit a raw RESULT. The source report's prediction that raw/stamped booleans distinguish the RESULT producer boundary is overstated; use the page-side boundary observer for that distinction in the next native run or label raw as unobserved. This does not bypass any acceptance assertion.",
+    "guard_limit": "The focused DOM seam uses source-shaped text rather than actual browser rendering. The native run is still the forcing proof of the complete field-to-three-rows flow."
+  },
+  "next_step": "Run the new driver with frozen CI run 37392653796 artifact 11381873416 and keep artifact SHA separate from driver SHA; inspect each completion boundary and verify exact rows on the live surface before any product-health claim."
+}
