@@ -36,5 +36,18 @@
       "src/features/showcase/tabs/PatternsTab.tsx PatternRow name span and Run pattern button"
     ],
     "next_step": "Run one bounded hosted native case against frozen product artifact 11440764124 (v0.2.325); inspect persisted-name, replay packet, and lifecycle evidence before any D47 product verdict."
+  },
+  "scoped_reverify_83a6148f": {
+    "verdict_a_actual_native_outcome": "UNVERIFIED: native run 37528814595 stopped at save_recipe before Save was clicked. Its open popover had an enabled Save button and name_matches=false. It supplies no saved recipe, replay packet, or D47 product outcome. The receipt does not isolate failed focus, selection, or React update.",
+    "verdict_b_driver_quality": "PASS for scoped name-entry repair, pending native observation. The shared click helper uses its existing visible, hit-tested trusted pointer path for the one save-name input; the driver waits for that input to own focus, sends platform-specific Meta+A on macOS or Ctrl+A elsewhere with CDP selectAll and virtual key code 65, inserts the generated UUID name, then waits for an exact DOM value match. Save remains behind the exact pre-click assertion and enabled-button assertion. The source does not set an input value directly or relax the persistence gate.",
+    "shared_helper_regression_and_privacy": "The new save-pattern-name branch only changes candidate resolution for that new kind; existing click kinds retain their paths. Candidate filtering and pointer diagnostics return counts and bounded classifications, not the input value or generated name. The save observation exports booleans and categorized errors, not field text. A missing or ambiguous input remains a hard driver failure.",
+    "new_breakage": "None found in the scoped source review. Source cannot establish that the trusted sequence succeeds in the hosted native panel; that remains the next live observation.",
+    "evidence": [
+      ".research/d47-save-native-20261006/37528814595/receipt.json",
+      "83a6148f tests/browser/settings-panel-driver.mjs save-pattern-name candidate branch",
+      "83a6148f tests/browser/showcase-d47-document-lifecycle.mjs focus, selectAll, exact-name wait and pre-Save assertions",
+      "tests/browser/profile-native-acceptance.mjs existing CDP selectAll convention"
+    ],
+    "verification": "Read-only source and receipt review; targeted syntax and lint checks. No native run, build, product edit, or new acceptance claim."
   }
 }
