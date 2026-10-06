@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "run_id": 37532036039,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37532036039",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "head_branch": "main",
+    "head_sha": "57e80bce34088ce583c28d70d88994fe93319b53",
+    "runner_label": "macos-15",
+    "acceptance_case": "showcase-d47-admin"
+  },
+  "development_artifact": {
+    "source_sha": "b6ec3615f0e0f917fb787a8ce82849a682017550",
+    "run_id": 37523207097,
+    "artifact_id": 11440764124,
+    "github_digest": "sha256:7cc729936035910557bb92daa5022364c6e592d48780dc20440550a398298989",
+    "tree_sha256": "05dd15ac790288b459bfb5a0ba21e03cd29449b231b26547cbe81c48fb709cb1",
+    "version": "0.2.325",
+    "eligible_store": false
+  },
+  "outcome": {
+    "status": "UNVERIFIED_POST_SAVE_RECIPE_NOT_OBSERVED",
+    "stage": "verify_persisted_recipe",
+    "failure_code": "verify_persisted_recipe_failed",
+    "failure_message_code": "saved_recipe_visible_not_observed",
+    "native_stage": "exercise_panel",
+    "auth_stage": "admin_extension_auth_completion",
+    "interpretation": "The exact-name pre-Save assertion passed and Save was enabled. The post-click success summary appeared. The Patterns view did not expose the exact generated recipe name before timeout. This is a failed read-after-write observation; it does not establish whether persistence failed or the list/read path failed."
+  },
+  "save_observation": {
+    "focus": {
+      "popover_visible": true,
+      "name_matches": false,
+      "name_focused": true,
+      "save_button_present": true,
+      "save_button_disabled": false,
+      "saving_indicator": false,
+      "saved_summary_visible": false,
+      "error_present": false,
+      "error_kind": null
+    },
+    "before_click": {
+      "popover_visible": true,
+      "name_matches": true,
+      "name_focused": true,
+      "save_button_present": true,
+      "save_button_disabled": false,
+      "saving_indicator": false,
+      "saved_summary_visible": false,
+      "error_present": false,
+      "error_kind": null
+    },
+    "last": {
+      "popover_visible": true,
+      "name_matches": true,
+      "name_focused": false,
+      "save_button_present": true,
+      "save_button_disabled": false,
+      "saving_indicator": false,
+      "saved_summary_visible": true,
+      "error_present": false,
+      "error_kind": null
+    },
+    "terminal": "summary",
+    "literal_recipe_name_recorded": false
+  },
+  "replay_and_lifecycle": {
+    "saved_result_present": false,
+    "contexts_count": 0,
+    "binding_events_count": 0,
+    "trace_assessment_present": false,
+    "verdicts": {
+      "current_saved_replay": "unverified",
+      "delayed_old_binding": "unverified",
+      "cancellation": "unverified"
+    },
+    "interpretation": "Replay, binding/context checks, and lifecycle terminal rows were not reached."
+  },
+  "resource_journals": [
+    {
+      "run_id": "hosted-browser-37532036039-1",
+      "path": ".research/d47-input-native-20261006/37532036039/resource-journals/hosted-browser-37532036039-1.jsonl",
+      "decision": "valid",
+      "resource_invalid": false,
+      "sha256": "72535ecebc71dfc9c89066c916f6b362044497f9974418e57faa5b9cf204dbf2"
+    },
+    {
+      "run_id": "hosted-guest-37532036039-1",
+      "path": ".research/d47-input-native-20261006/37532036039/resource-journals/hosted-guest-37532036039-1.jsonl",
+      "decision": "child_failed",
+      "resource_invalid": false,
+      "sha256": "4c5b5940aace7134738826b7f5e207ce56f96fecc0f1ff87e1461d402e980e52"
+    },
+    {
+      "run_id": "hosted-package-37532036039-1",
+      "path": ".research/d47-input-native-20261006/37532036039/resource-journals/hosted-package-37532036039-1.jsonl",
+      "decision": "valid",
+      "resource_invalid": false,
+      "sha256": "17844a9802bb1286140c27c56899068c9c934073b6f43dc574899f2e16523c1b"
+    }
+  ],
+  "temporary_secrets": {
+    "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON": {
+      "owned": true,
+      "deleted_at_terminal": true,
+      "absence_verified": true
+    },
+    "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON": {
+      "owned": true,
+      "deleted_at_terminal": true,
+      "absence_verified": true
+    },
+    "secret_values_recorded": false
+  },
+  "evidence": {
+    "directory": ".research/d47-input-native-20261006/37532036039/",
+    "receipt": ".research/d47-input-native-20261006/37532036039/receipt.json",
+    "original_receipt_external": "/Volumes/Samsung2TB/d47-input-native-20261006-originals/37532036039/_temp/showcase-d47-native-37532036039-1.json",
+    "original_receipt_sha256": "eede7e7fbe7885d3393e158f5042e39560919b6775b0dbfee3aaf9250d74551c",
+    "raw_run_log_external": "/Volumes/Samsung2TB/d47-input-native-20261006-originals/raw/hosted-run-37532036039.log",
+    "raw_run_log_sha256": "e31e2f22ef61edb288a6836b0c6331ef5df6e2e33bceec203d245e700eaad0b2",
+    "screenshots": [
+      {
+        "path": ".research/d47-input-native-20261006/37532036039/screenshots/native-side-panel.png",
+        "sha256": "35104afebb448dde7b3b315613486606a924f2fa636fa316acc30f63f681df10",
+        "privacy_review": "Generic side panel; no credential or personal data visible."
+      },
+      {
+        "path": ".research/d47-input-native-20261006/37532036039/screenshots/normal-target-after-open.png",
+        "sha256": "c939d4f6417b874eefffbe4a8c9bd1cf05088fe2b42ab7a7e13c65d79a024fd2",
+        "privacy_review": "Public controlled test fixture; no credential or personal data visible."
+      }
+    ]
+  },
+  "limits": [
+    "Native input advanced through the exact-name gate and Save success summary, but exact persisted row was not observed.",
+    "No current replay packet, binding events, document contexts, or lifecycle terminal rows.",
+    "Literal generated recipe name was not retained in committed evidence; diagnostic does not identify a database record.",
+    "T57 and D47 remain unverified."
+  ]
+}
