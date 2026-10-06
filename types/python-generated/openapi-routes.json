@@ -8580,6 +8580,9 @@
    "application/json"
   ]
  },
+ "/web/link-preview": {
+  "get": []
+ },
  "/webinarjam/public/status": {
   "get": []
  },
