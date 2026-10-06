@@ -70,13 +70,13 @@ export async function selectRowsViaManagementApi<T>(
   const token = loadOperatorToken();
   let response: Response;
   try {
-    response = await fetch(`${MANAGEMENT_API}/${projectRef}/database/query`, {
+    response = await fetch(`${MANAGEMENT_API}/${projectRef}/database/query/read-only`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ query: statement, read_only: true }),
+      body: JSON.stringify({ query: statement }),
       signal: AbortSignal.timeout(readTimeoutMs()),
     });
   } catch {
