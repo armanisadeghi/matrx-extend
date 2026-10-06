@@ -40,7 +40,18 @@ const packet = (contextId: number, body: string, sequence: number) =>
   });
 const committed = () =>
   emit('Page.frameNavigated', {
-    frame: { id: 'main-frame', url: 'https://electronic.vegas/calendar/' },
+    frame: {
+      id: 'main-frame',
+      url: 'https://electronic.vegas/calendar/',
+      loaderId: 'replay-loader',
+    },
+  });
+const started = (loaderId = 'replay-loader', navigationType = 'reload') =>
+  emit('Page.frameStartedNavigating', {
+    frameId: 'main-frame',
+    loaderId,
+    navigationType,
+    url: 'https://electronic.vegas/calendar/',
   });
 beforeEach(() => {
   harness.acquire.mockResolvedValue({ send: harness.send, release: harness.release });
@@ -67,7 +78,13 @@ beforeEach(() => {
   harness.send.mockImplementation(async (method, params) => {
     if (method === 'Page.getFrameTree')
       return {
-        frameTree: { frame: { id: 'main-frame', url: 'https://electronic.vegas/calendar/' } },
+        frameTree: {
+          frame: {
+            id: 'main-frame',
+            url: 'https://electronic.vegas/calendar/',
+            loaderId: 'original-loader',
+          },
+        },
       };
     if (method === 'Runtime.enable') context(1, 'prior-document');
     if (method === 'Runtime.addBinding') binding = params.name;
@@ -105,7 +122,7 @@ it('ends and releases its lease when Page.reload never settles', async () => {
     () => 'rejected',
   );
   for (let i = 0; i < 20; i++) await Promise.resolve();
-  expect(harness.send).toHaveBeenCalledWith('Page.reload');
+  expect(harness.send).toHaveBeenCalledWith('Page.reload', { loaderId: 'original-loader' });
   await vi.advanceTimersByTimeAsync(5_000);
   let verdict = 'pending';
   void status.then((value) => {
@@ -127,7 +144,9 @@ it('cancels and releases its lease while Page.reload is stalled', async () => {
     () => 'resolved',
     () => 'rejected',
   );
-  await vi.waitFor(() => expect(harness.send).toHaveBeenCalledWith('Page.reload'));
+  await vi.waitFor(() =>
+    expect(harness.send).toHaveBeenCalledWith('Page.reload', { loaderId: 'original-loader' }),
+  );
   controller.abort();
   let verdict = 'pending';
   void status.then((value) => {
@@ -184,6 +203,8 @@ it.each(['old first', 'current first'] as const)(
             (call) => call[0] === 'Page.addScriptToEvaluateOnNewDocument',
           ),
         ).toBe(true);
+        started();
+        started(); // CDP may repeat a start for the same loader.
         context(2, 'reloaded-document');
         const oldPacket = () => packet(1, '[{"venue":"Prior venue"}]', 999);
         const currentPacket = () => packet(2, '[{"venue":"Brooklyn Bowl"}]', 1);
@@ -238,6 +259,7 @@ it.each(['old first', 'current first'] as const)(
 it('refuses a stale-only response rather than delivering it as the replay document', async () => {
   const opts = options();
   const capture = await startDocumentNetworkCapture(opts);
+  started();
   context(2, 'reloaded-document');
   packet(1, '[{"venue":"Prior venue"}]', 999);
   committed();
@@ -249,6 +271,7 @@ it('refuses a stale-only response rather than delivering it as the replay docume
 
 it('cleans a nonce-pinned hook when stopped after context creation but before frame commit', async () => {
   const capture = await startDocumentNetworkCapture(options());
+  started();
   context(2, 'reloaded-document');
   handshake(2);
   await vi.waitFor(() => expect(chrome.scripting.executeScript).toHaveBeenCalledOnce());
@@ -279,6 +302,7 @@ it('refuses a replacement document when navigation arrives after the cleanup pro
     },
   });
   const capture = await startDocumentNetworkCapture(options());
+  started();
   context(2, 'reloaded-document');
   committed();
   handshake(2);
@@ -323,13 +347,14 @@ it('removes a late script registration when cancellation races installation', as
   expect(harness.send).toHaveBeenCalledWith('Page.removeScriptToEvaluateOnNewDocument', {
     identifier: 'late-script',
   });
-  expect(harness.send).not.toHaveBeenCalledWith('Page.reload');
+  expect(harness.send).not.toHaveBeenCalledWith('Page.reload', expect.anything());
   expect(harness.release).toHaveBeenCalledTimes(1);
 });
 
 it('terminates when a second document replaces the replay document at the identical URL', async () => {
   const opts = options();
   const capture = await startDocumentNetworkCapture(opts);
+  started();
   context(2, 'reloaded-document');
   committed();
   handshake(2);
@@ -349,6 +374,34 @@ it('terminates when a second document replaces the replay document at the identi
   expect(harness.release).toHaveBeenCalledTimes(1);
 });
 
+it.each([
+  ['external navigation starts first', () => started('external-loader', 'differentDocument')],
+  [
+    'external navigation supersedes reload before commit',
+    () => {
+      started();
+      started('external-loader', 'differentDocument');
+    },
+  ],
+] as const)('rejects a nonce-attested same-URL document when %s', async (_case, navigate) => {
+  const opts = options();
+  const capture = await startDocumentNetworkCapture(opts);
+  navigate();
+  context(2, 'external-document');
+  packet(2, '[{"venue":"External venue"}]', 1);
+  emit('Page.frameNavigated', {
+    frame: {
+      id: 'main-frame',
+      url: 'https://electronic.vegas/calendar/',
+      loaderId: 'external-loader',
+    },
+  });
+  handshake(2);
+  await vi.waitFor(() => expect(opts.onFailure).toHaveBeenCalledOnce());
+  expect(opts.onEvent).not.toHaveBeenCalled();
+  await capture.close();
+});
+
 it('rechecks the approved SPA route after script installation and never reloads a changed page', async () => {
   const opts = {
     ...options(),
@@ -359,7 +412,7 @@ it('rechecks the approved SPA route after script installation and never reloads 
     scripting: { executeScript: vi.fn(async () => [{ documentId: 'approved-document' }]) },
   });
   await expect(startDocumentNetworkCapture(opts)).rejects.toThrow('approved page changed');
-  expect(harness.send).not.toHaveBeenCalledWith('Page.reload');
+  expect(harness.send).not.toHaveBeenCalledWith('Page.reload', expect.anything());
   expect(harness.send).toHaveBeenCalledWith('Page.removeScriptToEvaluateOnNewDocument', {
     identifier: 'new-document-script',
   });

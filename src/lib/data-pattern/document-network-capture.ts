@@ -44,6 +44,8 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
   let reloadIssued = false;
   let mainFrame = '';
   let initialUrl = '';
+  let initialLoaderId = '';
+  let reloadLoaderId: string | null = null;
   let committed = false;
   let documentContext: { id: number; uniqueId: string } | null = null;
   let replayDocumentReplaced = false;
@@ -228,6 +230,20 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
     settleCaptureNonce(nonce);
     captureCleanupTarget();
   };
+  const claimDocumentContext = () => {
+    if (!reloadLoaderId || documentContext || closed) return;
+    const candidates = [...contexts.entries()].filter(
+      ([, context]) =>
+        context.frameId === mainFrame && context.isDefault && !oldContexts.has(context.uniqueId),
+    );
+    if (candidates.length !== 1) return;
+    const [id, context] = candidates[0]!;
+    documentContext = { id, uniqueId: context.uniqueId };
+    flush();
+    const nonce = hookNoncesByContext.get(id);
+    if (nonce) acceptCaptureNonce(id, nonce);
+    captureCleanupTarget();
+  };
   const onEvent = (
     source: chrome.debugger.Debuggee & { sessionId?: string },
     method: string,
@@ -267,23 +283,62 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
           fail('The page changed again during replay. Run the recipe on the intended document.');
           return;
         }
-        documentContext = { id: context.id, uniqueId: context.uniqueId };
-        flush();
-        const nonce = hookNoncesByContext.get(context.id);
-        if (nonce) acceptCaptureNonce(context.id, nonce);
-        captureCleanupTarget();
+        claimDocumentContext();
       }
+    } else if (method === 'Page.frameStartedNavigating' && params.frameId === mainFrame) {
+      const loaderId = params.loaderId;
+      const navigationType = params.navigationType;
+      const url = params.url;
+      // CDP may announce one navigation more than once with the same loader.
+      if (
+        reloadLoaderId &&
+        loaderId === reloadLoaderId &&
+        typeof url === 'string' &&
+        canonicalUrl(url) === initialUrl
+      )
+        return;
+      if (
+        !reloadIssued ||
+        reloadLoaderId ||
+        (navigationType !== 'reload' && navigationType !== 'reloadBypassingCache') ||
+        typeof loaderId !== 'string' ||
+        !loaderId ||
+        loaderId === initialLoaderId ||
+        typeof url !== 'string' ||
+        canonicalUrl(url) !== initialUrl
+      ) {
+        replayDocumentReplaced = true;
+        settleCaptureNonce(null);
+        fail(
+          'The page started another navigation during replay. Run the recipe on the intended document.',
+        );
+        return;
+      }
+      reloadLoaderId = loaderId;
+      claimDocumentContext();
     } else if (method === 'Page.navigatedWithinDocument' && params.frameId === mainFrame) {
       fail('The page route changed during replay. Run the recipe on the intended page.');
     } else if (method === 'Page.frameNavigated') {
-      const frame = params.frame as { id?: string; parentId?: string; url?: string };
+      const frame = params.frame as {
+        id?: string;
+        parentId?: string;
+        url?: string;
+        loaderId?: string;
+      };
       if (!frame || frame.parentId) return;
       if (!mainFrame) {
         fail('The page navigated while capture was preparing. Run again.');
         return;
       }
       if (frame.id !== mainFrame) return;
-      if (!reloadIssued || committed || !frame.url || canonicalUrl(frame.url) !== initialUrl) {
+      if (
+        !reloadIssued ||
+        committed ||
+        !reloadLoaderId ||
+        frame.loaderId !== reloadLoaderId ||
+        !frame.url ||
+        canonicalUrl(frame.url) !== initialUrl
+      ) {
         if (committed) {
           replayDocumentReplaced = true;
           settleCaptureNonce(null);
@@ -401,12 +456,17 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
       assertOpen();
       await lease.send('Page.enable');
       assertOpen();
-      const tree = await lease.send<{ frameTree: { frame: { id: string; url: string } } }>(
-        'Page.getFrameTree',
-      );
+      const tree = await lease.send<{
+        frameTree: { frame: { id: string; url: string; loaderId: string } };
+      }>('Page.getFrameTree');
       assertOpen();
       mainFrame = tree.frameTree.frame.id;
       initialUrl = canonicalUrl(tree.frameTree.frame.url);
+      initialLoaderId = tree.frameTree.frame.loaderId;
+      if (!initialLoaderId)
+        throw new Error(
+          'Chrome did not identify the approved page loader. Capture is unavailable.',
+        );
       await lease.send('Runtime.enable');
       assertOpen();
       await lease.send('Runtime.addBinding', { name: bindingName });
@@ -457,7 +517,7 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
         );
       });
       try {
-        await Promise.race([lease.send('Page.reload'), interrupted]);
+        await Promise.race([lease.send('Page.reload', { loaderId: initialLoaderId }), interrupted]);
         assertOpen();
       } finally {
         if (reloadTimer !== undefined) clearTimeout(reloadTimer);

@@ -106,15 +106,25 @@ it('approved Port discovery delivers only the new document first response throug
   h.acquire.mockResolvedValue({ send: h.send, release: h.release });
   h.release.mockResolvedValue(undefined);
   h.send.mockImplementation(async (method: string, params: any) => {
-    if (method === 'Page.getFrameTree') return { frameTree: { frame: { id: 'main', url: h.url } } };
+    if (method === 'Page.getFrameTree')
+      return { frameTree: { frame: { id: 'main', url: h.url, loaderId: 'original-loader' } } };
     if (method === 'Runtime.enable') context(1, 'prior-document');
     if (method === 'Runtime.addBinding') binding = params.name;
     if (method === 'Page.addScriptToEvaluateOnNewDocument') return { identifier: 'script' };
     if (method === 'Page.reload') {
+      expect(params).toEqual({ loaderId: 'original-loader' });
+      emit('Page.frameStartedNavigating', {
+        frameId: 'main',
+        loaderId: 'replay-loader',
+        navigationType: 'reload',
+        url: h.url,
+      });
       context(2, 'reloaded-document');
       packet(1, '[{"title":"Wrong old page"}]', 'sha256:' + '1'.repeat(64), 999);
       packet(2, '[{"title":"Opening night"}]', 'sha256:' + '2'.repeat(64), 1);
-      emit('Page.frameNavigated', { frame: { id: 'main', url: h.url } });
+      emit('Page.frameNavigated', {
+        frame: { id: 'main', url: h.url, loaderId: 'replay-loader' },
+      });
       emit('Runtime.bindingCalled', {
         name: binding,
         executionContextId: 2,

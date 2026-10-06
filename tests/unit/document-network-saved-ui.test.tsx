@@ -237,7 +237,7 @@ it.each([
           h.releases.add(resolve);
         });
       if (method === 'Page.getFrameTree')
-        return { frameTree: { frame: { id: 'main', url: h.url } } };
+        return { frameTree: { frame: { id: 'main', url: h.url, loaderId: 'original-loader' } } };
       if (method === 'Runtime.enable') context(1, 'old');
       if (method === 'Runtime.addBinding') binding = params.name;
       if (method === 'Page.addScriptToEvaluateOnNewDocument') {
@@ -254,8 +254,15 @@ it.each([
       }
       if (method === 'Page.reload') {
         expect(registered).toBe(true);
+        expect(params).toEqual({ loaderId: 'original-loader' });
         h.document = null;
         h.rerender?.();
+        emit('Page.frameStartedNavigating', {
+          frameId: 'main',
+          loaderId: 'replay-loader',
+          navigationType: 'reload',
+          url: h.url,
+        });
         context(2, 'new');
         // Mirror the document-start main-world hook: the capture core will
         // only authorize its nonce-pinned cleanup after this CDP handshake.
@@ -286,14 +293,24 @@ it.each([
           });
         packet(1, 'STALE_DOCUMENT_ROW', 999);
         packet(2, 'CURRENT_DOCUMENT_ROW', 1);
-        emit('Page.frameNavigated', { frame: { id: 'main', url: h.url } });
+        emit('Page.frameNavigated', {
+          frame: { id: 'main', url: h.url, loaderId: 'replay-loader' },
+        });
         h.document = 'replay-document';
         h.rerender?.();
         if (replaceDocument) {
           h.document = null;
           h.rerender?.();
+          emit('Page.frameStartedNavigating', {
+            frameId: 'main',
+            loaderId: 'unrelated-loader',
+            navigationType: 'differentDocument',
+            url: h.url,
+          });
           context(3, 'unrelated-document');
-          emit('Page.frameNavigated', { frame: { id: 'main', url: h.url } });
+          emit('Page.frameNavigated', {
+            frame: { id: 'main', url: h.url, loaderId: 'unrelated-loader' },
+          });
           h.document = 'unrelated-document';
           h.rerender?.();
         }

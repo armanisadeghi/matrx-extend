@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0047",
+  "source_base": "86046a88",
+  "lane": "pre-commit navigation replacement repair; no native or browser run",
+  "finding": "The first new default main-frame context and a matching URL were accepted after Page.reload even if a separate same-URL navigation supplied them before the first frame commit. The hook nonce identified the captured document, but did not establish navigation ownership.",
+  "repair": "Bind Page.reload to the approved starting loaderId; require a reload Page.frameStartedNavigating with a new loaderId; allow repeated start events for that loader; reject any distinct navigation start; require Page.frameNavigated to commit the same loaderId and URL before delivering buffered capture events.",
+  "red": {
+    "journal": "docs/stabilization/resource-journals/d47-nav-red-20261006-01.jsonl",
+    "result": "Valid resource decision, child exit 1. Both new nonce-attested same-URL external navigation cases failed because onFailure was never called; 12 surrounding tests passed."
+  },
+  "pre_final_green": {
+    "journal": "docs/stabilization/resource-journals/d47-nav-green-20261006-01.jsonl",
+    "result": "Valid resource decision, child exit 0; 45/45 across capture, saved UI, Data health and Showcase provenance. This run preceded a small duplicate-start correction."
+  },
+  "first_full_unit": {
+    "journal": "docs/stabilization/resource-journals/d47-ci-contract-unit-20261006-01.jsonl",
+    "result": "Valid resource decision, child exit 1; 298 files passed, two skipped, one failed. The sole failure was discovery-connected's old CDP fixture, which omitted the required initial loaderId and never emitted navigation start or committed loaderId. This was a fixture contract mismatch, separate from the product RED; the fixture was corrected afterward."
+  },
+  "final_validation": {
+    "full_unit_journal": "docs/stabilization/resource-journals/d47-ci-contract-unit-20261006-02.jsonl",
+    "full_unit_result": "Valid resource decision, child exit 0; 299 files and 2146 tests passed, two files and five tests skipped, no errors. Includes the navigation replacement regressions, owned reload positives, saved UI and discovery-connected real capture core.",
+    "compile_journal": "docs/stabilization/resource-journals/d47-ci-contract-compile-20261006-01.jsonl",
+    "compile_result": "Valid resource decision, child exit 0; pnpm compile passed on current source."
+  },
+  "limits": "CDP's Page.reload response has no navigation ID, so the observed navigation type and loader ID cannot uniquely prove command causation if another manual reload with the same URL wins the first start. The loader precondition and rejection of a later distinct start cover the demonstrated replacement sequences. Installed-browser behavior remains unverified in this lane.",
+  "protocol_reference": "https://chromedevtools.github.io/devtools-protocol/tot/Page/"
+}
