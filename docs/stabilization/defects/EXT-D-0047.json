@@ -28,11 +28,11 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Wait existing CI37533431195, then execute the one authorized guarded post-save native attempt against frozen artifact11440764124. Require exact persisted recipe, current binding/context and terminal replay proof; retain safe live Patterns observations on failure. No unbounded retries. Public-site replay and surrounding cases remain outstanding.",
-    "status": "Native name-entry repair observed; post-save list boundary remains unverified. Reviewed driver retest admitted only after CI37533431195 succeeds.",
-    "implementation_agent": "d47_browser_driver_oct6",
-    "execution_agent": "d47_input_native_retest",
-    "native_run_id": 37532036039,
+    "next_action": "Complete bounded Run-interaction diagnosis and meaningful focused verification, obtain independent review, then admit one frozen-artifact native retest. No additional native run is authorized. Preserve exact recipe and positive binding/context oracles; public-site replay and surrounding cases remain outstanding.",
+    "status": "Exact new Patterns row observed natively; Run interaction failed before replay. Bounded Astra diagnostic escalation owns remaining browser-control boundary.",
+    "implementation_agent": "d47_run_boundary_escalation",
+    "execution_agent": "none active",
+    "native_run_id": 37534454354,
     "workflow_source": "fbcc4311ae6885b67133e55336f692be38881249",
     "development_artifact_id": 11440764124,
     "development_source": "b6ec3615f0e0f917fb787a8ce82849a682017550",
@@ -47,7 +47,9 @@
     "third_native_evidence": ".research/d47-input-native-20261006.json",
     "third_native_outcome": "Resource-valid child failure at verify_persisted_recipe: exact name entered and save success summary observed, but exact row not observed. No replay/lifecycle proof. Narrow DB query supports likely persistence without exact-name receipt linkage.",
     "post_save_driver_commit": "8f2d6a43",
-    "post_save_review_commit": "7fc0fdfe"
+    "post_save_review_commit": "7fc0fdfe",
+    "fourth_native_evidence": ".research/d47-list-native-20261006.json",
+    "fourth_native_outcome": "Resource-valid child failure at saved_replay after active Patterns pane, exact new row, matching host and row_count=1 with no loading/empty/error state. No replay, binding/context or lifecycle terminal proof."
   },
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
   "verification_status": "Current independentevidencepeer e7a67bcd confirms initialrequest timing and documentidentity controlled regressions (including meaningful identitymutation), plus bounded installed initialHN capture and saved10row replay on8b0f8adc/9ea6687b. Delayed matching prior-document response with higher old sequence is still nativeUNVERIFIED; T57 and original D47 closure remain incomplete. No current runtime was run by evidencepeer.",
