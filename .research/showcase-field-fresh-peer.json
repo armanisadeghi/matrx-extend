@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "showcase_field_fresh_peer",
+  "reviewed_commit": "2e3c86642fb51422e2b2d599e1fdb09f96327a8c",
+  "verdict_A_behavior": {
+    "status": "PARTIAL_NATIVE_UNVERIFIED",
+    "evidence": "The driver samples a browser hit inside the real h2 and passes that point to a normal Playwright locator.click({ position }); no force click, DOM dispatch, or overlay removal appears in the reviewed path. The acceptance script retains count === 1 for picked items and checks all three fixture titles after extraction. Distinct select_B_field_click and select_B_field_wait stages now identify which operation fails. The prior native run 37390906047 passed card selection and B detection, then failed the combined select_B_field stage; no native result exists for this commit.",
+    "remaining": [
+      "Real B field selection",
+      "One picked item in native Chrome",
+      "Three-row extraction in native Chrome"
+    ]
+  },
+  "verdict_B_quality": {
+    "status": "IMPORTANT_FINDING",
+    "evidence": "Focused node tests pass 9/9. Biome check passes on all six commit files. Pointer receipt accepts only bounded numeric geometry and enumerated hit classes; failure code omits raw page and error text. Tests cover covered and fully obstructed targets and the separate failure stages.",
+    "finding": "The new field sampler calls observeShowcaseSelection with picked_item_count, which overwrites one shared observations.picked_item_count on every sample. Thus the serialized receipt does not preserve before-click, after-click, and after-failure counts separately, despite the repair report's claim. A failed wait can leave only the final count, weakening diagnosis of whether the click selected an item and selection was later lost. Store bounded picked count per pointer moment or in a separate stage-keyed count map and assert the serialized receipt retains the timeline."
+  },
+  "verification": {
+    "focused_command": "node --test tests/browser/showcase-card-driver.test.mjs tests/browser/showcase-selection-diagnostic.test.mjs",
+    "focused_result": "9 pass, 0 fail",
+    "biome_command": "pnpm exec biome check tests/browser/showcase-card-driver.mjs tests/browser/showcase-card-driver.test.mjs tests/browser/showcase-picker-native-acceptance.mjs tests/browser/showcase-selection-diagnostic.mjs tests/browser/showcase-selection-diagnostic.test.mjs .research/showcase-field-boundary-repair.json",
+    "biome_result": "pass",
+    "native_run": "not run by reviewer"
+  }
+}
