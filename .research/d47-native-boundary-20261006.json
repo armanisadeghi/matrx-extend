@@ -6,15 +6,18 @@
   "case_id": "EXT-F-1012-T57",
   "claim_commit": "a41f612dde64cdd3808b72f92cff0d751629282c",
   "implementation_commit": "3ef2d64a3946339f7beac196bbb21475cd3b9d62",
+  "lifecycle_correction_commit": "35dd207abe95704f3fb7ee57ef3819b0a948f363",
   "route": "tests/fixtures/showcase-replay/README.md#d47-document-replay-boundary",
-  "mechanism": "A seed page permits an exact saved Network recipe. After arming, the old page issues two real warmup fetches then a held GET /api/document-race; the saved replay reload serves a current page whose first fetch uses the identical URL, method and body. The server releases the old response only after sending the current response and reports whether its socket closed.",
+  "mechanism": "A seed page permits an exact saved Network recipe. After arming, the old page issues two real warmup fetches then a held GET /api/document-race; the saved replay reload serves a current page whose first fetch uses the identical URL, method and body. The server refuses old release before the current response or after old-client abort, and records pre-release state separately from server finish. Finish does not establish browser callback delivery.",
   "verification": {
     "final_green": "d47-fixture-final-20261006: admitted, resource valid, one focused test passed",
     "scratch_mutation_red": "d47-fixture-mutant-20261006: admitted, resource valid, current response value swapped to old value in a scratch server copy; test failed on Canyon Frequency output assertion",
+    "lifecycle_green": "d47-fixture-lifecycle-20261006: admitted, resource valid, three focused tests passed for normal server finish, aborted old client and exited-child teardown",
+    "independent_review": ".research/d47-fixture-peer-20261006.json identified the response-close ambiguity and teardown race; both were corrected in 35dd207a",
     "initial_environment_failure": "d47-fixture-source-20261006a: happy-dom fetch CORS replacement, corrected to node:http; not product evidence",
     "format": "Biome check and git diff --check passed on implementation files"
   },
   "native_pending": "No browser, build, release, deployment, or version bump was launched in this lane. No exact installed artifact, UI run, callback observation, or independent native review exists for this new route.",
   "acceptance_boundary": "Current-only saved rows or a server write to the old socket cannot establish that an old Runtime.bindingCalled callback reached the extension. Native rejection credit requires trusted evidence of old execution-context delivery after the new document begins, with a higher old request sequence, plus the visible saved current result. If Chrome destroys or cancels the old page first, classify that run as lifecycle evidence and keep the adversarial branch unverified.",
-  "next_action": "Fresh source review of the route, then a coordinated exact-development-artifact native driver using runNativeSidepanelQa, real signInSettings/admin organization, Network Capture page load/save, fixture arm and old pending check, Patterns Run/Allow, current sent then old release, and visible saved-result observation. Add a trusted old-binding observation if feasible without forging events; otherwise retain the controlled CDP regression as source proof and report the browser lifecycle limit."
+  "next_action": "A coordinated exact-development-artifact native driver using runNativeSidepanelQa, real signInSettings/admin organization, Network Capture page load/save, fixture arm and old pending check, Patterns Run/Allow, current sent then old release, and visible saved-result observation. Add a trusted old-binding observation if feasible without forging events; otherwise retain the controlled CDP regression as source proof and report the browser lifecycle limit."
 }
