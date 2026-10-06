@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "run_id": 37531552646,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37531552646",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "head_branch": "main",
+    "head_sha": "c51dc506f78b3fc92b5e4f71b28b2617830833ed",
+    "runner_label": "macos-15",
+    "acceptance_case": "showcase-d47-admin"
+  },
+  "development_artifact": {
+    "source_sha": "b6ec3615f0e0f917fb787a8ce82849a682017550",
+    "run_id": 37523207097,
+    "artifact_id": 11440764124,
+    "github_digest": "sha256:7cc729936035910557bb92daa5022364c6e592d48780dc20440550a398298989",
+    "version": "0.2.325",
+    "eligible_store": false
+  },
+  "outcome": {
+    "status": "SETUP_FAILED_NO_NATIVE_CASE",
+    "stage": "require_selected_authentication_before_browser_setup",
+    "failure_code": "d87_admin_identity_required",
+    "safe_diagnostic": "Admin credentials JSON lacked the required email property; the verifier observed undefined where admin@admin.com was expected. Credential input supplied to this run used username/password keys.",
+    "interpretation": "Authentication preflight stopped the workflow before browser setup. No recipe entry, save, replay, binding, lifecycle, or D47 product outcome was observed."
+  },
+  "resource": {
+    "hosted_resource_journals": [],
+    "reason": "The workflow stopped before package, browser, or acceptance guarded phases.",
+    "fresh_local_preflight": {
+      "run_id": "d47-input-preflight-20261006-1",
+      "decision": "valid",
+      "journal": "docs/stabilization/resource-journals/d47-input-preflight-20261006-1.jsonl"
+    }
+  },
+  "temporary_secrets": {
+    "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON": {
+      "owned": true,
+      "deleted_at_terminal": true,
+      "absence_verified": true
+    },
+    "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON": {
+      "owned": true,
+      "deleted_at_terminal": true,
+      "absence_verified": true
+    },
+    "secret_values_recorded": false
+  },
+  "evidence": {
+    "directory": ".research/d47-input-native-20261006/37531552646/",
+    "receipt": ".research/d47-input-native-20261006/37531552646/receipt.json",
+    "screenshots": [],
+    "privacy_review": "No browser was opened and no screenshot was produced.",
+    "raw_externally_preserved": "/Volumes/Samsung2TB/d47-input-native-20261006-originals/raw/hosted-run-37531552646-failed.log",
+    "raw_sha256": "76a85ae3bb489b1528409d8a9aef7ecd71762295d30517f3503c78007e5fa19b",
+    "raw_log_is_github_redacted": true
+  },
+  "limits": [
+    "This was a hosted credential-preflight failure, not a native acceptance attempt.",
+    "No D47 product or driver verdict follows.",
+    "Both temporary repository secrets were removed and their absence verified."
+  ],
+  "next_action": "A single replacement attempt is separately authorized after a private local credential preflight using the required email/password payload and a fresh valid resource admission."
+}

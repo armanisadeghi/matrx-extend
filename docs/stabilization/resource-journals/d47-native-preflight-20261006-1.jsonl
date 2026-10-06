@@ -1,0 +1,3 @@
+{"schema":1,"at":"2026-10-06T21:00:37.898Z","runId":"d47-native-preflight-20261006-1","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-06T21:00:37.904Z","runId":"d47-native-preflight-20261006-1","code":"RESOURCE_MEASUREMENT_FAILED"}
+{"schema":1,"at":"2026-10-06T21:00:37.906Z","runId":"d47-native-preflight-20261006-1","admitted":false,"resourceInvalid":false,"exitCode":2,"decision":"refused","code":"RESOURCE_FINAL_DECISION"}

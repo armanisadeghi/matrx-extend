@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "lane": "single hosted native retest of reviewed trusted recipe-name entry repair, with one preflight-rejected dispatch and one separately authorized replacement pending",
+  "attempts": [
+    {
+      "run_id": 37531552646,
+      "verdict": "setup_failed_no_native_case",
+      "receipt": ".research/d47-input-native-20261006/37531552646/receipt.json"
+    }
+  ],
+  "preflights": [
+    {
+      "run_id": "d47-native-preflight-20261006-1",
+      "decision": "refused",
+      "reason": "profile directory missing; no admission",
+      "journal": "docs/stabilization/resource-journals/d47-native-preflight-20261006-1.jsonl"
+    },
+    {
+      "run_id": "d47-input-preflight-20261006-1",
+      "decision": "valid",
+      "journal": "docs/stabilization/resource-journals/d47-input-preflight-20261006-1.jsonl"
+    },
+    {
+      "run_id": "d47-input-preflight-20261006-2",
+      "decision": "valid",
+      "journal": "docs/stabilization/resource-journals/d47-input-preflight-20261006-2.jsonl",
+      "purpose": "fresh resource admission for replacement attempt"
+    }
+  ],
+  "local_credential_preflight": {
+    "entrypoint": "node scripts/hosted-guest-acceptance.mjs",
+    "phase": "preflight",
+    "case": "showcase-d47-admin",
+    "result": "pass",
+    "credential_schema": "email/password",
+    "secret_values_recorded": false
+  },
+  "development_artifact": {
+    "source_sha": "b6ec3615f0e0f917fb787a8ce82849a682017550",
+    "run_id": 37523207097,
+    "artifact_id": 11440764124,
+    "version": "0.2.325",
+    "digest": "sha256:7cc729936035910557bb92daa5022364c6e592d48780dc20440550a398298989",
+    "eligible_store": false
+  },
+  "limits": [
+    "Run 37531552646 ended before browser setup; no T57/D47 outcome.",
+    "The separately authorized replacement has not yet been dispatched."
+  ]
+}
