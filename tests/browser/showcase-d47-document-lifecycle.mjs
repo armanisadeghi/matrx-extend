@@ -10,13 +10,13 @@ import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { approvedAdminOrganizationName, signInSettings } from './settings-native-auth-driver.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
-import { runShowcaseOrganizationCheckpoint } from './showcase-organization-checkpoint.mjs';
 import {
   assessD47Trace,
   cleanupD47Probe,
   discoveryTerminal,
   sanitizeD47Failure,
 } from './showcase-d47-driver-evidence.mjs';
+import { runShowcaseOrganizationCheckpoint } from './showcase-organization-checkpoint.mjs';
 
 const repo = resolve(import.meta.dirname, '../..');
 const output =
