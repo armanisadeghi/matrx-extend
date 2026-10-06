@@ -21,7 +21,7 @@ importers:
         version: 0.13.152(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@ai-matrx/content-ir':
         specifier: latest
-        version: 0.21.2
+        version: 0.22.1
       '@ai-matrx/content-ir-react':
         specifier: latest
         version: 0.24.2(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -287,8 +287,8 @@ packages:
     peerDependencies:
       react: '>=19.0.0'
 
-  '@ai-matrx/content-ir@0.21.2':
-    resolution: {integrity: sha512-37T9cBf0WCY8e7i+k3Nku+rm0RKhe0gqfRv1zueyQsdoapFtqlozvDx9RF1MjoTvC1KnxTfUCgTf7hr8BCgGWg==}
+  '@ai-matrx/content-ir@0.22.1':
+    resolution: {integrity: sha512-hqTjYGKKQlKpcf4dOEMa0fqSvolV0lWE2dVByjxm1RidyFMlrt0jEynNS61l/lLMxobAG0506fMKrmuU07UzSw==}
     engines: {node: '>=20'}
 
   '@ai-matrx/data@0.18.37':
@@ -5115,7 +5115,7 @@ snapshots:
   '@ai-matrx/agents@0.47.0(@supabase/supabase-js@2.117.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
     dependencies:
       '@ai-matrx/associations': 0.13.152(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@ai-matrx/content-ir': 0.21.2
+      '@ai-matrx/content-ir': 0.22.1
       '@ai-matrx/data': 0.18.37(@supabase/supabase-js@2.117.2)(react@19.3.0)
       '@ai-matrx/design-system': 0.69.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@ai-matrx/icons': 0.3.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -5159,7 +5159,7 @@ snapshots:
   '@ai-matrx/content-ir-react@0.24.2(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
     dependencies:
       '@ai-matrx/alchemy': 0.13.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@ai-matrx/content-ir': 0.21.2
+      '@ai-matrx/content-ir': 0.22.1
       '@ai-matrx/design-system': 0.69.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@ai-matrx/kit': 0.23.0(react@19.3.0)
       react: 19.3.0
@@ -5170,7 +5170,7 @@ snapshots:
       - recharts
       - supports-color
 
-  '@ai-matrx/content-ir@0.21.2':
+  '@ai-matrx/content-ir@0.22.1':
     dependencies:
       ajv: 8.20.0
 
@@ -5242,7 +5242,7 @@ snapshots:
 
   '@ai-matrx/kit@0.23.0(react@19.3.0)':
     dependencies:
-      '@ai-matrx/content-ir': 0.21.2
+      '@ai-matrx/content-ir': 0.22.1
       dompurify: 3.4.16
       idb: 8.0.4
       json5: 2.2.3
@@ -5271,7 +5271,7 @@ snapshots:
 
   '@ai-matrx/print@0.8.68(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
     dependencies:
-      '@ai-matrx/content-ir': 0.21.2
+      '@ai-matrx/content-ir': 0.22.1
       '@ai-matrx/kit': 0.23.0(react@19.3.0)
       '@radix-ui/react-dialog': 1.1.23(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       bidi-js: 1.1.0
