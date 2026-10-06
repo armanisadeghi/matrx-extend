@@ -4,8 +4,15 @@
   "scope": "Resume-checkpoint reconciliation only; no product, browser, database, build, test, release, or Store action.",
   "checkpoint": "docs/stabilization/COORDINATOR.md",
   "initial_execution_state": {
-    "active_native_or_heavy_job": false,
-    "evidence": "No active runner/collector was present in the assigned starting context; no job was launched in this lane."
+    "native_run_admitted": false,
+    "evidence": {
+      "observed_at": "2026-10-06T19:32:11Z",
+      "command": "gh run list --workflow hosted-guest-acceptance.yml --limit 5 --json databaseId,status,conclusion",
+      "latest_five_run_ids": [37511772063, 37510663159, 37509262239, 37395727468, 37394784438],
+      "status": "all completed",
+      "scope_limit": "This is the latest five acceptance-workflow runs, not a global process or all-workflows activity check."
+    },
+    "lane_activity": "D47 owns focused source tests; no native work was launched in this lane."
   },
   "reconciled_facts": {
     "D143": "CLOSED for the driver-specific reproduction on frozen 0.2.307; native run 37395727468 passed seven bounded checkpoints with valid resource journals. Newer 0.2.309 and remaining D42 dimensions are outside that proof.",
@@ -15,14 +22,15 @@
     "guest": "Run 37511772063 child receipt observed three HTTP 200 answers, but final resource guard invalidated the whole run; no overall acceptance pass."
   },
   "access_and_admission": {
-    "approved_fixture_path": "test-results/admin-profile-approved-organization-private.json",
-    "approved_fixture_mode": "0600",
+    "known_approved_fixture_path": "test-results/admin-profile-approved-organization-private.json",
+    "known_approved_fixture_mode": "0600",
+    "other_canonical_sources": "Authorized sibling-repository admin credentials through its .env source, and authenticated Matrx Vault/TOTP access used for the Oct 6 Store check.",
     "ephemeral_secret_names": [
       "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON",
       "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON"
     ],
     "handling": "Values were not read or recorded. Use only for an admitted approved native admin lane; remove both secrets immediately at terminal and verify absence.",
-    "machine_restrictions": "No manual build/release/deploy or local heavy/browser work below the 20 GiB free-space floor; latest audited internal free space was 209 MiB. Hosted heavy work is one at a time and requires a valid resource guard."
+    "machine_restrictions": "No manual build/release/deploy. Local heavy/browser work requires the 20 GiB free-space floor, which must be remeasured at admission; the older 209 MiB audit is stale for current capacity. Hosted heavy work is one at a time and requires a valid resource guard."
   },
   "active_lanes": {
     "d47_native_boundary": "Bounded native D47 T57 case implementation/proof only; no browser launch from this lane.",
