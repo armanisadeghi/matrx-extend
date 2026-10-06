@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "lane": "one authorized diagnostic hosted native TEST after reviewed driver repairs",
+  "run_id": 37528814595,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37528814595",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "head_branch": "main",
+    "head_sha": "eebc9d37639e495b9f07e448cc51ad378b337b21",
+    "runner_label": "macos-15",
+    "acceptance_case": "showcase-d47-admin"
+  },
+  "review_basis": {
+    "commits": ["f4b80048", "30701c7d", "dbf79715"],
+    "peer_report": ".research/d47-save-probe-peer-20261006.json",
+    "scope": "Save-state observation, persisted fresh-recipe assertion, and exact saved-row replay target."
+  },
+  "development_artifact": {
+    "source_sha": "b6ec3615f0e0f917fb787a8ce82849a682017550",
+    "run_id": 37523207097,
+    "artifact_id": 11440764124,
+    "github_digest": "sha256:7cc729936035910557bb92daa5022364c6e592d48780dc20440550a398298989",
+    "tree_sha256": "05dd15ac790288b459bfb5a0ba21e03cd29449b231b26547cbe81c48fb709cb1",
+    "version": "0.2.325",
+    "eligible_store": false,
+    "verification": "Imported receipt and manifest matched the exact frozen development artifact."
+  },
+  "resource_preflight": {
+    "run_id": "d47-save-native-preflight-20261006",
+    "decision": "valid",
+    "journal": "docs/stabilization/resource-journals/d47-save-native-preflight-20261006.jsonl"
+  },
+  "hosted_resource_runs": [
+    {
+      "run_id": "hosted-package-37528814595-1",
+      "decision": "valid",
+      "journal": "d47-save-native-20261006/37528814595/hosted-package.jsonl"
+    },
+    {
+      "run_id": "hosted-browser-37528814595-1",
+      "decision": "valid",
+      "journal": "d47-save-native-20261006/37528814595/hosted-browser.jsonl"
+    },
+    {
+      "run_id": "hosted-guest-37528814595-1",
+      "decision": "child_failed",
+      "resource_invalid": false,
+      "transient_cpu_episodes": "Pending CPU samples recovered before child exit.",
+      "journal": "d47-save-native-20261006/37528814595/hosted-guest.jsonl"
+    }
+  ],
+  "outcome": {
+    "status": "UNVERIFIED_DRIVER_INPUT_FAILURE",
+    "driver_stage": "save_recipe",
+    "native_harness_stage": "exercise_panel",
+    "auth_stage": "admin_extension_auth_completion",
+    "failure_code": "save_recipe_failed",
+    "sanitized_message_code": "unclassified_error",
+    "save_observation_before_click": {
+      "popover_visible": true,
+      "name_matches": false,
+      "save_button_present": true,
+      "save_button_disabled": false,
+      "saving_indicator": false,
+      "saved_summary_visible": false,
+      "error_present": false,
+      "error_kind": null
+    },
+    "interpretation": "The driver's save_name_not_entered assertion failed before clicking Save. The generated recipe name was not reflected in the visible input. No save request, persisted-row assertion, replay, fixture lifecycle, binding packet, or trace verdict was observed. This identifies a driver input failure; it does not establish product rejection or persistence failure.",
+    "behavior_verdicts": {
+      "current_saved_replay": "unverified",
+      "delayed_old_binding": "unverified",
+      "cancellation": "unverified"
+    }
+  },
+  "evidence": {
+    "directory": "d47-save-native-20261006/37528814595/",
+    "preserved_raw_artifact_directory": "/Volumes/Samsung2TB/d47-save-native-37528814595-originals/raw",
+    "receipt": "d47-save-native-20261006/37528814595/receipt.json",
+    "screenshots": [
+      {
+        "path": "d47-save-native-20261006/37528814595/native-sidepanel.png",
+        "privacy_review": "Generic initial guest panel; no credentials or personal data visible."
+      },
+      {
+        "path": "d47-save-native-20261006/37528814595/target-after-open.png",
+        "privacy_review": "Public test fixture page; no credentials or personal data visible."
+      }
+    ],
+    "excluded_from_commit": "Raw downloaded artifact also contains stale resource journals for run 37105304739; only this run's receipt, screenshots, and three journals are copied into the committed evidence directory."
+  },
+  "temporary_secrets": {
+    "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON": {
+      "owned": true,
+      "deleted_at_terminal": true,
+      "absence_verified": true
+    },
+    "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON": {
+      "owned": true,
+      "deleted_at_terminal": true,
+      "absence_verified": true
+    },
+    "secret_values_recorded": false
+  },
+  "limits": [
+    "No recipe save was clicked, so no save response or persisted recipe evidence exists.",
+    "No replay packet, current binding handshake, old-context teardown trace, or delayed-old-payload negative control was observed.",
+    "This run does not close T57 or D47. No third run, runtime edit, build, release, or deployment was performed."
+  ],
+  "next_action": "Retain as an unverified driver input failure. Continue only under a separate explicit authorization after diagnosing why trusted typing did not update the visible pattern name."
+}

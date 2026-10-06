@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "status": "unverified",
+  "stage": "save_recipe",
+  "artifact": {
+    "source_sha": "b6ec3615f0e0f917fb787a8ce82849a682017550",
+    "run_id": 37523207097,
+    "artifact_id": 11440764124,
+    "tree_sha256": "05dd15ac790288b459bfb5a0ba21e03cd29449b231b26547cbe81c48fb709cb1",
+    "version": "0.2.325"
+  },
+  "fixture": null,
+  "contexts": [],
+  "binding_events": [],
+  "saved_result": null,
+  "verdicts": {
+    "current_saved_replay": "unverified",
+    "delayed_old_binding": "unverified",
+    "cancellation": "unverified"
+  },
+  "failure_code": "save_recipe_failed",
+  "failure": {
+    "name": "AssertionError",
+    "stage": "save_recipe",
+    "message_code": "unclassified_error"
+  },
+  "diagnostics": {
+    "fixture": null,
+    "saved_result": null,
+    "trace_assessment": null,
+    "save_observation": {
+      "before_click": {
+        "popover_visible": true,
+        "name_matches": false,
+        "save_button_present": true,
+        "save_button_disabled": false,
+        "saving_indicator": false,
+        "saved_summary_visible": false,
+        "error_present": false,
+        "error_kind": null
+      },
+      "last": null
+    },
+    "native_stage": "exercise_panel",
+    "auth_stage": "admin_extension_auth_completion",
+    "panel": {
+      "state": "unavailable"
+    }
+  },
+  "native_stage": "exercise_panel",
+  "auth_stage": "admin_extension_auth_completion",
+  "organization_diagnostic": {
+    "substage": "organization_identity_compare",
+    "observations": {
+      "admin_role_verified": true,
+      "picker_available": true,
+      "picker_has_selection": false,
+      "selection_required": true,
+      "menu_open": true,
+      "visible_option_count": 58,
+      "exact_match_count": 1,
+      "exact_visible_match_count": 1,
+      "target_in_viewport": false,
+      "target_center_hit": false,
+      "archive_filter": "unknown",
+      "storage_has_uuid": true,
+      "storage_name_matches": true,
+      "rendered_email_matches": true,
+      "rendered_role_matches": true,
+      "rendered_profile_matches": true,
+      "rendered_organization_matches": true
+    }
+  },
+  "probe_cleanup": null
+}
