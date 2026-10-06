@@ -46,6 +46,14 @@
  "/actions": {
   "get": []
  },
+ "/actions/run": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/actions/server": {
+  "get": []
+ },
  "/activecampaign/public/status": {
   "get": []
  },
@@ -1986,6 +1994,11 @@
   ]
  },
  "/crm/pitch-advisories/one-per-outlet": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/crm/pre-send-check": {
   "post": [
    "application/json"
   ]
@@ -4298,6 +4311,14 @@
  "/mandates/references/board": {
   "get": []
  },
+ "/mandates/runs/{request_id}/answer": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/mandates/runs/{request_id}/result": {
+  "get": []
+ },
  "/mandates/soft": {
   "post": [
    "application/json"
@@ -4330,6 +4351,9 @@
  "/mandates/{mandate_key}/definition-rights": {
   "get": []
  },
+ "/mandates/{mandate_key}/describe": {
+  "get": []
+ },
  "/mandates/{mandate_key}/draft-inputs": {
   "patch": [
    "application/json"
@@ -4355,6 +4379,9 @@
   "get": []
  },
  "/mandates/{mandate_key}/resolution": {
+  "get": []
+ },
+ "/mandates/{mandate_key}/runs": {
   "get": []
  },
  "/mandates/{mandate_key}/test": {
@@ -8079,6 +8106,9 @@
    "application/json"
   ],
   "delete": []
+ },
+ "/v1/tables/{table}/rows/{row_id}/back_links": {
+  "get": []
  },
  "/v1/tables/{table}/rows/{row_id}/restore": {
   "post": []

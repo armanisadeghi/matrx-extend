@@ -379,6 +379,7 @@ export interface AgentStudioFromChatProgressData {
   type?: "agent_studio_from_chat_progress";
   step: "reading" | "briefing" | "building" | "proving";
   says: string;
+  build_id?: string | null;
 }
 
 export interface AgentStudioBriefVariable {
@@ -1098,6 +1099,15 @@ export interface LibrarySyncUnavailableData {
   message: string;
   remedy?: string | null;
   partial_total?: number;
+}
+
+export interface MandateInputRequiredData {
+  type?: "mandate_input_required";
+  mandate_key: string;
+  run_id: string;
+  checkpoint_id?: string | null;
+  inputs?: Record<string, JsonValue>[];
+  message?: string;
 }
 
 export interface MasterworkAuditionOutcomeVerdictData {
@@ -2489,6 +2499,7 @@ export type TypedDataPayload =
   | LibrarySyncPersistedData
   | LibrarySyncStartedData
   | LibrarySyncUnavailableData
+  | MandateInputRequiredData
   | MasterworkAuditionOutcomeVerdictData
   | MasterworkAuditionProgressData
   | MasterworkAuditionVerdictData
@@ -4131,7 +4142,7 @@ export interface SearchReplaceRenderData {
 
 export interface DirectiveReceiptRenderData {
   directive: string;
-  outcome: "proposed" | "applied" | "already_applied" | "failed" | "blocked";
+  outcome: "proposed" | "applied" | "already_applied" | "failed" | "blocked" | "pending";
   message: string;
   resource_kind?: string;
   resource_ids?: string[];
