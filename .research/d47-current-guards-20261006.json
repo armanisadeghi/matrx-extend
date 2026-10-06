@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "lane": "controlled source and saved UI guards only; no native/browser claim",
+  "base_head": "75ea8464d48450216a5bdbc2bcab21d2af44cfb8",
+  "source_sha256": {
+    "src/lib/data-pattern/document-network-capture.ts": "665e139fef101b4d8c9f6214c30fb0c9efb54001823aee70918ee17b8b580ed1",
+    "src/lib/data-pattern/run-interactive.ts": "ab7942fc38e920e8c3f3e71911ab963c52a564fd9fde40a474bd8586ac3f13aa",
+    "tests/unit/document-network-capture.test.ts": "ef925d3f2e3d3dc385a5af7304ab4ed822ba89bd5f1577a0be3382fb0c1ce56b",
+    "tests/unit/document-network-saved-ui.test.tsx": "e7839142816d1b760c4b2558fe4738528f4fdd3944b179612059d1f6cdde9a12"
+  },
+  "runs": [
+    {
+      "run_id": "d47-current-guards-20261006",
+      "journal": "docs/stabilization/resource-journals/d47-current-guards-20261006.jsonl",
+      "result": "resource-valid, 14/14 baseline tests passed, exit 0"
+    },
+    {
+      "run_id": "d47-current-new-guards-20261006",
+      "journal": "docs/stabilization/resource-journals/d47-current-new-guards-20261006.jsonl",
+      "result": "resource-valid, 16/16 focused tests passed, exit 0"
+    },
+    {
+      "run_id": "d47-current-identity-mutant-20261006",
+      "journal": "docs/stabilization/resource-journals/d47-current-identity-mutant-20261006.jsonl",
+      "result": "resource-valid deliberate RED, child exit 1; plant.py verdict RED; saved UI CURRENT_DOCUMENT_ROW assertion failed; source restored byte-identical"
+    }
+  ],
+  "controlled_branches": {
+    "old_seq999_before_current_seq1": "capture core and real saved UI terminal current row pass",
+    "current_seq1_before_old_seq999": "new capture core assertion passes; saved UI order not separately run",
+    "stale_only": "new capture core assertion passes with no delivered event; terminal saved UI no-match recovery not separately run",
+    "early_current_before_frame_commit": "existing capture core assertion passes; event buffered until commit",
+    "surrounding_cleanup": "existing cancellation, setup timeout, late registration, hook cleanup, detach cleanup, same-URL replacement, and SPA route tests pass in focused files"
+  },
+  "causal_mutation": {
+    "site": "Runtime.bindingCalled event filter in src/lib/data-pattern/document-network-capture.ts",
+    "mutation": "temporarily removed document uniqueId equality and oldContexts rejection, preserving other capture logic",
+    "effect": "old sequence 999 displaced current sequence 1 in actual saved UI path; CURRENT_DOCUMENT_ROW assertion failed in responsive-cleanup case",
+    "restore": "plant.py reported identical original/source SHA 665e139fef10"
+  },
+  "limits": [
+    "Chrome/CDP is doubled; no installed extension or public-site native acceptance was run.",
+    "Old manual/prior-run relay cannot satisfy saved replay is source-supported by separate ownership/transport but was not freshly forced through a terminal UI guard in this lane.",
+    "Stale-only terminal no-match and recovery are not proven by the new core assertion.",
+    "Native current provenance and adversarial delayed old response remain unverified; D47/T57 cannot close from this report."
+  ]
+}

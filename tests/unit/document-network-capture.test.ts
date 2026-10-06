@@ -172,55 +172,79 @@ it('returns an honest terminal error when owned debugger release never settles',
   expect(harness.release).toHaveBeenCalledOnce();
 });
 
-it('arms before reload and retains the earliest new-document response while rejecting a delayed old response', async () => {
-  const opts = options();
-  const baseSend = harness.send.getMockImplementation()!;
-  harness.send.mockImplementation(async (method, params) => {
-    if (method === 'Page.reload') {
-      expect(
-        harness.send.mock.calls.some((call) => call[0] === 'Page.addScriptToEvaluateOnNewDocument'),
-      ).toBe(true);
-      context(2, 'reloaded-document');
-      packet(1, '[{"venue":"Prior venue"}]', 999);
-      packet(2, '[{"venue":"Brooklyn Bowl"}]', 1);
-      expect(opts.onEvent).not.toHaveBeenCalled();
-      committed();
-      handshake(2);
-    }
-    return baseSend(method, params);
-  });
-  const capture = await startDocumentNetworkCapture(opts);
-  expect(opts.onEvent).toHaveBeenCalledTimes(1);
-  expect(opts.onEvent.mock.calls[0]![0]).toMatchObject({
-    body: '[{"venue":"Brooklyn Bowl"}]',
-    document_key: 'reloaded-document',
-    capture_id: opts.captureId,
-  });
-  expect(opts.onEvent.mock.calls[0]![0]).not.toHaveProperty('request_headers');
-  await capture.close();
-  expect(harness.send).toHaveBeenCalledWith('Page.removeScriptToEvaluateOnNewDocument', {
-    identifier: 'new-document-script',
-  });
-  await vi.waitFor(() =>
+it.each(['old first', 'current first'] as const)(
+  'arms before reload and retains the earliest new-document response with %s delivery',
+  async (deliveryOrder) => {
+    const opts = options();
+    const baseSend = harness.send.getMockImplementation()!;
+    harness.send.mockImplementation(async (method, params) => {
+      if (method === 'Page.reload') {
+        expect(
+          harness.send.mock.calls.some(
+            (call) => call[0] === 'Page.addScriptToEvaluateOnNewDocument',
+          ),
+        ).toBe(true);
+        context(2, 'reloaded-document');
+        const oldPacket = () => packet(1, '[{"venue":"Prior venue"}]', 999);
+        const currentPacket = () => packet(2, '[{"venue":"Brooklyn Bowl"}]', 1);
+        if (deliveryOrder === 'old first') {
+          oldPacket();
+          currentPacket();
+        } else {
+          currentPacket();
+          oldPacket();
+        }
+        expect(opts.onEvent).not.toHaveBeenCalled();
+        committed();
+        handshake(2);
+      }
+      return baseSend(method, params);
+    });
+    const capture = await startDocumentNetworkCapture(opts);
+    expect(opts.onEvent).toHaveBeenCalledTimes(1);
+    expect(opts.onEvent.mock.calls[0]![0]).toMatchObject({
+      body: '[{"venue":"Brooklyn Bowl"}]',
+      document_key: 'reloaded-document',
+      capture_id: opts.captureId,
+    });
+    expect(opts.onEvent.mock.calls[0]![0]).not.toHaveProperty('request_headers');
+    await capture.close();
+    expect(harness.send).toHaveBeenCalledWith('Page.removeScriptToEvaluateOnNewDocument', {
+      identifier: 'new-document-script',
+    });
+    await vi.waitFor(() =>
+      expect(chrome.scripting.executeScript).toHaveBeenCalledWith(
+        expect.objectContaining({
+          target: { tabId: 37 },
+          world: 'MAIN',
+          func: networkTapCleanupPresent,
+          args: [binding, nonce],
+        }),
+      ),
+    );
     expect(chrome.scripting.executeScript).toHaveBeenCalledWith(
       expect.objectContaining({
-        target: { tabId: 37 },
+        target: { tabId: 37, documentIds: ['replayed-document'] },
         world: 'MAIN',
-        func: networkTapCleanupPresent,
+        func: cleanupNetworkTapMain,
         args: [binding, nonce],
       }),
-    ),
-  );
-  expect(chrome.scripting.executeScript).toHaveBeenCalledWith(
-    expect.objectContaining({
-      target: { tabId: 37, documentIds: ['replayed-document'] },
-      world: 'MAIN',
-      func: cleanupNetworkTapMain,
-      args: [binding, nonce],
-    }),
-  );
-  expect(harness.send.mock.calls.some(([method]) => method === 'Runtime.evaluate')).toBe(false);
-  expect(harness.release).toHaveBeenCalledTimes(1);
+    );
+    expect(harness.send.mock.calls.some(([method]) => method === 'Runtime.evaluate')).toBe(false);
+    expect(harness.release).toHaveBeenCalledTimes(1);
+  },
+);
+
+it('refuses a stale-only response rather than delivering it as the replay document', async () => {
+  const opts = options();
+  const capture = await startDocumentNetworkCapture(opts);
+  context(2, 'reloaded-document');
+  packet(1, '[{"venue":"Prior venue"}]', 999);
+  committed();
+  handshake(2);
+  expect(opts.onEvent).not.toHaveBeenCalled();
+  await capture.close();
+  expect(opts.onEvent).not.toHaveBeenCalled();
 });
 
 it('cleans a nonce-pinned hook when stopped after context creation but before frame commit', async () => {
