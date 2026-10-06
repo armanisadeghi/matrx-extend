@@ -12,11 +12,11 @@
     "Select first controlled event card for B. Run37284490515 ends select_B_card_failed before completing B detection/extraction."
   ],
   "expected": "Current B can detect the intended repeated cards and extract actual fixture rows after rejecting stale A EXIT; on failure, bounded diagnostics identify the failing operation without exposing secrets.",
-  "actual": "Run37357780854 localizes first failure to card_click: 3 cards, 1 overlay, card_visible=true, card_center_hit=false. Scope choice/badge/detection not reached; exact interception cause unproven. Resource-valid failure; temporary secrets removed and absence verified.",
+  "actual": "Native37393464824 passes card detection and actual field selection (picked0\u21921), then fails done_B_failed. Done click, overlay detach, and builder visibility are not distinguished. Three-row extraction remains unverified; no resource invalidation.",
   "severity": "S2: current-session acceptance blocked; product vs driver cause unknown",
   "priority": "P1: resolve observed current-session failure before further Showcase retries",
   "state": "in-fix",
-  "owner": "showcase_card_boundary_diagnosis",
+  "owner": "showcase_done_boundary_diagnosis",
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/37284490515",
     ".research/showcase-reveal-native.json",
@@ -25,7 +25,9 @@
     ".research/showcase-selection-current-native.json",
     ".research/showcase-card-boundary-diagnosis.json",
     ".research/showcase-pointer-peer.json",
-    "docs/stabilization/evidence/showcase-pointer-native/run37388591467/original-receipt.json"
+    "docs/stabilization/evidence/showcase-pointer-native/run37388591467/original-receipt.json",
+    ".research/showcase-field-native-final.json",
+    ".research/showcase-field-timeline-final-peer.json"
   ],
   "transition_history": [
     {
@@ -63,6 +65,24 @@
       "from": "retest-fail",
       "to": "in-fix",
       "reason": "Field boundary combines click and picked-item wait. showcase_field_boundary_repair owns bounded repair/diagnostic; actual failed operation unproven."
+    },
+    {
+      "at": "2026-10-06T00:30:40.191384+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Field repair2e3c8664/117455d5 independently reviewed97efc4af and fullCI37392653796 green."
+    },
+    {
+      "at": "2026-10-06T00:30:40.191384+00:00",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Native37393464824 confirms card/field pass but full required flow fails at Done. Root verified original receipt and all four retained hashes; resources valid."
+    },
+    {
+      "at": "2026-10-06T00:30:40.191384+00:00",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Fresh escalation seat owns completion-boundary diagnosis. Earlier organization diagnostic is a successful prior checkpoint, not the failure cause."
     }
   ],
   "closure_requirement": "Localize actual failed operation, prove causal repair with meaningful RED/GREEN and independent review, then original native flow plus B detection/extraction passes with valid resource evidence.",
@@ -71,22 +91,22 @@
     "ci_wiring": "27d06012; exact existing regression command33/33 pass",
     "peer": "bee50b4d: A nativeUNVERIFIED, B PASS_WITH_CONCERNS; bounded catch/receipt checks2/2 pass",
     "ruling": "Minor receipt defect_id concern refuted as scope attribution: driver tests original D42 acceptance, so retaining D42 primary identity is correct. D143 and inventory explicitly link same run/report for the new diagnostic failure. Do not replace the original acceptance scope with instrumentation scope. Synthetic probe proves wiring only; actual sampling/native outcome unverified.",
-    "next": "Field boundary repair and fresh independent review, then full original native flow; no D143/D42 closure yet."
+    "next": "Diagnose completion boundary, peer-review meaningful repair, then retest full extraction. D143 and broader D42 remain open."
   },
   "current_native": {
-    "run_id": 37388591467,
-    "version": "0.2.305",
-    "source_sha": "7aace278d7db2849dd33e23ecfd546e893e8fa53",
-    "artifact_id": 11380143956,
-    "receipt": "docs/stabilization/evidence/showcase-pointer-native/run37388591467/original-receipt.json",
-    "receipt_sha256": "1a7a9762170527872f25e058188c660862f6f633ae78c7d9995f1c9d993a4a0c",
-    "failure": "select_B_card / card_click / selection_card_click_failed",
-    "observed": "Card center inside viewport hits picker_panel; card rect x8,y79.875,w585,h65.90625 overlaps panel x239,y16,w346,h110. Five sampled interior points hit card, four hit panel.",
-    "limits": "Before-click sample only; no after-failure sample. Obstruction observed, causal repair still requires reproduction and independent retest.",
-    "resource": "Package/browser valid; acceptance child_failed exit1 resourceInvalidfalse; root independently read all final decisions and hashes.",
-    "secrets": "Both owned temporary GHsecret names deleted, absence root-verified.",
-    "owner": "showcase_center_interception_fix",
-    "next": "Determine source-vs-driver repair with red/green real actionability semantics, fresh peer, then same native scope."
+    "run_id": 37393464824,
+    "version": "0.2.307",
+    "source_sha": "97efc4af8fd9581746d0b2b1745fc24296d7d0ec",
+    "artifact_id": 11381873416,
+    "receipt": "docs/stabilization/evidence/showcase-field-native/run37393464824/sanitized-receipt.json",
+    "receipt_sha256": "9893adb55739727f11259d0239c15ed696d4e814e60b44f640344ce3993eae7b",
+    "failure": "done_B_failed; operation unresolved",
+    "observed": "Card detection and field selection passed; field sample0\u21921. Field center hits picker panel but three interior points reach field.",
+    "limits": "Three-row extraction unverified; no inference from stale earlier organization diagnostic.",
+    "resource": "Package/browser valid; acceptance child_failed exit1 resourceInvalidfalse. Root independently verified hashes and final decisions.",
+    "secrets": "Both temporary GitHub secrets deleted; root independently verified absence.",
+    "owner": "showcase_done_boundary_diagnosis",
+    "next": "Diagnose completion boundary, peer-review meaningful repair, then retest full extraction. D143 and broader D42 remain open."
   },
-  "latest_retest_report": ".research/showcase-fixed-native-retest.json"
+  "latest_retest_report": ".research/showcase-field-native-final.json"
 }
