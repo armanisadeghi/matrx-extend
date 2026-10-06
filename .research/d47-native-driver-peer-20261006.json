@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "lane": "fresh independent source and acceptance-readiness review; no product or driver authorship",
+  "reviewed_commits": ["8479652c86dd4b1cf7fa5d518729b599382ec01f", "598570ca8e2b6a184e57086e442e0ef24199e8a3"],
+  "ruling": ".research/d47-acceptance-architecture-ruling-20261006.json",
+  "verdict_A_native_actual_outcome": {
+    "status": "UNVERIFIED_AND_NOT_READY_FOR_FIRST_HOSTED_RUN",
+    "reason": "No hosted native replay has run on this driver. Source inspection found a deterministic seed-save timeout before the adversarial replay. Current installed public-site replay and prior-document exclusion remain unverified; D47/T57 cannot close."
+  },
+  "verdict_B_quality": {
+    "status": "ROUTE_AND_CONTROLLED_CORE_GUARDS_SUPPORTED;_NATIVE_DRIVER_REPAIR_REQUIRED",
+    "positive": "Hosted D47 route, admin credential preflight, approved organization staging, exact imported development artifact receipt/tree check, and passive extension-worker chrome.debugger.onEvent observation are wired. Controlled core tests inject old seq999 and current seq1 in both orders, plus stale-only refusal. Existing real saved UI guard drives the actual saved runner and rendered rows. The recorded identity-removal mutant exited red; production source SHA is restored exactly.",
+    "limit": "The route test is preflight/source-only. Controlled guard Chrome/CDP is doubled. No native, browser, build or release run in this peer lane. The native script has no focused behavioral test of its timed seed transition or passive trace oracle."
+  },
+  "findings": [
+    {
+      "severity": "Critical",
+      "site": "tests/browser/showcase-d47-document-lifecycle.mjs:254-271",
+      "fact": "The driver waits for the first immediate seed response, then waits at most 10 seconds for enabled Save pattern. NetworkTab.tsx:376 does not render SaveAsPattern while discovering; runLocalNetworkDiscovery in src/lib/tools/dispatch.ts:1847,1875-1881 keeps discovery active for a full 20 seconds after arming. The driver will time out before Save appears.",
+      "action": "Await explicit page-load discovery completion with a bounded wait longer than the production 20-second window, then select and save the response. Guard this transition against the actual UI condition."
+    },
+    {
+      "severity": "Important",
+      "site": "tests/browser/showcase-d47-document-lifecycle.mjs:124-150,392-464",
+      "fact": "Passive observer records current packet URL/body substring and sequence, but omits method, request-body identity, source, and a body digest. The reported before-commit boolean is not asserted. Thus a bounded result would not record the full exact request provenance or document-start ordering required by the root ruling. Source fixes binding and script registration before reload, but the receipt does not demonstrate that order on the installed run.",
+      "action": "Record and assert current GET/none identity and exact body digest against the owned response and meaningful context/packet/commit order. Keep current positive handshake/body from the same binding and main-frame context. Correlate the observed sequence with the reviewed registration source; do not change production debugger methods merely to log commands."
+    },
+    {
+      "severity": "Important",
+      "site": "tests/browser/showcase-d47-document-lifecycle.mjs:328-330,429-466",
+      "fact": "The probe starts after the old page is pending and relies on Runtime.enable re-emitting its existing context during capture; this dependency is not checked before replay. It recognizes old teardown only as executionContextDestroyed, although the product accepts executionContextsCleared as equivalent. Observer removal and worker detach occur only on the success path.",
+      "action": "Establish the old main-frame context in the passive trace before Run (or explicitly correlate with the earlier page CDP identity), accept positively observed context clearing/destruction, and remove probe/detach worker in finally."
+    },
+    {
+      "severity": "Important",
+      "site": "tests/browser/showcase-d47-document-lifecycle.mjs:471-477",
+      "fact": "Any native failure writes only stage_failed and a stage name; the caught error and bounded last UI/probe state are discarded. A first hosted failure therefore cannot distinguish a selector, auth, CDP, or product failure from its receipt.",
+      "action": "Persist a sanitized failure class/message and bounded stage diagnostics in the private receipt while retaining no credential or page payload."
+    }
+  ],
+  "scope_limits": [
+    "Owned localhost race is supplemental; canonical public-site run on the same artifact is still required.",
+    "The old response begins before the new binding; absence of an old binding packet must be reported as architectural/lifecycle exclusion with positive controls, not delivered-stale rejection.",
+    "Higher old sequence and both response orders are controlled-core evidence; the native fixture cannot make that removed producer route emit into the new binding.",
+    "Stale-only terminal saved UI and recovery, manual/prior relay exclusion through the runner, cancellation, and a second ordinary successful replay are not proven by these new commits."
+  ],
+  "verification": {
+    "source": "Reviewed exact commit diffs and relevant production UI/capture/transport code; git diff --check passed for both commits.",
+    "controlled_journal": "docs/stabilization/resource-journals/d47-current-identity-mutant-20261006.jsonl records resource-valid child exit 1; .research/d47-current-guards-20261006.json records the assertion and byte-identical restoration. Verified current capture source SHA256 665e139fef101b4d8c9f6214c30fb0c9efb54001823aee70918ee17b8b580ed1.",
+    "tests_run_here": "none; builder owns the one guarded focused test slot; no native/browser/build/release executed"
+  }
+}
