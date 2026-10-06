@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-06",
+  "scope": "Public Store guest Chat startup in hosted run 37509262239; no product UI or Chat behavior was reached.",
+  "status": "ENDPOINT_ABSENT_CAUSE_UNCONFIRMED",
+  "source_sha": "dac42e109efb2094634f46e852e5e2d4420e3553",
+  "runner": {
+    "label": "macos-15-intel",
+    "architecture": "X64",
+    "machine": "x86_64",
+    "log_event": "HOSTED_RUNNER_PLATFORM"
+  },
+  "observed": {
+    "first_failure": "BROWSER_STARTUP_FAILURE",
+    "failure_code": "owned_cdp_endpoint_timeout",
+    "startup_elapsed_ms": 5033,
+    "spawn_observed": true,
+    "endpoint_polls": 126,
+    "endpoint_wait_elapsed_ms": 5022,
+    "longest_endpoint_read_ms": 163,
+    "child_exit_code_at_timeout": null,
+    "child_signal_at_timeout": null,
+    "launch_failed": false,
+    "stderr_observed": false,
+    "devtools_listening_observed": false,
+    "resource_journal": "hosted-guest-37509262239-1: admitted=true, resourceInvalid=false, childExitCode=1, decision=child_failed",
+    "browser_runtime": "Playwright Chromium build 1194 was installed and selected; this does not prove its launch succeeded.",
+    "artifact": "Public Store CRX 0.2.205 passed import verification before launch."
+  },
+  "working_sibling": {
+    "run_id": 37356729984,
+    "date": "2026-10-05",
+    "conclusion": "success",
+    "source_sha": "03009ba0486ba583d41ece4fab8604e8b95e542c",
+    "runner": "macos-15 ARM64 arm64",
+    "browser_runtime": "Playwright Chromium build 1194",
+    "artifact": "Public Store CRX 0.2.205 with the same unpacked tree SHA-256 08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "result": "PASS guest_chat_store after real initial and same-conversation follow-up answers",
+    "limit": "The two workflow heads and fresh runner instances differ. The logs establish the same reported browser build and extension tree, but do not retain browser executable hashes or prove an Intel-only cause."
+  },
+  "boundary_conclusion": "The owned profile's DevToolsActivePort read returned ENOENT through 126 polls over the existing 5000 ms deadline. The Chrome spawn event was observed and the polling loop ran repeatedly. The endpoint was not published within that interval. Null exit/signal fields are a snapshot at timeout, not proof that Chrome stayed alive throughout.",
+  "ruled_out_by_this_run": [
+    "A missing spawn event as the immediate explanation",
+    "A polling loop that was entirely blocked or starved during the endpoint wait",
+    "Resource admission refusal or watcher invalidation as the recorded job failure"
+  ],
+  "unresolved": [
+    "Why Chromium did not publish DevToolsActivePort within the deadline on this Intel runner",
+    "Whether the same public Store artifact and guest Chat case will publish the endpoint on the ARM runner",
+    "Whether the eventual guest Chat request and replies work; zero guest requests were observed"
+  ],
+  "next_decisive_test": {
+    "change_one_condition": "Run hosted-guest-acceptance.yml once with runner_label=macos-15 (ARM64), acceptance_case=guest-chat, published_store_crx=true, using the same public Store version 0.2.205 and unchanged resource guard, CDP deadline, browser build, and test assertions.",
+    "prediction_if_intel_environment_specific": "The ARM run should publish the endpoint and advance past cdp_connect; this would implicate an Intel runner condition but would not alone identify the Chromium subsystem.",
+    "prediction_if_shared_launch_or_artifact_issue": "The ARM run should show the same owned_cdp_endpoint_timeout before UI, warranting lower-level child startup capture under the existing guard.",
+    "evidence_to_keep": "HOSTED_RUNNER_PLATFORM, HOSTED_BROWSER_READY, PREPARED_PUBLISHED_STORE_CRX, BROWSER_STARTUP_FAILURE if present, native receipt, and current-run resource journal. Treat a one-off pass as bounded evidence because the Intel failure may be intermittent."
+  },
+  "source_changes": [],
+  "native_or_hosted_rerun": "Not performed in this diagnostic lane; root owns resource-admitted native dispatch and peer review.",
+  "sources": [
+    "gh run view 37509262239 --log",
+    "gh run view 37356729984 --log",
+    "tests/browser/vault-owned-cdp.cjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    ".github/workflows/hosted-guest-acceptance.yml",
+    ".research/daily-guest-20261006-run37509262239/hosted-guest-37509262239-1.jsonl"
+  ]
+}
