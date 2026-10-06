@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "5750e923",
+  "scope": "Source-only re-review of the three findings in .research/capture-correction-peer-20261006.json against .research/capture-procedure-correction-20261006.json. No general audit or runtime claim.",
+  "finding_dispositions": [
+    {
+      "finding": "C18/C19 semantic fixtures",
+      "status": "ADDRESSED",
+      "evidence": "The replacement preconditions and verdict step require a different-page loaded source for C18 and a separate source that is neither dead nor gated for C19. Each label has a distinct observation. src/features/tasks/verdicts.tsx preserves the corresponding meanings."
+    },
+    {
+      "finding": "Six mandatory capture-level filter options",
+      "status": "ADDRESSED",
+      "evidence": "The filter step names L1 · Quick, L2 · Scroll, L3 · Needs help, L4 · Paste, Sign-in, and Low-value without an availability qualifier; each needs an owned fixture and an uncheckable option or fixture is recorded unverified. src/features/tasks/QueueToolbar.tsx renders every BUCKET_LABELS entry."
+    },
+    {
+      "finding": "Prior-attempt parked Retry branch",
+      "status": "ADDRESSED",
+      "evidence": "The preconditions require distinct prior-attempt parked gated_login and low_value rows. The Retry step explicitly selects both, observes pending responses and corresponding parked-bucket visibility after refresh, separately from the ordinary prior-attempt row."
+    }
+  ],
+  "verdict_a_spec_coverage": {
+    "status": "addressed_as_source_only_procedure",
+    "reason": "The replacement preserves all 25 linked C01-C06, C09, C11-C28 controls once in control_ids, with distinct capture, gate, thin, cancel, source-link, paste, Retry, terminal verdict, grouping, and six filter actions and expected observations. It retains member/admin, explicit device organization, owned fixtures, warm and reload dimensions. C08/C10 remain stable, unlinked, uncovered and owner-intent-unresolved; the L4 no-submit observation does not claim C10 coverage."
+  },
+  "verdict_b_doctrine_evidence": {
+    "status": "addressed_with_execution_unverified",
+    "reason": "The proposal distinguishes ordinary pending Retry from parked-policy queue selection, requires observed server processing before expecting ordinary reappearance, leaves unavailable thin/error/fixture branches unverified, and does not claim a product failure or runtime pass from source. C18/C19, all six filters and both parked categories now have explicit owned fixtures and observations. The proposal has not been applied to canonical inventory and does not change evidence or runtime status."
+  },
+  "source_checks": [
+    "docs/stabilization/inventory.json: EXT-F-2002-T01 and C18-C28 original assertions",
+    "src/features/tasks/verdicts.tsx: exact verdict labels and meanings",
+    "src/features/tasks/QueueToolbar.tsx and queue-view.ts: six rendered filter labels",
+    "src/lib/api/routes/research.ts: ordinary and parked queue contract"
+  ],
+  "limits": "JSON and source review only; no tests, browser, DB, fixture creation, member/admin access verification, server processing observation, or runtime health evidence."
+}
