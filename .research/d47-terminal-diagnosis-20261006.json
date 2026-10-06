@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "lane": "read-only diagnosis of run 37537634304 at saved_terminal_result",
+  "status": "UI_RESULT_BOUNDARY_IDENTIFIED_CORE_OUTCOME_UNVERIFIED",
+  "frozen_product": {
+    "source_sha": "b6ec3615f0e0f917fb787a8ce82849a682017550",
+    "artifact_id": 11440764124,
+    "version": "0.2.325",
+    "source_comparison": "git diff frozen SHA against inspected current checkout for PatternsTab, use-active-tab, run-interactive, capture core and transport was empty"
+  },
+  "receipt": ".research/d47-run-ready-native-20261006/37537634304/receipt.json",
+  "observed": [
+    "Exact saved row was visible and its enabled Run control received a trusted mouse press and release; approval advanced to the current HTTP stage.",
+    "The fixture recorded the old request pending before release, two target requests, current response sent, and old request server-finished after release.",
+    "The passive extension-worker observer recorded old execution context creation then clearing, new main-frame context 10, a new binding handshake, and one current GET response packet with status 200, request_sequence 1, and current payload.",
+    "The driver timed out waiting for both the exact 'Last run: <recipe>' text and 'Canyon Frequency' in the panel. saved_result is null. The failure capture could not read the panel or probe again, and the receipt retains neither the last polled panel text nor the worker port result."
+  ],
+  "causal_boundary": {
+    "source_refs": [
+      "src/hooks/use-active-tab.ts:35-48,121-141,183-185",
+      "src/features/showcase/tabs/PatternsTab.tsx:57-79,112-184,273-286",
+      "src/lib/data-pattern/document-network-capture.ts:423-459",
+      "tests/browser/showcase-d47-document-lifecycle.mjs:499-553"
+    ],
+    "finding": "A saved Network replay intentionally reloads the selected page. The active-tab hook sets pageKey to null on top-frame navigation and later recomputes it from the new documentId. PatternsTab captures the pre-reload pageKey/runSeq in handleRun; its pageKey effect increments runSeq and clears rows, error, name and resultPageKey. Its isCurrent predicate then rejects the eventual success, error, progress and final refresh from this same replay. visibleRows additionally requires resultPageKey to equal the current pageKey. Thus the driver's Last run/current-row oracle cannot be satisfied by a normally observed owned reload, even if the capture core returns current rows. This is a product UI lifecycle mismatch supported by frozen source, with the native new-context trace as the reload positive control; the receipt does not expose the live React pageKey transition directly.",
+    "first_unobserved_boundary": "The new current response entered the capture binding. The receipt does not show whether the core accepted it, closed cleanly, returned rows to the worker, or sent a result/error over the saved-operation port. The first missing observation is that worker-to-panel terminal message with owned run identity and returned row count/reason.",
+    "worker_non_cause": "data_patterns.run explicitly leaves documentId null for network_capture and checks URL only after its owned reload; prepare/expectedPage verifies the pre-reload document. Its post-run pageIsCurrent check is therefore not a frozen-documentId veto for this network case."
+  },
+  "hypotheses": [
+    {
+      "cause": "UI discards the saved replay after its own navigation",
+      "prediction": "Capture may return current rows, but PatternsTab runSeq/pageKey changes before settle; neither Last run nor a saved error appears and bumpPatternRun is skipped.",
+      "evidence": "Direct frozen-source control flow plus native navigation/current binding; live pageKey and port result were not retained."
+    },
+    {
+      "cause": "Core rejects, loses, or fails cleanup after current binding",
+      "prediction": "The worker port sends an error or no terminal result despite the current binding; a repaired UI would show a recipe-scoped error or remain pending.",
+      "evidence": "Still possible because receipt stops before terminal worker/port observation; current binding alone is not accepted rows."
+    },
+    {
+      "cause": "Driver sampled the wrong UI surface",
+      "prediction": "An exact recipe result exists in Patterns pane while whole document text oracle misses it.",
+      "evidence": "Less supported: the oracle searches whole panel text and PatternsTab renders the exact Last run/current row there when visible; failure capture's panel read is unavailable, so actual rendered state is unknown."
+    }
+  ],
+  "regression_gap": {
+    "current_tests": "tests/unit/showcase-patterns-replay-provenance.test.tsx checks successful rows with stable URL-key mocks and rejects an unrelated navigation. tests/unit/document-network-saved-ui.test.tsx drives the real saved runner/transport/dispatcher/capture but holds its mocked active-tab document at original-document and isCurrentPageIdentity true across the simulated CDP reload. Neither models the owned old-document -> null -> new-document pageKey sequence.",
+    "smallest_forcing_regression": "At the real PatternsTab plus saved-operation boundary, emit a top-frame navigation transition during the approved Network replay after Run and before port completion, changing the active-tab pageKey from old document through null to the new document on the same tab/URL. Feed the real current response packet and terminal saved-operation result; require exact current saved row and Last run for the recipe. Then run a second input with an unrelated user navigation (different URL/tab or second document replacement outside the owned capture) before completion and require no old result or stale success. The current source should fail the owned-reload positive case; a constant or unconditional acceptance should fail the unrelated-navigation case. Observe the worker terminal and UI separately so a forged row cannot satisfy the test."
+  },
+  "next_action": "Repair ownership-aware UI result provenance so an approved replay's own verified document transition may publish its terminal result, while unrelated navigation, stop/disconnect, newer runs and page replacement still invalidate it. Instrument/retain the saved-operation worker port terminal and pageKey/runSeq transition in the next bounded native check to distinguish core completion from UI suppression; retain exact terminal UI and current binding assertions. Do not grant D47/T57 acceptance from this receipt."
+}
