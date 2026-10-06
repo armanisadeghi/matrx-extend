@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "reviewed_commit": "3ef2d64a3946339f7beac196bbb21475cd3b9d62",
+  "review_scope": "Independent source and evidence review of the HTTP race fixture, its focused guard, and the native acceptance boundary; no browser, build, release, or new test job was run.",
+  "verdict_A_actual_outcome": {
+    "status": "PARTIAL",
+    "evidence": "The server offers the same GET /api/document-race in old and current pages, holds the first armed response, sends the second, and gates old release until current_response_sent. The focused Node HTTP test observes that schedule and distinct payloads. Neither the test nor this commit runs the installed extension or observes a Chrome Runtime.bindingCalled from the old execution context after the new document starts.",
+    "missing": "Native delivery of the higher-sequence old response to the capture boundary, followed by a visible current-document saved result or explicit provenance refusal, remains unproved. Chrome cancellation or a server-side write cannot count as rejection of a delivered stale callback. The public-site saved replay evidence cited in the defect record is a separate bounded earlier result."
+  },
+  "verdict_B_quality": {
+    "status": "PARTIAL_WITH_IMPORTANT_EVIDENCE_GAPS",
+    "strengths": [
+      "Real loopback HTTP responses and distinct old/current values exercise the fixture server rather than a fabricated extension event.",
+      "The guard catches an observed current-response value swap: its admitted focused run exited zero, and the recorded scratch mutant exited one.",
+      "README explicitly refuses to infer stale callback delivery from current-only output or a successful server write."
+    ],
+    "findings": [
+      {
+        "severity": "important",
+        "location": "tests/fixtures/showcase-replay/serve.mjs:127-155",
+        "finding": "old_response_closed is set on ServerResponse close, which also fires after a normal end. The release handler marks old_response_released before checking destroyed and returns 200 even if the old response was already closed. A post-release status snapshot cannot distinguish Chrome cancellation from normal completion, and a 200 release is not proof that bytes reached the old page. Snapshot and persist pre-release closure and actual write/finish outcomes separately."
+      },
+      {
+        "severity": "important",
+        "location": "tests/fixtures/showcase-replay/serve.mjs:35-43",
+        "finding": "The old page uses fetch keepalive, which can preserve the network request across navigation, but the old document's JavaScript context may be destroyed before response.json runs. The route therefore cannot guarantee the required old Runtime.bindingCalled delivery; native CDP observation must establish it or the branch remains unverified."
+      },
+      {
+        "severity": "moderate",
+        "location": "tests/unit/showcase-d47-fixture.test.ts:63-98",
+        "finding": "The test reads HTML as text and manually issues HTTP requests. It does not execute the two warmup fetches, verify Chrome's old request_sequence exceeds the current sequence, use saved Network replay, or verify document identity filtering. Its green result is a fixture scheduling guard only."
+      },
+      {
+        "severity": "moderate",
+        "location": "tests/unit/showcase-d47-fixture.test.ts:8-12",
+        "finding": "Teardown waits for exit after calling kill. If the child exited independently before teardown, the exit event has already fired and afterEach can hang. Guard child.exitCode/signalCode or install the exit promise before sending the signal."
+      }
+    ]
+  },
+  "smallest_viable_native_observation": "Under one coordinated receipt-bound development-build browser permit, use runNativeSidepanelQa with real admin sign-in to save the exact seed GET recipe, arm the fixture, establish old_pending before Patterns Run, and observe current_response_sent before releasing old. Attach trusted CDP observation to the extension's debugger event boundary, recording Runtime.executionContextCreated unique IDs and Runtime.bindingCalled payloads with request_sequence for both documents. Require an actual old bindingCalled after the new document begins, old sequence greater than current, same URL/method/body, and the visible terminal saved result tied to current rows or an explicit provenance refusal. Record pre-release socket state and artifact receipt/tree hash. If Chrome cancels or destroys the old context before binding delivery, report lifecycle behavior and keep this acceptance branch unverified; the existing controlled CDP regression remains source support only.",
+  "evidence_checked": [
+    "git show 3ef2d64a for fixture, README, guard and defect record",
+    "docs/stabilization/resource-journals/d47-fixture-final-20261006.jsonl: admitted, resource-valid child exit 0",
+    "docs/stabilization/resource-journals/d47-fixture-mutant-20261006.jsonl: admitted, resource-valid child exit 1",
+    "src/lib/data-pattern/document-network-capture.ts:238-371: bindingCalled context identity gate and event emission",
+    "src/lib/data-pattern/run-interactive.ts:395-473: matcher and request_sequence choice",
+    "docs/stabilization/reports/showcase-d47-current-evidence-peer.json: earlier bounded native/public-site result and missing stale delivery"
+  ],
+  "limits": "The journal records exits, not the assertion transcript or a native result. No runtime was launched for this review."
+}
