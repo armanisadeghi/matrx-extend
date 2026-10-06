@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "lane": "independent acceptance architecture adjudication; no product authorship",
+  "reviewed_head": "53799a0a6370a82eb9d313bce27241716f48daa0",
+  "scope": "Read source, canonical case, original defect, historical evidence and current untracked native draft. One lightweight Node VM experiment exercised actual transpiled networkTapMain with deferred fetch. No browser, build, heavy test, product modification, native pass, or closure claim.",
+  "skills_applied": [
+    "forcing-function-tests: expected outcome must force real work; no-events alone is not a passing test",
+    "subagent-dispatch: independent actual-outcome and quality verdicts"
+  ],
+  "ruling": {
+    "status": "RETAIN_OUTCOME_REVISE_UNREACHABLE_FIXTURE_DEMAND_WITH_EXPLICIT_ROOT_RULING",
+    "decision": "The invariant remains unchanged: only the intended current document can supply saved replay rows, including same URL/method/body and a numerically later old local sequence; initial-load interception and public-site replay also remain required. Requiring this specific pending old fetch to naturally call the NEW replay binding is not executable under the repaired producer architecture. Architectural exclusion, positively demonstrated in native Chrome and paired with delivered-stale-event regression, can prove the original outcome. Cancellation alone or current-only rows alone cannot.",
+    "extent_of_proof": "Unreachability proved for the ordinary old fetch and existing manual/prior capture closures used by the proposed fixture. Not a claim that every conceivable Runtime.bindingCalled from an old context is impossible: page script can call exposed bindings, old queued protocol traffic exists, and unexpected navigation/concurrency requires the existing identity defenses.",
+    "root_decision_needed": "Record a technical evidence ruling separating native architectural exclusion from delivered-event rejection. Do not silently mark T57 passed or delete its provenance branch. Preserve the public-site precondition and surrounding regression. The present evidence is insufficient for closure; a new positive native trace is required.",
+    "no_scope_reduction": "Retain delayed old request, identical matcher identity, current request, both response orderings at the controlled boundary, higher old sequence, terminal saved UI, cancellation/cleanup, honest no-match, and public-site native use. Only the demand that fixed production recreate a removed producer-to-consumer route is replaced by affirmative evidence that the route is absent."
+  },
+  "verdict_A_actual_user_outcome": {
+    "status": "PARTIAL_NATIVE_CURRENT_PROVENANCE_STILL_UNVERIFIED",
+    "historical_supported": "Existing reports record original initial-request baseline RED and meaningful downstream document-identity mutation RED, plus installed public HN initial capture and terminal saved ten-row replay. These establish bounded historical outcomes, not current installed provenance.",
+    "current_native_draft": "Not acceptance-ready: old request is not captured by the new run, independent CDP observer has no demonstrated binding subscription, current saved result is sampled without awaiting terminal state, and old event recording checks neither event order nor sequence comparison. No native execution was performed here."
+  },
+  "verdict_B_evidence_quality": {
+    "status": "SOURCE_EXCLUSION_PROVED_FOR_FIXTURE;_NATIVE_PROOF_DESIGN_NEEDS_CORRECTION",
+    "positive": "The real capture producer was exercised in three distinct deferred-response states with positive legacy/prior-binding outputs. Source census finds no saved-run subscriber to the manual NET_CAPTURE_EVENT channel. Existing real saved-UI guard reaches the actual capture core and asserts distinct rendered rows.",
+    "limits": "Node VM substitutes the browser environment and does not prove Chrome lifecycle. Historical mutation evidence was read, not rerun. A separately attached CDP session cannot be presumed to observe another Runtime agent binding. Native trace must establish its own positive control."
+  },
+  "source_proof": [
+    {
+      "ref": "src/lib/data-pattern/run-interactive.ts:370,409-413,522-531",
+      "fact": "Each replay mints a captureId. Its sole Network result input is onEvent from openDocumentNetworkCapture, filtered by capture_id/document_key/tab. No NET_CAPTURE_EVENT subscription exists in this file."
+    },
+    {
+      "ref": "src/lib/data-pattern/document-network-capture.ts:35,409-419,438-459",
+      "fact": "Runtime.addBinding installs a fresh per-run binding, but networkTapMain is scheduled only by Page.addScriptToEvaluateOnNewDocument, without runImmediately, before Page.reload. Installing a binding is not installing a fetch wrapper in the existing page."
+    },
+    {
+      "ref": "src/lib/data-pattern/network-tap.ts:42-48,60-70,179-245",
+      "fact": "The wrapper captures bindingName lexically; only fetch calls initiated through patchedFetch get a requestSequence and body callback. A request started before installation cannot be retroactively wrapped. Existing manual/prior tap sentinel returns without replacing its binding closure."
+    },
+    {
+      "ref": "src/lib/data-pattern/network-tap.ts:323-355",
+      "fact": "Prior-run cleanup either disables its wrapper or clears its prior binding while preserving explicit manual capture. It never points pending callbacks at a future run binding."
+    },
+    {
+      "ref": "tests/fixtures/showcase-replay/serve.mjs:34-48; tests/fixtures/showcase-replay/README.md steps 2-3",
+      "fact": "The route reloads old page outside the extension and starts two warmups plus pending fetch before Patterns Run. These warmups are ordinary HTTP calls, not proof of any producer request_sequence. Its held request does not pass through the new run wrapper."
+    },
+    {
+      "ref": "src/lib/background/bootstrap.ts:554-562; src/hooks/use-network-capture.ts:59-71; src/lib/data-pattern/document-network-transport.ts:37-108,111-180",
+      "fact": "Manual relay remains in the product, stamps trusted sender identity, and feeds the manual hook. The saved operation uses a separate owned core callback and port result, so globally relayed old data does not flow into saved replay. Starting another owned capture aborts prior ownership."
+    },
+    {
+      "ref": "src/lib/data-pattern/document-network-capture.ts:235-307,378-392",
+      "fact": "The core additionally rejects wrong tab/session/default frame, initial context unique IDs, and nonselected contexts. Unexpected replacement/route navigation fails honestly. These protections must remain even if this fixture cannot generate their adversarial packet."
+    },
+    {
+      "ref": "src/lib/data-pattern/document-network-capture.ts:195-207,350-377",
+      "fact": "Accepted row packets receive worker-owned capture/document identity and are buffered until frame commit. Fresh packet + handshake + commit are positive proof points; absence of old packets alone is not."
+    }
+  ],
+  "official_protocol_basis": [
+    {
+      "url": "https://raw.githubusercontent.com/ChromeDevTools/devtools-protocol/master/json/browser_protocol.json",
+      "section": "Page.addScriptToEvaluateOnNewDocument",
+      "paraphrase": "New-document evaluation occurs before frame scripts; runImmediately defaults false."
+    },
+    {
+      "url": "https://raw.githubusercontent.com/ChromeDevTools/devtools-protocol/master/json/js_protocol.json",
+      "section": "Runtime.addBinding and Runtime.removeBinding",
+      "paraphrase": "Bindings can be exposed to existing and future contexts. Notification subscription belongs to a runtime agent; removeBinding unsubscribes that agent without removing the global function. Thus binding existence is not producer installation, nor proof that an unrelated observer receives notifications."
+    }
+  ],
+  "light_experiment": {
+    "command": "node heredoc: require typescript; transpileModule src/lib/data-pattern/network-tap.ts CommonJS ES2022; evaluate in node:vm with deferred window.fetch and real Response; install mode tap, start request, invoke new tap, resolve old body; inspect completed producer packets",
+    "sut": "Actual networkTapMain from reviewed checkout, not a reimplementation",
+    "substitutions": "Window/DOM/CDP binding functions and network response are environment doubles; producer closure, idempotency, sequence creation, response cloning and dispatch execute unchanged.",
+    "stronger_than_fixture": "Explicitly invoking the new tap in the existing old context still cannot retap an already-started native fetch or replace an existing tap. Production does not even invoke that old-context tap.",
+    "result": "exit 0; all three assertion sets passed",
+    "observations": [
+      {
+        "mode": "untapped pending fetch then new tap",
+        "new_binding_data": 0,
+        "prior_binding_data": 0,
+        "manual_relay_data": 0,
+        "positive_control": "new binding hook handshake observed"
+      },
+      {
+        "mode": "manual tap, pending fetch, then new tap",
+        "new_binding_data": 0,
+        "prior_binding_data": 0,
+        "manual_relay_data": 1,
+        "positive_control": "manual relay body exactly Moonlit Transit"
+      },
+      {
+        "mode": "prior binding tap, pending fetch, then new tap",
+        "new_binding_data": 0,
+        "prior_binding_data": 1,
+        "manual_relay_data": 0,
+        "positive_control": "old binding body exactly Moonlit Transit"
+      }
+    ],
+    "limit": "Not native browser proof, not a persisted regression suite, not acceptance. Demonstrates producer impossibility and positive alternate delivery under a deliberately preserved old JavaScript realm."
+  },
+  "native_harness_findings": [
+    {
+      "severity": "important",
+      "ref": "tests/browser/showcase-d47-document-lifecycle.mjs:131-144",
+      "finding": "Separate page CDP session enables Runtime and listens, but does not establish receipt of the extension-owned binding. Require actual current handshake and current body as observer positive controls; otherwise observer is blind/unmeasured. Prefer a passive chrome.debugger.onEvent listener in the running extension worker, installed before replay, without calling or replacing bindings."
+    },
+    {
+      "severity": "important",
+      "ref": "tests/browser/showcase-d47-document-lifecycle.mjs:153-167",
+      "finding": "Immediate panel sampling occurs before the capture window completes. Await recipe-specific terminal result and final rows, then assert exact current values and no old values. An already displayed discovery row must not satisfy the saved result assertion."
+    },
+    {
+      "severity": "important",
+      "ref": "tests/browser/showcase-d47-document-lifecycle.mjs:133-167",
+      "finding": "Record monotonic event ordering, selected main frame, capture name/ID and current sequence/body hash. at(-1) default context need not be main frame; any old integer sequence is not the required higher sequence after new-context creation."
+    },
+    {
+      "severity": "important",
+      "ref": "docs/stabilization/inventory.json:24930-24948; tests/fixtures/showcase-replay/README.md",
+      "finding": "Canonical native case explicitly requires public website and no localhost. Local synthetic race supplements this; it does not replace the public native case. Canonical step releases old then current, while fixture releases current then old. Preserve both ordering assertions in controlled regressions."
+    }
+  ],
+  "required_next_executable_test": {
+    "before_run": "Repair the draft observer/terminal assertions first. No third unchanged run. Use the existing runNativeSidepanelQa receipt/resource/auth path; register passive extension-worker debugger-event observation before Run and retain it through terminal cleanup.",
+    "exact_draft_command_after_repair": "node scripts/stabilization-resource.mjs run --run-id d47-native-architecture-20261006 -- node tests/browser/showcase-d47-document-lifecycle.mjs (existing exact-artifact, receipt, CI identity and approved-organization environment required)",
+    "positive_assertions": [
+      "Real saved exact recipe, reopened by its own name, correct tab/document and fresh approved capture; old real network request positively observed pending before Run.",
+      "New capture binding registration and new-document script registration precede replay reload; preexisting main-frame context recorded as old; current main-frame context unique ID differs.",
+      "Observer receives actual extension-binding handshake AND exact current response packet for the same capture and new main-frame context; response matches source request identity and body digest.",
+      "Old context destruction/clearing or continued existence is positively observed, correlated with actual request finish/abort and release attempt; no inference from empty event array.",
+      "Wait until THIS saved recipe reaches terminal state. Success requires current rows, source-proven identity, and no old replacement. Failure must be explicit provenance/lifecycle refusal, not timeout of harness. Repeat normal successful run to rule out reject-all.",
+      "Run original public-site saved initial request replay on same installed artifact. For adversarial public reproduction, pause a genuine matched response using browser interception, retain original URL/method/body and genuine response bytes, begin approved replay, then release after new document begins. Record actual canceled/completed lifecycle; do not fabricate a binding or network payload."
+    ],
+    "negative_assertions": [
+      "No accepted saved-run packet from old unique context, manual relay, previous capture name or another tab/frame. If any appears, fail irrespective of final row coincidence.",
+      "No saved result may be supplied solely by discovery UI, cached prior rows, harness-synthesized event, server finish, request count, or absence of callbacks.",
+      "No stale-only success when current response is suppressed. Require explicit no-match/retrigger outcome and then successful replay with current response restored.",
+      "Do not label old callback rejected unless an actual old callback is observed at the real extension boundary. An excluded/canceled old request is recorded as architectural/lifecycle exclusion, with controlled guard evidence separately labeled."
+    ],
+    "guard_requirements": [
+      "Keep current real saved-UI delivered old seq999/current seq1 guard and meaningful identity-removal mutant; rerun at frozen source. Add/retain inverse arrival order and stale-only input, proving current output and no stale success respectively.",
+      "Demonstrate old manual/prior-run messages cannot satisfy saved replay through the actual messaging/core/runner boundary, with positive current packet and terminal UI. A source-string assertion alone is inadequate.",
+      "Retain earliest-current-before-commit, tab/frame mismatch, same-URL replacement, denial, Stop/disconnect, cleanup/detach failure and no-match recovery coverage appropriate to original surrounding regression. Record fresh receipt and resource-valid results."
+    ],
+    "acceptance_rule": "Only after these positive native assertions and existing delivered-event/mutation guards pass may root accept architectural exclusion for the unreachable fixture event. Until then native provenance remains UNVERIFIED; report does not close D47/T57."
+  },
+  "historical_evidence_read": [
+    "docs/stabilization/defects/EXT-D-0047.json",
+    "docs/stabilization/reports/showcase-network-document-integration.json",
+    "docs/stabilization/reports/showcase-d47-current-evidence-peer.json",
+    ".research/d47-fixture-peer-20261006.json",
+    ".research/d47-lifecycle-fresh-review-20261006.json"
+  ],
+  "source_sha256": {
+    "src/lib/data-pattern/document-network-capture.ts": "665e139fef101b4d8c9f6214c30fb0c9efb54001823aee70918ee17b8b580ed1",
+    "src/lib/data-pattern/network-tap.ts": "663aeb03df15855c5702de7736becb30e66ca97c3f13099f81f819406c163668",
+    "src/lib/data-pattern/run-interactive.ts": "ab7942fc38e920e8c3f3e71911ab963c52a564fd9fde40a474bd8586ac3f13aa",
+    "src/lib/data-pattern/document-network-transport.ts": "b45bac80cc9b7be05c2220a47a1252bd80b6d30307016ee93a2a871ab54fa329",
+    "tests/fixtures/showcase-replay/serve.mjs": "e1e35298d6bab8b437e43a6dc90aec856c595f5c4687b6fb8316e27474e2f4de",
+    "tests/unit/document-network-capture.test.ts": "cc0077509155a0605615b3a50a623b18d4d221bedce6cb97b75a3502ac424b6c",
+    "tests/unit/document-network-saved-ui.test.tsx": "e7839142816d1b760c4b2558fe4738528f4fdd3944b179612059d1f6cdde9a12",
+    "tests/browser/showcase-d47-document-lifecycle.mjs": "266e38a18462b2143823f1a3ed1d1a0a598328cad9f587a55906c37930186e3c"
+  }
+}
