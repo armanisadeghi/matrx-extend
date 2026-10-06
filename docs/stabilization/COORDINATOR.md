@@ -1,6 +1,6 @@
 # Stabilization resume checkpoint
 
-- **Status:** campaign incomplete; at 19:32 UTC, root's check of the latest five `hosted-guest-acceptance.yml` runs found all five completed; no native run is admitted. Root owns integration, defect/inventory transitions, Store follow-through, and execution admission.
+- **Status:** campaign incomplete. As of 2026-10-06 19:32 UTC, root’s check of the latest five `hosted-guest-acceptance.yml` runs found all five completed; no native run is admitted. Root owns integration, defect/inventory transitions, Store follow-through, and execution admission.
 - **Source of truth:** resume from [inventory](inventory.json), [defects](defects/), [status](STATUS.md), and linked receipts/reviews in `.research/`, `runs/`, and `reports/`. Keep every case at its recorded scope; bounded passes do not promote whole features.
 - **D143:** CLOSED for its driver-specific failure on frozen 0.2.307. Native 37395727468 passed all seven recorded checkpoints with valid resource journals; it does not cover newer 0.2.309 or the remaining D42 channels. See [defect](defects/EXT-D-0143.json) and [run](runs/showcase-repick-native-37395727468.json).
 - **D42:** remains in-fix. Old EXIT rejection and same-page replacement are bounded evidence; stale ITEM_DETECTED/RESULT, delayed cancellation, deferred install, reinjection/listener cleanup, and nonadmin gating remain open. See [defect](defects/EXT-D-0042.json) and [session report](reports/showcase-picker-session-fix.json).
