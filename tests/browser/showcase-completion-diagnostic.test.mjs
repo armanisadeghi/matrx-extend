@@ -2,9 +2,23 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { runInNewContext } from 'node:vm';
 import {
+  cancelShowcaseRepick,
   listStateExpression,
   runShowcaseCompletionBoundary,
 } from './showcase-completion-diagnostic.mjs';
+
+test('repick cancellation clicks the page picker Cancel control through a normal click', async () => {
+  const clicks = [];
+  const page = {
+    locator(selector) {
+      return { click: async (options) => clicks.push({ selector, options }) };
+    },
+  };
+  await cancelShowcaseRepick(page);
+  assert.deepEqual(clicks, [
+    { selector: '#matrx-list-picker-host button#cancel', options: undefined },
+  ]);
+});
 
 // ListPatternTab renders the selected-field heading with text-transform: uppercase.
 // The expression must accept that actual innerText while rejecting other field counts.

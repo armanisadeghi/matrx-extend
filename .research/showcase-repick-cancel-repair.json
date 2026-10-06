@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "status": "driver_repaired_native_unverified",
+  "native_source": {
+    "run_id": 37394784438,
+    "receipt": "docs/stabilization/evidence/showcase-completion-native/run37394784438/sanitized-receipt.json",
+    "artifact_id": 11382867410,
+    "observation": "Done click, overlay detach, builder readiness, exact three rows and all fixture titles passed; repick overlay attached; panel Cancel was absent and the driver failed at cancel_click."
+  },
+  "cause": "With an existing List Pattern config, Pick more fields renders the builder and the page picker overlay. The panel Cancel button renders only for the initial pick without config. The driver targeted the panel during repick.",
+  "repair": "Repick cancellation clicks the overlay's button#cancel with an ordinary Playwright click; overlay detach and ordinary page click assertions remain.",
+  "guard": {
+    "command": "node --test tests/browser/showcase-completion-diagnostic.test.mjs",
+    "red": "Assertion failed when helper clicked overlay Done instead of Cancel.",
+    "green": "4 tests passed after selecting overlay Cancel; guard also asserts no force options."
+  },
+  "checks": [
+    "node --check tests/browser/showcase-picker-native-acceptance.mjs passed",
+    "pnpm exec biome check on three owned driver/test files passed"
+  ],
+  "limits": [
+    "No new native run, build, compile, or release in this bounded repair lane.",
+    "Cancellation detach and ordinary page click remain pending native verification."
+  ]
+}

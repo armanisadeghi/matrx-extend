@@ -18,6 +18,7 @@ import {
   clickReachableShowcaseTarget,
 } from './showcase-card-driver.mjs';
 import {
+  cancelShowcaseRepick,
   listStateExpression,
   runShowcaseCompletionBoundary,
 } from './showcase-completion-diagnostic.mjs';
@@ -451,9 +452,7 @@ try {
       await completion('repick_attach', async () =>
         (await pickedOverlay(page)).waitFor({ state: 'attached' }),
       );
-      await completion('cancel_click', () =>
-        resourceAction(() => click(panel, 'button-text', 'Cancel')),
-      );
+      await completion('cancel_click', () => resourceAction(() => cancelShowcaseRepick(page)));
       await completion('cancel_detach', async () =>
         (await pickedOverlay(page)).waitFor({ state: 'detached' }),
       );

@@ -18,6 +18,10 @@ export function listStateExpression() {
   })()`;
 }
 
+export async function cancelShowcaseRepick(page) {
+  await page.locator('#matrx-list-picker-host button#cancel').click();
+}
+
 async function observeCompletion({ page, readPanel, readRelays }) {
   const sample = {};
   try {
