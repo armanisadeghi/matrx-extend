@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "task_id": "showcase_completion_native",
+  "lane": "independent native retest",
+  "status": "partial_pass_cancel_click_failed",
+  "feature_ids": ["EXT-F-1012"],
+  "defect_ids": ["EXT-D-0143", "EXT-D-0042"],
+  "native": {
+    "run_id": 37394784438,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37394784438",
+    "runner": "macos-15",
+    "conclusion": "failure",
+    "workflow_driver_sha": "fa240b21e629c5683fdce8b69c16b461aac48986",
+    "driver_fix_sha": "9ffd06d354f83b51faec517d0f03285c97185f78",
+    "case": "showcase-stale-admin"
+  },
+  "frozen_artifact": {
+    "ci_run_id": 37392653796,
+    "artifact_id": 11381873416,
+    "source_sha": "97efc4af8fd9581746d0b2b1745fc24296d7d0ec",
+    "digest_sha256": "b852d9bc71d4fa2208c50827af6ea130bf9e71f10e104223b21ebe6cec012cbc",
+    "tree_sha256": "5460cc1f14b21e36d6186926fa912d36bd753a912de480e217499047b90ebdd4",
+    "version": "0.2.307"
+  },
+  "observed": {
+    "guest_gate": "pass",
+    "admin_signin_and_approved_organization": "pass",
+    "stale_A_exit_rejected_while_B_active": "pass",
+    "same_page_A_cancel_B_start": "pass",
+    "current_B_detection": "pass",
+    "B_field_picked_count": 1,
+    "done_B_click": "pass",
+    "done_B_detach": "pass",
+    "done_B_builder": "pass",
+    "selected_field_count": 1,
+    "extract_enabled": true,
+    "extract_B_click": "pass",
+    "extract_B_rows": "pass",
+    "row_count": 3,
+    "titles": ["Neon Nights", "Desert Lanterns", "Silver Moon"],
+    "repick_click": "pass",
+    "repick_attach": "pass"
+  },
+  "first_failure": {
+    "stage": "cancel_click",
+    "code": "cancel_click_failed",
+    "kind": "operation_failed",
+    "facts": "Repick overlay attached; Done present, enabled and hit-testable; picked count 0. Panel Cancel absent while selected field and Extract remain available. Driver clicked panel Cancel; operation failed.",
+    "source_context": "ListPatternTab renders panel Cancel only in !config && picking; with existing config it renders Pick more fields and Extract, so repick does not expose panel Cancel.",
+    "root_cause_scope": "driver expectation incompatible with repick UI; no product defect established at this step"
+  },
+  "resource": {
+    "package": "valid",
+    "browser": "valid",
+    "guest": "child_failed",
+    "guest_resource_invalid": false,
+    "guest_exit_code": 1
+  },
+  "evidence": {
+    "directory": "docs/stabilization/evidence/showcase-completion-native/run37394784438",
+    "hosted_artifact_id": 11382867410,
+    "hosted_artifact_digest_sha256": "59d5d70b3c6ad818d5a332f651ef5e7509ed4c02d0de1bacc40fd66dd7693523",
+    "files_sha256": {
+      "hosted-browser-37394784438-1.jsonl": "def2eb633184cbb5253e29da4bba7b88540cf357978ecb670a9c929bb8d75b19",
+      "hosted-guest-37394784438-1.jsonl": "1f93a8885f82a345c43922dd78c7e0aef65a5179c9dd13b732655a7abc2f3b45",
+      "hosted-package-37394784438-1.jsonl": "a5562062efe0562848f58e4046e34110e60f2641cb1a64adbc5e14de188674f3",
+      "sanitized-receipt.json": "626bd24c993497614e9c4269304a4b436d4759345c766a4fbd4809c460fb990f"
+    }
+  },
+  "temporary_secrets": {
+    "names": ["MATRX_PROFILE_APPROVED_ORGANIZATION_JSON", "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON"],
+    "absent_before_staging": true,
+    "privately_validated": true,
+    "deleted_after_terminal": true,
+    "absence_verified": true
+  },
+  "limitations": [
+    "The frozen artifact proves this 0.2.307 behavior only; current main has package.json and pnpm-lock.yaml changes after source 97efc4af.",
+    "The panel observer result_raw=true is a delivered relay observation, not independent proof of the page-side producer boundary.",
+    "Stale A ITEM_DETECTED/RESULT/EXIT held and released after B, delayed A cancellation, deferred installation, new content-script reinjection/listener count, and nonadmin gate remain unverified.",
+    "No unchanged retry or manual build/release launched."
+  ],
+  "next_action": "Repair the test driver repick cancellation to target the actual picker overlay Cancel control; independently review it, then one changed-condition native retest on a verified artifact."
+}
