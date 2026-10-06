@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "task_id": "showcase_repick_native_final",
+  "lane": "independent native retest",
+  "status": "passed_bounded",
+  "feature_ids": ["EXT-F-1012"],
+  "defect_ids": ["EXT-D-0143", "EXT-D-0042"],
+  "native": {
+    "run_id": 37395727468,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37395727468",
+    "runner": "macos-15",
+    "conclusion": "success",
+    "case": "showcase-stale-admin",
+    "workflow_driver_sha": "783ca42c3302be013a6e2787b7739ecb9c6057f4",
+    "artifact_source_sha": "97efc4af8fd9581746d0b2b1745fc24296d7d0ec",
+    "status": "passed_bounded",
+    "stage": "complete"
+  },
+  "frozen_artifact": {
+    "ci_run_id": 37392653796,
+    "artifact_id": 11381873416,
+    "source_sha": "97efc4af8fd9581746d0b2b1745fc24296d7d0ec",
+    "tree_sha256": "5460cc1f14b21e36d6186926fa912d36bd753a912de480e217499047b90ebdd4",
+    "version": "0.2.307"
+  },
+  "verified_cases": [
+    "guest_nonchat_control_and_showcase_gate",
+    "real_admin_signin_and_device_organization",
+    "genuine_A_exit_relay_rejected_while_B_active",
+    "same_page_cancel_A_start_B",
+    "current_B_detection_relayed",
+    "B_card_field_done_extract",
+    "ordinary_page_click_after_cancel"
+  ],
+  "completion_boundaries": [
+    "done_B_click",
+    "done_B_detach",
+    "done_B_builder",
+    "extract_B_click",
+    "extract_B_rows",
+    "repick_click",
+    "repick_attach",
+    "cancel_click",
+    "cancel_detach",
+    "normal_page_click"
+  ],
+  "observed": {
+    "three_fixture_rows_and_titles": true,
+    "repick_overlay_cancel_click": true,
+    "repick_overlay_detach": true,
+    "ordinary_page_click_count": 1,
+    "stale_A_exit_rejected_while_B_active": true
+  },
+  "resource": {
+    "package": {
+      "decision": "valid",
+      "resourceInvalid": false,
+      "exitCode": 0
+    },
+    "browser": {
+      "decision": "valid",
+      "resourceInvalid": false,
+      "exitCode": 0
+    },
+    "guest": {
+      "decision": "valid",
+      "resourceInvalid": false,
+      "exitCode": 0
+    }
+  },
+  "evidence": {
+    "directory": "docs/stabilization/evidence/showcase-repick-native/run37395727468",
+    "hosted_artifact_id": 11382814241,
+    "hosted_artifact_digest_sha256": "8b4a0996207339429183b9fb30cf317e2136d17b2e77fabdb72ff4f786f3ccf3",
+    "files_sha256": {
+      "sanitized-receipt.json": "2437584c5b64a03549b5b54c4972a85b173bf758cd2b4e50d27d9272f8f60ddc",
+      "hosted-package-37395727468-1.jsonl": "94328adda22d654ac96c9319601fd21c9504e15788dd7a522e957dbf2417b68b",
+      "hosted-browser-37395727468-1.jsonl": "5501c6e907bd9b7e8e0b13dcb584c2c7ecad973cfc05df0e68f65e3e1a764a95",
+      "hosted-guest-37395727468-1.jsonl": "b7a630b98ebf930729a1d3a520547e9eedf9ba43e74e8d7f33dfdd3321d54406"
+    }
+  },
+  "temporary_secrets": {
+    "names": ["MATRX_PROFILE_APPROVED_ORGANIZATION_JSON", "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON"],
+    "absent_before_staging": true,
+    "privately_validated": true,
+    "deleted_immediately_after_terminal": true,
+    "absence_verified": true
+  },
+  "limitations": [
+    "Pass binds frozen product 0.2.307/source 97efc4af with reviewed workflow driver 783ca42c; newer main packages and release 0.2.309 are not covered.",
+    "Receipt result_raw=true is a delivered relay observation, not independent page-side producer-boundary proof.",
+    "stale A ITEM_DETECTED and RESULT held and released after B starts",
+    "delayed A cancellation injection after B starts",
+    "deferred installation across replacement",
+    "new content-script context reinjection and exact listener count",
+    "nonadmin role gating"
+  ],
+  "next_action": "Root owns inventory/defect closure after independent receipt review; retain bounded native pass and unverified criteria separately."
+}
