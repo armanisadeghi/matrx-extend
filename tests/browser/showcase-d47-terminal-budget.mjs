@@ -1,6 +1,14 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import ts from 'typescript';
+import { pathToFileURL } from 'node:url';
+
+const ts = (
+  await import(
+    process.env.MATRX_TYPESCRIPT_MODULE
+      ? pathToFileURL(process.env.MATRX_TYPESCRIPT_MODULE).href
+      : 'typescript'
+  )
+).default;
 
 export const terminalBudgetPaths = {
   runner: 'src/lib/data-pattern/run-interactive.ts',

@@ -276,6 +276,11 @@ async function removePassiveWorkerProbe(worker) {
   });
 }
 
+if (process.env.MATRX_D47_IMPORT_PREFLIGHT === '1') {
+  process.stdout.write('HOSTED_D47_DRIVER_IMPORT_READY\n');
+  process.exit(0);
+}
+
 try {
   const extensionDir = process.env.MATRX_SHOWCASE_EXTENSION_DIR;
   const receiptPath = process.env.MATRX_SHOWCASE_RECEIPT;
