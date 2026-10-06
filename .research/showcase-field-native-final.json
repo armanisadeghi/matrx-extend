@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "task_id": "showcase_field_native_finish",
+  "lane": "independent native retest",
+  "status": "field_pass; done_B_failed; extraction_unverified",
+  "feature_ids": ["EXT-F-1012"],
+  "defect_ids": ["EXT-D-0143", "EXT-D-0042"],
+  "ci": {
+    "run_id": 37392653796,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37392653796",
+    "conclusion": "success",
+    "source_sha": "97efc4af8fd9581746d0b2b1745fc24296d7d0ec",
+    "includes_field_fix_sha": "117455d562022edd6520da71a4d282a2d7c84273",
+    "artifact_id": 11381873416,
+    "artifact_digest_sha256": "b852d9bc71d4fa2208c50827af6ea130bf9e71f10e104223b21ebe6cec012cbc",
+    "artifact_tree_sha256": "5460cc1f14b21e36d6186926fa912d36bd753a912de480e217499047b90ebdd4",
+    "version": "0.2.307",
+    "jobs": {
+      "checks": "success",
+      "resource-guard-integration": "success"
+    }
+  },
+  "native": {
+    "run_id": 37393464824,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37393464824",
+    "runner_label": "macos-15",
+    "acceptance_case": "showcase-stale-admin",
+    "conclusion": "failure",
+    "artifact_source_sha": "97efc4af8fd9581746d0b2b1745fc24296d7d0ec",
+    "passed": [
+      "guest_nonchat_control_and_showcase_gate",
+      "real_admin_signin_and_device_organization",
+      "genuine_A_exit_relay_rejected_while_B_active",
+      "same_page_cancel_A_start_B",
+      "current_B_detection_relayed",
+      "B_card_selection",
+      "B_field_click_and_one_picked_item"
+    ],
+    "first_failure": {
+      "stage": "done_B",
+      "failure_code": "done_B_failed",
+      "substage": "done_B_operations_unseparated",
+      "scope": "done_B combines Done click, overlay detach, and builder visibility; receipt does not identify failing operation."
+    },
+    "field_observation": {
+      "before_click_picked_item_count": 0,
+      "after_click_picked_item_count": 1,
+      "center_hit_kind": "picker_panel",
+      "reachable_interior_field_points": 3
+    },
+    "unverified": [
+      "B three-row extraction",
+      "stale A ITEM_DETECTED/RESULT/EXIT held and released after B starts",
+      "delayed A cancellation injection after B starts",
+      "deferred installation across replacement",
+      "new content-script context reinjection and exact listener count",
+      "nonadmin role gate"
+    ],
+    "resource": {
+      "package": {
+        "decision": "valid",
+        "resourceInvalid": false,
+        "exitCode": 0
+      },
+      "browser": {
+        "decision": "valid",
+        "resourceInvalid": false,
+        "exitCode": 0
+      },
+      "guest": {
+        "decision": "child_failed",
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "cpu_pending_recovered": true
+      }
+    },
+    "prior_successful_organization_checkpoint": {
+      "admin_role_verified": true,
+      "storage_has_uuid": true,
+      "storage_name_matches": true,
+      "rendered_identity_and_organization_match": true,
+      "note": "This diagnostic precedes done_B and is not evidence of the done_B failure cause."
+    }
+  },
+  "evidence": {
+    "directory": "docs/stabilization/evidence/showcase-field-native/run37393464824",
+    "hosted_artifact_id": 11382238638,
+    "hosted_artifact_digest_sha256": "741cf51c35c6e5cf01925c56dcc8bf80151624bc1455d2c93f99d17f7c46a75a",
+    "original_receipt_sha256": "b215a337c3a501d6cbf9c100c077b9de416f05bf1e35167f997e29eb10a1beb7",
+    "files_sha256": {
+      "hosted-browser-37393464824-1.jsonl": "2f46c7e7d1969795592f7bebf09c764c916528d7604baf2e2e4bd913c451c294",
+      "hosted-guest-37393464824-1.jsonl": "3f204f87d6caa3d974f5bde68103d57de4d92c8de9c5fbafebec5c908c3d3e13",
+      "sanitized-receipt.json": "9893adb55739727f11259d0239c15ed696d4e814e60b44f640344ce3993eae7b",
+      "hosted-package-37393464824-1.jsonl": "c00af5cc662e544e17830d562c558fa6cb1c1d69d3dc151958fac15c3c8418cd"
+    }
+  },
+  "temporary_secrets": {
+    "names": ["MATRX_PROFILE_APPROVED_ORGANIZATION_JSON", "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON"],
+    "absent_before_staging": true,
+    "validated_admin_fixture_with_requireSettingsCredential": true,
+    "deleted_immediately_after_terminal_run": true,
+    "absence_verified": true
+  },
+  "limitations": [
+    "Native field selection passed, but full showcase-stale-admin did not reach extraction.",
+    "The done_B receipt does not distinguish Done click, overlay detach, or builder visibility. Earlier organization identity observations were successful and do not establish a cause.",
+    "No unchanged retry launched."
+  ],
+  "next_action": "Separate the done_B click, overlay detach, and builder visibility operations in a bounded diagnostic; repair only the confirmed failing operation, then run one new native case from a fresh green artifact."
+}
