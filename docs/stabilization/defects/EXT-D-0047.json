@@ -28,11 +28,11 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Monitor existing native run37537634304 to terminal; collect same-run journals/live diagnostics, remove owned ephemeral secrets immediately, independently review actual replay and provenance evidence. No second run is authorized.",
-    "status": "One guarded native retest running:37537634304 after CI37536759731 success and valid credential/resource preflight.",
+    "next_action": "Complete source diagnosis and independently review evidence before repair/retest. No second hosted run authorized. Preserve actual trusted-input observations separately from absent terminal replay proof.",
+    "status": "Run37537634304 terminal failure at saved_terminal_result after trusted Run click and fixture request sequence; resources valid, temporary secrets removed. Fresh source diagnosis in progress; native replay remains unverified.",
     "implementation_agent": "completed: d47_run_boundary_escalation",
-    "execution_agent": "d47_input_native_retest",
-    "native_run_id": 37534454354,
+    "execution_agent": "none active",
+    "native_run_id": 37537634304,
     "workflow_source": "fbcc4311ae6885b67133e55336f692be38881249",
     "development_artifact_id": 11440764124,
     "development_source": "b6ec3615f0e0f917fb787a8ce82849a682017550",
@@ -54,7 +54,7 @@
     "run_boundary_review_commit": "5425d283",
     "run_boundary_review": ".research/d47-run-readiness-peer-20261006.json",
     "pending_ci_run_id": 37536759731,
-    "active_native_run_id": 37537634304
+    "latest_native_evidence": ".research/d47-run-ready-native-20261006.json"
   },
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
   "verification_status": "Current independentevidencepeer e7a67bcd confirms initialrequest timing and documentidentity controlled regressions (including meaningful identitymutation), plus bounded installed initialHN capture and saved10row replay on8b0f8adc/9ea6687b. Delayed matching prior-document response with higher old sequence is still nativeUNVERIFIED; T57 and original D47 closure remain incomplete. No current runtime was run by evidencepeer.",
