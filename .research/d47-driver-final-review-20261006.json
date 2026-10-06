@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "lane": "fresh zero-authorship scoped re-verification of native first-run driver",
+  "reviewed_repair_commit": "200831a80fa3486f0fe35828d094eccc559da49c",
+  "reviewed_merge_commit": "0401c052c84d3be39d2be12b968040d53ba0e88d",
+  "verdict_A_native_actual_outcome": {
+    "status": "UNVERIFIED_READY_FOR_ONE_BOUNDED_HOSTED_RUN",
+    "reason": "The repaired driver and its source-backed passive trace oracle are ready to attempt the first hosted native run. No native/browser execution occurred in this review. The localhost race is supplemental; current installed public-site replay and the full T57/D47 case remain unverified."
+  },
+  "verdict_B_quality": {
+    "status": "SCOPED_DRIVER_REPAIRS_ACCEPTED",
+    "reason": "All four prior driver findings are addressed in the wired native script and focused helper. The oracle refuses missing current packet or handshake, wrong exact GET/none/fetch/status/body digest, wrong main-frame context, absent old-context teardown, and any observed old target payload. Both packet/commit orderings are recorded and accepted as the root ruling permits. CI invokes the helper test."
+  },
+  "prior_findings": [
+    {
+      "prior_severity": "Critical",
+      "status": "ADDRESSED",
+      "evidence": "tests/browser/showcase-d47-document-lifecycle.mjs:279-308 waits for the actual stopped discovery UI with a 30-second bound after the initial response. Production src/lib/tools/dispatch.ts:1847,1876-1881 holds discovery for 20 seconds; src/features/showcase/tabs/NetworkTab.tsx:195-196 emits the stopped marker and :376 renders Save only after discovery."
+    },
+    {
+      "prior_severity": "Important",
+      "status": "ADDRESSED",
+      "evidence": "tests/browser/showcase-d47-document-lifecycle.mjs:143-172 captures extension-worker debugger events and bounded request identity plus SHA-256, and :433-448 calls the oracle. tests/browser/showcase-d47-driver-evidence.mjs:37-110 requires same binding/context handshake, exact request and owned response digest, and records packet versus commit order. src/lib/data-pattern/document-network-capture.ts:409-420 registers binding and new-document script before :438-459 reload. This registration order is source-supported, not independently observed in the passive trace."
+    },
+    {
+      "prior_severity": "Important",
+      "status": "ADDRESSED",
+      "evidence": "tests/browser/showcase-d47-document-lifecycle.mjs:347-373 correlates the old context before Run and installs the worker listener before replay; helper :92-100 accepts positively observed destruction or clearing. Driver :494-499 calls cleanup in finally and helper :21-35 still detaches after listener removal fails."
+    },
+    {
+      "prior_severity": "Important",
+      "status": "ADDRESSED",
+      "evidence": "tests/browser/showcase-d47-document-lifecycle.mjs:457-501 writes sanitized class/stage/message code, bounded fixture, trace and panel flags, and cleanup result on failure. Helper :7-19 strips raw error text."
+    }
+  ],
+  "test": {
+    "command": "node scripts/stabilization-resource.mjs run --run-id d47-driver-final-review-20261006 -- node --test tests/browser/showcase-d47-driver-evidence.test.mjs",
+    "journal": "docs/stabilization/resource-journals/d47-driver-final-review-20261006.jsonl",
+    "result": "resource admitted and valid; child exit 0; 5/5 tests pass",
+    "negative_controls": "The focused test mutates method, body identity, digest, source, old payload, handshake, old-context terminal event, and current context, and expects refusal."
+  },
+  "scope_limits": [
+    "No native, browser, build, release or product-code change in this lane.",
+    "No old binding event was fabricated; architectural/lifecycle exclusion still requires the positive hosted trace and cannot be called delivered-stale rejection.",
+    "The supplemental localhost race does not close the public-site requirement, stale-only terminal UI and recovery, cancellation, or repeat ordinary replay."
+  ],
+  "remaining_scoped_findings": []
+}
