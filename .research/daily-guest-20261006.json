@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-06",
+  "lane": "daily_public_store_guest_chat",
+  "status": "unverified_hosted_browser_startup_failure",
+  "run": {
+    "id": 37509262239,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37509262239",
+    "workflow": "hosted-guest-acceptance.yml",
+    "case": "guest-chat",
+    "source_sha": "dac42e109efb2094634f46e852e5e2d4420e3553",
+    "conclusion": "failure",
+    "failure_stage": "owned_profile",
+    "failure_code": "owned_cdp_endpoint_timeout",
+    "startup_elapsed_ms": 5033
+  },
+  "public_store_artifact": {
+    "source": "Google Chrome public update service",
+    "manifest_version": "0.2.205",
+    "crx_sha256": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23",
+    "unpacked_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "verified_by_hosted_importer": true,
+    "installation_mode": "published CRX unpacked in hosted Chrome profile"
+  },
+  "server": {
+    "health_endpoint": "https://server.app.matrxserver.com/health/version",
+    "before_git_sha": "3c2ff3dc9beb57726e26d1e8fbfe170d76aa7a8a",
+    "after_git_sha": "3c2ff3dc9beb57726e26d1e8fbfe170d76aa7a8a",
+    "stable": true
+  },
+  "guest_chat": {
+    "first_reply": "not_reached",
+    "same_conversation_followup": "not_reached",
+    "guest_requests_observed": 0,
+    "reason": "Chromium did not expose its owned CDP endpoint within the startup window; panel and Chat were never reached. This is an infrastructure failure, not a product verdict."
+  },
+  "resources": {
+    "package": "valid_exit_0",
+    "browser": "valid_exit_0",
+    "guest": "admitted_resource_valid_child_failed_exit_1",
+    "journals_dir": ".research/daily-guest-20261006-run37509262239",
+    "stale_journals_excluded": true
+  },
+  "artifact_upload": {
+    "id": 11434891055,
+    "name": "hosted-guest-37509262239-1",
+    "contents": "Three original same-run resource journals; no test receipt was uploaded"
+  },
+  "limits": [
+    "No guest Chat behavior was exercised; no terminal assistant content can be asserted.",
+    "The hosted method loads an unpacked public Store CRX and does not prove installation from the Chrome Web Store UI."
+  ],
+  "next_action": "Repair or diagnose owned Chromium CDP startup before another guarded hosted guest run; do not retry unchanged."
+}
