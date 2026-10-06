@@ -1,0 +1,28 @@
+{
+	"schema_version": 1,
+	"status": "DONE_WITH_CONCERNS",
+	"scope": "Fresh source-only reverify of Important A1 in EXT-F-4052-T01, fix commit 70d423e5. No native/model/browser/service execution.",
+	"finding_recheck": {
+		"id": "A1",
+		"verdict": "ADDRESSED",
+		"evidence": "Strict base64 decoding succeeded. Every PNG chunk CRC through IEND matched. IDAT decompressed into 16 unfiltered RGB scanlines. The 16x16 image has an 8x8 red square RGB(220,25,35) centered on 192 white RGB(255,255,255) pixels, including all four corners."
+	},
+	"verdict_A": {
+		"scope": "Acceptance against fixture finding and proposed image procedure",
+		"verdict": "PASS_SCOPED",
+		"evidence": "Question, steps, and expectation describe the actual red square on white and require semantic review. The 116-character base64 passes the named handler's minimum-length schema; image/png is accepted; its run path decodes with atob, creates a Blob, and supplies image input to quickPrompt. Tools manual path validates args before handler.run.",
+		"limit": "Warm/reload member/admin cells and positive native image functionality remain unverified. An observed ok:false capability branch records a limitation, never a positive-functionality or whole-case pass."
+	},
+	"verdict_B": {
+		"scope": "Quality and truth of fixture repair",
+		"verdict": "PASS_SCOPED",
+		"evidence": "Replacement bytes have valid PNG structure, CRCs, decompression, scanline lengths, and visible geometry. The source-only fixture_validation claim is accurate. No implementation or alternate handler was added. Conditional unavailable behavior carries a reason and optional availability without claiming success.",
+		"limit": "No runtime decoder, Chrome native AI capability, model semantics, or full procedure execution verified."
+	},
+	"source_checks": [
+		".research/native-ai-procedures-20261006.json EXT-F-4052-T01",
+		"src/lib/tools/handlers/onbox-ai.ts:218-253",
+		"src/lib/onbox-ai/client.ts:175-254",
+		"src/features/tools/ToolsView.tsx:390-490"
+	]
+}
