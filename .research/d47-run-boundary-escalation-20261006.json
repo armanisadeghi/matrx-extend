@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "lane": "bounded Run boundary diagnostic/readiness repair",
+  "status": "READY_FOR_INDEPENDENT_REVIEW_NATIVE_UNVERIFIED",
+  "evidence": {
+    "original_receipt": ".research/d47-list-native-20261006/37534454354/receipt.json",
+    "raw_receipt_external": "/Volumes/Samsung2TB/d47-list-native-20261006-originals/37534454354/_temp/showcase-d47-native-37534454354-1.json",
+    "workflow_sha": "415f901dae28f2ba68aadc3b83cc4101edd8091f",
+    "installed_source_sha": "b6ec3615f0e0f917fb787a8ce82849a682017550",
+    "artifact_id": 11440764124,
+    "version": "0.2.325"
+  },
+  "confirmed": [
+    "The saved_replay stage calls trustedPanelClick; its only AssertionError is point.count !== 1 before either Input.dispatchMouseEvent. This receipt identifies a nonunique actionable target, not a mouse transport or product replay failure.",
+    "The helper collapsed absent, hidden, disabled, wrong-row and duplicate targets to count; it then discarded even count. sanitizeD47Failure rejected panel_target_not_unique, producing unclassified_error.",
+    "runNativeSidepanelQa detaches the exercise panel in finally before the caller outer catch; consequently panel and probe diagnostic reads in that outer catch were unavailable.",
+    "The exact-row readiness observation preceded page.reload. useActiveTab withholds page identity on navigation; PatternsTab invalidates its page-key snapshot and refetches. Therefore that observation cannot prove the post-reload Run target is ready."
+  ],
+  "hypotheses": [
+    {
+      "rank": 1,
+      "cause": "Post-reload row or document identity still resolving",
+      "prediction": "Fresh same-sample exact row/host plus enabled-control gate observes initially zero/disabled then actionable without changing product or selector.",
+      "live_verdict": "Unmeasured in original receipt; new bounded gate and diagnostic distinguish this."
+    },
+    {
+      "rank": 2,
+      "cause": "Run title relocated by shared tooltip",
+      "prediction": "Exact row exists with row_stored_title_count positive and row_title_count zero.",
+      "live_verdict": "Unmeasured; no selector fallback added."
+    },
+    {
+      "rank": 3,
+      "cause": "Hidden or duplicate target/incorrect pane",
+      "prediction": "Selector and exact counts disagree with visible/enabled counts or active pane/host gate.",
+      "live_verdict": "Unmeasured; classifications preserved before teardown."
+    },
+    {
+      "rank": 4,
+      "cause": "CDP mouse dispatch failure",
+      "prediction": "Failure would follow positive target resolution and identify press/release transport.",
+      "live_verdict": "Ruled out for original AssertionError; future failures separately classified."
+    }
+  ],
+  "changes": [
+    "Extract real DOM target observation and trusted CDP action into driver-evidence helper; no product source edits.",
+    "Before Run, resample Patterns after reload. During bounded existing waitFor polling, require active Patterns pane, exact host including delimiter, exact recipe and one visible enabled target contained in that pane, then a positive center hit test. Dispatch exactly one press/release pair.",
+    "Keep original selector; no synthetic click, selector fallback, extended timeout, fixture bypass or acceptance weakening.",
+    "Persist privacy-safe counts/booleans and target/press/release phase synchronously at the live boundary. No recipe literals, raw DOM, input values, URLs, exception strings or screenshots in added diagnostic.",
+    "Wrap exercise callback to retain existing allowlisted passive probe contexts/bindings before harness detaches, including failures in approval/current HTTP/terminal/evidence sibling steps.",
+    "Same trusted helper covers Network tab, discovery response and Patterns tab clicks as well as saved Run; approval uses existing settings-panel-driver."
+  ],
+  "verification": {
+    "command": "node scripts/stabilization-resource.mjs run --run-id d47-run-boundary-source-20261006-2 -- node --test tests/browser/showcase-d47-driver-evidence.test.mjs",
+    "journal": "docs/stabilization/resource-journals/d47-run-boundary-source-20261006-2.jsonl",
+    "decision": "valid",
+    "resource_invalid": false,
+    "tests_passed": 9,
+    "first_guard": "d47-run-boundary-source-20261006-1: 3 new tests failed because happy-dom omits browser default visibility; explicit visible fixture corrected. Not claimed as original native RED.",
+    "sut": "actual DOM observer + trusted click state machine; happy-dom DOM and external geometry/CDP simulated, selector/classification/wait/dispatch logic real",
+    "cases": [
+      "unique ready",
+      "disabled",
+      "hidden",
+      "stored title",
+      "missing control",
+      "duplicate",
+      "wrong recipe",
+      "evaluation/press/release transport failure",
+      "disabled then enabled",
+      "wrong host",
+      "inactive pane",
+      "occluded center"
+    ],
+    "mutations": "Executed in memory: constant-success observer and bypassed-disabled filter both cause the disabled classification assertion to fail; no shared source mutation.",
+    "formatting": "pnpm exec biome format --write on all changed source/test/report files; git diff --check"
+  },
+  "limits": [
+    "Original native cause among missing/disabled/duplicate/hidden/title remains unknown; the old receipt cannot recover it.",
+    "No native browser dispatch, build, release, DB mutation, acceptance closure or product behavior fix performed.",
+    "Nine source guard passes establish diagnostic/readiness behavior, not saved replay, positive binding provenance or lifecycle acceptance.",
+    "Next native run must be separately admitted by root, retain new target_observation and live_failure_boundary, and satisfy unchanged positive-binding/current-row/old-lifecycle oracles."
+  ],
+  "files": [
+    "tests/browser/showcase-d47-document-lifecycle.mjs",
+    "tests/browser/showcase-d47-driver-evidence.mjs",
+    "tests/browser/showcase-d47-driver-evidence.test.mjs",
+    ".research/d47-run-boundary-escalation-20261006.json"
+  ]
+}

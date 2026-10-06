@@ -177,3 +177,166 @@ test('failure receipt retains safe class and stage but strips raw error text', (
     'unclassified_error',
   );
 });
+
+// Real use case: the controlled concert listing's saved Network recipe is
+// temporarily absent/disabled after document reload. DOM/layout and CDP are
+// external; selector resolution, classification and dispatch ordering stay real.
+async function targetHarness({ state = 'ready', fail = null, mutate = null } = {}) {
+  const { Window } = await import('happy-dom');
+  const { trustedD47PanelClick } = await import('./showcase-d47-driver-evidence.mjs');
+  const window = new Window();
+  const document = window.document;
+  document.body.innerHTML = `<div role="tablist"><button role="tab" data-state="active" aria-controls="patterns-pane">Patterns</button></div><div id="patterns-pane" data-state="active">All saved patterns for 127.0.0.1:4179, across every mode.<div class="group"><span class="truncate text-sm font-medium">Concert listing</span><button title="Run pattern" style="visibility:visible"><svg></svg></button></div></div>`;
+  const button = document.querySelector('button[title]');
+  button.getBoundingClientRect = () => ({
+    left: 20,
+    top: 30,
+    width: state === 'hidden' ? 0 : 40,
+    height: 20,
+  });
+  button.scrollIntoView = () => {};
+  document.elementFromPoint = () =>
+    state === 'occluded' ? document.body : button.querySelector('svg');
+  if (state === 'disabled' || state === 'becomes-ready') button.disabled = true;
+  if (state === 'wrong-host')
+    document.getElementById('patterns-pane').firstChild.textContent =
+      'All saved patterns for another-host';
+  if (state === 'inactive')
+    document.getElementById('patterns-pane').setAttribute('data-state', 'inactive');
+  if (state === 'stored-title') {
+    button.setAttribute('data-matrx-title', button.title);
+    button.removeAttribute('title');
+  }
+  if (state === 'missing') button.remove();
+  if (state === 'duplicate') {
+    const clone = button.cloneNode(true);
+    clone.getBoundingClientRect = button.getBoundingClientRect;
+    button.after(clone);
+  }
+  if (state === 'wrong-recipe')
+    document.querySelector('span').textContent = 'Another concert listing';
+  const records = [];
+  const inputs = [];
+  let error;
+  let samples = 0;
+  try {
+    await trustedD47PanelClick(
+      {
+        async send(method, args) {
+          if (method === 'Runtime.evaluate') {
+            samples++;
+            if (state === 'becomes-ready' && samples === 2) button.disabled = false;
+            if (fail === 'evaluate') throw new Error('private transport detail');
+            let expression = args.expression;
+            if (mutate) expression = mutate(expression);
+            return { result: { value: window.eval(expression) } };
+          }
+          inputs.push(args.type);
+          if (fail === args.type) throw new Error('private transport detail');
+          return {};
+        },
+      },
+      {
+        selector: 'button[title="Run pattern"]',
+        patternName: 'Concert listing',
+        expectedHost: '127.0.0.1:4179',
+      },
+      (record) => records.push(record),
+      state === 'becomes-ready' ? 1000 : 0,
+    );
+  } catch (caught) {
+    error = caught;
+  } finally {
+    await window.happyDOM.close();
+  }
+  return { records, inputs, error };
+}
+
+async function assertTargetCases(mutate = null) {
+  for (const [state, counts] of [
+    ['ready', [1, 1, 1, 1, 1, 0]],
+    ['disabled', [1, 1, 1, 0, 1, 0]],
+    ['hidden', [1, 1, 0, 0, 1, 0]],
+    ['stored-title', [0, 0, 0, 0, 1, 1]],
+    ['missing', [0, 0, 0, 0, 1, 0]],
+    ['duplicate', [2, 2, 2, 2, 1, 0]],
+    ['wrong-recipe', [1, 0, 0, 0, 0, 0]],
+  ]) {
+    const result = await targetHarness({ state, mutate });
+    const last = result.records.at(-1);
+    const value = last.state;
+    assert.deepEqual(
+      [
+        value?.selector_count,
+        value?.exact_match_count,
+        value?.visible_count,
+        value?.enabled_count,
+        value?.exact_row_count,
+        value?.row_stored_title_count,
+      ],
+      counts,
+      `target classification: ${state}`,
+    );
+    assert.deepEqual(
+      result.inputs,
+      state === 'ready' ? ['mousePressed', 'mouseReleased'] : [],
+      `trusted dispatch: ${state}`,
+    );
+    if (state === 'ready') assert.equal(result.error, undefined);
+    else assert.match(result.error.message, /^panel_target_ready_not_observed:/);
+    assert.equal(JSON.stringify(result.records).includes('Concert listing'), false);
+  }
+}
+
+test('live target receipt distinguishes absent, hidden, disabled, duplicate and renamed controls before teardown', async () => {
+  await assertTargetCases();
+});
+
+test('live target receipt preserves the exact failed transport boundary without private messages', async () => {
+  for (const [fail, phase, message] of [
+    ['evaluate', 'target_evaluation', 'panel_target_evaluation_failed'],
+    ['mousePressed', 'mouse_press', 'panel_mouse_press_failed'],
+    ['mouseReleased', 'mouse_release', 'panel_mouse_release_failed'],
+  ]) {
+    const result = await targetHarness({ fail });
+    assert.equal(result.records.at(-1).phase, phase);
+    assert.equal(result.error.message, message);
+    assert.equal(sanitizeD47Failure(result.error, 'saved_replay').message_code, message);
+    assert.equal(JSON.stringify(result.records).includes('private'), false);
+  }
+});
+
+test('target guard kills constant-success and skipped-disabled classification in memory', async () => {
+  await assert.rejects(
+    () =>
+      assertTargetCases(
+        () =>
+          `({diagnostic: {selector_count:1,exact_match_count:1,visible_count:1,enabled_count:1,exact_row_count:1,row_stored_title_count:0},point:{x:40,y:40}})`,
+      ),
+    /target classification: disabled/,
+  );
+  await assert.rejects(
+    () =>
+      assertTargetCases((source) =>
+        source.replace('visible.filter((el) => !el.disabled)', 'visible'),
+      ),
+    /target classification: disabled/,
+  );
+});
+
+test('Run waits for fresh exact host and enabled row without dispatching to a stale or unrelated page', async () => {
+  const ready = await targetHarness({ state: 'becomes-ready' });
+  assert.equal(ready.error, undefined);
+  assert.deepEqual(
+    ready.records.filter((r) => r.phase === 'target_resolution').map((r) => r.state.enabled_count),
+    [0, 1],
+  );
+  assert.deepEqual(ready.inputs, ['mousePressed', 'mouseReleased']);
+  for (const state of ['wrong-host', 'inactive', 'occluded']) {
+    const refused = await targetHarness({ state });
+    assert.deepEqual(refused.inputs, []);
+    assert.match(refused.error.message, /^panel_target_ready_not_observed:/);
+    if (state === 'occluded') assert.equal(refused.records.at(-1).state.center_hits_target, false);
+    else assert.equal(refused.records.at(-1).state.host_matches, false);
+  }
+});

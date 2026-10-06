@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { evaluate, waitFor } from './settings-panel-driver.mjs';
 
 export function discoveryTerminal(state) {
   return state?.discovering === false && state.responses === true && state.error === false;
@@ -108,4 +109,125 @@ export function assessD47Trace(observed, { origin, oldPageContext, expectedBodyS
     commit_order: commit.order,
     old_terminal_kind: oldTerminal.kind,
   };
+}
+
+// Executes in the owned panel. Return counts/booleans only: no DOM text, recipe,
+// URLs, credentials, or exception strings enter the diagnostic receipt.
+export function observeD47PanelTarget({
+  selector,
+  text = null,
+  patternName = null,
+  expectedHost = null,
+}) {
+  const candidates = [...document.querySelectorAll(selector)];
+  const exact = candidates.filter(
+    (el) =>
+      (text === null || el.textContent.trim() === text) &&
+      (patternName === null ||
+        [
+          ...(el.closest('div.group')?.querySelectorAll('span.truncate.text-sm.font-medium') ?? []),
+        ].some((name) => name.textContent.trim() === patternName)),
+  );
+  const visible = exact.filter((el) => {
+    const r = el.getBoundingClientRect();
+    return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility === 'visible';
+  });
+  const enabled = visible.filter((el) => !el.disabled);
+  const rows =
+    patternName === null
+      ? []
+      : [...document.querySelectorAll('span.truncate.text-sm.font-medium')].filter(
+          (name) => name.textContent.trim() === patternName,
+        );
+  const patternsTab = [...document.querySelectorAll('[role="tablist"] [role="tab"]')].find(
+    (el) => el.textContent.trim() === 'Patterns',
+  );
+  const pane = patternsTab
+    ? document.getElementById(patternsTab.getAttribute('aria-controls') ?? '')
+    : null;
+  const active =
+    patternsTab?.getAttribute('data-state') === 'active' &&
+    pane?.getAttribute('data-state') === 'active';
+  const diagnostic = {
+    patterns_active: expectedHost === null ? null : Boolean(active),
+    host_matches:
+      expectedHost === null
+        ? null
+        : Boolean(
+            active && pane.textContent.includes('All saved patterns for ' + expectedHost + ','),
+          ),
+    selector_count: candidates.length,
+    exact_match_count: exact.length,
+    visible_count: visible.length,
+    enabled_count: enabled.length,
+    exact_row_count: rows.length,
+    // Detect the shared tooltip's native-title relocation without changing the selector.
+    row_title_count: rows.reduce(
+      (n, row) =>
+        n + (row.closest('div.group')?.querySelectorAll('button[title="Run pattern"]').length ?? 0),
+      0,
+    ),
+    row_stored_title_count: rows.reduce(
+      (n, row) =>
+        n +
+        (row.closest('div.group')?.querySelectorAll('button[data-matrx-title="Run pattern"]')
+          .length ?? 0),
+      0,
+    ),
+  };
+  if (
+    enabled.length !== 1 ||
+    (expectedHost !== null && (!diagnostic.host_matches || !pane.contains(enabled[0])))
+  )
+    return { diagnostic, point: null };
+  enabled[0].scrollIntoView({ block: 'center', inline: 'center' });
+  const r = enabled[0].getBoundingClientRect();
+  const point = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  const hit = document.elementFromPoint(point.x, point.y);
+  diagnostic.center_hits_target = hit === enabled[0] || enabled[0].contains(hit);
+  return { diagnostic, point: diagnostic.center_hits_target ? point : null };
+}
+
+// Record each boundary synchronously before the native harness tears down CDP.
+// This preserves the existing exact target and trusted-input acceptance action.
+export async function trustedD47PanelClick(panel, target, record, timeoutMs = undefined) {
+  // Same bounded condition poll as the rest of the driver; input is sent once,
+  // only after the current document's exact row/host/control is ready.
+  const sample = await waitFor(
+    'panel_target_ready',
+    async () => {
+      record({ phase: 'target_evaluation', state: null });
+      let current;
+      try {
+        current = await evaluate(
+          panel,
+          `(${observeD47PanelTarget.toString()})(${JSON.stringify(target)})`,
+        );
+      } catch {
+        return { evaluation_failed: true };
+      }
+      record({ phase: 'target_resolution', state: current.diagnostic });
+      return current;
+    },
+    (value) => value?.evaluation_failed || Boolean(value?.point),
+    timeoutMs,
+  );
+  if (sample.evaluation_failed) throw new Error('panel_target_evaluation_failed');
+  for (const [type, phase] of [
+    ['mousePressed', 'mouse_press'],
+    ['mouseReleased', 'mouse_release'],
+  ]) {
+    record({ phase, state: sample.diagnostic });
+    try {
+      await panel.send('Input.dispatchMouseEvent', {
+        type,
+        ...sample.point,
+        button: 'left',
+        clickCount: 1,
+      });
+    } catch {
+      throw new Error(`panel_${phase}_failed`);
+    }
+  }
+  record({ phase: 'mouse_released', state: sample.diagnostic });
 }

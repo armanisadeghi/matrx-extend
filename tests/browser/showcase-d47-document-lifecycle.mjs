@@ -15,6 +15,7 @@ import {
   cleanupD47Probe,
   discoveryTerminal,
   sanitizeD47Failure,
+  trustedD47PanelClick,
 } from './showcase-d47-driver-evidence.mjs';
 import { runShowcaseOrganizationCheckpoint } from './showcase-organization-checkpoint.mjs';
 
@@ -149,39 +150,41 @@ async function readPatternsObservation(panel, recipe, host) {
     })()`,
   );
 }
-async function trustedPanelClick(panel, selector, text = null, patternName = null) {
-  const point = await evaluate(
+async function trustedPanelClick(
+  panel,
+  selector,
+  text = null,
+  patternName = null,
+  expectedHost = null,
+) {
+  return trustedD47PanelClick(
     panel,
-    `(() => {
-    const found = [...document.querySelectorAll(${JSON.stringify(selector)})].filter((el) => {
-      const r = el.getBoundingClientRect();
-      return r.width > 0 && r.height > 0 && !el.disabled && getComputedStyle(el).visibility === 'visible'
-        && (${JSON.stringify(text)} === null || el.textContent.trim() === ${JSON.stringify(text)})
-        && (${JSON.stringify(patternName)} === null || [...(el.closest('div.group')?.querySelectorAll('span.truncate.text-sm.font-medium') ?? [])]
-          .some(name => name.textContent.trim() === ${JSON.stringify(patternName)}));
-    });
-    if (found.length !== 1) return { count: found.length };
-    found[0].scrollIntoView({ block: 'center', inline: 'center' });
-    const r = found[0].getBoundingClientRect();
-    return { count: 1, x: r.left + r.width / 2, y: r.top + r.height / 2 };
-  })()`,
+    { selector, text, patternName, expectedHost },
+    (observation) => {
+      report.target_observation = { stage: report.stage, ...observation };
+    },
   );
-  assert.equal(point.count, 1, 'panel_target_not_unique');
-  await panel.send('Input.dispatchMouseEvent', {
-    type: 'mousePressed',
-    x: point.x,
-    y: point.y,
-    button: 'left',
-    clickCount: 1,
-  });
-  await panel.send('Input.dispatchMouseEvent', {
-    type: 'mouseReleased',
-    x: point.x,
-    y: point.y,
-    button: 'left',
-    clickCount: 1,
-  });
 }
+
+async function captureLiveFailure(exercise) {
+  try {
+    return await exercise();
+  } catch (error) {
+    report.live_failure_boundary = { stage: report.stage, probe: 'not_installed' };
+    if (probeInstalled && probeWorker) {
+      try {
+        const observed = await readPassiveWorkerProbe(probeWorker);
+        report.contexts = observed.filter((event) => event.kind !== 'binding');
+        report.binding_events = observed.filter((event) => event.kind === 'binding');
+        report.live_failure_boundary.probe = 'captured_before_detach';
+      } catch {
+        report.live_failure_boundary.probe = 'unavailable_before_detach';
+      }
+    }
+    throw error;
+  }
+}
+
 const allow = async (panel) => {
   await waitFor(
     'debugger_approval',
@@ -300,271 +303,274 @@ try {
       requireResourceHealth,
       reopenPanel,
       attachWorker,
-    }) => {
-      const origin = fixture.origin;
-      activePanel = panel;
-      stage('signin');
-      const auth = await resourceAction(() =>
-        signInSettings({
-          mode: 'admin',
-          page,
-          panel,
-          repo,
-          adminCredentialsFile: process.env.MATRX_PREPARE_ADMIN_CREDENTIALS_FILE,
-          onStage: (value) => {
-            report.auth_stage = value;
-          },
-        }),
-      );
-      assert.equal(auth.admin_role, true);
-      stage('organization');
-      await runShowcaseOrganizationCheckpoint({
-        panel,
-        auth,
-        resourceAction,
-        report,
-        requiredOrganizationName,
-      });
-      await resourceAction(() => reopenPanel());
-      await resourceAction(() => page.goto(`${origin}/document-race/`));
-      await waitFor(
-        'fixture_seed',
-        () => page.locator('#phase').textContent(),
-        (value) => value === 'seed',
-      );
-      await requireResourceHealth();
-      stage('capture_seed');
-      await tab(panel, 'Showcase (admin only)');
-      await trustedPanelClick(panel, '[role="tablist"] [role="tab"]', 'Network');
-      await click(panel, 'button-text', 'Capture page load');
-      await allow(panel);
-      await waitFor(
-        'seed_response',
-        () => panelText(panel),
-        (value) => value?.includes('/api/document-race') && value?.includes('response captured'),
-      );
-      await waitFor(
-        'seed_discovery_terminal',
-        () =>
-          evaluate(
+    }) =>
+      captureLiveFailure(async () => {
+        const origin = fixture.origin;
+        activePanel = panel;
+        stage('signin');
+        const auth = await resourceAction(() =>
+          signInSettings({
+            mode: 'admin',
+            page,
             panel,
-            `(() => ({
+            repo,
+            adminCredentialsFile: process.env.MATRX_PREPARE_ADMIN_CREDENTIALS_FILE,
+            onStage: (value) => {
+              report.auth_stage = value;
+            },
+          }),
+        );
+        assert.equal(auth.admin_role, true);
+        stage('organization');
+        await runShowcaseOrganizationCheckpoint({
+          panel,
+          auth,
+          resourceAction,
+          report,
+          requiredOrganizationName,
+        });
+        await resourceAction(() => reopenPanel());
+        await resourceAction(() => page.goto(`${origin}/document-race/`));
+        await waitFor(
+          'fixture_seed',
+          () => page.locator('#phase').textContent(),
+          (value) => value === 'seed',
+        );
+        await requireResourceHealth();
+        stage('capture_seed');
+        await tab(panel, 'Showcase (admin only)');
+        await trustedPanelClick(panel, '[role="tablist"] [role="tab"]', 'Network');
+        await click(panel, 'button-text', 'Capture page load');
+        await allow(panel);
+        await waitFor(
+          'seed_response',
+          () => panelText(panel),
+          (value) => value?.includes('/api/document-race') && value?.includes('response captured'),
+        );
+        await waitFor(
+          'seed_discovery_terminal',
+          () =>
+            evaluate(
+              panel,
+              `(() => ({
           discovering: Boolean(document.querySelector('[role="status"]')?.textContent.includes('Capturing page load') || document.body.innerText.includes('● page load —')),
           responses: document.body.innerText.includes('responses captured · stopped') || document.body.innerText.includes('response captured · stopped'),
           error: Boolean(document.querySelector('.text-destructive'))
         }))()`,
-          ),
-        discoveryTerminal,
-        30_000,
-      );
-      stage('select_seed_response');
-      await trustedPanelClick(panel, 'button.font-mono:has(span.flex-1)');
-      await waitFor(
-        'seed_save_ready',
-        () =>
-          evaluate(
-            panel,
-            `(() => [...document.querySelectorAll('button')].some(x => x.textContent.trim() === 'Save pattern' && !x.disabled))()`,
-          ),
-        (ready) => ready === true,
-      );
-      stage('save_recipe');
-      await click(panel, 'button-text', 'Save pattern');
-      const recipe = `Codex D47 document race ${randomUUID()}`;
-      // The popover is the only visible name field in this flow.
-      const inputs = await evaluate(
-        panel,
-        `(() => [...document.querySelectorAll('[data-radix-popper-content-wrapper] input')].map(x => ({ placeholder: x.placeholder })))()`,
-      );
-      assert.equal(inputs.length, 1, 'save_name_input_ambiguous');
-      saveObservation = { focus: null, before_click: null, last: null };
-      await click(panel, 'save-pattern-name', 'Save pattern');
-      await waitFor(
-        'save_name_focus',
-        async () => {
-          saveObservation.focus = await readSaveObservation(panel, recipe);
-          return saveObservation.focus;
-        },
-        (state) => state?.name_focused === true,
-      );
-      const selectAllModifier = process.platform === 'darwin' ? 4 : 2;
-      await panel.send('Input.dispatchKeyEvent', {
-        type: 'keyDown',
-        key: 'a',
-        code: 'KeyA',
-        modifiers: selectAllModifier,
-        windowsVirtualKeyCode: 65,
-        commands: ['selectAll'],
-      });
-      await panel.send('Input.dispatchKeyEvent', {
-        type: 'keyUp',
-        key: 'a',
-        code: 'KeyA',
-        modifiers: selectAllModifier,
-        windowsVirtualKeyCode: 65,
-      });
-      // Trusted typing through CDP; React observes the normal input sequence.
-      await panel.send('Input.insertText', { text: recipe });
-      await waitFor(
-        'save_name',
-        async () => {
-          saveObservation.before_click = await readSaveObservation(panel, recipe);
-          return saveObservation.before_click;
-        },
-        (state) => state?.name_matches === true,
-      );
-      assert.equal(saveObservation.before_click.name_matches, true, 'save_name_not_entered');
-      assert.equal(
-        saveObservation.before_click.save_button_disabled,
-        false,
-        'save_button_disabled',
-      );
-      await click(panel, 'button-text', 'Save');
-      const saveState = await waitFor(
-        'recipe_save_terminal',
-        async () => {
-          const state = await readSaveObservation(panel, recipe);
-          saveObservation.last = state;
-          return state;
-        },
-        (state) =>
-          state?.error_present === false &&
-          (state.saved_summary_visible === true || state.popover_visible === false),
-      );
-      saveObservation.terminal = saveState.saved_summary_visible ? 'summary' : 'popover_closed';
-      stage('verify_persisted_recipe');
-      await waitFor(
-        'save_popover_closed',
-        () => readSaveObservation(panel, recipe),
-        (state) => state?.popover_visible === false,
-      );
-      await trustedPanelClick(panel, '[role="tablist"] [role="tab"]', 'Patterns');
-      const fixtureHost = new URL(origin).host;
-      await waitFor(
-        'patterns_active',
-        async () => {
-          patternsObservation = await readPatternsObservation(panel, recipe, fixtureHost);
-          return patternsObservation;
-        },
-        (state) => state?.active === true,
-      );
-      await waitFor(
-        'saved_recipe_visible',
-        async () => {
-          patternsObservation = await readPatternsObservation(panel, recipe, fixtureHost);
-          return patternsObservation;
-        },
-        (state) => state?.exact_row_visible === true && state?.host_matches === true,
-      );
-      stage('arm_old_document');
-      await control(origin, 'arm');
-      await resourceAction(() => page.reload());
-      await waitFor(
-        'old_pending',
-        () => status(origin),
-        (value) => value?.old_pending === true && value.target_requests === 1,
-      );
-      stage('old_context_identity');
-      const pageCdp = await page.context().newCDPSession(page);
-      const oldContexts = [];
-      pageCdp.on('Runtime.executionContextCreated', ({ context }) => {
-        if (context.auxData?.isDefault && context.uniqueId)
-          oldContexts.push({
-            unique_id: context.uniqueId,
-            frame_id: context.auxData.frameId ?? null,
-          });
-      });
-      await pageCdp.send('Runtime.enable');
-      await waitFor(
-        'old_page_context',
-        () => oldContexts,
-        (value) => value.length === 1 && Boolean(value[0].frame_id),
-      );
-      const oldPageContext = oldContexts[0];
-      report.old_context_pre_run = {
-        unique_id: oldPageContext.unique_id,
-        frame_id: oldPageContext.frame_id,
-      };
-      await pageCdp.detach();
-      const worker = await attachWorker();
-      probeWorker = worker;
-      stage('worker_observer');
-      await installPassiveWorkerProbe(worker, origin);
-      probeInstalled = true;
-      stage('saved_replay');
-      await trustedPanelClick(panel, 'button[title="Run pattern"]', null, recipe);
-      stage('saved_approval');
-      await allow(panel);
-      stage('current_http');
-      await waitFor(
-        'current_response',
-        () => status(origin),
-        (value) => value?.current_response_sent === true && value.target_requests === 2,
-      );
-      report.fixture = { before_release: await status(origin) };
-      stage('release_old_http');
-      const release = await control(origin, 'release-old');
-      report.fixture.release_http_status = release.status;
-      report.fixture.after_release = await status(origin);
-      assert.equal(
-        report.fixture.before_release.old_pending ||
-          report.fixture.before_release.old_response_aborted,
-        true,
-        'old_request_lifecycle_missing',
-      );
-      assert.equal(
-        report.fixture.after_release.current_response_sent,
-        true,
-        'current_http_response_missing',
-      );
-      assert.equal(
-        report.fixture.after_release.old_response_finished ||
-          report.fixture.after_release.old_response_aborted,
-        true,
-        'old_http_terminal_missing',
-      );
-      assert.equal(
-        release.status,
-        report.fixture.after_release.old_response_finished ? 200 : 409,
-        'old_release_status_mismatch',
-      );
-      stage('saved_terminal_result');
-      await waitFor(
-        'saved_current_result',
-        () => panelText(panel),
-        (value) => value?.includes(`Last run: ${recipe}`) && value?.includes('Canyon Frequency'),
-      );
-      report.saved_result = {
-        page_phase_current: (await page.locator('#phase').textContent()) === 'current',
-        page_result_current: (await page.locator('#result').textContent()) === 'Canyon Frequency',
-        panel_current: (await panelText(panel))?.includes('Canyon Frequency') ?? false,
-        panel_old: (await panelText(panel))?.includes('Moonlit Transit') ?? false,
-      };
-      assert.equal(report.saved_result.page_phase_current, true, 'current_page_phase_missing');
-      assert.equal(report.saved_result.page_result_current, true, 'current_page_result_missing');
-      assert.equal(report.saved_result.panel_old, false, 'old_row_visible');
-      stage('binding_evidence');
-      const observed = await readPassiveWorkerProbe(worker);
-      assert.ok(Array.isArray(observed), 'worker_probe_lost');
-      report.contexts = observed.filter((event) => event.kind !== 'binding');
-      report.binding_events = observed.filter((event) => event.kind === 'binding');
-      const expectedBodySha256 = createHash('sha256')
-        .update(
-          JSON.stringify({ events: [{ eventName: 'Canyon Frequency' }], document: 'current' }),
-        )
-        .digest('hex');
-      report.trace_assessment = assessD47Trace(observed, {
-        origin,
-        oldPageContext,
-        expectedBodySha256,
-      });
-      assert.equal(report.trace_assessment.ok, true, report.trace_assessment.reason);
-      report.current_packet_before_commit = report.trace_assessment.current_packet_before_commit;
-      report.verdicts.current_saved_replay = report.saved_result.panel_current
-        ? 'pass'
-        : 'unverified';
-      report.verdicts.delayed_old_binding = 'architecturally_excluded_observed';
-    },
+            ),
+          discoveryTerminal,
+          30_000,
+        );
+        stage('select_seed_response');
+        await trustedPanelClick(panel, 'button.font-mono:has(span.flex-1)');
+        await waitFor(
+          'seed_save_ready',
+          () =>
+            evaluate(
+              panel,
+              `(() => [...document.querySelectorAll('button')].some(x => x.textContent.trim() === 'Save pattern' && !x.disabled))()`,
+            ),
+          (ready) => ready === true,
+        );
+        stage('save_recipe');
+        await click(panel, 'button-text', 'Save pattern');
+        const recipe = `Codex D47 document race ${randomUUID()}`;
+        // The popover is the only visible name field in this flow.
+        const inputs = await evaluate(
+          panel,
+          `(() => [...document.querySelectorAll('[data-radix-popper-content-wrapper] input')].map(x => ({ placeholder: x.placeholder })))()`,
+        );
+        assert.equal(inputs.length, 1, 'save_name_input_ambiguous');
+        saveObservation = { focus: null, before_click: null, last: null };
+        await click(panel, 'save-pattern-name', 'Save pattern');
+        await waitFor(
+          'save_name_focus',
+          async () => {
+            saveObservation.focus = await readSaveObservation(panel, recipe);
+            return saveObservation.focus;
+          },
+          (state) => state?.name_focused === true,
+        );
+        const selectAllModifier = process.platform === 'darwin' ? 4 : 2;
+        await panel.send('Input.dispatchKeyEvent', {
+          type: 'keyDown',
+          key: 'a',
+          code: 'KeyA',
+          modifiers: selectAllModifier,
+          windowsVirtualKeyCode: 65,
+          commands: ['selectAll'],
+        });
+        await panel.send('Input.dispatchKeyEvent', {
+          type: 'keyUp',
+          key: 'a',
+          code: 'KeyA',
+          modifiers: selectAllModifier,
+          windowsVirtualKeyCode: 65,
+        });
+        // Trusted typing through CDP; React observes the normal input sequence.
+        await panel.send('Input.insertText', { text: recipe });
+        await waitFor(
+          'save_name',
+          async () => {
+            saveObservation.before_click = await readSaveObservation(panel, recipe);
+            return saveObservation.before_click;
+          },
+          (state) => state?.name_matches === true,
+        );
+        assert.equal(saveObservation.before_click.name_matches, true, 'save_name_not_entered');
+        assert.equal(
+          saveObservation.before_click.save_button_disabled,
+          false,
+          'save_button_disabled',
+        );
+        await click(panel, 'button-text', 'Save');
+        const saveState = await waitFor(
+          'recipe_save_terminal',
+          async () => {
+            const state = await readSaveObservation(panel, recipe);
+            saveObservation.last = state;
+            return state;
+          },
+          (state) =>
+            state?.error_present === false &&
+            (state.saved_summary_visible === true || state.popover_visible === false),
+        );
+        saveObservation.terminal = saveState.saved_summary_visible ? 'summary' : 'popover_closed';
+        stage('verify_persisted_recipe');
+        await waitFor(
+          'save_popover_closed',
+          () => readSaveObservation(panel, recipe),
+          (state) => state?.popover_visible === false,
+        );
+        await trustedPanelClick(panel, '[role="tablist"] [role="tab"]', 'Patterns');
+        const fixtureHost = new URL(origin).host;
+        await waitFor(
+          'patterns_active',
+          async () => {
+            patternsObservation = await readPatternsObservation(panel, recipe, fixtureHost);
+            return patternsObservation;
+          },
+          (state) => state?.active === true,
+        );
+        await waitFor(
+          'saved_recipe_visible',
+          async () => {
+            patternsObservation = await readPatternsObservation(panel, recipe, fixtureHost);
+            return patternsObservation;
+          },
+          (state) => state?.exact_row_visible === true && state?.host_matches === true,
+        );
+        stage('arm_old_document');
+        await control(origin, 'arm');
+        await resourceAction(() => page.reload());
+        await waitFor(
+          'old_pending',
+          () => status(origin),
+          (value) => value?.old_pending === true && value.target_requests === 1,
+        );
+        stage('old_context_identity');
+        const pageCdp = await page.context().newCDPSession(page);
+        const oldContexts = [];
+        pageCdp.on('Runtime.executionContextCreated', ({ context }) => {
+          if (context.auxData?.isDefault && context.uniqueId)
+            oldContexts.push({
+              unique_id: context.uniqueId,
+              frame_id: context.auxData.frameId ?? null,
+            });
+        });
+        await pageCdp.send('Runtime.enable');
+        await waitFor(
+          'old_page_context',
+          () => oldContexts,
+          (value) => value.length === 1 && Boolean(value[0].frame_id),
+        );
+        const oldPageContext = oldContexts[0];
+        report.old_context_pre_run = {
+          unique_id: oldPageContext.unique_id,
+          frame_id: oldPageContext.frame_id,
+        };
+        await pageCdp.detach();
+        const worker = await attachWorker();
+        probeWorker = worker;
+        stage('worker_observer');
+        await installPassiveWorkerProbe(worker, origin);
+        probeInstalled = true;
+        stage('saved_replay');
+        // The earlier row observation predates page.reload and its document identity reset.
+        patternsObservation = await readPatternsObservation(panel, recipe, fixtureHost);
+        await trustedPanelClick(panel, 'button[title="Run pattern"]', null, recipe, fixtureHost);
+        stage('saved_approval');
+        await allow(panel);
+        stage('current_http');
+        await waitFor(
+          'current_response',
+          () => status(origin),
+          (value) => value?.current_response_sent === true && value.target_requests === 2,
+        );
+        report.fixture = { before_release: await status(origin) };
+        stage('release_old_http');
+        const release = await control(origin, 'release-old');
+        report.fixture.release_http_status = release.status;
+        report.fixture.after_release = await status(origin);
+        assert.equal(
+          report.fixture.before_release.old_pending ||
+            report.fixture.before_release.old_response_aborted,
+          true,
+          'old_request_lifecycle_missing',
+        );
+        assert.equal(
+          report.fixture.after_release.current_response_sent,
+          true,
+          'current_http_response_missing',
+        );
+        assert.equal(
+          report.fixture.after_release.old_response_finished ||
+            report.fixture.after_release.old_response_aborted,
+          true,
+          'old_http_terminal_missing',
+        );
+        assert.equal(
+          release.status,
+          report.fixture.after_release.old_response_finished ? 200 : 409,
+          'old_release_status_mismatch',
+        );
+        stage('saved_terminal_result');
+        await waitFor(
+          'saved_current_result',
+          () => panelText(panel),
+          (value) => value?.includes(`Last run: ${recipe}`) && value?.includes('Canyon Frequency'),
+        );
+        report.saved_result = {
+          page_phase_current: (await page.locator('#phase').textContent()) === 'current',
+          page_result_current: (await page.locator('#result').textContent()) === 'Canyon Frequency',
+          panel_current: (await panelText(panel))?.includes('Canyon Frequency') ?? false,
+          panel_old: (await panelText(panel))?.includes('Moonlit Transit') ?? false,
+        };
+        assert.equal(report.saved_result.page_phase_current, true, 'current_page_phase_missing');
+        assert.equal(report.saved_result.page_result_current, true, 'current_page_result_missing');
+        assert.equal(report.saved_result.panel_old, false, 'old_row_visible');
+        stage('binding_evidence');
+        const observed = await readPassiveWorkerProbe(worker);
+        assert.ok(Array.isArray(observed), 'worker_probe_lost');
+        report.contexts = observed.filter((event) => event.kind !== 'binding');
+        report.binding_events = observed.filter((event) => event.kind === 'binding');
+        const expectedBodySha256 = createHash('sha256')
+          .update(
+            JSON.stringify({ events: [{ eventName: 'Canyon Frequency' }], document: 'current' }),
+          )
+          .digest('hex');
+        report.trace_assessment = assessD47Trace(observed, {
+          origin,
+          oldPageContext,
+          expectedBodySha256,
+        });
+        assert.equal(report.trace_assessment.ok, true, report.trace_assessment.reason);
+        report.current_packet_before_commit = report.trace_assessment.current_packet_before_commit;
+        report.verdicts.current_saved_replay = report.saved_result.panel_current
+          ? 'pass'
+          : 'unverified';
+        report.verdicts.delayed_old_binding = 'architecturally_excluded_observed';
+      }),
   });
   assert.equal(native.verified, true);
   report.status = 'observed_bounded';
