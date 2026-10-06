@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "2728cabf423bf1147c0bd34761df1cda883aa434",
+  "status": "PASS_SCOPED_NATIVE_UNVERIFIED",
+  "verdict_a_scope_and_evidence": {
+    "result": "PASS",
+    "evidence": [
+      "The driver reads the runner, core, saved-operation handler, and panel-driver sources from the recorded artifact source SHA with git show; its report records source hashes and the resulting 20s capture + 20s cleanup + 10s delivery = 50s terminal budget.",
+      "The terminal wait begins after the current HTTP response and old release. The replacement still requires the exact Last run recipe and current row, and the existing saved-result and old-row assertions remain.",
+      "The guarded source test journal records an admitted valid run. The guard shows the former 10s deadline expires while the transpiled runner is pending and the derived deadline observes its actual timer and controlled close completion. It also follows a changed 35s source default and rejects a wrong recipe."
+    ],
+    "cannot_verify": [
+      "No native browser rerun belongs to this commit. Runtime acceptance and the historical native failure's sole cause are unproved; the author report says so explicitly."
+    ],
+    "missing": [],
+    "extra": [],
+    "misunderstood": []
+  },
+  "verdict_b_code_and_doctrine": {
+    "result": "PASS",
+    "evidence": [
+      "The source derivation rejects unfamiliar timer expressions, saved-call overrides, and settings spreads instead of silently assuming the default; no product file changed.",
+      "The RED/GREEN guard executes the product runner's transpiled timer/conclusion logic with virtual time, and a constant-success waiter mutant fails its before-operation assertion. The tests therefore depend on a real pending-to-completed transition.",
+      "Terminal samples retain monotonic elapsed and remaining milliseconds plus boolean states. A private text field supplied by the test read is excluded from recorded samples; exceptions and raw DOM text are not retained.",
+      "The saved-result assertion remains intact, including rejection of the old row. The authored report distinguishes the proven budget defect from the unproved cause of the historical native run."
+    ],
+    "important_gaps": [],
+    "minor_gaps": []
+  },
+  "review_limit": "Static review of the exact author commit and its recorded guarded evidence; no heavy build, browser run, or new test launch."
+}
