@@ -348,20 +348,20 @@
         "Record ai_check_availability {} from the same artifact/profile before assessing capability outcomes."
       ],
       "valid_args": {
-        "image_base64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/pZkAAAAASUVORK5CYII=",
+        "image_base64": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAHElEQVR42mP4TyJgGOQa7kgqY0WjGuirYYimJQApFoPfkbrvmgAAAABJRU5ErkJggg==",
         "mime_type": "image/png",
-        "question": "Describe the visible content of this one-pixel fixture."
+        "question": "Describe the colored shape and background in this synthetic image."
       },
       "invalid_args": {
         "image_base64": "x",
         "mime_type": "image/png"
       },
       "steps": [
-        "Use only the embedded synthetic one-pixel PNG bytes. Run valid JSON in ai_describe_image; inspect description. Repeat after reload. Then submit the short invalid image_base64.",
+        "Use only the embedded deterministic 16×16 PNG: a red square on a white background. Run valid JSON in ai_describe_image; inspect description. Repeat after reload. Then submit the short invalid image_base64.",
         "For each role, record warm and post-extension-reload outcomes separately with receipt/run IDs; compare actual inline result with the conditional expectations."
       ],
       "expected": [
-        "If multimodal languageModel accepts this fixture, ok:true returns a nonempty description; semantic content is not asserted for a one-pixel image. If image input is unsupported or model missing/not ready, ok:false has a reason and, when provided, availability.",
+        "If multimodal languageModel accepts this fixture, ok:true returns a nonempty description; the expected visual subject is a red square on white, but model wording and color naming may vary. Record the actual response and assess it against the image without treating a nonempty string alone as semantic correctness. If image input is unsupported or model missing/not ready, ok:false has a reason and, when provided, availability.",
         "Short image_base64 fails Schema mismatch before invocation.",
         "Manual result is inline; this case does not prove live registered binding, agent advertisement, or dispatcher permission enforcement."
       ],
@@ -379,7 +379,8 @@
         "src/lib/onbox-ai/client.ts:175-254",
         "src/features/tools/ToolsView.tsx:390-490",
         "src/lib/tools/categories.ts:461-560"
-      ]
+      ],
+      "fixture_validation": "Synthetic PNG generated from deterministic RGB pixels with Python standard-library zlib/struct. Full PNG chunk CRCs, IDAT decompression, all 16 scanline filters, and red-center/white-corner pixels independently checked in source-only verification."
     },
     "EXT-F-4053-T01": {
       "feature_id": "EXT-F-4053",
