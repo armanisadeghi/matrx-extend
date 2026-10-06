@@ -1,0 +1,199 @@
+{
+  "schema_version": 1,
+  "report_type": "bounded_current_source_inventory_delta",
+  "audited_at": "2026-10-06",
+  "inventory_path": "docs/stabilization/inventory.json",
+  "inventory_source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
+  "audited_source_sha": "9db45d37930e70092dd4be6829e12e1d27aea472",
+  "scope": "Post-snapshot visible-control and auth-mode reconciliation for added shared controls and Vault/Showcase source; excludes Chat/Pilot behavior inventory and all runtime/product testing.",
+  "inventory_gate_facts": {
+    "gate": "source-census-peer-reviewed-native-visibility-pending",
+    "scope_complete": false,
+    "source_sha_is_current": false,
+    "meaning": "The canonical inventory itself says global source census/native visibility is unfinished; this bounded report cannot certify full product inventory or behavior."
+  },
+  "findings": [
+    {
+      "kind": "missing_control_and_mode_cases",
+      "feature_id": "EXT-F-2011",
+      "feature_name": "Manage saved credentials and vault items",
+      "source_delta": "src/features/vault/FillDeviceSetupCard.tsx was added at 1f6d476c, after the inventory source snapshot; it is absent from EXT-F-2011 source_anchors and controls.",
+      "existing_overlap": {
+        "control_id": "EXT-F-2011-C30",
+        "reason_not_duplicate": "C30 enables/disables filling on an individual login. The new card registers this browser/device for filling after an identity step-up; those are distinct operations."
+      },
+      "proposed_controls": [
+        {
+          "id": "EXT-F-2011-C53",
+          "label": "Enable filling in this browser with account password",
+          "action": "Enter the AI Matrx account password to register this browser for credential filling; confirm empty input, visible recoverable failure, success, and that the password field clears before submission completes."
+        },
+        {
+          "id": "EXT-F-2011-C54",
+          "label": "Approve this browser for filling with passkey",
+          "action": "Open the account passkey approval page, return to the extension, claim approval with I approved it, and verify recoverable failure or enabled status."
+        }
+      ],
+      "proposed_cases": [
+        {
+          "id": "EXT-F-2011-T10",
+          "title": "Enable browser filling with account password",
+          "modes": ["member", "admin"],
+          "control_ids": ["EXT-F-2011-C53"],
+          "expected_scope": "Only shown when this browser is not enabled; successful step-up enables this browser, rejected/empty input remains explicit, and typed password is cleared and never included in evidence."
+        },
+        {
+          "id": "EXT-F-2011-T11",
+          "title": "Approve browser filling with account passkey",
+          "modes": ["member", "admin"],
+          "control_ids": ["EXT-F-2011-C54"],
+          "expected_scope": "Approval link/code and return-to-panel claim are visible; approval enables this browser; unapproved, expired, or failed claim offers a clear retry/password route."
+        }
+      ],
+      "applicability": {
+        "guest": "not-applicable: EXT-F-2011 already marks the Vault surface unavailable to guests.",
+        "member": "applicable",
+        "admin": "applicable"
+      },
+      "source_anchors": [
+        {
+          "path": "src/features/vault/FillDeviceSetupCard.tsx",
+          "lines": [34, 80],
+          "evidence": "status/method discovery; passkey approval link and pending-approval completion; panel focus refresh"
+        },
+        {
+          "path": "src/features/vault/FillDeviceSetupCard.tsx",
+          "lines": [96, 137],
+          "evidence": "password and passkey submission actions with visible failure recovery"
+        },
+        {
+          "path": "src/features/vault/FillDeviceSetupCard.tsx",
+          "lines": [142, 224],
+          "evidence": "user-visible setup controls, password field, passkey link, approval claim and errors"
+        },
+        {
+          "path": "src/features/vault/VaultView.tsx",
+          "lines": [209, 211],
+          "evidence": "card is rendered in the Vault view"
+        }
+      ],
+      "evidence_state": "source-only; no UI behavior or auth-mode result established"
+    },
+    {
+      "kind": "missing_control_and_mode_case",
+      "feature_id": "EXT-F-1012",
+      "feature_name": "Discover, save and replay site extraction patterns",
+      "source_delta": "src/features/showcase/SavedReplayApprovalHost.tsx was added after the inventory source snapshot and is absent from EXT-F-1012 source_anchors and controls. It presents/hydrates extension-origin pending confirmations outside a conversation, handles expiry, and denies pending requests on unmount.",
+      "existing_overlap": {
+        "control_id": "EXT-F-1012-C36",
+        "case_id": "EXT-F-1012-T57",
+        "reason_not_duplicate": "C36/T57 cover running saved patterns and replay/document provenance. They do not specify the new app-level approval host's pending-confirm hydration, expiry notice, response, or unmount cleanup. T59's approval is the separate initial-document discovery approval."
+      },
+      "proposed_control": {
+        "id": "EXT-F-1012-C50",
+        "label": "Saved replay approval outside conversations",
+        "action": "Display and settle a pending local saved-replay approval in the sidepanel host, including stored-request hydration, approve/deny response, expiry notice, and safe denial when the host unmounts."
+      },
+      "proposed_case": {
+        "id": "EXT-F-1012-T60",
+        "title": "Saved replay approval host hydration and terminal handling",
+        "modes": ["admin"],
+        "control_ids": ["EXT-F-1012-C36", "EXT-F-1012-C50"],
+        "expected_scope": "An extension-origin saved replay request appears outside Chat/Pilot; an already-persisted pending request is restored once; approve/deny settles the matching call; expiry is stated and removed; unmount does not leave a pending request authorized."
+      },
+      "applicability": {
+        "guest": "not-applicable to the host because signedIn=false renders nothing; Showcase access denial remains EXT-F-1012-T38.",
+        "member": "Showcase source audience denies member via existing EXT-F-1012-T38; no saved replay can be initiated there.",
+        "admin": "applicable; Showcase is admin-only and the host is rendered within AuthGate."
+      },
+      "source_anchors": [
+        {
+          "path": "src/features/showcase/SavedReplayApprovalHost.tsx",
+          "lines": [8, 37],
+          "evidence": "signed-in host listens for extension confirmation and expiration events"
+        },
+        {
+          "path": "src/features/showcase/SavedReplayApprovalHost.tsx",
+          "lines": [38, 73],
+          "evidence": "pending local confirmation hydration, expiry filtering, and deny on unmount"
+        },
+        {
+          "path": "src/features/showcase/SavedReplayApprovalHost.tsx",
+          "lines": [74, 90],
+          "evidence": "renders approval card and sends the response"
+        },
+        {
+          "path": "src/entrypoints/sidepanel/App.tsx",
+          "lines": [361, 363],
+          "evidence": "host is mounted inside AuthGate for the sidepanel"
+        }
+      ],
+      "evidence_state": "source-only; no UI behavior or auth-mode result established"
+    }
+  ],
+  "reconciled_existing_controls": [
+    {
+      "source": "src/components/SiteAccessControl.tsx",
+      "existing_controls": ["EXT-F-1001-C06", "EXT-F-1001-C07", "EXT-F-1001-C08"],
+      "case": "EXT-F-1001-T16 through EXT-F-1001-T18",
+      "applicability": ["guest", "member", "admin"],
+      "conclusion": "Menu, persistent grant and explicit reload are already inventoried for all three modes; current results are partial/unverified as recorded."
+    },
+    {
+      "source": "src/components/PageIdentityNotice.tsx",
+      "existing_control": "EXT-F-1007-C34",
+      "additional_surfaces": [
+        "src/features/data/DataView.tsx:402",
+        "src/features/showcase/ShowcaseView.tsx:57"
+      ],
+      "conclusion": "The same shared Retry page check action exists already. Reuse/reference C34; do not create a duplicate ID. The new surface placements have no runtime evidence here."
+    },
+    {
+      "source": "src/features/screenshots/ScreenshotShareLinks.tsx",
+      "existing_control": "EXT-F-1009-C05",
+      "conclusion": "The existing screenshot share-link manager control covers create/copy/refresh/revoke and limits; no additional control proposed from this bounded read."
+    }
+  ],
+  "showcase_network_t57": {
+    "case_id": "EXT-F-1012-T57",
+    "inventory_status": "already tracked; do not create a duplicate case",
+    "current_scope": "Admin-only saved Network replay, initial-request capture, and old-document response provenance; T38 covers guest/member denial.",
+    "current_evidence": "Inventory result remains unverified. Existing report says bounded initial-request capture and saved replay are proven on historical builds, but the decisive native delayed old-document response after navigation is missing; D47 remains open. T59's later native pass explicitly does not close T57's old-document provenance case.",
+    "required_evidence_before_behavior_claim": [
+      "Build/reload receipt bound to the current source and loaded development extension.",
+      "On an owned real public page, save and run the owned Network recipe; record initial request capture or the honest late-listening remedy.",
+      "Hold an old-document response across navigation, then release it after the new document starts; prove it cannot satisfy or overwrite the current replay, including overlapping URL/method/request identity and a higher local sequence.",
+      "Keep T59's initial-discovery approval/save/repeat replay proof distinct from T57; do not reuse its pass as old-document provenance evidence."
+    ],
+    "source_anchors": [
+      {
+        "path": "src/features/showcase/tabs/NetworkTab.tsx",
+        "lines": [82, 145],
+        "evidence": "Network capture and saved replay UI path"
+      },
+      {
+        "path": "src/lib/data-pattern/document-network-capture.ts",
+        "evidence": "document-start request capture lifecycle"
+      },
+      {
+        "path": "src/lib/data-pattern/document-network-transport.ts",
+        "evidence": "document-scoped relayed response transport"
+      },
+      {
+        "path": "docs/stabilization/inventory.json",
+        "lines": [24906, 24956],
+        "evidence": "T57 unverified result detail and T58 next case; T59 result separately records its bounded pass"
+      },
+      {
+        "path": "docs/stabilization/reports/showcase-d47-current-evidence-peer.json",
+        "evidence": "independent evidence audit calls out missing native delayed old-document response"
+      }
+    ],
+    "proposed_change": "Keep EXT-F-1012-T57 and its unverified state. Correct or append its source evidence detail only when a current-source receipt and the adversarial native response ordering are available; no new control/case ID is needed for this remaining behavior gap."
+  },
+  "limitations": [
+    "This is a bounded scan of post-528 additions in shared controls, Vault browser enrollment, saved replay approval, page identity recovery, screenshot sharing, and the named Network lane; it is not a whole-repository or all-product source census.",
+    "No browser/product behavior testing, builds, tests, database or credential access, or inventory.json edits were performed.",
+    "The shared checkout had unrelated dirty files during the scan; they were not read for behavior conclusions or modified."
+  ]
+}
