@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "run_id": "showcase-repick-native-37395727468",
+  "status": "PASS_BOUNDED_NATIVE",
+  "feature_ids": ["EXT-F-1012"],
+  "case_ids": ["EXT-F-1012-T24", "EXT-F-1012-T51"],
+  "defect_ids": ["EXT-D-0143", "EXT-D-0042"],
+  "observed_at": "2026-10-06T00:55:23.541401+00:00",
+  "artifact": {
+    "ci_run_id": 37392653796,
+    "artifact_id": 11381873416,
+    "source_sha": "97efc4af8fd9581746d0b2b1745fc24296d7d0ec",
+    "tree_sha256": "5460cc1f14b21e36d6186926fa912d36bd753a912de480e217499047b90ebdd4",
+    "version": "0.2.307"
+  },
+  "driver_sha": "783ca42c3302be013a6e2787b7739ecb9c6057f4",
+  "canonical_evidence_report": ".research/showcase-repick-native-final.json",
+  "verified_cases": [
+    "guest_nonchat_control_and_showcase_gate",
+    "real_admin_signin_and_device_organization",
+    "genuine_A_exit_relay_rejected_while_B_active",
+    "same_page_cancel_A_start_B",
+    "current_B_detection_relayed",
+    "B_card_field_done_extract",
+    "ordinary_page_click_after_cancel"
+  ],
+  "limitations": [
+    "Pass binds frozen product 0.2.307/source 97efc4af with reviewed workflow driver 783ca42c; newer main packages and release 0.2.309 are not covered.",
+    "Receipt result_raw=true is a delivered relay observation, not independent page-side producer-boundary proof.",
+    "stale A ITEM_DETECTED and RESULT held and released after B starts",
+    "delayed A cancellation injection after B starts",
+    "deferred installation across replacement",
+    "new content-script context reinjection and exact listener count",
+    "nonadmin role gating"
+  ],
+  "interpretation": "D143 original and adjacent checks pass; broader feature/case coverage remains partial and D42 open."
+}
