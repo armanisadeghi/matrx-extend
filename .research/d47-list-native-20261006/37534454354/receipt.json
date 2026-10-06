@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "run_id": 37534454354,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37534454354",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "head_branch": "main",
+    "head_sha": "415f901dae28f2ba68aadc3b83cc4101edd8091f",
+    "runner_label": "macos-15",
+    "acceptance_case": "showcase-d47-admin"
+  },
+  "driver_review": {
+    "repair_commit": "8f2d6a43",
+    "independent_review": "7fc0fdfe"
+  },
+  "development_artifact": {
+    "source_sha": "b6ec3615f0e0f917fb787a8ce82849a682017550",
+    "run_id": 37523207097,
+    "artifact_id": 11440764124,
+    "github_digest": "sha256:7cc729936035910557bb92daa5022364c6e592d48780dc20440550a398298989",
+    "tree_sha256": "05dd15ac790288b459bfb5a0ba21e03cd29449b231b26547cbe81c48fb709cb1",
+    "version": "0.2.325",
+    "eligible_store": false
+  },
+  "outcome": {
+    "status": "UNVERIFIED_SAVED_REPLAY_DRIVER_STOP",
+    "stage": "saved_replay",
+    "failure_code": "saved_replay_failed",
+    "failure_message_code": "unclassified_error",
+    "failure_name": "AssertionError",
+    "interpretation": "The exact saved row was observed active in Patterns with the expected host and no loading or error state. The run then stopped during saved_replay before any replay result. The receipt does not identify whether the row-scoped trusted click found no unique button or the CDP input failed; do not infer a replay or product failure."
+  },
+  "save_observation": {
+    "exact_name_matched_before_save": true,
+    "save_button_enabled": true,
+    "post_click_success_summary_visible": true,
+    "terminal": "summary",
+    "literal_recipe_name_recorded": false
+  },
+  "patterns_observation": {
+    "active": true,
+    "exact_row_visible": true,
+    "host_matches": true,
+    "row_count": 1,
+    "loading": false,
+    "empty_state": false,
+    "error_present": false,
+    "error_kind": null
+  },
+  "replay_and_lifecycle": {
+    "saved_result_present": false,
+    "contexts_count": 0,
+    "binding_events_count": 0,
+    "trace_assessment_present": false,
+    "verdicts": {
+      "current_saved_replay": "unverified",
+      "delayed_old_binding": "unverified",
+      "cancellation": "unverified"
+    },
+    "interpretation": "The row-visibility gate passed. Replay result, positive binding/context evidence, and lifecycle terminal rows were not reached."
+  },
+  "resource_journals": [
+    {
+      "run_id": "hosted-browser-37534454354-1",
+      "path": ".research/d47-list-native-20261006/37534454354/resource-journals/hosted-browser-37534454354-1.jsonl",
+      "decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0,
+      "sha256": "c6ba1134712cbc41f00b12e34e6200db73430a7811da4af875fc47953cce3f27"
+    },
+    {
+      "run_id": "hosted-guest-37534454354-1",
+      "path": ".research/d47-list-native-20261006/37534454354/resource-journals/hosted-guest-37534454354-1.jsonl",
+      "decision": "child_failed",
+      "resource_invalid": false,
+      "exit_code": 1,
+      "sha256": "5aa77b7e34180347df52ebcbc7dc1f0089e64480415b0a8d8d85d44b354badaa"
+    },
+    {
+      "run_id": "hosted-package-37534454354-1",
+      "path": ".research/d47-list-native-20261006/37534454354/resource-journals/hosted-package-37534454354-1.jsonl",
+      "decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0,
+      "sha256": "05b46966220e56e30f79aeb4936fd85a4d7cfa7e76f8bd9ffd0bee0540756197"
+    }
+  ],
+  "temporary_secrets": {
+    "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON": {
+      "owned": true,
+      "deleted_at_terminal": true,
+      "absence_verified": true
+    },
+    "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON": {
+      "owned": true,
+      "deleted_at_terminal": true,
+      "absence_verified": true
+    },
+    "secret_values_recorded": false
+  },
+  "evidence": {
+    "directory": ".research/d47-list-native-20261006/37534454354/",
+    "receipt": ".research/d47-list-native-20261006/37534454354/receipt.json",
+    "original_receipt_external": "/Volumes/Samsung2TB/d47-list-native-20261006-originals/37534454354/_temp/showcase-d47-native-37534454354-1.json",
+    "original_receipt_sha256": "86621122b6e9df787b763d6853ddfdde2c5f816c2931e6e277acab078ef085a7",
+    "raw_run_log_external": "/Volumes/Samsung2TB/d47-list-native-20261006-originals/raw/hosted-run-37534454354.log",
+    "raw_run_log_sha256": "52a8ff215ba5604d18564ec0d6dada8afb0eca5b48d154d16c7c7d50a7a2097c",
+    "screenshots": [
+      {
+        "path": ".research/d47-list-native-20261006/37534454354/screenshots/native-side-panel.png",
+        "sha256": "d9d40c6d68da4b569c22cf9f15aa3a50bc01b2f83e15210328075548e6abe106",
+        "privacy_review": "Generic initial side panel; no credential or personal data visible."
+      },
+      {
+        "path": ".research/d47-list-native-20261006/37534454354/screenshots/normal-target-after-open.png",
+        "sha256": "c939d4f6417b874eefffbe4a8c9bd1cf05088fe2b42ab7a7e13c65d79a024fd2",
+        "privacy_review": "Public controlled test fixture; no credential or personal data visible."
+      }
+    ]
+  },
+  "limits": [
+    "The literal generated recipe name is omitted; only exact-name comparison booleans are recorded.",
+    "No saved replay result, packet, current binding handshake, document contexts, or lifecycle terminal rows were captured.",
+    "No additional native run is authorized in this lane."
+  ]
+}

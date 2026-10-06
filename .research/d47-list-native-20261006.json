@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "lane": "one guarded hosted native retest after reviewed post-save list repair",
+  "run_id": 37534454354,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37534454354",
+  "verdict": "unverified_saved_replay_driver_stop",
+  "receipt": ".research/d47-list-native-20261006/37534454354/receipt.json",
+  "resource_preflight": {
+    "run_id": "d47-list-preflight-20261006-1",
+    "decision": "valid",
+    "journal": "docs/stabilization/resource-journals/d47-list-preflight-20261006-1.jsonl"
+  },
+  "authentication_preflight": {
+    "workflow_entrypoint": "node scripts/hosted-guest-acceptance.mjs",
+    "phase": "preflight",
+    "case": "showcase-d47-admin",
+    "credential_schema": "email/password",
+    "result": "pass",
+    "secret_values_recorded": false
+  },
+  "development_artifact": {
+    "source_sha": "b6ec3615f0e0f917fb787a8ce82849a682017550",
+    "run_id": 37523207097,
+    "artifact_id": 11440764124,
+    "github_digest": "sha256:7cc729936035910557bb92daa5022364c6e592d48780dc20440550a398298989",
+    "tree_sha256": "05dd15ac790288b459bfb5a0ba21e03cd29449b231b26547cbe81c48fb709cb1",
+    "version": "0.2.325",
+    "eligible_store": false
+  },
+  "patterns_observation": {
+    "active": true,
+    "exact_row_visible": true,
+    "host_matches": true,
+    "row_count": 1,
+    "loading": false,
+    "empty_state": false,
+    "error_present": false,
+    "error_kind": null
+  },
+  "exact_name_gate_passed": true,
+  "saved_replay_result_present": false,
+  "contexts_count": 0,
+  "binding_events_count": 0,
+  "lifecycle_terminal_rows": "not reached",
+  "temporary_secrets": {
+    "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON": {
+      "owned": true,
+      "deleted_at_terminal": true,
+      "absence_verified": true
+    },
+    "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON": {
+      "owned": true,
+      "deleted_at_terminal": true,
+      "absence_verified": true
+    },
+    "secret_values_recorded": false
+  },
+  "previous_native_receipt": ".research/d47-input-native-20261006/37532036039/receipt.json",
+  "next_action": "Use the saved_replay stage receipt and safe Patterns observation to continue independent diagnosis. Do not claim replay or D47 closure; no further attempt is authorized."
+}
