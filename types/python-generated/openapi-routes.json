@@ -7579,6 +7579,11 @@
  "/toggl/public/status": {
   "get": []
  },
+ "/tools/screen-run": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/tools/test/execute": {
   "post": [
    "application/json"
