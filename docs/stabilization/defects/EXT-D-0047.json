@@ -28,7 +28,7 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Independent failure evidence review in progress; localize missing terminal boundary before another fix or native retry. No native run active or admitted.",
+    "next_action": "Complete fresh independent review of driver budget repair2728cabf. If accepted, admit one guarded native diagnostic with exact artifact/source contract and sanitized elapsed observations. No native run active; original failure sole cause and product acceptance remain unverified.",
     "status": "Native37544119052 terminal failure: saved_current_result_not_observed on development0.2.332/sourcebb62b2df. Resources valid; no terminal saved result; D47 in-fix and T57 unverified.",
     "implementation_agent": "completed: d47_owned_reload_fix; d47_navigation_replacement_fix; d47_ci_contract_repair",
     "execution_agent": "completed: d47_new_product_native",
@@ -67,7 +67,10 @@
     "active_native_run_id": null,
     "candidate_artifact_id": 11449772840,
     "candidate_source": "bb62b2dfafad160de32ced456f86bf5b7ea9e216",
-    "candidate_version": "0.2.332"
+    "candidate_version": "0.2.332",
+    "failure_peer_report": ".research/d47-new-product-failure-peer-20261006.json",
+    "terminal_budget_fix_commit": "2728cabf",
+    "terminal_budget_fix_report": ".research/d47-terminal-budget-fix-20261006.json"
   },
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
   "verification_status": "Current independentevidencepeer e7a67bcd confirms initialrequest timing and documentidentity controlled regressions (including meaningful identitymutation), plus bounded installed initialHN capture and saved10row replay on8b0f8adc/9ea6687b. Delayed matching prior-document response with higher old sequence is still nativeUNVERIFIED; T57 and original D47 closure remain incomplete. No current runtime was run by evidencepeer.",
