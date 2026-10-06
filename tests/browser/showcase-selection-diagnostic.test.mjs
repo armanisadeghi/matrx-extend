@@ -9,6 +9,7 @@ import {
   observeShowcaseSelection,
   recordShowcasePointerSample,
   safeShowcaseSelectionFailure,
+  sampleShowcaseFieldSelection,
   sampleShowcaseSelection,
   stageShowcaseSelection,
 } from './showcase-selection-diagnostic.mjs';
@@ -109,12 +110,12 @@ test('pointer receipt rejects raw page text and unknown hit categories', () => {
   assert.equal(JSON.stringify(diagnostic).includes('private@example.invalid'), false);
 });
 
-test('native receipt distinguishes card click from scope choice failure', () => {
+test('native receipt distinguishes card, scope, field click, and field wait failures', () => {
   const directory = mkdtempSync(
     join(process.env.MATRX_TEST_EXTERNAL_TMPDIR ?? tmpdir(), 'showcase-selection-'),
   );
   try {
-    for (const substage of ['card_click', 'scope_choice']) {
+    for (const substage of ['card_click', 'scope_choice', 'field_click', 'field_wait']) {
       const output = join(directory, `${substage}.json`);
       const run = spawnSync(
         process.execPath,
@@ -141,5 +142,66 @@ test('native receipt distinguishes card click from scope choice failure', () => 
     }
   } finally {
     rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test('field geometry and picked count are bounded and distinguish click from selection wait', async () => {
+  const diagnostic = createShowcaseSelectionDiagnostic();
+  const previous = {
+    document: globalThis.document,
+    innerWidth: globalThis.innerWidth,
+    innerHeight: globalThis.innerHeight,
+  };
+  const rect = { x: 8, y: 20, left: 8, top: 20, right: 412, bottom: 92, width: 404, height: 72 };
+  const panel = {
+    getBoundingClientRect: () => ({ x: 84, y: 16, width: 320, height: 120 }),
+    contains: (node) => node === panel,
+  };
+  let picked = 0;
+  let hit = null;
+  const shadow = {
+    querySelector: (selector) => (selector === '.panel' ? panel : null),
+    querySelectorAll: (selector) => (selector === '.picked-item' ? Array(picked).fill({}) : []),
+    elementFromPoint: () => panel,
+  };
+  const host = { shadowRoot: shadow, contains: () => false };
+  const field = { getBoundingClientRect: () => rect, contains: () => false };
+  hit = host;
+  globalThis.innerWidth = 420;
+  globalThis.innerHeight = 600;
+  globalThis.document = {
+    querySelector: (selector) =>
+      selector === '#events article.event-card h2'
+        ? field
+        : selector === '#matrx-list-picker-host'
+          ? host
+          : null,
+    elementFromPoint: () => hit,
+  };
+  try {
+    const page = { evaluate: async (callback) => callback() };
+    stageShowcaseSelection(diagnostic, 'field_click');
+    await sampleShowcaseFieldSelection(page, diagnostic, 'field_before_click');
+    assert.equal(diagnostic.pointer_samples.field_before_click.center_hit_kind, 'picker_panel');
+    assert.equal(diagnostic.observations.picked_item_count, 0);
+    hit = field;
+    picked = 1;
+    stageShowcaseSelection(diagnostic, 'field_wait');
+    await sampleShowcaseFieldSelection(page, diagnostic, 'field_after_click');
+    assert.equal(diagnostic.pointer_samples.field_after_click.center_hit_kind, 'field');
+    assert.deepEqual(diagnostic.pointer_samples.field_after_click.field_rect, {
+      x: 8,
+      y: 20,
+      width: 404,
+      height: 72,
+    });
+    assert.equal(diagnostic.observations.picked_item_count, 1);
+    assert.equal(
+      safeShowcaseSelectionFailure(diagnostic, Error('private@example.invalid')),
+      'selection_field_wait_failed',
+    );
+    assert.equal(JSON.stringify(diagnostic).includes('private@example.invalid'), false);
+  } finally {
+    Object.assign(globalThis, previous);
   }
 });

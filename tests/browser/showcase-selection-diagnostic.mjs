@@ -1,20 +1,36 @@
-const SUBSTAGES = new Set(['card_click', 'scope_choice', 'scope_badge', 'detection_relay']);
+const SUBSTAGES = new Set([
+  'card_click',
+  'scope_choice',
+  'scope_badge',
+  'detection_relay',
+  'field_click',
+  'field_wait',
+]);
 const COUNTS = new Set([
   'card_count',
   'overlay_count',
   'scope_choice_count',
   'three_card_choice_count',
+  'picked_item_count',
 ]);
 const FLAGS = new Set(['card_visible', 'card_center_hit', 'badge_three_items']);
 const HIT_KINDS = new Set([
   'card',
   'card_ancestor',
+  'field',
+  'field_ancestor',
   'picker_panel',
   'picker_other',
   'other_element',
   'none',
 ]);
-const POINTER_MOMENTS = new Set(['before_click', 'after_failure']);
+const POINTER_MOMENTS = new Set([
+  'before_click',
+  'after_failure',
+  'field_before_click',
+  'field_after_click',
+  'field_after_failure',
+]);
 
 export function createShowcaseSelectionDiagnostic() {
   return { substage: 'card_click', observations: {}, pointer_samples: {} };
@@ -57,6 +73,7 @@ export function recordShowcasePointerSample(diagnostic, moment, sample) {
         ? { width: sample.viewport.width, height: sample.viewport.height }
         : null,
     card_rect: rect(sample.card_rect),
+    field_rect: rect(sample.field_rect),
     picker_panel_rect: rect(sample.picker_panel_rect),
     center_in_viewport: sample.center_in_viewport === true,
     center_hit_kind: HIT_KINDS.has(sample.center_hit_kind) ? sample.center_hit_kind : 'none',
@@ -64,6 +81,68 @@ export function recordShowcasePointerSample(diagnostic, moment, sample) {
       ? sample.interior_hit_kinds.slice(0, 9).map((kind) => (HIT_KINDS.has(kind) ? kind : 'none'))
       : [],
   };
+}
+
+export async function sampleShowcaseFieldSelection(page, diagnostic, moment) {
+  try {
+    const sample = await page.evaluate(() => {
+      const field = document.querySelector('#events article.event-card h2');
+      const host = document.querySelector('#matrx-list-picker-host');
+      const shadow = host?.shadowRoot;
+      const panel = shadow?.querySelector('.panel');
+      const rect = field?.getBoundingClientRect();
+      const bounds = rect && {
+        left: Math.max(0, rect.left),
+        top: Math.max(0, rect.top),
+        right: Math.min(innerWidth, rect.right),
+        bottom: Math.min(innerHeight, rect.bottom),
+      };
+      const classify = (x, y) => {
+        const hit = document.elementFromPoint(x, y);
+        if (!hit) return 'none';
+        if (hit === field || field?.contains(hit)) return 'field';
+        if (hit.contains(field)) return 'field_ancestor';
+        if (host && (hit === host || host.contains(hit))) {
+          const shadowHit = shadow?.elementFromPoint?.(x, y);
+          return shadowHit && panel?.contains(shadowHit) ? 'picker_panel' : 'picker_other';
+        }
+        return 'other_element';
+      };
+      const centerX = rect ? rect.left + rect.width / 2 : 0;
+      const centerY = rect ? rect.top + rect.height / 2 : 0;
+      const points =
+        bounds && bounds.right > bounds.left && bounds.bottom > bounds.top
+          ? [0.5, 0.25, 0.75].flatMap((fy) =>
+              [0.5, 0.25, 0.75].map((fx) => ({
+                x: bounds.left + (bounds.right - bounds.left) * fx,
+                y: bounds.top + (bounds.bottom - bounds.top) * fy,
+              })),
+            )
+          : [];
+      const panelRect = panel?.getBoundingClientRect();
+      return {
+        picked_item_count: shadow?.querySelectorAll('.picked-item').length ?? 0,
+        pointer: {
+          viewport: { width: innerWidth, height: innerHeight },
+          field_rect: rect
+            ? { x: rect.x, y: rect.y, width: rect.width, height: rect.height }
+            : null,
+          picker_panel_rect: panelRect
+            ? { x: panelRect.x, y: panelRect.y, width: panelRect.width, height: panelRect.height }
+            : null,
+          center_in_viewport: Boolean(
+            rect && centerX >= 0 && centerX < innerWidth && centerY >= 0 && centerY < innerHeight,
+          ),
+          center_hit_kind: rect ? classify(centerX, centerY) : 'none',
+          interior_hit_kinds: points.map(({ x, y }) => classify(x, y)),
+        },
+      };
+    });
+    observeShowcaseSelection(diagnostic, sample);
+    recordShowcasePointerSample(diagnostic, moment, sample.pointer);
+  } catch {
+    // A lost page context is represented by missing facts, never raw page/error text.
+  }
 }
 
 export function safeShowcaseSelectionFailure(diagnostic, error) {

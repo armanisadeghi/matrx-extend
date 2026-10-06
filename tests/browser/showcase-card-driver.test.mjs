@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { clickReachableShowcaseCard } from './showcase-card-driver.mjs';
+import {
+  clickReachableShowcaseCard,
+  clickReachableShowcaseTarget,
+} from './showcase-card-driver.mjs';
 
 function cardFixture(hitAt) {
   const previous = {
@@ -51,6 +54,29 @@ test('fully obstructed card fails before any browser click', async () => {
     await assert.rejects(
       clickReachableShowcaseCard(fixture.card),
       /showcase_card_no_reachable_pointer_point/,
+    );
+    assert.deepEqual(fixture.calls, ['scroll']);
+  } finally {
+    fixture.restore();
+  }
+});
+
+test('field target covered at center uses a reachable pointer point without force', async () => {
+  const fixture = cardFixture((x) => x < 239);
+  try {
+    await clickReachableShowcaseTarget(fixture.card, 'field');
+    assert.deepEqual(fixture.calls, ['scroll', { x: 146.25, y: 33 }]);
+  } finally {
+    fixture.restore();
+  }
+});
+
+test('fully obstructed field target refuses the click', async () => {
+  const fixture = cardFixture(() => false);
+  try {
+    await assert.rejects(
+      clickReachableShowcaseTarget(fixture.card, 'field'),
+      /showcase_field_no_reachable_pointer_point/,
     );
     assert.deepEqual(fixture.calls, ['scroll']);
   } finally {

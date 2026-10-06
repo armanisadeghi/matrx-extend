@@ -13,13 +13,17 @@ import {
   signInSettings,
 } from './settings-native-auth-driver.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
-import { clickReachableShowcaseCard } from './showcase-card-driver.mjs';
+import {
+  clickReachableShowcaseCard,
+  clickReachableShowcaseTarget,
+} from './showcase-card-driver.mjs';
 import { runShowcaseOrganizationCheckpoint } from './showcase-organization-checkpoint.mjs';
 import { safeShowcaseOrganizationFailure } from './showcase-organization-diagnostic.mjs';
 import {
   createShowcaseSelectionDiagnostic,
   observeShowcaseSelection,
   safeShowcaseSelectionFailure,
+  sampleShowcaseFieldSelection,
   sampleShowcaseSelection,
   stageShowcaseSelection,
 } from './showcase-selection-diagnostic.mjs';
@@ -113,9 +117,13 @@ async function chooseScopeIfNeeded(page) {
 }
 
 try {
-  if (['card_click', 'scope_choice'].includes(process.env.MATRX_SHOWCASE_DIAGNOSTIC_PROBE)) {
+  if (
+    ['card_click', 'scope_choice', 'field_click', 'field_wait'].includes(
+      process.env.MATRX_SHOWCASE_DIAGNOSTIC_PROBE,
+    )
+  ) {
     const substage = process.env.MATRX_SHOWCASE_DIAGNOSTIC_PROBE;
-    stage('select_B_card');
+    stage(substage.startsWith('field_') ? `select_B_${substage}` : 'select_B_card');
     report.selection_diagnostic = createShowcaseSelectionDiagnostic();
     stageShowcaseSelection(report.selection_diagnostic, substage);
     observeShowcaseSelection(report.selection_diagnostic, { card_count: 3, overlay_count: 1 });
@@ -397,8 +405,18 @@ try {
           same_tab_and_document_as_A: true,
         });
       }
-      stage('select_B_field');
-      await resourceAction(() => page.locator('#events article.event-card h2').first().click());
+      stage('select_B_field_click');
+      stageShowcaseSelection(report.selection_diagnostic, 'field_click');
+      await sampleShowcaseFieldSelection(page, report.selection_diagnostic, 'field_before_click');
+      await resourceAction(() =>
+        clickReachableShowcaseTarget(
+          page.locator('#events article.event-card h2').first(),
+          'field',
+        ),
+      );
+      await sampleShowcaseFieldSelection(page, report.selection_diagnostic, 'field_after_click');
+      stage('select_B_field_wait');
+      stageShowcaseSelection(report.selection_diagnostic, 'field_wait');
       await waitFor(
         'showcase_B_field',
         async () => (await pickedOverlay(page)).locator('.picked-item').count(),
@@ -464,11 +482,22 @@ try {
 } catch (error) {
   if (report.stage === 'select_B_card' && selectionPage && report.selection_diagnostic)
     await sampleShowcaseSelection(selectionPage, report.selection_diagnostic, 'after_failure');
+  if (
+    ['select_B_field_click', 'select_B_field_wait'].includes(report.stage) &&
+    selectionPage &&
+    report.selection_diagnostic
+  )
+    await sampleShowcaseFieldSelection(
+      selectionPage,
+      report.selection_diagnostic,
+      'field_after_failure',
+    );
   report.status = 'unverified';
   report.failure_code =
     report.stage === 'organization'
       ? safeShowcaseOrganizationFailure(error)
-      : report.stage === 'select_B_card' && report.selection_diagnostic
+      : ['select_B_card', 'select_B_field_click', 'select_B_field_wait'].includes(report.stage) &&
+          report.selection_diagnostic
         ? safeShowcaseSelectionFailure(report.selection_diagnostic, error)
         : `${report.stage}_failed`;
   process.stderr.write(

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "showcase_field_boundary_repair",
+  "feature_ids": ["EXT-F-1012"],
+  "defect_ids": ["EXT-D-0143", "EXT-D-0042"],
+  "status": "bounded_driver_patch_ready_for_native_retest",
+  "prior_native_evidence": {
+    "ci_run_id": 37390906047,
+    "artifact_source_sha": "b75d519d9c21e0d24b4f7368347f0951f2fae03b",
+    "passed": ["current_B_detection_relayed"],
+    "first_failure": "select_B_field_failed",
+    "uncertainty": "The receipt combines the first h2 click and the picked-item wait. It has no field hit geometry, so it does not establish pointer interception."
+  },
+  "change": {
+    "driver": "The intended first h2 uses the same sampled reachable-point normal Playwright click as the previously repaired card target, preserving actionability without force. The click and picked-item wait now have distinct stages and sanitized failure codes.",
+    "diagnostic": "The receipt records bounded field and picker-panel rectangles, viewport, center and nine interior hit classes, and picked-item count before click, after click, and after failure when available. No page text or raw error message is serialized.",
+    "acceptance": "The wait still requires exactly one picked item. The fixture and extension product code are unchanged."
+  },
+  "verification": {
+    "focused_tests": "node --test tests/browser/showcase-card-driver.test.mjs tests/browser/showcase-selection-diagnostic.test.mjs: 9 pass",
+    "mutation": "plant.py replaced locator.click({ position }) with locator.click(); both covered-center cases failed with browser_pointer_intercepted; original source restored identically.",
+    "biome": "pnpm exec biome check on all five touched source/test files: pass",
+    "syntax_and_diff": "node --check native driver and git diff --check: pass",
+    "scope": "Tests simulate DOM hit testing and receipt serialization; no fresh native extension case has run on this patch."
+  },
+  "limitations": [
+    "The prior field failure cause remains unproven until a fresh native receipt separates click from wait and captures field geometry.",
+    "Three-row extraction and broader D42 criteria remain unverified."
+  ],
+  "next_action": "Build a fresh green CI development artifact from this pushed source, then independently rerun showcase-stale-admin and use the first distinct field stage and bounded pointer sample to determine the next repair or closure."
+}

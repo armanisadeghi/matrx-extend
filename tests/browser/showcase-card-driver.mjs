@@ -1,7 +1,8 @@
-/** Click the intended card through the same browser pointer path as a user. */
-export async function clickReachableShowcaseCard(card) {
-  await card.scrollIntoViewIfNeeded();
-  const position = await card.evaluate((target) => {
+/** Click a visible picker target through the same browser pointer path as a user. */
+export async function clickReachableShowcaseTarget(locator, kind) {
+  if (kind !== 'card' && kind !== 'field') throw new Error('showcase_unknown_target_kind');
+  await locator.scrollIntoViewIfNeeded();
+  const position = await locator.evaluate((target) => {
     const rect = target.getBoundingClientRect();
     const bounds = {
       left: Math.max(0, rect.left),
@@ -9,7 +10,7 @@ export async function clickReachableShowcaseCard(card) {
       right: Math.min(innerWidth, rect.right),
       bottom: Math.min(innerHeight, rect.bottom),
     };
-    // The picker panel can cover the center while leaving a card edge reachable.
+    // The picker panel can cover the center while leaving an edge reachable.
     // Check the browser's actual topmost hit before asking Playwright to click.
     for (const fy of [0.5, 0.25, 0.75]) {
       for (const fx of [0.5, 0.25, 0.75]) {
@@ -23,7 +24,11 @@ export async function clickReachableShowcaseCard(card) {
     }
     return null;
   });
-  if (!position) throw new Error('showcase_card_no_reachable_pointer_point');
+  if (!position) throw new Error(`showcase_${kind}_no_reachable_pointer_point`);
   // Playwright still checks element readiness, stability, and interception at this point.
-  await card.click({ position });
+  await locator.click({ position });
+}
+
+export async function clickReachableShowcaseCard(card) {
+  await clickReachableShowcaseTarget(card, 'card');
 }
