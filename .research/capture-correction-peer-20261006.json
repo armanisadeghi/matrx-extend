@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "ce27631b",
+  "scope": "Independent source-only review of the proposed EXT-F-2002-T01 replacement against current inventory, prior peer findings, Tasks source, and the inspected queue contract. No runtime, browser, DB, canonical inventory, or product changes.",
+  "verdict_a_spec_coverage": {
+    "status": "partial",
+    "reason": "Modes, dimensions, all 25 existing control links, C08/C10 exclusion, and the main capture/paste/resolve/group/filter assertions are preserved. Consolidation removes duplicate C18-C28 actions and outcomes. It loses the two distinct C18/C19 fixture qualifications, weakens the six filter actions with 'available', and asks for a parked Retry branch in expected without a corresponding step or qualifying parked fixture. No runtime coverage is earned."
+  },
+  "verdict_b_doctrine_evidence": {
+    "status": "partial",
+    "reason": "The corrected ordinary Retry expectation matches the inspected source: Retry sets pending, while ordinary queue selection requires thin/failed plus server_gave_up. Parked policy rows have a separate selection rule. C08/C10 remain stable, unlinked, uncovered, source-absent, and owner-intent-unresolved. The proposal keeps inventory and evidence unchanged and does not claim product failure or live health. Missing fixture qualifications prevent an exhaustive source-faithful test procedure."
+  },
+  "findings": [
+    {
+      "severity": "Important",
+      "location": ".research/capture-procedure-correction-20261006.json:36",
+      "finding": "The original unique C18 step required an owned source that loaded as a different page; the unique C19 step required an owned source that is neither dead nor gated. The consolidated action merely says separate disposable sources. Clicking the labels on arbitrary sources would prove menu mechanics but not the intended semantic branches.",
+      "evidence": "docs/stabilization/inventory.json:EXT-F-2002-T01 original C18/C19 standalone steps; src/features/tasks/verdicts.tsx:30-53",
+      "action": "Restore both distinct fixture qualifications in the consolidated step; keep the actions deduplicated."
+    },
+    {
+      "severity": "Minor",
+      "location": ".research/capture-procedure-correction-20261006.json:29",
+      "finding": "'Each available queue bucket option' weakens the original unconditional six-option action. The current toolbar renders all six BUCKET_LABELS even when a bucket has no rows. Fixture absence must leave that named check unverified, not make the option optional.",
+      "evidence": "docs/stabilization/inventory.json:EXT-F-2002-T01 original C23-C28 steps; src/features/tasks/QueueToolbar.tsx:217-225; src/features/tasks/queue-view.ts:335-343",
+      "action": "Require each of the six named options and mark a missing control or fixture unverified."
+    },
+    {
+      "severity": "Important",
+      "location": ".research/capture-procedure-correction-20261006.json:23,35-36,47",
+      "finding": "The expected result says parked gated-login/low-value Retry is a distinct fixture branch, but the steps only select an unspecified prior-attempt source. They do not direct an explicit parked Retry observation or require a prior-attempt parked fixture. Thus the separate parked rule could be asserted from source while never exercised in the future procedure.",
+      "evidence": "research/multisource.py:271-327,639-692 in aidream; .research/capture-procedure-correction-20261006.json:47",
+      "action": "Either add a separately identified owned parked prior-attempt Retry fixture and observation, or state parked Retry remains unverified and outside T01's executed branches."
+    }
+  ],
+  "preserved_assertions": "C01-C06, C09, C11-C17, C18-C28 remain linked once in control_ids; the consolidated steps preserve the actions and broad outcomes for capture levels, user gate, conditional thin acceptance, source link, paste, Retry, terminal verdicts, grouping, all six filter buckets, member/admin, warm and reload. C07/C08/C10 are not added to T01; C08/C10 remain unresolved and uncovered.",
+  "retry_source_conclusion": "Ordinary Retry: verdict response pending and queue refresh, no immediate row reappearance without separately observed server processing. Parked gated-login/low-value: different queue selection rule; do not infer ordinary behavior. No runtime result claimed.",
+  "verification_limits": "JSON and source inspection only. No tests, browser run, fixtures, member/admin role access, server reprocessing, release, or runtime health verification."
+}
