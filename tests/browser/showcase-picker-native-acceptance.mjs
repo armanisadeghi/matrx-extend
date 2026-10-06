@@ -17,6 +17,10 @@ import {
   clickReachableShowcaseCard,
   clickReachableShowcaseTarget,
 } from './showcase-card-driver.mjs';
+import {
+  listStateExpression,
+  runShowcaseCompletionBoundary,
+} from './showcase-completion-diagnostic.mjs';
 import { runShowcaseOrganizationCheckpoint } from './showcase-organization-checkpoint.mjs';
 import { safeShowcaseOrganizationFailure } from './showcase-organization-diagnostic.mjs';
 import {
@@ -72,6 +76,7 @@ const report = {
   failure_code: null,
   organization_diagnostic: null,
   selection_diagnostic: null,
+  completion_diagnostic: { boundaries: [] },
 };
 let selectionPage = null;
 const staleBoundary = process.env.MATRX_SHOWCASE_STALE_BOUNDARY === '1';
@@ -79,26 +84,6 @@ const stage = (value) => {
   report.stage = value;
 };
 const passed = (id, evidence) => report.cases.push({ id, status: 'pass', evidence });
-
-function listStateExpression() {
-  return `(() => {
-    const outer = [...document.querySelectorAll('button[role="tab"][title="Showcase (admin only)"][data-state="active"]')];
-    const pane = outer.length === 1 ? document.getElementById(outer[0].getAttribute('aria-controls')) : null;
-    const tab = [...(pane?.querySelectorAll('button[role="tab"]') ?? [])]
-      .find(el => el.textContent.trim() === 'List Pattern' && el.getAttribute('data-state') === 'active');
-    const content = tab ? document.getElementById(tab.getAttribute('aria-controls')) : null;
-    const text = content?.innerText ?? '';
-    return { ready: Boolean(content && content.getAttribute('data-state') === 'active'),
-      start: [...(content?.querySelectorAll('button') ?? [])].some(el => el.textContent.trim() === 'Pick an example item' && !el.disabled),
-      picking: text.includes('Picking on page…'),
-      cancel: [...(content?.querySelectorAll('button') ?? [])].some(el => el.textContent.trim() === 'Cancel'),
-      extract: [...(content?.querySelectorAll('button') ?? [])].some(el => el.textContent.trim() === 'Extract' && !el.disabled),
-      selectedField: /1 selected field/.test(text),
-      rowCount: /3 rows/.test(text),
-      hasFirst: text.includes('Neon Nights'), hasSecond: text.includes('Desert Lanterns'),
-      hasThird: text.includes('Silver Moon') };
-  })()`;
-}
 
 async function panelState(panel) {
   return evaluate(panel, listStateExpression());
@@ -422,32 +407,60 @@ try {
         async () => (await pickedOverlay(page)).locator('.picked-item').count(),
         (count) => count === 1,
       );
-      stage('done_B');
-      await resourceAction(() => page.locator('#matrx-list-picker-host button#done').click());
-      await (await pickedOverlay(page)).waitFor({ state: 'detached' });
-      await waitFor(
-        'showcase_B_field_in_builder',
-        () => panelState(panel),
-        (value) => value?.selectedField && value.extract,
+      const completion = (name, action) => {
+        stage(name);
+        return runShowcaseCompletionBoundary({
+          diagnostic: report.completion_diagnostic,
+          name,
+          action,
+          page,
+          readPanel: () => panelState(panel),
+          readRelays: () => readShowcaseRelays(panel),
+        });
+      };
+      await completion('done_B_click', () =>
+        resourceAction(() => page.locator('#matrx-list-picker-host button#done').click()),
       );
-      stage('extract_B');
-      await resourceAction(() => click(panel, 'button-text', 'Extract'));
-      await waitFor(
-        'showcase_B_rows',
-        () => panelState(panel),
-        (value) => value?.rowCount && value.hasFirst && value.hasSecond && value.hasThird,
+      await completion('done_B_detach', async () =>
+        (await pickedOverlay(page)).waitFor({ state: 'detached' }),
+      );
+      await completion('done_B_builder', () =>
+        waitFor(
+          'showcase_B_field_in_builder',
+          () => panelState(panel),
+          (value) => value?.selectedField && value.extract,
+        ),
+      );
+      await completion('extract_B_click', () =>
+        resourceAction(() => click(panel, 'button-text', 'Extract')),
+      );
+      await completion('extract_B_rows', () =>
+        waitFor(
+          'showcase_B_rows',
+          () => panelState(panel),
+          (value) => value?.rowCount && value.hasFirst && value.hasSecond && value.hasThird,
+        ),
       );
       passed('B_card_field_done_extract', {
         fixture_rows: 3,
         titles_observed: true,
       });
-      stage('cancel_after_extract');
-      await resourceAction(() => click(panel, 'button-text', 'Pick more fields'));
-      await (await pickedOverlay(page)).waitFor({ state: 'attached' });
-      await resourceAction(() => click(panel, 'button-text', 'Cancel'));
-      await (await pickedOverlay(page)).waitFor({ state: 'detached' });
-      stage('normal_page_click');
-      await resourceAction(() => page.locator('#ordinary').click());
+      await completion('repick_click', () =>
+        resourceAction(() => click(panel, 'button-text', 'Pick more fields')),
+      );
+      await completion('repick_attach', async () =>
+        (await pickedOverlay(page)).waitFor({ state: 'attached' }),
+      );
+      await completion('cancel_click', () =>
+        resourceAction(() => click(panel, 'button-text', 'Cancel')),
+      );
+      await completion('cancel_detach', async () =>
+        (await pickedOverlay(page)).waitFor({ state: 'detached' }),
+      );
+      await completion('normal_page_click', () =>
+        resourceAction(() => page.locator('#ordinary').click()),
+      );
+      stage('normal_page_click_count');
       assert.equal(
         await page.locator('body').getAttribute('data-ordinary-clicks'),
         '1',
