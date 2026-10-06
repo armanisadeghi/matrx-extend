@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "lane": "one final-reviewed Run-readiness native retest",
+  "run_id": 37537634304,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37537634304",
+  "workflow_head_sha": "cc3012c8f04863de1926a1e70446405e16fc5ebb",
+  "workflow_file_blob_sha": "4d95f0285207ae0e80e3db1046ec8bf81c0915f4",
+  "reviewed_driver_source_sha": "0917cc61a38722ee82c9decfc8f30e3f67f6b421",
+  "workflow_and_d47_driver_equal_to_reviewed_source": true,
+  "conclusion": "failure",
+  "failed_step": "Exercise the selected Chrome side-panel case",
+  "failure_boundary": {
+    "stage": "saved_terminal_result",
+    "code": "saved_current_result_not_observed",
+    "classification": "unverified product result after trusted input and fixture request sequence; no D47 acceptance credit"
+  },
+  "ci_gate": {
+    "run_id": 37536759731,
+    "conclusion": "success",
+    "head_sha": "0917cc61a38722ee82c9decfc8f30e3f67f6b421",
+    "jobs": {
+      "checks": "success",
+      "resource-guard-integration": "success"
+    }
+  },
+  "development_artifact": {
+    "source_sha": "b6ec3615f0e0f917fb787a8ce82849a682017550",
+    "run_id": 37523207097,
+    "artifact_id": 11440764124,
+    "github_digest": "sha256:7cc729936035910557bb92daa5022364c6e592d48780dc20440550a398298989",
+    "tree_sha256": "05dd15ac790288b459bfb5a0ba21e03cd29449b231b26547cbe81c48fb709cb1",
+    "version": "0.2.325",
+    "eligible_store": false
+  },
+  "hosted_artifact": {
+    "id": 11448110503,
+    "name": "hosted-guest-37537634304-1",
+    "digest": "sha256:c8facf7eb937687e1e941e2fa7eaac39f6af128580e19f037ae57898b9912325",
+    "downloaded_raw_directory": "/Volumes/Samsung2TB/d47-run-ready-native-20261006/37537634304",
+    "unrelated_run_journals_preserved_only_in_raw_download": ["37105304739"]
+  },
+  "authentication_preflight": {
+    "workflow_entrypoint": "node scripts/hosted-guest-acceptance.mjs",
+    "phase": "preflight",
+    "case": "showcase-d47-admin",
+    "credential_schema": "email/password",
+    "result": "pass",
+    "secret_values_recorded": false
+  },
+  "resource_preflight": {
+    "initial_nonadmission": {
+      "run_id": "d47-run-ready-20261006-a",
+      "decision": "refused",
+      "reason": "profile directory did not yet exist; no admission",
+      "journal": "docs/stabilization/resource-journals/d47-run-ready-20261006-a.jsonl"
+    },
+    "fresh_admission": {
+      "run_id": "d47-run-ready-20261006-b",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "journal": "docs/stabilization/resource-journals/d47-run-ready-20261006-b.jsonl"
+    },
+    "hosted_phases": {
+      "package": {
+        "decision": "valid",
+        "resource_invalid": false,
+        "exit_code": 0
+      },
+      "browser": {
+        "decision": "valid",
+        "resource_invalid": false,
+        "exit_code": 0
+      },
+      "guest": {
+        "decision": "child_failed",
+        "resource_invalid": false,
+        "exit_code": 1
+      }
+    }
+  },
+  "native_observation": {
+    "auth_stage": "admin_extension_auth_completion",
+    "organization_identity_compare": {
+      "admin_role_verified": true,
+      "rendered_email_matches": true,
+      "rendered_role_matches": true,
+      "rendered_profile_matches": true,
+      "rendered_organization_matches": true
+    },
+    "save_observation": {
+      "exact_name_input_matched_before_click": true,
+      "saved_summary_visible_after_save": true,
+      "popover_still_visible": true,
+      "literal_recipe_name_retained_in_receipt": false,
+      "exact_generated_name_equality_observed": true,
+      "name_hash_available": false,
+      "independent_database_persistence_proof": false
+    },
+    "trusted_input": {
+      "target": "Run pattern button for exact recipe/host",
+      "phase": "mouse_released",
+      "implementation": "CDP Input.dispatchMouseEvent mousePressed then mouseReleased",
+      "patterns_target_state": {
+        "active": true,
+        "host_matches": true,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "center_hits_target": true,
+        "row_stored_title_count": 0,
+        "exact_recipe_row_text_observed": true,
+        "native_run_button_title_count": 1,
+        "data_matrx_title_count": 0
+      },
+      "trusted_input_dispatched": true
+    },
+    "fixture_sequence": {
+      "stage_advanced_through": [
+        "saved_approval",
+        "current_http",
+        "release_old_http",
+        "saved_terminal_result"
+      ],
+      "page_loads": 2,
+      "target_requests": 2,
+      "current_response_sent": true,
+      "old_request_pending_before_release": true,
+      "old_request_terminal_after_release": "server_finished",
+      "old_release_http_status": 200
+    },
+    "passive_context_binding_evidence": {
+      "old_context_created_then_cleared": true,
+      "current_context_id": 10,
+      "binding_handshake_observed": true,
+      "current_fixture_get_packet_observed": true,
+      "current_payload": true,
+      "old_payload": false,
+      "saved_recipe_replay_packet_or_body_proven": false,
+      "event_order_temporally_anchored_to_run_click": false
+    },
+    "saved_result": null,
+    "verdicts": {
+      "current_saved_replay": "unverified",
+      "delayed_old_binding": "unverified",
+      "cancellation": "unverified"
+    }
+  },
+  "temporary_secrets": {
+    "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON": {
+      "staged_for_run": true,
+      "deleted_at_terminal": true,
+      "absence_verified": true
+    },
+    "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON": {
+      "staged_for_run": true,
+      "deleted_at_terminal": true,
+      "absence_verified": true
+    },
+    "secret_values_recorded": false
+  },
+  "evidence_directory": ".research/d47-run-ready-native-20261006/37537634304",
+  "evidence_hashes": {
+    "receipt.json": "6639c37334f59e43962cc7b6a1b4c984b543522feda0d36293e3b892332fe022",
+    "resource-journals/hosted-package.jsonl": "97a625b370a5f3d07d9a766b1d2d483d47a2c1c3e3f58c194b4e0e8e820db770",
+    "resource-journals/hosted-browser.jsonl": "ce4211f51bbe7d4dc8f901f2163e1c8cec5d0db75b31985d41ee57c196510c94",
+    "resource-journals/hosted-guest.jsonl": "00b8cce69efb83e7bed6559ecb8e0b749c7507490e41efb2eb52006bcc01595a",
+    "screenshots/native-side-panel.png": "967c13093c4060073d1bb8cfc9d5702d42f05870dbe7e0eaffb0896e4988fcaa",
+    "screenshots/normal-target-after-open.png": "c939d4f6417b874eefffbe4a8c9bd1cf05088fe2b42ab7a7e13c65d79a024fd2"
+  },
+  "screenshot_privacy_review": "Both images show only the generic guest side panel and public demo page; no visible personal data or secret values.",
+  "next_action": "Independent diagnosis may inspect the retained receipt. Do not claim D47 acceptance or run another hosted attempt without new explicit authorization."
+}

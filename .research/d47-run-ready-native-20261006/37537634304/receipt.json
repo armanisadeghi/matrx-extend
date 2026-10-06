@@ -1,0 +1,256 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "status": "unverified",
+  "stage": "saved_terminal_result",
+  "artifact": {
+    "source_sha": "b6ec3615f0e0f917fb787a8ce82849a682017550",
+    "run_id": 37523207097,
+    "artifact_id": 11440764124,
+    "tree_sha256": "05dd15ac790288b459bfb5a0ba21e03cd29449b231b26547cbe81c48fb709cb1",
+    "version": "0.2.325"
+  },
+  "fixture": {
+    "before_release": {
+      "phase": "armed",
+      "page_loads": 2,
+      "target_requests": 2,
+      "old_pending": true,
+      "old_response_aborted": false,
+      "old_response_finished": false,
+      "old_response_released": false,
+      "old_release_prestate": null,
+      "old_release_outcome": null,
+      "current_response_sent": true
+    },
+    "release_http_status": 200,
+    "after_release": {
+      "phase": "armed",
+      "page_loads": 2,
+      "target_requests": 2,
+      "old_pending": false,
+      "old_response_aborted": false,
+      "old_response_finished": true,
+      "old_response_released": true,
+      "old_release_prestate": "pending",
+      "old_release_outcome": "server_finished",
+      "current_response_sent": true
+    }
+  },
+  "contexts": [
+    {
+      "order": 1,
+      "kind": "context_created",
+      "tab_id": 629361681,
+      "id": 7,
+      "unique_id": "-3804550689629225039.-529295317069441035",
+      "frame_id": "0822678376795306E592B8B4FE9E747B"
+    },
+    {
+      "order": 2,
+      "kind": "contexts_cleared",
+      "tab_id": 629361681
+    },
+    {
+      "order": 3,
+      "kind": "frame_navigated",
+      "tab_id": 629361681,
+      "frame_id": "0822678376795306E592B8B4FE9E747B",
+      "current_fixture": true
+    },
+    {
+      "order": 4,
+      "kind": "context_created",
+      "tab_id": 629361681,
+      "id": 10,
+      "unique_id": "3762378758128974759.8409048172457827118",
+      "frame_id": "0822678376795306E592B8B4FE9E747B"
+    }
+  ],
+  "binding_events": [
+    {
+      "order": 5,
+      "kind": "binding",
+      "tab_id": 629361681,
+      "context_id": 10,
+      "binding_name": "__matrx_capture_e1c3dd72_6af1_4059_ac9f_b9a890b32f75",
+      "handshake": true,
+      "target_packet": false,
+      "url": null,
+      "method": null,
+      "source": null,
+      "request_body_key": "other",
+      "status": null,
+      "request_sequence": null,
+      "current_payload": false,
+      "old_payload": false,
+      "body_sha256": null
+    },
+    {
+      "order": 6,
+      "kind": "binding",
+      "tab_id": 629361681,
+      "context_id": 10,
+      "binding_name": "__matrx_capture_e1c3dd72_6af1_4059_ac9f_b9a890b32f75",
+      "handshake": false,
+      "target_packet": true,
+      "url": "http://127.0.0.1:49186/api/document-race",
+      "method": "GET",
+      "source": "fetch",
+      "request_body_key": "none",
+      "status": 200,
+      "request_sequence": 1,
+      "current_payload": true,
+      "old_payload": false,
+      "body_sha256": "f98b5b68b8f45441831808df62c253a986cda3c55df85a76015ffeaa4d14c3e8"
+    }
+  ],
+  "saved_result": null,
+  "verdicts": {
+    "current_saved_replay": "unverified",
+    "delayed_old_binding": "unverified",
+    "cancellation": "unverified"
+  },
+  "failure_code": "saved_terminal_result_failed",
+  "failure": {
+    "name": "Error",
+    "stage": "saved_terminal_result",
+    "message_code": "saved_current_result_not_observed"
+  },
+  "diagnostics": {
+    "fixture": {
+      "before_release": {
+        "phase": "armed",
+        "page_loads": 2,
+        "target_requests": 2,
+        "old_pending": true,
+        "old_response_aborted": false,
+        "old_response_finished": false,
+        "old_response_released": false,
+        "old_release_prestate": null,
+        "old_release_outcome": null,
+        "current_response_sent": true
+      },
+      "after_release": {
+        "phase": "armed",
+        "page_loads": 2,
+        "target_requests": 2,
+        "old_pending": false,
+        "old_response_aborted": false,
+        "old_response_finished": true,
+        "old_response_released": true,
+        "old_release_prestate": "pending",
+        "old_release_outcome": "server_finished",
+        "current_response_sent": true
+      }
+    },
+    "saved_result": null,
+    "trace_assessment": null,
+    "save_observation": {
+      "focus": {
+        "popover_visible": true,
+        "name_matches": false,
+        "name_focused": true,
+        "save_button_present": true,
+        "save_button_disabled": false,
+        "saving_indicator": false,
+        "saved_summary_visible": false,
+        "error_present": false,
+        "error_kind": null
+      },
+      "before_click": {
+        "popover_visible": true,
+        "name_matches": true,
+        "name_focused": true,
+        "save_button_present": true,
+        "save_button_disabled": false,
+        "saving_indicator": false,
+        "saved_summary_visible": false,
+        "error_present": false,
+        "error_kind": null
+      },
+      "last": {
+        "popover_visible": true,
+        "name_matches": true,
+        "name_focused": false,
+        "save_button_present": true,
+        "save_button_disabled": false,
+        "saving_indicator": false,
+        "saved_summary_visible": true,
+        "error_present": false,
+        "error_kind": null
+      },
+      "terminal": "summary"
+    },
+    "patterns_observation": {
+      "active": true,
+      "host_matches": true,
+      "exact_row_visible": false,
+      "row_count": 0,
+      "loading": true,
+      "empty_state": false,
+      "error_present": false,
+      "error_kind": null
+    },
+    "native_stage": "exercise_panel",
+    "auth_stage": "admin_extension_auth_completion",
+    "probe": {
+      "state": "unavailable"
+    },
+    "panel": {
+      "state": "unavailable"
+    }
+  },
+  "native_stage": "exercise_panel",
+  "auth_stage": "admin_extension_auth_completion",
+  "organization_diagnostic": {
+    "substage": "organization_identity_compare",
+    "observations": {
+      "admin_role_verified": true,
+      "picker_available": true,
+      "picker_has_selection": false,
+      "selection_required": true,
+      "menu_open": true,
+      "visible_option_count": 58,
+      "exact_match_count": 1,
+      "exact_visible_match_count": 1,
+      "target_in_viewport": false,
+      "target_center_hit": false,
+      "archive_filter": "unknown",
+      "storage_has_uuid": true,
+      "storage_name_matches": true,
+      "rendered_email_matches": true,
+      "rendered_role_matches": true,
+      "rendered_profile_matches": true,
+      "rendered_organization_matches": true
+    }
+  },
+  "target_observation": {
+    "stage": "saved_replay",
+    "phase": "mouse_released",
+    "state": {
+      "patterns_active": true,
+      "host_matches": true,
+      "selector_count": 7030,
+      "exact_match_count": 1,
+      "visible_count": 1,
+      "enabled_count": 1,
+      "exact_row_count": 1,
+      "row_title_count": 1,
+      "row_stored_title_count": 0,
+      "center_hits_target": true
+    }
+  },
+  "old_context_pre_run": {
+    "unique_id": "-3804550689629225039.-529295317069441035",
+    "frame_id": "0822678376795306E592B8B4FE9E747B"
+  },
+  "live_failure_boundary": {
+    "stage": "saved_terminal_result",
+    "probe": "captured_before_detach"
+  },
+  "probe_cleanup": [
+    "remove_failed"
+  ]
+}
