@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "DONE_WITH_CONCERNS",
+  "target_commit": "1858170d",
+  "scope": "Source-only review of EXT-F-4045..4053, original inventory versus proposal. No browser, service, runtime or handler execution.",
+  "verdict_A": {
+    "area": "coverage/procedure",
+    "verdict": "PARTIAL",
+    "coverage": "All nine T01/C01 pairs and member/admin modes preserved; Internal delegates direct-run route, valid/invalid args, reload, and conditional expectations supplied. Guest Tools access correctly inapplicable.",
+    "finding_ids": [
+      "A1"
+    ],
+    "limit": "An observed ok:false due to missing native capability proves only unavailable behavior, never positive tool functionality or a whole-case pass."
+  },
+  "verdict_B": {
+    "area": "quality/truth",
+    "verdict": "FAIL",
+    "finding_ids": [
+      "A1"
+    ],
+    "assessment": "Manual execution is correctly scoped away from dispatcher/Ask-Act and DB advertisement. Exact-name DB absence is explicitly a historical 2026-10-04 census, not current DB proof. Invalid image fixture makes the positive case untrustworthy."
+  },
+  "findings": [
+    {
+      "id": "A1",
+      "severity": "Important",
+      "case_id": "EXT-F-4052-T01",
+      "location": "1858170d:.research/native-ai-procedures-20261006.json:351",
+      "problem": "Proposed valid PNG has bad IDAT CRC: stored 0xefbfa599, computed 0xefa2a75b. Base64 passes z.string().min(64), while atob and Blob do not validate PNG. Decoder rejection could be misclassified as unavailable model or image capability.",
+      "evidence": [
+        "src/lib/tools/handlers/onbox-ai.ts:218-253",
+        "Python standard-library base64/PNG chunk CRC check of exact proposal fixture"
+      ],
+      "remedy": "Use a validated PNG. Corrected IDAT CRC version: iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=."
+    }
+  ],
+  "source_checks": [
+    "docs/stabilization/inventory.json original nine feature/case records",
+    "src/features/tools/ToolsView.tsx:74-152,390-490",
+    "src/config/sidepanel-visibility.ts:20-43",
+    "src/lib/tools/categories.ts:461-560",
+    "src/lib/tools/registry.ts:49,79-86,237-240",
+    "src/lib/tools/handlers/canonical-mergers.ts:95-183",
+    "src/lib/tools/handlers/onbox-ai.ts:34-304",
+    "src/lib/onbox-ai/client.ts:90-416",
+    ".research/tool-binding-readonly-census.json dated 2026-10-04"
+  ],
+  "limits": [
+    "All case cells remain unverified.",
+    "No current DB query or agent advertisement claim.",
+    "No live Chrome capability or member/admin result observed.",
+    "The proposal changed after the frozen target commit; this report reviews the committed 1858170d fixture only."
+  ]
+}
