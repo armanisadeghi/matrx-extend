@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "commit": "dcb9ac4773190ecc3e212108b5d83e921bed6141",
+  "verdict_a": {
+    "status": "PARTIAL",
+    "finding": "The recorded native failure is correctly scoped to the driver targeting a panel Cancel that repick does not render. The repair targets the page picker overlay Cancel; the subsequent normal page click remains in the acceptance flow.",
+    "evidence": [
+      "The original receipt records successful full extraction of three named rows before failing at cancel_click.",
+      "The product picker mounts #matrx-list-picker-host with an open shadow root and button#cancel; repick still waits for overlay detach and clicks #ordinary, asserting its click count is 1.",
+      "Cancellation detach and normal page click remain unverified until a fresh native run."
+    ]
+  },
+  "verdict_b": {
+    "status": "PASS",
+    "finding": "The focused test asserts the exact overlay selector through the helper and would fail if restored to the original panel path; ordinary Playwright click options are absent. Existing completion assertions are unchanged.",
+    "test": "node --test tests/browser/showcase-completion-diagnostic.test.mjs passed (4 tests).",
+    "limitation": "This unit test records locator selection and does not itself exercise browser shadow-DOM click behavior; the retained native flow covers that on retest."
+  },
+  "biome": "pnpm exec biome check .research/showcase-repick-cancel-peer.json passed"
+}
