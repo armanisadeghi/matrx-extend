@@ -28,10 +28,10 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Check existing CI37536759731 (repair0917cc61) to terminal success or inspect its authoritative successor if canceled; then admit one guarded native retest against frozen artifact11440764124. No further native run is currently authorized. Preserve exact recipe/host and positive binding/context/lifecycle oracles, inspect retained live failure diagnostics if needed. Public-site replay and surrounding cases remain outstanding.",
-    "status": "Fresh readiness and canonical tooltip-title repair passed scoped peer review; native replay retest pending.",
+    "next_action": "Execution owner may dispatch exactly one showcase-d47-admin hosted test against frozen artifact11440764124 with reviewed Run-readiness driver. Require fresh preflight, same-run resource journals and immediate owned-secret cleanup. No second attempt without diagnosis and root admission. Native saved replay and public-site/surrounding cases remain unverified.",
+    "status": "CI37536759731 succeeded; one guarded final-reviewed driver retest conditionally admitted after fresh credential/resource preflight.",
     "implementation_agent": "completed: d47_run_boundary_escalation",
-    "execution_agent": "none active",
+    "execution_agent": "d47_input_native_retest",
     "native_run_id": 37534454354,
     "workflow_source": "fbcc4311ae6885b67133e55336f692be38881249",
     "development_artifact_id": 11440764124,
