@@ -28,9 +28,9 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Implementation owner repairs owned reload vs external navigation distinction with guarded RED/GREEN source regression and retained stale/cancel protections; fresh independent review required before new native acceptance. No hosted retest authorized.",
-    "status": "Source-confirmed Patterns UI invalidation on replay-owned reload under repair; native37537634304 runtime cause still requires terminal/page ownership evidence.",
-    "implementation_agent": "d47_owned_reload_fix",
+    "next_action": "Reproduce and repair early navigation replacement without weakening lifecycle ownership; guarded source regression and fresh peer review required before new-artifact native acceptance. Old0.2.325 artifact cannot verify new product fix. No hosted retest authorized.",
+    "status": "Owned-reload fix86046a88 passes43 guarded source tests but peer25903dd7 found uncovered same-URL replacement-before-first-commit race; revision underway. Native remains unverified.",
+    "implementation_agent": "d47_navigation_replacement_fix",
     "execution_agent": "none active",
     "native_run_id": 37537634304,
     "workflow_source": "fbcc4311ae6885b67133e55336f692be38881249",
@@ -53,9 +53,11 @@
     "run_boundary_repair_commit": "0917cc61",
     "run_boundary_review_commit": "5425d283",
     "run_boundary_review": ".research/d47-run-readiness-peer-20261006.json",
-    "pending_ci_run_id": 37536759731,
+    "pending_ci_run_id": 37540516689,
     "latest_native_evidence": ".research/d47-run-ready-native-20261006.json",
-    "terminal_diagnosis": ".research/d47-terminal-diagnosis-20261006.json"
+    "terminal_diagnosis": ".research/d47-terminal-diagnosis-20261006.json",
+    "owned_reload_fix_commit": "86046a88",
+    "owned_reload_peer_report": ".research/d47-owned-reload-peer-20261006.json"
   },
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
   "verification_status": "Current independentevidencepeer e7a67bcd confirms initialrequest timing and documentidentity controlled regressions (including meaningful identitymutation), plus bounded installed initialHN capture and saved10row replay on8b0f8adc/9ea6687b. Delayed matching prior-document response with higher old sequence is still nativeUNVERIFIED; T57 and original D47 closure remain incomplete. No current runtime was run by evidencepeer.",
