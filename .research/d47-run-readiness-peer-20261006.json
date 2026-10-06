@@ -38,5 +38,23 @@
     "result": "9 passed, 0 failed",
     "scope": "DOM observer and dispatch-state tests using happy-dom and simulated geometry/CDP; no live browser or product replay proof"
   },
-  "no_product_code_edits": true
+  "no_product_code_edits": true,
+  "reverify_0917cc61": {
+    "verdict_a_actual_native_outcome": "UNVERIFIED: no new native run, replay result, positive binding/context evidence or lifecycle terminal receipt",
+    "verdict_b_scoped_readiness": "PASS: exact Important title-relocation finding addressed; no new scoped gate or privacy regression found",
+    "finding_disposition": "ADDRESSED",
+    "source_evidence": [
+      "showcase-d47-document-lifecycle.mjs passes Run a selector covering title and data-matrx-title plus semanticTitle=Run pattern, exact recipe and expected host.",
+      "showcase-d47-driver-evidence.mjs applies (native title ?? stored title) exact equality before existing visible, enabled, active pane, host, containment and center-hit checks. A present empty or mismatched native title overrides stored Run, matching settings-panel-driver.mjs.",
+      "The guard dispatches one trusted press/release pair for native Run and stored Run. It refuses stored wrong label, disabled, duplicate, wrong recipe/host, inactive pane and occluded center. In-memory title-only and reversed-precedence mutations are required to fail the assertions."
+    ],
+    "verification": {
+      "recorded_guard_journal": "docs/stabilization/resource-journals/d47-run-title-source-20261006-1.jsonl",
+      "recorded_guard_result": "valid resource decision; child exit 0; builder reports 10/10 focused tests passed; journal independently confirms admission and exit, not test counts",
+      "independent_checks": "git show --check 0917cc61; node --check on three changed .mjs files; pnpm exec biome check on changed source/test/report files (zero errors, two existing style warnings from 1438d316)",
+      "new_native_run": false,
+      "heavy_suite_rerun": false
+    },
+    "limits": "This accepts the scoped source repair only. The original native failure cause remains unknown; D47 acceptance still requires a fresh authorized native run with actual saved replay and positive provenance/lifecycle proof."
+  }
 }
