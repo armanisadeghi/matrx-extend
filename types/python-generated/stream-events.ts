@@ -1110,6 +1110,18 @@ export interface MandateInputRequiredData {
   message?: string;
 }
 
+export interface MasterworkAgentBuildData {
+  type?: "masterwork_agent_build";
+  role: string;
+  agent_name: string;
+  message: string;
+  build_id?: string | null;
+  outcome?: string | null;
+  agent_id?: string | null;
+  reason?: string | null;
+  proof_cases?: number;
+}
+
 export interface MasterworkAuditionOutcomeVerdictData {
   type?: "masterwork_audition_outcome_verdict";
   rulebook_id: string;
@@ -2500,6 +2512,7 @@ export type TypedDataPayload =
   | LibrarySyncStartedData
   | LibrarySyncUnavailableData
   | MandateInputRequiredData
+  | MasterworkAgentBuildData
   | MasterworkAuditionOutcomeVerdictData
   | MasterworkAuditionProgressData
   | MasterworkAuditionVerdictData
