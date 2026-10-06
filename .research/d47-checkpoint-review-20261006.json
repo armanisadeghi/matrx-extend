@@ -1,0 +1,17 @@
+{
+  "scope": "Temporary resume checkpoint reader review and root adjudication; no product acceptance",
+  "reviewer": "d47_checkpoint_reader",
+  "decisions": {
+    "1": "Accepted: replaced attempt chronology with current execution/admission state.",
+    "2": "Accepted: reduced D143 to status and authoritative link.",
+    "3": "Accepted: removed D42 historical evidence; kept outstanding cases.",
+    "4": "Accepted: removed first-run narrative; current input boundary linked to diagnostic receipt.",
+    "5": "Refuted for this file: expressly temporary resume checkpoint requires concrete next action and now specifies refresh after next run; deleting it defeats resume purpose.",
+    "6": "Accepted: cut inventory-change history; retained current unverified status.",
+    "7": "Accepted: cut CI history; current CI must be checked separately.",
+    "8": "Partially accepted: exact Store status is useful to release resumption; added explicit observation timestamp and kept canonical evidence links.",
+    "9": "Resolved: current ../CLAUDE.md explicitly prohibits manual build/release/deploy on this machine; linked current policy instead of making permanent ruling.",
+    "10": "Accepted: removed stale capacity narrative; retained live admission requirement."
+  },
+  "native_scope": "Two resource-valid child failures before replay; no product pass/fail established. Both owned secret names absent after each run, independently checked by root."
+}
