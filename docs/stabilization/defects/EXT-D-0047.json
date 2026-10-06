@@ -28,14 +28,17 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Collect native receipt, same-run resource journals and screenshots; remove both owned temporary secrets at terminal. Independently assess positive current binding/context/recipe proof and old context lifecycle under the accepted architectural-exclusion ruling. Keep T57 and D47 unverified until their full acceptance scope passes.",
-    "status": "One bounded hosted native TEST admitted; awaiting terminal evidence and independent review",
+    "next_action": "Observe the diagnostic rerun against frozen development artifact11440764124. Require persisted fresh recipe, positive current binding/context/recipe proof and old context lifecycle under the accepted architectural-exclusion ruling. Remove owned secrets at terminal. T57 and D47 remain unverified.",
+    "status": "First hosted run failed at save confirmation before replay; one diagnostic rerun authorized after independent driver review",
     "implementation_agent": "d47_browser_driver_oct6",
     "execution_agent": "d47_first_native_execute",
     "native_run_id": 37526204746,
     "workflow_source": "fbcc4311ae6885b67133e55336f692be38881249",
     "development_artifact_id": 11440764124,
-    "development_source": "b6ec3615f0e0f917fb787a8ce82849a682017550"
+    "development_source": "b6ec3615f0e0f917fb787a8ce82849a682017550",
+    "first_native_evidence": ".research/d47-first-native-20261006.json",
+    "save_probe_review": ".research/d47-save-probe-peer-20261006.json",
+    "first_native_outcome": "resource-valid child failure at save_recipe/recipe_saved_not_observed; no replay verdict; product versus driver cause unknown"
   },
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
   "verification_status": "Current independentevidencepeer e7a67bcd confirms initialrequest timing and documentidentity controlled regressions (including meaningful identitymutation), plus bounded installed initialHN capture and saved10row replay on8b0f8adc/9ea6687b. Delayed matching prior-document response with higher old sequence is still nativeUNVERIFIED; T57 and original D47 closure remain incomplete. No current runtime was run by evidencepeer.",
