@@ -1,0 +1,201 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "lane": "one guarded hosted native retest on current reviewed product fixes",
+  "status": "unverified",
+  "run_id": 37544119052,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37544119052",
+  "workflow_head_sha": "09cbcc01034eede73322ddfff3a80762283b9391",
+  "workflow_head_delta_from_artifact_source": {
+    "source_sha": "bb62b2dfafad160de32ced456f86bf5b7ea9e216",
+    "only_changed_path": ".research/capture-fixture-readiness-20261006.json",
+    "driver_workflow_and_lockfile_changed": false
+  },
+  "conclusion": "failure",
+  "failed_step": "Exercise the selected Chrome side-panel case",
+  "failure_boundary": {
+    "stage": "saved_terminal_result",
+    "code": "saved_current_result_not_observed",
+    "classification": "current binding handshake and current fixture packet were observed, but the saved Patterns row remained absent/loading and no terminal saved result was observed"
+  },
+  "source_and_artifact": {
+    "fix_ancestors": [
+      "86046a88b37f155fa38e69ed5fb239c74a8d4101",
+      "f0d9040159be0f607aa7a0808107aee25c566bd7",
+      "c12a0e9f4c970375465e905f7f760e4ce8ab56eb"
+    ],
+    "final_source_review": "7bc2a56e95b1d885f3aa983f262dac897ffba91b",
+    "ci_run_id": 37543124765,
+    "ci_conclusion": "success",
+    "ci_head_sha": "bb62b2dfafad160de32ced456f86bf5b7ea9e216",
+    "artifact_id": 11449772840,
+    "artifact_name": "matrx-extend-development-test-bb62b2dfafad160de32ced456f86bf5b7ea9e216-37543124765-1",
+    "artifact_digest": "sha256:bf0278b25a9f210b8c2d6ef71a435b63ed6da661e6969c3b67e2ab9695d7d356",
+    "version": "0.2.332",
+    "tree_sha256": "20a7225907477f85a94193bbf5b1b838efe9487220da470d0d01ac44c042c2db",
+    "integrated_hosted_run_artifact": {
+      "id": 11450615218,
+      "name": "hosted-guest-37544119052-1",
+      "digest": "sha256:b84fa953be3fcc4fa661ab847dd48cf6be4b32e2ad840fc632e716669d5a0a47"
+    },
+    "receipt_and_provenance_agree": true,
+    "lockfile_sha256": "cf936f3f08d736083785a563709f7a1d9a94b1acb15e1f151dcae65261f9b718",
+    "lockfile_matches_ci_head": true,
+    "eligible_store": false,
+    "post_artifact_main_change": {
+      "main_sha": "0bad4b729a1983dcd5e22474af94c998d8e76508",
+      "changed_path": "pnpm-lock.yaml",
+      "current_lockfile_sha256": "fa5fb0b1997dc8fc8e0a09060b18337ad50a065ea09bd06b0f3a0a122cf48d04",
+      "included_in_tested_artifact": false,
+      "native_run_repeated": false
+    }
+  },
+  "native_observation": {
+    "auth_stage": "admin_extension_auth_completion",
+    "organization_identity_compare": {
+      "admin_role_verified": true,
+      "rendered_email_matches": true,
+      "rendered_role_matches": true,
+      "rendered_profile_matches": true,
+      "rendered_organization_matches": true,
+      "picker_selection_required": true,
+      "picker_menu_open": true,
+      "exact_visible_organization_option_count": 1,
+      "organization_option_in_viewport": false,
+      "storage_has_organization_uuid": true,
+      "storage_name_matches": true
+    },
+    "saved_recipe": {
+      "exact_name_input_matched_before_save_click": true,
+      "saved_summary_visible_after_save": true,
+      "terminal_save_observation": "summary",
+      "exact_generated_name_equality_observed_in_ui": true,
+      "independent_database_persistence_proof": false,
+      "exact_saved_row_present_before_run_click": true,
+      "trusted_run_input": "mouse_released",
+      "trusted_click_center_hit_target": true
+    },
+    "post_run_patterns_state": {
+      "active": true,
+      "host_matches": true,
+      "exact_row_visible": false,
+      "row_count": 0,
+      "loading": true,
+      "error_present": false
+    },
+    "fixture_lifecycle": {
+      "page_loads": 2,
+      "target_requests": 2,
+      "old_request_pending_before_release": true,
+      "current_response_sent": true,
+      "old_request_finished_after_release": true,
+      "old_release_prestate": "pending",
+      "old_release_outcome": "server_finished",
+      "old_release_http_status": 200
+    },
+    "document_contexts": {
+      "old_context_id": 7,
+      "old_context_cleared": true,
+      "old_context_unique_id": "-7246976517413363326.6194024900473874577",
+      "current_context_id": 10,
+      "current_context_unique_id": "7579492107734829340.6043892653181778472",
+      "same_frame_id": true,
+      "current_context_differs_from_old": true
+    },
+    "binding_events": {
+      "current_handshake_observed": true,
+      "current_fixture_packet_observed": true,
+      "packet_context_id": 10,
+      "packet_method": "GET",
+      "packet_source": "fetch",
+      "packet_status": 200,
+      "packet_request_sequence": 1,
+      "current_payload": true,
+      "old_payload": false,
+      "body_sha256": "f98b5b68b8f45441831808df62c253a986cda3c55df85a76015ffeaa4d14c3e8",
+      "captured_document_loader_gate_error": null,
+      "event_order_temporally_anchored_to_run_click": false
+    },
+    "saved_terminal_result": null,
+    "verdicts": {
+      "current_saved_replay": "unverified",
+      "delayed_old_binding": "unverified",
+      "cancellation": "unverified"
+    },
+    "probe_cleanup": ["remove_failed"]
+  },
+  "resource_verdict": {
+    "local_admission": "not_run; no local heavy/browser job was launched",
+    "hosted_remote_guards": {
+      "single_hosted_acceptance_run": true,
+      "workflow_concurrency_group": "hosted-guest-side-panel",
+      "phases": {
+        "package": {
+          "run_id": "hosted-package-37544119052-1",
+          "decision": "valid",
+          "admitted": true,
+          "resource_invalid": false,
+          "exit_code": 0,
+          "available_memory_gib": 5.88,
+          "required_memory_gib": 4,
+          "one_minute_load": 9.81,
+          "logical_cpus": 3,
+          "reasons": []
+        },
+        "browser": {
+          "run_id": "hosted-browser-37544119052-1",
+          "decision": "valid",
+          "admitted": true,
+          "resource_invalid": false,
+          "exit_code": 0,
+          "available_memory_gib": 5.88,
+          "required_memory_gib": 4,
+          "one_minute_load": 2.14,
+          "logical_cpus": 3,
+          "reasons": []
+        },
+        "acceptance": {
+          "run_id": "hosted-guest-37544119052-1",
+          "decision": "child_failed",
+          "admitted": true,
+          "resource_invalid": false,
+          "exit_code": 1,
+          "available_memory_gib_at_admission": 5.88,
+          "required_memory_gib": 4,
+          "watch_samples": 3,
+          "watch_resource_invalid": false,
+          "reasons": []
+        }
+      }
+    }
+  },
+  "temporary_secrets": {
+    "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON": {
+      "staged": true,
+      "deleted_at_terminal": true,
+      "absence_verified": true
+    },
+    "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON": {
+      "staged": true,
+      "deleted_at_terminal": true,
+      "absence_verified": true
+    },
+    "secret_values_recorded": false
+  },
+  "screenshots": {
+    "privacy_review": "Both images show only the generic extension guest shell and public demo page; no personal data or secret values are visible.",
+    "native-side-panel.png": "35104afebb448dde7b3b315613486606a924f2fa636fa316acc30f63f681df10",
+    "normal-target-after-open.png": "c939d4f6417b874eefffbe4a8c9bd1cf05088fe2b42ab7a7e13c65d79a024fd2"
+  },
+  "evidence_directory": ".research/d47-new-product-native-20261006/37544119052",
+  "evidence_hashes": {
+    "receipt.json": "fd4ea035aa10c46f0ff595a907a524c029ee55b467f2d9b56d1bd218710d37fa",
+    "resource-journals/hosted-package-37544119052-1.jsonl": "da0819cd3b51ea0bb3b1e7d82fcdc1dad643107ace6ae835b13f7e865ea40dff",
+    "resource-journals/hosted-browser-37544119052-1.jsonl": "3091dfb89449da19417c6b40d90ddb5b5909e4a51b934d67f2ac5696258d0319",
+    "resource-journals/hosted-guest-37544119052-1.jsonl": "d9f7dafbffaed8157966768893d33ea4ebbe9da1a1920e5e56cc253969d60c37",
+    "screenshots/native-side-panel.png": "35104afebb448dde7b3b315613486606a924f2fa636fa316acc30f63f681df10",
+    "screenshots/normal-target-after-open.png": "c939d4f6417b874eefffbe4a8c9bd1cf05088fe2b42ab7a7e13c65d79a024fd2"
+  },
+  "next_action": "No retry. Preserve native gap and exact saved-terminal failure; do not claim D47/T57 acceptance or close defect."
+}
