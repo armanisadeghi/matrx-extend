@@ -24,5 +24,17 @@
     ],
     "verification": "Read-only source and original receipt review; node --check and targeted biome check passed. No native rerun, browser test, build, or product edit in this lane."
   },
-  "next_step": "Scope the Run pattern click to the exact visible row bearing the freshly generated recipe name, then run one bounded hosted native case against frozen product artifact 11440764124 (v0.2.325). Inspect the new save observation, live Patterns row, replay packet, and lifecycle trace. Keep the outcome unverified until that run supplies the evidence."
+  "next_step": "Scope the Run pattern click to the exact visible row bearing the freshly generated recipe name, then run one bounded hosted native case against frozen product artifact 11440764124 (v0.2.325). Inspect the new save observation, live Patterns row, replay packet, and lifecycle trace. Keep the outcome unverified until that run supplies the evidence.",
+  "scoped_reverify_30701c7d": {
+    "finding_from_prior_review": "Unscoped Run pattern click is ambiguous when the host has multiple saved patterns.",
+    "disposition": "ADDRESSED",
+    "verdict_a_actual_native_outcome": "UNVERIFIED: commit 30701c7d changes only the driver, and this lane did not run a native case. The original run 37526204746 still proves no product replay outcome.",
+    "verdict_b_scoped_readiness": "PASS for this finding: the click now selects a visible enabled Run pattern button whose enclosing pattern row contains a span with the exact freshly generated recipe name. It requires exactly one match before trusted CDP input. The source PatternsTab maps each persisted pattern to one group row with that name span and Run pattern button. Multiple other same-host rows cannot satisfy this selector.",
+    "new_breakage": "None found in the scoped diff. A missing or duplicated target fails at saved_replay rather than running an arbitrary pattern.",
+    "evidence": [
+      "30701c7d tests/browser/showcase-d47-document-lifecycle.mjs trustedPanelClick filter and saved_replay call",
+      "src/features/showcase/tabs/PatternsTab.tsx PatternRow name span and Run pattern button"
+    ],
+    "next_step": "Run one bounded hosted native case against frozen product artifact 11440764124 (v0.2.325); inspect persisted-name, replay packet, and lifecycle evidence before any D47 product verdict."
+  }
 }
