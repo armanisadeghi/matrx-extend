@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 const bus = vi.hoisted(() => ({
   listener: null as null | ((event: CapturedNetEvent) => unknown),
   close: vi.fn(),
+  replayDocumentId: 'chrome-replay-document' as string | null,
 }));
 vi.mock('@/lib/messaging/native', () => ({
   on: (_channel: string, fn: (event: CapturedNetEvent) => unknown) => {
@@ -31,6 +32,7 @@ vi.mock('@/lib/data-pattern/document-network-transport', () => ({
       close: async () => {
         bus.listener = null;
         bus.close();
+        return bus.replayDocumentId;
       },
     });
   },
@@ -46,6 +48,7 @@ afterEach(() => {
   document.querySelector('base')?.remove();
   bus.listener = null;
   bus.close.mockClear();
+  bus.replayDocumentId = 'chrome-replay-document';
 });
 // Use case: an event-calendar researcher saves a selected API list to refresh it later.
 const response = (title: string, extra: Partial<CapturedNetEvent> = {}): CapturedNetEvent => ({
@@ -98,6 +101,19 @@ function replay(config: Record<string, unknown> = {}) {
   return { outcome, loading: () => updated?.(37, { status: 'loading' }), removeListener };
 }
 describe('Network replay integrity', () => {
+  it('refuses matched rows when cleanup cannot attest a Chrome replay document', async () => {
+    bus.replayDocumentId = null;
+    const run = replay();
+    run.loading();
+    await vi.advanceTimersByTimeAsync(0);
+    bus.listener?.(response('Tonight at Pier Hall'));
+    await vi.advanceTimersByTimeAsync(5000);
+    expect(await run.outcome).toEqual({
+      error: expect.stringMatching(/could not verify the replay document/i),
+    });
+    expect(bus.close).toHaveBeenCalledOnce();
+  });
+
   it('reports distinct matching rowsets, including a later response beyond the old settle window', async () => {
     const run = replay();
     run.loading();

@@ -126,6 +126,7 @@ vi.mock('@/lib/data-pattern/document-network-transport', () => ({
     return Promise.resolve({
       close: async () => {
         mocks.listeners.delete('net-capture:event');
+        return 'chrome-replay-document';
       },
     });
   },

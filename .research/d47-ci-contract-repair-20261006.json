@@ -1,0 +1,51 @@
+{
+  "defect": "EXT-D-0047",
+  "scope": "CI37540516689 document replay attestation test contract repairs",
+  "source_base_sha": "a162343def9fc5eba401a19cd9cba237031b73bd",
+  "core_navigation_commit": "f0d90401",
+  "diagnosis": {
+    "ci_failure": "15 tests in seven files failed after replay required a Chrome-attested document ID before returning captured rows.",
+    "fixture_cause": "Five transport doubles returned void from close(), although the real transport returns the Chrome replay document ID. The dispatcher success double omitted onReplayDocument and the post-replay webNavigation frame. The PatternsTab active-tab double omitted getActiveTabIdentitySnapshot.",
+    "product_boundary": "The production refusal for a missing replay document remains active. This lane did not change product code or claim that simulated transport proves native Chrome acceptance."
+  },
+  "repair": {
+    "files": [
+      "tests/unit/document-network-dispatch.test.ts",
+      "tests/unit/network-replay-integrity.test.ts",
+      "tests/unit/showcase-ai-copy-source.test.tsx",
+      "tests/unit/showcase-json-path-connected.test.tsx",
+      "tests/unit/showcase-json-path-query-roundtrip.test.ts",
+      "tests/unit/showcase-network-credential.test.tsx",
+      "tests/unit/showcase-network-save-replay.test.tsx"
+    ],
+    "contract": "Successful simulated transport cleanup returns a Chrome document ID distinct from the CDP context key. Local dispatcher success supplies onReplayDocument and verifies the current top frame matches that ID.",
+    "negative_guard": "Network replay still refuses matched rows when cleanup returns no Chrome document ID. Existing changed-document and changed-route approval checks remain."
+  },
+  "verification": {
+    "ci_log": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37540516689",
+    "biome_check": "Seven edited files checked; no errors (existing warnings only).",
+    "first_full_unit": {
+      "result": "one discovery fixture failed outside this lane after the new loader navigation contract",
+      "counts": "298 files passed, 2 skipped; 2145 tests passed, 5 skipped; 1 failed",
+      "journal": "docs/stabilization/resource-journals/d47-ci-contract-unit-20261006-01.jsonl"
+    },
+    "final_full_unit": {
+      "result": "passed after the core owner updated the discovery fixture",
+      "counts": "299 files passed, 2 skipped; 2146 tests passed, 5 skipped; 0 failed",
+      "command": "pnpm exec vitest run --maxWorkers=1",
+      "journal": "docs/stabilization/resource-journals/d47-ci-contract-unit-20261006-02.jsonl",
+      "resource_decision": "valid"
+    },
+    "compile": {
+      "result": "passed",
+      "command": "pnpm compile",
+      "journal": "docs/stabilization/resource-journals/d47-ci-contract-compile-20261006-01.jsonl",
+      "resource_decision": "valid"
+    },
+    "refused_attempt": {
+      "reason": "RESOURCE_COMMAND_NOT_ALLOWED for a combined shell script; no child admitted and policy unchanged",
+      "journal": "docs/stabilization/resource-journals/d47-ci-contract-20261006-01.jsonl"
+    }
+  },
+  "limits": "Unit doubles verify replay routing and refusal behavior; the core owner's capture tests cover CDP protocol fields. Native Chrome acceptance remains separate."
+}

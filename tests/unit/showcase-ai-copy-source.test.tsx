@@ -38,6 +38,13 @@ vi.mock('@/hooks/use-active-tab', () => ({
     identityError: null,
     pageKey: copied.page.url,
   }),
+  getActiveTabIdentitySnapshot: () => ({
+    ...copied.page,
+    documentId: copied.page.url,
+    identityStatus: 'ready',
+    identityError: null,
+    pageKey: copied.page.url,
+  }),
   isCurrentPageIdentity: (key: string) => key === copied.page.url,
 }));
 vi.mock('@/lib/supabase/queries', () => ({

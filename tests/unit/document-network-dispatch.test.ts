@@ -96,7 +96,10 @@ beforeEach(() => {
   vi.resetModules();
   h.handlers.clear();
   h.broadcasts.mockClear();
-  h.run.mockReset().mockResolvedValue([{ event: 'Current' }]);
+  h.run.mockReset().mockImplementation(async (_pattern, _tabId, opts) => {
+    opts?.onReplayDocument?.('reloaded-document');
+    return [{ event: 'Current' }];
+  });
   h.capture.mockReset().mockImplementation(async (options) => {
     options.onArmed();
     options.onEvent({
@@ -135,6 +138,13 @@ beforeEach(() => {
       query: vi.fn(async () => [{ id: 37, groupId: 1, url: h.url }]),
     },
     scripting: { executeScript: vi.fn(async () => [{ documentId: h.document, result: null }]) },
+    webNavigation: {
+      getFrame: vi.fn(async () => ({
+        documentId: 'reloaded-document',
+        url: h.url,
+        errorOccurred: false,
+      })),
+    },
   });
 });
 it('actual local dispatcher waits for TOOL_CONFIRM_RESPONSE then runs the real saved handler', async () => {
@@ -161,6 +171,9 @@ it('actual local dispatcher waits for TOOL_CONFIRM_RESPONSE then runs the real s
   await expect(result).resolves.toMatchObject({ ok: true, rows: [{ event: 'Current' }] });
   expect(h.run).toHaveBeenCalledOnce();
   expect(h.run.mock.calls[0]![1]).toBe(37);
+  expect(h.run.mock.calls[0]![2]).toMatchObject({
+    expectedPage: { url: h.url, documentId: 'original-document' },
+  });
 });
 it('actual global confirmation recovery executes a persisted data_patterns operation once', async () => {
   const { data_patterns } = await import('@/lib/tools/handlers/data-patterns');
