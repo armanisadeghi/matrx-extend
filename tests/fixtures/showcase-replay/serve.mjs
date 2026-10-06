@@ -15,6 +15,43 @@ const pages = new Map([
   ['/calendar/missing-root/', 'calendar/missing-root.html'],
   ['/search/', 'search/index.html'],
 ]);
+// The seed page lets an operator save an exact Network recipe through the real
+// extension before arming the two-document race. No extension event is forged.
+let racePhase = 'seed';
+let racePageLoads = 0;
+let raceTargetRequests = 0;
+let oldResponse = null;
+let oldResponseClosed = false;
+let oldResponseReleased = false;
+let currentResponseSent = false;
+const racePayload = (document) => ({
+  events: [{ eventName: document === 'current' ? 'Canyon Frequency' : 'Moonlit Transit' }],
+  document,
+});
+const racePage = (generation) => `<!doctype html><html lang="en"><meta charset="utf-8">
+<title>Harborline Live — Document replay</title><h1>Document replay</h1>
+<p id="phase">${generation}</p><output id="result">Waiting for the event schedule</output>
+<script>
+(async () => {
+  ${generation === 'old' ? "await fetch('/api/race-warmup'); await fetch('/api/race-warmup');" : ''}
+  try {
+    const response = await fetch('/api/document-race', { keepalive: true, cache: 'no-store' });
+    const data = await response.json();
+    document.querySelector('#result').textContent = data.events[0].eventName;
+  } catch {
+    document.querySelector('#result').textContent = 'Request ended during navigation';
+  }
+})();
+</script></html>`;
+const raceStatus = () => ({
+  phase: racePhase,
+  page_loads: racePageLoads,
+  target_requests: raceTargetRequests,
+  old_pending: Boolean(oldResponse && !oldResponseClosed && !oldResponseReleased),
+  old_response_closed: oldResponseClosed,
+  old_response_released: oldResponseReleased,
+  current_response_sent: currentResponseSent,
+});
 const eventResponses = new Map([
   [
     '2026-10-16',
@@ -65,6 +102,66 @@ const server = createServer(async (request, response) => {
     return;
   }
 
+  if (url.pathname === '/control/document-race/arm') {
+    racePhase = 'armed';
+    racePageLoads = 0;
+    raceTargetRequests = 0;
+    oldResponse = null;
+    oldResponseClosed = false;
+    oldResponseReleased = false;
+    currentResponseSent = false;
+    response
+      .writeHead(200, { 'Content-Type': 'application/json' })
+      .end(JSON.stringify(raceStatus()));
+    return;
+  }
+  if (url.pathname === '/control/document-race/status') {
+    response
+      .writeHead(200, { 'Content-Type': 'application/json' })
+      .end(JSON.stringify(raceStatus()));
+    return;
+  }
+  if (url.pathname === '/control/document-race/release-old') {
+    if (!currentResponseSent || !oldResponse)
+      return response.writeHead(409).end('Release requires old and current requests.');
+    oldResponseReleased = true;
+    if (!oldResponse.destroyed)
+      oldResponse
+        .writeHead(200, { 'Content-Type': 'application/json' })
+        .end(JSON.stringify(racePayload('prior')));
+    response
+      .writeHead(200, { 'Content-Type': 'application/json' })
+      .end(JSON.stringify(raceStatus()));
+    return;
+  }
+  if (url.pathname === '/document-race/') {
+    racePageLoads += 1;
+    const generation = racePhase === 'seed' ? 'seed' : racePageLoads === 1 ? 'old' : 'current';
+    response
+      .writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' })
+      .end(racePage(generation));
+    return;
+  }
+  if (url.pathname === '/api/race-warmup') {
+    response.writeHead(200, { 'Content-Type': 'application/json' }).end('{"warmup":true}');
+    return;
+  }
+  if (url.pathname === '/api/document-race') {
+    raceTargetRequests += 1;
+    if (racePhase === 'armed' && raceTargetRequests === 1) {
+      oldResponse = response;
+      response.on('close', () => {
+        oldResponseClosed = true;
+      });
+      return;
+    }
+    currentResponseSent = racePhase === 'armed';
+    response
+      .writeHead(200, { 'Content-Type': 'application/json' })
+      .end(JSON.stringify(racePayload('current')));
+    return;
+  }
+
   if (url.pathname === '/api/events') {
     const payload = eventResponses.get(url.searchParams.get('date') ?? '');
     if (!payload) {
@@ -99,7 +196,8 @@ const server = createServer(async (request, response) => {
     extname(filePath) === '.html' ? 'text/html; charset=utf-8' : 'application/octet-stream';
   try {
     const body = await readFile(filePath, 'utf8');
-    const origin = `http://127.0.0.1:${actualPort}`;
+    const address = server.address();
+    const origin = `http://127.0.0.1:${typeof address === 'object' && address ? address.port : port}`;
     response.writeHead(200, { 'Content-Type': contentType });
     response.end(body.replaceAll('http://127.0.0.1:4179', origin));
   } catch {

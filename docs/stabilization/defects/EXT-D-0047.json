@@ -22,8 +22,13 @@
   "native_boundary_owner": {
     "agent": "d47_native_boundary",
     "scope": "Bounded T57 delayed prior-document response acceptance route and proof limits only; admin mode, installed development artifact, real sign-in and service responses.",
-    "allowed_files": ["docs/stabilization/defects/EXT-D-0047.json", "tests/fixtures/showcase-replay/", "tests/browser/showcase-d47-*", ".research/d47-native-boundary-20261006.json"],
-    "next_action": "Create a controlled real-network same-URL request race with higher old-document sequence, then run it only under the coordinated native permit and record whether Chrome delivers the old response after navigation."
+    "allowed_files": [
+      "docs/stabilization/defects/EXT-D-0047.json",
+      "tests/fixtures/showcase-replay/",
+      "tests/browser/showcase-d47-*",
+      ".research/d47-native-boundary-20261006.json"
+    ],
+    "next_action": "Run the controlled route under a coordinated exact-development-artifact native permit, with real admin sign-in and saved recipe; observe whether the old response reaches Runtime.bindingCalled after the new document begins. A canceled old request or current-only saved output does not close the adversarial branch."
   },
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
   "verification_status": "Current independentevidencepeer e7a67bcd confirms initialrequest timing and documentidentity controlled regressions (including meaningful identitymutation), plus bounded installed initialHN capture and saved10row replay on8b0f8adc/9ea6687b. Delayed matching prior-document response with higher old sequence is still nativeUNVERIFIED; T57 and original D47 closure remain incomplete. No current runtime was run by evidencepeer.",
@@ -49,5 +54,11 @@
     }
   ],
   "closure_requirement": "Add regression coverage for an initial request racing tap installation and a delayed old-document response arriving after navigation loading; prove current-document attribution and honest retrigger guidance. Then verify saved request replay on a real public website using an installed build.",
-  "current_evidence_review": "docs/stabilization/reports/showcase-d47-current-evidence-peer.json"
+  "current_evidence_review": "docs/stabilization/reports/showcase-d47-current-evidence-peer.json",
+  "native_boundary_route": {
+    "path": "tests/fixtures/showcase-replay/README.md#d47-document-replay-boundary",
+    "state": "source_route_ready_native_unrun",
+    "source_guard": "tests/unit/showcase-d47-fixture.test.ts; d47-fixture-source-20261006b valid green and scratch response-swap d47-fixture-mutant-20261006 valid red",
+    "limitation": "Real HTTP route proves old/current response scheduling and matching URL/method/body, but neither server status nor a current-only UI row proves an old Chrome binding callback reached the extension after navigation."
+  }
 }
