@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "status": "READY_FOR_INDEPENDENT_REVIEW_NATIVE_UNVERIFIED",
+  "review_input": ".research/d47-new-product-failure-peer-20261006.json",
+  "native_input": ".research/d47-new-product-native-20261006/37544119052/receipt.json",
+  "artifact_source_sha": "bb62b2dfafad160de32ced456f86bf5b7ea9e216",
+  "artifact_version": "0.2.332",
+  "source_comparison": [
+    {
+      "path": "src/lib/data-pattern/run-interactive.ts",
+      "artifact_source_sha256": "ec8af7d4e75da1997c2dcb3064b8484fe26bae4d1d3413b56bebd3e88fd93046",
+      "current_matches_artifact": true
+    },
+    {
+      "path": "src/lib/data-pattern/document-network-capture.ts",
+      "artifact_source_sha256": "c65b4678be7e49829f4f346926d9ff9dbdce8b7b8506be23565abf644dba3596",
+      "current_matches_artifact": true
+    },
+    {
+      "path": "src/lib/tools/handlers/data-patterns.ts",
+      "artifact_source_sha256": "fa1eb3990d5611c597004b23999829d42d3833a6765f79d3865bedc8267d62cb",
+      "current_matches_artifact": true
+    },
+    {
+      "path": "tests/browser/settings-panel-driver.mjs",
+      "artifact_source_sha256": "a2c9d3f1f98151d678e57ea8909fc6a9fbe4e2851d59f1fd3811a901168d904f",
+      "current_matches_artifact": true
+    }
+  ],
+  "cause_scope": {
+    "source_proven": "Saved-operation handler does not provide timeoutMs. Real runner uses opts.timeoutMs ??20_000, starts its window onArmed, and concludes matches only after that timer and close(). Core cleanup removals and release share another opts.timeoutMs deadline. Acceptance used shared waitFor default10_000 after current HTTP. That acceptance budget can expire before a valid operation completes.",
+    "historical_native": "The original native receipt has no elapsed anchors. This does not prove timing was the sole cause of run37544119052; matcher/core/port/UI failures remain possible."
+  },
+  "repair": {
+    "artifact_binding": "git show recorded MATRX_SHOWCASE_CI_SOURCE_SHA for runner/core/handler/shared driver; hashes recorded in native report. Workflow checkout fetch-depth0 makes recorded ancestor available. Missing Git source or unfamiliar timeout expressions fail closed.",
+    "derivation": "AST-derived capture window + same configured cleanup window + existing UI observation budget; for tested artifact20_000+20_000+10_000=50_000ms. Poll interval comes from shared driver (100ms). No product setting changes or duplicated default timeout.",
+    "anchor": "Terminal wait begins only after current response sent and old release; setup/arming has therefore occurred. Full remaining capture and cleanup windows are conservatively allowed; no wait for artificial minimum time.",
+    "unbounded_limits": "Downstream browser/port/UI operations without a product deadline cannot be guaranteed by any finite test deadline; existing UI delivery allowance remains bounded and failure stays explicit.",
+    "observations": "Node monotonic stage elapsed times plus terminal wait start, sample count, first/last elapsed and remaining budget, exact-recipe/current-row/old-row/running/error/unavailable booleans. No raw DOM text, recipe name, URLs, input values, or exception payloads retained.",
+    "acceptance": "Unchanged exact Last run recipe plus current row; old-row assertion and positive binding/context/lifecycle assertions remain. No synthetic product events or native browser dispatch."
+  },
+  "guard": {
+    "command": "node scripts/stabilization-resource.mjs run --run-id d47-terminal-budget-source-20261006-2 -- node --test tests/browser/showcase-d47-driver-evidence.test.mjs",
+    "journal": "docs/stabilization/resource-journals/d47-terminal-budget-source-20261006-2.jsonl",
+    "decision": "valid",
+    "tests_passed": 14,
+    "sut": "Actual terminal waiter and AST-derived artifact contract, driven by real transpiled runNetworkCapturePattern timer/conclusion logic under virtual time. External CDP/core close and DOM are controlled dependencies. Matching helpers are doubles because this test owns deadline timing, not matcher/row-parser correctness.",
+    "red": "Legacy source-derived10s budget rejects while actual capture result is still pending and virtual time is less than20s capture window.",
+    "green": "Derived50s budget waits through actual20s window and controlled cleanup ending just before40s, then sees current rows. Changed actual35s default derives80s and observes completion around70s.",
+    "negative": [
+      "Different recipe still rejects at bounded deadline although product rows completed.",
+      "Executed constant-success waiter mutant fails before-operation assertion.",
+      "Sanitized monotonic samples exclude private text.",
+      "Unobservable explicit caller timeout or settings spread fails closed instead of assuming the default."
+    ],
+    "remaining": "Independent review and separately authorized native run; all final source edits covered by root-authorized second guarded run.",
+    "prior_run": {
+      "run_id": "d47-terminal-budget-source-20261006-1",
+      "decision": "valid",
+      "tests_passed": 13
+    },
+    "resource_invalid": false
+  },
+  "files": [
+    "tests/browser/showcase-d47-terminal-budget.mjs",
+    "tests/browser/showcase-d47-document-lifecycle.mjs",
+    "tests/browser/showcase-d47-driver-evidence.test.mjs"
+  ],
+  "limits": [
+    "No product code modified.",
+    "No native dispatch, release/build, database or secret access.",
+    "Runtime acceptance and historical sole-cause attribution remain unverified.",
+    "Root owns independent review and any new native admission."
+  ]
+}

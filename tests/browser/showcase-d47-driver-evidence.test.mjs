@@ -377,3 +377,202 @@ test('semantic title guard kills title-only lookup and reversed native-title pre
     /target classification: stored-native-mismatch/,
   );
 });
+
+// Concert listing: drive the real capture runner's timer and cleanup promise,
+// then observe its result with the real terminal waiter. Only clock, CDP/core,
+// and DOM are external doubles; no body/result is supplied by the waiter.
+async function terminalTimeHarness({
+  legacy = false,
+  windowMs = null,
+  wrongRecipe = false,
+  waiter = null,
+} = {}) {
+  const { readFile } = await import('node:fs/promises');
+  const { runInNewContext } = await import('node:vm');
+  const ts = (await import('typescript')).default;
+  const { deriveD47TerminalBudget, terminalBudgetPaths, waitD47SavedTerminal } = await import(
+    './showcase-d47-terminal-budget.mjs'
+  );
+  const sources = Object.fromEntries(
+    await Promise.all(
+      Object.entries(terminalBudgetPaths).map(async ([key, path]) => [
+        key,
+        await readFile(new URL(`../../${path}`, import.meta.url), 'utf8'),
+      ]),
+    ),
+  );
+  if (windowMs !== null)
+    sources.runner = sources.runner.replace(
+      'opts.timeoutMs ?? 20_000',
+      `opts.timeoutMs ?? ${windowMs}`,
+    );
+  const budget = deriveD47TerminalBudget(sources);
+  const ast = ts.createSourceFile('runner.ts', sources.runner, ts.ScriptTarget.Latest, true);
+  const runner = ast.statements.find(
+    (node) => ts.isFunctionDeclaration(node) && node.name?.text === 'runNetworkCapturePattern',
+  );
+  const js = ts.transpile(runner.getText(ast).replace('export ', ''), {
+    target: ts.ScriptTarget.ES2022,
+  });
+  let clock = 0;
+  let nextId = 0;
+  const timers = new Map();
+  let rows = null;
+  let productError = null;
+  const setTimeout = (fn, delay) => {
+    const id = ++nextId;
+    timers.set(id, { at: clock + delay, fn });
+    return id;
+  };
+  const flush = async () => {
+    for (let i = 0; i < 12; i++) await Promise.resolve();
+  };
+  const advance = async (ms) => {
+    const end = clock + ms;
+    for (;;) {
+      const next = [...timers.entries()]
+        .filter(([, task]) => task.at <= end)
+        .sort((a, b) => a[1].at - b[1].at)[0];
+      if (!next) break;
+      clock = next[1].at;
+      timers.delete(next[0]);
+      next[1].fn();
+      await flush();
+    }
+    clock = end;
+    await flush();
+  };
+  const sandbox = {
+    setTimeout,
+    clearTimeout: (id) => timers.delete(id),
+    crypto: { randomUUID: () => 'concert-capture' },
+    AbortController,
+    matchesUrlFilter: (url, filter) => url === filter,
+    sanitizeNetworkUrl: (url) => url,
+    transientCredentialFingerprint: () => '',
+    rowsFromBody: (body) => JSON.parse(body).events,
+    NetworkNoMatchError: Error,
+    openDocumentNetworkCapture: async (options) => {
+      options.onArmed();
+      options.onEvent({
+        capture_id: options.captureId,
+        document_key: 'current-document',
+        tab_id: 7,
+        url: `${origin}/api/document-race`,
+        method: 'GET',
+        status: 200,
+        request_body_key: 'none',
+        request_sequence: 1,
+        body: JSON.stringify({ events: [{ eventName: 'Canyon Frequency' }] }),
+      });
+      return {
+        close: () =>
+          new Promise((resolve) =>
+            setTimeout(() => resolve('current-document'), budget.cleanup_ms - 1),
+          ),
+      };
+    },
+  };
+  const run = runInNewContext(`${js};runNetworkCapturePattern`, sandbox);
+  run({ url_filter: `${origin}/api/document-race`, body_match: 'ignore' }, 7, {
+    initiation: 'user',
+  }).then(
+    (value) => {
+      rows = value;
+    },
+    (error) => {
+      productError = error;
+    },
+  );
+  await flush();
+  const samples = [];
+  const chosenBudget = legacy ? { ...budget, timeout_ms: budget.delivery_ms } : budget;
+  let error;
+  try {
+    await (waiter ?? waitD47SavedTerminal)({
+      budget: chosenBudget,
+      now: () => clock,
+      sleep: advance,
+      read: async () => ({
+        exact_recipe: rows !== null && !wrongRecipe,
+        current_row: rows?.[0]?.eventName === 'Canyon Frequency',
+        running: rows === null,
+        private_text: 'must not enter evidence',
+      }),
+      record: (sample) => samples.push(sample),
+    });
+  } catch (caught) {
+    error = caught;
+  }
+  assert.equal(productError, null);
+  return { error, clock, rows, samples, budget };
+}
+
+test('old default deadline is RED before actual capture timer and cleanup; derived deadline observes the actual result', async () => {
+  const red = await terminalTimeHarness({ legacy: true });
+  assert.match(red.error.message, /saved_current_result_not_observed/);
+  assert.equal(red.rows, null);
+  assert.ok(red.clock < red.budget.capture_window_ms);
+  const green = await terminalTimeHarness();
+  assert.equal(green.error, undefined);
+  assert.equal(green.rows[0].eventName, 'Canyon Frequency');
+  assert.ok(green.clock >= green.budget.capture_window_ms + green.budget.cleanup_ms - 1);
+  assert.equal(green.samples.at(-1).exact_recipe, true);
+  assert.ok(
+    green.samples.every((sample, i) => !i || sample.elapsed_ms >= green.samples[i - 1].elapsed_ms),
+  );
+  assert.equal(JSON.stringify(green.samples).includes('must not enter evidence'), false);
+});
+
+test('derived wait follows changed actual capture configuration and refuses a different recipe', async () => {
+  const changed = await terminalTimeHarness({ windowMs: 35000 });
+  assert.equal(changed.error, undefined);
+  assert.equal(changed.budget.capture_window_ms, 35000);
+  assert.ok(changed.clock >= 69999);
+  const wrong = await terminalTimeHarness({ wrongRecipe: true });
+  assert.match(wrong.error.message, /saved_current_result_not_observed/);
+  assert.equal(wrong.rows[0].eventName, 'Canyon Frequency');
+  assert.equal(wrong.clock, wrong.budget.timeout_ms);
+});
+
+test('terminal wait guard detects constant success without observing the operation', async () => {
+  const assertCompleted = async (waiter) => {
+    const result = await terminalTimeHarness({ waiter });
+    assert.equal(result.error, undefined);
+    assert.equal(
+      result.rows?.[0]?.eventName,
+      'Canyon Frequency',
+      'waiter_returned_before_operation',
+    );
+  };
+  await assertCompleted();
+  await assert.rejects(
+    () => assertCompleted(async () => ({ exact_recipe: true, current_row: true })),
+    /waiter_returned_before_operation/,
+  );
+});
+
+test('budget derivation refuses unobservable caller settings instead of assuming the default', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const { deriveD47TerminalBudget, terminalBudgetPaths } = await import(
+    './showcase-d47-terminal-budget.mjs'
+  );
+  const sources = Object.fromEntries(
+    await Promise.all(
+      Object.entries(terminalBudgetPaths).map(async ([key, path]) => [
+        key,
+        await readFile(new URL(`../../${path}`, import.meta.url), 'utf8'),
+      ]),
+    ),
+  );
+  for (const setting of ['timeoutMs: 45000,', '...savedSettings,']) {
+    const handler = sources.handler.replace(
+      'runSavedPattern(pattern, tabId, {',
+      'runSavedPattern(pattern, tabId, {' + setting,
+    );
+    assert.throws(
+      () => deriveD47TerminalBudget({ ...sources, handler }),
+      /terminal_budget_override_unavailable/,
+    );
+  }
+});

@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 /** Real signed-in saved Network replay with an owned HTTP document race. */
 import assert from 'node:assert/strict';
-import { spawn } from 'node:child_process';
+import { execFile, spawn } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
+import { promisify } from 'node:util';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { approvedAdminOrganizationName, signInSettings } from './settings-native-auth-driver.mjs';
@@ -17,6 +18,11 @@ import {
   sanitizeD47Failure,
   trustedD47PanelClick,
 } from './showcase-d47-driver-evidence.mjs';
+import {
+  deriveD47TerminalBudget,
+  terminalBudgetPaths,
+  waitD47SavedTerminal,
+} from './showcase-d47-terminal-budget.mjs';
 import { runShowcaseOrganizationCheckpoint } from './showcase-organization-checkpoint.mjs';
 
 const repo = resolve(import.meta.dirname, '../..');
@@ -48,8 +54,14 @@ let probeInstalled = false;
 let activePanel;
 let saveObservation = null;
 let patternsObservation = null;
+const observationStarted = performance.now();
+report.stage_observations = [];
 const stage = (value) => {
   report.stage = value;
+  report.stage_observations.push({
+    stage: value,
+    elapsed_ms: performance.now() - observationStarted,
+  });
 };
 const control = async (origin, action) => {
   const response = await fetch(`${origin}/control/document-race/${action}`);
@@ -286,6 +298,20 @@ try {
     tree_sha256: receipt.treeSha256,
     version: receipt.version,
   };
+  const artifactSources = Object.fromEntries(
+    await Promise.all(
+      Object.entries(terminalBudgetPaths).map(async ([key, path]) => {
+        const { stdout } = await promisify(execFile)(
+          'git',
+          ['show', `${report.artifact.source_sha}:${path}`],
+          { cwd: repo },
+        );
+        return [key, stdout];
+      }),
+    ),
+  );
+  const terminalBudget = deriveD47TerminalBudget(artifactSources);
+  report.terminal_budget = { ...terminalBudget, anchor: 'after_current_http_response' };
   fixture = await startFixture();
   stage('native');
   const native = await runNativeSidepanelQa({
@@ -543,11 +569,34 @@ try {
           'old_release_status_mismatch',
         );
         stage('saved_terminal_result');
-        await waitFor(
-          'saved_current_result',
-          () => panelText(panel),
-          (value) => value?.includes(`Last run: ${recipe}`) && value?.includes('Canyon Frequency'),
-        );
+        report.terminal_observation = {
+          sample_count: 0,
+          first: null,
+          last: null,
+          started_at_elapsed_ms: performance.now() - observationStarted,
+        };
+        await waitD47SavedTerminal({
+          budget: terminalBudget,
+          read: async () =>
+            evaluate(
+              panel,
+              `(() => {
+            const text = document.body.innerText;
+            return {
+              exact_recipe: text.includes(${JSON.stringify(`Last run: ${recipe}`)}),
+              current_row: text.includes('Canyon Frequency'),
+              old_row: text.includes('Moonlit Transit'),
+              running: text.includes('Listening in the reloaded document') || text.includes('checking for other matches'),
+              error_present: [...document.querySelectorAll('.text-destructive')].some(el => el.getBoundingClientRect().height > 0 && el.textContent.trim())
+            };
+          })()`,
+            ),
+          record: (observation) => {
+            report.terminal_observation.sample_count++;
+            report.terminal_observation.first ??= observation;
+            report.terminal_observation.last = observation;
+          },
+        });
         report.saved_result = {
           page_phase_current: (await page.locator('#phase').textContent()) === 'current',
           page_result_current: (await page.locator('#result').textContent()) === 'Canyon Frequency',
