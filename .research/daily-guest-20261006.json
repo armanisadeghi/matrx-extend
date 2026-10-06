@@ -2,7 +2,7 @@
   "schema_version": 1,
   "date": "2026-10-06",
   "lane": "daily_public_store_guest_chat",
-  "status": "unverified_hosted_browser_startup_failure",
+  "status": "unverified_server_changed_during_arm_acceptance",
   "run": {
     "id": 37509262239,
     "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37509262239",
@@ -50,5 +50,62 @@
     "No guest Chat behavior was exercised; no terminal assistant content can be asserted.",
     "The hosted method loads an unpacked public Store CRX and does not prove installation from the Chrome Web Store UI."
   ],
-  "next_action": "Repair or diagnose owned Chromium CDP startup before another guarded hosted guest run; do not retry unchanged."
+  "next_action": "Root to assess changed-server evidence; this lane will not retry.",
+  "arm_changed_condition_run": {
+    "id": 37510663159,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37510663159",
+    "runner": "macos-15 ARM64",
+    "source_sha": "3d218fdfd994bd40987b2f5539e9db38158b4ff7",
+    "conclusion": "failure",
+    "failure_stage": "server_version_after",
+    "failure_code": "backend_version_changed_during_acceptance",
+    "receipt_status": "unverified",
+    "artifact": {
+      "kind": "published_store_crx_unpacked",
+      "version": "0.2.205",
+      "crx_sha256": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23",
+      "tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+      "unchanged_during_acceptance": true,
+      "workflow_artifact_id": 11434333290
+    },
+    "server": {
+      "before_git_sha": "3c2ff3dc9beb57726e26d1e8fbfe170d76aa7a8a",
+      "after_git_sha": "4f6faa3b16fff6618ef3a1b98406fbba4b2d4352",
+      "stable": false
+    },
+    "behavior_gates": {
+      "opening": {
+        "terminal_verdict": "terminal_answer",
+        "http_status": 200,
+        "is_new": true,
+        "grounded_page_code": true
+      },
+      "same_conversation_followup": {
+        "terminal_verdict": "terminal_answer",
+        "http_status": 200,
+        "is_new": false,
+        "same_conversation_fingerprint": true,
+        "reply_count": 2,
+        "grounded_page_code": true
+      },
+      "post_reload_new_conversation": {
+        "terminal_verdict": "terminal_answer",
+        "http_status": 200,
+        "is_new": true,
+        "new_conversation_fingerprint": true,
+        "grounded_page_code": true
+      }
+    },
+    "resources": {
+      "package": "valid_exit_0",
+      "browser": "valid_exit_0",
+      "guest": "admitted_resource_valid_child_failed_exit_1"
+    },
+    "evidence_dir": ".research/daily-guest-20261006-run37510663159",
+    "limits": [
+      "The backend deployment changed during acceptance, so the whole-run verdict is unverified despite all three terminal answer behavior checks passing.",
+      "This was an unpacked public Store CRX in hosted Chrome, not a Chrome Web Store UI installation.",
+      "The uploaded receipt and journals contain no guest authentication secrets; no temporary local secrets were created."
+    ]
+  }
 }
