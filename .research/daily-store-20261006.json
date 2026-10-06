@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-06T18:20:25.011961+00:00",
+  "schedule_claim": "common-docs operations/scheduled-tasks.md Oct6 fallback row; commit c26592e64",
+  "item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+  "dashboard": {
+    "method": "Authenticated Chrome native UI; Package and Status Published/Draft pages read",
+    "published_version": "0.2.205",
+    "draft_version": "0.2.205",
+    "pending_review": false,
+    "status": "Published - public",
+    "published_status_text": "This draft is published and available to the public.",
+    "draft_status_text": "This draft is unpublished.",
+    "upload_enabled": true,
+    "reviewer_action_observed": false
+  },
+  "access_recovery": {
+    "saved_password_succeeded": true,
+    "existing_google_authenticator_in_matrx_vault_used": true,
+    "code_transferred_via_UI_clipboard_without_logging": true,
+    "human_action_required": false
+  },
+  "release_audit": ".research/daily-release-inventory-20261006.json",
+  "guest_acceptance": {
+    "status": "infrastructure_failure_under_diagnosis",
+    "report": ".research/daily-guest-20261006.json",
+    "run_id": 37509262239,
+    "product_verdict": "unverified; no Chat request reached"
+  },
+  "submission": "No new eligible Store artifact; no upload, submission, listing change or manual build/release initiated."
+}
