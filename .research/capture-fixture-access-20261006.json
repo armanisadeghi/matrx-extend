@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2002-T01",
+  "status": "access_prerequisite_unavailable_no_fixture_writes",
+  "scope": "Lightweight private authentication and product API read only. No browser, scrape, capture, schema change, test, build, deployment, or fixture write.",
+  "observed_at": "2026-10-06",
+  "admin_access": {
+    "approved_organization_source": "Existing mode-0600 admin-approved organization file and existing mode-0600 reviewer config agreed on the exact organization name; the reviewer config supplied its explicit organization ID.",
+    "sign_in": "Existing approved admin credentials from the local aidream environment authenticated through the published Supabase password token endpoint: HTTP 200; returned account matched the configured admin identity.",
+    "membership": "The signed-in admin called the existing mbr_for_user organization-membership RPC: HTTP 200; its returned container IDs included the explicitly approved organization ID.",
+    "product_read": "GET /research/topics on the live backend with that user's bearer and X-Organization-Id set to the approved organization ID returned HTTP 200.",
+    "credential_handling": "Credentials and bearer existed only in the private read process; neither values nor private organization or account names were printed or recorded."
+  },
+  "member_access": {
+    "prior_evidence": ".research/hosted-member205-final.json records an existing nonadmin signed-in member, fresh organization selection, and a canonical admin check returning zero rows during a hosted run.",
+    "current_finding": "No reusable member credential, magic link, or bearer was found in the inspected approved local reviewer manifests, production and aidream environment key inventories, or bounded private fixture-file inventory. The previous hosted magic-link file was explicitly deleted after its run. The local reviewer identity manifest has identity metadata only; the reviewer organization config has an explicit organization choice but no member session.",
+    "independent_product_read": "not_performed_no_current_member_session",
+    "role_scoped_topic_visibility": "unverified"
+  },
+  "fixture_provisioning": {
+    "topics_created": [],
+    "sources_created": [],
+    "reason_not_started": "The intended role-scoped fixture requires separate member access and a proven selected organization before a topic/source write. Admin access alone cannot establish member visibility. The supported topic/source create and exclusion contracts were confirmed in the research router, but no write was sent.",
+    "supported_routes_reviewed": [
+      "POST /research/topics",
+      "POST /research/topics/{topic_id}/sources",
+      "PATCH /research/topics/{topic_id}/sources/{source_id} with is_included=false"
+    ],
+    "cleanup": "No records were created or changed; no exclusion was needed."
+  },
+  "next_prerequisite": "Recover an existing authorized member sign-in path for the designated nonadmin principal without printing or changing credentials, verify that principal's independently selected organization and membership, then use the supported product API to create at most two tagged topics and two unique-URL sources and read them as both principals. Exclude only exact owned source IDs through the supported PATCH and verify the read-back and queue absence."
+}
