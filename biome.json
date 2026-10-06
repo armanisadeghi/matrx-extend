@@ -30,7 +30,8 @@
       "scripts/package-twins.json",
       "tests/fixtures/portions/**",
       "docs/stabilization/inventory.json",
-      "docs/stabilization/reports/**"
+      "docs/stabilization/reports/**",
+      ".research/**"
     ]
   },
   "formatter": {
