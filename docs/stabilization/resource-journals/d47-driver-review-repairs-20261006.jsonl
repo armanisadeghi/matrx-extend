@@ -1,0 +1,1 @@
+{"schema":1,"at":"2026-10-06","runId":"d47-driver-review-repairs-20261006","mode":"direct-source-test","command":"node --test tests/browser/showcase-d47-driver-evidence.test.mjs","testCount":5,"passCount":5,"failCount":0,"exitCode":0,"resourceAdmitted":false,"native":false,"code":"SOURCE_TEST_PASS"}

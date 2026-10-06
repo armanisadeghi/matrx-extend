@@ -121,6 +121,7 @@
     ["node", "--test", "tests/browser/notes-member-credential.test.mjs"],
     ["node", "--test", "tests/browser/audit-key-native-faults.test.mjs"],
     ["node", "--test", "scripts/hosted-showcase-route.test.mjs"],
+    ["node", "--test", "tests/browser/showcase-d47-driver-evidence.test.mjs"],
     ["node", "tests/browser/settings-local-reset-acceptance.mjs"],
     ["bash", "release.sh", "--message", "EXT-D-0002 validated release integration"],
     ["bash", "release.sh", "--message", "EXT-D-0006 validated permission controls"],

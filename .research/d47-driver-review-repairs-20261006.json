@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "lane": "native driver review repairs; no product code or native browser run",
+  "review_source": ".research/d47-native-driver-peer-20261006.json",
+  "changes": [
+    "Seed Save pattern waits for the explicit terminal page-load discovery UI after the product's 20-second window, then selects the response and uses the ordinary save-ready wait.",
+    "Passive worker probe records target URL, method, source, request-body identity, response status, sequence and SHA-256 body digest without persisting body bytes; the behavioral trace oracle binds current packet to current main-frame context, matching handshake, old-context teardown and frame commit.",
+    "Page CDP records old main-frame context before Run; worker trace correlates its unique ID and accepts either executionContextDestroyed or executionContextsCleared. Packet/commit order is recorded without treating either valid event ordering as a failure.",
+    "Probe listener removal and worker detachment run in finally, including failure paths. Failure receipt records safe class/code, stage, bounded fixture/trace and UI booleans, with no raw error, credentials or page body."
+  ],
+  "registration_basis": "Reviewed src/lib/data-pattern/document-network-capture.ts registers Runtime.addBinding and Page.addScriptToEvaluateOnNewDocument before Page.reload. This source-supported order is paired with observed handshake, current packet and frame commit; the passive probe does not replace chrome.debugger.sendCommand.",
+  "verification": {
+    "source_test": "node --test tests/browser/showcase-d47-driver-evidence.test.mjs: 5/5 pass, direct source-only run",
+    "guarded_source_test": "resource-admitted valid run d47-driver-review-repairs-20261006-gated: 5/5 pass, child exit 0",
+    "journals": [
+      "docs/stabilization/resource-journals/d47-driver-review-repairs-20261006.jsonl",
+      "docs/stabilization/resource-journals/d47-driver-review-repairs-20261006-gated.jsonl"
+    ],
+    "ci": ".github/workflows/ci.yml runs this behavioral helper test in Guest transport observer regression",
+    "syntax": "node --check tests/browser/showcase-d47-document-lifecycle.mjs passed",
+    "diff_check": "git diff --check passed",
+    "format": "Biome formatted three touched JavaScript files"
+  },
+  "limits": [
+    "No native/browser/build/release run in this lane; T57 and D47 remain unverified.",
+    "The local fixture is supplemental; original public-site saved initial-request replay on the same installed artifact remains required.",
+    "No claim that the removed old producer path delivers an old binding packet; native architectural exclusion still needs positive context and request lifecycle evidence.",
+    "Stale-only terminal saved UI, recovery, cancellation and ordinary repeat replay remain outside this repair lane."
+  ]
+}

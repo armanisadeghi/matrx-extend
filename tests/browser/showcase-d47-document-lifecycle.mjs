@@ -2,7 +2,7 @@
 /** Real signed-in saved Network replay with an owned HTTP document race. */
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -11,6 +11,12 @@ import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { approvedAdminOrganizationName, signInSettings } from './settings-native-auth-driver.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 import { runShowcaseOrganizationCheckpoint } from './showcase-organization-checkpoint.mjs';
+import {
+  assessD47Trace,
+  cleanupD47Probe,
+  discoveryTerminal,
+  sanitizeD47Failure,
+} from './showcase-d47-driver-evidence.mjs';
 
 const repo = resolve(import.meta.dirname, '../..');
 const output =
@@ -32,8 +38,13 @@ const report = {
     cancellation: 'unverified',
   },
   failure_code: null,
+  failure: null,
+  diagnostics: null,
 };
 let fixture;
+let probeWorker;
+let probeInstalled = false;
+let activePanel;
 const stage = (value) => {
   report.stage = value;
 };
@@ -128,6 +139,7 @@ async function installPassiveWorkerProbe(worker, origin) {
       if (globalThis.__d47PassiveProbe) throw new Error('probe_already_installed');
       const observed = [];
       const origin = ${JSON.stringify(origin)};
+      const pending = [];
       const listener = (source, method, params = {}) => {
         if (!Number.isInteger(source.tabId) || source.sessionId) return;
         const order = observed.length + 1;
@@ -136,22 +148,32 @@ async function installPassiveWorkerProbe(worker, origin) {
           if (c?.auxData?.isDefault) observed.push({ order, kind: 'context_created', tab_id: source.tabId, id: c.id, unique_id: c.uniqueId ?? null, frame_id: c.auxData.frameId ?? null });
         } else if (method === 'Runtime.executionContextDestroyed') {
           observed.push({ order, kind: 'context_destroyed', tab_id: source.tabId, id: params.executionContextId });
+        } else if (method === 'Runtime.executionContextsCleared') {
+          observed.push({ order, kind: 'contexts_cleared', tab_id: source.tabId });
         } else if (method === 'Page.frameNavigated' && !params.frame?.parentId) {
           observed.push({ order, kind: 'frame_navigated', tab_id: source.tabId, frame_id: params.frame?.id ?? null, current_fixture: params.frame?.url === origin + '/document-race/' });
         } else if (method === 'Runtime.bindingCalled' && String(params.name).startsWith('__matrx_capture_')) {
           let packet = null;
           try { packet = JSON.parse(params.payload); } catch { /* malformed marker below */ }
-          observed.push({ order, kind: 'binding', tab_id: source.tabId, context_id: params.executionContextId,
+          const event = { order, kind: 'binding', tab_id: source.tabId, context_id: params.executionContextId,
             binding_name: params.name,
             handshake: packet?.__matrx_capture_hook === 'network-tap',
             target_packet: packet?.url === origin + '/api/document-race',
+            url: packet?.url === origin + '/api/document-race' ? packet.url : null,
+            method: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].includes(packet?.method) ? packet.method : null,
+            source: ['fetch', 'xhr'].includes(packet?.source) ? packet.source : null,
+            request_body_key: packet?.request_body_key === 'none' ? 'none' : 'other',
+            status: packet?.status ?? null,
             request_sequence: Number.isSafeInteger(packet?.request_sequence) ? packet.request_sequence : null,
-            current_payload: typeof packet?.body === 'string' && packet.body.includes('Canyon Frequency'),
-            old_payload: typeof packet?.body === 'string' && packet.body.includes('Moonlit Transit') });
+            current_payload: packet?.body === ${JSON.stringify(JSON.stringify({ events: [{ eventName: 'Canyon Frequency' }], document: 'current' }))},
+            old_payload: typeof packet?.body === 'string' && packet.body.includes('Moonlit Transit'), body_sha256: null };
+          observed.push(event);
+          if (typeof packet?.body === 'string') pending.push(crypto.subtle.digest('SHA-256', new TextEncoder().encode(packet.body))
+            .then(bytes => { event.body_sha256 = [...new Uint8Array(bytes)].map(x => x.toString(16).padStart(2, '0')).join(''); }));
         }
       };
       chrome.debugger.onEvent.addListener(listener);
-      globalThis.__d47PassiveProbe = { observed, listener };
+      globalThis.__d47PassiveProbe = { observed, listener, pending };
       return true;
     })()`,
     returnByValue: true,
@@ -160,7 +182,9 @@ async function installPassiveWorkerProbe(worker, origin) {
 }
 async function readPassiveWorkerProbe(worker) {
   const result = await worker.send('Runtime.evaluate', {
-    expression: 'globalThis.__d47PassiveProbe?.observed ?? null',
+    expression:
+      '(async () => { const p = globalThis.__d47PassiveProbe; if (!p) return null; await Promise.all(p.pending); return p.observed; })()',
+    awaitPromise: true,
     returnByValue: true,
   });
   return result.result?.value ?? null;
@@ -216,6 +240,7 @@ try {
       attachWorker,
     }) => {
       const origin = fixture.origin;
+      activePanel = panel;
       stage('signin');
       const auth = await resourceAction(() =>
         signInSettings({
@@ -256,8 +281,20 @@ try {
         () => panelText(panel),
         (value) => value?.includes('/api/document-race') && value?.includes('response captured'),
       );
-      if ((await panelText(panel)).includes('● recording'))
-        await click(panel, 'button-text', 'Stop');
+      await waitFor(
+        'seed_discovery_terminal',
+        () =>
+          evaluate(
+            panel,
+            `(() => ({
+          discovering: Boolean(document.querySelector('[role="status"]')?.textContent.includes('Capturing page load') || document.body.innerText.includes('● page load —')),
+          responses: document.body.innerText.includes('responses captured · stopped') || document.body.innerText.includes('response captured · stopped'),
+          error: Boolean(document.querySelector('.text-destructive'))
+        }))()`,
+          ),
+        discoveryTerminal,
+        30_000,
+      );
       stage('select_seed_response');
       await trustedPanelClick(panel, 'button.font-mono:has(span.flex-1)');
       await waitFor(
@@ -324,10 +361,16 @@ try {
         (value) => value.length === 1 && Boolean(value[0].frame_id),
       );
       const oldPageContext = oldContexts[0];
+      report.old_context_pre_run = {
+        unique_id: oldPageContext.unique_id,
+        frame_id: oldPageContext.frame_id,
+      };
       await pageCdp.detach();
       const worker = await attachWorker();
+      probeWorker = worker;
       stage('worker_observer');
       await installPassiveWorkerProbe(worker, origin);
+      probeInstalled = true;
       stage('saved_replay');
       await trustedPanelClick(panel, '[role="tablist"] [role="tab"]', 'Patterns');
       await waitFor(
@@ -378,101 +421,82 @@ try {
         (value) => value?.includes(`Last run: ${recipe}`) && value?.includes('Canyon Frequency'),
       );
       report.saved_result = {
-        page_phase: await page.locator('#phase').textContent(),
-        page_result: await page.locator('#result').textContent(),
+        page_phase_current: (await page.locator('#phase').textContent()) === 'current',
+        page_result_current: (await page.locator('#result').textContent()) === 'Canyon Frequency',
         panel_current: (await panelText(panel))?.includes('Canyon Frequency') ?? false,
         panel_old: (await panelText(panel))?.includes('Moonlit Transit') ?? false,
       };
-      assert.equal(report.saved_result.page_phase, 'current');
-      assert.equal(report.saved_result.page_result, 'Canyon Frequency');
+      assert.equal(report.saved_result.page_phase_current, true, 'current_page_phase_missing');
+      assert.equal(report.saved_result.page_result_current, true, 'current_page_result_missing');
       assert.equal(report.saved_result.panel_old, false, 'old_row_visible');
-      report.verdicts.current_saved_replay = report.saved_result.panel_current
-        ? 'pass'
-        : 'unverified';
       stage('binding_evidence');
       const observed = await readPassiveWorkerProbe(worker);
       assert.ok(Array.isArray(observed), 'worker_probe_lost');
       report.contexts = observed.filter((event) => event.kind !== 'binding');
       report.binding_events = observed.filter((event) => event.kind === 'binding');
-      const handshakes = report.binding_events.filter((event) => event.handshake);
-      const currentPackets = report.binding_events.filter(
-        (event) => event.target_packet && event.current_payload,
-      );
-      assert.ok(
-        handshakes.length > 0 && currentPackets.length > 0,
-        'current_binding_positive_control_missing',
-      );
-      const current = currentPackets.at(-1);
-      assert.equal(current.request_sequence, 1, 'current_first_request_sequence_missing');
-      assert.ok(
-        handshakes.some(
-          (event) =>
-            event.context_id === current.context_id &&
-            event.binding_name === current.binding_name &&
-            event.order < current.order,
-        ),
-        'current_binding_handshake_missing',
-      );
-      const context = report.contexts.find(
-        (event) => event.kind === 'context_created' && event.id === current.context_id,
-      );
-      assert.ok(context?.unique_id && context.frame_id, 'current_context_identity_missing');
-      assert.ok(
-        report.contexts.some(
-          (event) =>
-            event.kind === 'frame_navigated' &&
-            event.frame_id === context.frame_id &&
-            event.current_fixture,
-        ),
-        'current_frame_commit_missing',
-      );
-      const old = report.contexts.find(
-        (event) =>
-          event.kind === 'context_created' &&
-          event.id !== current.context_id &&
-          event.frame_id === context.frame_id &&
-          event.unique_id === oldPageContext.unique_id &&
-          event.frame_id === oldPageContext.frame_id,
-      );
-      assert.ok(old && old.order < current.order, 'old_context_identity_missing');
-      assert.ok(
-        report.contexts.some(
-          (event) =>
-            event.kind === 'context_destroyed' &&
-            event.id === old.id &&
-            event.order < current.order,
-        ),
-        'old_context_destruction_missing',
-      );
-      assert.equal(
-        report.binding_events.some((event) => event.target_packet && event.old_payload),
-        false,
-        'old_binding_payload_observed',
-      );
-      report.current_packet_before_commit =
-        current.order <
-        Math.min(
-          ...report.contexts
-            .filter(
-              (event) =>
-                event.kind === 'frame_navigated' &&
-                event.frame_id === context.frame_id &&
-                event.current_fixture,
-            )
-            .map((event) => event.order),
-        );
+      const expectedBodySha256 = createHash('sha256')
+        .update(
+          JSON.stringify({ events: [{ eventName: 'Canyon Frequency' }], document: 'current' }),
+        )
+        .digest('hex');
+      report.trace_assessment = assessD47Trace(observed, {
+        origin,
+        oldPageContext,
+        expectedBodySha256,
+      });
+      assert.equal(report.trace_assessment.ok, true, report.trace_assessment.reason);
+      report.current_packet_before_commit = report.trace_assessment.current_packet_before_commit;
+      report.verdicts.current_saved_replay = report.saved_result.panel_current
+        ? 'pass'
+        : 'unverified';
       report.verdicts.delayed_old_binding = 'architecturally_excluded_observed';
-      await removePassiveWorkerProbe(worker);
-      await worker.detach();
     },
   });
   assert.equal(native.verified, true);
   report.status = 'observed_bounded';
-} catch {
+} catch (error) {
   report.failure_code = `${report.stage}_failed`;
+  report.failure = sanitizeD47Failure(error, report.stage);
+  report.diagnostics = {
+    fixture: report.fixture
+      ? {
+          before_release: report.fixture.before_release,
+          after_release: report.fixture.after_release,
+        }
+      : null,
+    saved_result: report.saved_result,
+    trace_assessment: report.trace_assessment ?? null,
+    native_stage: report.native_stage ?? null,
+    auth_stage: report.auth_stage ?? null,
+  };
+  try {
+    if (probeInstalled && probeWorker) {
+      const observed = await readPassiveWorkerProbe(probeWorker);
+      report.diagnostics.probe = {
+        event_count: observed?.length ?? 0,
+        last_kinds: observed?.slice(-8).map((event) => event.kind) ?? [],
+      };
+    }
+  } catch {
+    report.diagnostics.probe = { state: 'unavailable' };
+  }
+  try {
+    if (activePanel)
+      report.diagnostics.panel = await evaluate(
+        activePanel,
+        `(() => ({ has_save: [...document.querySelectorAll('button')].some(x => x.textContent.trim() === 'Save pattern'), discovering: document.body.innerText.includes('● page load —'), has_recipe_result: document.body.innerText.includes('Last run:'), has_current: document.body.innerText.includes('Canyon Frequency') }))()`,
+      );
+  } catch {
+    report.diagnostics.panel = { state: 'unavailable' };
+  }
   process.stderr.write(`UNVERIFIED showcase_d47 stage=${report.stage}\n`);
   process.exitCode = 1;
 } finally {
+  report.probe_cleanup = await cleanupD47Probe(
+    probeWorker,
+    probeInstalled,
+    removePassiveWorkerProbe,
+  );
   await stopFixture();
   await writeFile(output, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
 }
