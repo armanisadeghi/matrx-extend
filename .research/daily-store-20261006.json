@@ -22,10 +22,14 @@
   },
   "release_audit": ".research/daily-release-inventory-20261006.json",
   "guest_acceptance": {
-    "status": "infrastructure_failure_under_diagnosis",
+    "status": "unverified_overall",
     "report": ".research/daily-guest-20261006.json",
-    "run_id": 37509262239,
-    "product_verdict": "unverified; no Chat request reached"
+    "latest_report": ".research/daily-guest-stable-server-20261006.json",
+    "run_ids": [37509262239, 37510663159, 37511772063],
+    "product_verdict": "ARM run37510663159 returned grounded terminal first/same-conversation/reload answers with HTTP200 and unchanged public205 artifact, but server changed during acceptance. Fresh current-server run37511772063 child passed yet overall resource guard invalidated its evidence. No fully valid current-server acceptance claimed."
   },
-  "submission": "No new eligible Store artifact; no upload, submission, listing change or manual build/release initiated."
+  "submission": "No new eligible Store artifact; no upload, submission, listing change or manual build/release initiated.",
+  "documentation_validation": {
+    "okf_lint": "pre-edit baseline fails with17 violations and148 warnings outside this observation; no new documentation rule or gate added"
+  }
 }
