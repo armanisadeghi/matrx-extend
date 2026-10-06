@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "d4decbe3d6e17c8f74870c02b5cde44bded75b85",
+  "reviewed_report": ".research/d47-hosted-import-fix-20261006.json",
+  "scope": "Independent source review of hosted D47 module-load setup repair",
+  "verdict_a_setup_evidence": {
+    "status": "PASS",
+    "evidence": [
+      "The hosted package phase installs TypeScript only for showcase-d47-admin using the root manifest alias and its checked-in lockfile version.",
+      "The package phase checks the installed package identity and imports the actual D47 driver entry before the workflow's Chromium preparation step.",
+      "The copied-checkout guard has no checkout node_modules: the entry fails with TypeScript ERR_MODULE_NOT_FOUND before installation and succeeds after isolated runtime installation. The committed resource journal records an admitted, valid exit 0 for the guard."
+    ],
+    "limits": "Source and guard evidence establish module import in an isolated runtime. The GitHub hosted run and D47 product behavior have not been re-executed in this review."
+  },
+  "verdict_b_code_doctrine": {
+    "status": "PASS",
+    "evidence": [
+      "The existing runtime and production D47 entry are reused; the guard does not substitute a mirrored import list.",
+      "The manifest and lockfile are the version source, with installed identity checked before use. The change is scoped to hosted setup and test code, with no product implementation or credential changes.",
+      "The negative and positive guard results cover the original dependency failure; the preflight fails setup before browser preparation when import breaks. Git diff whitespace and touched module syntax checks pass."
+    ],
+    "findings": []
+  },
+  "remaining": "Root owns the separately authorized hosted native run; native D47/T57 acceptance remains unverified.",
+  "review_command_scope": "git show d4decbe3, source and workflow inspection, resource journal inspection, git diff --check, node --check of five touched modules; no browser, build, release, or hosted service was run"
+}
