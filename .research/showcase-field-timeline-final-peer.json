@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "showcase_field_timeline_final_peer",
+  "reviewed_commits": [
+    "2e3c86642fb51422e2b2d599e1fdb09f96327a8c",
+    "117455d562022edd6520da71a4d282a2d7c84273"
+  ],
+  "finding_status": "ADDRESSED",
+  "verdict_A_behavior": {
+    "status": "PARTIAL_NATIVE_UNVERIFIED",
+    "evidence": "Native selection uses clickReachableShowcaseTarget on the h2 locator: it samples a browser hit with elementFromPoint and calls normal Playwright locator.click({ position }), preserving browser actionability. Acceptance stages separate select_B_field_click from select_B_field_wait; its wait requires exactly one .picked-item. Builder acceptance then requires one selected field and extraction to show three rows plus each fixture title. No fresh native run was performed in this review, so actual Chrome selection and extraction remain unverified."
+  },
+  "verdict_B_quality": {
+    "status": "PASS_FINDING_ADDRESSED",
+    "evidence": "117455d5 adds picked_item_count to each bounded pointer sample. The focused test samples 0 before click, 1 after click, and 0 after failure, then asserts the JSON-serialized receipt retains [0,1,0]; the shared latest observation remains 0. Counts accept only safe integers from 0 through 10000. Receipts serialize rectangles, enumerated hit classes, and bounded counts; unknown/raw page text is omitted, and the sensitive-string test confirms it does not appear in the receipt. The tests and Biome check passed."
+  },
+  "verification": {
+    "focused_command": "node --test tests/browser/showcase-card-driver.test.mjs tests/browser/showcase-selection-diagnostic.test.mjs",
+    "focused_result": "9 passed, 0 failed",
+    "biome_command": "pnpm exec biome check tests/browser/showcase-selection-diagnostic.mjs tests/browser/showcase-selection-diagnostic.test.mjs",
+    "biome_result": "pass",
+    "native_run": "not run by reviewer"
+  },
+  "unverified_scope": [
+    "A fresh native Chrome run proving field selection succeeds",
+    "A fresh native Chrome run proving all three rows extract"
+  ]
+}
