@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2002-T01",
+  "status": "role_scoped_fixture_access_and_supported_cleanup_verified",
+  "observed_at": "2026-10-06",
+  "scope": "Lightweight first-party authentication, supported product API fixture creation and exclusion. No browser, scrape, capture, schema change, test, build, deployment, account creation, role change, or outbound message.",
+  "run_id": "f99bd053-5d0d-4403-a76b-a918853c91f8",
+  "access": {
+    "admin": "Existing approved admin credentials authenticated through Supabase Auth HTTP 200; exact approved organization membership RPC HTTP 200; live GET /research/topics HTTP 200.",
+    "nonadmin": "Existing designated reviewer was verified active, confirmed, unbanned, with zero admin assignments by the repository helper. A fresh first-party single-use magic link was generated without sending email, redeemed through Supabase Auth verifyOtp, and matched the exact existing reviewer user ID. No password or account data changed.",
+    "nonadmin_membership": "Live mbr_for_user RPC HTTP 200 found exactly one active organization membership with role owner. The organization name was verified against the helper's exact named choice, then GET /research/topics with its ID in X-Organization-Id returned HTTP 200. This proves a nonadmin account with organization-owner membership, not an organization member-role account.",
+    "organization_boundary": "The approved admin and designated nonadmin belong to different organizations. Direct GET of the other principal's topic returned HTTP 403 in both directions. Each topic is accessible to its creating principal; shared-topic, same-organization role coverage remains unavailable without an already authorized common organization.",
+    "credential_handling": "Auth credentials, one-time link, and bearer tokens remained private in process memory or short-lived mode-0600 local files; no value is recorded here."
+  },
+  "fixtures": [
+    {
+      "principal": "admin",
+      "organization_id": "11f4e747-c13a-49c7-81a3-66e6391f8a9b",
+      "topic_id": "fc94fdff-0e4b-4143-9132-b7557da06b4d",
+      "source_id": "8afa7e38-7775-4d0f-aa7e-e9527b16e794",
+      "source_url": "https://www.aimatrx.com/matrx-extend-demo?ext_f_2002=f99bd053-5d0d-4403-a76b-a918853c91f8&role=admin&nonce=71082b0a-33bf-45df-8508-70afc333a0f3",
+      "expected_page_identity": "Owned public Matrx Extend demo page; query parameters provide a unique fixture identity.",
+      "topic_create_http": "2xx (exact 200/201 status not retained by private request receipt)",
+      "topic_get_http": 200,
+      "source_create_http": 201,
+      "source_list_http": 200,
+      "initial_source_state": {
+        "is_included": true,
+        "scrape_status": "pending",
+        "server_attempts": 0,
+        "server_gave_up": false
+      },
+      "source_exclude_patch_http": 200,
+      "excluded_source_readback_http": 200,
+      "extension_queue_http": 200,
+      "excluded_source_absent_from_queue": true,
+      "cleanup_owner": "EXT-F-2002-T01; exact source ID above"
+    },
+    {
+      "principal": "nonadmin",
+      "organization_id": "4125c63d-518d-4fba-ba43-031160c7284b",
+      "topic_id": "0f5654c5-2bc9-4076-8734-f81afdaa6d3d",
+      "source_id": "7626ffe5-12af-4e03-bd03-445063e99552",
+      "source_url": "https://www.aimatrx.com/matrx-extend-demo?ext_f_2002=f99bd053-5d0d-4403-a76b-a918853c91f8&role=nonadmin&nonce=6eaf7717-f036-4473-a146-275825d0b9fa",
+      "expected_page_identity": "Owned public Matrx Extend demo page; query parameters provide a unique fixture identity.",
+      "topic_create_http": "2xx (exact 200/201 status not retained by private request receipt)",
+      "topic_get_http": 200,
+      "source_create_http": 201,
+      "source_list_http": 200,
+      "initial_source_state": {
+        "is_included": true,
+        "scrape_status": "pending",
+        "server_attempts": 0,
+        "server_gave_up": false
+      },
+      "source_exclude_patch_http": 200,
+      "excluded_source_readback_http": 200,
+      "extension_queue_http": 200,
+      "excluded_source_absent_from_queue": true,
+      "cleanup_owner": "EXT-F-2002-T01; exact source ID above"
+    }
+  ],
+  "cleanup": {
+    "method": "PATCH /research/topics/{topic_id}/sources/{source_id} with is_included=false on each exact campaign-owned source ID.",
+    "verified": "Both PATCH responses returned HTTP 200 with is_included=false; each excluded-source list read returned its exact ID; each authenticated extension scrape-queue GET returned HTTP 200 with the exact source ID absent.",
+    "topic_state": "Both tagged topic records remain for authorized reuse; no deletion route was invoked.",
+    "limitation": "Exclusion dequeues sources but does not reset history. No scrape or extension capture attempt ran, so these pending sources are not ordinary L1-L4 queue fixtures."
+  },
+  "remaining": "Same-organization admin/nonadmin visibility, organization member-role coverage, naturally qualified queue buckets, and runtime capture acceptance remain unverified. The two excluded sources are not eligible queue inputs; future capture runs need unique new URLs and natural server qualification under the desired role and organization."
+}

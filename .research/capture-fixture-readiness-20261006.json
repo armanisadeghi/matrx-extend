@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2002-T01",
+  "status": "fixture provisioning and cleanup prerequisites unresolved; runtime unverified",
+  "scope": "Read-only source, local evidence, and narrow live Supabase metadata investigation. No database write, browser run, fixture creation, test, or build.",
+  "existing_fixture_manifest": {
+    "verified_disposable_topic_ids": [],
+    "verified_qualifying_source_ids": [],
+    "finding": "The inspected local reports and runs contain no designated campaign-owned research topic/source manifest. A live read of research.rs_topic name/metadata and research.rs_source metadata matched zero rows for the exact case marker EXT-F-2002 and the generic markers stabilization or capture fixture. This is a queried absence of tagged fixtures, not evidence that untagged qualifying fixtures do not exist. The approved admin organization fixture exists with mode 0600 but proves neither queued sources nor member access.",
+    "live_query": {
+      "project_id": "brsgrqvjdzwihsvnfqkf",
+      "scope": "research.rs_topic.name/metadata and research.rs_source.metadata; case marker EXT-F-2002, stabilization, capture fixture; only IDs and ownership/queue metadata selected, no URLs or contents",
+      "matching_topics": 0,
+      "matching_sources": 0,
+      "untagged_fixture_availability": "unknown"
+    },
+    "evidence": [
+      "docs/stabilization/inventory.json: EXT-F-2002-T01 preconditions",
+      ".research/capture-controls-reconcile-20261006.json: t01_fixture_prerequisites",
+      ".research/inventory-procedure-applied-20261006.json: ruling",
+      "docs/stabilization/COORDINATOR.md: inventory and credential-path status",
+      "test-results/admin-profile-approved-organization-private.json: filesystem mode and keys only, private organization name not read",
+      "Supabase execute_sql, 2026-10-06: scoped rs_topic name/metadata and rs_source metadata queries returned []"
+    ]
+  },
+  "required_manifest": {
+    "principal_and_access": "One verified admin principal and a separate verified member principal, each with an explicitly selected device organization; record each topic's owning organization and prove both principals can see the intended rows independently. Prior hosted evidence proves a real signed-in nonadmin test identity with an organization selection, but not access to any capture topic.",
+    "topic": "At least two campaign-owned disposable accessible topics for project grouping; record topic IDs, organization IDs, provisioning owner, and cleanup owner.",
+    "row_fields": "For each source record source ID, topic ID, controlled URL/expected page identity, queue bucket, is_included, scrape_status, server_attempts, server_gave_up, policy_category, extension attempted_levels, role visibility, branch assignment, and restoration method. Do not include page text or credentials.",
+    "branch_assignments": [
+      "Separate ordinary L1, L2, L3 cancel, L3 Go, L3 Expect thin, L4 submit, and L4 no-submit rows, all qualifying in their exact buckets.",
+      "Separate gated_login and low_value parked rows with prior extension attempts for Retry, plus an ordinary prior-attempt Retry row.",
+      "Separate disposable rows for accept_as_is, gated, dead_link, retry, content_mismatch, and ignored verdicts. The wrong-content URL must load a different page; the ignore URL must be neither dead nor gated.",
+      "Six buckets must be populated when their individual filter assertions run. Fifteen disjoint rows per role run is only a planning lower bound, not a readiness claim."
+    ]
+  },
+  "product_and_api_path": {
+    "create_topic": "POST /research/topics creates a topic with admitted actor and explicit X-Organization-Id; no project is required. Use only a campaign-owned organization and record the resulting ID.",
+    "add_source": "POST /research/topics/{topic_id}/sources adds a URL idempotently but starts it pending, included, with zero server attempts. It does not by itself make an ordinary queue fixture.",
+    "natural_queue_path": "A controlled source must pass through actual server scrape attempts until thin/failed plus server_gave_up. The queue then derives ordinary L1-L4 from chrome_extension rs_content capture_level history; domain policy may force a floor. Parked gated_login/low_value rows use separate nonterminal policy selection.",
+    "partial_reset": "PATCH /research/topics/{topic_id}/sources/{source_id} permits is_included, is_stale, and scrape_status. Setting is_included=false on a proven campaign-owned row is a supported dequeue action because the queue selects only included sources. It does not erase history or remove the row from storage. It cannot restore server attempt accounting, policy category, extension capture history, verdict audit, or consumed paste/capture content. A pending ordinary source is absent from the extension queue until later server processing qualifies it again.",
+    "cleanup": "A valid per-run replenishment plan is to PATCH only exact consumed campaign-owned source IDs to is_included=false, read back those IDs and queue absence, and create new sources with unique controlled URLs for the next role run. The add-source endpoint is idempotent on topic plus URL, so reusing a URL returns the old row. No topic/source DELETE route or full fixture reset route was found in the inspected research router; long-term archival of accumulated excluded rows remains a separate scoped ownership decision. Never exclude unrelated records.",
+    "evidence": [
+      "/Volumes/Samsung2TB/code/aidream/aidream/api/routers/research.py:578-617,1034-1086",
+      "/Volumes/Samsung2TB/code/aidream/research/models.py:154-225,443-484",
+      "/Volumes/Samsung2TB/code/aidream/research/multisource.py:148-168,190-322,624-692",
+      "src/lib/api/routes/research.ts:102-146,410-470",
+      ".research/hosted-member205-final.json: observed existing nonadmin identity, organization selection, and signed-in extension use"
+    ]
+  },
+  "next_concrete_action": "The execution owner can create two clearly tagged disposable topics with POST /research/topics and unique controlled source URLs with POST /research/topics/{id}/sources, then drive actual server processing and extension attempts to qualify the required buckets. Record topic/source IDs, organization, role visibility, branch assignment, and source-state metadata in a sanitized manifest. After each role run, PATCH only those exact consumed IDs with is_included=false and verify dequeue before replenishing with new unique URLs. Prove the existing nonadmin principal can actually see the topics; do not infer that from the admin fixture. Keep naturally thin and recoverable-error branches unverified if they do not occur."
+}
