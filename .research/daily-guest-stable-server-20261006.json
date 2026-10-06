@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-06",
+  "lane": "daily_public_store_guest_chat_stable_server_retest",
+  "run": {
+    "id": 37511772063,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37511772063",
+    "workflow": "hosted-guest-acceptance.yml",
+    "runner": "macos-15 ARM64",
+    "acceptance_case": "guest-chat",
+    "head_sha": "4bed6b5e3e7f66e7c2d2040bc15e03b06e4bf0a3",
+    "conclusion": "failure",
+    "failure_stage": "resource_guard_final_decision",
+    "failure_code": "resource_invalid_cpu_busy",
+    "artifact_id": 11435334265
+  },
+  "verdict": {
+    "product_behavior_observed": "pass_in_child_receipt",
+    "whole_run": "unverified_resource_guard_invalid",
+    "reason": "The guest-chat child exited 0 and its receipt records a pass, but the mandatory resource guard returned exit 3 after CPU busy/high-load observations. Workflow conclusion is failure; do not promote it to a valid acceptance pass. No retry was dispatched."
+  },
+  "published_store_artifact": {
+    "kind": "published_store_crx_unpacked",
+    "version": "0.2.205",
+    "extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "artifact_unchanged_during_acceptance": true
+  },
+  "server": {
+    "endpoint": "https://server.app.matrxserver.com/health/version",
+    "before_git_sha": "4f6faa3b16fff6618ef3a1b98406fbba4b2d4352",
+    "after_git_sha": "4f6faa3b16fff6618ef3a1b98406fbba4b2d4352",
+    "stable_during_child_receipt": true,
+    "post_run_spot_check_git_sha": "4f6faa3b16fff6618ef3a1b98406fbba4b2d4352"
+  },
+  "guest_chat": {
+    "opening": {
+      "terminal_verdict": "terminal_answer",
+      "http_status": 200,
+      "is_new": true,
+      "conversation_fingerprint": "acb0ad999102c281",
+      "grounded_page_code": true
+    },
+    "same_conversation_followup": {
+      "terminal_verdict": "terminal_answer",
+      "http_status": 200,
+      "is_new": false,
+      "conversation_fingerprint": "acb0ad999102c281",
+      "reply_count": 2,
+      "grounded_page_code": true
+    },
+    "post_reload_new_conversation": {
+      "terminal_verdict": "terminal_answer",
+      "http_status": 200,
+      "is_new": true,
+      "conversation_fingerprint": "ada3b45d457ba1f3",
+      "grounded_page_code": true
+    }
+  },
+  "resources": {
+    "package": "admitted_valid_child_exit_0",
+    "browser": "admitted_valid_child_exit_0",
+    "guest": "admitted_invalid_child_exit_0_wrapper_exit_3",
+    "guest_observed_reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
+    "journals": "raw/hosted-{package,browser,guest}-37511772063-1.jsonl",
+    "stale_journals_from_upload_excluded": true
+  },
+  "evidence": {
+    "directory": ".research/daily-guest-stable-server-20261006-run37511772063/raw",
+    "receipt": "guest-chat.receipt.json",
+    "receipt_sha256": "283e9ba063be6df11956c35c72b4a15009f53ad6423f5c6b80b4a8adee8cb0ef",
+    "screenshots": [
+      "guest-chat-real-answer.png",
+      "guest-chat-same-conversation-followup.png",
+      "guest-chat-real-followup-answer.png",
+      "native-side-panel.png",
+      "normal-target-after-open.png"
+    ],
+    "sanitization": "Reviewed receipt, journals, and answer screenshots; original uploaded evidence contains synthetic fixture content and no credential values. Other-run journals from the artifact were excluded."
+  },
+  "limits": [
+    "Mandatory resource guard invalidated the whole run despite child-level terminal answer observations.",
+    "The hosted method unpacks the public Store CRX into a fresh Chrome profile; it does not prove installation through Chrome Web Store UI.",
+    "CDP observer attaches after panel load, so it does not prove absence of earlier requests."
+  ],
+  "next_action": "Independent peer can assess the retained receipt and guard journal. A future valid guarded run would be required for an overall acceptance pass."
+}
