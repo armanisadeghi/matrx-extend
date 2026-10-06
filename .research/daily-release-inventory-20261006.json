@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-06",
+  "scope": "Read-only hosted release artifact and next contained acceptance audit; no build, release, deployment, upload, credentials, or native browser action.",
+  "baseline": {
+    "published_version": "0.2.205",
+    "published_source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "primary_item": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "record": "/Users/armanisadeghi/code/common-docs/systems/apps/extension/CHROME-WEB-STORE.md",
+    "baseline_file": "config/chrome-web-store-approved-baseline.json"
+  },
+  "main": {
+    "head_sha": "dac42e109efb2094634f46e852e5e2d4420e3553",
+    "matches_origin_main": true,
+    "latest_automatic_release": {
+      "version": "0.2.322",
+      "sha": "dac42e109efb2094634f46e852e5e2d4420e3553",
+      "run_id": 37506120451,
+      "run_conclusion": "success",
+      "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37506120451",
+      "artifact_id": 11432606524,
+      "artifact_name": "matrx-extend-development-test-dac42e109efb2094634f46e852e5e2d4420e3553-37506120451-1",
+      "artifact_sha256": "4b9d5d8edd50ad33b9232c7fe1bb3a2e69e88b031690616460bfaac781190006",
+      "artifact_kind": "development-test bundle; not a Store ZIP",
+      "store_release_run_for_tag": {
+        "run_id": 37506119843,
+        "conclusion": "success",
+        "artifact_count": 0
+      }
+    }
+  },
+  "store_candidate": {
+    "eligible_new_candidate_found": false,
+    "reason": "The successful automatic main release run produced only a development-test artifact. The matching release-tag CI run has zero artifacts. Main version 0.2.322 is not evidence of a Store package.",
+    "new_store_zip_version": null,
+    "new_store_zip_source_sha": null,
+    "new_store_zip_artifact_id": null,
+    "new_store_zip_sha256": null,
+    "store_specific_ci_gate_conclusion": "unknown; no Store ZIP artifact or hosted Store release receipt was found for v0.2.322",
+    "evidence": "Read-only GitHub Actions run/artifact API inspection plus the approved baseline and canonical Store record. Historical latest Hosted release workflow observed remains successful run 37180303468 / version 0.2.205, already published baseline; no newer eligible Store artifact established."
+  },
+  "audience_acceptance": {
+    "guest": "No complete actual Store-installed acceptance for a new candidate. Existing bounded 0.2.205 unpacked/adapted evidence does not establish a new package.",
+    "non_admin": "No complete acceptance for a new candidate. Existing 0.2.205 member development ZIP evidence is not evidence for a newer Store ZIP.",
+    "admin": "Cannot substitute for guest or non-admin acceptance."
+  },
+  "next_contained_test": {
+    "case_id": "EXT-F-1012-T57",
+    "defect_id": "EXT-D-0047",
+    "priority": "P1",
+    "case_status": "unverified",
+    "defect_state": "in-fix",
+    "actual_claim_status": "No claim/assignment field exists in the inspected canonical inventory or defect record, and no authoritative claim ledger was located in this audit; therefore current claim status is unknown, not asserted unclaimed.",
+    "why_next": "D143 is closed, while D47 retains a concrete S2 wrong-document replay risk and its smallest decision-bearing runtime test: on a real public site, release a delayed old-document response after navigation then compare it with current-document output on an installed development build.",
+    "evidence": [
+      "docs/stabilization/inventory.json",
+      "docs/stabilization/defects/EXT-D-0047.json",
+      "docs/stabilization/reports/showcase-d47-current-evidence-peer.json"
+    ],
+    "remaining_gate": "The delayed matching old response with higher old sequence remains unverified; successful ordinary navigation or replay is insufficient."
+  },
+  "limits": [
+    "No overall product health conclusion.",
+    "No Store submission, listing, dashboard, or publication state was changed or independently observed during this audit.",
+    "No claim of guest/member acceptance for a new Store candidate."
+  ]
+}
