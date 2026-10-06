@@ -12,7 +12,7 @@ afterEach(() => {
 });
 
 describe('build-time Management API read', () => {
-  it('sends one SELECT with server read_only and validates distinct returned rows', async () => {
+  it('sends one SELECT through the server-enforced read-only endpoint and validates returned rows', async () => {
     vi.stubEnv('MATRX_SUPABASE_PROJECT_REF', projectRef);
     vi.stubEnv('SUPABASE_ACCESS_TOKEN', 'operator-fixture-token');
     const fetchRead = vi.fn(
@@ -28,12 +28,9 @@ describe('build-time Management API read', () => {
     ).resolves.toEqual([{ name: 'capture_page' }, { name: 'open_source' }]);
     expect(fetchRead).toHaveBeenCalledOnce();
     const [url, options] = fetchRead.mock.calls[0] as unknown as [string, RequestInit];
-    expect(url).toBe(`https://api.supabase.com/v1/projects/${projectRef}/database/query`);
+    expect(url).toBe(`https://api.supabase.com/v1/projects/${projectRef}/database/query/read-only`);
     expect(options.method).toBe('POST');
-    expect(JSON.parse(String(options.body))).toEqual({
-      query: 'select name from tool.definition',
-      read_only: true,
-    });
+    expect(JSON.parse(String(options.body))).toEqual({ query: 'select name from tool.definition' });
   });
 
   it('refuses a second statement before any network request', async () => {

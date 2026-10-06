@@ -83,7 +83,9 @@ beforeEach(() => {
       return new Response(JSON.stringify(serverDetail), { status: serverStatus });
     }
     const body = JSON.parse(String(init.body));
-    if (body.read_only !== true) throw new Error('Read must be server-enforced read_only');
+    if (!_url.endsWith('/database/query/read-only') || Object.hasOwn(body, 'read_only')) {
+      throw new Error('Read must use the server-enforced read-only endpoint');
+    }
     const sql = String(body.query);
     let rows: unknown;
     let status = 201;

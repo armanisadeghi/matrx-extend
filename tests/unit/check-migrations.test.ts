@@ -36,11 +36,11 @@ describe('strict migration ledger verification through the real Management reade
   });
 
   it('uses the real operator query when public configuration is absent and detects pending migrations', async () => {
-    const read = vi.fn(async (_url: string, init: RequestInit) => {
+    const read = vi.fn(async (url: string, init: RequestInit) => {
+      expect(url).toMatch(/\/database\/query\/read-only$/);
       expect(JSON.parse(String(init.body))).toEqual({
         query:
           "select filename, checksum from public._schema_migrations where source = 'matrx-extend' order by filename",
-        read_only: true,
       });
       return new Response('[]', { status: 201 });
     });
