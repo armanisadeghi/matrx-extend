@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-06",
+  "scope": "Source-backed replacement proposal for EXT-F-2002-T01 and corrected source reconciliation metadata for C08/C10. No canonical inventory, product, runtime, DB, browser, build, or test changes.",
+  "sources": {
+    "canonical_inventory": "docs/stabilization/inventory.json (current T01 and stable control IDs)",
+    "reconcile_report": ".research/capture-controls-reconcile-20261006.json",
+    "independent_peer": ".research/capture-controls-peer-20261006.json"
+  },
+  "correction_summary": [
+    "C08/C10 remain stable IDs, source-absent and owner-intent-unresolved; they are unlinked and uncovered, not N/A or covered.",
+    "Retry expects pending state and queue refresh; ordinary row reappearance requires separately observed server processing. Parked rows are a distinct branch.",
+    "Removed duplicate standalone C18-C28 actions and expected results; each behavioral check remains once in the consolidated steps.",
+    "No product failure is inferred from source evidence alone; runtime statuses and evidence are not changed."
+  ],
+  "test_case_replacement": {
+    "id": "EXT-F-2002-T01",
+    "title": "Capture, continue, paste, retry, and resolve owned queued sources",
+    "modes": ["member", "admin"],
+    "preconditions": [
+      "For each member and admin run, use a separate, real signed-in profile and an explicitly selected device organization. Capture the principal role and organization in the receipt; do not use the active organization as a list filter or infer member access from admin access.",
+      "Complete the resource permit and full build receipt required by docs/stabilization/PLAN.md § Build and reload contract. Use the approved receipt-bound extension artifact, verify loaded extension identity and source/tree hashes, reopen the actual side panel, and reload the controlled target pages after any applicable extension reload. Record no secrets.",
+      "Use only campaign-owned disposable queued sources in the selected organization, with known URLs and known queue buckets. Prepare separate owned rows for the automated, user-gated, paste, retry, and verdict branches, plus rows in each bucket for filter checks. For terminal verdicts, use only sacrificial owned sources with established cleanup ownership. If a required owned row or a naturally qualifying thin response is unavailable, leave that branch unverified; do not repurpose personal/organization records or fabricate backend responses.",
+      "Keep one owned ordinary page open in the disposable profile for the source-link check. Do not use an everyday browsing profile. Record fixture identifiers only, not page text or credential data.",
+      "Before each capture-level filter check, clear all queue filters, then select only the single tested level; clear it before checking another level. Execution owner must provision and clean up the named disposable sources; until those fixtures exist the procedure is not runnable."
+    ],
+    "steps": [
+      "In Tasks, click the toolbar toggle with title 'Group by capture level', then 'Group by project'; confirm the visible queue switches between level sections and project groups. [C20, C21]",
+      "Click the toolbar button with title 'Filters'. Under the exact group heading 'Capture level', select each available queue bucket option in turn using owned fixture rows: 'L1 · Quick', 'L2 · Scroll', 'L3 · Needs help', 'L4 · Paste', 'Sign-in', and 'Low-value'. For each, confirm only rows in that bucket remain; clear the bucket selection before the next option. Finish with 'Clear all filters' and confirm the full fixture queue returns. [C22-C28]",
+      "For the owned L1 source and then the owned L2 source, click its visible Run/Capture action while its URL is not already the active tab. Observe loading/error/success state and queue refresh. For L2, also observe page settling/scroll behavior on the controlled page. Record the actual terminal UI result; success and thin are distinct outcomes, and an explicit error is not a pass. [C01]",
+      "For the owned L3 user-gated source, click Trigger/Capture this tab. Confirm the target page becomes active and the in-page Matrx overlay appears. On this fixture, first click Cancel and confirm the overlay closes while the queued source remains available. On a separate L3 fixture, trigger again, complete the page gate yourself, and click Capture page in the overlay or Go in the side panel; wait for capture submission and inspect the row status. [C02, C04, C11]",
+      "On a separate owned L3 source, trigger the overlay and click 'Expect thin content'. If the response is thin, verify the source is resolved as accepted and the page tab is closed; if it is not thin, record that the auto-accept-thin branch was not exercised. Do not induce a thin response by mutating network/backend behavior. [C03]",
+      "On the controlled ordinary page, click the queued source URL and confirm it opens that source in a separate browser tab. Return to Tasks. [C12]",
+      "For the owned L4 source, enter a short synthetic marker string into the paste field and submit it. Observe success/error and whether the field clears; verify the queue refresh. On another L4 source, leave the editor without submitting and verify there was no content submission. This is a no-submit observation only; C10 remains unlinked because no cancel-editor control is present in source. [C09]",
+      "For a source with a prior capture attempt, open Resolve and verify 'Retry from scratch' is available; select it and observe the verdict response, pending state, and queue refresh. Do not expect an ordinary row to reappear from refresh alone. Separately, if an owned capture action produces a real recoverable error, click the row's Run/Trigger action again and observe whether a new attempt starts. If no error occurs, leave retry-after-error coverage unverified. [C05, C13, C17]",
+      "Using separate disposable owned sources, open Resolve and exercise the exact source labels 'This is the whole page', 'Page is gated', 'Page is dead / 404', 'Wrong content — not what it should be', and 'Ignore — don't want it'. On a source with a prior attempt, also exercise 'Retry from scratch'. For the Retry source, record pending status and refresh; do not expect an ordinary row to reappear before separately observed server reprocessing. Observe feedback for each; do not choose any terminal verdict for non-disposable records. [C06, C14-C19]",
+      "Repeat the applicable warm procedure for each role after the exact extension reload/reopen and controlled-page reload required by PLAN.md. Compare observations independently by role; do not reuse a prior run's result."
+    ],
+    "expected": [
+      "Grouping toggles display the queue by capture level or by project according to the selected mode. These checks cover queue organization only; they do not cover C08 or C10, which remain unlinked pending owner-intent reconciliation.",
+      "The Filters popover opens. Each exact capture-level option filters the rows to its corresponding bucket; clearing the filters restores the full fixture queue. This behavior is proposed under fresh filter control IDs only and does not cover C08's per-source intensity-picker description.",
+      "L1/L2 actions visibly enter loading phases and either show a successful/thin result followed by queue refresh or a specific recoverable error. Record observed tab behavior without treating unverified backend/parser outcomes as fixed.",
+      "L3 Trigger opens the user-gate overlay and waits for an explicit person action. Cancel removes the overlay and clears local in-progress state without submitting capture or removing the queued source. Capture page/Go removes the overlay and submits the currently loaded page; successful thin capture exposes its verdict card, while errors remain visible.",
+      "Expect thin content only auto-applies accept_as_is when the returned capture is thin. A non-thin response does not prove the conditional accept branch; unavailable fixture behavior remains unverified. The overlay action attempts to close its tab after capture completes.",
+      "The source URL link opens its URL in a separate tab; the Tasks side panel and source row remain available.",
+      "Paste submission with non-empty content sends trimmed text for that queued source, shows success or a specific error, and clears the local paste value only after success. Empty content cannot be submitted. The no-submit observation does not establish a source-backed C10 cancel control.",
+      "Resolve → Retry is available only after a prior attempt. Selecting Retry returns the source to pending and queue refresh reflects the current queue state. An ordinary pending source is not selected by the extension queue, whose ordinary rows require thin/failed status and server_gave_up; therefore refresh alone does not promise immediate reappearance. A later reappearance may be expected only after a separate, actually observed server-processing step changes the source back into a qualifying state. Parked gated-login/low-value rows follow separate queue rules and must be recorded as a distinct fixture branch. A real capture error remains visible and the row's Run/Trigger action is available for another attempt; absent an actual error, that recovery branch remains unverified.",
+      "The current source verdict catalog shows the exact labels 'This is the whole page', 'Wrong content — not what it should be', 'Page is gated', 'Page is dead / 404', 'Ignore — don't want it', and conditional 'Retry from scratch'. Successful terminal verdicts remove their owned source from the refreshed queue; Retry sets pending and queue refresh shows the resulting state. Do not treat refresh as proof that an ordinary row has re-entered the queue; require separate observed server processing before expecting reappearance. Errors remain visible.",
+      "Warm and reload observations are recorded independently for member and admin. Guest applicability remains feature-level not-applicable per the signed-in Tasks audience; this case makes no guest-case or guest-runtime-coverage claim. This proposal itself leaves all inventory cells/evidence states unchanged."
+    ],
+    "dimensions": [
+      "member",
+      "admin",
+      "explicit-device-organization",
+      "owned-fixture",
+      "warm",
+      "extension-reload",
+      "controlled-page-reload",
+      "capture",
+      "paste",
+      "retry",
+      "verdict",
+      "error-recovery",
+      "queue-grouping",
+      "queue-filter"
+    ],
+    "control_ids": [
+      "EXT-F-2002-C01",
+      "EXT-F-2002-C02",
+      "EXT-F-2002-C03",
+      "EXT-F-2002-C04",
+      "EXT-F-2002-C05",
+      "EXT-F-2002-C06",
+      "EXT-F-2002-C09",
+      "EXT-F-2002-C11",
+      "EXT-F-2002-C12",
+      "EXT-F-2002-C13",
+      "EXT-F-2002-C14",
+      "EXT-F-2002-C15",
+      "EXT-F-2002-C16",
+      "EXT-F-2002-C17",
+      "EXT-F-2002-C18",
+      "EXT-F-2002-C19",
+      "EXT-F-2002-C20",
+      "EXT-F-2002-C21",
+      "EXT-F-2002-C22",
+      "EXT-F-2002-C23",
+      "EXT-F-2002-C24",
+      "EXT-F-2002-C25",
+      "EXT-F-2002-C26",
+      "EXT-F-2002-C27",
+      "EXT-F-2002-C28"
+    ]
+  },
+  "source_reconciliation_replacement": {
+    "EXT-F-2002-C08": {
+      "status": "source-absent/owner-intent-unresolved",
+      "reason": "Current source has no per-source capture-intensity picker. The initial stabilization inventory explicitly lists this control, while inspected source/history does not establish whether it reflects owner intent or a stale inventory entry. Keep the stable ID source-absent and owner-intent-unresolved, unlinked from T01, and uncovered; do not map queue grouping/filtering to it. No product failure is claimed from source absence alone.",
+      "evidence": ".research/capture-controls-reconcile-20261006.json; .research/capture-controls-peer-20261006.json"
+    },
+    "EXT-F-2002-C10": {
+      "status": "source-absent/owner-intent-unresolved",
+      "reason": "Current PasteRow has no editor cancel control. The initial stabilization inventory explicitly lists this control, while inspected source/history does not establish whether it reflects owner intent or a stale inventory entry. Keep the stable ID source-absent and owner-intent-unresolved, unlinked from T01, and uncovered; the separate no-submit observation is not C10 coverage. No product failure is claimed from source absence alone.",
+      "evidence": ".research/capture-controls-reconcile-20261006.json; .research/capture-controls-peer-20261006.json"
+    }
+  },
+  "limits": [
+    "The case remains proposed and source-only; role/access, fixture existence, runtime behavior, and server reprocessing are unverified.",
+    "Fifteen disjoint rows remains a planning lower bound only, not a readiness claim. Capture the fixture identifiers, bucket/topic membership, role access, reset owner, and observed branch preconditions before execution."
+  ]
+}
