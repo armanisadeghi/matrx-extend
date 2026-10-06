@@ -57,5 +57,52 @@
     "reason": "This lane read source and inventory only. No browser, backend, fixture, role, organization, build, or test execution was performed."
   },
   "decision": "The procedure is mostly source-aligned but should not be applied unchanged: remove the nonexistent guest-case coverage assertion and do not map C08 to filtering/grouping. Treat the omitted two source verdict actions as an explicit inventory coverage gap. Keep all runtime cells and evidence untouched.",
-  "files_changed": [".research/inventory-procedure-peer-20261006.json"]
+  "files_changed": [".research/inventory-procedure-peer-20261006.json"],
+  "scoped_reverification": {
+    "target_commit": "bab43e6dd68ded98de078fac957daa4e62c0456d",
+    "scope": "Re-verified the revised EXT-F-2002 proposal only. No canonical inventory, runtime, or test changes.",
+    "prior_findings": [
+      {
+        "finding": "Guest coverage claimed from a nonexistent EXT-F-2002 guest case.",
+        "disposition": "ADDRESSED",
+        "evidence": "T01 remains member/admin; revised expected text says guest is feature-level not-applicable and makes no guest-case or guest-runtime-coverage claim."
+      },
+      {
+        "finding": "C08 filter/group actions were incorrectly mapped to per-source intensity picker.",
+        "disposition": "ADDRESSED",
+        "evidence": "C08 is omitted from control_ids, explicitly unlinked/uncovered, and the queue controls have separate proposed IDs C20-C28."
+      },
+      {
+        "finding": "Current verdict catalog's content_mismatch and ignored actions were missing from inventory/procedure coverage.",
+        "disposition": "ADDRESSED_IN_PROPOSAL; CANONICAL_INVENTORY_PENDING_OWNER",
+        "evidence": "C18/C19 are proposed additions and linked to exact Resolve labels/actions; steps exercise both. They are not yet present in docs/stabilization/inventory.json, and the proposal correctly does not alter that canonical file."
+      },
+      {
+        "finding": "No concrete owned queue fixture IDs or provisioning route is established.",
+        "disposition": "NOT ADDRESSED",
+        "evidence": "The revised precondition still requires campaign-owned disposable rows and cleanup ownership without identifying actual available fixture IDs/provisioning. It correctly leaves unavailable branches unverified."
+      }
+    ],
+    "control_id_and_mapping_check": {
+      "result": "PASS",
+      "details": "The revised control_ids contain 25 unique IDs. C18-C28 are each defined once in proposed_additions and each is included in control_ids; no ID conflicts with existing EXT-F-2002 C01-C17 (including the unused C07). C18/C19 labels match the six-option source verdict catalog; C20/C21 match the toolbar group-by buttons; C22 is the Filters popover; C23-C28 match the six exact BUCKET_LABELS values and bucket filtering. Existing inventory modes remain member/admin."
+    },
+    "outcome_quality_check": {
+      "result": "PASS_WITH_CONCERNS",
+      "details": "The revised capture and verdict expectations explicitly keep errors visible/unverified rather than counting them as passes. Retry is only exercised after a prior attempt; the post-error recapture branch remains unverified when no real recoverable error occurs. C18/C19 distinguish successful terminal resolution from visible failure. Source-present toolbar controls have actionable visible outcomes. The case still depends on separately established disposable records before execution."
+    },
+    "status_preservation": {
+      "result": "PASS",
+      "details": "The target commit changes only the proposal report; docs/stabilization/inventory.json is untouched. The proposal retains source-procedure-proposed-unverified and states that inventory cells, statuses, evidence, and runtime claims remain unchanged. C18-C28 are explicitly pending fresh review, not presented as already canonical."
+    },
+    "runtime_verdict": {
+      "status": "UNVERIFIED",
+      "reason": "Source and proposal inspection only. No browser, backend, fixture, role, organization, build, or test execution was performed."
+    },
+    "proposal_quality_verdict": {
+      "status": "PARTIAL",
+      "reason": "The earlier guest/C08/verdict-mapping blockers are corrected and the new source mappings are accurate. The procedure is not yet execution-ready because concrete disposable queue records and provisioning/cleanup ownership remain unstated. Root must decide/apply any approved proposed control additions to the canonical inventory."
+    },
+    "files_changed": [".research/inventory-procedure-peer-20261006.json"]
+  }
 }
