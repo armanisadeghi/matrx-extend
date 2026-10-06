@@ -19,6 +19,12 @@
   "severity": "S2: important; replay can miss intended initial data or return stale data from the prior document.",
   "priority": "P1: saved Network replay must identify the intended request and source document.",
   "state": "in-fix",
+  "native_boundary_owner": {
+    "agent": "d47_native_boundary",
+    "scope": "Bounded T57 delayed prior-document response acceptance route and proof limits only; admin mode, installed development artifact, real sign-in and service responses.",
+    "allowed_files": ["docs/stabilization/defects/EXT-D-0047.json", "tests/fixtures/showcase-replay/", "tests/browser/showcase-d47-*", ".research/d47-native-boundary-20261006.json"],
+    "next_action": "Create a controlled real-network same-URL request race with higher old-document sequence, then run it only under the coordinated native permit and record whether Chrome delivers the old response after navigation."
+  },
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
   "verification_status": "Current independentevidencepeer e7a67bcd confirms initialrequest timing and documentidentity controlled regressions (including meaningful identitymutation), plus bounded installed initialHN capture and saved10row replay on8b0f8adc/9ea6687b. Delayed matching prior-document response with higher old sequence is still nativeUNVERIFIED; T57 and original D47 closure remain incomplete. No current runtime was run by evidencepeer.",
   "source_report": "docs/stabilization/reports/showcase-network-final-peer.json",
