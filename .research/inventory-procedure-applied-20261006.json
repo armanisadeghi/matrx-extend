@@ -6,5 +6,12 @@
   "preservation": "All existing feature cells/results unchanged; all other features byte-equivalent as parsed JSON; global scope_complete remains false. IDs unique and every case link resolves. Generated tracker refreshed.",
   "review": ".research/inventory-procedure-peer-20261006.json",
   "ruling": "Accept reviewed source-mapped subset for inventory only. Fixture provisioning and cleanup ownership remain an explicit execution prerequisite and readiness gap; this does not admit a test or claim source completeness.",
-  "verification": "JSON structural/preservation assertions passed; generator ran. Inventory is excluded by repository Biome config and exceeds its default size limit. Biome stdin formatting succeeded with an explicit 5 MB file limit; retained the existing two-space JSON layout to avoid an unrelated 20,000-line reformat."
+  "verification": "JSON structural/preservation assertions passed; generator ran. Inventory is excluded by repository Biome config and exceeds its default size limit. Biome stdin formatting succeeded with an explicit 5 MB file limit; retained the existing two-space JSON layout to avoid an unrelated 20,000-line reformat.",
+  "retry_and_source_reconciliation": {
+    "review": ".research/capture-final-peer-20261006.json",
+    "proposal_commit": "5750e923",
+    "review_commit": "a5d39ae3",
+    "changes": "Applied reviewed consolidated T01 steps/expectations with all25 control links and mode requirements preserved. Expanded disposable fixture precondition for distinct parked retry, wrong-content and ignore rows. Ordinary Retry expects pending, not immediate queue reappearance. All six filters required. C08/C10 retained source-absent/owner-intent-unresolved, unlinked and uncovered.",
+    "verification": "Structural assertions prove all other features, mode cells, control test statuses and case IDs/modes/dimensions/control links unchanged. No runtime verdict changed; fixtures and actual behavior remain unverified."
+  }
 }
