@@ -121,14 +121,16 @@ async function readSaveObservation(panel, recipe) {
     })()`,
   );
 }
-async function trustedPanelClick(panel, selector, text = null) {
+async function trustedPanelClick(panel, selector, text = null, patternName = null) {
   const point = await evaluate(
     panel,
     `(() => {
     const found = [...document.querySelectorAll(${JSON.stringify(selector)})].filter((el) => {
       const r = el.getBoundingClientRect();
       return r.width > 0 && r.height > 0 && !el.disabled && getComputedStyle(el).visibility === 'visible'
-        && (${JSON.stringify(text)} === null || el.textContent.trim() === ${JSON.stringify(text)});
+        && (${JSON.stringify(text)} === null || el.textContent.trim() === ${JSON.stringify(text)})
+        && (${JSON.stringify(patternName)} === null || [...(el.closest('div.group')?.querySelectorAll('span.truncate.text-sm.font-medium') ?? [])]
+          .some(name => name.textContent.trim() === ${JSON.stringify(patternName)}));
     });
     if (found.length !== 1) return { count: found.length };
     found[0].scrollIntoView({ block: 'center', inline: 'center' });
@@ -425,7 +427,7 @@ try {
       await installPassiveWorkerProbe(worker, origin);
       probeInstalled = true;
       stage('saved_replay');
-      await click(panel, 'title', 'Run pattern');
+      await trustedPanelClick(panel, 'button[title="Run pattern"]', null, recipe);
       stage('saved_approval');
       await allow(panel);
       stage('current_http');
