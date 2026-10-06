@@ -1,32 +1,70 @@
 {
   "schema_version": 1,
   "case_id": "EXT-F-2002-T01",
-  "status": "access_prerequisite_unavailable_no_fixture_writes",
-  "scope": "Lightweight private authentication and product API read only. No browser, scrape, capture, schema change, test, build, deployment, or fixture write.",
+  "status": "role_scoped_fixture_access_and_supported_cleanup_verified",
   "observed_at": "2026-10-06",
-  "admin_access": {
-    "approved_organization_source": "Existing mode-0600 admin-approved organization file and existing mode-0600 reviewer config agreed on the exact organization name; the reviewer config supplied its explicit organization ID.",
-    "sign_in": "Existing approved admin credentials from the local aidream environment authenticated through the published Supabase password token endpoint: HTTP 200; returned account matched the configured admin identity.",
-    "membership": "The signed-in admin called the existing mbr_for_user organization-membership RPC: HTTP 200; its returned container IDs included the explicitly approved organization ID.",
-    "product_read": "GET /research/topics on the live backend with that user's bearer and X-Organization-Id set to the approved organization ID returned HTTP 200.",
-    "credential_handling": "Credentials and bearer existed only in the private read process; neither values nor private organization or account names were printed or recorded."
+  "scope": "Lightweight first-party authentication, supported product API fixture creation and exclusion. No browser, scrape, capture, schema change, test, build, deployment, account creation, role change, or outbound message.",
+  "run_id": "f99bd053-5d0d-4403-a76b-a918853c91f8",
+  "access": {
+    "admin": "Existing approved admin credentials authenticated through Supabase Auth HTTP 200; exact approved organization membership RPC HTTP 200; live GET /research/topics HTTP 200.",
+    "nonadmin": "Existing designated reviewer was verified active, confirmed, unbanned, with zero admin assignments by the repository helper. A fresh first-party single-use magic link was generated without sending email, redeemed through Supabase Auth verifyOtp, and matched the exact existing reviewer user ID. No password or account data changed.",
+    "nonadmin_membership": "Live mbr_for_user RPC HTTP 200 found exactly one active organization membership with role owner. The organization name was verified against the helper's exact named choice, then GET /research/topics with its ID in X-Organization-Id returned HTTP 200. This proves a nonadmin account with organization-owner membership, not an organization member-role account.",
+    "organization_boundary": "The approved admin and designated nonadmin belong to different organizations. Direct GET of the other principal's topic returned HTTP 403 in both directions. Each topic is accessible to its creating principal; shared-topic, same-organization role coverage remains unavailable without an already authorized common organization.",
+    "credential_handling": "Auth credentials, one-time link, and bearer tokens remained private in process memory or short-lived mode-0600 local files; no value is recorded here."
   },
-  "member_access": {
-    "prior_evidence": ".research/hosted-member205-final.json records an existing nonadmin signed-in member, fresh organization selection, and a canonical admin check returning zero rows during a hosted run.",
-    "current_finding": "No reusable member credential, magic link, or bearer was found in the inspected approved local reviewer manifests, production and aidream environment key inventories, or bounded private fixture-file inventory. The previous hosted magic-link file was explicitly deleted after its run. The local reviewer identity manifest has identity metadata only; the reviewer organization config has an explicit organization choice but no member session.",
-    "independent_product_read": "not_performed_no_current_member_session",
-    "role_scoped_topic_visibility": "unverified"
+  "fixtures": [
+    {
+      "principal": "admin",
+      "organization_id": "11f4e747-c13a-49c7-81a3-66e6391f8a9b",
+      "topic_id": "fc94fdff-0e4b-4143-9132-b7557da06b4d",
+      "source_id": "8afa7e38-7775-4d0f-aa7e-e9527b16e794",
+      "source_url": "https://www.aimatrx.com/matrx-extend-demo?ext_f_2002=f99bd053-5d0d-4403-a76b-a918853c91f8&role=admin&nonce=71082b0a-33bf-45df-8508-70afc333a0f3",
+      "expected_page_identity": "Owned public Matrx Extend demo page; query parameters provide a unique fixture identity.",
+      "topic_create_http": "2xx (exact 200/201 status not retained by private request receipt)",
+      "topic_get_http": 200,
+      "source_create_http": 201,
+      "source_list_http": 200,
+      "initial_source_state": {
+        "is_included": true,
+        "scrape_status": "pending",
+        "server_attempts": 0,
+        "server_gave_up": false
+      },
+      "source_exclude_patch_http": 200,
+      "excluded_source_readback_http": 200,
+      "extension_queue_http": 200,
+      "excluded_source_absent_from_queue": true,
+      "cleanup_owner": "EXT-F-2002-T01; exact source ID above"
+    },
+    {
+      "principal": "nonadmin",
+      "organization_id": "4125c63d-518d-4fba-ba43-031160c7284b",
+      "topic_id": "0f5654c5-2bc9-4076-8734-f81afdaa6d3d",
+      "source_id": "7626ffe5-12af-4e03-bd03-445063e99552",
+      "source_url": "https://www.aimatrx.com/matrx-extend-demo?ext_f_2002=f99bd053-5d0d-4403-a76b-a918853c91f8&role=nonadmin&nonce=6eaf7717-f036-4473-a146-275825d0b9fa",
+      "expected_page_identity": "Owned public Matrx Extend demo page; query parameters provide a unique fixture identity.",
+      "topic_create_http": "2xx (exact 200/201 status not retained by private request receipt)",
+      "topic_get_http": 200,
+      "source_create_http": 201,
+      "source_list_http": 200,
+      "initial_source_state": {
+        "is_included": true,
+        "scrape_status": "pending",
+        "server_attempts": 0,
+        "server_gave_up": false
+      },
+      "source_exclude_patch_http": 200,
+      "excluded_source_readback_http": 200,
+      "extension_queue_http": 200,
+      "excluded_source_absent_from_queue": true,
+      "cleanup_owner": "EXT-F-2002-T01; exact source ID above"
+    }
+  ],
+  "cleanup": {
+    "method": "PATCH /research/topics/{topic_id}/sources/{source_id} with is_included=false on each exact campaign-owned source ID.",
+    "verified": "Both PATCH responses returned HTTP 200 with is_included=false; each excluded-source list read returned its exact ID; each authenticated extension scrape-queue GET returned HTTP 200 with the exact source ID absent.",
+    "topic_state": "Both tagged topic records remain for authorized reuse; no deletion route was invoked.",
+    "limitation": "Exclusion dequeues sources but does not reset history. No scrape or extension capture attempt ran, so these pending sources are not ordinary L1-L4 queue fixtures."
   },
-  "fixture_provisioning": {
-    "topics_created": [],
-    "sources_created": [],
-    "reason_not_started": "The intended role-scoped fixture requires separate member access and a proven selected organization before a topic/source write. Admin access alone cannot establish member visibility. The supported topic/source create and exclusion contracts were confirmed in the research router, but no write was sent.",
-    "supported_routes_reviewed": [
-      "POST /research/topics",
-      "POST /research/topics/{topic_id}/sources",
-      "PATCH /research/topics/{topic_id}/sources/{source_id} with is_included=false"
-    ],
-    "cleanup": "No records were created or changed; no exclusion was needed."
-  },
-  "next_prerequisite": "Recover an existing authorized member sign-in path for the designated nonadmin principal without printing or changing credentials, verify that principal's independently selected organization and membership, then use the supported product API to create at most two tagged topics and two unique-URL sources and read them as both principals. Exclude only exact owned source IDs through the supported PATCH and verify the read-back and queue absence."
+  "remaining": "Same-organization admin/nonadmin visibility, organization member-role coverage, naturally qualified queue buckets, and runtime capture acceptance remain unverified. The two excluded sources are not eligible queue inputs; future capture runs need unique new URLs and natural server qualification under the desired role and organization."
 }
