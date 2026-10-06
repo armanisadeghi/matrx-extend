@@ -106,7 +106,7 @@ export async function observeShowcaseRelay(panel) {
     globalThis.__showcaseD42Relays = events;
     chrome.runtime.onMessage.addListener((message) => {
       if (message?.__matrx === true &&
-          ['${EXIT}', '${DETECTED}'].includes(message.kind)) {
+          ['${EXIT}', '${DETECTED}', 'data:list-picker-result'].includes(message.kind)) {
         events.push({ kind: message.kind, session_id: message.payload?.session_id,
           tab_id: message.payload?.tab_id ?? null,
           document_id: message.payload?.document_id ?? null });
