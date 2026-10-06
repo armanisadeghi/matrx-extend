@@ -45,6 +45,7 @@ let fixture;
 let probeWorker;
 let probeInstalled = false;
 let activePanel;
+let saveObservation = null;
 const stage = (value) => {
   report.stage = value;
 };
@@ -89,6 +90,37 @@ async function stopFixture() {
 }
 
 const panelText = (panel) => evaluate(panel, 'document.body.innerText');
+async function readSaveObservation(panel, recipe) {
+  return evaluate(
+    panel,
+    `(() => {
+      const content = [...document.querySelectorAll('[data-radix-popper-content-wrapper]')]
+        .find(wrapper => wrapper.getBoundingClientRect().width > 0 &&
+          wrapper.getBoundingClientRect().height > 0 &&
+          getComputedStyle(wrapper).visibility === 'visible' &&
+          wrapper.querySelector('input') &&
+          [...wrapper.querySelectorAll('button')].some(button => button.textContent.trim() === 'Save'));
+      const saveButton = [...(content?.querySelectorAll('button') ?? [])]
+        .find(button => button.textContent.trim() === 'Save');
+      const error = content?.querySelector('.text-destructive')?.textContent.trim() ?? '';
+      const input = content?.querySelector('input');
+      return {
+        popover_visible: Boolean(content),
+        name_matches: input ? input.value === ${JSON.stringify(recipe)} : null,
+        save_button_present: Boolean(saveButton),
+        save_button_disabled: saveButton?.disabled ?? null,
+        saving_indicator: Boolean(saveButton?.querySelector('.animate-spin')),
+        saved_summary_visible: Boolean(content?.textContent.includes('Pattern saved')),
+        error_present: Boolean(error),
+        error_kind: !error ? null :
+          /page changed|previous page|capture it again/i.test(error) ? 'page_identity' :
+          /organization|organisation/i.test(error) ? 'organization' :
+          /append|row/i.test(error) ? 'append' :
+          /save pattern|failed to save/i.test(error) ? 'save' : 'other'
+      };
+    })()`,
+  );
+}
 async function trustedPanelClick(panel, selector, text = null) {
   const point = await evaluate(
     panel,
@@ -330,11 +362,32 @@ try {
       });
       // Trusted typing through CDP; React observes the normal input sequence.
       await panel.send('Input.insertText', { text: recipe });
+      saveObservation = { before_click: await readSaveObservation(panel, recipe), last: null };
+      assert.equal(saveObservation.before_click.name_matches, true, 'save_name_not_entered');
+      assert.equal(
+        saveObservation.before_click.save_button_disabled,
+        false,
+        'save_button_disabled',
+      );
       await click(panel, 'button-text', 'Save');
+      const saveState = await waitFor(
+        'recipe_save_terminal',
+        async () => {
+          const state = await readSaveObservation(panel, recipe);
+          saveObservation.last = state;
+          return state;
+        },
+        (state) =>
+          state?.error_present === false &&
+          (state.saved_summary_visible === true || state.popover_visible === false),
+      );
+      saveObservation.terminal = saveState.saved_summary_visible ? 'summary' : 'popover_closed';
+      stage('verify_persisted_recipe');
+      await trustedPanelClick(panel, '[role="tablist"] [role="tab"]', 'Patterns');
       await waitFor(
-        'recipe_saved',
+        'saved_recipe_visible',
         () => panelText(panel),
-        (value) => value?.includes('Pattern saved'),
+        (value) => value?.includes(recipe),
       );
       stage('arm_old_document');
       await control(origin, 'arm');
@@ -372,12 +425,6 @@ try {
       await installPassiveWorkerProbe(worker, origin);
       probeInstalled = true;
       stage('saved_replay');
-      await trustedPanelClick(panel, '[role="tablist"] [role="tab"]', 'Patterns');
-      await waitFor(
-        'saved_recipe_visible',
-        () => panelText(panel),
-        (value) => value?.includes(recipe),
-      );
       await click(panel, 'title', 'Run pattern');
       stage('saved_approval');
       await allow(panel);
@@ -466,6 +513,7 @@ try {
       : null,
     saved_result: report.saved_result,
     trace_assessment: report.trace_assessment ?? null,
+    save_observation: saveObservation,
     native_stage: report.native_stage ?? null,
     auth_stage: report.auth_stage ?? null,
   };
