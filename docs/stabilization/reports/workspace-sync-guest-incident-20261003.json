@@ -1,6 +1,6 @@
 {
-  "observed_at": "2026-10-06T22:49:00.778883+00:00",
-  "last_all_remotes_fetched": "2026-10-06T22:49:00.778883+00:00",
+  "observed_at": "2026-10-06T22:50:03.254011+00:00",
+  "last_all_remotes_fetched": "2026-10-06T22:50:03.254011+00:00",
   "baseline_verified_from": "/Volumes/Samsung2TB/code/.stabilization-scratch/d47-ready-oct6-ledger-baseline.json",
   "repositories": [
     {
@@ -42,10 +42,10 @@
     {
       "repo": "ai-matrx",
       "prior_origin_main": "be669c40f8f0390ee73b15e598bd3a35e195528d",
-      "origin_main": "4d7a1d226647fb91a486bcaf5cf6f83bbdd5757c",
-      "last_update": "2026-10-06T15:45:37-07:00",
-      "files_modified_since_prior_ledger": 36,
-      "pushed_to_main": "2026-10-06T15:45:37-07:00",
+      "origin_main": "e0fa24b977c9c147931162acce28593ba08bda68",
+      "last_update": "2026-10-06T15:49:34-07:00",
+      "files_modified_since_prior_ledger": 192,
+      "pushed_to_main": "2026-10-06T15:49:34-07:00",
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -53,27 +53,27 @@
       "other_branches": ["main"],
       "unmerged_remote_branches": [],
       "worktrees": [
-        "worktree /Volumes/Samsung2TB/code/ai-matrx\nHEAD 4d7a1d226647fb91a486bcaf5cf6f83bbdd5757c\nbranch refs/heads/main"
+        "worktree /Volumes/Samsung2TB/code/ai-matrx\nHEAD e0fa24b977c9c147931162acce28593ba08bda68\nbranch refs/heads/main"
       ],
       "exception": "None"
     },
     {
       "repo": "matrx-extend",
       "prior_origin_main": "cbb3d3fda72f024a030fd0e85083fdef93bdfa8b",
-      "origin_main": "69a9bb50763eaf69eef23b5df121abdb91a39363",
-      "last_update": "2026-10-06T15:48:50-07:00",
+      "origin_main": "776559122572ffdfc56e05dd26c2f0e29260ef16",
+      "last_update": "2026-10-06T15:49:38-07:00",
       "files_modified_since_prior_ledger": 66,
-      "pushed_to_main": "2026-10-06T15:48:50-07:00",
+      "pushed_to_main": "2026-10-06T15:49:38-07:00",
       "branch": "main",
       "ahead_behind": "0\t0",
-      "dirty_paths": ["M docs/stabilization/reports/workspace-sync-guest-incident-20261003.json"],
+      "dirty_paths": [],
       "stashes": [],
       "other_branches": ["main"],
       "unmerged_remote_branches": [],
       "worktrees": [
-        "worktree /Volumes/Samsung2TB/code/matrx-extend\nHEAD 69a9bb50763eaf69eef23b5df121abdb91a39363\nbranch refs/heads/main"
+        "worktree /Volumes/Samsung2TB/code/matrx-extend\nHEAD 776559122572ffdfc56e05dd26c2f0e29260ef16\nbranch refs/heads/main"
       ],
-      "exception": "Active edits: M docs/stabilization/reports/workspace-sync-guest-incident-20261003.json"
+      "exception": "None"
     },
     {
       "repo": "matrx-local",
