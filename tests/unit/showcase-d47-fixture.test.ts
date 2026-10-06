@@ -7,9 +7,22 @@ import { afterEach, expect, it } from 'vitest';
 const children: ReturnType<typeof spawn>[] = [];
 afterEach(async () => {
   for (const child of children.splice(0)) {
+    if (child.exitCode !== null || child.signalCode !== null) continue;
+    const exited = once(child, 'exit');
     child.kill();
-    await once(child, 'exit');
+    await exited;
   }
+});
+
+it('tears down when the fixture child exited before cleanup', async () => {
+  await fixtureOrigin();
+  const child = children.at(-1);
+  expect(child).toBeDefined();
+  if (!child) return;
+  const exited = once(child, 'exit');
+  child.kill();
+  await exited;
+  expect(child.exitCode !== null || child.signalCode !== null).toBe(true);
 });
 
 async function fixtureOrigin() {
@@ -90,10 +103,52 @@ it('holds the older identical request until after the current document has its r
     current_response_sent: true,
     old_response_released: false,
   });
-  await get(`${origin}/control/document-race/release-old`);
+  const release = await get(`${origin}/control/document-race/release-old`);
+  expect(release.status).toBe(200);
   const priorResult = (await oldResult).json();
   expect(priorResult).toEqual({
     events: [{ eventName: 'Moonlit Transit' }],
     document: 'prior',
+  });
+  const completed = (await get(`${origin}/control/document-race/status`)).json();
+  expect(completed).toMatchObject({
+    old_pending: false,
+    old_response_aborted: false,
+    old_response_finished: true,
+    old_response_released: true,
+    old_release_prestate: 'pending',
+    old_release_outcome: 'server_finished',
+  });
+});
+
+it('refuses release when the old client aborts before the server finishes its response', async () => {
+  const origin = await fixtureOrigin();
+  await get(`${origin}/control/document-race/arm`);
+  await get(`${origin}/document-race/`);
+  const oldRequest = httpGet(`${origin}/api/document-race`);
+  oldRequest.on('error', () => undefined);
+  await expect
+    .poll(async () => (await get(`${origin}/control/document-race/status`)).json())
+    .toMatchObject({ old_pending: true, target_requests: 1 });
+  oldRequest.destroy();
+  await expect
+    .poll(async () => (await get(`${origin}/control/document-race/status`)).json())
+    .toMatchObject({
+      old_pending: false,
+      old_response_aborted: true,
+      old_response_finished: false,
+    });
+  await get(`${origin}/document-race/`);
+  await get(`${origin}/api/document-race`);
+  const release = await get(`${origin}/control/document-race/release-old`);
+  expect(release.status).toBe(409);
+  const status = (await get(`${origin}/control/document-race/status`)).json();
+  expect(status).toMatchObject({
+    current_response_sent: true,
+    old_response_aborted: true,
+    old_response_finished: false,
+    old_response_released: false,
+    old_release_prestate: 'aborted',
+    old_release_outcome: 'refused_aborted',
   });
 });

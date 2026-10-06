@@ -21,8 +21,11 @@ let racePhase = 'seed';
 let racePageLoads = 0;
 let raceTargetRequests = 0;
 let oldResponse = null;
-let oldResponseClosed = false;
+let oldResponseAborted = false;
+let oldResponseFinished = false;
 let oldResponseReleased = false;
+let oldReleasePrestate = null;
+let oldReleaseOutcome = null;
 let currentResponseSent = false;
 const racePayload = (document) => ({
   events: [{ eventName: document === 'current' ? 'Canyon Frequency' : 'Moonlit Transit' }],
@@ -47,9 +50,12 @@ const raceStatus = () => ({
   phase: racePhase,
   page_loads: racePageLoads,
   target_requests: raceTargetRequests,
-  old_pending: Boolean(oldResponse && !oldResponseClosed && !oldResponseReleased),
-  old_response_closed: oldResponseClosed,
+  old_pending: Boolean(oldResponse && !oldResponseAborted && !oldResponseFinished),
+  old_response_aborted: oldResponseAborted,
+  old_response_finished: oldResponseFinished,
   old_response_released: oldResponseReleased,
+  old_release_prestate: oldReleasePrestate,
+  old_release_outcome: oldReleaseOutcome,
   current_response_sent: currentResponseSent,
 });
 const eventResponses = new Map([
@@ -107,8 +113,11 @@ const server = createServer(async (request, response) => {
     racePageLoads = 0;
     raceTargetRequests = 0;
     oldResponse = null;
-    oldResponseClosed = false;
+    oldResponseAborted = false;
+    oldResponseFinished = false;
     oldResponseReleased = false;
+    oldReleasePrestate = null;
+    oldReleaseOutcome = null;
     currentResponseSent = false;
     response
       .writeHead(200, { 'Content-Type': 'application/json' })
@@ -122,13 +131,34 @@ const server = createServer(async (request, response) => {
     return;
   }
   if (url.pathname === '/control/document-race/release-old') {
-    if (!currentResponseSent || !oldResponse)
+    oldReleasePrestate = !oldResponse
+      ? 'missing'
+      : oldResponseAborted || oldResponse.destroyed
+        ? 'aborted'
+        : oldResponseFinished
+          ? 'finished'
+          : 'pending';
+    if (!currentResponseSent || !oldResponse) {
+      oldReleaseOutcome = 'refused_not_ready';
       return response.writeHead(409).end('Release requires old and current requests.');
+    }
+    if (oldReleasePrestate !== 'pending') {
+      oldReleaseOutcome = `refused_${oldReleasePrestate}`;
+      return response.writeHead(409).end('Old response is no longer pending.');
+    }
+    const finished = new Promise((resolveFinish) => {
+      oldResponse.once('finish', () => resolveFinish(true));
+      oldResponse.once('close', () => resolveFinish(oldResponse.writableFinished));
+    });
+    oldResponse
+      .writeHead(200, { 'Content-Type': 'application/json' })
+      .end(JSON.stringify(racePayload('prior')));
+    if (!(await finished)) {
+      oldReleaseOutcome = 'failed_before_finish';
+      return response.writeHead(409).end('Old response closed before the server finished it.');
+    }
     oldResponseReleased = true;
-    if (!oldResponse.destroyed)
-      oldResponse
-        .writeHead(200, { 'Content-Type': 'application/json' })
-        .end(JSON.stringify(racePayload('prior')));
+    oldReleaseOutcome = 'server_finished';
     response
       .writeHead(200, { 'Content-Type': 'application/json' })
       .end(JSON.stringify(raceStatus()));
@@ -150,8 +180,11 @@ const server = createServer(async (request, response) => {
     raceTargetRequests += 1;
     if (racePhase === 'armed' && raceTargetRequests === 1) {
       oldResponse = response;
+      response.on('finish', () => {
+        if (oldResponse === response) oldResponseFinished = true;
+      });
       response.on('close', () => {
-        oldResponseClosed = true;
+        if (oldResponse === response && !response.writableFinished) oldResponseAborted = true;
       });
       return;
     }

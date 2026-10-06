@@ -58,7 +58,7 @@
   "native_boundary_route": {
     "path": "tests/fixtures/showcase-replay/README.md#d47-document-replay-boundary",
     "state": "source_route_ready_native_unrun",
-    "source_guard": "tests/unit/showcase-d47-fixture.test.ts; d47-fixture-source-20261006b valid green and scratch response-swap d47-fixture-mutant-20261006 valid red",
+    "source_guard": "tests/unit/showcase-d47-fixture.test.ts; d47-fixture-lifecycle-20261006 resource-valid three-case green (normal finish, aborted old client, exited-child teardown) and scratch response-swap d47-fixture-mutant-20261006 valid red",
     "limitation": "Real HTTP route proves old/current response scheduling and matching URL/method/body, but neither server status nor a current-only UI row proves an old Chrome binding callback reached the extension after navigation."
   }
 }
