@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-06 23:29 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-06T23:29:55.094914+00:00. 205 features · 767 cases · 1349 controls · 146 linked defect records.
+Generated 2026-10-06 23:47 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-06T23:47:41.410701+00:00. 205 features · 767 cases · 1349 controls · 147 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -51,7 +51,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Tools Smart tests](#tools-smart-tests) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
 | [Tools Recorder](#tools-recorder) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
 | [Vault password generator](#vault-password-generator) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 6, n/a 0 | 0 |
-| [Tools / registered executor](#tools--registered-executor) | 169 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 154 unverified · 0 deferred; 0/150 full | 0 pass · 0 partial · 0 fail · 173 unverified · 0 deferred; 0/169 full | pass 0, partial 0, fail 0, unverified 327, n/a 0 | 4 |
+| [Tools / registered executor](#tools--registered-executor) | 169 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 154 unverified · 0 deferred; 0/150 full | 0 pass · 0 partial · 0 fail · 173 unverified · 0 deferred; 0/169 full | pass 0, partial 0, fail 0, unverified 327, n/a 0 | 5 |
 
 Role counts include only case-role combinations listed in each case. The all-role column includes every applicable recorded or unrecorded slot. Open each feature for case evidence, defects, and next action.
 
@@ -2309,7 +2309,9 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 **Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 1. **Controls:** 1.
 
-**Next:** Run the remaining role cases in the extension and attach a result.
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0147
+
+**Linked defects:** [EXT-D-0147](defects/EXT-D-0147.json) (triaged)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
