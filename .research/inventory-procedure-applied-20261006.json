@@ -1,0 +1,10 @@
+{
+  "feature_id": "EXT-F-2002",
+  "case_id": "EXT-F-2002-T01",
+  "status": "source-only procedure integrated; runtime unverified",
+  "changes": "Concrete steps, expected outcomes, role prerequisites and control links; added source-present C18-C28 without reusing IDs. C08 and C10 remain unlinked, unreconciled and unverified.",
+  "preservation": "All existing feature cells/results unchanged; all other features byte-equivalent as parsed JSON; global scope_complete remains false. IDs unique and every case link resolves. Generated tracker refreshed.",
+  "review": ".research/inventory-procedure-peer-20261006.json",
+  "ruling": "Accept reviewed source-mapped subset for inventory only. Fixture provisioning and cleanup ownership remain an explicit execution prerequisite and readiness gap; this does not admit a test or claim source completeness.",
+  "verification": "JSON structural/preservation assertions passed; generator ran. Inventory is excluded by repository Biome config and exceeds its default size limit. Biome stdin formatting succeeded with an explicit 5 MB file limit; retained the existing two-space JSON layout to avoid an unrelated 20,000-line reformat."
+}

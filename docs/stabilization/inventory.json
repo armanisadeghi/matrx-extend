@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-06T19:36:41.069425+00:00",
+  "updated_at": "2026-10-06T21:17:01.793354+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -18,7 +18,9 @@
     "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
     ".research/tool-discovery-inventory-census.json",
     ".research/inventory-current-delta-20261006.json",
-    ".research/inventory-delta-peer-20261006.json"
+    ".research/inventory-delta-peer-20261006.json",
+    ".research/inventory-procedure-gap-20261006.json",
+    ".research/inventory-procedure-peer-20261006.json"
   ],
   "features": [
     {
@@ -28459,7 +28461,12 @@
           "action": "Choose capture intensity for queued source",
           "source_anchor": "src/features/tasks/TasksView.tsx",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Open capture-level picker (Choose capture intensity for queued source) on Tasks capture flow in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Open capture-level picker (Choose capture intensity for queued source) on Tasks capture flow in source-applicable roles; include refusal and reload where state persists.",
+          "source_reconciliation": {
+            "status": "unverified",
+            "reason": "The inventory describes a per-source capture-intensity picker, but current source exposes only queue filtering/grouping. Keep C08 unlinked and uncovered until the inventory/source mismatch is reconciled; do not count any queue filter or group interaction as coverage of C08.",
+            "evidence": ".research/inventory-procedure-peer-20261006.json"
+          }
         },
         {
           "id": "EXT-F-2002-C09",
@@ -28475,7 +28482,12 @@
           "action": "Leave the paste editor without submitting",
           "source_anchor": "src/features/tasks/TasksView.tsx",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Cancel paste-only editor (Leave the paste editor without submitting) on Tasks capture flow in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Cancel paste-only editor (Leave the paste editor without submitting) on Tasks capture flow in source-applicable roles; include refusal and reload where state persists.",
+          "source_reconciliation": {
+            "status": "unverified",
+            "reason": "The current PasteRow source renders a textarea and Submit paste but no cancel-editor control. Keep C10 unlinked and uncovered until the inventory/source mismatch is reconciled; do not infer cancel behavior from leaving the row.",
+            "evidence": ".research/inventory-procedure-peer-20261006.json"
+          }
         },
         {
           "id": "EXT-F-2002-C11",
@@ -28532,6 +28544,94 @@
           "source_anchor": "src/features/tasks/TasksView.tsx",
           "test_design_status": "unverified",
           "test_design_item": "Verify Select capture verdict retry (Mark source for retry) on Tasks capture flow in source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2002-C18",
+          "label": "Wrong content \u2014 not what it should be",
+          "action": "Mark a loaded source as redirected or changed content, not a 404.",
+          "source_anchor": "src/features/tasks/verdicts.tsx:31",
+          "test_design_status": "unverified",
+          "test_design_item": "On a disposable owned source that loaded as a different page, open Resolve and click 'Wrong content \u2014 not what it should be'. Expected: The exact action is available; after successful resolution the source is removed from the refreshed queue. If the request fails, visible error feedback remains."
+        },
+        {
+          "id": "EXT-F-2002-C19",
+          "label": "Ignore \u2014 don't want it",
+          "action": "Stop surfacing a source that is not dead or gated.",
+          "source_anchor": "src/features/tasks/verdicts.tsx:49",
+          "test_design_status": "unverified",
+          "test_design_item": "On a separate disposable owned source that is neither dead nor gated, open Resolve and click 'Ignore \u2014 don't want it'. Expected: The exact action is available; after successful resolution the source is removed from the refreshed queue. If the request fails, visible error feedback remains."
+        },
+        {
+          "id": "EXT-F-2002-C20",
+          "label": "Group by capture level",
+          "action": "Group visible queue rows by capture level.",
+          "source_anchor": "src/features/tasks/QueueToolbar.tsx:97",
+          "test_design_status": "unverified",
+          "test_design_item": "Click the queue toolbar toggle with title 'Group by capture level'. Expected: Visible queue rows are organized by level sections."
+        },
+        {
+          "id": "EXT-F-2002-C21",
+          "label": "Group by project",
+          "action": "Group visible queue rows by project.",
+          "source_anchor": "src/features/tasks/QueueToolbar.tsx:105",
+          "test_design_status": "unverified",
+          "test_design_item": "Click the queue toolbar toggle with title 'Group by project'. Expected: Visible queue rows are organized by project groups."
+        },
+        {
+          "id": "EXT-F-2002-C22",
+          "label": "Filters",
+          "action": "Open queue filters.",
+          "source_anchor": "src/features/tasks/QueueToolbar.tsx:153",
+          "test_design_status": "unverified",
+          "test_design_item": "Click the toolbar button whose title is 'Filters'. Expected: The filter popover opens and exposes its filter groups, including Capture level."
+        },
+        {
+          "id": "EXT-F-2002-C23",
+          "label": "L1 \u00b7 Quick",
+          "action": "Filter queue to L1 quick sources.",
+          "source_anchor": "src/features/tasks/queue-view.ts:336",
+          "test_design_status": "unverified",
+          "test_design_item": "In Filters \u2192 Capture level, select 'L1 \u00b7 Quick'. Expected: Only L1 quick bucket rows remain visible until that bucket filter is cleared."
+        },
+        {
+          "id": "EXT-F-2002-C24",
+          "label": "L2 \u00b7 Scroll",
+          "action": "Filter queue to L2 scroll sources.",
+          "source_anchor": "src/features/tasks/queue-view.ts:336",
+          "test_design_status": "unverified",
+          "test_design_item": "In Filters \u2192 Capture level, select 'L2 \u00b7 Scroll'. Expected: Only L2 scroll bucket rows remain visible until that bucket filter is cleared."
+        },
+        {
+          "id": "EXT-F-2002-C25",
+          "label": "L3 \u00b7 Needs help",
+          "action": "Filter queue to L3 user-gated sources.",
+          "source_anchor": "src/features/tasks/queue-view.ts:336",
+          "test_design_status": "unverified",
+          "test_design_item": "In Filters \u2192 Capture level, select 'L3 \u00b7 Needs help'. Expected: Only L3 user-gated bucket rows remain visible until that bucket filter is cleared."
+        },
+        {
+          "id": "EXT-F-2002-C26",
+          "label": "L4 \u00b7 Paste",
+          "action": "Filter queue to L4 paste sources.",
+          "source_anchor": "src/features/tasks/queue-view.ts:336",
+          "test_design_status": "unverified",
+          "test_design_item": "In Filters \u2192 Capture level, select 'L4 \u00b7 Paste'. Expected: Only L4 paste bucket rows remain visible until that bucket filter is cleared."
+        },
+        {
+          "id": "EXT-F-2002-C27",
+          "label": "Sign-in",
+          "action": "Filter queue to gated-login sources.",
+          "source_anchor": "src/features/tasks/queue-view.ts:336",
+          "test_design_status": "unverified",
+          "test_design_item": "In Filters \u2192 Capture level, select 'Sign-in'. Expected: Only gated-login bucket rows remain visible until that bucket filter is cleared."
+        },
+        {
+          "id": "EXT-F-2002-C28",
+          "label": "Low-value",
+          "action": "Filter queue to low-value sources.",
+          "source_anchor": "src/features/tasks/queue-view.ts:336",
+          "test_design_status": "unverified",
+          "test_design_item": "In Filters \u2192 Capture level, select 'Low-value'. Expected: Only low-value bucket rows remain visible until that bucket filter is cleared."
         }
       ],
       "source_anchors": [
@@ -28558,31 +28658,106 @@
       "cases": [
         {
           "id": "EXT-F-2002-T01",
-          "title": "Queued capture and paste fallback",
+          "title": "Capture, continue, paste, retry, and resolve owned queued sources",
           "modes": [
             "member",
             "admin"
           ],
           "preconditions": [
-            "Use current source-visible surface with an owned fixture and selected device organization where required."
+            "For each member and admin run, use a separate, real signed-in profile and an explicitly selected device organization. Capture the principal role and organization in the receipt; do not use the active organization as a list filter or infer member access from admin access.",
+            "Complete the resource permit and full build receipt required by docs/stabilization/PLAN.md \u00a7 Build and reload contract. Use the approved receipt-bound extension artifact, verify loaded extension identity and source/tree hashes, reopen the actual side panel, and reload the controlled target pages after any applicable extension reload. Record no secrets.",
+            "Use only campaign-owned disposable queued sources in the selected organization, with known URLs and known queue buckets. Prepare separate owned rows for the automated, user-gated, paste, retry, and verdict branches, plus rows in each bucket for filter checks. For terminal verdicts, use only sacrificial owned sources with established cleanup ownership. If a required owned row or a naturally qualifying thin response is unavailable, leave that branch unverified; do not repurpose personal/organization records or fabricate backend responses.",
+            "Keep one owned ordinary page open in the disposable profile for the source-link check. Do not use an everyday browsing profile. Record fixture identifiers only, not page text or credential data.",
+            "Before each capture-level filter check, clear all queue filters, then select only the single tested level; clear it before checking another level. Execution owner must provision and clean up the named disposable sources; until those fixtures exist the procedure is not runnable."
           ],
           "steps": [
-            "Exercise source capture",
-            "Exercise browser gate continuation",
-            "Exercise paste-only submission",
-            "Exercise retry",
-            "Exercise each verdict"
+            "In Tasks, click the toolbar toggle with title 'Group by capture level', then 'Group by project'; confirm the visible queue switches between level sections and project groups. [C20, C21]",
+            "Click the toolbar button with title 'Filters'. Under the exact group heading 'Capture level', select each available queue bucket option in turn using owned fixture rows: 'L1 \u00b7 Quick', 'L2 \u00b7 Scroll', 'L3 \u00b7 Needs help', 'L4 \u00b7 Paste', 'Sign-in', and 'Low-value'. For each, confirm only rows in that bucket remain; clear the bucket selection before the next option. Finish with 'Clear all filters' and confirm the full fixture queue returns. [C22-C28]",
+            "For the owned L1 source and then the owned L2 source, click its visible Run/Capture action while its URL is not already the active tab. Observe loading/error/success state and queue refresh. For L2, also observe page settling/scroll behavior on the controlled page. Record the actual terminal UI result; success and thin are distinct outcomes, and an explicit error is not a pass. [C01]",
+            "For the owned L3 user-gated source, click Trigger/Capture this tab. Confirm the target page becomes active and the in-page Matrx overlay appears. On this fixture, first click Cancel and confirm the overlay closes while the queued source remains available. On a separate L3 fixture, trigger again, complete the page gate yourself, and click Capture page in the overlay or Go in the side panel; wait for capture submission and inspect the row status. [C02, C04, C11]",
+            "On a separate owned L3 source, trigger the overlay and click 'Expect thin content'. If the response is thin, verify the source is resolved as accepted and the page tab is closed; if it is not thin, record that the auto-accept-thin branch was not exercised. Do not induce a thin response by mutating network/backend behavior. [C03]",
+            "On the controlled ordinary page, click the queued source URL and confirm it opens that source in a separate browser tab. Return to Tasks. [C12]",
+            "For the owned L4 source, enter a short synthetic marker string into the paste field and submit it. Observe success/error and whether the field clears; verify the queue refresh. On another L4 source, leave the editor without submitting and verify there was no content submission. This is a no-submit observation only; C10 remains unlinked because no cancel-editor control is present in source. [C09]",
+            "For a source with a prior capture attempt, open Resolve and verify 'Retry from scratch' is available; select it and observe the queue refresh/requeue. Separately, if an owned capture action produces a real recoverable error, click the row's Run/Trigger action again and observe whether a new attempt starts. If no error occurs, leave retry-after-error coverage unverified. [C05, C13, C17]",
+            "Using separate disposable owned sources, open Resolve and exercise the exact source labels 'This is the whole page', 'Page is gated', 'Page is dead / 404', 'Wrong content \u2014 not what it should be', and 'Ignore \u2014 don't want it'. On a source with a prior attempt, also exercise 'Retry from scratch'. Observe pending state, result/error feedback and queue refresh for each; do not choose any terminal verdict for non-disposable records. [C06, C14-C19]",
+            "Repeat the applicable warm procedure for each role after the exact extension reload/reopen and controlled-page reload required by PLAN.md. Compare observations independently by role; do not reuse a prior run's result.",
+            "On a disposable owned source that loaded as a different page, open Resolve and click 'Wrong content \u2014 not what it should be'. [EXT-F-2002-C18]",
+            "On a separate disposable owned source that is neither dead nor gated, open Resolve and click 'Ignore \u2014 don't want it'. [EXT-F-2002-C19]",
+            "Click the queue toolbar toggle with title 'Group by capture level'. [EXT-F-2002-C20]",
+            "Click the queue toolbar toggle with title 'Group by project'. [EXT-F-2002-C21]",
+            "Click the toolbar button whose title is 'Filters'. [EXT-F-2002-C22]",
+            "In Filters \u2192 Capture level, select 'L1 \u00b7 Quick'. [EXT-F-2002-C23]",
+            "In Filters \u2192 Capture level, select 'L2 \u00b7 Scroll'. [EXT-F-2002-C24]",
+            "In Filters \u2192 Capture level, select 'L3 \u00b7 Needs help'. [EXT-F-2002-C25]",
+            "In Filters \u2192 Capture level, select 'L4 \u00b7 Paste'. [EXT-F-2002-C26]",
+            "In Filters \u2192 Capture level, select 'Sign-in'. [EXT-F-2002-C27]",
+            "In Filters \u2192 Capture level, select 'Low-value'. [EXT-F-2002-C28]"
           ],
           "expected": [
-            "source capture performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state.",
-            "browser gate continuation performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state.",
-            "paste-only submission performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state.",
-            "retry performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state.",
-            "each verdict performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state."
+            "Grouping toggles display the queue by capture level or by project according to the selected mode. These are grouping controls and do not change any source's assigned capture level.",
+            "The Filters popover opens. Each exact capture-level option filters the rows to its corresponding bucket; clearing the filters restores the full fixture queue. This behavior is proposed under fresh filter control IDs only and does not cover C08's per-source intensity-picker description.",
+            "L1/L2 actions visibly enter loading phases and either show a successful/thin result followed by queue refresh or a specific recoverable error. Record observed tab behavior without treating unverified backend/parser outcomes as fixed.",
+            "L3 Trigger opens the user-gate overlay and waits for an explicit person action. Cancel removes the overlay and clears local in-progress state without submitting capture or removing the queued source. Capture page/Go removes the overlay and submits the currently loaded page; successful thin capture exposes its verdict card, while errors remain visible.",
+            "Expect thin content only auto-applies accept_as_is when the returned capture is thin. A non-thin response does not prove the conditional accept branch; unavailable fixture behavior remains unverified. The overlay action attempts to close its tab after capture completes.",
+            "The source URL link opens its URL in a separate tab; the Tasks side panel and source row remain available.",
+            "Paste submission with non-empty content sends trimmed text for that queued source, shows success or a specific error, and clears the local paste value only after success. Empty content cannot be submitted. The no-submit observation does not establish a source-backed C10 cancel control.",
+            "Resolve \u2192 Retry is available only after a prior attempt. A successful retry requeues the source and it reappears after refresh. A real capture error remains visible and the row's Run/Trigger action is available for another attempt; absent an actual error, that recovery branch remains unverified.",
+            "The current source verdict catalog shows the exact labels 'This is the whole page', 'Wrong content \u2014 not what it should be', 'Page is gated', 'Page is dead / 404', 'Ignore \u2014 don't want it', and conditional 'Retry from scratch'. Successful terminal verdicts remove their owned source from the refreshed queue; Retry requeues it. Errors remain visible. The new Wrong content and Ignore controls are proposed additions; this proposal does not alter canonical inventory.",
+            "Warm and reload observations are recorded independently for member and admin. Guest applicability remains feature-level not-applicable per the signed-in Tasks audience; this case makes no guest-case or guest-runtime-coverage claim. This proposal itself leaves all inventory cells/evidence states unchanged.",
+            "The exact action is available; after successful resolution the source is removed from the refreshed queue. If the request fails, visible error feedback remains. [EXT-F-2002-C18]",
+            "The exact action is available; after successful resolution the source is removed from the refreshed queue. If the request fails, visible error feedback remains. [EXT-F-2002-C19]",
+            "Visible queue rows are organized by level sections. [EXT-F-2002-C20]",
+            "Visible queue rows are organized by project groups. [EXT-F-2002-C21]",
+            "The filter popover opens and exposes its filter groups, including Capture level. [EXT-F-2002-C22]",
+            "Only L1 quick bucket rows remain visible until that bucket filter is cleared. [EXT-F-2002-C23]",
+            "Only L2 scroll bucket rows remain visible until that bucket filter is cleared. [EXT-F-2002-C24]",
+            "Only L3 user-gated bucket rows remain visible until that bucket filter is cleared. [EXT-F-2002-C25]",
+            "Only L4 paste bucket rows remain visible until that bucket filter is cleared. [EXT-F-2002-C26]",
+            "Only gated-login bucket rows remain visible until that bucket filter is cleared. [EXT-F-2002-C27]",
+            "Only low-value bucket rows remain visible until that bucket filter is cleared. [EXT-F-2002-C28]"
           ],
           "dimensions": [
+            "member",
+            "admin",
+            "explicit-device-organization",
+            "owned-fixture",
             "warm",
-            "reload"
+            "extension-reload",
+            "controlled-page-reload",
+            "capture",
+            "paste",
+            "retry",
+            "verdict",
+            "error-recovery",
+            "queue-grouping",
+            "queue-filter"
+          ],
+          "control_ids": [
+            "EXT-F-2002-C01",
+            "EXT-F-2002-C02",
+            "EXT-F-2002-C03",
+            "EXT-F-2002-C04",
+            "EXT-F-2002-C05",
+            "EXT-F-2002-C06",
+            "EXT-F-2002-C09",
+            "EXT-F-2002-C11",
+            "EXT-F-2002-C12",
+            "EXT-F-2002-C13",
+            "EXT-F-2002-C14",
+            "EXT-F-2002-C15",
+            "EXT-F-2002-C16",
+            "EXT-F-2002-C17",
+            "EXT-F-2002-C18",
+            "EXT-F-2002-C19",
+            "EXT-F-2002-C20",
+            "EXT-F-2002-C21",
+            "EXT-F-2002-C22",
+            "EXT-F-2002-C23",
+            "EXT-F-2002-C24",
+            "EXT-F-2002-C25",
+            "EXT-F-2002-C26",
+            "EXT-F-2002-C27",
+            "EXT-F-2002-C28"
           ]
         }
       ],
@@ -28606,10 +28781,14 @@
           "retest_status": "not-run"
         }
       },
-      "inventory_status": "source-complete",
-      "missing_items": [],
+      "inventory_status": "source-control-reconciliation-pending",
+      "missing_items": [
+        "EXT-F-2002-C08: The inventory describes a per-source capture-intensity picker, but current source exposes only queue filtering/grouping. Keep C08 unlinked and uncovered until the inventory/source mismatch is reconciled; do not count any queue filter or group interaction as coverage of C08.",
+        "EXT-F-2002-C10: The current PasteRow source renders a textarea and Submit paste but no cancel-editor control. Keep C10 unlinked and uncovered until the inventory/source mismatch is reconciled; do not infer cancel behavior from leaving the row."
+      ],
       "readiness_gaps": [
-        "No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel."
+        "No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel.",
+        "Disposable member/admin fixture provisioning and cleanup ownership remain unverified; no runtime execution or acceptance is authorized by this source-only procedure update."
       ]
     },
     {

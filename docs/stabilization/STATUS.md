@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-06 19:46 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-06T19:36:41.069425+00:00. 205 features · 767 cases · 1338 controls · 146 linked defect records.
+Generated 2026-10-06 21:17 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-06T21:17:01.793354+00:00. 205 features · 767 cases · 1349 controls · 146 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -8,7 +8,7 @@ A feature is fully verified for a role only when every applicable case explicitl
 
 Applicable case-by-role slots: **1224** — Pass: 85 · Partial: 78 · Fail: 2 · Unverified: 1058 · N/A: 1.
 Unverified splits into **134 explicitly marked unverified** and **924 with no result record**.
-Full feature-role pairs: **0/396**. Procedure gaps: 91 cases without steps, 91 without expected outcomes, 28 without control links.
+Full feature-role pairs: **0/396**. Procedure gaps: 91 cases without steps, 91 without expected outcomes, 27 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
 ## Tab and surface overview
@@ -1353,17 +1353,17 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Capture and submit a queued page (EXT-F-2002)
 
-**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 1. **Controls:** 16.
+**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 1. **Controls:** 27.
 
-**Next:** Add cases for 16 uncovered control(s), then verify them in the extension.
+**Next:** Add cases for 2 uncovered control(s), then verify them in the extension.
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-2002-T01 Queued capture and paste fallback | N/A | Unverified | Unverified | No control mapped |
+| EXT-F-2002-T01 Capture, continue, paste, retry, and resolve owned queued sources | N/A | Unverified | Unverified | EXT-F-2002-C01, EXT-F-2002-C02, EXT-F-2002-C03, EXT-F-2002-C04, EXT-F-2002-C05, EXT-F-2002-C06, EXT-F-2002-C09, EXT-F-2002-C11, EXT-F-2002-C12, EXT-F-2002-C13, EXT-F-2002-C14, EXT-F-2002-C15, EXT-F-2002-C16, EXT-F-2002-C17, EXT-F-2002-C18, EXT-F-2002-C19, EXT-F-2002-C20, EXT-F-2002-C21, EXT-F-2002-C22, EXT-F-2002-C23, EXT-F-2002-C24, EXT-F-2002-C25, EXT-F-2002-C26, EXT-F-2002-C27, EXT-F-2002-C28 |
 
-**Controls without a mapped case:** EXT-F-2002-C01 Capture L1/L2 item; EXT-F-2002-C02 Level 3 user-gated capture; EXT-F-2002-C03 Expect thin content; EXT-F-2002-C04 Cancel overlay; EXT-F-2002-C05 Retry capture; EXT-F-2002-C06 Verdict buttons accept/gated/dead-link/retry; EXT-F-2002-C08 Open capture-level picker; EXT-F-2002-C09 Submit paste-only source text; EXT-F-2002-C10 Cancel paste-only editor; EXT-F-2002-C11 Continue browser-gated capture; EXT-F-2002-C12 Open source after capture; EXT-F-2002-C13 Retry failed source; EXT-F-2002-C14 Select capture verdict accept as is; EXT-F-2002-C15 Select capture verdict gated; EXT-F-2002-C16 Select capture verdict dead link; EXT-F-2002-C17 Select capture verdict retry
+**Controls without a mapped case:** EXT-F-2002-C08 Open capture-level picker; EXT-F-2002-C10 Cancel paste-only editor
 
-**Other remaining work:** No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel.
+**Other remaining work:** No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel.; Disposable member/admin fixture provisioning and cleanup ownership remain unverified; no runtime execution or acceptance is authorized by this source-only procedure update.
 
 
 ## Lists side-panel
