@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-06 00:55 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-06T00:55:23.541401+00:00. 205 features · 764 cases · 1335 controls · 146 linked defect records.
+Generated 2026-10-06 19:36 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-06T19:36:41.069425+00:00. 205 features · 767 cases · 1338 controls · 146 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1219** — Pass: 85 · Partial: 78 · Fail: 2 · Unverified: 1053 · N/A: 1.
-Unverified splits into **129 explicitly marked unverified** and **924 with no result record**.
+Applicable case-by-role slots: **1224** — Pass: 85 · Partial: 78 · Fail: 2 · Unverified: 1058 · N/A: 1.
+Unverified splits into **134 explicitly marked unverified** and **924 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 91 cases without steps, 91 without expected outcomes, 28 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -29,7 +29,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 6 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
 | [Guidance](#guidance) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 46, n/a 0 | 1 |
-| [Showcase](#showcase) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 1 pass · 28 partial · 0 fail · 29 unverified · 0 deferred; 0/1 full | pass 1, partial 28, fail 0, unverified 29, n/a 0 | 11 |
+| [Showcase](#showcase) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 1 pass · 28 partial · 0 fail · 30 unverified · 0 deferred; 0/1 full | pass 1, partial 28, fail 0, unverified 30, n/a 0 | 11 |
 | [Token broker](#token-broker) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 9, n/a 0 | 0 |
 | [Content-page overlays / context menus / commands](#content-page-overlays--context-menus--commands) | 1 | 0 pass · 1 partial · 0 fail · 18 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | pass 0, partial 1, fail 0, unverified 56, n/a 0 | 0 |
 | [Profile/auth/org picker](#profileauthorg-picker) | 1 | 0 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 18 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 18 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 46, n/a 0 | 1 |
@@ -44,7 +44,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Files side-panel](#files-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 2, fail 0, unverified 4, n/a 0 | 0 |
 | [Saved captures side-panel](#saved-captures-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | pass 0, partial 1, fail 0, unverified 13, n/a 0 | 0 |
 | [Capture side-panel](#capture-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 6, n/a 0 | 0 |
-| [Vault side-panel](#vault-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 0 |
+| [Vault side-panel](#vault-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
 | [Tools/manual runner](#toolsmanual-runner) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 4, n/a 0 | 0 |
 | [Chat (deferred wave D)](#chat-deferred-wave-d) | 1 | 1 pass · 0 partial · 1 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 1, partial 1, fail 1, unverified 24, n/a 0 | 3 |
 | [Pilot (deferred wave D)](#pilot-deferred-wave-d) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 5, n/a 0 | 1 |
@@ -1057,7 +1057,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Discover, save and replay site extraction patterns (EXT-F-1012)
 
-**Role status:** guest: N/A · member: N/A · admin: Partial. **Cases:** 59. **Controls:** 49.
+**Role status:** guest: N/A · member: N/A · admin: Partial. **Cases:** 60. **Controls:** 50.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0040, EXT-D-0041, EXT-D-0042, EXT-D-0043, EXT-D-0044, EXT-D-0046, EXT-D-0047, EXT-D-0048, EXT-D-0054, EXT-D-0057, EXT-D-0059
 
@@ -1124,6 +1124,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1012-T57 Network replay captures initial request and isolates document provenance | N/A | N/A | Unverified | EXT-F-1012-C31, EXT-F-1012-C36, EXT-F-1012-C42, EXT-F-1012-C47 |
 | EXT-F-1012-T58 Network saved matcher and name do not retain credential-bearing URLs | N/A | N/A | Partial | EXT-F-1012-C42, EXT-F-1012-C48 |
 | EXT-F-1012-T59 Page-load discovery approval, exact save and repeat replay | N/A | N/A | Pass | EXT-F-1012-C49, EXT-F-1012-C39, EXT-F-1012-C36, EXT-F-1012-C45 |
+| EXT-F-1012-T60 Saved replay approval host hydration and terminal handling | N/A | N/A | Unverified | EXT-F-1012-C36, EXT-F-1012-C50 |
 
 **Recorded case details and evidence:**
 
@@ -1564,7 +1565,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Manage saved credentials and vault items (EXT-F-2011)
 
-**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 9. **Controls:** 52.
+**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 11. **Controls:** 54.
 
 **Next:** Add cases for 44 uncovered control(s), then verify them in the extension.
 
@@ -1579,6 +1580,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-2011-T07 Vault list can be freshly read after browser restart | N/A | Unverified | Unverified | EXT-F-2011-C01, EXT-F-2011-C04 |
 | EXT-F-2011-T08 Distinguish failed site-login lookup from no matches and retry | N/A | Unverified | Unverified | EXT-F-2011-C51 |
 | EXT-F-2011-T09 Saved-login candidates track the resolved page URL | N/A | Unverified | Unverified | EXT-F-2011-C31, EXT-F-2011-C52 |
+| EXT-F-2011-T10 Enable browser filling with account password | N/A | Unverified | Unverified | EXT-F-2011-C53 |
+| EXT-F-2011-T11 Approve browser filling with account passkey | N/A | Unverified | Unverified | EXT-F-2011-C54 |
 
 **Controls without a mapped case:** EXT-F-2011-C02 Open web vault; EXT-F-2011-C03 Search/create item; EXT-F-2011-C05 Sign in; EXT-F-2011-C06 Pending page-capture accept/deny; EXT-F-2011-C07 Fill / use here; EXT-F-2011-C08 Dismiss outcome; EXT-F-2011-C09 Expand/collapse entry; EXT-F-2011-C10 Add field; EXT-F-2011-C11 Reveal secret toggle; EXT-F-2011-C12 Copy secret; EXT-F-2011-C13 Change/save/cancel field; EXT-F-2011-C14 Remove field/item; EXT-F-2011-C15 Edit/create entry fields; EXT-F-2011-C16 Generate password; EXT-F-2011-C17 Create login from current page; EXT-F-2011-C18 Enter new login name; EXT-F-2011-C19 Enter new login username; EXT-F-2011-C20 Enter new login password; EXT-F-2011-C21 Save new login; EXT-F-2011-C22 Cancel new login; EXT-F-2011-C23 Expand login row; EXT-F-2011-C24 Collapse login row; EXT-F-2011-C25 Edit login metadata; EXT-F-2011-C26 Set login URLs; EXT-F-2011-C27 Choose URL match rule; EXT-F-2011-C28 Save login metadata; EXT-F-2011-C29 Cancel metadata edit; EXT-F-2011-C30 Toggle browser fill; EXT-F-2011-C32 Use matching login here; EXT-F-2011-C33 Dismiss login outcome; EXT-F-2011-C34 Reveal encrypted field; EXT-F-2011-C35 Hide encrypted field; EXT-F-2011-C36 Copy encrypted field; EXT-F-2011-C37 Edit encrypted field value; EXT-F-2011-C38 Save encrypted field value; EXT-F-2011-C39 Cancel field value edit; EXT-F-2011-C40 Add encrypted field; EXT-F-2011-C41 Save added encrypted field; EXT-F-2011-C42 Cancel add-field form; EXT-F-2011-C43 Remove encrypted field; EXT-F-2011-C44 Remove login item; EXT-F-2011-C46 Save pending credential as new; EXT-F-2011-C47 Update existing login from capture; EXT-F-2011-C48 Search capture update targets
 

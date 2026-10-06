@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-06T00:55:23.541401+00:00",
+  "updated_at": "2026-10-06T19:36:41.069425+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -16,7 +16,9 @@
     "docs/stabilization/reports/inventory-connected.json",
     "docs/stabilization/reports/inventory-tools.json",
     "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
-    ".research/tool-discovery-inventory-census.json"
+    ".research/tool-discovery-inventory-census.json",
+    ".research/inventory-current-delta-20261006.json",
+    ".research/inventory-delta-peer-20261006.json"
   ],
   "features": [
     {
@@ -22872,6 +22874,11 @@
           "id": "EXT-F-1012-C49",
           "label": "Network Capture page load",
           "action": "Explicitly approve initial-document discovery before reload, select intended response, preserve exact saved matching, stop or cancel and release capture resources."
+        },
+        {
+          "id": "EXT-F-1012-C50",
+          "label": "Saved replay approval outside conversations",
+          "action": "Display and settle a pending local saved-replay approval in the sidepanel host, including stored-request hydration, approve/deny response, expiry notice, and safe denial when the host unmounts."
         }
       ],
       "source_anchors": [
@@ -22927,7 +22934,9 @@
         "src/lib/data-pattern/list-picker.ts:1",
         "src/lib/data-pattern/list-picker.ts:78",
         "src/lib/data-pattern/picker.ts:1",
-        "src/lib/data-pattern/picker.ts:66"
+        "src/lib/data-pattern/picker.ts:66",
+        "src/features/showcase/SavedReplayApprovalHost.tsx",
+        "src/entrypoints/sidepanel/App.tsx"
       ],
       "dependency_class": "local",
       "wave": "B",
@@ -25051,6 +25060,40 @@
               "run_id": "showcase-d50-native-20260928"
             }
           }
+        },
+        {
+          "id": "EXT-F-1012-T60",
+          "title": "Saved replay approval host hydration and terminal handling",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1012-C36",
+            "EXT-F-1012-C50"
+          ],
+          "preconditions": [
+            "Use an authorized CI development artifact with source/lock/output receipt and valid resource admission. Reload the exact unpacked extension, reopen its sidepanel and reload affected tabs; verify running identity, real sign-in role and explicitly chosen device organization. Repeat warm and after full reload. Never build or release manually from the restricted Mac.",
+            "Initiate a real saved Network replay as admin; its prepared operation requires admin-only cdp_attach. The host is shared across signed-in panel locations; Showcase navigation audience alone is not its access policy. T59 separately owns initial page-load discovery approval."
+          ],
+          "expected": [
+            "An extension-origin saved replay request appears outside Chat/Pilot; an already-persisted pending request is restored once; approve/deny settles the matching call; expiry is stated and removed; unmount does not leave a pending request authorized."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "error-recovery"
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "detail": "Source-inventoried and independently reviewed; no native behavior claimed."
+            }
+          },
+          "steps": [
+            "Run an owned saved Network recipe while outside Chat/Pilot; confirm the local approval appears through the shared host. Deny, then repeat and approve; verify only the matching request settles.",
+            "Reopen the sidepanel with a still-valid persisted pending local request and confirm exactly one card rehydrates; repeat with an expired request and confirm an explicit expiry without authorization.",
+            "Unmount or sign out with a pending request; verify it is denied and no capture remains authorized. Repeat after full extension reload."
+          ]
         }
       ],
       "cells": {
@@ -32853,6 +32896,16 @@
           "label": "Invalidate saved-login candidates when panel URL changes",
           "action": "Only candidates matching the resolved panel page and actual actor remain actionable.",
           "source_anchor": "src/features/vault/VaultView.tsx"
+        },
+        {
+          "id": "EXT-F-2011-C53",
+          "label": "Enable filling in this browser with account password",
+          "action": "Enter the AI Matrx account password to register this browser for credential filling; confirm empty input, visible recoverable failure, success, and that the password field clears before submission completes."
+        },
+        {
+          "id": "EXT-F-2011-C54",
+          "label": "Approve this browser for filling with passkey",
+          "action": "Open the account passkey approval page, return to the extension, claim approval with I approved it, and verify recoverable failure or enabled status."
         }
       ],
       "source_anchors": [
@@ -32862,7 +32915,8 @@
         "src/features/vault/PasswordGenerator.tsx:1",
         "src/features/vault/usePanelAdmission.ts:1",
         "src/features/vault/VaultView.tsx",
-        "src/features/vault/useVault.ts"
+        "src/features/vault/useVault.ts",
+        "src/features/vault/FillDeviceSetupCard.tsx"
       ],
       "dependency_class": "database",
       "wave": "B",
@@ -33184,6 +33238,82 @@
               "detail": "Current-source procedure awaits receipt-bound native execution."
             }
           }
+        },
+        {
+          "id": "EXT-F-2011-T10",
+          "title": "Enable browser filling with account password",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-2011-C53"
+          ],
+          "preconditions": [
+            "Use an authorized CI development artifact with source/lock/output receipt and valid resource admission. Reload the exact unpacked extension, reopen its sidepanel and reload affected tabs; verify running identity, real sign-in role and explicitly chosen device organization. Repeat warm and after full reload. Never build or release manually from the restricted Mac.",
+            "Use an owned browser not enrolled for filling and an authorized disposable account. Retrieve its password privately at point of use; do not capture secret field values."
+          ],
+          "expected": [
+            "Only shown when this browser is not enabled; successful step-up enables this browser, rejected/empty input remains explicit, and typed password is cleared and never included in evidence."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "error-recovery"
+          ],
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "Source-inventoried and independently reviewed; no native behavior claimed."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "Source-inventoried and independently reviewed; no native behavior claimed."
+            }
+          },
+          "steps": [
+            "Open Vault and inspect device enrollment state; attempt empty submission and a controlled incorrect password, then confirm visible recoverable failure.",
+            "Enter the correct account password and enable filling. Confirm this browser becomes enabled and the password input is cleared without reading or recording its value.",
+            "Reopen the panel and reload the extension; verify enabled state persists and the setup card does not misleadingly request reenrollment."
+          ]
+        },
+        {
+          "id": "EXT-F-2011-T11",
+          "title": "Approve browser filling with account passkey",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-2011-C54"
+          ],
+          "preconditions": [
+            "Use an authorized CI development artifact with source/lock/output receipt and valid resource admission. Reload the exact unpacked extension, reopen its sidepanel and reload affected tabs; verify running identity, real sign-in role and explicitly chosen device organization. Repeat warm and after full reload. Never build or release manually from the restricted Mac.",
+            "Use an owned browser not enrolled for filling and an account with an existing usable passkey. Do not create or replace personal passkeys as test setup."
+          ],
+          "expected": [
+            "Approval link/code and return-to-panel claim are visible; approval enables this browser; unapproved, expired, or failed claim offers a clear retry/password route."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "error-recovery"
+          ],
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "Source-inventoried and independently reviewed; no native behavior claimed."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "Source-inventoried and independently reviewed; no native behavior claimed."
+            }
+          },
+          "steps": [
+            "Open Vault and begin passkey approval; verify the existing account approval page opens.",
+            "Return before approval and use I approved it; verify explicit pending/recoverable state. Complete the real approval and return to claim it.",
+            "Verify enabled state after panel and extension reload; exercise expired/unapproved claim and the displayed password recovery path without logging codes."
+          ]
         }
       ],
       "cells": {
