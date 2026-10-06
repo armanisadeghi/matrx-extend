@@ -28,9 +28,9 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Complete bounded Run-interaction diagnosis and meaningful focused verification, obtain independent review, then admit one frozen-artifact native retest. No additional native run is authorized. Preserve exact recipe and positive binding/context oracles; public-site replay and surrounding cases remain outstanding.",
-    "status": "Exact new Patterns row observed natively; Run interaction failed before replay. Bounded Astra diagnostic escalation owns remaining browser-control boundary.",
-    "implementation_agent": "d47_run_boundary_escalation",
+    "next_action": "Check existing CI37536759731 (repair0917cc61) to terminal success or inspect its authoritative successor if canceled; then admit one guarded native retest against frozen artifact11440764124. No further native run is currently authorized. Preserve exact recipe/host and positive binding/context/lifecycle oracles, inspect retained live failure diagnostics if needed. Public-site replay and surrounding cases remain outstanding.",
+    "status": "Fresh readiness and canonical tooltip-title repair passed scoped peer review; native replay retest pending.",
+    "implementation_agent": "completed: d47_run_boundary_escalation",
     "execution_agent": "none active",
     "native_run_id": 37534454354,
     "workflow_source": "fbcc4311ae6885b67133e55336f692be38881249",
@@ -49,7 +49,11 @@
     "post_save_driver_commit": "8f2d6a43",
     "post_save_review_commit": "7fc0fdfe",
     "fourth_native_evidence": ".research/d47-list-native-20261006.json",
-    "fourth_native_outcome": "Resource-valid child failure at saved_replay after active Patterns pane, exact new row, matching host and row_count=1 with no loading/empty/error state. No replay, binding/context or lifecycle terminal proof."
+    "fourth_native_outcome": "Resource-valid child failure at saved_replay after active Patterns pane, exact new row, matching host and row_count=1 with no loading/empty/error state. No replay, binding/context or lifecycle terminal proof.",
+    "run_boundary_repair_commit": "0917cc61",
+    "run_boundary_review_commit": "5425d283",
+    "run_boundary_review": ".research/d47-run-readiness-peer-20261006.json",
+    "pending_ci_run_id": 37536759731
   },
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
   "verification_status": "Current independentevidencepeer e7a67bcd confirms initialrequest timing and documentidentity controlled regressions (including meaningful identitymutation), plus bounded installed initialHN capture and saved10row replay on8b0f8adc/9ea6687b. Delayed matching prior-document response with higher old sequence is still nativeUNVERIFIED; T57 and original D47 closure remain incomplete. No current runtime was run by evidencepeer.",
