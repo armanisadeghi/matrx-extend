@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-06T21:59:55Z",
+  "scope": "Source-only reconciliation of EXT-F-2002-C08/C10 and fixture prerequisites for EXT-F-2002-T01. No product or canonical inventory edits, DB writes, runtime/browser work, builds, or tests.",
+  "source_snapshot": {
+    "matrx_extend_head": "6831f803",
+    "aidream_head": "3bba442266",
+    "canonical_inventory": "docs/stabilization/inventory.json",
+    "procedure_evidence": ".research/inventory-procedure-applied-20261006.json"
+  },
+  "controls": [
+    {
+      "id": "EXT-F-2002-C08",
+      "inventory_claim": "Open capture-level picker; choose capture intensity for queued source.",
+      "current_source": {
+        "finding": "No per-source capture-level/intensity picker exists in current Tasks source. Queue items are rendered from server-assigned buckets; renderItem derives rowLevel from BUCKET_LEVEL and wires Run to that fixed level. QueueToolbar's capture-level group toggle changes presentation, while its Capture level filter narrows visible buckets. Neither changes a source's assigned capture level.",
+        "evidence": [
+          "src/features/tasks/TasksView.tsx:806-840",
+          "src/features/tasks/QueueToolbar.tsx:97-107,217-225",
+          "src/features/tasks/queue-view.ts:6-9,84-92,296-310"
+        ]
+      },
+      "documented_intent": {
+        "finding": "The current feature-test doc describes capture-level filtering and grouping as queue-view controls. The research contract says capture level is a server-derived escalation ladder: next_level follows attempted capture history, and the capture ladder only moves upward. Neither describes a user picker to override a source's next level.",
+        "evidence": [
+          "docs/feature-tests.md:2278-2295",
+          "/Volumes/Samsung2TB/code/matrx-common-docs/systems/knowledge/research/STATE.md:86-90",
+          "src/lib/api/routes/research.ts:1-15,102-134",
+          "/Volumes/Samsung2TB/code/aidream/research/multisource.py:121-168,197-230,274-322"
+        ]
+      },
+      "history": "Current source history contains the queue grouping/filtering implementation in 02ceff1f (2026-06-18); the source behavior and feature-test doc identify those as view/filter controls. No source change establishing or removing a per-source picker was found. The inventory claim is first present in the 2026-09-25 initial stabilization inventory snapshot (76ba1292). This supports a mistaken inventory identification (likely conflation with capture-level view/filter controls), not a demonstrated removal. It does not establish owner intent before that snapshot.",
+      "proposed_disposition": "Retain C08 unchanged as a stable historical ID, but explicitly reconcile it as unsupported by current source / not applicable to the current Tasks UI, with no T01 control link and no behavior verdict. Do not map it to grouping or filtering, which have separate IDs C20-C28. If an owner-authored requirement for a user-selectable per-source level is later found, reopen as a product omission; present source/docs do not establish that requirement.",
+      "status": "source-reconciled; runtime unverified; original intent before the inventory snapshot remains unverified"
+    },
+    {
+      "id": "EXT-F-2002-C10",
+      "inventory_claim": "Cancel paste-only editor; leave the editor without submitting.",
+      "current_source": {
+        "finding": "PasteRow is always rendered for level_4_paste items. While unfinished it renders a textarea and Submit paste button; there is no editor-open state, Cancel button, or close action. Text is local state keyed by topic/source and is removed after successful submission; the source makes no submit request unless Submit paste invokes runPaste. Choosing not to submit is possible, but is not a cancel control.",
+        "evidence": [
+          "src/features/tasks/TasksView.tsx:806-824,558-580,1339-1428",
+          "src/lib/api/routes/research.ts:265-280"
+        ]
+      },
+      "documented_intent": {
+        "finding": "The current Tasks feature-test doc and capture-ladder contract document manual paste submission (L4), not an editor lifecycle or cancel action. PasteRow's textarea/button structure is present in source history from its initial implementation on 2026-04-30 (cb5cfba0); subsequent source history shows no cancel-editor control being removed.",
+        "evidence": [
+          "docs/feature-tests.md:2230-2248,2278-2295",
+          "src/lib/api/routes/research.ts:1-15,265-280",
+          "git blame src/features/tasks/TasksView.tsx:1339-1428 (PasteRow introduced by cb5cfba0, 2026-04-30)"
+        ]
+      },
+      "proposed_disposition": "Retain C10 unchanged as a stable historical ID, explicitly reconcile it as an unsupported current-source control / not applicable to the current Tasks UI, leave it unlinked, and record runtime as unverified. Keep the T01 no-submit observation as a safety observation only; it does not cover a Cancel control. No source or documentation evidence establishes a promised cancel-editor feature, so this is not currently a proven product omission. If owner intent for a dedicated cancel action is later evidenced, reclassify as an omission then.",
+      "status": "source-reconciled; runtime unverified; original intent before the inventory snapshot remains unverified"
+    }
+  ],
+  "t01_fixture_prerequisites": {
+    "audience_and_scope": [
+      "Use real signed-in member and admin profiles independently, with an explicitly selected device organization on each profile. The queue enumerates topics accessible to the user; each fixture topic must actually be accessible to the role being exercised. Do not infer member access from admin access.",
+      "Provision only campaign-owned disposable topics/sources; at least two accessible topics are needed for a meaningful group-by-project observation, and queue rows must span levels/buckets for group-by-level and filters.",
+      "No extension-source fixture creation/reset/cleanup API or approved owner is identified in the inspected source. Provisioning and cleanup ownership must be named before runtime execution; no direct database mutation is proposed here."
+    ],
+    "queue_row_contract": [
+      "Ordinary ladder rows must be included sources with scrape_status thin or failed, server_gave_up=true, and server_attempts >= 1. They must belong to an accessible topic. The backend derives the bucket from chrome_extension capture history: no attempted levels yields L1; attempted [1] yields L2; [1,2] yields L3; [1,2,3] yields L4, subject to domain-policy floors/forcing.",
+      "The parked filter rows must be nonterminal sources with policy_category gated_login and low_value respectively. The backend places these into separate parked buckets at next_level 3 without requiring server_gave_up; they are not equivalent to ordinary L3 rows.",
+      "For an L3 overlay/continuation fixture, use a controlled URL and source with L3 queue placement; the page must permit the human to complete the gate for the Go/capture branch. The conditional Expect thin branch is runnable only if a natural capture response is thin; do not synthesize that server result.",
+      "For paste, provide two distinct L4 rows: one for successful/nonempty paste submission and one for the no-submit observation. For source-verdict checks, provide six distinct disposable queued rows, one each for accept, gated, dead-link, retry, wrong-content redirect, and ignore; the retry row needs prior extension-attempt history, wrong-content must load a different page rather than a 404, and ignore must be neither dead nor gated."
+    ],
+    "minimum_disjoint_fixture_set": {
+      "per_independent_role_run": 15,
+      "breakdown": {
+        "one_each_of_six_filter_buckets": 6,
+        "additional_l3_rows_for_three_distinct_cancel_capture_expect_thin_branches": 2,
+        "additional_l4_row_for_second_no_submit_paste_branch": 1,
+        "separate_source_verdict_rows_including_retry": 6
+      },
+      "qualification": "This is the minimum disjoint set for the current T01 sequence when captures/submissions may move or remove their source and verdict sources remain distinct. Rows can be reused only when they satisfy every later precondition and remain in the required queue state; source does not guarantee capture outcomes. If a single fixture set is reused across member/admin runs, it must be restored/re-provisioned between runs by its named owner because terminal verdicts remove sources from the queue."
+    },
+    "cleanup": "The backend maps accept_as_is, gated, dead_link, ignored, and content_mismatch verdicts to terminal statuses that leave the queue; retry sets pending and derives the next level from extension-attempt history. Successful paste sets status manual and leaves the queue; captures can also advance/remove rows. Cleanup therefore needs named ownership and a sanctioned way to restore/replenish terminal and consumed fixtures before the next role run. The inspected sources do not define an extension-side undo/reset control; do not promise cleanup through the UI.",
+    "evidence": [
+      "docs/stabilization/inventory.json: EXT-F-2002-T01 and controls C01-C28",
+      "src/lib/api/routes/research.ts:102-146,265-280",
+      "/Volumes/Samsung2TB/code/aidream/research/multisource.py:121-168,197-230,274-322,627-692",
+      "/Volumes/Samsung2TB/code/aidream/research/models.py:1040-1077,1170-1185",
+      "/Volumes/Samsung2TB/code/matrx-common-docs/systems/knowledge/research/STATE.md:86-96"
+    ]
+  },
+  "limits_and_open_evidence": [
+    "Source/docs do not establish whether C08 or C10 was an owner-requested control before the initial inventory snapshot; no source removal was found, but an unwritten or pre-checkout requirement cannot be ruled out.",
+    "The numeric fixture minimum assumes disjoint branch rows for safety and matches T01's separate-row instructions. This report does not establish that those fixtures exist or that cleanup ownership has been assigned.",
+    "No runtime behavior, role access, organization visibility, server response, or real natural-thin case was verified."
+  ]
+}
