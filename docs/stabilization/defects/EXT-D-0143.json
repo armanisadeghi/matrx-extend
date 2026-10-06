@@ -45,6 +45,24 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Bounded evidence-first diagnostic repair assigned; no blind retry"
+    },
+    {
+      "at": "2026-10-06T00:03:43.177736+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Retrospective source checkpoint: card driver52a3eb1f/d7b7991e/b75d519d accepted by peer7a65f51a and fullCI37390160862."
+    },
+    {
+      "at": "2026-10-06T00:03:43.177736+00:00",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Native37390906047 proves original card/detection pass but full required extraction flow stops at select_B_field. Four retained hashes root-verified; resourcevalid, no wholecasepass."
+    },
+    {
+      "at": "2026-10-06T00:03:43.177736+00:00",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Field boundary combines click and picked-item wait. showcase_field_boundary_repair owns bounded repair/diagnostic; actual failed operation unproven."
     }
   ],
   "closure_requirement": "Localize actual failed operation, prove causal repair with meaningful RED/GREEN and independent review, then original native flow plus B detection/extraction passes with valid resource evidence.",
@@ -53,7 +71,7 @@
     "ci_wiring": "27d06012; exact existing regression command33/33 pass",
     "peer": "bee50b4d: A nativeUNVERIFIED, B PASS_WITH_CONCERNS; bounded catch/receipt checks2/2 pass",
     "ruling": "Minor receipt defect_id concern refuted as scope attribution: driver tests original D42 acceptance, so retaining D42 primary identity is correct. D143 and inventory explicitly link same run/report for the new diagnostic failure. Do not replace the original acceptance scope with instrumentation scope. Synthetic probe proves wiring only; actual sampling/native outcome unverified.",
-    "next": "Determine source-vs-driver repair with red/green real actionability semantics, fresh peer, then same native scope."
+    "next": "Field boundary repair and fresh independent review, then full original native flow; no D143/D42 closure yet."
   },
   "current_native": {
     "run_id": 37388591467,
@@ -69,5 +87,6 @@
     "secrets": "Both owned temporary GHsecret names deleted, absence root-verified.",
     "owner": "showcase_center_interception_fix",
     "next": "Determine source-vs-driver repair with red/green real actionability semantics, fresh peer, then same native scope."
-  }
+  },
+  "latest_retest_report": ".research/showcase-fixed-native-retest.json"
 }
