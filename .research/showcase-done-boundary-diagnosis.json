@@ -10,7 +10,7 @@
     "artifact_source_sha": "97efc4af8fd9581746d0b2b1745fc24296d7d0ec",
     "artifact_ci_run_id": 37392653796,
     "artifact_id": 11381873416,
-    "driver_fix_commit": "resolve from this report commit git history",
+    "driver_fix_commit": "9ffd06d354f83b51faec517d0f03285c97185f78",
     "screenshot_inspection": "retained native-side-panel.png is initial guest surface, not failure-time evidence",
     "proven_native_facts": [
       "genuine stale A EXIT rejected while B active",
@@ -61,7 +61,7 @@
   ],
   "verification": {
     "focused": "10 focused tests pass including completion, selection and stale runtime boundary",
-    "compile": "pnpm compile passed",
+    "compile": "Unguarded local observation only: pnpm compile exited 0; no same-run resource guard journal. Excluded from campaign verification and not an admitted gate.",
     "syntax": "native driver node --check passed",
     "red_green": "uppercase regression failed before predicate repair, passed afterward",
     "mutations": "scratch copies: constant panel-state return, skipped action, stale after snapshot all caught by assertion failures; copies removed",
@@ -71,7 +71,8 @@
     "no native/browser/build/release launched in this lane",
     "three-row extraction remains unverified",
     "original done_B cause cannot be uniquely assigned from old evidence",
-    "focused DOM seam uses source-shaped uppercase text; no new actual browser rendering proof"
+    "focused DOM seam uses source-shaped uppercase text; no new actual browser rendering proof",
+    "Local compile ran without a same-run resource guard journal; excluded from campaign verification. No compile rerun authorized or performed for this correction."
   ],
   "next_action": "Fresh independent source review then one native using unchanged exact CI37392653796 artifact11381873416 and new driver commit; retain separate artifact/driver SHAs; no release or health promotion."
 }
