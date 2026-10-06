@@ -196,6 +196,18 @@ test('field geometry and picked count are bounded and distinguish click from sel
       height: 72,
     });
     assert.equal(diagnostic.observations.picked_item_count, 1);
+    picked = 0;
+    await sampleShowcaseFieldSelection(page, diagnostic, 'field_after_failure');
+    const serialized = JSON.parse(JSON.stringify(diagnostic));
+    assert.deepEqual(
+      [
+        serialized.pointer_samples.field_before_click.picked_item_count,
+        serialized.pointer_samples.field_after_click.picked_item_count,
+        serialized.pointer_samples.field_after_failure.picked_item_count,
+      ],
+      [0, 1, 0],
+    );
+    assert.equal(serialized.observations.picked_item_count, 0);
     assert.equal(
       safeShowcaseSelectionFailure(diagnostic, Error('private@example.invalid')),
       'selection_field_wait_failed',

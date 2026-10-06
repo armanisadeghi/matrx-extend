@@ -74,6 +74,12 @@ export function recordShowcasePointerSample(diagnostic, moment, sample) {
         : null,
     card_rect: rect(sample.card_rect),
     field_rect: rect(sample.field_rect),
+    picked_item_count:
+      Number.isSafeInteger(sample.picked_item_count) &&
+      sample.picked_item_count >= 0 &&
+      sample.picked_item_count <= 10000
+        ? sample.picked_item_count
+        : null,
     picker_panel_rect: rect(sample.picker_panel_rect),
     center_in_viewport: sample.center_in_viewport === true,
     center_hit_kind: HIT_KINDS.has(sample.center_hit_kind) ? sample.center_hit_kind : 'none',
@@ -139,7 +145,10 @@ export async function sampleShowcaseFieldSelection(page, diagnostic, moment) {
       };
     });
     observeShowcaseSelection(diagnostic, sample);
-    recordShowcasePointerSample(diagnostic, moment, sample.pointer);
+    recordShowcasePointerSample(diagnostic, moment, {
+      ...sample.pointer,
+      picked_item_count: sample.picked_item_count,
+    });
   } catch {
     // A lost page context is represented by missing facts, never raw page/error text.
   }
