@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "lane": "first bounded hosted native TEST of the repaired D47 driver",
+  "run_id": 37526204746,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37526204746",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "head_branch": "main",
+    "head_sha": "fbcc4311ae6885b67133e55336f692be38881249",
+    "runner_label": "macos-15",
+    "acceptance_case": "showcase-d47-admin"
+  },
+  "development_artifact": {
+    "source_sha": "b6ec3615f0e0f917fb787a8ce82849a682017550",
+    "run_id": 37523207097,
+    "artifact_id": 11440764124,
+    "github_digest": "sha256:7cc729936035910557bb92daa5022364c6e592d48780dc20440550a398298989",
+    "tree_sha256": "05dd15ac790288b459bfb5a0ba21e03cd29449b231b26547cbe81c48fb709cb1",
+    "version": "0.2.325",
+    "eligible_store": false,
+    "verified_by": "scripts/current-test-artifact.mjs import and hosted native receipt"
+  },
+  "resource_preflight": {
+    "run_id": "d47-native-preflight-20261006",
+    "decision": "valid",
+    "journal": "docs/stabilization/resource-journals/d47-native-preflight-20261006.jsonl"
+  },
+  "hosted_resource_runs": [
+    {
+      "run_id": "hosted-package-37526204746-1",
+      "decision": "valid",
+      "journal": "d47-first-native-20261006/37526204746/hosted-package.jsonl"
+    },
+    {
+      "run_id": "hosted-browser-37526204746-1",
+      "decision": "valid",
+      "journal": "d47-first-native-20261006/37526204746/hosted-browser.jsonl"
+    },
+    {
+      "run_id": "hosted-guest-37526204746-1",
+      "decision": "child_failed",
+      "resource_invalid": false,
+      "transient_cpu_episode": "CPU pending indicators recovered before child exit",
+      "journal": "d47-first-native-20261006/37526204746/hosted-guest.jsonl"
+    }
+  ],
+  "outcome": {
+    "status": "UNVERIFIED_DRIVER_STAGE_FAILURE",
+    "native_driver_stage": "save_recipe",
+    "native_harness_stage": "exercise_panel",
+    "auth_stage": "admin_extension_auth_completion",
+    "sanitized_failure_code": "recipe_saved_not_observed",
+    "summary": "The hosted script completed its admin authentication and reached saved-pattern creation after the seed capture. It clicked Save but did not observe the Pattern saved confirmation. The run ended before old-document setup, saved replay, binding trace assessment, or lifecycle verdicts.",
+    "behavior_verdicts": {
+      "current_saved_replay": "unverified",
+      "delayed_old_binding": "unverified",
+      "cancellation": "unverified"
+    },
+    "classification": "The native script failed at a driver stage. This run does not establish a D47 product failure or pass. A transient CPU-busy episode recovered; the resource wrapper ended child_failed with resource_invalid=false."
+  },
+  "evidence": {
+    "directory": "d47-first-native-20261006/37526204746/",
+    "receipt": "d47-first-native-20261006/37526204746/receipt.json",
+    "screenshots": [
+      {
+        "path": "d47-first-native-20261006/37526204746/native-sidepanel.png",
+        "privacy_review": "Shows generic initial guest panel; no credentials or personal data visible."
+      },
+      {
+        "path": "d47-first-native-20261006/37526204746/target-after-open.png",
+        "privacy_review": "Shows the public test fixture page; no credentials or personal data visible."
+      }
+    ],
+    "excluded_from_commit": "Downloaded raw artifact also contained three stale resource journals for run 37105304739; the evidence directory retains only this run's receipt, screenshots, and journals."
+  },
+  "temporary_secrets": {
+    "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON": {
+      "owned": true,
+      "deleted_after_terminal": true,
+      "absence_verified": true
+    },
+    "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON": {
+      "owned": true,
+      "deleted_after_terminal": true,
+      "absence_verified": true
+    },
+    "secret_values_recorded": false
+  },
+  "limits": [
+    "No saved Network replay, current binding handshake or packet, old-context teardown trace, or delayed-old-payload negative control was observed.",
+    "This single bounded native test does not close T57 or D47 and does not verify cancellation or repeated ordinary replay.",
+    "No retry, manual build, release, deployment, or version change was performed."
+  ],
+  "next_action": "Route sanitized stage/code, receipt, screenshots, and journals to the separately authorized D47 save-failure diagnosis; preserve this run as unverified and do not retry from this lane."
+}
