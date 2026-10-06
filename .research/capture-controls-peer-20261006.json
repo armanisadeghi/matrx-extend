@@ -8,20 +8,20 @@
   },
   "verdict_b_quality_evidence": {
     "status": "fail",
-    "reason": "The report's retry fixture and cleanup assertions adopt the client comment that Retry reappears after queue refresh, but the backend code currently excludes the pending status that Retry writes. The minimum fixture count is an assumption for disjoint rows, not a sufficient runnable fixture plan. No live behavior or role access was checked."
+    "reason": "The report's retry fixture and cleanup assertions adopt the client comment that Retry reappears after queue refresh, but the backend code currently excludes ordinary pending rows after Retry. The minimum fixture count is an assumption for disjoint rows, not a sufficient runnable fixture plan. No live behavior or role access was checked."
   },
   "findings": [
     {
       "severity": "Important",
       "location": ".research/capture-controls-reconcile-20261006.json:t01_fixture_prerequisites.queue_row_contract/cleanup",
-      "finding": "Retry does not immediately reappear in the extension queue on the inspected backend path. apply_user_verdict maps retry to pending and returns a derived next_level; get_extension_scrape_queue includes ordinary rows only with scrape_status thin/failed and server_gave_up. A subsequent server attempt may change state, but neither the verdict endpoint nor queue refresh does so in the inspected path.",
+      "finding": "For an ordinary ladder row, Retry does not immediately make the source reappear in the extension queue on the inspected backend path. apply_user_verdict maps retry to pending and returns a derived next_level; get_extension_scrape_queue includes ordinary rows only with scrape_status thin/failed and server_gave_up. Parked policy rows follow a separate nonterminal rule and may remain visible. A subsequent server attempt may change an ordinary row's state, but neither the verdict endpoint nor queue refresh does so in the inspected path. This is a test expectation mismatch, not a demonstrated product failure.",
       "evidence": [
         "/Volumes/Samsung2TB/code/aidream/research/multisource.py:154-167,281-327,627-692",
         "/Volumes/Samsung2TB/code/aidream/aidream/api/routers/research.py:2194-2205",
         "src/features/tasks/TasksView.tsx:582-605",
-        "docs/stabilization/inventory.json:28682-28683,28703"
+        "docs/stabilization/inventory.json:28681-28682,28704-28705"
       ],
-      "action": "Describe Retry as setting pending and disappearing from the current queue pending another server attempt, unless a real runtime run proves a different orchestration path. Correct the T01 expected result and do not count a queue refresh alone as a requeue pass."
+      "action": "For an ordinary fixture, assert the verdict response and visible pending/refresh behavior; require a separately observed server reprocessing step before expecting the row to return with thin/failed. Specify a parked policy fixture separately if that branch is intended. Correct the T01 expected result and do not count refresh alone as an ordinary-row requeue pass."
     },
     {
       "severity": "Important",
