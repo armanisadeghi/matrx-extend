@@ -28,7 +28,7 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Complete hosted isolated-driver dependency repair/review, then admit one fresh guarded native retest. No native job active or admitted; do not count setup failure as a third saved-terminal product failure.",
+    "next_action": "Hosted dependency repaird4decbe3 passed isolated real-entry import RED/GREEN and independent review336467d2. Verify exact source/product/lock against candidate artifact11449894309, then admit one guarded native retest using reviewed harness; no native job active or admitted. Keep D47 in-fix/T57 unverified until real terminal observations and independent review.",
     "status": "Native37546403812 terminal test setup failure: ERR_MODULE_NOT_FOUND_typescript before D47 driver initialization. No new product observation. Resource valid; both secrets removed/root verified.",
     "implementation_agent": "completed: d47_owned_reload_fix; d47_navigation_replacement_fix; d47_ci_contract_repair",
     "execution_agent": "completed: d47_budget_native",
@@ -41,7 +41,7 @@
     "first_native_outcome": "resource-valid child failure at save_recipe/recipe_saved_not_observed; no replay verdict; product versus driver cause unknown",
     "second_native_evidence": ".research/d47-save-native-20261006.json",
     "second_native_outcome": "resource-valid child failure; name_matches=false with enabled Save and no visible error; Save not clicked and no replay verdict",
-    "temporary_secret_cleanup": "Both owned names deleted after37544119052; executor and root independently verified absence.",
+    "temporary_secret_cleanup": "Both names removed after37546403812; executor and root verified absence. No subsequent credential staging.",
     "input_repair_commit": "83a6148f",
     "input_repair_review_commit": "d1c00968",
     "third_native_evidence": ".research/d47-input-native-20261006.json",
@@ -73,7 +73,11 @@
     "terminal_budget_fix_report": ".research/d47-terminal-budget-fix-20261006.json",
     "terminal_budget_peer_commit": "4d06bbac",
     "terminal_budget_peer_report": ".research/d47-terminal-budget-peer-20261006.json",
-    "hosted_import_fix_agent": "d47_hosted_import_fix"
+    "hosted_import_fix_agent": "completed: d47_hosted_import_fix",
+    "hosted_import_fix_commit": "d4decbe3",
+    "hosted_import_fix_report": ".research/d47-hosted-import-fix-20261006.json",
+    "hosted_import_peer_commit": "336467d2",
+    "hosted_import_peer_report": ".research/d47-hosted-import-peer-20261006.json"
   },
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
   "verification_status": "Current independentevidencepeer e7a67bcd confirms initialrequest timing and documentidentity controlled regressions (including meaningful identitymutation), plus bounded installed initialHN capture and saved10row replay on8b0f8adc/9ea6687b. Delayed matching prior-document response with higher old sequence is still nativeUNVERIFIED; T57 and original D47 closure remain incomplete. No current runtime was run by evidencepeer.",
