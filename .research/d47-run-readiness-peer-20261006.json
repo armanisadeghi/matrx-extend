@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "role": "fresh independent zero-authorship source and receipt review",
+  "reviewed_commit": "1438d316",
+  "verdict_a_actual_native_outcome": {
+    "status": "UNVERIFIED",
+    "evidence": ".research/d47-list-native-20261006/37534454354/receipt.json",
+    "finding": "Original native run observed the active Patterns pane, exact saved row, expected host and row count 1, then failed at saved_replay with AssertionError before mouse dispatch. The original helper asserted point.count === 1 before Input.dispatchMouseEvent. Its receipt omitted count and the reason it was not 1. Saved replay, current binding/context proof and old-document lifecycle remain unobserved.",
+    "bounds": "The pre-dispatch assertion excludes a CDP mouse transport failure in that original run. It cannot distinguish missing, disabled, hidden, duplicate, wrong-row, or temporarily retitled controls. No new native run was performed."
+  },
+  "verdict_b_scoped_readiness": {
+    "status": "CHANGES_REQUESTED",
+    "accepted": [
+      "Post-reload Run targeting now samples active Patterns pane, exact host, exact recipe row, one visible enabled control contained in that pane, and center hit before one trusted press/release pair.",
+      "Failure category and phase are recorded before native teardown; the passive worker probe is read inside the exercise catch, with the original positive trace gate retained.",
+      "The receipt records target counts and booleans without recipe literals, DOM text, raw URLs, input values or exception strings. Existing trace assessment rejects missing current packet, handshake, context and old terminal events."
+    ],
+    "important_findings": [
+      {
+        "location": "tests/browser/showcase-d47-document-lifecycle.mjs:501",
+        "issue": "Run is still selected only by button[title=\"Run pattern\"]. The shared title-tooltip contract preserves a hovered button's title as data-matrx-title; settings-panel-driver.mjs:127-129 already resolves either attribute by exact title. The new stored-title case expects zero dispatch and timeout for a valid Run button.",
+        "impact": "A valid hovered saved row can exhaust the readiness poll and stop before replay, so the scoped repair has not covered a known actual-control state.",
+        "remedy": "Use the canonical exact title-or-stored-title identity for the same row-scoped Run control, retaining unique visible enabled, pane, host and center-hit gates. This corrects one semantic selector; it is not a loose fallback. Update the stored-title guard to require the trusted press/release pair."
+      }
+    ],
+    "source_checks": [
+      "PatternsTab.tsx renders the required host line, recipe name span, group row and Run button title used by the observer.",
+      "The new helper samples a fresh control after page.reload; no synthetic click, fixture bypass, timeout extension or acceptance oracle weakening was found.",
+      "The original raw receipt confirms saved_replay AssertionError; the patch report's proposed post-reload readiness cause remains a hypothesis, not a proven native root cause."
+    ]
+  },
+  "verification": {
+    "command": "node scripts/stabilization-resource.mjs run --run-id d47-run-readiness-peer-20261006-1 -- node --test tests/browser/showcase-d47-driver-evidence.test.mjs",
+    "journal": "docs/stabilization/resource-journals/d47-run-readiness-peer-20261006-1.jsonl",
+    "resource_decision": "valid",
+    "result": "9 passed, 0 failed",
+    "scope": "DOM observer and dispatch-state tests using happy-dom and simulated geometry/CDP; no live browser or product replay proof"
+  },
+  "no_product_code_edits": true
+}
