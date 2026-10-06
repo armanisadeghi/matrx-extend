@@ -152,6 +152,11 @@ export async function click(panel, kind, label) {
     }
     else if (kind === 'button-text') candidates = [...document.querySelectorAll('button')]
       .filter((el) => el.textContent.trim() === label);
+    else if (kind === 'save-pattern-name') candidates = [...document.querySelectorAll('[data-radix-popper-content-wrapper]')]
+      .filter((wrapper) => [...wrapper.querySelectorAll('button')]
+        .some((button) => button.textContent.trim() === 'Save'))
+      .flatMap((wrapper) => [...wrapper.querySelectorAll('input')])
+      .filter((input) => label === 'Save pattern');
     else if (kind === 'scrape-result-tab') {
       const pane = ${activeTabPanelExpression('Scrape')};
       candidates = [...(pane?.querySelectorAll('[role="tablist"] [role="tab"]') ?? [])]

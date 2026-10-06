@@ -3,7 +3,7 @@
   "case_id": "EXT-F-1012-T57",
   "defect_id": "EXT-D-0047",
   "run_id": 37526204746,
-  "status": "driver_oracle_repaired_native_retest_required",
+  "status": "driver_name_entry_repaired_native_retest_required",
   "artifact": {
     "source_sha": "b6ec3615f0e0f917fb787a8ce82849a682017550",
     "artifact_id": 11440764124,
@@ -19,13 +19,28 @@
     "binding_events": 0,
     "native_resource_verdict": "admitted_child_failed_resource_valid"
   },
-  "determination": "The original artifact proves the driver did not observe the short-lived success banner within its save wait. It does not show whether the save succeeded, was rejected, remained pending, or the driver missed the banner. Source shows SaveAsPattern sets the banner after savePattern resolves and closes the popover 1200 ms later; the original driver's only save oracle was a 100 ms poll for that transient banner. Product versus driver cause in the original run remains unresolved; no native D47 verdict follows from it.",
-  "change": "The driver now records a bounded save observation before the click and during the save wait, while the panel is still open. It records name match, save button presence and disabled state, saving indicator, success banner, and categorized visible error without raw text or entered values. It accepts banner or normal popover close only as a signal to check the durable result, then opens Patterns and requires the unique recipe name to be present before starting replay. A visible save error cannot satisfy the terminal condition. The Run pattern click is scoped to the row with that exact recipe name, so prior same-host patterns cannot steal or block the replay. These repairs correct weak driver oracles and preserve the first useful failure boundary in the next native receipt.",
+  "second_run_evidence": {
+    "run_id": 37528814595,
+    "receipt": ".research/d47-save-native-20261006/37528814595/receipt.json",
+    "failure_stage": "save_recipe",
+    "before_click": {
+      "popover_visible": true,
+      "name_matches": false,
+      "save_button_present": true,
+      "save_button_disabled": false,
+      "saving_indicator": false,
+      "error_present": false
+    },
+    "save_click_executed": false,
+    "native_resource_verdict": "admitted_child_failed_resource_valid"
+  },
+  "determination": "The first receipt cannot distinguish a rejected, pending, successful-but-missed, or interrupted save. The second run proves a driver failure before Save: the open form had an enabled button but the entered name did not equal the generated recipe. Source shows NetworkTab supplies a nonempty default name. The driver clicked the input with a one-shot point and sent Meta+A without the explicit selectAll command or virtual key code used by the established input helpers; the second receipt does not isolate focus versus selection versus React update as the failed substep. No product D47 pass or failure follows from either run.",
+  "change": "The driver uses the shared hit-tested pointer helper to focus the save-name input, records and requires observed focus, sends the established platform-specific selectAll key sequence with virtual key code and explicit command, inserts text through CDP, and waits for the exact generated name before Save. It retains the pre-click name assertion and bounded safe save observation. A success banner or popover close only prompts a durable Patterns row check; replay clicks Run pattern within that exact row.",
   "verification": {
-    "syntax": "node --check tests/browser/showcase-d47-document-lifecycle.mjs passed after row-targeting follow-up",
-    "format_and_lint": "pnpm exec biome check tests/browser/showcase-d47-document-lifecycle.mjs .research/d47-save-failure-repair-20261006.json passed after row-targeting follow-up",
+    "syntax": "node --check passed for the D47 driver and shared panel helper after name-entry repair",
+    "format_and_lint": "targeted Biome check passed for the D47 driver, shared panel helper, and report after name-entry repair",
     "compile": "d47-save-diagnostic-20261006: resource admitted and valid; pnpm compile passed before final JavaScript-only oracle change",
     "native": "not_run_in_this_lane"
   },
-  "next_action": "Run the exact D47 hosted native case once with frozen product artifact 11440764124 (v0.2.325) and current driver workflow, inspect diagnostics.save_observation and the persisted pattern state, then repair any product or driver boundary proved by that run. No product edit is justified by the original receipt alone."
+  "next_action": "After independent source review, run the exact D47 hosted native case once with frozen product artifact 11440764124 (v0.2.325) and current driver workflow. Confirm focused input, exact name, persisted pattern, replay and lifecycle trace. No product edit is justified by these receipts."
 }

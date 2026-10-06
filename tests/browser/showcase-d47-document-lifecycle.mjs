@@ -107,6 +107,7 @@ async function readSaveObservation(panel, recipe) {
       return {
         popover_visible: Boolean(content),
         name_matches: input ? input.value === ${JSON.stringify(recipe)} : null,
+        name_focused: input ? document.activeElement === input : null,
         save_button_present: Boolean(saveButton),
         save_button_disabled: saveButton?.disabled ?? null,
         saving_indicator: Boolean(saveButton?.querySelector('.animate-spin')),
@@ -349,22 +350,42 @@ try {
         `(() => [...document.querySelectorAll('[data-radix-popper-content-wrapper] input')].map(x => ({ placeholder: x.placeholder })))()`,
       );
       assert.equal(inputs.length, 1, 'save_name_input_ambiguous');
-      await trustedPanelClick(panel, '[data-radix-popper-content-wrapper] input');
+      saveObservation = { focus: null, before_click: null, last: null };
+      await click(panel, 'save-pattern-name', 'Save pattern');
+      await waitFor(
+        'save_name_focus',
+        async () => {
+          saveObservation.focus = await readSaveObservation(panel, recipe);
+          return saveObservation.focus;
+        },
+        (state) => state?.name_focused === true,
+      );
+      const selectAllModifier = process.platform === 'darwin' ? 4 : 2;
       await panel.send('Input.dispatchKeyEvent', {
         type: 'keyDown',
         key: 'a',
         code: 'KeyA',
-        modifiers: 4,
+        modifiers: selectAllModifier,
+        windowsVirtualKeyCode: 65,
+        commands: ['selectAll'],
       });
       await panel.send('Input.dispatchKeyEvent', {
         type: 'keyUp',
         key: 'a',
         code: 'KeyA',
-        modifiers: 4,
+        modifiers: selectAllModifier,
+        windowsVirtualKeyCode: 65,
       });
       // Trusted typing through CDP; React observes the normal input sequence.
       await panel.send('Input.insertText', { text: recipe });
-      saveObservation = { before_click: await readSaveObservation(panel, recipe), last: null };
+      await waitFor(
+        'save_name',
+        async () => {
+          saveObservation.before_click = await readSaveObservation(panel, recipe);
+          return saveObservation.before_click;
+        },
+        (state) => state?.name_matches === true,
+      );
       assert.equal(saveObservation.before_click.name_matches, true, 'save_name_not_entered');
       assert.equal(
         saveObservation.before_click.save_button_disabled,
