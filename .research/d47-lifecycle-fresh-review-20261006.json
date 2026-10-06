@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "reviewed_commits": ["35dd207abe95704f3fb7ee57ef3819b0a948f363", "58bb8aca"],
+  "role": "fresh independent source and focused-guard review; no code changes or native browser run",
+  "verdict_A_functional_outcome": {
+    "status": "NATIVE_UNVERIFIED",
+    "evidence": "The local HTTP fixture schedules an older held GET and a current GET to the same route, and the focused guard confirms distinct JSON values and release order. No installed extension, Chrome Runtime.bindingCalled event, request_sequence comparison, or saved Patterns result was observed in this review.",
+    "unresolved": "An actual higher-sequence old callback delivered after the new document starts, followed by visible current-document output or explicit provenance refusal, still requires native observation. A server finish does not prove delivery to the old JavaScript context."
+  },
+  "verdict_B_fixture_quality": {
+    "status": "ACCEPTED_FOR_HTTP_SCHEDULING_AND_LIFECYCLE_ONLY",
+    "peer_findings": [
+      {
+        "finding": "ServerResponse close ambiguity and post-abort release",
+        "status": "addressed",
+        "evidence": "finish sets old_response_finished; close marks aborted only before writableFinished. Release snapshots pending/aborted/finished, refuses nonpending with 409, and records server_finished only after finish/close outcome. The normal and aborted tests assert different status fields and response codes."
+      },
+      {
+        "finding": "keepalive cannot guarantee old document callback",
+        "status": "unresolved_native_limit",
+        "evidence": "The fixture still uses fetch keepalive. The README and report correctly constrain server_finished to the server write boundary. Native CDP evidence is still required."
+      },
+      {
+        "finding": "HTTP test does not execute page JavaScript or prove sequence/provenance",
+        "status": "unresolved_by_design",
+        "evidence": "The test reads HTML and issues HTTP requests manually. It checks two warmup references in source, not actual browser warmup execution, sequence ordering, or document identity filtering."
+      },
+      {
+        "finding": "teardown hangs for already-exited child",
+        "status": "addressed",
+        "evidence": "afterEach skips children with exitCode or signalCode and subscribes to exit before kill for live children. A dedicated test exits the child before afterEach, and the focused run completes."
+      }
+    ],
+    "test_strength": "The normal path asserts current and prior payloads, refusal before current response, and finished lifecycle fields. The abort path waits for the server to observe close, then asserts 409 and refused_aborted. These are meaningful HTTP behavior assertions; they are not a browser acceptance test.",
+    "remaining_quality_limit": "No fresh mutation or return-expected sabotage was performed in this review. The earlier scratch current-payload mutation is recorded in the prior peer evidence; lifecycle branch sabotage evidence was not supplied."
+  },
+  "verification": {
+    "command": "node scripts/stabilization-resource.mjs run --run-id d47-lifecycle-fresh-20261006 -- pnpm exec vitest run --maxWorkers=1 tests/unit/showcase-d47-fixture.test.ts",
+    "result": "admitted, resource-valid, 1 file and 3 tests passed",
+    "journal": "docs/stabilization/resource-journals/d47-lifecycle-fresh-20261006.jsonl"
+  }
+}
