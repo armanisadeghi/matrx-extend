@@ -28,10 +28,10 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Check integrated CI37542932982 to terminal (if canceled inspect actual successor); also preserve running source-fix CI37542852254. Freeze a SUCCESS development artifact containing86046a88+f0d90401+c12a0e9f and intended dependency lock; record hashes/version. Prior local2146pass does not prove post-merge dependencies. Then admit one guarded native original-repro retest; oldartifact11440764124 cannot verify new code. Require saved terminal result plus binding/context/lifecycle and surrounding cases; manual-reload protocol limit remains explicit. No native run currently authorized.",
-    "status": "Source repair and fixture contracts independently reviewed; guarded fullunit2146pass/5skip and compile pass. New-artifact native acceptance pending; defect and T57 remain unverified/in-fix.",
+    "next_action": "Monitor owned run37544119052 to terminal; collect exact current result/binding/context/lifecycle and same-run resource evidence, remove ephemeral secrets immediately. No retry without diagnosis and root admission. Independent retest review required before any case status promotion.",
+    "status": "Integrated CI37543124765 atbb62b2df succeeded; new development0.2.332 artifact11449772840 admitted to one guarded native run37544119052. No acceptance result yet.",
     "implementation_agent": "completed: d47_owned_reload_fix; d47_navigation_replacement_fix; d47_ci_contract_repair",
-    "execution_agent": "none active",
+    "execution_agent": "d47_new_product_native",
     "native_run_id": 37537634304,
     "workflow_source": "fbcc4311ae6885b67133e55336f692be38881249",
     "development_artifact_id": 11440764124,
@@ -63,7 +63,11 @@
     "final_source_peer_report": ".research/d47-revision-final-peer-20261006.json",
     "source_fix_ci_run_id": 37542852254,
     "canceled_ci_run_id": 37542663531,
-    "integration_limit": "Source fix2146pass/typecheck evidence predates concurrently merged lockfile update. Current integrated main requires its own successful CI; source-fix CI37542852254 at7bc2a56e is running, integrated69a9bb50 CI37542932982 queued at checkpoint."
+    "integration_limit": "Source fix2146pass/typecheck evidence predates concurrently merged lockfile update. Current integrated main requires its own successful CI; source-fix CI37542852254 at7bc2a56e is running, integrated69a9bb50 CI37542932982 queued at checkpoint.",
+    "active_native_run_id": 37544119052,
+    "candidate_artifact_id": 11449772840,
+    "candidate_source": "bb62b2dfafad160de32ced456f86bf5b7ea9e216",
+    "candidate_version": "0.2.332"
   },
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
   "verification_status": "Current independentevidencepeer e7a67bcd confirms initialrequest timing and documentidentity controlled regressions (including meaningful identitymutation), plus bounded installed initialHN capture and saved10row replay on8b0f8adc/9ea6687b. Delayed matching prior-document response with higher old sequence is still nativeUNVERIFIED; T57 and original D47 closure remain incomplete. No current runtime was run by evidencepeer.",
