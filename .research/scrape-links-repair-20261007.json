@@ -1,0 +1,41 @@
+{
+  "task_id": "scrape-links-repair-20261007",
+  "lane": "guest Scrape warm Links acceptance driver",
+  "status": "source_repair_ready_native_retest_pending",
+  "source_commit": "f8c0ad58",
+  "original_run": {
+    "id": 37670744036,
+    "case": "EXT-F-1007-T13",
+    "artifact_source_sha": "87f6649b4874492a1f8af59cd8703eff0e06424c",
+    "observation": "The trusted native open click on /forms completed. The Scrape result tab then became temporarily unselected during opened-tab closure. The next /appointments Copy pointer query found zero targets; Links became selected again in the subsequent transition.",
+    "evidence": ".research/parallel-scrape-product-20261007/evidence/run37670744036/native-scrape-receipt-sanitized.json"
+  },
+  "diagnosis": {
+    "boundary": "Native acceptance driver, between opening a media link and resolving the following Copy target",
+    "inference": "The driver queried during the observed selected-tab restoration gap. The recorded open pointer events and later Links selection support this; hosted confirmation on the changed source remains pending.",
+    "ruled_out_by_run": [
+      "The /forms open link was absent or unclickable before the gap: trusted pointerdown, pointerup, and click were recorded.",
+      "The controlled /appointments row was absent after the gap: the failure observation lists both expected links."
+    ],
+    "sibling_scope": "The shared video and Scrape link open-to-copy path uses the same readiness check. It requires the selected result tab, exact destination row, and unique Copy control before the existing trusted pointer action."
+  },
+  "repair": {
+    "files": [
+      "tests/browser/scrape-native-media-actions.mjs",
+      "tests/browser/scrape-native-media-actions.test.mjs"
+    ],
+    "behavior": "Bounded DOM readiness polling precedes the native Copy click after the opened tab closes. Missing, sibling, wrong-tab, and duplicate targets still fail; resource admission and trusted pointer clicking are unchanged."
+  },
+  "verification": {
+    "causal_red": "Before the repair, the selected-tab restoration test failed with pointer_target_not_unique and the sibling-target rejection test failed with Missing expected rejection.",
+    "green": "node --test tests/browser/scrape-native-media-actions.test.mjs: 20 passed, 0 failed after formatting and mutation restore.",
+    "mutation": "plant.py changed readiness acceptance to unconditional true for the focused test; it failed with pointer_target_not_unique, then restored the source byte-for-byte.",
+    "format": "pnpm exec biome format --write on both changed .mjs files; git diff --check passed.",
+    "native": "pending independent hosted run on a fresh development artifact from this source or newer"
+  },
+  "limitations": [
+    "The original hosted run used an older artifact and stopped before the remaining Scrape lifecycle cases.",
+    "No new native browser run or release was launched in this lane."
+  ],
+  "next_action": "Independent reviewer checks the driver code and causal guard; then the root owner arranges a resource-admitted hosted guest Scrape retest and records its case receipt."
+}
