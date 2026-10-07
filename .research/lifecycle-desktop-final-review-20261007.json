@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "task_id": "lifecycle-desktop-final-review-20261007",
+  "scope": "Independent read-only review of D42 picker native attempt and diagnosis, plus the exact guest desktop remaining run. No browser, build, release, product edit, or acceptance rerun.",
+  "reviewed_commits": ["c28cb618", "890da805", "4afd6726"],
+  "verdict_A_actual_scope_and_readiness": {
+    "picker_D42": {
+      "status": "partial_open",
+      "evidence": "Run 37700751092 exercised the frozen 0.2.391 CI development artifact from source 52487361b1b6a8663b958dbb2196cbcc9b1af31c. The exact extracted tree hash is 04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793, matching the CI receipt and provenance; the exact frozen list-picker.js SHA-256 is f1c01974128704dd6355ef7843187502e03df845e3b28e0d342b9809b7da6b3e. No src files changed between frozen source and native workflow checkout 424c2fb7eff7b3f4f6a7426d0a60113ace4a89c7.",
+      "resource_decision": "Package and browser were valid/exit 0; guest was admitted, resourceInvalid=false, child_failed/exit 1. Native failure is an assertion failure, not an invalid-resource run.",
+      "passed_boundaries": ["stale A EXIT, ITEM_DETECTED, and RESULT after B start", "delayed A cancellation with B three-row extraction and unchanged page", "deferred A installation with two intercepted install calls, zero obsolete A starts, and B three-row extraction"],
+      "failed_boundary": "Reinjection reported two intercepted installs but start_distinct=false and teardown_distinct=false in the pinned content world; one overlay and one click/hover listener were last observed. The runner stopped before positive post-reinjection extraction, listener cleanup, and ordinary click assertions.",
+      "unverified": ["actual second evaluation/world identity", "post-reinjection B detection and extraction", "post-reinjection listener removal and ordinary click", "signed-in nonadmin role gating"],
+      "closure": "D42 stays in-fix; this result cannot close it."
+    },
+    "picker_diagnostic": {
+      "status": "ready_for_one_diagnostic_native_attempt_not_product_fix",
+      "evidence": "Commit 890da805 reads bounded same-world and start/teardown identity values from the actual chrome.scripting.executeScript start callback and keeps the pinned CDP comparison. A changed-world result, old function identities in the start world, or a missing callback result fails explicit assertions; full extraction/listener/click criteria remain afterward.",
+      "limit": "Node vm re-evaluation of the exact frozen bundle rejects the claim that the WXT wrapper inherently reuses the start hook, but cannot choose between Chrome evaluation failure and observer/world mismatch. No revised native run occurred in the diagnosis lane."
+    },
+    "desktop_run_37701201664": {
+      "status": "scoped_guest_evidence_only",
+      "artifact": "Frozen CI development test, source eb4182d3032ccef6a9317fcc34d5274a01deac39, version 0.2.392, CI run 37700221775, artifact 11517690844, tree 9a4712e75055559b3e868b90c37e4e8a2573237e67df3156f8d1978caa75c866; workflow checkout 6483de02724209e0ae9b8148d38388d0f32309ae is the driver revision. No src file changed between those commits.",
+      "resource_decision": "The three exact-run package/browser/guest journals all end RESOURCE_FINAL_DECISION valid, resourceInvalid=false, exitCode=0. The receipt is guest, case remaining, status pass, and its SHA-256 matches the curated manifest.",
+      "T43": "PARTIAL: owned HTTP fixture showed Forget Cancel preserve a controlled code, storage.remove refusal with visible error, and retry removing browser pairing. Current live transport, actual engine pairing acceptance, and healthy connection remain unverified.",
+      "T46": "PARTIAL in this run: ports 1 and 65535 saved, 0 and 65536 rejected with prior value retained, nondigits filtered, and blank clear/error clearing persisted through Settings Page.reload. This receipt does not observe worker rediscovery. Independently accepted complete guest T46 evidence from run 37699338786 on its own frozen 0.2.391 artifact remains a separate prior proof; these runs must not be spliced into a new pass claim.",
+      "T49": "PASS for the exercised guest reset sequence: Cancel preserved six observed local and one session value; injected clear refusal kept confirmation, values, and visible retry; successful retry removed the session fixture, left zero unexplained prior local/session values, and signed out after Settings Page.reload.",
+      "limits": ["The reset used Settings Page.reload, not a full Chrome extension Reload.", "Neither this run nor its setup screenshots prove Store/current-main behavior or a healthy desktop-engine connection."]
+    }
+  },
+  "verdict_B_evidence_and_quality": {
+    "status": "pass_with_explicit_native_limit",
+    "checks": [
+      "Recomputed picker frozen extracted tree hash, picker script hash, native receipt hash, and all three picker journal hashes; all match the reports.",
+      "Recomputed desktop receipt and three journal SHA-256 values; all match the report and SHA256SUMS manifest. Each exact 37701201664-1 journal has a terminal decision; older uploaded journals were excluded.",
+      "Reviewed only the three owners' exact commits and the relevant source/receipt paths. The revised picker probe is bounded and refuses false success instead of relabeling the native failure.",
+      "Focused Node tests: node --test tests/browser/showcase-stale-runtime-boundary.test.mjs tests/browser/showcase-stale-diagnostic.test.mjs; 8 passed, 0 failed. No new native result is inferred from those source tests.",
+      "Desktop case mapping matches docs/stabilization/inventory.json T43/T46/T49 and the remaining branch source; the raw receipt's overall pass is not promoted to three complete inventory passes."
+    ],
+    "finding": "No new blocking evidence-integrity or source-quality defect found in the reviewed units. The picker native failure and remaining desktop case gaps are retained in Verdict A, not concealed by green source tests or workflow status."
+  },
+  "source_references": [
+    "tests/browser/showcase-stale-runtime-boundary.mjs:328-360",
+    "tests/browser/showcase-picker-native-acceptance.mjs:384-510",
+    "tests/browser/settings-desktop-native-acceptance.mjs:475-612,850-979",
+    ".research/picker-lifecycle-native-20261007.json",
+    ".research/picker-reinject-diagnosis-20261007.json",
+    ".research/desktop-remaining-native-20261007.json",
+    "docs/stabilization/evidence/desktop-settings-remaining-native/run37701201664/receipt.json"
+  ]
+}
