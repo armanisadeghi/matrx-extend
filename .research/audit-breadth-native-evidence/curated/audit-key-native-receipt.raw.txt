@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0093",
+  "status": "fail",
+  "source": {
+    "sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "version": "0.2.391",
+    "tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793"
+  },
+  "artifact_id": 11516342905,
+  "run_id": 37698216289,
+  "cases": [],
+  "failure_stage": "details_failure",
+  "failure_code": "audit_compare_storage_after_retry_failed",
+  "reload_boundaries": [
+    {
+      "boundary": "enable_page",
+      "outcome": "started"
+    },
+    {
+      "boundary": "enable_page",
+      "outcome": "completed"
+    },
+    {
+      "boundary": "read_previous_document",
+      "outcome": "started"
+    },
+    {
+      "boundary": "read_previous_document",
+      "outcome": "completed"
+    },
+    {
+      "boundary": "install_script",
+      "outcome": "started"
+    },
+    {
+      "boundary": "install_script",
+      "outcome": "completed"
+    },
+    {
+      "boundary": "request_reload",
+      "outcome": "started"
+    },
+    {
+      "boundary": "request_reload",
+      "outcome": "completed"
+    },
+    {
+      "boundary": "wait_new_document",
+      "outcome": "started"
+    },
+    {
+      "boundary": "document_probe",
+      "outcome": "completed",
+      "newDocument": true,
+      "settingsReady": false,
+      "preludeInstalled": true
+    },
+    {
+      "boundary": "document_probe",
+      "outcome": "completed",
+      "newDocument": true,
+      "settingsReady": true,
+      "preludeInstalled": true
+    },
+    {
+      "boundary": "wait_new_document",
+      "outcome": "completed"
+    },
+    {
+      "boundary": "check_marker",
+      "outcome": "started"
+    },
+    {
+      "boundary": "check_marker",
+      "outcome": "completed"
+    },
+    {
+      "boundary": "remove_script",
+      "outcome": "started"
+    },
+    {
+      "boundary": "remove_script",
+      "outcome": "completed"
+    }
+  ],
+  "detail_diagnostic": {
+    "step": "compare_storage_after_retry",
+    "card": {
+      "keyId": "ab7a5aa93b605d39",
+      "generated": "10/7/2026, 11:48:43 PM",
+      "receiptCount": "0",
+      "recent": {
+        "filters": {
+          "all": {
+            "count": 0,
+            "selected": true
+          },
+          "agent": {
+            "count": 0,
+            "selected": false
+          },
+          "pilot": {
+            "count": 0,
+            "selected": false
+          },
+          "parallel": {
+            "count": 0,
+            "selected": false
+          },
+          "webmcp": {
+            "count": 0,
+            "selected": false
+          }
+        },
+        "rows": [],
+        "empty": "No receipts yet.",
+        "last": "last 0"
+      },
+      "detailsUnavailable": false,
+      "exportFailed": false,
+      "rotationFailed": false,
+      "rotated": false,
+      "unknown": false,
+      "lockUnavailable": false,
+      "retryDetails": false,
+      "retryExport": false,
+      "copied": false,
+      "rekeyDisabled": false,
+      "exportDisabled": false
+    },
+    "fault": null,
+    "panel_visible": true
+  }
+}

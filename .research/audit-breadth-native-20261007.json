@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-D-0157",
+  "scope": "One hosted audit-key-admin native attempt for T27/T61/T62 after source diagnostics acceptance. No inventory promotion.",
+  "source_review": {
+    "source_commit": "3ccf9dda",
+    "diagnostic_commit": "58f41d1eeddbf1ed3eb8669347a3e1c1f4dc16ea",
+    "peer": ".research/audit-diagnostics-final-peer-20261007.json",
+    "peer_verdict": "source_ready_native_pending",
+    "root_confirmed_prior_A_terminal_and_secrets_absent": true,
+    "relevant_product_src_changed_since_selected_artifact": false
+  },
+  "execution": {
+    "workflow_run_id": 37703766572,
+    "workflow_run_attempt": 1,
+    "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37703766572",
+    "workflow_checkout_sha": "c93eca2aedddfbbd18c9fdd4ffb8a8fdbbc78694",
+    "runner_label": "macos-15",
+    "runner_arch": "ARM64",
+    "terminal_at": "2026-10-07T23:48:50Z",
+    "run_conclusion": "failure",
+    "terminal_failure_stage": "details_failure",
+    "terminal_failure_code": "audit_compare_storage_after_retry_failed",
+    "native_case_results": [],
+    "interpretation": "The run stopped before recording an inventory case. T27, T61 and T62 were not reached; no product verdict or inventory status changes are supported. The bounded failure is not attributed to a product behavior."
+  },
+  "selected_artifact": {
+    "ci_run_id": 37698216289,
+    "ci_run_attempt": 1,
+    "artifact_id": 11516342905,
+    "artifact_digest": "sha256:927854cfdda6e57d272277653e0b4c507720c29d74978da235d80c064c1017ee",
+    "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "source_version": "0.2.391",
+    "tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+    "runtime_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "eligibility": "Existing successful CI artifact, imported by the workflow's canonical importer. Product src relevant to the audit card was unchanged from this artifact; current hosted harness and diagnostic runner were used."
+  },
+  "resource_admission": {
+    "hosted_package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "journal": ".research/audit-breadth-native-evidence/run37703766572/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37703766572-1.jsonl",
+      "sha256": "0a57f54e4960758c9f9b7ff307dcc0972e9981836a58937c76d2fcabefd9ca22"
+    },
+    "hosted_browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "journal": ".research/audit-breadth-native-evidence/run37703766572/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37703766572-1.jsonl",
+      "sha256": "6329ac67a578acae009ca8519310d68d88706af50d3e2ea49c8c83fefc743c00"
+    },
+    "hosted_acceptance": {
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 1,
+      "decision": "child_failed",
+      "journal": ".research/audit-breadth-native-evidence/run37703766572/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37703766572-1.jsonl",
+      "sha256": "52f51a5c478e78f572abb8fa857ef3c5256ee25f5d8554344440016bc7a8edc1"
+    }
+  },
+  "native_receipt": {
+    "original_path": ".research/audit-breadth-native-evidence/run37703766572/matrx-extend/matrx-extend/test-results/audit-key-native-f063632b-331c-4854-b4a9-1afb0c10a0ad.json",
+    "sha256": "d57bb627cbc9c588dcddddab934374a5698880d2a69b12b0a7260d79fe8c5944",
+    "failure_diagnostic": {
+      "step": "compare_storage_after_retry",
+      "card_visible": true,
+      "case_results_count": 0,
+      "stored_receipt_count": 0,
+      "key_unchanged": null
+    },
+    "curated_byte_identical_copies": [
+      ".research/audit-breadth-native-evidence/curated/audit-key-native-receipt.json",
+      ".research/audit-breadth-native-evidence/curated/audit-key-native-receipt.raw.txt"
+    ],
+    "formatted_copy": ".research/audit-breadth-native-evidence/curated/audit-key-native-receipt.formatted.json",
+    "formatted_copy_semantically_equal": true
+  },
+  "screenshots": [
+    {
+      "original_path": ".research/audit-breadth-native-evidence/run37703766572/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-HDG9GC/native-side-panel.png",
+      "curated_path": ".research/audit-breadth-native-evidence/curated/native-side-panel.png",
+      "sha256": "35104afebb448dde7b3b315613486606a924f2fa636fa316acc30f63f681df10",
+      "role": "generic pre-auth harness screenshot; not Audit card evidence"
+    },
+    {
+      "original_path": ".research/audit-breadth-native-evidence/run37703766572/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-HDG9GC/normal-target-after-open.png",
+      "curated_path": ".research/audit-breadth-native-evidence/curated/normal-target-after-open.png",
+      "sha256": "c939d4f6417b874eefffbe2a4c9bd1cf05088fe2b42ab7a7e13c65d79a024fd2",
+      "role": "controlled target-page setup screenshot; not Audit card evidence"
+    }
+  ],
+  "evidence_artifact": {
+    "id": 11518019357,
+    "name": "hosted-guest-37703766572-1",
+    "digest": "sha256:bc257a96a16b33f8634700edbd128978c89a1d09e09a3690f3e5e6eb5f466f2f",
+    "downloaded_original_tree": ".research/audit-breadth-native-evidence/run37703766572/",
+    "note": "The original downloaded artifact contains three stale 371053 journals from a prior run alongside this attempt's exact journals. They are preserved unmodified and excluded from this run's resource verdict."
+  },
+  "secret_cleanup": {
+    "names": ["MATRX_PREPARE_ADMIN_CREDENTIALS_JSON", "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"],
+    "deleted_immediately_after_terminal": true,
+    "both_names_absent_verified": true,
+    "verified_at": "2026-10-07T23:48:50Z",
+    "values_recorded": false
+  },
+  "previous_native_results_unchanged": {
+    "source_report": ".research/audit-selected-native-20261007.json",
+    "run_id": 37699585477,
+    "case_results": {
+      "T60": "pass",
+      "T86": "pass_with_limit",
+      "T87": "pass",
+      "T88": "pass",
+      "T89": "pass",
+      "T90": "pass",
+      "T91": "partial"
+    },
+    "this_attempt_changed_none": true
+  },
+  "next_action": "Root peer reviews the terminal evidence. Keep T27/T61/T62 and T86 direct-rotation invocation criterion unverified; no retry was made."
+}
