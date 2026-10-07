@@ -86,7 +86,8 @@
       "behavior_observed": false,
       "screenshot_files": [],
       "underlying_assertion_location": "tests/browser/settings-local-controls-acceptance.mjs:378",
-      "native_result_evidence": ".research/settings-retry-37686070986/settings-local-controls-acceptance.json"
+      "native_result_evidence": ".research/settings-retry-37686070986/settings-local-controls-acceptance.json",
+      "formatted_native_result_sha256": "98dd19e4ab8afe04e5222e5d057357485ff01985cd0eb00d11dafeff4216e405"
     },
     "product_verdict": "none; no Settings control behavior was observed and no product defect is inferred"
   },
