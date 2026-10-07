@@ -5,7 +5,7 @@
   "artifact_version": "0.2.366",
   "artifact_source_sha": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
   "reviewed_source_commit": "45ee8732dda67ad5bb5b22136798c19c3d361d51",
-  "inventory_source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
+  "inventory_source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
   "A_mapping_proof": {
     "mapping_basis": "Exact section + observed source-rendered row_label + kind + reviewed source component relationship + existing inventory control description. No fingerprint inversion or behavioral result inference.",
     "nodes": [
@@ -140,5 +140,7 @@
     "safe_without_per_run_hmac_registry": true,
     "rule": "Use exact normalized semantic row label + section + observed kind, and require a unique reviewed source/inventory relation. Where sibling node kinds share one documented aggregate row, map each node separately to that aggregate control ID.",
     "guard": "Unknown, ambiguous, changed, or duplicate labels remain unmapped; no index/path-based identity and no HMAC inversion."
-  }
+  },
+  "historical_inventory_baseline_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
+  "inventory_provenance_note": "The mapping read the canonical inventory snapshot whose source_sha was 636d0085 (present after bounded refresh commit 518926c9); the earlier 528ea0b0 value came from settings-inventory-delta.json as its historical baseline and was not the mapping snapshot."
 }
