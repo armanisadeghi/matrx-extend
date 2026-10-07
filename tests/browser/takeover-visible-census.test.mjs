@@ -12,6 +12,7 @@ import {
   CONTROL_SELECTOR,
   captureGuestReadiness,
   censusCompleteness,
+  collectTabSurface,
   discoveryExpression,
   mapObservation,
   mutationGuard,
@@ -19,6 +20,93 @@ import {
   readBrowserVersion,
   settingsControlsExpression,
 } from './takeover-visible-census.mjs';
+
+test('active Scrape, Data, and SEO tabs wait for their deferred visible controls', async () => {
+  const controls = {
+    Scrape: 'Retry page check',
+    Data: 'Pick fields on this page',
+    SEO: 'Audit this page',
+  };
+  for (const [tab, label] of Object.entries(controls)) {
+    const context = domContext(
+      `<button role="tab" title="${tab}" aria-controls="pane" data-state="active">${tab}</button><div role="tabpanel" id="pane"></div>`,
+    );
+    const panel = {
+      async send(method, params) {
+        assert.equal(method, 'Runtime.evaluate');
+        const value = await vm.runInNewContext(params.expression, context);
+        if (!context.document.querySelector('#pane button'))
+          setTimeout(() => {
+            context.document.querySelector('#pane').innerHTML = `<button>${label}</button>`;
+          }, 10);
+        return { result: { value } };
+      },
+    };
+    const observed = await collectTabSurface(panel, tab, randomBytes(32).toString('base64'), 400);
+    assert.equal(observed.ready, true);
+    assert.equal(observed.raw.length, 1, `${tab} must record the later source control`);
+    if (observed.raw[0].label) assert.equal(observed.raw[0].label, label);
+    else assert.match(observed.raw[0].label_fingerprint, /^[a-f0-9]{64}$/);
+  }
+});
+
+test('present but empty visible surfaces cannot complete an otherwise clean census', () => {
+  const empty = { total: 0, mapped: [], unmapped_count: 0, unmapped: [] };
+  const filled = { ...empty, total: 1, mapped: [{ label: 'Visible control' }] };
+  const required = [
+    'Account',
+    'Organization',
+    'Appearance',
+    'Chat',
+    'Privacy',
+    'Scrape',
+    'Data',
+    'SEO',
+    'Desktop bridge',
+    'Data & reset',
+    'About',
+  ];
+  const observation = {
+    navigation: {
+      ...empty,
+      total: 4,
+      mapped: ['Scrape', 'Data', 'SEO', 'Settings'].map((label) => ({ label })),
+    },
+    surfaces: { Scrape: empty, Data: empty, SEO: empty },
+    sections: { ...empty, total: required.length, mapped: required.map((label) => ({ label })) },
+    controls: Object.fromEntries(required.map((label) => [label, filled])),
+    inaccessible_regions: [],
+  };
+  const result = censusCompleteness(observation, 0);
+  assert.deepEqual(result.missing_required_regions, ['tab:Scrape', 'tab:Data', 'tab:SEO']);
+  assert.equal(result.complete, false);
+  assert.equal(result.unmapped_total, 0);
+  assert.equal(result.unsupported_trigger_count, 0);
+  assert.equal(result.inaccessible_count, 0);
+  assert.equal(result.blocked_request_count, 0);
+});
+
+test('surface readiness timeout retains fixed safe stage, tab, and count facts', async () => {
+  const context = domContext(
+    '<button role="tab" title="Scrape" aria-controls="pane" data-state="active">Scrape</button><div role="tabpanel" id="pane">Private page content</div>',
+  );
+  const observed = await collectTabSurface(
+    guestPanel(context),
+    'Scrape',
+    randomBytes(32).toString('base64'),
+    120,
+  );
+  assert.equal(observed.raw.length, 0);
+  assert.equal(observed.ready, false);
+  assert.deepEqual(observed.diagnostic, {
+    stage: 'surface_readiness',
+    tab: 'Scrape',
+    pane_present: true,
+    visible_control_count: 0,
+    witness_visible: false,
+  });
+  assert.doesNotMatch(JSON.stringify(observed), /Private|content|https?:\/\//);
+});
 
 test('known inventory labels map to source IDs while new visible controls stay explicit and private', () => {
   const privateFingerprint = 'a'.repeat(64);
@@ -152,7 +240,7 @@ test('unknown labels, inaccessible regions, and intercepted RPCs each prevent co
   const complete = {
     ...observed,
     navigation: { ...empty, total: 2, mapped: [{ label: 'Chat' }, { label: 'Settings' }] },
-    surfaces: { Chat: empty },
+    surfaces: { Chat: { ...empty, total: 1, mapped: [{ label: 'Visible control' }] } },
     sections: { ...empty, total: required.length, mapped: required.map((label) => ({ label })) },
     controls: Object.fromEntries(required.map((label) => [label, empty])),
   };

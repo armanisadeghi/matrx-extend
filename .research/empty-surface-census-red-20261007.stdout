@@ -1,0 +1,92 @@
+{"schema":1,"at":"2026-10-07T15:51:19.241Z","runId":"empty-surface-red-20261007-01","path":"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/empty-surface-red-20261007-01.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-07T15:52:26.450Z","runId":"empty-surface-red-20261007-01","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":12.48,"requiredMemoryGiB":4,"oneMinuteLoad":1.6599999999999997,"logicalCpus":10,"cpuBusyFraction":0.018571428571428572,"swapUsedMiB":2864.31,"repoFreeGiB":1680.0174674987793,"profileFreeGiB":1680.0174674987793,"safetyFreeGiB":22.86160659790039,"systemFreeGiB":22.86160659790039},"cpuBusySamples":[0.03,0.02,0.02,0.01,0.01,0.01,0.03],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+✔ Profile route passes exact CI artifact identity and extended admin mode to the native driver (1.290125ms)
+✔ Profile route refuses absent or wrong case and non-CI evidence (0.748458ms)
+✔ hosted Profile preflight refuses before credentials or runtime setup (171.16975ms)
+✔ Profile organization fixture requires a private approved name (0.166125ms)
+✔ Showcase and Scrape admin routes require the approved fixture before browser setup (162.477833ms)
+✔ hosted Profile stages an exclusive private organization fixture for the native driver (3.833834ms)
+✔ every hosted Profile phase refuses before browser setup with valid private inputs (598.666709ms)
+✔ other hosted acceptance still passes credential preflight without runtime setup (72.556291ms)
+✔ non-Profile package and browser phases retain resource admission (149.000875ms)
+✖ active Scrape, Data, and SEO tabs wait for their deferred visible controls (8.932709ms)
+✖ present but empty visible surfaces cannot complete an otherwise clean census (1.107708ms)
+✔ known inventory labels map to source IDs while new visible controls stay explicit and private (0.462ms)
+✔ browser version failures expose fixed safe diagnostics without transport content (0.280625ms)
+✔ backend mutation attempt is aborted without retaining URL or request body (0.184791ms)
+✔ unknown labels, inaccessible regions, and intercepted RPCs each prevent completeness (0.192583ms)
+✔ Settings census observes the actual OpenUrl anchor as C39 without emitting its href (3.731833ms)
+✔ unknown DOM labels use a fresh keyed fingerprint without raw text or correlation (5.338084ms)
+✔ Settings census links only exact source-rendered row labels to observed controls (3.245167ms)
+✔ Desktop bridge census links each input and button only to its exact static row (4.559542ms)
+✔ direct census invocation refuses before browser or credentials without resource guard (85.953209ms)
+✔ hosted census role preflight requires real auth only for member and admin (0.252416ms)
+✔ discovery retains untitled and alternate tab shapes but only permits mapped native triggers (2.617792ms)
+✔ census distinguishes structural containers and actions from unopened regions with safe provenance (2.337875ms)
+✔ discovery retains summary, non-button expanders and unclassified section controls (2.088625ms)
+✔ Settings section readiness uses its active panel while retaining unknown section triggers (1.739ms)
+✔ Settings readiness refuses an inactive panel or duplicate Account expanders inside it (2.128583ms)
+✔ guest evidence requires observed signed-out account and absent credentials (1.196167ms)
+✔ guest observation refuses every contradictory or missing auth signal without leaking identity (7.873084ms)
+✔ discovery contract detects an in-memory narrowed selector and constant-result replacement (6.870916ms)
+✔ guest contract detects a constant signed-out replacement (4.864709ms)
+✔ guest capture frames Account after signed-out proof and restricts an existing screenshot (6.03425ms)
+✔ guest screenshot failures retain stage and last safe observations without payloads (1.430541ms)
+✔ guest screenshot refuses capture when Account remains outside the viewport (0.876625ms)
+✔ guest screenshot refuses a one-pixel Account header or Sign in sliver (1.47075ms)
+ℹ tests 34
+ℹ suites 0
+ℹ pass 32
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1230.663292
+
+✖ failing tests:
+
+test at tests/browser/takeover-visible-census.test.mjs:24:1
+✖ active Scrape, Data, and SEO tabs wait for their deferred visible controls (8.932709ms)
+  AssertionError [ERR_ASSERTION]: Scrape must record the later source control
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/takeover-visible-census.test.mjs:45:12)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/browser/takeover-visible-census.test.mjs:50:1
+✖ present but empty visible surfaces cannot complete an otherwise clean census (1.107708ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + []
+  - [
+  -   'tab:Scrape',
+  -   'tab:Data',
+  -   'tab:SEO'
+  - ]
+  
+      at TestContext.<anonymous> (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/takeover-visible-census.test.mjs:62:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [],
+    expected: [ 'tab:Scrape', 'tab:Data', 'tab:SEO' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+{"schema":1,"at":"2026-10-07T15:52:27.771Z","runId":"empty-surface-red-20261007-01","childExitCode":1,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-07T15:52:27.808Z","runId":"empty-surface-red-20261007-01","admitted":true,"resourceInvalid":false,"exitCode":1,"decision":"child_failed","code":"RESOURCE_FINAL_DECISION"}

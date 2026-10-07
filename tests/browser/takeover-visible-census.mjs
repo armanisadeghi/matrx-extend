@@ -575,6 +575,78 @@ async function settingsControls(panel, section, fingerprintKey) {
   return evaluate(panel, settingsControlsExpression(section, fingerprintKey));
 }
 
+export async function collectTabSurface(panel, tabLabel, fingerprintKey, timeoutMs = 10000) {
+  const readinessLabels = {
+    Scrape: ['Retry page check', 'Capture this page', 'Capture', 'Re-capture', 'Scroll & capture'],
+    Data: ['Pick fields on this page', 'Picking on page…', 'Sign in to save'],
+    SEO: ['Audit this page', 'Re-audit'],
+  };
+  let last = null;
+  let stableCount = null;
+  let stableReads = 0;
+  const read = () =>
+    evaluate(
+      panel,
+      `(async () => {
+      const known = new Set(${JSON.stringify([...uniqueControlIds.keys()])});
+      ${fingerprintScript(fingerprintKey)}
+      ${provenanceScript}
+      const tab = document.querySelector('button[role="tab"][title=${JSON.stringify(tabLabel)}]');
+      const pane = tab?.getAttribute('aria-controls')
+        ? document.getElementById(tab.getAttribute('aria-controls')) : null;
+      if (!pane) return { pane_present: false, witness_visible: false, raw: null };
+      const visible = (el) => { const r = el.getBoundingClientRect(), s = getComputedStyle(el);
+        return r.width > 0 && r.height > 0 && s.display !== 'none' && s.visibility !== 'hidden'; };
+      const controls = [...pane.querySelectorAll(${JSON.stringify(CONTROL_SELECTOR)})].filter(visible);
+      const witnesses = ${JSON.stringify(readinessLabels[tabLabel] ?? null)};
+      const witness_visible = witnesses === null ? controls.length > 0 :
+        controls.some(el => el.tagName === 'BUTTON' && witnesses.includes(el.textContent.trim()));
+      const raw = await Promise.all(controls
+        .map(async (el, order) => { const label = (el.getAttribute('aria-label') ||
+          (el.tagName === 'A' ? el.textContent : null) || el.getAttribute('title') ||
+          el.getAttribute('data-matrx-title') || el.textContent || '').trim().slice(0, 256);
+          return { kind: safeRole(el) || el.tagName.toLowerCase(),
+            provenance: { ...provenance(el, order), tab: ${JSON.stringify(tabLabel)} },
+            ...(known.has(label) ? { label } : { label_fingerprint: await fingerprint(label) }) };
+        }));
+      return { pane_present: true, witness_visible, raw };
+    })()`,
+    );
+  try {
+    const settled = await waitFor(
+      'census_surface_controls',
+      async () => {
+        last = await read();
+        return last;
+      },
+      (state) => {
+        if (!state?.pane_present || !state.witness_visible || !state.raw?.length) {
+          stableReads = 0;
+          stableCount = null;
+          return false;
+        }
+        stableReads = stableCount === state.raw.length ? stableReads + 1 : 1;
+        stableCount = state.raw.length;
+        return stableReads >= 2;
+      },
+      timeoutMs,
+    );
+    return { raw: settled.raw, ready: true };
+  } catch {
+    return {
+      raw: last?.raw ?? null,
+      ready: false,
+      diagnostic: {
+        stage: 'surface_readiness',
+        tab: tabLabel,
+        pane_present: last?.pane_present === true,
+        visible_control_count: last?.raw?.length ?? 0,
+        witness_visible: last?.witness_visible === true,
+      },
+    };
+  }
+}
+
 async function census(panel, fingerprintKey) {
   const navigationRaw = await evaluate(panel, discoveryExpression('navigation', fingerprintKey));
   const navigation = mapObservation('navigation', navigationRaw);
@@ -607,35 +679,28 @@ async function census(panel, fingerprintKey) {
           ),
         Boolean,
       );
-      const surfaceRaw = await evaluate(
-        panel,
-        `(async () => {
-      const known = new Set(${JSON.stringify([...uniqueControlIds.keys()])});
-      ${fingerprintScript(fingerprintKey)}
-      ${provenanceScript}
-      const tab = document.querySelector('button[role="tab"][title=${JSON.stringify(tab.label)}]');
-      const pane = tab?.getAttribute('aria-controls')
-        ? document.getElementById(tab.getAttribute('aria-controls')) : null;
-      if (!pane) return null;
-      const visible = (el) => { const r = el.getBoundingClientRect(), s = getComputedStyle(el);
-        return r.width > 0 && r.height > 0 && s.display !== 'none' && s.visibility !== 'hidden'; };
-      return Promise.all([...pane.querySelectorAll(${JSON.stringify(CONTROL_SELECTOR)})]
-        .filter(visible).map(async (el, order) => { const label = (el.getAttribute('aria-label') ||
-          (el.tagName === 'A' ? el.textContent : null) || el.getAttribute('title') ||
-          el.getAttribute('data-matrx-title') || el.textContent || '').trim().slice(0, 256);
-          return { kind: safeRole(el) || el.tagName.toLowerCase(),
-            provenance: { ...provenance(el, order), tab: ${JSON.stringify(tab.label)} },
-            ...(known.has(label) ? { label } : { label_fingerprint: await fingerprint(label) }) };
-        }));
-    })()`,
-      );
+      const {
+        raw: surfaceRaw,
+        ready,
+        diagnostic,
+      } = await collectTabSurface(panel, tab.label, fingerprintKey);
       if (!surfaceRaw)
         inaccessible_regions.push({
           region: 'tab_content',
           label: tab.label,
           reason: 'panel_missing',
+          ...(diagnostic ? { diagnostic } : {}),
         });
-      else surfaces[tab.label] = mapObservation('surface_control', surfaceRaw);
+      else {
+        surfaces[tab.label] = mapObservation('surface_control', surfaceRaw);
+        if (!ready)
+          inaccessible_regions.push({
+            region: 'tab_content',
+            label: tab.label,
+            reason: 'controls_not_ready',
+            diagnostic,
+          });
+      }
     } catch {
       inaccessible_regions.push({
         region: 'tab_content',
@@ -738,7 +803,7 @@ export function censusCompleteness(observation, blockedTotal) {
   const visibleTabs = new Set(observation.navigation?.mapped.map((item) => item.label) ?? []);
   if (!visibleTabs.has('Settings')) missingRequiredRegions.push('settings_tab');
   for (const tab of visibleTabs)
-    if (tab !== 'Settings' && !Object.hasOwn(observation.surfaces, tab))
+    if (tab !== 'Settings' && !observation.surfaces[tab]?.total)
       missingRequiredRegions.push(`tab:${tab}`);
   if (!observation.sections?.total) missingRequiredRegions.push('settings_sections');
   const visibleSections = new Set(observation.sections?.mapped.map((item) => item.label) ?? []);

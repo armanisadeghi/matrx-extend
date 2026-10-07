@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "scope": "EXT-D-0153 visible-surface census source repair takeover",
+  "status": "source_verified_pending_independent_review_and_native_retest",
+  "findings": [
+    "The earlier red run reproduced immediate empty capture after active tab trigger and false completeness for present zero-control surfaces.",
+    "The collector now waits for a visible source control and two same-count reads; a timeout retains raw observations and fixed safe diagnostics.",
+    "A visible zero-control tab remains missing in censusCompleteness, while unknown control text remains a keyed fingerprint."
+  ],
+  "final_guarded_run": {
+    "command": "node scripts/stabilization-resource.mjs run --run-id empty-surface-decomposed-20261007-01 -- node --test tests/browser/takeover-visible-census.test.mjs scripts/hosted-profile-route.test.mjs",
+    "stdout": ".research/empty-surface-census-decomposed-20261007.stdout",
+    "completed_journal": "docs/stabilization/resource-journals/empty-surface-decomposed-20261007-01.jsonl",
+    "tests": 35,
+    "passed": 35,
+    "failed": 0,
+    "resource_decision": "valid"
+  },
+  "prior_failures": [
+    ".research/empty-surface-census-red-20261007.stdout",
+    ".research/empty-surface-census-green-20261007.stdout",
+    ".research/empty-surface-census-green-final-20261007.stdout"
+  ],
+  "checks": ["scoped Biome passed", "git diff --check passed"],
+  "limitations": [
+    "The original native blank-pane cause is not established by this source guard.",
+    "A receipt-bound native census and independent peer verification remain open; this report does not promote runtime health."
+  ]
+}

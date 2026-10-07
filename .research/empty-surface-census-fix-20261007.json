@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "scope": "EXT-D-0153 visible-surface census collector and completeness repair",
+  "status": "source_verified_pending_independent_review_and_native_retest",
+  "cause": "An active tab trigger was accepted before its pane controls rendered, and a present surface object with total zero satisfied completeness.",
+  "repair": [
+    "Collect each visible pane through the existing bounded wait primitive, requiring a visible source control and two consecutive readings of the same control count.",
+    "Return the accepted control observation from that wait, preserving the existing keyed fingerprints and mapped-label relationships.",
+    "Keep a timed-out pane as a raw zero-control observation with fixed stage, tab, pane-present, witness-visible, and count diagnostics; count a zero-total visible tab as a missing required region."
+  ],
+  "causal_red": {
+    "run_id": "empty-surface-red-20261007-01",
+    "stdout": ".research/empty-surface-census-red-20261007.stdout",
+    "journal": "docs/stabilization/resource-journals/empty-surface-red-20261007-01.jsonl",
+    "assertions": [
+      "Scrape must record the later source control: 0 !== 1",
+      "present empty surfaces yielded no missing_required_regions"
+    ]
+  },
+  "green_attempts": [
+    {
+      "run_id": "empty-surface-green-20261007-01",
+      "stdout": ".research/empty-surface-census-green-20261007.stdout",
+      "journal": "docs/stabilization/resource-journals/empty-surface-green-20261007-01.jsonl",
+      "result": "failed on test harness poll-duration and cross-realm array comparison"
+    },
+    {
+      "run_id": "empty-surface-green-20261007-02",
+      "stdout": ".research/empty-surface-census-green-final-20261007.stdout",
+      "journal": "docs/stabilization/resource-journals/empty-surface-green-20261007-02.jsonl",
+      "result": "34 passed, 1 failed on an assertion expecting Data's private label; collector correctly provided its keyed fingerprint"
+    }
+  ],
+  "post_run_edit": "After the second failed attempt, the prior lane changed the final assertion to accept a source label only when already known and otherwise require the private fingerprint; its own two-run cap then stopped that lane.",
+  "final_guarded_run": {
+    "run_id": "empty-surface-decomposed-20261007-01",
+    "stdout": ".research/empty-surface-census-decomposed-20261007.stdout",
+    "journal": "docs/stabilization/resource-journals/empty-surface-decomposed-20261007-01.jsonl",
+    "result": "35 passed, 0 failed; resource final decision valid"
+  },
+  "scoped_biome": "Passed after the final test assertion edit; git diff --check also passed.",
+  "native_limit": "The native cause of the original blank panes remains unproven and belongs to the parallel native lane."
+}

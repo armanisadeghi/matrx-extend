@@ -1,0 +1,47 @@
+{"schema":1,"at":"2026-10-07T15:57:59.105Z","runId":"empty-surface-decomposed-20261007-01","path":"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/empty-surface-decomposed-20261007-01.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-07T15:59:06.310Z","runId":"empty-surface-decomposed-20261007-01","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":12.48,"requiredMemoryGiB":4,"oneMinuteLoad":1.75,"logicalCpus":10,"cpuBusyFraction":0.054285714285714284,"swapUsedMiB":2840.31,"repoFreeGiB":1680.01762008667,"profileFreeGiB":1680.01762008667,"safetyFreeGiB":22.865692138671875,"systemFreeGiB":22.865692138671875},"cpuBusySamples":[0.09,0.13,0.02,0.01,0.01,0.02,0.1],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+✔ Profile route passes exact CI artifact identity and extended admin mode to the native driver (1.407709ms)
+✔ Profile route refuses absent or wrong case and non-CI evidence (0.752125ms)
+✔ hosted Profile preflight refuses before credentials or runtime setup (171.569625ms)
+✔ Profile organization fixture requires a private approved name (0.167917ms)
+✔ Showcase and Scrape admin routes require the approved fixture before browser setup (149.370459ms)
+✔ hosted Profile stages an exclusive private organization fixture for the native driver (3.899375ms)
+✔ every hosted Profile phase refuses before browser setup with valid private inputs (590.032417ms)
+✔ other hosted acceptance still passes credential preflight without runtime setup (72.7295ms)
+✔ non-Profile package and browser phases retain resource admission (156.938666ms)
+✔ active Scrape, Data, and SEO tabs wait for their deferred visible controls (629.177417ms)
+✔ present but empty visible surfaces cannot complete an otherwise clean census (0.701417ms)
+✔ surface readiness timeout retains fixed safe stage, tab, and count facts (205.419375ms)
+✔ known inventory labels map to source IDs while new visible controls stay explicit and private (0.629833ms)
+✔ browser version failures expose fixed safe diagnostics without transport content (0.265875ms)
+✔ backend mutation attempt is aborted without retaining URL or request body (0.179792ms)
+✔ unknown labels, inaccessible regions, and intercepted RPCs each prevent completeness (0.195834ms)
+✔ Settings census observes the actual OpenUrl anchor as C39 without emitting its href (2.017625ms)
+✔ unknown DOM labels use a fresh keyed fingerprint without raw text or correlation (2.335167ms)
+✔ Settings census links only exact source-rendered row labels to observed controls (2.681ms)
+✔ Desktop bridge census links each input and button only to its exact static row (2.6025ms)
+✔ direct census invocation refuses before browser or credentials without resource guard (85.760542ms)
+✔ hosted census role preflight requires real auth only for member and admin (0.245167ms)
+✔ discovery retains untitled and alternate tab shapes but only permits mapped native triggers (2.496125ms)
+✔ census distinguishes structural containers and actions from unopened regions with safe provenance (2.252542ms)
+✔ discovery retains summary, non-button expanders and unclassified section controls (1.957042ms)
+✔ Settings section readiness uses its active panel while retaining unknown section triggers (1.6085ms)
+✔ Settings readiness refuses an inactive panel or duplicate Account expanders inside it (1.894375ms)
+✔ guest evidence requires observed signed-out account and absent credentials (1.107625ms)
+✔ guest observation refuses every contradictory or missing auth signal without leaking identity (7.525708ms)
+✔ discovery contract detects an in-memory narrowed selector and constant-result replacement (4.570958ms)
+✔ guest contract detects a constant signed-out replacement (3.712417ms)
+✔ guest capture frames Account after signed-out proof and restricts an existing screenshot (3.633208ms)
+✔ guest screenshot failures retain stage and last safe observations without payloads (1.541584ms)
+✔ guest screenshot refuses capture when Account remains outside the viewport (0.986ms)
+✔ guest screenshot refuses a one-pixel Account header or Sign in sliver (1.659333ms)
+ℹ tests 35
+ℹ suites 0
+ℹ pass 35
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1216.640167
+{"schema":1,"at":"2026-10-07T15:59:07.620Z","runId":"empty-surface-decomposed-20261007-01","childExitCode":0,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-07T15:59:07.658Z","runId":"empty-surface-decomposed-20261007-01","admitted":true,"resourceInvalid":false,"exitCode":0,"decision":"valid","code":"RESOURCE_FINAL_DECISION"}
