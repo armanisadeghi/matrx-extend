@@ -26,7 +26,10 @@
     ".research/d42-native-retest-20261007.json",
     ".research/native-batch-evidence-peer-20261007.json",
     ".research/picker-channels-native-20261007.json",
-    ".research/picker-channels-native-peer-20261007.json"
+    ".research/picker-channels-native-peer-20261007.json",
+    ".research/picker-lifecycle-missing-20261007.json",
+    ".research/picker-lifecycle-source-peer-20261007.json",
+    ".research/picker-lifecycle-final-peer-20261007.json"
   ],
   "severity": "S2: a superseded picker may overwrite the current extraction definition or terminate the current pick",
   "priority": "P1: Showcase reliable detection and extraction lifecycle",
@@ -54,7 +57,7 @@
   ],
   "closure_requirement": "Prove the delayed old-session boundary red before repair, then prove current-session detection and extraction plus old-session rejection green. Check identity through every SW relay, delayed cancellation, pending injection, and cross-context listener teardown. Run changed types and obtain independent installed-extension verification against real page data before closure.",
   "verification_status": "Native37697860472 frozen development0.2.388/source91e15220/artifact11512366176 independently passes genuine stale A ITEM_DETECTED and RESULT through stamped same-tab/document relays, separately, while current B survives and extracts3expected rows in each cycle. Existing EXIT/current extraction/repick Cancel/normal click also pass; all3 current resource journals valid. Delayed cancellation, deferred installation, reinjection listener count and signed-in nonadmin remain unverified. D42 stays in-fix.",
-  "next_action": "Extend native coverage for delayed cancellation, deferred installation, reinjection/listener teardown and nonadmin; do not repeat only already-proven stale event channels.",
+  "next_action": "Source1b4be844/64461290 now independently accepted by93ed9d2f for delayed cancellation, deferred installation and proven fresh-context reinjection. Run one guarded native batch once A audit37699585477 is authoritative terminal and secrets cleaned; nonadmin remains separate.",
   "latest_retest": {
     "run_id": "37697860472",
     "status": "bounded-pass",
