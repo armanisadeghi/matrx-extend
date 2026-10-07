@@ -181,7 +181,7 @@
   },
   "limitations": [
     "One guest development-artifact run only; member/admin modes remain unverified.",
-    "The driver passed the former link pointer stage but failed during Video Copy readiness before Links actions; T13 remains unverified.",
+    "The driver failed earlier during Video Copy readiness before Links actions. The former Links pointer failure was not retested; T13 remains unverified.",
     "No Data feature behavior or separate SEO audit behavior was exercised.",
     "Do not promote any full case or feature from these partial assertions. No retry was authorized or launched."
   ]

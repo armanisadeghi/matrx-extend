@@ -7,7 +7,7 @@
   "title": "Media copy driver races restored result pane and rejects tooltip-migrated titles",
   "severity": "S2: prevents trustworthy media acceptance; product defect not established",
   "priority": "P1: unblock exhaustive Scrape guest retest",
-  "state": "fixed",
+  "state": "in-fix",
   "owner": "root/scrape_link_repair",
   "preconditions": [
     "Original native run37670744036, frozen development0.2.385 source87f6649b; use the controlled clinic page from that run and signed-out profile."
@@ -23,7 +23,8 @@
     ".research/parallel-scrape-product-20261007.json",
     ".research/scrape-links-repair-20261007.json",
     ".research/scrape-links-repair-peer-20261007.json",
-    ".research/scrape-selector-final-peer-20261007.json"
+    ".research/scrape-selector-final-peer-20261007.json",
+    ".research/scrape-links-native-retest-20261007.json"
   ],
   "fix_commits": ["f8c0ad58", "42a51b13"],
   "transition_history": [
@@ -50,8 +51,20 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Fresh independent review0acf64de accepts readiness and real native pointer resolution for both tooltip title forms;31focused tests pass. Native original/surrounding retest pending."
+    },
+    {
+      "at": "2026-10-07T21:57:08.349492+00:00",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Native37688019001 with valid journals regressed earlier at Video Copy readiness: selectedfalse despite observed Video active. Links never reached; original Links defect not retest-passed."
+    },
+    {
+      "at": "2026-10-07T21:57:08.349492+00:00",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Fresh Sol escalation owns actual rendered DOM predicate and causal guard repair."
     }
   ],
   "closure_requirement": "Independent source review plus guarded native original and surrounding Video/Links warm/reload retest; do not promote feature-wide or other-mode health.",
-  "next_action": "Owned root/parallel_scrape_product prepares one original-artifact lane B native retest after GitHub API reset21:14:32UTC; no full product cases promoted."
+  "next_action": "root/scrape_readiness_escalation repairs demonstrated Video readiness regression; fresh independent review before next native retest."
 }
