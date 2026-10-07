@@ -1,8 +1,32 @@
 import assert from 'node:assert/strict';
 import { withClipboardReadPermission } from './clipboard-observation.mjs';
-import { activeTabPanelExpression } from './settings-panel-driver.mjs';
+import { activeTabPanelExpression, waitFor } from './settings-panel-driver.mjs';
 
 const diagnostic = (error) => String(error?.message ?? error).slice(0, 120);
+export async function waitForMediaCopyTarget(panel, url, evaluate, selectedTab, timeoutMs = 10000) {
+  return waitFor(
+    'scrape_media_copy_target_ready',
+    () =>
+      evaluate(
+        panel,
+        `(() => {
+      // copy_target_readiness: opening a row may briefly remount the selected Scrape tab.
+      const expectedTab = ${JSON.stringify(selectedTab)};
+      const pane = ${activeTabPanelExpression('Scrape')};
+      const tab = pane?.querySelector('[role="tablist"] [role="tab"][aria-selected="true"]');
+      const content = tab ? document.getElementById(tab.getAttribute('aria-controls') ?? '') : null;
+      const rows = [...(content?.querySelectorAll('a') ?? [])]
+        .filter((anchor) => anchor.href === ${JSON.stringify(url)});
+      const targets = rows.flatMap((anchor) =>
+        [...(anchor.parentElement?.querySelectorAll('button[title^="Copy "], button[data-matrx-title^="Copy "]') ?? [])]);
+      return { selected: tab?.textContent?.trim() === expectedTab, rowCount: rows.length,
+        targetCount: targets.length };
+    })()`,
+      ),
+    (state) => state?.selected === true && state.rowCount === 1 && state.targetCount === 1,
+    timeoutMs,
+  );
+}
 export async function enterMediaField({
   panel,
   field,
@@ -73,6 +97,7 @@ async function observeOpenedAndCopiedLinks({
     result.limitations.push(`open_unavailable:${diagnostic(error)}`);
   }
   result.copy_feedback = await run('scrape-media-copy', urls[1], async () => {
+    await waitForMediaCopyTarget(panel, urls[1], evaluate, kind === 'video' ? 'Video' : 'Links');
     await resourceAction(() => click(panel, 'scrape-media-copy', urls[1]));
     return observeCopyFeedback(panel, urls[1], evaluate);
   });

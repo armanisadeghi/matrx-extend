@@ -9,6 +9,7 @@ import {
   observeScrapeLinks,
   observeVideoLinks,
   videoLinksVerdict,
+  waitForMediaCopyTarget,
 } from './scrape-native-media-actions.mjs';
 
 const openUrl = 'http://127.0.0.1:4021/intake-walkthrough.mp4';
@@ -59,7 +60,10 @@ function controls({
     close: async () => undefined,
   };
   const page = { context: () => ({ waitForEvent: async () => opened }) };
-  const evaluate = async () => feedback;
+  const evaluate = async (_panel, expression) =>
+    expression.includes('copy_target_readiness')
+      ? { selected: true, rowCount: 1, targetCount: 1 }
+      : feedback;
   const browserSession = {
     send: async (method, args) => actions.push(['permission', method, args.setting]),
   };
@@ -155,7 +159,9 @@ test('unavailable native observations remain partial with bounded diagnostics', 
       },
     }),
   };
-  deps.evaluate = async () => {
+  deps.evaluate = async (_panel, expression) => {
+    if (expression.includes('copy_target_readiness'))
+      return { selected: true, rowCount: 1, targetCount: 1 };
     throw new Error('clipboard_observation_unavailable');
   };
   const result = await observeVideoLinks({ ...deps, urls: [openUrl, copyUrl] });
@@ -237,6 +243,94 @@ test('native Scrape link open and clipboard copy preserve the exact destination'
   assert.deepEqual(
     refused.actions.filter(([kind]) => kind === 'click'),
     [['click', 'scrape-media-open', openUrl]],
+  );
+});
+
+test('native link copy waits for its selected row after the opened tab restores Scrape', async () => {
+  for (const observe of [observeScrapeLinks, observeVideoLinks]) {
+    const deps = controls();
+    const window = new Window();
+    window.document.body.innerHTML = `<button role="tab" title="Scrape" data-state="active" aria-controls="pane">Scrape</button>
+      <section id="pane" role="tabpanel" data-state="active"><div role="tablist"><button role="tab" aria-selected="true" aria-controls="links">Links</button><button role="tab" aria-selected="false" aria-controls="video">Video</button></div>
+        <div id="links"><div><a href="${copyUrl}">Target</a><button title="Copy URL"><svg class="text-emerald-500"></svg></button></div></div>
+        <div id="video"><div><a href="${copyUrl}">Target</a><button title="Copy video URL"><svg class="text-emerald-500"></svg></button></div></div></section>`;
+    const selected = observe === observeScrapeLinks ? 'Links' : 'Video';
+    const tabs = [...window.document.querySelectorAll('section [role="tab"]')];
+    const select = (name) => {
+      for (const tab of tabs) tab.setAttribute('aria-selected', String(tab.textContent === name));
+    };
+    select(selected);
+    let readinessSamples = 0;
+    deps.evaluate = async (_panel, expression) => {
+      if (expression.includes('copy_target_readiness')) {
+        readinessSamples++;
+        if (readinessSamples === 2) select(selected);
+      }
+      return window.eval(expression);
+    };
+    deps.click = async (_panel, kind, target) => {
+      deps.actions.push(['click', kind, target]);
+      if (kind === 'scrape-media-open') select('Article');
+      if (
+        kind === 'scrape-media-copy' &&
+        window.document.querySelector('section [role="tab"][aria-selected="true"]')?.textContent !==
+          selected
+      )
+        throw new Error('pointer_target_not_unique');
+    };
+    const result = await observe({ ...deps, urls: [openUrl, copyUrl] });
+    assert.equal(result.copy_feedback, 'copied');
+    assert.equal(readinessSamples, 2);
+    assert.deepEqual(
+      deps.actions.filter(([kind]) => kind === 'click'),
+      [
+        ['click', 'scrape-media-open', openUrl],
+        ['click', 'scrape-media-copy', copyUrl],
+      ],
+    );
+  }
+});
+
+test('copy readiness requires the exact selected row, not a visible sibling', async () => {
+  const window = new Window();
+  window.document.body.innerHTML = `<button role="tab" title="Scrape" data-state="active" aria-controls="pane">Scrape</button>
+    <section id="pane" role="tabpanel" data-state="active"><div role="tablist"><button role="tab" aria-selected="true" aria-controls="links">Links</button></div>
+      <div id="links"><div><a href="${openUrl}">Sibling</a><button title="Copy URL"></button></div></div></section>`;
+  await assert.rejects(
+    waitForMediaCopyTarget(
+      null,
+      copyUrl,
+      async (_panel, expression) => window.eval(expression),
+      'Links',
+      20,
+    ),
+    /scrape_media_copy_target_ready_not_observed/,
+  );
+  window.document.querySelector('a').href = copyUrl;
+  window.document.querySelector('[role="tablist"] [role="tab"]').textContent = 'Video';
+  await assert.rejects(
+    waitForMediaCopyTarget(
+      null,
+      copyUrl,
+      async (_panel, expression) => window.eval(expression),
+      'Links',
+      20,
+    ),
+    /scrape_media_copy_target_ready_not_observed/,
+  );
+  window.document.querySelector('[role="tablist"] [role="tab"]').textContent = 'Links';
+  window.document
+    .querySelector('#links div')
+    .insertAdjacentHTML('beforeend', '<button title="Copy duplicate"></button>');
+  await assert.rejects(
+    waitForMediaCopyTarget(
+      null,
+      copyUrl,
+      async (_panel, expression) => window.eval(expression),
+      'Links',
+      20,
+    ),
+    /scrape_media_copy_target_ready_not_observed/,
   );
 });
 
