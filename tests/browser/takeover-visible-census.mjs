@@ -512,6 +512,7 @@ export async function mutationGuard(panel) {
 export function settingsControlsExpression(section, fingerprintKey) {
   return `(async () => {
     const known = new Set(${JSON.stringify([...controlsByLabel.keys(), ...controlAliases.keys()])});
+    const staticPillRows = ${JSON.stringify({ Organization: ['Acting as'], Appearance: ['Theme'], Chat: ['Default mode', 'Default speed'], Scrape: ['Auto-scrape mode'] })};
     ${fingerprintScript(fingerprintKey)}
     ${provenanceScript}
     const header = [...document.querySelectorAll('button[aria-expanded]')]
@@ -521,12 +522,50 @@ export function settingsControlsExpression(section, fingerprintKey) {
     if (!content) return null;
     const visible = (el) => { const r = el.getBoundingClientRect(), s = getComputedStyle(el);
       return r.width > 0 && r.height > 0 && s.display !== 'none' && s.visibility !== 'hidden'; };
+    const candidateLabel = (el) => {
+      const row = el.parentElement?.parentElement;
+      if (!row) return null;
+      const children = [...row.children];
+      let label = null;
+      if (el.matches('button[role="combobox"]') && children.length === 2 &&
+          children[1] === el.parentElement && el.parentElement.children.length === 1) {
+        const labelSpan = children[0].firstElementChild;
+        if (labelSpan?.tagName === 'SPAN' && labelSpan.textContent === labelSpan.firstChild?.textContent &&
+            (staticPillRows[${JSON.stringify(section)}] ?? []).includes(labelSpan.textContent))
+          label = labelSpan.textContent;
+      } else if (${JSON.stringify(section)} === 'Desktop bridge' &&
+          ['INPUT', 'BUTTON'].includes(el.tagName)) {
+        const direct = [...el.parentElement.children];
+        if (direct[0]?.tagName === 'INPUT' && direct[0].getAttribute('placeholder') === 'Pair code' &&
+            direct[1]?.tagName === 'BUTTON' && direct[1].textContent.trim() === 'Pair' &&
+            direct.length === 2 && direct.includes(el)) label = 'Pair code';
+        else if (direct[0]?.tagName === 'SPAN' && direct[0].textContent === 'Local engine port' &&
+            direct[1]?.tagName === 'INPUT' && direct[1].getAttribute('placeholder') === 'auto' &&
+            direct[2]?.tagName === 'BUTTON' && ['Set', 'Save'].includes(direct[2].textContent.trim()) &&
+            (direct.length === 3 || (direct.length === 4 && direct[3].tagName === 'SPAN' &&
+              direct[3].textContent === 'override')) && direct.slice(1, 3).includes(el))
+          label = 'Local engine port';
+      }
+      return label;
+    };
+    const rowLabel = (el) => {
+      const label = candidateLabel(el);
+      if (!label) return null;
+      // A copied static row is ambiguous; only the sole matching source shape can testify.
+      const same = [...content.querySelectorAll(${JSON.stringify(CONTROL_SELECTOR)})]
+        .filter(visible).filter(other => other !== el && other.parentElement !== el.parentElement &&
+          candidateLabel(other) === label);
+      return same.length === 0 ? label : null;
+    };
     return Promise.all([...content.querySelectorAll(${JSON.stringify(CONTROL_SELECTOR)})]
       .filter(visible).map(async (el, order) => { const label = (el.getAttribute('aria-label') ||
         (el.tagName === 'A' ? el.textContent : null) || el.getAttribute('title') ||
         el.closest('label')?.textContent || el.textContent || '').trim().slice(0, 256);
+        const staticRowLabel = rowLabel(el);
+        const { source_anchor: _unverifiedAnchor, ...safeProvenance } = provenance(el, order);
         return { kind: safeRole(el) || el.tagName.toLowerCase(),
-          provenance: { ...provenance(el, order), section: ${JSON.stringify(section)} },
+          provenance: { ...safeProvenance, section: ${JSON.stringify(section)},
+            ...(staticRowLabel ? { row_label: staticRowLabel } : {}) },
           ...(known.has(label) ? { label } : { label_fingerprint: await fingerprint(label) }) };
       }));
   })()`;

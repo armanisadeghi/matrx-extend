@@ -251,6 +251,53 @@ test('unknown DOM labels use a fresh keyed fingerprint without raw text or corre
   assert.equal(JSON.stringify(first).includes('Private account row'), false);
 });
 
+test('Settings census links only exact source-rendered row labels to observed controls', async () => {
+  const context =
+    domContext(`<button aria-expanded="true" aria-controls="appearance">Appearance</button>
+    <div id="appearance">
+      <div><div><span>Theme</span><span>Private neighboring hint</span></div><div><button role="combobox" data-census-id="EXT-F-9999-C99"><span>Private selected value</span></button></div></div>
+      <div><div><span>Theme</span></div><div><button role="combobox">Private duplicate</button></div></div>
+      <div><div><span>Private row</span></div><div><button role="combobox">Private option</button></div></div>
+    </div>`);
+  const observed = await vm.runInNewContext(
+    settingsControlsExpression('Appearance', randomBytes(32).toString('base64')),
+    context,
+  );
+  assert.equal(observed.length, 3);
+  assert.ok(
+    observed.every((item) => item.provenance.row_label === undefined),
+    'duplicate static labels are ambiguous',
+  );
+  assert.doesNotMatch(JSON.stringify(observed), /Private|EXT-F-9999/);
+  context.document.querySelectorAll('#appearance > div')[1].remove();
+  const unambiguous = await vm.runInNewContext(
+    settingsControlsExpression('Appearance', randomBytes(32).toString('base64')),
+    context,
+  );
+  assert.equal(unambiguous[0].provenance.row_label, 'Theme');
+  assert.equal(unambiguous[1].provenance.row_label, undefined);
+  assert.doesNotMatch(JSON.stringify(unambiguous), /Private/);
+});
+
+test('Desktop bridge census links each input and button only to its exact static row', async () => {
+  const context =
+    domContext(`<button aria-expanded="true" aria-controls="desktop">Desktop bridge</button>
+    <div id="desktop">
+      <div><input placeholder="Pair code" value="Private pair token"><button>Pair</button></div>
+      <div><span>Local engine port</span><input placeholder="auto" value="Private port"><button>Save</button><span>override</span></div>
+      <div><span>Private neighboring text</span><input placeholder="auto"><button>Save</button></div>
+    </div>`);
+  const observed = await vm.runInNewContext(
+    settingsControlsExpression('Desktop bridge', randomBytes(32).toString('base64')),
+    context,
+  );
+  assert.deepEqual(
+    Array.from(observed, (item) => item.provenance.row_label ?? null),
+    ['Pair code', 'Pair code', 'Local engine port', 'Local engine port', null, null],
+  );
+  assert.doesNotMatch(JSON.stringify(observed), /Private|value=|override/);
+});
+
 test('direct census invocation refuses before browser or credentials without resource guard', () => {
   const result = spawnSync(process.execPath, ['tests/browser/takeover-visible-census.mjs'], {
     env: { PATH: process.env.PATH, MATRX_CENSUS_ROLE: 'guest' },

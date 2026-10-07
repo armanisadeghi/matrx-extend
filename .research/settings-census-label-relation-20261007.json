@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "settings-census-label-relation-20261007",
+  "scope": "Non-Chat/Pilot Settings census observation only; no mapping or runtime verdict changes",
+  "cause": "settingsControlsExpression retained only the control's extracted label and DOM path, so PillSelect selections and Desktop bridge input/button pairs lacked the source-rendered static row label on the exact observed node",
+  "source_basis": {
+    "frozen_sha": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+    "control_row": "src/features/settings/SettingsView.tsx:820-838 renders a static label span as the first row child and the PillSelect control as the second row child",
+    "pill_rows": "src/features/settings/SettingsView.tsx:287-305,335-349,393-423,503-516 renders Acting as, Theme, Default mode, Default speed, and Auto-scrape mode",
+    "desktop_rows": "src/features/settings/SettingsView.tsx:566-603,630-649 renders Pair code input beside Pair button, then Local engine port span beside input and Set/Save button"
+  },
+  "observation": "An allowlisted row_label is included within each matching control's existing provenance only when the direct DOM shape and unique row relationship agree. Missing or duplicate shapes retain only the keyed label fingerprint. Settings provenance drops unverified syntax-shaped source_anchor.",
+  "red": {
+    "run_id": "37643142383-settings-label-red",
+    "journal": "docs/stabilization/resource-journals/37643142383-settings-label-red.jsonl",
+    "decision": "child_failed, resourceInvalid=false",
+    "tests": "30 pass, 2 fail: absent row relation in both new cases; first case also caught preexisting syntax-shaped source_anchor emission",
+    "stdout_capture": "Tool response only; raw stdout was not redirected to a file for the initial RED run"
+  },
+  "green": {
+    "run_id": "37643142383-settings-label-final",
+    "stdout": ".research/settings-census-label-relation-20261007.stdout.txt",
+    "journal": "docs/stabilization/resource-journals/37643142383-settings-label-final.jsonl",
+    "decision": "valid, resourceInvalid=false",
+    "tests": "32 pass, 0 fail"
+  },
+  "lint": "pnpm exec biome check tests/browser/takeover-visible-census.mjs tests/browser/takeover-visible-census.test.mjs: pass",
+  "limits": "Controlled realistic DOM fixtures verify extraction and privacy. No native rerun of the changed driver or attribution of the eight historical unknown Settings nodes has occurred; the 27 reconciliation unknowns remain unresolved."
+}
