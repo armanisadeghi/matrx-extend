@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "e1fb50a528713fda848e8a68791055db2acf2530",
+  "scope": "Fresh independent read-only review of retained D47 manual-channel and prior-run-binding source causal evidence; no execution, browser, build, database, or product/test edit",
+  "verdict_A_claim_and_spec": {
+    "status": "PASS_BOUNDED_SOURCE_CAUSAL; FULL_D47_T57_UNVERIFIED",
+    "manual_channel": "The original test drives window message through networkRelayIsolated, background NET_CAPTURE_EVENT and useNetworkCapture, then calls the real runNetworkCapturePattern with mocked Chrome/CDP boundaries. It positively observes the manual response in the hook and expects the saved replay to return Brooklyn Bowl. The retained source mutation adds a subscriber that injects that manual event into the saved collector; the red transcript shows Manual prior response at the final saved-row assertion. This supports the channel-isolation guard only at the controlled source boundary.",
+    "prior_run_binding": "The original test completes one replay and sends the previous run's binding name during a second replay, before its current packet. The retained source mutation replaces the exact binding-name check with true; the red transcript shows Earlier run late instead of Current run at the final saved-row assertion. This supports the per-run binding exclusion guard at the controlled CDP boundary.",
+    "original_repro_limit": "This evidence package does not contain a fresh native reproduction of the original defect or a browser-delivered late prior callback. It verifies two existing source guards, not the entire original T57 scenario. The tests invoke replay directly and use synthetic Chrome/CDP events, so they do not establish database loading, sidepanel behavior, real navigation timing, or deployed artifact identity.",
+    "open": "Native manual/prior-run isolation, cancellation, delivered old-callback rejection, and full D47/T57 acceptance remain unverified. Do not promote inventory status from this review."
+  },
+  "verdict_B_evidence_and_quality": {
+    "status": "PASS_WITH_SCOPE_LIMIT",
+    "retained_bytes": "Independently recomputed SHA-256 and byte counts for both original sources, both original tests and all four retained scratch files; all eight match prelaunch-hashes.json. The retained scratch files differ from originals only by the two intended source mutations and one vi.mock import adapter in each test. The executable scratch paths are absent from the working tree.",
+    "stdout": "Independently recomputed all three stdout SHA-256 values; they match the report. Manual red is 1/1 failed at saved-row assertion, binding red is 1/17 failed at saved-row assertion with 16 siblings passing, and untouched green is 18/18 passed. Neither red is a collection or setup failure.",
+    "resource_journals": "Each current-run journal has RESOURCE_JOURNAL_OPENED, RESOURCE_ADMITTED, RESOURCE_JOB_EXIT and RESOURCE_FINAL_DECISION for the matching run ID; both reds are admitted, resourceInvalid=false, childExitCode=1, decision=child_failed; green is admitted, resourceInvalid=false, childExitCode=0, decision=valid. The terminal times are sequential with no overlap. Journals establish child validity and exit status; stdout supplies assertion identity.",
+    "causal_strength": "Both mutants retain the owned replay and capture logic around the changed gate, and the original tests require different expected rows across replays. The manual mutant deliberately forges capture_id/document_key when merging the separate manual channel, so its result proves the test detects that explicit cross-channel merge; it does not prove that production naturally emits such an event. The binding mutant directly removes the relevant exact-name filter and is caught by the expected stale-row replacement.",
+    "limits": "Review was read-only and did not independently rerun tests. Retained prelaunch hashes and transcripts are self-contained evidence of the recorded source runs, not proof of real browser timing or current deployed behavior. Earlier constant-output RED evidence is outside this commit and was not revalidated here."
+  },
+  "review_disposition": "Accept the claimed bounded source RED-to-GREEN guard causality; preserve native and full-case status as open."
+}
