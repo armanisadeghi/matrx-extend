@@ -21,11 +21,15 @@
     "Completeness requires nonempty navigation, the Settings tab, all 11 source-present Settings headers, inspected visible tab panes, and inspected visible Settings section content; any unmapped label, inaccessible region, or blocked request still makes it incomplete.",
     "Unknown labels are HMAC-SHA-256 fingerprinted inside the extension document with a fresh random 256-bit key per driver run. The key is never persisted or included in output; raw unknown text and length never leave the document.",
     "A raw unknown label arriving at mapObservation is rejected before reporting, so a missing browser-side fingerprint cannot silently fall back to a deterministic hash.",
-    "The anchor and empty-observation guards failed on the previous source: 0 observed anchors versus 1 expected, and empty census complete=true versus false expected. The targeted tests then passed after repair."
+    "Direct, unguarded node:test source runs showed the anchor and empty-observation assertions fail on the previous source: 0 observed anchors versus 1 expected, and empty census complete=true versus false expected. The targeted tests then passed after repair."
   ],
   "verification": {
-    "targeted_source_tests": "node --test tests/browser/takeover-visible-census.test.mjs: 7 passed",
-    "hosted_route_tests": "node --test scripts/hosted-profile-route.test.mjs: 9 passed in the combined pre-format run",
+    "execution_class": "local direct node:test source checks outside stabilization-resource guard; no native/browser acceptance",
+    "resource_guard_completed_journal_paths": [],
+    "transcript_location": "current Codex task tool outputs only; no filesystem test transcript was saved",
+    "red_source_checks": "node --test tests/browser/takeover-visible-census.test.mjs was invoked directly and failed the omitted-anchor and empty-census assertions; later direct run failed the unkeyed fingerprint assertions before that repair",
+    "targeted_source_tests": "direct node --test tests/browser/takeover-visible-census.test.mjs: 7 passed",
+    "hosted_route_tests": "direct node --test scripts/hosted-profile-route.test.mjs: 9 passed in the combined 16-test source run",
     "format": "Biome targeted check passed",
     "native_browser": "not run",
     "hosted_workflow": "not dispatched"
@@ -37,6 +41,7 @@
     "note": "Reported by the coordinator as successful; this repair lane did not import or run it."
   },
   "known_limits": [
+    "The reported red/green and 16-test source runs were outside the resource guard. They do not establish guarded acceptance; there are no completed census resource-journal paths to cite.",
     "A fresh independent source review is required before native role observations. No guest, member, or admin runtime visibility is claimed.",
     "A mapped control is label visibility only; behavior, permissions, persistence, and backend access remain unverified.",
     "Blocked POST/RPC requests may include reads. Their safe boundary categories are reported and the altered UI cannot yield complete visibility.",
