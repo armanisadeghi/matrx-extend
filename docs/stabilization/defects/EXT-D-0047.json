@@ -28,8 +28,8 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Escalation fixer d47_actual_shape_repair owns source-traced observer/fixture alignment: actual driver saves key_path=[] and root events/document row, not eventName-only. Fresh peer392ff350 found the synthetic positive fixture mismatched. No native run admitted; fix tests under sole resource permit then fresh independent review and current CI/artifact verification.",
-    "status": "Latest native37548083191 resource-invalid, product acceptance unverified. Previous driver source proofs were bounded and did not establish actual saved-table compatibility.",
+    "next_action": "Verify successful integrated CI and current artifact/source/dependency lock, then admit exactly one native D47 run with reviewed cfa475f2 root-result observer. Preserve binding/context/lifecycle and old-callback proof limits. No native/source jobs active; all worker browsers and wrappers exited.",
+    "status": "Driver observation seam source-traced to real saved root config and reviewed48de45db; guarded Chromium7/7 and all three mutations rejected. Product D47/T57 acceptance remains unverified; latest native37548083191 was resource-invalid.",
     "implementation_agent": "completed: d47_owned_reload_fix; d47_navigation_replacement_fix; d47_ci_contract_repair",
     "execution_agent": "completed: d47_import_native",
     "native_run_id": 37537634304,
@@ -63,7 +63,7 @@
     "final_source_peer_report": ".research/d47-revision-final-peer-20261006.json",
     "source_fix_ci_run_id": 37542852254,
     "canceled_ci_run_id": 37542663531,
-    "integration_limit": "Frozen artifact11449894309/sourcefa2720fc remains bounded evidence. Remote source/version0.2.333 and dependency update integrated subsequently; new current artifact must be verified before further acceptance.",
+    "integration_limit": "Latest source version0.2.334 and multiple remote dependency updates integrated after frozen0.2.332 artifact. Prior source/DOM checks do not establish new native acceptance. Reverify current CI/artifact before dependent testing.",
     "active_native_run_id": null,
     "candidate_artifact_id": 11449894309,
     "candidate_source": "fa2720fcf21ba5476e81d13f3b4454020bb3bf54",
@@ -83,7 +83,11 @@
     "label_fix_report": ".research/d47-label-fix-20261006.json",
     "label_peer_report": ".research/d47-label-fresh-peer-20261007.json",
     "exact_preview_fix_commit": "55b66d85",
-    "exact_preview_peer_report": ".research/d47-exact-preview-peer-20261007.json"
+    "exact_preview_peer_report": ".research/d47-exact-preview-peer-20261007.json",
+    "actual_shape_fix_commit": "cfa475f2",
+    "actual_shape_fix_report": ".research/d47-actual-shape-repair-20261007.json",
+    "actual_shape_peer_commit": "48de45db",
+    "actual_shape_peer_report": ".research/d47-root-shape-peer-20261007.json"
   },
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
   "verification_status": "Current independentevidencepeer e7a67bcd confirms initialrequest timing and documentidentity controlled regressions (including meaningful identitymutation), plus bounded installed initialHN capture and saved10row replay on8b0f8adc/9ea6687b. Delayed matching prior-document response with higher old sequence is still nativeUNVERIFIED; T57 and original D47 closure remain incomplete. No current runtime was run by evidencepeer.",
