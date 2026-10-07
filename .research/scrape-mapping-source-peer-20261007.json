@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "reviewed_commits": {
+    "scrape_mapping": "574b43dd41679449d8a26e2eda44484c3dea52ec",
+    "data_retry_correction": "59945a4d02085da08cfa8a04e980bd96bd240731"
+  },
+  "lane": "fresh-independent-source-and-persisted-evidence-review",
+  "outcome_verdict_A": "pass-source-mapping-native-unverified",
+  "quality_verdict_B": "pass-with-explicit-runtime-limits",
+  "scrape_findings": [
+    "The three exact title strings in the mapper match current Scrape source and the frozen source has no diff in AddToProjectButton.tsx or ScrapeView.tsx. Inventory C19, C01 and C02 describe the corresponding header, fast capture and deep capture controls.",
+    "The collector observes visible controls in the active Scrape pane, recognizes a source title only on a BUTTON whose title equals the extracted label, and fingerprints private or changed labels. The mapper also requires button kind, Scrape provenance, source_title and one eligible occurrence of that title.",
+    "The saved red run failed the new named test at 38 pass/1 fail; the ready and final runs passed at 39/0; the C19-to-C01 mutant failed that named test at 38/1. The logs report admitted resource decisions. These are fixture/test evidence, not native observations.",
+    "The fixture covers exact titles, a private title, copied aria-label, changed title, wrong tab, wrong kind and duplicate eligible nodes. It does not prove current native visibility or the number of rendered source controls in a signed-in profile."
+  ],
+  "data_retry_findings": [
+    "Both earlier wording findings are addressed: inventory T05 now conditions getFrame on an active tab and current lookup sequence, and the research limitation distinguishes the absent clients/extension alias from the existing apps/extension canonical directory.",
+    "DataView still mounts PageIdentityNotice and guards picker and pattern Run without pageKey; the notice invokes refreshActiveTabIdentity. The hook queries the active tab, may return before getFrame, and rejects stale or unresolved identity. The T05 procedure remains design-needed and runtime-unverified."
+  ],
+  "new_issues": [],
+  "limits": [
+    "No native UI run, build, or new test was performed in this review.",
+    "The frozen fingerprint-only Scrape receipt cannot retroactively identify its three unknown nodes; one guarded native census on the reviewed exact artifact is still required.",
+    "Remaining non-Chat, Chat and Pilot unknown observations are outside this bounded mapping."
+  ]
+}
