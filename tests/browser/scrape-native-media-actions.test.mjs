@@ -3,6 +3,7 @@ import test from 'node:test';
 import { runInNewContext } from 'node:vm';
 import { Window } from 'happy-dom';
 import { runNativeResourceAction } from './native-resource-boundary.mjs';
+import { click as nativeClick, evaluate as panelEvaluate } from './settings-panel-driver.mjs';
 import {
   enterMediaField,
   observeCopyFeedback,
@@ -332,6 +333,62 @@ test('copy readiness requires the exact selected row, not a visible sibling', as
     ),
     /scrape_media_copy_target_ready_not_observed/,
   );
+});
+
+test('native Copy target agrees with readiness for title and tooltip-migrated title', async () => {
+  for (const attribute of ['title', 'data-matrx-title']) {
+    const window = new Window();
+    window.document.body.innerHTML = `<button role="tab" title="Scrape" data-state="active" aria-controls="pane">Scrape</button>
+      <section id="pane" role="tabpanel" data-state="active"><div role="tablist"><button role="tab" aria-selected="true" aria-controls="links">Links</button></div>
+        <div id="links"><div><a href="${openUrl}">Sibling</a><button title="Copy URL"></button></div>
+          <div><a href="${copyUrl}">Target</a><button ${attribute}="Copy URL"></button></div></div></section>`;
+    const target = window.document.querySelectorAll('#links button')[1];
+    const rect = {
+      x: 20,
+      y: 20,
+      left: 20,
+      top: 20,
+      right: 120,
+      bottom: 40,
+      width: 100,
+      height: 20,
+    };
+    window.HTMLElement.prototype.getBoundingClientRect = () => rect;
+    window.HTMLElement.prototype.scrollIntoView = () => {};
+    window.HTMLElement.prototype.getAnimations = () => [];
+    window.document.elementFromPoint = () => target;
+    const events = [];
+    const panel = {
+      send: async (method, args) => {
+        if (method === 'Input.dispatchMouseEvent') {
+          events.push(args.type);
+          return {};
+        }
+        assert.equal(method, 'Runtime.evaluate');
+        return {
+          result: {
+            value: runInNewContext(args.expression, {
+              document: window.document,
+              getComputedStyle: () => ({
+                display: 'block',
+                visibility: 'visible',
+                overflowX: 'visible',
+                overflowY: 'visible',
+                position: 'static',
+                pointerEvents: 'auto',
+              }),
+              innerWidth: 360,
+              innerHeight: 454,
+            }),
+          },
+        };
+      },
+    };
+    const ready = await waitForMediaCopyTarget(panel, copyUrl, panelEvaluate, 'Links', 20);
+    assert.deepEqual({ ...ready }, { selected: true, rowCount: 1, targetCount: 1 });
+    await nativeClick(panel, 'scrape-media-copy', copyUrl);
+    assert.deepEqual(events, ['mousePressed', 'mouseReleased']);
+  }
 });
 
 test('failed Copy feedback is a product failure and never gains read permission', async () => {

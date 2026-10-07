@@ -18,7 +18,7 @@ export async function waitForMediaCopyTarget(panel, url, evaluate, selectedTab, 
       const rows = [...(content?.querySelectorAll('a') ?? [])]
         .filter((anchor) => anchor.href === ${JSON.stringify(url)});
       const targets = rows.flatMap((anchor) =>
-        [...(anchor.parentElement?.querySelectorAll('button[title^="Copy "], button[data-matrx-title^="Copy "]') ?? [])]);
+        [...(anchor.parentElement?.querySelectorAll('button[title^="Copy "], button:not([title])[data-matrx-title^="Copy "]') ?? [])]);
       return { selected: tab?.textContent?.trim() === expectedTab, rowCount: rows.length,
         targetCount: targets.length };
     })()`,

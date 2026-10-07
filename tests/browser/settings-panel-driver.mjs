@@ -171,7 +171,7 @@ export async function click(panel, kind, label, onPhase = undefined) {
         .flatMap((a) => [...(a.parentElement?.querySelectorAll('button[title^="Remove "]') ?? [])]);
       else if (kind === 'scrape-media-copy') candidates = [...(content?.querySelectorAll('a') ?? [])]
         .filter((a) => a.href === label)
-        .flatMap((a) => [...(a.parentElement?.querySelectorAll('button[title^="Copy "]') ?? [])]);
+        .flatMap((a) => [...(a.parentElement?.querySelectorAll('button[title^="Copy "], button:not([title])[data-matrx-title^="Copy "]') ?? [])]);
       else if (kind === 'scrape-media-open') candidates = [...(content?.querySelectorAll('a') ?? [])]
         .filter((a) => a.href === label);
       else if (kind === 'scrape-media-add-row') candidates = [...(content?.querySelectorAll('button') ?? [])]
