@@ -1,0 +1,284 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "lane": "A",
+  "scope": "One guarded guest Settings-controls hosted run on an exact successful CI development artifact; no native case interaction occurred.",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "path": ".github/workflows/hosted-guest-acceptance.yml",
+    "run_id": 37686070986,
+    "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37686070986",
+    "workflow_head_sha": "0d36f5cb713f660e61e41e41f810d00a2446259d",
+    "job_id": 113014103451,
+    "job_name": "guest",
+    "runner": "macos-15 (ARM64)",
+    "started_at": "2026-10-07T20:58:55Z",
+    "completed_at": "2026-10-07T21:04:58Z",
+    "terminal": "completed/failure",
+    "failed_step": "Exercise the selected Chrome side-panel case"
+  },
+  "dispatch": {
+    "acceptance_lane": "A",
+    "acceptance_case": "settings-controls",
+    "role": "signed-out guest",
+    "runner_label": "macos-15",
+    "development_run_id": 37684665825,
+    "development_artifact_id": 11511120729
+  },
+  "frozen_artifact": {
+    "ci_run_id": 37684665825,
+    "artifact_id": 11511120729,
+    "artifact_name": "matrx-extend-development-test-14305391032aaf326c57ce196d50518f0d42f047-37684665825-1",
+    "ci_conclusion": "success",
+    "ci_event": "push",
+    "ci_branch": "main",
+    "source_sha": "14305391032aaf326c57ce196d50518f0d42f047",
+    "receipt": {
+      "schema_version": 1,
+      "kind": "local_dev_unpacked",
+      "publish_state": "not_published",
+      "observedAt": "2026-10-07T20:53:22.000Z",
+      "extensionDir": "/home/runner/work/matrx-extend/matrx-extend/.output/chrome-mv3",
+      "version": "0.2.387",
+      "treeSha256": "dd75d3643a6339ebac79871bc30d316bb65029f37424a7fa2638fee4d9a507f5"
+    },
+    "receipt_sha256": "1b1bf110e0e87c762311e28966dbe0d2ebb3039455075381811e9c746f8f6a18",
+    "provenance_sha256": "2f09dbeffd6709ca0be7c6e78ecb529be992e3d7570cab679ee092e138bb1cb8",
+    "imported_tree_sha256": "dd75d3643a6339ebac79871bc30d316bb65029f37424a7fa2638fee4d9a507f5"
+  },
+  "result": {
+    "status": "unverified_harness_artifact_version_mismatch",
+    "cases": [
+      {
+        "id": "EXT-F-1003-T22",
+        "status": "unverified",
+        "steps": [],
+        "evidence": null
+      },
+      {
+        "id": "EXT-F-1003-T37",
+        "status": "unverified",
+        "steps": [],
+        "evidence": null
+      },
+      {
+        "id": "EXT-F-1003-T46",
+        "status": "unverified",
+        "steps": [],
+        "evidence": null
+      },
+      {
+        "id": "EXT-F-1003-T70",
+        "status": "unverified",
+        "steps": [],
+        "evidence": null
+      }
+    ],
+    "setup_error": "development receipt must match package\n+ actual - expected\n\n+ '0.2.387'\n- '0.2.388'\n         ^\n",
+    "diagnosis": {
+      "stage": "before any Settings/native assertion; acceptance driver setup completed with receipt/package version validation failure",
+      "actual_artifact_version": "0.2.387",
+      "expected_checkout_package_version": "0.2.388",
+      "assertion": "assert.equal(result.code, 0, ...)",
+      "source_location": "scripts/hosted-guest-acceptance.mjs:518",
+      "native_driver": "test-results/settings-local-controls-acceptance.json",
+      "native_driver_sha256": "98dd19e4ab8afe04e5222e5d057357485ff01985cd0eb00d11dafeff4216e405",
+      "behavior_observed": false,
+      "screenshot_files": [],
+      "underlying_assertion_location": "tests/browser/settings-local-controls-acceptance.mjs:378"
+    },
+    "product_verdict": "none; no Settings control behavior was observed and no product defect is inferred"
+  },
+  "resource_journals": {
+    "capture": "The uploaded run artifact omitted the resource-journal paths. Each journal event below is reconstructed verbatim from the hosted job log JSON records; these are not represented as downloaded journal files or original-journal hashes.",
+    "hosted_job_log_sha256": "410ccaaf65513003d6f34ca2cffa7faae00c065166ae7685b52753bd3ef3ce86",
+    "hosted_job_log_scratch_path": "/Volumes/Samsung2TB/.scratch/independent-product-batch-37686070986/job.log",
+    "event_streams": {
+      "hosted-browser-37686070986-1": [
+        {
+          "schema": 1,
+          "at": "2026-10-07T21:01:34.059Z",
+          "runId": "hosted-browser-37686070986-1",
+          "path": "/Users/runner/work/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37686070986-1.pending.jsonl",
+          "code": "RESOURCE_JOURNAL_OPENED"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T21:02:42.141Z",
+          "runId": "hosted-browser-37686070986-1",
+          "mode": "run",
+          "policySchema": 1,
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 5.81,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 2.09,
+            "logicalCpus": 3,
+            "cpuBusyFraction": 0.03571428571428571,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 43.2885856628418,
+            "profileFreeGiB": 43.2885856628418,
+            "safetyFreeGiB": 43.2885856628418,
+            "systemFreeGiB": 43.2885856628418
+          },
+          "cpuBusySamples": [0.05, 0.02, 0.04, 0.01, 0.1, 0.02, 0.01],
+          "reasons": [],
+          "swapWindowSeconds": 60,
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T21:02:46.474Z",
+          "runId": "hosted-browser-37686070986-1",
+          "childExitCode": 0,
+          "childSignal": null,
+          "code": "RESOURCE_JOB_EXIT"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T21:02:46.566Z",
+          "runId": "hosted-browser-37686070986-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      ],
+      "hosted-guest-37686070986-1": [
+        {
+          "schema": 1,
+          "at": "2026-10-07T21:03:30.959Z",
+          "runId": "hosted-guest-37686070986-1",
+          "path": "/Users/runner/work/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37686070986-1.pending.jsonl",
+          "code": "RESOURCE_JOURNAL_OPENED"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T21:04:38.860Z",
+          "runId": "hosted-guest-37686070986-1",
+          "mode": "run",
+          "policySchema": 1,
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 5.81,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 1.71,
+            "logicalCpus": 3,
+            "cpuBusyFraction": 0.027142857142857142,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 43.64197540283203,
+            "profileFreeGiB": 43.64197540283203,
+            "safetyFreeGiB": 43.64197540283203,
+            "systemFreeGiB": 43.64197540283203
+          },
+          "cpuBusySamples": [0.07, 0.01, 0.05, 0.02, 0.02, 0.01, 0.01],
+          "reasons": [],
+          "swapWindowSeconds": 60,
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T21:04:45.018Z",
+          "runId": "hosted-guest-37686070986-1",
+          "childExitCode": 1,
+          "childSignal": null,
+          "code": "RESOURCE_JOB_EXIT"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T21:04:45.088Z",
+          "runId": "hosted-guest-37686070986-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 1,
+          "decision": "child_failed",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      ],
+      "hosted-package-37686070986-1": [
+        {
+          "schema": 1,
+          "at": "2026-10-07T20:59:37.700Z",
+          "runId": "hosted-package-37686070986-1",
+          "path": "/Users/runner/work/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37686070986-1.pending.jsonl",
+          "code": "RESOURCE_JOURNAL_OPENED"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T21:00:45.501Z",
+          "runId": "hosted-package-37686070986-1",
+          "mode": "run",
+          "policySchema": 1,
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 5.88,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 5.46,
+            "logicalCpus": 3,
+            "cpuBusyFraction": 0.12,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 43.31287384033203,
+            "profileFreeGiB": 43.31287384033203,
+            "safetyFreeGiB": 43.31287384033203,
+            "systemFreeGiB": 43.31287384033203
+          },
+          "cpuBusySamples": [0.05, 0.01, 0.07, 0.01, 0.06, 0.42, 0.22],
+          "reasons": [],
+          "swapWindowSeconds": 60,
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T21:00:47.245Z",
+          "runId": "hosted-package-37686070986-1",
+          "childExitCode": 0,
+          "childSignal": null,
+          "code": "RESOURCE_JOB_EXIT"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T21:00:47.325Z",
+          "runId": "hosted-package-37686070986-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      ]
+    },
+    "decisions": {
+      "hosted-package-37686070986-1": {
+        "decision": "valid",
+        "resource_invalid": false,
+        "exit_code": 0
+      },
+      "hosted-browser-37686070986-1": {
+        "decision": "valid",
+        "resource_invalid": false,
+        "exit_code": 0
+      },
+      "hosted-guest-37686070986-1": {
+        "decision": "child_failed",
+        "resource_invalid": false,
+        "exit_code": 1
+      }
+    }
+  },
+  "hosted_output_artifact": {
+    "name": "hosted-guest-37686070986-1",
+    "artifact_id": 11510794410,
+    "size_bytes": 5409,
+    "sha256": "c241b6408bb1b85bc1885a27ca9fe6813a1ec3bcb67af96f356e0093f1cd05ce",
+    "contents": ["test-results/settings-local-controls-acceptance.json"],
+    "screenshots_present": false
+  },
+  "limitations": [
+    "The case stopped before native assertions because artifact v0.2.387 did not match checkout package v0.2.388.",
+    "All four mapped cases remain unverified: EXT-F-1003-T22, EXT-F-1003-T37, EXT-F-1003-T46, EXT-F-1003-T70.",
+    "No inventory statuses are changed by this evidence; coordinator owns inventory reconciliation.",
+    "A prior same-case attempt ended with an invalid resource verdict; this retry exposed a distinct harness/artifact version mismatch. No blind retry is recommended; root owns diagnosis and repair.",
+    "Resource event summaries come from job stdout, not completed journal files; no native acceptance credit can be established from this attempt."
+  ]
+}
