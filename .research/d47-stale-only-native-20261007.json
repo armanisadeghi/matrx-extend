@@ -1,0 +1,101 @@
+{
+  "schema": 1,
+  "defect_id": "EXT-D-0047",
+  "case": "showcase-d47-admin",
+  "d47_response_order": "stale-only",
+  "workflow": {
+    "run_id": 37578280425,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37578280425",
+    "dispatch_ref": "v0.2.345",
+    "workflow_head": "4a242ccd6c535c17a9671c37c118ad834dd835ef",
+    "app_source": "30f4e0459cf50f384b5bfaa05dbabbe0ea598d28",
+    "matching_ci_run": 37577447833,
+    "artifact_id": 11463646188,
+    "artifact_tree_sha256": "915438568fed771e93b73bd91a1c9fe500497c633386930ce66099acb4b6f8d7",
+    "terminal": "failure",
+    "failed_step": "Exercise the selected Chrome side-panel case",
+    "scope_note": "The immutable workflow ref and successful app artifact are paired. The reviewed tag-to-app-source differences are stabilization documentation only; app, package, lock, workflow, harness, driver, and fixture match."
+  },
+  "source_review": {
+    "guard_report": ".research/d47-stale-guarded-checks-20261007.json",
+    "guarded_checks": "44/44 valid",
+    "peer_report": ".research/d47-stale-only-driver-peer-20261007.json",
+    "peer_source": "0358dc48",
+    "peer_verdict": "source structurally ready; native behavior unverified before this run",
+    "native_source": "30f4e0459cf50f384b5bfaa05dbabbe0ea598d28"
+  },
+  "preflight_and_secrets": {
+    "canonical_credential_validator": "passed",
+    "admin_env_mode_0600": true,
+    "organization_fixture_mode_0600": true,
+    "actions_secrets_absent_before_stage": true,
+    "staged_immediately_before_dispatch": true,
+    "deleted_at_terminal": true,
+    "absence_verified_after_cleanup": true,
+    "secret_values_recorded": false,
+    "resource_preflight_admitted": true
+  },
+  "native_result": {
+    "receipt_status": "unverified",
+    "stage": "save_recipe",
+    "failure_code": "save_recipe_failed",
+    "failure_message": "unclassified_error",
+    "timeline_ms": {
+      "native": 375,
+      "signin": 6015,
+      "organization": 20307,
+      "capture_seed": 57693,
+      "select_seed_response": 78644,
+      "save_recipe": 78844
+    },
+    "organization": "Admin identity and intended organization were confirmed; the exact visible picker option was present. The case progressed through seed capture and response selection.",
+    "save_observation": "The exact recipe name matched and Save was present and enabled. No error or saving indicator appeared; the post-click terminal observation was null.",
+    "cleanup_list_observation": "No exact owned recipe row was visible; the driver marked cleanup unverified.",
+    "fixture": "No stale-only fixture route/refusal or fresh recovery was observed; fixture evidence was null.",
+    "verdicts": {
+      "saved_replay": "unverified",
+      "delayed_old_binding": "unverified",
+      "cancellation": "unverified"
+    },
+    "no_rerun": true
+  },
+  "receipt": {
+    "private_path": "/tmp/d47-stale-only-native-37578280425/_temp/showcase-d47-native-37578280425-1.json",
+    "sha256": "7c84634a204619f03945a9becf159bae200d5d9ce8bd25f73e3cc172ec3a7022",
+    "committed": false
+  },
+  "owned_recipe_cleanup": {
+    "evidence": ".research/d47-stale-owned-cleanup-20261007.json",
+    "method": "read-only exact-name and suffix-prefix count in extend.wbx_pattern",
+    "exact_count": 0,
+    "name_and_suffix_count": 0,
+    "delete_performed": false,
+    "conclusion": "No persisted run-owned recipe remained at query time. This does not determine whether Save was clicked or whether a row was inserted and removed; save-stage failure remains unclassified."
+  },
+  "resource_journals": [
+    {
+      "path": "docs/stabilization/resource-journals/d47stale_native_37578280425_package.jsonl",
+      "sha256": "2375a393bd3cfb5a49d81b685d4e707cf95cc391fa30f8d1ba6864f0edd3bb36",
+      "final_decision": "resourceInvalid=false"
+    },
+    {
+      "path": "docs/stabilization/resource-journals/d47stale_native_37578280425_browser.jsonl",
+      "sha256": "e26c3f3e14eb4c3fb70d4f33c075aea33114a15869905338eed89a01eada184f",
+      "final_decision": "resourceInvalid=false"
+    },
+    {
+      "path": "docs/stabilization/resource-journals/d47stale_native_37578280425_guest.jsonl",
+      "sha256": "726b5b749ee69170ce6acff54ff3f68417035998f0539f22ddf00c32c9e6c605",
+      "final_decision": "admitted=true; resourceInvalid=false; child exit 1; decision child_failed"
+    }
+  ],
+  "terminal_cleanup": {
+    "temporary_actions_secrets_absent": true,
+    "fixture_server_stopped": true,
+    "workflow_child_and_browser_terminal": true,
+    "native_recipe_cleanup_driver_result": "unverified",
+    "read_only_database_absence_check": "exact and suffix-prefix counts zero; no deletion performed",
+    "screenshots_and_raw_receipt_remain_private": true
+  },
+  "acceptance": "Not accepted. The workflow failure is bounded to unclassified save-stage behavior. No stale refusal, exact settled saved row, or fresh-context recovery was demonstrated. No product-failure rerun was made."
+}
