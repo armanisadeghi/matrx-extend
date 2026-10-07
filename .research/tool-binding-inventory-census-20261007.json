@@ -1,0 +1,341 @@
+{
+  "live_metadata": {
+    "connection": "canonical self-hosted database, accessed through sibling ai-matrx pnpm admin-query; script guard requires db.matrxserver.com",
+    "interpretation": "DB binding status and surface-default metadata describe this connected project. They do not prove request-time advertisement, user/role access, permission outcomes, or runtime execution.",
+    "provenance_limit": "Read-only private RPC path validated by ../ai-matrx/scripts/execute-admin-query.ts host guard. Connected cloud Supabase MCP snapshot matched queried counts/surface facts but is not used as canonical evidence.",
+    "queried_at": "2026-10-07T11:46-11:48Z",
+    "query_result": {
+      "binding_rows": 84,
+      "definition_and_binding_active_pairs": 81,
+      "distinct_names": 84,
+      "executor_name": "chrome-extension",
+      "inactive_or_definition_disabled_pairs": 3,
+      "inactive_or_disabled_names": [
+        "capture_credential",
+        "evaluate_javascript",
+        "fetch_url_as_markdown"
+      ],
+      "inactive_or_disabled_rows": [
+        {
+          "binding_active": false,
+          "definition_active": false,
+          "id": "ee4190a3-8667-40b0-a402-c897b3423f1c",
+          "name": "capture_credential"
+        },
+        {
+          "binding_active": false,
+          "definition_active": false,
+          "id": "61a964d0-0935-4081-82a1-e5a4f9483c8f",
+          "name": "evaluate_javascript"
+        },
+        {
+          "binding_active": false,
+          "definition_active": false,
+          "id": "5654f4ef-ef37-4150-85fb-cb36f3a5389e",
+          "name": "fetch_url_as_markdown"
+        }
+      ],
+      "inventory_binding_comparison": {
+        "active_binding_names_absent_from_both_inventory_and_catalog": 0,
+        "catalog_unique_names_without_active_definition_binding": 85,
+        "inventory_unique_names_without_active_definition_binding": 87,
+        "known_active_inventory_names_missing_from_catalog": ["records"],
+        "known_inventory_name_without_active_binding": ["fetch_url_as_markdown"],
+        "query_file": "/tmp/tool-binding-canonical-compare.sql",
+        "query_sha256": "495f4bc6237d4c4ef7cb850a657f31da9c4d4de57e228bf88ff92f8774fdc981"
+      },
+      "minimum_fields_selected": [
+        "tool.definition.id",
+        "tool.definition.name",
+        "tool.definition.tier",
+        "tool.definition.admin_only",
+        "tool.definition.is_active",
+        "tool.binding.executor_name",
+        "tool.binding.is_active",
+        "tool.surface_defaults.surface_name",
+        "tool.surface_defaults.always_include_tools",
+        "tool.surface_defaults.always_include_bundles",
+        "tool.surface_defaults.never_include_tools"
+      ],
+      "query_file": " /tmp/tool-binding-canonical-compare.sql",
+      "query_files": {
+        "counts": "/tmp/tool-binding-canonical-counts.sql",
+        "counts_sha256": "7949e6a174e4ca8af4f9df9fd5f7c256e870d4f33461115b5971d33fedeca2d0",
+        "definitions_bindings_surfaces": "/tmp/tool-binding-canonical-census.sql",
+        "definitions_bindings_surfaces_sha256": "a6b75e6ec6e2f163b933ff24f448e06e426861e04e785b0692349dab37bce4b3",
+        "inventory_catalog_compare": "/tmp/tool-binding-canonical-compare.sql",
+        "inventory_catalog_compare_sha256": "495f4bc6237d4c4ef7cb850a657f31da9c4d4de57e228bf88ff92f8774fdc981",
+        "names_surfaces": "/tmp/tool-binding-canonical-names.sql",
+        "names_surfaces_sha256": "ec0354b10dce740624982faa11c0e6ade04e836a17109496384d08db763b53c6",
+        "schema": "/tmp/tool-binding-census-schema.sql",
+        "schema_sha256": "824fe09c833cee549b23c818fb650923c5f5226496eeaac982916d55307aabc0",
+        "surface_mismatch": "/tmp/tool-binding-surface-mismatch.sql",
+        "surface_mismatch_sha256": "94d532e543790e4e5d5b1b5e38c6a9febf8070cabb4eb0af6d7b7ec12008e02e"
+      },
+      "safety": "Read-only SELECT only; no descriptions, parameters, outputs, users, credentials, or writes selected.",
+      "selected_fields": [
+        "tool.definition.id",
+        "tool.definition.name",
+        "tool.definition.tier",
+        "tool.definition.admin_only",
+        "tool.definition.is_active",
+        "tool.binding.executor_name",
+        "tool.binding.is_active"
+      ],
+      "selected_row_shape": "id + name + tier + admin_only + definition_active + executor_name + binding_active; no descriptions, parameters, outputs, user data, or credentials",
+      "surfaces": {
+        "chrome-extension/assistant": {
+          "active_bound_names": 80,
+          "always_include_bundles": ["google"],
+          "always_include_count": 83,
+          "always_include_names_without_active_definition_binding": [
+            "fetch_url_as_markdown",
+            "memory",
+            "tasks"
+          ],
+          "includes_inventory_names": ["records", "wait_for"],
+          "never_include_tools": ["ask_person"]
+        },
+        "chrome-extension/pilot": {
+          "active_bound_names": 80,
+          "always_include_bundles": ["google"],
+          "always_include_count": 83,
+          "always_include_names_without_active_definition_binding": [
+            "fetch_url_as_markdown",
+            "memory",
+            "tasks"
+          ],
+          "includes_inventory_names": ["records", "wait_for"],
+          "never_include_tools": ["ask_person"]
+        }
+      }
+    },
+    "snapshot_is_canonical_source": true
+  },
+  "observed_at": "2026-10-07T11:48:17Z",
+  "pinned_head": "2da7b00da9067d2a03740fa9e5c923a6fd74e587",
+  "reconciliation": {
+    "binding_and_surface_deltas": [
+      "Canonical DB has 84 chrome-extension binding rows / unique names; 81 definition+binding pairs active, 3 disabled/inactive.",
+      "Each surface default lists 83 tools; 80 have an active chrome-extension definition+binding. The three names without an active binding are fetch_url_as_markdown, memory, and tasks.",
+      "85 current client catalog names lack active DB definition+binding; 87 inventory names lack active DB definition+binding. These source/catalog rows still exist; this difference alone does not indicate missing features.",
+      "No active DB-bound name is absent from both inventory and current catalog."
+    ],
+    "metadata_status": "Current source/catalog metadata is largely reconciled; inventory readiness remains metadata and does not represent runtime acceptance.",
+    "not_proven": [
+      "request-time advertisement",
+      "role access or permission outcomes",
+      "runtime execution or behavior",
+      "feature acceptance",
+      "fetch_url_as_markdown retirement, replacement, applicability, or owner intent"
+    ],
+    "source_deltas": [
+      "EXT-F-4125 inventory schema includes persist; current source/catalog schema contains css and tab_id, so reconcile that stale parameter while retaining feature identity.",
+      "EXT-F-4167 inventory schema includes persistent; current source/catalog schema contains action, css, tab_id, so reconcile that stale parameter while retaining feature identity.",
+      "EXT-F-4149 fetch_url_as_markdown remains in the inventory, but no matching current generated client catalog record is present; canonical DB definition and binding are both inactive. Source absence and metadata are proven; retirement, replacement, applicability, and owner intent remain unverified.",
+      "EXT-F-4130 records is an active server/manual execution capability and is absent from generated client schema catalog; both surface defaults include its name.",
+      "EXT-F-4058 and EXT-F-4156 are distinct wait_for IDs: preserve the first as the legacy catalog row shadowed by canonical registry handler, and preserve the second as canonical route."
+    ]
+  },
+  "schema_version": 1,
+  "source_catalog": {
+    "catalog_names_absent_from_inventory": [],
+    "current_catalog_generated_at": "2026-10-07T11:35:23.721Z",
+    "current_catalog_rows": 167,
+    "current_catalog_unique_names": 166,
+    "inventory_feature_rows": 169,
+    "inventory_file_sha256": "a6f6b5f170c584b0348b8425583c7df4abbb459345fba44967b3ebab209f4bd2",
+    "inventory_generated_at": "2026-09-25T21:56:50.109Z",
+    "inventory_names_absent_from_client_catalog": ["fetch_url_as_markdown", "records"],
+    "inventory_source_sha_declared": "dc64e8a1c6c0ac28ac8102dd31857bf645d72df2",
+    "inventory_status_counts": {
+      "catalog-record-shadowed-by-canonical": 1,
+      "source-listed-pending-reconciliation": 167,
+      "source-reconciled-procedure-needed": 1
+    },
+    "inventory_unique_names": 168,
+    "key_rows": [
+      {
+        "admin_only": false,
+        "current_catalog_indices": [57, 153],
+        "dependency_class": "local",
+        "id": "EXT-F-4058",
+        "inventory_catalog_index": 57,
+        "inventory_status": "catalog-record-shadowed-by-canonical",
+        "name": "wait_for",
+        "optional_permissions": [],
+        "required_permissions": ["activeTab", "scripting"],
+        "schema_exact_catalog_indices": [57],
+        "source_anchors": [
+          "types/tool-catalog.json",
+          "src/lib/tools/registry.ts",
+          "src/features/tools/ToolsView.tsx",
+          "src/config/sidepanel-visibility.ts:31"
+        ],
+        "surface_bundles": ["pilot", "pilot+privileged"],
+        "tier": "action"
+      },
+      {
+        "admin_only": false,
+        "current_catalog_indices": [124],
+        "dependency_class": "local",
+        "id": "EXT-F-4125",
+        "inventory_catalog_index": 124,
+        "inventory_status": "source-listed-pending-reconciliation",
+        "name": "inject_stylesheet",
+        "optional_permissions": [],
+        "required_permissions": ["activeTab", "scripting"],
+        "schema_exact_catalog_indices": [],
+        "source_anchors": [
+          "types/tool-catalog.json",
+          "src/lib/tools/registry.ts",
+          "src/features/tools/ToolsView.tsx",
+          "src/config/sidepanel-visibility.ts:31"
+        ],
+        "surface_bundles": ["pilot+privileged"],
+        "tier": "privileged"
+      },
+      {
+        "admin_only": false,
+        "current_catalog_indices": [],
+        "dependency_class": "cross-system",
+        "id": "EXT-F-4130",
+        "inventory_catalog_index": 129,
+        "inventory_status": "source-listed-pending-reconciliation",
+        "name": "records",
+        "optional_permissions": [],
+        "required_permissions": [],
+        "schema_exact_catalog_indices": [],
+        "source_anchors": [
+          "types/tool-catalog.json",
+          "src/lib/tools/registry.ts",
+          "src/features/tools/ToolsView.tsx",
+          "src/config/sidepanel-visibility.ts:31"
+        ],
+        "surface_bundles": ["pilot", "pilot+privileged"],
+        "tier": "action"
+      },
+      {
+        "admin_only": false,
+        "current_catalog_indices": [],
+        "dependency_class": "local",
+        "id": "EXT-F-4149",
+        "inventory_catalog_index": 148,
+        "inventory_status": "source-listed-pending-reconciliation",
+        "name": "fetch_url_as_markdown",
+        "optional_permissions": [],
+        "required_permissions": [],
+        "schema_exact_catalog_indices": [],
+        "source_anchors": [
+          "types/tool-catalog.json",
+          "src/lib/tools/registry.ts",
+          "src/features/tools/ToolsView.tsx",
+          "src/config/sidepanel-visibility.ts:31"
+        ],
+        "surface_bundles": ["assistant", "pilot", "pilot+privileged"],
+        "tier": "read"
+      },
+      {
+        "admin_only": false,
+        "current_catalog_indices": [57, 153],
+        "dependency_class": "local",
+        "id": "EXT-F-4156",
+        "inventory_catalog_index": 155,
+        "inventory_status": "source-reconciled-procedure-needed",
+        "name": "wait_for",
+        "optional_permissions": [],
+        "required_permissions": ["activeTab", "scripting"],
+        "schema_exact_catalog_indices": [153],
+        "source_anchors": [
+          "types/tool-catalog.json",
+          "src/lib/tools/registry.ts",
+          "src/features/tools/ToolsView.tsx",
+          "src/config/sidepanel-visibility.ts:31"
+        ],
+        "surface_bundles": ["assistant", "pilot", "pilot+privileged"],
+        "tier": "read"
+      },
+      {
+        "admin_only": false,
+        "current_catalog_indices": [164],
+        "dependency_class": "local",
+        "id": "EXT-F-4167",
+        "inventory_catalog_index": 166,
+        "inventory_status": "source-listed-pending-reconciliation",
+        "name": "stylesheet",
+        "optional_permissions": [],
+        "required_permissions": ["activeTab", "scripting"],
+        "schema_exact_catalog_indices": [],
+        "source_anchors": [
+          "types/tool-catalog.json",
+          "src/lib/tools/registry.ts",
+          "src/features/tools/ToolsView.tsx",
+          "src/config/sidepanel-visibility.ts:31"
+        ],
+        "surface_bundles": ["pilot+privileged"],
+        "tier": "privileged"
+      }
+    ],
+    "metadata_comparison": {
+      "catalog_index_rule": "Positional indices are not stable IDs; compare exact name and schema. wait_for remains two inventory rows.",
+      "schema_mismatch_rows": [
+        "EXT-F-4125 inject_stylesheet (inventory still has persist)",
+        "EXT-F-4167 stylesheet (inventory still has persistent)"
+      ],
+      "stale_catalog_record_indices": 39,
+      "tier_admin_permissions_surface_bundle_mismatches_on_schema-matched_catalog_routes": 0
+    },
+    "special_route_classification": {
+      "EXT-F-4058": {
+        "canonical_index": 153,
+        "legacy_index": 57,
+        "name": "wait_for",
+        "preserve_id": true,
+        "route": "legacy catalog record shadowed by canonical registry handler"
+      },
+      "EXT-F-4130": {
+        "evidence": "src/lib/tools/server-catalog.ts declares execution=server; intentionally not in generated client schema catalog",
+        "name": "records",
+        "route": "server-side/manual server execution"
+      },
+      "EXT-F-4156": {
+        "canonical_index": 153,
+        "name": "wait_for",
+        "preserve_id": true,
+        "registry_evidence": "src/lib/tools/registry.ts registers canonical handlers last and marks wait_for as intentional shadow",
+        "route": "canonical handler and current canonical catalog entry"
+      }
+    }
+  },
+  "source_hashes": {
+    ".research/inventory-gate-audit-20261007.json": {
+      "modified_at": "2026-10-07T04:19:34-0700",
+      "sha256": "f54471c3bfa2ec449be84fb6e2bd9e45a61e9b72e76ca4f2a5bfb461f56649fb"
+    },
+    ".research/tool-binding-readonly-census.json": {
+      "modified_at": "2026-10-04T11:27:16-0700",
+      "sha256": "ab9316697e39820a3003202a4253815ef6c38cd51071c2cae4a654ef10078cf4"
+    },
+    "docs/stabilization/reports/inventory-tools.json": {
+      "modified_at": "2026-09-26T04:41:40-0700",
+      "sha256": "a6f6b5f170c584b0348b8425583c7df4abbb459345fba44967b3ebab209f4bd2"
+    },
+    "src/lib/tools/catalog.ts": {
+      "modified_at": "2026-10-06T22:17:10-0700",
+      "sha256": "e40131859046afb9ebc846ee0fa34993d33729c1215b0df101a1b489e2cfc1b0"
+    },
+    "src/lib/tools/registry.ts": {
+      "modified_at": "2026-10-06T22:17:10-0700",
+      "sha256": "a3098a18b23216466f7699d0180eff5ccdafec775825b2285b6d1ec9291bd363"
+    },
+    "src/lib/tools/server-catalog.ts": {
+      "modified_at": "2026-10-02T23:17:04-0700",
+      "sha256": "4c3c7b178abf35e21d47cc1d95ea7a999292672f036241accb767d0041f7ff9d"
+    },
+    "types/tool-catalog.json": {
+      "modified_at": "2026-10-07T04:39:10-0700",
+      "sha256": "1f70e29ce0fb2f528c21080c5f70c0c5cf134d2482c0e13bc34179ba893a6081"
+    }
+  },
+  "task_id": "tool-binding-inventory-census-20261007"
+}
