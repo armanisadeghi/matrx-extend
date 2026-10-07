@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task": "read-only native role visibility census source repair",
+  "status": "source_ready_native_unverified",
+  "scope": {
+    "roles": ["guest", "member", "admin"],
+    "artifact_channel": "successful CI development test artifact only",
+    "browser_profiles": "fresh owned native profile per role",
+    "interaction": "direct sidepanel tab navigation and Settings section expansion only",
+    "excluded": ["Profile route", "control activation", "backend product writes", "destructive actions"]
+  },
+  "source_evidence": [
+    "tests/browser/takeover-visible-census.mjs verifies imported CI artifact source/run/artifact/tree identity before native startup and native extension ID/version after observation",
+    "scripts/hosted-guest-acceptance.mjs routes visibility-census-guest/member/admin through the existing hosted CI importer and one resource guard per selected case",
+    "scripts/hosted-profile-route.mjs requires hosted member/admin auth fixtures at preflight; the native driver uses signInSettings for first-party web and extension identity checks",
+    "the driver enumerates visible navigation, active tab controls, Settings sections and expanded section controls; unknown labels are SHA-256 digested inside the extension document and returned as counts/fingerprints, never raw private row text",
+    "Fetch interception on sidepanel and extension worker aborts non-read HTTP(S) requests during census, then fails the observation if any mutation was attempted"
+  ],
+  "source_ids": {
+    "navigation": "EXT-F-1001-C01",
+    "settings_sections": "EXT-F-1003-C10",
+    "settings_controls": "exact inventory labels and four current-source aliases",
+    "other_surface_controls": "unique exact inventory control labels; ambiguous and unknown labels remain explicitly unmapped"
+  },
+  "known_limits": [
+    "No native browser or hosted workflow was dispatched by this source lane; guest/member/admin observations remain pending.",
+    "This is observation/discovery. A mapped control means a label was visible, not that its action, permission, persistence, or backend access worked.",
+    "An unknown label is reported by count and fingerprint. Its text needs a separate privacy-safe source reconciliation before an ID can be assigned.",
+    "Fetch interception covers sidepanel and extension worker targets. Other browser targets are outside this source guard; no action controls are clicked."
+  ]
+}

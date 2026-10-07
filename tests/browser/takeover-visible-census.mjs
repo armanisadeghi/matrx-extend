@@ -1,20 +1,22 @@
 #!/usr/bin/env node
-/** Bounded guest census in the resource guard's owned native sidepanel harness. */
+/** Receipt-bound, read-only native visibility discovery for a fresh role profile. */
 import assert from 'node:assert/strict';
-import { readFile, realpath, stat } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
-import { dirname, isAbsolute, join, resolve } from 'node:path';
+import { createHash } from 'node:crypto';
+import { readFile, writeFile } from 'node:fs/promises';
+import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
-import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
+import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifact.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { signInSettings } from './settings-native-auth-driver.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
 const ROOT = resolve(import.meta.dirname, '../..');
-const EXTENSION_DIR = join(ROOT, '.output/chrome-mv3-dev');
-const SCRATCH = '/Volumes/Samsung2TB/code/.stabilization-scratch';
-const EXTENSION_ID = 'cihdmkcdjjckfhjpgoedmgfpoljebaml';
-const NAV = [
+const ROLE = process.env.MATRX_CENSUS_ROLE;
+const EXTENSION_DIR = process.env.MATRX_CENSUS_EXTENSION_DIR;
+const RECEIPT = process.env.MATRX_CENSUS_RECEIPT;
+const OUTPUT = process.env.MATRX_CENSUS_OUTPUT;
+const EXPECTED_ID = 'cihdmkcdjjckfhjpgoedmgfpoljebaml';
+const knownTabs = new Set([
   'Chat',
   'Pilot (admin only — sandboxed tab group)',
   'Plan & tasks',
@@ -36,8 +38,35 @@ const NAV = [
   'Showcase (admin only)',
   'Token broker (admin only)',
   'Debug (admin only)',
-];
-const SECTIONS = [
+  'Pages that need your browser',
+]);
+const captureCountLabel = /^[1-9][0-9]* pages? need your browser$/;
+const isKnownTab = (label) => knownTabs.has(label) || captureCountLabel.test(label ?? '');
+const inventory = JSON.parse(
+  await readFile(join(ROOT, 'docs/stabilization/inventory.json'), 'utf8'),
+);
+const settings = inventory.features.find((feature) => feature.id === 'EXT-F-1003');
+const controlsByLabel = new Map(settings.controls.map((control) => [control.label, control.id]));
+const featureById = new Map(inventory.features.map((feature) => [feature.id, feature]));
+const globalControlLabels = new Map();
+for (const feature of inventory.features)
+  for (const control of feature.controls ?? []) {
+    const ids = globalControlLabels.get(control.label) ?? [];
+    ids.push(control.id);
+    globalControlLabels.set(control.label, ids);
+  }
+const uniqueControlIds = new Map(
+  [...globalControlLabels]
+    .filter(([, ids]) => ids.length === 1)
+    .map(([label, ids]) => [label, ids[0]]),
+);
+const controlAliases = new Map([
+  ['Offer to save logins to the Vault', 'EXT-F-1003-C07'],
+  ['Local engine port', 'EXT-F-1003-C16'],
+  ['Clear local data on this device', 'EXT-F-1003-C17'],
+  ['Check for extension update', 'EXT-F-1003-C31'],
+]);
+const settingsSections = new Set([
   'Account',
   'Organization',
   'Appearance',
@@ -49,211 +78,300 @@ const SECTIONS = [
   'Desktop bridge',
   'Data & reset',
   'About',
-];
-const CONTROLS = [
-  'Theme',
-  'Default agent',
-  'Default mode',
-  'Default speed',
-  'Share page identity & email content',
-  'Offer to save logins to the Vault',
-  'Offer saved logins on sign-in forms',
-  'Show password suggestions on websites',
-  'Deep clean',
-  'Auto-scrape on load',
-  'Auto-scrape mode',
-  'Local engine port',
-  'Clear local data on this device',
-  'Check for extension update',
-];
-let stage = 'preflight';
+  'Advanced agent capabilities',
+]);
 
-function refuse(code) {
-  const error = new Error(code);
-  error.censusCode = code;
-  throw error;
+export function mapObservation(scope, observations) {
+  assert.ok(['navigation', 'section', 'settings_control', 'surface_control'].includes(scope));
+  const mapped = [];
+  const unmapped = [];
+  for (const item of observations) {
+    const label = item.label;
+    const id =
+      scope === 'navigation' && isKnownTab(label)
+        ? 'EXT-F-1001-C01'
+        : scope === 'section' && settingsSections.has(label)
+          ? 'EXT-F-1003-C10'
+          : scope === 'settings_control'
+            ? (controlsByLabel.get(label) ?? controlAliases.get(label))
+            : scope === 'surface_control'
+              ? uniqueControlIds.get(label)
+              : undefined;
+    if (id) {
+      const feature = featureById.get(id.split('-C')[0]);
+      mapped.push({ id, label, applicability: feature?.applicability?.[ROLE] ?? null });
+    } else
+      unmapped.push({
+        kind: item.kind,
+        label_sha256:
+          item.label_sha256 ??
+          createHash('sha256')
+            .update(String(label ?? ''))
+            .digest('hex'),
+        label_length: item.label_length ?? String(label ?? '').length,
+      });
+  }
+  return { total: observations.length, mapped, unmapped_count: unmapped.length, unmapped };
 }
 
-async function preflight() {
-  if (
-    !/^[0-9a-f-]{36}$/.test(process.env.MATRX_RESOURCE_OWNER ?? '') ||
-    !process.env.MATRX_RESOURCE_RUN_ID ||
-    !process.env.MATRX_RESOURCE_STOP_FILE
-  )
-    refuse('CENSUS_RESOURCE_OWNER_REQUIRED');
-  const callerTmpdir = process.env.TMPDIR;
-  if (!callerTmpdir || !isAbsolute(callerTmpdir)) refuse('CENSUS_TMPDIR_REQUIRED');
-  const scratch = await realpath(callerTmpdir).catch(() => refuse('CENSUS_SCRATCH_REFUSED'));
-  if (scratch !== SCRATCH || !(await stat(scratch)).isDirectory()) refuse('CENSUS_SCRATCH_REFUSED');
-  if ((await realpath(tmpdir())) !== scratch) refuse('CENSUS_TMPDIR_REFUSED');
-  const callerReceipt = process.env.CENSUS_DEV_BUILD_RECEIPT;
-  if (!callerReceipt || !isAbsolute(callerReceipt)) refuse('CENSUS_RECEIPT_PATH_REQUIRED');
-  const receiptPath = await realpath(callerReceipt).catch(() => refuse('CENSUS_RECEIPT_REFUSED'));
-  if (dirname(receiptPath) !== (await realpath(join(ROOT, 'test-results'))))
-    refuse('CENSUS_RECEIPT_PATH_REFUSED');
-  const receipt = JSON.parse(await readFile(receiptPath, 'utf8'));
-  const dev = requireLocalDevReceipt(receipt, EXTENSION_DIR);
-  const manifest = JSON.parse(await readFile(join(EXTENSION_DIR, 'manifest.json'), 'utf8'));
-  const pkg = JSON.parse(await readFile(join(ROOT, 'package.json'), 'utf8'));
-  if (
-    dev.version !== pkg.version ||
-    manifest.version !== dev.version ||
-    typeof manifest.key !== 'string' ||
-    !manifest.key ||
-    hashReleaseTree(EXTENSION_DIR) !== dev.treeSha256
-  )
-    refuse('CENSUS_RECEIPT_REFUSED');
-  return { scratch, dev, receiptPath };
-}
+const digestInPage = `async (label) => [...new Uint8Array(await crypto.subtle.digest('SHA-256',
+  new TextEncoder().encode(label)))].map((byte) => byte.toString(16).padStart(2, '0')).join('')`;
 
-// Only fixed source labels and counts leave the real extension document.
-async function knownVisible(panel, selector, labels) {
+async function visible(panel, selector, knownLabels = [], captureTab = false) {
   return evaluate(
     panel,
-    `(() => {
-    const labels = ${JSON.stringify(labels)};
-    const visible = (el) => {
-      const style = getComputedStyle(el), rect = el.getBoundingClientRect();
-      return rect.width > 0 && rect.height > 0 && style.display !== 'none' &&
-        style.visibility !== 'hidden' && !el.closest('[inert]');
-    };
-    const nodes = [...document.querySelectorAll(${JSON.stringify(selector)})].filter(visible);
-    return {
-      known: labels.filter((label) => nodes.some((el) =>
-        (el.title || el.getAttribute('aria-label') || el.textContent.trim()) === label)),
-      total: nodes.length,
-    };
+    `(async () => {
+    const known = new Set(${JSON.stringify(knownLabels)});
+    const captureTab = ${captureTab};
+    const digest = ${digestInPage};
+    const visible = (el) => { const r = el.getBoundingClientRect(), s = getComputedStyle(el);
+      return r.width > 0 && r.height > 0 && s.display !== 'none' &&
+        s.visibility !== 'hidden' && !el.closest('[inert]'); };
+    return Promise.all([...document.querySelectorAll(${JSON.stringify(selector)})].filter(visible)
+      .map(async (el) => { const label = (el.getAttribute('aria-label') || el.getAttribute('title') ||
+          el.getAttribute('data-matrx-title') || el.textContent || '').trim().slice(0, 256);
+        return { kind: el.getAttribute('role') || el.tagName.toLowerCase(),
+          ...(known.has(label) || (captureTab && /^[1-9][0-9]* pages? need your browser$/.test(label))
+            ? { label } : { label_sha256: await digest(label), label_length: label.length }) };
+      }));
   })()`,
   );
 }
 
-async function sectionControls(panel, section) {
+export async function mutationGuard(panel) {
+  let attempts = 0;
+  const off = panel.on('Fetch.requestPaused', (event) => {
+    try {
+      const url = new URL(event.request.url);
+      if (
+        ['http:', 'https:'].includes(url.protocol) &&
+        !['GET', 'HEAD', 'OPTIONS'].includes(event.request.method?.toUpperCase())
+      ) {
+        attempts++;
+        void panel.send('Fetch.failRequest', {
+          requestId: event.requestId,
+          errorReason: 'Aborted',
+        });
+        return;
+      }
+    } catch {
+      /* Extension and data URLs continue. */
+    }
+    void panel.send('Fetch.continueRequest', { requestId: event.requestId });
+  });
+  await panel.send('Fetch.enable', { patterns: [{ urlPattern: '*', requestStage: 'Request' }] });
+  return {
+    count: () => attempts,
+    close: async () => {
+      off();
+      await panel.send('Fetch.disable');
+    },
+  };
+}
+
+async function settingsControls(panel, section) {
   return evaluate(
     panel,
-    `(() => {
-    const section = ${JSON.stringify(section)};
-    const labels = ${JSON.stringify(CONTROLS)};
-    const trigger = [...document.querySelectorAll('button[aria-expanded]')]
-      .find((el) => el.textContent.trim() === section);
-    const content = trigger?.getAttribute('aria-controls')
-      ? document.getElementById(trigger.getAttribute('aria-controls')) : null;
-    if (!content || trigger.getAttribute('aria-expanded') !== 'true')
-      return { open: false, animating: false, known: [], total: 0 };
-    const visible = (el) => {
-      const style = getComputedStyle(el), rect = el.getBoundingClientRect();
-      return rect.width > 0 && rect.height > 0 && style.display !== 'none' &&
-        style.visibility !== 'hidden' && !el.closest('[inert]');
-    };
-    const nodes = [...content.querySelectorAll('button, [role="switch"], [role="combobox"], span')]
-      .filter(visible);
-    return {
-      open: true,
-      animating: content.getAnimations({ subtree: true })
-        .some((animation) => animation.playState === 'running'),
-      known: labels.filter((label) => nodes.some((el) =>
-        (el.getAttribute('aria-label') || el.textContent.trim()) === label)),
-      total: nodes.length,
-    };
+    `(async () => {
+    const known = new Set(${JSON.stringify([...controlsByLabel.keys(), ...controlAliases.keys()])});
+    const digest = ${digestInPage};
+    const header = [...document.querySelectorAll('button[aria-expanded]')]
+      .find((el) => el.textContent.trim() === ${JSON.stringify(section)});
+    const id = header?.getAttribute('aria-controls');
+    const content = id ? document.getElementById(id) : null;
+    if (!content) return null;
+    const visible = (el) => { const r = el.getBoundingClientRect(), s = getComputedStyle(el);
+      return r.width > 0 && r.height > 0 && s.display !== 'none' && s.visibility !== 'hidden'; };
+    return Promise.all([...content.querySelectorAll('button, [role="switch"], [role="combobox"], input')]
+      .filter(visible).map(async (el) => { const label = (el.getAttribute('aria-label') ||
+        el.getAttribute('title') || el.closest('label')?.textContent || el.textContent || '').trim().slice(0, 256);
+        return { kind: el.getAttribute('role') || el.tagName.toLowerCase(),
+          ...(known.has(label) ? { label } : { label_sha256: await digest(label), label_length: label.length }) };
+      }));
   })()`,
   );
 }
 
-async function censusGuest(panel, version) {
-  const navigation = await knownVisible(panel, 'button[role="tab"][title]', NAV);
-  if (!navigation.known.includes('Settings')) refuse('CENSUS_SETTINGS_TAB_MISSING');
+async function census(panel) {
+  const navigationRaw = await visible(panel, 'button[role="tab"][title]', [...knownTabs], true);
+  const navigation = mapObservation('navigation', navigationRaw);
+  assert.ok(
+    navigationRaw.some((item) => item.label === 'Settings'),
+    'census_settings_missing',
+  );
+  const surfaces = {};
+  // Trusted clicks only on direct tab triggers. Profile and action controls stay untouched.
+  for (const tab of navigationRaw) {
+    if (!isKnownTab(tab.label) || tab.label === 'Settings') continue;
+    await click(panel, 'title', tab.label);
+    await waitFor(
+      'census_tab_active',
+      () =>
+        evaluate(
+          panel,
+          `Boolean(document.querySelector('button[role="tab"][title=${JSON.stringify(tab.label)}][data-state="active"]'))`,
+        ),
+      Boolean,
+    );
+    const surfaceRaw = await evaluate(
+      panel,
+      `(async () => {
+      const known = new Set(${JSON.stringify([...uniqueControlIds.keys()])});
+      const digest = ${digestInPage};
+      const tab = document.querySelector('button[role="tab"][title=${JSON.stringify(tab.label)}]');
+      const pane = tab?.getAttribute('aria-controls')
+        ? document.getElementById(tab.getAttribute('aria-controls')) : null;
+      if (!pane) return null;
+      const visible = (el) => { const r = el.getBoundingClientRect(), s = getComputedStyle(el);
+        return r.width > 0 && r.height > 0 && s.display !== 'none' && s.visibility !== 'hidden'; };
+      return Promise.all([...pane.querySelectorAll('button, [role="switch"], [role="combobox"], input')]
+        .filter(visible).map(async (el) => { const label = (el.getAttribute('aria-label') ||
+          el.getAttribute('title') || el.getAttribute('data-matrx-title') || el.textContent || '').trim().slice(0, 256);
+          return { kind: el.getAttribute('role') || el.tagName.toLowerCase(),
+            ...(known.has(label) ? { label } : { label_sha256: await digest(label), label_length: label.length }) };
+        }));
+    })()`,
+    );
+    assert.ok(surfaceRaw, 'census_tab_panel_missing');
+    surfaces[tab.label] = mapObservation('surface_control', surfaceRaw);
+  }
   await click(panel, 'title', 'Settings');
   await waitFor(
-    'census_settings_guest',
+    'census_settings_active',
     () =>
       evaluate(
         panel,
-        `(() => {
-      const active = document.querySelector('button[title="Settings"][data-state="active"]');
-      const text = document.body?.innerText ?? '';
-      return { active: Boolean(active), guest: text.includes('Sign in to choose'),
-        adminSection: [...document.querySelectorAll('button[aria-expanded]')]
-          .some((el) => el.textContent.trim() === 'Advanced agent capabilities') };
-    })()`,
+        'Boolean(document.querySelector(\'button[role="tab"][title="Settings"][data-state="active"]\'))',
       ),
-    (state) => state?.active && state.guest && !state.adminSection,
+    Boolean,
   );
-  const sections = await knownVisible(panel, 'button[aria-expanded]', SECTIONS);
+  const sectionRaw = await visible(panel, 'button[aria-expanded]', [...settingsSections]);
+  const sections = mapObservation('section', sectionRaw);
   const controls = {};
-  for (const section of SECTIONS) {
-    if (!sections.known.includes(section)) continue;
-    await openSection(panel, section); // Trusted pointer on a section header only.
-    controls[section] = await waitFor(
-      'census_section_settled',
-      () => sectionControls(panel, section),
-      (state) => state?.open && !state.animating,
-    );
+  for (const section of sectionRaw) {
+    if (!settingsSections.has(section.label)) continue;
+    await openSection(panel, section.label);
+    const sectionRawControls = await settingsControls(panel, section.label);
+    assert.ok(sectionRawControls, 'census_settings_section_content_missing');
+    controls[section.label] = mapObservation('settings_control', sectionRawControls);
   }
   const identity = await evaluate(
     panel,
-    `(() => ({
-    extensionId: chrome.runtime.id,
-    version: chrome.runtime.getManifest().version,
-  }))()`,
+    '({ extensionId: chrome.runtime.id, version: chrome.runtime.getManifest().version })',
   );
-  assert.equal(identity.extensionId, EXTENSION_ID, 'CENSUS_EXTENSION_ID_MISMATCH');
-  assert.equal(identity.version, version, 'CENSUS_VERSION_MISMATCH');
-  return { navigation, sections, controls, identity };
+  return { navigation, surfaces, sections, controls, identity };
 }
 
 async function main() {
-  const { scratch, dev, receiptPath } = await preflight();
-  stage = 'native_harness';
-  let census;
+  assert.ok(['guest', 'member', 'admin'].includes(ROLE), 'census_role_required');
+  assert.ok(EXTENSION_DIR && RECEIPT && OUTPUT, 'census_artifact_inputs_required');
+  assert.ok(
+    process.env.MATRX_RESOURCE_OWNER &&
+      process.env.MATRX_RESOURCE_RUN_ID &&
+      process.env.MATRX_RESOURCE_STOP_FILE,
+    'census_resource_guard_required',
+  );
+  const evidence = await verifyImportedNativeEvidence(EXTENSION_DIR, RECEIPT);
+  const receipt = JSON.parse(await readFile(RECEIPT, 'utf8'));
+  assert.equal(evidence.eligibleStore, false, 'census_ci_development_only');
+  assert.equal(evidence.sourceSha, process.env.MATRX_CENSUS_SOURCE_SHA, 'census_source_mismatch');
+  assert.equal(evidence.runId, Number(process.env.MATRX_CENSUS_CI_RUN_ID), 'census_run_mismatch');
+  assert.equal(
+    evidence.artifactId,
+    Number(process.env.MATRX_CENSUS_ARTIFACT_ID),
+    'census_artifact_mismatch',
+  );
+  let observation;
   const native = await runNativeSidepanelQa({
     headed: true,
     extensionDir: EXTENSION_DIR,
-    localDevReceiptPath: receiptPath,
-    expectedRelease: { version: dev.version, treeSha256: dev.treeSha256 },
-    expectedExtensionId: EXTENSION_ID,
-    artifactRoot: scratch,
-    exercisePanel: async ({ panel }) => {
-      stage = 'guest_census';
-      census = await censusGuest(panel, dev.version);
+    localDevReceiptPath: RECEIPT,
+    expectedRelease: { version: receipt.version, treeSha256: evidence.treeSha256 },
+    expectedExtensionId: EXPECTED_ID,
+    exercisePanel: async ({ page, panel, activatePanel, attachWorker }) => {
+      let authentication = { role: 'guest' };
+      if (ROLE !== 'guest') {
+        const signedIn = await signInSettings({
+          mode: ROLE,
+          page,
+          panel,
+          repo: ROOT,
+          adminCredentialsFile: process.env.MATRX_PREPARE_ADMIN_CREDENTIALS_FILE,
+          memberLinkFile: process.env.MATRX_REVIEWER_MAGIC_LINK_FILE,
+          onStage: () => {},
+        });
+        authentication = {
+          role: ROLE,
+          web_signed_in: signedIn.web_signed_in,
+          extension_signed_in: signedIn.extension_signed_in,
+          admin_role: signedIn.admin_role,
+          rendered_identity: signedIn.rendered_identity,
+        };
+        await activatePanel();
+      }
+      const worker = await attachWorker();
+      let panelGuard;
+      let workerGuard;
+      try {
+        panelGuard = await mutationGuard(panel);
+        workerGuard = await mutationGuard(worker);
+        observation = { authentication, ...(await census(panel)) };
+        assert.equal(
+          panelGuard.count() + workerGuard.count(),
+          0,
+          'census_backend_mutation_attempted',
+        );
+      } finally {
+        if (panelGuard) await panelGuard.close();
+        if (workerGuard) await workerGuard.close();
+        await worker.detach();
+      }
     },
   });
-  if (!native.verified || native.extensionId !== EXTENSION_ID || !census)
-    refuse('CENSUS_NATIVE_VERIFICATION_MISSING');
-  stage = 'complete';
+  assert.equal(native.verified, true, 'census_native_unverified');
+  assert.equal(observation.identity.extensionId, EXPECTED_ID, 'census_extension_id_mismatch');
+  assert.equal(observation.identity.version, receipt.version, 'census_version_mismatch');
+  const buckets = [
+    observation.navigation,
+    observation.sections,
+    ...Object.values(observation.surfaces),
+    ...Object.values(observation.controls),
+  ];
+  const report = {
+    schema_version: 2,
+    status: 'observed',
+    role: ROLE,
+    observation_only: true,
+    build_channel: 'ci_development_test',
+    artifact: {
+      version: receipt.version,
+      source_sha: evidence.sourceSha,
+      ci_run_id: evidence.runId,
+      artifact_id: evidence.artifactId,
+      tree_sha256: evidence.treeSha256,
+    },
+    ...observation,
+    unmapped_total: buckets.reduce((sum, bucket) => sum + bucket.unmapped_count, 0),
+    native_panel_verified: native.verified,
+  };
+  await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
   process.stdout.write(
     `${JSON.stringify({
-      schema_version: 1,
-      code: 'CENSUS_GUEST_NATIVE_OBSERVED',
-      at: new Date().toISOString(),
-      role: 'guest',
-      profile: 'fresh external scratch profile',
-      artifact: { version: dev.version, tree_sha256: dev.treeSha256 },
-      runtime_identity: census.identity,
-      navigation: census.navigation,
-      sections: census.sections,
-      controls_by_section: census.controls,
-      native_panel_verified: native.verified,
-      member_admin: 'unverified',
+      status: report.status,
+      role: ROLE,
+      unmapped_total: report.unmapped_total,
+      output: OUTPUT,
     })}\n`,
   );
 }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
+if (process.argv[1] === fileURLToPath(import.meta.url))
   main().catch((error) => {
-    const message = String(error?.message ?? '');
-    const knownRuntimeFailure = [
-      ['browser_runtime_playwright_missing', 'CENSUS_PLAYWRIGHT_MISSING'],
-      ['browser_runtime_playwright_unavailable', 'CENSUS_PLAYWRIGHT_UNAVAILABLE'],
-      ['browser_runtime_playwright_invalid', 'CENSUS_PLAYWRIGHT_INVALID'],
-      ['browser_runtime_chrome_missing', 'CENSUS_CHROME_MISSING'],
-    ].find(([prefix]) => message.startsWith(prefix))?.[1];
     process.stderr.write(
       `${JSON.stringify({
-        code: error?.censusCode ?? knownRuntimeFailure ?? 'CENSUS_FAILED',
-        stage,
-        at: new Date().toISOString(),
-        native_guest_observed: false,
+        code: error?.message?.startsWith('census_') ? error.message : 'census_unverified',
+        role: ROLE ?? 'unknown',
       })}\n`,
     );
     process.exitCode = 2;
   });
-}

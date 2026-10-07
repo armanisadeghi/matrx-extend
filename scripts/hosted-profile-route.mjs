@@ -45,6 +45,7 @@ export function requireHostedAcceptanceCredential(acceptanceCase, env) {
       'member-chat',
       'settings-persistence-member',
       'desktop-settings-member',
+      'visibility-census-member',
       'profile-member',
     ].includes(acceptanceCase) ||
     scrapeMode === 'member'
@@ -64,6 +65,7 @@ export function requireHostedAcceptanceCredential(acceptanceCase, env) {
       'showcase-d47-admin',
       'showcase-d47-public-admin',
       'profile-admin',
+      'visibility-census-admin',
     ].includes(acceptanceCase) ||
     scrapeMode === 'admin'
   ) {

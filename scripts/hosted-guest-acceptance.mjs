@@ -279,6 +279,9 @@ async function run(prepared, artifactMode) {
       'desktop-settings-guest',
       'desktop-settings-member',
       'desktop-settings-admin',
+      'visibility-census-guest',
+      'visibility-census-member',
+      'visibility-census-admin',
       'audit-key-admin',
       'member-chat',
       'prepare-stale-results',
@@ -300,6 +303,8 @@ async function run(prepared, artifactMode) {
     );
   if (acceptanceCase.startsWith('desktop-settings-'))
     assert.equal(kind, 'ci_development_test', 'Desktop Settings requires CI development receipt');
+  if (acceptanceCase.startsWith('visibility-census-'))
+    assert.equal(kind, 'ci_development_test', 'Visibility census requires CI development receipt');
   if (acceptanceCase === 'audit-key-admin')
     assert.equal(kind, 'ci_development_test', 'Audit key requires CI development receipt');
   if (acceptanceCase === 'member-chat')
@@ -350,7 +355,8 @@ async function run(prepared, artifactMode) {
     acceptanceCase === 'member-chat' ||
     (scrapeRoute && scrapeSelection.mode === 'member') ||
     acceptanceCase === 'settings-persistence-member' ||
-    acceptanceCase === 'desktop-settings-member'
+    acceptanceCase === 'desktop-settings-member' ||
+    acceptanceCase === 'visibility-census-member'
   ) {
     assert.ok(process.env.MATRX_HOSTED_MEMBER_LINK_JSON, 'member link secret required');
     await writeFile(memberLinkPath, process.env.MATRX_HOSTED_MEMBER_LINK_JSON, {
@@ -364,7 +370,8 @@ async function run(prepared, artifactMode) {
     (scrapeRoute && scrapeSelection.mode === 'admin') ||
     acceptanceCase === 'settings-persistence-admin' ||
     acceptanceCase === 'audit-key-admin' ||
-    acceptanceCase === 'desktop-settings-admin'
+    acceptanceCase === 'desktop-settings-admin' ||
+    acceptanceCase === 'visibility-census-admin'
   ) {
     assert.ok(process.env.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON, 'Prepare admin secret required');
     const parsed = JSON.parse(process.env.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON);
@@ -423,10 +430,26 @@ async function run(prepared, artifactMode) {
           MATRX_DESKTOP_SETTINGS_AUTH_MODE: acceptanceCase.slice('desktop-settings-'.length),
         }
       : {}),
+    ...(acceptanceCase.startsWith('visibility-census-')
+      ? {
+          MATRX_CENSUS_ROLE: acceptanceCase.slice('visibility-census-'.length),
+          MATRX_CENSUS_EXTENSION_DIR: extensionDir,
+          MATRX_CENSUS_RECEIPT: relocatedReceipt,
+          MATRX_CENSUS_OUTPUT: join(
+            repo,
+            'test-results',
+            `${acceptanceCase}.json`,
+          ),
+          MATRX_CENSUS_SOURCE_SHA: prepared.sourceSha,
+          MATRX_CENSUS_CI_RUN_ID: String(prepared.runId),
+          MATRX_CENSUS_ARTIFACT_ID: String(prepared.artifactId),
+        }
+      : {}),
     ...(acceptanceCase === 'member-chat' ||
     (scrapeRoute && scrapeSelection.mode === 'member') ||
     acceptanceCase === 'settings-persistence-member' ||
-    acceptanceCase === 'desktop-settings-member'
+    acceptanceCase === 'desktop-settings-member' ||
+    acceptanceCase === 'visibility-census-member'
       ? { MATRX_REVIEWER_MAGIC_LINK_FILE: memberLinkPath }
       : {}),
     ...(acceptanceCase === 'prepare-stale-results' ||
@@ -434,7 +457,8 @@ async function run(prepared, artifactMode) {
     (scrapeRoute && scrapeSelection.mode === 'admin') ||
     acceptanceCase === 'settings-persistence-admin' ||
     acceptanceCase === 'audit-key-admin' ||
-    acceptanceCase === 'desktop-settings-admin'
+    acceptanceCase === 'desktop-settings-admin' ||
+    acceptanceCase === 'visibility-census-admin'
       ? {
           MATRX_PREPARE_EXTENSION_DIR: extensionDir,
           MATRX_PREPARE_RECEIPT: relocatedReceipt,
@@ -468,19 +492,21 @@ async function run(prepared, artifactMode) {
             ? 'tests/browser/settings-local-controls-acceptance.mjs'
             : scrapeRoute
               ? scrapeRoute.driver
-              : acceptanceCase.startsWith('desktop-settings-')
-                ? 'tests/browser/settings-desktop-native-acceptance.mjs'
-                : acceptanceCase === 'audit-key-admin'
-                  ? 'tests/browser/audit-key-native-acceptance.mjs'
-                  : acceptanceCase.startsWith('settings-persistence')
-                    ? 'tests/browser/settings-d87-native-acceptance.mjs'
-                    : showcaseRoute
-                      ? showcaseRoute.driver
-                      : acceptanceCase === 'prepare-stale-results'
-                        ? 'tests/browser/prepare-stale-result-native-acceptance.mjs'
-                        : acceptanceCase === 'member-chat'
-                          ? 'tests/browser/reviewer-chat-store-acceptance.mjs'
-                          : 'tests/browser/guest-chat-store-acceptance.mjs',
+              : acceptanceCase.startsWith('visibility-census-')
+                ? 'tests/browser/takeover-visible-census.mjs'
+                : acceptanceCase.startsWith('desktop-settings-')
+                  ? 'tests/browser/settings-desktop-native-acceptance.mjs'
+                  : acceptanceCase === 'audit-key-admin'
+                    ? 'tests/browser/audit-key-native-acceptance.mjs'
+                    : acceptanceCase.startsWith('settings-persistence')
+                      ? 'tests/browser/settings-d87-native-acceptance.mjs'
+                      : showcaseRoute
+                        ? showcaseRoute.driver
+                        : acceptanceCase === 'prepare-stale-results'
+                          ? 'tests/browser/prepare-stale-result-native-acceptance.mjs'
+                          : acceptanceCase === 'member-chat'
+                            ? 'tests/browser/reviewer-chat-store-acceptance.mjs'
+                            : 'tests/browser/guest-chat-store-acceptance.mjs',
         ),
       ],
       {

@@ -44,6 +44,9 @@ on:
           - desktop-settings-guest
           - desktop-settings-member
           - desktop-settings-admin
+          - visibility-census-guest
+          - visibility-census-member
+          - visibility-census-admin
           - audit-key-admin
           - member-chat
           - prepare-stale-results
@@ -187,7 +190,7 @@ jobs:
           if [[ "$ACCEPTANCE_CASE" == guest-scrape-development ]]; then
             [[ -z "$RELEASE_RUN_ID" && -n "$DEVELOPMENT_RUN_ID" && -n "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
           fi
-          if [[ "$ACCEPTANCE_CASE" == settings-persistence || "$ACCEPTANCE_CASE" == settings-persistence-admin || "$ACCEPTANCE_CASE" == settings-persistence-member || "$ACCEPTANCE_CASE" == desktop-settings-guest || "$ACCEPTANCE_CASE" == desktop-settings-member || "$ACCEPTANCE_CASE" == desktop-settings-admin || "$ACCEPTANCE_CASE" == audit-key-admin || "$ACCEPTANCE_CASE" == profile-admin || "$ACCEPTANCE_CASE" == profile-member || "$ACCEPTANCE_CASE" == startup-resource-diagnostic ]]; then
+          if [[ "$ACCEPTANCE_CASE" == settings-persistence || "$ACCEPTANCE_CASE" == settings-persistence-admin || "$ACCEPTANCE_CASE" == settings-persistence-member || "$ACCEPTANCE_CASE" == desktop-settings-guest || "$ACCEPTANCE_CASE" == desktop-settings-member || "$ACCEPTANCE_CASE" == desktop-settings-admin || "$ACCEPTANCE_CASE" == visibility-census-guest || "$ACCEPTANCE_CASE" == visibility-census-member || "$ACCEPTANCE_CASE" == visibility-census-admin || "$ACCEPTANCE_CASE" == audit-key-admin || "$ACCEPTANCE_CASE" == profile-admin || "$ACCEPTANCE_CASE" == profile-member || "$ACCEPTANCE_CASE" == startup-resource-diagnostic ]]; then
             [[ -z "$RELEASE_RUN_ID" && -n "$DEVELOPMENT_RUN_ID" && -n "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
           fi
           if [[ "$ACCEPTANCE_CASE" == prepare-stale-results || "$ACCEPTANCE_CASE" == showcase-picker-admin || "$ACCEPTANCE_CASE" == showcase-stale-admin || "$ACCEPTANCE_CASE" == showcase-d47-admin || "$ACCEPTANCE_CASE" == showcase-d47-public-admin ]]; then
@@ -311,6 +314,7 @@ jobs:
             test-results/scrape-guest-native-*.json
             test-results/settings-local-controls-acceptance.json
             test-results/settings-d87-native-*.json
+            test-results/visibility-census-*.json
             test-results/settings-desktop-native-*.json
             test-results/audit-key-native-*.json
             test-results/reviewer-chat-store-*.json
