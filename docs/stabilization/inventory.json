@@ -1064,20 +1064,27 @@
             "region-completeness",
             "readiness"
           ],
-          "defect_ids": ["EXT-D-0149", "EXT-D-0151"],
+          "defect_ids": ["EXT-D-0149", "EXT-D-0151", "EXT-D-0152"],
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37624678750",
-              "evidence": ".research/guest-census-original-retest-20261007.json",
-              "defect_ids": ["EXT-D-0149", "EXT-D-0151"],
-              "detail": "Original Account readiness and before/after guest proof pass on frozen0.2.366. Full census incomplete:54 observed,26 mapped,28 unmapped,4 unsupported,4 inaccessible. Native peer accepted bounded readiness with evidence limitations; no current-main or product behavior acceptance.",
+              "run_id": "37641053827",
+              "evidence": ".research/guest-census-provenance-native-20261007.json",
+              "defect_ids": ["EXT-D-0149", "EXT-D-0151", "EXT-D-0152"],
+              "detail": "Original frozen0.2.366 guest readiness before/after passes; observedChrome141.0.7390.37. Census54 observed,26 mapped,27 unmapped,1 structural,0 unsupported/inaccessible/blocked. Still incomplete; Account screenshot not uploaded (D152). No current-main, member/admin, or product behavior acceptance.",
               "historical_result": {
-                "status": "fail",
-                "run_id": "37621192492",
-                "evidence": ".research/guest-visibility-native-20261007.json",
-                "defect_ids": ["EXT-D-0149"],
-                "detail": "Native guest census stopped at census_guest_account_ready_not_observed before positive signed-out guest proof or complete region accounting. The two Account candidates were not safe to open; 15 candidates were reported (12 mapped, 3 fingerprint-only). This is a census readiness failure; no product behavior failure is claimed."
+                "status": "partial",
+                "run_id": "37624678750",
+                "evidence": ".research/guest-census-original-retest-20261007.json",
+                "defect_ids": ["EXT-D-0149", "EXT-D-0151"],
+                "detail": "Original Account readiness and before/after guest proof pass on frozen0.2.366. Full census incomplete:54 observed,26 mapped,28 unmapped,4 unsupported,4 inaccessible. Native peer accepted bounded readiness with evidence limitations; no current-main or product behavior acceptance.",
+                "historical_result": {
+                  "status": "fail",
+                  "run_id": "37621192492",
+                  "evidence": ".research/guest-visibility-native-20261007.json",
+                  "defect_ids": ["EXT-D-0149"],
+                  "detail": "Native guest census stopped at census_guest_account_ready_not_observed before positive signed-out guest proof or complete region accounting. The two Account candidates were not safe to open; 15 candidates were reported (12 mapped, 3 fingerprint-only). This is a census readiness failure; no product behavior failure is claimed."
+                }
               }
             },
             "member": {
@@ -1100,7 +1107,8 @@
             "EXT-D-0056",
             "EXT-D-0119",
             "EXT-D-0149",
-            "EXT-D-0151"
+            "EXT-D-0151",
+            "EXT-D-0152"
           ],
           "run_ids": [],
           "retest_status": "partial: EXT-D-0025 and EXT-D-0051 passed; remaining infrastructure cases unverified"

@@ -315,6 +315,7 @@ jobs:
             test-results/settings-local-controls-acceptance.json
             test-results/settings-d87-native-*.json
             test-results/visibility-census-*.json
+            test-results/visibility-census-guest.json.guest-account-readiness.png
             test-results/settings-desktop-native-*.json
             test-results/audit-key-native-*.json
             test-results/reviewer-chat-store-*.json

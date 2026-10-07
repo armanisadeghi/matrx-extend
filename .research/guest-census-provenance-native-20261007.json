@@ -1,0 +1,234 @@
+{
+  "schema_version": 1,
+  "purpose": "Independent source review and one guarded original-artifact guest visibility census; preserve exact bounded evidence and limits.",
+  "source_review": {
+    "reviewed_commit": "efb459a454d0577b63d7ede7bab9b35e23ab818a",
+    "prior_peer_commit": "934d7e48d4ff854909b686f205ae4a87b1f04640",
+    "correction_report": ".research/guest-census-receipt-correction-20261007.json",
+    "verdict_A_intended_evidence": "SOURCE_READY_FOR_ONE_NATIVE_RUN",
+    "verdict_B_quality_privacy": "SOURCE_PRIVACY_AND_FIXED_DIAGNOSTICS_ACCEPTED; NATIVE_ARTIFACT_SCREENSHOT_CAPTURE_INCOMPLETE",
+    "findings": [
+      "The Account heading and enabled Sign in control must fit fully inside the attached side-panel viewport; Account content must intersect it before screenshot capture.",
+      "Existing screenshot destinations are chmod 0600 before truncation; new destinations request 0600.",
+      "Browser-version, frame, screenshot send/decode/write/close failure paths expose fixed stage/target and safe observations only; transport causes and payloads are not serialized.",
+      "Source inspection found no blocker to the single native attempt."
+    ],
+    "fresh_uploader_source_check": {
+      "commit": "1e366f07d63beaf1ab80e9ad88ca1cc76f664c8f",
+      "reviewed_at_checkout": "efb459a454d0577b63d7ede7bab9b35e23ab818a",
+      "verdict": "SOURCE_PATH_MATCH_CONFIRMED; NATIVE_UPLOAD_UNVERIFIED",
+      "change": "Adds the exact `test-results/visibility-census-guest.json.guest-account-readiness.png` path to the workflow upload allowlist.",
+      "remote_status": "Push not verified at review time; no claim of remote availability.",
+      "run_status": "Not exercised by run37641053827 because this correction postdates that run; no new run authorized."
+    }
+  },
+  "native_run": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "run_id": 37641053827,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37641053827",
+    "workflow_checkout_sha": "be19facac30a90312d995586223cee6e16853764",
+    "case": "visibility-census-guest",
+    "runner_label": "macos-15",
+    "runner_architecture": "ARM64",
+    "terminal_status": "failure",
+    "failure_stage": "Exercise the selected Chrome side-panel case",
+    "exact_classification": "census_incomplete; the result reports 27 unmapped observations and native acceptance exits 2. Not a product behavior failure or resource invalidation.",
+    "artifact": {
+      "development_run_id": 37619740064,
+      "development_artifact_id": 11482071536,
+      "runtime_source_sha": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+      "runtime_version": "0.2.366",
+      "archive_sha256": "eebbeb6d4c63cffab1c4462acf5b69e081336c3795782c54d3a5e8ba554e9ebb",
+      "tree_sha256": "9e7c2db499a2c1fed0a8b3ea6facfa88a13f3c2c26ba7f9b9d2d1f216310236c"
+    },
+    "observed_browser": {
+      "product": "Chrome/141.0.7390.37",
+      "protocol_version": "1.3"
+    },
+    "authentication_before": {
+      "role": "guest",
+      "signed_out_observed": true,
+      "access_token_present": false,
+      "refresh_token_present": false,
+      "profile_present": false,
+      "admin_role": false,
+      "account_visible": true,
+      "sign_in_visible": true,
+      "sign_out_visible": false
+    },
+    "authentication_after": {
+      "role": "guest",
+      "signed_out_observed": true,
+      "access_token_present": false,
+      "refresh_token_present": false,
+      "profile_present": false,
+      "admin_role": false,
+      "account_visible": true,
+      "sign_in_visible": true,
+      "sign_out_visible": false
+    },
+    "census": {
+      "status": "incomplete",
+      "total_observed": 54,
+      "mapped": 26,
+      "unmapped": 27,
+      "structural": 1,
+      "action": 3,
+      "unsupported_triggers": 0,
+      "inaccessible_regions": 0,
+      "blocked_requests": 0,
+      "missing_required_regions": [],
+      "scope_counts": {
+        "navigation": {
+          "total": 8,
+          "mapped": 5,
+          "unmapped": 2,
+          "structural": 1,
+          "action": 2
+        },
+        "surface:Chat": {
+          "total": 18,
+          "mapped": 2,
+          "unmapped": 16
+        },
+        "surface:Scrape": {
+          "total": 0,
+          "mapped": 0,
+          "unmapped": 0
+        },
+        "surface:Data": {
+          "total": 0,
+          "mapped": 0,
+          "unmapped": 0
+        },
+        "surface:SEO": {
+          "total": 0,
+          "mapped": 0,
+          "unmapped": 0
+        },
+        "sections": {
+          "total": 12,
+          "mapped": 11,
+          "unmapped": 1,
+          "action": 1
+        },
+        "controls:Appearance": {
+          "total": 1,
+          "mapped": 0,
+          "unmapped": 1
+        },
+        "controls:Chat": {
+          "total": 2,
+          "mapped": 0,
+          "unmapped": 2
+        },
+        "controls:Privacy": {
+          "total": 4,
+          "mapped": 4,
+          "unmapped": 0
+        },
+        "controls:Scrape": {
+          "total": 3,
+          "mapped": 2,
+          "unmapped": 1
+        },
+        "controls:Desktop bridge": {
+          "total": 4,
+          "mapped": 0,
+          "unmapped": 4
+        },
+        "controls:Data & reset": {
+          "total": 1,
+          "mapped": 1,
+          "unmapped": 0
+        },
+        "controls:About": {
+          "total": 1,
+          "mapped": 1,
+          "unmapped": 0
+        },
+        "all other controls": {
+          "total": 0,
+          "mapped": 0,
+          "unmapped": 0
+        }
+      },
+      "classification_and_unknowns": "Exact full output, including all 27 unmapped keyed fingerprints and provenance/classifications, is preserved in evidence/visibility-census-guest.json.",
+      "classified_action_controls": 3,
+      "safe_navigation_actions_performed": 16,
+      "delta_vs_prior_original_retest": {
+        "prior_unmapped": 28,
+        "current_unmapped": 27,
+        "prior_unsupported_triggers": 4,
+        "current_unsupported_triggers": 0,
+        "prior_inaccessible_regions": 4,
+        "current_inaccessible_regions": 0,
+        "interpretation": "Classification/accounting improved; census remains incomplete."
+      }
+    },
+    "resource_journals": [
+      {
+        "run_id": "hosted-package-37641053827-1",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      {
+        "run_id": "hosted-browser-37641053827-1",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      {
+        "run_id": "hosted-guest-37641053827-1",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 1,
+        "decision": "child_failed"
+      }
+    ],
+    "authentication_and_actions": {
+      "role": "guest",
+      "signed_out_before_and_after": true,
+      "no_auth_state_present_before_and_after": true,
+      "no_product_action_controls_clicked": true,
+      "http_mutations_blocked": 0
+    },
+    "native_screenshot": {
+      "result_claimed_path": "test-results/visibility-census-guest.json.guest-account-readiness.png",
+      "result_records_path": "/Users/runner/work/matrx-extend/matrx-extend/test-results/visibility-census-guest.json.guest-account-readiness.png",
+      "included_in_workflow_artifact": false,
+      "reason": "The workflow upload patterns include test-results/visibility-census-*.json, which matches the result JSON only, and PNGs under native-sidepanel-qa-* directories. They do not include the sibling *.json.guest-account-readiness.png file.",
+      "pixel_verdict": "Account readiness screenshot is unavailable from the downloaded artifact and cannot be visually accepted.",
+      "available_sidepanel_screenshot": "evidence/screenshots/native-side-panel.png",
+      "available_sidepanel_pixel_verdict": "Inspected: guest Chat panel with guest status and Sign in; it is not the Account readiness stage.",
+      "target_screenshot": "evidence/screenshots/normal-target-after-open.png",
+      "target_pixel_verdict": "Inspected: controlled public research-brief page with Open panel control; no account/credential content.",
+      "uploader_source_correction": {
+        "commit": "1e366f07d63beaf1ab80e9ad88ca1cc76f664c8f",
+        "local_source_review": "accepted exact path match",
+        "runtime_upload": "unverified; no subsequent run"
+      }
+    },
+    "workflow_artifact": {
+      "id": 11491574186,
+      "name": "hosted-guest-37641053827-1",
+      "zip_sha256": "edad6925444965843033f799ffbc3c5faace78d560b3a0f844db2f9639ad6f7f"
+    },
+    "evidence_directory": ".research/guest-census-provenance-native-20261007/evidence",
+    "resource_journal_contamination": "The workflow artifact contained three pre-existing journals for run37105304739. They are preserved under evidence/historical-artifact-journals and are not evidence for run37641053827. The three owned journals for37641053827 are under evidence/resource-journals.",
+    "scope_limits": [
+      "This is frozen 0.2.366 guest visibility evidence only; no transfer to current main or Store build.",
+      "Census remains incomplete; unknown fingerprints are not guessed or relabeled.",
+      "No guest behavior, persistence, permission-denial, backend or product-health verdict is established.",
+      "Member and admin census remain unverified.",
+      "The Account screenshot path is in the result but the PNG is absent from the uploaded artifact, so Account pixels are unverified.",
+      "No second native run, repair, release or product mode promotion was performed."
+    ],
+    "started_at": "2026-10-07T14:57:41Z",
+    "completed_at": "2026-10-07T15:04:33Z"
+  },
+  "next_action": "Route workflow artifact upload correction separately; root owns inventory and defect transitions."
+}

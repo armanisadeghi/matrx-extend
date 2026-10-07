@@ -1,0 +1,619 @@
+{
+  "schema_version": 1,
+  "task_id": "guest-unmapped-reconciliation-20261007",
+  "purpose": "Source-only accounting of every unknown from the frozen native guest visibility census; no runtime retest or inventory mutation.",
+  "frozen_artifact": {
+    "source_sha": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+    "version": "0.2.366",
+    "evidence": ".research/guest-census-provenance-native-20261007/evidence/visibility-census-guest.json"
+  },
+  "source_basis": [
+    "tests/browser/takeover-visible-census.mjs:156,165: extracted labels are keyed with per-run HMAC; discovery is DOM-shape based.",
+    "src/entrypoints/sidepanel/App.tsx: header tabs followed by SiteAccessControl and UserMenu.",
+    "src/features/chat/ChatView.tsx: GuestBanner, ChatHeader, EmptyState, Composer order; ChatHeader control order; ChatView lines 557-704, 805-890.",
+    "src/features/settings/SettingsView.tsx: Collapsible sections and Theme/Default mode/Default speed/Auto-scrape mode PillSelects; Pair code and Local engine port input/button pairs.",
+    "docs/stabilization/inventory.json: existing IDs EXT-F-1003-C02/C04/C05/C15/C16/C29 and EXT-F-2013-C04/C05/C06/C08/C09/C10/C11/C19/C37/C132/C133."
+  ],
+  "accounting": {
+    "expected_unknowns": 27,
+    "accounted": 27,
+    "mapped": 0,
+    "candidate_groups": 22,
+    "unresolved": 27,
+    "principle": "Candidate IDs are leads only; no HMAC inversion, source_anchor syntax inference, or inventory promotion."
+  },
+  "observations": [
+    {
+      "scope": "navigation",
+      "fingerprint": "0171e726c406b58387c7d9487980c253a95d2a4b54b91d64365828db17afd2cd",
+      "kind": "button",
+      "classification": "action",
+      "provenance": {
+        "tag": "button",
+        "role": null,
+        "dom_order": 6,
+        "region": "outside_panel",
+        "dom_path": "html:-1/body:0/div:0/div:0/div:0/div:0/button:0"
+      },
+      "candidate_inventory_ids": [],
+      "candidate_certainty": "unresolved; no justified candidate ID",
+      "source_evidence": "App.tsx places SiteAccessControl and UserMenu after the tablist; source confirms header controls, but the recorded path does not distinguish their descendants or bind this button to an inventory control.",
+      "exact_frozen_source": {
+        "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+        "version": "0.2.366"
+      },
+      "minimal_missing_observation": "A future exact-artifact census must include a privacy-safe, source-owned control/component anchor (and the nearest known section/header region) for this node; no label/value or HMAC key is needed."
+    },
+    {
+      "scope": "navigation",
+      "fingerprint": "f13ba651407c05b07feb839732da61010f2a66abdc0cc5a1ef56788752520c77",
+      "kind": "button",
+      "classification": "action",
+      "provenance": {
+        "tag": "button",
+        "role": null,
+        "dom_order": 7,
+        "region": "outside_panel",
+        "dom_path": "html:-1/body:0/div:0/div:0/div:0/div:0/button:1"
+      },
+      "candidate_inventory_ids": [],
+      "candidate_certainty": "unresolved; no justified candidate ID",
+      "source_evidence": "App.tsx places SiteAccessControl and UserMenu after the tablist; source confirms header controls, but the recorded path does not distinguish their descendants or bind this button to an inventory control.",
+      "exact_frozen_source": {
+        "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+        "version": "0.2.366"
+      },
+      "minimal_missing_observation": "A future exact-artifact census must include a privacy-safe, source-owned control/component anchor (and the nearest known section/header region) for this node; no label/value or HMAC key is needed."
+    },
+    {
+      "scope": "surface:Chat",
+      "fingerprint": "fe2e9f7c431452d268f325ee3f4b54524eb2b7826256b3344138631f962d424e",
+      "kind": "button",
+      "classification": null,
+      "provenance": {
+        "tag": "button",
+        "role": null,
+        "dom_order": 0,
+        "region": "tabpanel",
+        "dom_path": "body:0/div:0/div:0/div:0/div:1/div:0/div:0/button:0",
+        "tab": "Chat"
+      },
+      "candidate_inventory_ids": ["EXT-F-2013-C132", "EXT-F-2013-C133"],
+      "candidate_certainty": "source-and-scope candidate; exact node-to-ID unresolved",
+      "source_evidence": "GuestBanner renders the two guest actions in this order; receipt identifies the first two Chat buttons under the panel banner, but no source-owned node anchor binds either digest to a button.",
+      "exact_frozen_source": {
+        "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+        "version": "0.2.366"
+      },
+      "minimal_missing_observation": "A future exact-artifact census must include a privacy-safe, source-owned control/component anchor (and the nearest known section/header region) for this node; no label/value or HMAC key is needed."
+    },
+    {
+      "scope": "surface:Chat",
+      "fingerprint": "4e2b52c046401d8ff5a547e472ce61d473f14ea6ddc335950aa2e57783a86a84",
+      "kind": "button",
+      "classification": null,
+      "provenance": {
+        "tag": "button",
+        "role": null,
+        "dom_order": 1,
+        "region": "tabpanel",
+        "dom_path": "body:0/div:0/div:0/div:0/div:1/div:0/div:0/button:1",
+        "tab": "Chat"
+      },
+      "candidate_inventory_ids": ["EXT-F-2013-C132", "EXT-F-2013-C133"],
+      "candidate_certainty": "source-and-scope candidate; exact node-to-ID unresolved",
+      "source_evidence": "GuestBanner renders the two guest actions in this order; receipt identifies the first two Chat buttons under the panel banner, but no source-owned node anchor binds either digest to a button.",
+      "exact_frozen_source": {
+        "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+        "version": "0.2.366"
+      },
+      "minimal_missing_observation": "A future exact-artifact census must include a privacy-safe, source-owned control/component anchor (and the nearest known section/header region) for this node; no label/value or HMAC key is needed."
+    },
+    {
+      "scope": "surface:Chat",
+      "fingerprint": "39ffe4a50c9af241d2191a0f443f13a57dbf09ba9aded1256bcc97c8e3bc531e",
+      "kind": "button",
+      "classification": null,
+      "provenance": {
+        "tag": "button",
+        "role": null,
+        "dom_order": 2,
+        "region": "tabpanel",
+        "dom_path": "div:0/div:0/div:0/div:1/div:0/div:1/div:0/button:0",
+        "tab": "Chat"
+      },
+      "candidate_inventory_ids": ["EXT-F-2013-C05", "EXT-F-2013-C19", "EXT-F-2013-C06"],
+      "candidate_certainty": "source-and-scope candidate; exact node-to-ID unresolved",
+      "source_evidence": "ChatHeader source order begins TaskPanelChip, LanguagePicker, SandboxPickerChip, PermissionModeChip, then the two receipt-mapped Copy/New buttons; these are header-control candidates only.",
+      "exact_frozen_source": {
+        "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+        "version": "0.2.366"
+      },
+      "minimal_missing_observation": "A future exact-artifact census must include a privacy-safe, source-owned control/component anchor (and the nearest known section/header region) for this node; no label/value or HMAC key is needed."
+    },
+    {
+      "scope": "surface:Chat",
+      "fingerprint": "26d5ae55957152cf257d9a34774e9c7514634707d730095eedca5ae26900831c",
+      "kind": "button",
+      "classification": null,
+      "provenance": {
+        "tag": "button",
+        "role": null,
+        "dom_order": 3,
+        "region": "tabpanel",
+        "dom_path": "div:0/div:0/div:0/div:1/div:0/div:1/div:0/button:1",
+        "tab": "Chat"
+      },
+      "candidate_inventory_ids": ["EXT-F-2013-C05", "EXT-F-2013-C19", "EXT-F-2013-C06"],
+      "candidate_certainty": "source-and-scope candidate; exact node-to-ID unresolved",
+      "source_evidence": "ChatHeader source order begins TaskPanelChip, LanguagePicker, SandboxPickerChip, PermissionModeChip, then the two receipt-mapped Copy/New buttons; these are header-control candidates only.",
+      "exact_frozen_source": {
+        "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+        "version": "0.2.366"
+      },
+      "minimal_missing_observation": "A future exact-artifact census must include a privacy-safe, source-owned control/component anchor (and the nearest known section/header region) for this node; no label/value or HMAC key is needed."
+    },
+    {
+      "scope": "surface:Chat",
+      "fingerprint": "d1fe5bef5ebbdc1cf4fda6eb90a5931fae432eb73cc0e16bffc97d8d09f5b6ab",
+      "kind": "button",
+      "classification": null,
+      "provenance": {
+        "tag": "button",
+        "role": null,
+        "dom_order": 4,
+        "region": "tabpanel",
+        "dom_path": "div:0/div:0/div:0/div:1/div:0/div:1/div:0/button:2",
+        "tab": "Chat"
+      },
+      "candidate_inventory_ids": ["EXT-F-2013-C05", "EXT-F-2013-C19", "EXT-F-2013-C06"],
+      "candidate_certainty": "source-and-scope candidate; exact node-to-ID unresolved",
+      "source_evidence": "ChatHeader source order begins TaskPanelChip, LanguagePicker, SandboxPickerChip, PermissionModeChip, then the two receipt-mapped Copy/New buttons; these are header-control candidates only.",
+      "exact_frozen_source": {
+        "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+        "version": "0.2.366"
+      },
+      "minimal_missing_observation": "A future exact-artifact census must include a privacy-safe, source-owned control/component anchor (and the nearest known section/header region) for this node; no label/value or HMAC key is needed."
+    },
+    {
+      "scope": "surface:Chat",
+      "fingerprint": "c406017ca2f9905627755e052c675fe155e417e7454f6b6623142aef755a57a1",
+      "kind": "button",
+      "classification": null,
+      "provenance": {
+        "tag": "button",
+        "role": null,
+        "dom_order": 7,
+        "region": "tabpanel",
+        "dom_path": "div:0/div:0/div:0/div:1/div:0/div:1/div:0/button:5",
+        "tab": "Chat"
+      },
+      "candidate_inventory_ids": ["EXT-F-2013-C04"],
+      "candidate_certainty": "source-and-scope candidate; exact node-to-ID unresolved",
+      "source_evidence": "ChatHeader includes HistoryMenu after the receipt-mapped Copy entire conversation and New chat buttons; source/order is consistent with this remaining header button.",
+      "exact_frozen_source": {
+        "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+        "version": "0.2.366"
+      },
+      "minimal_missing_observation": "A future exact-artifact census must include a privacy-safe, source-owned control/component anchor (and the nearest known section/header region) for this node; no label/value or HMAC key is needed."
+    },
+    {
+      "scope": "surface:Chat",
+      "fingerprint": "9291532fcb1df66c0c0cfb9753b6433d5034716c84822418dfd5cdd89be64f6f",
+      "kind": "button",
+      "classification": null,
+      "provenance": {
+        "tag": "button",
+        "role": null,
+        "dom_order": 8,
+        "region": "tabpanel",
+        "dom_path": "div:0/div:0/div:1/div:0/div:2/div:0/div:0/button:0",
+        "tab": "Chat"
+      },
+      "candidate_inventory_ids": ["EXT-F-2013-C11"],
+      "candidate_certainty": "source-and-scope candidate; exact node-to-ID unresolved",
+      "source_evidence": "The Chat empty state is rendered between ChatHeader and Composer; its source provides four suggestion actions, matching this four-button sibling group.",
+      "exact_frozen_source": {
+        "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+        "version": "0.2.366"
+      },
+      "minimal_missing_observation": "A future exact-artifact census must include a privacy-safe, source-owned control/component anchor (and the nearest known section/header region) for this node; no label/value or HMAC key is needed."
+    },
+    {
+      "scope": "surface:Chat",
+      "fingerprint": "f4dd796b85c446821d271b2d4be04d8599b0ae8591d4a1fa31e5200446010197",
+      "kind": "button",
+      "classification": null,
+      "provenance": {
+        "tag": "button",
+        "role": null,
+        "dom_order": 9,
+        "region": "tabpanel",
+        "dom_path": "div:0/div:0/div:1/div:0/div:2/div:0/div:0/button:1",
+        "tab": "Chat"
+      },
+      "candidate_inventory_ids": ["EXT-F-2013-C11"],
+      "candidate_certainty": "source-and-scope candidate; exact node-to-ID unresolved",
+      "source_evidence": "The Chat empty state is rendered between ChatHeader and Composer; its source provides four suggestion actions, matching this four-button sibling group.",
+      "exact_frozen_source": {
+        "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+        "version": "0.2.366"
+      },
+      "minimal_missing_observation": "A future exact-artifact census must include a privacy-safe, source-owned control/component anchor (and the nearest known section/header region) for this node; no label/value or HMAC key is needed."
+    },
+    {
+      "scope": "surface:Chat",
+      "fingerprint": "da29ac3185350e35ddde556d76d32c6425209bf8cf670a09b088e6fe251378ea",
+      "kind": "button",
+      "classification": null,
+      "provenance": {
+        "tag": "button",
+        "role": null,
+        "dom_order": 10,
+        "region": "tabpanel",
+        "dom_path": "div:0/div:0/div:1/div:0/div:2/div:0/div:0/button:2",
+        "tab": "Chat"
+      },
+      "candidate_inventory_ids": ["EXT-F-2013-C11"],
+      "candidate_certainty": "source-and-scope candidate; exact node-to-ID unresolved",
+      "source_evidence": "The Chat empty state is rendered between ChatHeader and Composer; its source provides four suggestion actions, matching this four-button sibling group.",
+      "exact_frozen_source": {
+        "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+        "version": "0.2.366"
+      },
+      "minimal_missing_observation": "A future exact-artifact census must include a privacy-safe, source-owned control/component anchor (and the nearest known section/header region) for this node; no label/value or HMAC key is needed."
+    },
+    {
+      "scope": "surface:Chat",
+      "fingerprint": "5b35ac987e81c50801eb700a83cb06bf09d1e2b01aea0c6c3e87bee0c3360059",
+      "kind": "button",
+      "classification": null,
+      "provenance": {
+        "tag": "button",
+        "role": null,
+        "dom_order": 11,
+        "region": "tabpanel",
+        "dom_path": "div:0/div:0/div:1/div:0/div:2/div:0/div:0/button:3",
+        "tab": "Chat"
+      },
+      "candidate_inventory_ids": ["EXT-F-2013-C11"],
+      "candidate_certainty": "source-and-scope candidate; exact node-to-ID unresolved",
+      "source_evidence": "The Chat empty state is rendered between ChatHeader and Composer; its source provides four suggestion actions, matching this four-button sibling group.",
+      "exact_frozen_source": {
+        "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+        "version": "0.2.366"
+      },
+      "minimal_missing_observation": "A future exact-artifact census must include a privacy-safe, source-owned control/component anchor (and the nearest known section/header region) for this node; no label/value or HMAC key is needed."
+    },
+    {
+      "scope": "surface:Chat",
+      "fingerprint": "b39311891f253097aa9853453b6dfc4c288998319b71cef17d43c82977088ecb",
+      "kind": "textarea",
+      "classification": null,
+      "provenance": {
+        "tag": "textarea",
+        "role": null,
+        "dom_order": 12,
+        "region": "tabpanel",
+        "dom_path": "div:0/div:0/div:0/div:1/div:0/div:3/div:0/textarea:0",
+        "tab": "Chat"
+      },
+      "candidate_inventory_ids": ["EXT-F-2013-C08"],
+      "candidate_certainty": "source-and-scope candidate; exact node-to-ID unresolved",
+      "source_evidence": "ChatView renders Composer after the conversation body; the observed node is a textarea at the Composer branch and inventory C08 covers the draft.",
+      "exact_frozen_source": {
+        "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+        "version": "0.2.366"
+      },
+      "minimal_missing_observation": "A future exact-artifact census must include a privacy-safe, source-owned control/component anchor (and the nearest known section/header region) for this node; no label/value or HMAC key is needed."
+    },
+    {
+      "scope": "surface:Chat",
+      "fingerprint": "4e89582d59d9487a4de13290244238dbd241c9a4bda87503329cc899f8c0fdd3",
+      "kind": "button",
+      "classification": null,
+      "provenance": {
+        "tag": "button",
+        "role": null,
+        "dom_order": 13,
+        "region": "tabpanel",
+        "dom_path": "div:0/div:0/div:1/div:0/div:3/div:0/div:0/button:0",
+        "tab": "Chat"
+      },
+      "candidate_inventory_ids": ["EXT-F-2013-C09", "EXT-F-2013-C10", "EXT-F-2013-C37"],
+      "candidate_certainty": "source-and-scope candidate; exact node-to-ID unresolved",
+      "source_evidence": "ChatView renders Composer; its source supports microphone, send/stop and attachment actions, but the three DOM nodes are not source-anchored individually.",
+      "exact_frozen_source": {
+        "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+        "version": "0.2.366"
+      },
+      "minimal_missing_observation": "A future exact-artifact census must include a privacy-safe, source-owned control/component anchor (and the nearest known section/header region) for this node; no label/value or HMAC key is needed."
+    },
+    {
+      "scope": "surface:Chat",
+      "fingerprint": "6b855a0d53e66ba60a80915f470f191673b09c08e48464ee75bc772b0496233f",
+      "kind": "button",
+      "classification": null,
+      "provenance": {
+        "tag": "button",
+        "role": null,
+        "dom_order": 14,
+        "region": "tabpanel",
+        "dom_path": "div:0/div:0/div:1/div:0/div:3/div:0/div:0/button:1",
+        "tab": "Chat"
+      },
+      "candidate_inventory_ids": ["EXT-F-2013-C09", "EXT-F-2013-C10", "EXT-F-2013-C37"],
+      "candidate_certainty": "source-and-scope candidate; exact node-to-ID unresolved",
+      "source_evidence": "ChatView renders Composer; its source supports microphone, send/stop and attachment actions, but the three DOM nodes are not source-anchored individually.",
+      "exact_frozen_source": {
+        "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+        "version": "0.2.366"
+      },
+      "minimal_missing_observation": "A future exact-artifact census must include a privacy-safe, source-owned control/component anchor (and the nearest known section/header region) for this node; no label/value or HMAC key is needed."
+    },
+    {
+      "scope": "surface:Chat",
+      "fingerprint": "e206de5234a7e3eb8743cd8e390834a80aa064fddd66adc34a8b54c3602c51ce",
+      "kind": "button",
+      "classification": null,
+      "provenance": {
+        "tag": "button",
+        "role": null,
+        "dom_order": 15,
+        "region": "tabpanel",
+        "dom_path": "div:0/div:0/div:1/div:0/div:3/div:0/div:0/button:2",
+        "tab": "Chat"
+      },
+      "candidate_inventory_ids": ["EXT-F-2013-C09", "EXT-F-2013-C10", "EXT-F-2013-C37"],
+      "candidate_certainty": "source-and-scope candidate; exact node-to-ID unresolved",
+      "source_evidence": "ChatView renders Composer; its source supports microphone, send/stop and attachment actions, but the three DOM nodes are not source-anchored individually.",
+      "exact_frozen_source": {
+        "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+        "version": "0.2.366"
+      },
+      "minimal_missing_observation": "A future exact-artifact census must include a privacy-safe, source-owned control/component anchor (and the nearest known section/header region) for this node; no label/value or HMAC key is needed."
+    },
+    {
+      "scope": "surface:Chat",
+      "fingerprint": "ab33ea3970dee30308c22cec31df957e40930b223d72b8009640d378ef9dbe31",
+      "kind": "button",
+      "classification": null,
+      "provenance": {
+        "tag": "button",
+        "role": null,
+        "dom_order": 16,
+        "region": "tabpanel",
+        "dom_path": "div:0/div:1/div:0/div:3/div:0/div:0/div:0/button:0",
+        "tab": "Chat"
+      },
+      "candidate_inventory_ids": [],
+      "candidate_certainty": "unresolved; no justified candidate ID",
+      "source_evidence": "No source component is tied to this separate DOM branch; GuestBanner actions elsewhere do not justify assigning this observation to them.",
+      "exact_frozen_source": {
+        "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+        "version": "0.2.366"
+      },
+      "minimal_missing_observation": "A future exact-artifact census must include a privacy-safe, source-owned control/component anchor (and the nearest known section/header region) for this node; no label/value or HMAC key is needed."
+    },
+    {
+      "scope": "surface:Chat",
+      "fingerprint": "1d8bc067072bbf44320be26a44fd9358e7735f3b52dfeccf25bdf1bdb401933f",
+      "kind": "button",
+      "classification": null,
+      "provenance": {
+        "tag": "button",
+        "role": null,
+        "dom_order": 17,
+        "region": "tabpanel",
+        "dom_path": "div:0/div:1/div:0/div:3/div:0/div:0/div:0/button:1",
+        "tab": "Chat"
+      },
+      "candidate_inventory_ids": [],
+      "candidate_certainty": "unresolved; no justified candidate ID",
+      "source_evidence": "No source component is tied to this separate DOM branch; GuestBanner actions elsewhere do not justify assigning this observation to them.",
+      "exact_frozen_source": {
+        "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+        "version": "0.2.366"
+      },
+      "minimal_missing_observation": "A future exact-artifact census must include a privacy-safe, source-owned control/component anchor (and the nearest known section/header region) for this node; no label/value or HMAC key is needed."
+    },
+    {
+      "scope": "sections",
+      "fingerprint": "fe2e9f7c431452d268f325ee3f4b54524eb2b7826256b3344138631f962d424e",
+      "kind": "button",
+      "classification": "action",
+      "provenance": {
+        "tag": "button",
+        "role": null,
+        "dom_order": 11,
+        "region": "tabpanel",
+        "dom_path": "body:0/div:0/div:0/div:0/div:5/div:0/div:2/button:0"
+      },
+      "candidate_inventory_ids": [],
+      "candidate_certainty": "unresolved; no justified candidate ID",
+      "source_evidence": "SettingsView section triggers are Collapsible controls with named labels; this button is not proven to be one of those triggers. Its equal fingerprint to a Chat button only establishes equal extracted text.",
+      "exact_frozen_source": {
+        "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+        "version": "0.2.366"
+      },
+      "minimal_missing_observation": "A future exact-artifact census must include a privacy-safe, source-owned control/component anchor (and the nearest known section/header region) for this node; no label/value or HMAC key is needed."
+    },
+    {
+      "scope": "controls:Appearance",
+      "fingerprint": "0e1004d324c39d7482619e452929e13fd1a169349cc49c4ffec44fdafd8f7d49",
+      "kind": "combobox",
+      "classification": null,
+      "provenance": {
+        "tag": "button",
+        "role": "combobox",
+        "dom_order": 0,
+        "region": "tabpanel",
+        "dom_path": "div:1/div:0/div:0/div:0/div:0/div:0/div:1/button:0",
+        "section": "Appearance"
+      },
+      "candidate_inventory_ids": ["EXT-F-1003-C02"],
+      "candidate_certainty": "source-and-scope candidate; exact node-to-ID unresolved",
+      "source_evidence": "SettingsView renders one Theme PillSelect in Appearance; the census found one combobox in that region.",
+      "exact_frozen_source": {
+        "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+        "version": "0.2.366"
+      },
+      "minimal_missing_observation": "A future exact-artifact census must include a privacy-safe, source-owned control/component anchor (and the nearest known section/header region) for this node; no label/value or HMAC key is needed."
+    },
+    {
+      "scope": "controls:Chat",
+      "fingerprint": "9c4db83b2b236b7df811cc42fa3fa4d52c6e4763762e6e6bdac01d07516a8598",
+      "kind": "combobox",
+      "classification": null,
+      "provenance": {
+        "tag": "button",
+        "role": "combobox",
+        "dom_order": 0,
+        "region": "tabpanel",
+        "dom_path": "div:1/div:0/div:0/div:0/div:0/div:1/div:1/button:0",
+        "section": "Chat"
+      },
+      "candidate_inventory_ids": ["EXT-F-1003-C04", "EXT-F-1003-C05"],
+      "candidate_certainty": "source-and-scope candidate; exact node-to-ID unresolved",
+      "source_evidence": "SettingsView renders Default mode then Default speed as PillSelect controls; the two observed comboboxes match this pair in count and source order, but no node anchor binds fingerprints individually.",
+      "exact_frozen_source": {
+        "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+        "version": "0.2.366"
+      },
+      "minimal_missing_observation": "A future exact-artifact census must include a privacy-safe, source-owned control/component anchor (and the nearest known section/header region) for this node; no label/value or HMAC key is needed."
+    },
+    {
+      "scope": "controls:Chat",
+      "fingerprint": "7c1aaa9293cd8abf234e0fb27723dda15c07568728df0079c6de49f9cbedf2fe",
+      "kind": "combobox",
+      "classification": null,
+      "provenance": {
+        "tag": "button",
+        "role": "combobox",
+        "dom_order": 1,
+        "region": "tabpanel",
+        "dom_path": "div:1/div:0/div:0/div:0/div:0/div:2/div:1/button:0",
+        "section": "Chat"
+      },
+      "candidate_inventory_ids": ["EXT-F-1003-C04", "EXT-F-1003-C05"],
+      "candidate_certainty": "source-and-scope candidate; exact node-to-ID unresolved",
+      "source_evidence": "SettingsView renders Default mode then Default speed as PillSelect controls; the two observed comboboxes match this pair in count and source order, but no node anchor binds fingerprints individually.",
+      "exact_frozen_source": {
+        "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+        "version": "0.2.366"
+      },
+      "minimal_missing_observation": "A future exact-artifact census must include a privacy-safe, source-owned control/component anchor (and the nearest known section/header region) for this node; no label/value or HMAC key is needed."
+    },
+    {
+      "scope": "controls:Scrape",
+      "fingerprint": "cdee736a9967e1921913b52ad217b50500834825f9d341a65ac26625723d49f0",
+      "kind": "combobox",
+      "classification": null,
+      "provenance": {
+        "tag": "button",
+        "role": "combobox",
+        "dom_order": 2,
+        "region": "tabpanel",
+        "dom_path": "div:1/div:0/div:0/div:0/div:0/div:2/div:1/button:0",
+        "section": "Scrape"
+      },
+      "candidate_inventory_ids": ["EXT-F-1003-C29"],
+      "candidate_certainty": "source-and-scope candidate; exact node-to-ID unresolved",
+      "source_evidence": "SettingsView renders one Auto-scrape mode PillSelect in Scrape; the census found one combobox in that region.",
+      "exact_frozen_source": {
+        "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+        "version": "0.2.366"
+      },
+      "minimal_missing_observation": "A future exact-artifact census must include a privacy-safe, source-owned control/component anchor (and the nearest known section/header region) for this node; no label/value or HMAC key is needed."
+    },
+    {
+      "scope": "controls:Desktop bridge",
+      "fingerprint": "b39311891f253097aa9853453b6dfc4c288998319b71cef17d43c82977088ecb",
+      "kind": "input",
+      "classification": null,
+      "provenance": {
+        "tag": "input",
+        "role": null,
+        "dom_order": 0,
+        "region": "tabpanel",
+        "dom_path": "div:8/div:1/div:0/div:0/div:0/div:0/div:1/input:0",
+        "section": "Desktop bridge"
+      },
+      "candidate_inventory_ids": ["EXT-F-1003-C15"],
+      "candidate_certainty": "source-and-scope candidate; exact node-to-ID unresolved",
+      "source_evidence": "SettingsView source renders Pair code input then Pair button, followed by Local engine port input then Set/Save button; receipt order and path group each pair. Candidate is pair-level coverage, not fingerprint identity.",
+      "exact_frozen_source": {
+        "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+        "version": "0.2.366"
+      },
+      "minimal_missing_observation": "A future exact-artifact census must include a privacy-safe, source-owned control/component anchor (and the nearest known section/header region) for this node; no label/value or HMAC key is needed."
+    },
+    {
+      "scope": "controls:Desktop bridge",
+      "fingerprint": "4e1277bf77b229d5ec1174eb33851fcc6a3f2d232c871979ce99697f6b8654f6",
+      "kind": "button",
+      "classification": null,
+      "provenance": {
+        "tag": "button",
+        "role": null,
+        "dom_order": 1,
+        "region": "tabpanel",
+        "dom_path": "div:8/div:1/div:0/div:0/div:0/div:0/div:1/button:0",
+        "section": "Desktop bridge"
+      },
+      "candidate_inventory_ids": ["EXT-F-1003-C15"],
+      "candidate_certainty": "source-and-scope candidate; exact node-to-ID unresolved",
+      "source_evidence": "SettingsView source renders Pair code input then Pair button, followed by Local engine port input then Set/Save button; receipt order and path group each pair. Candidate is pair-level coverage, not fingerprint identity.",
+      "exact_frozen_source": {
+        "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+        "version": "0.2.366"
+      },
+      "minimal_missing_observation": "A future exact-artifact census must include a privacy-safe, source-owned control/component anchor (and the nearest known section/header region) for this node; no label/value or HMAC key is needed."
+    },
+    {
+      "scope": "controls:Desktop bridge",
+      "fingerprint": "b39311891f253097aa9853453b6dfc4c288998319b71cef17d43c82977088ecb",
+      "kind": "input",
+      "classification": null,
+      "provenance": {
+        "tag": "input",
+        "role": null,
+        "dom_order": 2,
+        "region": "tabpanel",
+        "dom_path": "div:8/div:1/div:0/div:0/div:0/div:0/div:2/input:0",
+        "section": "Desktop bridge"
+      },
+      "candidate_inventory_ids": ["EXT-F-1003-C16"],
+      "candidate_certainty": "source-and-scope candidate; exact node-to-ID unresolved",
+      "source_evidence": "SettingsView source renders Pair code input then Pair button, followed by Local engine port input then Set/Save button; receipt order and path group each pair. Candidate is pair-level coverage, not fingerprint identity.",
+      "exact_frozen_source": {
+        "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+        "version": "0.2.366"
+      },
+      "minimal_missing_observation": "A future exact-artifact census must include a privacy-safe, source-owned control/component anchor (and the nearest known section/header region) for this node; no label/value or HMAC key is needed."
+    },
+    {
+      "scope": "controls:Desktop bridge",
+      "fingerprint": "24b48098e989ba6f5dd562ed8b466a81eaad1c4267908538238dd532a031fca9",
+      "kind": "button",
+      "classification": null,
+      "provenance": {
+        "tag": "button",
+        "role": null,
+        "dom_order": 3,
+        "region": "tabpanel",
+        "dom_path": "div:8/div:1/div:0/div:0/div:0/div:0/div:2/button:0",
+        "section": "Desktop bridge"
+      },
+      "candidate_inventory_ids": ["EXT-F-1003-C16"],
+      "candidate_certainty": "source-and-scope candidate; exact node-to-ID unresolved",
+      "source_evidence": "SettingsView source renders Pair code input then Pair button, followed by Local engine port input then Set/Save button; receipt order and path group each pair. Candidate is pair-level coverage, not fingerprint identity.",
+      "exact_frozen_source": {
+        "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+        "version": "0.2.366"
+      },
+      "minimal_missing_observation": "A future exact-artifact census must include a privacy-safe, source-owned control/component anchor (and the nearest known section/header region) for this node; no label/value or HMAC key is needed."
+    }
+  ],
+  "closure_requirement": "Keep unknowns unresolved until an exact-artifact observation records a safe source-owned component/control anchor. A repaired uploader path and remote workflow availability are prerequisites to any native retest; this report does not dispatch one."
+}

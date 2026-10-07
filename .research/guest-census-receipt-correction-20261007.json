@@ -24,6 +24,14 @@
       "Browser transport/validation and screenshot send/decode/write failures expose stage, target, and safe state without private payloads."
     ]
   },
+  "evidence_export_correction": {
+    "workflow_commit": "1e366f07",
+    "finding": "Native guest readiness screenshot was written beside the census result but omitted from the hosted artifact upload list.",
+    "exact_emitted_path": "test-results/visibility-census-guest.json.guest-account-readiness.png",
+    "workflow_upload_path": "test-results/visibility-census-guest.json.guest-account-readiness.png",
+    "source_verification": "The hosted runner sets MATRX_CENSUS_OUTPUT to test-results/visibility-census-guest.json, the census appends .guest-account-readiness.png, and the workflow now lists that exact path. git diff --check passed.",
+    "limitation": "Source-only uploader correction. Artifact delivery requires the next native workflow run; none was launched in this lane."
+  },
   "limitations": [
     "No native browser launch or image inspection in this lane; fresh source reviewer and authorized native operator must establish native readiness.",
     "The separate dirty workspace-sync ledger was preserved without edits."

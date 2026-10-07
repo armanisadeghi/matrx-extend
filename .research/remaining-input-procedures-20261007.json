@@ -40,7 +40,7 @@
         }
       },
       "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
-      "design_status": "proposal-source-only-focus-and-permission-runtime-unverified",
+      "design_status": "NOT_EXECUTABLE: owned manual fixture host and repeatable focus-preserving call path are unresolved; keep permissions and runtime unverified",
       "preconditions": [
         "Complete shared preconditions for the selected existing member/admin mode and verify the owned /form-controls route is actually mounted with the fixture hash recorded. Use a fresh tab on that route and record its numeric tab ID.",
         "Confirm debugger permission is already granted and that the owned tab has no pre-existing debugger attachment/banner. Record cdp_session {\"action\":\"list\"} as baseline only in the admin profile; for member, do not use the admin-only helper as an assumed authorized permission check.",
@@ -98,7 +98,7 @@
         }
       },
       "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
-      "design_status": "proposal-source-only-owned-route-prerequisite-and-permission-unverified",
+      "design_status": "NOT_EXECUTABLE: the owned fixture has no guarded manual-runner host; keep permissions and runtime unverified",
       "preconditions": [
         "Complete shared preconditions for the selected existing member/admin mode. The target must be the owned /form-controls fixture route served from the recorded loopback origin and verified exact fixture hash. The existing fixture unit test does not itself leave a route running for manual Tools work; if the route is not independently mounted, stop and leave all positive branches unverified.",
         "In Tools → Catalog choose All handlers, search wait_for, and select the row labeled Read. There are two same-name rows: the canonical Read handler is EXT-F-4156 and takes tab_id string + condition/target; the legacy Action handler has selector/ready_state and is the distinct EXT-F-4058 row. Do not run the Action row for this case.",
@@ -151,15 +151,15 @@
         }
       },
       "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
-      "design_status": "proposal-source-only-admin-manual-handler-runtime-unverified",
+      "design_status": "NOT_EXECUTABLE: the owned fixture has no guarded manual-runner host; keep permissions and runtime unverified",
       "preconditions": [
-        "Complete shared preconditions in the existing admin profile, with debugger permission already granted. Do not exercise this case as member; its inventory applicability is admin only. Open a fresh owned tab at the verified local /form-controls fixture route when available, otherwise use a fresh owned https://example.org/ tab (no sign-in, form submission, or external side effect). Record the exact URL and tab ID.",
-        "Open Tools → Catalog → All handlers, search cdp_session, verify the admin badge, privileged tier and displayed enum schema. Keep the owned target focused for calls that omit tab_id. The manual runner bypasses admin and permission gates; this test does not establish a dispatch-access result.",
+        "Complete shared preconditions in the existing admin profile, with debugger permission already granted. Do not exercise this case as member; its inventory applicability is admin only. The owned /form-controls route must already be mounted by an approved guarded manual-runner host, with actual loopback URL and served-byte hash recorded. No such host is currently available, so do not execute this procedure until it exists. Record the route's numeric tab ID from the owned browser tab.",
+        "Open Tools → Catalog → All handlers, search cdp_session, verify the admin badge, privileged tier and displayed enum schema. The manual runner bypasses admin and permission gates; this test does not establish a dispatch-access result.",
         "Take cdp_session {\"action\":\"list\"} before any attach and preserve the complete tab_ids baseline. If the owned tab is already listed, shows a debugger banner, or the relationship between listed tabs and the owned target is ambiguous, stop without detaching anything. No concurrent debugger operations may occur during the run."
       ],
       "steps": [
         "Warm list branch: call {\"action\":\"list\"}. Confirm result has tab_ids array and equals the saved baseline; do not treat it as a census beyond this worker's in-memory attachment set.",
-        "Attach branch: with the owned target focused, call {\"action\":\"attach\"}. Require {ok:true}. Immediately call list and compare to baseline; require exactly one new numeric ID, tied to the still-focused owned target and with no concurrent attachment activity. If the delta is not exactly one, stop without detaching any ID.",
+        "Attach branch: call {\"action\":\"attach\",\"tab_id\":<recorded owned numeric tab ID>}. Require {ok:true}. Immediately call list and compare to baseline; require exactly one new numeric ID equal to the explicit tab_id, tied to the owned target, and no concurrent attachment activity. If the delta is not exactly one or does not equal that ID, stop without detaching any ID.",
         "Call attach again with {\"action\":\"attach\",\"tab_id\":<exact owned delta ID>}; require {ok:true} and list unchanged from the one-delta set. Invalid schema branch: call {\"action\":\"unknown\"}; require Schema mismatch before handler invocation, then call list and require no mutation.",
         "Detach branch: call {\"action\":\"detach\",\"tab_id\":<exact owned delta ID>}. Require {ok:true}; call list and require that exact owned delta absent while all pre-existing baseline IDs remain. Confirm Chrome's debugger banner clears on the owned target. Never detach an unknown or baseline ID.",
         "After full extension Reload and reloading the owned target, take a fresh list baseline. Repeat list, attach, same-ID repeated attach, schema-negative, exact-ID detach and list/banner cleanup. Reacquire owned ID from the fresh post-attach delta; never reuse an earlier run's ID as ownership proof.",

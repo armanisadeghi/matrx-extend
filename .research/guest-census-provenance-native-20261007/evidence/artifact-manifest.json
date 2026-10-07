@@ -1,0 +1,68 @@
+{
+  "run_id": 37641053827,
+  "workflow_artifact_id": 11491574186,
+  "workflow_artifact_name": "hosted-guest-37641053827-1",
+  "workflow_artifact_zip_sha256": "edad6925444965843033f799ffbc3c5faace78d560b3a0f844db2f9639ad6f7f",
+  "files": [
+    {
+      "path": "historical-artifact-journals/hosted-browser-37105304739-1.jsonl",
+      "bytes": 1532,
+      "sha256": "6c45eac59dd17d7194ac61d92a8571331e9db92593361e9a622a461786b58dea"
+    },
+    {
+      "path": "historical-artifact-journals/hosted-guest-37105304739-1.jsonl",
+      "bytes": 1530,
+      "sha256": "1a2654d74ad70721a101c9710333ced8d23da567266d2f5653db2849e8ea51d2"
+    },
+    {
+      "path": "historical-artifact-journals/hosted-package-37105304739-1.jsonl",
+      "bytes": 1057,
+      "sha256": "15fbd74ef4739e033a278c80463ff29b182947b96eb802f93473d88c6e978692"
+    },
+    {
+      "path": "resource-journals/hosted-browser-37641053827-1.jsonl",
+      "bytes": 988,
+      "sha256": "f98dbab72a165f3cb240363d6a30bd5fd82e46a11544f27b831b01ade90ba4c7"
+    },
+    {
+      "path": "resource-journals/hosted-guest-37641053827-1.jsonl",
+      "bytes": 1401,
+      "sha256": "b916996854e6f081728aa41a50c0ccfa0bd17d1a9eb6c685fc3e41bead86b772"
+    },
+    {
+      "path": "resource-journals/hosted-package-37641053827-1.jsonl",
+      "bytes": 1000,
+      "sha256": "c9e6250be646b4f25797537db704ed7da8c6c179be41d37b9b5c99259c74596d"
+    },
+    {
+      "path": "screenshots/native-side-panel.png",
+      "bytes": 32353,
+      "sha256": "d9d40c6d68da4b569c22cf9f15aa3a50bc01b2f83e15210328075548e6abe106"
+    },
+    {
+      "path": "screenshots/normal-target-after-open.png",
+      "bytes": 27078,
+      "sha256": "c939d4f6417b874eefffbe4a8c9bd1cf05088fe2b42ab7a7e13c65d79a024fd2"
+    },
+    {
+      "path": "terminal-evidence.txt",
+      "bytes": 3810,
+      "sha256": "b9a74ce1d060ae50f98089b2ab4ed7112cd4bfff1df1fbd9c59fa8d3ef439fc5"
+    },
+    {
+      "path": "visibility-census-guest.json",
+      "bytes": 31336,
+      "sha256": "f609a43a33a4c4f372ce80f808fd7407c6e62e71590e7fdb776e0d79913b8521"
+    }
+  ],
+  "historical_journals_from_unrelated_run_37105304739": [
+    "historical-artifact-journals/hosted-package-37105304739-1.jsonl",
+    "historical-artifact-journals/hosted-browser-37105304739-1.jsonl",
+    "historical-artifact-journals/hosted-guest-37105304739-1.jsonl"
+  ],
+  "owned_journals_from_run_37641053827": [
+    "resource-journals/hosted-package-37641053827-1.jsonl",
+    "resource-journals/hosted-browser-37641053827-1.jsonl",
+    "resource-journals/hosted-guest-37641053827-1.jsonl"
+  ]
+}

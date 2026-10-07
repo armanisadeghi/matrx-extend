@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_source_and_procedure_only",
+  "reviewed_commit": "b88a5cc4c40dfb7c9b53ad27e7a43255a6c88f80",
+  "reviewed_proposal": ".research/remaining-input-procedures-20261007.json",
+  "runtime_executed": false,
+  "verdict_A_completeness_and_reproducibility": {
+    "status": "PARTIAL_NOT_EXECUTABLE_AS_WRITTEN",
+    "preserved_scope": "All three feature/case IDs, control IDs, member/admin applicability, inventory dimensions, and manual-runner limits match the authoritative inventory. No inventory verdict or runtime cell should be promoted.",
+    "per_case": {
+      "EXT-F-4106-T01": "NOT_EXECUTABLE_POSITIVE: fixture serving is an unresolved prerequisite and the focus/value boundary is explicitly unproven. The schema-negative segment is reproducible once the route exists. The proposal correctly refuses to infer success from {ok:true}.",
+      "EXT-F-4156-T01": "CONDITIONAL_BRANCH_COVERAGE: all four inputs and expected result shapes match the canonical handler, but no manual-runner procedure mounts the owned route. The proposal says a future runner/operator must expose it, then tells the tester to stop if unavailable; that leaves fixture provisioning outside the executable procedure.",
+      "EXT-F-4168-T01": "BLOCKED_INITIAL_ATTACH_STEP: the first attach call omits tab_id. ToolsView invokes handler.run with assignedTabId:null, and cdp_session delegates that null to cdp_attach, which then returns No active tab. Pass the recorded numeric ID explicitly. Remaining same-ID attach, invalid action, and exact-ID detach steps are source-consistent once this is fixed."
+    },
+    "findings": [
+      {
+        "id": "A1",
+        "case": "EXT-F-4168-T01",
+        "severity": "blocking",
+        "location": "steps[1]",
+        "issue": "Initial {\"action\":\"attach\"} has no tab_id. A focused browser tab does not supply an assigned tab to the direct manual runner; ToolsView passes assignedTabId:null, so cdp_attach cannot resolve a target.",
+        "correction": "Use {\"action\":\"attach\",\"tab_id\":<recorded owned numeric tab ID>} and verify the one-ID delta maps to that exact tab."
+      },
+      {
+        "id": "A2",
+        "case": "EXT-F-4106-T01, EXT-F-4156-T01, EXT-F-4168-T01",
+        "severity": "blocking_for_execution",
+        "location": "owned_fixture.serving_status and preconditions",
+        "issue": "The exact fixture is served only by a transient test server in form-control-owned-fixture.test.mjs. The proposed tester is told that a future runner/operator must expose it, but is not given an executable serving entrypoint, ownership receipt, or startup/stop procedure. Current steps correctly say to stop when the route is absent, so the positive branches cannot be run from this artifact alone.",
+        "correction": "Provide an already-reviewed owned fixture runner with deterministic startup, actual loopback origin/port, served-byte hash, process ownership, and shutdown instructions, or classify these branches as not runnable until that runner exists."
+      },
+      {
+        "id": "A3",
+        "case": "EXT-F-4106-T01",
+        "severity": "blocking_for_positive",
+        "location": "steps[0-1]",
+        "issue": "The procedure acknowledges that opening/running the side panel may move focus, and the insertion-boundary focus state is not observable through the specified manual call. Thus a tester cannot certify the focused-target criterion from the prescribed observations; this is an honest unresolved gate, not a reproducible positive path.",
+        "correction": "Keep the positive explicitly not executable until a native, repeatable focus-preserving call path demonstrates exact field mutation at the insertion boundary."
+      }
+    ]
+  },
+  "verdict_B_quality_and_privacy": {
+    "status": "ACCEPT_AS_CAREFUL_BOUNDED_SOURCE_PROPOSAL_WITH_BLOCKERS_RETAINED",
+    "decision": "Inputs, IDs, handler branches, timeout bounds, invalid-schema cases, role applicability, and cleanup ownership are mostly precise. The procedure consistently distinguishes direct manual handler behavior from dispatcher authorization, and does not mislabel malformed input or handler failure as permission denial. Resolve A1 before cdp_session execution and retain A2/A3 as explicit gates; none of these proposals completes the inventory permission dimension.",
+    "privacy_and_cleanup": "No unnecessary personal or account data is requested. The probe string is synthetic; the fixture is local and form actions are blocked. Receipt instructions prohibit secrets. CDP cleanup preserves baseline IDs, limits detach to the owned delta, and calls out worker-local list limitations. No material privacy gap found.",
+    "specific_quality_gaps": [
+      "The owned fixture is not currently available to a manual tester from the described setup; an aspirational future runner is not a concrete fixture procedure.",
+      "cdp_session's initial attach input is not executable as written because it omits the explicit target tab ID.",
+      "cdp_input_type cannot presently satisfy its positive focus/value assertion through the stated manual sequence; its schema-negative segment remains usable after fixture provisioning.",
+      "Inventory permissions remain open for all cases because Tools → Catalog → Run directly invokes handlers and bypasses dispatcher gates. The proposed future dispatcher segment has no concrete current route or refusal observation, correctly leaving it unverified."
+    ]
+  },
+  "sources_checked": [
+    "docs/stabilization/inventory.json: EXT-F-4106, EXT-F-4156, EXT-F-4168 records and case dimensions",
+    ".research/remaining-input-procedures-20261007.json",
+    "src/features/tools/ToolsView.tsx:390-459: direct handler.run with assignedTabId:null",
+    "src/lib/tools/handlers/canonical.ts:650-799: wait_for schema, branch semantics, timeout and network-idle behavior",
+    "src/lib/tools/handlers/cdp.ts:41-85,371-396: cdp_attach target resolution and cdp_input_type behavior",
+    "src/lib/tools/handlers/canonical-mergers.ts:482-516: cdp_session enum and delegate behavior",
+    "src/lib/cdp/client.ts:79-92,271-301,352-388: idle detach and worker-local attachment lifecycle",
+    "tests/browser/form-control-owned-fixture.test.mjs and tests/browser/owned-fixture-server.mjs: fixture route is mounted only by test-owned server",
+    "docs/stabilization/PLAN.md:24-34: receipt, reload and independent-closure requirements"
+  ],
+  "limitations": [
+    "Source-only review; no browser, handler, build, test, database, credential, permission, reload, or release action was performed.",
+    "No runtime result, role cell, permission outcome, fixture availability, or inventory status was changed."
+  ]
+}
