@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "run_id": 37696455741,
+  "source": "GitHub Actions failed-step log for this exact run; no raw resource journal was present in the downloaded run artifact",
+  "events": [
+    {
+      "code": "RESOURCE_ADMITTED",
+      "at": "2026-10-07T22:34:56.731Z",
+      "reasons": [],
+      "sample": {
+        "availableMemoryGiB": 5.81,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.25,
+        "logicalCpus": 3,
+        "cpuBusyFraction": 0.16,
+        "repoFreeGiB": 43.611351013183594
+      }
+    },
+    {
+      "code": "RESOURCE_CPU_PENDING",
+      "at": "2026-10-07T22:35:12.997Z",
+      "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
+      "sample": {
+        "availableMemoryGiB": 5.67,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.31,
+        "logicalCpus": 3,
+        "cpuBusyFraction": 0.81,
+        "repoFreeGiB": 43.5399169921875
+      }
+    },
+    {
+      "code": "RESOURCE_PROCESS_ATTRIBUTION",
+      "at": "2026-10-07T22:35:13.073Z",
+      "process_names": [
+        "MTLCompilerServi",
+        "diskutil",
+        "Chromium Helper",
+        "diskarbitrationd",
+        "node",
+        "launchd",
+        "authd",
+        "storagekitd"
+      ]
+    },
+    {
+      "code": "RESOURCE_JOB_EXIT",
+      "at": "2026-10-07T22:35:24.724Z",
+      "childExitCode": 0
+    },
+    {
+      "code": "RESOURCE_FINAL_DECISION",
+      "at": "2026-10-07T22:35:24.822Z",
+      "admitted": true,
+      "resourceInvalid": true,
+      "exitCode": 3,
+      "decision": "invalid"
+    }
+  ],
+  "stale_journals": "run 371053 was excluded; it is unrelated to this attempt"
+}

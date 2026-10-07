@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1003-T46",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37696455741",
+    "run_id": 37696455741,
+    "status": "completed",
+    "conclusion": "failure",
+    "job": "guest",
+    "job_id": 113049287120,
+    "duration": "6m24s",
+    "head_branch": "main",
+    "head_sha": "a899206b29e8bc768b353a3e3992dd4adc08f5de",
+    "acceptance_lane": "A",
+    "acceptance_case": "settings-controls",
+    "role": "signed-out guest",
+    "runner_label": "macos-15"
+  },
+  "ownership_check": {
+    "in_progress_hosted_acceptance_runs_at_dispatch": [],
+    "all_known_prior_lane_attempts_terminal": true
+  },
+  "selected_development_artifact": {
+    "run_id": 37695280574,
+    "artifact_id": 11514778541,
+    "artifact_name": "matrx-extend-development-test-d10719c667c87b578689f1cdecf23e2a637d3207-37695280574-1",
+    "expired": false,
+    "ci_conclusion": "success",
+    "source_sha": "d10719c667c87b578689f1cdecf23e2a637d3207",
+    "version": "0.2.391",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "39c001784e5566e54c5862f3db31f5688aafead51c418b7c52ccc3ec1c924410",
+    "verification": "Hosted importer logged exact_pushed_commit_only; native receipt reports build.verified=true and matching source tree/version/id."
+  },
+  "native_outcome": {
+    "status": "T46_DRIVER_PASS_RESOURCE_INVALID_RUN_UNVERIFIED",
+    "case_criteria": "8/8 pass in the downloaded native driver report",
+    "observed": "65001 saved and read back after Settings Page.reload; 1 and 65535 each saved and read back after Settings Page.reload; 65536 showed the range error while storage stayed 65535; blank cleared the override and error, with null still observed after reload. Original state was null and final state was null.",
+    "resource_gate": "The run was admitted, then logged RESOURCE_CPU_PENDING for RESOURCE_CPU_BUSY and RESOURCE_CPU_HIGH_LOAD_BUSY (81% busy, load 2.31). The child exited 0, but final resource decision was invalid with exit code 3; overall report status is unverified. Do not award acceptance credit from this attempt.",
+    "scope_limits": [
+      "Settings Page.reload is not a full extension Reload.",
+      "The fixture intentionally returns HTTP 503; healthy desktop-engine connectivity is not established.",
+      "The downloaded acceptance artifact had no screenshots or raw resource journal; resource events are summarized from the exact run log."
+    ]
+  },
+  "evidence": {
+    "directory": ".research/settings-boundary-native-20261007/evidence/",
+    "files": [
+      "raw/ci-build-receipt.json",
+      "raw/ci-build-provenance.json",
+      "raw/settings-local-controls-acceptance.json",
+      "t46-guest-native-receipt.json",
+      "resource-summary.json",
+      "screenshots/availability.json"
+    ],
+    "native_report_sha256": "a9034e979ee31f193579cde0215cd86ba272391ba278dd9316fb3c1d7a5f229b",
+    "native_artifact_id": 11516145523,
+    "native_artifact_digest": "sha256:222e41c65d9ba565b56be1e0ce39fde5e51a01276ae7ebb379bcd612e8e405e9",
+    "stale_run_371053_excluded": true
+  }
+}

@@ -1,0 +1,357 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1003-T46",
+  "source": "GitHub hosted native acceptance artifact; exact run 37696455741",
+  "report_status": "unverified",
+  "case": {
+    "id": "EXT-F-1003-T46",
+    "role": "guest",
+    "status": "pass",
+    "steps": [
+      {
+        "phase": "warm",
+        "action": "Record original engine port state",
+        "observation": {
+          "value": "",
+          "saved": null,
+          "button": ["Set"],
+          "override": false,
+          "error": null
+        }
+      },
+      {
+        "phase": "warm",
+        "action": "Save valid port",
+        "observation": {
+          "value": "65001",
+          "saved": 65001,
+          "button": ["Save"],
+          "override": true,
+          "error": null
+        }
+      },
+      {
+        "phase": "warm",
+        "action": "Observe worker rediscovery enter and reach post-probe broadcast after Save",
+        "observation": {
+          "saveStartedAt": 1791412517495,
+          "pauses": [
+            {
+              "reason": "other",
+              "hitBreakpoints": ["4:29:140257:5"],
+              "callFrames": [
+                {
+                  "functionName": "",
+                  "url": "",
+                  "location": {
+                    "scriptId": "5",
+                    "lineNumber": 29,
+                    "columnNumber": 140257
+                  }
+                },
+                {
+                  "functionName": "i",
+                  "url": "",
+                  "location": {
+                    "scriptId": "5",
+                    "lineNumber": 1,
+                    "columnNumber": 25746
+                  }
+                }
+              ],
+              "observedAt": 1791412517674
+            },
+            {
+              "reason": "other",
+              "hitBreakpoints": ["4:29:140333:5"],
+              "callFrames": [
+                {
+                  "functionName": "",
+                  "url": "",
+                  "location": {
+                    "scriptId": "5",
+                    "lineNumber": 29,
+                    "columnNumber": 140333
+                  }
+                }
+              ],
+              "observedAt": 1791412517682
+            }
+          ],
+          "entryBreakpoint": "4:29:140257:5",
+          "completionBreakpoint": "4:29:140333:5",
+          "resumeError": null,
+          "port": 65001,
+          "healthRequests": [
+            {
+              "method": "GET",
+              "path": "/health",
+              "observedAt": 1791412517679
+            }
+          ]
+        }
+      },
+      {
+        "phase": "reload",
+        "action": "Inspect valid override after reload",
+        "observation": {
+          "value": "65001",
+          "saved": 65001,
+          "button": ["Save"],
+          "override": true,
+          "error": null
+        }
+      },
+      {
+        "phase": "warm",
+        "action": "Save inclusive boundary port 1",
+        "observation": {
+          "value": "1",
+          "saved": 1,
+          "button": ["Save"],
+          "override": true,
+          "error": null
+        }
+      },
+      {
+        "phase": "reload",
+        "action": "Read inclusive boundary port 1 after reload",
+        "observation": {
+          "value": "1",
+          "saved": 1,
+          "button": ["Save"],
+          "override": true,
+          "error": null
+        }
+      },
+      {
+        "phase": "warm",
+        "action": "Save inclusive boundary port 65535",
+        "observation": {
+          "value": "65535",
+          "saved": 65535,
+          "button": ["Save"],
+          "override": true,
+          "error": null
+        }
+      },
+      {
+        "phase": "reload",
+        "action": "Read inclusive boundary port 65535 after reload",
+        "observation": {
+          "value": "65535",
+          "saved": 65535,
+          "button": ["Save"],
+          "override": true,
+          "error": null
+        }
+      },
+      {
+        "phase": "warm",
+        "action": "Submit invalid range",
+        "observation": {
+          "value": "65536",
+          "saved": 65535,
+          "button": ["Save"],
+          "override": true,
+          "error": "Port must be 1\u201365535."
+        }
+      },
+      {
+        "phase": "warm",
+        "action": "Clear override without leaving the invalid-error view",
+        "observation": {
+          "value": "",
+          "saved": null,
+          "button": ["Set"],
+          "override": false,
+          "error": null
+        }
+      },
+      {
+        "phase": "reload",
+        "action": "Inspect cleared override after reload",
+        "observation": {
+          "value": "",
+          "saved": null,
+          "button": ["Set"],
+          "override": false,
+          "error": null
+        }
+      }
+    ],
+    "criteria": [
+      {
+        "name": "valid port saved",
+        "status": "pass",
+        "evidence": {
+          "value": "65001",
+          "saved": 65001,
+          "button": ["Save"],
+          "override": true,
+          "error": null
+        }
+      },
+      {
+        "name": "saved port triggers desktop worker rediscovery",
+        "status": "pass",
+        "evidence": {
+          "saveStartedAt": 1791412517495,
+          "pauses": [
+            {
+              "reason": "other",
+              "hitBreakpoints": ["4:29:140257:5"],
+              "callFrames": [
+                {
+                  "functionName": "",
+                  "url": "",
+                  "location": {
+                    "scriptId": "5",
+                    "lineNumber": 29,
+                    "columnNumber": 140257
+                  }
+                },
+                {
+                  "functionName": "i",
+                  "url": "",
+                  "location": {
+                    "scriptId": "5",
+                    "lineNumber": 1,
+                    "columnNumber": 25746
+                  }
+                }
+              ],
+              "observedAt": 1791412517674
+            },
+            {
+              "reason": "other",
+              "hitBreakpoints": ["4:29:140333:5"],
+              "callFrames": [
+                {
+                  "functionName": "",
+                  "url": "",
+                  "location": {
+                    "scriptId": "5",
+                    "lineNumber": 29,
+                    "columnNumber": 140333
+                  }
+                }
+              ],
+              "observedAt": 1791412517682
+            }
+          ],
+          "entryBreakpoint": "4:29:140257:5",
+          "completionBreakpoint": "4:29:140333:5",
+          "resumeError": null
+        }
+      },
+      {
+        "name": "valid override persists after reload",
+        "status": "pass",
+        "evidence": {
+          "value": "65001",
+          "saved": 65001,
+          "button": ["Save"],
+          "override": true,
+          "error": null
+        }
+      },
+      {
+        "name": "boundary port 1 saves and persists after reload",
+        "status": "pass",
+        "evidence": {
+          "accepted": {
+            "value": "1",
+            "saved": 1,
+            "button": ["Save"],
+            "override": true,
+            "error": null
+          },
+          "persisted": {
+            "value": "1",
+            "saved": 1,
+            "button": ["Save"],
+            "override": true,
+            "error": null
+          }
+        }
+      },
+      {
+        "name": "boundary port 65535 saves and persists after reload",
+        "status": "pass",
+        "evidence": {
+          "accepted": {
+            "value": "65535",
+            "saved": 65535,
+            "button": ["Save"],
+            "override": true,
+            "error": null
+          },
+          "persisted": {
+            "value": "65535",
+            "saved": 65535,
+            "button": ["Save"],
+            "override": true,
+            "error": null
+          }
+        }
+      },
+      {
+        "name": "invalid range shows error and retains saved port",
+        "status": "pass",
+        "evidence": {
+          "value": "65536",
+          "saved": 65535,
+          "button": ["Save"],
+          "override": true,
+          "error": "Port must be 1\u201365535."
+        }
+      },
+      {
+        "name": "blank clears override and stale error",
+        "status": "pass",
+        "evidence": {
+          "value": "",
+          "saved": null,
+          "button": ["Set"],
+          "override": false,
+          "error": null
+        }
+      },
+      {
+        "name": "cleared override persists after reload",
+        "status": "pass",
+        "evidence": {
+          "value": "",
+          "saved": null,
+          "button": ["Set"],
+          "override": false,
+          "error": null
+        }
+      }
+    ],
+    "build": {
+      "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "kind": "local_dev_unpacked",
+      "publishState": "not_published",
+      "version": "0.2.391",
+      "treeSha256": "39c001784e5566e54c5862f3db31f5688aafead51c418b7c52ccc3ec1c924410",
+      "verified": true
+    },
+    "preconditions": [
+      "Owned disposable profile",
+      "Extension receipt and tree hash verified",
+      "Guest panel settled before interaction"
+    ],
+    "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-EgBpLG"
+  },
+  "interpretation": {
+    "case_assertions": "8/8 pass in the driver receipt",
+    "run_level_acceptance": "unverified because resource journal final decision was invalid",
+    "settings_page_reload_only": true,
+    "full_extension_reload_claimed": false,
+    "healthy_engine_claimed": false,
+    "initial_override_null_and_final_override_null": true
+  },
+  "source_report_sha256": "a9034e979ee31f193579cde0215cd86ba272391ba278dd9316fb3c1d7a5f229b"
+}

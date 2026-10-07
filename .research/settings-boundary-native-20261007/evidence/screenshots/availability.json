@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "run_id": 37696455741,
+  "status": "not_available_in_downloaded_artifact",
+  "downloaded_artifact": "hosted-guest-37696455741-1",
+  "artifact_files": ["settings-local-controls-acceptance.json"],
+  "note": "The workflow upload contained the native JSON report only. No PNG/JPEG screenshot or raw resource journal was present; no screenshot is inferred or fabricated."
+}
