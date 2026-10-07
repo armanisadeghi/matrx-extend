@@ -1,0 +1,185 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "scope": "One native signed-in admin stale-only D47 retest using the existing macos-15 ARM runner. No source edit, build, release, deployment, tag, database query, retry, or child run was performed.",
+  "workflow": {
+    "run_id": 37582763499,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37582763499",
+    "dispatch_ref": "main",
+    "workflow_head": "4d0afc1608d94627476910b9fe3cb7e821ad52dd",
+    "event": "workflow_dispatch",
+    "conclusion": "success",
+    "acceptance_case": "showcase-d47-admin",
+    "response_order": "stale-only",
+    "runner_label": "macos-15",
+    "runner_architecture": "ARM64",
+    "runner_machine": "arm64",
+    "terminal_at": "2026-10-07T06:47:55Z"
+  },
+  "frozen_artifact": {
+    "ci_run_id": 37580349432,
+    "artifact_id": 11463999781,
+    "source_sha": "5fc0ae3939dfbb1f1ba5696ca63a1a9d5b390d3d",
+    "version": "0.2.347",
+    "imported_tree_sha256": "7a46872cf0b4e245e3f40608f674924d1b63f25779801c4438465e5d5b53f932",
+    "receipt_source_sha": "5fc0ae3939dfbb1f1ba5696ca63a1a9d5b390d3d",
+    "receipt_artifact_id": 11463999781,
+    "receipt_tree_sha256": "7a46872cf0b4e245e3f40608f674924d1b63f25779801c4438465e5d5b53f932",
+    "scope_limit": "This is evidence for the imported frozen artifact only. The newer workflow checkout's current-main application runtime was not tested or accepted."
+  },
+  "source_comparison": {
+    "base_source_sha": "5fc0ae3939dfbb1f1ba5696ca63a1a9d5b390d3d",
+    "workflow_head": "4d0afc1608d94627476910b9fe3cb7e821ad52dd",
+    "unchanged_qa_paths": [
+      ".github/workflows/hosted-guest-acceptance.yml",
+      "scripts/current-test-artifact.mjs",
+      "scripts/hosted-guest-acceptance.mjs",
+      "scripts/hosted-profile-route.mjs",
+      "scripts/hosted-showcase-route.mjs",
+      "scripts/hosted-driver-dependencies.mjs",
+      "scripts/hosted-resource-readiness.mjs",
+      "scripts/stabilization-resource.mjs",
+      "tests/browser/showcase-d47-document-lifecycle.mjs",
+      "tests/browser/showcase-d47-driver-evidence.mjs",
+      "tests/browser/showcase-d47-saved-result.mjs",
+      "tests/browser/showcase-d47-worker-probe.mjs",
+      "tests/fixtures/showcase-replay/"
+    ],
+    "comparison": "The listed workflow, importer, driver, fixture, and resource-gate paths were byte-identical to source 5fc0ae39 at dispatch. The run rehashed the imported extension tree and reported the exact frozen source and tree hashes above.",
+    "hosted_typescript": "typescript@npm:@typescript/typescript6@6.0.2",
+    "artifact_ruling": ".research/d47-stale-resource-peer-20261007.json"
+  },
+  "preflight_and_secret_cleanup": {
+    "canonical_credential_validator": "passed",
+    "admin_identity": "admin@admin.com",
+    "admin_env_mode": "0600",
+    "organization_fixture_mode": "0600",
+    "temporary_secret_names_absent_before_stage": true,
+    "temporary_secret_names": [
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "staged_immediately_before_dispatch": true,
+    "deleted_at_terminal": true,
+    "absence_verified_after_cleanup": true,
+    "local_staged_files_removed": true,
+    "secret_values_recorded": false
+  },
+  "resource_decisions": [
+    {
+      "phase": "package",
+      "run_id": "hosted-package-37582763499-1",
+      "journal": "docs/stabilization/resource-journals/d47-stale-arm-native-37582763499-package.jsonl",
+      "journal_sha256": "c7566b1e5bfeacbe2c735a9e94f222827e4af7d9334748640934cf62b69d58dd",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 0,
+      "decision": "valid"
+    },
+    {
+      "phase": "browser",
+      "run_id": "hosted-browser-37582763499-1",
+      "journal": "docs/stabilization/resource-journals/d47-stale-arm-native-37582763499-browser.jsonl",
+      "journal_sha256": "0452903afbe29a77287f50c050e362d58e7cbe4c4b28e05583a7a298389b95f7",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 0,
+      "decision": "valid"
+    },
+    {
+      "phase": "native",
+      "run_id": "hosted-guest-37582763499-1",
+      "journal": "docs/stabilization/resource-journals/d47-stale-arm-native-37582763499-guest.jsonl",
+      "journal_sha256": "90a1b914301a2f8bf55e85dbaf04f9e7e68674d85b9a64bb872b39ee374648a0",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 0,
+      "decision": "valid"
+    }
+  ],
+  "native_result": {
+    "receipt_status": "observed_bounded",
+    "stage": "fresh_saved_terminal",
+    "auth": "real admin extension sign-in; role and selected organization identity checks passed",
+    "save": {
+      "click_entered": true,
+      "click_completed": true,
+      "click_phase": "release_returned",
+      "recipe_creation": "observed_in_patterns",
+      "first_post_click_state": "Save disabled with saving indicator; no error",
+      "settled_exact_recipe": true
+    },
+    "stale_only": {
+      "fixture_armed": true,
+      "old_response_was_pending": true,
+      "current_probe_finished_before_old_release": true,
+      "old_response_finished": true,
+      "current_response_sent": false,
+      "refusal_samples": 157,
+      "terminal_refusal": true,
+      "terminal_error_count": 1,
+      "running": false,
+      "current_result_row": false,
+      "old_result_row": false,
+      "header": "absent",
+      "preview": "absent"
+    },
+    "fresh_recovery": {
+      "enabled": true,
+      "target_request_finished": true,
+      "terminal_samples": 162,
+      "settled_elapsed_ms": 20321.2,
+      "exact_recipe": true,
+      "current_row": true,
+      "old_row": false,
+      "running": false,
+      "error_present": false,
+      "observation_available": true,
+      "header": "exact",
+      "preview": "current_only"
+    },
+    "verdicts": {
+      "stale_only_refusal": "pass",
+      "fresh_recovery": "pass",
+      "current_saved_replay_after_recovery": "pass",
+      "delayed_old_binding": "architecturally_excluded_observed",
+      "cancellation": "unverified"
+    },
+    "trace_limits": "The old-only HTTP response finished after the old document context was cleared. The receipt does not prove delivery of a stale old-document binding callback; no old binding packet is claimed.",
+    "cleanup": {
+      "owned_recipe": "removed",
+      "exact_recipe_rows_after_cleanup": 0,
+      "probe_cleanup_result": null,
+      "probe_cleanup_meaning": "cleanup helper returned null, its no-failure result",
+      "fixture_subprocess": "driver completed with exit 0; no separate shutdown receipt field"
+    },
+    "full_case_status": "EXT-D-0047 remains in-fix and EXT-F-1012-T57 remains unverified; this bounded stale-only result does not cover cancellation, manual/prior-run isolation, or the full D47 case."
+  },
+  "artifact_residue": {
+    "excluded_from_this_run": [
+      "hosted-package-37105304739-1.jsonl",
+      "hosted-browser-37105304739-1.jsonl",
+      "hosted-guest-37105304739-1.jsonl"
+    ],
+    "finding": "The downloaded hosted artifact contained older workspace-residue journals for run 37105304739. Only the three journals whose IDs match 37582763499 were used or committed."
+  },
+  "retained_private_evidence": {
+    "directory": "test-results/d47-stale-arm-native-37582763499.private/",
+    "directory_mode": "0700",
+    "receipt": "test-results/d47-stale-arm-native-37582763499.private/_temp/showcase-d47-native-37582763499-1.json",
+    "receipt_mode": "0600",
+    "receipt_sha256": "16e230f2edef169783429d59debc79bb1cfe5da2f50d250bf6ac98d9362eb993",
+    "raw_log": "test-results/d47-stale-arm-native-37582763499.private/run.log",
+    "raw_log_mode": "0600",
+    "raw_log_sha256": "f300fc43798ae7aa9da0d55b7e270329ffafb757581039d822032d05470e5955",
+    "screenshots_mode": "0600",
+    "retained_for_independent_review": true
+  },
+  "guarded_source_checks": {
+    "report": ".research/d47-stale-guarded-checks-20261007.json",
+    "result": "44/44 valid before this native run",
+    "native_run_is_separate": true
+  },
+  "acceptance": "Accept the bounded stale-only refusal and fresh recovery observations under the exact frozen artifact. Do not promote the full D47 defect or T57 cell from this run."
+}
