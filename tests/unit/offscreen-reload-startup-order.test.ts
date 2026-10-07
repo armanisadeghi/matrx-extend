@@ -3,12 +3,12 @@
  * must wait: both operations own that singleton document, and reversing them
  * destroys the fresh socket's owner after it opens.
  */
-import { afterEach, describe, expect, it, vi } from 'vitest';
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { matchesAllowedOrigin } from '@/lib/origin-allowlist';
 import { readDefaultPermissionMode } from '@/lib/settings/persisted';
 import { handleWebmcpCall } from '@/lib/tools/dispatch';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const deferred = <T>() => {
   let resolve!: (value: T) => void;
