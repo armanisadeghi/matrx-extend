@@ -2192,6 +2192,9 @@
  "/directives/catalog": {
   "get": []
  },
+ "/directives/catalog/{noun}": {
+  "get": []
+ },
  "/directives/confirm": {
   "post": [
    "application/json"
