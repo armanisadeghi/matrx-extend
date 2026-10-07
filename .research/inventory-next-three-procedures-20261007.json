@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "artifact_type": "inventory-case-procedure-patch",
+  "task_id": "inventory-next-three-procedures-20261007",
+  "status": "source-procedure-proposed-unverified",
+  "source_sha": "f271586c026ac2835ef6ee689db37de23b355599",
+  "scope": "Proposed preconditions, steps, expected outcomes and dimensions for three existing non-Chat/non-Pilot cases. No new feature IDs, inventory status changes, product edits, runtime tests or behavior verdicts.",
+  "shared_receipt_and_reload_preamble": [
+    "Before each case, obtain the resource permit required by docs/stabilization/PLAN.md and write a fresh receipt: source SHA and dirty-source hash if applicable, lockfile hash, output hash, WXT mode, runtime extension ID, Chrome version, profile label, auth/role/org state, granted permissions, backend identity, owned fixture IDs and timestamp. Do not include credentials, tokens, session data or page contents.",
+    "Use an already built, receipt-bound unpacked development artifact. Confirm loaded extension ID, source/output identity and build fingerprint. Wait for any build to finish before reload; reload the extension, reopen the actual side panel and Tools tab, and reload the controlled target tab. Record the worker/offscreen build identity if available; HMR alone is not acceptance evidence.",
+    "Run separately in genuine signed-in member and admin profiles. Tools is signed-in-only; guest applicability is not added by these proposals. Keep device organization and role visible in the receipt; do not infer one role's behavior from the other. Use only the owned public HTTPS fixtures described below.",
+    "Actual UI route: open the extension side panel, select Tools > Catalog, select All handlers, search and expand the exact handler, inspect its displayed local JSON schema, enter the specified JSON in Test runner and press Run. This route is source-confirmed in src/features/tools/ToolsView.tsx. It parses JSON and safe-parses local schemas, then calls handler.run directly with permissionMode=act and assignedTabId=null. It bypasses dispatcher permission/approval and role gates; these procedures do not establish dispatcher behavior, denied-permission behavior or live DB binding/advertisement.",
+    "Immediately before each Run, verify the selected active tab in the disposable test Chrome window is the owned public HTTPS fixture. Do not run in an everyday browsing profile. If the actual UI route, receipt or target focus cannot be established, leave the case unverified. Preserve original browser state and close only fixture tabs created by that case."
+  ],
+  "patches": [
+    {
+      "feature_id": "EXT-F-4021",
+      "feature_name": "chrome_batch",
+      "case_id": "EXT-F-4021-T01",
+      "source_anchors": [
+        "src/lib/tools/handlers/batch.ts:24-94 — nonempty calls array up to 20, lookup, read-tier enforcement, nested schema parsing, per-call result collection and stop_on_error.",
+        "src/lib/tools/registry.ts — canonical handler registration and lookup used by chrome_batch.",
+        "src/features/tools/ToolsView.tsx:346-462,510-545 — displayed schema, JSON runner, direct handler invocation, visible result/error.",
+        "src/lib/tools/dispatch.ts — outer dispatcher permission gate; not exercised by the manual runner."
+      ],
+      "actual_ui_route": "Extension side panel > Tools > Catalog > All handlers > search chrome_batch > expand > Test runner > Run.",
+      "preconditions": [
+        "Use the shared receipt and reload preamble. Verify current active tab is https://example.com/ in the disposable profile; this case only reads the public page/tab listing.",
+        "Use separate genuine member and admin profiles. Do not use private browsing, injected sessions or mocked services. No backend data fixture is needed."
+      ],
+      "steps": [
+        "Run {\"calls\":[{\"name\":\"list_open_tabs\",\"arguments\":{\"all_windows\":false,\"url\":\"https://example.com/*\"}}],\"stop_on_error\":true}. Confirm one ordered result and that the nested output reports the owned example.com fixture tab, without recording other tab URLs or titles.",
+        "Run {\"calls\":[{\"name\":\"missing_test_tool_20261007\",\"arguments\":{}},{\"name\":\"list_open_tabs\",\"arguments\":{\"all_windows\":false,\"url\":\"https://example.com/*\"}}]}. Confirm unknown-tool failure is itemized and, with default stop_on_error=false, the second read is still returned.",
+        "Run {\"calls\":[{\"name\":\"navigate\",\"arguments\":{\"url\":\"https://example.com/\"}}],\"stop_on_error\":true}. Confirm the nested non-read action is rejected before it runs; verify the selected fixture URL did not change.",
+        "Run {\"calls\":[],\"stop_on_error\":true}. Confirm the manual runner reports a schema mismatch before handler.run.",
+        "After full extension reload and reopening Tools, repeat the first read once in the warm/reloaded state. Do not claim service-worker idle-restart or offscreen-recreation coverage unless those contexts were independently observed."
+      ],
+      "expected": [
+        "The first call returns count=1, results[0].ok=true, name=list_open_tabs and a nested list containing the owned fixture tab. No navigation, write or other action occurs.",
+        "The unknown nested name produces an item-level ok=false with an unknown-tool error; because stop_on_error defaults false, the following list call is also attempted and returned.",
+        "The action-tier navigate call returns an item-level ok=false with the source-defined read-tier-only error and does not navigate the fixture tab.",
+        "An empty calls array is rejected by the outer schema, so no batch call executes.",
+        "Reloaded direct-run behavior is recorded separately. Dispatcher approval/denial, optional permission refusal, registered binding and a real agent-dispatched batch remain unverified by this manual route."
+      ],
+      "dimensions": [
+        "member",
+        "admin",
+        "signed-in",
+        "owned-public-page",
+        "valid-input",
+        "unknown-tool",
+        "nested-action-denial",
+        "invalid-input",
+        "direct-handler",
+        "extension-reload",
+        "dispatcher-unverified",
+        "permission-denial-unverified",
+        "live-binding-unverified"
+      ],
+      "permission_and_evidence_limits": "chrome_batch declares no required permissions in types/tool-catalog.md; nested tool permission gates are not run because the handler executes nested read handlers directly. No permission-denied or dispatcher result is inferred. This proposal is not a runtime pass."
+    },
+    {
+      "feature_id": "EXT-F-4028",
+      "feature_name": "take_screenshot",
+      "case_id": "EXT-F-4028-T01",
+      "source_anchors": [
+        "src/lib/tools/handlers/read.ts:136-183 — ScreenshotArgs, visible/full_page mode, profile/format and persist flag (persistence defaults true).",
+        "src/lib/tools/handlers/read.ts:331-455 — assigned-tab/document identity check, visible versus full-page capture, output shape and optional persistence.",
+        "src/lib/tools/catalog.ts:65 and types/tool-catalog.md:526 — activeTab requirement and catalog schema.",
+        "src/features/tools/ToolsView.tsx:346-462,510-545 — actual manual runner route and direct-handler semantics.",
+        "src/features/screenshots/ScreenshotsView.tsx:165-229 — separate Screenshots UI path persists and refreshes the gallery; this proposal uses the no-persistence manual handler path."
+      ],
+      "actual_ui_route": "Extension side panel > Tools > Catalog > All handlers > search take_screenshot > expand > Test runner > Run.",
+      "preconditions": [
+        "Use the shared receipt and reload preamble. Target only the owned public page https://example.com/ and avoid any page containing personal, account or confidential information.",
+        "Set persist=false in every positive input so the procedure creates no cloud file or screenshot-index row. Do not use the Screenshots gallery button, which persists by design and is a different route.",
+        "Record activeTab declared/granted state from the existing extension permissions UI/build receipt. The manual runner bypasses dispatcher checks; if actual browser capture permission is unavailable, record the exact UI result and leave permission behavior unverified rather than labeling it dispatcher denial."
+      ],
+      "steps": [
+        "With the owned example.com page active, run {\"mode\":\"visible\",\"profile\":\"auto\",\"format\":\"png\",\"persist\":false}. Confirm the result is an image capture and do not copy or commit its base64 image payload.",
+        "With the same owned public page active, run {\"mode\":\"full_page\",\"profile\":\"auto\",\"format\":\"png\",\"persist\":false}. Confirm the full-page result includes tile_count/truncated metadata when provided; do not treat a legitimately truncated long page as a tool failure.",
+        "Run {\"mode\":\"sideways\",\"persist\":false}. Confirm local schema validation rejects the enum value before handler.run and no capture occurs.",
+        "Reload the extension, reopen the side panel and Tools catalog, reload the owned target page, then repeat the visible capture. Record the reload run independently."
+      ],
+      "expected": [
+        "For visible capture, handler output has ok=true, mode=visible, PNG media type/format, positive width and height, inline image bytes, and null file_id/screenshot_id because persistence was disabled. The target document identity is the active owned page.",
+        "For full_page, output has ok=true and mode=full_page, with positive dimensions and full-page metadata; if the source reports truncated=true, the test records that limit rather than failing solely for truncation.",
+        "Invalid mode is reported as a schema mismatch in the manual UI before capture. No database persistence occurs for these inputs.",
+        "The reloaded visible capture result is recorded independently. Missing capture permission, an unavailable target, dispatcher behavior and permission-denied recovery remain unverified unless exercised through their actual gates."
+      ],
+      "dimensions": [
+        "member",
+        "admin",
+        "signed-in",
+        "owned-public-page",
+        "mode-visible",
+        "mode-full-page",
+        "no-persistence",
+        "invalid-input",
+        "activeTab-permission-state",
+        "extension-reload",
+        "direct-handler",
+        "dispatcher-unverified",
+        "permission-denial-unverified"
+      ],
+      "permission_and_evidence_limits": "The catalog declares activeTab for take_screenshot. The manual Tools runner invokes handler.run directly and does not establish dispatch.ts approval/permission behavior. Do not retain image payloads or claim a screenshot-gallery persistence result."
+    },
+    {
+      "feature_id": "EXT-F-4153",
+      "feature_name": "tabs",
+      "case_id": "EXT-F-4153-T01",
+      "source_anchors": [
+        "src/lib/tools/handlers/canonical.ts:479-559 — tabs action schema, read/action tier distinction, required tab ID and dispatch to leaf handlers.",
+        "src/lib/tools/handlers/tabs.ts:38-65,143-171,174-230,250-330 — listing, creation, close, switch, reload, pin, mute, duplicate, move and zoom behavior.",
+        "src/lib/tools/catalog.ts:79 and types/tool-catalog.md — list_open_tabs tabs permission and tabs tool schema.",
+        "src/features/tools/ToolsView.tsx:346-462,510-545 — actual direct-handler manual runner route; action-tier badge states test mode bypasses approval."
+      ],
+      "actual_ui_route": "Extension side panel > Tools > Catalog > All handlers > search tabs > expand > Test runner > Run.",
+      "preconditions": [
+        "Use the shared receipt and reload preamble in disposable signed-in member/admin profiles. This tool can alter or close tabs, so create and record two owned fixture tabs in the test profile only; never pass IDs for ordinary user tabs.",
+        "Open https://example.com/ as fixture A and https://example.org/ as fixture B through the tabs tool or browser UI. Record only their IDs and owned URLs. Restore the original order, pin/mute/zoom state, active tab and fixture cleanup before ending.",
+        "Record the tabs permission state from the current build and extension UI. Direct manual calls bypass dispatcher approval/permission checks; any denied-permission behavior remains unverified unless tested through the actual dispatcher."
+      ],
+      "steps": [
+        "Run {\"action\":\"list\"} and {\"action\":\"active\"}; confirm list includes fixture A/B and active identifies the current fixture. Run {\"action\":\"info\",\"tab_id\":\"<fixture-A-id>\"} and confirm it describes A.",
+        "Run {\"action\":\"create\",\"url\":\"https://example.com/\"}; record the returned owned tab ID as fixture C. Use only returned fixture IDs below.",
+        "On fixture C, run switch, reload, pin with on=true then on=false, mute with on=true then on=false, zoom with zoom_factor=1.1 then restore to 1.0, and move with a valid fixture-only index. After each action, run info/list and confirm the requested state or visible error.",
+        "Run duplicate for fixture C; record the returned duplicate ID and verify it resolves to the same public URL. Close only fixture C and the owned duplicate by their IDs, then verify both are absent from list.",
+        "Run {\"action\":\"close\"} without tab_id and {\"action\":\"move\",\"tab_id\":\"<fixture-A-id>\"} without index. Confirm each returns its source-defined missing-argument result without altering fixtures.",
+        "Reload the extension and reopen the Tools route. Run list and info on fixture A to confirm the handler remains usable after reload; then restore the original fixture state and close only any remaining case-owned tabs."
+      ],
+      "expected": [
+        "list, active and info return structured tab metadata for the owned fixture(s); the read actions have source tier read even though the top-level handler is action-tier for mutating actions.",
+        "create opens the specified public URL and returns an ID for the new active fixture tab.",
+        "switch/reload/pin/mute/zoom/move affect only the supplied owned fixture ID. Readback shows the requested state where Chrome exposes it; invalid/unavailable actions return an explicit failure. Restore baseline state after observing the result.",
+        "duplicate produces a separate owned tab with the fixture URL; close removes only the explicit owned IDs. Original user tabs remain untouched.",
+        "Missing tab_id and missing move index return the source-defined {ok:false,reason:...} results without mutation.",
+        "Reloaded list/info remain usable. Dispatcher prompts, denied-permission behavior, actual agent assignment/pinning and live DB binding are outside the direct manual-runner evidence and remain unverified."
+      ],
+      "dimensions": [
+        "member",
+        "admin",
+        "signed-in",
+        "owned-public-fixture-tabs",
+        "read-actions",
+        "mutating-actions",
+        "missing-tab-id",
+        "missing-move-index",
+        "permission-state",
+        "fixture-cleanup",
+        "extension-reload",
+        "direct-handler",
+        "dispatcher-unverified",
+        "permission-denial-unverified"
+      ],
+      "permission_and_evidence_limits": "The source catalog declares tabs for list_open_tabs. Manual execution calls the tabs handler directly; it does not test dispatcher permission or approval checks. Fixture tabs must be disposable and every mutation must be restored."
+    }
+  ],
+  "limitations": [
+    "Source review only: none of these procedures has been run in Chrome, and no pass/fail/runtime verdict is asserted.",
+    "The required execution receipt, resource journal, real member/admin profile observations, runtime permissions, dispatcher gates and post-reload behavior remain future evidence.",
+    "Only these existing case procedures are proposed. The canonical inventory remains unchanged pending independent peer review and coordinator integration."
+  ]
+}
