@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "picker-lifecycle-source-peer-20261007",
+  "defect_id": "EXT-D-0042",
+  "reviewed_commit": "1b4be844",
+  "verdict_A": {
+    "status": "PARTIAL_SOURCE_READY_NATIVE_UNVERIFIED",
+    "cancel": "Source path holds the actual content-world cancel hook invoked by the sidepanel, releases the captured A target after B mounts, checks B overlay and distinct session, then detects, completes and extracts three rows. Native behavior has not run in this review.",
+    "install": "Source path holds the actual sidepanel Chrome file-install promise, starts B while A is pending, releases A through the original Chrome call, checks same tab/document, exactly two installs and one start, then extracts B's three rows. Native behavior has not run in this review.",
+    "reinjection": "Source path executes a second Chrome file installation and start for the current session, tracks capture-phase document listeners, checks one detection and three extracted rows. Fresh module-context identity is not established; native behavior has not run in this review.",
+    "stale_channels": "Previously implemented EXIT, ITEM_DETECTED and RESULT cycles remain in the opt-in path ahead of the three new cases. They were not executed natively in this review."
+  },
+  "verdict_B": {
+    "status": "IMPORTANT_GAP",
+    "findings": [
+      {
+        "severity": "Important",
+        "file": "tests/browser/showcase-picker-native-acceptance.mjs",
+        "line": 447,
+        "issue": "Two recorded executeScript file calls and two start calls do not prove that the second installation created a distinct picker module context. A runtime that reuses the old module and calls mountListPicker again can satisfy overlay, listener, relay and extraction assertions, leaving the cross-context teardown regression untested.",
+        "needed": "At the content-world boundary, capture the installed start/teardown function identity before and after reinjection (or another direct module-context marker) and require the second identity to differ before crediting this case."
+      }
+    ],
+    "production_route": "The new hooks wrap chrome.scripting.executeScript and the content-world __matrxListPickerCancel used by src/lib/data-pattern/list-picker-session.ts; they do not synthesize picker relays. The positive path checks stamped detection/result, one overlay, empty preselection root, field selection, and three extracted rows.",
+    "diagnostic": "Lifecycle steps use fixed allowlisted targets and bounded count/boolean samples; the receipt preserves lifecycle_diagnostic.failed_target without raw exception, selector or page text. Probe tests exercise cancel, install and reinject serialization."
+  },
+  "focused_checks": {
+    "node_tests": "8 passed, 0 failed: showcase-stale-runtime-boundary.test.mjs and showcase-stale-diagnostic.test.mjs",
+    "runner_syntax": "node --check passed",
+    "biome": "Five touched browser files passed",
+    "diff_whitespace": "git diff --check passed"
+  },
+  "limits": "No browser, native artifact, build, release or source edit was performed. The simulated boundary tests cannot establish a new Chrome module context or live behavior. Nonadmin role gating remains unverified.",
+  "recommended_next_action": "Close the fresh-context proof gap in the runner, then run one resource-admitted hosted native acceptance against the exact installed artifact; keep D42 open pending nonadmin verification."
+}
