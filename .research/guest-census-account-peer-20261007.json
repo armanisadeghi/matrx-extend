@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "subject": "EXT-D-0149 / ac47cc66",
+  "verdict_a_requirements": "PASS_WITH_NATIVE_PENDING",
+  "verdict_b_quality": "PASS_WITH_LIMITATION",
+  "basis": "Source confines section discovery to the unique active Settings tabpanel, still inventories unknown in-pane controls, and retains duplicate/missing trigger refusal. Guest proof requires an expanded visible Account, enabled visible Sign in anywhere in Settings, no Sign out, and absent auth/profile/admin storage. No action control is clicked.",
+  "causal_review": "Original diagnostic shows two unsafe Account candidates and no positive guest proof. Repair report correctly limits screenshots to guest Chat and target page, not later Settings. Runtime source supports global Account user-menu plus Settings Account and footer Sign in explanation.",
+  "red_green_review": "Recorded guarded journals show readiness RED (22/23), Settings-scope GREEN (24/24), footer-proof RED, final GREEN (24/24); resource decisions are valid/child_failed as expected. Logs corroborate sequence; no independent rerun performed.",
+  "tracking_review": "Registration adds only EXT-F-0002-C11 and EXT-F-0002-T11, links EXT-D-0149, preserves guest cell unverified, records T11 guest fail, and leaves member/admin unverified; original IDs/statuses preserved.",
+  "limitation": "Original frozen runtime is 0.2.366; changed-source native acceptance remains pending. Screenshots cannot independently confirm the later Settings UI, so no guest visibility verdict is promoted.",
+  "scope": "Read-only review; no tests, browser, database, build, or source edits. Existing unrelated dirty workspace-sync report preserved."
+}
