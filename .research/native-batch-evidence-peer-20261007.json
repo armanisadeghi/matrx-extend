@@ -31,6 +31,26 @@
     "credential_cleanup": "The report states that both temporary secret names were deleted and verified absent after terminal completion. The root coordinator separately reported a live gh secret-list count of zero for those exact two names, without reading values. This independent review did not perform that check; the curated native artifacts themselves do not prove deletion and contain no credential values or account identifiers.",
     "qualification": "The controlled three-card fixture proves extraction for that fixture. It does not establish the full T51 real-calendar and alternate nested-list acceptance."
   },
+  "scrape_D154_review": {
+    "reviewed_report": ".research/scrape-counted-native-retest-20261007.json",
+    "reviewed_commit": "bd2b8cda",
+    "workflow_run_id": 37693691959,
+    "artifact_version": "0.2.385",
+    "A_actual_behavior": {
+      "verdict": "PASS_GUEST_WARM_AND_RELOAD",
+      "T12_guest": "The selected Video pane was observed with exact initial paths and counts in warm and full-extension-reload phases. A trusted Open reached the expected video path; Copy produced trusted pointerdown/up/click, copied feedback, and exact clipboard equality after a scoped read grant that was restored. Selective Remove and valid Add produced exact survivor paths/counts. The driver asserts blank video Add retains the empty form and unchanged row set; this substep is not separately emitted in the curated T12 evidence.",
+      "T13_guest": "The selected Links pane passed Open, trusted Copy and clipboard equality, selective Remove, blank href rejection, valid href/text Add, and Cancel with exact paths/text/counts in warm and reload phases. The raw T13 partial status cites only untested member/admin modes; those are separate matrix cells, so the guest T13 mode cell meets its required steps and dimensions.",
+      "D154_disposition": "Original Links restoration race and surrounding Video readiness/tooltip target are covered by this native run plus the prior independent source review. Closing D154 as a testing-infrastructure defect is supported. No product failure was established.",
+      "limits": "One signed-out guest, narrow 360px headed development run. Member/admin and normal-width Scrape coverage remain separate; no feature-wide promotion. Other partial case statuses in the receipt remain partial."
+    },
+    "B_evidence_quality": {
+      "verdict": "SUFFICIENT_FOR_GUEST_CASE_CREDIT_AND_D154_CLOSURE",
+      "receipt": "The curated native receipt records the frozen CI source 87f6649b4874492a1f8af59cd8703eff0e06424c, development version 0.2.385, headed browser command-line verification, guest auth storage absent, native 360px panel in both phases, no driver failure, exact path/count/text observations, and four trusted Copy event triples. Overall status is partial because other mode/case coverage remains open.",
+      "resource_journals": "The curated current-run package, browser, and guest journals each show admission and final valid exit 0. A guest CPU-pending interval recovered before a healthy watch and final valid decision; this is not a resource-invalid result.",
+      "screenshots": "The retained screenshots visually show the controlled Harbor Dental Scrape setup in fast and deep Article states. They do not show the Video/Links action sequence; the receipt and driver assertions carry that proof.",
+      "qualification": "The curated T12 row omits a standalone blank-video observation although the native driver asserts it before continuing to Add and the terminal run has no failure. This is a transparency limit of the curated receipt, not evidence that the step failed."
+    }
+  },
   "sources": [
     "docs/stabilization/defects/EXT-D-0042.json",
     "docs/stabilization/inventory.json",
@@ -40,6 +60,10 @@
     "docs/stabilization/evidence/showcase-d42-native/run37692910351/frozen-artifact/ci-build-provenance.json",
     "docs/stabilization/evidence/showcase-d42-native/run37692910351/resource-journals/hosted-package-37692910351-1.jsonl",
     "docs/stabilization/evidence/showcase-d42-native/run37692910351/resource-journals/hosted-browser-37692910351-1.jsonl",
-    "docs/stabilization/evidence/showcase-d42-native/run37692910351/resource-journals/hosted-guest-37692910351-1.jsonl"
+    "docs/stabilization/evidence/showcase-d42-native/run37692910351/resource-journals/hosted-guest-37692910351-1.jsonl",
+    "docs/stabilization/defects/EXT-D-0154.json",
+    "tests/browser/scrape-guest-native-acceptance.mjs",
+    ".research/scrape-counted-native-retest-20261007/evidence/run37693691959/native-scrape-receipt-curated.json",
+    ".research/scrape-counted-native-retest-20261007/evidence/run37693691959/resource-journal-curated.json"
   ]
 }
