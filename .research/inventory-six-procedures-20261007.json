@@ -33,17 +33,17 @@
         "Run once and record only ok, byte_length, and whether mhtml_base64 is non-empty; do not copy, screenshot, or retain the page archive. Clear the visible result panel immediately after recording those fields.",
         "Reload the extension according to the receipt, reopen Tools, repeat the same positive input, and compare the result shape and positive byte count.",
         "For the declared-schema negative input, enter {\"tab_id\": 1.5} and run. Confirm the UI reports Schema mismatch before the handler is invoked.",
-        "As a permission-denial observation, revoke pageCapture in chrome://extensions for the unpacked extension and retry the positive input; record the observed result without treating it as dispatcher-gate evidence. Restore the grant before finishing."
+        "In an admin profile only, use Settings > Advanced agent capabilities > Page archive (MHTML) to turn off pageCapture, then retry the positive input and record the Chrome API result. Turn the switch back on and verify its initial state. Do not claim a member-profile denial test from this admin-only switch."
       ],
       "expected": [
         "With the grant and an eligible owned tab, each positive call returns ok:true, a positive byte_length, and a non-empty archive field; the archive itself is excluded from evidence.",
         "The fractional tab_id is rejected by Zod and the UI shows Schema mismatch without a handler result.",
-        "The permission-denial observation is recorded as Chrome API behavior only; the manual runner does not prove the normal dispatcher denies or prompts.",
+        "If the admin switch successfully removes pageCapture, record the retry as Chrome API behavior only; the manual runner does not prove the normal dispatcher denies or prompts. Member-profile permission denial remains unverified.",
         "This capture is returned inline and is not persisted by this handler; no MHTML artifact remains after the result panel is cleared and the fixture tab is closed."
       ],
       "cleanup": [
         "Close only the disposable fixture tab and clear the inline result.",
-        "Restore pageCapture to its initial grant state and record that state in the receipt."
+        "In the admin profile, restore pageCapture through Settings > Advanced agent capabilities and record its final grant state in the receipt."
       ]
     },
     {
@@ -57,7 +57,7 @@
         "docs/stabilization/inventory.json: EXT-F-4095"
       ],
       "preconditions": [
-        "Grant the sessions optional permission. Use a disposable local fixture URL with a unique title and no personal data.",
+        "Use a Chrome build with the required sessions permission declared in the loaded manifest. Use a disposable local fixture URL with a unique title and no personal data.",
         "Record the pre-run recently-closed list and verify the fixture is not already present. The list_recently_closed handler can identify the exact fixture session after closing it.",
         "Run in a disposable profile, because restoring the most-recent session without an explicit session ID could restore unrelated browsing."
       ],
@@ -67,17 +67,17 @@
         "Run restore_recently_closed with {\"session_id\": \"FIXTURE_SESSION_ID\"} using that exact returned ID.",
         "Verify Chrome reopened the fixture tab at the owned URL, then reload the extension, select All handlers again, and repeat list_recently_closed to check that the restored fixture is no longer pending as a closed session.",
         "For the declared-schema negative input, enter {\"session_id\": 123} and confirm Schema mismatch before invocation.",
-        "With sessions revoked, retry only the exact fixture session ID and record the Chrome API outcome; restore the grant after the observation."
+        "Leave the required sessions permission unchanged; permission-denial behavior remains unverified."
       ],
       "expected": [
         "The exact fixture session is restored. Inspect only the nested restored result needed to confirm the owned fixture tab/window returned; do not copy the full result or unrelated session data.",
         "After reload, a fresh recently-closed listing no longer identifies that fixture as closed.",
         "A numeric session_id is rejected by the string schema before handler invocation.",
-        "The revoked-permission result is only an API-level observation because the direct runner bypasses dispatcher permission gating."
+        "Permission-denial behavior is unverified because sessions is required in this Chrome build; the direct runner also bypasses dispatcher permission gating."
       ],
       "cleanup": [
         "Close the restored disposable fixture tab and confirm its URL/title is the one created for this case.",
-        "Restore the sessions grant to its initial state; do not restore or close any unrelated session."
+        "Do not restore or close any unrelated session; leave the required sessions permission unchanged."
       ]
     },
     {
@@ -165,12 +165,13 @@
       "steps": [
         "Run {\"domain\":\"memo-procedure-20261007.invalid\",\"note\":\"procedure receipt marker\",\"hints\":{\"procedure_key\":\"procedure-value\"}}.",
         "Verify ok:true and the returned memo contains the exact domain, note, and hint key/value; do not include the returned full storage object in the receipt.",
-        "Reload the extension and repeat the same call. Verify storage persistence and note deduplication: there is one copy of the note and the hint remains present.",
+        "Reload the extension and run {\"domain\":\"memo-procedure-20261007.invalid\",\"hints\":{\"post_reload_key\":\"post-reload-value\"}} without the original note or procedure_key hint. Verify the returned memo still has exactly the original note and original hint plus the new hint; this distinct write cannot recreate the original values.",
+        "Separately repeat the original note with {\"domain\":\"memo-procedure-20261007.invalid\",\"note\":\"procedure receipt marker\"} and verify the note still occurs exactly once.",
         "For the declared-schema/refinement negative input, run {\"domain\":\"memo-procedure-20261007.invalid\",\"note\":\"\"} and confirm Schema mismatch because note is empty and no nonempty hints are present.",
-        "Confirm the rejected input did not change the stored memo by repeating the positive read/write and checking the same one-note state."
+        "Confirm the rejected input did not change the original note or hints by running a hints-only probe with a different key, {\"domain\":\"memo-procedure-20261007.invalid\",\"hints\":{\"post_negative_key\":\"post-negative-value\"}}. Verify exactly one original note and both earlier hints survive alongside this new hint; do not send the original note or original hint in this readback."
       ],
       "expected": [
-        "Positive input returns ok:true and persists its values across extension reload; repeating an identical note does not append a duplicate.",
+        "Positive input returns ok:true. The distinct hints-only post-reload call preserves the original note and hint while adding its new hint, demonstrating storage persistence; repeating the original note separately does not append a duplicate. The post-negative hints-only probe preserves all prior values without recreating them.",
         "Empty note without hints fails the min-length/refinement validation before handler invocation.",
         "No browser permission or role gate exists in this handler; manual execution provides no evidence about agent advertisement or role policy."
       ],
@@ -223,7 +224,7 @@
   "limits": [
     "The inventory source SHA is the inspected checkout HEAD, b68129726c37041eecf27ed1ff9303b62d733fd5. Recheck it before applying these patches; source and inventory can change in the shared checkout.",
     "All six are direct Tools manual-runner procedures. ToolsView safe-parses each local handler schema, then calls handler.run directly with permissionMode act and assignedTabId null. It bypasses dispatcher permission authorization and does not prove role availability, DB tool.definition/tool.binding activation, agent advertisement, or normal agent tab assignment.",
-    "Permission-revocation observations apply only to optional permissions that Chrome lets the operator revoke (for example pageCapture and sessions). tabGroups, scripting, and debugger are required in this build; their denial behavior is unverified and these procedures do not exercise dispatcher authorization.",
+    "Only pageCapture has a source-backed optional-permission toggle for these cases: Settings > Advanced agent capabilities is admin-only. sessions, tabGroups, scripting, and debugger are required in this Chrome build; their denial behavior is unverified. Direct manual runs do not exercise dispatcher authorization, and member-profile pageCapture denial remains unverified.",
     "EXT-F-4093 cleanup uses a newly created disposable Chrome profile that is discarded after the case because no domain-memo deletion UI is present in the inspected feature sources. Screenshot cleanup verifies the gallery row separately; the uploaded screenshot image and GIF cloud file remain outstanding because no supported file deletion path was established. Discarding a profile removes local state only, never the remote upload.",
     "No browser, build, test, database, credential, or product action was run. No existing dimensions, case IDs, or runtime status cells were changed."
   ],
@@ -233,6 +234,10 @@
     "docs/stabilization/inventory.json",
     "src/features/tools/ToolsView.tsx",
     "src/lib/tools/handlers/optional-perms.ts",
+    "wxt.config.ts",
+    "src/features/settings/SettingsView.tsx",
+    "src/features/settings/AdvancedAgentCapabilities.tsx",
+    "src/lib/permissions/optional.ts",
     "src/lib/tools/handlers/_active-tab.ts",
     "src/lib/tools/handlers/canonical-mergers.ts",
     "src/lib/tools/handlers/tabs.ts",
