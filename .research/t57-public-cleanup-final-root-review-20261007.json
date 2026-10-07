@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "reviewer": "root; zero authorship of QA controller/tests, independent of implementation and prior cleanup finding reviewer",
+  "reviewed_commits": ["b12f99c8", "c443ed93"],
+  "verdict_A": {
+    "status": "PASS_BOUNDED_CLEANUP_SOURCE",
+    "addressed": [
+      "late resolve and reject after completed cleanup both executed by retained test",
+      "fixed-category disable/detach failure controls plus held continuation attempts retained"
+    ],
+    "scope": "Source QA only; T57 remains unverified. Original D47 closure unchanged. Double-navigation scenario remains unsuitable for native retry."
+  },
+  "verdict_B": {
+    "status": "PASS_BOUNDED_EVIDENCE",
+    "evidence": "Inspected real controller closed checks and listener removal, parameterized deferred resolve/reject test, cleanup call assertions, strict acceptance remaining unverified. Independently verified source/stdout/journal hashes and terminal admitted/resourceInvalid=false/valid record; 9 tests passed. No browser/test rerun by this reviewer.",
+    "ruling": "Successful teardown remains disabled_detached even when late body read rejects; overall scenario verdict remains unverified. Do not conflate cleanup completion with scenario acceptance."
+  },
+  "verified_sha256": {
+    "tests/browser/showcase-d47-public-race-preflight.mjs": "1aa521557bfe7eb2a6444baecb8e01427e9f83493830fad4658c5d05c4ca931d",
+    "tests/browser/showcase-d47-public-race-preflight.test.mjs": "bf2537102d995c01aebcf98fd31e58345793a938ec11a879134592e4fb3bddd2",
+    ".research/t57-public-late-reject-20261007.stdout": "7ea37da0dc366e82e6f20aa7a91c744b662e89e0dec06765dec1809ecaa6e8da",
+    "docs/stabilization/resource-journals/t57-public-late-reject-20261007.jsonl": "cf78e42321d52267751a1ed096e235c54e53675d8a0b64641975f9c30dbd094a"
+  },
+  "next_action": "Correct prior-document-before-new-replay sequence and independently review it before one guarded native attempt. No Store or overall-health claim."
+}

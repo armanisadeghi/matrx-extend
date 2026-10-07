@@ -19820,7 +19820,7 @@
             "artifact_id": 11474839620,
             "app_tree_sha256": "e41e0fe5243284e1781a2c997078a05bd4ae50f68a3543914a21e13a18d9ddc7",
             "source_review": ".research/t57-public-race-preflight-final-peer-20261007.json",
-            "next_action": "Diagnostics repair a28945dc independently accepted at source scope; fix peer cleanup body-read race and focused cleanup failure controls, then independently review. Before another native run, correct the double-navigation sequence to an old-document request pending BEFORE the new saved replay. Evaluate positive current binding/context/request identity and recipe terminal result or honest refusal under architectural exclusion; do not demand old callback delivery. T57 remains unverified and original D47 remains closed.",
+            "next_action": "Diagnostics repair a28945dc independently accepted at source scope; cleanup body-read race and resolution/rejection/failure controls repaired in b12f99c8/c443ed93 and independently checked in .research/t57-public-cleanup-final-root-review-20261007.json. Before another native run, correct the double-navigation sequence to an old-document request pending BEFORE the new saved replay. Evaluate positive current binding/context/request identity and recipe terminal result or honest refusal under architectural exclusion; do not demand old callback delivery. T57 remains unverified and original D47 remains closed.",
             "workflow_conclusion": "failure",
             "failure_stage": "public_race_release",
             "report": ".research/t57-public-race-native-20261007.json",
@@ -19834,7 +19834,7 @@
               "commit": "a28945dc",
               "report": ".research/t57-public-release-diagnostics-fix-20261007.json",
               "peer": ".research/t57-release-diagnostics-peer-20261007.json",
-              "remaining": "Async pause-handler cleanup race and failure branch controls; source scenario sequencing before native retry."
+              "remaining": "Cleanup race and failure controls independently accepted; source scenario sequencing remains before native retry."
             }
           }
         },
