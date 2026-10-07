@@ -7,7 +7,7 @@
   "title": "Desktop native driver rejects selected CI artifacts against obsolete fixed source/run/artifact IDs",
   "severity": "S2: blocks verification before UI; product failure not established",
   "priority": "P1",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "root/desktop_artifact_identity",
   "preconditions": [
     "Select successful CI37694579646/artifact11515715192/source61a9b1ca for desktop-settings-guest."
@@ -19,7 +19,12 @@
   ],
   "expected": "Expected source/run/artifact follows explicitly selected importer-verified CI identity, with strict actual manifest/tree/runtime validation.",
   "actual": "Obsolete fixed identity forces one old artifact despite a newer verified selection.",
-  "evidence": [".research/desktop-guest-batch-20261007.json"],
+  "evidence": [
+    ".research/desktop-guest-batch-20261007.json",
+    ".research/desktop-artifact-identity-20261007.json",
+    ".research/desktop-identity-peer-20261007.json",
+    ".research/audit-identity-final-peer-20261007.json"
+  ],
   "transition_history": [
     {
       "at": "2026-10-07T22:27:17.123128+00:00",
@@ -38,9 +43,16 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Sol owns importer-selected identity validation and wrong-artifact refusal guard."
+    },
+    {
+      "at": "2026-10-07T22:39:45.151952+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Desktop and audit sibling share importer-selected identity verification; independent source reviews accepted. Native original-boundary retest pending."
     }
   ],
   "closure_requirement": "Independent source proof of valid selected artifact and mismatch refusal plus guarded native original setup boundary retest; judge product cases separately.",
-  "next_action": "Independent source review then one guarded desktop-settings-guest current-artifact test.",
-  "provenance_note": "Source commit bd7f2088 used already-owned D156 in its message; its desktop repair belongs here. D156 uninterrupted approvals record is untouched."
+  "next_action": "Review desktop run37696764772 terminal evidence against original setup boundary; audit-key native route remains separately unverified.",
+  "provenance_note": "Source commit bd7f2088 used already-owned D156 in its message; its desktop repair belongs here. D156 uninterrupted approvals record is untouched.",
+  "fix_commits": ["bd7f2088", "4b61cbc3"]
 }
