@@ -1,0 +1,22 @@
+{
+  "status": "source-integrated-runtime-unverified",
+  "at": "2026-10-07T14:28:53.581444+00:00",
+  "source_proposal": ".research/webmcp-current-procedures-20261007.json",
+  "proposal_commit": "b9ea24cc",
+  "peer_review": ".research/webmcp-current-procedures-gate-peer-20261007.json",
+  "peer_commit": "d92b2da2",
+  "cases": ["EXT-F-4118-T01", "EXT-F-4119-T01", "EXT-F-4120-T01", "EXT-F-4162-T01"],
+  "verification": {
+    "changed_only": "preconditions,steps,expected for the4 named cases",
+    "exact_rest_of_inventory_preserved": true,
+    "missing_steps_before": 33,
+    "missing_steps_after": 29,
+    "runtime_cells_results_applicability_design_status_and_dimensions": "unchanged"
+  },
+  "limits": [
+    "No native/browser/runtime result promoted.",
+    "Require actual documented API on observed browser;149 is origin-trial start, not asserted local minimum.",
+    "Optional-permission dispatcher denial is source-inapplicable; admin,confirmation and Chrome host/scripting boundaries remain separately required.",
+    "Native original D150 reproduction and origin-tab/closure cases remain outstanding."
+  ]
+}
