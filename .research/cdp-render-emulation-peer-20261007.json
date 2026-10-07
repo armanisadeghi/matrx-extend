@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent-source-peer-review",
+  "reviewed_artifact": ".research/cdp-render-emulation-procedures-20261007.json",
+  "reviewed_commit": "4b960fba8c1969e857519b93a88fc91d473b1888",
+  "review_scope": "Source and official API documentation only; no browser, build, database, inventory, or runtime test was run.",
+  "verdict_A_per_case": {
+    "EXT-F-4103-T01": "corrections-required: valid/invalid, member/admin, warm/reload and exact-owned cleanup are specified, but the named fixture does not establish the demanded below-the-fold proof and the cloud-only media inspection route is incomplete when no URL is returned",
+    "EXT-F-4111-T01": "accepted as a source-derived executable proposal, runtime unverified: decoded PDF rendering, both roles, invalid input, warm/reload and exact-owned cleanup are specified with correct pdf_base64 and byte_length fields",
+    "EXT-F-4113-T01": "corrections-required: the specified DevTools observation method terminates the extension debugger session, invalidating the live emulation and attached clear checks",
+    "EXT-F-4114-T01": "corrections-required: the specified DevTools observation method can detach the extension before clear, which returns ok:true without sending either clear command"
+  },
+  "verdict_B_quality": "corrections-required: proposal preserves inventory applicability and correctly limits manual-runner evidence, but two measurement routes are not executable as written. No runtime pass is established.",
+  "findings": [
+    {
+      "severity": "Important",
+      "cases": ["EXT-F-4113-T01", "EXT-F-4114-T01"],
+      "location": ".research/cdp-render-emulation-procedures-20261007.json:52",
+      "problem": "It instructs Chrome DevTools evaluation on the owned page before, during and after emulation while the extension owns a chrome.debugger session on that same tab.",
+      "impact": "Chrome terminates an extension debugger session when DevTools is invoked for its attached tab. The tracker removes the tab on onDetach; cdp_clear_emulation then takes its unattached early return {ok:true}. The procedure cannot prove live attached emulation or actual clear behavior this way.",
+      "required_correction": "Specify an independent, observable page-state probe that does not attach DevTools to the owned target, and require the owned tab ID to remain in cdp_attached_tabs immediately before valid clear. Record the five page values before/apply/negative/clear and verify restoration without forcing debugger detach. If no such probe is available, leave these cases unverified."
+    },
+    {
+      "severity": "Important",
+      "cases": ["EXT-F-4103-T01"],
+      "location": ".research/cdp-render-emulation-procedures-20261007.json:67",
+      "problem": "The procedure fixes the target to https://example.org/ yet requires recognizable content below the fold for a full_page capture.",
+      "impact": "The short Example Domain document has no guaranteed below-fold content at the test viewport, so a screenshot of its whole page cannot demonstrate capture beyond the viewport.",
+      "required_correction": "Use a controlled public test page with explicit top and below-fold markers and recorded viewport/document heights. Require document height greater than viewport height and inspect the decoded top and bottom pixels. Keep the case unverified until this actual full-page dimension is exercised."
+    },
+    {
+      "severity": "Important",
+      "cases": ["EXT-F-4103-T01"],
+      "location": ".research/cdp-render-emulation-procedures-20261007.json:67",
+      "problem": "The cloud screenshot result may supply file_id but no url/file_url, while the procedure says to open the returned image URL/reference.",
+      "impact": "The manual runner displays JSON and its cloud reference is not itself decoded image pixels; a bare file_id is insufficient as a visual inspection step.",
+      "required_correction": "Name an actual authorized UI or file-resolution route for a cloud-only file_id/screenshot_id and inspect the resulting pixels. Otherwise explicitly mark that content branch unavailable and do not pass it from metadata."
+    }
+  ],
+  "supporting_evidence": [
+    "Chrome debugger API: https://developer.chrome.com/docs/extensions/reference/api/debugger — onDetach occurs when Chrome DevTools is invoked for an attached tab.",
+    "src/lib/cdp/client.ts:128-137 removes an externally detached tab from attachedTabs; src/lib/tools/handlers/cdp.ts:603-610 returns ok:true without commands if the tab is not tracked.",
+    "src/features/tools/ToolsView.tsx:398-460 validates local Zod args and calls handler.run directly; 471-478 serializes output as JSON. It does not prove dispatcher admin/permission enforcement or agent routing.",
+    "src/lib/tools/handlers/cdp.ts:131-281 returns image_base64 on inline success, or cloudScreenshotRef output; src/lib/screenshot/persist.ts:45-68 includes URL fields only if fileUrl exists.",
+    "src/lib/tools/handlers/cdp.ts:498-524 returns pdf_base64 and decoded byte_length. Example Domain public page: https://example.org/.",
+    "docs/stabilization/inventory.json:60444-60465,61930-61951,62283-62304,62415-62436 preserve member/admin for screenshot/PDF and admin-only for emulate/clear."
+  ],
+  "accepted_limits": [
+    "The proposal is clearly labeled source-derived and runtime-unverified; the review does not promote case or inventory status.",
+    "Manual positive and schema-negative runs can test handlers and runner validation only. They cannot establish debugger permission denial, Ask/Act, admin dispatcher, or agent routing.",
+    "Exact owned attachment-delta cleanup and baseline preservation are correctly required for all four cases."
+  ]
+}
