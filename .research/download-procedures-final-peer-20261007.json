@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent-source-procedure-reverification",
+  "reviewed_correction_commit": "82fd21a8b41cc2794c2c8eecea9b24cee89d6338",
+  "source_review_only": true,
+  "finding_verdicts": [
+    {
+      "finding": "Unfiltered canonical download list could expose unrelated history",
+      "status": "ADDRESSED",
+      "evidence": [
+        ".research/download-procedures-20261007.json:13-14 requires a newly created dedicated profile, an empty-history precondition, stopping on unexpected rows, and omission of their details from evidence.",
+        ".research/download-procedures-20261007.json:188,197 explicitly says list is unfiltered, searches newest 50, and must not be described as query-filtered.",
+        "src/lib/tools/handlers/canonical.ts:580 delegates list with an empty filter; src/lib/tools/handlers/browser-data.ts:179-198 returns the matching metadata fields for all search results."
+      ],
+      "note": "The procedure relies on the dedicated empty-profile precondition; if it is violated, action=list still returns the unfiltered rows. It now states this behavior and a stop rule without claiming the query itself is scoped."
+    },
+    {
+      "finding": "Guessed nonexistent-ID cancellation may cancel a real download",
+      "status": "ADDRESSED",
+      "evidence": [
+        ".research/download-procedures-20261007.json:105,113-116 permits cancel only for the exact ID from the owned slow fixture after observing in_progress, and the only negative invocation is schema-invalid input.",
+        "src/lib/tools/handlers/downloads.ts:63-70 passes an integer directly to chrome.downloads.cancel without catching API errors."
+      ],
+      "residual_metadata": ".research/download-procedures-20261007.json:129 still lists nonexistent-id-negative in the cancel case dimensions, despite the action being removed. This is an inconsistent dimension label, not an execution step; remove it before using the dimensions as a test checklist."
+    },
+    {
+      "finding": "Shared completed fixture cleanup and disposable profile cleanup were omitted",
+      "status": "ADDRESSED",
+      "evidence": [
+        ".research/download-procedures-20261007.json:13 limits the completed fixture to EXT-F-4154 list/confirm; 4087 and 4088 explicitly do not create it.",
+        ".research/download-procedures-20261007.json:117 cleans exact owned files and verifies profile-directory absence for 4088; :194 does the same for the completed fixture and any C04/C05 files for each 4154 role profile.",
+        "tests/browser/fixtures/chrome-local-download.html:5 identifies the synthetic completed fixture filename."
+      ]
+    }
+  ],
+  "verdict_a_procedure_adequacy": {
+    "status": "PASS",
+    "summary": "The revised instructions are adequate as source-only procedures for the currently runnable list/confirm and schema-negative branches, and they correctly gate positive download_url and cancellation branches on owned fixtures. The stale dimension label is an artifact-consistency issue; it does not direct a runner to perform the removed guessed-ID action.",
+    "limits": [
+      "The owned HTTP(S) download_url fixture and controlled slow cancellation fixture remain absent prerequisites. Their positive branches cannot run yet.",
+      "No feature cell, browser behavior, role behavior, cleanup outcome, or runtime acceptance is verified by this review."
+    ]
+  },
+  "verdict_b_quality_privacy": {
+    "status": "PASS_WITH_MINOR_METADATA_NOTE",
+    "summary": "The correction removes the unsafe cancellation instruction, accurately discloses the unfiltered list behavior, and specifies owned-path and profile cleanup. One stale dimension label remains, but the runnable instructions and privacy boundary are clear.",
+    "open_note": "Remove nonexistent-id-negative from .research/download-procedures-20261007.json:129 so the dimensions agree with the revised safe procedure."
+  },
+  "evidence_limit": "Read the correction artifact, peer review, relevant handler and Tools runner source, fixture source, and correction commit diff. No browser, build, test, DB query, network request, permission change, or cleanup was run. Actual HTTP(S) and slow-response fixture prerequisites remain unmet; no runtime result is claimed.",
+  "source_files_read": [
+    ".research/download-procedures-20261007.json",
+    ".research/download-procedures-peer-20261007.json",
+    "src/lib/tools/handlers/canonical.ts",
+    "src/lib/tools/handlers/browser-data.ts",
+    "src/lib/tools/handlers/downloads.ts",
+    "src/features/tools/ToolsView.tsx",
+    "tests/browser/fixtures/chrome-local-download.html"
+  ]
+}
