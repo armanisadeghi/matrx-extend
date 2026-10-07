@@ -1,0 +1,34 @@
+{
+  "task_id": "parallel-test-admission-20261007",
+  "date": "2026-10-07T18:52:24.972Z",
+  "decision": "Two static hosted browser lanes A/B. Shared member/admin credential cases occupy A for the entire job including cleanup; B accepts only guest cases. Hosted resource diagnosis occupies A. Both lanes retain separate host-local resource admission.",
+  "red": {
+    "command": "node --test scripts/test-hosted-acceptance-lanes.mjs against scratch copy with prior global group and disabled B fixture isolation",
+    "exit_code": 1,
+    "stdout": "✖ hosted acceptance has exactly two fixed concurrency lanes, including diagnosis (1.4935ms)\n✖ lane admission refuses unknown lanes and isolates shared credentials (26.912917ms)\nℹ tests 2\nℹ suites 0\nℹ pass 0\nℹ fail 2\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 147.504791\n\n✖ failing tests:\n\ntest at scripts/test-hosted-acceptance-lanes.mjs:30:1\n✖ hosted acceptance has exactly two fixed concurrency lanes, including diagnosis (1.4935ms)\n  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + 'hosted-guest-side-panel'\n  - \"${{ inputs.acceptance_lane == 'B' && 'hosted-guest-side-panel-B' || 'hosted-guest-side-panel-A' }}\"\n  \n      at TestContext.<anonymous> (file:///private/var/folders/xp/_2jlqq_j0_z80zn9x0zzk7gr0000gn/T/hosted-lane-red-q3DXQl/scripts/test-hosted-acceptance-lanes.mjs:33:10)\n      at Test.runInAsyncScope (node:async_hooks:226:14)\n      at Test.run (node:internal/test_runner/test:1118:25)\n      at Test.start (node:internal/test_runner/test:1015:17)\n      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: 'hosted-guest-side-panel',\n    expected: \"${{ inputs.acceptance_lane == 'B' && 'hosted-guest-side-panel-B' || 'hosted-guest-side-panel-A' }}\",\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n\ntest at scripts/test-hosted-acceptance-lanes.mjs:59:1\n✖ lane admission refuses unknown lanes and isolates shared credentials (26.912917ms)\n  AssertionError [ERR_ASSERTION]: settings-persistence-admin\n  \n  true !== false\n  \n      at TestContext.<anonymous> (file:///private/var/folders/xp/_2jlqq_j0_z80zn9x0zzk7gr0000gn/T/hosted-lane-red-q3DXQl/scripts/test-hosted-acceptance-lanes.mjs:83:12)\n      at Test.runInAsyncScope (node:async_hooks:226:14)\n      at Test.run (node:internal/test_runner/test:1118:25)\n      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)\n      at Test.postRun (node:internal/test_runner/test:1247:19)\n      at Test.run (node:internal/test_runner/test:1175:12)\n      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {\n    generatedMessage: false,\n    code: 'ERR_ASSERTION',\n    actual: true,\n    expected: false,\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n",
+    "stderr": ""
+  },
+  "green": {
+    "command": "node --test scripts/test-hosted-acceptance-lanes.mjs",
+    "exit_code": 0,
+    "stdout": "✔ hosted acceptance has exactly two fixed concurrency lanes, including diagnosis (1.971209ms)\n✔ lane admission refuses unknown lanes and isolates shared credentials (88.916917ms)\nℹ tests 2\nℹ suites 0\nℹ pass 2\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 211.539792\n",
+    "stderr": ""
+  },
+  "surrounding": {
+    "command": "node --test scripts/hosted-profile-route.test.mjs scripts/hosted-scrape-route.test.mjs scripts/hosted-showcase-route.test.mjs",
+    "exit_code": 0,
+    "stdout": "✔ Profile route passes exact CI artifact identity and extended admin mode to the native driver (1.338ms)\n✔ Profile route refuses absent or wrong case and non-CI evidence (0.75225ms)\n✔ hosted Profile preflight refuses before credentials or runtime setup (157.618917ms)\n✔ Profile organization fixture requires a private approved name (0.168417ms)\n✔ Showcase and Scrape admin routes require the approved fixture before browser setup (158.97ms)\n✔ hosted Profile stages an exclusive private organization fixture for the native driver (4.216292ms)\n✔ every hosted Profile phase refuses before browser setup with valid private inputs (612.702083ms)\n✔ other hosted acceptance still passes credential preflight without runtime setup (75.5445ms)\n✔ non-Profile package and browser phases retain resource admission (168.757792ms)\n✔ development Scrape requires verified CI development provenance (1.861209ms)\n✔ Store Scrape keeps its release ZIP restriction (0.129292ms)\n✔ Scrape auth mode requires matching staged credential before browser setup (0.765542ms)\n✔ workflow admits development Scrape only with one complete development selection (2.216625ms)\n✔ hosted artifact upload preserves every routed showcase native receipt (1.405208ms)\n✔ explicit stale case dispatches the native driver with opt-in and exact artifact identity (0.615416ms)\n✔ ordinary case clears inherited stale opt-in and unrelated cases have no showcase route (0.062625ms)\n✔ D47 route binds the exact CI development artifact to its own native result (0.051792ms)\n✔ D47 route propagates only an explicit supported inverse order (0.424333ms)\n✔ D47 stale-only route keeps the exact artifact and isolated native output (0.080334ms)\n✔ D47 manual-prior route selects the existing saved replay driver (0.042834ms)\n✔ D47 prior-saved route dispatches two-run native driver on the same exact artifact (0.049208ms)\n✔ public D47 route uses its own exact-artifact native receipt and never inherits fixture ordering (0.104166ms)\n✔ stale route refuses wrong artifact identity before child dispatch (0.484708ms)\n✔ stale preflight refuses missing approved fixture before resource admission (161.068041ms)\n✔ approved stale preflight reaches credential-ready without resource or browser setup (79.584208ms)\n✔ D47 preflight requires real admin credentials and device organization (157.770792ms)\nℹ tests 26\nℹ suites 0\nℹ pass 26\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1252.050167\n",
+    "stderr": ""
+  },
+  "resource_guard": {
+    "policy_sha256": "e5bde6ba555c59e9f1bacf15958702b8abca84b26ef70d6c456d443fd13e738b",
+    "workflow_guard_invocations": 4,
+    "native_runs_launched": 0,
+    "resource_journals": [],
+    "note": "Static workflow/unit verification only; no heavy resource permit or native browser was started."
+  },
+  "limitations": [
+    "GitHub Actions server scheduling and simultaneous native browser execution remain unverified.",
+    "GitHub concurrency allows one running and one pending job per lane; a later pending dispatch may replace an earlier pending dispatch."
+  ]
+}

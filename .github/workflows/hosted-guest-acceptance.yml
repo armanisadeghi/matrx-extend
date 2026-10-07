@@ -3,6 +3,14 @@ name: Hosted guest side-panel acceptance
 on:
   workflow_dispatch:
     inputs:
+      acceptance_lane:
+        description: Bounded hosted browser lane; use A for shared member/admin credentials
+        required: true
+        default: A
+        type: choice
+        options:
+          - A
+          - B
       runner_label:
         description: Standard macOS runner for the guarded acceptance
         required: true
@@ -108,11 +116,36 @@ jobs:
     runs-on: ${{ inputs.runner_label == 'macos-15' && 'macos-15' || 'macos-15-intel' }}
     timeout-minutes: 15
     concurrency:
-      group: hosted-guest-side-panel
+      # The closed expression maps even malformed dispatch inputs to A; preflight then refuses them.
+      group: ${{ inputs.acceptance_lane == 'B' && 'hosted-guest-side-panel-B' || 'hosted-guest-side-panel-A' }}
       cancel-in-progress: false
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
+      - name: Require bounded lane and isolate shared credentials
+        shell: bash
+        env:
+          ACCEPTANCE_LANE: ${{ inputs.acceptance_lane }}
+          ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
+          SCRAPE_AUTH_MODE: ${{ inputs.scrape_auth_mode }}
+        run: |
+          # BEGIN hosted lane admission
+          [[ "$ACCEPTANCE_LANE" == A || "$ACCEPTANCE_LANE" == B ]] || { echo 'Unknown hosted acceptance lane.' >&2; exit 1; }
+          case "$ACCEPTANCE_CASE" in
+            guest-chat|guest-scrape|guest-scrape-development|settings-controls|settings-persistence|settings-persistence-admin|settings-persistence-member|desktop-settings-guest|desktop-settings-member|desktop-settings-admin|visibility-census-guest|visibility-census-member|visibility-census-admin|audit-key-admin|member-chat|prepare-stale-results|showcase-picker-admin|showcase-stale-admin|showcase-d47-admin|showcase-d47-public-admin|profile-admin|profile-member|startup-resource-diagnostic) ;;
+            *) echo 'Unknown hosted acceptance case.' >&2; exit 1 ;;
+          esac
+          if [[ "$ACCEPTANCE_LANE" == B ]]; then
+            case "$ACCEPTANCE_CASE" in
+              *-admin|*-member|member-chat|prepare-stale-results|showcase-*)
+                echo 'Shared member/admin fixture requires lane A.' >&2; exit 1 ;;
+            esac
+            if [[ "$ACCEPTANCE_CASE" == guest-scrape || "$ACCEPTANCE_CASE" == guest-scrape-development ]]; then
+              [[ "$SCRAPE_AUTH_MODE" == guest ]] || { echo 'Authenticated scrape requires lane A.' >&2; exit 1; }
+            fi
+          fi
+          # END hosted lane admission
+
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0

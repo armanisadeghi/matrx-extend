@@ -48,6 +48,8 @@ jobs:
         run: node --test scripts/test-stabilization-resource-disk-integration.mjs
       - name: CPU confirmation and native action boundary
         run: node --test scripts/test-stabilization-resource-cpu-integration.mjs
+      - name: Bounded hosted acceptance lanes
+        run: node --test scripts/test-hosted-acceptance-lanes.mjs
 
   checks:
     runs-on: ubuntu-latest
