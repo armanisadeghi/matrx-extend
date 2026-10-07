@@ -177,5 +177,10 @@
     "No behavior test, browser interaction, or product edit was performed.",
     "No HMAC or DOM order was decoded or used as identity evidence.",
     "This audit does not close the census or claim runtime behavior acceptance."
-  ]
+  ],
+  "owner_review": {
+    "verdict": "NOT_ACCEPTED",
+    "reason": "Several alleged static UI labels are inventory descriptions, not observed/source-rendered strings. Settings unknown is classified action, not section; missing admin heading is not evidence identifying it. No rules or applicability defect may be inferred from these candidates.",
+    "next": "Fresh Sol source-label audit; this report is retained as rejected work, not mapping authority."
+  }
 }
