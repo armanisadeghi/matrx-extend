@@ -16,10 +16,26 @@
     "old_driver_result": "RED: 9 > 10 is false; native driver stopped before second saved terminal or held release"
   },
   "repair": "The prior-saved driver delegates navigation correlation to assessD47Trace with a commit window after the first target packet and before the second. It retains same-tab/frame/current-fixture, distinct document and binding identity, context teardown, handshake, exact second response identity/body, and before/after-release saved-result observations.",
-  "guard": {
+  "unguarded_attempt": {
     "command": "node --test tests/browser/showcase-d47-driver-evidence.test.mjs",
     "stdout_path": ".research/d47-navigation-order-fix-20261007.out",
     "stdout_sha256": "98df9ee580b1cca09e08667ae28d7ed24c890c6dfe3831400014bb9ecf281acf",
+    "campaign_acceptance": "invalid: no stabilization-resource admission or journal"
+  },
+  "guard": {
+    "command": "node scripts/stabilization-resource.mjs run --run-id d47-navigation-order-guarded-20261007 -- node --test tests/browser/showcase-d47-driver-evidence.test.mjs",
+    "stdout_path": ".research/d47-navigation-order-guarded-20261007.out",
+    "stdout_sha256": "a5e9db6d71600afcf7a0cf85737f0f49e5f7893e5d56740c7d773c28218332b8",
+    "journal_path": "docs/stabilization/resource-journals/d47-navigation-order-guarded-20261007.jsonl",
+    "journal_sha256": "0dd0a0b921fc9713568415a784cc18fc8c3890a5cdf93b19f4e72bca5a1d62f3",
+    "terminal": {
+      "childExitCode": 0,
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
     "result": "21 passed, 0 failed",
     "controls": "Retained 6,8,9,10,11,12 shape passes; wrong frame, wrong tab, commit before first packet, commit after second packet, absent commit, reused context and wrong second body fail. Test also asserts the former after-new-context predicate is false for the retained positive trace."
   },
