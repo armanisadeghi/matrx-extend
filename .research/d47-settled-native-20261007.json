@@ -40,8 +40,18 @@
   "resource": {
     "evidence_source": "hosted run job logs",
     "phase_decisions": {
-      "package": { "decision": "valid", "admitted": true, "resource_invalid": false, "exit_code": 0 },
-      "browser": { "decision": "valid", "admitted": true, "resource_invalid": false, "exit_code": 0 },
+      "package": {
+        "decision": "valid",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0
+      },
+      "browser": {
+        "decision": "valid",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0
+      },
       "guest": { "decision": "valid", "admitted": true, "resource_invalid": false, "exit_code": 0 }
     },
     "cleanup": "All three guarded phase children exited 0 and all wrappers recorded RESOURCE_FINAL_DECISION valid with resourceInvalid false."
@@ -73,8 +83,16 @@
     "owned_recipe": "Exact run-created recipe deleted; driver waited until its exact row was absent.",
     "probe_cleanup": "The observer was active. probe_cleanup was null, meaning no remove/detach failures were returned. The removal helper asserts onEvent.hasListener is false.",
     "temporary_secrets": {
-      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON": { "staged": true, "deleted": true, "absence_verified": true },
-      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON": { "staged": true, "deleted": true, "absence_verified": true },
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON": {
+        "staged": true,
+        "deleted": true,
+        "absence_verified": true
+      },
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON": {
+        "staged": true,
+        "deleted": true,
+        "absence_verified": true
+      },
       "values_recorded": false
     }
   },
