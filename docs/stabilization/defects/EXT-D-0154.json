@@ -7,7 +7,7 @@
   "title": "Media copy driver races restored result pane and rejects tooltip-migrated titles",
   "severity": "S2: prevents trustworthy media acceptance; product defect not established",
   "priority": "P1: unblock exhaustive Scrape guest retest",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "root/scrape_link_repair",
   "preconditions": [
     "Original native run37670744036, frozen development0.2.385 source87f6649b; use the controlled clinic page from that run and signed-out profile."
@@ -22,9 +22,10 @@
   "evidence": [
     ".research/parallel-scrape-product-20261007.json",
     ".research/scrape-links-repair-20261007.json",
-    ".research/scrape-links-repair-peer-20261007.json"
+    ".research/scrape-links-repair-peer-20261007.json",
+    ".research/scrape-selector-final-peer-20261007.json"
   ],
-  "fix_commits": ["f8c0ad58"],
+  "fix_commits": ["f8c0ad58", "42a51b13"],
   "transition_history": [
     {
       "at": "2026-10-07T21:05:54.818023+00:00",
@@ -43,8 +44,14 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "First repair failed independent source review; worker repairing actual target resolver and causal tests."
+    },
+    {
+      "at": "2026-10-07T21:08:24.009023+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Fresh independent review0acf64de accepts readiness and real native pointer resolution for both tooltip title forms;31focused tests pass. Native original/surrounding retest pending."
     }
   ],
   "closure_requirement": "Independent source review plus guarded native original and surrounding Video/Links warm/reload retest; do not promote feature-wide or other-mode health.",
-  "next_action": "Complete selector repair, fresh review, then run owned lane B on frozen artifact with completed valid resource journals."
+  "next_action": "Owned root/parallel_scrape_product prepares one original-artifact lane B native retest after GitHub API reset21:14:32UTC; no full product cases promoted."
 }
