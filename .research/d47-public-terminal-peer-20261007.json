@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "role": "fresh independent native-evidence reviewer",
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "review_scope": "One public-site initial-load Network capture and saved-recipe replay on the installed development extension; no new execution or product edits.",
+  "verdict_a_behavioral_acceptance": {
+    "overall": "PARTIAL",
+    "reason": "The public initial capture, owned recipe save, completed exact-recipe replay with Last run hits output, and UI-observed deletion are supported. The separate saved-pattern list refresh was still active at the terminal observation, and this single case does not cover the other D47/T57 branches.",
+    "claims": [
+      {
+        "claim": "A real public HN page was used without an injected fetch",
+        "verdict": "SUPPORTED_WITH_RECEIPT_LIMIT",
+        "evidence": "The source driver navigates to https://hn.algolia.com/?q=OpenAI and asserts its host; the native receipt target says public=true and injected_fetch=false. This is a driver and receipt observation, not an independent network trace."
+      },
+      {
+        "claim": "Initial Network capture found the intended successful response",
+        "verdict": "SUPPORTED",
+        "evidence": "The receipt records responses captured without an error, one matched preview, one selected matching row, POST 200, a recognized Algolia HTTPS host, /1/indexes/Item_dev/query, query OpenAI, and a one-row table with a nonempty hits preview. The request-list shortcut counted zero rows containing the legacy 'queries' label; selection proceeded by the one Algolia POST 200 candidate and checked its actual preview."
+      },
+      {
+        "claim": "A recipe was saved and specifically replayed to a completed result",
+        "verdict": "SUPPORTED",
+        "evidence": "The receipt records creation=observed_in_patterns, a trusted Run pattern click scoped to the exact named row, and a Last run header for that exact recipe with a visible hits row. The row's Run control was idle and no error was visible at observation. PatternsTab clears runningId in the Run handler's finally block and separately starts a saved-pattern list refresh."
+      },
+      {
+        "claim": "The whole Patterns panel reached a quiescent state after replay",
+        "verdict": "UNVERIFIED",
+        "evidence": "saved_result.loading=true while running=false, unavailable=false, last_run_exact=true, hits_rows=true, and outcome=captured_initial_request. The loading flag reads the separate saved-pattern list Refresh spinner, which the Run handler starts after clearing runningId; it is not proof that replay remained active. The receipt retains only the accepted sample and sample_count=161, not later list-refresh completion or a stable-state interval."
+      },
+      {
+        "claim": "The owned recipe was removed",
+        "verdict": "SUPPORTED_FOR_UI_STATE",
+        "evidence": "owned_recipe.cleanup=removed follows a driver wait requiring the exact row to disappear with Patterns active, host matching, loading=false, and no visible error. The receipt does not independently query the backing database."
+      },
+      {
+        "claim": "D47/T57 overall acceptance or defect closure",
+        "verdict": "UNVERIFIED",
+        "evidence": "This run covers only the public initial-load branch. It has no whole-panel quiescence observation and no evidence here for stale-only refusal/retrigger, manual/prior-run isolation, or the higher-old-sequence document race."
+      }
+    ]
+  },
+  "verdict_b_evidence_and_quality": {
+    "overall": "CONCERNS",
+    "reason": "The provenance and resource admissions are coherent, and the receipt records useful UI facts. The Run completion contract is supported by the exact result and idle Run control; the separate list refresh remained active, limiting only a whole-panel quiescence claim.",
+    "findings": [
+      {
+        "severity": "LIMIT_FOR_WHOLE_PANEL_CLAIM",
+        "finding": "The source classifyPublicReplay requires exact_row, idle Run control, available control, and exact hits output, but does not require the separate list refresh to finish. PatternsTab clears runningId in the Run handler's finally block and then starts refreshCurrent.current(). The live receipt's loading=true does not contradict completed replay, but does leave whole-panel quiescence unobserved."
+      },
+      {
+        "severity": "LIMIT",
+        "finding": "The initial preview records credential_key_present=true and credential_masked=false before the checkbox action. Source code asserts masking before save and the run continued, but no post-checkbox receipt field proves the masked state independently. Do not infer a leak or claim receipt-level mask proof."
+      },
+      {
+        "severity": "LIMIT",
+        "finding": "The organization diagnostic records an admin role and matching rendered identity, but picker_has_selection=false and selection_required=true. The receipt alone cannot establish the selected organization context."
+      },
+      {
+        "severity": "LIMIT",
+        "finding": "The named POST 200 'queries' list count is zero because the selected live endpoint is the single-index /query path. The driver checks the selected preview directly; the count mismatch does not invalidate that observation, but the legacy-label count must not be cited as a positive match."
+      }
+    ],
+    "forcing_function_assessment": "The source requires a live selected response preview and exact named result row; workflow green alone is not the acceptance oracle. I did not rerun tests or mutation checks, so I make no new red-to-green guard claim or whole-code-quality certification."
+  },
+  "provenance": {
+    "native_run_id": 37571487114,
+    "native_run_conclusion": "success",
+    "native_workflow_head_sha": "2274d23617a07bc9a501d551f8f1f57e22f90d14",
+    "ci_run_id": 37570793297,
+    "ci_run_conclusion": "success",
+    "ci_head_sha": "2274d23617a07bc9a501d551f8f1f57e22f90d14",
+    "ci_artifact_id": 11460697871,
+    "ci_artifact_digest": "sha256:2df3aae51aeb8ea86c2e6028e2b6e33ec886e7c223efbb8009c0874671e5c229",
+    "installed_tree_sha256_from_receipt": "a27d96c72ac2d4ef9c74951d3e9b9e8939d0fb89e3b47c689ab2360875911aba",
+    "installed_version_from_receipt": "0.2.344",
+    "tag_v0_2_344_commit": "2274d23617a07bc9a501d551f8f1f57e22f90d14",
+    "native_result_artifact_id": 11461720502,
+    "native_result_artifact_digest": "sha256:fda1d73dd90dbc74ce8f3528a2a1e9072fc785e22c9969a2e309d1c79ddddec1",
+    "private_receipt_sha256": "131bdcdef77dad2f70cbdd7a4b9bb5fa21f21e74038fcdb204bc1dea3b23f308",
+    "basis": "GitHub reports successful CI and hosted workflow runs on the same commit; its artifact API confirms both artifact identities and digests. The native receipt records the installed tree and version; the tag resolves to the same commit. These checks establish a coherent source/artifact chain but do not make CI green a live-behavior claim."
+  },
+  "resources_and_cleanup": {
+    "package": "valid, admitted, child exit 0; journal SHA-256 e856a0d7af7c527c74c8059c64f4d43ae68cf4b91a6645d7571b7e0343b33ef0",
+    "browser": "valid, admitted, child exit 0; journal SHA-256 fb635bf0453536bebd828b01995b3de7b8a16ecb01273fbd7453e9605fd34a31",
+    "guest": "valid, admitted, child exit 0; journal SHA-256 ff9d9aa2154cea88f12545c9dcde7f0982abbe5ca27a9928e135c050a6f564ee",
+    "temporary_credentials": "The executor report records staged, deleted, absence-verified temporary credential files. I did not inspect credential values or independently inspect the former runner filesystem."
+  },
+  "sources": [
+    "/tmp/d47-native-result-37571487114/_temp/showcase-d47-public-native-37571487114-1.json",
+    ".research/d47-public-endpoint-native-20261007.json",
+    "tests/browser/showcase-d47-public-initial-load.mjs at source commit 2274d23617a07bc9a501d551f8f1f57e22f90d14",
+    "tests/browser/showcase-d47-saved-result.mjs",
+    "src/features/showcase/tabs/PatternsTab.tsx at source commit 2274d23617a07bc9a501d551f8f1f57e22f90d14",
+    "docs/stabilization/resource-journals/d47-public-endpoint-native-37571487114-{package,browser,guest}.jsonl",
+    "GitHub Actions run and artifact metadata for 37571487114 and 37570793297"
+  ],
+  "final_status": "Bounded public capture, save, completed recipe replay output, and UI cleanup observed; whole-panel quiescence, full D47, and full T57 remain unverified."
+}
