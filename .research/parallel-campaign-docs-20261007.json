@@ -30,13 +30,25 @@
     {
       "old": "Historical release-order finding read as an operative repair task",
       "resolution": "Plan now requires inspection of current release path; historical evidence preserved."
+    },
+    {
+      "old": "Blocker table still treated the September release finding as current",
+      "resolution": "Table now labels the finding historical and requires inspection of current release ordering at the next release."
+    },
+    {
+      "old": "Blocker table denied a persistent wakeup despite active automations",
+      "resolution": "Table now identifies the active hourly sync heartbeat and approved campaign automation without treating either as test evidence."
+    },
+    {
+      "old": "Blocker table retained a capped baseline before product tests",
+      "resolution": "Runnable batches and discoverable prerequisite work now proceed concurrently."
     }
   ],
   "remaining_gaps": [
     "Hosted guard and workflow changes are owned separately and await independent review; two concurrent browser lanes are not yet asserted running.",
     "Actual hosted machines, isolated profiles, fixtures, account and secret schedules require admission at dispatch.",
     "Inventory unknowns, missing procedures, native case results and Store installation remain open in authoritative records.",
-    "The app goal text and automation are owned by the root task; this documentation change does not claim they were updated.",
+    "The app goal text could not be updated through the current goal API; the approved replacement objective is now explicit in PLAN.md. The root task verified the updated automation.",
     "No HANDOFF.md exists at the supplied common-docs extension path; no replacement or historical status was invented."
   ],
   "verification": [
@@ -45,6 +57,6 @@
     "No inventory.json, resource guard, workflow or release command was changed by this documentation lane.",
     "Common-docs skill description lint passed with pre-existing warnings.",
     "Common-docs whole-repository OKF lint failed on 22 unrelated pre-existing files; none were in the changed extension paths.",
-    "Biome ignores the .research path, so its format command processed no files; JSON parsed successfully."
+    "Biome stdin format using package.json parser was byte-for-byte equal to the report JSON."
   ]
 }
