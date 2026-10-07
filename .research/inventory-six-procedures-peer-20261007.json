@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "report_type": "independent_source_review_of_procedure_design",
+  "task_id": "inventory-six-procedures-20261007",
+  "reviewed_artifact": ".research/inventory-six-procedures-20261007.json",
+  "reviewed_source_commit": "b68129726c37041eecf27ed1ff9303b62d733fd5",
+  "reviewer_checkout_head": "b378592a56c15854507212960c18fd744fce1996",
+  "scope": "Source-only peer review of six proposed manual procedures. No browser, product, build, test, database, or credential actions were performed.",
+  "verdicts": {
+    "A_procedure_accuracy": "Accurate after material corrections below. Inputs and expected handler outputs are mostly grounded in the inspected source. The recently-closed leaf tools are hidden by the catalog's default surface filter, and several expected details overstate what the merged router or persisted response guarantees.",
+    "B_quality_and_limits": "Strong safety and scope framing. The report correctly distinguishes direct Tools invocation from dispatcher authorization and live agent execution. Fixture ownership and cleanup are thoughtful, but screenshot and GIF backend artifacts have deletion gaps that must remain explicit; source cannot establish the success of UI deletion or cloud cleanup. These are procedure designs, not runtime evidence or status promotion."
+  },
+  "material_corrections": [
+    {
+      "finding": "The Tools Catalog initializes its surface filter to Agent surface (canonical). list_recently_closed and restore_recently_closed are internal delegate handlers and will be hidden until the operator selects Internal delegates or All handlers.",
+      "evidence": [
+        "src/features/tools/ToolsView.tsx:121-145",
+        "types/tool-catalog.json:4516-4570",
+        "src/lib/tools/registry.ts:138-143"
+      ],
+      "correction": "Add a shared preamble instruction to switch the surface selector to Internal delegates or All handlers before searching either leaf tool. The canonical chrome_recently_closed router is separately available on the default surface, but takes {action:'list'|'restore'} and is a different invocation path."
+    },
+    {
+      "finding": "The tab_groups create router forwards tab_ids, title, and color to create_tab_group but drops collapsed. The create handler therefore does not apply the supplied collapsed:false value.",
+      "evidence": [
+        "src/lib/tools/handlers/canonical-mergers.ts:293-352",
+        "src/lib/tools/handlers/tabs.ts:340-370"
+      ],
+      "correction": "Remove collapsed:false from the create call's asserted input effect. The subsequent update call does forward collapsed:true, so assert the collapsed state only after that update."
+    },
+    {
+      "finding": "get_tab_groups queries every Chrome group and all tabs, without filtering to a window. It returns group IDs, title, color, collapsed, window_id, and tab_ids.",
+      "evidence": ["src/lib/tools/handlers/tabs.ts:73-101"],
+      "correction": "Describe the baseline and post-run list as global group listings; identify the test group by its owned tab IDs and window ID. Avoid implying list is scoped to the test window."
+    },
+    {
+      "finding": "After successful screenshot persistence, screenshot_region returns a cloud image_ref with metadata and dimensions, not image_base64. When persistence fails or is skipped it returns inline image_base64 and nullable file identifiers. The tool persists both a cld_files upload and a wbx_screenshot row, while the gallery deletion contract was not established by the reviewed source.",
+      "evidence": [
+        "src/lib/tools/handlers/extract.ts:646-709",
+        "src/lib/screenshot/persist.ts:105-183"
+      ],
+      "correction": "Record only the response shape and identifiers needed for cleanup; do not assume image_base64 is present. Keep upload and screenshot-row cleanup independently outstanding until the gallery/UI deletion and reread verify both owned artifacts are removed."
+    },
+    {
+      "finding": "Successful GIF export uploads first, then clears the recording buffer before attempting download or drop. With download:true, the result includes file_id, file_url, download_id, and frame_count; download failure can occur after upload and still leave the uploaded file. A later clear therefore normally reports cleared_frames:0.",
+      "evidence": [
+        "src/lib/tools/handlers/record.ts:194-285",
+        "src/lib/recording/state.ts:120-158"
+      ],
+      "correction": "Expect clear to report zero after successful export; keep file cleanup required even when download fails. Ensure the fixture remains the focused tab for several screencast intervals after start and before stop, then require a positive frame count for a successful recording case. The start result itself is {ok:true,recording:true}; no separate visible recording indicator is produced by the handler."
+    },
+    {
+      "finding": "The domain-memo source exposes a forgetDomainMemo primitive but no manual catalog tool or user-facing delete flow. The proposed cleanup says to edit extension storage directly without identifying an available supported UI path.",
+      "evidence": [
+        "src/lib/chat/context/domain-memo.ts:115-130",
+        "types/tool-catalog.json: remember_for_domain catalog record"
+      ],
+      "correction": "Keep this run in a newly created disposable Chrome profile and discard that profile during cleanup, or explicitly leave the exact key cleanup outstanding. Do not present direct extension-storage editing as an established product UI procedure."
+    }
+  ],
+  "case_verdicts": [
+    {
+      "feature_id": "EXT-F-4096",
+      "case_id": "EXT-F-4096-T01",
+      "accuracy": "PASS with minor wording correction",
+      "quality_limits": "Schema accepts an optional integer tab_id, so 1.5 is a valid negative control. A successful call returns ok, mhtml_base64, and byte_length. Direct Tools invocation bypasses the normal permission gate as stated. The result necessarily renders the encoded archive in the UI even if the procedure forbids copying it; evidence should capture only booleans and byte count.",
+      "corrections": [
+        "Clarify the result display may contain base64 and must not be copied or included in receipts.",
+        "The output is inline-only in handler state; clearing the result and closing the owned tab does not represent file deletion because this handler creates no durable artifact."
+      ]
+    },
+    {
+      "feature_id": "EXT-F-4095",
+      "case_id": "EXT-F-4095-T01",
+      "accuracy": "PASS after catalog-surface correction",
+      "quality_limits": "The list and restore leaf handler schemas match the proposed calls: list_recently_closed defaults max_results to 25, exposes tab sessionId/title/URL, and restore_recently_closed accepts optional string session_id. Numeric session_id is rejected before invocation. A closed disposable tab is a suitably owned fixture.",
+      "corrections": [
+        "Select Internal delegates or All handlers to find both list_recently_closed and restore_recently_closed; the catalog defaults to Agent surface.",
+        "The list is capped at 25 and can include unrelated session entries; identify only the unique owned fixture and never restore without its exact ID.",
+        "The restore result is {ok:true,restored:<Chrome restore result>}; verify the fixture tab/window from that nested object or Chrome UI rather than assuming a fixed result shape."
+      ]
+    },
+    {
+      "feature_id": "EXT-F-4163",
+      "case_id": "EXT-F-4163-T01",
+      "accuracy": "PASS after list and create corrections",
+      "quality_limits": "The canonical router schema and action names match. Fractional tab_ids fail Zod integer validation. Create's router ignores collapsed, update forwards it, add/remove operate on supplied tab IDs, and list returns all groups across windows.",
+      "corrections": [
+        "Do not expect create to apply collapsed:false; assert collapsed only after the explicit update.",
+        "The router's create branch forwards title/color but not collapsed.",
+        "Capture the baseline list globally, then isolate the disposable group using owned tab IDs/window ID.",
+        "The router schema requires only action; missing tab_ids/group_id are handler-level error results, not Schema mismatch. The existing fractional-ID case is a true schema-negative control."
+      ]
+    },
+    {
+      "feature_id": "EXT-F-4143",
+      "case_id": "EXT-F-4143-T01",
+      "accuracy": "PASS with artifact-result caveat",
+      "quality_limits": "The selector, padding, format, and zero-width negative input match the schema. Tools passes assignedTabId:null, and getAssignedTab then uses the focused tab. Handler outputs positive crop dimensions on success and attempts persistence to cld_files plus wbx_screenshot; cloud success changes the result to an image_ref.",
+      "corrections": [
+        "If persistence succeeds, do not expect an image_base64 field; the cloud response includes an image reference plus width/height and capture metadata.",
+        "A zero-width rect fails the positive-number schema as proposed.",
+        "The handler has no local permission declaration in its args schema, and the direct runner bypasses dispatcher gates; the proposed revoke-scripting observation should not be represented as a stable negative outcome because captureVisibleTab, scripting, and document helpers have distinct failure points.",
+        "Delete and reread both the screenshot row and uploaded file or explicitly leave whichever cleanup unverified; the inspected source does not prove gallery deletion removes both."
+      ]
+    },
+    {
+      "feature_id": "EXT-F-4093",
+      "case_id": "EXT-F-4093-T01",
+      "accuracy": "PASS",
+      "quality_limits": "The chosen .invalid hostname is syntactically acceptable to the handler's length schema and isolates a single storage map key. The positive note/hint call persists in chrome.storage.local; duplicate notes are not appended. Empty note without hints fails the min-length validation. No permission or role gate appears in this handler.",
+      "corrections": [
+        "For reload verification, distinguish invoking the same write again from reading stored state: the source exposes listDomainMemos/getDomainMemoForUrl primitives but no manual read tool. Repeating the identical write verifies deduplication and retained values in the returned memo, not an independent read-only persistence path.",
+        "Exact-key restoration from a preexisting value is safe if only that hostname entry is read and rewritten; preserving absence requires deleting only that key after the run. No reviewed manual UI provides that deletion, so use and discard a dedicated disposable profile or leave cleanup explicitly outstanding."
+      ]
+    },
+    {
+      "feature_id": "EXT-F-4129",
+      "case_id": "EXT-F-4129-T01",
+      "accuracy": "PASS after duration, clear, and cleanup corrections",
+      "quality_limits": "The schema requires a string digit tab_id and action in start_recording/stop_recording/export/clear; pause is a valid enum-negative input. Start returns recording:true; stop returns frame_count and duration_ms, with duration zero if there are no frames. Export with download:true uploads and then downloads, returning a file ID and download ID on success. State is held only in the service worker and is lost on restart.",
+      "corrections": [
+        "Keep the target tab active and wait several screencast intervals before stopping; otherwise a successful start can still yield zero frames and export cannot succeed.",
+        "A successful export already clears the buffer, so the next clear should return cleared_frames:0.",
+        "Extension reload tests buffer loss only if the service worker/extension actually restarts; after export the buffer is already cleared, so the proposed reload/no-buffer assertion is not independent evidence. To test restart loss, start and gather frames, reload before export, then expect no-buffer, and afterward make a fresh complete recording/export for the positive case.",
+        "A reload/restart during active debugger recording can end CDP capture and may trigger debugger detach behavior; do not assert that no buffer exists until the actual restart is confirmed.",
+        "Export's output contains file_url even when the procedure says omit it from evidence. Do not copy it. Deleting the downloaded file does not prove the uploaded cld_files object was removed; verify upload cleanup separately through an owning UI and retain cleanup as outstanding if not verified."
+      ]
+    }
+  ],
+  "shared_limits": [
+    "ToolsView defaults to the canonical agent surface and uses safeParse(handler.argsSchema) before directly calling handler.run with permissionMode:'act' and assignedTabId:null. This validates local handler input and targets the focused tab, but skips dispatcher permission authorization, role checks, and normal run provenance.",
+    "Optional-permission revocation through Chrome settings is only an API-level observation. It cannot prove dispatcher prompting or denial, registered DB binding activation, agent advertisement, or agent-assigned-tab behavior.",
+    "Run receipt, fixture ownership, no-secret evidence, reload identity, and no-runtime-promotion constraints are well stated. User-visible output may still contain sensitive binary payloads or URLs; the operator must avoid copying them.",
+    "Screenshot and GIF cleanup needs verified UI deletion and rereads for both database/index and uploaded-file artifacts. The inspected source establishes creation paths but not that the named UI removes every artifact.",
+    "Domain-memo cleanup has no corresponding manual tool or user-facing delete path in the reviewed feature sources. A disposable profile can bound the side effect, but the proposed exact-key editing mechanism is not established by source.",
+    "The CLAUDE.md reference /Users/armanisadeghi/code/common-docs/systems/clients/extension/ was absent in this environment, and no matching clients/extension directory was found in the mounted docs roots. Review therefore uses the exact requested extension source commit, local inventory, local tool catalog, and handler/UI implementations.",
+    "No runtime, fixture, browser, build, test, database, credential, or product status was inspected. This report does not establish procedure execution or runtime success."
+  ],
+  "source_files_reviewed": [
+    "src/features/tools/ToolsView.tsx",
+    "src/lib/tools/registry.ts",
+    "src/lib/tools/handlers/optional-perms.ts",
+    "src/lib/tools/handlers/_active-tab.ts",
+    "src/lib/tools/handlers/canonical-mergers.ts",
+    "src/lib/tools/handlers/tabs.ts",
+    "src/lib/tools/handlers/extract.ts",
+    "src/lib/tools/handlers/memory.ts",
+    "src/lib/chat/context/domain-memo.ts",
+    "src/lib/tools/handlers/record.ts",
+    "src/lib/recording/state.ts",
+    "src/lib/screenshot/persist.ts",
+    "types/tool-catalog.json",
+    "docs/stabilization/inventory.json"
+  ]
+}
