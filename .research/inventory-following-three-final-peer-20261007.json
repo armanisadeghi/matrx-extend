@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "artifact_type": "inventory-procedure-independent-peer-review",
+  "task_id": "inventory-following-three-procedures-20261007",
+  "reviewed_artifact": ".research/inventory-following-three-procedures-20261007.json",
+  "reviewed_commits": ["55512ff5", "e2497861"],
+  "review_scope": "Fresh source-only review of three proposed procedures against actual Tools UI, local schemas/handlers, active-tab resolver, fixture, and stabilization receipt rules. No runtime, test, browser, product, or canonical inventory work.",
+  "verdict_A_procedure_accuracy_and_runnability": {
+    "status": "PASS_SOURCE_SUPPORTED_FOR_ALL_THREE_PROPOSALS",
+    "cases": {
+      "EXT-F-4142-T01": {
+        "status": "PASS",
+        "evidence": "ToolsView exposes All handlers, validates local Zod args, then directly calls handler.run with assignedTabId null. The active-tab helper resolves the focused tab. Fixture source has two tables; #event-schedule is a 3-column, 3-body-row HTML table with the specified headers and values. #no-such-table is absent; #events is a div with no table/grid descendant or ancestor. The handler returns the described missing-target and non-table results."
+      },
+      "EXT-F-4147-T01": {
+        "status": "PASS_AFTER_ENUM_CORRECTION",
+        "evidence": "The declared kinds enum is snapshot/json_ld/microdata. {\"kinds\":[\"not-a-kind\"]} fails safeParse before handler invocation, unlike an unknown object key. The NoSuchType itemtype is valid and returns an empty microdata list. Fixture JSON-LD has three Event graph entries with nested Place values; Microdata has three top-level Event items with nested Place. Recursive JSON-LD type collection supports Event and Place in schema_org_types; returned counts are derived from the output arrays."
+      },
+      "EXT-F-4146-T01": {
+        "status": "PASS",
+        "evidence": "The fixture's visible date button fetches a fixed loopback response and updates #api-result. The watcher supports children and text, observes the selected target, reports changed text, and disconnects MutationObserver and optional IntersectionObserver before resolving. Missing selector returns element not found; omitting both ref and selector fails the schema refinement before invocation."
+      }
+    },
+    "corrected_preconditions": "The shared receipt still captures the loaded extension UI artifact/build identity and source/output provenance. It correctly states that these direct-handler cases do not require separate service-worker or offscreen build identities, because ToolsView invokes these handlers in the side panel and their page work uses direct handler paths. That lifecycle remains explicitly outside scope. The microdata invalid control now tests an invalid declared enum, which is actually rejected before handler.run.",
+    "remaining_run_limits": "Steps are source-supported procedures, not execution evidence. Starting the fixture requires the coordinator's resource permit and README command. Member/admin profile state, actual permission grants, artifact identity, fixture port, UI outcomes, and cleanup are all to be recorded during execution."
+  },
+  "verdict_B_quality_and_limits": {
+    "status": "PASS_WITH_EXPLICIT_SOURCE_ONLY_LIMITS",
+    "strengths": [
+      "The actual route names the All handlers selector (the UI initially selects Agent surface), exact handler, local schema, Test runner, and Run button.",
+      "The procedures correctly disclose that manual execution invokes handlers directly and bypasses dispatch approval, permission enforcement, and live binding advertisement.",
+      "Each case separates member/admin runs, synthetic loopback evidence, reload observation, and unsupported lifecycle/permission dimensions. Cleanup is limited to the owned fixture tab and server."
+    ],
+    "limits": [
+      "No proposal was executed, so no runtime pass/fail is asserted.",
+      "A synthetic fixture cannot establish public-page behavior or customer data behavior.",
+      "These cases do not establish dispatcher behavior, binding advertisement, service-worker idle restart, offscreen recreation, navigation, permission-denied recovery, offline recovery, or guest behavior."
+    ],
+    "gaps": []
+  },
+  "original_peer_gaps": {
+    "invalid_microdata_enum": "RESOLVED: invalid declared enum value is used and rejected by the local schema before handler invocation.",
+    "unrelated_service_worker_offscreen_identity_gate": "RESOLVED: separate identities are not prerequisites for these direct-handler procedures; relevant UI artifact identity and receipt provenance remain required."
+  },
+  "source_reviewed": [
+    "src/features/tools/ToolsView.tsx",
+    "src/lib/tools/handlers/_active-tab.ts",
+    "src/lib/tools/handlers/extract.ts",
+    "src/lib/tools/handlers/microdata.ts",
+    "src/lib/data-pattern/modes/json-ld.ts",
+    "src/lib/data-pattern/modes/microdata.ts",
+    "src/lib/tools/handlers/extras.ts",
+    "src/lib/tools/catalog.ts",
+    "types/tool-catalog.md",
+    "tests/fixtures/showcase-replay/README.md",
+    "tests/fixtures/showcase-replay/serve.mjs",
+    "tests/fixtures/showcase-replay/calendar/index.html",
+    "docs/stabilization/PLAN.md"
+  ],
+  "final_status": "procedures_source_reviewed_and_accepted_as_proposals; runtime unverified; canonical inventory unchanged"
+}
