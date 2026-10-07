@@ -18,7 +18,7 @@
   ],
   "severity": "S2: important; replay can miss intended initial data or return stale data from the prior document.",
   "priority": "P1: saved Network replay must identify the intended request and source document.",
-  "state": "in-fix",
+  "state": "closed",
   "native_boundary_owner": {
     "agent": "root",
     "scope": "Bounded T57 delayed prior-document response acceptance route and proof limits only; admin mode, installed development artifact, real sign-in and service responses.",
@@ -28,8 +28,8 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Audit original D47/T57 closure requirements against retained independent evidence and relevant source identity across frozen artifacts. Identify only genuinely missing required proof, separating unrelated org/masking/cancellation cases. Architectural exclusion is already an accepted mechanism; do not invent a requirement to observe a removed callback route. If required scope remains missing, execute that exact case; otherwise transition defect through recorded retest/closure states.",
-    "status": "Fresh peer8ad248c2 accepts bounded manual-prior native37588499593 on frozen0.2.350/source82f3c440: real manual UI response positive control and second manual request pending before replay, current-document positive trace before held manual HTTP200/server finish, exact settled current-only saved row, owned-recipe cleanup and three valid resource journals. Server finish does not prove old callback delivery/rejection. Prior saved-run isolation, cancellation and fullT57 remain unverified.",
+    "next_action": "T57 next: one bounded native capability preflight must establish timing-only pause/continue of genuine public HN responses alongside the extension debugger lease and repeatable exact request matching across navigation. Existing public route has no hold/release; controlled fixture route is not public acceptance. Only after these preconditions are proved implement/review/run the real-public ordered race. No fabricated bodies, injected sessions, test-server acceptance, or recreated old callback requirement.",
+    "status": "Original defect closed; associated T57 acceptance gap remains owned by root.",
     "implementation_agent": "completed: /root/d47_prior_saved_native_route",
     "execution_agent": "completed: /root/d47_prior_saved_native_execution; no native/source job active; fresh peer /root/d47_prior_saved_retest_peer accepted bounded result.",
     "native_run_id": 37537634304,
@@ -183,10 +183,12 @@
     "prior_saved_native_retry_workflow_source": "f52c1f74149746104990468a47b0863118da7ce1",
     "prior_saved_native_retry_scope": "Frozen app0.2.354/c53c6e0a/artifact11470764778, exacttree. Newer lock catch-up affects design-system/kit/records only, not nodebuiltins/localQA or pinned Playwright1.56.1/TS; importer/sharedharness/workflow unchanged. Root explicitly accepts frozenexperiment with reviewed QA fix; newer version/packages remain untested.",
     "prior_saved_native_retry_report": ".research/d47-prior-saved-native-retest-20261007.json",
-    "prior_saved_native_retry_peer": ".research/d47-prior-saved-retest-peer-20261007.json"
+    "prior_saved_native_retry_peer": ".research/d47-prior-saved-retest-peer-20261007.json",
+    "closure_audit": ".research/d47-original-closure-audit-20261007.json",
+    "public_race_feasibility_report": ".research/d47-public-race-feasibility-20261007.json"
   },
-  "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
-  "verification_status": "Bounded independent evidence now covers current-first0.2.337, old-first0.2.338, public initial capture/save/completed replay0.2.344, stale-only refusal/fresh recovery0.2.347, manual-prior server finish0.2.350, and prior-saved two-run isolation0.2.354. Retained source mutants independently verify higher-old-sequence, manual-channel merge and prior-run binding controls. Native callbacks were architecturally excluded/not observed; no delivered-old-callback claim. FullT57 unverified pending requirement-by-requirement audit and source-scope reconciliation; mask/org and cancellation observations are not inferred.",
+  "reproduction_status": "Original missed-initial-request and stale-document source reproduction retained; original defect now independently verified at bounded frozen-artifact scope. See closure_review. The stricter public-site ordered-race T57 remains unverified.",
+  "verification_status": "Closed for original initial-request/document-provenance defect at independently accepted frozen-artifact scope. Original closure requires regression/isolation coverage followed by real public installed replay; audit39e564ba accepts both. Current-first0.2.337, old-first0.2.338, public initial capture/save/completed replay0.2.344, stale-only recovery0.2.347, manual-prior0.2.350 and prior-saved0.2.354 retain separate provenance. Old callbacks were architecturally excluded/not observed. T57 remains unverified for its stricter combined public-site ordered-race scenario; no newer-runtime/package or whole-feature acceptance.",
   "source_report": "docs/stabilization/reports/showcase-network-final-peer.json",
   "transition_history": [
     {
@@ -206,6 +208,24 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Reconciled tracking: source checkpoints 3cb72bd0 and 10640dbe implement repair; peer-triggered cleanup correction is active. This timestamp records state reconciliation, not an invented historical implementation time."
+    },
+    {
+      "at": "2026-10-07T09:55:00.758180+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Recorded reconciliation of the implemented document-bound replay repair; independently audited relevant runtime paths are unchanged across accepted frozen builds and 8cae3809. This is not an invented historical fix timestamp."
+    },
+    {
+      "at": "2026-10-07T09:55:00.758180+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Fresh independent closure audit39e564ba accepts original defect requirements: retained causal guards and peer-accepted native isolation, plus actual public HN initial capture and saved completed replay37571487114. Both behavior and evidence-quality verdicts pass for bounded defect scope."
+    },
+    {
+      "at": "2026-10-07T09:55:00.758180+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original D47 closure requirements satisfied under architectural-exclusion ruling. No old callback delivery/rejection claim. T57 remains unverified for its combined public-site ordered race; newer app/package acceptance, other cases and overall Showcase health are not established."
     }
   ],
   "closure_requirement": "Add regression coverage for an initial request racing tap installation and a delayed old-document response arriving after navigation loading; prove current-document attribution and honest retrigger guidance. Then verify saved request replay on a real public website using an installed build.",
@@ -242,5 +262,14 @@
     ],
     "reason": "Peer303e60f5 accepts retained bounded manual-channel/prior-run-binding causal proof: exact mutant/source/test bytes and hashes, full assertion stdout, two resource-valid behavioral REDs and untouched18/18GREEN. The manual mutant explicitly merges a forged manual envelope into the replay collector; this detects cross-channel merge regression, not natural Chrome delivery. Earlier missing-output qualification is lifted for these two source branches only. Native prior-saved-run isolation, callback delivery/rejection and cancellation remain unverified.",
     "cost_if_wrong": "Could overstate mutation coverage; do not call those failures independently reproduced, attach run-bound hashes/output on future executions. Full case stays unverified."
+  },
+  "closure_review": {
+    "report": ".research/d47-original-closure-audit-20261007.json",
+    "commit": "39e564ba",
+    "reviewer": "/root/d47_closure_scope_audit",
+    "behavior": "PASS_WITH_BOUNDED_ARTIFACT_LIMITS",
+    "quality": "PASS_FOR_DEFECT_CLOSURE_EVIDENCE",
+    "case_status": "EXT-F-1012-T57 admin remains unverified",
+    "recorded_at": "2026-10-07T09:55:00.758180+00:00"
   }
 }

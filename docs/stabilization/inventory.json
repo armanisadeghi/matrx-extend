@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-07T05:31:12.930287+00:00",
+  "updated_at": "2026-10-07T09:55:00.758180+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -19795,9 +19795,13 @@
                 ".research/d47-prior-saved-native-retest-20261007.json",
                 ".research/d47-prior-saved-retest-peer-20261007.json",
                 ".research/d47-prior-saved-native-diagnosis-20261007.json",
-                ".research/d47-navigation-order-peer-20261007.json"
+                ".research/d47-navigation-order-peer-20261007.json",
+                ".research/d47-original-closure-audit-20261007.json"
               ],
-              "detail": "Independent accepted bounded native evidence: current-first37558902653/frozen0.2.337; old-first37562111314/frozen0.2.338; real public initial capture/save/completed replay and UI cleanup37571487114/frozen0.2.344; stale-only refusal/fresh recovery37582763499/frozen0.2.347; manual-prior native37588499593/frozen0.2.350 with delayed manual server finish and exact current-only saved result. Source higher-old-sequence, manual-channel merge and prior-run binding guards have retained mutants, assertion output, valid resource journals and independent review. Original missing-output qualification is lifted only for those retained runs. Fresh peer93d69b96 accepts bounded native prior-saved retry37600370555 on frozen0.2.354/c53c6e0a/artifact11470764778 with reviewed QA f52c1f74: held saved-run request arrival1 precedes firstfinish2; distinct second context/binding and positive trace; exact second current-only idle saved result and live page before and after HTTP200 release; prior_saved_finished=true and prior_saved_aborted=false. Initial old-document request abort is a separate lifecycle. No old binding callback observed. Three current-run resource journals valid; ownedrecipe removed; both temporary secrets independently absent. FullT57 remains unverified pending whole-case closure audit; no newer-runtime/package acceptance. Original prior-saved37597422020 failed an inverted driver navigation-order assertion; independently diagnosed and repaired, guarded21/21 and fresh source review accepted before retry. Overall panel quiescence, org/mask observations and cancellation are not established; do not promote other cases."
+              "detail": "D47 original defect closed after fresh independent requirement audit39e564ba; accepted bounded regression/native isolation and public HN initial capture/saved completed replay satisfy the original defect closure clauses. T57 remains unverified: its public-site precondition applies to the ordered prior/current response race, not yet observed together. Preserve existing receipt-specific evidence; source continuity across frozen builds supports the mechanism, not native acceptance of newer versions/packages. No observed old callback delivery/rejection; architecture-exclusion ruling applies. Mask/org/cancellation and unrelated cases are not promoted.",
+              "remaining_criteria": [
+                "Receipt-bound installed development extension on a real public site: an owned initial-load Network recipe, matching prior response pending across navigation, old-then-current release, exact current-only terminal saved output or honest provenance refusal, positive current context/binding and lifecycle controls, independent review."
+              ]
             }
           },
           "proof_ruling": "2026-10-06 root technical ruling: see .research/d47-acceptance-architecture-ruling-20261006.json. A native architectural-exclusion trace with positively observed current binding/packet, exact contexts, old request lifecycle and terminal saved result may supplement delivered-stale-event causal guards. Neither cancellation alone nor current-only rows nor empty event arrays prove exclusion. Retain public-site same-artifact replay, both response orders, higher old sequence, stale-only refusal and cleanup; no existing result is promoted."
