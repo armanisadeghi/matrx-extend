@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent_source_only_integration_review",
+  "task_id": "inventory-metadata-integration-peer-20261007",
+  "reviewed_commit": "d6678732d36b2d39afd8b718946f3405a82a7ad2",
+  "reviewed_artifact": ".research/inventory-metadata-integration-20261007.json",
+  "verdict_A_correctness": {
+    "verdict": "PASS",
+    "findings": [
+      "The integrated inventory retains all 205 feature records, 1,349 control IDs, and 767 case IDs. Feature ID sequence, case-to-control mappings, applicability objects, and runtime cells match the parent inventory exactly.",
+      "All 20 corrected catalog_record_index values for EXT-F-4150 through EXT-F-4169 map to the same named records in the current generated catalog. EXT-F-4149 has no current client catalog record; EXT-F-4058 and EXT-F-4156 remain distinct wait_for records; EXT-F-4130 records remains identified as the server/manual route.",
+      "The current metadata summary agrees with the cited census: 84 chrome-extension binding rows/names, 81 active definition-binding pairs, three inactive pairs, and 80 active bound names on each of the assistant and pilot defaults. The report and inventory qualify metadata as distinct from request advertisement, role access, permissions, execution, and acceptance.",
+      "EXT-F-4149 keeps its historical ID, C01 and T01. Its new source-absence/current-build-nonrunnable status is bounded by explicit evidence; applicability, replacement, retirement, owner intent, and runtime results remain unresolved. Its current inactive definition and binding values match the census."
+    ]
+  },
+  "verdict_B_quality": {
+    "verdict": "PASS",
+    "findings": [
+      "The inventory note clearly dates the current census and says older per-feature binding details remain tied to their observation dates unless individually refreshed. The two other inactive census names, capture_credential and evaluate_javascript, have no per-feature live_binding entry in this inventory, so no contradictory active per-feature claim was found for them.",
+      "The EXT-F-2002-C06 label and test-design text now cover all six verdict choices, including retry's prior-attempt condition. Existing control and case IDs are retained.",
+      "The integration preserves existing case applicability and runtime results and makes no feature-acceptance or runtime conclusion. The generated checklist and status trackers reflect the updated inventory timestamp and catalog mappings."
+    ]
+  },
+  "source_checks": {
+    "inventory_sha256": "5a46b2f08946f584b6906defee3327d77a954c09e072151cbad842305c718913",
+    "catalog_sha256": "2ea7bd2cbe04af9e3a64120e2be412d15faea8f8fca8513ca36727288f65f8d1",
+    "preserved_scope": {
+      "features": 205,
+      "controls": 1349,
+      "cases": 767,
+      "feature_ids": true,
+      "case_ids_and_control_mappings": true,
+      "applicability": true,
+      "runtime_cells": true
+    },
+    "catalog_index_mappings_checked": 20,
+    "current_snapshot_values": {
+      "chrome_extension_binding_rows": 84,
+      "active_definition_binding_pairs": 81,
+      "inactive_pairs": 3,
+      "active_bound_names_per_listed_surface": 80
+    }
+  },
+  "limits": [
+    "Source-only review. No browser, tests, build, database query, runtime execution, or source edit was performed.",
+    "The canonical database snapshot was not independently re-queried; its counts and provenance were checked against the cited census and prior peer review.",
+    "No conclusion is made about request-time advertisement, role access, permission outcomes, organization access, runtime behavior, retirement, replacement, owner intent, or feature acceptance."
+  ]
+}
