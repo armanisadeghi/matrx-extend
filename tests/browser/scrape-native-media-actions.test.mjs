@@ -3,7 +3,6 @@ import test from 'node:test';
 import { runInNewContext } from 'node:vm';
 import { Window } from 'happy-dom';
 import { runNativeResourceAction } from './native-resource-boundary.mjs';
-import { click as nativeClick, evaluate as panelEvaluate } from './settings-panel-driver.mjs';
 import {
   enterMediaField,
   observeCopyFeedback,
@@ -12,6 +11,7 @@ import {
   videoLinksVerdict,
   waitForMediaCopyTarget,
 } from './scrape-native-media-actions.mjs';
+import { click as nativeClick, evaluate as panelEvaluate } from './settings-panel-driver.mjs';
 
 const openUrl = 'http://127.0.0.1:4021/intake-walkthrough.mp4';
 const copyUrl = 'http://127.0.0.1:4021/referral-walkthrough.mp4';
