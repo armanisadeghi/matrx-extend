@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "role": "single bounded native public HN race preflight",
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "run": {
+    "run_id": 37608190442,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37608190442",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_source": "05e220857bfaed9fa94027ff6728ad212ba6ddf5",
+    "workflow_sha256": "6eca96863fd1a4fd9c22846ac8b55f787e1f8da0bffbf18512cd3cf4455048b6",
+    "reviewed_driver_source": "8e84f3aa0f2bb31ea42c960457c294f98fd9af8a",
+    "correction_evidence_commit": "a4269c28c84f7ed297dd50cbbec64389dc72a88e",
+    "review": ".research/t57-public-race-preflight-final-peer-20261007.json",
+    "runner": "macos-15 ARM",
+    "case": "showcase-d47-public-admin",
+    "preflight_flag": true,
+    "workflow_conclusion": "failure",
+    "failure_stage": "public_race_release"
+  },
+  "frozen_app": {
+    "ci_run_id": 37606653249,
+    "artifact_id": 11474839620,
+    "artifact_digest": "sha256:c622d544be202fac1724908168f16b32db0802786f945f734e8bbc70767e1671",
+    "source_sha": "62142e748d2e83eae1a97a07e9a2d388f22aeab2",
+    "version": "0.2.360",
+    "tree_sha256": "e41e0fe5243284e1781a2c997078a05bd4ae50f68a3543914a21e13a18d9ddc7",
+    "imported_and_verified": true,
+    "reviewed_qa_hashes": {
+      "tests/browser/showcase-d47-public-race-preflight.mjs": "6942d3334b22cdc37acce994e75bcda4f3175f63f582cc4f29c0240f4552b571",
+      "tests/browser/showcase-d47-public-race-preflight.test.mjs": "18b76cb228c5f49fc9dbab9a03238ea55a0a4e6246de6fa1c1762b7e45ae1f81",
+      "tests/browser/showcase-d47-public-initial-load.mjs": "8dd2722906c31ad675b9da6889bd421e9c8fbdbcf45f24af06dad82a823eb7b1"
+    },
+    "runtime_delta_from_artifact_source": "empty for src, config, package.json, pnpm-lock.yaml, and wxt.config.ts"
+  },
+  "result": {
+    "status": "unverified",
+    "stage": "public_race_release",
+    "sanitized_failure": "unclassified_error",
+    "public_capture": {
+      "site": "hn.algolia.com",
+      "public_real_traffic": true,
+      "injected_fetch": false,
+      "selected_initial_request": true,
+      "http_status": 200,
+      "owned_recipe_created": true
+    },
+    "timing_preflight": {
+      "two_real_responses_paused": true,
+      "both_http_status": 200,
+      "request_identity_equal": true,
+      "response_body_digest_equal": true,
+      "main_frame_contexts_distinct": true,
+      "extension_capture_hook_observed_at_old_pause": true,
+      "active_saved_replay_at_old_pause": false,
+      "release_order": [],
+      "old_response_lifecycle": "failed_after_navigation_before_release",
+      "current_response_lifecycle": "finished",
+      "unmatched_target_count": 0,
+      "verdict": "unverified"
+    },
+    "interpretation": "The native run positively demonstrated timing interception of two matching genuine HN responses and the extension capture hook. The old response did not remain releasable across navigation: its lifecycle was failed before release, so no old-then-current delivery or saved-result assertion was established. The driver left the preflight unverified. This is a bounded browser/network lifecycle finding, not a product failure or T57 pass."
+  },
+  "cleanup": {
+    "owned_recipe": "removed",
+    "capture_probe": "removed_and_detached",
+    "interception_controller": "unverified",
+    "temporary_admin_secret_deleted": true,
+    "temporary_approved_organization_secret_deleted": true,
+    "both_names_absent_after_terminal": true
+  },
+  "resources": {
+    "package": {
+      "path": "docs/stabilization/resource-journals/t57-public-race-native-37608190442-package.jsonl",
+      "sha256": "e564f0036a03cacae69815281c2859ae59609cc1a64e0dab5ad4e12bc672568a",
+      "decision": "valid"
+    },
+    "browser": {
+      "path": "docs/stabilization/resource-journals/t57-public-race-native-37608190442-browser.jsonl",
+      "sha256": "9b0ab9331f9789b66abf2acfb1e8b6ba94c45c09529f9a9c73d86809bf1f93cd",
+      "decision": "valid"
+    },
+    "guest": {
+      "path": "docs/stabilization/resource-journals/t57-public-race-native-37608190442-guest.jsonl",
+      "sha256": "ef5f350007113f0b0a418db409081a3ac1a63557e63341a7a29e3c2e763e695b",
+      "decision": "child_failed",
+      "exit_code": 1
+    }
+  },
+  "private_evidence": {
+    "directory": ".research/t57-public-race-native-20261007/private",
+    "receipt": ".research/t57-public-race-native-20261007/private/artifact/hosted-guest-37608190442-1/_temp/showcase-d47-public-native-37608190442-1.json",
+    "receipt_sha256": "b2990a4cf2664a00cc8c1dd8cb6f9556d56ae0ee7ce2d836e5d7e92ed533977e",
+    "failed_step_log": ".research/t57-public-race-native-20261007/private/failed-step.log",
+    "failed_step_log_sha256": "31d31980de1a63c3644691d3a6505e7b7656395966a9d505ee1ffad5e2ec553d",
+    "artifact_digest": "sha256:b96e3e455f5e79e748c193762513c53d55ccba7008540b35a53d38e824860642",
+    "screenshots": [
+      {
+        "path": ".research/t57-public-race-native-20261007/private/artifact/hosted-guest-37608190442-1/_temp/guest-acceptance/native-sidepanel-qa-1QK31K/native-side-panel.png",
+        "sha256": "d9d40c6d68da4b569c22cf9f15aa3a50bc01b2f83e15210328075548e6abe106"
+      },
+      {
+        "path": ".research/t57-public-race-native-20261007/private/artifact/hosted-guest-37608190442-1/_temp/guest-acceptance/native-sidepanel-qa-1QK31K/normal-target-after-open.png",
+        "sha256": "c939d4f6417b874eefffbe4a8c9bd1cf05088fe2b42ab7a7e13c65d79a024fd2"
+      }
+    ],
+    "permissions": "private directory mode 0700; evidence files mode 0600"
+  },
+  "claim_limit": "One native preflight only. The three-resource validity gate failed because the guest journal records child_failed. No delivery order, saved current result, honest refusal after ordered release, or full T57 acceptance is claimed. No retry was dispatched."
+}
