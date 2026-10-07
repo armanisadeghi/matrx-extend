@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "scope": "EXT-D-0153 final independent source-only peer review of commits 3a5c8e6d and bcb60647",
+  "reviewed_commits": [
+    "3a5c8e6d460c5e284d27d83ea3b0fc72367c0e55",
+    "bcb60647b80a98614249f7211c7c826e96adba92"
+  ],
+  "review_mode": "Fresh source-only review; no source edits, browser session, or test execution.",
+  "verdict_a": {
+    "status": "PARTIAL",
+    "outcome": "The source acceptance defect is addressed: required Scrape, Data, and SEO surfaces must be present in observed navigation and each must have a nonempty collected surface. This remains separate from proof of the native panes' user-visible outcome.",
+    "evidence": [
+      "tests/browser/takeover-visible-census.mjs:48-51 defines the universal tab set; censusCompleteness at lines 803-808 checks its union with observed tabs and reports tab:<name> when any required tab is absent or empty.",
+      "tests/browser/takeover-visible-census.test.mjs:89-137 tests each omitted Scrape, Data, and SEO tab with populated surface buckets for guest, member, and admin; each omission must make completeness false.",
+      ".research/empty-surface-omission-red-20261007.stdout records the omission test failing with actual missing_required_regions=[] versus expected tab:Scrape under the planted observed-tabs-only implementation.",
+      ".research/empty-surface-omission-green-20261007.stdout records 36/36 passing and resource decision valid after restoration.",
+      ".research/empty-surface-census-decomposed-20261007.json explicitly leaves the receipt-bound native census open; there is no evidence here proving the original panes eventually rendered or stayed blank."
+    ],
+    "unresolved": [
+      "Native outcome remains unverified. Keep the runtime closure partial until receipt-bound evidence records the rendered controls or explicit readiness/empty diagnostics for the original artifact."
+    ]
+  },
+  "verdict_b": {
+    "status": "PASS",
+    "source_quality": [
+      "The omission guard is at the census completeness seam and checks all three declared universally available non-Chat tabs even when navigation omits them.",
+      "The forcing test checks the everyone-audience declarations in src/config/sidepanel-visibility.ts and demonstrates red-before/green-after evidence from the saved causal runs.",
+      "The earlier delayed-control and empty-surface guards remain present; the saved decomposed guarded run records 35/35 passing before the omission follow-up, and the follow-up records 36/36 passing.",
+      "Privacy handling remains intact: unknown visible labels use per-run keyed fingerprints, and the existing tests assert private text is absent from observations; readiness timeout output is restricted to fixed stage, tab, pane-presence, witness, and count fields."
+    ],
+    "gaps": []
+  },
+  "evidence_limits": [
+    "This peer review inspected source and saved output only; it did not independently rerun tests or use the browser.",
+    "Saved causal red/green runs establish the source guard behavior, not native rendering behavior."
+  ],
+  "recommendation": "Accept the source repair and source-quality review. Keep EXT-D-0153's native outcome closure open pending receipt-bound native evidence."
+}
