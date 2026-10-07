@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "task": "D47 single native prior-saved acceptance run",
+  "status": "native_unverified_driver_assertion_failure",
+  "run": {
+    "id": 37597422020,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37597422020",
+    "workflow": "Hosted guest side-panel acceptance",
+    "workflow_source_sha": "47930011cd7f5cb755572638dec6fb873554afbf",
+    "event": "workflow_dispatch",
+    "conclusion": "failure",
+    "runner": "macos-15 ARM64",
+    "case": "showcase-d47-admin",
+    "response_order": "prior-saved",
+    "started_at": "2026-10-07T08:59:02Z",
+    "completed_at": "2026-10-07T09:06:10Z"
+  },
+  "tested_app_artifact": {
+    "ci_run_id": 37596432707,
+    "artifact_id": 11470764778,
+    "app_source_sha": "c53c6e0aa592a805f64855f235ca4a39ac493837",
+    "app_tree_sha256": "98e9a17853419f826f920e89ee8ec1b7985ce5f1d8f36a730fe19d6e5411617a",
+    "github_artifact_digest": "sha256:af9149612d7c9a56c44f21ac098875e4806b5b750cd6f3e8b707ff6e82bec93b",
+    "version": "0.2.354",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "source_binding": {
+    "decision": "Use exact successful frozen CI artifact11470764778 from c53c6e0a with reviewed QA source at workflow checkout47930011; no claim that runtime version0.2.355 was tested.",
+    "reason": "The artifact importer verified the run, workflow, GitHub digest, provenance and extracted tree. The c53c6e0a-to-47930011 diff contains only package version0.2.354-to0.2.355 and generated tool-catalog/docs timestamps/content; src, scripts, tests, config, .github and pnpm-lock.yaml are unchanged. Current corrected QA hashes match the accepted correction ledger.",
+    "reviewed_source_sha256_at_dispatch": {
+      "tests/browser/showcase-d47-document-lifecycle.mjs": "06ccdfe875a1b752c524c834d5947c283112ef776271b6623d50b8b5903c36fb",
+      "tests/fixtures/showcase-replay/serve.mjs": "4d14bacf9d126eab8af35f4c66380afbff838ef0f4682ea9d3ba18e24236a794",
+      "tests/unit/showcase-d47-fixture.test.ts": "e5d7ad0a7d46d76680ac062c4d19ddeb88b51f5d2ae92189ee0a704f2f851236",
+      "scripts/hosted-showcase-route.mjs": "c1b963101be5bdbc52be154d6be2f5dd6f5d284de4aa8f84706d206670b7d6ed",
+      "scripts/hosted-showcase-route.test.mjs": "e205df13a3b225631251fa4fd1762ff7fa5de40ff8b31f6a636fa48f6c5cf0ac",
+      ".github/workflows/hosted-guest-acceptance.yml": "d2d514ae3e04aa3faafdc331464942a83d51069df366004ab32868b1e31a07c4"
+    }
+  },
+  "outcome": {
+    "status": "unverified",
+    "case_id": "EXT-F-1012-T57",
+    "native_stage": "exercise_panel",
+    "auth_stage": "admin_extension_auth_completion",
+    "failure_code": "second_saved_trace_failed",
+    "failure_message_code": "second_run_navigation_commit_missing",
+    "failure_stage": "second_saved_trace",
+    "driver_diagnosis": ".research/d47-prior-saved-native-diagnosis-20261007.json",
+    "driver_diagnosis_note": "Fresh diagnosis e82d020c identifies a driver ordering mismatch: the current-frame navigation commit is order9 and new document context is order10, while the driver incorrectly requires the commit after that new context. This is a driver assertion failure; no product failure is claimed.",
+    "verdicts": {
+      "current_saved_replay": "unverified",
+      "prior_saved_run_isolation": "unverified",
+      "delayed_old_binding": "unverified",
+      "cancellation": "unverified"
+    },
+    "observations": {
+      "first_saved_held_arrival_order": 1,
+      "first_saved_response_finish_order": 2,
+      "first_saved_trace_ok": true,
+      "first_document_context_order": 4,
+      "first_target_packet_order": 6,
+      "binding_event_count": 4,
+      "context_created_count": 4,
+      "contexts_cleared_count": 2,
+      "frame_navigated_count": 2,
+      "second_saved_http_response_finished": true,
+      "held_first_run_http_still_pending_during_second_response": true,
+      "second_target_packet_observed": true,
+      "second_binding_context_body_distinct": true,
+      "second_context_order": 10,
+      "second_navigation_commit_order": 9,
+      "second_handshake_order": 11,
+      "second_target_packet_order": 12,
+      "second_navigation_commit_observed": false,
+      "second_exact_saved_result_retained": false,
+      "old_callback_observed": false,
+      "held_old_response_released": false,
+      "owned_recipe_cleanup": "removed"
+    },
+    "limits": [
+      "The run stopped at the second-saved trace assertion before a second navigation commit or second exact saved result was observed.",
+      "A finished HTTP response does not establish old binding callback delivery or rejection; no callback was observed and the held response was not released.",
+      "The native acceptance is unverified and the failure is attributed to the driver assertion ordering diagnosis, not a product defect.",
+      "The exact runtime artifact is version0.2.354; version0.2.355 was not tested. Full D47/T57 remains unverified."
+    ]
+  },
+  "resource_journals": {
+    "docs/stabilization/resource-journals/d47-prior-saved-native-37597422020-package.jsonl": {
+      "sha256": "72468d21c84d28fe098e1780f7209bf72860b77e5622ba79cbb226e723041978",
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "docs/stabilization/resource-journals/d47-prior-saved-native-37597422020-browser.jsonl": {
+      "sha256": "837973b67cf2119610f55d68ad6a6521e638e473f221f93c5f491efe97603cf2",
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "docs/stabilization/resource-journals/d47-prior-saved-native-37597422020-guest.jsonl": {
+      "sha256": "96aec47f8f10123659f2875a9977a5e58dc3d67b9da760b31b6280530aacd2d0",
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    }
+  },
+  "private_raw_evidence": {
+    "directory": ".research/d47-prior-saved-native-20261007/private (mode 0700)",
+    "receipt": ".research/d47-prior-saved-native-20261007/private/artifact/_temp/showcase-d47-native-37597422020-1.json",
+    "receipt_sha256": "1ab146fabec8e7a74c2b492ae524044574144d2f35b8c4b752e8ec34900c4399",
+    "stdout": ".research/d47-prior-saved-native-20261007/private/native-stdout-37597422020.log",
+    "stdout_sha256": "18fd3d134979a63f583e16165101cba7729ade88a18d07554ec061f2411288f4",
+    "screenshots": {
+      "side_panel": {
+        "path": ".research/d47-prior-saved-native-20261007/private/artifact/_temp/guest-acceptance/native-sidepanel-qa-GlNj9f/native-side-panel.png",
+        "sha256": "35104afebb448dde7b3b315613486606a924f2fa636fa316acc30f63f681df10"
+      },
+      "target_after_open": {
+        "path": ".research/d47-prior-saved-native-20261007/private/artifact/_temp/guest-acceptance/native-sidepanel-qa-GlNj9f/normal-target-after-open.png",
+        "sha256": "c939d4f6417b874eefffbe4a8c9bd1cf05088fe2b42ab7a7e13c65d79a024fd2"
+      }
+    }
+  },
+  "secrets": {
+    "temporary_actions_secrets_removed": true,
+    "names_absent_verified": [
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "local_staging_files_created": false
+  }
+}
