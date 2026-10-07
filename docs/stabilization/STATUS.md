@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-07 17:12 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-07T15:47:18.263750+00:00. 205 features · 768 cases · 1350 controls · 153 linked defect records.
+Generated 2026-10-07 17:31 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-07T15:47:18.263750+00:00. 205 features · 769 cases · 1351 controls · 153 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1227** — Pass: 85 · Partial: 79 · Fail: 2 · Unverified: 1060 · N/A: 1.
-Unverified splits into **136 explicitly marked unverified** and **924 with no result record**.
+Applicable case-by-role slots: **1230** — Pass: 85 · Partial: 79 · Fail: 2 · Unverified: 1063 · N/A: 1.
+Unverified splits into **136 explicitly marked unverified** and **927 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 29 cases without steps, 29 without expected outcomes, 27 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -38,7 +38,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Tasks capture flow](#tasks-capture-flow) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 2, n/a 0 | 0 |
 | [Lists side-panel](#lists-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 10, n/a 0 | 0 |
 | [Agenda side-panel](#agenda-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 0 |
-| [Data side-panel](#data-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 1, fail 0, unverified 6, n/a 0 | 1 |
+| [Data side-panel](#data-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 0, partial 1, fail 0, unverified 9, n/a 0 | 1 |
 | [Notes side-panel](#notes-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 4, n/a 0 | 3 |
 | [Notes editor](#notes-editor) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 3 |
 | [Files side-panel](#files-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 2, fail 0, unverified 4, n/a 0 | 0 |
@@ -1416,7 +1416,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Extract structured data from the active page (EXT-F-2005)
 
-**Role status:** guest: Unverified · member: Unverified · admin: Partial. **Cases:** 4. **Controls:** 31.
+**Role status:** guest: Unverified · member: Unverified · admin: Partial. **Cases:** 5. **Controls:** 32.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0054
 
@@ -1428,6 +1428,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-2005-T02 Matched pattern run, copy variants, and retry | N/A | Unverified | Unverified | EXT-F-2005-C01, EXT-F-2005-C02, EXT-F-2005-C17, EXT-F-2005-C04, EXT-F-2005-C05, EXT-F-2005-C06 |
 | EXT-F-2005-T03 Manual field pattern lifecycle and extracted rows | N/A | Unverified | Partial | EXT-F-2005-C14, EXT-F-2005-C15, EXT-F-2005-C03, EXT-F-2005-C12, EXT-F-2005-C11, EXT-F-2005-C07, EXT-F-2005-C08, EXT-F-2005-C09, EXT-F-2005-C10 |
 | EXT-F-2005-T04 Non-matching page and active-tab boundary | N/A | Unverified | Unverified | EXT-F-2005-C02, EXT-F-2005-C07 |
+| EXT-F-2005-T05 Data page identity Retry, failure and recovery | Unverified | Unverified | Unverified | EXT-F-2005-C32, EXT-F-2005-C14, EXT-F-2005-C15, EXT-F-2005-C02, EXT-F-2005-C07 |
 
 **Recorded case details and evidence:**
 
