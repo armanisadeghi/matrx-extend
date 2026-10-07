@@ -1,0 +1,22 @@
+{
+  "issue": "The hosted public D47 acceptance route writes a showcase-d47-public-native receipt, but the artifact upload path selected only showcase-d47-native receipts.",
+  "repair": "Include showcase-d47-public-native-*.json in the hosted artifact upload while preserving the fixture D47 receipt pattern.",
+  "guard": "scripts/hosted-showcase-route.test.mjs reads the workflow upload paths and checks every routed showcase native output against them.",
+  "red": {
+    "resource_run_id": "d47-public-upload-red-20261007",
+    "admitted": true,
+    "resource_invalid": false,
+    "tests_passed": 9,
+    "tests_failed": 1,
+    "failure": "showcase-d47-public-admin receipt /private/results/showcase-d47-public-native-42-1.json is absent from hosted upload paths"
+  },
+  "green": {
+    "resource_run_id": "d47-public-upload-green-20261007",
+    "admitted": true,
+    "resource_invalid": false,
+    "tests_passed": 10,
+    "tests_failed": 0,
+    "decision": "valid"
+  },
+  "limits": "Source-level producer/upload contract only; native acceptance was not run in this lane."
+}

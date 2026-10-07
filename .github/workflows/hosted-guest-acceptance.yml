@@ -308,6 +308,7 @@ jobs:
             test-results/prepare-stale-result-native-*.json
             ${{ runner.temp }}/showcase-picker-native-*.json
             ${{ runner.temp }}/showcase-d47-native-*.json
+            ${{ runner.temp }}/showcase-d47-public-native-*.json
             test-results/profile-native-hosted-profile-*.json
             test-results/native-sidepanel-qa-*/*.png
             ${{ runner.temp }}/guest-acceptance/startup-interval-diagnostic.json

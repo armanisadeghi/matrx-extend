@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { hostedShowcaseRoute } from './hosted-showcase-route.mjs';
 
@@ -16,6 +17,34 @@ const credentials = {
   MATRX_HOSTED_ADMIN_CREDENTIALS_JSON: '{"email":"admin@admin.com","password":"opaque"}',
   MATRX_HOSTED_PROFILE_ORGANIZATION_JSON: '{"approved_organization_name":"Matrx Org"}',
 };
+
+test('hosted artifact upload preserves every routed showcase native receipt', () => {
+  const workflow = readFileSync('.github/workflows/hosted-guest-acceptance.yml', 'utf8');
+  const uploadPaths = workflow.match(/ {10}path: \|\n((?: {12}[^\n]+\n)+)/g) ?? [];
+  const patterns = uploadPaths.flatMap((block) =>
+    block
+      .split('\n')
+      .slice(1)
+      .filter(Boolean)
+      .map((line) => line.trim().replace('${{ runner.temp }}', runner.temp)),
+  );
+  for (const acceptanceCase of [
+    'showcase-picker-admin',
+    'showcase-stale-admin',
+    'showcase-d47-admin',
+    'showcase-d47-public-admin',
+  ]) {
+    const output = hostedShowcaseRoute(acceptanceCase, prepared, runner).env.MATRX_SHOWCASE_OUTPUT;
+    assert.ok(
+      patterns.some((pattern) =>
+        new RegExp(
+          `^${pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\\\*/g, '[^/]*')}$`,
+        ).test(output),
+      ),
+      `${acceptanceCase} receipt ${output} is absent from hosted upload paths`,
+    );
+  }
+});
 
 test('explicit stale case dispatches the native driver with opt-in and exact artifact identity', () => {
   const route = hostedShowcaseRoute('showcase-stale-admin', prepared, runner);
