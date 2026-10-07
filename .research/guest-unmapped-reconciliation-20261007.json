@@ -122,9 +122,14 @@
         "dom_path": "div:0/div:0/div:0/div:1/div:0/div:1/div:0/button:0",
         "tab": "Chat"
       },
-      "candidate_inventory_ids": ["EXT-F-2013-C05", "EXT-F-2013-C19", "EXT-F-2013-C06"],
+      "candidate_inventory_ids": [
+        "EXT-F-2013-C05",
+        "EXT-F-2013-C19",
+        "EXT-F-2013-C06",
+        "EXT-F-2013-C41"
+      ],
       "candidate_certainty": "source-and-scope candidate; exact node-to-ID unresolved",
-      "source_evidence": "ChatHeader source order begins TaskPanelChip, LanguagePicker, SandboxPickerChip, PermissionModeChip, then the two receipt-mapped Copy/New buttons; these are header-control candidates only.",
+      "source_evidence": "Frozen ChatView.tsx:876-884 renders TaskPanelChip, LanguagePicker, SandboxPickerChip, PermissionModeChip in sequence. Inventory C41 is Open compute target picker. This makes C41 a possible candidate within the unanchored header-control observations; it does not bind this fingerprint to SandboxPickerChip.",
       "exact_frozen_source": {
         "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
         "version": "0.2.366"
@@ -144,9 +149,14 @@
         "dom_path": "div:0/div:0/div:0/div:1/div:0/div:1/div:0/button:1",
         "tab": "Chat"
       },
-      "candidate_inventory_ids": ["EXT-F-2013-C05", "EXT-F-2013-C19", "EXT-F-2013-C06"],
+      "candidate_inventory_ids": [
+        "EXT-F-2013-C05",
+        "EXT-F-2013-C19",
+        "EXT-F-2013-C06",
+        "EXT-F-2013-C41"
+      ],
       "candidate_certainty": "source-and-scope candidate; exact node-to-ID unresolved",
-      "source_evidence": "ChatHeader source order begins TaskPanelChip, LanguagePicker, SandboxPickerChip, PermissionModeChip, then the two receipt-mapped Copy/New buttons; these are header-control candidates only.",
+      "source_evidence": "Frozen ChatView.tsx:876-884 renders TaskPanelChip, LanguagePicker, SandboxPickerChip, PermissionModeChip in sequence. Inventory C41 is Open compute target picker. This makes C41 a possible candidate within the unanchored header-control observations; it does not bind this fingerprint to SandboxPickerChip.",
       "exact_frozen_source": {
         "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
         "version": "0.2.366"
@@ -166,9 +176,14 @@
         "dom_path": "div:0/div:0/div:0/div:1/div:0/div:1/div:0/button:2",
         "tab": "Chat"
       },
-      "candidate_inventory_ids": ["EXT-F-2013-C05", "EXT-F-2013-C19", "EXT-F-2013-C06"],
+      "candidate_inventory_ids": [
+        "EXT-F-2013-C05",
+        "EXT-F-2013-C19",
+        "EXT-F-2013-C06",
+        "EXT-F-2013-C41"
+      ],
       "candidate_certainty": "source-and-scope candidate; exact node-to-ID unresolved",
-      "source_evidence": "ChatHeader source order begins TaskPanelChip, LanguagePicker, SandboxPickerChip, PermissionModeChip, then the two receipt-mapped Copy/New buttons; these are header-control candidates only.",
+      "source_evidence": "Frozen ChatView.tsx:876-884 renders TaskPanelChip, LanguagePicker, SandboxPickerChip, PermissionModeChip in sequence. Inventory C41 is Open compute target picker. This makes C41 a possible candidate within the unanchored header-control observations; it does not bind this fingerprint to SandboxPickerChip.",
       "exact_frozen_source": {
         "commit": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
         "version": "0.2.366"
