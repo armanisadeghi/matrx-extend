@@ -1,0 +1,36 @@
+{
+  "incident": {
+    "run": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37615673755",
+    "source_sha": "2787ed85",
+    "job": "checks / Unit tests",
+    "failure": "saved UI handles unrelated same-route navigation after a full window without showing old-document rows: expected undefined to be type of 'function' at tests/unit/document-network-saved-ui.test.tsx:404",
+    "summary": "1 failed, 2158 passed, 6 skipped"
+  },
+  "cause": "The test advanced fake time in one hundred 100 ms steps while waiting for the CDP setup command. That command follows asynchronous storage, messaging and imports, whose scheduling is real event-loop work. On a delayed setup path the arbitrary loop exhausted before Page.addScriptToEvaluateOnNewDocument was called. The test then failed at its setup gate without exercising the navigation and stale-row behavior.",
+  "scope": "Test harness only. No product source changed. The controlled Chrome Page.enable response is delayed 250 ms in the unrelated-navigation case to make this scheduling class reproducible.",
+  "red_proof": {
+    "command": "python3 .claude/skills/forcing-function-tests/plant.py --file tests/unit/document-network-saved-ui.test.tsx --old-file /tmp/saved-ui-current-wait.txt --new-file /tmp/saved-ui-old-wait.txt --expect red --must-mention \"expected undefined to be type of 'function'\" --timeout 20 -- pnpm exec vitest run tests/unit/document-network-saved-ui.test.tsx --maxWorkers=1 --reporter=verbose",
+    "result": "VERDICT: RED (rc=1, expected RED); 1 failed, 4 passed; original fake-time wait failed at releaseSetup assertion; plant restored identical SHA-256 2c473bd895f1606dc3bb36ad2483bf0998a7dc7a8fefad86457e7a531fa859a3"
+  },
+  "green_proof": [
+    {
+      "command": "pnpm exec vitest run tests/unit/document-network-saved-ui.test.tsx --maxWorkers=1 --reporter=verbose",
+      "result": "5 passed; unrelated same-route navigation passed in 270 ms",
+      "stdout_sha256": "3d153a896422c03e25eaa9b556dfeed9b00dae75745c64ac2ca9c584db813987"
+    },
+    {
+      "command": "pnpm exec vitest run tests/unit/document-network-saved-ui.test.tsx tests/unit/document-network-capture.test.ts tests/unit/document-network-dispatch.test.ts tests/unit/document-network-approval-remount.test.tsx --maxWorkers=2 --reporter=dot",
+      "result": "4 files passed, 37 tests passed",
+      "stdout_sha256": "1f19e277c4848d39090bba0b84b6ac2f44e0d6e4fcb3747136f44a4d248d3fbd"
+    },
+    {
+      "command": "pnpm exec biome check tests/unit/document-network-saved-ui.test.tsx",
+      "result": "exit 0; four pre-existing noExplicitAny warnings"
+    },
+    {
+      "command": "git diff --check -- tests/unit/document-network-saved-ui.test.tsx",
+      "result": "exit 0"
+    }
+  ],
+  "retained_behavior": "The test still requires the approval, a withheld CDP setup, Page.reload, a full matching window, cleanup, no stale document rows and no row from unrelated same-route navigation. The wait now resolves on the actual setup command with a 4-second real-time diagnostic deadline."
+}

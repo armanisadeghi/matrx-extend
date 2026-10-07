@@ -1,5 +1,9 @@
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
+// The replay setup crosses dynamic imports. Its arrival is an event, not fake
+// elapsed time; retain a real deadline so a broken path fails with that cause.
+const realSetTimeout = globalThis.setTimeout;
+const realClearTimeout = globalThis.clearTimeout;
 const h = vi.hoisted(() => ({
   handlers: new Map<string, Array<(p: any) => unknown>>(),
   broadcasts: vi.fn(),
@@ -215,6 +219,10 @@ it.each([
     let registered = false;
     let scriptId = '';
     let releaseSetup!: () => void;
+    let signalSetupEntered!: () => void;
+    const setupEntered = new Promise<void>((resolve) => {
+      signalSetupEntered = resolve;
+    });
     const attach = vi.fn(async () => {});
     const detach = vi.fn(async () => {
       if (stallDetach)
@@ -236,11 +244,17 @@ it.each([
         return new Promise<void>((resolve) => {
           h.releases.add(resolve);
         });
+      // This Chrome response may arrive after unrelated real event-loop work.
+      // Keep the navigation case delayed so its setup wait cannot consume the
+      // fake capture budget before setup actually starts.
+      if (replaceDocument && method === 'Page.enable')
+        await new Promise<void>((resolve) => realSetTimeout(resolve, 250));
       if (method === 'Page.getFrameTree')
         return { frameTree: { frame: { id: 'main', url: h.url, loaderId: 'original-loader' } } };
       if (method === 'Runtime.enable') context(1, 'old');
       if (method === 'Runtime.addBinding') binding = params.name;
       if (method === 'Page.addScriptToEvaluateOnNewDocument') {
+        signalSetupEntered();
         await new Promise<void>((resolve) => {
           releaseSetup = () => {
             h.releases.delete(releaseSetup);
@@ -391,15 +405,25 @@ it.each([
     expect(approvalText).toContain('https://calendar.invalid/calendar');
     expect(approvalText).toMatch(/debugger.*reload/i);
     fireEvent.click(allow);
-    // The persisted-confirm recovery crosses storage, messaging, and React
-    // boundaries before it reaches CDP setup. Keep the setup gate explicit:
-    // package import scheduling must not decide whether this guard reaches its
-    // intended stalled-cleanup path.
-    for (let i = 0; i < 100 && !releaseSetup; i++) {
+    // Wait for the actual CDP setup command. Advancing the fake clock here
+    // consumed its setup deadline while dynamic imports were still loading on
+    // busy CI runners, so this case could fail before reaching navigation.
+    let setupDeadline: ReturnType<typeof setTimeout> | undefined;
+    try {
       await act(async () => {
-        await vi.advanceTimersByTimeAsync(100);
+        await Promise.race([
+          setupEntered,
+          new Promise<never>((_resolve, reject) => {
+            setupDeadline = realSetTimeout(
+              () => reject(new Error('Saved replay never reached CDP setup after approval.')),
+              4_000,
+            );
+          }),
+        ]);
         await drain();
       });
+    } finally {
+      if (setupDeadline !== undefined) realClearTimeout(setupDeadline);
     }
     expect(releaseSetup).toBeTypeOf('function');
     await act(async () => {
