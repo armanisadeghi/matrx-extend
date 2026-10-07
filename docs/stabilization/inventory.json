@@ -4831,7 +4831,7 @@
             "Reload/reopen Settings in the still-signed-out guest session; confirm the same guidance and absence of the selector."
           ],
           "expected": [
-            "The guest sees \u201cSign in to choose\u201d; no organization selector or guest organization-choice action is exposed, and the guest guidance remains after reload."
+            "The guest sees “Sign in to choose”; no organization selector or guest organization-choice action is exposed, and the guest guidance remains after reload."
           ],
           "dimensions": ["warm", "reload"],
           "results": {
@@ -4855,7 +4855,7 @@
             "Verify the real signed-in principal is an ordinary non-admin member using the displayed account/role and known test-principal provenance."
           ],
           "steps": [
-            "Open Settings > Organization signed in with no device organization set; verify Choose\u2026 and required-selection guidance without implicit organization choice.",
+            "Open Settings > Organization signed in with no device organization set; verify Choose… and required-selection guidance without implicit organization choice.",
             "Choose an existing authorized test organization explicitly; verify Acting as displays it.",
             "Perform a full extension Reload and confirm the organization persists."
           ],
@@ -4877,7 +4877,7 @@
             "Verify the real signed-in principal is the authorized admin using the displayed account/role and known test-principal provenance."
           ],
           "steps": [
-            "Open Settings > Organization signed in with no device organization set; verify Choose\u2026 and required-selection guidance without implicit organization choice.",
+            "Open Settings > Organization signed in with no device organization set; verify Choose… and required-selection guidance without implicit organization choice.",
             "Choose an existing authorized test organization explicitly; verify Acting as displays it.",
             "Perform a full extension Reload and confirm the organization persists."
           ],
@@ -5058,7 +5058,7 @@
             "Reload/reopen Settings in the same guest state; confirm the unavailable-state guidance remains."
           ],
           "expected": [
-            "The guest sees \u201cChoose an organization above\u201d and no agent picker or selection action; this unavailable-state guidance remains after reload."
+            "The guest sees “Choose an organization above” and no agent picker or selection action; this unavailable-state guidance remains after reload."
           ],
           "dimensions": ["warm", "reload"],
           "results": {
@@ -5423,6 +5423,23 @@
                   }
                 ]
               }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "37671048453",
+                "build_version": "0.2.385",
+                "source_sha": "87f6649b4874492a1f8af59cd8703eff0e06424c",
+                "artifact_id": 11503412219,
+                "evidence": [
+                  ".research/parallel-settings-product-20261007.json",
+                  ".research/parallel-rollout-final-peer-20261007.json"
+                ],
+                "evidence_validity": "invalid-resource",
+                "acceptance_credit": false,
+                "detail": "Latest attempted native run on0.2.385; no acceptance credit because final guest resource journal invalidated CPU pending. Internal assertion observations do not replace last accepted build-specific result."
+              }
             }
           ]
         },
@@ -5555,7 +5572,7 @@
             "Reload the extension and reopen Settings; repeat the expand/collapse check for visible sections."
           ],
           "expected": [
-            "Every section available to this role opens and closes without losing or mislabeling its content; role-gated sections stay absent. Empty Data/SEO cards truthfully show \u201cNo options yet\u201d."
+            "Every section available to this role opens and closes without losing or mislabeling its content; role-gated sections stay absent. Empty Data/SEO cards truthfully show “No options yet”."
           ],
           "dimensions": ["warm", "reload"],
           "results": {
@@ -5584,7 +5601,7 @@
             "Reload the extension and reopen Settings; repeat the expand/collapse check for visible sections."
           ],
           "expected": [
-            "Every section available to this role opens and closes without losing or mislabeling its content; role-gated sections stay absent. Empty Data/SEO cards truthfully show \u201cNo options yet\u201d."
+            "Every section available to this role opens and closes without losing or mislabeling its content; role-gated sections stay absent. Empty Data/SEO cards truthfully show “No options yet”."
           ],
           "dimensions": ["warm", "reload"]
         },
@@ -5605,7 +5622,7 @@
             "Reload the extension and reopen Settings; repeat the expand/collapse check for visible sections."
           ],
           "expected": [
-            "Every section available to this role opens and closes without losing or mislabeling its content; role-gated sections stay absent. Empty Data/SEO cards truthfully show \u201cNo options yet\u201d."
+            "Every section available to this role opens and closes without losing or mislabeling its content; role-gated sections stay absent. Empty Data/SEO cards truthfully show “No options yet”."
           ],
           "dimensions": ["warm", "reload"],
           "results": {
@@ -5813,6 +5830,23 @@
                     ]
                   }
                 ]
+              }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "37671048453",
+                "build_version": "0.2.385",
+                "source_sha": "87f6649b4874492a1f8af59cd8703eff0e06424c",
+                "artifact_id": 11503412219,
+                "evidence": [
+                  ".research/parallel-settings-product-20261007.json",
+                  ".research/parallel-rollout-final-peer-20261007.json"
+                ],
+                "evidence_validity": "invalid-resource",
+                "acceptance_credit": false,
+                "detail": "Latest attempted native run on0.2.385; no acceptance credit because final guest resource journal invalidated CPU pending. Internal assertion observations do not replace last accepted build-specific result."
               }
             }
           ]
@@ -6149,6 +6183,23 @@
                     ]
                   }
                 ]
+              }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "37671048453",
+                "build_version": "0.2.385",
+                "source_sha": "87f6649b4874492a1f8af59cd8703eff0e06424c",
+                "artifact_id": 11503412219,
+                "evidence": [
+                  ".research/parallel-settings-product-20261007.json",
+                  ".research/parallel-rollout-final-peer-20261007.json"
+                ],
+                "evidence_validity": "invalid-resource",
+                "acceptance_credit": false,
+                "detail": "Latest attempted native run on0.2.385; no acceptance credit because final guest resource journal invalidated CPU pending. Internal assertion observations do not replace last accepted build-specific result."
               }
             }
           ]
@@ -6624,11 +6675,11 @@
                     "docs/stabilization/reports/cookies-prompt-semantics.json",
                     "docs/stabilization/reports/native-denial-operator-005.json"
                   ],
-                  "detail": "Ruling inferred from official Chrome warning semantics and current broad-host manifest, corroborated by actual no-prompt OFF\u2192ON observation. Not a denial pass. Re-evaluate on browser/manifest warning-policy change."
+                  "detail": "Ruling inferred from official Chrome warning semantics and current broad-host manifest, corroborated by actual no-prompt OFF→ON observation. Not a denial pass. Re-evaluate on browser/manifest warning-policy change."
                 },
                 "current-grant-removal-reload": {
                   "status": "unverified",
-                  "detail": "Current005 only observed UI OFF\u2192ON; prior build grant/removal/reload remains historical."
+                  "detail": "Current005 only observed UI OFF→ON; prior build grant/removal/reload remains historical."
                 }
               }
             }
@@ -6863,7 +6914,7 @@
           ],
           "steps": ["Select all, agent, pilot, parallel and webmcp receipt filters."],
           "expected": [
-            "Visible receipt rows and counts match selected origin; empty filter shows \u201cNo receipts with origin=\u2026\u201d; all restores every row."
+            "Visible receipt rows and counts match selected origin; empty filter shows “No receipts with origin=…”; all restores every row."
           ],
           "dimensions": ["warm", "reload"]
         },
@@ -7064,6 +7115,23 @@
                   }
                 ]
               }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "37671048453",
+                "build_version": "0.2.385",
+                "source_sha": "87f6649b4874492a1f8af59cd8703eff0e06424c",
+                "artifact_id": 11503412219,
+                "evidence": [
+                  ".research/parallel-settings-product-20261007.json",
+                  ".research/parallel-rollout-final-peer-20261007.json"
+                ],
+                "evidence_validity": "invalid-resource",
+                "acceptance_credit": false,
+                "detail": "Latest attempted native run on0.2.385; no acceptance credit because final guest resource journal invalidated CPU pending. Internal assertion observations do not replace last accepted build-specific result."
+              }
             }
           ]
         },
@@ -7169,7 +7237,7 @@
             "Reload the extension and reopen Settings; inspect Account and the footer action again."
           ],
           "expected": [
-            "Email is shown as unavailable (\u2014), no Name or admin badge appears, and the footer action is Sign in both before and after reload."
+            "Email is shown as unavailable (—), no Name or admin badge appears, and the footer action is Sign in both before and after reload."
           ],
           "dimensions": ["warm", "reload"]
         },
@@ -14035,7 +14103,26 @@
                 "verified_at": "2026-10-05T03:24:31.466984+00:00"
               }
             }
-          }
+          },
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "37670744036",
+                "build_version": "0.2.385",
+                "source_sha": "87f6649b4874492a1f8af59cd8703eff0e06424c",
+                "artifact_id": 11503412219,
+                "evidence": [
+                  ".research/parallel-scrape-product-20261007.json",
+                  ".research/parallel-rollout-final-peer-20261007.json"
+                ],
+                "evidence_validity": "resource-valid-incomplete",
+                "acceptance_credit": false,
+                "detail": "Resource-valid warm observations only; full case remains unverified after runner stopped at Links pointer targeting. Prior accepted build-specific results retained; no new full-case pass."
+              }
+            }
+          ]
         },
         {
           "id": "EXT-F-1007-T02",
@@ -14267,6 +14354,25 @@
                 "detail": "Healthy exact development215 selectedall6tabs and matchedArticle/Links/SEO/Schema. All9geometryboundaries at360px showdocumentwidth360/scrollLeft0, strip336px; rootdeepPNGconfirmsno leftclip. Images/video content or empty state and normalwidth stillunverified."
               }
             }
+          ],
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "37670744036",
+                "build_version": "0.2.385",
+                "source_sha": "87f6649b4874492a1f8af59cd8703eff0e06424c",
+                "artifact_id": 11503412219,
+                "evidence": [
+                  ".research/parallel-scrape-product-20261007.json",
+                  ".research/parallel-rollout-final-peer-20261007.json"
+                ],
+                "evidence_validity": "resource-valid-incomplete",
+                "acceptance_credit": false,
+                "detail": "Resource-valid warm observations only; full case remains unverified after runner stopped at Links pointer targeting. Prior accepted build-specific results retained; no new full-case pass."
+              }
+            }
           ]
         },
         {
@@ -14333,7 +14439,7 @@
                     "build": "development0.2.215/source3536b5cb",
                     "run_id": "37214124282",
                     "evidence": [".research/scrape-transition-native-diagnostic.json"],
-                    "detail": "Warm native medium/icon/large removals verified with exact before/after identities, trusted pointer events, Images retained and count3\u21922\u21921\u2192empty. Later control sequence failed with Article selected; earlier third-removal inference refuted. Fullreload and otherroles unverified."
+                    "detail": "Warm native medium/icon/large removals verified with exact before/after identities, trusted pointer events, Images retained and count3→2→1→empty. Later control sequence failed with Article selected; earlier third-removal inference refuted. Fullreload and otherroles unverified."
                   }
                 }
               }
@@ -14347,7 +14453,26 @@
               "viewport": "600px owned SIDE_PANEL CDP viewport emulation; actual headed browser, not physical resize proof",
               "verified_at": "2026-10-05T04:38:29.178906+00:00"
             }
-          }
+          },
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "37670744036",
+                "build_version": "0.2.385",
+                "source_sha": "87f6649b4874492a1f8af59cd8703eff0e06424c",
+                "artifact_id": 11503412219,
+                "evidence": [
+                  ".research/parallel-scrape-product-20261007.json",
+                  ".research/parallel-rollout-final-peer-20261007.json"
+                ],
+                "evidence_validity": "resource-valid-incomplete",
+                "acceptance_credit": false,
+                "detail": "Resource-valid warm observations only; full case remains unverified after runner stopped at Links pointer targeting. Prior accepted build-specific results retained; no new full-case pass."
+              }
+            }
+          ]
         },
         {
           "id": "EXT-F-1007-T11",
@@ -14411,7 +14536,26 @@
               "viewport": "600px owned SIDE_PANEL CDP viewport emulation; actual headed browser, not physical resize proof",
               "verified_at": "2026-10-05T04:38:29.178906+00:00"
             }
-          }
+          },
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "37670744036",
+                "build_version": "0.2.385",
+                "source_sha": "87f6649b4874492a1f8af59cd8703eff0e06424c",
+                "artifact_id": 11503412219,
+                "evidence": [
+                  ".research/parallel-scrape-product-20261007.json",
+                  ".research/parallel-rollout-final-peer-20261007.json"
+                ],
+                "evidence_validity": "resource-valid-incomplete",
+                "acceptance_credit": false,
+                "detail": "Resource-valid warm observations only; full case remains unverified after runner stopped at Links pointer targeting. Prior accepted build-specific results retained; no new full-case pass."
+              }
+            }
+          ]
         },
         {
           "id": "EXT-F-1007-T12",
@@ -14479,7 +14623,26 @@
               "viewport": "600px owned SIDE_PANEL CDP viewport emulation; actual headed browser, not physical resize proof",
               "verified_at": "2026-10-05T04:38:29.178906+00:00"
             }
-          }
+          },
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "37670744036",
+                "build_version": "0.2.385",
+                "source_sha": "87f6649b4874492a1f8af59cd8703eff0e06424c",
+                "artifact_id": 11503412219,
+                "evidence": [
+                  ".research/parallel-scrape-product-20261007.json",
+                  ".research/parallel-rollout-final-peer-20261007.json"
+                ],
+                "evidence_validity": "resource-valid-incomplete",
+                "acceptance_credit": false,
+                "detail": "Resource-valid warm observations only; full case remains unverified after runner stopped at Links pointer targeting. Prior accepted build-specific results retained; no new full-case pass."
+              }
+            }
+          ]
         },
         {
           "id": "EXT-F-1007-T13",
@@ -14549,7 +14712,26 @@
               "viewport": "600px owned SIDE_PANEL CDP viewport emulation; actual headed browser, not physical resize proof",
               "verified_at": "2026-10-05T04:38:29.178906+00:00"
             }
-          }
+          },
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "37670744036",
+                "build_version": "0.2.385",
+                "source_sha": "87f6649b4874492a1f8af59cd8703eff0e06424c",
+                "artifact_id": 11503412219,
+                "evidence": [
+                  ".research/parallel-scrape-product-20261007.json",
+                  ".research/parallel-rollout-final-peer-20261007.json"
+                ],
+                "evidence_validity": "resource-valid-incomplete",
+                "acceptance_credit": false,
+                "detail": "Resource-valid warm observations only; full case remains unverified after runner stopped at Links pointer targeting. Prior accepted build-specific results retained; no new full-case pass."
+              }
+            }
+          ]
         },
         {
           "id": "EXT-F-1007-T14",
@@ -14703,7 +14885,7 @@
           ],
           "steps": ["Open Scrape before capturing, then navigate active tab to another URL."],
           "expected": [
-            "Empty state invites capture; previous page\u2019s content and Saved badge clear after navigation."
+            "Empty state invites capture; previous page’s content and Saved badge clear after navigation."
           ],
           "dimensions": ["warm", "reload"],
           "results": {
@@ -14774,6 +14956,25 @@
                   "detail": "Release205 local development ZIP: signed-out token/profile absence and initial Scrape empty state observed. Navigation/reload were not reached. Exact Store ZIP rerun37186201850 failed at browser startup before any UI case; no Store pass.",
                   "additional_evidence": [".research/guest-scrape-store-native.json"]
                 }
+              }
+            }
+          ],
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "37670744036",
+                "build_version": "0.2.385",
+                "source_sha": "87f6649b4874492a1f8af59cd8703eff0e06424c",
+                "artifact_id": 11503412219,
+                "evidence": [
+                  ".research/parallel-scrape-product-20261007.json",
+                  ".research/parallel-rollout-final-peer-20261007.json"
+                ],
+                "evidence_validity": "resource-valid-incomplete",
+                "acceptance_credit": false,
+                "detail": "Resource-valid warm observations only; full case remains unverified after runner stopped at Links pointer targeting. Prior accepted build-specific results retained; no new full-case pass."
               }
             }
           ]
