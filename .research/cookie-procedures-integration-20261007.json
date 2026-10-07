@@ -1,0 +1,14 @@
+{
+  "status": "source_procedures_integrated_runtime_unverified",
+  "cases": ["EXT-F-4097-T01", "EXT-F-4098-T01", "EXT-F-4099-T01", "EXT-F-4161-T01"],
+  "missing_steps_before": 64,
+  "missing_steps_after": 60,
+  "runtime_status_changes": 0,
+  "review": ".research/cookie-procedures-peer-20261007.json",
+  "correction_commit": "b6654307",
+  "correction_verification": "Root inspected exact correction diff and dispatcher confirmation source; citation and collision wording corrected. No runtime evidence claimed.",
+  "limits": [
+    "Admin-only manual Tools procedures; dispatcher, permission-denial and runtime results remain unverified.",
+    "All existing controls/modes/results preserved."
+  ]
+}
