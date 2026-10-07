@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "run_id": "hosted-guest-37671048453-1",
+  "scope": "Read-only diagnosis of the Settings guest resource verdict; no native rerun or product defect claim.",
+  "verdict": "invalid_resource_cpu_pending",
+  "confirmed_mechanism": {
+    "admission": "At 19:05:23.575Z, the completed guest journal admitted the child after a full 60-second preflight: mean CPU busy 0.16, load 1.65 on 3 logical CPUs, and no refusal reason.",
+    "watch": "At 19:05:39.773Z, the first 15-second watch measured CPU busy 0.62 and one-minute load 2.7 on 3 logical CPUs. Load per CPU was 0.90, exceeding the 0.75 high-load condition while busy exceeded the unchanged 0.60 threshold. The guard durably wrote RESOURCE_CPU_PENDING with RESOURCE_CPU_HIGH_LOAD_BUSY.",
+    "exit": "The child exited 0 at 19:05:54.735Z, 14.962 seconds after pending began. No later watch or three healthy recovery samples occurred. The completed final event at 19:05:54.917Z recorded resourceInvalid=true, exitCode=3, decision=invalid.",
+    "source_boundary": "scripts/stabilization-resource-cpu.mjs keeps one CPU-only bad sample pending until three healthy watches recover it or a second bad watch makes it unsafe. scripts/stabilization-resource.mjs marks a child exit while pending resource-invalid and finalizes through resourceVerdict. The first sample is measured by the second one-second iostat row in scripts/stabilization-resource-safety.mjs.",
+    "certainty": "high for the invalid verdict mechanism; moderate for which host process caused the CPU burst"
+  },
+  "ranked_hypotheses": [
+    {
+      "rank": 1,
+      "cause": "Transient CPU demand during native Chromium startup, with macOS Metal compilation contributing substantially.",
+      "evidence": "The same-run process snapshot 65 ms after pending lists MTLCompilerServi at 90.4% CPU, Chromium at 10.1%, two Chromium Helpers at 9.7% and 6.1%, and the owned Node driver at 6.4%. The previous browser-install phase ended valid at 19:03:32.505Z, before the guest phase launched native Chromium. Similar completed native journals show Metal compiler and Chromium load together.",
+      "limit": "The process snapshot follows the iostat interval and MTLCompilerServi is reparented to PID 1; the journal does not prove exact interval ownership or whether Chromium caused the compiler work.",
+      "falsifiable_prediction": "A bracketed process-time sample around the next admitted guest watch would show substantial Metal or owned Chromium CPU time during the unsafe interval; if all such deltas are low, this hypothesis weakens."
+    },
+    {
+      "rank": 2,
+      "cause": "Unrelated runner or system activity added enough CPU to cross the high-load gate.",
+      "evidence": "The snapshot also contains system daemons and runner processes, but each shown below 4% CPU except the listed Chromium/Metal processes.",
+      "falsifiable_prediction": "An interval process-time bracket would assign most CPU time outside the owned Chromium tree and Metal service. Current snapshot does not support this as the leading explanation."
+    },
+    {
+      "rank": 3,
+      "cause": "Bad CPU sampler or guard classification.",
+      "evidence": "The journal has numeric iostat-derived busy and sysctl load values, no measurement failure, and the source applies the policy's existing 0.60 busy plus 0.75 load-per-CPU rule exactly.",
+      "falsifiable_prediction": "A simultaneous independent sampler would disagree with iostat, or replaying 0.62 busy/2.7 load/3 CPUs through reasons() would yield no CPU reason. Current evidence contradicts this hypothesis."
+    },
+    {
+      "rank": 4,
+      "cause": "Settings assertions or child exit code caused the wrapper failure.",
+      "evidence": "The child exit was 0 and the sanitized native report has partial passing assertions. The guard's explicit final decision is resource-invalid, with no product-fail claim.",
+      "falsifiable_prediction": "A nonzero child exit or a valid resource final decision would be present; neither is."
+    }
+  ],
+  "product_evidence_limit": "Guest assertions for T22 and T37 passed in the child; T46 omitted the inventory boundary ports 1 and 65535; T70 did not exercise alternative update outcomes. None is accepted as a terminal product verdict because the guest journal is invalid. No Settings defect follows from this run.",
+  "bounded_next_action": "Root may schedule one guarded, serialized native retry against the frozen artifact only after current readiness and fresh resource admission. Use a fresh run ID and completed guest journal. Require either no CPU pending episode or a recorded three-watch recovery before child exit, plus the actual native receipt. If the same first-watch burst recurs, use the already available bounded startup process-time bracket on that one run to test owned Chromium/Metal versus other-host attribution before proposing any source repair. Preserve thresholds, one-heavy ownership, and invalid verdict semantics.",
+  "evidence_files": [
+    ".research/parallel-settings-product-20261007-hosted-guest-37671048453-1.jsonl",
+    ".research/parallel-settings-product-20261007-hosted-browser-37671048453-1.jsonl",
+    ".research/parallel-settings-product-20261007-evidence.json",
+    ".research/parallel-settings-product-20261007-acceptance.json"
+  ],
+  "verification": "Compared completed journals with guard CPU state machine, iostat sampler, policy, hosted phase driver, and sanitized Settings acceptance report; no heavy or hosted commands run.",
+  "sensitive_output": "No credentials or tokens included."
+}
