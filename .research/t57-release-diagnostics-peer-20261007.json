@@ -16,7 +16,7 @@
       "Existing extension-hook attestation and request/response identity digests remain in the evidence path."
     ],
     "acceptance_limit": "The preflight still starts the saved replay, pauses its response, then navigates again. That extra navigation may cancel the held response and does not recreate the original prior-document-pending-before-new-replay race. Under the binding architecture ruling, old callback delivery is not mandatory; cancellation or absence alone cannot pass. This repair is accepted as diagnostics work only.",
-    "next_action": "Repair the native observer and terminal assertions per the binding architecture ruling, then run the separately authorized exact-artifact native trace with positive current binding/body controls and lifecycle evidence. Record architectural exclusion as such; do not label it a delivered callback or close the defect until native acceptance and existing delivered-event guards are satisfied."
+    "next_action": "Keep D47 closed at its original bounded scope, as recorded in .research/d47-original-closure-audit-20261007.json. T57's broader case remains unverified. First correct the native sequence so a prior-document request is positively pending before the new saved replay begins; remove the extra post-pause navigation that cancels the held response. Then repair observer and terminal assertions per the binding architecture ruling and run the separately authorized exact-artifact native trace with positive current binding/body controls and lifecycle evidence. Record architectural exclusion as such; do not label it a delivered callback."
   },
   "verdict_B_source_quality": {
     "status": "PASS_WITH_BOUNDED_TEST_COVERAGE_GAP",
@@ -26,8 +26,16 @@
       "The assessment still requires old/current response identity, distinct document contexts, old-then-current successful release, finished lifecycles, response hashes, active replay, extension capture attestation, and verified cleanup."
     ],
     "gaps": [
-      "The new regression injects failure only for the old release. It does not independently inject Fetch.disable failure or detach failure to prove the later cleanup operation is still attempted; source control flow catches each independently and continues, but those branches lack a direct negative control.",
-      "The asynchronous Fetch.requestPaused body-read handler is not awaited by cleanup. This is outside the requested cancellation diagnostic repair, but could leave a late observation racing final assessment if cleanup overlaps a body read."
+      {
+        "severity": "low",
+        "finding": "The new regression injects failure only for the old release. It does not independently inject Fetch.disable failure or detach failure to prove the later cleanup operation is still attempted; source control flow catches each independently and continues, but those branches lack a direct negative control.",
+        "next_action": "Add focused negative controls for disable failure and detach failure, asserting each later cleanup operation is attempted and final cleanup remains unverified."
+      },
+      {
+        "severity": "medium",
+        "finding": "The asynchronous Fetch.requestPaused body-read handler is not awaited by cleanup. Cleanup can overlap a body read and permit a late observation to race final assessment.",
+        "next_action": "Track in-flight pause handlers and await their settled completion during cleanup, or explicitly prevent observations from mutating facts after cleanup starts; add a cancellation/cleanup regression for the selected behavior."
+      }
     ],
     "boundary": "No tests, browser, native app, or product runtime were launched for this review. Existing retained test stdout and resource journals were inspected as supplied evidence, not independently rerun."
   },
@@ -42,5 +50,5 @@
     ".research/t57-public-release-diagnostics-final-20261007.stdout": "6cf1151244d90949f01a4f002f613f3680381900b96399925bb8dd3ee299b9d2"
   },
   "commit_evidence": "a28945dc7920e741efc08f8d7a2bd2dcbce640c7; retained diagnostic source/test/evidence matched declared SHA-256 values.",
-  "report_status": "independent_review_complete; diagnostics accepted within scope; native acceptance remains pending"
+  "report_status": "independent_review_complete; D47 closed at original bounded scope; T57 broader case remains unverified; diagnostics accepted within scope"
 }
