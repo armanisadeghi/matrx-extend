@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "status": "partial_procedure_integration",
+  "cases": ["EXT-F-4021-T01", "EXT-F-4028-T01", "EXT-F-4153-T01"],
+  "missing_steps_expected_before": 48,
+  "missing_steps_expected_after": 45,
+  "review": ".research/inventory-next-three-procedures-final-peer-20261007.json",
+  "limits": "No runtime results or mode cells promoted. Direct-handler procedures only; all original dimensions preserved, design_status remains needed. Cold idle restart, navigation, permission denial, offline recovery and dispatcher behavior remain explicitly unverified."
+}
