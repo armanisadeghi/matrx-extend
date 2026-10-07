@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
+  assessD47ManualRelease,
   assessD47StaleTrace,
   assessD47Trace,
   captureD47SaveClick,
@@ -9,6 +10,76 @@ import {
   safeD47SaveClickFailure,
   sanitizeD47Failure,
 } from './showcase-d47-driver-evidence.mjs';
+
+test('manual late response requires a finished write after the current binding trace', () => {
+  const prior = { manual_pending: true };
+  const currentTrace = { ok: true };
+  const finished = {
+    current_response_sent: true,
+    manual_release_prestate: 'pending',
+    manual_pending_finished: true,
+    manual_pending_aborted: false,
+  };
+  assert.deepEqual(
+    assessD47ManualRelease({
+      releaseHttpStatus: 200,
+      pendingBeforeReplay: prior,
+      currentTrace,
+      afterRelease: finished,
+    }),
+    { verdict: 'finished_after_current', reason: null },
+  );
+  assert.deepEqual(
+    assessD47ManualRelease({
+      releaseHttpStatus: 409,
+      pendingBeforeReplay: prior,
+      currentTrace,
+      afterRelease: {
+        ...finished,
+        manual_release_prestate: 'aborted',
+        manual_pending_finished: false,
+        manual_pending_aborted: true,
+      },
+    }),
+    { verdict: 'unverified_canceled_before_release', reason: null },
+  );
+  assert.equal(
+    assessD47ManualRelease({
+      releaseHttpStatus: 409,
+      pendingBeforeReplay: prior,
+      currentTrace,
+      afterRelease: {
+        ...finished,
+        manual_release_prestate: 'aborted',
+        manual_pending_finished: false,
+        manual_pending_aborted: false,
+      },
+    }).verdict,
+    'unverified_canceled_before_release',
+  );
+  for (const input of [
+    { releaseHttpStatus: 409, pendingBeforeReplay: prior, currentTrace, afterRelease: finished },
+    {
+      releaseHttpStatus: 200,
+      pendingBeforeReplay: prior,
+      currentTrace,
+      afterRelease: { ...finished, manual_pending_aborted: true },
+    },
+    {
+      releaseHttpStatus: 200,
+      pendingBeforeReplay: prior,
+      currentTrace: { ok: false },
+      afterRelease: finished,
+    },
+    {
+      releaseHttpStatus: 200,
+      pendingBeforeReplay: { manual_pending: false },
+      currentTrace,
+      afterRelease: finished,
+    },
+  ])
+    assert.equal(assessD47ManualRelease(input).verdict, 'invalid');
+});
 import { isD47StaleRefusal } from './showcase-d47-saved-result.mjs';
 
 const origin = 'http://127.0.0.1:4179';

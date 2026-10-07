@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "status": "source_oracle_guard_verified_native_unverified",
+  "scope": "D47 manual delayed-response oracle repair; no native/browser execution",
+  "prelaunch_hashes_sha256": {
+    "tests/browser/showcase-d47-driver-evidence.mjs": "593601023c0556f51084387698f91765d1733fd76763c2e2067acb4588be9406",
+    "tests/browser/showcase-d47-driver-evidence.test.mjs": "25bdeb5f644280baa6b04f19e00e6ecdafa6172bf5639cceb7c9a4aded63e310",
+    "tests/browser/showcase-d47-document-lifecycle.mjs": "c0f47bb9f1df407a0b1131f243f1e9c886404521795befa6c3eec841cc0fc24f",
+    "tests/browser/.d47-manual-oracle-mutant.mjs": "6846066ee96dfc11f70e075443212bba4acf961579910ceb20900c22d47dd40c",
+    ".research/d47-manual-prior-oracle-20261007/mutant-source.mjs.txt": "6846066ee96dfc11f70e075443212bba4acf961579910ceb20900c22d47dd40c",
+    "tests/unit/d47-manual-oracle-mutant.test.ts": "4b77e53fa7e5f99d2e5930e372b3969e70d508d126b23e07a67afe99193ddff7",
+    ".research/d47-manual-prior-oracle-20261007/mutant-test.ts.txt": "4b77e53fa7e5f99d2e5930e372b3969e70d508d126b23e07a67afe99193ddff7"
+  },
+  "mutant": "Only the aborted/409 branch returns finished_after_current instead of unverified_canceled_before_release.",
+  "planned_runs": [
+    {
+      "run_id": "d47-manual-oracle-green-20261007",
+      "command": "node --test tests/browser/showcase-d47-driver-evidence.test.mjs",
+      "stdout": ".research/d47-manual-prior-oracle-20261007/green.out"
+    },
+    {
+      "run_id": "d47-manual-oracle-red-retry-20261007",
+      "command": "pnpm exec vitest run --maxWorkers=1 tests/unit/d47-manual-oracle-mutant.test.ts",
+      "stdout": ".research/d47-manual-prior-oracle-20261007/red-retry.out"
+    }
+  ],
+  "invalid_attempt": {
+    "run_id": "d47-manual-oracle-red-20261007",
+    "reason": "Vitest include glob excluded browser .mjs scratch test; no tests executed; no mutation verdict",
+    "stdout": ".research/d47-manual-prior-oracle-20261007/red.out"
+  },
+  "source_hashes_at_finish_sha256": {
+    "tests/browser/showcase-d47-driver-evidence.mjs": "593601023c0556f51084387698f91765d1733fd76763c2e2067acb4588be9406",
+    "tests/browser/showcase-d47-driver-evidence.test.mjs": "25bdeb5f644280baa6b04f19e00e6ecdafa6172bf5639cceb7c9a4aded63e310",
+    "tests/browser/showcase-d47-document-lifecycle.mjs": "c0f47bb9f1df407a0b1131f243f1e9c886404521795befa6c3eec841cc0fc24f",
+    "tests/fixtures/showcase-replay/README.md": "9acd7ec65ffb60ad098bdedca3aef51525a853bba8ff4f6230625ec223bb0eca",
+    ".research/d47-manual-prior-oracle-20261007/mutant-source.mjs.txt": "6846066ee96dfc11f70e075443212bba4acf961579910ceb20900c22d47dd40c",
+    ".research/d47-manual-prior-oracle-20261007/mutant-test.ts.txt": "4b77e53fa7e5f99d2e5930e372b3969e70d508d126b23e07a67afe99193ddff7"
+  },
+  "results": [
+    {
+      "run_id": "d47-manual-oracle-green-20261007",
+      "outcome": "valid_green_20_of_20",
+      "stdout": ".research/d47-manual-prior-oracle-20261007/green.out",
+      "stdout_sha256": "676d8dea2ef860b8561fb531739ea502288ffeb4da8e229a86294b1a804b5ab6",
+      "journal": "docs/stabilization/resource-journals/d47-manual-oracle-green-20261007.jsonl",
+      "journal_sha256": "e6881cfe01ce78c4660d068f58f5272d53c5e89991ca62436f2c2926c3f4ee47"
+    },
+    {
+      "run_id": "d47-manual-oracle-red-20261007",
+      "outcome": "excluded_setup_failure_no_test_files_found",
+      "stdout": ".research/d47-manual-prior-oracle-20261007/red.out",
+      "stdout_sha256": "0801ccb92f57e35d6c15a8e8fffce781667c471c6a28a3dcf7776511694b07c3",
+      "journal": "docs/stabilization/resource-journals/d47-manual-oracle-red-20261007.jsonl",
+      "journal_sha256": "3924ceeb8fd29680911378e16f98a2ac0a91065af6019504195061bcd0fefe9c"
+    },
+    {
+      "run_id": "d47-manual-oracle-red-retry-20261007",
+      "outcome": "valid_behavioral_red_1_of_1",
+      "assertion": "tests/unit/d47-manual-oracle-mutant.test.ts:14 expected unverified_canceled_before_release, got finished_after_current",
+      "stdout": ".research/d47-manual-prior-oracle-20261007/red-retry.out",
+      "stdout_sha256": "97d78da598e5ae410d5250d055fd9f98a0fb66a9ea169a5a2a69f2851b50cb93",
+      "journal": "docs/stabilization/resource-journals/d47-manual-oracle-red-retry-20261007.jsonl",
+      "journal_sha256": "d02c4d20f3a2e33fe650527f9c97e68799c3d88131bd3aed29952370dfd37a80"
+    }
+  ],
+  "ruling": "A delayed manual response counts as bounded server-finish isolation only for HTTP 200, prior pending state, finished=true, aborted=false, positive current trace, and pending manual request before replay. HTTP 409 with aborted prior state and no finish is explicitly unverified cancellation; server finish is not browser callback delivery.",
+  "native_limit": "No native run, build, release, DB or secrets. Full D47/T57 and prior saved-run binding isolation remain unverified."
+}

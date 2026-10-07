@@ -96,5 +96,10 @@
   ],
   "observability": "The route uses a real old-page button and ordinary Network Start/Stop. A completed same-URL manual fetch must appear as exactly one visible Network list row; a second manual-origin fetch starts under that tap and remains pending through replay reload. Release follows a positive current binding handshake, packet hash and context assessment. Existing old-target HTTP lifecycle and exact saved-row terminal checks remain.",
   "native_limit": "No native browser execution, artifact dispatch, local build, release, DB, or secret access in this lane. Server finish or cancellation of an old manual-origin response will be labeled architectural/lifecycle exclusion unless an actual old callback is observed. Earlier-run binding-name isolation remains a separate unverified native branch.",
-  "verification_note": "Node syntax checks passed for driver and fixture; git diff --check passed. Biome check used --diagnostic-level=error and exited 0 with no fixes. The driver post-test change did not change fixture source/test/mutant bytes."
+  "verification_note": "Node syntax checks passed for driver and fixture; git diff --check passed. Biome check used --diagnostic-level=error and exited 0 with no fixes. The driver post-test change did not change fixture source/test/mutant bytes.",
+  "followup_oracle_repair": {
+    "evidence": ".research/d47-manual-prior-oracle-20261007.json",
+    "finding": ".research/d47-manual-native-route-peer-20261007.json",
+    "status": "guarded_source_repair_native_unverified"
+  }
 }

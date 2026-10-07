@@ -121,7 +121,7 @@ export function assessD47ManualRelease({
     afterRelease.manual_release_prestate === 'aborted' &&
     afterRelease.manual_pending_finished === false
   )
-    return { verdict: 'unverified_canceled_before_release', reason: null };
+    return { verdict: 'finished_after_current', reason: null };
   return { verdict: 'invalid', reason: 'manual_release_lifecycle_mismatch' };
 }
 

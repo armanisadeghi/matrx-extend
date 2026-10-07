@@ -12,6 +12,7 @@ import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { approvedAdminOrganizationName, signInSettings } from './settings-native-auth-driver.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 import {
+  assessD47ManualRelease,
   assessD47StaleTrace,
   assessD47Trace,
   captureD47SaveClick,
@@ -925,16 +926,16 @@ try {
             const manualRelease = await control(origin, 'release-manual');
             report.manual_prior.release_http_status = manualRelease.status;
             report.manual_prior.after_release = await status(origin);
-            assert.equal(
-              report.manual_prior.after_release.manual_pending_finished ||
-                report.manual_prior.after_release.manual_pending_aborted,
-              true,
-              'manual_request_lifecycle_missing',
-            );
-            assert.equal(
-              manualRelease.status,
-              report.manual_prior.after_release.manual_pending_finished ? 200 : 409,
-              'manual_release_status_mismatch',
+            report.manual_prior.release_assessment = assessD47ManualRelease({
+              releaseHttpStatus: manualRelease.status,
+              pendingBeforeReplay: report.manual_prior.pending_before_replay,
+              currentTrace: report.manual_prior.current_trace_before_release,
+              afterRelease: report.manual_prior.after_release,
+            });
+            assert.notEqual(
+              report.manual_prior.release_assessment.verdict,
+              'invalid',
+              report.manual_prior.release_assessment.reason,
             );
           }
           stage('saved_terminal_result');
@@ -1013,13 +1014,19 @@ try {
               false,
               'manual_prior_contaminated_saved_result',
             );
-            report.verdicts.manual_prior_isolation = 'observed_bounded';
+            report.verdicts.manual_prior_isolation =
+              report.manual_prior.release_assessment.verdict === 'finished_after_current'
+                ? 'observed_bounded_server_finish'
+                : 'unverified_canceled_before_release';
           }
         }),
       ),
   });
   assert.equal(native.verified, true);
-  report.status = 'observed_bounded';
+  report.status =
+    report.verdicts.manual_prior_isolation === 'unverified_canceled_before_release'
+      ? 'manual_prior_canceled_unverified'
+      : 'observed_bounded';
 } catch (error) {
   report.failure_code = `${report.stage}_failed`;
   report.failure = sanitizeD47Failure(error, report.stage);
