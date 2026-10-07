@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "reviewed_correction_commit": "823724eb97ab6887f4c41a6096054a831da849dc",
+  "inherited_commit": "a9ed51dd",
+  "review_mode": "Fresh independent read-only source and recorded-evidence re-review; no tests or native browser replay",
+  "finding_disposition": {
+    "lost_install_acknowledgement": "ADDRESSED: installPassiveWorkerProbe invokes onAttempt immediately before Runtime.evaluate. The lifecycle sets probeInstallAttempted there, and withD47Cleanup calls cleanupD47Probe before the native harness tears down its owned browser. removePassiveWorkerProbe removes the listener and confirms hasListener is false before worker detach. The global probe is recorded before addListener, so an evaluation that never ran reports confirmed absence.",
+    "primary_failure_preservation": "ADDRESSED: withD47Cleanup retains the exercise error as primary and records probe_cleanup if removal or detach fails. An otherwise clean exercise fails closed with worker_probe_cleanup_failed. The lost-acknowledgement test keeps ack_lost primary; the failed-removal test reports remove_failed.",
+    "new_breakage": "NONE FOUND in the correction diff. Runtime.enable failure precedes the installation attempt; no listener is installed in that path. The probe helper preserves the existing event capture logic."
+  },
+  "verdict_a_spec": {
+    "result": "PARTIAL",
+    "scoped_correction": "PASS on source: attempted installation is cleaned while the worker and browser are owned; absent installation is idempotent; actual removal failure prevents a clean pass; an earlier replay failure remains primary.",
+    "native_acceptance": "UNVERIFIED: no fresh signed-in installed-artifact replay was run in this review or the builder correction. The current saved result, listener removal, and run-owned recipe absence remain native acceptance targets. This correction is not D47/T57 product closure."
+  },
+  "verdict_b_quality": {
+    "result": "PASS for this scoped correction",
+    "evidence": "The focused worker-probe guard is in CI. Recorded resource-admitted run d47-probe-ack-green-20261007-2 exited 0 with 3/3 passing. The acknowledgement-only and constant-success mutations were admitted and exited 1 at 2/3, demonstrating the guard rejects the original state bug and a vacuous installer. Recorded d47-probe-biome-green-20261007-1 exited 0. Source review confirms removal uses chrome.debugger.onEvent.hasListener and cleanupD47Probe records remove_failed/detach_failed.",
+    "limit": "The focused tests use a VM worker harness; they do not prove native extension behavior. Journal files establish admitted child exit codes, while detailed assertion counts come from the builder report."
+  },
+  "open_items": [
+    "Fresh signed-in native replay on a current installed artifact, with terminal result and owned-resource cleanup evidence, remains required before D47/T57 closure."
+  ]
+}
