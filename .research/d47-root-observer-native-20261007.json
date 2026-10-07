@@ -154,13 +154,27 @@
     "size_bytes": 64832,
     "result_file_sha256": "ed403eea2891091b0916a40e52a995387d46d538d4f6d05284fa127e1b0cba63",
     "uploaded_files": ["showcase-d47-native-37554362947-1.json"],
-    "screenshots_included": false
+    "screenshots_included": false,
+    "retained_evidence": {
+      "sanitized_native_subset": ".research/d47-root-observer-native-20261007/native-evidence.json",
+      "sanitized_native_subset_sha256": "918a15196c6972ee4e1c9a5243346c7afec825c8681ee922e9e121ea6d13e490",
+      "resource_final_decisions": ".research/d47-root-observer-native-20261007/resource-final-decisions.jsonl",
+      "resource_final_decisions_sha256": "37055da97825b8fb983864ad74e3977444e0d27d287f96ad41dac416e246ec72"
+    }
   },
   "scope_limit": "This one bounded native run supports exact current saved-result observation and the accepted architectural exclusion route for this frozen artifact. It does not close EXT-D-0047/T57, prove old callback cancellation or delivery, prove the replay settled, or certify the later alchemy 0.14.0 lockfile. The defect remains in-fix.",
   "cleanup": {
     "hosted_job_terminal": true,
     "hosted_child_processes": "all guarded phases exited with code 0",
     "temporary_secrets_absent": true,
-    "local_test_or_browser_launched": false
+    "local_test_or_browser_launched": false,
+    "saved_recipe": {
+      "status": "removed_exactly_and_absence_verified",
+      "recipe_id": "6557e3b3-41b8-43b6-af64-05d6721357a9",
+      "evidence": ".research/d47-owned-recipe-cleanup-20261007.json",
+      "evidence_commit": "cdae4b060082a1962a1290d4ac661db5c299ee8c"
+    },
+    "passive_debugger_probe": "listener removal failed; worker detach had no recorded failure",
+    "local_fixture_server": "stopFixture was called from the driver finally block; explicit stop result was not retained"
   }
 }

@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "status": "observed_bounded",
+  "stage": "binding_evidence",
+  "artifact": {
+    "source_sha": "a6e0ef68d40ad8661baf7be7e6518783f85c173d",
+    "run_id": 37553646030,
+    "artifact_id": 11454177514,
+    "tree_sha256": "af369f6123075b97d677bbd71cca7625f8b20f3173d89dcce23a758da9741425",
+    "version": "0.2.334"
+  },
+  "fixture": {
+    "before_release": {
+      "phase": "armed",
+      "page_loads": 2,
+      "target_requests": 2,
+      "old_pending": true,
+      "old_response_aborted": false,
+      "old_response_finished": false,
+      "old_response_released": false,
+      "old_release_prestate": null,
+      "old_release_outcome": null,
+      "current_response_sent": true
+    },
+    "release_http_status": 200,
+    "after_release": {
+      "phase": "armed",
+      "page_loads": 2,
+      "target_requests": 2,
+      "old_pending": false,
+      "old_response_aborted": false,
+      "old_response_finished": true,
+      "old_response_released": true,
+      "old_release_prestate": "pending",
+      "old_release_outcome": "server_finished",
+      "current_response_sent": true
+    }
+  },
+  "contexts": [
+    {
+      "order": 1,
+      "kind": "context_created",
+      "tab_id": 2008142274,
+      "id": 7,
+      "unique_id": "5725754812989175053.8019409382847809876",
+      "frame_id": "C0B442E5244A6619E579FB12C996564B"
+    },
+    {
+      "order": 2,
+      "kind": "contexts_cleared",
+      "tab_id": 2008142274
+    },
+    {
+      "order": 3,
+      "kind": "frame_navigated",
+      "tab_id": 2008142274,
+      "frame_id": "C0B442E5244A6619E579FB12C996564B",
+      "current_fixture": true
+    },
+    {
+      "order": 4,
+      "kind": "context_created",
+      "tab_id": 2008142274,
+      "id": 10,
+      "unique_id": "396843446339804045.-6377297913166196832",
+      "frame_id": "C0B442E5244A6619E579FB12C996564B"
+    }
+  ],
+  "binding_events": [
+    {
+      "order": 5,
+      "kind": "binding",
+      "tab_id": 2008142274,
+      "context_id": 10,
+      "handshake": true,
+      "target_packet": false,
+      "url": null,
+      "method": null,
+      "source": null,
+      "request_body_key": "other",
+      "status": null,
+      "request_sequence": null,
+      "current_payload": false,
+      "old_payload": false,
+      "body_sha256": null
+    },
+    {
+      "order": 6,
+      "kind": "binding",
+      "tab_id": 2008142274,
+      "context_id": 10,
+      "handshake": false,
+      "target_packet": true,
+      "url": "http://127.0.0.1:49190/api/document-race",
+      "method": "GET",
+      "source": "fetch",
+      "request_body_key": "none",
+      "status": 200,
+      "request_sequence": 1,
+      "current_payload": true,
+      "old_payload": false,
+      "body_sha256": "f98b5b68b8f45441831808df62c253a986cda3c55df85a76015ffeaa4d14c3e8"
+    }
+  ],
+  "saved_result": {
+    "page_phase_current": true,
+    "page_result_current": true,
+    "panel_current": true,
+    "panel_old": false
+  },
+  "terminal_observation": {
+    "sample_count": 158,
+    "first": {
+      "elapsed_ms": 376.37970900000073,
+      "remaining_ms": 49623.61091599999,
+      "exact_recipe": false,
+      "current_row": false,
+      "old_row": false,
+      "running": false,
+      "error_present": false,
+      "observation_unavailable": false,
+      "header_status": "absent",
+      "preview_status": "absent"
+    },
+    "last": {
+      "elapsed_ms": 19994.33825,
+      "remaining_ms": 30005.658082999988,
+      "exact_recipe": true,
+      "current_row": true,
+      "old_row": false,
+      "running": true,
+      "error_present": false,
+      "observation_unavailable": false,
+      "header_status": "exact",
+      "preview_status": "current_only"
+    },
+    "started_at_elapsed_ms": 98927.143833
+  },
+  "trace_assessment": {
+    "ok": true,
+    "reason": null,
+    "current_packet_before_commit": false,
+    "context_order": 4,
+    "handshake_order": 5,
+    "packet_order": 6,
+    "commit_order": 3,
+    "old_terminal_kind": "contexts_cleared"
+  },
+  "current_packet_before_commit": false,
+  "verdicts": {
+    "current_saved_replay": "pass",
+    "delayed_old_binding": "architecturally_excluded_observed",
+    "cancellation": "unverified"
+  },
+  "probe_cleanup": [
+    "remove_failed"
+  ]
+}
