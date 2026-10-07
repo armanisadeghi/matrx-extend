@@ -99,7 +99,7 @@
     "hosted_package": "valid; admitted=true; resourceInvalid=false; child exit 0",
     "hosted_browser": "valid; admitted=true; resourceInvalid=false; child exit 0",
     "hosted_native": "valid; admitted=true; resourceInvalid=false; child exit 0; watchdog remained healthy",
-    "journal_recovery": "Journals were not in the uploaded artifact. Exact JSONL journal bytes were reconstructed from the authenticated action-log event objects using the resource-journal writer whitelist and JSON serializer; each includes its final valid decision.",
+    "journal_recovery": "The original nested resource-journal files were found in the retained hosted checkout at docs/stabilization/resource-journals/. Their bytes were independently verified against the curated copies by SHA-256; all three hashes match exactly. Each journal includes its final valid decision.",
     "journals": [
       {
         "run_id": "hosted-package-37699585477-1",
