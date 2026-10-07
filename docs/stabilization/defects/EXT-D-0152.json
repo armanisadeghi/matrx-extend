@@ -7,7 +7,7 @@
   "title": "Guest Account readiness screenshot is omitted from hosted artifact",
   "severity": "S3",
   "priority": "P1",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root",
   "reproduction": [
     "Run hosted visibility-census-guest at be19faca using original CI37619740064/artifact11482071536.",
@@ -18,13 +18,15 @@
   "actual": "Workflow uploads census JSON but omits adjacent readiness PNG; visual readiness cannot be verified after runner ends.",
   "evidence": [
     ".research/guest-census-provenance-native-20261007.json",
-    ".research/guest-census-receipt-correction-20261007.json"
+    ".research/guest-census-receipt-correction-20261007.json",
+    ".research/guest-screenshot-upload-retest-20261007.json"
   ],
   "fix_shas": ["1e366f07"],
   "verification": {
     "source": "Exact guest PNG path added to workflow; independent native operator source-check accepted matching path.",
-    "native": "Corrected uploader not yet run; screenshot pixels remain unverified.",
-    "remote": "Source fix1e366f07 reached origin/main through3254a188 after GitHub writes recovered."
+    "native": "37643142383 independently verified actual artifact11492724650 includes readiness PNG SHA4883f4fc2cd744c01a634a00817a16d924ada0fdff98ed8ed04f505435409391; inspected pixels show Settings Account and enabled Sign in. Guest proof before/after; no resource invalidation. Full census still incomplete, no broader health claim.",
+    "remote": "Source fix1e366f07 reached origin/main through3254a188 after GitHub writes recovered.",
+    "independent_review": "f93ad790: separate A original-repro/pixels PASS and B quality/privacy accepted with explicit frozen0.2.366 limits."
   },
   "transition_history": [
     {
@@ -50,8 +52,20 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Source correction1e366f07 accepted; native delivery remains pending."
+    },
+    {
+      "at": "2026-10-07T15:32:05.525014+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Original missing-image reproduction no longer occurs in independently inspected hosted artifact; surrounding guest readiness and classification remain observed."
+    },
+    {
+      "at": "2026-10-07T15:32:05.525014+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Both native original-repro and quality/privacy verdicts accepted. T11 and27 unknown controls remain incomplete separately."
     }
   ],
   "closure_requirement": "Fresh guarded original-artifact census uploads exact readiness PNG; independent pixel inspection confirms Account/Sign in guest state.",
-  "next_action": "Follow active guarded original-artifact retest37643142383 through terminal and inspect uploaded Account PNG. Do not infer pixels from path alone."
+  "next_action": "Closed at exact original-artifact screenshot-delivery scope; continue T11 inventory reconciliation."
 }
