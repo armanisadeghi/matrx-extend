@@ -1,0 +1,57 @@
+{
+  "id": "EXT-D-0148",
+  "feature_id": "EXT-F-4163",
+  "case_ids": ["EXT-F-4163-T01"],
+  "title": "Canonical tab-group create drops the supported collapsed setting",
+  "surface": "Tools > Catalog > tab_groups; canonical delegated tool",
+  "auth_mode": "member/admin",
+  "state": "in-fix",
+  "owner": "root/tab_group_collapsed_fix",
+  "priority": "P1",
+  "severity": "S3",
+  "preconditions": [
+    "Receipt-bound development build with signed-in member/admin, two owned disposable tabs and tab-group capability.",
+    "For deterministic source reproduction invoke real canonical handler with owned Chrome API stubs and retain forwarded arguments; this is not native proof."
+  ],
+  "reproduction": [
+    "Invoke tab_groups with action=create, owned tab_ids, and collapsed=true.",
+    "Inspect Chrome tabGroups.update call and resulting group state; compare with create_tab_group invoked with identical options.",
+    "Repeat with collapsed=false and title/color controls; then explicitly update collapsed via tab_groups action=update."
+  ],
+  "expected": "The canonical merger preserves the existing leaf create collapsed option, consistent with its explicit no-capability-loss charter.",
+  "actual": "Source inspection shows create forwards tab_ids/title/color but omits collapsed; update forwards it. The canonical inline comment and generated description mention collapse only for update, so accepted schema input alone is not evidence; the defect is the lost existing leaf capability. Native behavior and deterministic RED verification remain pending.",
+  "evidence": [
+    "src/lib/tools/handlers/canonical-mergers.ts module charter and tab_groups create branch",
+    "src/lib/tools/handlers/tabs.ts create_tab_group",
+    ".research/inventory-six-procedures-peer-20261007.json"
+  ],
+  "reproducibility": "Deterministic guarded real canonical delegation seam: both create collapsed=true and collapsed=false fail; 71 sibling contract cases pass.",
+  "build_receipt": null,
+  "fix_shas": [],
+  "verification": {
+    "source": "Guarded ext-d-0148-tab-groups-red2-20261007: 73 cases, exactly two omitted-collapsed failures; worker evidence report pending.",
+    "native": "unverified",
+    "independent_review": "pending",
+    "release": "unverified"
+  },
+  "transition_history": [
+    {
+      "at": "2026-10-07T11:22:33.059321+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Independent procedure review exposed an existing leaf capability dropped by canonical routing; scoped investigation assigned."
+    },
+    {
+      "at": "2026-10-07T11:23:10.160364+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Guarded exact true/false reproduction confirms lost leaf option with71 sibling passes."
+    },
+    {
+      "at": "2026-10-07T11:23:10.160364+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Scoped canonical forwarding repair assigned; native results remain unverified."
+    }
+  ]
+}

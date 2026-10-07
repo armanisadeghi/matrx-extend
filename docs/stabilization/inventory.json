@@ -61730,13 +61730,13 @@
         },
         "member": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": ["EXT-D-0148"],
           "run_ids": [],
           "retest_status": "not-run"
         },
         "admin": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": ["EXT-D-0148"],
           "run_ids": [],
           "retest_status": "not-run"
         }
