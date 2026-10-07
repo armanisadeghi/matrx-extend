@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent-source-peer-review",
+  "reviewed_artifact": ".research/stylesheet-procedures-20261007.json",
+  "reviewed_commits": ["f3a85b89", "d735c159"],
+  "scope": ["EXT-F-4125-T01", "EXT-F-4126-T01", "EXT-F-4167-T01"],
+  "verdict_A_spec_executability": {
+    "EXT-F-4125-T01": "MANUAL PROCEDURE EXECUTABLE, RUNTIME UNVERIFIED. C01 has a fixed reachable target, owned tab and exact CSS; the valid direct handler call, schema negatives, visible effect, same-run cleanup and page-reload boundary are sequenced. Dispatcher/confirmation and permission-denial dimensions remain outside this manual path and explicitly unverified.",
+    "EXT-F-4126-T01": "MANUAL PROCEDURE EXECUTABLE, RUNTIME UNVERIFIED. C01 first establishes a visibly changed style on this run's owned tab, then removes the identical CSS and checks restoration before reload. Invalid values are schema negatives; a failed remove is not disguised by page-reload cleanup. Dispatcher/confirmation and permission-denial remain unverified.",
+    "EXT-F-4167-T01": "MANUAL PROCEDURE EXECUTABLE, RUNTIME UNVERIFIED. C01-C03 preserve the canonical action=inject and action=remove branches, their valid and invalid inputs, exact same-run CSS cleanup and lifecycle boundary. This covers the Tools direct handler path only; delegated routing, confirmation and permission-denial remain unverified."
+  },
+  "verdict_B_quality": "ACCEPT FOR MANUAL EXECUTION WITH EXPLICIT LIMITS. The earlier false unknown-key rejection is gone, the ephemeral fixture dependency is replaced by a fixed public demo route, and API success is separated from visible styling. The procedures preserve role and control IDs, constrain mutation to a newly opened owned tab and exact CSS, and label every unexecutable dispatcher or permission dimension. No runtime result or full inventory closure is claimed.",
+  "findings": [],
+  "source_checks": [
+    "src/lib/tools/handlers/privileged.ts:15-67: leaf schemas require nonempty CSS and optional integer tab_id; insertCSS/removeCSS target that tab and return ok only after the API resolves. The objects are non-strict, so extra keys are stripped rather than rejected.",
+    "src/lib/tools/handlers/canonical-mergers.ts:459-479: action is inject or remove, css is nonempty, tab_id is optional integer; both valid branches delegate to the leaf handlers.",
+    "src/features/tools/ToolsView.tsx:397-462,557: manual Run safeParses with the local Zod schema and calls handler.run with permissionMode act; the UI says Test mode bypasses approval. Thus manual Run does not prove dispatcher confirmation.",
+    "src/lib/tools/dispatch.ts:816-840: delegated privileged calls request confirmation, separate from Tools manual Run.",
+    "tests/browser/native-sidepanel-qa-harness.mjs:1375-1380 allows the exact https://www.aimatrx.com/matrx-extend-demo route and waits for visible main article. A read-only HTTP fetch during this review returned 200 at that exact URL, title 'Matrx Extend Demo Page - AI Matrx', and one h1, 'A clear three-stage browser workflow'. This is target availability evidence, not browser execution evidence.",
+    "docs/stabilization/inventory.json:64439-64699,72951-73108 preserves the three case IDs, controls C01/C01/C01-C03 and member/admin applicability; guest is not applicable to these Tools UI cases. The inventory still requires permissions and reload dimensions, so manual results alone cannot close those cells.",
+    "docs/stabilization/PLAN.md:24-45 requires a resource permit and a current build receipt and separates extension reload from target-page reload."
+  ],
+  "prior_issue_resolution": {
+    "unknown_keys": "Corrected: persist/persistent are identified as unsupported inventory drift and excluded from no-effect negatives because Zod may strip them and execute.",
+    "ephemeral_fixture": "Corrected: a live fixed public demo URL replaces the temporary /referrals server; each run checks exact URL and target heading before proceeding.",
+    "delegated_path": "Correctly bounded: Chat/Pilot dispatcher, privileged approval/denial and Pilot scope are explicitly not executable in these manual cases and remain unverified.",
+    "permission_denial": "Correctly bounded: declared activeTab/scripting permissions and observed handler output are separate; no permission-denial pass is inferred.",
+    "prior_peer_integrity": "The current .research/stylesheet-procedure-peer-20261007.json SHA-256 matches git show f9efbcad:.research/stylesheet-procedure-peer-20261007.json byte for byte: 6e4f760bfa48938649401869d99ee3fe8e53f28e7b13895a58a951e043053bb6. This review was performed independently of the worker's restoration claim."
+  },
+  "limits": "Source review and read-only HTTP fetch only. No browser, native UI, test, build, database, credential use, permission manipulation or inventory edit. This review does not establish CSS application/removal, Chrome activeTab behavior, member/admin profile access, or any case pass."
+}
