@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "lane": "fresh independent original-hosted-artifact evidence review; no product authorship or native rerun",
+  "reviewed_run": {
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37558902653",
+    "id": 37558902653,
+    "head_sha": "fdae9c4b8eb421cabbea41bb6156bd34d847262d",
+    "conclusion": "success",
+    "original_artifact_id": 11456545136,
+    "original_artifact_name": "hosted-guest-37558902653-1",
+    "artifact_zip_sha256_from_upload_log": "2623d5c9b2ed01ac8958e93ad6e219f9c1151dbaefa18aeb89daac6e380b0dc7",
+    "original_receipt_sha256_independently_computed": "9d902d39796a9a2d876cfc36b90f2206f55279f9cc1ec50be3b8670c81e78f87",
+    "original_receipt_member": "_temp/showcase-d47-native-37558902653-1.json"
+  },
+  "source_artifact": {
+    "ci_run_id": 37558363826,
+    "ci_conclusion": "success",
+    "source_sha": "823724eb97ab6887f4c41a6096054a831da849dc",
+    "development_artifact_id": 11456086365,
+    "development_artifact_digest_from_api": "sha256:fd4fbbf39c878996b4a54c5c59b24afdae98d22bc0ec40d8580b4f124f45f107",
+    "original_receipt_tree_sha256": "a1a5691549cf15ee5b212ebf712eef31ef1942c7ac6d73835a49c9505ac10e1e",
+    "version": "0.2.337",
+    "import_log": "DEVELOPMENT_TEST_IMPORTED for exact CI source and run; exact_pushed_commit_only",
+    "harness_and_lock_equivalence": "git diff --name-only 823724eb fdae9c4b for hosted workflow, D47 driver/helpers/fixture and pnpm-lock.yaml was empty; both lockfile SHA256 values were 873379be301b01bc5c3795f2011c486fea5543f3c5c0bc7841a7be1ccbcabe73",
+    "later_lock_limit": "Current HEAD lockfile SHA256 e55bbb50b0a0bfdd025a60b24808cfa808d34db6e6d62d03bf4ccbfc74e7e348 differs; this run does not verify the later dependency state."
+  },
+  "resource_decisions_from_original_run_log": {
+    "package": "valid/admitted/exit0/resourceInvalid=false",
+    "browser": "valid/admitted/exit0/resourceInvalid=false",
+    "guest": "valid/admitted/exit0/resourceInvalid=false"
+  },
+  "observed_native_boundary": {
+    "surface": "The hosted D47 case calls runNativeSidepanelQa with headed Chromium and the imported unpacked extension; receipt reports admin extension authentication and approved organization. No mock service or synthetic binding packet is in this path.",
+    "recipe": "A unique run-owned recipe was created, observed in Patterns, and its exact visible Run control clicked; terminal reader scopes to Last run: exact recipe and the adjacent result table.",
+    "terminal": "After 163 samples over 20.370 seconds, exact_recipe=true, current_row=true, old_row=false, running=false, error_present=false, observation_unavailable=false, header=exact, preview=current_only. The row contains Canyon Frequency and document=current; the old Moonlit Transit row is absent.",
+    "http_lifecycle": "Before release, old request pending and current response sent. The release returned HTTP 200; afterward old_response_finished=true, old_response_aborted=false. This is current-then-old response ordering at the fixture server, not an old delivered binding callback.",
+    "document_trace": "Old default main-frame context id7/unique ID was recorded before replay. Contexts cleared, the same main frame navigated, and current default context id10 had a different unique ID. The extension-worker passive observer recorded a same-name handshake at order5 and one GET/fetch/200 target response at order6 with request_sequence=1 and the expected current body SHA256 f98b5b68b8f45441831808df62c253a986cda3c55df85a76015ffeaa4d14c3e8. The trace assessor reported ok=true; no old binding packet was recorded.",
+    "cleanup": "Original receipt says exact run-owned recipe cleanup=removed. Source cleanup waits for that exact Patterns row to disappear. probe_cleanup=null; source helper removes listener, asserts hasListener=false, then detaches the worker session. Both actions ran in the exercisePanel cleanup before the native browser helper returned verified=true; no removal or detach failure was reported. This is helper-confirmed cleanup, not a separate post-detach listener query."
+  },
+  "verdict_A_scope": {
+    "bounded_native_current_document": "PASS",
+    "full_T57_and_D47_closure": "PARTIAL_UNVERIFIED",
+    "limits": [
+      "Fixture is 127.0.0.1; canonical T57 requires a real public website and an initial document-load request on the installed build.",
+      "Canonical old-then-current release order is untested here; this run exercised current-then-old.",
+      "No old binding callback was delivered, so this run proves bounded architectural exclusion with positive current controls, not an actual delivered old-event rejection or higher-old-sequence native comparison.",
+      "Stale-only refusal/retrigger, manual or previous capture isolation, cancellation, and surrounding warm/reload/navigation/service-error cases are not established by this run."
+    ]
+  },
+  "verdict_B_evidence_quality": {
+    "bounded_receipt": "PASS_WITH_LIMITS",
+    "basis": "Original downloaded receipt and run log agree on exact artifact, real sidepanel path, terminal exact-recipe result, current binding positive controls, three valid resource decisions, and source-enforced cleanup. The terminal reader's success condition includes running=false and an available exact result. No builder summary was used as the sole source.",
+    "limits": [
+      "Current-only output plus absence of an old binding packet cannot by itself establish rejection of a delivered stale packet; root's architectural-exclusion ruling requires separate causal guards.",
+      "The HTTP server's old_response_finished flag does not prove old browser callback delivery or cancellation.",
+      "The receipt records no separate listener-removal acknowledgment beyond null failure result; source establishes the asserted teardown path."
+    ],
+    "concrete_failure_found_in_this_bounded_run": false
+  },
+  "recommendation": "Accept this as settled native current-document and bounded architectural-exclusion evidence on frozen v0.2.337/823724eb only. Keep EXT-D-0047 in-fix and T57 unverified until public-site initial-load, reverse order, stale-only refusal, delivered higher-old-sequence guard and surrounding cases are independently verified."
+}
