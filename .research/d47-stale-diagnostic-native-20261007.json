@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "scope": "One authorized native stale-only attempt using the frozen development artifact from successful CI 37580349432. No release, tag, local build, or second native attempt.",
+  "status": "unverified_resource_guard_invalidated",
+  "workflow": {
+    "run_id": 37581293963,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37581293963",
+    "dispatch_ref": "main",
+    "workflow_head": "5c11dd3372a08082c2660aad8efa8b21b601a107",
+    "case": "showcase-d47-admin",
+    "response_order": "stale-only",
+    "terminal": "failure",
+    "failed_step": "Exercise the selected Chrome side-panel case",
+    "action_artifact_id": 11464863298,
+    "action_artifact_name": "hosted-guest-37581293963-1",
+    "action_artifact_digest": "sha256:a3bebe2e86834906fa88622d8f23068f639bd21927bef4ea68a9f9e4cf0540d7",
+    "action_artifact_contains_d47_receipt": false,
+    "source_scope_note": "The workflow ref resolved after source 5fc0ae39. Its hosted workflow, artifact importer, acceptance/profile/showcase routes, D47 lifecycle driver/evidence/reader, fixture server, and fixture README are unchanged from 5fc0ae39. Newer app code was not certified by this run."
+  },
+  "development_artifact": {
+    "ci_run_id": 37580349432,
+    "ci_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37580349432",
+    "ci_terminal": "success",
+    "artifact_id": 11463999781,
+    "artifact_name": "matrx-extend-development-test-5fc0ae3939dfbb1f1ba5696ca63a1a9d5b390d3d-37580349432-1",
+    "artifact_digest": "sha256:8c5f280562add48d0c24e0a52594ec6f38df54cf45ab510755d15d0f5ca81555",
+    "source_sha": "5fc0ae3939dfbb1f1ba5696ca63a1a9d5b390d3d",
+    "tree_sha256": "7a46872cf0b4e245e3f40608f674924d1b63f25779801c4438465e5d5b53f932",
+    "importer_validation": "The hosted importer verified the exact run, artifact, provenance, receipt, and extension tree. Native test code loaded this imported directory and rechecked its tree hash; no runtime code was copied from the workflow checkout into the extension."
+  },
+  "resource_guard": {
+    "package": {
+      "journal": "docs/stabilization/resource-journals/d47-stale-diagnostic-native-37581293963-package.jsonl",
+      "sha256": "23ccc93646103ed44725bb89b558c57bf4e9865169aff78884858efe826ac4ec",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit": 0
+    },
+    "browser": {
+      "journal": "docs/stabilization/resource-journals/d47-stale-diagnostic-native-37581293963-browser.jsonl",
+      "sha256": "c5714bc164d7742111f212f66bb5e813b5f7eb86e6f56be33801345adcd74ae3",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit": 0
+    },
+    "native": {
+      "journal": "docs/stabilization/resource-journals/d47-stale-diagnostic-native-37581293963-guest.jsonl",
+      "sha256": "3e6bd8e5a3049261717fd3835e9f6a858a8c405082b2eba4257d9444bcee57fa",
+      "admitted": true,
+      "resource_invalid": true,
+      "events": [
+        "RESOURCE_CPU_PENDING: RESOURCE_CPU_BUSY",
+        "RESOURCE_WATCH_UNSAFE: RESOURCE_CPU_BUSY, RESOURCE_CPU_HIGH_LOAD_BUSY",
+        "RESOURCE_STOP_AT_SAFE_BOUNDARY",
+        "RESOURCE_GROUP_STOP_REQUESTED: watchdog SIGTERM",
+        "RESOURCE_FINAL_DECISION: invalid, child exit 3"
+      ],
+      "unsafe_watch_at": "2026-10-07T06:30:37.120Z",
+      "terminal_at": "2026-10-07T06:30:38.735Z"
+    },
+    "conclusion": "The native guard admitted the job, then invalidated it on CPU busy/high-load samples and stopped the owned process group. This invalidates the native observation; it is not a product verdict."
+  },
+  "verdicts": {
+    "actual_admin_login": "unverified_no_native_receipt",
+    "save_click_diagnostic": "unverified_no_native_receipt",
+    "recipe_persistence": "unverified_no_native_receipt",
+    "stale_only_refusal": "unverified_no_native_receipt",
+    "fresh_recovery": "unverified_no_native_receipt",
+    "owned_recipe_and_observer_cleanup": "unverified_no_native_receipt",
+    "product_failure_or_acceptance": "none_claimed"
+  },
+  "preflight_and_secret_cleanup": {
+    "canonical_credential_validator": "passed before staging",
+    "credential_source_mode_0600": true,
+    "approved_organization_fixture_mode_0600": true,
+    "actions_secrets_staged_immediately_before_dispatch": true,
+    "both_actions_secrets_deleted_after_terminal": true,
+    "names_only_absence_verification": "passed",
+    "local_private_staging_files_removed": true,
+    "secret_values_recorded": false
+  },
+  "evidence_limits": [
+    "The Actions artifact contains the three current-run resource journals and native harness screenshots, but no showcase-d47-native receipt. The protected runner log confirms the exact frozen artifact source/tree and driver import preflight; there is no completed D47 stage result.",
+    "The screenshots do not establish a Save click, persisted recipe, stale-only terminal refusal, fresh recovery, or product cleanup.",
+    "Only frozen app source 5fc0ae3939dfbb1f1ba5696ca63a1a9d5b390d3d is in scope. The workflow checkout was 5c11dd3372a08082c2660aad8efa8b21b601a107; newer main app code remains unverified."
+  ],
+  "no_rerun": true
+}
