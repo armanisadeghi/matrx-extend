@@ -28,10 +28,10 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Finish fresh independent raw-receipt review of ARM37582763499 before accepting bounded stale-only refusal/fresh recovery. FullT57 remains unverified; no active native run.",
+    "next_action": "Remaining manual/prior-run isolation native proof and fully retained causal higher-old-sequence checks, plus reconcile relevant source changes before whole-case closure. Do not repeat accepted stale-only/refusal/recovery absent relevant changes. FullT57 remains unverified.",
     "status": "Independent peer1abea43b accepts bounded old-first saved replay at frozen0.2.338/source651f25d0: observed old/current HTTP finish order, current context/packet, exact settled current-only saved row, valid resources and cleanup. Current-first earlier0.2.337 remains separately bounded. D47in-fix/T57unverified unchanged.",
     "implementation_agent": "completed: d47_save_click_evidence_fix; 19/19 resource-valid source checks, fresh independent bounded source review accepted",
-    "execution_agent": "completed: d47_stale_arm_retest; native37582763499 terminalsuccess, secretsremoved; independentreceipt reviewactive",
+    "execution_agent": "completed: d47_stale_arm_retest; native37582763499 independently accepted at bounded frozen5fc scope",
     "native_run_id": 37537634304,
     "workflow_source": "fbcc4311ae6885b67133e55336f692be38881249",
     "development_artifact_id": 11440764124,
@@ -148,10 +148,11 @@
     },
     "stale_only_resource_invalid_report": ".research/d47-stale-diagnostic-native-20261007.json",
     "stale_only_resource_peer": ".research/d47-stale-resource-peer-20261007.json",
-    "stale_only_arm_report": ".research/d47-stale-arm-native-20261007.json"
+    "stale_only_arm_report": ".research/d47-stale-arm-native-20261007.json",
+    "stale_only_arm_peer": ".research/d47-stale-arm-native-peer-20261007.json"
   },
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
-  "verification_status": "Independent reviews accept bounded current-first0.2.337 and old-first0.2.338 fixture replay. Fresh peer8dfbdee1 supports public initial capture, saved exact-recipe completed replay with hits and UI cleanup on frozen0.2.344/source2274d236/native37571487114, with valid resources. Whole-panel quiescence, selected organization context and post-checkbox receipt-level mask evidence are not established. Stale-only recovery, manual/prior-run isolation and causal higher-old-sequence coverage remain outstanding. D47 in-fix/T57 unverified.",
+  "verification_status": "Independent reviews accept bounded current-first0.2.337 and old-first0.2.338 fixture replay. Fresh peer8dfbdee1 supports public initial capture, saved exact-recipe completed replay with hits and UI cleanup on frozen0.2.344/source2274d236/native37571487114, with valid resources. Whole-panel quiescence, selected organization context and post-checkbox receipt-level mask evidence are not established. Stale-only recovery, manual/prior-run isolation and causal higher-old-sequence coverage remain outstanding. D47 in-fix/T57 unverified. Fresh peerb583ec01 accepts native37582763499 stale-only refusal and fresh current saved replay recovery on frozen0.2.347/source5fc0ae39 with valid resources and owned-recipe cleanup. This completes the bounded stale-only branch; manual/prior-run isolation and full-case acceptance remain unverified.",
   "source_report": "docs/stabilization/reports/showcase-network-final-peer.json",
   "transition_history": [
     {
