@@ -1,0 +1,65 @@
+PLANTED in /Volumes/Samsung2TB/code/matrx-extend/tests/browser/takeover-visible-census.mjs
+RESTORED /Volumes/Samsung2TB/code/matrx-extend/tests/browser/takeover-visible-census.mjs sha=8fe03fb4c82e original_sha=8fe03fb4c82e IDENTICAL
+----- command output (tail) -----
+✔ active Scrape, Data, and SEO tabs wait for their deferred visible controls (631.639666ms)
+✔ present but empty visible surfaces cannot complete an otherwise clean census (0.791083ms)
+✖ every role requires Scrape, Data, and SEO navigation even with populated surface buckets (1.780875ms)
+✔ surface readiness timeout retains fixed safe stage, tab, and count facts (206.861416ms)
+✔ known inventory labels map to source IDs while new visible controls stay explicit and private (0.533583ms)
+✔ browser version failures expose fixed safe diagnostics without transport content (0.271125ms)
+✔ backend mutation attempt is aborted without retaining URL or request body (0.199708ms)
+✔ unknown labels, inaccessible regions, and intercepted RPCs each prevent completeness (0.166ms)
+✔ Settings census observes the actual OpenUrl anchor as C39 without emitting its href (2.083125ms)
+✔ unknown DOM labels use a fresh keyed fingerprint without raw text or correlation (2.416708ms)
+✔ Settings census links only exact source-rendered row labels to observed controls (2.805333ms)
+✔ Desktop bridge census links each input and button only to its exact static row (2.289666ms)
+✔ direct census invocation refuses before browser or credentials without resource guard (87.752333ms)
+✔ hosted census role preflight requires real auth only for member and admin (0.296042ms)
+✔ discovery retains untitled and alternate tab shapes but only permits mapped native triggers (2.633833ms)
+✔ census distinguishes structural containers and actions from unopened regions with safe provenance (2.298042ms)
+✔ discovery retains summary, non-button expanders and unclassified section controls (1.692291ms)
+✔ Settings section readiness uses its active panel while retaining unknown section triggers (1.576458ms)
+✔ Settings readiness refuses an inactive panel or duplicate Account expanders inside it (1.89775ms)
+✔ guest evidence requires observed signed-out account and absent credentials (1.199292ms)
+✔ guest observation refuses every contradictory or missing auth signal without leaking identity (9.16825ms)
+✔ discovery contract detects an in-memory narrowed selector and constant-result replacement (6.530875ms)
+✔ guest contract detects a constant signed-out replacement (4.119125ms)
+✔ guest capture frames Account after signed-out proof and restricts an existing screenshot (4.200584ms)
+✔ guest screenshot failures retain stage and last safe observations without payloads (1.706167ms)
+✔ guest screenshot refuses capture when Account remains outside the viewport (0.92225ms)
+✔ guest screenshot refuses a one-pixel Account header or Sign in sliver (1.780333ms)
+ℹ tests 36
+ℹ suites 0
+ℹ pass 35
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1329.37075
+
+✖ failing tests:
+
+test at tests/browser/takeover-visible-census.test.mjs:89:1
+✖ every role requires Scrape, Data, and SEO navigation even with populated surface buckets (1.780875ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + []
+  - [
+  -   'tab:Scrape'
+  - ]
+  
+      at TestContext.<anonymous> (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/takeover-visible-census.test.mjs:132:14)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [],
+    expected: [ 'tab:Scrape' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+{"schema":1,"at":"2026-10-07T16:15:12.198Z","runId":"empty-surface-omission-red-20261007-01","childExitCode":1,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-07T16:15:12.241Z","runId":"empty-surface-omission-red-20261007-01","admitted":true,"resourceInvalid":false,"exitCode":1,"decision":"child_failed","code":"RESOURCE_FINAL_DECISION"}
+---------------------------------
+VERDICT: RED (rc=1, expected RED)

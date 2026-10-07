@@ -86,6 +86,55 @@ test('present but empty visible surfaces cannot complete an otherwise clean cens
   assert.equal(result.blocked_request_count, 0);
 });
 
+test('every role requires Scrape, Data, and SEO navigation even with populated surface buckets', async () => {
+  const audience = await readFile(
+    new URL('../../src/config/sidepanel-visibility.ts', import.meta.url),
+    'utf8',
+  );
+  for (const tab of ['scrape', 'data', 'seo'])
+    assert.match(audience, new RegExp(`^  ${tab}: 'everyone',$`, 'm'));
+
+  const filled = { total: 1, mapped: [{ label: 'Visible control' }], unmapped_count: 0 };
+  const sections = [
+    'Account',
+    'Organization',
+    'Appearance',
+    'Chat',
+    'Privacy',
+    'Scrape',
+    'Data',
+    'SEO',
+    'Desktop bridge',
+    'Data & reset',
+    'About',
+  ];
+  const tabs = ['Chat', 'Scrape', 'Data', 'SEO', 'Settings'];
+  for (const role of ['guest', 'member', 'admin']) {
+    const complete = {
+      authentication: { role, signed_out_observed: role === 'guest' },
+      authentication_after: { signed_out_observed: role === 'guest' },
+      navigation: { ...filled, total: tabs.length, mapped: tabs.map((label) => ({ label })) },
+      surfaces: Object.fromEntries(
+        tabs.filter((tab) => tab !== 'Settings').map((tab) => [tab, filled]),
+      ),
+      sections: { ...filled, total: sections.length, mapped: sections.map((label) => ({ label })) },
+      controls: Object.fromEntries(sections.map((section) => [section, filled])),
+      inaccessible_regions: [],
+    };
+    assert.equal(censusCompleteness(complete, 0).complete, true);
+    for (const missing of ['Scrape', 'Data', 'SEO']) {
+      const navigation = {
+        ...complete.navigation,
+        total: tabs.length - 1,
+        mapped: complete.navigation.mapped.filter((item) => item.label !== missing),
+      };
+      const result = censusCompleteness({ ...complete, navigation }, 0);
+      assert.deepEqual(result.missing_required_regions, [`tab:${missing}`]);
+      assert.equal(result.complete, false);
+    }
+  }
+});
+
 test('surface readiness timeout retains fixed safe stage, tab, and count facts', async () => {
   const context = domContext(
     '<button role="tab" title="Scrape" aria-controls="pane" data-state="active">Scrape</button><div role="tabpanel" id="pane">Private page content</div>',
@@ -239,8 +288,17 @@ test('unknown labels, inaccessible regions, and intercepted RPCs each prevent co
   ];
   const complete = {
     ...observed,
-    navigation: { ...empty, total: 2, mapped: [{ label: 'Chat' }, { label: 'Settings' }] },
-    surfaces: { Chat: { ...empty, total: 1, mapped: [{ label: 'Visible control' }] } },
+    navigation: {
+      ...empty,
+      total: 5,
+      mapped: ['Chat', 'Scrape', 'Data', 'SEO', 'Settings'].map((label) => ({ label })),
+    },
+    surfaces: Object.fromEntries(
+      ['Chat', 'Scrape', 'Data', 'SEO'].map((label) => [
+        label,
+        { ...empty, total: 1, mapped: [{ label: 'Visible control' }] },
+      ]),
+    ),
     sections: { ...empty, total: required.length, mapped: required.map((label) => ({ label })) },
     controls: Object.fromEntries(required.map((label) => [label, empty])),
   };

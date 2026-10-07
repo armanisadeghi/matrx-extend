@@ -48,6 +48,9 @@ const knownTabs = new Set([
 ]);
 const captureCountLabel = /^[1-9][0-9]* pages? need your browser$/;
 const isKnownTab = (label) => knownTabs.has(label) || captureCountLabel.test(label ?? '');
+// The universally available non-Chat surfaces in src/config/sidepanel-visibility.ts.
+// Missing navigation is a census gap even if an earlier surface bucket still exists.
+const requiredEveryoneSurfaceTabs = new Set(['Scrape', 'Data', 'SEO']);
 const inventory = JSON.parse(
   await readFile(join(ROOT, 'docs/stabilization/inventory.json'), 'utf8'),
 );
@@ -802,8 +805,8 @@ export function censusCompleteness(observation, blockedTotal) {
   if (!observation.navigation?.total) missingRequiredRegions.push('navigation');
   const visibleTabs = new Set(observation.navigation?.mapped.map((item) => item.label) ?? []);
   if (!visibleTabs.has('Settings')) missingRequiredRegions.push('settings_tab');
-  for (const tab of visibleTabs)
-    if (tab !== 'Settings' && !observation.surfaces[tab]?.total)
+  for (const tab of new Set([...visibleTabs, ...requiredEveryoneSurfaceTabs]))
+    if (tab !== 'Settings' && (!visibleTabs.has(tab) || !observation.surfaces[tab]?.total))
       missingRequiredRegions.push(`tab:${tab}`);
   if (!observation.sections?.total) missingRequiredRegions.push('settings_sections');
   const visibleSections = new Set(observation.sections?.mapped.map((item) => item.label) ?? []);

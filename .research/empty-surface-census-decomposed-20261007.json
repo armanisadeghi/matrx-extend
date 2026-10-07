@@ -5,7 +5,8 @@
   "findings": [
     "The earlier red run reproduced immediate empty capture after active tab trigger and false completeness for present zero-control surfaces.",
     "The collector now waits for a visible source control and two same-count reads; a timeout retains raw observations and fixed safe diagnostics.",
-    "A visible zero-control tab remains missing in censusCompleteness, while unknown control text remains a keyed fingerprint."
+    "A visible zero-control tab remains missing in censusCompleteness, while unknown control text remains a keyed fingerprint.",
+    "Fresh review found that an omitted required Scrape, Data, or SEO navigation tab could escape completeness. These three everyone-audience tabs are now required even when absent from observed navigation, for guest, member, and admin."
   ],
   "final_guarded_run": {
     "command": "node scripts/stabilization-resource.mjs run --run-id empty-surface-decomposed-20261007-01 -- node --test tests/browser/takeover-visible-census.test.mjs scripts/hosted-profile-route.test.mjs",
@@ -21,6 +22,25 @@
     ".research/empty-surface-census-green-20261007.stdout",
     ".research/empty-surface-census-green-final-20261007.stdout"
   ],
+  "omission_guarded_runs": {
+    "causal_red": {
+      "run_id": "empty-surface-omission-red-20261007-01",
+      "method": "sanctioned plant.py temporarily restored the observed-tabs-only loop, then ran the exact resource-guarded test command and restored the source",
+      "stdout": ".research/empty-surface-omission-red-20261007.stdout",
+      "completed_journal": "docs/stabilization/resource-journals/empty-surface-omission-red-20261007-01.jsonl",
+      "result": "named omission test failed: missing_required_regions [] instead of tab:Scrape; plant verdict RED; resource child_failed as expected"
+    },
+    "restored_green": {
+      "run_id": "empty-surface-omission-green-20261007-01",
+      "command": "node scripts/stabilization-resource.mjs run --run-id empty-surface-omission-green-20261007-01 -- node --test tests/browser/takeover-visible-census.test.mjs scripts/hosted-profile-route.test.mjs",
+      "stdout": ".research/empty-surface-omission-green-20261007.stdout",
+      "completed_journal": "docs/stabilization/resource-journals/empty-surface-omission-green-20261007-01.jsonl",
+      "tests": 36,
+      "passed": 36,
+      "failed": 0,
+      "resource_decision": "valid"
+    }
+  },
   "checks": ["scoped Biome passed", "git diff --check passed"],
   "limitations": [
     "The original native blank-pane cause is not established by this source guard.",
