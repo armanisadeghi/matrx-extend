@@ -129,10 +129,10 @@ vi.mock('@/state/pilot', () => ({
   usePilotStore: { getState: () => ({ isGroupValid: vi.fn() }) },
 }));
 
+import { useNetworkCapture } from '@/hooks/use-network-capture';
 import { bootstrapBackground } from '@/lib/background/bootstrap';
 import { networkRelayIsolated } from '@/lib/data-pattern/network-tap';
 import { runNetworkCapturePattern } from '@/lib/data-pattern/run-interactive';
-import { useNetworkCapture } from '@/hooks/use-network-capture';
 import { CHANNELS } from '@/lib/messaging/schemas';
 
 afterEach(() => {

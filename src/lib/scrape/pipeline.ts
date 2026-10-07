@@ -99,7 +99,7 @@ export async function runScrape(
 
   // Thread `doc` to every collector — they defaulted to the GLOBAL document,
   // which equals `doc` in a content script but is the EMPTY offscreen page in
-  // the fetch-and-parse path: fetch_url_as_markdown silently shipped wrong
+  // the fetch-and-parse path. Without this, fetched pages report wrong
   // metadata and empty links/images/json-ld for every fetched URL.
   const metadata = collectMetadata(doc);
   const article = await extractArticle(doc, o.preferDefuddle);

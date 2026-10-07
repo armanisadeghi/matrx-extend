@@ -32,7 +32,7 @@
  * 📝 Notes:
  *    .research/proposed-tools-and-features.md (item #10 → renumbered)
  *
- * 🧪 Tests: docs/feature-tests.md → "fetch_url_as_markdown"
+ * 🧪 Tests: Scrape tab manual coverage and `tests/unit/normalize-markup.test.ts`
  */
 import { type SoupResult, runScrape } from '@/lib/scrape/pipeline';
 
