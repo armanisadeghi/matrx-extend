@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-07T04:01:32.053263+00:00",
+  "updated_at": "2026-10-07T04:46:42.370314+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -24952,7 +24952,7 @@
           "results": {
             "admin": {
               "status": "unverified",
-              "run_id": "showcase-d47-native-37562111314-1",
+              "run_id": "showcase-d47-public-native-37571487114-1",
               "evidence": [
                 "docs/stabilization/runs/showcase-network-current-001.json",
                 "docs/stabilization/runs/showcase-d49-native-retest-001.json",
@@ -24967,9 +24967,11 @@
                 ".research/d47-settled-native-20261007.json",
                 ".research/d47-settled-native-peer-20261007.json",
                 ".research/d47-oldfirst-native-20261007.json",
-                ".research/d47-oldfirst-native-peer-20261007.json"
+                ".research/d47-oldfirst-native-peer-20261007.json",
+                ".research/d47-public-endpoint-native-20261007.json",
+                ".research/d47-public-terminal-peer-20261007.json"
               ],
-              "detail": "Independent peer1abea43b accepts resource-valid old-first native37562111314 at frozen0.2.338/source651f25d0: distinct pending requests finished old then current, fresh current-document handshake/exact packet, exact settled current-only saved result with no loading/error, observer and exact owned-recipe cleanup. Earlier current-first proof remains frozen0.2.337/run37558902653/peer9f70b303. Neither delivered an old binding callback; architectural exclusion is not callback-rejection proof. FullT57 remains unverified: public-site initial-load precondition, stale-only refusal/recovery, manual/prior-run isolation and separate causal higher-old-sequence guard coverage remain required."
+              "detail": "Independent peer1abea43b accepts resource-valid old-first native37562111314 at frozen0.2.338/source651f25d0: distinct pending requests finished old then current, fresh current-document handshake/exact packet, exact settled current-only saved result with no loading/error, observer and exact owned-recipe cleanup. Earlier current-first proof remains frozen0.2.337/run37558902653/peer9f70b303. Neither delivered an old binding callback; architectural exclusion is not callback-rejection proof. Fresh independent peer8dfbdee1 supports public initial capture, saved exact-recipe completed replay with hits and UI cleanup on frozen0.2.344/source2274d236/native37571487114; all resource phases valid. Whole-panel quiescence, selected organization context and separate post-checkbox mask receipt remain unverified. FullT57 remains unverified: stale-only refusal/recovery, manual/prior-run isolation and separate causal higher-old-sequence guard coverage remain required."
             }
           },
           "proof_ruling": "2026-10-06 root technical ruling: see .research/d47-acceptance-architecture-ruling-20261006.json. A native architectural-exclusion trace with positively observed current binding/packet, exact contexts, old request lifecycle and terminal saved result may supplement delivered-stale-event causal guards. Neither cancellation alone nor current-only rows nor empty event arrays prove exclusion. Retain public-site same-artifact replay, both response orders, higher old sequence, stale-only refusal and cleanup; no existing result is promoted."
