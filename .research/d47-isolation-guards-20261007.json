@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "scope": "D47 remaining source isolation guards only; no native/browser/product/build/release work",
+  "production_path": [
+    "runNetworkCapturePattern -> openDocumentNetworkCapture -> startDocumentNetworkCapture -> CDP Runtime.bindingCalled",
+    "document capture admits only current main-frame unique context and this run binding, tags packet with capture_id/document_key; replay matcher orders accepted packet request_sequence"
+  ],
+  "existing_guard_map": {
+    "stale_only": "document-network-capture.test.ts had onEvent refusal but no saved replay terminal outcome or fresh recovery",
+    "prior_run": "document-network-capture bindingName unique per capture; no existing saved replay old-binding output guard",
+    "higher_old_sequence": "existing capture-layer order test, but no saved replay output assertion using real transport and matcher",
+    "manual": "runNetworkCapturePattern takes only openDocumentNetworkCapture events; manual window-message/content relay is a separate channel and was not executed in this source lane"
+  },
+  "added_tests": [
+    "saved replay refuses stale-only rows and recovers on a fresh run",
+    "saved replay ignores a prior-run binding while accepting its own document",
+    "saved replay rejects a higher old-document sequence on the real capture path"
+  ],
+  "resource_runs": [
+    {
+      "run_id": "d47-isolation-guards-green-20261007-a",
+      "decision": "child_failed",
+      "reason": "test harness advanced fake clock before capture setup; not product evidence"
+    },
+    {
+      "run_id": "d47-isolation-guards-green-20261007-b",
+      "decision": "child_failed",
+      "reason": "test helper wrapped previous send implementation on second run; not product evidence"
+    },
+    {
+      "run_id": "d47-isolation-guards-green-20261007-c",
+      "decision": "valid",
+      "result": "17/17 passed, connected real capture/transport/replay test"
+    },
+    {
+      "run_id": "d47-isolation-constant-red-20261007",
+      "decision": "child_failed as expected",
+      "result": "scratch constant return Brooklyn Bowl: all 3 new tests red because no reload command occurred"
+    },
+    {
+      "run_id": "d47-isolation-source-red-20261007",
+      "decision": "child_failed as expected",
+      "result": "scratch source binding context/old-context filter removal: stale-only returns Prior venue, higher-old-sequence returns Prior venue"
+    },
+    {
+      "run_id": "d47-isolation-run-binding-red-20261007",
+      "decision": "child_failed as expected",
+      "result": "scratch source per-run binding-name filter removal: second saved replay returns Earlier run late"
+    },
+    {
+      "run_id": "d47-isolation-final-green-20261007",
+      "decision": "valid",
+      "result": "17/17 passed after final test-name/comment cleanup"
+    }
+  ],
+  "journals": "docs/stabilization/resource-journals/<run-id>.jsonl; all admitted, resourceInvalid false",
+  "limits": [
+    "Manual content-relay channel is not proven here; a native or connected manual capture cross-channel case remains.",
+    "No native proof, whole-panel quiescence or D47 closure claimed."
+  ],
+  "manual_gap": {
+    "source_identity": [
+      "src/lib/data-pattern/network-tap.ts: networkRelayIsolated sends net-capture:event from MAIN-world window messages",
+      "src/lib/background/bootstrap.ts: NET_CAPTURE_EVENT handler stamps sender tab then broadcasts",
+      "src/hooks/use-network-capture.ts: manual sidepanel listener",
+      "src/lib/data-pattern/run-interactive.ts: runNetworkCapturePattern consumes only openDocumentNetworkCapture CDP events"
+    ],
+    "smallest_connected_guard": "With a manual capture active in a mounted sidepanel hook and a saved replay active on the same tab, emit a real networkRelayIsolated window message that reaches the background NET_CAPTURE_EVENT broadcaster and a distinct CDP-bound replay response; assert the manual list receives the manual event while the saved replay resolves only the CDP current-document rows. Remove/redirect the channel boundary in scratch to prove RED. Native proof remains separate."
+  }
+}
