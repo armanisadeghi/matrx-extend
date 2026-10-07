@@ -27,6 +27,12 @@ const siteHost = 'hn.algolia.com';
 const output =
   process.env.MATRX_SHOWCASE_OUTPUT ?? join(tmpdir(), `showcase-d47-public-${randomUUID()}.json`);
 
+export function publicTrustedClick(panel, target, report) {
+  return trustedD47PanelClick(panel, target, (observation) => {
+    report.click_observations.push({ stage: report.stage, ...observation });
+  });
+}
+
 // The only two acceptable terminal observations: actual exact-recipe rows, or
 // the product's specific no-match remedy after its document-start capture.
 export function classifyPublicReplay(observation) {
@@ -146,24 +152,32 @@ async function exactRecipeVisible(panel, recipe) {
   );
 }
 
-async function removeOwnedRecipe(panel, recipe) {
+async function removeOwnedRecipe(panel, recipe, report) {
   await tab(panel, 'Showcase (admin only)');
-  await trustedD47PanelClick(panel, {
-    selector: '[role="tablist"] [role="tab"]',
-    text: 'Patterns',
-  });
+  await publicTrustedClick(
+    panel,
+    {
+      selector: '[role="tablist"] [role="tab"]',
+      text: 'Patterns',
+    },
+    report,
+  );
   const before = await waitFor(
     'public_recipe_cleanup_list',
     () => exactRecipeVisible(panel, recipe),
     (state) => state?.exact_row === true,
   );
   assert.equal(before.exact_row, true, 'owned_recipe_cleanup_row_missing');
-  await trustedD47PanelClick(panel, {
-    selector: 'button[title], button[data-matrx-title]',
-    patternName: recipe,
-    expectedHost: siteHost,
-    semanticTitle: 'Delete pattern',
-  });
+  await publicTrustedClick(
+    panel,
+    {
+      selector: 'button[title], button[data-matrx-title]',
+      patternName: recipe,
+      expectedHost: siteHost,
+      semanticTitle: 'Delete pattern',
+    },
+    report,
+  );
   await waitFor(
     'public_recipe_delete_confirmation',
     () =>
@@ -173,10 +187,14 @@ async function removeOwnedRecipe(panel, recipe) {
       ),
     (titles) => titles?.length === 1 && titles[0] === `Delete the pattern "${recipe}"?`,
   );
-  await trustedD47PanelClick(panel, {
-    selector: '[role="alertdialog"] button',
-    text: 'Delete pattern',
-  });
+  await publicTrustedClick(
+    panel,
+    {
+      selector: '[role="alertdialog"] button',
+      text: 'Delete pattern',
+    },
+    report,
+  );
   await waitFor(
     'public_recipe_removed',
     () => exactRecipeVisible(panel, recipe),
@@ -202,6 +220,7 @@ async function run() {
     capture: null,
     saved_result: null,
     owned_recipe: null,
+    click_observations: [],
     failure: null,
   };
   let ownedRecipe;
@@ -291,10 +310,14 @@ async function run() {
           await requireResourceHealth();
           report.stage = 'initial_capture';
           await tab(panel, 'Showcase (admin only)');
-          await trustedD47PanelClick(panel, {
-            selector: '[role="tablist"] [role="tab"]',
-            text: 'Network',
-          });
+          await publicTrustedClick(
+            panel,
+            {
+              selector: '[role="tablist"] [role="tab"]',
+              text: 'Network',
+            },
+            report,
+          );
           await click(panel, 'button-text', 'Capture page load');
           await allow(panel);
           await waitFor(
@@ -316,10 +339,14 @@ async function run() {
             `(() => [...document.querySelectorAll('button.font-mono:has(span.flex-1)')].filter(el => el.textContent.includes('POST') && el.textContent.includes('200') && el.textContent.toLowerCase().includes('algolia') && el.textContent.includes('queries')).map(el => el.textContent.trim()))()`,
           );
           assert.equal(candidates.length, 1, 'public_initial_post_ambiguous');
-          await trustedD47PanelClick(panel, {
-            selector: 'button.font-mono:has(span.flex-1)',
-            text: candidates[0],
-          });
+          await publicTrustedClick(
+            panel,
+            {
+              selector: 'button.font-mono:has(span.flex-1)',
+              text: candidates[0],
+            },
+            report,
+          );
           const response = await evaluate(
             panel,
             `(() => {
@@ -344,9 +371,13 @@ async function run() {
             );
             assert.equal(credential.present, true, 'public_credential_control_missing');
             if (!credential.checked)
-              await trustedD47PanelClick(panel, {
-                selector: 'input[aria-label="Treat x-algolia-api-key as credential"]',
-              });
+              await publicTrustedClick(
+                panel,
+                {
+                  selector: 'input[aria-label="Treat x-algolia-api-key as credential"]',
+                },
+                report,
+              );
             const masked = await evaluate(
               panel,
               `(() => (document.querySelector('#network-replay-url-filter')?.value ?? '').includes('x-algolia-api-key=[credential]'))()`,
@@ -399,10 +430,14 @@ async function run() {
               ),
             (value) => value === true,
           );
-          await trustedD47PanelClick(panel, {
-            selector: '[role="tablist"] [role="tab"]',
-            text: 'Patterns',
-          });
+          await publicTrustedClick(
+            panel,
+            {
+              selector: '[role="tablist"] [role="tab"]',
+              text: 'Patterns',
+            },
+            report,
+          );
           await waitFor(
             'public_recipe_visible',
             () => exactRecipeVisible(panel, ownedRecipe),
@@ -410,12 +445,16 @@ async function run() {
           );
           report.owned_recipe.creation = 'observed_in_patterns';
           report.stage = 'saved_replay';
-          await trustedD47PanelClick(panel, {
-            selector: 'button[title], button[data-matrx-title]',
-            patternName: ownedRecipe,
-            expectedHost: siteHost,
-            semanticTitle: 'Run pattern',
-          });
+          await publicTrustedClick(
+            panel,
+            {
+              selector: 'button[title], button[data-matrx-title]',
+              patternName: ownedRecipe,
+              expectedHost: siteHost,
+              semanticTitle: 'Run pattern',
+            },
+            report,
+          );
           await allow(panel);
           report.stage = 'saved_terminal';
           const started = performance.now();
@@ -450,7 +489,7 @@ async function run() {
         } finally {
           if (ownedRecipe) {
             try {
-              report.owned_recipe.cleanup = await removeOwnedRecipe(panel, ownedRecipe);
+              report.owned_recipe.cleanup = await removeOwnedRecipe(panel, ownedRecipe, report);
             } catch {
               report.owned_recipe.cleanup = 'unverified';
               if (!primary) primary = new Error('owned_recipe_cleanup_failed');

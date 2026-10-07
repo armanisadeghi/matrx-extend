@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "source_reviewed": "c984804ba375dba673ab106c9735a17069c9e0c2",
+  "source_peer": ".research/d47-public-source-peer-20261007.json",
+  "status": "SOURCE_GUARDS_GREEN_NATIVE_UNVERIFIED",
+  "fix": "All eight public driver trusted-click sites now pass through a wrapper that supplies the mandatory record callback. It records stage, phase, and sanitized target counts into the public receipt; cleanup uses the same path.",
+  "guard": "An integration test invokes the exported public driver click path with a DOM-backed panel transport, asserts click-boundary recording and trusted CDP mouse dispatch for Network and the exact saved pattern. Its in-memory prior call shape omits the callback, fails target readiness, and dispatches no input; the poll is set to zero for a fast proof.",
+  "sibling_census": "The document-lifecycle driver already supplies a callback at both direct trusted-click sites; the shared helper test also supplies it. No analogous omission found in other production driver sites.",
+  "source_checks": {
+    "biome_format": "completed for both edited source files",
+    "git_diff_check": "passed",
+    "source_test": "a3 admitted, 3/3 passed, valid final resource decision; the in-memory prior missing-callback call was rejected before CDP input",
+    "route_test": "route-a1 admitted, 9/9 passed, valid final resource decision",
+    "native": "not run; fresh independent source review and guarded tests remain first"
+  },
+  "resource_setup_refusal": {
+    "run_id": "d47-public-click-source-20261007-a1",
+    "journal": "docs/stabilization/resource-journals/d47-public-click-source-20261007-a1.jsonl",
+    "code": "RESOURCE_MEASUREMENT_FAILED",
+    "detail": "ENOENT: no such file or directory, stat '/tmp/d47-public-click-source-20261007-a1'",
+    "decision": "refused",
+    "admitted": false,
+    "resource_invalid": false,
+    "exit_code": 2,
+    "child_started": false
+  },
+  "resource_test_runs": {
+    "a2": "admitted, integration fixture failed because happy-dom reported a control with unset computed visibility; no product inference",
+    "a3": "admitted, 3/3 green, valid resource final decision",
+    "route_a1": "admitted, 9/9 green, valid resource final decision"
+  },
+  "remaining": "Obtain a fresh independent source check, then run exact current-artifact public native acceptance. T57 and D47 remain open; source-only controlled CDP observations are not live acceptance."
+}
