@@ -5,7 +5,7 @@
   "title": "Canonical tab-group create drops the supported collapsed setting",
   "surface": "Tools > Catalog > tab_groups; canonical delegated tool",
   "auth_mode": "member/admin",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "root/tab_group_collapsed_fix",
   "priority": "P1",
   "severity": "S3",
@@ -19,20 +19,23 @@
     "Repeat with collapsed=false and title/color controls; then explicitly update collapsed via tab_groups action=update."
   ],
   "expected": "The canonical merger preserves the existing leaf create collapsed option, consistent with its explicit no-capability-loss charter.",
-  "actual": "Source inspection shows create forwards tab_ids/title/color but omits collapsed; update forwards it. The canonical inline comment and generated description mention collapse only for update, so accepted schema input alone is not evidence; the defect is the lost existing leaf capability. Native behavior and deterministic RED verification remain pending.",
+  "actual": "Guarded source reproduction confirmed collapsed=true/false were dropped before repair. Canonical create now forwards the exposed option; 73/73 delegation cases and typecheck pass. Native behavior has not been tested.",
   "evidence": [
     "src/lib/tools/handlers/canonical-mergers.ts module charter and tab_groups create branch",
     "src/lib/tools/handlers/tabs.ts create_tab_group",
-    ".research/inventory-six-procedures-peer-20261007.json"
+    ".research/inventory-six-procedures-peer-20261007.json",
+    ".research/tab-group-collapsed-fix-20261007.json",
+    ".research/tab-group-collapsed-peer-20261007.json",
+    "docs/feature-tests.md"
   ],
   "reproducibility": "Deterministic guarded real canonical delegation seam: both create collapsed=true and collapsed=false fail; 71 sibling contract cases pass.",
   "build_receipt": null,
-  "fix_shas": [],
+  "fix_shas": ["13f95e1f5cbf7732e39580fad0c7030f58425359"],
   "verification": {
-    "source": "Guarded ext-d-0148-tab-groups-red2-20261007: 73 cases, exactly two omitted-collapsed failures; worker evidence report pending.",
-    "native": "unverified",
-    "independent_review": "pending",
-    "release": "unverified"
+    "source": "Guarded two-case RED then73/73 GREEN, compile/catalog/docs valid. Exact evidence and hashes in .research/tab-group-collapsed-fix-20261007.json.",
+    "independent_review": ".research/tab-group-collapsed-peer-20261007.json; PASS source capability and PASS_WITH_LIMITS evidence.",
+    "native": "unverified; original true/false create reproduction and surrounding update/add/remove/list in real Chrome remain required",
+    "release": "unverified; no Store package or submission claimed"
   },
   "transition_history": [
     {
@@ -52,6 +55,13 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Scoped canonical forwarding repair assigned; native results remain unverified."
+    },
+    {
+      "at": "2026-10-07T11:38:31.300965+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Guarded source reproduction repaired, surrounding73cases/typecheck/catalog/docs passed, independent source peer accepted. Await original native retest before retest-pass/closed."
     }
-  ]
+  ],
+  "separate_discovery": "Underlying create leaf also exposes window_id, absent from canonical schema. Recorded for source/DB contract census; not covered by this exposed-collapsed forwarding fix."
 }

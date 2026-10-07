@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "status": "partial_procedure_integration",
+  "cases": [
+    "EXT-F-4096-T01",
+    "EXT-F-4095-T01",
+    "EXT-F-4163-T01",
+    "EXT-F-4143-T01",
+    "EXT-F-4093-T01",
+    "EXT-F-4129-T01"
+  ],
+  "missing_steps_expected_before": 42,
+  "missing_steps_expected_after": 36,
+  "review": ".research/inventory-six-procedures-root-review-20261007.json",
+  "limits": "No runtime or mode status promoted; all original dimensions and design_status retained. Uploaded screenshot/GIF cleanup remains outstanding, required-permission denial unverified."
+}

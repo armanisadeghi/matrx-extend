@@ -19820,7 +19820,7 @@
             "artifact_id": 11474839620,
             "app_tree_sha256": "e41e0fe5243284e1781a2c997078a05bd4ae50f68a3543914a21e13a18d9ddc7",
             "source_review": ".research/t57-public-race-preflight-final-peer-20261007.json",
-            "next_action": "Diagnostics repair a28945dc independently accepted at source scope; cleanup body-read race and resolution/rejection/failure controls repaired in b12f99c8/c443ed93 and independently checked in .research/t57-public-cleanup-final-root-review-20261007.json. Before another native run, correct the double-navigation sequence to an old-document request pending BEFORE the new saved replay. Evaluate positive current binding/context/request identity and recipe terminal result or honest refusal under architectural exclusion; do not demand old callback delivery. T57 remains unverified and original D47 remains closed.",
+            "next_action": "Revised prior-document sequence a2b73385 independently source-reviewed; controller10/10 and driver4/4 guarded pass. No revised native run. Finish current source/auth visibility inventory gate, then one guarded exact-artifact public run with positive current context/binding/body identity and recipe terminal result/refusal. Keep cancellation event order explicit; never require removed oldcallback route. T57 unverified, original D47 closed.",
             "workflow_conclusion": "failure",
             "failure_stage": "public_race_release",
             "report": ".research/t57-public-race-native-20261007.json",
@@ -19835,6 +19835,12 @@
               "report": ".research/t57-public-release-diagnostics-fix-20261007.json",
               "peer": ".research/t57-release-diagnostics-peer-20261007.json",
               "remaining": "Cleanup race and failure controls independently accepted; source scenario sequencing remains before native retry."
+            },
+            "sequence_repair": {
+              "commit": "a2b73385",
+              "report": ".research/t57-prior-sequence-escalation-20261007.json",
+              "peer": ".research/t57-prior-sequence-independent-peer-20261007.json",
+              "native": "unverified"
             }
           }
         },
@@ -49287,12 +49293,47 @@
           "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Before each case, use the coordinator-issued resource permit and record its current build receipt: source SHA and dirty-source hash, lockfile and output hashes, WXT mode, loaded extension runtime ID and source directory, Chrome version, profile label, signed-in role and selected organization when required, relevant grants, backend identity, fixture IDs, and timestamp. Omit secrets and page contents.",
+            "Use the actual side-panel Tools > Catalog manual runner in the loaded extension. The catalog defaults to Agent surface; select All handlers before searching list_recently_closed or restore_recently_closed. Search the exact tool name, expand its row, paste the listed JSON into the test runner, and press Run. This path validates with the handler's Zod argsSchema and calls handler.run directly. It bypasses dispatcher permission and role gates; role labels, optional-permission denial, and database binding advertisements are not established by a manual-run result. Capture only the specific output fields listed below and the receipt reference, not credentials, page text, URLs unless needed privately for fixture identity, MHTML archive data, image bytes, or GIF contents.",
+            "Replace each uppercase fixture placeholder with the exact value recorded for the disposable fixture before pasting JSON (tab and group IDs as JSON integers; a session ID as a JSON string). Keep the resolved input in the private run receipt only when needed for cleanup.",
+            "After any extension reload required by the coordinator receipt, reopen the side panel and confirm the same loaded runtime identity before repeating the safe positive case. Only the tested surfaces need to run: these procedures do not require forcing an unrelated offscreen document. Keep target fixtures disposable and owned; remove created tabs/groups, discard the dedicated memo-test profile, and track screenshot rows, uploaded files, and local GIF downloads as separate cleanup artifacts.",
+            "Create a new disposable Chrome profile used only for this case and use a unique test hostname, for example memo-procedure-20261007.invalid, not a production domain. Do not use a profile containing preexisting domain memos."
           ],
-          "steps": [],
-          "expected": [],
-          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"]
+          "steps": [
+            "Run {\"domain\":\"memo-procedure-20261007.invalid\",\"note\":\"procedure receipt marker\",\"hints\":{\"procedure_key\":\"procedure-value\"}}.",
+            "Verify ok:true and the returned memo contains the exact domain, note, and hint key/value; do not include the returned full storage object in the receipt.",
+            "Reload the extension and run {\"domain\":\"memo-procedure-20261007.invalid\",\"hints\":{\"post_reload_key\":\"post-reload-value\"}} without the original note or procedure_key hint. Verify the returned memo still has exactly the original note and original hint plus the new hint; this distinct write cannot recreate the original values.",
+            "Separately repeat the original note with {\"domain\":\"memo-procedure-20261007.invalid\",\"note\":\"procedure receipt marker\"} and verify the note still occurs exactly once.",
+            "For the declared-schema/refinement negative input, run {\"domain\":\"memo-procedure-20261007.invalid\",\"note\":\"\"} and confirm Schema mismatch because note is empty and no nonempty hints are present.",
+            "Confirm the rejected input did not change the original note or hints by running a hints-only probe with a different key, {\"domain\":\"memo-procedure-20261007.invalid\",\"hints\":{\"post_negative_key\":\"post-negative-value\"}}. Verify exactly one original note and both earlier hints survive alongside this new hint; do not send the original note or original hint in this readback.",
+            "Cleanup: Discard the dedicated disposable Chrome profile to remove the test memo. The inspected product surface has no memo-delete control; do not claim exact-key cleanup through a user-facing UI."
+          ],
+          "expected": [
+            "Positive input returns ok:true. The distinct hints-only post-reload call preserves the original note and hint while adding its new hint, demonstrating storage persistence; repeating the original note separately does not append a duplicate. The post-negative hints-only probe preserves all prior values without recreating them.",
+            "Empty note without hints fails the min-length/refinement validation before handler invocation.",
+            "No browser permission or role gate exists in this handler; manual execution provides no evidence about agent advertisement or role policy."
+          ],
+          "dimensions": [
+            "valid-input",
+            "invalid-input",
+            "permissions",
+            "reload",
+            "direct-handler",
+            "owned-fixture",
+            "dispatcher-unverified",
+            "runtime-unverified"
+          ],
+          "procedure_source_review": {
+            "proposal": ".research/inventory-six-procedures-20261007.json",
+            "peer": ".research/inventory-six-procedures-root-review-20261007.json",
+            "source_anchors": [
+              "src/features/tools/ToolsView.tsx:383-460",
+              "src/lib/tools/handlers/memory.ts:20-64",
+              "src/lib/chat/context/domain-memo.ts:14-110",
+              "docs/stabilization/inventory.json: EXT-F-4093"
+            ],
+            "limits": "No runtime/mode promotion. Direct handler only; original dimensions/design_status preserved. See case cleanup for remote artifacts remaining outstanding."
+          }
         }
       ],
       "cells": {
@@ -49562,12 +49603,51 @@
           "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Before each case, use the coordinator-issued resource permit and record its current build receipt: source SHA and dirty-source hash, lockfile and output hashes, WXT mode, loaded extension runtime ID and source directory, Chrome version, profile label, signed-in role and selected organization when required, relevant grants, backend identity, fixture IDs, and timestamp. Omit secrets and page contents.",
+            "Use the actual side-panel Tools > Catalog manual runner in the loaded extension. The catalog defaults to Agent surface; select All handlers before searching list_recently_closed or restore_recently_closed. Search the exact tool name, expand its row, paste the listed JSON into the test runner, and press Run. This path validates with the handler's Zod argsSchema and calls handler.run directly. It bypasses dispatcher permission and role gates; role labels, optional-permission denial, and database binding advertisements are not established by a manual-run result. Capture only the specific output fields listed below and the receipt reference, not credentials, page text, URLs unless needed privately for fixture identity, MHTML archive data, image bytes, or GIF contents.",
+            "Replace each uppercase fixture placeholder with the exact value recorded for the disposable fixture before pasting JSON (tab and group IDs as JSON integers; a session ID as a JSON string). Keep the resolved input in the private run receipt only when needed for cleanup.",
+            "After any extension reload required by the coordinator receipt, reopen the side panel and confirm the same loaded runtime identity before repeating the safe positive case. Only the tested surfaces need to run: these procedures do not require forcing an unrelated offscreen document. Keep target fixtures disposable and owned; remove created tabs/groups, discard the dedicated memo-test profile, and track screenshot rows, uploaded files, and local GIF downloads as separate cleanup artifacts.",
+            "Use a Chrome build with the required sessions permission declared in the loaded manifest. Use a disposable local fixture URL with a unique title and no personal data.",
+            "Record the pre-run recently-closed list and verify the fixture is not already present. The list_recently_closed handler can identify the exact fixture session after closing it.",
+            "Run in a disposable profile, because restoring the most-recent session without an explicit session ID could restore unrelated browsing."
           ],
-          "steps": [],
-          "expected": [],
-          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"]
+          "steps": [
+            "Open one tab to the unique fixture URL, record its title, then close that tab from Chrome.",
+            "Select All handlers in the Tools Catalog surface selector, run list_recently_closed, and identify the fixture entry by its unique local title and URL; record only its session ID privately for this run.",
+            "Run restore_recently_closed with {\"session_id\": \"FIXTURE_SESSION_ID\"} using that exact returned ID.",
+            "Verify Chrome reopened the fixture tab at the owned URL, then reload the extension, select All handlers again, and repeat list_recently_closed to check that the restored fixture is no longer pending as a closed session.",
+            "For the declared-schema negative input, enter {\"session_id\": 123} and confirm Schema mismatch before invocation.",
+            "Leave the required sessions permission unchanged; permission-denial behavior remains unverified.",
+            "Cleanup: Close the restored disposable fixture tab and confirm its URL/title is the one created for this case.",
+            "Cleanup: Do not restore or close any unrelated session; leave the required sessions permission unchanged."
+          ],
+          "expected": [
+            "The exact fixture session is restored. Inspect only the nested restored result needed to confirm the owned fixture tab/window returned; do not copy the full result or unrelated session data.",
+            "After reload, a fresh recently-closed listing no longer identifies that fixture as closed.",
+            "A numeric session_id is rejected by the string schema before handler invocation.",
+            "Permission-denial behavior is unverified because sessions is required in this Chrome build; the direct runner also bypasses dispatcher permission gating."
+          ],
+          "dimensions": [
+            "valid-input",
+            "invalid-input",
+            "permissions",
+            "reload",
+            "direct-handler",
+            "owned-fixture",
+            "dispatcher-unverified",
+            "runtime-unverified"
+          ],
+          "procedure_source_review": {
+            "proposal": ".research/inventory-six-procedures-20261007.json",
+            "peer": ".research/inventory-six-procedures-root-review-20261007.json",
+            "source_anchors": [
+              "src/features/tools/ToolsView.tsx:383-460",
+              "src/lib/tools/handlers/optional-perms.ts:154-216",
+              "src/lib/tools/handlers/canonical-mergers.ts:434-454",
+              "docs/stabilization/inventory.json: EXT-F-4095"
+            ],
+            "limits": "No runtime/mode promotion. Direct handler only; original dimensions/design_status preserved. See case cleanup for remote artifacts remaining outstanding."
+          }
         }
       ],
       "cells": {
@@ -49694,12 +49774,51 @@
           "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Before each case, use the coordinator-issued resource permit and record its current build receipt: source SHA and dirty-source hash, lockfile and output hashes, WXT mode, loaded extension runtime ID and source directory, Chrome version, profile label, signed-in role and selected organization when required, relevant grants, backend identity, fixture IDs, and timestamp. Omit secrets and page contents.",
+            "Use the actual side-panel Tools > Catalog manual runner in the loaded extension. The catalog defaults to Agent surface; select All handlers before searching list_recently_closed or restore_recently_closed. Search the exact tool name, expand its row, paste the listed JSON into the test runner, and press Run. This path validates with the handler's Zod argsSchema and calls handler.run directly. It bypasses dispatcher permission and role gates; role labels, optional-permission denial, and database binding advertisements are not established by a manual-run result. Capture only the specific output fields listed below and the receipt reference, not credentials, page text, URLs unless needed privately for fixture identity, MHTML archive data, image bytes, or GIF contents.",
+            "Replace each uppercase fixture placeholder with the exact value recorded for the disposable fixture before pasting JSON (tab and group IDs as JSON integers; a session ID as a JSON string). Keep the resolved input in the private run receipt only when needed for cleanup.",
+            "After any extension reload required by the coordinator receipt, reopen the side panel and confirm the same loaded runtime identity before repeating the safe positive case. Only the tested surfaces need to run: these procedures do not require forcing an unrelated offscreen document. Keep target fixtures disposable and owned; remove created tabs/groups, discard the dedicated memo-test profile, and track screenshot rows, uploaded files, and local GIF downloads as separate cleanup artifacts.",
+            "Use a disposable local fixture page with a visible unique marker and no personal data; leave its tab open and record its numeric Chrome tab ID.",
+            "The loaded Chrome extension must have the pageCapture optional permission granted for the positive run. The Tools runner will not request or enforce it.",
+            "Run as a signed-in member and admin only to compare the same manual UI availability; this tool handler contains no role check."
           ],
-          "steps": [],
-          "expected": [],
-          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"]
+          "steps": [
+            "In Tools > Catalog, search chrome_save_page_as_mhtml and enter {\"tab_id\": FIXTURE_TAB_ID} with the actual integer ID.",
+            "Run once and record only ok, byte_length, and whether mhtml_base64 is non-empty; do not copy, screenshot, or retain the page archive. Clear the visible result panel immediately after recording those fields.",
+            "Reload the extension according to the receipt, reopen Tools, repeat the same positive input, and compare the result shape and positive byte count.",
+            "For the declared-schema negative input, enter {\"tab_id\": 1.5} and run. Confirm the UI reports Schema mismatch before the handler is invoked.",
+            "In an admin profile only, use Settings > Advanced agent capabilities > Page archive (MHTML) to turn off pageCapture, then retry the positive input and record the Chrome API result. Turn the switch back on and verify its initial state. Do not claim a member-profile denial test from this admin-only switch.",
+            "Cleanup: Close only the disposable fixture tab and clear the inline result.",
+            "Cleanup: In the admin profile, restore pageCapture through Settings > Advanced agent capabilities and record its final grant state in the receipt."
+          ],
+          "expected": [
+            "With the grant and an eligible owned tab, each positive call returns ok:true, a positive byte_length, and a non-empty archive field; the archive itself is excluded from evidence.",
+            "The fractional tab_id is rejected by Zod and the UI shows Schema mismatch without a handler result.",
+            "If the admin switch successfully removes pageCapture, record the retry as Chrome API behavior only; the manual runner does not prove the normal dispatcher denies or prompts. Member-profile permission denial remains unverified.",
+            "This capture is returned inline and is not persisted by this handler; no MHTML artifact remains after the result panel is cleared and the fixture tab is closed."
+          ],
+          "dimensions": [
+            "valid-input",
+            "invalid-input",
+            "permissions",
+            "reload",
+            "direct-handler",
+            "owned-fixture",
+            "dispatcher-unverified",
+            "runtime-unverified"
+          ],
+          "procedure_source_review": {
+            "proposal": ".research/inventory-six-procedures-20261007.json",
+            "peer": ".research/inventory-six-procedures-root-review-20261007.json",
+            "source_anchors": [
+              "src/features/tools/ToolsView.tsx:383-460",
+              "src/lib/tools/handlers/optional-perms.ts:117-151",
+              "src/lib/tools/handlers/_active-tab.ts:18-32",
+              "types/tool-catalog.json: catalog record for chrome_save_page_as_mhtml",
+              "docs/stabilization/inventory.json: EXT-F-4096"
+            ],
+            "limits": "No runtime/mode promotion. Direct handler only; original dimensions/design_status preserved. See case cleanup for remote artifacts remaining outstanding."
+          }
         }
       ],
       "cells": {
@@ -55184,12 +55303,58 @@
           "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Before each case, use the coordinator-issued resource permit and record its current build receipt: source SHA and dirty-source hash, lockfile and output hashes, WXT mode, loaded extension runtime ID and source directory, Chrome version, profile label, signed-in role and selected organization when required, relevant grants, backend identity, fixture IDs, and timestamp. Omit secrets and page contents.",
+            "Use the actual side-panel Tools > Catalog manual runner in the loaded extension. The catalog defaults to Agent surface; select All handlers before searching list_recently_closed or restore_recently_closed. Search the exact tool name, expand its row, paste the listed JSON into the test runner, and press Run. This path validates with the handler's Zod argsSchema and calls handler.run directly. It bypasses dispatcher permission and role gates; role labels, optional-permission denial, and database binding advertisements are not established by a manual-run result. Capture only the specific output fields listed below and the receipt reference, not credentials, page text, URLs unless needed privately for fixture identity, MHTML archive data, image bytes, or GIF contents.",
+            "Replace each uppercase fixture placeholder with the exact value recorded for the disposable fixture before pasting JSON (tab and group IDs as JSON integers; a session ID as a JSON string). Keep the resolved input in the private run receipt only when needed for cleanup.",
+            "After any extension reload required by the coordinator receipt, reopen the side panel and confirm the same loaded runtime identity before repeating the safe positive case. Only the tested surfaces need to run: these procedures do not require forcing an unrelated offscreen document. Keep target fixtures disposable and owned; remove created tabs/groups, discard the dedicated memo-test profile, and track screenshot rows, uploaded files, and local GIF downloads as separate cleanup artifacts.",
+            "Use an owned local fixture tab with a visible nonsensitive marker and a dedicated disposable signed-in profile/org whose existing file upload path is available for the export action.",
+            "Confirm the loaded extension manifest declares the required debugger permission. Do not expect an optional-permission grant flow.",
+            "Set a unique filename such as codex-procedure-20261007.gif and record the returned file ID privately for cleanup tracking; uploaded cloud-file deletion remains unsupported in the inspected Files surface."
           ],
-          "steps": [],
-          "expected": [],
-          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"]
+          "steps": [
+            "With the fixture tab ID as a digit string, run {\"action\":\"start_recording\",\"tab_id\":\"FIXTURE_TAB_ID\"}; confirm the result is {ok:true,recording:true}, keep the fixture tab focused and visible, make two harmless page interactions, and wait at least one second for frames.",
+            "Run {\"action\":\"stop_recording\",\"tab_id\":\"FIXTURE_TAB_ID\"}; require frame_count > 0 and record only frame_count and duration_ms.",
+            "Reload the extension and confirm the loaded runtime identity. Run export once before starting another recording; expect the no-buffer error only after confirming the extension/service worker restarted.",
+            "Repeat start_recording, focused fixture interactions, and stop_recording to create a fresh buffer. Require frame_count > 0 before continuing.",
+            "Run {\"action\":\"export\",\"tab_id\":\"FIXTURE_TAB_ID\",\"download\":true,\"filename\":\"codex-procedure-20261007.gif\"}; record success and the file/download IDs only in the private cleanup receipt. The result contains a URL; do not copy it or include GIF bytes in evidence.",
+            "Run {\"action\":\"clear\",\"tab_id\":\"FIXTURE_TAB_ID\"} after successful export and expect cleared_frames:0 because export already consumed and cleared the buffer.",
+            "For the declared-schema negative input, run {\"action\":\"pause\",\"tab_id\":\"FIXTURE_TAB_ID\"} and confirm Schema mismatch before recording code runs.",
+            "Permission-denial behavior is unverified: debugger is a required permission in this build; do not attempt to revoke it.",
+            "Cleanup: Delete the local download if created and verify its removal. Cloud GIF-file cleanup remains outstanding because no supported file-delete path was established in the inspected Files surface; discarding a Chrome profile does not remove the remote file.",
+            "Cleanup: Run clear for the fixture tab, close that owned tab, and leave the required debugger permission unchanged. The disposable profile bounds local state only; it does not remove an uploaded cloud file.",
+            "Cleanup: If export or cleanup fails, retain a private receipt containing only enough fixture identity to finish cleanup; keep uploaded-file and local-download cleanup statuses independent and do not call the case clean until both are verified removed."
+          ],
+          "expected": [
+            "Each positive start returns recording:true; each stop must report positive frame_count and nonnegative duration. Successful download:true export returns an uploaded file identity and download ID; clear after export returns zero frames.",
+            "The export uses the backend upload path even when download:true. Keep file_id and download_id in the private cleanup receipt; omit file_url and GIF contents from general evidence.",
+            "Only the pre-positive-export reload probe demonstrates service-worker buffer loss, and only when the extension/service worker restart is confirmed.",
+            "Unknown action pause fails enum validation before handler invocation.",
+            "This direct path does not verify the normal dispatcher permission prompt, role policy, or live binding.",
+            "Permission denial remains unverified; this manual procedure does not test dispatcher permission enforcement."
+          ],
+          "dimensions": [
+            "valid-input",
+            "invalid-input",
+            "permissions",
+            "reload",
+            "direct-handler",
+            "owned-fixture",
+            "dispatcher-unverified",
+            "runtime-unverified"
+          ],
+          "procedure_source_review": {
+            "proposal": ".research/inventory-six-procedures-20261007.json",
+            "peer": ".research/inventory-six-procedures-root-review-20261007.json",
+            "source_anchors": [
+              "src/features/tools/ToolsView.tsx:383-460",
+              "src/lib/tools/handlers/record.ts:1-31",
+              "src/lib/tools/handlers/record.ts:35-192",
+              "src/lib/tools/handlers/record.ts:194-285",
+              "src/lib/recording/state.ts",
+              "docs/stabilization/inventory.json: EXT-F-4129"
+            ],
+            "limits": "No runtime/mode promotion. Direct handler only; original dimensions/design_status preserved. See case cleanup for remote artifacts remaining outstanding."
+          }
         }
       ],
       "cells": {
@@ -57997,12 +58162,53 @@
           "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Before each case, use the coordinator-issued resource permit and record its current build receipt: source SHA and dirty-source hash, lockfile and output hashes, WXT mode, loaded extension runtime ID and source directory, Chrome version, profile label, signed-in role and selected organization when required, relevant grants, backend identity, fixture IDs, and timestamp. Omit secrets and page contents.",
+            "Use the actual side-panel Tools > Catalog manual runner in the loaded extension. The catalog defaults to Agent surface; select All handlers before searching list_recently_closed or restore_recently_closed. Search the exact tool name, expand its row, paste the listed JSON into the test runner, and press Run. This path validates with the handler's Zod argsSchema and calls handler.run directly. It bypasses dispatcher permission and role gates; role labels, optional-permission denial, and database binding advertisements are not established by a manual-run result. Capture only the specific output fields listed below and the receipt reference, not credentials, page text, URLs unless needed privately for fixture identity, MHTML archive data, image bytes, or GIF contents.",
+            "Replace each uppercase fixture placeholder with the exact value recorded for the disposable fixture before pasting JSON (tab and group IDs as JSON integers; a session ID as a JSON string). Keep the resolved input in the private run receipt only when needed for cleanup.",
+            "After any extension reload required by the coordinator receipt, reopen the side panel and confirm the same loaded runtime identity before repeating the safe positive case. Only the tested surfaces need to run: these procedures do not require forcing an unrelated offscreen document. Keep target fixtures disposable and owned; remove created tabs/groups, discard the dedicated memo-test profile, and track screenshot rows, uploaded files, and local GIF downloads as separate cleanup artifacts.",
+            "Use a disposable local fixture with a clearly bounded, colored element whose selector is #procedure-target; ensure it contains no personal or secret data.",
+            "Make that fixture tab the focused tab before clicking Run; the manual context has assignedTabId:null and resolves the focused tab.",
+            "For the persisted-result assertion, use an authorized signed-in profile with an explicitly selected device organization and the existing screenshot/file backend available. Record the org identity, never its credentials."
           ],
-          "steps": [],
-          "expected": [],
-          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"]
+          "steps": [
+            "Run {\"selector\":\"#procedure-target\",\"padding\":0,\"format\":\"png\"} from the focused fixture tab.",
+            "Record ok, dimensions, format, and the presence of file_id and screenshot_id independently; record identifiers only in the private cleanup receipt. Do not save image_base64, URLs, image_ref payloads, or the image itself as evidence.",
+            "Reload the extension, focus the same fixture tab, run the positive input again, and verify a new capture result with positive dimensions.",
+            "For the declared-schema negative input, run {\"rect\":{\"x\":0,\"y\":0,\"w\":0,\"h\":20}} and confirm Schema mismatch before capture.",
+            "After reload, inspect the Screenshots gallery for the owned capture if screenshot_id was returned. If only file_id was returned, track the uploaded file separately and record the missing index row; if both IDs are null, record the inline-only response and leave persistence unverified.",
+            "Permission-denial behavior is unverified: scripting is a required permission in this build; do not attempt to revoke it.",
+            "Cleanup: Delete the screenshot row through the Screenshots gallery and reread to verify row removal. Cloud image-file cleanup remains outstanding because no supported file-delete path was established in the inspected Files surface; a disposable profile does not remove the remote file.",
+            "Cleanup: Close the fixture tab and leave the required scripting permission unchanged."
+          ],
+          "expected": [
+            "The positive result is ok:true with PNG format and positive width/height. Successful file upload returns a cloud image_ref with file_id and possibly screenshot_id, and may omit image_base64; an unavailable/failed upload returns inline image_base64 with null identifiers. A file upload and screenshot index row can succeed independently.",
+            "A zero-width rectangle fails the positive-number schema and causes no capture.",
+            "A returned screenshot_id appears in the gallery after extension reload. Track file_id and screenshot_id separately; inline-only fallback is not durable persistence success.",
+            "Direct invocation does not establish dispatcher enforcement of activeTab or scripting permissions.",
+            "Permission denial remains unverified; the manual runner does not establish dispatcher permission enforcement."
+          ],
+          "dimensions": [
+            "valid-input",
+            "invalid-input",
+            "permissions",
+            "reload",
+            "direct-handler",
+            "owned-fixture",
+            "dispatcher-unverified",
+            "runtime-unverified"
+          ],
+          "procedure_source_review": {
+            "proposal": ".research/inventory-six-procedures-20261007.json",
+            "peer": ".research/inventory-six-procedures-root-review-20261007.json",
+            "source_anchors": [
+              "src/features/tools/ToolsView.tsx:383-460",
+              "src/lib/tools/handlers/extract.ts:467-694",
+              "src/lib/tools/handlers/_active-tab.ts:18-32",
+              "src/lib/screenshot/persist.ts",
+              "docs/stabilization/inventory.json: EXT-F-4143"
+            ],
+            "limits": "No runtime/mode promotion. Direct handler only; original dimensions/design_status preserved. See case cleanup for remote artifacts remaining outstanding."
+          }
         }
       ],
       "cells": {
@@ -61713,12 +61919,50 @@
           "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Before each case, use the coordinator-issued resource permit and record its current build receipt: source SHA and dirty-source hash, lockfile and output hashes, WXT mode, loaded extension runtime ID and source directory, Chrome version, profile label, signed-in role and selected organization when required, relevant grants, backend identity, fixture IDs, and timestamp. Omit secrets and page contents.",
+            "Use the actual side-panel Tools > Catalog manual runner in the loaded extension. The catalog defaults to Agent surface; select All handlers before searching list_recently_closed or restore_recently_closed. Search the exact tool name, expand its row, paste the listed JSON into the test runner, and press Run. This path validates with the handler's Zod argsSchema and calls handler.run directly. It bypasses dispatcher permission and role gates; role labels, optional-permission denial, and database binding advertisements are not established by a manual-run result. Capture only the specific output fields listed below and the receipt reference, not credentials, page text, URLs unless needed privately for fixture identity, MHTML archive data, image bytes, or GIF contents.",
+            "Replace each uppercase fixture placeholder with the exact value recorded for the disposable fixture before pasting JSON (tab and group IDs as JSON integers; a session ID as a JSON string). Keep the resolved input in the private run receipt only when needed for cleanup.",
+            "After any extension reload required by the coordinator receipt, reopen the side panel and confirm the same loaded runtime identity before repeating the safe positive case. Only the tested surfaces need to run: these procedures do not require forcing an unrelated offscreen document. Keep target fixtures disposable and owned; remove created tabs/groups, discard the dedicated memo-test profile, and track screenshot rows, uploaded files, and local GIF downloads as separate cleanup artifacts.",
+            "Use two disposable tabs in one Chrome window, each on a local fixture URL with a distinct harmless title. Record both tab IDs and the window ID.",
+            "Confirm tabs and tabGroups API permissions are present before running; the direct manual handler does not pass through dispatcher permission checks.",
+            "Run in Chrome with signed-in member/admin profiles as applicable. The handler has no role-specific branch."
           ],
-          "steps": [],
-          "expected": [],
-          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"]
+          "steps": [
+            "Run {\"action\":\"list\"} and record the global baseline group IDs; identify any groups containing the two owned fixture tab IDs and their window ID.",
+            "Run {\"action\":\"create\",\"tab_ids\":[TAB_A,TAB_B],\"title\":\"Codex disposable group\",\"color\":\"cyan\"}; record the returned group_id.",
+            "Run {\"action\":\"update\",\"group_id\":GROUP_ID,\"title\":\"Codex group updated\",\"color\":\"blue\",\"collapsed\":true}; then run list and verify both tabs and updated properties belong to that group.",
+            "Create a third disposable fixture tab, run {\"action\":\"add\",\"group_id\":GROUP_ID,\"tab_ids\":[TAB_C]}, then run {\"action\":\"remove\",\"tab_ids\":[TAB_C]} and verify the third tab is ungrouped while the original two remain grouped.",
+            "Reload the extension, run list again, and confirm the group identified by the two owned tab IDs remains visible with the updated properties.",
+            "For the declared-schema negative input, run {\"action\":\"create\",\"tab_ids\":[1.25]} and confirm Schema mismatch before Chrome is called.",
+            "Cleanup: Run remove for the two original test tab IDs to ungroup them, close all three owned fixture tabs, and verify the test group disappears from list."
+          ],
+          "expected": [
+            "Create returns ok:true and a group ID; update/add/remove return successful results. The global list identifies the group by its owned tab IDs and reports the updated title, color, and collapsed:true state after the explicit update.",
+            "Fractional tab ID is rejected by the array item integer schema.",
+            "Reload does not erase Chrome-owned tab-group state.",
+            "Permission-denial behavior is unverified: tabGroups is declared as a required permission in this build, and this procedure does not test dispatcher enforcement."
+          ],
+          "dimensions": [
+            "valid-input",
+            "invalid-input",
+            "permissions",
+            "reload",
+            "direct-handler",
+            "owned-fixture",
+            "dispatcher-unverified",
+            "runtime-unverified"
+          ],
+          "procedure_source_review": {
+            "proposal": ".research/inventory-six-procedures-20261007.json",
+            "peer": ".research/inventory-six-procedures-root-review-20261007.json",
+            "source_anchors": [
+              "src/features/tools/ToolsView.tsx:383-460",
+              "src/lib/tools/handlers/canonical-mergers.ts:293-352",
+              "src/lib/tools/handlers/tabs.ts:340-430",
+              "docs/stabilization/inventory.json: EXT-F-4163"
+            ],
+            "limits": "No runtime/mode promotion. Direct handler only; original dimensions/design_status preserved. See case cleanup for remote artifacts remaining outstanding."
+          }
         }
       ],
       "cells": {
