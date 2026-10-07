@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-07T21:05:54.818023+00:00",
+  "updated_at": "2026-10-07T22:00:57.574346+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -7809,7 +7809,8 @@
             "EXT-D-0012",
             "EXT-D-0084",
             "EXT-D-0086",
-            "EXT-D-0087"
+            "EXT-D-0087",
+            "EXT-D-0155"
           ],
           "run_ids": [
             "guest-local-001",

@@ -1,0 +1,51 @@
+{
+  "id": "EXT-D-0155",
+  "feature_id": "EXT-F-1003",
+  "case_ids": ["EXT-F-1003-T22", "EXT-F-1003-T37", "EXT-F-1003-T46", "EXT-F-1003-T70"],
+  "surface": "Testing infrastructure / frozen artifact identity; Settings, navigation and SEO",
+  "auth_mode": "guest observed",
+  "title": "Native runners reject valid frozen artifacts when workflow checkout version advances",
+  "severity": "S2: prevents acceptance before UI; product impact not established",
+  "priority": "P1: prerequisite for frozen-artifact batches",
+  "state": "in-fix",
+  "owner": "root/settings_resource_diagnosis",
+  "preconditions": [
+    "Successful pinned CI37684665825/artifact11511120729/source14305391 is development0.2.387; workflow37686070986 checkout package is0.2.388."
+  ],
+  "reproduction": [
+    "Dispatch settings-controls with pinned development artifact and newer workflow main.",
+    "Observe importer verifies source and tree successfully.",
+    "Settings setup compares receipt.version0.2.387 to checkout package.version0.2.388 and exits before browser assertions."
+  ],
+  "expected": "Validate actual artifact manifest/tree and runtime identity against its own imported receipt and provenance; workflow source may be newer.",
+  "actual": "Settings and source-confirmed SEO/navigation siblings require version equality with mutable checkout package.",
+  "evidence": [
+    ".research/independent-product-batch-20261007.json",
+    ".research/frozen-artifact-version-repair-20261007.json",
+    ".research/frozen-identity-peer-20261007.json"
+  ],
+  "fix_commits": ["bddbee75"],
+  "verification": "Fresh peer source behavior PASS, quality PARTIAL: add second valid version and prove constant-return guard. Native setup and Settings behavior retest remain pending.",
+  "transition_history": [
+    {
+      "at": "2026-10-07T22:00:57.574346+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Registered exact resource-valid child failure from37686070986."
+    },
+    {
+      "at": "2026-10-07T22:00:57.574346+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Source equality confirmed across Settings, SEO and navigation; importer not at fault."
+    },
+    {
+      "at": "2026-10-07T22:00:57.574346+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Source fix bddbee75 accepted behaviorally; peer-required forcing test correction in progress."
+    }
+  ],
+  "closure_requirement": "Fresh peer accepts actual identity guard including differing workflow/artifact versions and corrupt artifact refusal, followed by guarded native original Settings setup/controls retest. Keep sibling native scopes explicit.",
+  "next_action": "Finish corrective tests and fresh review, then native frozen Settings retest."
+}
