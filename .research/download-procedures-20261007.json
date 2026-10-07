@@ -126,7 +126,6 @@
         "admin",
         "valid-input",
         "invalid-input",
-        "nonexistent-id-negative",
         "downloads-permission-present",
         "owned-slow-fixture",
         "warm",
