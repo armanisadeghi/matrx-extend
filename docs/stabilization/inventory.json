@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-07T12:42:43+00:00",
+  "updated_at": "2026-10-07T15:47:18.263750+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
-  "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
+  "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
   "modes": ["guest", "member", "admin"],
   "collection_reports": [
     "docs/stabilization/reports/inventory-operations.json",
@@ -23,7 +23,8 @@
     ".research/cookie-procedures-peer-20261007.json",
     ".research/clipboard-procedures-20261007.json",
     ".research/clipboard-procedures-peer-20261007.json",
-    ".research/clipboard-final-peer-20261007.json"
+    ".research/clipboard-final-peer-20261007.json",
+    ".research/inventory-source-delta-check-20261007.json"
   ],
   "features": [
     {
@@ -63366,7 +63367,8 @@
     "Takeover .89 native guest census observed five expected guest tabs and eleven known Settings section labels; five additional aria-expanded elements are unclassified, not established extra sections. Only scoped T22/T37/T46/T70 guest behavior admitted; full surface/mode coverage remains open. See runs/takeover-visible-census-089-002.json.",
     "2026-10-03 current-source Settings delta reconciles EXT-F-1003 against HEAD 6f4e9d0. Added explicit account identity, organization archive-filter visibility/behavior, settled desktop status/health and admin permission retry controls; refined misleading debugger toggle and role-denial procedures. All additions remain unverified; this does not close the global source census.",
     "Settings source census is reconciled through source SHA 6f4e9d0; guest/member/admin controls now have explicit readiness procedures. Runtime additions and failure-injection paths remain unverified. Global scope_complete remains false.",
-    "Settings follow-up: T60 now requires visible actionable clipboard failure feedback and no false copied-success state. Current console-only error handling is retained as unverified source lead EXT-L-SETTINGS-002, not a runtime defect or pass."
+    "Settings follow-up: T60 now requires visible actionable clipboard failure feedback and no false copied-success state. Current console-only error handling is retained as unverified source lead EXT-L-SETTINGS-002, not a runtime defect or pass.",
+    "Source snapshot636d0085 includes the independently reviewed six-file WebMCP delta since d6678732; see .research/inventory-source-delta-check-20261007.json. This does not re-census the historical baseline or establish native completeness; scope_complete and all feature/case/runtime data are unchanged."
   ],
   "source_review": "docs/stabilization/reports/takeover-inventory-reconciled.json"
 }
