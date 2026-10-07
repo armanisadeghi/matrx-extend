@@ -28,9 +28,9 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "d47_public_replay_case owns sole guarded source-test permit for real-public-site initial-load replay driver and minimal hosted routing. No browser/native run admitted. Scope retains real initial fetch/XHR provenance, exact saved replay or honest late-listener guidance, owned cleanup, current build evidence and no localhost substitution. Separate fresh peer required before native dispatch.",
+    "next_action": "Await successful exact-current CI development artifact, then admit one guarded hosted public-site initial-load replay run. Fresh peer d4497d11 accepts callback correction9cfe7403 for native testing; no public native result exists. Require real initial HTTP response and preview, exact saved replay or honest late-listener remedy, and verified owned cleanup. Later lock changes are not covered by the frozen fixture receipts.",
     "status": "Independent peer1abea43b accepts bounded old-first saved replay at frozen0.2.338/source651f25d0: observed old/current HTTP finish order, current context/packet, exact settled current-only saved row, valid resources and cleanup. Current-first earlier0.2.337 remains separately bounded. D47in-fix/T57unverified unchanged.",
-    "implementation_agent": "active: d47_public_replay_case",
+    "implementation_agent": "completed: d47_public_replay_case; correction d47_public_click_integration_fix; independent peer d47_public_click_fresh_peer",
     "execution_agent": "completed: d47_oldfirst_native_execution",
     "native_run_id": 37537634304,
     "workflow_source": "fbcc4311ae6885b67133e55336f692be38881249",
@@ -53,7 +53,7 @@
     "run_boundary_repair_commit": "0917cc61",
     "run_boundary_review_commit": "5425d283",
     "run_boundary_review": ".research/d47-run-readiness-peer-20261006.json",
-    "pending_ci_run_id": null,
+    "pending_ci_run_id": 37564980992,
     "latest_native_evidence": ".research/d47-oldfirst-native-20261007.json",
     "terminal_diagnosis": ".research/d47-terminal-diagnosis-20261006.json",
     "owned_reload_fix_commit": "86046a88",
@@ -98,10 +98,14 @@
     "reverse_order_source_commit": "b0324a8a",
     "reverse_order_source_report": ".research/d47-reverse-order-source-20261007.json",
     "reverse_order_peer_report": ".research/d47-reverse-fresh-review-20261007.json",
-    "reverse_order_mutation_report": ".research/d47-reverse-mutation-20261007.json"
+    "reverse_order_mutation_report": ".research/d47-reverse-mutation-20261007.json",
+    "public_source_report": ".research/d47-public-replay-source-20261007.json",
+    "public_click_fix_report": ".research/d47-public-click-fix-20261007.json",
+    "public_click_peer_report": ".research/d47-public-click-fresh-peer-20261007.json",
+    "public_source_status": "independently accepted source; native public-site acceptance unverified"
   },
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
-  "verification_status": "Independent native peer9f70b303 verifies settled exact-recipe current-only output, current-document handshake/packet, old-context clearing, real old HTTP completion, and observer/owned-recipe cleanup on frozen0.2.337/source823724eb. This controlled fixture does not satisfy public-site initial-load acceptance; inverse response order, stale-only recovery, manual/prior-run isolation and causal higher-old-sequence coverage remain required. D47in-fix/T57unverified; no later dependency-state acceptance.",
+  "verification_status": "Independent peers accept bounded current-first native37558902653 on frozen0.2.337 and old-first37562111314 on frozen0.2.338: settled current-only saved output, current binding/context evidence, actual old HTTP finish, valid resources and cleanup. Neither observed old binding callback delivery. Public-site driver callback correction9cfe7403 is independently source accepted by d4497d11; no public native run yet. Public initial-load, stale-only recovery, manual/prior-run isolation and causal higher-old-sequence coverage remain required. D47 in-fix/T57 unverified; later dependency state is not certified.",
   "source_report": "docs/stabilization/reports/showcase-network-final-peer.json",
   "transition_history": [
     {
