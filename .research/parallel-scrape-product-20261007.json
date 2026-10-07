@@ -1,0 +1,190 @@
+{
+  "task_id": "parallel-scrape-product-20261007",
+  "lane": "B",
+  "status": "terminal_failure_with_partial_product_evidence",
+  "workflow": {
+    "run_id": 37670744036,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37670744036",
+    "conclusion": "failure",
+    "head_sha": "7de49783f53c92ef6ff6883f77fbb18ee793741a",
+    "acceptance_case": "guest-scrape-development",
+    "runner_label": "macos-15",
+    "runner_architecture": "ARM64",
+    "scrape_auth_mode": "guest",
+    "owned_job_terminal": true
+  },
+  "tested_build": {
+    "kind": "ci_development_test",
+    "version": "0.2.385",
+    "source_sha": "87f6649b4874492a1f8af59cd8703eff0e06424c",
+    "ci_run_id": 37666263406,
+    "artifact_id": 11503412219,
+    "artifact_digest_sha256": "c08bdbc7581a528f4da99a3e3ed9138168229df1d8c299355f2ae022fb090322",
+    "tree_sha256": "0073d51422e2a5dcb66c31682cc91c13f105d46c8a242f0a50eb5d0303cdadac",
+    "eligible_store": false,
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "chrome": "Chromium 141.0.7390.37 (Playwright build 1194)",
+    "launch_mode": "headed"
+  },
+  "fixture_and_auth": {
+    "fixture": "Existing Harbor Dental controlled page and media, served by the owned localhost fixture on the disposable runner.",
+    "remote_fixture_writes": false,
+    "shared_credentials_used": false,
+    "guest_account_observed": true,
+    "guest_access_token_present": false,
+    "guest_profile_present": false,
+    "preflight": "passed"
+  },
+  "resource_admission": {
+    "package": "valid",
+    "browser": "valid",
+    "acceptance": "valid",
+    "acceptance_transient_cpu_pending": "recovered before terminal decision",
+    "resource_invalid": false,
+    "decision": "child_failed",
+    "current_journals": [
+      "evidence/run37670744036/hosted-package-journal.jsonl",
+      "evidence/run37670744036/hosted-browser-journal.jsonl",
+      "evidence/run37670744036/hosted-guest-journal.jsonl"
+    ]
+  },
+  "case_results": [
+    {
+      "case_id": "EXT-F-1007-T20",
+      "verdict": "unverified",
+      "subassertions": [
+        { "assertion": "initial Scrape state is empty before capture", "verdict": "pass" }
+      ],
+      "observed": "The empty Scrape state was visible before capture on the controlled page.",
+      "limit": "The case remained partial in the native receipt; its full navigation and extension-reload lifecycle was not reached."
+    },
+    {
+      "case_id": "EXT-F-1007-T01",
+      "verdict": "unverified",
+      "subassertions": [
+        { "assertion": "capture busy control is disabled", "verdict": "pass" },
+        { "assertion": "article title appears in result", "verdict": "pass" },
+        { "assertion": "lazy content is absent before deep capture", "verdict": "pass" },
+        { "assertion": "result tabs appear", "verdict": "pass" }
+      ],
+      "observed": "Fast capture disabled its busy control, returned the expected article title, kept lazy content absent, and displayed the result tabs.",
+      "limit": "Only warm capture assertions ran; full reload behavior remains unverified."
+    },
+    {
+      "case_id": "EXT-F-1007-T08",
+      "verdict": "unverified",
+      "subassertions": [
+        {
+          "assertion": "Article, Images, Video, Links, SEO, and Schema tabs can be selected",
+          "verdict": "pass"
+        },
+        {
+          "assertion": "selected tabs show matching controlled fixture content",
+          "verdict": "pass"
+        },
+        { "assertion": "result empty states and reload lifecycle", "verdict": "unverified" }
+      ],
+      "observed": "Article, Images, Video, Links, SEO, and Schema tabs selected and showed matching controlled-page content; the SEO tab matched its expected content pattern and Schema showed Dentist.",
+      "limit": "This is partial tab/content evidence only; empty states and reload lifecycle were not reached. It does not verify the separate SEO feature cases."
+    },
+    {
+      "case_id": "EXT-F-1007-T10",
+      "verdict": "unverified",
+      "subassertions": [
+        { "assertion": "image removal updates the list through empty state", "verdict": "pass" },
+        { "assertion": "valid controlled image can be added", "verdict": "pass" },
+        { "assertion": "repeat behavior after extension reload", "verdict": "unverified" }
+      ],
+      "observed": "Warm image removal reached empty state and a controlled image could be added.",
+      "limit": "Reload repetition was not reached."
+    },
+    {
+      "case_id": "EXT-F-1007-T11",
+      "verdict": "unverified",
+      "subassertions": [
+        { "assertion": "blank image input is rejected", "verdict": "pass" },
+        { "assertion": "valid controlled image is added", "verdict": "pass" },
+        { "assertion": "Cancel clears the draft", "verdict": "pass" },
+        { "assertion": "repeat behavior after extension reload", "verdict": "unverified" }
+      ],
+      "observed": "Blank image input was rejected; valid image input was added; cancel cleared its draft.",
+      "limit": "Reload repetition was not reached."
+    },
+    {
+      "case_id": "EXT-F-1007-T12",
+      "verdict": "unverified",
+      "subassertions": [
+        { "assertion": "video removal and valid addition update the list", "verdict": "pass" },
+        { "assertion": "controlled video URL opens", "verdict": "pass" },
+        { "assertion": "copy feedback and clipboard equal the expected URL", "verdict": "pass" },
+        { "assertion": "repeat behavior after extension reload", "verdict": "unverified" }
+      ],
+      "observed": "Warm video remove/add, opening the controlled video URL, copy feedback, and clipboard equality after a temporary observation permission were recorded.",
+      "limit": "The native receipt retained partial status; reload repetition and other auth modes remain unverified."
+    },
+    {
+      "case_id": "EXT-F-1007-T13",
+      "verdict": "unverified",
+      "subassertions": [
+        { "assertion": "both controlled link rows appear in the Links pane", "verdict": "pass" },
+        { "assertion": "link open/copy/remove/add actions", "verdict": "unverified" }
+      ],
+      "observed": "At the warm link-controls stage the screenshot showed both expected links, but the pointer helper reported zero matched and zero visible targets and aborted before link actions.",
+      "limit": "Unresolved whether the failure is in the test driver's target query or product behavior; no product defect is asserted. See failure_observation."
+    },
+    {
+      "case_id": "EXT-F-1007-T02",
+      "verdict": "unverified",
+      "subassertions": [
+        { "assertion": "deep capture and lazy-content assertions", "verdict": "unverified" }
+      ],
+      "observed": "No deep-capture assertion was reached."
+    },
+    {
+      "case_id": "EXT-F-2005-T01",
+      "verdict": "unverified",
+      "subassertions": [
+        { "assertion": "guest Data extraction and sign-in save gate", "verdict": "unverified" }
+      ],
+      "observed": "Data extraction was not exercised by this registered guest Scrape case."
+    },
+    {
+      "case_id": "EXT-F-2005-T05",
+      "verdict": "unverified",
+      "subassertions": [
+        { "assertion": "Data page-identity Retry and recovery", "verdict": "unverified" }
+      ],
+      "observed": "Data page-identity Retry and recovery were not exercised."
+    },
+    {
+      "case_id": "EXT-F-1008-T01",
+      "verdict": "unverified",
+      "subassertions": [
+        { "assertion": "SEO audit/history product behavior", "verdict": "unverified" }
+      ],
+      "observed": "The separate SEO audit/history behavior was not exercised; only Scrape's SEO result tab content was observed under EXT-F-1007-T08."
+    }
+  ],
+  "failure_observation": {
+    "type": "unclassified_native_runner_observation",
+    "expected": "The visible link target for the first controlled link is uniquely found so the existing test can verify opening and copying it.",
+    "actual": "The native click helper raised pointer_target_not_unique with matchedTargetCount=0 and visibleMatchCount=0 while the Links pane displayed Patient forms and Appointments.",
+    "mode": "guest",
+    "severity": "undetermined",
+    "priority": "P2 for triage; not yet a confirmed product defect",
+    "evidence": [
+      "evidence/run37670744036/native-scrape-receipt-original.json",
+      "evidence/run37670744036/native-scrape-receipt-sanitized.json",
+      "evidence/run37670744036/scrape-warm-links-failure.png",
+      "evidence/run37670744036/hosted-guest-journal.jsonl"
+    ],
+    "defect_id": null
+  },
+  "scope_limits": [
+    "One guest development-artifact batch only; member/admin modes remain unverified.",
+    "No Data feature behavior was exercised; no separate SEO feature behavior was verified.",
+    "The native runner stopped before deep capture, link actions, error recovery, navigation, and extension reload.",
+    "No product fix, release, or full Scrape/Data/SEO coverage claim is made."
+  ],
+  "evidence_hashes": "evidence/run37670744036/evidence-metadata.json"
+}

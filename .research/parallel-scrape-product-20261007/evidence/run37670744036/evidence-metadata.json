@@ -1,0 +1,24 @@
+{
+  "workflow_run_id": 37670744036,
+  "uploaded_result_artifact_id": 11505716113,
+  "uploaded_result_artifact_sha256_original": "7575987ebac6f18779cb37633495dcfbc41e07e22128688cec16882c5fdbdc12",
+  "uploaded_result_artifact_sha256_local_download": "7575987ebac6f18779cb37633495dcfbc41e07e22128688cec16882c5fdbdc12",
+  "incoming_ci_run_id": 37666263406,
+  "incoming_artifact_id": 11503412219,
+  "incoming_artifact_sha256_github": "c08bdbc7581a528f4da99a3e3ed9138168229df1d8c299355f2ae022fb090322",
+  "incoming_artifact_sha256_local_download": "c08bdbc7581a528f4da99a3e3ed9138168229df1d8c299355f2ae022fb090322",
+  "incoming_artifact_scratch_location": "/Volumes/Samsung2TB/code/.stabilization-scratch/parallel-scrape-product-20261007/source-development-artifact-original.zip",
+  "uploaded_artifact_scratch_location": "/Volumes/Samsung2TB/code/.stabilization-scratch/parallel-scrape-product-20261007/hosted-result-artifact-original.zip",
+  "original_receipt_sha256": "14ff19df9c4fd5ba9eae32551df7e34b8d8d6c01df4ecbeb80233d1b8fbfd7ef",
+  "sanitized_receipt_sha256": "50f852e95a63ca9d49a22e957be63f1d38de650be6e5a81f94ac3eb3fcd6d169",
+  "current_journals": {
+    "package_sha256": "50eea5be5d79340e759d39c01d5a11e826b6412089c02dfeb157c5e60da83fca",
+    "browser_sha256": "6cc418cce2f7fe4021253f05bd845fae6719451028abf12119b9783243e8dbc7",
+    "guest_acceptance_sha256": "e88dc7d2170c7f7596bdbbc6e250a47cc51ca38d6716d91e9210a9a55d5f57a7"
+  },
+  "inspected_png_sha256": {
+    "scrape_fast_article.png": "e733cac31a32bbd1ea828fa14f2b31d8de2ebcf1b524d400d3d11009a2ff315b",
+    "scrape_warm_links_failure.png": "3df83a47d0a9d27765451ab909f3d4e391f229fd3ca10f9e357a0773d0099df8"
+  },
+  "excluded_from_repo": "Full uploaded artifact ZIP, its extracted tree, and the imported source artifact are retained in the scratch location for hash provenance; unrelated older resource journals from the uploaded archive are excluded from committed evidence."
+}

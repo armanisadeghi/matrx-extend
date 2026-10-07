@@ -1,0 +1,3893 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007",
+  "mode": "guest",
+  "status": "unverified",
+  "artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.385",
+    "source_sha": "87f6649b4874492a1f8af59cd8703eff0e06424c",
+    "tree_sha256": "0073d51422e2a5dcb66c31682cc91c13f105d46c8a242f0a50eb5d0303cdadac",
+    "run_id": 37666263406,
+    "artifact_id": 11503412219
+  },
+  "guest_account_observed": true,
+  "cases": [
+    {
+      "id": "EXT-F-1007-T20",
+      "status": "partial",
+      "evidence": {
+        "initial_empty": true,
+        "initial_url": "http://localhost:49195/intake"
+      },
+      "remaining": [
+        "Navigation and reload lifecycle remain to be exercised."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T01",
+      "status": "partial",
+      "evidence": {
+        "url": "http://localhost:49195/intake",
+        "busy_disabled": true,
+        "article_title": "Harbor Dental intake guide",
+        "lazy_content_absent": true,
+        "result_tabs": [
+          "Article",
+          "Images",
+          "Video",
+          "Links",
+          "SEO",
+          "Schema"
+        ]
+      },
+      "remaining": [
+        "Full extension reload and post-reload capture not yet exercised."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T08",
+      "status": "partial",
+      "evidence": {
+        "tabs_selected": [
+          "Article",
+          "Images",
+          "Video",
+          "Links",
+          "SEO",
+          "Schema"
+        ],
+        "matching_content": {
+          "article": true,
+          "images": {
+            "pane": "Images",
+            "state": "matching_content",
+            "count": 3,
+            "paths": [
+              "/intake.svg",
+              "/appointment-card.svg",
+              "/clinic-icon.svg"
+            ],
+            "alt": [
+              "New patient intake desk",
+              "Appointment card",
+              "Clinic icon"
+            ],
+            "natural_sizes": [
+              [
+                640,
+                480
+              ],
+              [
+                96,
+                96
+              ],
+              [
+                32,
+                32
+              ]
+            ]
+          },
+          "video": {
+            "pane": "Video",
+            "state": "matching_content",
+            "count": 2,
+            "paths": [
+              "/intake-walkthrough.mp4",
+              "/referral-walkthrough.mp4"
+            ]
+          },
+          "links": true,
+          "seo": true,
+          "schema": true
+        }
+      },
+      "remaining": [
+        "Image and video empty states and reload lifecycle need full observation."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T10",
+      "status": "partial",
+      "evidence": {
+        "warm": {
+          "before": {
+            "pane": "Images",
+            "state": "matching_content",
+            "count": 3,
+            "paths": [
+              "/intake.svg",
+              "/appointment-card.svg",
+              "/clinic-icon.svg"
+            ],
+            "alt": [
+              "New patient intake desk",
+              "Appointment card",
+              "Clinic icon"
+            ],
+            "natural_sizes": [
+              [
+                640,
+                480
+              ],
+              [
+                96,
+                96
+              ],
+              [
+                32,
+                32
+              ]
+            ]
+          },
+          "removals": [
+            {
+              "pane": "Images",
+              "state": "matching_content",
+              "count": 2,
+              "paths": [
+                "/intake.svg",
+                "/clinic-icon.svg"
+              ],
+              "alt": [
+                "New patient intake desk",
+                "Clinic icon"
+              ],
+              "natural_sizes": [
+                [
+                  640,
+                  480
+                ],
+                [
+                  32,
+                  32
+                ]
+              ]
+            },
+            {
+              "pane": "Images",
+              "state": "matching_content",
+              "count": 1,
+              "paths": [
+                "/intake.svg"
+              ],
+              "alt": [
+                "New patient intake desk"
+              ],
+              "natural_sizes": [
+                [
+                  640,
+                  480
+                ]
+              ]
+            },
+            {
+              "pane": "Images",
+              "state": "empty",
+              "count": 0,
+              "paths": [],
+              "alt": [],
+              "natural_sizes": []
+            }
+          ],
+          "added": {
+            "pane": "Images",
+            "state": "matching_content",
+            "count": 1,
+            "paths": [
+              "/followup-card.svg"
+            ],
+            "alt": [
+              "Follow-up card"
+            ],
+            "natural_sizes": [
+              [
+                96,
+                96
+              ]
+            ]
+          }
+        }
+      },
+      "remaining": [
+        "Repeat controls after full extension reload."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T11",
+      "status": "partial",
+      "evidence": {
+        "warm": {
+          "blank_rejected": true,
+          "valid_added": {
+            "pane": "Images",
+            "state": "matching_content",
+            "count": 1,
+            "paths": [
+              "/followup-card.svg"
+            ],
+            "alt": [
+              "Follow-up card"
+            ],
+            "natural_sizes": [
+              [
+                96,
+                96
+              ]
+            ]
+          },
+          "cancel_cleared": true
+        }
+      },
+      "remaining": [
+        "Repeat controls after full extension reload."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T12",
+      "status": "partial",
+      "evidence": {
+        "warm": {
+          "before": {
+            "pane": "Video",
+            "state": "matching_content",
+            "count": 2,
+            "paths": [
+              "/intake-walkthrough.mp4",
+              "/referral-walkthrough.mp4"
+            ]
+          },
+          "removed": {
+            "pane": "Video",
+            "state": "matching_content",
+            "count": 1,
+            "paths": [
+              "/referral-walkthrough.mp4"
+            ]
+          },
+          "added": {
+            "pane": "Video",
+            "state": "matching_content",
+            "count": 2,
+            "paths": [
+              "/referral-walkthrough.mp4",
+              "/consultation.mp4"
+            ]
+          },
+          "links": {
+            "opened_url": "http://localhost:49195/intake-walkthrough.mp4",
+            "copy_feedback": "copied",
+            "clipboard_equal": true,
+            "clipboard_read": {
+              "ok": false,
+              "code": "NotAllowedError",
+              "focused": true,
+              "visible": true
+            },
+            "clipboard_observation": {
+              "clipboardObservationStage": "read",
+              "clipboardObservationPermissionRestored": true,
+              "clipboardReadPermissionForObservation": true
+            },
+            "limitations": [],
+            "failures": [],
+            "clipboard_read_after_grant": {
+              "ok": true,
+              "same": true,
+              "focused": true,
+              "visible": true
+            }
+          }
+        }
+      },
+      "remaining": [
+        "Repeat controls after full extension reload; verify native link and clipboard outcomes."
+      ]
+    }
+  ],
+  "stage": "warm_link_controls",
+  "native_stage": "exercise_panel",
+  "failure": {
+    "stage": "warm_link_controls",
+    "code": "unique visible pointer target"
+  },
+  "original_busy_failure": null,
+  "cpu_diagnostic": null,
+  "horizontal_geometry": [
+    {
+      "boundary": "after_fast_capture",
+      "at": "2026-10-07T19:04:04.810Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 12,
+          "right": 69.921875,
+          "width": 57.921875,
+          "scrollLeft": 0,
+          "scrollWidth": 58,
+          "clientWidth": 58
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 217.90625,
+              "width": 65.65625,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 221.90625,
+              "right": 284.65625,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 288.65625,
+              "right": 333.03125,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    },
+    {
+      "boundary": "after_Article_tab",
+      "at": "2026-10-07T19:04:04.996Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 12,
+          "right": 69.921875,
+          "width": 57.921875,
+          "scrollLeft": 0,
+          "scrollWidth": 58,
+          "clientWidth": 58
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 217.90625,
+              "width": 65.65625,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 221.90625,
+              "right": 284.65625,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 288.65625,
+              "right": 333.03125,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    },
+    {
+      "boundary": "after_Images_tab",
+      "at": "2026-10-07T19:04:05.205Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 73.921875,
+          "right": 148.25,
+          "width": 74.328125,
+          "scrollLeft": 0,
+          "scrollWidth": 74,
+          "clientWidth": 74
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 217.90625,
+              "width": 65.65625,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 221.90625,
+              "right": 284.65625,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 288.65625,
+              "right": 333.03125,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    },
+    {
+      "boundary": "after_Video_tab",
+      "at": "2026-10-07T19:04:05.392Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 152.25,
+          "right": 217.90625,
+          "width": 65.65625,
+          "scrollLeft": 0,
+          "scrollWidth": 66,
+          "clientWidth": 66
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 217.90625,
+              "width": 65.65625,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 221.90625,
+              "right": 284.65625,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 288.65625,
+              "right": 333.03125,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    },
+    {
+      "boundary": "after_Links_tab",
+      "at": "2026-10-07T19:04:05.578Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 221.90625,
+          "right": 284.65625,
+          "width": 62.75,
+          "scrollLeft": 0,
+          "scrollWidth": 63,
+          "clientWidth": 63
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 217.90625,
+              "width": 65.65625,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 221.90625,
+              "right": 284.65625,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 288.65625,
+              "right": 333.03125,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    },
+    {
+      "boundary": "after_SEO_tab",
+      "at": "2026-10-07T19:04:05.847Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 288.65625,
+          "right": 333.03125,
+          "width": 44.375,
+          "scrollLeft": 0,
+          "scrollWidth": 44,
+          "clientWidth": 44
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 217.90625,
+              "width": 65.65625,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 221.90625,
+              "right": 284.65625,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 288.65625,
+              "right": 333.03125,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    },
+    {
+      "boundary": "after_Schema_tab",
+      "at": "2026-10-07T19:04:06.036Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 12,
+          "right": 78.296875,
+          "width": 66.296875,
+          "scrollLeft": 0,
+          "scrollWidth": 66,
+          "clientWidth": 66
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 217.90625,
+              "width": 65.65625,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 221.90625,
+              "right": 284.65625,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 288.65625,
+              "right": 333.03125,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "reload_milestones": [],
+  "reload_lifecycle": null,
+  "driver_failure": {
+    "code": "pointer_target_not_unique",
+    "sampleStage": null,
+    "matchedTargetCount": 0,
+    "visibleMatchCount": 0,
+    "uniqueVisibleTarget": false,
+    "hitTarget": false,
+    "animating": false,
+    "stableSamples": 0,
+    "positionStable": false,
+    "targetHasArea": null,
+    "clippedTargetHasArea": null,
+    "selectedPointAvailable": null,
+    "centerHitCategory": null,
+    "targetDisabled": null,
+    "pointerEventsNone": null,
+    "clippingAncestorCount": null,
+    "testedPointCount": null,
+    "interiorHitKinds": null,
+    "targetRectangle": null,
+    "centerOccluder": null,
+    "firstInteriorOccluder": null
+  },
+  "media_transitions": [
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-result-tab",
+        "target": "Images"
+      },
+      "pre": {
+        "selected": "Schema",
+        "imagePaths": [],
+        "imageCount": "3",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [
+          "/intake.svg",
+          "/appointment-card.svg",
+          "/clinic-icon.svg"
+        ],
+        "imageCount": "3",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 50485,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 111,
+          "y": 166,
+          "target": "tab:Images",
+          "selected": "Schema"
+        },
+        {
+          "ms": 50488,
+          "type": "tab_change",
+          "selected": "Images",
+          "sameTabs": true
+        },
+        {
+          "ms": 50492,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 111,
+          "y": 166,
+          "target": "tab:Images",
+          "selected": "Images"
+        },
+        {
+          "ms": 50492,
+          "type": "click",
+          "trusted": true,
+          "x": 111,
+          "y": 166,
+          "target": "tab:Images",
+          "selected": "Images"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "remove_image",
+        "target": "/appointment-card.svg"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [
+          "/intake.svg",
+          "/appointment-card.svg",
+          "/clinic-icon.svg"
+        ],
+        "imageCount": "3",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [
+          "/intake.svg",
+          "/clinic-icon.svg"
+        ],
+        "imageCount": "2",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 50777,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 60,
+          "y": 286,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 50781,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 60,
+          "y": 286,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 50781,
+          "type": "click",
+          "trusted": true,
+          "x": 60,
+          "y": 286,
+          "target": "Remove image",
+          "selected": "Images"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "remove_image",
+        "target": "/clinic-icon.svg"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [
+          "/intake.svg",
+          "/clinic-icon.svg"
+        ],
+        "imageCount": "2",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [
+          "/intake.svg"
+        ],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 50976,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 41,
+          "y": 286,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 50979,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 41,
+          "y": 286,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 50979,
+          "type": "click",
+          "trusted": true,
+          "x": 41,
+          "y": 286,
+          "target": "Remove image",
+          "selected": "Images"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "remove_image",
+        "target": "/intake.svg"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [
+          "/intake.svg"
+        ],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [],
+        "imageCount": null,
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 51231,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 100,
+          "y": 256,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 51232,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 100,
+          "y": 256,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 51232,
+          "type": "click",
+          "trusted": true,
+          "x": 100,
+          "y": 256,
+          "target": "Remove image",
+          "selected": "Images"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-add-row",
+        "target": "Add image URL"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [],
+        "imageCount": null,
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [],
+        "imageCount": null,
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 51426,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 180,
+          "y": 231,
+          "target": "Add image URL",
+          "selected": "Images"
+        },
+        {
+          "ms": 51437,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 180,
+          "y": 231,
+          "target": "Add image URL",
+          "selected": "Images"
+        },
+        {
+          "ms": 51437,
+          "type": "click",
+          "trusted": true,
+          "x": 180,
+          "y": 231,
+          "target": "Add image URL",
+          "selected": "Images"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-form-action",
+        "target": "Add"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [],
+        "imageCount": null,
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [],
+        "imageCount": null,
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 51618,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 54,
+          "y": 305,
+          "target": "Add",
+          "selected": "Images"
+        },
+        {
+          "ms": 51621,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 54,
+          "y": 305,
+          "target": "Add",
+          "selected": "Images"
+        },
+        {
+          "ms": 51621,
+          "type": "click",
+          "trusted": true,
+          "x": 54,
+          "y": 305,
+          "target": "Add",
+          "selected": "Images"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-form-field",
+        "target": "src"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [],
+        "imageCount": null,
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [],
+        "imageCount": null,
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 51804,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 180,
+          "y": 237,
+          "target": "field:https://…",
+          "selected": "Images"
+        },
+        {
+          "ms": 51814,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 180,
+          "y": 237,
+          "target": "field:https://…",
+          "selected": "Images"
+        },
+        {
+          "ms": 51815,
+          "type": "click",
+          "trusted": true,
+          "x": 180,
+          "y": 237,
+          "target": "field:https://…",
+          "selected": "Images"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-field-insert",
+        "target": "src"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [],
+        "imageCount": null,
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [],
+        "imageCount": null,
+        "panePresent": true
+      },
+      "events": [],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-form-field",
+        "target": "alt"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [],
+        "imageCount": null,
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [],
+        "imageCount": null,
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 52062,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 180,
+          "y": 271,
+          "target": "field:alt text (optional)",
+          "selected": "Images"
+        },
+        {
+          "ms": 52071,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 180,
+          "y": 271,
+          "target": "field:alt text (optional)",
+          "selected": "Images"
+        },
+        {
+          "ms": 52071,
+          "type": "click",
+          "trusted": true,
+          "x": 180,
+          "y": 271,
+          "target": "field:alt text (optional)",
+          "selected": "Images"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-field-insert",
+        "target": "alt"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [],
+        "imageCount": null,
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [],
+        "imageCount": null,
+        "panePresent": true
+      },
+      "events": [],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-form-action",
+        "target": "Add"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [],
+        "imageCount": null,
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [
+          "/followup-card.svg"
+        ],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 52257,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 54,
+          "y": 305,
+          "target": "Add",
+          "selected": "Images"
+        },
+        {
+          "ms": 52260,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 54,
+          "y": 305,
+          "target": "Add",
+          "selected": "Images"
+        },
+        {
+          "ms": 52260,
+          "type": "click",
+          "trusted": true,
+          "x": 54,
+          "y": 305,
+          "target": "Add",
+          "selected": "Images"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-form-field",
+        "target": "src"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [
+          "/followup-card.svg"
+        ],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [
+          "/followup-card.svg"
+        ],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 52477,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 176,
+          "y": 286,
+          "target": "field:https://…",
+          "selected": "Images"
+        },
+        {
+          "ms": 52484,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 176,
+          "y": 286,
+          "target": "field:https://…",
+          "selected": "Images"
+        },
+        {
+          "ms": 52484,
+          "type": "click",
+          "trusted": true,
+          "x": 176,
+          "y": 286,
+          "target": "field:https://…",
+          "selected": "Images"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-field-insert",
+        "target": "src"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [
+          "/followup-card.svg"
+        ],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [
+          "/followup-card.svg"
+        ],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-form-action",
+        "target": "Cancel"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [
+          "/followup-card.svg"
+        ],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [
+          "/followup-card.svg"
+        ],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 52678,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 127,
+          "y": 323,
+          "target": "Cancel",
+          "selected": "Images"
+        },
+        {
+          "ms": 52682,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 127,
+          "y": 323,
+          "target": "Cancel",
+          "selected": "Images"
+        },
+        {
+          "ms": 52682,
+          "type": "click",
+          "trusted": true,
+          "x": 127,
+          "y": 323,
+          "target": "Cancel",
+          "selected": "Images"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-add-row",
+        "target": "Add image URL"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [
+          "/followup-card.svg"
+        ],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [
+          "/followup-card.svg"
+        ],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 52929,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 176,
+          "y": 329,
+          "target": "Add image URL",
+          "selected": "Images"
+        },
+        {
+          "ms": 52930,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 176,
+          "y": 329,
+          "target": "Add image URL",
+          "selected": "Images"
+        },
+        {
+          "ms": 52930,
+          "type": "click",
+          "trusted": true,
+          "x": 176,
+          "y": 329,
+          "target": "Add image URL",
+          "selected": "Images"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-result-tab",
+        "target": "Video"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [
+          "/followup-card.svg"
+        ],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 53115,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 185,
+          "y": 166,
+          "target": "tab:Video",
+          "selected": "Images"
+        },
+        {
+          "ms": 53118,
+          "type": "tab_change",
+          "selected": "Video",
+          "sameTabs": true
+        },
+        {
+          "ms": 53122,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 185,
+          "y": 166,
+          "target": "tab:Video",
+          "selected": "Video"
+        },
+        {
+          "ms": 53122,
+          "type": "click",
+          "trusted": true,
+          "x": 185,
+          "y": 166,
+          "target": "tab:Video",
+          "selected": "Video"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-open",
+        "target": "/intake-walkthrough.mp4"
+      },
+      "pre": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "post": {
+        "selected": null,
+        "imagePaths": null,
+        "imageCount": null,
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 53302,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 162,
+          "y": 260,
+          "target": "open:/intake-walkthrough.mp4",
+          "selected": "Video"
+        },
+        {
+          "ms": 53305,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 162,
+          "y": 260,
+          "target": "open:/intake-walkthrough.mp4",
+          "selected": "Video"
+        },
+        {
+          "ms": 53305,
+          "type": "click",
+          "trusted": true,
+          "x": 162,
+          "y": 260,
+          "target": "open:/intake-walkthrough.mp4",
+          "selected": "Video"
+        },
+        {
+          "ms": 53418,
+          "type": "tab_change",
+          "selected": null,
+          "sameTabs": false
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": false,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-copy",
+        "target": "/referral-walkthrough.mp4"
+      },
+      "pre": {
+        "selected": null,
+        "imagePaths": null,
+        "imageCount": null,
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 53972,
+          "type": "tab_change",
+          "selected": "Video",
+          "sameTabs": false
+        },
+        {
+          "ms": 54151,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 294,
+          "y": 286,
+          "target": "Copy video URL",
+          "selected": "Video"
+        },
+        {
+          "ms": 54154,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 294,
+          "y": 286,
+          "target": "Copy video URL",
+          "selected": "Video"
+        },
+        {
+          "ms": 54154,
+          "type": "click",
+          "trusted": true,
+          "x": 294,
+          "y": 286,
+          "target": "Copy video URL",
+          "selected": "Video"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "remove_video",
+        "target": "/intake-walkthrough.mp4"
+      },
+      "pre": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 54489,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 318,
+          "y": 260,
+          "target": "Remove video",
+          "selected": "Video"
+        },
+        {
+          "ms": 54492,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 318,
+          "y": 260,
+          "target": "Remove video",
+          "selected": "Video"
+        },
+        {
+          "ms": 54492,
+          "type": "click",
+          "trusted": true,
+          "x": 318,
+          "y": 260,
+          "target": "Remove video",
+          "selected": "Video"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-add-row",
+        "target": "Add video URL"
+      },
+      "pre": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 54677,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 180,
+          "y": 307,
+          "target": "Add video URL",
+          "selected": "Video"
+        },
+        {
+          "ms": 54680,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 180,
+          "y": 307,
+          "target": "Add video URL",
+          "selected": "Video"
+        },
+        {
+          "ms": 54680,
+          "type": "click",
+          "trusted": true,
+          "x": 180,
+          "y": 307,
+          "target": "Add video URL",
+          "selected": "Video"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-form-action",
+        "target": "Add"
+      },
+      "pre": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 54858,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 54,
+          "y": 323,
+          "target": "Add",
+          "selected": "Video"
+        },
+        {
+          "ms": 54860,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 54,
+          "y": 323,
+          "target": "Add",
+          "selected": "Video"
+        },
+        {
+          "ms": 54860,
+          "type": "click",
+          "trusted": true,
+          "x": 54,
+          "y": 323,
+          "target": "Add",
+          "selected": "Video"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-form-field",
+        "target": "src"
+      },
+      "pre": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 55053,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 176,
+          "y": 289,
+          "target": "field:https://…",
+          "selected": "Video"
+        },
+        {
+          "ms": 55059,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 176,
+          "y": 289,
+          "target": "field:https://…",
+          "selected": "Video"
+        },
+        {
+          "ms": 55059,
+          "type": "click",
+          "trusted": true,
+          "x": 176,
+          "y": 289,
+          "target": "field:https://…",
+          "selected": "Video"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-field-insert",
+        "target": "src"
+      },
+      "pre": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-form-action",
+        "target": "Add"
+      },
+      "pre": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 55299,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 54,
+          "y": 323,
+          "target": "Add",
+          "selected": "Video"
+        },
+        {
+          "ms": 55303,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 54,
+          "y": 323,
+          "target": "Add",
+          "selected": "Video"
+        },
+        {
+          "ms": 55303,
+          "type": "click",
+          "trusted": true,
+          "x": 54,
+          "y": 323,
+          "target": "Add",
+          "selected": "Video"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-form-field",
+        "target": "src"
+      },
+      "pre": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 55485,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 176,
+          "y": 289,
+          "target": "field:https://…",
+          "selected": "Video"
+        },
+        {
+          "ms": 55487,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 176,
+          "y": 289,
+          "target": "field:https://…",
+          "selected": "Video"
+        },
+        {
+          "ms": 55487,
+          "type": "click",
+          "trusted": true,
+          "x": 176,
+          "y": 289,
+          "target": "field:https://…",
+          "selected": "Video"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-field-insert",
+        "target": "src"
+      },
+      "pre": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-form-action",
+        "target": "Cancel"
+      },
+      "pre": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 55677,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 127,
+          "y": 323,
+          "target": "Cancel",
+          "selected": "Video"
+        },
+        {
+          "ms": 55685,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 127,
+          "y": 323,
+          "target": "Cancel",
+          "selected": "Video"
+        },
+        {
+          "ms": 55685,
+          "type": "click",
+          "trusted": true,
+          "x": 127,
+          "y": 323,
+          "target": "Cancel",
+          "selected": "Video"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-add-row",
+        "target": "Add video URL"
+      },
+      "pre": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 55922,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 176,
+          "y": 329,
+          "target": "Add video URL",
+          "selected": "Video"
+        },
+        {
+          "ms": 55924,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 176,
+          "y": 329,
+          "target": "Add video URL",
+          "selected": "Video"
+        },
+        {
+          "ms": 55924,
+          "type": "click",
+          "trusted": true,
+          "x": 176,
+          "y": 329,
+          "target": "Add video URL",
+          "selected": "Video"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-result-tab",
+        "target": "Links"
+      },
+      "pre": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Links",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 56119,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 253,
+          "y": 166,
+          "target": "tab:Links",
+          "selected": "Video"
+        },
+        {
+          "ms": 56122,
+          "type": "tab_change",
+          "selected": "Links",
+          "sameTabs": true
+        },
+        {
+          "ms": 56125,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 253,
+          "y": 166,
+          "target": "tab:Links",
+          "selected": "Links"
+        },
+        {
+          "ms": 56125,
+          "type": "click",
+          "trusted": true,
+          "x": 253,
+          "y": 166,
+          "target": "tab:Links",
+          "selected": "Links"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-open",
+        "target": "/forms"
+      },
+      "pre": {
+        "selected": "Links",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "post": {
+        "selected": null,
+        "imagePaths": null,
+        "imageCount": null,
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 56307,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 162,
+          "y": 266,
+          "target": "open:/forms",
+          "selected": "Links"
+        },
+        {
+          "ms": 56309,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 162,
+          "y": 266,
+          "target": "open:/forms",
+          "selected": "Links"
+        },
+        {
+          "ms": 56309,
+          "type": "click",
+          "trusted": true,
+          "x": 162,
+          "y": 266,
+          "target": "open:/forms",
+          "selected": "Links"
+        },
+        {
+          "ms": 56361,
+          "type": "tab_change",
+          "selected": null,
+          "sameTabs": false
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": false,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-copy",
+        "target": "/appointments"
+      },
+      "pre": {
+        "selected": null,
+        "imagePaths": null,
+        "imageCount": null,
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Links",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 56533,
+          "type": "tab_change",
+          "selected": "Links",
+          "sameTabs": false
+        }
+      ],
+      "pointerFailure": {
+        "code": "pointer_target_not_unique",
+        "sampleStage": null,
+        "matchedTargetCount": 0,
+        "visibleMatchCount": 0,
+        "uniqueVisibleTarget": false,
+        "hitTarget": false,
+        "animating": false,
+        "stableSamples": 0,
+        "positionStable": false,
+        "targetHasArea": null,
+        "clippedTargetHasArea": null,
+        "selectedPointAvailable": null,
+        "centerHitCategory": null,
+        "targetDisabled": null,
+        "pointerEventsNone": null,
+        "clippingAncestorCount": null,
+        "testedPointCount": null,
+        "interiorHitKinds": null,
+        "targetRectangle": null,
+        "centerOccluder": null,
+        "firstInteriorOccluder": null
+      },
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    }
+  ],
+  "media_event_traces": [
+    {
+      "phase": "warm-media",
+      "events": [
+        {
+          "ms": 50485,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 111,
+          "y": 166,
+          "target": "tab:Images",
+          "selected": "Schema"
+        },
+        {
+          "ms": 50488,
+          "type": "tab_change",
+          "selected": "Images",
+          "sameTabs": true
+        },
+        {
+          "ms": 50492,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 111,
+          "y": 166,
+          "target": "tab:Images",
+          "selected": "Images"
+        },
+        {
+          "ms": 50492,
+          "type": "click",
+          "trusted": true,
+          "x": 111,
+          "y": 166,
+          "target": "tab:Images",
+          "selected": "Images"
+        },
+        {
+          "ms": 50777,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 60,
+          "y": 286,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 50781,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 60,
+          "y": 286,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 50781,
+          "type": "click",
+          "trusted": true,
+          "x": 60,
+          "y": 286,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 50976,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 41,
+          "y": 286,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 50979,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 41,
+          "y": 286,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 50979,
+          "type": "click",
+          "trusted": true,
+          "x": 41,
+          "y": 286,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 51231,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 100,
+          "y": 256,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 51232,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 100,
+          "y": 256,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 51232,
+          "type": "click",
+          "trusted": true,
+          "x": 100,
+          "y": 256,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 51426,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 180,
+          "y": 231,
+          "target": "Add image URL",
+          "selected": "Images"
+        },
+        {
+          "ms": 51437,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 180,
+          "y": 231,
+          "target": "Add image URL",
+          "selected": "Images"
+        },
+        {
+          "ms": 51437,
+          "type": "click",
+          "trusted": true,
+          "x": 180,
+          "y": 231,
+          "target": "Add image URL",
+          "selected": "Images"
+        },
+        {
+          "ms": 51618,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 54,
+          "y": 305,
+          "target": "Add",
+          "selected": "Images"
+        },
+        {
+          "ms": 51621,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 54,
+          "y": 305,
+          "target": "Add",
+          "selected": "Images"
+        },
+        {
+          "ms": 51621,
+          "type": "click",
+          "trusted": true,
+          "x": 54,
+          "y": 305,
+          "target": "Add",
+          "selected": "Images"
+        },
+        {
+          "ms": 51804,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 180,
+          "y": 237,
+          "target": "field:https://…",
+          "selected": "Images"
+        },
+        {
+          "ms": 51814,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 180,
+          "y": 237,
+          "target": "field:https://…",
+          "selected": "Images"
+        },
+        {
+          "ms": 51815,
+          "type": "click",
+          "trusted": true,
+          "x": 180,
+          "y": 237,
+          "target": "field:https://…",
+          "selected": "Images"
+        },
+        {
+          "ms": 52062,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 180,
+          "y": 271,
+          "target": "field:alt text (optional)",
+          "selected": "Images"
+        },
+        {
+          "ms": 52071,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 180,
+          "y": 271,
+          "target": "field:alt text (optional)",
+          "selected": "Images"
+        },
+        {
+          "ms": 52071,
+          "type": "click",
+          "trusted": true,
+          "x": 180,
+          "y": 271,
+          "target": "field:alt text (optional)",
+          "selected": "Images"
+        },
+        {
+          "ms": 52257,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 54,
+          "y": 305,
+          "target": "Add",
+          "selected": "Images"
+        },
+        {
+          "ms": 52260,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 54,
+          "y": 305,
+          "target": "Add",
+          "selected": "Images"
+        },
+        {
+          "ms": 52260,
+          "type": "click",
+          "trusted": true,
+          "x": 54,
+          "y": 305,
+          "target": "Add",
+          "selected": "Images"
+        },
+        {
+          "ms": 52477,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 176,
+          "y": 286,
+          "target": "field:https://…",
+          "selected": "Images"
+        },
+        {
+          "ms": 52484,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 176,
+          "y": 286,
+          "target": "field:https://…",
+          "selected": "Images"
+        },
+        {
+          "ms": 52484,
+          "type": "click",
+          "trusted": true,
+          "x": 176,
+          "y": 286,
+          "target": "field:https://…",
+          "selected": "Images"
+        },
+        {
+          "ms": 52678,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 127,
+          "y": 323,
+          "target": "Cancel",
+          "selected": "Images"
+        },
+        {
+          "ms": 52682,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 127,
+          "y": 323,
+          "target": "Cancel",
+          "selected": "Images"
+        },
+        {
+          "ms": 52682,
+          "type": "click",
+          "trusted": true,
+          "x": 127,
+          "y": 323,
+          "target": "Cancel",
+          "selected": "Images"
+        },
+        {
+          "ms": 52929,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 176,
+          "y": 329,
+          "target": "Add image URL",
+          "selected": "Images"
+        },
+        {
+          "ms": 52930,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 176,
+          "y": 329,
+          "target": "Add image URL",
+          "selected": "Images"
+        },
+        {
+          "ms": 52930,
+          "type": "click",
+          "trusted": true,
+          "x": 176,
+          "y": 329,
+          "target": "Add image URL",
+          "selected": "Images"
+        },
+        {
+          "ms": 53115,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 185,
+          "y": 166,
+          "target": "tab:Video",
+          "selected": "Images"
+        },
+        {
+          "ms": 53118,
+          "type": "tab_change",
+          "selected": "Video",
+          "sameTabs": true
+        },
+        {
+          "ms": 53122,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 185,
+          "y": 166,
+          "target": "tab:Video",
+          "selected": "Video"
+        },
+        {
+          "ms": 53122,
+          "type": "click",
+          "trusted": true,
+          "x": 185,
+          "y": 166,
+          "target": "tab:Video",
+          "selected": "Video"
+        },
+        {
+          "ms": 53302,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 162,
+          "y": 260,
+          "target": "open:/intake-walkthrough.mp4",
+          "selected": "Video"
+        },
+        {
+          "ms": 53305,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 162,
+          "y": 260,
+          "target": "open:/intake-walkthrough.mp4",
+          "selected": "Video"
+        },
+        {
+          "ms": 53305,
+          "type": "click",
+          "trusted": true,
+          "x": 162,
+          "y": 260,
+          "target": "open:/intake-walkthrough.mp4",
+          "selected": "Video"
+        },
+        {
+          "ms": 53418,
+          "type": "tab_change",
+          "selected": null,
+          "sameTabs": false
+        },
+        {
+          "ms": 53972,
+          "type": "tab_change",
+          "selected": "Video",
+          "sameTabs": false
+        },
+        {
+          "ms": 54151,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 294,
+          "y": 286,
+          "target": "Copy video URL",
+          "selected": "Video"
+        },
+        {
+          "ms": 54154,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 294,
+          "y": 286,
+          "target": "Copy video URL",
+          "selected": "Video"
+        },
+        {
+          "ms": 54154,
+          "type": "click",
+          "trusted": true,
+          "x": 294,
+          "y": 286,
+          "target": "Copy video URL",
+          "selected": "Video"
+        },
+        {
+          "ms": 54489,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 318,
+          "y": 260,
+          "target": "Remove video",
+          "selected": "Video"
+        },
+        {
+          "ms": 54492,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 318,
+          "y": 260,
+          "target": "Remove video",
+          "selected": "Video"
+        },
+        {
+          "ms": 54492,
+          "type": "click",
+          "trusted": true,
+          "x": 318,
+          "y": 260,
+          "target": "Remove video",
+          "selected": "Video"
+        },
+        {
+          "ms": 54677,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 180,
+          "y": 307,
+          "target": "Add video URL",
+          "selected": "Video"
+        },
+        {
+          "ms": 54680,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 180,
+          "y": 307,
+          "target": "Add video URL",
+          "selected": "Video"
+        },
+        {
+          "ms": 54680,
+          "type": "click",
+          "trusted": true,
+          "x": 180,
+          "y": 307,
+          "target": "Add video URL",
+          "selected": "Video"
+        },
+        {
+          "ms": 54858,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 54,
+          "y": 323,
+          "target": "Add",
+          "selected": "Video"
+        },
+        {
+          "ms": 54860,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 54,
+          "y": 323,
+          "target": "Add",
+          "selected": "Video"
+        },
+        {
+          "ms": 54860,
+          "type": "click",
+          "trusted": true,
+          "x": 54,
+          "y": 323,
+          "target": "Add",
+          "selected": "Video"
+        },
+        {
+          "ms": 55053,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 176,
+          "y": 289,
+          "target": "field:https://…",
+          "selected": "Video"
+        },
+        {
+          "ms": 55059,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 176,
+          "y": 289,
+          "target": "field:https://…",
+          "selected": "Video"
+        },
+        {
+          "ms": 55059,
+          "type": "click",
+          "trusted": true,
+          "x": 176,
+          "y": 289,
+          "target": "field:https://…",
+          "selected": "Video"
+        },
+        {
+          "ms": 55299,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 54,
+          "y": 323,
+          "target": "Add",
+          "selected": "Video"
+        },
+        {
+          "ms": 55303,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 54,
+          "y": 323,
+          "target": "Add",
+          "selected": "Video"
+        },
+        {
+          "ms": 55303,
+          "type": "click",
+          "trusted": true,
+          "x": 54,
+          "y": 323,
+          "target": "Add",
+          "selected": "Video"
+        },
+        {
+          "ms": 55485,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 176,
+          "y": 289,
+          "target": "field:https://…",
+          "selected": "Video"
+        },
+        {
+          "ms": 55487,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 176,
+          "y": 289,
+          "target": "field:https://…",
+          "selected": "Video"
+        },
+        {
+          "ms": 55487,
+          "type": "click",
+          "trusted": true,
+          "x": 176,
+          "y": 289,
+          "target": "field:https://…",
+          "selected": "Video"
+        },
+        {
+          "ms": 55677,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 127,
+          "y": 323,
+          "target": "Cancel",
+          "selected": "Video"
+        },
+        {
+          "ms": 55685,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 127,
+          "y": 323,
+          "target": "Cancel",
+          "selected": "Video"
+        },
+        {
+          "ms": 55685,
+          "type": "click",
+          "trusted": true,
+          "x": 127,
+          "y": 323,
+          "target": "Cancel",
+          "selected": "Video"
+        },
+        {
+          "ms": 55922,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 176,
+          "y": 329,
+          "target": "Add video URL",
+          "selected": "Video"
+        },
+        {
+          "ms": 55924,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 176,
+          "y": 329,
+          "target": "Add video URL",
+          "selected": "Video"
+        },
+        {
+          "ms": 55924,
+          "type": "click",
+          "trusted": true,
+          "x": 176,
+          "y": 329,
+          "target": "Add video URL",
+          "selected": "Video"
+        }
+      ],
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": false,
+      "paneConnected": true,
+      "state": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      }
+    },
+    {
+      "phase": "warm-links",
+      "events": [
+        {
+          "ms": 56119,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 253,
+          "y": 166,
+          "target": "tab:Links",
+          "selected": "Video"
+        },
+        {
+          "ms": 56122,
+          "type": "tab_change",
+          "selected": "Links",
+          "sameTabs": true
+        },
+        {
+          "ms": 56125,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 253,
+          "y": 166,
+          "target": "tab:Links",
+          "selected": "Links"
+        },
+        {
+          "ms": 56125,
+          "type": "click",
+          "trusted": true,
+          "x": 253,
+          "y": 166,
+          "target": "tab:Links",
+          "selected": "Links"
+        },
+        {
+          "ms": 56307,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 162,
+          "y": 266,
+          "target": "open:/forms",
+          "selected": "Links"
+        },
+        {
+          "ms": 56309,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 162,
+          "y": 266,
+          "target": "open:/forms",
+          "selected": "Links"
+        },
+        {
+          "ms": 56309,
+          "type": "click",
+          "trusted": true,
+          "x": 162,
+          "y": 266,
+          "target": "open:/forms",
+          "selected": "Links"
+        },
+        {
+          "ms": 56361,
+          "type": "tab_change",
+          "selected": null,
+          "sameTabs": false
+        },
+        {
+          "ms": 56533,
+          "type": "tab_change",
+          "selected": "Links",
+          "sameTabs": false
+        }
+      ],
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": false,
+      "paneConnected": true,
+      "state": {
+        "selected": "Links",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      }
+    }
+  ],
+  "authentication": null,
+  "panel_viewports": [
+    {
+      "phase": "warm",
+      "mode": "narrow",
+      "mechanism": "native_default",
+      "observed_px": 360,
+      "minimum_px": null
+    }
+  ],
+  "panel_visibility_timeline": [
+    {
+      "phase": "initial_settled_before_screenshots",
+      "measured": true,
+      "visibility": "visible",
+      "hasFocus": false,
+      "ready": true,
+      "width": 360,
+      "height": 454
+    },
+    {
+      "phase": "after_initial_screenshots",
+      "measured": true,
+      "visibility": "visible",
+      "hasFocus": false,
+      "ready": true,
+      "width": 360,
+      "height": 454
+    }
+  ],
+  "browser_launch": {
+    "requested_mode": "headed",
+    "observed_mode": "headed",
+    "verified_by": "Browser.getBrowserCommandLine"
+  },
+  "panel_transition": null,
+  "width_mode": "narrow",
+  "guest_auth_storage": {
+    "hasAccessToken": false,
+    "hasUserProfile": false
+  },
+  "fast_busy_observation": {
+    "observed": true,
+    "text": "Capturing…",
+    "samples": 5,
+    "matchingButtons": 1,
+    "buttonReplacements": 0,
+    "disabledSamples": 1,
+    "disabledMutationRecords": 2,
+    "observedAtMs": 48725.90000000002,
+    "observationBasis": "current_owned_visible_dom"
+  },
+  "fast_screenshot": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-IE7kw1/scrape-fast-article.png",
+  "media_controls": {
+    "warm": {
+      "phase": "warm",
+      "images": {
+        "before": {
+          "pane": "Images",
+          "state": "matching_content",
+          "count": 3,
+          "paths": [
+            "/intake.svg",
+            "/appointment-card.svg",
+            "/clinic-icon.svg"
+          ],
+          "alt": [
+            "New patient intake desk",
+            "Appointment card",
+            "Clinic icon"
+          ],
+          "natural_sizes": [
+            [
+              640,
+              480
+            ],
+            [
+              96,
+              96
+            ],
+            [
+              32,
+              32
+            ]
+          ]
+        },
+        "removals": [
+          {
+            "pane": "Images",
+            "state": "matching_content",
+            "count": 2,
+            "paths": [
+              "/intake.svg",
+              "/clinic-icon.svg"
+            ],
+            "alt": [
+              "New patient intake desk",
+              "Clinic icon"
+            ],
+            "natural_sizes": [
+              [
+                640,
+                480
+              ],
+              [
+                32,
+                32
+              ]
+            ]
+          },
+          {
+            "pane": "Images",
+            "state": "matching_content",
+            "count": 1,
+            "paths": [
+              "/intake.svg"
+            ],
+            "alt": [
+              "New patient intake desk"
+            ],
+            "natural_sizes": [
+              [
+                640,
+                480
+              ]
+            ]
+          },
+          {
+            "pane": "Images",
+            "state": "empty",
+            "count": 0,
+            "paths": [],
+            "alt": [],
+            "natural_sizes": []
+          }
+        ],
+        "added": {
+          "pane": "Images",
+          "state": "matching_content",
+          "count": 1,
+          "paths": [
+            "/followup-card.svg"
+          ],
+          "alt": [
+            "Follow-up card"
+          ],
+          "natural_sizes": [
+            [
+              96,
+              96
+            ]
+          ]
+        }
+      },
+      "videos": {
+        "before": {
+          "pane": "Video",
+          "state": "matching_content",
+          "count": 2,
+          "paths": [
+            "/intake-walkthrough.mp4",
+            "/referral-walkthrough.mp4"
+          ]
+        },
+        "removed": {
+          "pane": "Video",
+          "state": "matching_content",
+          "count": 1,
+          "paths": [
+            "/referral-walkthrough.mp4"
+          ]
+        },
+        "added": {
+          "pane": "Video",
+          "state": "matching_content",
+          "count": 2,
+          "paths": [
+            "/referral-walkthrough.mp4",
+            "/consultation.mp4"
+          ]
+        },
+        "links": {
+          "opened_url": "http://localhost:49195/intake-walkthrough.mp4",
+          "copy_feedback": "copied",
+          "clipboard_equal": true,
+          "clipboard_read": {
+            "ok": false,
+            "code": "NotAllowedError",
+            "focused": true,
+            "visible": true
+          },
+          "clipboard_observation": {
+            "clipboardObservationStage": "read",
+            "clipboardObservationPermissionRestored": true,
+            "clipboardReadPermissionForObservation": true
+          },
+          "limitations": [],
+          "failures": [],
+          "clipboard_read_after_grant": {
+            "ok": true,
+            "same": true,
+            "focused": true,
+            "visible": true
+          }
+        }
+      }
+    }
+  },
+  "media_failure_observation": {
+    "phase": "warm-links",
+    "code": "unique visible pointer target",
+    "selected": "Links",
+    "visible": true,
+    "resultText": "2 LINKS\nPatient forms\nhttp://localhost:49195/forms\nAppointments\nhttp://localhost:49195/appointments\nAdd link",
+    "media": {
+      "tabCount": "2",
+      "formOpen": false,
+      "imageToolbar": "2 links",
+      "imageToolbarRendered": "2 LINKS",
+      "imageGroups": {
+        "large": [],
+        "medium": [],
+        "icon": []
+      },
+      "imageItems": [],
+      "videoItems": [],
+      "linkItems": [
+        {
+          "href": "http://localhost:49195/forms",
+          "text": "Patient forms"
+        },
+        {
+          "href": "http://localhost:49195/appointments",
+          "text": "Appointments"
+        }
+      ],
+      "linkToolbar": "2 links"
+    },
+    "screenshot": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-IE7kw1/scrape-warm-links-failure.png"
+  }
+}
