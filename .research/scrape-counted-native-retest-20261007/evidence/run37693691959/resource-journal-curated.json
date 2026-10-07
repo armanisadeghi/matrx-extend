@@ -1,0 +1,154 @@
+[
+  {
+    "at": "2026-10-07T22:07:06.623Z",
+    "runId": "hosted-browser-37693691959-1",
+    "code": "RESOURCE_JOURNAL_OPENED",
+    "decision": null,
+    "exitCode": null,
+    "reasons": null
+  },
+  {
+    "at": "2026-10-07T22:08:14.447Z",
+    "runId": "hosted-browser-37693691959-1",
+    "code": "RESOURCE_ADMITTED",
+    "decision": null,
+    "exitCode": null,
+    "reasons": []
+  },
+  {
+    "at": "2026-10-07T22:08:20.167Z",
+    "runId": "hosted-browser-37693691959-1",
+    "code": "RESOURCE_JOB_EXIT",
+    "decision": null,
+    "exitCode": null,
+    "reasons": null
+  },
+  {
+    "at": "2026-10-07T22:08:20.299Z",
+    "runId": "hosted-browser-37693691959-1",
+    "code": "RESOURCE_FINAL_DECISION",
+    "decision": "valid",
+    "exitCode": 0,
+    "reasons": null
+  },
+  {
+    "at": "2026-10-07T22:09:03.281Z",
+    "runId": "hosted-guest-37693691959-1",
+    "code": "RESOURCE_JOURNAL_OPENED",
+    "decision": null,
+    "exitCode": null,
+    "reasons": null
+  },
+  {
+    "at": "2026-10-07T22:10:11.170Z",
+    "runId": "hosted-guest-37693691959-1",
+    "code": "RESOURCE_ADMITTED",
+    "decision": null,
+    "exitCode": null,
+    "reasons": []
+  },
+  {
+    "at": "2026-10-07T22:10:27.503Z",
+    "runId": "hosted-guest-37693691959-1",
+    "code": "RESOURCE_CPU_PENDING",
+    "decision": null,
+    "exitCode": null,
+    "reasons": ["RESOURCE_CPU_BUSY"]
+  },
+  {
+    "at": "2026-10-07T22:10:27.622Z",
+    "runId": "hosted-guest-37693691959-1",
+    "code": "RESOURCE_PROCESS_ATTRIBUTION",
+    "decision": null,
+    "exitCode": null,
+    "reasons": null
+  },
+  {
+    "at": "2026-10-07T22:10:43.652Z",
+    "runId": "hosted-guest-37693691959-1",
+    "code": "RESOURCE_CPU_PENDING",
+    "decision": null,
+    "exitCode": null,
+    "reasons": []
+  },
+  {
+    "at": "2026-10-07T22:10:59.744Z",
+    "runId": "hosted-guest-37693691959-1",
+    "code": "RESOURCE_CPU_PENDING",
+    "decision": null,
+    "exitCode": null,
+    "reasons": []
+  },
+  {
+    "at": "2026-10-07T22:11:15.953Z",
+    "runId": "hosted-guest-37693691959-1",
+    "code": "RESOURCE_CPU_RECOVERED",
+    "decision": null,
+    "exitCode": null,
+    "reasons": []
+  },
+  {
+    "at": "2026-10-07T22:11:32.178Z",
+    "runId": "hosted-guest-37693691959-1",
+    "code": "RESOURCE_WATCH_HEALTHY",
+    "decision": null,
+    "exitCode": null,
+    "reasons": []
+  },
+  {
+    "at": "2026-10-07T22:11:48.262Z",
+    "runId": "hosted-guest-37693691959-1",
+    "code": "RESOURCE_WATCH_HEALTHY",
+    "decision": null,
+    "exitCode": null,
+    "reasons": []
+  },
+  {
+    "at": "2026-10-07T22:11:50.603Z",
+    "runId": "hosted-guest-37693691959-1",
+    "code": "RESOURCE_JOB_EXIT",
+    "decision": null,
+    "exitCode": null,
+    "reasons": null
+  },
+  {
+    "at": "2026-10-07T22:11:50.756Z",
+    "runId": "hosted-guest-37693691959-1",
+    "code": "RESOURCE_FINAL_DECISION",
+    "decision": "valid",
+    "exitCode": 0,
+    "reasons": null
+  },
+  {
+    "at": "2026-10-07T22:05:10.340Z",
+    "runId": "hosted-package-37693691959-1",
+    "code": "RESOURCE_JOURNAL_OPENED",
+    "decision": null,
+    "exitCode": null,
+    "reasons": null
+  },
+  {
+    "at": "2026-10-07T22:06:17.915Z",
+    "runId": "hosted-package-37693691959-1",
+    "code": "RESOURCE_ADMITTED",
+    "decision": null,
+    "exitCode": null,
+    "reasons": []
+  },
+  {
+    "at": "2026-10-07T22:06:19.925Z",
+    "runId": "hosted-package-37693691959-1",
+    "code": "RESOURCE_JOB_EXIT",
+    "decision": null,
+    "exitCode": null,
+    "reasons": null
+  },
+  {
+    "at": "2026-10-07T22:06:20.053Z",
+    "runId": "hosted-package-37693691959-1",
+    "code": "RESOURCE_FINAL_DECISION",
+    "decision": "valid",
+    "exitCode": 0,
+    "reasons": null
+  }
+]
