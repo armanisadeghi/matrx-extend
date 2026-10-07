@@ -2093,7 +2093,7 @@ Every entry follows this shape:
   1. Pick an agent, set the chip to **Act without asking**.
   2. Ask for a multi-step task (e.g. "read this page, click the first link, then navigate to another page").
 - **Expected:** Clicks and navigation run with no "Approve" card on any step. Switch the chip to **Ask before acting** → each action shows a card again.
-- **Edge cases worth poking:** Privileged tools still confirm in Act. With no per-agent choice, Settings → Default mode = Act also runs without cards.
+- **Edge cases worth poking:** Privileged tools still confirm in Act. With no per-agent choice, Settings → Default mode = Act also runs without cards. Ask for parallel work on two disposable tabs and confirm the earliest child action uses the parent mode. Repeat in Ask. Keep Assistant on Ask and Pilot on Act (then reverse them); each surface’s backend context and tool execution use its own mode. Repeat after reopening the panel and extension reload.
 
 ### "Allow this tool on <site> for the rest of this chat" is remembered
 - **What it does:** Ticking the checkbox on an approval card stops that tool asking again on that site for the rest of the chat, including on later steps and later messages.
@@ -2102,7 +2102,7 @@ Every entry follows this shape:
   1. Ask the agent to open two different pages on the same site, one after another.
   2. On the first "Approve navigate" card, tick the checkbox and click Allow.
 - **Expected:** The second navigate on that site runs with no card. A different tool, or the same tool on another site, still asks.
-- **Edge cases worth poking:** Start a new chat → it asks again. Privileged tools never show the checkbox.
+- **Edge cases worth poking:** Start a new chat → it asks again. Privileged tools never show the checkbox. Approve two cards on different sites together with both checkboxes selected; later runs on both sites retain the choices. With a delayed storage write, a remembered approval finishes saving before its tool result can start a continuation. Repeat after a service-worker restart.
 
 ### Settings preference save and retry
 - **What it does:** Settings reports a rejected preference save and offers Retry save. Overlapping changes are written in choice order so the latest selection survives reload.

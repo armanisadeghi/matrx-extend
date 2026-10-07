@@ -8,6 +8,7 @@ const h = vi.hoisted(() => ({
   broadcasts: vi.fn(),
   run: vi.fn(),
   post: vi.fn(),
+  trustWrite: vi.fn(),
 }));
 vi.mock('@/lib/messaging/native', () => ({
   on: (kind: string, fn: (p: any) => unknown) => {
@@ -87,11 +88,13 @@ beforeEach(() => {
   h.broadcasts.mockClear();
   h.run.mockReset().mockResolvedValue({ ok: true });
   h.post.mockReset().mockResolvedValue({ ok: true });
+  h.trustWrite.mockReset().mockResolvedValue(undefined);
   let store: Record<string, unknown> = {};
   Object.assign(chrome.storage, {
     session: {
       get: async () => structuredClone(store),
       set: async (value: object) => {
+        if ('matrx.dispatch.conversationTrust' in value) await h.trustWrite();
         store = { ...store, ...structuredClone(value) };
       },
       remove: async () => {},
@@ -129,4 +132,79 @@ it('without the checkbox, the next run still asks', async () => {
   await delegate('run-b', 'call-2', 'https://app.notion.com/p/two');
   await vi.waitFor(() => expect(confirmRequests()).toHaveLength(2));
   expect(h.run).toHaveBeenCalledTimes(1);
+});
+
+it('waits for remembered choices to persist before either tool can continue', async () => {
+  // A property manager approves work on two SaaS hosts at once; both choices
+  // must be durable before results can trigger fresh continuation runs.
+  let releaseWrite!: () => void;
+  const pendingWrite = new Promise<void>((resolve) => {
+    releaseWrite = resolve;
+  });
+  h.trustWrite.mockImplementation(() => pendingWrite);
+  const dispatch = await import('@/lib/tools/dispatch');
+  dispatch.startToolDispatcher({ defaultPermissionMode: () => 'ask' });
+  await delegate('maintenance-notion', 'approve-notion', 'https://app.notion.com/maintenance');
+  await delegate(
+    'maintenance-calendar',
+    'approve-calendar',
+    'https://calendar.google.com/maintenance',
+  );
+  await vi.waitFor(() => expect(confirmRequests()).toHaveLength(2));
+  const approvals = Promise.all([
+    emit(CHANNELS.TOOL_CONFIRM_RESPONSE, {
+      callId: 'approve-notion',
+      decision: 'allow',
+      rememberFor: 'conversation',
+    }),
+    emit(CHANNELS.TOOL_CONFIRM_RESPONSE, {
+      callId: 'approve-calendar',
+      decision: 'allow',
+      rememberFor: 'conversation',
+    }),
+  ]);
+  try {
+    await vi.waitFor(() => expect(h.trustWrite).toHaveBeenCalled());
+    expect(h.run).not.toHaveBeenCalled();
+    expect(h.post).not.toHaveBeenCalled();
+  } finally {
+    releaseWrite();
+    await approvals;
+  }
+  await vi.waitFor(() => expect(h.run).toHaveBeenCalledTimes(2));
+  await delegate('maintenance-notion-next', 'next-notion', 'https://app.notion.com/next-request');
+  await delegate(
+    'maintenance-calendar-next',
+    'next-calendar',
+    'https://calendar.google.com/next-request',
+  );
+  await vi.waitFor(() => expect(h.run).toHaveBeenCalledTimes(4));
+  expect(confirmRequests()).toHaveLength(2);
+});
+
+it('retains concurrent remembered hosts in the real session-storage map', async () => {
+  const { addConversationTrust, loadConversationTrust } = await import(
+    '@/lib/tools/dispatch-persist'
+  );
+  let releaseWrite!: () => void;
+  const pendingWrite = new Promise<void>((resolve) => {
+    releaseWrite = resolve;
+  });
+  h.trustWrite.mockImplementation(() => pendingWrite);
+  const writes = Promise.all([
+    addConversationTrust('maintenance-chat', 'navigate@app.notion.com'),
+    addConversationTrust('maintenance-chat', 'navigate@calendar.google.com'),
+    addConversationTrust('inspection-chat', 'navigate@app.notion.com'),
+  ]);
+  try {
+    await vi.waitFor(() => expect(h.trustWrite).toHaveBeenCalled());
+  } finally {
+    releaseWrite();
+    await writes;
+  }
+  expect(await loadConversationTrust('maintenance-chat')).toEqual([
+    'navigate@app.notion.com',
+    'navigate@calendar.google.com',
+  ]);
+  expect(await loadConversationTrust('inspection-chat')).toEqual(['navigate@app.notion.com']);
 });

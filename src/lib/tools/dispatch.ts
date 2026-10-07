@@ -1125,13 +1125,13 @@ async function isTrustedForConversation(
   return (await loadConversationTrust(conversationId)).includes(entry);
 }
 
-function rememberForConversation(
+async function rememberForConversation(
   toolName: string,
   url: string,
   runId: string,
   conversationId: string | null,
   meta: RunMeta | undefined,
-): void {
+): Promise<void> {
   const host = hostOf(url);
   if (!host) return;
   const entry = trustEntry(toolName, host);
@@ -1140,7 +1140,7 @@ function rememberForConversation(
     mirrorRunMeta(runId, meta);
   }
   const id = conversationId ?? meta?.conversationId ?? null;
-  if (id) void addConversationTrust(id, entry);
+  if (id) await addConversationTrust(id, entry);
 }
 
 async function requestConfirmation(
@@ -1218,17 +1218,20 @@ async function requestConfirmation(
       void removePendingConfirm(ctx.callId);
       resolve(out);
     };
-    const off = on<ConfirmResponse, { ack: true }>(CHANNELS.TOOL_CONFIRM_RESPONSE, (payload) => {
-      if (payload.callId !== ctx.callId) return { ack: true };
-      if (payload.decision === 'allow' && payload.rememberFor === 'conversation' && url) {
-        rememberForConversation(handler.name, url, ctx.runId, ctx.conversationId, meta);
-      }
-      finish({
-        allow: payload.decision === 'allow',
-        reason: payload.decision === 'deny' ? 'User denied this action' : undefined,
-      });
-      return { ack: true };
-    });
+    const off = on<ConfirmResponse, { ack: true }>(
+      CHANNELS.TOOL_CONFIRM_RESPONSE,
+      async (payload) => {
+        if (payload.callId !== ctx.callId) return { ack: true };
+        if (payload.decision === 'allow' && payload.rememberFor === 'conversation' && url) {
+          await rememberForConversation(handler.name, url, ctx.runId, ctx.conversationId, meta);
+        }
+        finish({
+          allow: payload.decision === 'allow',
+          reason: payload.decision === 'deny' ? 'User denied this action' : undefined,
+        });
+        return { ack: true };
+      },
+    );
     const timer = setTimeout(() => {
       // Tell the sidepanel to drop the card — before this, the card lingered
       // after the timeout and a late click broadcast into the void (P2-4).
@@ -1317,7 +1320,7 @@ async function recoverPersistedConfirm(payload: ConfirmResponse): Promise<void> 
   if (payload.rememberFor === 'conversation') {
     const url = (rec.args as { url?: unknown })?.url;
     if (typeof url === 'string') {
-      rememberForConversation(rec.toolName, url, rec.runId, rec.conversationId, meta);
+      await rememberForConversation(rec.toolName, url, rec.runId, rec.conversationId, meta);
     }
   }
   await handleCall(handler, rec.args, ctx, meta, {

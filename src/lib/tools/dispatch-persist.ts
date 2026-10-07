@@ -79,7 +79,21 @@ function sessionStore(): chrome.storage.StorageArea | null {
 
 /* ── Run metadata ─────────────────────────────────────────────────── */
 
-export async function persistRunMeta(runId: string, meta: PersistedRunMeta): Promise<void> {
+// Every run shares RUNS_KEY, including prune removals. Keep each complete
+// read/modify/write together so parallel children and stream-open updates
+// cannot overwrite one another's restart metadata.
+let runMutation: Promise<void> = Promise.resolve();
+export function persistRunMeta(runId: string, meta: PersistedRunMeta): Promise<void> {
+  const write = () => persistRunMetaUnlocked(runId, meta);
+  const result = runMutation.then(write, write);
+  runMutation = result.then(
+    () => undefined,
+    () => undefined,
+  );
+  return result;
+}
+
+async function persistRunMetaUnlocked(runId: string, meta: PersistedRunMeta): Promise<void> {
   const store = sessionStore();
   if (!store) return;
   try {
@@ -93,6 +107,9 @@ export async function persistRunMeta(runId: string, meta: PersistedRunMeta): Pro
 }
 
 export async function loadRunMeta(runId: string): Promise<PersistedRunMeta | null> {
+  // A lookup after a fire-and-forget mirror observes that mirror, rather
+  // than temporarily treating the newly assigned run as unknown.
+  await runMutation;
   const store = sessionStore();
   if (!store) return null;
   try {
@@ -152,7 +169,20 @@ export async function loadConversationTrust(conversationId: string): Promise<str
   }
 }
 
-export async function addConversationTrust(conversationId: string, entry: string): Promise<void> {
+// Trust shares one storage key across conversations; serialize the entire
+// read/modify/write so simultaneous approval clicks cannot replace each other.
+let trustMutation: Promise<void> = Promise.resolve();
+export function addConversationTrust(conversationId: string, entry: string): Promise<void> {
+  const write = () => addConversationTrustUnlocked(conversationId, entry);
+  const result = trustMutation.then(write, write);
+  trustMutation = result.then(
+    () => undefined,
+    () => undefined,
+  );
+  return result;
+}
+
+async function addConversationTrustUnlocked(conversationId: string, entry: string): Promise<void> {
   const store = sessionStore();
   if (!store) return;
   try {

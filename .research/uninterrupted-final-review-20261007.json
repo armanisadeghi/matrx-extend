@@ -1,0 +1,57 @@
+{
+  "reviewer": "approval_final_review",
+  "date": "2026-10-07",
+  "scope": "Independent read-only source review of uninterrupted approval repair; no implementation edits, workers, build, release, or test execution",
+  "verdictA": {
+    "status": "UNVERIFIED",
+    "reason": "Current native behavior cannot be established from the stale local 0.2.173 artifact. Resource preflight refused testing at 19.2369 GiB system free space with RESOURCE_DISK_LOW; guard was not bypassed.",
+    "evidence": [
+      ".output/chrome-mv3/manifest.json",
+      "docs/stabilization/resource-journals/approval-audit-20261007.jsonl"
+    ],
+    "required": [
+      "Current-build Act and Ask opposing-surface runs",
+      "Earliest parallel action before STREAM_OPENED",
+      "Remembered approvals across continuation and service-worker restart",
+      "Timeout and recovered approvals"
+    ]
+  },
+  "verdictB": {
+    "status": "PASS_SOURCE_ONLY",
+    "confirmedBySource": [
+      "Pilot browser-dom mode now resolves through Pilot store rather than Assistant store",
+      "Parallel run metadata is seeded with parent permission mode before STREAM_RUN",
+      "Conversation trust writes are serialized across conversations and awaited before continuation",
+      "Recovered approvals await the remembered trust write and reject already-expired records",
+      "Follow-up run metadata repair serializes all RUNS_KEY writes and pruning; loadRunMeta waits for pending mirrors",
+      "Action tier skips approval in Act; privileged tier continues confirming by existing contract",
+      "Focused guards cover opposing modes, early child metadata, simultaneous remembered writes, concurrent run metadata with pruning, and lookup waiting for queued mirrors; execution and red-to-green evidence were not available"
+    ],
+    "findings": [
+      {
+        "severity": "Resolved by follow-up source repair",
+        "location": "src/lib/tools/dispatch-persist.ts:86",
+        "issue": "Initial reviewed diff retained concurrent RUNS_KEY map overwrites. Follow-up runMutation repair now serializes all writers and loadRunMeta waits for mirrors.",
+        "impact": "The same persistence race class as conversation trust is now repaired by source inspection.",
+        "verification": "Follow-up source inspected; no executed regression proof or native evidence"
+      },
+      {
+        "severity": "Known inherited limitation; no new blocking defect",
+        "location": "src/lib/tools/dispatch-persist.ts:addConversationTrustUnlocked",
+        "issue": "A rejected remembered trust get/set is caught and resolves successfully. The new awaited approval path therefore proceeds despite the preference not being durable; failure is only a debug warning.",
+        "impact": "A subsequent run may ask again when Chrome storage fails. Existing warning-only best-effort behavior remains. User-authorized Allowed action must not be blocked solely because the browser could not save the remembered choice.",
+        "verification": "Source-backed rejection path; not reproduced natively or by executed test"
+      }
+    ],
+    "changesNotAdded": ["No migration", "No dependency", "No new access path"]
+  },
+  "testsExecuted": [],
+  "reviewQueue": {
+    "id": "bf959dba-5441-45a1-b06e-ec013cb21fb5",
+    "status": "parent-owned; submitted row, verifying transition pending",
+    "nativePending": true,
+    "releasePending": true,
+    "readyForHuman": false
+  },
+  "overall": "SOURCE ONLY: original approval races are repaired by inspection; executable guard results, current native behavior and release remain unverified"
+}

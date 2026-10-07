@@ -176,7 +176,10 @@ async function runChild(args: RunChildArgs): Promise<SubRunOutcome> {
 
   // Pin the tab BEFORE STREAM_RUN so the dispatcher has the tabId latched
   // for any tool_event the child emits.
-  recordAssignedTab(subRunId, tabId);
+  recordAssignedTab(subRunId, tabId, {
+    permissionMode: args.parentCtx.permissionMode,
+    agentName: 'parallel-sub-run',
+  });
 
   // Build child-request body. We deliberately keep `context` empty — the
   // server's load_chrome_tools discovery handler is what drives this

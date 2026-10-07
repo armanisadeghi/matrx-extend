@@ -1,0 +1,65 @@
+{
+  "id": "EXT-D-0156",
+  "feature_id": "EXT-F-2013",
+  "feature_ids": ["EXT-F-2013", "EXT-F-2014", "EXT-F-1003"],
+  "case_ids": ["EXT-F-1003-T10", "EXT-F-1003-T11", "EXT-F-1003-T12"],
+  "title": "Uninterrupted mode and remembered approvals have remaining parallel and persistence races",
+  "surface": "Chat / Pilot / parallel browser child runs",
+  "auth_mode": "guest/member/admin as source-applicable; parallel requires signed in",
+  "state": "in-fix",
+  "owner": "root/uninterrupted-approval",
+  "priority": "P1",
+  "severity": "S2",
+  "preconditions": [
+    "Assistant Act, child parallel browser run; first delegated action arrives before STREAM_OPENED",
+    "Two concurrent remembered approval responses with session writes delayed",
+    "Opposing Assistant and Pilot modes"
+  ],
+  "reproduction": [
+    "Dispatch parallel child before STREAM_OPENED; pre-repair recordAssignedTab defaults child to Ask despite Act parent.",
+    "Remember two tool/site approvals together; pre-repair independent read-modify-write updates can lose one entry.",
+    "Construct Pilot browser DOM state while Assistant mode differs; pre-repair builder advertises Assistant mode."
+  ],
+  "expected": "Act ordinary actions execute uninterrupted, child runs inherit parent mode, each surface advertises its own choice, remembered approvals survive concurrent choices and continuation.",
+  "actual": "Independent source audit confirmed all three remaining gaps; native reproduction and executable causal tests pending. Prior Oct5 fixes17caea89 and58a5debd remain present.",
+  "cause_sibling_census": [
+    "Missing pre-stream permission latch in parallel child path; main bootstrap already latches it.",
+    "Shared conversation trust map writes not serialized; remembered choice persistence not awaited in warm and recovered confirmation paths.",
+    "Pilot capability envelope uses Assistant store.",
+    "Run metadata map shares the concurrent read-modify-write bug; parallel children can lose restart mode. Queue writes/pruning and wait pending mirrors on lookup."
+  ],
+  "evidence": [
+    ".research/uninterrupted-independent-approval-audit-20261007.md",
+    "docs/stabilization/resource-journals/approval-audit-20261007.jsonl",
+    ".research/uninterrupted-final-review-20261007.json"
+  ],
+  "verification": {
+    "source": "Repair written and independent final review pending; automatic CI will validate exact pushed unit.",
+    "local_checks": "Refused RESOURCE_DISK_LOW: system/safety free19.2369GiB below20GiB. Canonical dev-caches --apply freed0; no guard bypass.",
+    "native": "Unverified: local unpacked artifact0.2.173 predates fix. Current artifact must be bound to source and independently exercised warm/reload.",
+    "release": "Pending; workspace forbids manually initiating release/build on this Mac."
+  },
+  "transition_history": [
+    {
+      "at": "2026-10-07T22:06:24.201168+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "User requests independent completeness audit of uninterrupted setting."
+    },
+    {
+      "at": "2026-10-07T22:06:24.201168+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Three source gaps corroborated independently; prior resolver/trust fixes present."
+    },
+    {
+      "at": "2026-10-07T22:06:24.201168+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Bounded repairs and regression guards written; verification still pending."
+    }
+  ],
+  "closure_requirement": "Guarded checks and independent native original/parallel/concurrent approvals/Ask control/Pilot opposing modes with warm and full reload proof; source tests alone cannot close.",
+  "next_action": "Finish independent source review; push exact paths to main, inspect automatic CI; retest exact current artifact on permitted host. Do not close on stale build or resource refusal.",
+  "review_queue_id": "bf959dba-5441-45a1-b06e-ec013cb21fb5"
+}

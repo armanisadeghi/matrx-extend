@@ -26,6 +26,7 @@ import { ALL_OPTIONAL, hasOptionalPermissions } from '@/lib/permissions/optional
 import { useAuthStore } from '@/state/auth';
 import { useChatStore } from '@/state/chat';
 import { useDesktopStore } from '@/state/desktop';
+import { usePilotChatStore } from '@/state/pilot-chat';
 
 export interface BrowserDomState {
   current_url: string | null;
@@ -185,7 +186,8 @@ export async function buildBrowserDomState(
     detectOnboxAi(),
     getAccessToken(),
   ]);
-  const permissionMode = useChatStore.getState().getPermissionMode(opts.agentId ?? null);
+  const permissionStore = opts.surface === 'pilot' ? usePilotChatStore : useChatStore;
+  const permissionMode = permissionStore.getState().getPermissionMode(opts.agentId ?? null);
   const boundTarget = useChatStore.getState().boundComputeTarget;
   return {
     current_url: tab.url,
