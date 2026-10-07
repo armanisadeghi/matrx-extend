@@ -1548,6 +1548,11 @@
    "application/json"
   ]
  },
+ "/coding-sessions/connection/organization/project": {
+  "put": [
+   "application/json"
+  ]
+ },
  "/coding-sessions/conversations/{conversation_id}/responder": {
   "get": []
  },
