@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-06 23:47 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-06T23:47:41.410701+00:00. 205 features · 767 cases · 1349 controls · 147 linked defect records.
+Generated 2026-10-07 00:15 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-07T00:15:06.303794+00:00. 205 features · 767 cases · 1349 controls · 147 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -2311,26 +2311,28 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0147
 
-**Linked defects:** [EXT-D-0147](defects/EXT-D-0147.json) (triaged)
+**Linked defects:** [EXT-D-0147](defects/EXT-D-0147.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
 | EXT-F-4045-T01 Controlled manual execution: ai_check_availability | N/A | Unverified | Unverified | EXT-F-4045-C01 |
 
-**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification.
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification.; EXT-D-0147: source repair has guarded regression/typecheck evidence; native warm/reload capability success and separate background-dispatch execution remain unverified.
 
 
 ### ai_summarize (EXT-F-4046)
 
 **Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 1. **Controls:** 1.
 
-**Next:** Run the remaining role cases in the extension and attach a result.
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0147
+
+**Linked defects:** [EXT-D-0147](defects/EXT-D-0147.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
 | EXT-F-4046-T01 Controlled manual execution: ai_summarize | N/A | Unverified | Unverified | EXT-F-4046-C01 |
 
-**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification.
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification.; EXT-D-0147: source repair has guarded regression/typecheck evidence; native warm/reload capability success and separate background-dispatch execution remain unverified.
 
 
 ### ai_classify (EXT-F-4047)
@@ -2363,39 +2365,45 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 **Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 1. **Controls:** 1.
 
-**Next:** Run the remaining role cases in the extension and attach a result.
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0147
+
+**Linked defects:** [EXT-D-0147](defects/EXT-D-0147.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
 | EXT-F-4049-T01 Controlled manual execution: ai_translate | N/A | Unverified | Unverified | EXT-F-4049-C01 |
 
-**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification.
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification.; EXT-D-0147: source repair has guarded regression/typecheck evidence; native warm/reload capability success and separate background-dispatch execution remain unverified.
 
 
 ### ai_detect_language (EXT-F-4050)
 
 **Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 1. **Controls:** 1.
 
-**Next:** Run the remaining role cases in the extension and attach a result.
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0147
+
+**Linked defects:** [EXT-D-0147](defects/EXT-D-0147.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
 | EXT-F-4050-T01 Controlled manual execution: ai_detect_language | N/A | Unverified | Unverified | EXT-F-4050-C01 |
 
-**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification.
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification.; EXT-D-0147: source repair has guarded regression/typecheck evidence; native warm/reload capability success and separate background-dispatch execution remain unverified.
 
 
 ### ai_proofread (EXT-F-4051)
 
 **Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 1. **Controls:** 1.
 
-**Next:** Run the remaining role cases in the extension and attach a result.
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0147
+
+**Linked defects:** [EXT-D-0147](defects/EXT-D-0147.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
 | EXT-F-4051-T01 Controlled manual execution: ai_proofread | N/A | Unverified | Unverified | EXT-F-4051-C01 |
 
-**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification.
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification.; EXT-D-0147: source repair has guarded regression/typecheck evidence; native warm/reload capability success and separate background-dispatch execution remain unverified.
 
 
 ### ai_describe_image (EXT-F-4052)
