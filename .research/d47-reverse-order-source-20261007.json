@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "scope": "D47 controlled inverse HTTP response ordering and native replay selection; source and fixture evidence only",
+  "status": "source_implemented_with_unexecuted_constant_success_gutcheck",
+  "fixture": {
+    "default": "current-first remains the default arm mode",
+    "inverse": "old-first holds the current target response after the second document request is pending, releases a genuinely pending old response first, then releases current",
+    "telemetry": "response_finish_order records the server's actual response finish events; pending, abort, and finish are separate facts",
+    "prior_server_sha256": "e1e35298d6bab8b437e43a6dc90aec856c595f5c4687b6fb8316e27474e2f4de",
+    "updated_server_sha256": "4cb079e09ccdcd70e791179c337bfbb36784555704a19e0ab36a45c2b4ef83b2"
+  },
+  "native_driver": {
+    "case": "showcase-d47-admin",
+    "input": "d47_response_order workflow choice; current-first default or old-first",
+    "inverse_acceptance": "Requires a distinct new-document request pending while the old request remains pending, server old finish before current release, server current finish second, then the pre-existing exact settled saved result, trace provenance, observer and recipe cleanup gates",
+    "limits": "No native or product execution was authorized in this lane; server finish is not proof of delivery to old JavaScript or an extension binding"
+  },
+  "source_tests": [
+    {
+      "run_id": "d47-reverse-fixture-green-20261007",
+      "resource_decision": "valid",
+      "result": "4/4 fixture tests passed, including inverse real HTTP completion",
+      "journal": "docs/stabilization/resource-journals/d47-reverse-fixture-green-20261007.jsonl"
+    },
+    {
+      "run_id": "d47-reverse-route-20261007",
+      "resource_decision": "valid",
+      "result": "8/8 hosted routing and credential preflight tests passed",
+      "journal": "docs/stabilization/resource-journals/d47-reverse-route-20261007.jsonl"
+    },
+    {
+      "run_id": "d47-reverse-original-red-20261007",
+      "resource_decision": "child_failed as expected",
+      "result": "A scratch copy of the prior server passed the three older tests and failed the new inverse test: current_response_sent was true and current_pending/response_order/finish telemetry were absent",
+      "journal": "docs/stabilization/resource-journals/d47-reverse-original-red-20261007.jsonl"
+    }
+  ],
+  "unexecuted_gutcheck": {
+    "scratch_mutant": "response_finish_order always returns ['old', 'current'] instead of observed finishes",
+    "scratch_mutant_sha256": "22aae1e8564edc17342f6e8c04cbca3e5323879db860371999f47b42608fa9ab",
+    "run_id": "d47-reverse-constant-red-20261007",
+    "resource_decision": "refused before child",
+    "measured_reasons": ["RESOURCE_PRESSURE_UNSAFE", "RESOURCE_SWAP_GROWTH"],
+    "journal": "docs/stabilization/resource-journals/d47-reverse-constant-red-20261007.jsonl",
+    "next_step": "Run the prepared constant-success scratch mutant under a later valid resource permit; no red outcome is claimed"
+  },
+  "first_attempt": {
+    "run_id": "d47-reverse-fixture-red-20261007",
+    "resource_decision": "refused before child",
+    "measured_reasons": ["RESOURCE_PRESSURE_UNSAFE", "RESOURCE_SWAP_GROWTH"],
+    "journal": "docs/stabilization/resource-journals/d47-reverse-fixture-red-20261007.jsonl",
+    "interpretation": "environment refusal, not a test RED"
+  },
+  "static_checks": "node --check for the edited JavaScript modules, git diff --check, and scoped Biome check passed",
+  "remaining": [
+    "Execute constant-success gutcheck under a valid permit",
+    "Independent source review and bounded native old-first run on an exact installed artifact",
+    "Public-site initial-load and the other T57 acceptance branches remain separate"
+  ]
+}

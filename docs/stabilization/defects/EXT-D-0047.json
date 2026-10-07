@@ -28,9 +28,9 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "d47_reverse_order_case owns sole guarded source-test permit for explicit old-first response scenario and existing hosted-case configuration. No native run admitted. First local source-test admission was refused before child launch for pressure/swap; this is not product RED. Preserve current-first accepted native evidence and do not weaken resource policy.",
+    "next_action": "Source old-first path independently reviewed at849e0ae5; constant-success telemetry rejected and clean fixture4/4 passed under valid resources at09334779. Await successful exact-artifact CI, then admit one old-first native run. No native job active. Public-site initial-load and remaining fullT57 branches stay unverified; do not rerun accepted current-first case.",
     "status": "Run37558902653 on frozen0.2.337/source823724eb passed all resource phases and reached exact settled current-only saved result. Independentpeer9f70b303 accepts bounded result, current handshake/packet/context clearing, observer cleanup and exact owned-recipe removal. OldHTTP finished after current; no old binding callback observed. D47in-fix/T57unverified remain unchanged.",
-    "implementation_agent": "d47_reverse_order_case",
+    "implementation_agent": "completed: d47_reverse_order_case",
     "execution_agent": "completed: d47_settled_native",
     "native_run_id": 37537634304,
     "workflow_source": "fbcc4311ae6885b67133e55336f692be38881249",
@@ -94,7 +94,11 @@
     "completion_cleanup_report": ".research/d47-completion-cleanup-fix-20261007.json",
     "completion_cleanup_review": ".research/d47-ack-cleanup-fresh-peer-20261007.json",
     "completion_cleanup_status": "Source correction independently accepted; native37558902653 now verifies settled exact-recipe completion and in-lifetime observer/owned-recipe cleanup at frozen-artifact scope. Fullcase remains unverified.",
-    "latest_native_run_id": 37558902653
+    "latest_native_run_id": 37558902653,
+    "reverse_order_source_commit": "b0324a8a",
+    "reverse_order_source_report": ".research/d47-reverse-order-source-20261007.json",
+    "reverse_order_peer_report": ".research/d47-reverse-fresh-review-20261007.json",
+    "reverse_order_mutation_report": ".research/d47-reverse-mutation-20261007.json"
   },
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
   "verification_status": "Independent native peer9f70b303 verifies settled exact-recipe current-only output, current-document handshake/packet, old-context clearing, real old HTTP completion, and observer/owned-recipe cleanup on frozen0.2.337/source823724eb. This controlled fixture does not satisfy public-site initial-load acceptance; inverse response order, stale-only recovery, manual/prior-run isolation and causal higher-old-sequence coverage remain required. D47in-fix/T57unverified; no later dependency-state acceptance.",

@@ -1,0 +1,305 @@
+{
+  "schema_version": 1,
+  "artifact_type": "inventory-case-procedure-patch",
+  "task_id": "cdp-lifecycle-procedures-20261007",
+  "patch_id": "cdp-lifecycle-procedures-20261007",
+  "source": {
+    "source_inventory": "docs/stabilization/inventory.json",
+    "scope": "Source-traced executable procedure additions for EXT-F-4100-T01, EXT-F-4101-T01, EXT-F-4102-T01, EXT-F-4104-T01, and EXT-F-4112-T01 only. Proposal only: no inventory, status, runtime, browser, build, permission, storage, cloud, or test-result changes.",
+    "source_files_reviewed": [
+      "docs/stabilization/PLAN.md",
+      "docs/stabilization/inventory.json",
+      "src/features/tools/ToolsView.tsx",
+      "src/lib/tools/handlers/_active-tab.ts",
+      "src/lib/tools/handlers/cdp.ts",
+      "src/lib/cdp/client.ts"
+    ],
+    "anchors": [
+      "docs/stabilization/PLAN.md:27-41 (resource permit, build receipt, reload contract)",
+      "docs/stabilization/PLAN.md:47-49 (mode/applicability axis)",
+      "docs/stabilization/inventory.json:59879-59889 (EXT-F-4100-T01/control), 60011-60020 (EXT-F-4101-T01), 60141-60150 (EXT-F-4102-T01), 60494-60505 (EXT-F-4104-T01), 61774-61785 (EXT-F-4112-T01)",
+      "src/features/tools/ToolsView.tsx:390-429, 453-459 (JSON parse/schema validation/direct handler invocation and context); 525-545 (args textarea and Run button)",
+      "src/lib/tools/handlers/_active-tab.ts:10-20, 23-40 (manual run resolves currently focused tab when assignedTabId is null)",
+      "src/lib/tools/handlers/cdp.ts:44-58, 61-85, 286-324, 523-550 (argument schemas and source-defined handler results)",
+      "src/lib/cdp/client.ts:271-301, 352-388 (attached tab list and attach/detach behavior)"
+    ],
+    "known_limits": [
+      "Tools → Catalog → Run calls handler.run directly with permissionMode='act', conversationId=null, and assignedTabId=null after Zod validation. It bypasses dispatcher admin, Ask/Act, and required_optional_permissions checks; these procedures cannot establish those gates.",
+      "The inventory has exact applicability: attach/detach/list admin only; a11y tree and performance metrics member and admin. Guest Tools UI boundary is not exercised here and must remain unresolved unless covered by its existing access case; this artifact does not invent guest N/A or promote any cell.",
+      "The inventory census records exact-name live binding metadata absent for cdp_attach, cdp_detach, and cdp_attached_tabs, and active metadata for cdp_a11y_tree and cdp_perf_metrics. Manual handler procedures do not establish advertised agent routing.",
+      "Invalid cdp_detach calls can schedule an idle retry timer even after Chrome rejects the target; the procedure deliberately avoids probing detach with invalid or unowned IDs."
+    ]
+  },
+  "selectedCaseIDs": [
+    "EXT-F-4100-T01",
+    "EXT-F-4101-T01",
+    "EXT-F-4102-T01",
+    "EXT-F-4104-T01",
+    "EXT-F-4112-T01"
+  ],
+  "shared_setup": {
+    "resource_and_build": [
+      "Before any future execution, obtain the existing stabilization resource permit and a receipt containing every field required by the full build/reload contract in docs/stabilization/PLAN.md (currently lines 24-34): source SHA plus dirty-source hash when applicable, lockfile and output hashes, WXT mode, extension runtime ID, Chrome version, profile and auth/role/org state, permissions, backend identity, fixture IDs, timestamp, login method, principal provenance, real data origin, build/env flags, response interception, mocks, and seeded browser state. Identify the controlled public test page. Record no secrets or unrelated profile/storage contents.",
+      "Use the currently authorized signed-in member test profile and admin test profile, with no account, membership, organization, role, or permission changes. Run only modes already listed for each inventory case. The required debugger optional permission must already be granted for positive operations; do not request or revoke it as part of these procedures.",
+      "Complete one warm pass, then use Chrome's extension Reload control for the exact receipt-bound unpacked extension; wait for reload, reopen the side panel, refocus the owned test tab, and repeat the positive sequence as the post-reload pass. A panel reopen/page refresh alone is not extension reload. If source/output identity changes, stop and require a matching new receipt. No build, reload, or browser run occurred while authoring this artifact."
+    ],
+    "owned_tab_and_cleanup": [
+      "In the selected profile, create one fresh tab owned by this run at https://example.org/ (public, static page, no sign-in or form submission). Before any handler call, focus it and capture cdp_attached_tabs as the baseline. Record its ID only from the unique post-operation delta in cdp_attached_tabs after a successful operation; ownership requires the tab still be focused and exactly one new ID relative to baseline, with no concurrent attachment activity. Preserve every baseline entry and never detach it. Keep this tab focused whenever a step omits tab_id because manual Tools resolves the focused tab at call time.",
+      "Before attach, confirm this is the newly created owned tab and not one with an existing debugger banner/session. If it appears already debugged or the UI indicates another debugger owner, stop and discard this target without detaching it. Never operate on other tabs or debugger sessions.",
+      "After each positive cycle, run cdp_detach only for the exact uniquely identified owned delta ID; verify that ID disappears from cdp_attached_tabs and Chrome no longer shows the debugger banner for that owned tab, while preserving all baseline entries. Close only the owned example.org tab at the end. Never use a global detach-all action, navigate unrelated tabs, or close unrelated tabs. If detach fails, stop and report the owned tab ID for cleanup; do not retry through global controls."
+    ],
+    "manual_runner": [
+      "In the signed-in side panel open Tools → Catalog, select All handlers if the named row is hidden by the current surface filter, search the exact handler name, expand that result, set its JSON arguments in the visible test runner textarea, and select Run. Record the inline result or schema error, without copying unrelated page data.",
+      "The manual runner's null assignedTabId means the active/focused tab is resolved at run time. Keep the owned test tab focused at every call that omits tab_id. Explicit tab_id is used only when its exact value came from the cdp_attached_tabs result for this owned tab.",
+      "If permission is absent before the procedure, record the positive branch as not run/unavailable and stop; do not alter permission settings. A manual handler error under that condition does not prove dispatcher denial. If permission is granted, a negative invalid target may be run with tab_id=-1; Chrome's returned reason is variable and must be recorded as observed, never replaced by a hardcoded error string."
+    ]
+  },
+  "case_updates": {
+    "EXT-F-4100-T01": {
+      "feature_id": "EXT-F-4100",
+      "title": "Controlled manual execution: cdp_attach",
+      "control_ids": ["EXT-F-4100-C01"],
+      "modes": ["admin"],
+      "design_status": "procedure-proposal-runtime-unverified",
+      "preconditions": [
+        "Complete shared resource/build preconditions, verify the required debugger permission is already granted, and use the fresh owned focused https://example.org/ target. Run separately in each listed existing applicability mode.",
+        "Use only Tools → Catalog manual runner as described in shared_setup. This measures local handler behavior; it does not test dispatcher authorization or agent routing.",
+        "Inventory marks this case admin-applicable. Do not run this case in the member profile; the handler's admin_only metadata is not enforced by the manual runner.",
+        "For the negative target branch, use only tab_id=-1 (guaranteed invalid integer target), never a guessed positive tab ID."
+      ],
+      "steps": [
+        "Focus the newly created owned public test tab; confirm it shows no existing debugger banner/session. Run cdp_attached_tabs with {} before any attach and record the full baseline. Preserve all IDs already in that baseline; if the owned tab itself appears already debugged or ownership is otherwise ambiguous, stop without detaching anything.",
+        "Run cdp_attach with {} while confirming the owned tab remains focused. Run cdp_attached_tabs with {} and compare with baseline. Require exactly one newly present ID and no concurrent attachment activity; associate that ID with the still-focused owned tab. Preserve all baseline IDs. If the delta is not exactly one, stop without detaching any ID.",
+        "Run cdp_attach with {\"tab_id\":<owned ID>} a second time, then list and confirm the owned ID remains present without changing baseline entries. Run cdp_attach with {\"tab_id\":-1}; list again and verify the list is unchanged from immediately before the invalid-target call. Do not target another tab.",
+        "Run cdp_detach with {\"tab_id\":<owned ID>} and verify with cdp_attached_tabs that this exact delta ID is absent and every baseline entry remains. Repeat the sequence after the extension Reload for the post-reload pass, recapturing a fresh baseline before attach and requiring a unique delta; if the tab no longer exists, create a new owned target."
+      ],
+      "expected": [
+        "Valid attach returns {ok:true}; repeat attach on the same owned target returns {ok:true}. Relative to the pre-attach baseline, exactly one new tab ID is present after attach, and it is tied to the still-focused owned target with no concurrent attachment activity.",
+        "Invalid target returns {ok:false,reason:<Chrome debugger API error string>}; record the actual reason. Its list is unchanged from immediately before the call, and no baseline or unrelated entry is affected.",
+        "After exact-owned-ID detach, the owned ID is absent from tab_ids. If any valid branch returns a different shape or failure, preserve the observed output and stop before proceeding to unrelated targets."
+      ],
+      "dimensions": [
+        "valid-owned-target",
+        "repeat-attach",
+        "invalid-target",
+        "debugger-permission-present",
+        "admin",
+        "warm",
+        "extension-reload",
+        "owned-target-cleanup"
+      ],
+      "source_evidence": [
+        "src/features/tools/ToolsView.tsx:390-429, 453-459, 525-545",
+        "src/lib/tools/handlers/_active-tab.ts:10-20, 23-40",
+        "docs/stabilization/PLAN.md:27-41",
+        "docs/stabilization/inventory.json:59879-59889",
+        "src/lib/tools/handlers/cdp.ts:44-58",
+        "src/lib/cdp/client.ts:271-301"
+      ],
+      "access_context_permission_limits": [
+        "The manual Run path validates the local Zod args schema and invokes handler.run directly; it bypasses dispatcher authorization. Do not infer admin denial, Ask/Act behavior, or optional-permission enforcement from this path.",
+        "Only modes listed by the existing inventory case are included. Guest boundary remains outside this procedure and is not assigned a new applicability or test status."
+      ],
+      "limits": [
+        "Source-derived proposal only. No runtime execution or test status promotion was performed."
+      ]
+    },
+    "EXT-F-4101-T01": {
+      "feature_id": "EXT-F-4101",
+      "title": "Controlled manual execution: cdp_detach",
+      "control_ids": ["EXT-F-4101-C01"],
+      "modes": ["admin"],
+      "design_status": "procedure-proposal-runtime-unverified",
+      "preconditions": [
+        "Complete shared resource/build preconditions, verify the required debugger permission is already granted, and use the fresh owned focused https://example.org/ target. Run separately in each listed existing applicability mode.",
+        "Use only Tools → Catalog manual runner as described in shared_setup. This measures local handler behavior; it does not test dispatcher authorization or agent routing.",
+        "Inventory marks this case admin-applicable. Do not run it in the member profile. Begin only after the same profile's current sequence has successfully attached the owned target and cdp_attached_tabs returned its exact ID. Capture cdp_attached_tabs before attach as baseline; require exactly one new ID tied to the still-focused owned target, with no concurrent attachment activity, before using that ID."
+      ],
+      "steps": [
+        "Warm pass: run cdp_attached_tabs {} before attach and record baseline. Attach to the focused owned public tab using cdp_attach {}. Run cdp_attached_tabs {} and require exactly one new ID relative to baseline, tied to the still-focused owned tab with no concurrent attachment activity; preserve all baseline entries. If not unique, stop without detaching any ID.",
+        "Run cdp_detach with {\"tab_id\":<owned ID>}. Run cdp_attached_tabs {} and verify only the owned delta ID is gone while baseline entries remain. Check the owned tab no longer shows Chrome's debugging banner.",
+        "Reattach the same owned tab: capture a fresh baseline, call cdp_attach {}, then require exactly one new ID tied to the focused owned tab. Run cdp_detach for that exact ID and verify only that delta is removed. Separately enter {\"tab_id\":\"bad\"} for cdp_detach; the runner must reject it at schema validation, and cdp_attached_tabs must be unchanged. Do not probe detach with an invalid integer or unowned target because a failed detach schedules the client idle timer for that ID.",
+        "After extension Reload, repeat the baseline, attach, exact-owned-ID detach, reattach/exact-owned-ID detach, and schema-negative sequence for the post-reload pass, capturing a fresh baseline before each attach. Finish with list absence of each owned delta, preserved baseline entries, and banner gone."
+      ],
+      "expected": [
+        "Detach of the currently attached owned tab returns {ok:true}; subsequent list excludes exactly that tab ID and the banner is gone.",
+        "Only the owned target ID is asserted or detached. Never detach an unknown target; if owned detach returns false, stop and report the exact owned ID and actual result.",
+        "A string tab_id is rejected by the local schema before handler invocation; the attached-tabs list remains unchanged. This safe schema-negative check does not exercise an invalid Chrome target or the detach handler's failure path."
+      ],
+      "dimensions": [
+        "valid-owned-attachment",
+        "debugger-permission-present",
+        "admin",
+        "warm",
+        "extension-reload",
+        "owned-target-cleanup",
+        "invalid-schema-input"
+      ],
+      "source_evidence": [
+        "src/features/tools/ToolsView.tsx:390-429, 453-459, 525-545",
+        "src/lib/tools/handlers/_active-tab.ts:10-20, 23-40",
+        "docs/stabilization/PLAN.md:27-41",
+        "docs/stabilization/inventory.json:60011-60020",
+        "src/lib/tools/handlers/cdp.ts:61-75",
+        "src/lib/cdp/client.ts:352-388"
+      ],
+      "access_context_permission_limits": [
+        "The manual Run path validates the local Zod args schema and invokes handler.run directly; it bypasses dispatcher authorization. Do not infer admin denial, Ask/Act behavior, or optional-permission enforcement from this path.",
+        "Only modes listed by the existing inventory case are included. Guest boundary remains outside this procedure and is not assigned a new applicability or test status."
+      ],
+      "limits": [
+        "Source-derived proposal only. No runtime execution or test status promotion was performed."
+      ]
+    },
+    "EXT-F-4102-T01": {
+      "feature_id": "EXT-F-4102",
+      "title": "Controlled manual execution: cdp_attached_tabs",
+      "control_ids": ["EXT-F-4102-C01"],
+      "modes": ["admin"],
+      "design_status": "procedure-proposal-runtime-unverified",
+      "preconditions": [
+        "Complete shared resource/build preconditions, verify the required debugger permission is already granted, and use the fresh owned focused https://example.org/ target. Run separately in each listed existing applicability mode.",
+        "Use only Tools → Catalog manual runner as described in shared_setup. This measures local handler behavior; it does not test dispatcher authorization or agent routing.",
+        "Inventory marks this case admin-applicable. Do not run it in the member profile.",
+        "Use only the fresh owned target ID produced by this same run. The list is the handler's in-memory set, not a census of every Chrome debugger session."
+      ],
+      "steps": [
+        "Warm pass: focus the owned target, run cdp_attached_tabs {} before attach, and record the full baseline. Do not infer ownership from any existing ID; if target ownership is ambiguous, stop without detaching anything.",
+        "Attach the focused owned target with cdp_attach {}. Run cdp_attached_tabs {} and require exactly one newly added ID relative to baseline, tied to the still-focused owned tab and with no concurrent attachment activity. Preserve all baseline IDs; if the delta is not exactly one, stop.",
+        "Run cdp_attached_tabs with [] (valid JSON but schema-invalid for the no-args object) in the manual runner. Confirm schema rejection before handler invocation, then run cdp_attached_tabs {} and verify the list is unchanged. Detach only the exact owned delta ID with cdp_detach and confirm it is absent while baseline entries remain. After extension Reload, repeat with a fresh pre-attach baseline and the same rules."
+      ],
+      "expected": [
+        "Each valid call returns {tab_ids:<number[]>}; an initial baseline may contain entries, which are preserved and not treated as owned. After successful attach exactly one new ID is present and tied to the focused owned target; after exact-ID detach that delta is absent.",
+        "Other IDs, if any, are not touched or asserted. The return does not prove all browser debugger targets or sessions are listed.",
+        "The [] argument is rejected by the local object schema before handler invocation and does not mutate the attached-tabs list."
+      ],
+      "dimensions": [
+        "empty-or-baseline-list",
+        "owned-target-present-after-attach",
+        "owned-target-absent-after-detach",
+        "debugger-permission-present",
+        "admin",
+        "warm",
+        "extension-reload",
+        "invalid-schema-input"
+      ],
+      "source_evidence": [
+        "src/features/tools/ToolsView.tsx:390-429, 453-459, 525-545",
+        "src/lib/tools/handlers/_active-tab.ts:10-20, 23-40",
+        "docs/stabilization/PLAN.md:27-41",
+        "docs/stabilization/inventory.json:60141-60150",
+        "src/lib/tools/handlers/cdp.ts:78-85",
+        "src/lib/cdp/client.ts:271-273"
+      ],
+      "access_context_permission_limits": [
+        "The manual Run path validates the local Zod args schema and invokes handler.run directly; it bypasses dispatcher authorization. Do not infer admin denial, Ask/Act behavior, or optional-permission enforcement from this path.",
+        "Only modes listed by the existing inventory case are included. Guest boundary remains outside this procedure and is not assigned a new applicability or test status."
+      ],
+      "limits": [
+        "Source-derived proposal only. No runtime execution or test status promotion was performed."
+      ]
+    },
+    "EXT-F-4104-T01": {
+      "feature_id": "EXT-F-4104",
+      "title": "Controlled manual execution: cdp_a11y_tree",
+      "control_ids": ["EXT-F-4104-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "procedure-proposal-runtime-unverified",
+      "preconditions": [
+        "Complete shared resource/build preconditions, verify the required debugger permission is already granted, and use the fresh owned focused https://example.org/ target. Run separately in each listed existing applicability mode.",
+        "Use only Tools → Catalog manual runner as described in shared_setup. This measures local handler behavior; it does not test dispatcher authorization or agent routing.",
+        "Inventory lists both member and admin. Repeat independently in the existing member and admin profiles; do not substitute one role for the other.",
+        "The owned public page is used only as a read target. Keep its URL and page text public; do not capture a signed-in or personal page."
+      ],
+      "steps": [
+        "In the member profile, focus the owned https://example.org/ tab and run cdp_attached_tabs {} before the positive call; record baseline. Run cdp_a11y_tree with {}. Then list again and require exactly one newly present ID tied to the still-focused owned tab, with no concurrent attachment activity. Save only the stable outer result shape and counts; inspect optional node fields only when present. If the delta is ambiguous, stop without detaching any ID.",
+        "Run cdp_a11y_tree with {\"max_nodes\":1}; then run with {\"max_nodes\":-1}. The latter is schema-negative and must be rejected before handler invocation. Verify the attached-tabs list is unchanged by that rejection. Run {\"tab_id\":-1} for invalid target and capture the actual handler reason; do not treat it as an ownership ID.",
+        "Detach only the exact owned delta ID from step 1; verify that ID is absent and baseline entries remain. Reload the extension, capture a fresh list baseline before repeating the positive {} run, identify exactly one new owned delta, and perform the same exact-ID cleanup and list check.",
+        "Repeat steps 1-3 independently in the existing admin profile with its own owned public tab and fresh baselines. Do not infer one role's result from the other. Member use of cdp_attached_tabs/cdp_detach in this manual runner is diagnostic handler reachability only; these admin_only handlers bypass dispatch authorization in ToolsView, so this does not establish member dispatcher access."
+      ],
+      "expected": [
+        "On the valid public page, result shape is {ok:true,count:<number>,total:<number>,nodes:[...]}; count equals nodes.length and is no greater than max_nodes (default 500); total is the source tree's node count and may vary.",
+        "Returned node objects have stable outer collection structure, but role, name, value, description, properties, and child_ids are optional Chrome AX fields and may be omitted after JSON serialization. Inspect only fields present; do not require every key or assert fixed content.",
+        "max_nodes=-1 is rejected by the Tools runner schema without calling the handler and leaves the list unchanged. Invalid target returns {ok:false,reason:<observed error>} if the handler reaches Chrome. Successful handler auto-attaches and retains ownership; cleanup uses only the unique owned delta ID."
+      ],
+      "dimensions": [
+        "valid-public-page",
+        "node-limit",
+        "invalid-node-limit",
+        "invalid-target",
+        "debugger-permission-present",
+        "member",
+        "admin",
+        "warm",
+        "extension-reload",
+        "owned-target-cleanup"
+      ],
+      "source_evidence": [
+        "src/features/tools/ToolsView.tsx:390-429, 453-459, 525-545",
+        "src/lib/tools/handlers/_active-tab.ts:10-20, 23-40",
+        "docs/stabilization/PLAN.md:27-41",
+        "docs/stabilization/inventory.json:60494-60505",
+        "src/lib/tools/handlers/cdp.ts:286-324",
+        "src/lib/cdp/client.ts:298-301"
+      ],
+      "access_context_permission_limits": [
+        "The manual Run path validates the local Zod args schema and invokes handler.run directly; it bypasses dispatcher authorization. Do not infer admin denial, Ask/Act behavior, or optional-permission enforcement from this path. In the member profile, use of admin_only cdp_attached_tabs and cdp_detach through this runner proves diagnostic handler reachability only, not ordinary-member access through dispatch.",
+        "Only modes listed by the existing inventory case are included. Guest boundary remains outside this procedure and is not assigned a new applicability or test status."
+      ],
+      "limits": [
+        "Source-derived proposal only. No runtime execution or test status promotion was performed."
+      ]
+    },
+    "EXT-F-4112-T01": {
+      "feature_id": "EXT-F-4112",
+      "title": "Controlled manual execution: cdp_perf_metrics",
+      "control_ids": ["EXT-F-4112-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "procedure-proposal-runtime-unverified",
+      "preconditions": [
+        "Complete shared resource/build preconditions, verify the required debugger permission is already granted, and use the fresh owned focused https://example.org/ target. Run separately in each listed existing applicability mode.",
+        "Use only Tools → Catalog manual runner as described in shared_setup. This measures local handler behavior; it does not test dispatcher authorization or agent routing.",
+        "Inventory lists both member and admin. Repeat independently in the existing member and admin profiles.",
+        "Use the fresh owned public page as a read-only target. Metrics are live Chrome output; do not compare values across runs or hardcode expected metric names/values."
+      ],
+      "steps": [
+        "In the member profile, focus the owned https://example.org/ tab and capture cdp_attached_tabs baseline before the positive call. Run cdp_perf_metrics with {}. Record only result shape, metric-key count, and whether returned values are numeric and finite. List again and require exactly one new ID tied to the still-focused owned tab, with no concurrent attachment activity; preserve baseline entries. If ambiguous, stop without detaching anything.",
+        "Run cdp_perf_metrics with {\"tab_id\":-1} for invalid target and record actual reason. Run cdp_perf_metrics with {\"tab_id\":\"bad\"}; the runner must reject this schema-invalid string before handler invocation and the attached-tabs list must remain unchanged.",
+        "Detach only the exact owned delta ID from step 1 and verify it is absent while baseline entries remain. Reload the extension, capture a fresh baseline before repeating the positive call, require one unique delta tied to the focused owned tab, and perform the same exact-ID cleanup and list check.",
+        "Repeat the same sequence independently in the existing admin profile using its own owned public tab and fresh baseline. Member use of admin_only cdp_attached_tabs/cdp_detach through this manual runner is diagnostic handler reachability only and proves no dispatcher access outcome."
+      ],
+      "expected": [
+        "Valid metrics result shape is {ok:true,metrics:<object>} where each present value is a finite number. Names and values depend on the live page/runtime and may differ between runs; do not assert fixed values or that an undocumented metric key is present.",
+        "Invalid target returns {ok:false,reason:<actual Chrome debugger API error string>} when Chrome rejects attachment; schema-invalid string is rejected in the runner without handler invocation.",
+        "This handler auto-attaches and keeps the attachment; clean up only the exact owned tab ID observed in the attached-tabs output. If no owned ID is observed, do not guess one."
+      ],
+      "dimensions": [
+        "valid-public-page",
+        "metric-result-shape",
+        "invalid-target",
+        "invalid-schema-input",
+        "debugger-permission-present",
+        "member",
+        "admin",
+        "warm",
+        "extension-reload",
+        "owned-target-cleanup"
+      ],
+      "source_evidence": [
+        "src/features/tools/ToolsView.tsx:390-429, 453-459, 525-545",
+        "src/lib/tools/handlers/_active-tab.ts:10-20, 23-40",
+        "docs/stabilization/PLAN.md:27-41",
+        "docs/stabilization/inventory.json:61774-61785",
+        "src/lib/tools/handlers/cdp.ts:523-550",
+        "src/lib/cdp/client.ts:298-301"
+      ],
+      "access_context_permission_limits": [
+        "The manual Run path validates the local Zod args schema and invokes handler.run directly; it bypasses dispatcher authorization. Do not infer admin denial, Ask/Act behavior, or optional-permission enforcement from this path. Member cleanup through admin_only list/detach handlers in this runner is diagnostic reachability only, not proof of dispatcher access.",
+        "Only modes listed by the existing inventory case are included. Guest boundary remains outside this procedure and is not assigned a new applicability or test status."
+      ],
+      "limits": [
+        "Source-derived proposal only. No runtime execution or test status promotion was performed."
+      ]
+    }
+  }
+}

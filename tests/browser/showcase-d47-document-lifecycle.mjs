@@ -32,6 +32,8 @@ import {
 import { runShowcaseOrganizationCheckpoint } from './showcase-organization-checkpoint.mjs';
 
 const repo = resolve(import.meta.dirname, '../..');
+const responseOrder = process.env.MATRX_D47_RESPONSE_ORDER ?? 'current-first';
+assert.ok(['current-first', 'old-first'].includes(responseOrder), 'd47_response_order_invalid');
 const output =
   process.env.MATRX_SHOWCASE_OUTPUT ?? join(tmpdir(), `showcase-d47-${randomUUID()}.json`);
 const report = {
@@ -42,6 +44,7 @@ const report = {
   stage: 'inputs',
   artifact: null,
   fixture: null,
+  response_order: responseOrder,
   contexts: [],
   binding_events: [],
   saved_result: null,
@@ -526,7 +529,7 @@ try {
           );
           report.owned_recipe.creation = 'observed_in_patterns';
           stage('arm_old_document');
-          await control(origin, 'arm');
+          await control(origin, `arm?response_order=${responseOrder}`);
           await resourceAction(() => page.reload());
           await waitFor(
             'old_pending',
@@ -576,15 +579,48 @@ try {
           await allow(panel);
           stage('current_http');
           await waitFor(
-            'current_response',
+            responseOrder === 'old-first' ? 'current_request_pending' : 'current_response',
             () => status(origin),
-            (value) => value?.current_response_sent === true && value.target_requests === 2,
+            (value) =>
+              value?.target_requests === 2 &&
+              value.response_order === responseOrder &&
+              (responseOrder === 'old-first'
+                ? value.current_pending === true &&
+                  value.current_response_sent === false &&
+                  value.old_pending === true &&
+                  value.response_finish_order.length === 0
+                : value.current_response_finished === true &&
+                  value.response_finish_order[0] === 'current'),
           );
           report.fixture = { before_release: await status(origin) };
           stage('release_old_http');
           const release = await control(origin, 'release-old');
           report.fixture.release_http_status = release.status;
           report.fixture.after_release = await status(origin);
+          report.fixture.observed_response_finish_order =
+            report.fixture.after_release.response_finish_order;
+          if (responseOrder === 'old-first') {
+            assert.equal(release.status, 200, 'old_pending_release_failed');
+            assert.equal(report.fixture.after_release.old_release_prestate, 'pending');
+            assert.deepEqual(report.fixture.after_release.response_finish_order, ['old']);
+            assert.equal(report.fixture.after_release.current_pending, true);
+            const currentRelease = await control(origin, 'release-current');
+            assert.equal(currentRelease.status, 200, 'current_pending_release_failed');
+            report.fixture.after_current_release = await status(origin);
+            assert.deepEqual(report.fixture.after_current_release.response_finish_order, [
+              'old',
+              'current',
+            ]);
+            report.fixture.observed_response_finish_order =
+              report.fixture.after_current_release.response_finish_order;
+          } else if (report.fixture.after_release.old_response_finished) {
+            assert.deepEqual(report.fixture.after_release.response_finish_order, [
+              'current',
+              'old',
+            ]);
+          } else {
+            assert.deepEqual(report.fixture.after_release.response_finish_order, ['current']);
+          }
           assert.equal(
             report.fixture.before_release.old_pending ||
               report.fixture.before_release.old_response_aborted,
@@ -592,13 +628,15 @@ try {
             'old_request_lifecycle_missing',
           );
           assert.equal(
-            report.fixture.after_release.current_response_sent,
+            (report.fixture.after_current_release ?? report.fixture.after_release)
+              .current_response_sent,
             true,
             'current_http_response_missing',
           );
           assert.equal(
             report.fixture.after_release.old_response_finished ||
-              report.fixture.after_release.old_response_aborted,
+              (responseOrder === 'current-first' &&
+                report.fixture.after_release.old_response_aborted),
             true,
             'old_http_terminal_missing',
           );

@@ -331,11 +331,16 @@ async function run(prepared, artifactMode) {
     runtimeDir,
     'approved-admin-organization-private.json',
   );
-  const showcaseRoute = hostedShowcaseRoute(acceptanceCase, prepared, {
-    temp: process.env.RUNNER_TEMP,
-    runId: process.env.GITHUB_RUN_ID,
-    attempt: process.env.GITHUB_RUN_ATTEMPT,
-  });
+  const showcaseRoute = hostedShowcaseRoute(
+    acceptanceCase,
+    prepared,
+    {
+      temp: process.env.RUNNER_TEMP,
+      runId: process.env.GITHUB_RUN_ID,
+      attempt: process.env.GITHUB_RUN_ATTEMPT,
+    },
+    process.env.MATRX_D47_RESPONSE_ORDER || 'current-first',
+  );
   const needsApprovedAdminOrganization =
     Boolean(showcaseRoute) || (scrapeRoute && scrapeSelection.mode === 'admin');
   let adminCredentialsCreated = false;

@@ -28,6 +28,7 @@ test('explicit stale case dispatches the native driver with opt-in and exact art
     MATRX_SHOWCASE_CI_ARTIFACT_ID: String(prepared.artifactId),
     MATRX_SHOWCASE_OUTPUT: '/private/results/showcase-picker-native-42-1.json',
     MATRX_SHOWCASE_STALE_BOUNDARY: '1',
+    MATRX_D47_RESPONSE_ORDER: undefined,
   });
 });
 
@@ -44,7 +45,22 @@ test('D47 route binds the exact CI development artifact to its own native result
   assert.equal(route.env.MATRX_SHOWCASE_OUTPUT, '/private/results/showcase-d47-native-42-1.json');
   assert.equal(route.env.MATRX_SHOWCASE_CI_SOURCE_SHA, prepared.sourceSha);
   assert.equal(route.env.MATRX_SHOWCASE_STALE_BOUNDARY, undefined);
+  assert.equal(route.env.MATRX_D47_RESPONSE_ORDER, 'current-first');
   assert.equal(route.env.MATRX_SHOWCASE_EXTENSION_DIR, prepared.extensionDir);
+});
+
+test('D47 route propagates only an explicit supported inverse order', () => {
+  const inverse = hostedShowcaseRoute('showcase-d47-admin', prepared, runner, 'old-first');
+  assert.equal(inverse.env.MATRX_D47_RESPONSE_ORDER, 'old-first');
+  assert.throws(
+    () => hostedShowcaseRoute('showcase-d47-admin', prepared, runner, 'old-first-extra'),
+    /d47_response_order_invalid/,
+  );
+  assert.equal(
+    hostedShowcaseRoute('showcase-picker-admin', prepared, runner, 'old-first').env
+      .MATRX_D47_RESPONSE_ORDER,
+    undefined,
+  );
 });
 
 test('stale route refuses wrong artifact identity before child dispatch', () => {

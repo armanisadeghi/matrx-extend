@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent-source-rereview",
+  "reviewed_commit": "37e2a5224e298c20895b85370e7f4b19e40c6a35",
+  "reviewed_artifact": ".research/cdp-lifecycle-procedures-20261007.json",
+  "prior_review": ".research/cdp-procedures-independent-review-20261007.json",
+  "method": "Fresh diff, proposal, inventory, manual runner, handler, CDP client, active-tab resolver, and stabilization contract review. Source only; no tests, browser, build, database, permission, or runtime execution.",
+  "verdict_A_spec_and_procedure": {
+    "overall": "ACCEPT for inventory procedure integration as an unverified proposal; no case status or permission/dispatcher coverage promotion",
+    "prior_findings": {
+      "EXT-F-4100-T01": {
+        "status": "ADDRESSED",
+        "reason": "Baseline now precedes attach; a unique focused-owned delta is required, the invalid target is checked against the immediately prior list, and exact-ID cleanup preserves baseline entries.",
+        "evidence": [
+          ".research/cdp-lifecycle-procedures-20261007.json:70-82",
+          "src/lib/cdp/client.ts:271-301"
+        ]
+      },
+      "EXT-F-4101-T01": {
+        "status": "ADDRESSED",
+        "reason": "Every attach has a prior baseline and unique delta; a string tab_id tests schema rejection without invoking unsafe failed detach, and list preservation is checked.",
+        "evidence": [
+          ".research/cdp-lifecycle-procedures-20261007.json:113-128",
+          "src/lib/tools/handlers/cdp.ts:60-85",
+          "src/lib/cdp/client.ts:352-388"
+        ]
+      },
+      "EXT-F-4102-T01": {
+        "status": "ADDRESSED",
+        "reason": "No owned ID is inferred before attach; unique delta and exact-ID cleanup are explicit, and [] is a safe non-object schema-negative argument.",
+        "evidence": [
+          ".research/cdp-lifecycle-procedures-20261007.json:159-176",
+          "src/lib/tools/handlers/cdp.ts:41-42,78-85"
+        ]
+      },
+      "EXT-F-4104-T01": {
+        "status": "ADDRESSED",
+        "reason": "Optional AX fields are no longer required; both roles and both reload passes have baseline/delta/exact-ID cleanup; member use of admin-only diagnostic helpers is correctly scoped.",
+        "evidence": [
+          ".research/cdp-lifecycle-procedures-20261007.json:208-225,246",
+          "src/lib/tools/handlers/cdp.ts:286-324"
+        ]
+      },
+      "EXT-F-4112-T01": {
+        "status": "ADDRESSED",
+        "reason": "Both roles and reload passes now require baseline/delta/exact-ID cleanup, with member diagnostic reachability distinguished from dispatcher access.",
+        "evidence": [
+          ".research/cdp-lifecycle-procedures-20261007.json:259-277,297",
+          "src/lib/tools/handlers/cdp.ts:523-550"
+        ]
+      }
+    }
+  },
+  "verdict_B_quality_and_truth": {
+    "overall": "ACCEPT for source-derived procedure quality with runtime explicitly UNVERIFIED",
+    "prior_findings": {
+      "ownership_and_cleanup": "ADDRESSED: each positive path captures a pre-operation list, requires one uniquely identified new ID tied to the still-focused owned tab without concurrent attachment activity, and detaches only that ID while preserving baseline entries.",
+      "full_build_receipt": "ADDRESSED: shared setup now cites and enumerates the full PLAN build/reload receipt fields.",
+      "permission_denial_limit": "ADDRESSED AS LIMIT: the proposal keeps pre-granted debugger permission as a precondition and expressly disclaims permission enforcement or dispatcher denial; those dimensions remain unverified.",
+      "member_admin_only_diagnostics": "ADDRESSED: member use of cdp_attached_tabs and cdp_detach is expressly diagnostic, with no dispatcher access conclusion."
+    },
+    "source_evidence": [
+      ".research/cdp-lifecycle-procedures-20261007.json:41-55,209-218,259-269",
+      "docs/stabilization/PLAN.md:24-34",
+      "src/features/tools/ToolsView.tsx:390-459",
+      "src/lib/tools/handlers/_active-tab.ts:23-40",
+      "src/lib/cdp/client.ts:267-301,352-388"
+    ]
+  },
+  "substantive_new_findings": [],
+  "runtime_status": "UNVERIFIED",
+  "inventory_status_changed": false,
+  "integration_limit": "Integrate the five procedures only as proposed steps. Live role, lifecycle, permission-denied, dispatcher, and agent-routing verdicts require separate authorized execution and evidence."
+}

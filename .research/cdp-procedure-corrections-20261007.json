@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent-procedure-correction-receipt",
+  "task_id": "cdp-lifecycle-procedures-20261007",
+  "proposal": ".research/cdp-lifecycle-procedures-20261007.json",
+  "independent_review": ".research/cdp-procedures-independent-review-20261007.json",
+  "scope": [
+    "EXT-F-4100-T01",
+    "EXT-F-4101-T01",
+    "EXT-F-4102-T01",
+    "EXT-F-4104-T01",
+    "EXT-F-4112-T01"
+  ],
+  "method": "Compared each substantive independent-review finding with the proposal and inspected the cited PLAN, ToolsView, CDP handler, CDP client, and inventory sources. Source-only correction; no browser, runtime, build, database, or test execution.",
+  "findings": [
+    {
+      "case_id": "EXT-F-4100-T01",
+      "independent_finding_verbatim": "Step 1 must list attachments before the first attach. As written it attaches first and calls that later list the baseline, then instructs the operator to stop if the owned ID appears. A successful attach necessarily adds that ID, so the procedure stops before its main assertion. Capture the list before attach, require exactly one newly present ID after successful attach, and verify the browser still focuses the owned tab before treating that ID as owned. Preserve prior list entries. After invalid target, compare the list again to ensure it did not change.",
+      "disposition": "corrected",
+      "proposal_change": "Corrected ordering: record cdp_attached_tabs baseline before the first attach; require exactly one new ID after attach, still-focused owned target, and no concurrent activity; preserve baseline IDs. After invalid target, require the list unchanged. This follows attachedTabsList() tracking only successful local attach and avoids the former stop-after-success contradiction.",
+      "evidence": [
+        ".research/cdp-lifecycle-procedures-20261007.json:71-79",
+        "src/lib/cdp/client.ts:275-301"
+      ]
+    },
+    {
+      "case_id": "EXT-F-4101-T01",
+      "independent_finding_verbatim": "Take an attached-tabs baseline before attach and require exactly one new ID afterward, associated with the focused owned tab, before using the ID in detach. The proposal currently calls an ID 'newly attached' without a baseline. The inventory also has an invalid-input dimension: add a schema-negative tab_id string or other invalid schema value that the runner rejects before the handler, while keeping the unsafe invalid-target detach excluded and explaining that distinction. Verify no list change after schema rejection.",
+      "disposition": "corrected",
+      "proposal_change": "Added pre-attach baseline and unique owned delta requirements. Added tab_id string schema-negative detach input and unchanged-list check, while retaining the explicit exclusion of invalid integer/unowned detach because detach catches Chrome rejection and schedules an idle timer. The local Zod schema requires an integer.",
+      "evidence": [
+        ".research/cdp-lifecycle-procedures-20261007.json:116-135",
+        "docs/stabilization/inventory.json:60011-60028",
+        "src/lib/tools/handlers/cdp.ts:61-75",
+        "src/lib/cdp/client.ts:352-388"
+      ]
+    },
+    {
+      "case_id": "EXT-F-4102-T01",
+      "independent_finding_verbatim": "The initial step cannot know the owned tab ID from attached_tabs before attach under the shared setup. Record baseline, attach the focused owned tab, require exactly one newly added ID and no concurrent attachment activity, then use that ID only. Add a schema-negative non-object argument for this no-args handler to cover the inventory's invalid-input dimension and verify it does not mutate the list. No debugger permission denial is established by this manual path.",
+      "disposition": "corrected",
+      "proposal_change": "Replaced impossible pre-attach ownership claim with a baseline, attach, unique delta tied to focused owned target, and no-concurrent-activity rule. Added [] schema-negative input to the no-args object schema and an unchanged-list check.",
+      "evidence": [
+        ".research/cdp-lifecycle-procedures-20261007.json:47,165-181",
+        "docs/stabilization/inventory.json:60141-60158",
+        "src/lib/tools/handlers/cdp.ts:41-42,78-85",
+        "src/lib/cdp/client.ts:267-273"
+      ]
+    },
+    {
+      "case_id": "EXT-F-4104-T01",
+      "independent_finding_verbatim": "Do not require every returned node object to visibly contain all seven named keys: role, name, value, description, properties, and child_ids are read from optional Chrome AX fields and undefined properties disappear when ToolsView JSON-stringifies output. Assert stable outer shape and inspect only fields present. Take a list baseline before the first positive call and identify exactly one newly attached ID before cleanup; repeat exact-ID cleanup after the post-reload positive call in each role. State that member access through this manual runner proves handler reachability only, since cdp_attached_tabs and cdp_detach carry admin_only metadata that the runner does not enforce.",
+      "disposition": "corrected",
+      "proposal_change": "Removed the requirement that optional AX fields appear in serialized node objects; asserts count/outer structure and inspects optional fields only when present. Added pre-positive baseline and unique delta cleanup after both warm and post-reload positives for each role. Explicitly limits member manual-runner cleanup/list use to diagnostic handler reachability, since both handlers are admin_only and dispatch is bypassed.",
+      "evidence": [
+        ".research/cdp-lifecycle-procedures-20261007.json:210-219",
+        "src/lib/tools/handlers/cdp.ts:78-85,284-324",
+        "src/features/tools/ToolsView.tsx:453-462,494-499"
+      ]
+    },
+    {
+      "case_id": "EXT-F-4112-T01",
+      "independent_finding_verbatim": "Take an attached-tabs baseline before the positive call and require exactly one new ID tied to the focused owned tab before exact-ID cleanup. The present instruction 'if the owned target appears' has no way to distinguish that target from pre-existing listed IDs. Make the same cleanup explicit after the post-reload positive call in both roles. State that member use of admin_only cleanup/list handlers through ToolsView is a manual-runner bypass and proves no dispatcher access outcome.",
+      "disposition": "corrected",
+      "proposal_change": "Added baseline and unique focused-target delta before cleanup, plus explicit cleanup/list verification after the post-reload positive call in each role. Explicitly limits member use of admin_only cleanup/list handlers through this runner to diagnostic reachability, with no dispatcher-access conclusion.",
+      "evidence": [
+        ".research/cdp-lifecycle-procedures-20261007.json:262-270",
+        "src/lib/tools/handlers/cdp.ts:78-85,523-550",
+        "src/features/tools/ToolsView.tsx:453-462"
+      ]
+    },
+    {
+      "case_id": "cross-case",
+      "independent_finding_verbatim": "Ownership cannot be inferred from an unqualified list entry. Require a pre-operation list and unique post-operation delta before any explicit-ID detach; otherwise stop without detaching unknown IDs.",
+      "disposition": "corrected in procedure; conclusion retained",
+      "evidence": [
+        "docs/stabilization/PLAN.md:24-34,45-49",
+        "src/features/tools/ToolsView.tsx:390-429,453-462",
+        "src/lib/tools/handlers/cdp.ts:47-85,293-324,526-550",
+        "src/lib/cdp/client.ts:267-301,352-388"
+      ],
+      "basis": "Every explicit detach now requires a pre-operation list and a unique new delta tied to the focused owned tab, with no concurrent attachment activity; ambiguity stops without detach. Existing baseline entries are preserved."
+    },
+    {
+      "case_id": "cross-case",
+      "independent_finding_verbatim": "The shared build receipt description omits some fields the PLAN requires: backend identity, fixture IDs, login method, principal provenance, real data origin, env flags, interception, mocks, and seeded browser state. Refer unambiguously to the full PLAN receipt or include these fields before future execution.",
+      "disposition": "corrected",
+      "evidence": [
+        "docs/stabilization/PLAN.md:24-34,45-49",
+        "src/features/tools/ToolsView.tsx:390-429,453-462",
+        "src/lib/tools/handlers/cdp.ts:47-85,293-324,526-550",
+        "src/lib/cdp/client.ts:267-301,352-388"
+      ],
+      "basis": "Shared setup now requires full docs/stabilization/PLAN.md receipt fields, including the omitted fields. Source checked at PLAN.md:24-34."
+    },
+    {
+      "case_id": "cross-case",
+      "independent_finding_verbatim": "Do not treat pre-granted debugger permission or a manual-runner result as proof of permission enforcement. Keep the permission-denied inventory dimension unresolved or design a separately authorized dispatcher-path procedure later.",
+      "disposition": "unresolved by design",
+      "evidence": [
+        "docs/stabilization/PLAN.md:24-34,45-49",
+        "src/features/tools/ToolsView.tsx:390-429,453-462",
+        "src/lib/tools/handlers/cdp.ts:47-85,293-324,526-550",
+        "src/lib/cdp/client.ts:267-301,352-388"
+      ],
+      "basis": "Permission-denied enforcement remains explicitly unresolved; this manual route cannot prove it and no inventory status was changed."
+    },
+    {
+      "case_id": "cross-case",
+      "independent_finding_verbatim": "Member cleanup through admin_only handlers is a manual runner diagnostic, not proof of ordinary-member access to those handlers through dispatch.",
+      "disposition": "corrected",
+      "evidence": [
+        "docs/stabilization/PLAN.md:24-34,45-49",
+        "src/features/tools/ToolsView.tsx:390-429,453-462",
+        "src/lib/tools/handlers/cdp.ts:47-85,293-324,526-550",
+        "src/lib/cdp/client.ts:267-301,352-388"
+      ],
+      "basis": "Both member-applicable cases explicitly state that manual-runner list/detach use is diagnostic reachability only and does not prove member dispatch access."
+    }
+  ],
+  "preserved_invariants": {
+    "control_ids": {
+      "EXT-F-4100-T01": ["EXT-F-4100-C01"],
+      "EXT-F-4101-T01": ["EXT-F-4101-C01"],
+      "EXT-F-4102-T01": ["EXT-F-4102-C01"],
+      "EXT-F-4104-T01": ["EXT-F-4104-C01"],
+      "EXT-F-4112-T01": ["EXT-F-4112-C01"]
+    },
+    "modes": {
+      "EXT-F-4100-T01": ["admin"],
+      "EXT-F-4101-T01": ["admin"],
+      "EXT-F-4102-T01": ["admin"],
+      "EXT-F-4104-T01": ["member", "admin"],
+      "EXT-F-4112-T01": ["member", "admin"]
+    },
+    "design_status": "procedure-proposal-runtime-unverified for all five cases",
+    "inventory_status_changed": false,
+    "runtime_status": "UNVERIFIED"
+  },
+  "unresolved_boundaries": [
+    "The debugger permission-denied inventory dimension remains unresolved. Tools → Catalog directly invokes the handler after local schema validation with permissionMode=act and assignedTabId=null; a pre-granted permission or handler result cannot establish permission enforcement. A separate authorized dispatcher-path procedure is outside this proposal correction.",
+    "Guest applicability/access remains unresolved and unchanged. No guest mode or applicability ruling was added.",
+    "Member use of admin_only cdp_attached_tabs and cdp_detach in the manual runner is diagnostic handler reachability only, not evidence of ordinary-member dispatch access.",
+    "No live runtime behavior or inventory test status was verified or promoted."
+  ]
+}

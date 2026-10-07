@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "scope": "D47 reverse-order fixture source constant-success mutation gut check and clean baseline; no production or test source edits",
+  "status": "constant_success_mutant_rejected_and_clean_suite_green",
+  "mutant": {
+    "path": "/tmp/d47-reverse-red.XWO6XY/constant-success.mjs",
+    "mutation": "response_finish_order always returns ['old', 'current']",
+    "sha256": "22aae1e8564edc17342f6e8c04cbca3e5323879db860371999f47b42608fa9ab"
+  },
+  "source_fingerprints": {
+    "fixture_server": {
+      "path": "tests/fixtures/showcase-replay/serve.mjs",
+      "sha256": "4cb079e09ccdcd70e791179c337bfbb36784555704a19e0ab36a45c2b4ef83b2"
+    },
+    "test": {
+      "path": "tests/unit/showcase-d47-fixture.test.ts",
+      "sha256": "2aeb20a69320082d2eb9692bf7cb280cd5b3811f86b0231effad0d7abab8ec59"
+    }
+  },
+  "runs": [
+    {
+      "run_id": "d47-reverse-constant-red-20261007-02",
+      "resource_decision": "child_failed",
+      "resource_invalid": false,
+      "result": "3 passed, 1 failed",
+      "failure": "Expected pre-release response_finish_order [] while both requests were pending; mutant returned ['old', 'current']. Assertion at tests/unit/showcase-d47-fixture.test.ts:140.",
+      "journal": "docs/stabilization/resource-journals/d47-reverse-constant-red-20261007-02.jsonl",
+      "journal_sha256": "c60864717d174a3a565b845c4eba8d1d9974d24c9571c82effe832e5ce791838"
+    },
+    {
+      "run_id": "d47-reverse-fixture-green-20261007-02",
+      "resource_decision": "valid",
+      "resource_invalid": false,
+      "result": "4/4 fixture tests passed",
+      "journal": "docs/stabilization/resource-journals/d47-reverse-fixture-green-20261007-02.jsonl",
+      "journal_sha256": "3333f7c552a49db79c45a2f7d05197e976a574b90dfe95b22041db1793a57ece"
+    }
+  ],
+  "interpretation": "The targeted fixture test rejects this one constant-success telemetry mutant for the observed pre-release order. The clean admitted run establishes the unmodified fixture suite is green. This is not native, browser, or broader D47 acceptance evidence."
+}
