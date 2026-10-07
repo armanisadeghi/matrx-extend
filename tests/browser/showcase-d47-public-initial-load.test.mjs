@@ -6,6 +6,7 @@ import {
   classifyPublicReplay,
   inspectPublicCaptureCandidates,
   publicTrustedClick,
+  readSelectedCapture,
   selectPublicCaptureResponse,
 } from './showcase-d47-public-initial-load.mjs';
 
@@ -62,8 +63,8 @@ test('constant success and permissive guidance mutants are rejected by the oracl
   assert.notDeepEqual(verdicts(permissive), expected);
 });
 
-// Break guarded: selecting by shortened label loses a valid /queries endpoint.
-test('public capture selects the unique full endpoint after a shortened label and records only redacted evidence', async () => {
+// Break guarded: label truncation, wrong SDK route, and invisible preview metadata reject a real HN search.
+test('public capture selects the actual HN single-index response after a shortened label and records only redacted evidence', async () => {
   const window = new Window();
   const { document } = window;
   const longLabel = '200 POST uj5wyc0l7x-dsn.algolia.net…api-key=opaque';
@@ -72,7 +73,7 @@ test('public capture selects the unique full endpoint after a shortened label an
     .map((label) => `<button class="font-mono"><span class="flex-1">${label}</span></button>`)
     .join(
       '',
-    )}</div><div class="space-y-2"><div class="font-mono break-all"></div><div>POST · 200 hits</div><input id="network-replay-url-filter"></div><div>rows extracted</div>`;
+    )}</div><div class="space-y-2"><div class="font-mono break-all"></div><div>POST · 200 OK · application/json · 8 KB</div><input id="network-replay-url-filter"></div><div><div>1 row</div><table><thead><tr><th>hits</th><th>query</th></tr></thead><tbody><tr><td>[{"objectID":"8863","title":"My YC application"}]</td><td>OpenAI</td></tr></tbody></table></div>`;
   const rows = [...document.querySelectorAll('button.font-mono')];
   rows.forEach((element, index) => {
     element.getBoundingClientRect = () => ({
@@ -96,7 +97,7 @@ test('public capture selects the unique full endpoint after a shortened label an
         );
         input.value =
           args.x < 80
-            ? 'https://uj5wyc0l7x-dsn.algolia.net/1/indexes/*/queries?key=opaque'
+            ? 'https://uj5wyc0l7x-dsn.algolia.net/1/indexes/Item_dev/query?key=opaque'
             : otherUrl;
         document.querySelector('.break-all').textContent = input.value;
       }
@@ -154,11 +155,102 @@ test('public capture selects the unique full endpoint after a shortened label an
       capture_observations: {},
     };
     assert.equal((await selectPublicCaptureResponse(panel, corrected)).target_host, true);
+    // The actual driver rejects the previous multi-index-only endpoint oracle.
+    const oldEndpointReader = new Function(
+      'waitFor',
+      'evaluate',
+      'publicSearchHosts',
+      `return (${readSelectedCapture
+        .toString()
+        .replace(
+          'query_endpoint: paths.includes(pathname)',
+          "query_endpoint: selectedUrl?.pathname === '/1/indexes/*/queries'",
+        )})`,
+    )(
+      (label, read) => read(),
+      async (target, expression) =>
+        (await target.send('Runtime.evaluate', { expression })).result.value,
+      ['uj5wyc0l7x-dsn.algolia.net'],
+    );
+    const oldEndpointDriver = new Function(
+      'inspectPublicCaptureCandidates',
+      'publicTrustedClick',
+      'readSelectedCapture',
+      'assert',
+      `return (${selectPublicCaptureResponse.toString()})`,
+    )(inspectPublicCaptureCandidates, publicTrustedClick, oldEndpointReader, assert);
+    const oldEndpointReport = {
+      stage: 'initial_capture',
+      click_observations: [],
+      capture_observations: {},
+    };
+    await assert.rejects(
+      () => oldEndpointDriver(panel, oldEndpointReport),
+      /public_initial_post_ambiguous/,
+    );
+    assert.equal(
+      oldEndpointReport.capture_observations.previews[0].endpoint_shape,
+      '/1/indexes/Item_dev/query',
+    );
+    assert.equal(oldEndpointReport.capture_observations.matched_previews, 0);
+
+    const oldPreviewReader = new Function(
+      'waitFor',
+      'evaluate',
+      'publicSearchHosts',
+      `return (${readSelectedCapture
+        .toString()
+        .replace(
+          "hits_preview: Array.isArray(hits) && hits.length > 0 && hits.every(hit => hit && typeof hit === 'object' && !Array.isArray(hit))",
+          "hits_preview: text.includes('hits') && document.body.innerText.includes('rows extracted')",
+        )})`,
+    )(
+      (label, read) => read(),
+      async (target, expression) =>
+        (await target.send('Runtime.evaluate', { expression })).result.value,
+      ['uj5wyc0l7x-dsn.algolia.net'],
+    );
+    const oldPreviewDriver = new Function(
+      'inspectPublicCaptureCandidates',
+      'publicTrustedClick',
+      'readSelectedCapture',
+      'assert',
+      `return (${selectPublicCaptureResponse.toString()})`,
+    )(inspectPublicCaptureCandidates, publicTrustedClick, oldPreviewReader, assert);
+    await assert.rejects(
+      () =>
+        oldPreviewDriver(panel, {
+          stage: 'initial_capture',
+          click_observations: [],
+          capture_observations: {},
+        }),
+      /public_initial_response_missing/,
+    );
+    const hitsCell = document.querySelector('tbody td');
+    const queryCell = hitsCell.nextElementSibling;
+    const freshReport = () => ({
+      stage: 'initial_capture',
+      click_observations: [],
+      capture_observations: {},
+    });
+    hitsCell.textContent = '[]';
+    await assert.rejects(
+      () => selectPublicCaptureResponse(panel, freshReport()),
+      /public_initial_response_missing/,
+    );
+    hitsCell.textContent = '[{"objectID":"8863"}]';
+    queryCell.textContent = 'unrelated search';
+    await assert.rejects(
+      () => selectPublicCaptureResponse(panel, freshReport()),
+      /public_initial_query_mismatch/,
+    );
+    queryCell.textContent = 'OpenAI';
+    assert.equal((await selectPublicCaptureResponse(panel, freshReport())).hits_preview, true);
     rows[0].parentElement.append(rows[1]);
 
-    otherUrl = 'https://uj5wyc0l7x-1.algolianet.com/1/indexes/*/queries?key=second';
+    otherUrl = 'https://uj5wyc0l7x-1.algolianet.com/1/indexes/Item_dev_sort_date/query?key=second';
     rows[1].querySelector('span').textContent =
-      '200 POST uj5wyc0l7x-1.algolianet.com/1/indexes/*/queries?key=second';
+      '200 POST uj5wyc0l7x-1.algolianet.com/1/indexes/Item_dev_sort_date/query?key=second';
     const ambiguous = {
       stage: 'initial_capture',
       click_observations: [],
@@ -172,6 +264,23 @@ test('public capture selects the unique full endpoint after a shortened label an
     assert.equal(JSON.stringify(ambiguous).includes('second'), false);
 
     rows[0].remove();
+    document.elementFromPoint = () => rows[1];
+    for (const path of [
+      '/1/indexes/*/queries',
+      '/1/indexes/User_dev/query',
+      '/1/indexes/private-sensitive/query',
+      '/private-sensitive',
+    ]) {
+      otherUrl = `https://uj5wyc0l7x-dsn.algolia.net${path}?key=unrelated`;
+      const unsupported = freshReport();
+      await assert.rejects(
+        () => selectPublicCaptureResponse(panel, unsupported),
+        /public_initial_post_ambiguous/,
+      );
+      assert.equal(unsupported.capture_observations.matched_previews, 0);
+      assert.equal(JSON.stringify(unsupported).includes('private-sensitive'), false);
+      assert.equal(JSON.stringify(unsupported).includes('unrelated'), false);
+    }
     otherUrl = 'https://hn.algolia.com/1/indexes/*/queries?key=unrelated';
     document.elementFromPoint = () => rows[1];
     const unrelated = {

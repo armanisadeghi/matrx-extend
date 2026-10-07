@@ -71,7 +71,7 @@ const publicSearchHosts = [
   'uj5wyc0l7x-3.algolianet.com',
 ];
 
-async function readSelectedCapture(panel, candidate, report) {
+export async function readSelectedCapture(panel, candidate, report) {
   return waitFor(
     'public_capture_selection',
     async () => {
@@ -87,14 +87,35 @@ async function readSelectedCapture(panel, candidate, report) {
           try { selectedUrl = new URL(fullUrl); } catch {}
           const text = box?.innerText ?? '';
           const names = [...document.querySelectorAll('label')].map(el => el.textContent.trim());
+          // NetworkTab renders ResultPreview immediately after the selected response box.
+          // Its description is clipboard metadata, not visible text.
+          const tables = [...(box?.nextElementSibling?.querySelectorAll('table') ?? [])];
+          const headers = tables.length === 1 ? [...tables[0].querySelectorAll('thead th')].map(el => el.textContent.trim()) : [];
+          const resultRows = tables.length === 1 ? [...tables[0].querySelectorAll('tbody tr')] : [];
+          const cells = resultRows.length === 1 ? [...resultRows[0].querySelectorAll('td')] : [];
+          const cell = name => cells[headers.indexOf(name)]?.textContent.trim() ?? '';
+          let hits = null;
+          try { hits = JSON.parse(cell('hits')); } catch {}
+          const pathname = selectedUrl?.pathname ?? '';
+          const paths = ['/1/indexes/Item_dev/query', '/1/indexes/Item_dev_sort_date/query'];
+          const endpointShape = paths.includes(pathname) ? pathname
+            : pathname === '/1/indexes/*/queries' ? 'multi_index_queries'
+            : /^\\/1\\/indexes\\/[^/]+\\/query$/.test(pathname) ? 'other_single_index_query'
+            : selectedUrl ? 'other_path' : 'invalid_url';
           return {
             selected_rows: selected.length,
             selected_row_matches: selected.length === 1 && selected[0].textContent.trim() === ${JSON.stringify(candidate)},
             preview_url_matches: Boolean(fullUrl) && fullUrl === input?.value,
             post_200: text.includes('POST · 200'),
             target_host: selectedUrl?.protocol === 'https:' && ${JSON.stringify(publicSearchHosts)}.includes(selectedUrl?.host),
-            query_endpoint: selectedUrl?.pathname === '/1/indexes/*/queries',
-            hits_preview: text.includes('hits') && document.body.innerText.includes('rows extracted'),
+            endpoint_shape: endpointShape,
+            endpoint_path_segments: pathname.split('/').filter(Boolean).length,
+            endpoint_has_query: Boolean(selectedUrl?.search),
+            query_endpoint: paths.includes(pathname),
+            response_tables: tables.length,
+            response_rows: resultRows.length,
+            intended_query: cell('query') === 'OpenAI',
+            hits_preview: Array.isArray(hits) && hits.length > 0 && hits.every(hit => hit && typeof hit === 'object' && !Array.isArray(hit)),
             credential_key_present: names.some(name => name.toLowerCase().includes('x-algolia-api-key')),
             credential_masked: (input?.value ?? '').includes('x-algolia-api-key=[credential]'),
           };
@@ -138,6 +159,7 @@ export async function selectPublicCaptureResponse(panel, report) {
     finalPreview.post_200 && finalPreview.target_host && finalPreview.query_endpoint,
     'public_initial_selection_mismatch',
   );
+  assert.equal(finalPreview.intended_query, true, 'public_initial_query_mismatch');
   assert.equal(finalPreview.hits_preview, true, 'public_initial_response_missing');
   return finalPreview;
 }
