@@ -2,12 +2,10 @@
   "schema_version": 1,
   "artifact_type": "inventory-case-procedure-patch",
   "task_id": "contained-procedure-gaps-20261007",
-  "patch_id": "guidance-missing-id-local-procedures-20261007",
+  "patch_id": "guidance-owned-note-full-procedures-20261007",
   "source": {
     "source_inventory": "docs/stabilization/inventory.json",
-    "inventory_source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
-    "checkout_head": "f47890940e40ca21b4585fe4e3056c70fe3b5a21",
-    "scope": "Two source-traced, non-Chat/non-Pilot manual guidance-tool cases. Design proposal only; no inventory, case mode, test status, runtime result, account, browser state, or product source changes.",
+    "scope": "Source-traced proposal for existing EXT-F-4139-T01 and EXT-F-4140-T01 only. No inventory, runtime, browser, storage, cloud, account, or test-status changes.",
     "source_files_reviewed": [
       "docs/stabilization/PLAN.md",
       "docs/stabilization/inventory.json",
@@ -15,26 +13,32 @@
       "src/lib/tools/categories.ts",
       "src/lib/tools/handlers/guidance.ts",
       "src/lib/guidance/storage.ts",
-      "src/lib/guidance/types.ts"
+      "src/lib/guidance/cloud-sync.ts",
+      "src/lib/supabase/queries.ts",
+      "src/hooks/use-guidance-sync.ts"
     ]
   },
   "selectedFeatureIDs": ["EXT-F-4139", "EXT-F-4140"],
   "shared_setup": {
     "build_profile_reload": [
-      "Use the resource permit and build-receipt procedure in docs/stabilization/PLAN.md. Before opening the side panel, confirm the existing receipt-bound development artifact matches the source SHA/tree hash and the loaded unpacked extension identity. Record receipt ID, source SHA, artifact/tree hash, WXT mode, extension ID, Chrome version, role/profile label, required permissions, and timestamp; include no credentials or storage contents.",
-      "Use an existing signed-in member profile and an existing signed-in admin profile in their separate dedicated test profiles. Do not create or change accounts, roles, organizations, or permissions. The inventory's modes remain member and admin for both cases; guest remains not applicable because the Tools UI requires sign-in.",
-      "Confirm the loaded artifact declares the required storage permission. It is a required extension permission, not an optional permission to toggle. Run one warm case pass, then reload the extension, close and reopen the side panel, and repeat on the same build/profile. If source/config/manifest changed, stop and obtain a matching fresh receipt before resuming."
+      "Use the resource permit and build-receipt procedure in docs/stabilization/PLAN.md. Match the receipt-bound development artifact, source SHA/tree hash, loaded unpacked extension identity, WXT mode, required storage permission, and Chrome version. Record the receipt, role/profile, and timestamp without credentials or unrelated storage contents.",
+      "Use existing signed-in member and admin dedicated test profiles separately. Do not create or change accounts, roles, organizations, or permissions. Confirm an active organization is selected on each device because cloud writes require it. Guest remains inapplicable to the signed-in Tools UI.",
+      "For each profile, perform the warm pass, reload the same extension and reopen the side panel, then perform the specified post-reload checks. If the artifact changes, obtain a matching new receipt."
     ],
     "manual_surface": [
-      "In the signed-in side panel, open Tools → Catalog. Leave the surface selector at Agent surface, search the exact tool name, expand its row, enter the case JSON in the test-runner text area, select Run, and inspect the inline result. Both selected guidance tools are in CANONICAL_SURFACE.",
-      "ToolsView validates the JSON and invokes the registered local handler directly with conversationId=null and assignedTabId=null. It bypasses the normal dispatcher permission gate; these procedures cover only the user-initiated manual handler path. Do not infer agent advertisement, Ask/Act permission enforcement, or guest access from a successful manual call."
+      "In the signed-in side panel open Tools → Catalog, leave the selector at Agent surface, search the exact tool name, expand its row, replace the test-runner JSON, select Run, and inspect the inline result. The guidance tools are in CANONICAL_SURFACE.",
+      "The runner validates JSON against the handler schema and invokes the local handler directly with conversationId=null and assignedTabId=null. It bypasses dispatcher authorization. This procedure covers the manual handler path; agent advertisement, Ask/Act gating, and guest denial require separate cases."
     ],
-    "input_fixture": {
-      "description": "Two fixed non-generated string identifiers, one per case. Source creates current guidance IDs with crypto.randomUUID(); pre-2026-09-28 legacy IDs use gd_<time>_<rand>. These fixture strings do not follow either generated form and are only used as missing-item lookups.",
-      "get_missing_id": "procedure-missing-EXT-F-4139-20261007",
-      "delete_missing_id": "procedure-missing-EXT-F-4140-20261007",
-      "preflight": "For each role/profile, run the get_guidance_item case first. Proceed to delete_guidance_item only when the exact fixture ID returns the source-defined missing result. If it returns an item, stop and leave both cases unverified for that profile; do not inspect, copy, or delete the returned item."
-    }
+    "owned_fixture": [
+      "In each role/profile, use save_guidance_note through the same manual Tools runner with a unique recognizable domain (for example procedure-guidance.invalid), caption (for example EXT-F-4139-T01 member fixture), and short harmless text (for example owned synthetic guidance note). These are test-created items, never pre-existing user data.",
+      "Require save_guidance_note to return {ok:true,id:<UUID>,domain:<chosen domain>}. Record the exact returned UUID privately for subsequent get/delete calls; use no guessed ID for a positive branch. Keep separate IDs for member and admin. Stop that profile if saving fails.",
+      "Keep only the returned IDs and sanitized result evidence. Do not browse, copy, modify, or delete unrelated guidance. After every attempt, clean up each successfully created fixture by its exact returned ID; if cleanup cannot be confirmed locally and in the cloud, record an open cleanup item for that ID and do not claim a full pass."
+    ],
+    "cloud_observation": [
+      "Saving and deleting update chrome.storage.local first and start fire-and-forget cloud work. A local {ok:true}, a warm read, or extension reload alone does not prove cloud persistence, sync, or durable deletion.",
+      "For any cloud claim, verify only the exact owned UUID in extend.wbx_guidance using an authorized scoped read or observe an equivalent independent second-profile hydration. After save, require the matching live row and fields; after delete, require a deleted_at tombstone and no live item on a hydrated independent profile. Do not use a broad table dump or inspect unrelated rows. If that observation is unavailable, report cloud sync/deletion unverified while retaining the local handler result.",
+      "Cloud hydration runs on signed-in sidepanel mount and merges last-write-wins; a same-profile reload usually retains the local cache and is only a local persistence check. A failed fire-and-forget push or tombstone can leave a cloud mismatch or permit reappearance; record this as a failure or unresolved cloud limit, not a pass."
+    ]
   },
   "case_updates": {
     "EXT-F-4139-T01": {
@@ -44,38 +48,49 @@
       "modes": ["member", "admin"],
       "design_status": "complete-procedure-proposal-runtime-unverified",
       "preconditions": [
-        "Complete the shared receipt-bound build/profile/reload setup for this role.",
-        "Use only the fixed get_missing_id fixture from shared_setup. The item must remain absent in this profile before and during the run.",
-        "Applicability is unchanged from inventory: guest=false (Tools UI requires sign-in; guest denial belongs to the Tools UI case), member=true, admin=true."
+        "Complete shared build/profile setup and create an owned synthetic note in the current profile through save_guidance_note; retain its exact returned UUID.",
+        "Run the full sequence independently in the existing member and admin profiles. Guest remains inapplicable to Tools UI."
       ],
       "steps": [
-        "In the member profile, open Tools → Catalog and search get_guidance_item. Expand the row and replace the test-runner JSON with {\"id\":\"procedure-missing-EXT-F-4139-20261007\"}; select Run.",
-        "Inspect only the inline result status and reason. Require the exact source-defined missing-item response; do not open any stored item or capture unrelated extension storage.",
-        "Reload the extension and reopen the side panel under the shared setup, then repeat the same input. Repeat both runs separately in the existing admin profile.",
-        "If either profile returns an item or any non-missing result, stop that profile's procedure, preserve only a sanitized description of the mismatch, and leave it unverified."
+        "In Tools → Catalog run get_guidance_item with {\"id\":\"<exact returned UUID>\"}. Check the inline item against only the fixture's id, kind=note, domain, text, and caption; record sanitized evidence.",
+        "Run get_guidance_item with {\"id\":\"procedure-missing-EXT-F-4139-20261007\"}. If unexpectedly found, stop this negative branch without opening or touching that item; otherwise check the missing response.",
+        "Enter {} for get_guidance_item and select Run; require a schema mismatch for the required nonempty id and no handler result.",
+        "Reload the extension and reopen the signed-in side panel, then repeat get on the exact owned UUID and the missing ID. Where claiming cloud persistence, separately use shared cloud observation; reload alone establishes only local persistence.",
+        "Run EXT-F-4140-T01 on the owned UUID in the same profile to clean it up. If the delete case cannot run, delete only that exact fixture through the same manual tool and verify get returns missing. Repeat all steps with a separately created admin/member fixture."
       ],
       "expected": [
-        "The result is {\"ok\":false,\"reason\":\"No guidance item with id=procedure-missing-EXT-F-4139-20261007\"}; it contains no guidance item payload.",
-        "The same missing result is returned after extension reload for both applicable roles. A thrown storage error, malformed result, or found item is not a pass.",
-        "The input is schema-valid (id is a nonempty string), so a runner schema-rejection message is not the expected handler result."
+        "Positive get returns {ok:true,item:<owned note>} with exact returned UUID and fixture fields before and after reload.",
+        "Missing get returns {ok:false,reason:\"No guidance item with id=procedure-missing-EXT-F-4139-20261007\"}; no item payload.",
+        "Invalid {} is rejected by the runner schema and does not call the handler. A found unexpected ID, wrong payload, thrown storage failure, or missing owned item fails the corresponding branch.",
+        "Cloud persistence is claimed only when the exact live cloud row or an independent hydrated copy is observed; otherwise mark that dimension unverified."
       ],
-      "dimensions": ["missing-id", "member", "admin", "warm", "extension-reload"],
+      "dimensions": [
+        "valid-owned-id",
+        "missing-id",
+        "invalid-input",
+        "member",
+        "admin",
+        "warm",
+        "extension-reload",
+        "local-persistence",
+        "cloud-observation"
+      ],
       "source_evidence": [
-        "docs/stabilization/inventory.json: EXT-F-4139 / EXT-F-4139-T01 (existing IDs, modes, applicability, storage permission)",
-        "src/features/tools/ToolsView.tsx:121-152,198-212,390-477,525-545 (catalog selection, JSON validation, direct local run, inline result)",
-        "src/lib/tools/categories.ts:523-530 (guidance handlers on Agent surface)",
-        "src/lib/tools/handlers/guidance.ts:81-94 (schema and exact missing-item return)",
-        "src/lib/guidance/storage.ts:74-82 (storage lookup returns null when absent)",
-        "src/lib/guidance/storage.ts:23-31 (current and legacy identifier formats)"
+        "docs/stabilization/inventory.json: EXT-F-4139 / EXT-F-4139-T01 (existing ID, modes, dimensions, storage permission)",
+        "src/features/tools/ToolsView.tsx:390-463,525-545 (JSON/schema validation, direct local run, inline result)",
+        "src/lib/tools/categories.ts:523-530 (Agent surface guidance roster)",
+        "src/lib/tools/handlers/guidance.ts:31-60,80-94 (save-created UUID note and positive/missing get branches)",
+        "src/lib/guidance/storage.ts:23-30,74-82,97-125 (UUID creation, local read, local save and asynchronous cloud push)",
+        "src/lib/guidance/cloud-sync.ts:137-155,167-210 (best-effort push and hydration)",
+        "src/hooks/use-guidance-sync.ts:24-58 (signed-in sidepanel hydration)"
       ],
       "access_context_permission_limits": [
-        "Case modes remain member and admin only; guest remains not applicable as currently inventoried.",
-        "The manual Tools path passes no conversation and no assigned tab and bypasses dispatcher authorization. No claim is made about agent calls, Ask/Act behavior, or denied access.",
-        "The handler reads one exact chrome.storage.local key. It does not call cloud sync; no network or paid service is needed for the handler case.",
-        "The extension's required storage permission must be present in the receipt-bound artifact. No permission change is part of this procedure."
+        "Member and admin are applicable; guest is not. Required storage permission is present in the receipt-bound artifact.",
+        "Manual Tools calls bypass dispatcher authorization and carry no conversation or assigned tab. No Ask/Act, agent-call, or guest-access claim follows.",
+        "This handler reads the exact local key. Cloud behavior is separate and asynchronous; local success and reload do not establish remote persistence."
       ],
       "limits": [
-        "Source-derived only; neither role profile nor runtime behavior was exercised in this lane."
+        "Source-derived only; no runtime execution or cloud verification was performed while writing this proposal."
       ]
     },
     "EXT-F-4140-T01": {
@@ -85,56 +100,58 @@
       "modes": ["member", "admin"],
       "design_status": "complete-procedure-proposal-runtime-unverified",
       "preconditions": [
-        "Complete the shared receipt-bound build/profile/reload setup for this role.",
-        "First complete EXT-F-4139-T01 in this same profile and require the exact delete_missing_id fixture to return the source-defined missing result. This establishes absence before the delete path; never proceed if an item is found.",
-        "Applicability is unchanged from inventory: guest=false (Tools UI requires sign-in; guest denial belongs to the Tools UI case), member=true, admin=true."
+        "Complete shared setup and create an owned synthetic note in the same profile through save_guidance_note, or use the still-owned UUID from EXT-F-4139-T01. Confirm get_guidance_item returns the matching fixture before deletion.",
+        "If claiming cloud deletion, first independently confirm its exact live cloud row; otherwise cloud deletion remains unverified. Never use a pre-existing item's ID."
       ],
       "steps": [
-        "In the member profile, open Tools → Catalog and search delete_guidance_item. Expand the row and enter {\"id\":\"procedure-missing-EXT-F-4140-20261007\"}; select Run.",
-        "Inspect only the inline result status and reason. Require the source-defined missing-item response. Do not use an ID belonging to a real item and do not capture unrelated storage contents.",
-        "Reload the extension and reopen the side panel under the shared setup, then repeat the same input. Repeat the two runs separately in the existing admin profile, after that profile's own get_guidance_item absence preflight.",
-        "After each run, repeat get_guidance_item for this exact fixture ID and require that it remains absent. If any item is found at preflight or postflight, stop, do not retry deletion, and leave that profile unverified."
+        "In Tools → Catalog run delete_guidance_item with {\"id\":\"<exact returned owned UUID>\"}. Require {ok:true,deleted:true}. Immediately run get_guidance_item for that UUID and require the missing result.",
+        "Run delete_guidance_item again on the same UUID; require the source-defined missing response and no deleted=true. This checks the absent branch without targeting unrelated data.",
+        "Enter {} for delete_guidance_item and select Run; require runner schema mismatch without handler invocation.",
+        "Reload the extension and reopen the side panel. Run get_guidance_item for the exact owned UUID again and require missing. Observe the exact cloud tombstone and independently hydrated absence before asserting durable cloud deletion. If a late push resurrects the row or a second profile sees the note, report failure and repeat cleanup for this owned UUID only.",
+        "Repeat with a distinct owned UUID in the other existing role/profile. At end verify both recorded fixture UUIDs are locally absent and, where cloud observation was available, tombstoned. Track any residual fixture ID as an open cleanup item."
       ],
       "expected": [
-        "The result is {\"ok\":false,\"reason\":\"No guidance item with id=procedure-missing-EXT-F-4140-20261007\"}; it does not report deleted=true.",
-        "The handler returns false when the ID is absent from the local summary list. In that branch it does not remove storage keys and does not invoke the best-effort cloud delete.",
-        "The fixture ID remains absent after the call and after extension reload. A deleted=true result, changed fixture state, thrown storage error, or malformed response is not a pass."
+        "The first delete of an existing owned item returns {ok:true,deleted:true}; subsequent get returns {ok:false,reason:\"No guidance item with id=<exact returned owned UUID>\"} before and after reload.",
+        "Second delete returns {ok:false,reason:\"No guidance item with id=<exact returned owned UUID>\"}; it does not report deleted=true.",
+        "Invalid {} is rejected by the runner schema. A first-delete missing result, surviving local item, unexpected result, or thrown storage failure fails the corresponding branch.",
+        "Local delete success does not prove cloud deletion. Claim remote durability only after observing the exact row tombstone and independent hydrated absence; otherwise mark cloud deletion unverified."
       ],
       "dimensions": [
+        "valid-owned-id",
         "missing-id",
-        "absence-preflight",
-        "absence-postflight",
+        "invalid-input",
         "member",
         "admin",
         "warm",
-        "extension-reload"
+        "extension-reload",
+        "local-deletion",
+        "cloud-observation",
+        "cleanup"
       ],
       "source_evidence": [
-        "docs/stabilization/inventory.json: EXT-F-4140 / EXT-F-4140-T01 (existing IDs, modes, applicability, storage permission)",
-        "src/features/tools/ToolsView.tsx:121-152,198-212,390-477,525-545 (catalog selection, JSON validation, direct local run, inline result)",
-        "src/lib/tools/categories.ts:523-530 (guidance handlers on Agent surface)",
-        "src/lib/tools/handlers/guidance.ts:96-110 (schema and missing-item result)",
-        "src/lib/guidance/storage.ts:128-141 (absent index entry returns false before storage removal or cloud sync)"
+        "docs/stabilization/inventory.json: EXT-F-4140 / EXT-F-4140-T01 (existing ID, modes, dimensions, storage permission)",
+        "src/features/tools/ToolsView.tsx:390-463,525-545 (schema validation, direct local run, inline result)",
+        "src/lib/tools/handlers/guidance.ts:31-60,80-110 (owned note creation, get, positive/missing delete branches)",
+        "src/lib/guidance/storage.ts:97-139 (local save/index; absent and present delete branches; asynchronous cloud calls)",
+        "src/lib/guidance/cloud-sync.ts:157-210 (best-effort cloud delete and tombstone hydration)",
+        "src/lib/supabase/queries.ts:1412-1445 (cloud tombstone update and row fetch)"
       ],
       "access_context_permission_limits": [
-        "Case modes remain member and admin only; guest remains not applicable as currently inventoried.",
-        "The manual Tools path passes no conversation and no assigned tab and bypasses dispatcher authorization. No claim is made about agent calls, Ask/Act behavior, or denied access.",
-        "The tested missing-ID branch reads local chrome.storage only and does not call cloud sync. The positive delete branch is deliberately unsupported here because it would mutate user data and trigger cloud sync.",
-        "The extension's required storage permission must be present in the receipt-bound artifact. No permission change is part of this procedure."
+        "Member and admin are applicable; guest is not. Required storage permission is present in the receipt-bound artifact.",
+        "Manual Tools calls bypass dispatcher authorization and carry no conversation or assigned tab. No Ask/Act, agent-call, or guest-access claim follows.",
+        "Cloud delete is asynchronous, and its current helper does not prove success from {ok:true,deleted:true}; local and cloud observations must be reported separately."
       ],
       "limits": [
-        "Source-derived only; neither role profile nor runtime behavior was exercised in this lane."
+        "Source-derived only; no runtime execution or cloud verification was performed while writing this proposal."
       ]
     }
   },
   "unsupported_scope": [
-    "Positive get/delete behavior for an existing guidance item: requires a controlled synthetic item fixture; this proposal does not create or mutate one.",
-    "list_guidance and list_demos: omitted because they can expose unrelated saved user data in their inline result; no procedure here asserts empty profile/cloud state.",
-    "Guest denial, dispatcher permission checks, Ask/Act behavior, live binding, and agent-request reachability: unavailable through the direct Tools manual-run route and remain separate coverage.",
-    "Any run requiring new credentials, changing org/role/permission state, cloud seeding, paid services, browser automation, or test execution: outside this source-inventory lane."
+    "Guest denial, dispatcher permissions, Ask/Act behavior, live binding, and agent request reachability are outside this direct manual Tools path and need separate cases.",
+    "An independent device/profile or scoped cloud-row observation may be unavailable during execution. In that event record cloud persistence and deletion as unverified; do not downgrade the positive local get/delete branches to missing-ID-only coverage."
   ],
   "review_notes": [
-    "This file proposes steps for existing inventory cases only; it does not change canonical inventory, applicability, modes, case IDs, statuses, or coverage claims.",
-    "Independent peer review and coordinator integration are required before any proposed text is copied into docs/stabilization/inventory.json."
+    "This is a source procedure proposal for existing inventory cases. It changes no canonical inventory, applicability, case IDs, test statuses, or runtime coverage claims.",
+    "Independent peer review and coordinator integration are required before proposed text enters docs/stabilization/inventory.json."
   ]
 }
