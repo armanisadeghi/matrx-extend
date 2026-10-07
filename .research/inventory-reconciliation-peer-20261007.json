@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent_source_and_metadata_review",
+  "reviewed_artifacts": [
+    {
+      "path": ".research/inventory-current-source-reconcile-20261007.json",
+      "commit": "2da7b00d"
+    },
+    {
+      "path": ".research/tool-binding-inventory-census-20261007.json",
+      "commit": "5563e27d"
+    }
+  ],
+  "canonical_basis": {
+    "path": "docs/stabilization/inventory.json",
+    "sha256": "34fc9929a87e066541e8bb090aa10cd9688759c77e5d73c9400cbffa7a2972e8",
+    "hash_verified": true,
+    "census_pinned_head": "0280779141044116be9a94c235d0f468ae9f7903",
+    "current_head_at_review": "00a19a14553252c7a25c6f4fc440197ae49dbaeb"
+  },
+  "verdict_A_mapping_accuracy": {
+    "verdict": "MOSTLY ACCURATE WITH ONE MATERIAL PATCH CORRECTION",
+    "findings": [
+      "The 20 positional entries EXT-F-4150 through EXT-F-4169 map to canonical inventory feature positions 185 through 204 and catalog indices 148 through 167. Each exact tool name aligns with the current generated catalog. The reported one-position index shift is accurate.",
+      "The corrected census correctly treats live binding and surface-default data as current canonical database metadata. It reports 84 chrome-extension binding rows / names, 81 active definition-binding pairs, 3 inactive pairs, and 80 active names per listed surface. It correctly separates those facts from request advertisement, role access, permission outcomes, execution, and acceptance.",
+      "The source-absent fetch_url_as_markdown mapping is directionally accurate: its handler/import/category/catalog path is absent, the generated catalog has no row, and the census records its DB definition and binding inactive. However, the proposed source status `source-absent/retired-executor`, and any interpretation that this establishes retirement or not-applicable status, goes beyond the evidence. Keep EXT-F-4149 and C01/T01 stable; record the source absence and current-build non-runnability while leaving applicability, replacement, owner intent, and retirement unresolved. Preserve the runtime cells as unverified.",
+      "EXT-F-4130 `records` remains a distinct server/manual route with current source anchors and both surfaces include the name. Preserve it rather than treating absence from the client catalog as deletion.",
+      "EXT-F-4058 and EXT-F-4156 are distinct stable `wait_for` feature IDs. The current catalog has two same-name rows at indices 57 and 153; the canonical inventory maps the former to 57 and the latter to 154 as reported. Preserve both IDs and their respective mapping."
+    ]
+  },
+  "verdict_B_scope_and_quality": {
+    "verdict": "GOOD BOUNDED EVIDENCE; KEEP PATCH SOURCE-ONLY AND STATUS-CAUTIOUS",
+    "findings": [
+      "The current-source reconciliation explicitly limits itself to the changed-path diff and does not claim a complete inventory audit or runtime verification. Its mappings for saved Network ownership, Debug download, agenda alarm behavior, Onbox AI, tab_groups collapsed forwarding, and shared scrape comments are scoped to existing features and controls.",
+      "For EXT-F-2002-C06, the source label names only accept/gated/dead-link/retry while the shared verdict options contain six choices. The catalog verifies stable EXT-F-2002-C14 through C19 mappings: accept_as_is, gated, dead_link, retry, content_mismatch, ignored. `retry` is conditional on a prior attempt. Expand C06's aggregate label to describe all six choices; retain C06 and C14-C19 without creating duplicate controls or IDs.",
+      "The source-only proposals correctly leave C08 and C10 as owner-intent unresolved and do not turn missing source observations into product-omission claims. They also correctly avoid runtime or role-visibility conclusions.",
+      "The census source hashes for docs/stabilization/inventory.json, types/tool-catalog.json, src/lib/tools/catalog.ts, src/lib/tools/registry.ts, and src/lib/tools/server-catalog.ts match the files at review. The canonical inventory digest also matches. The report's query provenance is documented as read-only and narrowly selected; this review validates its internal scope and source metadata, but does not independently replay the private database query."
+    ]
+  },
+  "source_checks": {
+    "canonical_inventory": "SHA-256 verified against the named file; reviewed canonical tool entries and stable IDs.",
+    "tool_catalog": "Generated catalog name/index findings checked against types/tool-catalog.json; its census SHA-256 matches.",
+    "fetch_url_as_markdown": "No current handler/registry/category/catalog record; retained offscreen fetch/parse modules do not constitute this registered tool.",
+    "records": "src/lib/tools/server-catalog.ts retains the server execution route; canonical inventory anchors identify Tools manual execution.",
+    "wait_for": "Two canonical IDs and their distinct catalog mappings verified.",
+    "capture_verdicts": "src/features/tasks/verdicts.tsx defines six options; retryOnly is set on retry; canonical C14-C19 IDs exist."
+  },
+  "limits": [
+    "Source and metadata review only. No browser, product, test, or runtime action was performed.",
+    "The connected database snapshot was not independently re-queried; this review checks the supplied provenance, selected fields, internal comparisons, and source hashes.",
+    "No canonical inventory edit or runtime promotion is authorized by this review."
+  ],
+  "recommended_disposition": "Accept the positional remapping, current binding snapshot, records and wait_for preservation, and six-choice C06 correction. Revise the fetch_url_as_markdown proposal to preserve stable IDs and mark only source absence/current-build non-runnability; keep applicability, replacement, owner intent, and retirement unresolved."
+}
