@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "run_id": 37578280425,
+  "status": "native_save_click_unverified",
+  "receipt": {
+    "path": "/tmp/d47-stale-only-native-37578280425/_temp/showcase-d47-native-37578280425-1.json",
+    "sha256": "7c84634a204619f03945a9becf159bae200d5d9ce8bd25f73e3cc172ec3a7022",
+    "artifact_source_sha": "30f4e0459cf50f384b5bfaa05dbabbe0ea598d28",
+    "driver_source_sha": "4a242ccd",
+    "artifact_version": "0.2.345",
+    "resource_decision": "hosted guest admitted, resourceInvalid=false, child exit 1"
+  },
+  "first_failure_boundary": {
+    "stage": "save_recipe",
+    "driver_action": "generic settings-panel-driver click(panel, 'button-text', 'Save')",
+    "observed_before_action": "Save popover visible; unique generated name matches input; Save button present and enabled; no saving indicator or visible error",
+    "observed_after_action": "No post-click readSaveObservation completed; diagnostics.save_observation.last is null; verify_persisted_recipe and all replay/probe stages were not entered",
+    "inference": "The failure arose within the awaited Save click helper before its caller advanced to waitFor('recipe_save_terminal'). The receipt does not establish whether pointer press or release was dispatched, or whether the application received Save.",
+    "sanitization_gap": "failure.message_code is unclassified_error. sanitizeD47Failure discarded the original error and did not preserve the settings-panel-driver driverFailure code or pointer diagnostic. The exact click substep cannot be reconstructed from this receipt."
+  },
+  "competing_explanations": [
+    {
+      "hypothesis": "The generic global button-text Save target was absent or ambiguous at the click sample",
+      "prediction": "A next-run pre-dispatch target observation would show visibleMatchCount other than one and no pointer dispatch",
+      "current_evidence": "Possible; the earlier scoped popover observation proves an enabled Save existed, but not that the later global target remained unique."
+    },
+    {
+      "hypothesis": "Target was unique but unstable or occluded during click preparation",
+      "prediction": "A next-run pointer diagnostic would show a failed stable hit and no dispatch",
+      "current_evidence": "Possible; no Save-click pointer diagnostic survived."
+    },
+    {
+      "hypothesis": "Pointer dispatch failed or Save was sent while the panel execution context changed",
+      "prediction": "A next-run phase trace would show press/release progress or transport error, separating dispatch from application receipt",
+      "current_evidence": "Possible; no Save-click dispatch phase survived."
+    }
+  ],
+  "cleanup": {
+    "owned_name": "Codex D47 document race fec0684b-1f8b-4a44-9ddb-b359b92993fa",
+    "host": "127.0.0.1:49193",
+    "creation": "attempted_only",
+    "receipt_cleanup": "unverified",
+    "evidence_limit": "cleanup_target_observation.phase=mouse_released belongs to the cleanup Patterns-tab click. Its exact_row_count=0 is a target-resolution diagnostic, not a loaded Patterns-list absence check. No database record ID, successful save terminal, loaded host list, or delete confirmation was recorded.",
+    "resolution_target": "Read-only check for this exact generated name and host in extend.wbx_pattern, scoped by creation time and organization/creator if available. If a row exists, the owner must perform guarded exact-ID cleanup and verify zero remaining. This diagnostic lane was explicitly barred from DB access."
+  },
+  "product_verdict": "Unverified: stale-only replay, cancellation, and old binding were never exercised. This receipt is no evidence for or against a stale-refusal product defect.",
+  "smallest_retest_target": "On the same frozen driver/artifact pair, preserve an allowlisted Save-click trace at target resolution, stable hit, press, release, and first terminal read, plus driverFailure.code on catch. Scope Save to the visible popover only if the trace confirms the global target is ambiguous. Verify owned-row absence or exact guarded cleanup before ending the run."
+}
