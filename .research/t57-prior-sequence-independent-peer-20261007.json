@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "date": "2026-10-07",
+  "role": "fresh independent QA peer; no product, native, browser, build or release action",
+  "reviewed_commit": "a2b73385729b6f89fdb0ae7b1b1defa308aa56fd",
+  "reviewed_handoffs": [
+    ".research/t57-prior-sequence-escalation-20261007.json",
+    ".research/t57-prior-document-sequence-20261007.json",
+    ".research/d47-acceptance-architecture-ruling-20261006.json"
+  ],
+  "verdict_A_sequence_and_native_readiness": {
+    "status": "SOURCE_SEQUENCE_READY_NATIVE_UNVERIFIED",
+    "finding": "The driver now starts a genuine HN reload, waits for the first matched HTTP 200 response in a pending old loader, and checks that the exact saved recipe is idle before its trusted Run click. That Run owns the later navigation; the driver waits for a second matched response in a distinct loader and context. This corrects the earlier order in which Run preceded the old pause. No native run of this repaired sequence is present, so T57 and D47 acceptance remain unverified.",
+    "evidence": [
+      "tests/browser/showcase-d47-public-initial-load.mjs:565-603",
+      "tests/browser/showcase-d47-public-race-preflight.mjs:28-49,282-325,454-480",
+      "tests/browser/showcase-d47-public-race-preflight.test.mjs:21-56"
+    ]
+  },
+  "verdict_B_quality_and_causal_evidence": {
+    "status": "SOURCE_QA_PASS_WITH_NATIVE_CAUSAL_GAP",
+    "finding": "The passive worker observer requires a hook handshake on the owned tab, an attached target, and a current-context packet whose URL, request-body key and response digest match the intercepted current response. The observer awaits asynchronous digests and closes before listener removal, then drains pending work without publishing late packets. The controller distinguishes a continued old response from an old loadingFailed plus rejected continuation, requires the current response to finish, and attempts remaining cleanup. Exact recipe terminal rows or the specific no-match guidance are required. The guarded source tests pass, but controlled CDP doubles and source-order checks cannot prove the installed extension's real binding delivery, current saved rows, or cancellation cause on public HN.",
+    "evidence": [
+      "tests/browser/showcase-d47-public-race-preflight.mjs:52-86,91-219,346-369,394-483",
+      "tests/browser/showcase-d47-public-initial-load.mjs:599-654,689-725",
+      "tests/browser/showcase-d47-public-race-preflight.test.mjs:100-215,320-383,386-501",
+      "tests/browser/showcase-d47-public-initial-load.test.mjs:318-388"
+    ]
+  },
+  "specific_gaps": [
+    {
+      "severity": "Important",
+      "ref": "tests/browser/showcase-d47-public-initial-load.mjs:565-654",
+      "gap": "No native public-site run after a2b73385 demonstrates this revised pre-Run old pause, the matching current binding packet, and exact recipe terminal rows or refusal together. Source readiness is not T57 acceptance."
+    },
+    {
+      "severity": "Minor",
+      "ref": "tests/browser/showcase-d47-public-race-preflight.mjs:267-272,358-367,472-481",
+      "gap": "The canceled-old verdict records loadingFailed and a rejected old continuation, but it does not record the old failure's time relative to Run. A future native receipt should preserve event order before attributing cancellation to replay. This does not weaken the current-response requirement or turn cancellation alone into a pass."
+    }
+  ],
+  "architecture_ruling": "Accepted exclusion of the unreachable old callback is preserved. The review makes no forced old-callback claim; any native cancellation is lifecycle evidence, while current binding and terminal UI must be affirmative. No injected fetch, fabricated payload or changed third-party response was found in the reviewed commit.",
+  "verification": {
+    "retained_guarded_controller": "10 passed, 0 failed; resource decision valid in .research/t57-escalation-controller-20261007.stdout and docs/stabilization/resource-journals/t57-escalation-controller-20261007.jsonl; hashes independently checked below",
+    "independent_driver_command": "node scripts/stabilization-resource.mjs run --run-id t57-prior-sequence-independent-peer-driver-20261007 -- node --test tests/browser/showcase-d47-public-initial-load.test.mjs",
+    "independent_driver_result": "4 passed, 0 failed; admitted, resourceInvalid=false, child exit 0, final decision valid",
+    "independent_driver_journal": "docs/stabilization/resource-journals/t57-prior-sequence-independent-peer-driver-20261007.jsonl",
+    "limit": "The four public driver tests exercise the classifier, selection and trusted click path with a CDP stand-in; the repaired pre-Run order is checked structurally in the retained controller suite. Neither suite is a native Chrome acceptance run."
+  },
+  "reviewed_sha256": {
+    "tests/browser/showcase-d47-public-initial-load.mjs": "eba5944bd9cc281c6d6b0c638b9829f569a6fd89b75704aadf52bd707617accc",
+    "tests/browser/showcase-d47-public-race-preflight.mjs": "57495b8a9fad009cc7fecccb9be325a32410e430fb063100f378adddadb9df73",
+    "tests/browser/showcase-d47-public-race-preflight.test.mjs": "713ab4144c46183be6abd0d46e0a4bbb0a2f6d01467eef1eaa0c2b05fdf209d2",
+    ".research/t57-escalation-controller-20261007.stdout": "b3a8811856c45d6668aea68dfacb4bfa3333c45adb8955b99de04bdc0d846198",
+    "docs/stabilization/resource-journals/t57-escalation-controller-20261007.jsonl": "9b7be180c51adae3fd6f9ff93ec015f3f9673c907b296a0918534f3250f80c90"
+  }
+}
