@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "review": "independent_native_evidence",
+  "reviewed_report": ".research/d42-native-retest-20261007.json",
+  "reviewed_commit": "9f749774",
+  "workflow_run_id": 37692910351,
+  "artifact_version": "0.2.388",
+  "scope": "Read-only review of the curated native receipt, two screenshots, all three current-run resource journals, frozen artifact receipt/provenance, original D42 reproduction, current T24/T51 inventory, and the native driver assertions.",
+  "A_actual_behavior": {
+    "verdict": "PASS_BOUNDED",
+    "supported": [
+      "The driver held A's genuine EXIT before A was canceled, started B on the same page, released A's EXIT through a session-, tab-, and document-stamped relay, and observed B still picking with one overlay.",
+      "B produced a distinct session detection on the same tab/document; Done produced raw and stamped B RESULT, populated the field in the builder, and Extract displayed the expected three fixture titles.",
+      "A later repick Cancel detached the overlay and one ordinary page click reached the page."
+    ],
+    "not_proven": [
+      "Held stale A ITEM_DETECTED and RESULT after B starts",
+      "Delayed A cancellation injection and deferred installation across replacement",
+      "Fresh content-script reinjection and exactly one detection listener",
+      "Signed-in nonadmin role gating",
+      "Full T24 finish/restart dimensions and full T51 Doctor-seeded, alternate nested-scope, and real-calendar behavior"
+    ],
+    "disposition": "Keep EXT-D-0042 in-fix and EXT-F-1012-T24/T51 partial. The run may be credited only to the tested EXIT race and positive B fixture path."
+  },
+  "B_evidence_quality": {
+    "verdict": "SUFFICIENT_FOR_BOUNDED_CREDIT",
+    "receipt": "The retained sanitized receipt has complete/passed_bounded status, seven passed cases, ten passed completion boundaries, distinct A/B session IDs, a same-tab/document relay comparison, and three-row/title assertions. The driver source contains live assertions for these facts rather than only a final success flag.",
+    "resource_journals": "The hosted-package, hosted-browser, and hosted-guest journals all match run 37692910351, show RESOURCE_ADMITTED and RESOURCE_FINAL_DECISION valid, child exit 0, and resourceInvalid false. All three reported SHA-256 hashes match retained files.",
+    "artifact_identity": "Frozen CI provenance and receipt agree on source 91e152208490a05c3dc1f15bdadbdaafc80dad64, version 0.2.388, and tree digest; the native receipt names the same source, version, and digest. This is a development artifact, not a Store release.",
+    "screenshots": "Both PNG SHA-256 hashes match the report. Visual inspection shows a generic signed-out side panel and a runner-owned research-brief setup page. Neither depicts the A/B picker interaction; the receipt supplies that proof.",
+    "credential_cleanup": "The report states that both temporary secret names were deleted and verified absent after terminal completion. Curated native artifacts contain no credential values or account identifiers; they do not independently prove secret deletion, so cleanup is credited as reported operational handling only.",
+    "qualification": "The controlled three-card fixture proves extraction for that fixture. It does not establish the full T51 real-calendar and alternate nested-list acceptance."
+  },
+  "sources": [
+    "docs/stabilization/defects/EXT-D-0042.json",
+    "docs/stabilization/inventory.json",
+    "tests/browser/showcase-picker-native-acceptance.mjs",
+    "docs/stabilization/evidence/showcase-d42-native/run37692910351/sanitized-receipt.json",
+    "docs/stabilization/evidence/showcase-d42-native/run37692910351/frozen-artifact/ci-build-receipt.json",
+    "docs/stabilization/evidence/showcase-d42-native/run37692910351/frozen-artifact/ci-build-provenance.json",
+    "docs/stabilization/evidence/showcase-d42-native/run37692910351/resource-journals/hosted-package-37692910351-1.jsonl",
+    "docs/stabilization/evidence/showcase-d42-native/run37692910351/resource-journals/hosted-browser-37692910351-1.jsonl",
+    "docs/stabilization/evidence/showcase-d42-native/run37692910351/resource-journals/hosted-guest-37692910351-1.jsonl"
+  ]
+}
