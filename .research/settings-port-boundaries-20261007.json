@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1003-T46",
+  "scope": "Source-ready extension of the signed-out guest native Settings controls driver; no native browser run or release in this lane.",
+  "change": "The existing trusted UI sequence now saves inclusive ports 1 and 65535, reads the Chrome local-storage override and displayed input after each Save and Settings reload, then checks that rejected 65536 leaves saved 65535 intact. The existing observed-worker rediscovery, blank-clear, reload, and disposable-profile cleanup checks remain in place.",
+  "forcing_breaks": [
+    "A client that rejects either inclusive endpoint cannot reach its post-Save storage and reload assertions.",
+    "A client that updates only the visible input without persisting the override fails the storage read.",
+    "A client that applies 65536 or silently alters the last accepted value fails preservation of 65535.",
+    "A client that fails to clear the override fails the existing blank and reload checks."
+  ],
+  "verification": {
+    "node_check": "pass",
+    "biome_check": "pass",
+    "git_diff_check": "pass",
+    "native_execution": "not run in this lane"
+  },
+  "remaining_gaps": [
+    "The extended driver still needs a fresh, receipt-verified native Chrome execution before the new boundary checks receive acceptance credit.",
+    "A healthy desktop-engine connection remains unverified because the existing observed port returns an intentional 503 rather than a fabricated health response.",
+    "This guest-only case does not establish member, admin, or full Settings health."
+  ]
+}

@@ -570,6 +570,39 @@ try {
               : 'fail',
             reloaded,
           );
+          // Both inclusive endpoints must survive an actual Save and reopened
+          // Settings panel. A display-only change cannot satisfy the storage read.
+          for (const boundary of [1, 65535]) {
+            await replacePort(panel, String(boundary));
+            const accepted = await waitFor(
+              `boundary_${boundary}_saved`,
+              () => port(panel),
+              (s) => s?.saved === boundary && s.value === String(boundary) && s.override,
+            );
+            c.steps.push({
+              phase: 'warm',
+              action: `Save inclusive boundary port ${boundary}`,
+              observation: accepted,
+            });
+            await reloadSettings(panel);
+            await openSection(panel, 'Desktop bridge');
+            const persisted = await port(panel);
+            c.steps.push({
+              phase: 'reload',
+              action: `Read inclusive boundary port ${boundary} after reload`,
+              observation: persisted,
+            });
+            criterion(
+              c,
+              `boundary port ${boundary} saves and persists after reload`,
+              persisted.saved === boundary &&
+                persisted.value === String(boundary) &&
+                persisted.override
+                ? 'pass'
+                : 'fail',
+              { accepted, persisted },
+            );
+          }
           await replacePort(panel, '65536');
           const invalid = await waitFor(
             'invalid_port_error',
@@ -580,7 +613,7 @@ try {
           criterion(
             c,
             'invalid range shows error and retains saved port',
-            invalid.saved === observedPort.port ? 'pass' : 'fail',
+            invalid.saved === 65535 && invalid.value === '65536' ? 'pass' : 'fail',
             invalid,
           );
           await replacePort(panel, '');
