@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "run_id": 37645860520,
+  "artifact_id": 11493304470,
+  "artifact_name": "hosted-guest-37645860520-1",
+  "artifact_size_bytes": 85805,
+  "artifact_zip_sha256": "7f7dfb35a290612b549d9c9a3d3cafc6501718546e10b6aa66775f687909f8f2",
+  "artifact_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37645860520/artifacts/11493304470",
+  "receipt": {
+    "path": ".research/settings-census-label-native-20261007.json",
+    "sha256": "1d722f937258ff24d2bbcce89b2d0989a9f1bd0ac1d2531abecaa0c9b80aa549",
+    "size_bytes": 8876
+  },
+  "files": {
+    "visibility-census-guest.json": {
+      "sha256": "8e0e6b5ca0e034014dcac51ec0e1a6347cadc84b5777f80abf2d870a7b0851cf",
+      "size_bytes": 31666
+    },
+    "guest-account-readiness.png": {
+      "sha256": "4883f4fc2cd744c01a634a00817a16d924ada0fdff98ed8ed04f505435409391",
+      "size_bytes": 20794
+    },
+    "resource-journals/hosted-package-37645860520-1.jsonl": {
+      "sha256": "22b1e8aeb7120bb2b036f16686c16a221ad37cf6af66e91f189051cb3b2fc1be",
+      "size_bytes": 991
+    },
+    "resource-journals/hosted-browser-37645860520-1.jsonl": {
+      "sha256": "92302fca0bf878a3528f529572e9eb4bcfe3091a29ad4ce565de29c4dc71d1e6",
+      "size_bytes": 1001
+    },
+    "resource-journals/hosted-guest-37645860520-1.jsonl": {
+      "sha256": "e7c2032cdd392b26b2753798e513106dd0f5f3c6e4bddc31ac026b9025aa50c3",
+      "size_bytes": 1406
+    }
+  },
+  "curation": "Contains the native result, inspected Account readiness PNG, and only this run’s three owned resource journals. The original downloaded artifact also had three older 37105304739 journals, which are excluded. The remote artifact ID and archive SHA preserve attribution to the unmodified original zip."
+}

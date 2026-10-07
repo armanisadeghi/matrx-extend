@@ -1,0 +1,207 @@
+{
+  "schema_version": 1,
+  "task_id": "settings-census-label-native-20261007",
+  "scope": "One native guest visibility census using the frozen 0.2.366 development artifact; observe the eight Settings row_label relationships and preserve unknowns. No mappings are assigned here.",
+  "source_review": {
+    "reviewed_driver_commit": "45ee8732dda67ad5bb5b22136798c19c3d361d51",
+    "current_main_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
+    "checked_paths": [
+      "tests/browser/takeover-visible-census.mjs",
+      "tests/browser/takeover-visible-census.test.mjs",
+      "scripts/hosted-guest-acceptance.mjs",
+      ".github/workflows/hosted-guest-acceptance.yml"
+    ],
+    "delta": "No changes in the four checked paths between reviewed driver commit 45ee8732 and current main 636d0085. The preceding peer c1d13af5 accepted the static Settings row-label source relation and required native follow-up. No active or queued hosted-guest-acceptance.yml run existed before dispatch."
+  },
+  "native_run": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "run_id": 37645860520,
+    "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37645860520",
+    "job_id": 112876306162,
+    "event": "workflow_dispatch",
+    "head_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
+    "acceptance_case": "visibility-census-guest",
+    "runner_label": "macos-15",
+    "started_at": "2026-10-07T15:40:51Z",
+    "completed_at": "2026-10-07T15:47:14Z",
+    "terminal_status": "failure",
+    "failure_stage": "Exercise the selected Chrome side-panel case",
+    "failure_classification": "The native child returned exit 2 because the guest census remained incomplete with 27 unmapped observations. This is an incomplete observation, not a product behavior failure or resource invalidation.",
+    "single_attempt": true,
+    "no_retry_or_duplicate": true,
+    "preparation": "Package, driver, Chromium, and acceptance resource readiness steps passed; frozen development artifact import and browser context proof succeeded. All three owned journals ended admitted=true, resourceInvalid=false.",
+    "artifact_provenance": {
+      "development_run_id": 37619740064,
+      "development_artifact_id": 11482071536,
+      "runtime_version": "0.2.366",
+      "runtime_source_sha": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+      "runtime_tree_sha256": "9e7c2db499a2c1fed0a8b3ea6facfa88a13f3c2c26ba7f9b9d2d1f216310236c",
+      "runtime_archive_sha256": "eebbeb6d4c63cffab1c4462acf5b69e081336c3795782c54d3a5e8ba554e9ebb"
+    },
+    "observed_browser": {
+      "product": "Chrome/141.0.7390.37",
+      "protocol_version": "1.3"
+    },
+    "workflow_artifact": {
+      "id": 11493304470,
+      "name": "hosted-guest-37645860520-1",
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37645860520/artifacts/11493304470",
+      "size_bytes": 85805,
+      "zip_sha256": "7f7dfb35a290612b549d9c9a3d3cafc6501718546e10b6aa66775f687909f8f2"
+    }
+  },
+  "verdict_A_native_observation": {
+    "verdict": "PASS_ROW_LABELS_OBSERVED; CENSUS_INCOMPLETE",
+    "finding": "The changed driver emitted source-rendered row_label provenance for all eight formerly unresolved Settings controls. These observations support the stated row relationships, but do not identify inventory feature/control IDs; no IDs or mappings are inferred here.",
+    "settings_row_relationships": [
+      {
+        "section": "Appearance",
+        "control": "combobox",
+        "row_label": "Theme",
+        "dom_path": "div:1/div:0/div:0/div:0/div:0/div:0/div:1/button:0"
+      },
+      {
+        "section": "Chat",
+        "control": "combobox",
+        "row_label": "Default mode",
+        "dom_path": "div:1/div:0/div:0/div:0/div:0/div:1/div:1/button:0"
+      },
+      {
+        "section": "Chat",
+        "control": "combobox",
+        "row_label": "Default speed",
+        "dom_path": "div:1/div:0/div:0/div:0/div:0/div:2/div:1/button:0"
+      },
+      {
+        "section": "Scrape",
+        "control": "combobox",
+        "row_label": "Auto-scrape mode",
+        "dom_path": "div:1/div:0/div:0/div:0/div:0/div:2/div:1/button:0"
+      },
+      {
+        "section": "Desktop bridge",
+        "control": "input",
+        "row_label": "Pair code",
+        "dom_path": "div:8/div:1/div:0/div:0/div:0/div:0/div:1/input:0"
+      },
+      {
+        "section": "Desktop bridge",
+        "control": "button",
+        "row_label": "Pair code",
+        "dom_path": "div:8/div:1/div:0/div:0/div:0/div:0/div:1/button:0"
+      },
+      {
+        "section": "Desktop bridge",
+        "control": "input",
+        "row_label": "Local engine port",
+        "dom_path": "div:8/div:1/div:0/div:0/div:0/div:0/div:2/input:0"
+      },
+      {
+        "section": "Desktop bridge",
+        "control": "button",
+        "row_label": "Local engine port",
+        "dom_path": "div:8/div:1/div:0/div:0/div:0/div:0/div:2/button:0"
+      }
+    ],
+    "census": {
+      "status": "incomplete",
+      "total_observed": 54,
+      "mapped": 26,
+      "unmapped": 27,
+      "structural": 1,
+      "action": 3,
+      "unsupported_triggers": 0,
+      "inaccessible_regions": 0,
+      "blocked_requests": 0,
+      "missing_required_regions": [],
+      "settings_sections": { "total": 12, "mapped": 11, "unmapped": 1 },
+      "settings_controls": {
+        "Appearance": 1,
+        "Chat": 2,
+        "Privacy": 4,
+        "Scrape": 3,
+        "Desktop bridge": 4,
+        "Data & reset": 1,
+        "About": 1
+      }
+    },
+    "unknown_preservation": "All 27 unmapped observations, their keyed label fingerprints, and provenance are retained unchanged in evidence/visibility-census-guest.json. No unknown was relabeled or promoted."
+  },
+  "verdict_B_quality_privacy": {
+    "verdict": "PASS_BOUNDED_GUEST_OBSERVATION; RESOURCE_VALID",
+    "guest_before_after": {
+      "before": {
+        "role": "guest",
+        "signed_out_observed": true,
+        "access_token_present": false,
+        "refresh_token_present": false,
+        "profile_present": false,
+        "admin_role": false,
+        "account_visible": true,
+        "sign_in_visible": true,
+        "sign_out_visible": false
+      },
+      "after": {
+        "role": "guest",
+        "signed_out_observed": true,
+        "access_token_present": false,
+        "refresh_token_present": false,
+        "profile_present": false,
+        "admin_role": false,
+        "account_visible": true,
+        "sign_in_visible": true,
+        "sign_out_visible": false
+      }
+    },
+    "observation_only": true,
+    "blocked_http_mutations": 0,
+    "screenshot": {
+      "path": "evidence/guest-account-readiness.png",
+      "included_in_artifact": true,
+      "pixels_inspected": true,
+      "visual_finding": "The 360x454 PNG shows the Settings Account section, signed-out Email row, and visible Sign in control.",
+      "sha256": "4883f4fc2cd744c01a634a00817a16d924ada0fdff98ed8ed04f505435409391"
+    },
+    "owned_resource_journals": [
+      {
+        "path": "evidence/resource-journals/hosted-package-37645860520-1.jsonl",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      {
+        "path": "evidence/resource-journals/hosted-browser-37645860520-1.jsonl",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      {
+        "path": "evidence/resource-journals/hosted-guest-37645860520-1.jsonl",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 1,
+        "decision": "child_failed"
+      }
+    ],
+    "historical_journals": "The artifact also contained three unrelated 37105304739 journals. They were excluded from curated evidence and from this run's resource verdict.",
+    "limits": [
+      "The native run verifies row_label output on the exact observed nodes; it does not attribute those nodes to inventory IDs.",
+      "Census completeness remains false with 27 unknowns; this is not a complete guest inventory.",
+      "Evidence applies only to frozen guest artifact 0.2.366, not current-main or Store product health, guest behavior or persistence, permission-denial, backend, member, or admin outcomes."
+    ]
+  },
+  "evidence": {
+    "directory": ".research/settings-census-label-native-20261007/evidence/",
+    "files": [
+      "visibility-census-guest.json",
+      "guest-account-readiness.png",
+      "resource-journals/hosted-package-37645860520-1.jsonl",
+      "resource-journals/hosted-browser-37645860520-1.jsonl",
+      "resource-journals/hosted-guest-37645860520-1.jsonl"
+    ],
+    "manifest": ".research/settings-census-label-native-20261007-manifest.json",
+    "excluded": "Redundant unfiltered artifact extraction and its historical journals were discarded after curation; remote artifact 11493304470 remains the original archive of record."
+  }
+}
