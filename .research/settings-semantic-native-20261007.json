@@ -2,7 +2,7 @@
   "schema_version": 1,
   "task_id": "settings-semantic-native-retest-20261007",
   "defect_id": "EXT-D-0151",
-  "status": "BLOCKED_ENV",
+  "status": "NATIVE_OBSERVED_INCOMPLETE",
   "scope": "One guarded hosted native guest Settings census retest against the original frozen development artifact; no current-main product-health claim.",
   "source_review": {
     "mapping_commit": "b2a1efad2080200be9e56043ed70011f7a111e6c",
@@ -42,17 +42,63 @@
     {
       "method": "gh api POST to the named workflow dispatch endpoint with the same inputs",
       "outcome": "unexpected end of JSON input; no new run appeared"
+    },
+    {
+      "method": "final gh workflow run after verifying no delayed job and after origin/main push recovered",
+      "outcome": "created run 37655683227",
+      "workflow_id": 373685650
     }
   ],
   "terminal_check": {
-    "checked_at_utc": "2026-10-07T17:00:39Z",
-    "latest_hosted_guest_run_id": 37651810572,
-    "latest_hosted_guest_created_at_utc": "2026-10-07T16:24:44Z",
-    "new_run_observed": false,
-    "owned_jobs_started": 0,
+    "checked_at_utc": "2026-10-07T17:08:05Z",
+    "owned_run_id": 37655683227,
+    "owned_jobs_started": 1,
     "owned_jobs_terminal": true,
-    "owned_resource_journals": [],
-    "temporary_credentials_staged": false
+    "temporary_credentials_staged": false,
+    "resource_journals": [
+      {
+        "path": ".research/settings-semantic-native-20261007/evidence/hosted-package-37655683227-1.jsonl",
+        "sha256": "87eb614990f747e1eaf5147d228ca9e5776ee0783b3073882e5cc3ef98607734",
+        "final_decision": {
+          "schema": 1,
+          "at": "2026-10-07T17:03:35.614Z",
+          "runId": "hosted-package-37655683227-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      },
+      {
+        "path": ".research/settings-semantic-native-20261007/evidence/hosted-browser-37655683227-1.jsonl",
+        "sha256": "dfd2b5e144dab0e4197e1a14c9be51a4382c7f4b77f8fb1c6ed26595a9b869bb",
+        "final_decision": {
+          "schema": 1,
+          "at": "2026-10-07T17:05:33.956Z",
+          "runId": "hosted-browser-37655683227-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      },
+      {
+        "path": ".research/settings-semantic-native-20261007/evidence/hosted-guest-37655683227-1.jsonl",
+        "sha256": "8ebf1b66ac9bf63f817cf9b8d70cc3ea6f402421853366bb0978aebefe1aff66",
+        "final_decision": {
+          "schema": 1,
+          "at": "2026-10-07T17:07:49.174Z",
+          "runId": "hosted-guest-37655683227-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 1,
+          "decision": "child_failed",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      }
+    ]
   },
   "evidence_boundary": {
     "prior_original_receipt": ".research/empty-surface-native-retest-20261007/evidence/native-receipt-original.json",
@@ -60,12 +106,105 @@
     "prior_sanitized_receipt": ".research/empty-surface-native-retest-20261007/evidence/native-receipt-sanitized.json",
     "prior_sanitized_receipt_sha256": "9ce85f396d08fd5a5c3622ca54e07052e8aeffc79b868ae8410e6c247d9a10a6",
     "prior_census": "Incomplete with 33 unknown observations; prior Settings fingerprints cannot establish identity for the new source mapping.",
-    "new_receipt": null,
-    "new_pixels": null,
-    "settings_ids_verified_natively": [],
-    "settings_ids_pending_native": ["EXT-F-1003-C02", "EXT-F-1003-C04", "EXT-F-1003-C05", "EXT-F-1003-C29", "EXT-F-1003-C15", "EXT-F-1003-C16"],
-    "product_verdict": "UNVERIFIED",
-    "resource_verdict": "NO_CHILD_ADMITTED; dispatch endpoint failed before workflow creation"
+    "product_verdict": "SETTINGS_MAPPING_OBSERVED; OVERALL_CENSUS_INCOMPLETE; BEHAVIOR_UNVERIFIED",
+    "resource_verdict": "VALID_PACKAGE_AND_BROWSER; VALID_ADMITTED_GUEST_RESOURCE_WITH_CHILD_FAILED_ON_CENSUS_EXIT",
+    "new_original_receipt": ".research/settings-semantic-native-20261007/evidence/native-receipt-original.json",
+    "new_original_receipt_sha256": "ecb08333283aa5a0e6f8e13c0f2d7fcc8ea000f850eff5aa9e5b6a32dfec55b2",
+    "new_sanitized_receipt": ".research/settings-semantic-native-20261007/evidence/native-receipt-sanitized.json",
+    "new_sanitized_receipt_sha256": "19c0cd388e905712af2e01f14185b811673d9253771600c6d2a1161788240c53",
+    "sanitization": "Only absolute hosted-runner screenshot path rewritten to the saved relative evidence path; all receipt observations retained.",
+    "artifact_identity": {
+      "version": "0.2.366",
+      "source_sha": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+      "ci_run_id": 37619740064,
+      "artifact_id": 11482071536,
+      "tree_sha256": "9e7c2db499a2c1fed0a8b3ea6facfa88a13f3c2c26ba7f9b9d2d1f216310236c"
+    },
+    "runtime_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "observed_browser": {
+      "product": "Chrome/141.0.7390.37",
+      "protocol_version": "1.3"
+    },
+    "guest_signed_out_before_after": true,
+    "native_panel_verified": true,
+    "blocked_requests": 0,
+    "settings_nodes_mapped": 8,
+    "settings_unique_control_ids": [
+      "EXT-F-1003-C02",
+      "EXT-F-1003-C04",
+      "EXT-F-1003-C05",
+      "EXT-F-1003-C15",
+      "EXT-F-1003-C16",
+      "EXT-F-1003-C29"
+    ],
+    "settings_controls_unmapped": 0,
+    "settings_section_action_unmapped": 1,
+    "overall_census": {
+      "status": "incomplete",
+      "complete": false,
+      "unmapped_total": 35,
+      "inaccessible_count": 0,
+      "unsupported_trigger_count": 0,
+      "missing_required_regions": []
+    },
+    "same_artifact_comparison": {
+      "prior_run_id": 37651810572,
+      "same_version_source_run_artifact_and_tree": true,
+      "prior_settings_control_unmapped": 8,
+      "new_settings_control_unmapped": 0,
+      "prior_total_unmapped": 33,
+      "new_total_unmapped": 35,
+      "prior_surface_counts": {
+        "Chat": 18,
+        "Scrape": 3,
+        "Data": 2,
+        "SEO": 1
+      },
+      "new_surface_counts": {
+        "Chat": 18,
+        "Scrape": 3,
+        "Data": 1,
+        "SEO": 12
+      },
+      "interpretation": "All eight reviewed Settings nodes mapped in this run. Total unknowns rose by two due to changing observations outside Settings (SEO 1 to 12, Data 2 to 1); fingerprints are run-specific and no other identity is inferred."
+    },
+    "screenshots": [
+      {
+        "path": ".research/settings-semantic-native-20261007/evidence/guest-account-readiness.png",
+        "sha256": "4883f4fc2cd744c01a634a00817a16d924ada0fdff98ed8ed04f505435409391",
+        "pixels_inspected": true,
+        "finding": "360x454 screenshot shows Settings Account, Appearance and Chat top rows plus Sign in; it does not show the later expanded Settings sections or Scrape/Data/SEO surfaces."
+      },
+      {
+        "path": ".research/settings-semantic-native-20261007/evidence/native-side-panel.png",
+        "sha256": "d9d40c6d68da4b569c22cf9f15aa3a50bc01b2f83e15210328075548e6abe106",
+        "pixels_inspected": true,
+        "finding": "Native Chrome side panel shows guest Chat and visible actions; it is not a screenshot of the Settings census stage."
+      }
+    ]
   },
-  "next_action": "When GitHub workflow dispatch recovers, first confirm no existing hosted heavy job, then run exactly one guarded visibility-census-guest on the frozen artifact. Inspect the actual original and sanitized receipts, resource journals and screenshots before assigning any native mapping or completeness verdict."
+  "next_action": "Use the fresh, privacy-safe receipt to source-review the remaining 35 unknown observations and the separate Settings section action. Do not repeat a census merely because it is incomplete; only a changed, reviewed mapping or test condition justifies another guarded run. Member/admin and actual Settings behaviors remain unverified.",
+  "native_run": {
+    "run_id": 37655683227,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37655683227",
+    "job_id": 112909877997,
+    "workflow_artifact_id": 11498726719,
+    "workflow_artifact_name": "hosted-guest-37655683227-1",
+    "head_sha": "73280def2bfa5db75968924f5d8dcb97ce016e0a",
+    "created_at_utc": "2026-10-07T17:01:31Z",
+    "completed_at_utc": "2026-10-07T17:08:04Z",
+    "status": "completed",
+    "conclusion": "failure",
+    "failure_stage": "Exercise the selected Chrome side-panel case",
+    "failure_observation": {
+      "census_driver_status": "incomplete",
+      "census_driver_exit_code": 2,
+      "unmapped_total": 35,
+      "hosted_acceptance_assertion": "native side-panel acceptance exited 2",
+      "acceptance_child_exit_code": 1,
+      "resource_wrapper_decision": "child_failed",
+      "resource_invalid": false,
+      "interpretation": "Completeness gate rejected remaining unknown observations; the admitted browser/resource run was valid. This does not establish a product behavior failure."
+    }
+  }
 }
