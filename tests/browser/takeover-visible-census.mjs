@@ -8,7 +8,13 @@ import { fileURLToPath } from 'node:url';
 import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifact.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { signInSettings } from './settings-native-auth-driver.mjs';
-import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
+import {
+  activeTabPanelExpression,
+  click,
+  evaluate,
+  openSection,
+  waitFor,
+} from './settings-panel-driver.mjs';
 
 const ROOT = resolve(import.meta.dirname, '../..');
 const ROLE = process.env.MATRX_CENSUS_ROLE;
@@ -167,10 +173,12 @@ export function discoveryExpression(scope, fingerprintKey) {
     const visible = (el) => { const r = el.getBoundingClientRect(), s = getComputedStyle(el);
       return r.width > 0 && r.height > 0 && s.display !== 'none' &&
         s.visibility !== 'hidden' && !el.closest('[inert]'); };
+    const scopeRoot = captureTab ? document : ${activeTabPanelExpression('Settings')};
+    if (!scopeRoot) return [];
     // Inventory every semantic interactive trigger outside content regions, not only
     // the markup our trusted click driver happens to support. Unknowns never click.
-    const candidates = [...document.querySelectorAll(${JSON.stringify(selector)})].filter(visible);
-    const sectionContents = [...document.querySelectorAll('[aria-expanded][aria-controls]')]
+    const candidates = [...scopeRoot.querySelectorAll(${JSON.stringify(selector)})].filter(visible);
+    const sectionContents = [...scopeRoot.querySelectorAll('[aria-expanded][aria-controls]')]
       .map(el => document.getElementById(el.getAttribute('aria-controls'))).filter(Boolean);
     const triggers = candidates.filter(el => captureTab
       ? !el.closest('[role="tabpanel"]')
@@ -203,10 +211,11 @@ export async function observeGuestAuthentication(panel) {
     ]);
     const visible = el => { const r = el.getBoundingClientRect(), s = getComputedStyle(el);
       return r.width > 0 && r.height > 0 && s.display !== 'none' && s.visibility !== 'hidden' && !el.closest('[inert]'); };
-    const headers = [...document.querySelectorAll('button[aria-expanded="true"][aria-controls]')]
+    const settingsPane = ${activeTabPanelExpression('Settings')};
+    const headers = [...(settingsPane?.querySelectorAll('button[aria-expanded="true"][aria-controls]') ?? [])]
       .filter(el => visible(el) && el.textContent.trim() === 'Account');
     const content = headers.length === 1 ? document.getElementById(headers[0].getAttribute('aria-controls')) : null;
-    const buttons = [...(content?.querySelectorAll('button') ?? [])].filter(visible);
+    const buttons = [...(settingsPane?.querySelectorAll('button') ?? [])].filter(visible);
     return {
       access_token_present: stored['matrx.auth.accessToken'] != null,
       refresh_token_present: stored['matrx.auth.refreshTokenEnc'] != null || stored['matrx.auth.refreshTokenIv'] != null,
@@ -214,7 +223,7 @@ export async function observeGuestAuthentication(panel) {
       admin_role: stored['matrx.user.isAdmin'] === true,
       account_visible: Boolean(content && visible(content)),
       sign_in_visible: buttons.some(el => el.textContent.trim() === 'Sign in' && !el.disabled),
-      sign_out_visible: [...document.querySelectorAll('button')].filter(visible).some(el => el.textContent.trim() === 'Sign out'),
+      sign_out_visible: buttons.some(el => el.textContent.trim() === 'Sign out'),
     };
   })()`,
   );

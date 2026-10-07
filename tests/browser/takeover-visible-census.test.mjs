@@ -9,9 +9,9 @@ import {
   CONTROL_SELECTOR,
   censusCompleteness,
   discoveryExpression,
-  observeGuestAuthentication,
   mapObservation,
   mutationGuard,
+  observeGuestAuthentication,
   settingsControlsExpression,
 } from './takeover-visible-census.mjs';
 
@@ -278,10 +278,13 @@ test('discovery retains untitled and alternate tab shapes but only permits mappe
 });
 
 test('discovery retains summary, non-button expanders and unclassified section controls', async () => {
-  const context = domContext(`<button aria-expanded="false" aria-controls="account">Account</button>
+  const context =
+    domContext(`<button role="tab" title="Settings" aria-controls="settings" data-state="active">Settings</button>
+    <div role="tabpanel" id="settings" data-state="active">
+    <button aria-expanded="false" aria-controls="account">Account</button>
     <div role="button" aria-expanded="false">Appearance</div>
     <details><summary>Private section</summary></details>
-    <button>Private unclassified section</button>`);
+    <button>Private unclassified section</button></div>`);
   const observed = await vm.runInNewContext(
     discoveryExpression('section', randomBytes(32).toString('base64')),
     context,
@@ -293,8 +296,50 @@ test('discovery retains summary, non-button expanders and unclassified section c
   assert.doesNotMatch(JSON.stringify(observed), /Private/);
 });
 
-const guestHtml =
-  '<button aria-expanded="true" aria-controls="account">Account</button><div id="account"><button>Sign in</button></div>';
+test('Settings section readiness uses its active panel while retaining unknown section triggers', async () => {
+  const context = domContext(`<button title="Account">G</button>
+    <button role="tab" title="Settings" aria-controls="settings" data-state="active">Settings</button>
+    <div role="tabpanel" id="settings" data-state="active" tabindex="0">
+      <button aria-expanded="true" aria-controls="account">Account</button>
+      <div id="account"><button>Sign in</button></div>
+      <button>Private unclassified section</button>
+    </div>`);
+  const observed = await vm.runInNewContext(
+    discoveryExpression('section', randomBytes(32).toString('base64')),
+    context,
+  );
+  assert.equal(observed.length, 2);
+  assert.equal(observed.find((item) => item.label === 'Account')?.safe_to_open, true);
+  assert.equal(mapObservation('section', observed).unmapped_count, 1);
+  assert.doesNotMatch(JSON.stringify(observed), /Private/);
+});
+
+test('Settings readiness refuses an inactive panel or duplicate Account expanders inside it', async () => {
+  const key = randomBytes(32).toString('base64');
+  const inactive =
+    domContext(`<button role="tab" title="Settings" aria-controls="settings" data-state="inactive">Settings</button>
+    <div role="tabpanel" id="settings" data-state="inactive"><button aria-expanded="true" aria-controls="account">Account</button></div>`);
+  assert.equal((await vm.runInNewContext(discoveryExpression('section', key), inactive)).length, 0);
+  const duplicated =
+    domContext(`<button role="tab" title="Settings" aria-controls="settings" data-state="active">Settings</button>
+    <div role="tabpanel" id="settings" data-state="active">
+      <button aria-expanded="true" aria-controls="account-one">Account</button>
+      <button aria-expanded="true" aria-controls="account-two">Account</button>
+    </div>`);
+  const observed = await vm.runInNewContext(discoveryExpression('section', key), duplicated);
+  assert.equal(observed.filter((item) => item.label === 'Account').length, 2);
+  assert.equal(
+    observed.some((item) => item.safe_to_open),
+    false,
+  );
+});
+
+const guestHtml = `<button role="tab" title="Settings" aria-controls="settings" data-state="active">Settings</button>
+  <div role="tabpanel" id="settings" data-state="active">
+    <button aria-expanded="true" aria-controls="account">Account</button>
+    <div id="account"><span>Email</span><span>—</span></div>
+    <button>Sign in</button>
+  </div>`;
 function guestPanel(context) {
   return {
     send: async (method, params) => {
@@ -321,6 +366,8 @@ test('guest observation refuses every contradictory or missing auth signal witho
     [guestHtml, { 'matrx.user.profile': { id: 'private-profile' } }],
     [guestHtml, { 'matrx.user.isAdmin': true }],
     [guestHtml.replace('Sign in', 'Sign out'), {}],
+    [guestHtml.replace('<button>Sign in</button>', ''), {}],
+    [guestHtml.replace('aria-expanded="true"', 'aria-expanded="false"'), {}],
     ['', {}],
   ]) {
     await assert.rejects(

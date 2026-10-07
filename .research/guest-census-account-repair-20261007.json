@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0149",
+  "scope": "Native guest visibility census readiness; no product failure established",
+  "native_run_id": 37621192492,
+  "native_result_artifact_id": 11481804368,
+  "native_runtime_source_sha": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+  "captured_ui": {
+    "native_side_panel_screenshot_sha256": "3108e33c50299ebe0069325e11976ff142cd281edaaa8b41ab4590992097b977",
+    "normal_target_after_open_screenshot_sha256": "c939d4f6417b874eefffbe4a8c9bd1cf05088fe2b42ab7a7e13c65d79a024fd2",
+    "observation": "The captured native side panel shows guest Chat with a global G user-menu control and a visible Sign in action. The normal target screenshot shows the test article. Neither screenshot captures the later Settings readiness state. The failure diagnostic supplies the two Account candidates and the unsafe-to-open verdict."
+  },
+  "confirmed_cause": "The census searched the whole document for Settings section triggers. The runtime source contains both a global UserMenu button titled Account and an Account collapsible inside Settings. The document-wide duplicate-label safety check therefore rejected the actual Settings Account expander. The active tabpanel itself was also an unrelated section candidate.",
+  "second_observation_boundary": "The runtime Settings source renders Sign in in a footer sibling of the Account collapsible. The guest evidence check incorrectly searched only inside Account for that button; a source-faithful DOM fixture made the check fail.",
+  "repair": "Section discovery now inspects descendants of the active Settings tabpanel, still fingerprints unknown controls inside it, and refuses missing or duplicate in-panel triggers. Guest evidence requires the active Settings panel, a visible expanded Account section, a visible enabled Sign in control anywhere in that panel, no visible Sign out control, and absent stored auth/profile/admin state.",
+  "evidence_directory": ".research/guest-census-account-repair-20261007/evidence",
+  "guarded_runs": [
+    {
+      "run_id": "guest-census-account-red-20261007",
+      "result": "valid resource; 22 pass, 1 fail; new readiness fixture counted 4 rather than 2 candidates"
+    },
+    {
+      "run_id": "guest-census-account-green2-20261007",
+      "result": "valid resource; 24 pass, 0 fail after active-panel discovery repair"
+    },
+    {
+      "run_id": "guest-census-auth-red-20261007",
+      "result": "valid resource; source-faithful Settings footer fixture failed guest evidence"
+    },
+    {
+      "run_id": "guest-census-final-green-20261007",
+      "result": "valid resource; 24 pass, 0 fail after guest observation repair"
+    }
+  ],
+  "command": "node scripts/stabilization-resource.mjs run --run-id <unique-id> -- node --test tests/browser/takeover-visible-census.test.mjs scripts/hosted-profile-route.test.mjs",
+  "source_checks": "biome check of both touched .mjs files and git diff --check passed",
+  "runtime_boundary": "The original native run used frozen extension build 0.2.366. No new hosted or native run was authorized or performed; guest visibility remains unverified on the changed source pending independent review and a later native run."
+}
