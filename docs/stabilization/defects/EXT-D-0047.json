@@ -28,10 +28,10 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Verify current green automatic CI and exact artifact/source/lock receipt, then admit one guarded native D47 replay to verify settled exact-recipe completion and in-session observer/owned-recipe cleanup. No native job admitted. Preserve public-site initial-load, inverse response order, stale-only refusal and surrounding-case requirements; full T57 remains unverified.",
+    "next_action": "d47_settled_native owns sole manual heavy/native permit for one macos-15 hosted D47 replay after green exact-artifact CI and credential preflight. No native run launched yet. Verify settled exact-recipe completion and in-session observer/owned-recipe cleanup; retain all original T57 requirements.",
     "status": "Run37554362947 resource-valid success on frozen0.2.334/a6e: exact saved current root result plus current-context handshake/packet observed. Last sample running=true; oldHTTP finished but oldcallback absent. Independentpeer477695bc preserves D47in-fix/T57unverified. Exact owned DBrecipe removed and absence verified; passive probe removal unconfirmed.",
     "implementation_agent": "completed: d47_completion_cleanup_fix",
-    "execution_agent": "completed: d47_root_observer_native",
+    "execution_agent": "d47_settled_native",
     "native_run_id": 37537634304,
     "workflow_source": "fbcc4311ae6885b67133e55336f692be38881249",
     "development_artifact_id": 11440764124,
