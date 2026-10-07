@@ -57485,18 +57485,44 @@
             "member",
             "admin"
           ],
-          "design_status": "needed",
+          "design_status": "procedure-proposed-fixture-gated-runtime-unverified",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "For each signed-in member and admin mode, use its own dedicated disposable Chrome profile and a current exact-artifact receipt supplied by the native acceptance owner. Do not build or install from this source-only lane. Record source SHA, dirty-source hash if any, lock hash, output hash, WXT mode, loaded extension runtime ID, Chrome version, profile label, principal/role/org state, permission state, fixture IDs, and timestamp without secrets. The plan names development ID cihdmkcdjjckfhjpgoedmgfpoljebaml and Store ID hnfolienncfklkgmdjjmhhegglimlamg, but the actually loaded ID must be observed against the receipt; do not infer it from source or manifest version.",
+            "Before opening Tools, satisfy the current resource permit and build/reload contract in docs/stabilization/PLAN.md. In the isolated profile, verify the loaded artifact and side panel match the receipt; reload the extension when required, reopen the side panel, and reload the controlled fixture tab. Run warm and post-reload/cold-recovery passes separately and preserve separate run evidence. No HMR-only acceptance.",
+            "Sign in as the role for that profile. Tools manual Run is the user-initiated direct local handler route: select All handlers (or Internal delegates if the row is grouped there), search the exact tool name, expand it, enter the stated JSON, press Run, and inspect the inline result. The route supplies permissionMode='act' and assignedTabId=null and bypasses dispatch.ts authorization/confirmation checks. These observations do not establish account authorization, registered agent invocation, or Ask/Act enforcement.",
+            "Preflight that the exact loaded Chrome artifact has the required downloads permission and chrome.downloads API. download_url and cancel_download declare required downloads permission in source/catalog; the combined downloads tool declares none in its wrapper schema but delegates into those handlers. Do not remove or toggle permissions to manufacture denial. Missing permission/API is a prerequisite gap or observed unavailable-API result, not proof of dispatcher denial.",
+            "Use a newly created dedicated disposable Chrome profile for each role, not a reused profile. Before adding fixtures or running any downloads action, confirm its Downloads history is empty. If it contains any row, stop and create another fresh profile; do not inspect or record those rows. Do not create the shared completed fixture for every case: create it only for EXT-F-4154 list/confirm, and create only the gated owned endpoint fixtures when they are actually available.",
+            "Never inspect, cancel, overwrite, delete, or report downloads from an existing/user profile. In each verified-empty disposable profile, stop if any unexpected row appears and do not copy its URL, path, or other details into evidence. For each owned download created, record its exact returned ID, filename, and final file path privately. After sanitized evidence capture, close Chrome, remove only those exact owned file paths and verify each is absent, retire the dedicated disposable profile and verify its exact profile directory is absent. If any ownership/path/absence is uncertain, do not delete it and mark cleanup unverified.",
+            "Complete the shared receipt-bound setup independently for member and admin, including verified downloads permission/API in each exact loaded artifact/profile. Do not prepare the completed-download HTML fixture for this case.",
+            "Before attempting a positive call, provide a controlled owned HTTP(S) fixture endpoint with deterministic small synthetic bytes and a known expected filename. Such a source fixture is missing in this lane; until it exists and is reviewed, record this positive branch as fixture-pending and do not use a public or personal URL.",
+            "Use Tools > Catalog > All handlers (or Internal delegates when surfaced there), find download_url, and confirm its visible schema matches the checked-in handler before running."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "If and only if the owned controlled URL fixture is present, enter valid_args with its exact run-scoped URL and a unique synthetic filename; press Run. Record the returned download_id, returned filename, state, and ok value. If the fixture is absent, stop this branch as fixture-pending without invoking the handler.",
+            "In Chrome Downloads, verify only the returned ID/run-scoped filename: it belongs to this invocation, has the expected synthetic bytes and completed state, and its reported filename is consistent with Chrome's chosen name. Never assert against unrelated rows.",
+            "Run invalid_args. Expect the runner's schema validation error before handler invocation; verify no new owned download ID/file appeared.",
+            "Reload the extension and reopen the side panel under the required receipt-bound sequence. Repeat the valid fixture call with a new run-scoped filename only if the controlled fixture still exists; compare result and downloaded bytes, then record cold/recovery evidence separately.",
+            "After sanitized evidence capture, remove only exact owned file paths created by this case (including a partial file from the owned slow fixture), verify each is absent, close Chrome, retire this dedicated profile and verify its exact directory is absent. Do not remove any unidentified path; if ownership or absence cannot be confirmed, mark cleanup unverified."
+          ],
+          "expected": [
+            "With a valid controlled URL and granted API, source predicts ok:true with download_id and filename; the returned state may be absent because the immediate search can race download state, so verify final state in Chrome Downloads by exact ID. Exact successful behavior remains runtime-unverified.",
+            "Malformed URL fails Zod validation in the manual runner and should not call chrome.downloads.download or create a file.",
+            "If the exact artifact lacks chrome.downloads, source handler returns {ok:false, reason:'downloads API unavailable'}; if Chrome rejects a URL or download operation, handler returns {ok:false, reason}. Record observed text sanitized; do not claim this tests dispatcher denial.",
+            "If the owned endpoint fixture is missing, there is no positive result; keep the case unverified/fixture-pending."
+          ],
           "dimensions": [
+            "member",
+            "admin",
             "valid-input",
             "invalid-input",
-            "permissions",
-            "reload"
+            "downloads-permission-present",
+            "owned-fixture",
+            "warm",
+            "extension-reload-cold-recovery"
+          ],
+          "procedure_evidence": [
+            ".research/download-procedures-20261007.json",
+            ".research/download-procedures-final-peer-20261007.json"
           ]
         }
       ],
@@ -57621,18 +57647,43 @@
             "member",
             "admin"
           ],
-          "design_status": "needed",
+          "design_status": "procedure-proposed-fixture-gated-runtime-unverified",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "For each signed-in member and admin mode, use its own dedicated disposable Chrome profile and a current exact-artifact receipt supplied by the native acceptance owner. Do not build or install from this source-only lane. Record source SHA, dirty-source hash if any, lock hash, output hash, WXT mode, loaded extension runtime ID, Chrome version, profile label, principal/role/org state, permission state, fixture IDs, and timestamp without secrets. The plan names development ID cihdmkcdjjckfhjpgoedmgfpoljebaml and Store ID hnfolienncfklkgmdjjmhhegglimlamg, but the actually loaded ID must be observed against the receipt; do not infer it from source or manifest version.",
+            "Before opening Tools, satisfy the current resource permit and build/reload contract in docs/stabilization/PLAN.md. In the isolated profile, verify the loaded artifact and side panel match the receipt; reload the extension when required, reopen the side panel, and reload the controlled fixture tab. Run warm and post-reload/cold-recovery passes separately and preserve separate run evidence. No HMR-only acceptance.",
+            "Sign in as the role for that profile. Tools manual Run is the user-initiated direct local handler route: select All handlers (or Internal delegates if the row is grouped there), search the exact tool name, expand it, enter the stated JSON, press Run, and inspect the inline result. The route supplies permissionMode='act' and assignedTabId=null and bypasses dispatch.ts authorization/confirmation checks. These observations do not establish account authorization, registered agent invocation, or Ask/Act enforcement.",
+            "Preflight that the exact loaded Chrome artifact has the required downloads permission and chrome.downloads API. download_url and cancel_download declare required downloads permission in source/catalog; the combined downloads tool declares none in its wrapper schema but delegates into those handlers. Do not remove or toggle permissions to manufacture denial. Missing permission/API is a prerequisite gap or observed unavailable-API result, not proof of dispatcher denial.",
+            "Use a newly created dedicated disposable Chrome profile for each role, not a reused profile. Before adding fixtures or running any downloads action, confirm its Downloads history is empty. If it contains any row, stop and create another fresh profile; do not inspect or record those rows. Do not create the shared completed fixture for every case: create it only for EXT-F-4154 list/confirm, and create only the gated owned endpoint fixtures when they are actually available.",
+            "Never inspect, cancel, overwrite, delete, or report downloads from an existing/user profile. In each verified-empty disposable profile, stop if any unexpected row appears and do not copy its URL, path, or other details into evidence. For each owned download created, record its exact returned ID, filename, and final file path privately. After sanitized evidence capture, close Chrome, remove only those exact owned file paths and verify each is absent, retire the dedicated disposable profile and verify its exact profile directory is absent. If any ownership/path/absence is uncertain, do not delete it and mark cleanup unverified.",
+            "Complete the shared receipt-bound setup independently for member and admin, including verified downloads permission/API in each exact loaded artifact/profile. Do not prepare the completed-download HTML fixture for this case.",
+            "A dedicated owned slow-response download fixture is missing. Do not start a cancel test until an owned endpoint is confirmed to remain in_progress; never select an existing user's download or guess an ID.",
+            "Use Tools > Catalog > All handlers (or Internal delegates when surfaced there), find cancel_download, and confirm its visible schema matches the checked-in handler before running."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "If and only if an owned slow-response fixture is available, start its synthetic download in the disposable profile, capture the newly returned download ID from the fixture run, and immediately verify Chrome reports that exact ID as in_progress. If not in_progress or the fixture is missing, stop without calling cancel_download.",
+            "Run cancel_download with only that exact owned in-progress ID. Inspect the inline result and then query Chrome Downloads for the same ID; do not cancel any other row.",
+            "Run invalid_args; expect schema mismatch before handler invocation and no change to the owned fixture state.",
+            "Reload the extension. Create a fresh owned slow download and repeat exact-ID cancellation once for cold recovery; never reuse the prior completed/canceled ID as the positive fixture.",
+            "After sanitized evidence capture, remove only exact owned file paths created by this case (including a partial file from the owned slow fixture), verify each is absent, close Chrome, retire this dedicated profile and verify its exact directory is absent. Do not remove any unidentified path; if ownership or absence cannot be confirmed, mark cleanup unverified."
+          ],
+          "expected": [
+            "For the exact in-progress owned ID, source predicts {ok:true}; verify Chrome shows that same record no longer in_progress and reaches canceled/interrupted state as exposed by Chrome. The exact final state is runtime-unverified.",
+            "An absent downloads API returns {ok:false, reason:'downloads API unavailable'}; a missing permission must be treated as a setup gap unless the exact runtime observation proves otherwise.",
+            "No positive cancellation verdict is possible until the dedicated owned slow fixture exists and is observed in_progress."
+          ],
           "dimensions": [
+            "member",
+            "admin",
             "valid-input",
             "invalid-input",
-            "permissions",
-            "reload"
+            "downloads-permission-present",
+            "owned-slow-fixture",
+            "warm",
+            "extension-reload-cold-recovery"
+          ],
+          "procedure_evidence": [
+            ".research/download-procedures-20261007.json",
+            ".research/download-procedures-final-peer-20261007.json"
           ]
         }
       ],
@@ -70699,18 +70750,52 @@
             "member",
             "admin"
           ],
-          "design_status": "needed",
+          "design_status": "procedure-proposed-partially-fixture-gated-runtime-unverified",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "For each signed-in member and admin mode, use its own dedicated disposable Chrome profile and a current exact-artifact receipt supplied by the native acceptance owner. Do not build or install from this source-only lane. Record source SHA, dirty-source hash if any, lock hash, output hash, WXT mode, loaded extension runtime ID, Chrome version, profile label, principal/role/org state, permission state, fixture IDs, and timestamp without secrets. The plan names development ID cihdmkcdjjckfhjpgoedmgfpoljebaml and Store ID hnfolienncfklkgmdjjmhhegglimlamg, but the actually loaded ID must be observed against the receipt; do not infer it from source or manifest version.",
+            "Before opening Tools, satisfy the current resource permit and build/reload contract in docs/stabilization/PLAN.md. In the isolated profile, verify the loaded artifact and side panel match the receipt; reload the extension when required, reopen the side panel, and reload the controlled fixture tab. Run warm and post-reload/cold-recovery passes separately and preserve separate run evidence. No HMR-only acceptance.",
+            "Sign in as the role for that profile. Tools manual Run is the user-initiated direct local handler route: select All handlers (or Internal delegates if the row is grouped there), search the exact tool name, expand it, enter the stated JSON, press Run, and inspect the inline result. The route supplies permissionMode='act' and assignedTabId=null and bypasses dispatch.ts authorization/confirmation checks. These observations do not establish account authorization, registered agent invocation, or Ask/Act enforcement.",
+            "Preflight that the exact loaded Chrome artifact has the required downloads permission and chrome.downloads API. download_url and cancel_download declare required downloads permission in source/catalog; the combined downloads tool declares none in its wrapper schema but delegates into those handlers. Do not remove or toggle permissions to manufacture denial. Missing permission/API is a prerequisite gap or observed unavailable-API result, not proof of dispatcher denial.",
+            "Use a newly created dedicated disposable Chrome profile for each role, not a reused profile. Before adding fixtures or running any downloads action, confirm its Downloads history is empty. If it contains any row, stop and create another fresh profile; do not inspect or record those rows. Do not create the shared completed fixture for every case: create it only for EXT-F-4154 list/confirm, and create only the gated owned endpoint fixtures when they are actually available.",
+            "Never inspect, cancel, overwrite, delete, or report downloads from an existing/user profile. In each verified-empty disposable profile, stop if any unexpected row appears and do not copy its URL, path, or other details into evidence. For each owned download created, record its exact returned ID, filename, and final file path privately. After sanitized evidence capture, close Chrome, remove only those exact owned file paths and verify each is absent, retire the dedicated disposable profile and verify its exact profile directory is absent. If any ownership/path/absence is uncertain, do not delete it and mark cleanup unverified.",
+            "Complete the shared receipt-bound setup independently for member and admin in a newly created dedicated disposable profile; confirm Downloads history is empty before creating the owned completed fixture. If any row exists, stop and replace the profile. Also require the missing owned HTTP(S) endpoint and slow-response fixtures for download_url/cancel positive branches.",
+            "Use Tools > Catalog > Agent surface for canonical downloads if present; otherwise use All handlers and confirm the exact row/schema. The inventory's active metadata snapshot is historical and does not prove current live reachability.",
+            "Record the fixture's exact ID and filename privately. Only query/confirm/cancel that owned ID; do not include unrelated download rows in evidence."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "In the verified-empty profile, first run {\"action\":\"list\"} and confirm the full returned downloads array is empty. Then open tests/browser/fixtures/chrome-local-download.html, click its link, verify the exact synthetic filename matrx-owned-chrome-download-fixture.txt completed, and privately record its ID and final file path. Run action=list again; it is unfiltered and searches the newest 50 downloads, so inspect only the owned row and stop without recording details if any unexpected row appears. Do not describe this query as filename/ID filtered.",
+            "Run action=confirm with the exact owned completed ID as a decimal string. Verify the inline response has ok:true and a download value matching that ID; it is a search/read of the record and does not prompt or approve anything.",
+            "Run invalid_args. The router parses a nonnumeric ID to NaN and returns {ok:false, reason:\"download_id required for action='cancel'\"}; no Chrome cancel call should occur. Also run {\"action\":\"unknown\"} as a schema-negative and expect rejection before handler invocation.",
+            "Only when the dedicated owned slow fixture has yielded an exact in_progress ID, run action=cancel with that ID as a decimal string. Verify the same ID leaves in_progress; otherwise stop and keep C04 unverified.",
+            "Only when the owned HTTP(S) download_url fixture exists, run action=download_url with that URL and a unique synthetic filename. Confirm a new owned download record was created, then verify its final state by exact returned ID. Without the fixture, keep C05 positive branch fixture-pending.",
+            "Reload extension/panel per the receipt-bound contract. Repeat list and confirm against the completed fixture; recreate fresh owned fixtures before repeating cancel/download_url. Do not reuse IDs for new positive actions.",
+            "After sanitized evidence capture, remove and verify absence of the exact owned completed-fixture file and any exact files created by C04/C05. Close Chrome, retire the role-specific disposable profile, and verify its exact profile directory is absent. If file ownership/path or profile absence cannot be confirmed, do not delete an uncertain path and report cleanup unverified. Repeat independently for the other role."
+          ],
+          "expected": [
+            "C02 list returns count and the full downloads array from Chrome search sorted newest first; it has no query filter. Because the dedicated profile was confirmed empty before adding only the owned fixture, the expected rows are the owned synthetic record(s). Stop on an unexpected row; exact count varies.",
+            "C03 confirm returns ok:true and the matching item or null for a valid ID; with the known owned completed ID, expect the matching item. It does not modify the download.",
+            "The malformed cancel ID returns the router's structured missing-ID error. Unknown action is rejected by Zod before run.",
+            "C04 and C05 are conditional: source predicts delegation to cancel_download and download_url respectively, but their positive branches are not executable until the missing owned fixtures are supplied and verified.",
+            "Manual Catalog success does not establish agent advertisement, DB binding, dispatcher authorization, or permission-gate enforcement; keep those dimensions separately unverified."
+          ],
           "dimensions": [
-            "valid-input",
+            "member",
+            "admin",
+            "list",
+            "confirm",
+            "cancel",
+            "download_url",
             "invalid-input",
-            "permissions",
-            "reload"
+            "downloads-permission-present",
+            "owned-completed-fixture",
+            "owned-slow-fixture-pending",
+            "owned-URL-fixture-pending",
+            "warm",
+            "extension-reload-cold-recovery"
+          ],
+          "procedure_evidence": [
+            ".research/download-procedures-20261007.json",
+            ".research/download-procedures-final-peer-20261007.json"
           ]
         }
       ],

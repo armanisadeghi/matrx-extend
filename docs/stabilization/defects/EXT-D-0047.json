@@ -31,7 +31,7 @@
     "next_action": "Admit one frozen-artifact native stale-only refusal/fresh-recovery retest after successful CI and resource preflight, using independently reviewed Save diagnostic correction3d5ee733. Native37578280425 failed before replay; dispatch unknown. No stale-only acceptance credit.",
     "status": "Independent peer1abea43b accepts bounded old-first saved replay at frozen0.2.338/source651f25d0: observed old/current HTTP finish order, current context/packet, exact settled current-only saved row, valid resources and cleanup. Current-first earlier0.2.337 remains separately bounded. D47in-fix/T57unverified unchanged.",
     "implementation_agent": "completed: d47_save_click_evidence_fix; 19/19 resource-valid source checks, fresh independent bounded source review accepted",
-    "execution_agent": "completed: d47_stale_only_native; native37578280425 failed before replay, save click boundary",
+    "execution_agent": "active: d47_stale_retest_after_diagnostics; one guarded native stale-only test, frozen5fc artifact",
     "native_run_id": 37537634304,
     "workflow_source": "fbcc4311ae6885b67133e55336f692be38881249",
     "development_artifact_id": 11440764124,
@@ -139,7 +139,13 @@
     "stale_only_native_report": ".research/d47-stale-only-native-20261007.json",
     "save_click_evidence_report": ".research/d47-save-click-evidence-fix-20261007.json",
     "save_click_evidence_commit": "3d5ee733",
-    "save_click_evidence_peer": ".research/d47-save-click-evidence-peer-20261007.json"
+    "save_click_evidence_peer": ".research/d47-save-click-evidence-peer-20261007.json",
+    "frozen_artifact_runtime_ruling": {
+      "decision": "Test frozen CI37580349432 source5fc0ae39 artifact11463999781 with unchanged independently reviewed hosted driver/importer/fixture on a newer workflow checkout; no current-main runtime acceptance claim.",
+      "basis": "prepareDevelopment selects authenticated exact run/artifact, verifies provenance and full tree; native driver rehashes imported extensionDir. No checkout src is injected/copied into extension. Current main changes agenda scanner/background startup only plus evidence; QA execution paths unchanged.",
+      "supersedes": "Earlier blanket runtime-match requirement for this explicitly frozen-artifact experiment only.",
+      "cost_if_wrong": "Could certify mixed runtime bytes; require imported tree hash before/after, unchanged QA code hashes, exact workflow and artifact identities, and independent native receipt review."
+    }
   },
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
   "verification_status": "Independent reviews accept bounded current-first0.2.337 and old-first0.2.338 fixture replay. Fresh peer8dfbdee1 supports public initial capture, saved exact-recipe completed replay with hits and UI cleanup on frozen0.2.344/source2274d236/native37571487114, with valid resources. Whole-panel quiescence, selected organization context and post-checkbox receipt-level mask evidence are not established. Stale-only recovery, manual/prior-run isolation and causal higher-old-sequence coverage remain outstanding. D47 in-fix/T57 unverified.",
