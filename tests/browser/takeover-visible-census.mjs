@@ -75,6 +75,19 @@ const controlAliases = new Map([
   ['Clear local data on this device', 'EXT-F-1003-C17'],
   ['Check for extension update', 'EXT-F-1003-C31'],
 ]);
+// These labels are emitted by exact source-rendered Settings rows in
+// SettingsView.tsx. Selected values and action text remain fingerprinted.
+// The paired input and button are two observed nodes of one inventory control.
+const settingsRowControls = new Map([
+  ['Appearance|Theme|combobox', 'EXT-F-1003-C02'],
+  ['Chat|Default mode|combobox', 'EXT-F-1003-C04'],
+  ['Chat|Default speed|combobox', 'EXT-F-1003-C05'],
+  ['Scrape|Auto-scrape mode|combobox', 'EXT-F-1003-C29'],
+  ['Desktop bridge|Pair code|input', 'EXT-F-1003-C15'],
+  ['Desktop bridge|Pair code|button', 'EXT-F-1003-C15'],
+  ['Desktop bridge|Local engine port|input', 'EXT-F-1003-C16'],
+  ['Desktop bridge|Local engine port|button', 'EXT-F-1003-C16'],
+]);
 const settingsSections = new Set([
   'Account',
   'Organization',
@@ -119,23 +132,45 @@ export function mapObservation(scope, observations) {
   const mapped = [];
   const unmapped = [];
   const structural = [];
+  const rowCounts = new Map();
+  if (scope === 'settings_control')
+    for (const item of observations) {
+      const { section, row_label: rowLabel } = item.provenance ?? {};
+      if (!section || !rowLabel) continue;
+      const key = `${section}|${rowLabel}|${item.kind}`;
+      rowCounts.set(key, (rowCounts.get(key) ?? 0) + 1);
+    }
   for (const item of observations) {
+    const { row_label: observedRowLabel, ...otherProvenance } = item.provenance ?? {};
+    const observedRowKey = `${otherProvenance.section}|${observedRowLabel}|${item.kind}`;
+    const provenance = item.provenance
+      ? {
+          ...otherProvenance,
+          ...(settingsRowControls.has(observedRowKey) ? { row_label: observedRowLabel } : {}),
+        }
+      : undefined;
     if (item.classification === 'structural') {
       structural.push({
         kind: item.kind,
-        provenance: item.provenance,
+        provenance,
         ...(item.label_fingerprint ? { label_fingerprint: item.label_fingerprint } : {}),
       });
       continue;
     }
     const label = item.label;
+    const { section, row_label: rowLabel } = provenance ?? {};
+    const rowKey = `${section}|${rowLabel}|${item.kind}`;
+    const rowId =
+      scope === 'settings_control' && item.label_fingerprint && rowCounts.get(rowKey) === 1
+        ? settingsRowControls.get(rowKey)
+        : undefined;
     const id =
       scope === 'navigation' && item.classification === 'navigation' && isKnownTab(label)
         ? 'EXT-F-1001-C01'
         : scope === 'section' && item.classification === 'section' && settingsSections.has(label)
           ? 'EXT-F-1003-C10'
           : scope === 'settings_control'
-            ? (controlsByLabel.get(label) ?? controlAliases.get(label))
+            ? (controlsByLabel.get(label) ?? controlAliases.get(label) ?? rowId)
             : scope === 'surface_control'
               ? uniqueControlIds.get(label)
               : undefined;
@@ -143,10 +178,10 @@ export function mapObservation(scope, observations) {
       const feature = featureById.get(id.split('-C')[0]);
       mapped.push({
         id,
-        label,
+        label: label ?? rowLabel,
         applicability: feature?.applicability?.[ROLE] ?? null,
         ...(item.classification ? { classification: item.classification } : {}),
-        ...(item.provenance ? { provenance: item.provenance } : {}),
+        ...(provenance ? { provenance } : {}),
       });
     } else {
       if (item.label)
@@ -170,7 +205,7 @@ export function mapObservation(scope, observations) {
         kind: item.kind,
         ...(item.label ? { label: item.label } : { label_fingerprint: item.label_fingerprint }),
         ...(item.classification ? { classification: item.classification } : {}),
-        ...(item.provenance ? { provenance: item.provenance } : {}),
+        ...(provenance ? { provenance } : {}),
       });
     }
   }

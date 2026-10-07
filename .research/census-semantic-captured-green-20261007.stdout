@@ -1,0 +1,50 @@
+{"schema":1,"at":"2026-10-07T16:48:48.831Z","runId":"census-semantic-captured-green-20261007","path":"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/census-semantic-captured-green-20261007.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-07T16:49:56.046Z","runId":"census-semantic-captured-green-20261007","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":10.88,"requiredMemoryGiB":4,"oneMinuteLoad":1.39,"logicalCpus":10,"cpuBusyFraction":0.04285714285714286,"swapUsedMiB":1958.94,"repoFreeGiB":1679.9999351501465,"profileFreeGiB":1679.9999351501465,"safetyFreeGiB":23.663013458251953,"systemFreeGiB":23.663013458251953},"cpuBusySamples":[0.04,0.08,0.03,0.03,0.04,0.04,0.04],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+✔ Profile route passes exact CI artifact identity and extended admin mode to the native driver (1.376875ms)
+✔ Profile route refuses absent or wrong case and non-CI evidence (0.771584ms)
+✔ hosted Profile preflight refuses before credentials or runtime setup (166.726042ms)
+✔ Profile organization fixture requires a private approved name (0.155209ms)
+✔ Showcase and Scrape admin routes require the approved fixture before browser setup (173.924792ms)
+✔ hosted Profile stages an exclusive private organization fixture for the native driver (3.994916ms)
+✔ every hosted Profile phase refuses before browser setup with valid private inputs (613.06825ms)
+✔ other hosted acceptance still passes credential preflight without runtime setup (74.81125ms)
+✔ non-Profile package and browser phases retain resource admission (159.121ms)
+✔ active Scrape, Data, and SEO tabs wait for their deferred visible controls (631.246333ms)
+✔ present but empty visible surfaces cannot complete an otherwise clean census (0.71025ms)
+✔ every role requires Scrape, Data, and SEO navigation even with populated surface buckets (1.01825ms)
+✔ surface readiness timeout retains fixed safe stage, tab, and count facts (205.226625ms)
+✔ known inventory labels map to source IDs while new visible controls stay explicit and private (0.644208ms)
+✔ source-reviewed Settings rows map each observed node without revealing selected values (0.156292ms)
+✔ Settings row mapping leaves changed, cross-section, wrong-kind and duplicate evidence unknown (0.086416ms)
+✔ browser version failures expose fixed safe diagnostics without transport content (0.238375ms)
+✔ backend mutation attempt is aborted without retaining URL or request body (0.208333ms)
+✔ unknown labels, inaccessible regions, and intercepted RPCs each prevent completeness (0.216416ms)
+✔ Settings census observes the actual OpenUrl anchor as C39 without emitting its href (1.829208ms)
+✔ unknown DOM labels use a fresh keyed fingerprint without raw text or correlation (2.509459ms)
+✔ Settings census links only exact source-rendered row labels to observed controls (2.806625ms)
+✔ Desktop bridge census links each input and button only to its exact static row (2.462541ms)
+✔ direct census invocation refuses before browser or credentials without resource guard (86.094334ms)
+✔ hosted census role preflight requires real auth only for member and admin (0.230875ms)
+✔ discovery retains untitled and alternate tab shapes but only permits mapped native triggers (2.546ms)
+✔ census distinguishes structural containers and actions from unopened regions with safe provenance (2.338208ms)
+✔ discovery retains summary, non-button expanders and unclassified section controls (2.085833ms)
+✔ Settings section readiness uses its active panel while retaining unknown section triggers (1.671208ms)
+✔ Settings readiness refuses an inactive panel or duplicate Account expanders inside it (1.99825ms)
+✔ guest evidence requires observed signed-out account and absent credentials (1.149125ms)
+✔ guest observation refuses every contradictory or missing auth signal without leaking identity (9.600917ms)
+✔ discovery contract detects an in-memory narrowed selector and constant-result replacement (4.634917ms)
+✔ guest contract detects a constant signed-out replacement (3.4615ms)
+✔ guest capture frames Account after signed-out proof and restricts an existing screenshot (2.983542ms)
+✔ guest screenshot failures retain stage and last safe observations without payloads (1.836167ms)
+✔ guest screenshot refuses capture when Account remains outside the viewport (1.168ms)
+✔ guest screenshot refuses a one-pixel Account header or Sign in sliver (1.994458ms)
+ℹ tests 38
+ℹ suites 0
+ℹ pass 38
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1264.528917
+{"schema":1,"at":"2026-10-07T16:49:57.407Z","runId":"census-semantic-captured-green-20261007","childExitCode":0,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-07T16:49:57.449Z","runId":"census-semantic-captured-green-20261007","admitted":true,"resourceInvalid":false,"exitCode":0,"decision":"valid","code":"RESOURCE_FINAL_DECISION"}

@@ -178,6 +178,68 @@ test('known inventory labels map to source IDs while new visible controls stay e
   );
 });
 
+test('source-reviewed Settings rows map each observed node without revealing selected values', () => {
+  const cases = [
+    ['Appearance', 'Theme', 'combobox', 'EXT-F-1003-C02'],
+    ['Chat', 'Default mode', 'combobox', 'EXT-F-1003-C04'],
+    ['Chat', 'Default speed', 'combobox', 'EXT-F-1003-C05'],
+    ['Scrape', 'Auto-scrape mode', 'combobox', 'EXT-F-1003-C29'],
+    ['Desktop bridge', 'Pair code', 'input', 'EXT-F-1003-C15'],
+    ['Desktop bridge', 'Pair code', 'button', 'EXT-F-1003-C15'],
+    ['Desktop bridge', 'Local engine port', 'input', 'EXT-F-1003-C16'],
+    ['Desktop bridge', 'Local engine port', 'button', 'EXT-F-1003-C16'],
+  ];
+  const observed = cases.map(([section, row_label, kind], index) => ({
+    kind,
+    label_fingerprint: String(index + 1).padStart(64, 'a'),
+    provenance: { section, row_label },
+  }));
+  const mapped = mapObservation('settings_control', observed);
+  assert.deepEqual(
+    mapped.mapped.map(({ id }) => id),
+    cases.map((entry) => entry[3]),
+  );
+  assert.equal(mapped.total, 8);
+  assert.equal(mapped.unmapped_count, 0);
+  assert.equal(mapped.mapped[0].provenance.row_label, 'Theme');
+  assert.doesNotMatch(JSON.stringify(mapped), /Private selected value/);
+});
+
+test('Settings row mapping leaves changed, cross-section, wrong-kind and duplicate evidence unknown', () => {
+  const fingerprint = 'd'.repeat(64);
+  const observed = [
+    {
+      kind: 'combobox',
+      label_fingerprint: fingerprint,
+      provenance: { section: 'Chat', row_label: 'Theme' },
+    },
+    {
+      kind: 'button',
+      label_fingerprint: fingerprint,
+      provenance: { section: 'Appearance', row_label: 'Theme' },
+    },
+    {
+      kind: 'combobox',
+      label_fingerprint: fingerprint,
+      provenance: { section: 'Appearance', row_label: 'Changed theme' },
+    },
+    {
+      kind: 'combobox',
+      label_fingerprint: fingerprint,
+      provenance: { section: 'Appearance', row_label: 'Theme' },
+    },
+    {
+      kind: 'combobox',
+      label_fingerprint: fingerprint,
+      provenance: { section: 'Appearance', row_label: 'Theme' },
+    },
+  ];
+  const result = mapObservation('settings_control', observed);
+  assert.equal(result.mapped.length, 0);
+  assert.equal(result.unmapped_count, observed.length);
+  assert.ok(result.unmapped.every((item) => item.label_fingerprint === fingerprint));
+});
+
 test('browser version failures expose fixed safe diagnostics without transport content', async () => {
   for (const session of [
     {
@@ -422,6 +484,12 @@ test('Settings census links only exact source-rendered row labels to observed co
   );
   assert.equal(unambiguous[0].provenance.row_label, 'Theme');
   assert.equal(unambiguous[1].provenance.row_label, undefined);
+  const mapped = mapObservation('settings_control', unambiguous);
+  assert.deepEqual(
+    mapped.mapped.map((item) => item.id),
+    ['EXT-F-1003-C02'],
+  );
+  assert.equal(mapped.unmapped_count, 1);
   assert.doesNotMatch(JSON.stringify(unambiguous), /Private/);
 });
 
@@ -441,6 +509,12 @@ test('Desktop bridge census links each input and button only to its exact static
     Array.from(observed, (item) => item.provenance.row_label ?? null),
     ['Pair code', 'Pair code', 'Local engine port', 'Local engine port', null, null],
   );
+  const mapped = mapObservation('settings_control', observed);
+  assert.deepEqual(
+    mapped.mapped.map((item) => item.id),
+    ['EXT-F-1003-C15', 'EXT-F-1003-C15', 'EXT-F-1003-C16', 'EXT-F-1003-C16'],
+  );
+  assert.equal(mapped.unmapped_count, 2);
   assert.doesNotMatch(JSON.stringify(observed), /Private|value=|override/);
 });
 

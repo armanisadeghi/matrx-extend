@@ -1,0 +1,65 @@
+PLANTED in /Volumes/Samsung2TB/code/matrx-extend/tests/browser/takeover-visible-census.mjs
+RESTORED /Volumes/Samsung2TB/code/matrx-extend/tests/browser/takeover-visible-census.mjs sha=388a40613517 original_sha=388a40613517 IDENTICAL
+----- command output (tail) -----
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [],
+    expected: [ 'EXT-F-1003-C02', 'EXT-F-1003-C04', 'EXT-F-1003-C05', 'EXT-F-1003-C29', 'EXT-F-1003-C15', 'EXT-F-1003-C15', 'EXT-F-1003-C16', 'EXT-F-1003-C16' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/browser/takeover-visible-census.test.mjs:462:1
+✖ Settings census links only exact source-rendered row labels to observed controls (2.922542ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + []
+  - [
+  -   'EXT-F-1003-C02'
+  - ]
+  
+      at TestContext.<anonymous> (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/takeover-visible-census.test.mjs:488:10)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [],
+    expected: [ 'EXT-F-1003-C02' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/browser/takeover-visible-census.test.mjs:496:1
+✖ Desktop bridge census links each input and button only to its exact static row (2.520875ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + []
+  - [
+  -   'EXT-F-1003-C15',
+  -   'EXT-F-1003-C15',
+  -   'EXT-F-1003-C16',
+  -   'EXT-F-1003-C16'
+  - ]
+  
+      at TestContext.<anonymous> (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/takeover-visible-census.test.mjs:513:10)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [],
+    expected: [ 'EXT-F-1003-C15', 'EXT-F-1003-C15', 'EXT-F-1003-C16', 'EXT-F-1003-C16' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+{"schema":1,"at":"2026-10-07T16:48:20.955Z","runId":"census-semantic-plant-red2-20261007","childExitCode":1,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-07T16:48:20.998Z","runId":"census-semantic-plant-red2-20261007","admitted":true,"resourceInvalid":false,"exitCode":1,"decision":"child_failed","code":"RESOURCE_FINAL_DECISION"}
+---------------------------------
+VERDICT: RED (rc=1, expected RED)

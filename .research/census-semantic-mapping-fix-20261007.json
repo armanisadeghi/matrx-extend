@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-D-0151-T11-settings-semantic-mapping",
+  "scope": "Map only the eight Settings nodes in the reviewed 37645860520 guest receipt using source-rendered row labels, Settings section, and control kind.",
+  "source_evidence": {
+    "native_mapping": ".research/settings-observed-mapping-peer-20261007.json",
+    "collector": "tests/browser/takeover-visible-census.mjs:settingsControlsExpression",
+    "source": "src/features/settings/SettingsView.tsx",
+    "inventory": "docs/stabilization/inventory.json"
+  },
+  "mapped_nodes": 8,
+  "logical_controls": 6,
+  "control_ids": [
+    "EXT-F-1003-C02",
+    "EXT-F-1003-C04",
+    "EXT-F-1003-C05",
+    "EXT-F-1003-C29",
+    "EXT-F-1003-C15",
+    "EXT-F-1003-C16"
+  ],
+  "ambiguity_rule": "A Settings row relationship maps only when its exact section, source-rendered row label, and observed kind match a reviewed relation and that relation occurs once among observed nodes. Paired input/button nodes map separately to the documented aggregate control. Changed and duplicated rows remain unknown. Dynamic selected values and action labels remain per-run HMAC fingerprints.",
+  "red_green": {
+    "command": "node scripts/stabilization-resource.mjs run --run-id <unique> -- node --test tests/browser/takeover-visible-census.test.mjs scripts/hosted-profile-route.test.mjs",
+    "red_run_id": "census-semantic-red-20261007",
+    "red": "37 passed, 1 failed: all eight source-reviewed Settings node IDs absent",
+    "green_run_id": "census-semantic-green-20261007",
+    "green": "38 passed, 0 failed; resource decision valid",
+    "causal_mutation": "The settingsRowControls map was temporarily emptied by forcing-function-tests/plant.py; the exact admitted two-file command failed the new mapping and collector-to-mapper assertions, then plant.py restored the source byte for byte.",
+    "causal_red_run_id": "census-semantic-plant-red2-20261007",
+    "causal_red_stdout": ".research/census-semantic-plant-red2-20261007.stdout",
+    "captured_green_run_id": "census-semantic-captured-green-20261007",
+    "captured_green_stdout": ".research/census-semantic-captured-green-20261007.stdout",
+    "first_plant_limit": "A first one-file planted command was refused by the resource policy before testing; it is not counted as causal RED."
+  },
+  "remaining_unknowns": {
+    "latest_guest_native_run": 37651810572,
+    "raw_unmapped_total": 33,
+    "historical_settings_nodes_addressed_by_this_rule": 8,
+    "six_new_surface_nodes": "Scrape 3, Data 2, SEO 1 stay unknown. The latest receipt gives per-run fingerprints and kinds but no source-owned semantic label or other unique relation for those nodes; no fingerprint inversion or DOM-index mapping was attempted.",
+    "other_unknowns": "Remain unknown pending separately reviewed source-grounded identity evidence. The eight Settings mappings are supported by the historical 37645860520 source review; their presence in any next native receipt is unverified. No native rerun or behavioral pass is claimed."
+  }
+}
