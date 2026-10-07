@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "artifact_type": "source_only_inventory_delta_review",
+  "task_id": "inventory-source-delta-check-20261007",
+  "baseline_commit": "d6678732d36b2d39afd8b718946f3405a82a7ad2",
+  "source_commit": "636d00857f774a7b15fe70032dd9c35cef44c015",
+  "inventory": "docs/stabilization/inventory.json",
+  "inventory_sha256": "936b2b2eec5751ac0c39f24bd113e2b5f57bf6be7b7077faa531a9033f065f97",
+  "inventory_source_sha_before": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
+  "source_diff_paths": [
+    "src/entrypoints/webmcp-bridge.content.ts",
+    "src/lib/background/bootstrap.ts",
+    "src/lib/tools/categories.ts",
+    "src/lib/tools/dispatch.ts",
+    "src/lib/tools/handlers/webmcp.ts",
+    "src/lib/webmcp/register.ts"
+  ],
+  "verdict_A_source_coverage": {
+    "verdict": "PASS",
+    "finding": "Every capability/control change in the scoped source diff maps to existing WebMCP inventory records and procedures; no new feature or control ID is indicated.",
+    "coverage_by_feature_id": [
+      {
+        "feature_id": "EXT-F-4014",
+        "covered_control_ids": ["EXT-F-4014-C01"],
+        "paths": ["src/lib/tools/categories.ts"],
+        "mapping": "Page-registered-tools catalog discovery metadata/description; existing list_webmcp_tools inventory record covers this catalog surface."
+      },
+      {
+        "feature_id": "EXT-F-4118",
+        "covered_control_ids": ["EXT-F-4118-C01"],
+        "paths": ["src/lib/tools/handlers/webmcp.ts", "src/lib/tools/dispatch.ts", "src/lib/background/bootstrap.ts"],
+        "mapping": "Availability now reads document.modelContext and awaited getTools; originating page tab is validated and carried in dispatch. Existing T01 covers native discovery, A/B routing, closed-origin, and authorization boundaries."
+      },
+      {
+        "feature_id": "EXT-F-4119",
+        "covered_control_ids": ["EXT-F-4119-C01"],
+        "paths": ["src/lib/tools/handlers/webmcp.ts", "src/lib/tools/dispatch.ts", "src/lib/background/bootstrap.ts"],
+        "mapping": "Listing now uses awaited native getTools; source tab is retained for extension-origin dispatch. Existing T01 covers catalog comparison and A/B routing."
+      },
+      {
+        "feature_id": "EXT-F-4120",
+        "covered_control_ids": ["EXT-F-4120-C01"],
+        "paths": ["src/lib/tools/handlers/webmcp.ts", "src/lib/tools/dispatch.ts", "src/lib/background/bootstrap.ts"],
+        "mapping": "Calls discover a real RegisteredTool, validate object arguments, execute it, and preserve origin-tab identity through the page bridge. Existing T01 covers held action, approval, and A/B routing."
+      },
+      {
+        "feature_id": "EXT-F-4162",
+        "covered_control_ids": ["EXT-F-4162-C01", "EXT-F-4162-C02", "EXT-F-4162-C03", "EXT-F-4162-C04"],
+        "paths": ["src/lib/tools/dispatch.ts", "src/lib/tools/handlers/webmcp.ts", "src/lib/background/bootstrap.ts", "src/lib/webmcp/register.ts", "src/entrypoints/webmcp-bridge.content.ts"],
+        "mapping": "Canonical check/list/call delegates to covered leaves; extension registration uses the current async registerTool/execute/AbortSignal contract and page bridge. Existing T01 and branch controls cover all three routes and registration lifecycle."
+      }
+    ],
+    "no_new_entrypoints_or_controls": "No new user-facing entrypoint, control, permission gate, or feature was found in the six-file source diff. The changed comments/category description describe the same existing WebMCP surface.",
+    "evidence": [
+      ".research/webmcp-native-contract-repair-20261007.json",
+      ".research/webmcp-native-contract-peer-20261007.json",
+      ".research/webmcp-origin-tab-repair-20261007.json",
+      ".research/webmcp-current-procedures-20261007.json",
+      ".research/webmcp-current-procedures-gate-peer-20261007.json",
+      ".research/webmcp-procedure-integration-20261007.json"
+    ],
+    "runtime_status": "Unverified. Source fixtures and peer review do not establish native browser acceptance or live permissions/advertisement."
+  },
+  "verdict_B_metadata_and_provenance": {
+    "can_refresh_source_sha_to_source_commit": true,
+    "judgment": "The bounded d6678732..636d0085 source delta is reconciled to existing inventory IDs and current procedures, so source_sha may truthfully identify 636d0085 as the latest source snapshot considered when paired with this report.",
+    "preserve_without_promotion": [
+      "scope_complete remains false",
+      "inventory_gate remains source-census-peer-reviewed-native-visibility-pending",
+      "all runtime cells and results remain unchanged/unverified",
+      "no feature acceptance or native runtime conclusion is implied"
+    ],
+    "provenance_limit": "This bounded delta review does not independently re-census the entire repository or revalidate the historical 528ea0b0 baseline. Record the source delta report as provenance; do not present the refreshed SHA as a full-repository census."
+  },
+  "limits": [
+    "Source-only review of src changes from d6678732 to 636d0085; non-source diffs were intentionally excluded.",
+    "No browser, tests, build, database, handler execution, or inventory edit was performed."
+  ]
+}
