@@ -3,24 +3,24 @@
   "reviewed_commit": "934d7e48d4ff854909b686f205ae4a87b1f04640",
   "review_scope": "Independent source-only review of the guest census receipt correction against original findings, PLAN.md runner diagnostics, implementation, callers, and recorded fixture run; no native browser, tests, build, DB, or release work.",
   "verdict_A_intended_evidence_behavior": {
-    "verdict": "SOURCE_SEQUENCE_ACCEPTED_WITH_FRAMING_LIMIT; NATIVE_BEHAVIOR_UNVERIFIED",
+    "verdict": "SOURCE_PARTIAL; NATIVE_BEHAVIOR_UNVERIFIED",
     "browser_metadata": "readBrowserVersion(browserSession) receives the harness-owned browser CDP session, validates Chrome product and protocol version, and retains only those fields. The caller assigns this before guest observation; invalid response and transport errors use fixed diagnostics. Native Browser.getVersion behavior remains unverified.",
     "guest_readiness": "After prepareGuestObservation returns its positive signed-out proof, captureGuestReadiness scrolls the Account header and checks that the header, Account content, and enabled Sign in control intersect the attached sidepanel viewport before Page.captureScreenshot. This closes the original no-scroll/no-viewport-check source gap. The test exercises the guard and ordering through fixtures only. The intersection predicate accepts any positive overlap, including a sliver, and no captured pixels are inspected, so useful visual framing is not fully guaranteed by source.",
     "original_findings": [
       {
         "finding": "Existing screenshot file permissions are not restricted",
-        "status": "ADDRESSED_IN_SOURCE",
+        "status": "ADDRESSED",
         "evidence": "captureGuestReadiness opens the deterministic screenshot path, chmods it to 0600 before truncating, then writes bytes; new files are opened with 0600. Fixture coverage overwrites a 0644 file and checks its mode and bytes."
       },
       {
         "finding": "New browser-version, screenshot, decode, and write boundaries lack fixed diagnostics",
-        "status": "ADDRESSED_IN_SOURCE",
+        "status": "ADDRESSED",
         "evidence": "readBrowserVersion and captureGuestReadiness attach fixed stage/target and safe state. Main serializes only receiptDiagnostic. The harness awaits exercisePanel and its finally cleanup rethrows the original error, so diagnostics reach the census runner catch. No raw cause, transport response, or private payload is serialized."
       },
       {
         "finding": "Screenshot framing is not guaranteed to show Account readiness",
-        "status": "PARTIALLY_ADDRESSED_IN_SOURCE",
-        "evidence": "Account is scrolled into view and all three target elements must intersect the viewport before capture. Any positive intersection passes, and the PNG is not pixel-inspected; source therefore proves a viewport precondition but not a clearly framed readiness image."
+        "status": "NOT_ADDRESSED",
+        "evidence": "The correction improves the path by scrolling Account and checking viewport intersection, but any positive intersection passes and the PNG is not pixel-inspected. Source therefore does not guarantee a clearly framed readiness image."
       }
     ],
     "native_gap": "No native run or screenshot inspection occurred. Fixture tests do not establish owned-panel behavior, observed browser version, screenshot appearance, or native guest census acceptance."
