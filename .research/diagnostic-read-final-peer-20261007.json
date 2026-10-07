@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "ea0945c90e21e2e8d7828bd63dcc8c8e3e16124f",
+  "reviewed_artifact": ".research/diagnostic-read-procedures-20261007.json",
+  "prior_findings_artifact": ".research/diagnostic-read-peer-20261007.json",
+  "scope": [
+    "EXT-F-4115-T01",
+    "EXT-F-4116-T01",
+    "EXT-F-4117-T01"
+  ],
+  "verdict_a_finding_dispositions_and_executable_fidelity": "bounded_conditional_acceptance",
+  "verdict_b_quality": "adequate_for_bounded_direct_manual_procedure_integration; incomplete_for_exhaustive_inventory_coverage",
+  "finding_dispositions": [
+    {
+      "prior_severity": "Important",
+      "prior_location": ".research/diagnostic-read-procedures-20261007.json:19",
+      "disposition": "corrected",
+      "evidence": "Shared setup requires checking chrome.permissions.contains({permissions:['debugger']}) in each extension context before a positive Tools run. It identifies debugger as a required installation permission with no optional request switch, and classifies false/unavailable as a build/browser precondition failure rather than a handler result. This matches the cited manifest, settings, and permission-classification source locations and corrects the prior optional-permission/user-gesture premise."
+    },
+    {
+      "prior_severity": "Important",
+      "prior_location": ".research/diagnostic-read-procedures-20261007.json:22",
+      "disposition": "bounded_scope_acknowledged_permissions_remain_unresolved",
+      "evidence": "The revision explicitly states Tools Run directly calls handler.run with permissionMode=act and assignedTabId=null, bypassing dispatcher confirmation. It preserves permissions in all three original dimensions and labels each permissions design status unresolved; remaining_unverified likewise says no role results or permission dimensions are verified. It does not provide the prior finding's executable dispatcher Deny procedure, so that finding is not resolved for exhaustive coverage. This is consistent with the requested bounded direct-procedure integration and does not claim the permissions dimension was designed or run."
+    },
+    {
+      "prior_severity": "Minor",
+      "prior_location": ".research/diagnostic-read-procedures-20261007.json:77",
+      "disposition": "corrected",
+      "evidence": "The network procedure records matching metadata and request IDs, selects a completed final public 200 GET for the body test, and routes duplicates or redirects to fixture/browser classification. A single record is only the clean-pass criterion, not a generic defect oracle."
+    }
+  ],
+  "executable_fidelity": {
+    "accepted_paths": [
+      "Direct Tools-runner positive and local schema-negative procedures for the three named handlers, conditional on the stated disposable profile, required debugger permission precheck, public fixture checks, and live-session requirements.",
+      "Warm and post-extension-Reload paths distinguish extension reload from page reload and require fresh capture state/request IDs.",
+      "Console procedure arms before the user click and respects peek, consume-before-filter, and filtered-empty semantics.",
+      "Network procedure arms before navigation, treats reads as draining, and limits its oracle to completed matching document metadata.",
+      "Body procedure reads the response body of the exact captured GET in the same CDP session, with the independently checked title marker as its oracle."
+    ],
+    "limits": [
+      "No browser, member/admin, or handler execution was performed in this review; all runtime cells remain unverified.",
+      "Direct Tools runs cannot verify privileged-card denial, role advertisement, or assigned-tab isolation. The permissions dimension remains unresolved for each case.",
+      "The observed external fixture hashes and markers are dated; executors must recheck live fixture behavior."
+    ]
+  },
+  "quality_assessment": "The procedure is source-grounded and executable within its narrow direct-manual scope, with the required debugger permission precondition and appropriately bounded console, network, and response-body oracles. It is not exhaustive inventory coverage: the original permissions dimensions remain unresolved and require a separate demonstrated dispatcher path and actual Deny interaction before those dimensions can be designed as executable cases or marked complete.",
+  "verification": {
+    "reviewed_commit": "ea0945c90e21e2e8d7828bd63dcc8c8e3e16124f",
+    "native_browser": "not_run",
+    "runtime_results": "not_claimed",
+    "source_execution": "not_performed_in_this_bounded_review"
+  }
+}
