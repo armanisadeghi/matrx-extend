@@ -1,13 +1,23 @@
 import assert from 'node:assert/strict';
 import { join } from 'node:path';
 
-export function hostedShowcaseRoute(acceptanceCase, prepared, runner) {
+export function hostedShowcaseRoute(
+  acceptanceCase,
+  prepared,
+  runner,
+  d47ResponseOrder = 'current-first',
+) {
   if (
     !['showcase-picker-admin', 'showcase-stale-admin', 'showcase-d47-admin'].includes(
       acceptanceCase,
     )
   )
     return null;
+  if (acceptanceCase === 'showcase-d47-admin')
+    assert.ok(
+      ['current-first', 'old-first'].includes(d47ResponseOrder),
+      'd47_response_order_invalid',
+    );
   assert.equal(prepared.kind, 'ci_development_test', 'showcase_ci_artifact_required');
   assert.match(prepared.sourceSha ?? '', /^[a-f0-9]{40}$/, 'showcase_ci_source_required');
   assert.match(String(prepared.runId ?? ''), /^[1-9][0-9]*$/, 'showcase_ci_run_required');
@@ -30,6 +40,8 @@ export function hostedShowcaseRoute(acceptanceCase, prepared, runner) {
         `${acceptanceCase === 'showcase-d47-admin' ? 'showcase-d47-native' : 'showcase-picker-native'}-${runner.runId}-${runner.attempt}.json`,
       ),
       MATRX_SHOWCASE_STALE_BOUNDARY: acceptanceCase === 'showcase-stale-admin' ? '1' : undefined,
+      MATRX_D47_RESPONSE_ORDER:
+        acceptanceCase === 'showcase-d47-admin' ? d47ResponseOrder : undefined,
     },
   };
 }

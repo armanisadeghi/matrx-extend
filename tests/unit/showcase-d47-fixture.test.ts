@@ -121,6 +121,57 @@ it('holds the older identical request until after the current document has its r
   });
 });
 
+it('finishes a genuinely pending old response before releasing the held current response', async () => {
+  const origin = await fixtureOrigin();
+  const armed = await get(`${origin}/control/document-race/arm?response_order=old-first`);
+  expect(armed.status).toBe(200);
+  await get(`${origin}/document-race/`);
+  const oldResult = get(`${origin}/api/document-race`);
+  void oldResult.catch(() => undefined);
+  await expect
+    .poll(async () => (await get(`${origin}/control/document-race/status`)).json())
+    .toMatchObject({ old_pending: true, target_requests: 1 });
+  expect((await get(`${origin}/control/document-race/release-old`)).status).toBe(409);
+  await get(`${origin}/document-race/`);
+  const currentResult = get(`${origin}/api/document-race`);
+  void currentResult.catch(() => undefined);
+  await expect
+    .poll(async () => (await get(`${origin}/control/document-race/status`)).json())
+    .toMatchObject({
+      response_order: 'old-first',
+      target_requests: 2,
+      old_pending: true,
+      current_pending: true,
+      current_response_sent: false,
+      response_finish_order: [],
+    });
+  expect((await get(`${origin}/control/document-race/release-current`)).status).toBe(409);
+  const releaseOld = await get(`${origin}/control/document-race/release-old`);
+  expect(releaseOld.status).toBe(200);
+  expect((await oldResult).json()).toEqual({
+    events: [{ eventName: 'Moonlit Transit' }],
+    document: 'prior',
+  });
+  expect((await get(`${origin}/control/document-race/status`)).json()).toMatchObject({
+    old_release_prestate: 'pending',
+    old_response_finished: true,
+    current_pending: true,
+    current_response_sent: false,
+    response_finish_order: ['old'],
+  });
+  const releaseCurrent = await get(`${origin}/control/document-race/release-current`);
+  expect(releaseCurrent.status).toBe(200);
+  expect((await currentResult).json()).toEqual({
+    events: [{ eventName: 'Canyon Frequency' }],
+    document: 'current',
+  });
+  expect((await get(`${origin}/control/document-race/status`)).json()).toMatchObject({
+    old_response_aborted: false,
+    current_response_finished: true,
+    response_finish_order: ['old', 'current'],
+  });
+});
+
 it('refuses release when the old client aborts before the server finishes its response', async () => {
   const origin = await fixtureOrigin();
   await get(`${origin}/control/document-race/arm`);

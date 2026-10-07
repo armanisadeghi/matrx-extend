@@ -53,6 +53,14 @@ on:
           - profile-admin
           - profile-member
           - startup-resource-diagnostic
+      d47_response_order:
+        description: D47 held HTTP response order for showcase-d47-admin
+        required: false
+        default: current-first
+        type: choice
+        options:
+          - current-first
+          - old-first
       scrape_diagnostic_cpu_rate:
         description: Optional owned intake-page CPU diagnostic rate for guest-scrape or guest-scrape-development (for example 4)
         required: false
@@ -252,6 +260,7 @@ jobs:
           MATRX_HOSTED_DEV_ARTIFACT_ID: ${{ inputs.development_artifact_id }}
           MATRX_HOSTED_PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx == true && '0.2.205' || '' }}
           MATRX_HOSTED_ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
+          MATRX_D47_RESPONSE_ORDER: ${{ inputs.d47_response_order }}
           MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE: ${{ inputs.scrape_diagnostic_cpu_rate }}
           MATRX_SCRAPE_AUTH_MODE: ${{ inputs.scrape_auth_mode }}
           MATRX_SCRAPE_WIDTH_MODE: ${{ inputs.scrape_width_mode }}

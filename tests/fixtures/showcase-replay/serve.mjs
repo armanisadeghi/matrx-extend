@@ -20,13 +20,18 @@ const pages = new Map([
 let racePhase = 'seed';
 let racePageLoads = 0;
 let raceTargetRequests = 0;
+let responseOrder = 'current-first';
 let oldResponse = null;
+let currentResponse = null;
 let oldResponseAborted = false;
 let oldResponseFinished = false;
 let oldResponseReleased = false;
 let oldReleasePrestate = null;
 let oldReleaseOutcome = null;
 let currentResponseSent = false;
+let currentResponseFinished = false;
+let currentResponseAborted = false;
+const responseFinishOrder = [];
 const racePayload = (document) => ({
   events: [{ eventName: document === 'current' ? 'Canyon Frequency' : 'Moonlit Transit' }],
   document,
@@ -50,6 +55,8 @@ const raceStatus = () => ({
   phase: racePhase,
   page_loads: racePageLoads,
   target_requests: raceTargetRequests,
+  response_order: responseOrder,
+  response_finish_order: [...responseFinishOrder],
   old_pending: Boolean(oldResponse && !oldResponseAborted && !oldResponseFinished),
   old_response_aborted: oldResponseAborted,
   old_response_finished: oldResponseFinished,
@@ -57,6 +64,9 @@ const raceStatus = () => ({
   old_release_prestate: oldReleasePrestate,
   old_release_outcome: oldReleaseOutcome,
   current_response_sent: currentResponseSent,
+  current_pending: Boolean(currentResponse && !currentResponseFinished && !currentResponseAborted),
+  current_response_finished: currentResponseFinished,
+  current_response_aborted: currentResponseAborted,
 });
 const eventResponses = new Map([
   [
@@ -109,16 +119,24 @@ const server = createServer(async (request, response) => {
   }
 
   if (url.pathname === '/control/document-race/arm') {
+    const requestedOrder = url.searchParams.get('response_order') ?? 'current-first';
+    if (!['current-first', 'old-first'].includes(requestedOrder))
+      return response.writeHead(400).end('Unsupported response order.');
     racePhase = 'armed';
+    responseOrder = requestedOrder;
     racePageLoads = 0;
     raceTargetRequests = 0;
     oldResponse = null;
+    currentResponse = null;
     oldResponseAborted = false;
     oldResponseFinished = false;
     oldResponseReleased = false;
     oldReleasePrestate = null;
     oldReleaseOutcome = null;
     currentResponseSent = false;
+    currentResponseFinished = false;
+    currentResponseAborted = false;
+    responseFinishOrder.length = 0;
     response
       .writeHead(200, { 'Content-Type': 'application/json' })
       .end(JSON.stringify(raceStatus()));
@@ -138,7 +156,11 @@ const server = createServer(async (request, response) => {
         : oldResponseFinished
           ? 'finished'
           : 'pending';
-    if (!currentResponseSent || !oldResponse) {
+    const newRequestReady =
+      responseOrder === 'old-first'
+        ? Boolean(currentResponse && !currentResponseAborted && racePageLoads >= 2)
+        : currentResponseSent;
+    if (!newRequestReady || !oldResponse) {
       oldReleaseOutcome = 'refused_not_ready';
       return response.writeHead(409).end('Release requires old and current requests.');
     }
@@ -164,6 +186,30 @@ const server = createServer(async (request, response) => {
       .end(JSON.stringify(raceStatus()));
     return;
   }
+  if (url.pathname === '/control/document-race/release-current') {
+    if (
+      responseOrder !== 'old-first' ||
+      !oldResponseFinished ||
+      !currentResponse ||
+      currentResponseAborted ||
+      currentResponseFinished
+    )
+      return response.writeHead(409).end('Current response is not ready for release.');
+    const finished = new Promise((resolveFinish) => {
+      currentResponse.once('finish', () => resolveFinish(true));
+      currentResponse.once('close', () => resolveFinish(currentResponse.writableFinished));
+    });
+    currentResponseSent = true;
+    currentResponse
+      .writeHead(200, { 'Content-Type': 'application/json' })
+      .end(JSON.stringify(racePayload('current')));
+    if (!(await finished))
+      return response.writeHead(409).end('Current response closed before finish.');
+    response
+      .writeHead(200, { 'Content-Type': 'application/json' })
+      .end(JSON.stringify(raceStatus()));
+    return;
+  }
   if (url.pathname === '/document-race/') {
     racePageLoads += 1;
     const generation = racePhase === 'seed' ? 'seed' : racePageLoads === 1 ? 'old' : 'current';
@@ -181,14 +227,36 @@ const server = createServer(async (request, response) => {
     if (racePhase === 'armed' && raceTargetRequests === 1) {
       oldResponse = response;
       response.on('finish', () => {
-        if (oldResponse === response) oldResponseFinished = true;
+        if (oldResponse === response) {
+          oldResponseFinished = true;
+          responseFinishOrder.push('old');
+        }
       });
       response.on('close', () => {
         if (oldResponse === response && !response.writableFinished) oldResponseAborted = true;
       });
       return;
     }
+    if (racePhase === 'armed' && responseOrder === 'old-first' && raceTargetRequests === 2) {
+      currentResponse = response;
+      response.on('finish', () => {
+        if (currentResponse === response) {
+          currentResponseFinished = true;
+          responseFinishOrder.push('current');
+        }
+      });
+      response.on('close', () => {
+        if (currentResponse === response && !response.writableFinished)
+          currentResponseAborted = true;
+      });
+      return;
+    }
     currentResponseSent = racePhase === 'armed';
+    if (racePhase === 'armed')
+      response.on('finish', () => {
+        currentResponseFinished = true;
+        responseFinishOrder.push('current');
+      });
     response
       .writeHead(200, { 'Content-Type': 'application/json' })
       .end(JSON.stringify(racePayload('current')));
