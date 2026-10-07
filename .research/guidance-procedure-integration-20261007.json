@@ -1,0 +1,15 @@
+{
+  "status": "source_procedures_integrated_runtime_unverified",
+  "case_ids": ["EXT-F-4139-T01", "EXT-F-4140-T01"],
+  "proposal_commit": "4798b619",
+  "peer_commit": "947e2e62",
+  "fresh_correction_review": {
+    "reviewer": "root; no proposal authorship",
+    "A": "Both peer findings addressed: same-principal hydration and exact-ID cloud absence where save never reached cloud. Applicable org access explicitly required at integration.",
+    "B": "Source inspection matches asynchronous save/delete and tombstone hydration; local results do not establish cloud durability. No new runtime claim."
+  },
+  "missing_steps_expected_before": 82,
+  "missing_steps_expected_after": 80,
+  "invariants": "Feature/case IDs, controls, mode applicability and all recorded test/retest cells unchanged.",
+  "runtime": "Not run; no test pass promoted."
+}

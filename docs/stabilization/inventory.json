@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-07T00:15:06.303794+00:00",
+  "updated_at": "2026-10-07T00:58:28.311086+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -67037,18 +67037,63 @@
             "member",
             "admin"
           ],
-          "design_status": "needed",
+          "design_status": "source-reviewed-runtime-unverified",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Use the resource permit and build-receipt procedure in docs/stabilization/PLAN.md. Match the receipt-bound development artifact, source SHA/tree hash, loaded unpacked extension identity, WXT mode, required storage permission, and Chrome version. Record the receipt, role/profile, and timestamp without credentials or unrelated storage contents.",
+            "Use existing signed-in member and admin dedicated test profiles separately. Do not create or change accounts, roles, organizations, or permissions. Confirm an active organization is selected on each device because cloud writes require it. Guest remains inapplicable to the signed-in Tools UI.",
+            "For each profile, perform the warm pass, reload the same extension and reopen the side panel, then perform the specified post-reload checks. If the artifact changes, obtain a matching new receipt.",
+            "In the signed-in side panel open Tools \u2192 Catalog, leave the selector at Agent surface, search the exact tool name, expand its row, replace the test-runner JSON, select Run, and inspect the inline result. The guidance tools are in CANONICAL_SURFACE.",
+            "The runner validates JSON against the handler schema and invokes the local handler directly with conversationId=null and assignedTabId=null. It bypasses dispatcher authorization. This procedure covers the manual handler path; agent advertisement, Ask/Act gating, and guest denial require separate cases.",
+            "In each role/profile, use save_guidance_note through the same manual Tools runner with a unique recognizable domain (for example procedure-guidance.invalid), caption (for example EXT-F-4139-T01 member fixture), and short harmless text (for example owned synthetic guidance note). These are test-created items, never pre-existing user data.",
+            "Require save_guidance_note to return {ok:true,id:<UUID>,domain:<chosen domain>}. Record the exact returned UUID privately for subsequent get/delete calls; use no guessed ID for a positive branch. Keep separate IDs for member and admin. Stop that profile if saving fails.",
+            "Keep only the returned IDs and sanitized result evidence. Do not browse, copy, modify, or delete unrelated guidance. After every attempt, clean up each successfully created fixture by its exact returned ID; if cleanup cannot be confirmed locally and by an exact-ID cloud tombstone or exact-ID absence when the save never reached cloud, record an open cleanup item for that ID and do not claim a full pass.",
+            "Saving and deleting update chrome.storage.local first and start fire-and-forget cloud work. A local {ok:true}, a warm read, or extension reload alone does not prove cloud persistence, sync, or durable deletion.",
+            "For any cloud claim, verify only the exact owned UUID in extend.wbx_guidance using an authorized scoped read or observe an equivalent independent hydration in a separate profile signed in as the same principal. After save, require the matching live row and fields; after delete, require a deleted_at tombstone for a confirmed cloud row and no live item after independent hydration under the same principal. If the save never reached cloud, exact-ID cloud absence is sufficient for cleanup but does not verify cloud deletion. Do not use a broad table dump or inspect unrelated rows. If that observation is unavailable, report cloud sync/deletion unverified while retaining the local handler result.",
+            "Cloud hydration runs on signed-in sidepanel mount and merges last-write-wins; a same-profile reload usually retains the local cache and is only a local persistence check. A failed fire-and-forget push or tombstone can leave a cloud mismatch or permit reappearance; record this as a failure or unresolved cloud limit, not a pass.",
+            "Complete shared build/profile setup and create an owned synthetic note in the current profile through save_guidance_note; retain its exact returned UUID.",
+            "Run the full sequence independently in the existing member and admin profiles. Guest remains inapplicable to Tools UI.",
+            "For cloud evidence record the same signed-in principal and authorized organization/access context in both profiles. Confirm an explicitly selected organization for each save; do not copy account or extension storage between role profiles."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "In Tools \u2192 Catalog run get_guidance_item with {\"id\":\"<exact returned UUID>\"}. Check the inline item against only the fixture's id, kind=note, domain, text, and caption; record sanitized evidence.",
+            "Run get_guidance_item with {\"id\":\"procedure-missing-EXT-F-4139-20261007\"}. If unexpectedly found, stop this negative branch without opening or touching that item; otherwise check the missing response.",
+            "Enter {} for get_guidance_item and select Run; require a schema mismatch for the required nonempty id and no handler result.",
+            "Reload the extension and reopen the signed-in side panel, then repeat get on the exact owned UUID and the missing ID. Where claiming cloud persistence, separately use shared cloud observation; reload alone establishes only local persistence.",
+            "Run EXT-F-4140-T01 on the owned UUID in the same profile to clean it up. If the delete case cannot run, delete only that exact fixture through the same manual tool and verify get returns missing. Repeat all steps with a separately created admin/member fixture."
+          ],
+          "expected": [
+            "Positive get returns {ok:true,item:<owned note>} with exact returned UUID and fixture fields before and after reload.",
+            "Missing get returns {ok:false,reason:\"No guidance item with id=procedure-missing-EXT-F-4139-20261007\"}; no item payload.",
+            "Invalid {} is rejected by the runner schema and does not call the handler. A found unexpected ID, wrong payload, thrown storage failure, or missing owned item fails the corresponding branch.",
+            "Cloud persistence is claimed only when the exact live cloud row or an independently hydrated copy under the same signed-in principal is observed; otherwise mark that dimension unverified."
+          ],
           "dimensions": [
-            "valid-input",
+            "valid-owned-id",
+            "missing-id",
             "invalid-input",
-            "permissions",
-            "reload"
+            "member",
+            "admin",
+            "warm",
+            "extension-reload",
+            "local-persistence",
+            "cloud-observation"
+          ],
+          "source_evidence": [
+            "docs/stabilization/inventory.json: EXT-F-4139 / EXT-F-4139-T01 (existing ID, modes, dimensions, storage permission)",
+            "src/features/tools/ToolsView.tsx:390-463,525-545 (JSON/schema validation, direct local run, inline result)",
+            "src/lib/tools/categories.ts:523-530 (Agent surface guidance roster)",
+            "src/lib/tools/handlers/guidance.ts:31-60,80-94 (save-created UUID note and positive/missing get branches)",
+            "src/lib/guidance/storage.ts:23-30,74-82,97-125 (UUID creation, local read, local save and asynchronous cloud push)",
+            "src/lib/guidance/cloud-sync.ts:137-155,167-210 (best-effort push and hydration)",
+            "src/hooks/use-guidance-sync.ts:24-58 (signed-in sidepanel hydration)"
+          ],
+          "access_context_permission_limits": [
+            "Member and admin are applicable; guest is not. Required storage permission is present in the receipt-bound artifact.",
+            "Manual Tools calls bypass dispatcher authorization and carry no conversation or assigned tab. No Ask/Act, agent-call, or guest-access claim follows.",
+            "This handler reads the exact local key. Cloud behavior is separate and asynchronous; local success and reload do not establish remote persistence."
+          ],
+          "limits": [
+            "Source-derived only; no runtime execution or cloud verification was performed while writing this proposal."
           ]
         }
       ],
@@ -67193,18 +67238,63 @@
             "member",
             "admin"
           ],
-          "design_status": "needed",
+          "design_status": "source-reviewed-runtime-unverified",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Use the resource permit and build-receipt procedure in docs/stabilization/PLAN.md. Match the receipt-bound development artifact, source SHA/tree hash, loaded unpacked extension identity, WXT mode, required storage permission, and Chrome version. Record the receipt, role/profile, and timestamp without credentials or unrelated storage contents.",
+            "Use existing signed-in member and admin dedicated test profiles separately. Do not create or change accounts, roles, organizations, or permissions. Confirm an active organization is selected on each device because cloud writes require it. Guest remains inapplicable to the signed-in Tools UI.",
+            "For each profile, perform the warm pass, reload the same extension and reopen the side panel, then perform the specified post-reload checks. If the artifact changes, obtain a matching new receipt.",
+            "In the signed-in side panel open Tools \u2192 Catalog, leave the selector at Agent surface, search the exact tool name, expand its row, replace the test-runner JSON, select Run, and inspect the inline result. The guidance tools are in CANONICAL_SURFACE.",
+            "The runner validates JSON against the handler schema and invokes the local handler directly with conversationId=null and assignedTabId=null. It bypasses dispatcher authorization. This procedure covers the manual handler path; agent advertisement, Ask/Act gating, and guest denial require separate cases.",
+            "In each role/profile, use save_guidance_note through the same manual Tools runner with a unique recognizable domain (for example procedure-guidance.invalid), caption (for example EXT-F-4139-T01 member fixture), and short harmless text (for example owned synthetic guidance note). These are test-created items, never pre-existing user data.",
+            "Require save_guidance_note to return {ok:true,id:<UUID>,domain:<chosen domain>}. Record the exact returned UUID privately for subsequent get/delete calls; use no guessed ID for a positive branch. Keep separate IDs for member and admin. Stop that profile if saving fails.",
+            "Keep only the returned IDs and sanitized result evidence. Do not browse, copy, modify, or delete unrelated guidance. After every attempt, clean up each successfully created fixture by its exact returned ID; if cleanup cannot be confirmed locally and by an exact-ID cloud tombstone or exact-ID absence when the save never reached cloud, record an open cleanup item for that ID and do not claim a full pass.",
+            "Saving and deleting update chrome.storage.local first and start fire-and-forget cloud work. A local {ok:true}, a warm read, or extension reload alone does not prove cloud persistence, sync, or durable deletion.",
+            "For any cloud claim, verify only the exact owned UUID in extend.wbx_guidance using an authorized scoped read or observe an equivalent independent hydration in a separate profile signed in as the same principal. After save, require the matching live row and fields; after delete, require a deleted_at tombstone for a confirmed cloud row and no live item after independent hydration under the same principal. If the save never reached cloud, exact-ID cloud absence is sufficient for cleanup but does not verify cloud deletion. Do not use a broad table dump or inspect unrelated rows. If that observation is unavailable, report cloud sync/deletion unverified while retaining the local handler result.",
+            "Cloud hydration runs on signed-in sidepanel mount and merges last-write-wins; a same-profile reload usually retains the local cache and is only a local persistence check. A failed fire-and-forget push or tombstone can leave a cloud mismatch or permit reappearance; record this as a failure or unresolved cloud limit, not a pass.",
+            "Complete shared setup and create an owned synthetic note in the same profile through save_guidance_note, or use the still-owned UUID from EXT-F-4139-T01. Confirm get_guidance_item returns the matching fixture before deletion.",
+            "If claiming cloud deletion, first independently confirm its exact live cloud row; otherwise cloud deletion remains unverified. Never use a pre-existing item's ID.",
+            "For cloud evidence record the same signed-in principal and authorized organization/access context in both profiles. Confirm an explicitly selected organization for each save; do not copy account or extension storage between role profiles."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "In Tools \u2192 Catalog run delete_guidance_item with {\"id\":\"<exact returned owned UUID>\"}. Require {ok:true,deleted:true}. Immediately run get_guidance_item for that UUID and require the missing result.",
+            "Run delete_guidance_item again on the same UUID; require the source-defined missing response and no deleted=true. This checks the absent branch without targeting unrelated data.",
+            "Enter {} for delete_guidance_item and select Run; require runner schema mismatch without handler invocation.",
+            "Reload the extension and reopen the side panel. Run get_guidance_item for the exact owned UUID again and require missing. Observe the exact cloud tombstone and independently hydrated absence under the same signed-in principal before asserting durable cloud deletion. If the save never reached cloud, exact-ID cloud absence confirms cleanup only. If a late push resurrects the row or that same-principal profile sees the note, report failure and repeat cleanup for this owned UUID only.",
+            "Repeat with a distinct owned UUID in the other existing role/profile. At end verify both recorded fixture UUIDs are locally absent and, where cloud observation was available, either tombstoned or absent by exact-ID cloud read when the save never reached cloud. Track any residual fixture ID as an open cleanup item."
+          ],
+          "expected": [
+            "The first delete of an existing owned item returns {ok:true,deleted:true}; subsequent get returns {ok:false,reason:\"No guidance item with id=<exact returned owned UUID>\"} before and after reload.",
+            "Second delete returns {ok:false,reason:\"No guidance item with id=<exact returned owned UUID>\"}; it does not report deleted=true.",
+            "Invalid {} is rejected by the runner schema. A first-delete missing result, surviving local item, unexpected result, or thrown storage failure fails the corresponding branch.",
+            "Local delete success does not prove cloud deletion. Claim remote durability only after observing the exact row tombstone and independent same-principal hydrated absence; otherwise mark cloud deletion unverified."
+          ],
           "dimensions": [
-            "valid-input",
+            "valid-owned-id",
+            "missing-id",
             "invalid-input",
-            "permissions",
-            "reload"
+            "member",
+            "admin",
+            "warm",
+            "extension-reload",
+            "local-deletion",
+            "cloud-observation",
+            "cleanup"
+          ],
+          "source_evidence": [
+            "docs/stabilization/inventory.json: EXT-F-4140 / EXT-F-4140-T01 (existing ID, modes, dimensions, storage permission)",
+            "src/features/tools/ToolsView.tsx:390-463,525-545 (schema validation, direct local run, inline result)",
+            "src/lib/tools/handlers/guidance.ts:31-60,80-110 (owned note creation, get, positive/missing delete branches)",
+            "src/lib/guidance/storage.ts:97-139 (local save/index; absent and present delete branches; asynchronous cloud calls)",
+            "src/lib/guidance/cloud-sync.ts:157-210 (best-effort cloud delete and tombstone hydration)",
+            "src/lib/supabase/queries.ts:1412-1445 (cloud tombstone update and row fetch)"
+          ],
+          "access_context_permission_limits": [
+            "Member and admin are applicable; guest is not. Required storage permission is present in the receipt-bound artifact.",
+            "Manual Tools calls bypass dispatcher authorization and carry no conversation or assigned tab. No Ask/Act, agent-call, or guest-access claim follows.",
+            "Cloud delete is asynchronous, and its current helper does not prove success from {ok:true,deleted:true}; local and cloud observations must be reported separately."
+          ],
+          "limits": [
+            "Source-derived only; no runtime execution or cloud verification was performed while writing this proposal."
           ]
         }
       ],
