@@ -53,18 +53,66 @@
       "990a174a9a7c264595eee8e2a765553195ae5909a64439320ce84c5327f72c8f"
     ],
     "mapped_candidates": [
-      { "label": "Account", "control_id": "EXT-F-1003-C10", "safe_to_open": false },
-      { "label": "Account", "control_id": "EXT-F-1003-C10", "safe_to_open": false },
-      { "label": "Organization", "control_id": "EXT-F-1003-C10", "safe_to_open": true },
-      { "label": "Appearance", "control_id": "EXT-F-1003-C10", "safe_to_open": true },
-      { "label": "Chat", "control_id": "EXT-F-1003-C10", "safe_to_open": true },
-      { "label": "Privacy", "control_id": "EXT-F-1003-C10", "safe_to_open": true },
-      { "label": "Scrape", "control_id": "EXT-F-1003-C10", "safe_to_open": true },
-      { "label": "Data", "control_id": "EXT-F-1003-C10", "safe_to_open": true },
-      { "label": "SEO", "control_id": "EXT-F-1003-C10", "safe_to_open": true },
-      { "label": "Desktop bridge", "control_id": "EXT-F-1003-C10", "safe_to_open": true },
-      { "label": "Data & reset", "control_id": "EXT-F-1003-C10", "safe_to_open": true },
-      { "label": "About", "control_id": "EXT-F-1003-C10", "safe_to_open": true }
+      {
+        "label": "Account",
+        "control_id": "EXT-F-1003-C10",
+        "safe_to_open": false
+      },
+      {
+        "label": "Account",
+        "control_id": "EXT-F-1003-C10",
+        "safe_to_open": false
+      },
+      {
+        "label": "Organization",
+        "control_id": "EXT-F-1003-C10",
+        "safe_to_open": true
+      },
+      {
+        "label": "Appearance",
+        "control_id": "EXT-F-1003-C10",
+        "safe_to_open": true
+      },
+      {
+        "label": "Chat",
+        "control_id": "EXT-F-1003-C10",
+        "safe_to_open": true
+      },
+      {
+        "label": "Privacy",
+        "control_id": "EXT-F-1003-C10",
+        "safe_to_open": true
+      },
+      {
+        "label": "Scrape",
+        "control_id": "EXT-F-1003-C10",
+        "safe_to_open": true
+      },
+      {
+        "label": "Data",
+        "control_id": "EXT-F-1003-C10",
+        "safe_to_open": true
+      },
+      {
+        "label": "SEO",
+        "control_id": "EXT-F-1003-C10",
+        "safe_to_open": true
+      },
+      {
+        "label": "Desktop bridge",
+        "control_id": "EXT-F-1003-C10",
+        "safe_to_open": true
+      },
+      {
+        "label": "Data & reset",
+        "control_id": "EXT-F-1003-C10",
+        "safe_to_open": true
+      },
+      {
+        "label": "About",
+        "control_id": "EXT-F-1003-C10",
+        "safe_to_open": true
+      }
     ],
     "inaccessible_region_count": null,
     "inaccessible_region_note": "Not emitted because the readiness assertion stopped the driver before completeness accounting.",
@@ -108,7 +156,12 @@
     "artifact_id": 11481804368,
     "name": "hosted-guest-37621192492-1",
     "sha256": "c8c4af91b2fba61800909d76bb98c93e2595dbe5a2de14e922ca10930f94ab01",
-    "sanitized_inspection": "Only this run's three resource journals were extracted and inspected. Screenshot files and unrelated stale journals packaged by the workflow were not opened or copied. No full census report was generated."
+    "sanitized_inspection": "Only this run's three resource journals were extracted and inspected. Screenshot files and unrelated stale journals packaged by the workflow were not opened or copied. No full census report was generated.",
+    "screenshot_paths": [
+      "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-zLO2Hj/native-side-panel.png",
+      "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-zLO2Hj/normal-target-after-open.png"
+    ],
+    "screenshot_note": "These captured UI images remain in artifact 11481804368 for follow-up diagnosis; this lane did not inspect or copy them."
   },
   "scope_limits": [
     "Only guest visibility discovery was attempted; no intentional behavior, persistence, permission-denial, or backend access tests were run.",
