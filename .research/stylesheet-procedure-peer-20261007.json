@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent-source-peer-review",
+  "reviewed_artifact": ".research/stylesheet-procedures-20261007.json",
+  "review_scope": "Source-only review of EXT-F-4125-T01, EXT-F-4126-T01, and EXT-F-4167-T01. No browser, tests, build, database, credentials, or inventory mutation. Procedure proposals only; no runtime result is promoted.",
+  "verdict_A_spec_executable_or_partial_or_unverified": {
+    "EXT-F-4125-T01": "PARTIAL, runtime unverified: valid/ordinary malformed CSS argument paths can be attempted in Tools on an explicitly owned tab, but the extra persistent-property negative is not rejected by the current Zod object and can still inject CSS. The dispatcher/approval path has no concrete invocation steps. The CSS page is only proposed; no route or exact fixture body exists in the inspected owned server source.",
+    "EXT-F-4126-T01": "PARTIAL, runtime unverified: the positive removal sequence correctly requires a visible same-run injection on the same owned tab, and reload is not misrepresented as removal. The extra persistent-property negative is not rejected and can still call remove_stylesheet; the unspecified fixture and unexecutable dispatcher path remain gaps.",
+    "EXT-F-4167-T01": "PARTIAL, runtime unverified: inject/remove branch inputs and ordinary malformed action/css/tab_id checks align with live source, and visual checks are appropriately independent from API acknowledgements. The extra-property rejection is false, while C02/C03's real-executor/dispatcher path lacks a concrete way to trigger or observe the delegated call. Fixture and activeTab permission behavior remain unestablished."
+  },
+  "verdict_B_quality_misleading_guards_reuse": "CORRECTION REQUIRED. The safety/quality framing is strong on owned-tab targeting, exact CSS cleanup, distinct visual evidence, and unverified status, but it overstates unknown-key rejection, leaves delegated execution as an instruction without an actionable route, and treats an unprepared fixture plus unresolved activeTab behavior as executable procedure preconditions. Preserve all proposal statuses as unverified until these are corrected and executed.",
+  "findings": [
+    {
+      "severity": "Important",
+      "cases": ["EXT-F-4125-T01", "EXT-F-4126-T01", "EXT-F-4167-T01"],
+      "location": ".research/stylesheet-procedures-20261007.json:70-75, 97-101, 131-136, 150-158; src/lib/tools/handlers/privileged.ts:15-18, 40-43; src/lib/tools/handlers/canonical-mergers.ts:459-464; src/features/tools/ToolsView.tsx:412-425, 449-462; src/lib/tools/dispatch.ts:743",
+      "problem": "Each procedure expects an extra persistent property to fail schema validation. The live leaf and merger schemas are ordinary z.object schemas without .strict(); Zod strips unknown keys. ToolsView.safeParse then passes validated.data to handler.run, and dispatcher safeParse likewise proceeds with parsed.data. The inject inventory key is spelled persist (not persistent); the canonical stylesheet inventory key is persistent; neither is in the current live schema.",
+      "impact": "An extra-key injection input is silently reduced to {css, tab_id} and executes, so the proposed 'no visible change' negative can mutate the page. The analogous remove negative can execute removal. This is a false safety guard, not a schema-negative test.",
+      "required_correction": "Remove the claim that extra keys are schema-rejected. Do not submit an extra-key case as a no-effect negative against a live handler. If retaining it as drift evidence, state that the current runner strips the key and may execute, use only a fresh isolated fixture with known same-run state, and check the resulting behavior explicitly. Reconcile persist/persistent only after the source/catalog contract is resolved; do not imply either flag is supported."
+    },
+    {
+      "severity": "Important",
+      "cases": ["EXT-F-4125-T01", "EXT-F-4126-T01", "EXT-F-4167-T01"],
+      "location": ".research/stylesheet-procedures-20261007.json:49-52, 63-66, 88-92, 108-111, 122-125, 144-148; docs/stabilization/reports/inventory-tools.json:13516-13590, 13620-13691, 19475-19570; src/features/tools/ToolsView.tsx:414-462",
+      "problem": "The procedures say to invoke a 'real delegated path' and test privileged approval/denial, but provide no concrete UI action, conversation/tool request, or other call trigger. The source's Tools Run button validates then calls handler.run directly with permissionMode act and does not use the dispatcher; the inventory names Chat/Pilot as deferred agent entry points. Merely saying 'actual delegated call' is not executable evidence for C02/C03 or dispatcher behavior.",
+      "impact": "An operator can complete the manual steps and incorrectly treat the inventory's real-executor and approval dimensions as covered, or be left without a reproducible way to exercise them. Manual {ok:true} cannot establish dispatch, confirmation, Pilot scope, or tool-result routing.",
+      "required_correction": "Name an available real dispatcher trigger and its exact owned-target setup, identify the confirmation accept/deny observations, and sequence it consistently with the stabilization plan's Chat/Pilot ordering. If no non-Chat/non-Pilot trigger exists, mark that dispatcher dimension explicitly deferred/unverified rather than presenting it as a completed step."
+    },
+    {
+      "severity": "Important",
+      "cases": ["EXT-F-4125-T01", "EXT-F-4126-T01", "EXT-F-4167-T01"],
+      "location": ".research/stylesheet-procedures-20261007.json:22-29, 43-46, 60-62, 85-87, 105-107, 119-121; tests/browser/owned-fixture-server.mjs:1-19",
+      "problem": "The target section says the executor must identify/prepare a stylesheet fixture route, but the source server accepts only caller-supplied exact in-memory routes and contains no stylesheet page or URL. The proposed h1 selector and colors are inputs, not evidence that the controlled page has a visible h1 or a stable baseline. This is a useful bounded prerequisite, but the case steps themselves do not yet identify a runnable target.",
+      "impact": "No operator can reproduce the positive visual assertion from this proposal alone, and remove's captured-baseline expectation is not grounded in an owned page definition. A guessed route returns 404 under the fixture helper.",
+      "required_correction": "Before execution, bind a concrete owned route and exact page markup containing one visible h1, record its URL/fixture ID and baseline in the receipt, and state the exact launch/ownership path. Keep visual outcomes unverified until observed."
+    },
+    {
+      "severity": "Important",
+      "cases": ["EXT-F-4125-T01", "EXT-F-4126-T01", "EXT-F-4167-T01"],
+      "location": ".research/stylesheet-procedures-20261007.json:15-21, 27-29, 38-40, 65-66, 90-92, 110-111, 147-148; docs/stabilization/reports/inventory-tools.json:13545-13557, 13647-13658, 19502-19521; src/lib/tools/catalog.ts:141-142, 255",
+      "problem": "The proposal names activeTab and scripting as required permissions and says to record actual permission state, but leaves activeTab grant behavior unresolved and contains no permission-negative procedure. The inventory readiness gaps explicitly require gated/negative permission cases. These are required permissions rather than declared optional permissions, so the dispatcher's optional-permission check is not the negative path; manual Tools execution also skips dispatch.",
+      "impact": "The current procedure cannot close the inventory's permission dimension, and a successful direct handler call would not prove the intended permission boundary. The text correctly warns against inference but does not give a test or mark the dimension out of scope/deferred in the case verdict.",
+      "required_correction": "Keep this dimension explicitly unresolved unless the campaign defines a safe, supported way to observe activeTab denial on an owned target. Do not claim permission coverage from manual execution or the catalog declaration; record actual granted/effective state and the observed API outcome separately."
+    }
+  ],
+  "source_checks": [
+    "src/lib/tools/handlers/privileged.ts:15-37,40-67: leaf schemas require nonempty css and optional integer tab_id; handlers use explicit tab_id or getAssignedTabId, call chrome.scripting.insertCSS/removeCSS, and return {ok:true} on API resolution.",
+    "src/lib/tools/handlers/canonical-mergers.ts:459-479: stylesheet action enum is inject/remove; css is nonempty; tab_id optional integer; both branches delegate to the leaf handlers. No persistent field exists.",
+    "src/features/tools/ToolsView.tsx:390-425,449-462: local schema is shown as JSON Schema, but manual validation uses Zod safeParse and handler.run is called directly with permissionMode act and assignedTabId null. It bypasses dispatcher permission/confirmation logic and does not itself establish page appearance.",
+    "src/lib/tools/dispatch.ts:743-755,805-840: delegated inputs are safeParsed before operation preparation; privileged tier requests confirmation independent of Ask/Act after pilot scope checks. This path is distinct from ToolsView's direct call.",
+    "src/lib/tools/types.ts:195-210: unknown delegate keys are explicitly rejected only inside delegate(); this does not make top-level leaf or merger args strict.",
+    "src/lib/tools/catalog.ts:141-142,255: permission metadata declares activeTab and scripting for both leaf tools and the merger. The inventory lists no optional permissions.",
+    "tests/browser/owned-fixture-server.mjs:1-19: server maps only exact caller-supplied in-memory routes/assets; every unlisted non-root pathname returns 404. It does not define the proposed h1 fixture.",
+    "docs/stabilization/PLAN.md:24-32: every run/retest needs resource permit and complete build receipt; extension reload is distinct from target page reload; receipt also captures auth/provenance/flags/mocks/seeded state and effective configuration. The proposal appropriately says proposals only but leaves fixture and actual runtime permission observation for execution."
+  ],
+  "accepted_bounds": [
+    "All three cases remain explicitly unverified and no results are promoted.",
+    "The exact-css, exact-owned-tab removal rule and separate visual evidence are safer and source-aligned; reload returning a document to baseline is not incorrectly claimed as proof that remove_stylesheet worked.",
+    "Guest N/A follows the inventory's Tools UI applicability, while member/admin remain separate applicable runs."
+  ],
+  "limits": "No runtime, browser, test, build, permission change, database operation, credential access, or inventory mutation was performed. This review does not establish Chrome's activeTab grant behavior, CSS visual effect, removal matching, or fixture availability beyond the inspected source."
+}
