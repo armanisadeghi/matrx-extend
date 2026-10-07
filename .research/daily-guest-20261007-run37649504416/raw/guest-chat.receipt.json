@@ -1,0 +1,341 @@
+{
+  "schema_version": 1,
+  "scope": "fresh owned guest profile; unpredictable article fixture in the owned browser tab; real Chat opening, same-conversation follow-up, and post-reload new conversation",
+  "context_rule_read_observation_scope": "CDP observer attaches after panel load and runs through Values chip open, both guest sends, and panel reload; it cannot establish requests before attachment",
+  "status": "pass",
+  "build": {
+    "version": "0.2.205",
+    "tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "receipt_kind": "published_store_crx_unpacked",
+    "extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "artifact_unchanged": true
+  },
+  "server_version_before": {
+    "reachable": true,
+    "status": 200,
+    "git_sha": "8fe201b44e7a4c8fe3bf726b77546ad533926a60"
+  },
+  "server_version_after": {
+    "reachable": true,
+    "status": 200,
+    "git_sha": "8fe201b44e7a4c8fe3bf726b77546ad533926a60"
+  },
+  "guest": {
+    "fresh": true,
+    "chat_visible": true,
+    "after_reload": true,
+    "fixture_reinstalled_before_first_send": false,
+    "session_absent_after_reload": true,
+    "fixture_reinstalled_after_reload": false
+  },
+  "chat": {
+    "opening_question_fingerprint": "8b0041e45eb47431",
+    "fixture_fragment_fingerprint": "9f5d3f76b8667cf6",
+    "opening_code_fingerprint": "903e56c35093675d",
+    "completed_reply_count": 1,
+    "answer_contains_unpredictable_page_code": true,
+    "answer_names_page_stages": true,
+    "answer_stages_in_order": true,
+    "no_login_paywall_or_error": true,
+    "followup_completed_after_reload": true,
+    "same_conversation_followup_completed": true,
+    "same_conversation_followup_reply_count": 2,
+    "same_conversation_followup_contains_page_code": true,
+    "same_conversation_identity_verified": true,
+    "followup_question_fingerprint": "be2d5336e111bd21",
+    "followup_code_fingerprint": "3c50f6f58b5b392c",
+    "followup_reply_count": 1,
+    "followup_contains_unpredictable_page_code": true,
+    "followup_names_fixture_heading": true
+  },
+  "screenshot": "guest-chat-real-answer.png",
+  "followup_screenshot": "guest-chat-real-followup-answer.png",
+  "failure_stage": null,
+  "failure_code": null,
+  "failure_reason": null,
+  "stage_progress": [
+    "owned_profile",
+    "fresh_guest",
+    "owned_article_page",
+    "page_specific_fixture",
+    "guest_chat_open",
+    "guest_values_chip_open",
+    "guest_question",
+    "real_guest_answer",
+    "same_conversation_followup_question",
+    "real_same_conversation_followup_answer",
+    "real_panel_reload",
+    "guest_followup_composer",
+    "guest_followup_question",
+    "real_guest_followup_answer",
+    "artifact_unchanged"
+  ],
+  "guest_ai_requests": [
+    {
+      "attempt": "opening",
+      "request_at_utc": "2026-10-07T16:13:11.685Z",
+      "cdp_request_id": "5243.156",
+      "status": 200,
+      "code": null,
+      "conversation_fingerprint": "28880ff6f961b62f",
+      "is_new": true
+    },
+    {
+      "attempt": "same_conversation_followup",
+      "request_at_utc": "2026-10-07T16:13:19.858Z",
+      "cdp_request_id": "5243.159",
+      "status": 200,
+      "code": null,
+      "conversation_fingerprint": "28880ff6f961b62f",
+      "is_new": false
+    },
+    {
+      "attempt": "post_reload_new_conversation",
+      "request_at_utc": "2026-10-07T16:13:24.124Z",
+      "cdp_request_id": "5243.279",
+      "status": 200,
+      "code": null,
+      "conversation_fingerprint": "fc144b2acb5ae13d",
+      "is_new": true
+    }
+  ],
+  "guest_ai_observer": {
+    "mode": "auto_attach",
+    "counters": {
+      "attached": 17,
+      "identity_changed": 2,
+      "network_enabled": 2,
+      "request_events": 100,
+      "post_events": 3,
+      "chat_path_events": 3,
+      "response_events": 100
+    },
+    "provisional_sessions": 1,
+    "confirmed_sessions": 1,
+    "buffered_requests": 3,
+    "observer_failure": null,
+    "target_inventory": [
+      {
+        "identity": "other",
+        "auto_attached_by_observer": true,
+        "type": "service_worker"
+      },
+      {
+        "identity": "other",
+        "auto_attached_by_observer": true,
+        "type": "page"
+      },
+      {
+        "identity": "other",
+        "auto_attached_by_observer": true,
+        "type": "page"
+      },
+      {
+        "identity": "provisional",
+        "auto_attached_by_observer": true,
+        "type": "page"
+      },
+      {
+        "identity": "offscreen",
+        "auto_attached_by_observer": true,
+        "type": "other_type"
+      }
+    ]
+  },
+  "guest_ai_transport_proven": true,
+  "context_rule_reads": [],
+  "grounding_diagnostics": {
+    "before_first_send": {
+      "readableMarkerPresent": true,
+      "pageUrlMatches": true,
+      "activeTabMatchesFixture": true,
+      "activeUrlMatchesFixture": true,
+      "assignedTabMatchesFixture": null
+    },
+    "opening": {
+      "toolEvents": [
+        {
+          "name": "context",
+          "phase": "tool_started",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "context",
+          "phase": "tool_completed",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": true,
+          "resultContainsFollowupCode": true,
+          "resultContainsFixtureHeading": true
+        }
+      ],
+      "toolBoundaryChecks": [
+        {
+          "eventIndex": 1,
+          "toolName": "context",
+          "phase": "tool_started",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        },
+        {
+          "eventIndex": 2,
+          "toolName": "context",
+          "phase": "tool_completed",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        }
+      ],
+      "terminal": {
+        "readableMarkerPresent": true,
+        "pageUrlMatches": true,
+        "activeTabMatchesFixture": true,
+        "activeUrlMatchesFixture": true,
+        "assignedTabMatchesFixture": true
+      }
+    },
+    "same_conversation_followup": {
+      "toolEvents": [],
+      "toolBoundaryChecks": [],
+      "terminal": {
+        "readableMarkerPresent": true,
+        "pageUrlMatches": true,
+        "activeTabMatchesFixture": true,
+        "activeUrlMatchesFixture": true,
+        "assignedTabMatchesFixture": true
+      }
+    },
+    "before_followup_send": {
+      "readableMarkerPresent": true,
+      "pageUrlMatches": true,
+      "activeTabMatchesFixture": true,
+      "activeUrlMatchesFixture": true,
+      "assignedTabMatchesFixture": null
+    },
+    "followup": {
+      "toolEvents": [
+        {
+          "name": "context",
+          "phase": "tool_started",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "context",
+          "phase": "tool_completed",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": true,
+          "resultContainsFollowupCode": true,
+          "resultContainsFixtureHeading": true
+        }
+      ],
+      "toolBoundaryChecks": [
+        {
+          "eventIndex": 1,
+          "toolName": "context",
+          "phase": "tool_started",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        },
+        {
+          "eventIndex": 2,
+          "toolName": "context",
+          "phase": "tool_completed",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        }
+      ],
+      "terminal": {
+        "readableMarkerPresent": true,
+        "pageUrlMatches": true,
+        "activeTabMatchesFixture": true,
+        "activeUrlMatchesFixture": true,
+        "assignedTabMatchesFixture": true
+      }
+    }
+  },
+  "opening_turn_verdict": "terminal_answer",
+  "opening_turn_timeline": [
+    {
+      "verdict": "in_progress",
+      "runCount": 0,
+      "replyCount": 0,
+      "streaming": true
+    },
+    {
+      "verdict": "in_progress",
+      "runCount": 1,
+      "replyCount": 0,
+      "streaming": true
+    },
+    {
+      "verdict": "terminal_answer",
+      "runCount": 1,
+      "replyCount": 1,
+      "streaming": false
+    }
+  ],
+  "same_conversation_turn_verdict": "terminal_answer",
+  "same_conversation_turn_timeline": [
+    {
+      "verdict": "in_progress",
+      "runCount": 1,
+      "replyCount": 1,
+      "streaming": true
+    },
+    {
+      "verdict": "in_progress",
+      "runCount": 2,
+      "replyCount": 1,
+      "streaming": true
+    },
+    {
+      "verdict": "terminal_answer",
+      "runCount": 2,
+      "replyCount": 2,
+      "streaming": false
+    }
+  ],
+  "same_conversation_screenshot": "guest-chat-same-conversation-followup.png",
+  "followup_turn_verdict": "terminal_answer",
+  "followup_turn_timeline": [
+    {
+      "verdict": "in_progress",
+      "runCount": 0,
+      "replyCount": 0,
+      "streaming": true
+    },
+    {
+      "verdict": "in_progress",
+      "runCount": 1,
+      "replyCount": 0,
+      "streaming": true
+    },
+    {
+      "verdict": "terminal_answer",
+      "runCount": 1,
+      "replyCount": 1,
+      "streaming": false
+    }
+  ],
+  "server_version_stable": true
+}

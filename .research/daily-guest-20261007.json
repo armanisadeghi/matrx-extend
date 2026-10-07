@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "lane": "daily_public_store_guest_chat_stable_server_retest",
+  "run": {
+    "id": 37649504416,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37649504416",
+    "workflow": "hosted-guest-acceptance.yml",
+    "event": "workflow_dispatch",
+    "runner": "macos-15 ARM64",
+    "acceptance_case": "guest-chat",
+    "published_store_crx": true,
+    "head_sha": "80841962053d49684e6da73ec9aa9c0a639713fb",
+    "conclusion": "success",
+    "completed_at_utc": "2026-10-07T16:13:43Z",
+    "artifact_id": 11495178831,
+    "artifact_name": "hosted-guest-37649504416-1",
+    "artifact_zip_sha256": "ebb5e37ee98273fe8a0adc61ebec505e7676435ad6681c1991124fd4b614f9fa"
+  },
+  "verdict": {
+    "bounded_acceptance": "pass",
+    "overall_product_health": "not_established",
+    "reason": "The owned hosted run and all three resource journals completed successfully. Evidence covers one fresh guest profile and three turns only."
+  },
+  "published_store_artifact": {
+    "kind": "published_store_crx_unpacked",
+    "version": "0.2.205",
+    "extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "artifact_unchanged_during_acceptance": true
+  },
+  "server": {
+    "endpoint": "https://server.app.matrxserver.com/health/version",
+    "before_git_sha": "8fe201b44e7a4c8fe3bf726b77546ad533926a60",
+    "after_git_sha": "8fe201b44e7a4c8fe3bf726b77546ad533926a60",
+    "post_run_spot_check_git_sha": "8fe201b44e7a4c8fe3bf726b77546ad533926a60",
+    "stable_during_run_and_post_run_check": true
+  },
+  "guest_chat": {
+    "opening": {
+      "terminal_verdict": "terminal_answer",
+      "http_status": 200,
+      "is_new": true,
+      "conversation_fingerprint": "28880ff6f961b62f",
+      "grounded_page_code": true,
+      "stage_names_in_order": true
+    },
+    "same_conversation_followup": {
+      "terminal_verdict": "terminal_answer",
+      "http_status": 200,
+      "is_new": false,
+      "conversation_fingerprint": "28880ff6f961b62f",
+      "reply_count": 2,
+      "grounded_page_code": true
+    },
+    "post_reload_new_conversation": {
+      "terminal_verdict": "terminal_answer",
+      "http_status": 200,
+      "is_new": true,
+      "conversation_fingerprint": "fc144b2acb5ae13d",
+      "grounded_page_code": true,
+      "fixture_heading": true
+    },
+    "all_http_requests_returned_200": true,
+    "same_conversation_fingerprint_preserved": true
+  },
+  "resources": {
+    "journals": {
+      "package": {
+        "file": "raw/hosted-package-37649504416-1.jsonl",
+        "opened": true,
+        "admitted": true,
+        "child_exit_code": 0,
+        "final_decision": "valid",
+        "resource_invalid": false,
+        "reasons": [],
+        "sha256": "e5bbe4b38386c2e1e246672f46fba87ef8065ce8fd9dfd6ef205847b8278811b"
+      },
+      "browser": {
+        "file": "raw/hosted-browser-37649504416-1.jsonl",
+        "opened": true,
+        "admitted": true,
+        "child_exit_code": 0,
+        "final_decision": "valid",
+        "resource_invalid": false,
+        "reasons": [],
+        "sha256": "e5b5f9237eb87a6eb46476d5c08ff604f070dd9ad787788dd0645351ffa784e4"
+      },
+      "guest": {
+        "file": "raw/hosted-guest-37649504416-1.jsonl",
+        "opened": true,
+        "admitted": true,
+        "child_exit_code": 0,
+        "final_decision": "valid",
+        "resource_invalid": false,
+        "reasons": [],
+        "sha256": "1102f53a25c0ad2e76fe86cd06ce756226f643964cdc6062d8c87c2772a4297a"
+      }
+    },
+    "stale_journals_from_upload_excluded": true
+  },
+  "evidence": {
+    "directory": ".research/daily-guest-20261007-run37649504416/raw",
+    "receipt": "guest-chat.receipt.json",
+    "receipt_sha256": "18bc5f4cd4ac780de059d8c67f2990dec64c72b1d42cad89cca109a4c8e6d0a3",
+    "screenshots": {
+      "guest-chat-real-answer.png": {
+        "path": "raw/guest-chat-real-answer.png",
+        "sha256": "db9b665e6c3aed46443c2529cf1505c04e4638228b4a9bcf55b3177cc4c48e69"
+      },
+      "guest-chat-same-conversation-followup.png": {
+        "path": "raw/guest-chat-same-conversation-followup.png",
+        "sha256": "302d7a4a8fa2278698b3a80abd98cd2493fe1be622fc38804499b303792c7726"
+      },
+      "guest-chat-real-followup-answer.png": {
+        "path": "raw/guest-chat-real-followup-answer.png",
+        "sha256": "55d279329f396dc550082fc2f9b5b5629de31c806deca49df7f6236a9de626bb"
+      },
+      "native-side-panel.png": {
+        "path": "raw/native-side-panel.png",
+        "sha256": "0a8d8ce98cd7693b266576da86250d815a55f8b67ce39a6e319786256d64da58"
+      },
+      "normal-target-after-open.png": {
+        "path": "raw/normal-target-after-open.png",
+        "sha256": "970ae5ac62c9cdf9c951d332bf061b1c38b5d01aa19792217c04b12bc618a189"
+      }
+    },
+    "sanitization": "Replaced runner-local screenshot paths with artifact-relative names, removed an intermediate nonfinal failure checkpoint, retained the exact three current-run journals, and excluded three stale journals from run 37105304739. Reviewed the receipt, journals, and five screenshot images for credentials or personal content; screenshots show the guest panel and synthetic public fixture only."
+  },
+  "limits": [
+    "The hosted method unpacks the public Store CRX into a fresh Chrome profile; it does not prove installation through Chrome Web Store UI.",
+    "The CDP observer attaches after panel load, so it does not establish absence of earlier requests.",
+    "This bounded guest-chat pass does not establish overall product health or exhaustive coverage."
+  ],
+  "next_action": "Keep the guarded dashboard recheck separate; its completion is tracked by the parent task."
+}
