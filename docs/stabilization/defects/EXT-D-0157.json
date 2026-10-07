@@ -25,7 +25,10 @@
     ".research/desktop-identity-peer-20261007.json",
     ".research/audit-identity-final-peer-20261007.json",
     ".research/desktop-guest-native-20261007.json",
-    ".research/parallel-native-evidence-peer-20261007.json"
+    ".research/parallel-native-evidence-peer-20261007.json",
+    ".research/audit-selected-native-20261007.json",
+    ".research/settings-audit-native-peer-20261007.json",
+    ".research/desktop-route-audit-final-peer-20261007.json"
   ],
   "transition_history": [
     {
@@ -66,12 +69,18 @@
     }
   ],
   "closure_requirement": "Independent source proof of valid selected artifact and mismatch refusal plus guarded native original setup boundary retest; judge product cases separately.",
-  "next_action": "Audit-key native selected-artifact route remains unverified; continue Settings guest missing criteria without transferring desktop evidence.",
+  "next_action": "Original desktop and audit selected-artifact setup now independently verified; continue remaining product criteria in authoritative inventory.",
   "provenance_note": "Source commit bd7f2088 used already-owned D156 in its message; its desktop repair belongs here. D156 uninterrupted approvals record is untouched.",
   "fix_commits": ["bd7f2088", "4b61cbc3"],
   "original_repro_retest": {
     "run_id": "37696764772",
     "result": "pass",
     "scope": "Desktop selected-artifact native setup; all3 resource journals valid. Audit sibling source reviewed, native audit unverified."
+  },
+  "audit_sibling_retest": {
+    "run_id": "37699585477",
+    "status": "selected-artifact-native-setup-pass",
+    "resource_verdict": "all3 original completed journals valid",
+    "limits": "Audit product criteria mapped separately; incompletecase coverage notwholehealth."
   }
 }

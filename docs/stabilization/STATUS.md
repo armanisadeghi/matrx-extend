@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-07 23:07 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-07T23:07:05.883731+00:00. 205 features · 769 cases · 1351 controls · 157 linked defect records.
+Generated 2026-10-07 23:14 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-07T23:14:28.478294+00:00. 205 features · 769 cases · 1351 controls · 157 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1230** — Pass: 85 · Partial: 79 · Fail: 2 · Unverified: 1063 · N/A: 1.
-Unverified splits into **136 explicitly marked unverified** and **927 with no result record**.
+Applicable case-by-role slots: **1230** — Pass: 83 · Partial: 83 · Fail: 2 · Unverified: 1061 · N/A: 1.
+Unverified splits into **137 explicitly marked unverified** and **924 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 29 cases without steps, 29 without expected outcomes, 27 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -20,7 +20,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Navigation / shell](#navigation--shell) | 1 | 1 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 6, fail 0, unverified 17, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
-| [Settings](#settings) | 1 | 10 pass · 4 partial · 0 fail · 12 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | 14 pass · 3 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | pass 26, partial 10, fail 0, unverified 58, n/a 1 | 0 |
+| [Settings](#settings) | 1 | 10 pass · 4 partial · 0 fail · 12 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | 12 pass · 7 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | pass 24, partial 14, fail 0, unverified 56, n/a 1 | 0 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
@@ -399,7 +399,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1003-T24 admin: Advanced agent capabilities | N/A | N/A | Unverified | EXT-F-1003-C08 |
 | EXT-F-1003-T25 guest: Audit key access denial | N/A | N/A | N/A | EXT-F-1003-C09 |
 | EXT-F-1003-T26 member: Audit key access denial | N/A | Unverified | N/A | EXT-F-1003-C09 |
-| EXT-F-1003-T27 admin: Audit key | N/A | N/A | Unverified | EXT-F-1003-C09 |
+| EXT-F-1003-T27 admin: Audit key | N/A | N/A | Partial | EXT-F-1003-C09 |
 | EXT-F-1003-T28 guest: Collapsible groups | Pass | N/A | N/A | EXT-F-1003-C10 |
 | EXT-F-1003-T29 member: Collapsible groups | N/A | Unverified | N/A | EXT-F-1003-C10 |
 | EXT-F-1003-T30 admin: Collapsible groups | N/A | N/A | Pass | EXT-F-1003-C10 |
@@ -433,7 +433,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1003-T58 Optional permission: Clipboard read | N/A | N/A | Pass | EXT-F-1003-C22 |
 | EXT-F-1003-T59 Optional permission: Tab video capture | N/A | N/A | Unverified | EXT-F-1003-C23 |
 | EXT-F-1003-T60 Audit key export | N/A | N/A | Pass | EXT-F-1003-C24, EXT-F-1003-C38 |
-| EXT-F-1003-T61 Audit key re-key confirmation | N/A | N/A | Unverified | EXT-F-1003-C25 |
+| EXT-F-1003-T61 Audit key re-key confirmation | N/A | N/A | Partial | EXT-F-1003-C25 |
 | EXT-F-1003-T62 Audit receipt origin filters | N/A | N/A | Unverified | EXT-F-1003-C26 |
 | EXT-F-1003-T63 Advanced capabilities member denial | Unverified | Unverified | N/A | EXT-F-1003-C27 |
 | EXT-F-1003-T64 guest: Ask again for a never-capture site | Unverified | N/A | N/A | EXT-F-1003-C28 |
@@ -458,12 +458,12 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1003-T82 guest: Retry saving preferences | Pass | N/A | N/A | EXT-F-1003-C36 |
 | EXT-F-1003-T83 member: Retry saving preferences | N/A | Pass | N/A | EXT-F-1003-C36 |
 | EXT-F-1003-T84 admin: Retry saving preferences | N/A | N/A | Pass | EXT-F-1003-C36 |
-| EXT-F-1003-T86 Audit details read failure and retry | N/A | N/A | Pass | EXT-F-1003-C09, EXT-F-1003-C37 |
+| EXT-F-1003-T86 Audit details read failure and retry | N/A | N/A | Partial | EXT-F-1003-C09, EXT-F-1003-C37 |
 | EXT-F-1003-T87 Audit rotation failure before mutation | N/A | N/A | Pass | EXT-F-1003-C25 |
 | EXT-F-1003-T88 Successful rotation with failed details refresh | N/A | N/A | Pass | EXT-F-1003-C25, EXT-F-1003-C37 |
 | EXT-F-1003-T89 Audit key late persistence failure | N/A | N/A | Pass | EXT-F-1003-C25, EXT-F-1003-C37 |
 | EXT-F-1003-T90 Concurrent audit key rotation preserves receipt verification | N/A | N/A | Pass | EXT-F-1003-C09, EXT-F-1003-C25 |
-| EXT-F-1003-T91 Audit storage locking unavailable recovery | N/A | N/A | Pass | EXT-F-1003-C09, EXT-F-1003-C24, EXT-F-1003-C25, EXT-F-1003-C37 |
+| EXT-F-1003-T91 Audit storage locking unavailable recovery | N/A | N/A | Partial | EXT-F-1003-C09, EXT-F-1003-C24, EXT-F-1003-C25, EXT-F-1003-C37 |
 | EXT-F-1003-T92 Archived organization management link and guest visibility | Unverified | Unverified | Unverified | EXT-F-1003-C39 |
 
 **Recorded case details and evidence:**
@@ -494,6 +494,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: 37693743871, development0.2.387/source14305391, ['.research/frozen-settings-native-retest-20261007.json', '.research/native-batch-evidence-peer-20261007.json']
 - EXT-F-1003-T25 · guest: N/A. Audit key is admin-only: source isAdmin gate and actual guest T22 evidence confirm absence. Negative access remains covered byT22/T63; this does not waive member/direct-state checks.
   Evidence / build / date recorded: ['docs/stabilization/reports/guest-settings-applicability.json', 'docs/stabilization/runs/guest-settings-local-003.json']
+- EXT-F-1003-T27 · admin: Partial. Admin identity and key-read/error recovery exercised; no assertions for creation time, receipt count, recent rows, filters, or a normal warm/reload display comparison.
+  Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
 - EXT-F-1003-T28 · guest: Pass.
   Evidence / build / date recorded: guest-settings-002, docs/stabilization/runs/guest-settings-002.json
 - EXT-F-1003-T30 · admin: Pass. Actual adminUI on0.2.51; full control criteria includingreload verified, System/Fast/groups restored; resourcehealthy.
@@ -534,8 +536,12 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: admin-permissions-001, docs/stabilization/runs/admin-permissions-001.json
 - EXT-F-1003-T59 · admin: Unverified.
   Evidence / build / date recorded: permissions-auth-native-sol, docs/stabilization/runs/permissions-auth-native-sol.json
-- EXT-F-1003-T60 · admin: Pass. Actual clipboard rejection rendered failure; explicit retry copied the public JWK without rotating the key.
-  Evidence / build / date recorded: audit-final-native-20261003-02, ['.research/audit-final-native.json', '.research/audit-receipts-peer.json']
+- EXT-F-1003-T60 · admin: Pass. Injected one clipboard refusal; visible failure and retry, no copied state; retry copied only the public JWK and storage stayed unchanged.
+  Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
+- EXT-F-1003-T61 · admin: Partial. Confirmed rotation paths exercised; cancel confirmation and unchanged-key assertion before confirmation were not exercised.
+  Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
+- EXT-F-1003-T62 · admin: Unverified. No receipt-origin filter selection, per-filter row/count assertion, or empty-origin assertion.
+  Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
 - EXT-F-1003-T67 · guest: Pass. Capture and Scroll & capture each persisted after full extension Reload. Restored Capture and verified after final reload.
   Evidence / build / date recorded: guest-autoscrape-native-20261002-01, docs/stabilization/reports/guest-autoscrape-native-20261002.json
 - EXT-F-1003-T70 · guest: Unverified. Identity/readiness/no-update path observed;5passed/5unverified criteria. Alternate API/update branches untested; no full-case pass. Guest only; other modes retain their own evidence.
@@ -548,18 +554,18 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: settings-mounted-member-full6-20261003-01, ['.research/settings-all-modes-evidence-peer.json', '.research/settings-mounted-native.json']
 - EXT-F-1003-T84 · admin: Pass. Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. The actual Retry save control clears the failure and persists the latest choice; no other preference-control coverage inferred.
   Evidence / build / date recorded: settings-mounted-admin-full6-20261003-01, ['.research/settings-all-modes-evidence-peer.json', '.research/settings-mounted-native.json']
-- EXT-F-1003-T86 · admin: Pass. Actual new-document read rejection rendered failure; details retry recovered with zero active-key writes.
-  Evidence / build / date recorded: audit-final-native-20261003-02, ['.research/audit-final-native.json', '.research/audit-receipts-peer.json']
-- EXT-F-1003-T87 · admin: Pass. Pre-mutation history failure preserved the key; fresh confirmation rotated successfully. The prior product-signed receipt verified and its tampered copy failed.
-  Evidence / build / date recorded: audit-final-native-20261003-02, ['.research/audit-final-native.json', '.research/audit-receipts-peer.json']
-- EXT-F-1003-T88 · admin: Pass. Successful rotation followed by a failed details refresh remained acknowledged; retry recovered without another rotation.
-  Evidence / build / date recorded: audit-final-native-20261003-02, ['.research/audit-final-native.json', '.research/audit-receipts-peer.json']
-- EXT-F-1003-T89 · admin: Pass. An uncertain persisted active-key write blocked further mutation until read recovery; the prior genuine receipt verified and its tampered copy failed.
-  Evidence / build / date recorded: audit-final-native-20261003-02, ['.research/audit-final-native.json', '.research/audit-receipts-peer.json']
-- EXT-F-1003-T90 · admin: Pass. Two same-origin contexts serialized rotations and signing; three distinct product-signed generations verified after both contexts reloaded, and all tampered copies failed. Uses the actual bundled product verifier, not the receipt-dialog UI.
-  Evidence / build / date recorded: audit-final-native-20261003-02, ['.research/audit-final-native.json', '.research/audit-receipts-peer.json']
-- EXT-F-1003-T91 · admin: Pass. Missing Web Locks at initial audit-card mount in an already authenticated shell disabled mutation and export; restoring capability plus details retry recovered without history mutation. Cold extension/auth-shell startup is not covered.
-  Evidence / build / date recorded: audit-final-native-20261003-02, ['.research/audit-final-native.json', '.research/audit-receipts-peer.json']
+- EXT-F-1003-T86 · admin: Partial. Read rejection showed actionable failure; retry recovered details with unchanged key/history and zero active-key writes. No separate rotate-invocation counter was recorded.
+  Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
+- EXT-F-1003-T87 · admin: Pass. History-write rejection preserved active key/history; a fresh confirmation rotated; prior genuine receipt verified and tampered copy rejected after reload.
+  Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
+- EXT-F-1003-T88 · admin: Pass. Successful rotation with refresh-read failure recovered details without repeating rotation; key persisted across reload.
+  Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
+- EXT-F-1003-T89 · admin: Pass. Persisted active-key write with rejected acknowledgement/readback entered unknown state, blocked re-key, recovered by read, survived reload, and retained valid old receipt/tamper rejection.
+  Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
+- EXT-F-1003-T90 · admin: Pass. Two same-origin contexts queued overlapping rotations under native Web Locks; three signed generations verified after both contexts reloaded; tampered receipts rejected in both.
+  Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
+- EXT-F-1003-T91 · admin: Partial. Unavailable-lock details/export/rotation states disabled actions and preserved history; restoration/read-only retry recovered. Cold auth-shell boot and ordinary retryable failures were not tested in this case.
+  Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
 
 
 ## Profile

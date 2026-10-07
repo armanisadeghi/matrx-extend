@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-07T23:07:05.883731+00:00",
+  "updated_at": "2026-10-07T23:14:28.478294+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -5566,7 +5566,22 @@
           "expected": [
             "The admin sees the actual public key ID, creation time, receipt count and current recent rows. Failed reads show an actionable error instead of indefinite loading or misleading empty success."
           ],
-          "dimensions": ["warm", "reload"]
+          "dimensions": ["warm", "reload"],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "37699585477",
+              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+              "build_version": "0.2.391",
+              "evidence": [
+                ".research/audit-selected-native-20261007.json",
+                ".research/settings-audit-native-peer-20261007.json",
+                ".research/desktop-route-audit-final-peer-20261007.json"
+              ],
+              "detail": "Admin identity and key-read/error recovery exercised; no assertions for creation time, receipt count, recent rows, filters, or a normal warm/reload display comparison.",
+              "release_scope": "Exact frozen development artifact and listed native UI/crypto assertions only; no Store or whole Settings health."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T28",
@@ -7001,20 +7016,38 @@
           "results": {
             "admin": {
               "status": "pass",
-              "run_id": "audit-final-native-20261003-02",
-              "native_run_status": "pass",
-              "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
-              "build_version": "0.2.176",
-              "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+              "run_id": "37699585477",
+              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+              "build_version": "0.2.391",
               "evidence": [
-                ".research/audit-final-native.json",
-                ".research/audit-receipts-peer.json"
+                ".research/audit-selected-native-20261007.json",
+                ".research/settings-audit-native-peer-20261007.json",
+                ".research/desktop-route-audit-final-peer-20261007.json"
               ],
-              "detail": "Actual clipboard rejection rendered failure; explicit retry copied the public JWK without rotating the key.",
-              "release_scope": "Exact CI development artifact, not frozen Store package or full extension-update lifecycle."
+              "detail": "Injected one clipboard refusal; visible failure and retry, no copied state; retry copied only the public JWK and storage stayed unchanged.",
+              "release_scope": "Exact frozen development artifact and listed native UI/crypto assertions only; no Store or whole Settings health."
             }
           },
-          "linked_defects": ["EXT-D-0093"]
+          "linked_defects": ["EXT-D-0093"],
+          "result_history": [
+            {
+              "mode": "admin",
+              "result": {
+                "status": "pass",
+                "run_id": "audit-final-native-20261003-02",
+                "native_run_status": "pass",
+                "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+                "build_version": "0.2.176",
+                "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+                "evidence": [
+                  ".research/audit-final-native.json",
+                  ".research/audit-receipts-peer.json"
+                ],
+                "detail": "Actual clipboard rejection rendered failure; explicit retry copied the public JWK without rotating the key.",
+                "release_scope": "Exact CI development artifact, not frozen Store package or full extension-update lifecycle."
+              }
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T61",
@@ -7033,7 +7066,22 @@
           "expected": [
             "Cancel preserves key; confirm rotates key, refreshes ID and preserves receipt verification history."
           ],
-          "dimensions": ["warm", "reload"]
+          "dimensions": ["warm", "reload"],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "37699585477",
+              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+              "build_version": "0.2.391",
+              "evidence": [
+                ".research/audit-selected-native-20261007.json",
+                ".research/settings-audit-native-peer-20261007.json",
+                ".research/desktop-route-audit-final-peer-20261007.json"
+              ],
+              "detail": "Confirmed rotation paths exercised; cancel confirmation and unchanged-key assertion before confirmation were not exercised.",
+              "release_scope": "Exact frozen development artifact and listed native UI/crypto assertions only; no Store or whole Settings health."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T62",
@@ -7050,7 +7098,22 @@
           "expected": [
             "Visible receipt rows and counts match selected origin; empty filter shows \u201cNo receipts with origin=\u2026\u201d; all restores every row."
           ],
-          "dimensions": ["warm", "reload"]
+          "dimensions": ["warm", "reload"],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "37699585477",
+              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+              "build_version": "0.2.391",
+              "evidence": [
+                ".research/audit-selected-native-20261007.json",
+                ".research/settings-audit-native-peer-20261007.json",
+                ".research/desktop-route-audit-final-peer-20261007.json"
+              ],
+              "detail": "No receipt-origin filter selection, per-filter row/count assertion, or empty-origin assertion.",
+              "release_scope": "Exact frozen development artifact and listed native UI/crypto assertions only; no Store or whole Settings health."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T63",
@@ -7698,21 +7761,39 @@
           "dimensions": ["warm", "reload"],
           "results": {
             "admin": {
-              "status": "pass",
-              "run_id": "audit-final-native-20261003-02",
-              "native_run_status": "pass",
-              "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
-              "build_version": "0.2.176",
-              "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+              "status": "partial",
+              "run_id": "37699585477",
+              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+              "build_version": "0.2.391",
               "evidence": [
-                ".research/audit-final-native.json",
-                ".research/audit-receipts-peer.json"
+                ".research/audit-selected-native-20261007.json",
+                ".research/settings-audit-native-peer-20261007.json",
+                ".research/desktop-route-audit-final-peer-20261007.json"
               ],
-              "detail": "Actual new-document read rejection rendered failure; details retry recovered with zero active-key writes.",
-              "release_scope": "Exact CI development artifact, not frozen Store package or full extension-update lifecycle."
+              "detail": "Read rejection showed actionable failure; retry recovered details with unchanged key/history and zero active-key writes. No separate rotate-invocation counter was recorded.",
+              "release_scope": "Exact frozen development artifact and listed native UI/crypto assertions only; no Store or whole Settings health."
             }
           },
-          "linked_defects": ["EXT-D-0093"]
+          "linked_defects": ["EXT-D-0093"],
+          "result_history": [
+            {
+              "mode": "admin",
+              "result": {
+                "status": "pass",
+                "run_id": "audit-final-native-20261003-02",
+                "native_run_status": "pass",
+                "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+                "build_version": "0.2.176",
+                "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+                "evidence": [
+                  ".research/audit-final-native.json",
+                  ".research/audit-receipts-peer.json"
+                ],
+                "detail": "Actual new-document read rejection rendered failure; details retry recovered with zero active-key writes.",
+                "release_scope": "Exact CI development artifact, not frozen Store package or full extension-update lifecycle."
+              }
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T87",
@@ -7737,20 +7818,38 @@
           "results": {
             "admin": {
               "status": "pass",
-              "run_id": "audit-final-native-20261003-02",
-              "native_run_status": "pass",
-              "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
-              "build_version": "0.2.176",
-              "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+              "run_id": "37699585477",
+              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+              "build_version": "0.2.391",
               "evidence": [
-                ".research/audit-final-native.json",
-                ".research/audit-receipts-peer.json"
+                ".research/audit-selected-native-20261007.json",
+                ".research/settings-audit-native-peer-20261007.json",
+                ".research/desktop-route-audit-final-peer-20261007.json"
               ],
-              "detail": "Pre-mutation history failure preserved the key; fresh confirmation rotated successfully. The prior product-signed receipt verified and its tampered copy failed.",
-              "release_scope": "Exact CI development artifact, not frozen Store package or full extension-update lifecycle."
+              "detail": "History-write rejection preserved active key/history; a fresh confirmation rotated; prior genuine receipt verified and tampered copy rejected after reload.",
+              "release_scope": "Exact frozen development artifact and listed native UI/crypto assertions only; no Store or whole Settings health."
             }
           },
-          "linked_defects": ["EXT-D-0093"]
+          "linked_defects": ["EXT-D-0093"],
+          "result_history": [
+            {
+              "mode": "admin",
+              "result": {
+                "status": "pass",
+                "run_id": "audit-final-native-20261003-02",
+                "native_run_status": "pass",
+                "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+                "build_version": "0.2.176",
+                "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+                "evidence": [
+                  ".research/audit-final-native.json",
+                  ".research/audit-receipts-peer.json"
+                ],
+                "detail": "Pre-mutation history failure preserved the key; fresh confirmation rotated successfully. The prior product-signed receipt verified and its tampered copy failed.",
+                "release_scope": "Exact CI development artifact, not frozen Store package or full extension-update lifecycle."
+              }
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T88",
@@ -7775,20 +7874,38 @@
           "results": {
             "admin": {
               "status": "pass",
-              "run_id": "audit-final-native-20261003-02",
-              "native_run_status": "pass",
-              "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
-              "build_version": "0.2.176",
-              "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+              "run_id": "37699585477",
+              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+              "build_version": "0.2.391",
               "evidence": [
-                ".research/audit-final-native.json",
-                ".research/audit-receipts-peer.json"
+                ".research/audit-selected-native-20261007.json",
+                ".research/settings-audit-native-peer-20261007.json",
+                ".research/desktop-route-audit-final-peer-20261007.json"
               ],
-              "detail": "Successful rotation followed by a failed details refresh remained acknowledged; retry recovered without another rotation.",
-              "release_scope": "Exact CI development artifact, not frozen Store package or full extension-update lifecycle."
+              "detail": "Successful rotation with refresh-read failure recovered details without repeating rotation; key persisted across reload.",
+              "release_scope": "Exact frozen development artifact and listed native UI/crypto assertions only; no Store or whole Settings health."
             }
           },
-          "linked_defects": ["EXT-D-0093"]
+          "linked_defects": ["EXT-D-0093"],
+          "result_history": [
+            {
+              "mode": "admin",
+              "result": {
+                "status": "pass",
+                "run_id": "audit-final-native-20261003-02",
+                "native_run_status": "pass",
+                "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+                "build_version": "0.2.176",
+                "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+                "evidence": [
+                  ".research/audit-final-native.json",
+                  ".research/audit-receipts-peer.json"
+                ],
+                "detail": "Successful rotation followed by a failed details refresh remained acknowledged; retry recovered without another rotation.",
+                "release_scope": "Exact CI development artifact, not frozen Store package or full extension-update lifecycle."
+              }
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T89",
@@ -7813,20 +7930,38 @@
           "results": {
             "admin": {
               "status": "pass",
-              "run_id": "audit-final-native-20261003-02",
-              "native_run_status": "pass",
-              "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
-              "build_version": "0.2.176",
-              "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+              "run_id": "37699585477",
+              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+              "build_version": "0.2.391",
               "evidence": [
-                ".research/audit-final-native.json",
-                ".research/audit-receipts-peer.json"
+                ".research/audit-selected-native-20261007.json",
+                ".research/settings-audit-native-peer-20261007.json",
+                ".research/desktop-route-audit-final-peer-20261007.json"
               ],
-              "detail": "An uncertain persisted active-key write blocked further mutation until read recovery; the prior genuine receipt verified and its tampered copy failed.",
-              "release_scope": "Exact CI development artifact, not frozen Store package or full extension-update lifecycle."
+              "detail": "Persisted active-key write with rejected acknowledgement/readback entered unknown state, blocked re-key, recovered by read, survived reload, and retained valid old receipt/tamper rejection.",
+              "release_scope": "Exact frozen development artifact and listed native UI/crypto assertions only; no Store or whole Settings health."
             }
           },
-          "linked_defects": ["EXT-D-0093"]
+          "linked_defects": ["EXT-D-0093"],
+          "result_history": [
+            {
+              "mode": "admin",
+              "result": {
+                "status": "pass",
+                "run_id": "audit-final-native-20261003-02",
+                "native_run_status": "pass",
+                "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+                "build_version": "0.2.176",
+                "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+                "evidence": [
+                  ".research/audit-final-native.json",
+                  ".research/audit-receipts-peer.json"
+                ],
+                "detail": "An uncertain persisted active-key write blocked further mutation until read recovery; the prior genuine receipt verified and its tampered copy failed.",
+                "release_scope": "Exact CI development artifact, not frozen Store package or full extension-update lifecycle."
+              }
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T90",
@@ -7852,19 +7987,37 @@
           "results": {
             "admin": {
               "status": "pass",
-              "run_id": "audit-final-native-20261003-02",
-              "native_run_status": "pass",
-              "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
-              "build_version": "0.2.176",
-              "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+              "run_id": "37699585477",
+              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+              "build_version": "0.2.391",
               "evidence": [
-                ".research/audit-final-native.json",
-                ".research/audit-receipts-peer.json"
+                ".research/audit-selected-native-20261007.json",
+                ".research/settings-audit-native-peer-20261007.json",
+                ".research/desktop-route-audit-final-peer-20261007.json"
               ],
-              "detail": "Two same-origin contexts serialized rotations and signing; three distinct product-signed generations verified after both contexts reloaded, and all tampered copies failed. Uses the actual bundled product verifier, not the receipt-dialog UI.",
-              "release_scope": "Exact CI development artifact, not frozen Store package or full extension-update lifecycle."
+              "detail": "Two same-origin contexts queued overlapping rotations under native Web Locks; three signed generations verified after both contexts reloaded; tampered receipts rejected in both.",
+              "release_scope": "Exact frozen development artifact and listed native UI/crypto assertions only; no Store or whole Settings health."
             }
-          }
+          },
+          "result_history": [
+            {
+              "mode": "admin",
+              "result": {
+                "status": "pass",
+                "run_id": "audit-final-native-20261003-02",
+                "native_run_status": "pass",
+                "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+                "build_version": "0.2.176",
+                "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+                "evidence": [
+                  ".research/audit-final-native.json",
+                  ".research/audit-receipts-peer.json"
+                ],
+                "detail": "Two same-origin contexts serialized rotations and signing; three distinct product-signed generations verified after both contexts reloaded, and all tampered copies failed. Uses the actual bundled product verifier, not the receipt-dialog UI.",
+                "release_scope": "Exact CI development artifact, not frozen Store package or full extension-update lifecycle."
+              }
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T91",
@@ -7889,20 +8042,38 @@
           "linked_defects": ["EXT-D-0093"],
           "results": {
             "admin": {
-              "status": "pass",
-              "run_id": "audit-final-native-20261003-02",
-              "native_run_status": "pass",
-              "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
-              "build_version": "0.2.176",
-              "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+              "status": "partial",
+              "run_id": "37699585477",
+              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+              "build_version": "0.2.391",
               "evidence": [
-                ".research/audit-final-native.json",
-                ".research/audit-receipts-peer.json"
+                ".research/audit-selected-native-20261007.json",
+                ".research/settings-audit-native-peer-20261007.json",
+                ".research/desktop-route-audit-final-peer-20261007.json"
               ],
-              "detail": "Missing Web Locks at initial audit-card mount in an already authenticated shell disabled mutation and export; restoring capability plus details retry recovered without history mutation. Cold extension/auth-shell startup is not covered.",
-              "release_scope": "Exact CI development artifact, not frozen Store package or full extension-update lifecycle."
+              "detail": "Unavailable-lock details/export/rotation states disabled actions and preserved history; restoration/read-only retry recovered. Cold auth-shell boot and ordinary retryable failures were not tested in this case.",
+              "release_scope": "Exact frozen development artifact and listed native UI/crypto assertions only; no Store or whole Settings health."
             }
-          }
+          },
+          "result_history": [
+            {
+              "mode": "admin",
+              "result": {
+                "status": "pass",
+                "run_id": "audit-final-native-20261003-02",
+                "native_run_status": "pass",
+                "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+                "build_version": "0.2.176",
+                "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+                "evidence": [
+                  ".research/audit-final-native.json",
+                  ".research/audit-receipts-peer.json"
+                ],
+                "detail": "Missing Web Locks at initial audit-card mount in an already authenticated shell disabled mutation and export; restoring capability plus details retry recovered without history mutation. Cold extension/auth-shell startup is not covered.",
+                "release_scope": "Exact CI development artifact, not frozen Store package or full extension-update lifecycle."
+              }
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T92",
