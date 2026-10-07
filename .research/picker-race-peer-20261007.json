@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "picker-race-peer-20261007",
+  "reviewed_commit": "8f1b52d065395f45f806d12658b482faab269629",
+  "defect_id": "EXT-D-0042",
+  "outcome_A": "source_ready_native_pending",
+  "outcome_B": "quality_concern_nonblocking",
+  "review_scope": "Fresh independent source review of ITEM_DETECTED and RESULT stale A delivery after B starts; no native browser or hosted acceptance run in this lane.",
+  "findings": [
+    {
+      "severity": "Minor",
+      "location": "tests/browser/showcase-picker-native-acceptance.mjs:748-765",
+      "finding": "The receipt records only the broad cycle stage on a wait timeout, while waitFor's precise label and last observed value remain in the thrown error and are not persisted. A hosted failure at B's stamped detection, field selection, result, or extraction can therefore have the same failure_code.",
+      "impact": "A failed hosted attempt needs log inspection to identify the exact boundary; this does not allow a missing receipt to pass."
+    }
+  ],
+  "source_evidence": [
+    "The hook arms one channel, captures the original message object and arguments in the extension isolated world, and releases them through the bound original runtime.sendMessage. It never constructs a replacement envelope for native delivery.",
+    "The sidepanel listener records the delivered channel/session and the service worker's tab_id/document_id stamp. The driver waits for the old stamped relay and asserts B remains picking, has one overlay, and has no A configuration before B selection.",
+    "A uses the two-card #archive/.archive-card fixture; B uses three #events/.event-card fixtures. A's captured selectors are evaluated against the page, B's configuration root must differ, and B's distinct session must produce stamped detection and result before three titled rows count as a pass.",
+    "The two new cycles run only with MATRX_SHOWCASE_STALE_BOUNDARY=1. Receipt status remains unverified on any thrown assertion and only removes the stale-channel criterion after the entire native driver completes."
+  ],
+  "checks": {
+    "node_test": "node --test tests/browser/showcase-stale-runtime-boundary.test.mjs: 2 pass",
+    "syntax": "node --check tests/browser/showcase-picker-native-acceptance.mjs: pass",
+    "biome": "pnpm exec biome check on three changed browser files: pass",
+    "native": "not run; source review and simulated hook tests do not prove installed-extension behavior"
+  },
+  "decision": "Source is ready for the guarded hosted showcase-stale-admin native run. Keep EXT-D-0042 in-fix and do not credit ITEM_DETECTED or RESULT as native-passed until exact-artifact receipts show both cycles. Remaining delayed cancellation, deferred installation, reinjection listener count, and nonadmin gating remain open."
+}
