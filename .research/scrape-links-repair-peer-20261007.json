@@ -1,0 +1,34 @@
+{
+  "task_id": "scrape-links-repair-peer-20261007",
+  "reviewed_commit": "f8c0ad58953721b65e60c9dcd50d05d151c449af",
+  "status": "done_with_concerns",
+  "verdict_a_behavior_source_vs_native": {
+    "source": "partial",
+    "native_acceptance": "unverified",
+    "ready_for_guarded_native_retest": false,
+    "evidence": [
+      "The original run 37670744036 recorded a trusted /forms pointer click, then selected:null before selected:Links returned; this supports a race at the next Copy target lookup.",
+      "The new bounded readiness poll runs after the open tab closes and before both Links and Video Copy clicks; the subsequent click still passes through the native resource gate and trusted pointer driver.",
+      "The prior hosted artifact predates f8c0ad58. No native run of this change was performed by this reviewer."
+    ],
+    "finding": "Readiness can return true for a data-matrx-title-only Copy button, but the following scrape-media-copy pointer resolver searches only button[title^=\"Copy \"]. A hover/title transition between open and copy can therefore reproduce pointer_target_not_unique despite a ready verdict. Make both lookups use the same target contract, then perform the guarded native retest."
+  },
+  "verdict_b_quality_doctrine": {
+    "status": "fail",
+    "severity": "important",
+    "causal_guard": "The reported pre-fix run says the new restoration case failed on pointer_target_not_unique and the sibling rejection case failed on a missing rejection; the current node --test run passed 20/20 with zero skipped. The test waits for a scripted second readiness sample, which does exercise the old-versus-new boundary, but it does not expose the title/data-matrx-title mismatch because its fake click checks only the selected tab.",
+    "timeout_and_diagnostics": "waitFor is bounded to 10 seconds and throws scrape_media_copy_target_ready_not_observed with the last readiness state; it does not convert this error to a partial observation. The pointer click retains its own failure diagnostics.",
+    "video_sibling": "observeVideoLinks and observeScrapeLinks share the changed function; the focused restoration test iterates over both. The same selector mismatch affects both.",
+    "assertion_integrity": "No skip or softened verdict was introduced in f8c0ad58; URL mismatch and clipboard mismatch assertions remain failures, and native action errors still abort.",
+    "finding": "Add a focused case with a Copy control carrying only data-matrx-title that proves the readiness result and pointer target selection agree. Current readiness can pass where the pointer driver necessarily finds zero candidates."
+  },
+  "verification": {
+    "command": "node --test tests/browser/scrape-native-media-actions.test.mjs",
+    "result": "20 passed, 0 failed, 0 skipped; 1.84 seconds",
+    "source_checks": [
+      "tests/browser/scrape-native-media-actions.mjs waitForMediaCopyTarget query includes button[data-matrx-title^=\"Copy \"].",
+      "tests/browser/settings-panel-driver.mjs scrape-media-copy query includes only button[title^=\"Copy \"].",
+      "tests/browser/scrape-native-media-actions.test.mjs restoration fake click checks selected tab and does not call the pointer resolver."
+    ]
+  }
+}
