@@ -107,5 +107,5 @@
     ],
     "permissions": "private directory mode 0700; evidence files mode 0600"
   },
-  "claim_limit": "One native preflight only. The three-resource validity gate failed because the guest journal records child_failed. No delivery order, saved current result, honest refusal after ordered release, or full T57 acceptance is claimed. No retry was dispatched."
+  "claim_limit": "One native preflight only. All three resource journals were admitted with resourceInvalid=false; the guest child_failed decision records the native child exit 1, not resource invalidation. No delivery order, saved current result, honest refusal after ordered release, or full T57 acceptance is claimed. No retry was dispatched."
 }
