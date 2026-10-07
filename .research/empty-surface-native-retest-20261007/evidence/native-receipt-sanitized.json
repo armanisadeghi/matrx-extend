@@ -1,0 +1,1152 @@
+{
+  "schema_version": 2,
+  "status": "incomplete",
+  "role": "guest",
+  "observation_only": true,
+  "build_channel": "ci_development_test",
+  "artifact": {
+    "version": "0.2.366",
+    "source_sha": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+    "ci_run_id": 37619740064,
+    "artifact_id": 11482071536,
+    "tree_sha256": "9e7c2db499a2c1fed0a8b3ea6facfa88a13f3c2c26ba7f9b9d2d1f216310236c"
+  },
+  "authentication": {
+    "role": "guest",
+    "signed_out_observed": true,
+    "access_token_present": false,
+    "refresh_token_present": false,
+    "profile_present": false,
+    "admin_role": false,
+    "account_visible": true,
+    "sign_in_visible": true,
+    "sign_out_visible": false
+  },
+  "navigation": {
+    "total": 8,
+    "mapped": [
+      {
+        "id": "EXT-F-1001-C01",
+        "label": "Chat",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        },
+        "classification": "navigation",
+        "provenance": {
+          "tag": "button",
+          "role": "tab",
+          "dom_order": 1,
+          "region": "tablist",
+          "dom_path": "html:-1/body:0/div:0/div:0/div:0/div:0/div:0/button:0"
+        }
+      },
+      {
+        "id": "EXT-F-1001-C01",
+        "label": "Scrape",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        },
+        "classification": "navigation",
+        "provenance": {
+          "tag": "button",
+          "role": "tab",
+          "dom_order": 2,
+          "region": "tablist",
+          "dom_path": "html:-1/body:0/div:0/div:0/div:0/div:0/div:0/button:1"
+        }
+      },
+      {
+        "id": "EXT-F-1001-C01",
+        "label": "Data",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        },
+        "classification": "navigation",
+        "provenance": {
+          "tag": "button",
+          "role": "tab",
+          "dom_order": 3,
+          "region": "tablist",
+          "dom_path": "html:-1/body:0/div:0/div:0/div:0/div:0/div:0/button:2"
+        }
+      },
+      {
+        "id": "EXT-F-1001-C01",
+        "label": "SEO",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        },
+        "classification": "navigation",
+        "provenance": {
+          "tag": "button",
+          "role": "tab",
+          "dom_order": 4,
+          "region": "tablist",
+          "dom_path": "html:-1/body:0/div:0/div:0/div:0/div:0/div:0/button:3"
+        }
+      },
+      {
+        "id": "EXT-F-1001-C01",
+        "label": "Settings",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        },
+        "classification": "navigation",
+        "provenance": {
+          "tag": "button",
+          "role": "tab",
+          "dom_order": 5,
+          "region": "tablist",
+          "dom_path": "html:-1/body:0/div:0/div:0/div:0/div:0/div:0/button:4"
+        }
+      }
+    ],
+    "unmapped_count": 2,
+    "unmapped": [
+      {
+        "kind": "button",
+        "label_fingerprint": "6da0287da4c2eeae7614257f6054f7a948d79da58af28dd909a60f991ee6c6e7",
+        "classification": "action",
+        "provenance": {
+          "tag": "button",
+          "role": null,
+          "dom_order": 6,
+          "region": "outside_panel",
+          "dom_path": "html:-1/body:0/div:0/div:0/div:0/div:0/button:0"
+        }
+      },
+      {
+        "kind": "button",
+        "label_fingerprint": "d97b5851b2ea33d824bf8a6955b328de6de0732e9e19e98a0fe63564b7c57085",
+        "classification": "action",
+        "provenance": {
+          "tag": "button",
+          "role": null,
+          "dom_order": 7,
+          "region": "outside_panel",
+          "dom_path": "html:-1/body:0/div:0/div:0/div:0/div:0/button:1"
+        }
+      }
+    ],
+    "structural_count": 1,
+    "structural": [
+      {
+        "kind": "tablist",
+        "provenance": {
+          "tag": "div",
+          "role": "tablist",
+          "dom_order": 0,
+          "region": "tablist",
+          "dom_path": "html:-1/body:0/div:0/div:0/div:0/div:0/div:0"
+        },
+        "label_fingerprint": "018b440f0ec3d8159fa5a0c2a818f5f4864b2e524678f0dae30b98efe604357e"
+      }
+    ],
+    "action_count": 2,
+    "unsupported_trigger_count": 0
+  },
+  "surfaces": {
+    "Chat": {
+      "total": 18,
+      "mapped": [
+        {
+          "id": "EXT-F-2013-C55",
+          "label": "Copy entire conversation",
+          "applicability": {
+            "applicable": true,
+            "reason": "Chat tab is everyone in side-panel visibility registry; individual account/voice/file actions have their own gates."
+          },
+          "provenance": {
+            "tag": "button",
+            "role": null,
+            "dom_order": 5,
+            "region": "tabpanel",
+            "dom_path": "div:0/div:0/div:0/div:1/div:0/div:1/div:0/button:3",
+            "tab": "Chat"
+          }
+        },
+        {
+          "id": "EXT-F-2013-C03",
+          "label": "New chat",
+          "applicability": {
+            "applicable": true,
+            "reason": "Chat tab is everyone in side-panel visibility registry; individual account/voice/file actions have their own gates."
+          },
+          "provenance": {
+            "tag": "button",
+            "role": null,
+            "dom_order": 6,
+            "region": "tabpanel",
+            "dom_path": "div:0/div:0/div:0/div:1/div:0/div:1/div:0/button:4",
+            "tab": "Chat"
+          }
+        }
+      ],
+      "unmapped_count": 16,
+      "unmapped": [
+        {
+          "kind": "button",
+          "label_fingerprint": "b1a5dcc535cfbdb3b3d37f65d086d0dbb6475cc60b2de18699b94420543bbc45",
+          "provenance": {
+            "tag": "button",
+            "role": null,
+            "dom_order": 0,
+            "region": "tabpanel",
+            "dom_path": "body:0/div:0/div:0/div:0/div:1/div:0/div:0/button:0",
+            "tab": "Chat"
+          }
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "f0f8622b930103a0730e874496e90defc40e463edb53625d875f74bc71ed326b",
+          "provenance": {
+            "tag": "button",
+            "role": null,
+            "dom_order": 1,
+            "region": "tabpanel",
+            "dom_path": "body:0/div:0/div:0/div:0/div:1/div:0/div:0/button:1",
+            "tab": "Chat"
+          }
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "05e64d6a79ae9e476fda5355f98d0841b7d7ec19c83d007f218dd77136f5696b",
+          "provenance": {
+            "tag": "button",
+            "role": null,
+            "dom_order": 2,
+            "region": "tabpanel",
+            "dom_path": "div:0/div:0/div:0/div:1/div:0/div:1/div:0/button:0",
+            "tab": "Chat"
+          }
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "d71f513d599049f426f2a07e60325f0ef853c71f5beb78ca46967b6815a0a1ea",
+          "provenance": {
+            "tag": "button",
+            "role": null,
+            "dom_order": 3,
+            "region": "tabpanel",
+            "dom_path": "div:0/div:0/div:0/div:1/div:0/div:1/div:0/button:1",
+            "tab": "Chat"
+          }
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "32ae0bbaeeeab71208ada93f8bf528a29eda33dd2364b2aa80a16298350d6796",
+          "provenance": {
+            "tag": "button",
+            "role": null,
+            "dom_order": 4,
+            "region": "tabpanel",
+            "dom_path": "div:0/div:0/div:0/div:1/div:0/div:1/div:0/button:2",
+            "tab": "Chat"
+          }
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "dad87d728f61c75413f38d9970cba4606ecdd0e25b2b214e76a8664f09629a07",
+          "provenance": {
+            "tag": "button",
+            "role": null,
+            "dom_order": 7,
+            "region": "tabpanel",
+            "dom_path": "div:0/div:0/div:0/div:1/div:0/div:1/div:0/button:5",
+            "tab": "Chat"
+          }
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "935460e38907244bd6612f3269dc61043c7d0e54ed06cd074c967b38954d797a",
+          "provenance": {
+            "tag": "button",
+            "role": null,
+            "dom_order": 8,
+            "region": "tabpanel",
+            "dom_path": "div:0/div:0/div:1/div:0/div:2/div:0/div:0/button:0",
+            "tab": "Chat"
+          }
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "77e4eb7641a30578818c1259d6b296d72452e3dc65e35e16950da615686f2f0b",
+          "provenance": {
+            "tag": "button",
+            "role": null,
+            "dom_order": 9,
+            "region": "tabpanel",
+            "dom_path": "div:0/div:0/div:1/div:0/div:2/div:0/div:0/button:1",
+            "tab": "Chat"
+          }
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "95380e39e8bc8bf5fb6024bdedb5df30c8780f4ba4525df904f061f8c16658cc",
+          "provenance": {
+            "tag": "button",
+            "role": null,
+            "dom_order": 10,
+            "region": "tabpanel",
+            "dom_path": "div:0/div:0/div:1/div:0/div:2/div:0/div:0/button:2",
+            "tab": "Chat"
+          }
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "8f6f670231a0b8ab88f3f49eb2ca7f994e636f7cdbecd8b26e2cba7258d1c111",
+          "provenance": {
+            "tag": "button",
+            "role": null,
+            "dom_order": 11,
+            "region": "tabpanel",
+            "dom_path": "div:0/div:0/div:1/div:0/div:2/div:0/div:0/button:3",
+            "tab": "Chat"
+          }
+        },
+        {
+          "kind": "textarea",
+          "label_fingerprint": "018b440f0ec3d8159fa5a0c2a818f5f4864b2e524678f0dae30b98efe604357e",
+          "provenance": {
+            "tag": "textarea",
+            "role": null,
+            "dom_order": 12,
+            "region": "tabpanel",
+            "dom_path": "div:0/div:0/div:0/div:1/div:0/div:3/div:0/textarea:0",
+            "tab": "Chat"
+          }
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "490aa00141c7495188a0bc80c2afabcf2f0d96f22a504b1a87bf65003d9dd09f",
+          "provenance": {
+            "tag": "button",
+            "role": null,
+            "dom_order": 13,
+            "region": "tabpanel",
+            "dom_path": "div:0/div:0/div:1/div:0/div:3/div:0/div:0/button:0",
+            "tab": "Chat"
+          }
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "4f471d3e1e5da86b5c6a92c5d00fecd3d94ba00ba74da6bf724fd803ca0da5e5",
+          "provenance": {
+            "tag": "button",
+            "role": null,
+            "dom_order": 14,
+            "region": "tabpanel",
+            "dom_path": "div:0/div:0/div:1/div:0/div:3/div:0/div:0/button:1",
+            "tab": "Chat"
+          }
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "6e52c5bf2f49f462903ca9bf1949a96390c3fd3d1f447a0504ad20a58944826a",
+          "provenance": {
+            "tag": "button",
+            "role": null,
+            "dom_order": 15,
+            "region": "tabpanel",
+            "dom_path": "div:0/div:0/div:1/div:0/div:3/div:0/div:0/button:2",
+            "tab": "Chat"
+          }
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "c4856159af4014fb396d81201b71283dd528a4f986fc5b97ed4641cb8318a7d5",
+          "provenance": {
+            "tag": "button",
+            "role": null,
+            "dom_order": 16,
+            "region": "tabpanel",
+            "dom_path": "div:0/div:1/div:0/div:3/div:0/div:0/div:0/button:0",
+            "tab": "Chat"
+          }
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "ea6e1ac2708541e0364a8ede1c8ec1f00a09c5ab404162b68eec177536ef476d",
+          "provenance": {
+            "tag": "button",
+            "role": null,
+            "dom_order": 17,
+            "region": "tabpanel",
+            "dom_path": "div:0/div:1/div:0/div:3/div:0/div:0/div:0/button:1",
+            "tab": "Chat"
+          }
+        }
+      ],
+      "structural_count": 0,
+      "structural": [],
+      "action_count": 0,
+      "unsupported_trigger_count": 0
+    },
+    "Scrape": {
+      "total": 3,
+      "mapped": [],
+      "unmapped_count": 3,
+      "unmapped": [
+        {
+          "kind": "button",
+          "label_fingerprint": "16e3e3038d6841cfbcd4bd87c31033fcc732f52d17f1c9372e03ffc3c92a4e71",
+          "provenance": {
+            "tag": "button",
+            "role": null,
+            "dom_order": 0,
+            "region": "tabpanel",
+            "dom_path": "div:0/div:0/div:0/div:2/div:0/div:0/div:0/button:0",
+            "tab": "Scrape"
+          }
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "8730043e9c1365340324ef206113f2a1c75b88ccdfca319af1f0e218c25c275a",
+          "provenance": {
+            "tag": "button",
+            "role": null,
+            "dom_order": 1,
+            "region": "tabpanel",
+            "dom_path": "div:0/div:0/div:0/div:2/div:0/div:2/div:0/button:0",
+            "tab": "Scrape"
+          }
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "656e926d81015487f63258daddfabc3c9957c9065a564e1edd2f91fd5306d8fb",
+          "provenance": {
+            "tag": "button",
+            "role": null,
+            "dom_order": 2,
+            "region": "tabpanel",
+            "dom_path": "div:0/div:0/div:0/div:2/div:0/div:2/div:0/button:1",
+            "tab": "Scrape"
+          }
+        }
+      ],
+      "structural_count": 0,
+      "structural": [],
+      "action_count": 0,
+      "unsupported_trigger_count": 0
+    },
+    "Data": {
+      "total": 2,
+      "mapped": [],
+      "unmapped_count": 2,
+      "unmapped": [
+        {
+          "kind": "button",
+          "label_fingerprint": "e5eed0623f250d2ea69845d908dfc1e8349fabbd3843da45ea7c50ef95389661",
+          "provenance": {
+            "tag": "button",
+            "role": null,
+            "dom_order": 0,
+            "region": "tabpanel",
+            "dom_path": "div:0/div:0/div:3/div:0/div:1/div:0/div:0/button:0",
+            "tab": "Data"
+          }
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "90bb7c2dbf48cfee8f4df9e10728b8ed6d369330fc1b122fa70a30958599d1cc",
+          "provenance": {
+            "tag": "button",
+            "role": null,
+            "dom_order": 1,
+            "region": "tabpanel",
+            "dom_path": "body:0/div:0/div:0/div:0/div:3/div:0/div:2/button:0",
+            "tab": "Data"
+          }
+        }
+      ],
+      "structural_count": 0,
+      "structural": [],
+      "action_count": 0,
+      "unsupported_trigger_count": 0
+    },
+    "SEO": {
+      "total": 1,
+      "mapped": [],
+      "unmapped_count": 1,
+      "unmapped": [
+        {
+          "kind": "button",
+          "label_fingerprint": "b751b333a1682b2a233cdb97c22b522ae61161b9c88d690b0335bd59c4a4e29d",
+          "provenance": {
+            "tag": "button",
+            "role": null,
+            "dom_order": 0,
+            "region": "tabpanel",
+            "dom_path": "body:0/div:0/div:0/div:0/div:4/div:0/div:2/button:0",
+            "tab": "SEO"
+          }
+        }
+      ],
+      "structural_count": 0,
+      "structural": [],
+      "action_count": 0,
+      "unsupported_trigger_count": 0
+    }
+  },
+  "sections": {
+    "total": 12,
+    "mapped": [
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "Account",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        },
+        "classification": "section",
+        "provenance": {
+          "tag": "button",
+          "role": null,
+          "dom_order": 0,
+          "region": "tabpanel",
+          "dom_path": "div:0/div:5/div:0/div:1/div:0/div:0/div:0/button:0"
+        }
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "Organization",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        },
+        "classification": "section",
+        "provenance": {
+          "tag": "button",
+          "role": null,
+          "dom_order": 1,
+          "region": "tabpanel",
+          "dom_path": "div:0/div:5/div:0/div:1/div:0/div:1/div:0/button:0"
+        }
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "Appearance",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        },
+        "classification": "section",
+        "provenance": {
+          "tag": "button",
+          "role": null,
+          "dom_order": 2,
+          "region": "tabpanel",
+          "dom_path": "div:0/div:5/div:0/div:1/div:0/div:2/div:0/button:0"
+        }
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "Chat",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        },
+        "classification": "section",
+        "provenance": {
+          "tag": "button",
+          "role": null,
+          "dom_order": 3,
+          "region": "tabpanel",
+          "dom_path": "div:0/div:5/div:0/div:1/div:0/div:3/div:0/button:0"
+        }
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "Privacy",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        },
+        "classification": "section",
+        "provenance": {
+          "tag": "button",
+          "role": null,
+          "dom_order": 4,
+          "region": "tabpanel",
+          "dom_path": "div:0/div:5/div:0/div:1/div:0/div:4/div:0/button:0"
+        }
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "Scrape",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        },
+        "classification": "section",
+        "provenance": {
+          "tag": "button",
+          "role": null,
+          "dom_order": 5,
+          "region": "tabpanel",
+          "dom_path": "div:0/div:5/div:0/div:1/div:0/div:5/div:0/button:0"
+        }
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "Data",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        },
+        "classification": "section",
+        "provenance": {
+          "tag": "button",
+          "role": null,
+          "dom_order": 6,
+          "region": "tabpanel",
+          "dom_path": "div:0/div:5/div:0/div:1/div:0/div:6/div:0/button:0"
+        }
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "SEO",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        },
+        "classification": "section",
+        "provenance": {
+          "tag": "button",
+          "role": null,
+          "dom_order": 7,
+          "region": "tabpanel",
+          "dom_path": "div:0/div:5/div:0/div:1/div:0/div:7/div:0/button:0"
+        }
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "Desktop bridge",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        },
+        "classification": "section",
+        "provenance": {
+          "tag": "button",
+          "role": null,
+          "dom_order": 8,
+          "region": "tabpanel",
+          "dom_path": "div:0/div:5/div:0/div:1/div:0/div:8/div:0/button:0"
+        }
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "Data & reset",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        },
+        "classification": "section",
+        "provenance": {
+          "tag": "button",
+          "role": null,
+          "dom_order": 9,
+          "region": "tabpanel",
+          "dom_path": "div:0/div:5/div:0/div:1/div:0/div:9/div:0/button:0"
+        }
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "About",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        },
+        "classification": "section",
+        "provenance": {
+          "tag": "button",
+          "role": null,
+          "dom_order": 10,
+          "region": "tabpanel",
+          "dom_path": "div:0/div:5/div:0/div:1/div:0/div:10/div:0/button:0"
+        }
+      }
+    ],
+    "unmapped_count": 1,
+    "unmapped": [
+      {
+        "kind": "button",
+        "label_fingerprint": "b1a5dcc535cfbdb3b3d37f65d086d0dbb6475cc60b2de18699b94420543bbc45",
+        "classification": "action",
+        "provenance": {
+          "tag": "button",
+          "role": null,
+          "dom_order": 11,
+          "region": "tabpanel",
+          "dom_path": "body:0/div:0/div:0/div:0/div:5/div:0/div:2/button:0"
+        }
+      }
+    ],
+    "structural_count": 0,
+    "structural": [],
+    "action_count": 1,
+    "unsupported_trigger_count": 0
+  },
+  "controls": {
+    "Account": {
+      "total": 0,
+      "mapped": [],
+      "unmapped_count": 0,
+      "unmapped": [],
+      "structural_count": 0,
+      "structural": [],
+      "action_count": 0,
+      "unsupported_trigger_count": 0
+    },
+    "Organization": {
+      "total": 0,
+      "mapped": [],
+      "unmapped_count": 0,
+      "unmapped": [],
+      "structural_count": 0,
+      "structural": [],
+      "action_count": 0,
+      "unsupported_trigger_count": 0
+    },
+    "Appearance": {
+      "total": 1,
+      "mapped": [],
+      "unmapped_count": 1,
+      "unmapped": [
+        {
+          "kind": "combobox",
+          "label_fingerprint": "36943282111417aefbde71e73015ef650d3ef591c5ee0c40addbc259f25dda6f",
+          "provenance": {
+            "tag": "button",
+            "role": "combobox",
+            "dom_order": 0,
+            "region": "tabpanel",
+            "dom_path": "div:1/div:0/div:0/div:0/div:0/div:0/div:1/button:0",
+            "section": "Appearance",
+            "row_label": "Theme"
+          }
+        }
+      ],
+      "structural_count": 0,
+      "structural": [],
+      "action_count": 0,
+      "unsupported_trigger_count": 0
+    },
+    "Chat": {
+      "total": 2,
+      "mapped": [],
+      "unmapped_count": 2,
+      "unmapped": [
+        {
+          "kind": "combobox",
+          "label_fingerprint": "77aa19e0963ed4585a7933c234c7f9917d2c3d0a566e81cc9ea7578cb47e0628",
+          "provenance": {
+            "tag": "button",
+            "role": "combobox",
+            "dom_order": 0,
+            "region": "tabpanel",
+            "dom_path": "div:1/div:0/div:0/div:0/div:0/div:1/div:1/button:0",
+            "section": "Chat",
+            "row_label": "Default mode"
+          }
+        },
+        {
+          "kind": "combobox",
+          "label_fingerprint": "a9eb2f694bcd02b118a8dccbbd8666751f1f4cdb611d251944000f0f3b14c7dd",
+          "provenance": {
+            "tag": "button",
+            "role": "combobox",
+            "dom_order": 1,
+            "region": "tabpanel",
+            "dom_path": "div:1/div:0/div:0/div:0/div:0/div:2/div:1/button:0",
+            "section": "Chat",
+            "row_label": "Default speed"
+          }
+        }
+      ],
+      "structural_count": 0,
+      "structural": [],
+      "action_count": 0,
+      "unsupported_trigger_count": 0
+    },
+    "Privacy": {
+      "total": 4,
+      "mapped": [
+        {
+          "id": "EXT-F-1003-C06",
+          "label": "Share page identity & email content",
+          "applicability": {
+            "applicable": true,
+            "reason": "Available to this mode per source visibility gate."
+          },
+          "provenance": {
+            "tag": "button",
+            "role": "switch",
+            "dom_order": 0,
+            "region": "tabpanel",
+            "dom_path": "div:1/div:0/div:0/div:0/div:0/div:0/div:1/button:0",
+            "section": "Privacy"
+          }
+        },
+        {
+          "id": "EXT-F-1003-C07",
+          "label": "Offer to save logins to the Vault",
+          "applicability": {
+            "applicable": true,
+            "reason": "Available to this mode per source visibility gate."
+          },
+          "provenance": {
+            "tag": "button",
+            "role": "switch",
+            "dom_order": 1,
+            "region": "tabpanel",
+            "dom_path": "div:1/div:0/div:0/div:0/div:0/div:1/div:1/button:0",
+            "section": "Privacy"
+          }
+        },
+        {
+          "id": "EXT-F-1003-C11",
+          "label": "Offer saved logins on sign-in forms",
+          "applicability": {
+            "applicable": true,
+            "reason": "Available to this mode per source visibility gate."
+          },
+          "provenance": {
+            "tag": "button",
+            "role": "switch",
+            "dom_order": 2,
+            "region": "tabpanel",
+            "dom_path": "div:1/div:0/div:0/div:0/div:0/div:2/div:1/button:0",
+            "section": "Privacy"
+          }
+        },
+        {
+          "id": "EXT-F-1003-C12",
+          "label": "Show password suggestions on websites",
+          "applicability": {
+            "applicable": true,
+            "reason": "Available to this mode per source visibility gate."
+          },
+          "provenance": {
+            "tag": "button",
+            "role": "switch",
+            "dom_order": 3,
+            "region": "tabpanel",
+            "dom_path": "div:1/div:0/div:0/div:0/div:0/div:3/div:1/button:0",
+            "section": "Privacy"
+          }
+        }
+      ],
+      "unmapped_count": 0,
+      "unmapped": [],
+      "structural_count": 0,
+      "structural": [],
+      "action_count": 0,
+      "unsupported_trigger_count": 0
+    },
+    "Scrape": {
+      "total": 3,
+      "mapped": [
+        {
+          "id": "EXT-F-1003-C13",
+          "label": "Deep clean",
+          "applicability": {
+            "applicable": true,
+            "reason": "Available to this mode per source visibility gate."
+          },
+          "provenance": {
+            "tag": "button",
+            "role": "switch",
+            "dom_order": 0,
+            "region": "tabpanel",
+            "dom_path": "div:1/div:0/div:0/div:0/div:0/div:0/div:1/button:0",
+            "section": "Scrape"
+          }
+        },
+        {
+          "id": "EXT-F-1003-C14",
+          "label": "Auto-scrape on load",
+          "applicability": {
+            "applicable": true,
+            "reason": "Available to this mode per source visibility gate."
+          },
+          "provenance": {
+            "tag": "button",
+            "role": "switch",
+            "dom_order": 1,
+            "region": "tabpanel",
+            "dom_path": "div:1/div:0/div:0/div:0/div:0/div:1/div:1/button:0",
+            "section": "Scrape"
+          }
+        }
+      ],
+      "unmapped_count": 1,
+      "unmapped": [
+        {
+          "kind": "combobox",
+          "label_fingerprint": "3413b6412b3f9025b6773c4d032ef50b27a7e37b42622b9377e0b68e96519f04",
+          "provenance": {
+            "tag": "button",
+            "role": "combobox",
+            "dom_order": 2,
+            "region": "tabpanel",
+            "dom_path": "div:1/div:0/div:0/div:0/div:0/div:2/div:1/button:0",
+            "section": "Scrape",
+            "row_label": "Auto-scrape mode"
+          }
+        }
+      ],
+      "structural_count": 0,
+      "structural": [],
+      "action_count": 0,
+      "unsupported_trigger_count": 0
+    },
+    "Data": {
+      "total": 0,
+      "mapped": [],
+      "unmapped_count": 0,
+      "unmapped": [],
+      "structural_count": 0,
+      "structural": [],
+      "action_count": 0,
+      "unsupported_trigger_count": 0
+    },
+    "SEO": {
+      "total": 0,
+      "mapped": [],
+      "unmapped_count": 0,
+      "unmapped": [],
+      "structural_count": 0,
+      "structural": [],
+      "action_count": 0,
+      "unsupported_trigger_count": 0
+    },
+    "Desktop bridge": {
+      "total": 4,
+      "mapped": [],
+      "unmapped_count": 4,
+      "unmapped": [
+        {
+          "kind": "input",
+          "label_fingerprint": "018b440f0ec3d8159fa5a0c2a818f5f4864b2e524678f0dae30b98efe604357e",
+          "provenance": {
+            "tag": "input",
+            "role": null,
+            "dom_order": 0,
+            "region": "tabpanel",
+            "dom_path": "div:8/div:1/div:0/div:0/div:0/div:0/div:1/input:0",
+            "section": "Desktop bridge",
+            "row_label": "Pair code"
+          }
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "e54ba7c339bfce972e478eedddf3e5579180a4f6821ba54ff1b5d2b5bf3fbff5",
+          "provenance": {
+            "tag": "button",
+            "role": null,
+            "dom_order": 1,
+            "region": "tabpanel",
+            "dom_path": "div:8/div:1/div:0/div:0/div:0/div:0/div:1/button:0",
+            "section": "Desktop bridge",
+            "row_label": "Pair code"
+          }
+        },
+        {
+          "kind": "input",
+          "label_fingerprint": "018b440f0ec3d8159fa5a0c2a818f5f4864b2e524678f0dae30b98efe604357e",
+          "provenance": {
+            "tag": "input",
+            "role": null,
+            "dom_order": 2,
+            "region": "tabpanel",
+            "dom_path": "div:8/div:1/div:0/div:0/div:0/div:0/div:2/input:0",
+            "section": "Desktop bridge",
+            "row_label": "Local engine port"
+          }
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "427b239cee456646fa8ef3454dcfcacc8f14a5152c3162962c91a28a60ebd0b4",
+          "provenance": {
+            "tag": "button",
+            "role": null,
+            "dom_order": 3,
+            "region": "tabpanel",
+            "dom_path": "div:8/div:1/div:0/div:0/div:0/div:0/div:2/button:0",
+            "section": "Desktop bridge",
+            "row_label": "Local engine port"
+          }
+        }
+      ],
+      "structural_count": 0,
+      "structural": [],
+      "action_count": 0,
+      "unsupported_trigger_count": 0
+    },
+    "Data & reset": {
+      "total": 1,
+      "mapped": [
+        {
+          "id": "EXT-F-1003-C17",
+          "label": "Clear local data on this device",
+          "applicability": {
+            "applicable": true,
+            "reason": "Available to this mode per source visibility gate."
+          },
+          "provenance": {
+            "tag": "button",
+            "role": null,
+            "dom_order": 0,
+            "region": "tabpanel",
+            "dom_path": "div:0/div:9/div:1/div:0/div:0/div:0/div:0/button:0",
+            "section": "Data & reset"
+          }
+        }
+      ],
+      "unmapped_count": 0,
+      "unmapped": [],
+      "structural_count": 0,
+      "structural": [],
+      "action_count": 0,
+      "unsupported_trigger_count": 0
+    },
+    "About": {
+      "total": 1,
+      "mapped": [
+        {
+          "id": "EXT-F-1003-C31",
+          "label": "Check for extension update",
+          "applicability": {
+            "applicable": true,
+            "reason": "Available to this mode per source visibility gate."
+          },
+          "provenance": {
+            "tag": "button",
+            "role": null,
+            "dom_order": 0,
+            "region": "tabpanel",
+            "dom_path": "div:10/div:1/div:0/div:0/div:0/div:0/div:4/button:0",
+            "section": "About"
+          }
+        }
+      ],
+      "unmapped_count": 0,
+      "unmapped": [],
+      "structural_count": 0,
+      "structural": [],
+      "action_count": 0,
+      "unsupported_trigger_count": 0
+    }
+  },
+  "navigation_actions": [
+    {
+      "kind": "direct_tab",
+      "label": "Chat"
+    },
+    {
+      "kind": "direct_tab",
+      "label": "Scrape"
+    },
+    {
+      "kind": "direct_tab",
+      "label": "Data"
+    },
+    {
+      "kind": "direct_tab",
+      "label": "SEO"
+    },
+    {
+      "kind": "direct_tab",
+      "label": "Settings"
+    },
+    {
+      "kind": "settings_section",
+      "label": "Account"
+    },
+    {
+      "kind": "settings_section",
+      "label": "Organization"
+    },
+    {
+      "kind": "settings_section",
+      "label": "Appearance"
+    },
+    {
+      "kind": "settings_section",
+      "label": "Chat"
+    },
+    {
+      "kind": "settings_section",
+      "label": "Privacy"
+    },
+    {
+      "kind": "settings_section",
+      "label": "Scrape"
+    },
+    {
+      "kind": "settings_section",
+      "label": "Data"
+    },
+    {
+      "kind": "settings_section",
+      "label": "SEO"
+    },
+    {
+      "kind": "settings_section",
+      "label": "Desktop bridge"
+    },
+    {
+      "kind": "settings_section",
+      "label": "Data & reset"
+    },
+    {
+      "kind": "settings_section",
+      "label": "About"
+    }
+  ],
+  "inaccessible_regions": [],
+  "identity": {
+    "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.366"
+  },
+  "authentication_after": {
+    "role": "guest",
+    "signed_out_observed": true,
+    "access_token_present": false,
+    "refresh_token_present": false,
+    "profile_present": false,
+    "admin_role": false,
+    "account_visible": true,
+    "sign_in_visible": true,
+    "sign_out_visible": false
+  },
+  "observed_browser": {
+    "product": "Chrome/141.0.7390.37",
+    "protocol_version": "1.3"
+  },
+  "guest_account_readiness_screenshot": "evidence/guest-account-readiness.png",
+  "completeness": {
+    "complete": false,
+    "unmapped_total": 33,
+    "unsupported_trigger_count": 0,
+    "inaccessible_count": 0,
+    "blocked_request_count": 0,
+    "missing_required_regions": []
+  },
+  "interception": {
+    "scope": ["sidepanel", "extension_worker"],
+    "effect": "HTTP(S) methods other than GET/HEAD/OPTIONS aborted during observation",
+    "blocked_request_count": 0,
+    "sidepanel": {},
+    "extension_worker": {}
+  },
+  "unmapped_total": 33,
+  "native_panel_verified": true
+}
