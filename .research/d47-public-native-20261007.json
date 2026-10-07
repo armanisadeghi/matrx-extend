@@ -1,0 +1,182 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "status": "bounded_native_failure_unverified",
+  "conclusion": "The one guarded hosted public initial-load replay reached the installed side panel and uniquely delivered the first trusted Network tab click, then failed in initial_capture before recording a captured response. Source inspection narrows the AssertionError to the exact POST 200 Algolia queries candidate-count assertion, but the receipt does not record whether the count was zero or greater than one. No recipe was created; saved replay and owned-recipe deletion were not reached. This cannot certify a product capture failure or T57 acceptance.",
+  "run": {
+    "id": 37566057766,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37566057766",
+    "workflow": "Hosted guest side-panel acceptance",
+    "case": "showcase-d47-public-admin",
+    "runner": "macos-15",
+    "runner_arch": "ARM64",
+    "workflow_head_sha": "effe5d4e1b8463749b24ee17020cfa3f1c2f8dce",
+    "status": "completed",
+    "conclusion": "failure",
+    "native_artifact_id": 11458304478,
+    "native_artifact_digest": "sha256:e0bb217935e78fa5ab136f421102aaca28f20cc5c0e5dc2c6260f9006698ab5e"
+  },
+  "source_artifact": {
+    "ci_run_id": 37565491715,
+    "source_sha": "c60184e19f40508ebea700398affecefbd426454",
+    "artifact_id": 11458429951,
+    "artifact_digest": "sha256:2291fcbf59fa5d8f860c6143c1f15f5261acb0c6e86e11d8cea5e189e6b6afd1",
+    "version": "0.2.340",
+    "tree_sha256": "6cce179402335cbd0d2118cd8f4fe5897ad2e5f164e3a593601c814a9ee6484c",
+    "source_to_workflow_equivalence": "Relevant runtime, driver, harness, importer, package and pnpm lock paths identical. The sole selected workflow difference is the independently reviewed addition of the public-native receipt upload glob."
+  },
+  "receipt": {
+    "original_sha256": "bacc3af5f109efbcf37005ea9682e9d396acbe367eb0eef6ab0df70c9b0502f7",
+    "status": "unverified",
+    "stage": "initial_capture",
+    "failure": {
+      "name": "AssertionError",
+      "stage": "initial_capture",
+      "message_code": "unclassified_error"
+    },
+    "auth_stage": "admin_extension_auth_completion",
+    "native_stage": "exercise_panel",
+    "capture": null,
+    "saved_result": null,
+    "owned_recipe": null,
+    "click_observations": [
+      {
+        "stage": "initial_capture",
+        "phase": "target_evaluation",
+        "state": null
+      },
+      {
+        "stage": "initial_capture",
+        "phase": "target_resolution",
+        "state": {
+          "patterns_active": null,
+          "host_matches": null,
+          "selector_count": 33,
+          "exact_match_count": 1,
+          "visible_count": 1,
+          "enabled_count": 1,
+          "exact_row_count": 0,
+          "row_title_count": 0,
+          "row_stored_title_count": 0,
+          "center_hits_target": true
+        }
+      },
+      {
+        "stage": "initial_capture",
+        "phase": "mouse_press",
+        "state": {
+          "patterns_active": null,
+          "host_matches": null,
+          "selector_count": 33,
+          "exact_match_count": 1,
+          "visible_count": 1,
+          "enabled_count": 1,
+          "exact_row_count": 0,
+          "row_title_count": 0,
+          "row_stored_title_count": 0,
+          "center_hits_target": true
+        }
+      },
+      {
+        "stage": "initial_capture",
+        "phase": "mouse_release",
+        "state": {
+          "patterns_active": null,
+          "host_matches": null,
+          "selector_count": 33,
+          "exact_match_count": 1,
+          "visible_count": 1,
+          "enabled_count": 1,
+          "exact_row_count": 0,
+          "row_title_count": 0,
+          "row_stored_title_count": 0,
+          "center_hits_target": true
+        }
+      },
+      {
+        "stage": "initial_capture",
+        "phase": "mouse_released",
+        "state": {
+          "patterns_active": null,
+          "host_matches": null,
+          "selector_count": 33,
+          "exact_match_count": 1,
+          "visible_count": 1,
+          "enabled_count": 1,
+          "exact_row_count": 0,
+          "row_title_count": 0,
+          "row_stored_title_count": 0,
+          "center_hits_target": true
+        }
+      }
+    ],
+    "organization_observations": {
+      "admin_role_verified": true,
+      "picker_available": true,
+      "picker_has_selection": false,
+      "selection_required": true,
+      "menu_open": true,
+      "visible_option_count": 58,
+      "exact_match_count": 1,
+      "exact_visible_match_count": 1,
+      "target_in_viewport": false,
+      "target_center_hit": false,
+      "archive_filter": "unknown",
+      "storage_has_uuid": true,
+      "storage_name_matches": true,
+      "rendered_email_matches": true,
+      "rendered_role_matches": true,
+      "rendered_profile_matches": true,
+      "rendered_organization_matches": true
+    }
+  },
+  "resource": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "valid",
+      "exit_code": 0,
+      "admission_reasons": [],
+      "journal_sha256": "0dafe437830f9e3457ec3fba7b4e38ed325281b632a4f82eb7f6894c4da1c480"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "valid",
+      "exit_code": 0,
+      "admission_reasons": [],
+      "journal_sha256": "a9de11c888a886e8c56618dd9293279bd131cfe639706dd6b2a9a7858b4f60ee"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "child_failed",
+      "exit_code": 1,
+      "admission_reasons": [],
+      "journal_sha256": "4bb215c5a7aea60412779651dcfae485282e6fd1fe77e72952c2ef8ac95a3d7b"
+    }
+  },
+  "cleanup": {
+    "owned_recipe": "not_created",
+    "temporary_secrets": {
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON": {
+        "staged": true,
+        "deleted": true,
+        "absence_verified": true
+      },
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON": {
+        "staged": true,
+        "deleted": true,
+        "absence_verified": true
+      }
+    },
+    "values_recorded": false
+  },
+  "limits": [
+    "The sanitizer emitted unclassified_error for the AssertionError; the exact candidate count and captured-response list were not written to the receipt.",
+    "The matched public request and preview were never established; no saved terminal output exists.",
+    "D47 stays in-fix and full T57 unverified. No second run was dispatched."
+  ],
+  "next_action": "Source owner should make the initial capture candidate count and sanitized capture state observable and determine whether HN produced no matching request, multiple requests, or the selector missed the actual row before deciding whether a new native run is warranted."
+}
