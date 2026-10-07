@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-07T00:58:28.311086+00:00",
+  "updated_at": "2026-10-07T01:11:37.555071+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -24950,7 +24950,7 @@
           "results": {
             "admin": {
               "status": "unverified",
-              "run_id": "showcase-discovery-native-20260928",
+              "run_id": "showcase-d47-native-37554362947-1",
               "evidence": [
                 "docs/stabilization/runs/showcase-network-current-001.json",
                 "docs/stabilization/runs/showcase-d49-native-retest-001.json",
@@ -24958,9 +24958,12 @@
                 "docs/stabilization/reports/showcase-d49-standalone-peer.json",
                 "docs/stabilization/reports/showcase-request-identity.json",
                 "docs/stabilization/reports/showcase-discovery-native-acceptance.json",
-                "docs/stabilization/reports/showcase-d47-current-evidence-peer.json"
+                "docs/stabilization/reports/showcase-d47-current-evidence-peer.json",
+                ".research/d47-root-observer-native-20261007.json",
+                ".research/d47-native-result-peer-20261007.json",
+                ".research/d47-owned-recipe-cleanup-20261007.json"
               ],
-              "detail": "Independent e7a67bcd evidenceaudit: initialrequest capture and actualsaved10row replay are natively proven on8b0f8adc/9ea6687b; controlled documentidentity regression has meaningful downstreammutationproof. Native delayedmatchingoldresponse after navigation (higheroldsequence) remains missing, so T57unverified and D47notclosed. General navigationcancel and repeatedHNsuccess cannot replace this adversarialprovenance case."
+              "detail": "Independent peer477695bc: resource-valid native37554362947 on frozen0.2.334/a6e observed exact saved current root result, current-context handshake/packet and old-context clearing. OldHTTP completed; no oldcallback observed (architectural exclusion, not callback rejection). Last sample still running=true. FullT57 remains unverified: settled completion, observer cleanup, public-site same-artifact replay, reverse order, stale-only recovery and manual/prior-run isolation remain. Exact run-owned DBrecipe deleted and absence verified. Later alchemy lock state is not tested by this artifact."
             }
           },
           "proof_ruling": "2026-10-06 root technical ruling: see .research/d47-acceptance-architecture-ruling-20261006.json. A native architectural-exclusion trace with positively observed current binding/packet, exact contexts, old request lifecycle and terminal saved result may supplement delivered-stale-event causal guards. Neither cancellation alone nor current-only rows nor empty event arrays prove exclusion. Retain public-site same-artifact replay, both response orders, higher old sequence, stale-only refusal and cleanup; no existing result is promoted."
