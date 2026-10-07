@@ -28,9 +28,9 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Execute causal source guards for remaining stale-only/recovery, manual/prior-run and higher-old-sequence branches; no native launch active. Source evidence cannot close full T57.",
+    "next_action": "Fresh review of source stale-only/recovery/prior-binding/high-old-sequence guards; implement missing connected manual/saved channel guard. No native run active; full T57 remains unverified.",
     "status": "Independent peer1abea43b accepts bounded old-first saved replay at frozen0.2.338/source651f25d0: observed old/current HTTP finish order, current context/packet, exact settled current-only saved row, valid resources and cleanup. Current-first earlier0.2.337 remains separately bounded. D47in-fix/T57unverified unchanged.",
-    "implementation_agent": "active: d47_remaining_isolation_guards; source guard execution only, sole heavy-test permit",
+    "implementation_agent": "active: d47_manual_isolation_guard (sole source-test permit); d47_remaining_isolation_guards completed3a5c9222, independent review active",
     "execution_agent": "completed: d47_actual_endpoint_native; reviewed by d47_public_terminal_peer",
     "native_run_id": 37537634304,
     "workflow_source": "fbcc4311ae6885b67133e55336f692be38881249",
@@ -118,7 +118,8 @@
       "reason": "QA driver is executed from workflow checkout and is not compiled into the installed extension. b446b52d to a428099e differs only in the exact reviewed public driver/test and evidence.",
       "cost_if_wrong": "An unreviewed driver or changed runtime could falsely certify behavior; enforce path/hash comparison before staging, retain actual native receipt, and require independent review afterward."
     },
-    "latest_public_native_peer": ".research/d47-public-terminal-peer-20261007.json"
+    "latest_public_native_peer": ".research/d47-public-terminal-peer-20261007.json",
+    "isolation_source_report": ".research/d47-isolation-guards-20261007.json"
   },
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
   "verification_status": "Independent reviews accept bounded current-first0.2.337 and old-first0.2.338 fixture replay. Fresh peer8dfbdee1 supports public initial capture, saved exact-recipe completed replay with hits and UI cleanup on frozen0.2.344/source2274d236/native37571487114, with valid resources. Whole-panel quiescence, selected organization context and post-checkbox receipt-level mask evidence are not established. Stale-only recovery, manual/prior-run isolation and causal higher-old-sequence coverage remain outstanding. D47 in-fix/T57 unverified.",
