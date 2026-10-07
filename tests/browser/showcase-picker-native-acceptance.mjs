@@ -40,6 +40,7 @@ import {
   STALE_PICKER_KINDS,
   armShowcaseInstallBoundary,
   armShowcaseStaleBoundary,
+  assertFreshShowcasePickerContext,
   observeShowcaseRelay,
   readShowcaseRelays,
   reinjectShowcasePicker,
@@ -384,12 +385,13 @@ async function runLifecycleReinjection({ page, panel, boundary, resourceAction, 
   report.lifecycle_diagnostic = diagnostic;
   let installBoundary = null;
   const sample = async () => {
-    const [state, overlay, relays, install, listeners] = await Promise.allSettled([
+    const [state, overlay, relays, install, listeners, context] = await Promise.allSettled([
       panelState(panel),
       page.locator('#matrx-list-picker-host').count(),
       readShowcaseRelays(panel),
       installBoundary?.snapshot(),
       boundary.listenerSnapshot(),
+      boundary.comparePickerContext(),
     ]);
     return {
       ...(state.status === 'fulfilled' && {
@@ -407,6 +409,11 @@ async function runLifecycleReinjection({ page, panel, boundary, resourceAction, 
         listeners.value && {
           listener_click_count: listeners.value.click_count,
           listener_hover_count: listeners.value.hover_count,
+        }),
+      ...(context.status === 'fulfilled' &&
+        context.value && {
+          context_start_distinct: context.value.start_distinct,
+          context_teardown_distinct: context.value.teardown_distinct,
         }),
     };
   };
@@ -439,6 +446,7 @@ async function runLifecycleReinjection({ page, panel, boundary, resourceAction, 
       'showcase_initial_listener_count_wrong',
     ),
   );
+  await step('lifecycle_B_start', () => boundary.capturePickerContext());
   const session = before.starts[0];
   await step('lifecycle_B_start', () => assert.match(session.session_id, /^[0-9a-f-]{36}$/i));
   await step('lifecycle_reinject', () =>
@@ -458,6 +466,7 @@ async function runLifecycleReinjection({ page, panel, boundary, resourceAction, 
       1,
       'showcase_reinject_multiple_overlays',
     );
+    assertFreshShowcasePickerContext(await boundary.comparePickerContext());
     assert.deepEqual(
       await boundary.listenerSnapshot(),
       { click_count: 1, hover_count: 1 },

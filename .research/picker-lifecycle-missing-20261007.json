@@ -18,10 +18,11 @@
     {
       "case": "fresh content-context reinjection and listener teardown",
       "operation": "Trace the current UI-started session, execute the real Chrome file installation and start hook again for that same session, and count capture-phase document click/mouseover listeners across the reinjection.",
-      "forcing_outcome": "One active click and one hover listener remain, one card click yields exactly one stamped detection, current result extracts three rows, both listeners leave after Done, and an ordinary page click increments once."
+      "forcing_outcome": "The installed start and teardown function references both differ after the second file installation, proving a fresh picker module context. One active click and one hover listener remain, one card click yields exactly one stamped detection, current result extracts three rows, both listeners leave after Done, and an ordinary page click increments once."
     }
   ],
-  "diagnostics": "All new browser actions, waits and assertions have fixed lifecycle target labels with bounded allowlisted state/count samples. The receipt retains lifecycle_diagnostic.failed_target on an action/wait failure, never raw errors, selectors or page text; focused probes cover cancel, install and reinject receipt serialization.",
+  "diagnostics": "All new browser actions, waits and assertions have fixed lifecycle target labels with bounded allowlisted state/count samples, including start/teardown identity booleans. The receipt retains lifecycle_diagnostic.failed_target on an action/wait failure, never raw errors, selectors or page text; focused probes cover cancel, install and reinject receipt serialization.",
+  "peer_finding_resolution": "The first source peer found that two executeScript calls could reuse the old module. The runner now captures the live content-world start and teardown function references before reinjection and requires both references to differ afterward. A focused negative control reuses the old references and confirms the same acceptance assertion rejects them; replacing both references passes. Chrome still needs to execute this path natively.",
   "focused_checks": {
     "command": "node --test tests/browser/showcase-stale-runtime-boundary.test.mjs tests/browser/showcase-stale-diagnostic.test.mjs; node --check tests/browser/showcase-picker-native-acceptance.mjs; pnpm exec biome check five touched browser files; git diff --check",
     "result": "8 focused tests passed; runner syntax, formatter/lint and whitespace checks passed.",

@@ -5,6 +5,18 @@ const DETECTED = 'data:list-picker-item-detected';
 const RESULT = 'data:list-picker-result';
 export const STALE_PICKER_KINDS = { exit: EXIT, detected: DETECTED, result: RESULT };
 
+export function assertFreshShowcasePickerContext(observation) {
+  assert.deepEqual(
+    observation,
+    {
+      both_present: true,
+      start_distinct: true,
+      teardown_distinct: true,
+    },
+    'showcase_reinject_reused_picker_module',
+  );
+}
+
 // CDP evaluates only in the owned fixture page's extension isolated world. This
 // intercepts the producer's real Chrome API call before runtime delivery.
 export async function armShowcaseStaleBoundary(page, extensionId) {
@@ -71,6 +83,33 @@ export async function armShowcaseStaleBoundary(page, extensionId) {
   })()`);
   assert.equal(armed, true, 'showcase_picker_runtime_boundary_not_writable');
   return {
+    async capturePickerContext() {
+      assert.equal(
+        await run(`(() => {
+        const s = globalThis.__showcaseD42Boundary;
+        const start = window.__matrxListPickerStart;
+        const teardown = window.__matrxListPickerTeardown;
+        if (s.pickerContext || typeof start !== 'function' || typeof teardown !== 'function')
+          return false;
+        s.pickerContext = { start, teardown };
+        return true;
+      })()`),
+        true,
+        'showcase_initial_picker_context_missing',
+      );
+    },
+    async comparePickerContext() {
+      return run(`(() => {
+        const prior = globalThis.__showcaseD42Boundary.pickerContext;
+        const start = window.__matrxListPickerStart;
+        const teardown = window.__matrxListPickerTeardown;
+        return {
+          both_present: !!prior && typeof start === 'function' && typeof teardown === 'function',
+          start_distinct: !!prior && typeof start === 'function' && start !== prior.start,
+          teardown_distinct: !!prior && typeof teardown === 'function' && teardown !== prior.teardown,
+        };
+      })()`);
+    },
     async armListenerCount() {
       assert.equal(
         await run(`(() => {

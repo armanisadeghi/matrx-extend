@@ -46,6 +46,8 @@ const FLAGS = new Set([
   'B_result_stamped',
   'cancel_held',
   'install_held',
+  'context_start_distinct',
+  'context_teardown_distinct',
 ]);
 const COUNTS = new Set([
   'overlay_count',

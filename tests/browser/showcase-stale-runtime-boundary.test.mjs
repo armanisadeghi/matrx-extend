@@ -6,6 +6,7 @@ import {
   STALE_PICKER_KINDS,
   armShowcaseInstallBoundary,
   armShowcaseStaleBoundary,
+  assertFreshShowcasePickerContext,
 } from './showcase-stale-runtime-boundary.mjs';
 
 test('each held A channel stays outside Chrome until its exact envelope is released', async () => {
@@ -32,6 +33,7 @@ test('each held A channel stays outside Chrome until its exact envelope is relea
     document,
     window: {
       __matrxListPickerStart() {},
+      __matrxListPickerTeardown() {},
       __matrxListPickerCancel(id) {
         cancelled.push(id);
       },
@@ -132,6 +134,26 @@ test('each held A channel stays outside Chrome until its exact envelope is relea
   document.removeEventListener('mouseover', newHover, true);
   assert.deepEqual(await boundary.listenerSnapshot(), { click_count: 0, hover_count: 0 });
   await boundary.closeListenerCount();
+  await boundary.capturePickerContext();
+  const reused = await boundary.comparePickerContext();
+  assert.deepEqual(reused, {
+    both_present: true,
+    start_distinct: false,
+    teardown_distinct: false,
+  });
+  assert.throws(
+    () => assertFreshShowcasePickerContext(reused),
+    /showcase_reinject_reused_picker_module/,
+  );
+  world.window.__matrxListPickerStart = function freshStart() {};
+  world.window.__matrxListPickerTeardown = function freshTeardown() {};
+  const fresh = await boundary.comparePickerContext();
+  assert.deepEqual(fresh, {
+    both_present: true,
+    start_distinct: true,
+    teardown_distinct: true,
+  });
+  assert.doesNotThrow(() => assertFreshShowcasePickerContext(fresh));
   await boundary.close();
 });
 
