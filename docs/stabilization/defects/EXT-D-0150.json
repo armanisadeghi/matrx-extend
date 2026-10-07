@@ -1,0 +1,63 @@
+{
+  "id": "EXT-D-0150",
+  "feature_id": "EXT-F-4118",
+  "feature_ids": ["EXT-F-4014", "EXT-F-4118", "EXT-F-4119", "EXT-F-4120", "EXT-F-4162"],
+  "case_ids": [
+    "EXT-F-4014-T01",
+    "EXT-F-4118-T01",
+    "EXT-F-4119-T01",
+    "EXT-F-4120-T01",
+    "EXT-F-4162-T01"
+  ],
+  "title": "WebMCP discovery, invocation and registration use an obsolete native API contract",
+  "surface": "Tools / WebMCP and extension page-tool registration",
+  "auth_mode": "admin",
+  "state": "in-fix",
+  "owner": "root/webmcp_procedures",
+  "priority": "P1",
+  "severity": "S2",
+  "user_impact": "A page implementing the currently documented native interface cannot be discovered, invoked or registered through the obsolete interface. Native browser reproduction remains pending; source-boundary failure is reproduced.",
+  "preconditions": [
+    "Use exact pre-repair source and the documented-native-boundary test introduced by the repair worker. Keep the production resource guard enabled.",
+    "For native confirmation use an owned secure page and browser exposing documented document.modelContext; record exact browser/channel/enablement and extension artifact."
+  ],
+  "reproduction": [
+    "Run the guarded tests/unit/webmcp-native-contract.test.ts against the pre-repair source.",
+    "Provide only document.modelContext with asynchronous getTools/executeTool and registerTool expecting execute; call the real extension handlers/registration.",
+    "Observe all three positive discovery/invocation/registration cases fail with WebMCP unavailable; the strict boundary intentionally supplies none of the obsolete navigator/tools/callTool/run aliases."
+  ],
+  "expected": "Use the documented document.modelContext asynchronous discovery/execution and registration contract, preserving assigned-tab routing and authorization.",
+  "actual": "Three guarded causal source cases fail on the pre-repair implementation. Current Chrome documentation contradicts namespace, method and callback assumptions. No native browser failure has yet been reproduced.",
+  "evidence": [
+    ".research/webmcp-native-contract-check-20261007.json",
+    ".research/webmcp-native-red-20261007.stdout",
+    "docs/stabilization/resource-journals/webmcp-native-red-20261007.jsonl"
+  ],
+  "verification": {
+    "source": "Guarded3/3 causal RED; admitted,resourceInvalid=false,child_failed. Repair underway.",
+    "native": "unverified; existing guest harness installed Chromium141, older than documented149+ origin-trial support. This is not evidence of product native behavior.",
+    "independent_review": "pending",
+    "release": "not submitted"
+  },
+  "transition_history": [
+    {
+      "at": "2026-10-07T13:22:08.902958+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Official API/source mismatch found while reviewing test procedures."
+    },
+    {
+      "at": "2026-10-07T13:22:08.902958+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Strict documented-boundary causal reproduction fails all three positive paths."
+    },
+    {
+      "at": "2026-10-07T13:22:08.902958+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Bounded sibling implementation repair assigned; preserve native acceptance as pending."
+    }
+  ],
+  "closure_requirement": "Independent source review plus native original discovery/call/registration reproduction and surrounding failure/reload cases in a supporting receipt-bound browser. No source fixture alone closes this defect."
+}

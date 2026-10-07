@@ -48,7 +48,10 @@
   "evidence": [
     ".research/guest-visibility-native-20261007.json",
     ".research/guest-census-account-repair-20261007.json",
-    ".research/guest-census-account-peer-20261007.json"
+    ".research/guest-census-account-peer-20261007.json",
+    ".research/guest-census-original-retest-20261007.json",
+    ".research/guest-census-original-retest-peer-20261007.json",
+    ".research/guest-census-mapping-reconcile-20261007.json"
   ],
   "native_screenshot_paths_in_receipt": [
     "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-zLO2Hj/native-side-panel.png",
@@ -81,14 +84,15 @@
     }
   ],
   "closure_requirement": "Review the actual captured UI for the exact run, establish a source-supported diagnosis, then rerun the existing guarded workflow with exact frozen artifact/run receipts and positive role proof. Record all unsupported, gated, inaccessible, and unknown regions; keep member/admin unverified until separately observed.",
-  "next_action": "Run one guarded guest visibility census with the reviewed driver and a receipt-bound eligible development artifact; require positive observed signed-out state, original Account readiness, and honest unknown/inaccessible region accounting. Independently review native evidence before retest-pass/closed. Member/admin census remains separately pending.",
+  "next_action": "Preserve bounded original-readiness pass. Resolve privacy-safe provenance/classification for28 unmapped controls and4 inaccessible regions, then rerun exact-artifact guest census; broaderT11 and member/admin remain unverified. Keep fixed until the stated complete-region accounting closure condition is satisfied.",
   "verification": {
-    "native": "guest census failed before completeness; positive guest proof unverified",
+    "native": "Original Account-readiness reproduction PASS on frozen0.2.366 in guarded37624678750; before/after guest role proven by DOM/storage observations. Full census remains incomplete:54 observed,26 mapped,28 unmapped,4 unsupported,4 inaccessible. No current-main or product behavior acceptance.",
     "member": "unverified",
     "admin": "unverified",
     "product_behavior": "no product behavior failure established",
     "source": "Guarded causal RED for trigger scope and Settings footer observation, then24/24 finalGREEN; completed resource journals and stdout in repair evidence folder.",
-    "independent_review": ".research/guest-census-account-peer-20261007.json: source requirements PASS_WITH_NATIVE_PENDING; quality PASS_WITH_LIMITATION."
+    "independent_review": ".research/guest-census-account-peer-20261007.json: source requirements PASS_WITH_NATIVE_PENDING; quality PASS_WITH_LIMITATION.",
+    "native_independent_review": "d6e2324e: original readiness PASS; evidence PASS_WITH_LIMITATION (no later Settings screenshot or observed running browser version)."
   },
   "context": {
     "classification": "test infrastructure / census readiness",
