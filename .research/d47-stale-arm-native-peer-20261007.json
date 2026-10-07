@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "review_type": "fresh_independent_zero_authorship",
+  "reviewed_commit": "1b338f7d885cb4fe5a96fccaa548c7ade908df19",
+  "run": {
+    "id": 37582763499,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37582763499",
+    "workflow_head": "4d0afc1608d94627476910b9fe3cb7e821ad52dd",
+    "verified_conclusion": "completed_success",
+    "runner": "macos-15 ARM64",
+    "tested_extension_source": "5fc0ae3939dfbb1f1ba5696ca63a1a9d5b390d3d",
+    "tested_artifact_id": 11463999781,
+    "tested_artifact_tree_sha256": "7a46872cf0b4e245e3f40608f674924d1b63f25779801c4438465e5d5b53f932"
+  },
+  "verdict_a_behavior": {
+    "status": "PASS_BOUNDED",
+    "scope": "Native signed-in admin stale-only refusal and fresh saved replay recovery on the imported frozen extension artifact only.",
+    "checked_claims": [
+      "The receipt records a trusted Save click, an immediate disabled Save control with Saving indicator and no error, then the exact recipe visible in Patterns; the replay later selected its exact saved row after a page reload.",
+      "The old target HTTP request was pending while a distinct current-document warmup packet completed. Releasing the old response returned HTTP 200 and the fixture recorded server_finished, with no current target response sent before recovery.",
+      "The saved replay reached one visible terminal refusal, stopped running, and displayed neither an old nor a current result row, header, or preview. The current-document warmup binding proves the passive observer was active.",
+      "After recovery was enabled, a fresh saved replay obtained the current target response. The terminal observation showed the exact recipe header, exactly the current result row and preview, no old row, no error, and no running indicator. The page and panel current-result checks passed.",
+      "The owned recipe was removed and the exact recipe row count was zero afterward; passive probe cleanup returned its no-failure value."
+    ],
+    "limits": [
+      "The old HTTP response completed after the old execution context was cleared; there was no old-document target binding callback to inspect. This supports architectural exclusion of a stale binding, not observed rejection of a delivered old binding.",
+      "The receipt leaves cancellation unverified. Manual or prior-run isolation and the full EXT-D-0047 / EXT-F-1012-T57 case remain unverified.",
+      "Persistence is evidenced by the exact saved recipe in the real Patterns UI and subsequent saved-row replay; this review did not query the database directly.",
+      "The newer workflow checkout's application runtime was not exercised."
+    ]
+  },
+  "verdict_b_evidence_quality": {
+    "status": "PASS_BOUNDED",
+    "checked_claims": [
+      "GitHub reports workflow_dispatch run 37582763499 completed successfully at the stated workflow head. The receipt identifies the imported CI artifact, its source SHA, version, and exact tree hash; the retained log contains the same identifiers.",
+      "Git diff between the frozen source and workflow head is empty for the listed workflow, importer, D47 driver, fixture, and resource-gate paths. The development-artifact importer validates GitHub metadata and the imported tree hash before native use.",
+      "The three committed journals match this run ID and their recorded SHA-256 hashes. Each shows admission, child exit zero, resourceInvalid false, and a final valid decision; the older artifact-residue journals were excluded.",
+      "The private receipt and raw log hashes match the report; their filesystem modes are 0600 under a 0700 directory, and the directory is Git-ignored.",
+      "The test asserts the old response order, exact terminal refusal, fresh current-row rendering, passive binding provenance, and owned-recipe cleanup; a green workflow alone is not the basis for this verdict."
+    ],
+    "limits": [
+      "This was an evidence review, not an independently repeated native browser run or a mutation test.",
+      "Private receipt values, page content, credential values, and raw logs were not copied into this report.",
+      "Secret-name cleanup was reported and checked by the parent reviewer; this peer did not independently query repository secret storage."
+    ]
+  },
+  "overall": "ACCEPT_BOUNDED_STALE_ONLY_AND_FRESH_RECOVERY;_DO_NOT_CLOSE_FULL_D47_OR_T57"
+}
