@@ -28,9 +28,9 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Public-site initial-load replay, stale-only refusal/recovery and manual/prior-run isolation remain. Preserve separate causal higher-old-sequence guard coverage; neither native run delivered an old binding callback. Do not repeat accepted fixture orders without a relevant change. No native job or temporary secret active.",
+    "next_action": "d47_public_replay_case owns sole guarded source-test permit for real-public-site initial-load replay driver and minimal hosted routing. No browser/native run admitted. Scope retains real initial fetch/XHR provenance, exact saved replay or honest late-listener guidance, owned cleanup, current build evidence and no localhost substitution. Separate fresh peer required before native dispatch.",
     "status": "Independent peer1abea43b accepts bounded old-first saved replay at frozen0.2.338/source651f25d0: observed old/current HTTP finish order, current context/packet, exact settled current-only saved row, valid resources and cleanup. Current-first earlier0.2.337 remains separately bounded. D47in-fix/T57unverified unchanged.",
-    "implementation_agent": "completed: d47_reverse_order_case",
+    "implementation_agent": "active: d47_public_replay_case",
     "execution_agent": "completed: d47_oldfirst_native_execution",
     "native_run_id": 37537634304,
     "workflow_source": "fbcc4311ae6885b67133e55336f692be38881249",
