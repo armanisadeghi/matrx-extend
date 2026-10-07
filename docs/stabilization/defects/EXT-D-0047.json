@@ -28,7 +28,7 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "One ARM macos-15 stale-only retest on frozen5fc artifact after independent resource review. Intel37581293963 invalidated by CPU watchdog; no D47 receipt/product verdict. If ARM also sustainedCPUfails, use existing startup diagnostic before further acceptance.",
+    "next_action": "Poll ARM native37582763499 to terminal; frozen5fc artifact11463999781, unchanged guards. No duplicate. Remove temporary secrets at terminal and independently review receipt/resource result.",
     "status": "Independent peer1abea43b accepts bounded old-first saved replay at frozen0.2.338/source651f25d0: observed old/current HTTP finish order, current context/packet, exact settled current-only saved row, valid resources and cleanup. Current-first earlier0.2.337 remains separately bounded. D47in-fix/T57unverified unchanged.",
     "implementation_agent": "completed: d47_save_click_evidence_fix; 19/19 resource-valid source checks, fresh independent bounded source review accepted",
     "execution_agent": "active: d47_stale_arm_retest; preparing one existing ARM-runner test with unchanged guards",
@@ -64,7 +64,7 @@
     "source_fix_ci_run_id": 37542852254,
     "canceled_ci_run_id": 37542663531,
     "integration_limit": "Old-first artifact11457371389/source651f25d0/0.2.338 and workflowheadf3163aa8 had equivalent runtime/harness/workflow/lock paths. Current-first proof is separate frozen0.2.337. Neither bounded run certifies untested later changes or full public-site acceptance.",
-    "active_native_run_id": null,
+    "active_native_run_id": 37582763499,
     "candidate_artifact_id": 11457371389,
     "candidate_source": "651f25d05e8538ed880c07a3294b81672eec0694",
     "candidate_version": "0.2.338",
