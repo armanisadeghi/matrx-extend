@@ -31,12 +31,14 @@
     ".research/guest-census-provenance-decomposed-red-20261007-01.stdout",
     ".research/guest-census-provenance-decomposed-green-20261007-01.stdout",
     ".research/guest-census-provenance-peer-20261007.json",
-    ".research/guest-census-provenance-native-20261007.json"
+    ".research/guest-census-provenance-native-20261007.json",
+    ".research/settings-census-label-relation-20261007.json",
+    ".research/settings-census-label-relation-peer-20261007.json"
   ],
   "verification": {
     "native": "37641053827 on frozen0.2.366:54 observed,26 mapped,27 unmapped,1 structural,0 unsupported,0 inaccessible,0 blocked. Guest signed-out before/after passes; observedChrome141.0.7390.37. Census still incomplete; Account PNG omitted from upload (D152).",
-    "source": "Causal RED24/25 then GREEN25/25 in f2a53199; fresh independent guarded25/25 with actual stdout and valid completed journal. No native or product coverage promoted.",
-    "independent_review": "3b48f50d: source PASS_WITH_NATIVE_PENDING; quality PASS_WITH_LIMITATIONS. Semantic-selector coverage and syntax-only source_anchor limits remain explicit.",
+    "source": "Classification fixf2a53199 independently accepted25/25. Additional Settings static row-label relationships45ee8732 passed32/32 with saved finalstdout/completed validjournal and scopedBiome. Initial relation REDstdout not saved, so reported30/2 is not persisted causal failure evidence.",
+    "independent_review": "Classification peer3b48f50d accepted with limits; relation peerc1d13af5 separately accepts source readiness and quality/privacy, native mapping pending. No syntax-anchor ownership inference.",
     "product_behavior": "No product failure or pass established."
   },
   "transition_history": [
@@ -66,6 +68,6 @@
     }
   ],
   "closure_requirement": "Fresh independent source review and guarded exact-artifact native census with trustworthy classification/provenance and original ambiguity no longer reproducing. Unknown controls remain incomplete until mapped from evidence; no member/admin or broader product health inferred.",
-  "next_action": "Independently reconcile27 unmapped safe provenance observations; do not guess fingerprints/source-anchor ownership. Preserve partial T11; D152 owns missing screenshot delivery.",
-  "fix_shas": ["f2a53199"]
+  "next_action": "Run one guarded original-artifact guest census with reviewed45ee8732 driver, inspect eight Settings row-label relationships and independently map only proven exact nodes. Preserve all ambiguous/unknown controls and T11partial; D152 screenshot upload closed separately.",
+  "fix_shas": ["f2a53199", "45ee8732"]
 }
