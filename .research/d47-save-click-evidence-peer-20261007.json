@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "reviewed_commit": "3d5ee7337ff635394ea1782907780b22eda71323",
+  "review_scope": "Fresh zero-authorship source and retained-evidence review of the named commit only; no native run, test launch, or source edit",
+  "verdict_a_diagnostic_contract": {
+    "status": "PASS_BOUNDED_SOURCE",
+    "findings": [],
+    "evidence": [
+      "The receipt is initialized before Save, records entered and completed separately, and retains an allowlisted driverFailure code plus target and stable-hit counts when click rejects.",
+      "The shared click helper reports target_selected, press_attempted, press_returned, release_attempted, and release_returned around the awaited CDP calls. An attempted phase does not assert dispatch; a returned phase does not assert application receipt.",
+      "After a completed click, the first read records either the bounded Save observation or a sanitized read error. The existing recipe_save_terminal acceptance predicate and subsequent persistence and stale-only checks are unchanged.",
+      "The native failure receipt from run 37578280425 predates this commit and remains unable to establish whether Save was dispatched. No fresh native Save or stale-only replay was run in this review."
+    ],
+    "cannot_verify": [
+      "Whether the updated native run reaches and receives the Save click, persists the recipe, or passes T57 stale-only acceptance"
+    ]
+  },
+  "verdict_b_code_privacy_shared_helper": {
+    "status": "PASS_BOUNDED_SOURCE",
+    "findings": [],
+    "evidence": [
+      "The optional phase callback is added to the existing shared click helper; no second click implementation or product path is introduced.",
+      "The receipt copies only known failure codes and sample stages, nonnegative integer counts, a boolean hit flag, and the existing bounded Save observation. Raw transport errors, page text, URL-like input, and pointer geometry are not copied into this receipt.",
+      "The new tests exercise the actual shared click helper through simulated CDP responses, including ambiguous target before dispatch, press transport failure, returned release before the first read, read failure, and malformed/private-looking failure fields.",
+      "The optional callback is synchronous and its current caller only assigns a fixed allowlisted phase to a plain object. A future throwing callback inside a dispatch try block would be classified as a transport failure; that hypothetical is outside this commit's observed path and is not an actionable finding here."
+    ],
+    "limits": [
+      "The simulated CDP tests establish receipt logic and callback ordering, not native app receipt or persistence.",
+      "No new dependency, migration, database write, product behavior, selector, timeout, or acceptance oracle was found in the reviewed diff."
+    ]
+  },
+  "retained_verification": {
+    "run_id": "d47-save-click-evidence-test-20261007-recorded",
+    "resource_journal": "docs/stabilization/resource-journals/d47-save-click-evidence-test-20261007-recorded.jsonl",
+    "journal_sha256_verified": "f624a0e07758864b74f1559d7a4e2af13b4d968e6a30462f0bba5676b4710dc5",
+    "admitted": true,
+    "resource_invalid": false,
+    "child_exit": 0,
+    "retained_output": ".research/d47-save-click-evidence-test-20261007-recorded.out",
+    "output_sha256_verified": "b7085adb33b26f1112f7ff952fc48840a6df911a51df99547f493d1c1c292e8e",
+    "result": "19 passed, 0 failed",
+    "source_sha256_verified": {
+      "tests/browser/settings-panel-driver.mjs": "a37776dfa52215c17734f44261c28c588386e72d51f2d5d5d6882b99042b6ff9",
+      "tests/browser/showcase-d47-document-lifecycle.mjs": "3aff7abc15abeeca56614026b8572c8f4b0dac4c289980079322439854a29f33",
+      "tests/browser/showcase-d47-driver-evidence.mjs": "fc6c3b9859a39b6aa2e5769dc42408e4dda79098ed58458e62c5e1d8431ef5ea",
+      "tests/browser/showcase-d47-driver-evidence.test.mjs": "c9aeed1b91ac88890d56949549f24e254f25e0ce2913bb9f8d2b0a1c1fbafa27"
+    }
+  },
+  "review_outcome": "Accepted bounded source review; native product and T57 acceptance remain unverified"
+}
