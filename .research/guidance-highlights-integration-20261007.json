@@ -1,0 +1,27 @@
+{
+  "status": "source-integrated-runtime-unverified",
+  "source_proposal": ".research/guidance-highlights-procedures-20261007.json",
+  "peer_review": ".research/guidance-highlights-procedures-peer-20261007.json",
+  "cases": [
+    "EXT-F-4137-T01",
+    "EXT-F-4138-T01",
+    "EXT-F-4141-T01"
+  ],
+  "unchanged_runtime_assertions": {
+    "case_ids_control_ids_modes": true,
+    "design_status_original_needed": true,
+    "feature_cells_and_applicability": true,
+    "original_dimensions_preserved_by_union": true,
+    "all_case_verdicts_unchanged": "No runtime cells or run records modified",
+    "missing_steps_before": 36,
+    "missing_steps_after": 33
+  },
+  "verification_limits": [
+    "No browser/build/DB execution in this source-only lane: all role cells and actual permission outcomes remain unverified.",
+    "Manual runner bypasses dispatcher; Ask/Act gate, agent advertisement, guest denial, and role-based auth/organization isolation need separate cases.",
+    "Guidance cloud push/delete are asynchronous; exact-ID scoped cloud or independently hydrated same-principal observation is needed for sync/durable cleanup claims.",
+    "Highlights reads return [] on database error and silently skip invalid rows; empty/missing data cannot certify access denial or successful read without independent fixture row and error observation.",
+    "Inventory/catalog metadata was previously captured and does not establish current live binding at runtime; receipt-bound registry reconciliation remains open.",
+    "No tests, browser, database, build or runtime execution performed in this integration lane."
+  ]
+}
