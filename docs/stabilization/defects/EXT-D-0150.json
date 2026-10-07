@@ -13,7 +13,7 @@
   "surface": "Tools / WebMCP and extension page-tool registration",
   "auth_mode": "admin",
   "state": "in-fix",
-  "owner": "root/webmcp_procedures",
+  "owner": "root/webmcp_origin_tab_fix",
   "priority": "P1",
   "severity": "S2",
   "user_impact": "A page implementing the currently documented native interface cannot be discovered, invoked or registered through the obsolete interface. Native browser reproduction remains pending; source-boundary failure is reproduced.",
@@ -31,12 +31,14 @@
   "evidence": [
     ".research/webmcp-native-contract-check-20261007.json",
     ".research/webmcp-native-red-20261007.stdout",
-    "docs/stabilization/resource-journals/webmcp-native-red-20261007.jsonl"
+    "docs/stabilization/resource-journals/webmcp-native-red-20261007.jsonl",
+    ".research/webmcp-native-contract-repair-20261007.json",
+    ".research/webmcp-native-contract-peer-20261007.json"
   ],
   "verification": {
-    "source": "Guarded3/3 causal RED; admitted,resourceInvalid=false,child_failed. Repair underway.",
+    "source": "Native API boundary repaired in db2ecc8d; guarded causal3/3RED then5/5GREEN, final typecheck/catalog/docs valid. No native proof.",
     "native": "unverified; existing guest harness installed Chromium141, older than documented149+ origin-trial support. This is not evidence of product native behavior.",
-    "independent_review": "pending",
+    "independent_review": "83faf01c: API source boundary accepted; origin-tab routing and contradictory older acceptance procedures require repair.",
     "release": "not submitted"
   },
   "transition_history": [
@@ -59,5 +61,7 @@
       "reason": "Bounded sibling implementation repair assigned; preserve native acceptance as pending."
     }
   ],
-  "closure_requirement": "Independent source review plus native original discovery/call/registration reproduction and surrounding failure/reload cases in a supporting receipt-bound browser. No source fixture alone closes this defect."
+  "closure_requirement": "Independent source review plus native original discovery/call/registration reproduction and surrounding failure/reload cases in a supporting receipt-bound browser. No source fixture alone closes this defect.",
+  "fix_shas": ["db2ecc8d"],
+  "next_action": "Reproduce and repair dropped WebMCP sender tab identity and stale API/confirmation procedures; fresh independent re-review, then supported-browser native acceptance."
 }

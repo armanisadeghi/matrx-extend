@@ -1,6 +1,6 @@
 {
-  "observed_at": "2026-10-07T13:24:32.575632+00:00",
-  "last_all_remotes_fetched": "2026-10-07T13:24:32.575632+00:00",
+  "observed_at": "2026-10-07T13:35:06.013114+00:00",
+  "last_all_remotes_fetched": "2026-10-07T13:35:06.013114+00:00",
   "baseline_verified_from": "/Volumes/Samsung2TB/code/.stabilization-scratch/guest-census-retest-ledger-baseline.json",
   "repositories": [
     {
@@ -24,10 +24,10 @@
     {
       "repo": "aidream",
       "prior_origin_main": "a1ab942e6a13db26b4b96f31f7e22483d470c0b3",
-      "origin_main": "2bdb13f2bddf1cbe5a6d7c9dd4697197e0ce41d1",
-      "last_update": "2026-10-07T06:22:53-07:00",
-      "files_modified_since_prior_ledger": 49,
-      "pushed_to_main": "2026-10-07T06:22:53-07:00",
+      "origin_main": "a73f0b5df0b4de99052a6b91891b9a200f4be3cc",
+      "last_update": "2026-10-07T06:34:26-07:00",
+      "files_modified_since_prior_ledger": 69,
+      "pushed_to_main": "2026-10-07T06:34:26-07:00",
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -35,17 +35,17 @@
       "other_branches": ["main"],
       "unmerged_remote_branches": [],
       "worktrees": [
-        "worktree /Volumes/Samsung2TB/code/aidream\nHEAD 2bdb13f2bddf1cbe5a6d7c9dd4697197e0ce41d1\nbranch refs/heads/main"
+        "worktree /Volumes/Samsung2TB/code/aidream\nHEAD a73f0b5df0b4de99052a6b91891b9a200f4be3cc\nbranch refs/heads/main"
       ],
       "exception": "None"
     },
     {
       "repo": "ai-matrx",
       "prior_origin_main": "8779ae2a249473fdbb06d575b4579ec1f5f2c866",
-      "origin_main": "876feb1c5ec9891200d1cbf235f5355120f82e50",
-      "last_update": "2026-10-07T06:23:49-07:00",
-      "files_modified_since_prior_ledger": 146,
-      "pushed_to_main": "2026-10-07T06:23:49-07:00",
+      "origin_main": "ea0d1b752e24a900ed641298bd7fffbada5bbf1f",
+      "last_update": "2026-10-07T06:30:26-07:00",
+      "files_modified_since_prior_ledger": 148,
+      "pushed_to_main": "2026-10-07T06:30:26-07:00",
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -53,37 +53,27 @@
       "other_branches": ["main"],
       "unmerged_remote_branches": [],
       "worktrees": [
-        "worktree /Volumes/Samsung2TB/code/ai-matrx\nHEAD 876feb1c5ec9891200d1cbf235f5355120f82e50\nbranch refs/heads/main"
+        "worktree /Volumes/Samsung2TB/code/ai-matrx\nHEAD ea0d1b752e24a900ed641298bd7fffbada5bbf1f\nbranch refs/heads/main"
       ],
       "exception": "None"
     },
     {
       "repo": "matrx-extend",
       "prior_origin_main": "30e958359934cc616af2b40cf3a682f8b6a5909c",
-      "origin_main": "1a4dee811faab30d3dcb6b723ebf547dbfd8c7ee",
-      "last_update": "2026-10-07T06:23:28-07:00",
-      "files_modified_since_prior_ledger": 24,
-      "pushed_to_main": "2026-10-07T06:23:28-07:00",
+      "origin_main": "6fbf8a0b0aec0978492d3f589160b7b5e340b63b",
+      "last_update": "2026-10-07T06:33:33-07:00",
+      "files_modified_since_prior_ledger": 49,
+      "pushed_to_main": "2026-10-07T06:33:33-07:00",
       "branch": "main",
-      "ahead_behind": "0\t2",
-      "dirty_paths": [
-        "M src/lib/tools/handlers/webmcp.ts",
-        " M src/lib/webmcp/register.ts",
-        "?? .research/webmcp-native-compile-20261007.stdout",
-        "?? .research/webmcp-native-green-20261007.stdout",
-        "?? .research/webmcp-native-red-20261007.stdout",
-        "?? docs/stabilization/resource-journals/webmcp-native-compile-20261007.jsonl",
-        "?? docs/stabilization/resource-journals/webmcp-native-green-20261007.jsonl",
-        "?? docs/stabilization/resource-journals/webmcp-native-red-20261007.jsonl",
-        "?? tests/unit/webmcp-native-contract.test.ts"
-      ],
+      "ahead_behind": "0\t0",
+      "dirty_paths": [],
       "stashes": [],
       "other_branches": ["main"],
       "unmerged_remote_branches": [],
       "worktrees": [
-        "worktree /Volumes/Samsung2TB/code/matrx-extend\nHEAD 50e225fe34fd227e86dc19202be7356a4721b683\nbranch refs/heads/main"
+        "worktree /Volumes/Samsung2TB/code/matrx-extend\nHEAD 6fbf8a0b0aec0978492d3f589160b7b5e340b63b\nbranch refs/heads/main"
       ],
-      "exception": "Active edits: M src/lib/tools/handlers/webmcp.ts;  M src/lib/webmcp/register.ts; ?? .research/webmcp-native-compile-20261007.stdout; ?? .research/webmcp-native-green-20261007.stdout; ?? .research/webmcp-native-red-20261007.stdout; ?? docs/stabilization/resource-journals/webmcp-native-compile-20261007.jsonl; ?? docs/stabilization/resource-journals/webmcp-native-green-20261007.jsonl; ?? docs/stabilization/resource-journals/webmcp-native-red-20261007.jsonl; ?? tests/unit/webmcp-native-contract.test.ts; branch main ahead/behind 0\t2"
+      "exception": "None"
     },
     {
       "repo": "matrx-local",
@@ -160,10 +150,10 @@
     {
       "repo": "matrx-common-docs",
       "prior_origin_main": "21b40bf0bc16127daa835b39145f10fbdf5737ce",
-      "origin_main": "7908224d15951b7f73e16f129d307ee1c8577db1",
-      "last_update": "2026-10-07T06:23:47-07:00",
-      "files_modified_since_prior_ledger": 2,
-      "pushed_to_main": "2026-10-07T06:23:47-07:00",
+      "origin_main": "c815c36b5aed28aadc7103e5a3b2f53d8f3794c4",
+      "last_update": "2026-10-07T06:28:24-07:00",
+      "files_modified_since_prior_ledger": 3,
+      "pushed_to_main": "2026-10-07T06:28:24-07:00",
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -171,7 +161,7 @@
       "other_branches": ["main"],
       "unmerged_remote_branches": [],
       "worktrees": [
-        "worktree /Volumes/Samsung2TB/code/matrx-common-docs\nHEAD 7908224d15951b7f73e16f129d307ee1c8577db1\nbranch refs/heads/main"
+        "worktree /Volumes/Samsung2TB/code/matrx-common-docs\nHEAD c815c36b5aed28aadc7103e5a3b2f53d8f3794c4\nbranch refs/heads/main"
       ],
       "exception": "None"
     },
