@@ -1,0 +1,66 @@
+{
+  "title": "Independent WebMCP procedure review",
+  "reviewed_proposal": ".research/webmcp-current-procedures-20261007.json",
+  "proposal_commit": "14be7f57",
+  "review_date": "2026-10-07",
+  "scope": "Source and official-contract review only. No browser, DB, product-control, test, build, or release actions were performed.",
+  "verdict_a_intended_coverage_and_executability": {
+    "verdict": "PARTIAL",
+    "finding_ids": ["A1"],
+    "summary": "The four cases preserve their original coverage identifiers and cover the stated read, list, call, and canonical route branches. Most positive and negative steps map to current source and Chrome's imperative API. The assigned-tab race proof is not forced by the proposed fixture, so the claimed tab-pinning check can pass without actually switching focus while a call is pending."
+  },
+  "verdict_b_evidence_and_doctrine": {
+    "verdict": "FAIL",
+    "finding_ids": ["B1", "B2"],
+    "summary": "The proposal keeps browser observations explicitly unresolved and distinguishes manual handler runs from dispatcher evidence. However, the receipt step can collect unrelated tab URLs and titles, and the proposal is not Biome-formatted despite passing JSON parsing."
+  },
+  "coverage_parity": {
+    "baseline": "git show 14be7f57:docs/stabilization/inventory.json",
+    "checked": ["EXT-F-4118-T01", "EXT-F-4119-T01", "EXT-F-4120-T01", "EXT-F-4162-T01"],
+    "result": "All four IDs, control_ids arrays, modes arrays, and dimensions arrays exactly match their baseline inventory cases.",
+    "native_contract": "Current Chrome imperative API documentation shows document.modelContext.registerTool with an execute callback, awaited getTools(), and executeTool(RegisteredTool, input). The proposal uses these documented forms. Chrome describes Chrome 149 as the Origin Trial start and the enable-webmcp-testing flag for local development; the proposal does not assert runtime availability."
+  },
+  "findings": [
+    {
+      "id": "A1",
+      "verdict": "PARTIAL",
+      "severity": "important",
+      "location": "All four cases, common precondition 3 and the tab-switch steps",
+      "evidence": "The fixture execute callback is described as incrementing the visible counter and returning immediately. The tab-pinning steps require switching focus while a real call is in flight but provide no entered signal, hold, or release mechanism. A fast callback may finish before the switch, making the assertion non-forcing. Current _active-tab.ts correctly uses assignedTabId when present, but the procedure needs a fixture that visibly signals entry and waits on a controlled release; switch to B after entry, release A, then assert the only mutation is on A. Keep the browser UI action entirely on owned fixture pages.",
+      "required_resolution": "Add a deterministic pending-call gate to the owned fixture and define the exact A/B before-and-after evidence."
+    },
+    {
+      "id": "B1",
+      "verdict": "FAIL",
+      "severity": "important",
+      "location": "All four cases, common precondition 7: the matrx.list_open_tabs receipt",
+      "evidence": "The proposal invokes the discovered matrx.list_open_tabs tool with {}. Current src/lib/tools/handlers/tabs.ts defaults all_windows to true and returns every matching tab's URL and title. In an otherwise-used disposable profile, the receipt may capture unrelated URLs or sensitive query strings. The privacy-safe proof is to ensure the disposable profile contains only owned fixture tabs and constrain the read with all_windows:false plus a fixture URL filter, retaining only the receipt fields needed for origin, call/tool identity, completion, and timestamp.",
+      "required_resolution": "Constrain the receipt query to fixture tabs and require evidence redaction or a profile-state check proving no unrelated tabs are present."
+    },
+    {
+      "id": "B2",
+      "verdict": "FAIL",
+      "severity": "minor",
+      "location": ".research/webmcp-current-procedures-20261007.json: cases[*].control_ids, modes, dimensions",
+      "evidence": "A JSON parse succeeds, but Biome formatting does not. I copied the proposal to /tmp and ran `pnpm exec biome format --config-path biome.json /tmp/webmcp-proposal-biome-check.json`; Biome reported a diff that collapses these short arrays to single lines. Running format with --stdin-file-path against the ignored .research path did not validate formatting (it reported that the formatter was disabled). The proposal itself was not edited.",
+      "required_resolution": "Run Biome formatting on the exact proposal through a non-ignored temporary path or apply the formatter output, then repeat the format check."
+    }
+  ],
+  "source_evidence": [
+    "src/lib/tools/handlers/webmcp.ts:24-151",
+    "src/lib/tools/handlers/_active-tab.ts:1-38",
+    "src/lib/tools/handlers/canonical-mergers.ts:255-290",
+    "src/lib/tools/dispatch.ts:1448-1585",
+    "src/features/tools/ToolsView.tsx:390-465",
+    "src/lib/tools/handlers/tabs.ts:38-70",
+    "src/lib/background/bootstrap.ts:560-625",
+    "src/lib/origin-allowlist.ts:1-27",
+    "docs/feature-tests.md:2068-2092",
+    "https://developer.chrome.com/docs/ai/webmcp/imperative-api",
+    "https://developer.chrome.com/docs/ai/webmcp"
+  ],
+  "limits": [
+    "No native browser runtime, extension build identity, or live advertisement was inspected, so this report makes no execution or availability claim.",
+    "The source proposal and its evidence remain unchanged; this report is an independent review artifact only."
+  ]
+}
