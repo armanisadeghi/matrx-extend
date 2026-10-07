@@ -1,0 +1,353 @@
+{
+  "task_id": "census-identity-audit-takeover-20261007",
+  "supersedes_rejected_report": ".research/census-remaining-identity-audit-20261007.json",
+  "frozen_source_sha": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+  "guest_receipt": ".research/empty-surface-native-retest-20261007/evidence/native-receipt-sanitized.json",
+  "guest_receipt_run": 37651810572,
+  "status": "source-only candidate allowlist; receipt identities unresolved",
+  "receipt_unknown_counts": {
+    "navigation": 2,
+    "Settings_action": 1,
+    "Chat": 16,
+    "Scrape": 3,
+    "Data": 2,
+    "SEO": 1
+  },
+  "matching_rule": "On a fresh observation, first scope by section/tab and element kind. Read the actual accessible name, aria-label, title, or placeholder from that element. Match an exact source-owned string below only when unique in that scope and the source visibility condition holds. A title is a valid candidate only if actually observed on the element; source title alone cannot identify a fingerprint. Never decode HMAC, use DOM order/path as identity, or transfer a prior run's fingerprint. Ambiguous, missing, dynamic, or externally owned labels stay unresolved. Do not assign any current receipt fingerprint from this report.",
+  "candidates": [
+    {
+      "scope": "navigation/outside_panel",
+      "kind": "button",
+      "string": "Site access",
+      "attribute": "aria-label and title",
+      "source": "src/components/SiteAccessControl.tsx:109-112",
+      "inventory_id": "EXT-F-1001-C06",
+      "source_expression": "title=\"Site access\"; aria-label=\"Site access\""
+    },
+    {
+      "scope": "navigation/outside_panel",
+      "kind": "button",
+      "string": "Account",
+      "attribute": "title fallback when user absent",
+      "source": "src/components/UserMenu.tsx:39-42",
+      "inventory_id": "EXT-F-1001-C04",
+      "condition": "guest only; signed-in title is user email and must be excluded",
+      "source_expression": "title={user?.email ?? 'Account'}"
+    },
+    {
+      "scope": "navigation/outside_panel",
+      "kind": "button",
+      "string": "Open Vault to review saved-login assistance",
+      "attribute": "title",
+      "source": "src/entrypoints/sidepanel/App.tsx:532-540",
+      "inventory_id": "EXT-F-1001-C03",
+      "condition": "assistance active and current tab not Vault",
+      "source_expression": "title=\"Open Vault to review saved-login assistance\""
+    },
+    {
+      "scope": "navigation/outside_panel",
+      "kind": "button",
+      "string": "Open Scrape",
+      "attribute": "text",
+      "source": "src/entrypoints/sidepanel/App.tsx:369-378",
+      "inventory_id": "EXT-F-1001-C01",
+      "condition": "popup capture claim failure alert",
+      "source_expression": "button text=\"Open Scrape\""
+    },
+    {
+      "scope": "Settings/footer",
+      "kind": "button",
+      "string": "Sign in",
+      "attribute": "text",
+      "source": "src/features/settings/SettingsView.tsx:761-774",
+      "inventory_id": "EXT-F-1003-C18",
+      "condition": "guest; action after collapsible sections",
+      "source_expression": "button text=\"Sign in\""
+    },
+    {
+      "scope": "Chat/guest banner",
+      "kind": "button",
+      "string": "Sign in",
+      "attribute": "text",
+      "source": "src/components/GuestBanner.tsx:31-39",
+      "inventory_id": "EXT-F-2013-C132",
+      "source_expression": "button text=\"Sign in\""
+    },
+    {
+      "scope": "Chat/guest banner",
+      "kind": "button",
+      "string": "Sign up free",
+      "attribute": "text",
+      "source": "src/components/GuestBanner.tsx:40-42",
+      "inventory_id": "EXT-F-2013-C133",
+      "source_expression": "button text=\"Sign up free\""
+    },
+    {
+      "scope": "Chat/header",
+      "kind": "button",
+      "string": "Tool permission mode",
+      "attribute": "title",
+      "source": "src/features/chat/ChatView.tsx:921-938",
+      "inventory_id": "EXT-F-2013-C06",
+      "source_expression": "title=\"Tool permission mode\""
+    },
+    {
+      "scope": "Chat/header",
+      "kind": "button",
+      "string": "History",
+      "attribute": "title",
+      "source": "src/features/chat/ChatView.tsx:1018-1026",
+      "inventory_id": "EXT-F-2013-C04",
+      "source_expression": "title=\"History\""
+    },
+    {
+      "scope": "Chat/header",
+      "kind": "button",
+      "string": "Show plan / tasks / todos",
+      "attribute": "title",
+      "source": "src/features/lists/TaskPanel.tsx:378-401",
+      "inventory_id": "EXT-F-2013-C05",
+      "condition": "requires conversation and task/plan content; normally absent for an empty guest",
+      "source_expression": "title=\"Show plan / tasks / todos\""
+    },
+    {
+      "scope": "Chat/header",
+      "kind": "button",
+      "string": "Voice language, currently ${selected.englishName}",
+      "attribute": "aria-label template",
+      "source": "src/features/chat/LanguagePicker.tsx:53-60",
+      "inventory_id": "EXT-F-2013-C19",
+      "condition": "use only after exact observed language option is verified from source-owned LANGUAGE_OPTIONS; do not wildcard arbitrary text",
+      "source_expression": "aria-label={`Voice language, currently ${selected.englishName}`}"
+    },
+    {
+      "scope": "Chat/header",
+      "kind": "button",
+      "string": "Pick a sandbox or your own computer",
+      "attribute": "title",
+      "source": "src/features/chat/SandboxPickerChip.tsx:65-86",
+      "inventory_id": "EXT-F-2013-C41",
+      "condition": "unbound compute target only; bound target name is dynamic and excluded",
+      "source_expression": "title=\"Pick a sandbox or your own computer\""
+    },
+    {
+      "scope": "Chat/header",
+      "kind": "button",
+      "string": "Copy entire conversation",
+      "attribute": "title",
+      "source": "src/features/chat/CopyConversationButton.tsx:112-120",
+      "inventory_id": "EXT-F-2013-C55",
+      "source_expression": "title=\"Copy entire conversation\""
+    },
+    {
+      "scope": "Chat/header",
+      "kind": "button",
+      "string": "New chat",
+      "attribute": "title",
+      "source": "src/features/chat/ChatView.tsx:890-898",
+      "inventory_id": "EXT-F-2013-C03",
+      "source_expression": "title=\"New chat\""
+    },
+    {
+      "scope": "Chat/empty suggestion",
+      "kind": "button",
+      "string": "Help me with my writing",
+      "attribute": "text",
+      "source": "src/features/chat/ChatView.tsx:87-92,1255-1265",
+      "inventory_id": "EXT-F-2013-C11",
+      "source_expression": "button text=\"Help me with my writing\""
+    },
+    {
+      "scope": "Chat/empty suggestion",
+      "kind": "button",
+      "string": "Brainstorm ideas with me",
+      "attribute": "text",
+      "source": "src/features/chat/ChatView.tsx:87-92,1255-1265",
+      "inventory_id": "EXT-F-2013-C11",
+      "source_expression": "button text=\"Brainstorm ideas with me\""
+    },
+    {
+      "scope": "Chat/empty suggestion",
+      "kind": "button",
+      "string": "Help me make a decision",
+      "attribute": "text",
+      "source": "src/features/chat/ChatView.tsx:87-92,1255-1265",
+      "inventory_id": "EXT-F-2013-C11",
+      "source_expression": "button text=\"Help me make a decision\""
+    },
+    {
+      "scope": "Chat/empty suggestion",
+      "kind": "button",
+      "string": "Analyze the current page",
+      "attribute": "text",
+      "source": "src/features/chat/ChatView.tsx:87-92,1255-1265",
+      "inventory_id": "EXT-F-2013-C11",
+      "source_expression": "button text=\"Analyze the current page\""
+    },
+    {
+      "scope": "Chat/composer",
+      "kind": "textarea",
+      "string": "How can I help you today?",
+      "attribute": "placeholder",
+      "source": "src/features/chat/ChatView.tsx:701-707,1503-1509",
+      "inventory_id": "EXT-F-2013-C08",
+      "condition": "selected agent unnamed and not resolving; agent-name placeholder excluded",
+      "source_expression": "placeholder={placeholder}; branch=\"How can I help you today?\""
+    },
+    {
+      "scope": "Chat/composer",
+      "kind": "textarea",
+      "string": "Naming the agent…",
+      "attribute": "placeholder",
+      "source": "src/features/chat/ChatView.tsx:701-707,1503-1509",
+      "inventory_id": "EXT-F-2013-C08",
+      "condition": "selected agent resolving",
+      "source_expression": "placeholder={placeholder}; branch=\"Naming the agent…\""
+    },
+    {
+      "scope": "Chat/composer",
+      "kind": "button",
+      "string": "Customize this conversation",
+      "attribute": "title",
+      "source": "src/features/chat/ChatView.tsx:1713-1723",
+      "inventory_id": "EXT-F-2013-C07",
+      "source_expression": "title=\"Customize this conversation\""
+    },
+    {
+      "scope": "Chat/composer",
+      "kind": "button",
+      "string": "Attach a Google Doc or Sheet you've shared with AI Matrx",
+      "attribute": "title",
+      "source": "src/features/chat/GoogleFileAttachmentChip.tsx:75-82",
+      "inventory_id": "EXT-F-2013-C37",
+      "source_expression": "title=\"Attach a Google Doc or Sheet you've shared with AI Matrx\""
+    },
+    {
+      "scope": "Chat/composer",
+      "kind": "button",
+      "string": "Sign in to use voice input",
+      "attribute": "title",
+      "source": "src/features/chat/ChatView.tsx:1526-1547",
+      "inventory_id": "EXT-F-2013-C09",
+      "condition": "guest only",
+      "source_expression": "title=\"Sign in to use voice input\""
+    },
+    {
+      "scope": "Chat/composer",
+      "kind": "button",
+      "string": "Send",
+      "attribute": "title",
+      "source": "src/features/chat/ChatView.tsx:1649-1662",
+      "inventory_id": "EXT-F-2013-C10",
+      "condition": "idle stream",
+      "source_expression": "title=\"Send\""
+    },
+    {
+      "scope": "Scrape/header",
+      "kind": "button",
+      "string": "Add this page to a project",
+      "attribute": "title",
+      "source": "src/features/scrape/ScrapeView.tsx:320-326; src/components/AddToProjectButton.tsx:118-128",
+      "inventory_id": null,
+      "condition": "icon variant; no unique existing control found for this Scrape header action",
+      "source_expression": "title=\"Add this page to a project\""
+    },
+    {
+      "scope": "Scrape/footer",
+      "kind": "button",
+      "string": "Capture the page exactly as it is right now",
+      "attribute": "title",
+      "source": "src/features/scrape/ScrapeView.tsx:729-744",
+      "inventory_id": "EXT-F-1007-C01",
+      "source_expression": "title=\"Capture the page exactly as it is right now\""
+    },
+    {
+      "scope": "Scrape/footer",
+      "kind": "button",
+      "string": "Scroll the page top→bottom to load lazy content (images, infinite-scroll items), then capture. Better for dynamic pages.",
+      "attribute": "title",
+      "source": "src/features/scrape/ScrapeView.tsx:745-762",
+      "inventory_id": "EXT-F-1007-C02",
+      "source_expression": "title=\"Scroll the page top→bottom to load lazy content (images, infinite-scroll items), then capture. Better for dynamic pages.\""
+    },
+    {
+      "scope": "Scrape/identity notice",
+      "kind": "button",
+      "string": "Retry page check",
+      "attribute": "text",
+      "source": "src/features/scrape/ScrapeView.tsx:302-312",
+      "inventory_id": null,
+      "condition": "only when tab.pageKey absent; no unique existing control",
+      "source_expression": "button text=\"Retry page check\""
+    },
+    {
+      "scope": "Data/footer",
+      "kind": "button",
+      "string": "Pick fields on this page",
+      "attribute": "text",
+      "source": "src/features/data/DataView.tsx:744-752",
+      "inventory_id": "EXT-F-2005-C14",
+      "condition": "no selected fields and not picking",
+      "source_expression": "button text=\"Pick fields on this page\""
+    },
+    {
+      "scope": "Data/identity notice",
+      "kind": "button",
+      "string": "Retry",
+      "attribute": "text",
+      "source": "src/features/data/DataView.tsx:448; src/components/PageIdentityNotice.tsx:7-17",
+      "inventory_id": null,
+      "condition": "only when tab.pageKey absent; require enclosing output region because Retry alone is nonunique in Data",
+      "source_expression": "button text=\"Retry\""
+    },
+    {
+      "scope": "Data/load error",
+      "kind": "button",
+      "string": "Retry",
+      "attribute": "text",
+      "source": "src/features/data/DataView.tsx:459-472",
+      "inventory_id": "EXT-F-2005-C01",
+      "condition": "patternLoadError; require enclosing error region because text is nonunique",
+      "source_expression": "button text=\"Retry\""
+    },
+    {
+      "scope": "SEO/footer",
+      "kind": "button",
+      "string": "Audit this page",
+      "attribute": "text",
+      "source": "src/features/seo/SeoView.tsx:332-340",
+      "inventory_id": "EXT-F-1008-C02",
+      "condition": "no audit",
+      "source_expression": "button text=\"Audit this page\""
+    },
+    {
+      "scope": "SEO/footer",
+      "kind": "button",
+      "string": "Re-audit",
+      "attribute": "text",
+      "source": "src/features/seo/SeoView.tsx:332-340",
+      "inventory_id": "EXT-F-1008-C02",
+      "condition": "audit exists",
+      "source_expression": "button text=\"Re-audit\""
+    },
+    {
+      "scope": "SEO/identity notice",
+      "kind": "button",
+      "string": "Retry",
+      "attribute": "text",
+      "source": "src/features/seo/SeoView.tsx:353-363",
+      "inventory_id": "EXT-F-1008-C03",
+      "condition": "tab.pageKey absent; require identity notice scope",
+      "source_expression": "button text=\"Retry\""
+    }
+  ],
+  "exclusions": [
+    "Settings Advanced agent capabilities is isAdmin-gated at src/features/settings/SettingsView.tsx:664-668 and cannot be inferred from the guest action row; prior report's section-by-elimination suggestion is rejected.",
+    "Navigation and Settings Account labels differ by scope. UserMenu signed-in title is user email; never record or allowlist that value.",
+    "Chat selected-agent name in composer placeholder, bound compute target names, conversation titles, user-entered draft, and free-form voice errors remain private/dynamic; do not expose or match them.",
+    "Chat ContextRulesChip is from @ai-matrx/agents/context/react, and any external package trigger requires a verified source-owned static label before inclusion.",
+    "A text string, title, and aria-label can differ for the same control; observe the actual accessible label source used by the census before exact matching. Duplicate Retry and Sign in require section scope."
+  ],
+  "safe_observation_rule": "If a candidate's accessible label is not stable or source-owned, observe only nonpersonal static attributes already present (role, kind, tab/section, aria-disabled, data-testid where explicitly source-owned); otherwise add a dedicated source-owned data-census-id in product code during a separate implementation. Do not capture email, agent/compute names, URL, user input, or raw title for unknown controls in persisted receipts.",
+  "verification": "Read full sanitized receipt and frozen d68a1db3 source; no browser, driver, product, or HMAC operation. The six Scrape/Data/SEO rows and all other fingerprint-only rows remain unidentified until fresh observed labels confirm them."
+}
