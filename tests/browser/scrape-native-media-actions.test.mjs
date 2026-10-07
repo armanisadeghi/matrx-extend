@@ -335,6 +335,34 @@ test('copy readiness requires the exact selected row, not a visible sibling', as
   );
 });
 
+test('selected Video with a rendered count badge is ready only for its unique Copy row', async () => {
+  // The native run 37688019001 showed selected "Video 2" with two rows after Open.
+  const window = new Window();
+  window.document.body.innerHTML = `<button role="tab" title="Scrape" data-state="active" aria-controls="pane">Scrape</button>
+    <section id="pane" role="tabpanel" data-state="active"><div role="tablist">
+      <button role="tab" aria-selected="false" aria-controls="images">Images<span>1</span></button>
+      <button role="tab" aria-selected="true" aria-controls="video">Video<span>2</span></button>
+    </div><div id="video" role="tabpanel" data-state="active">
+      <div><a href="${openUrl}">Intake walkthrough</a><button title="Copy video URL"></button></div>
+      <div><a href="${copyUrl}">Referral walkthrough</a><button title="Copy video URL"></button></div>
+    </div></section>`;
+  const evaluate = async (_panel, expression) => window.eval(expression);
+  assert.deepEqual(
+    { ...(await waitForMediaCopyTarget(null, copyUrl, evaluate, 'Video', 20)) },
+    {
+      selected: true,
+      rowCount: 1,
+      targetCount: 1,
+    },
+  );
+  window.document.querySelector('[aria-controls="video"]').setAttribute('aria-selected', 'false');
+  window.document.querySelector('[aria-controls="images"]').setAttribute('aria-selected', 'true');
+  await assert.rejects(
+    waitForMediaCopyTarget(null, copyUrl, evaluate, 'Video', 20),
+    /scrape_media_copy_target_ready_not_observed/,
+  );
+});
+
 test('native Copy target agrees with readiness for title and tooltip-migrated title', async () => {
   for (const attribute of ['title', 'data-matrx-title']) {
     const window = new Window();

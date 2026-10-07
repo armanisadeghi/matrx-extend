@@ -1,0 +1,25 @@
+{
+  "defect_id": "EXT-D-0154",
+  "scope": "Native Scrape Video Copy readiness in tests/browser/scrape-native-media-actions.mjs",
+  "source_run": {
+    "workflow_run_id": 37688019001,
+    "receipt": ".research/scrape-links-native-retest-20261007/evidence/run37688019001/native-scrape-receipt-sanitized.json",
+    "screenshot": ".research/scrape-links-native-retest-20261007/evidence/run37688019001/scrape-warm-media-failure.png",
+    "observation": "Video was selected and rendered as Video 2 with two rows and Copy controls. Readiness returned selected=false, rowCount=1, targetCount=1. No Copy pointer action occurred. Links controls were never reached."
+  },
+  "confirmed_cause": "The readiness helper compared the selected trigger's full textContent to Video. ScrapeTab renders a count span after its label when count > 0, so the selected trigger's textContent was Video2. Other native Scrape observers already identify tab labels using firstChild.textContent.",
+  "repair": "Read only the selected trigger's label text node for readiness; retain the selected aria state, exact href row, and unique Copy target requirements.",
+  "regression_guard": {
+    "file": "tests/browser/scrape-native-media-actions.test.mjs",
+    "case": "selected Video with a rendered count badge is ready only for its unique Copy row",
+    "red_before_repair": "scrape_media_copy_target_ready_not_observed:{\"selected\":false,\"rowCount\":1,\"targetCount\":1}",
+    "green_after_repair": "22 tests passed with a selected Video 2 trigger and the exact Copy row; the same fixture rejects readiness when Images is selected while the Video row remains in the DOM."
+  },
+  "checks": [
+    "node --test tests/browser/scrape-native-media-actions.test.mjs: 22 passed",
+    "pnpm exec biome check tests/browser/scrape-native-media-actions.mjs tests/browser/scrape-native-media-actions.test.mjs: passed",
+    "git diff --check: passed"
+  ],
+  "status": "source_repair_ready_for_independent_review",
+  "native_acceptance": "Not rerun in this lane; T12 Copy and later actions, T13 Links, and remaining acceptance cases are unverified."
+}

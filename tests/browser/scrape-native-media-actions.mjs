@@ -19,7 +19,7 @@ export async function waitForMediaCopyTarget(panel, url, evaluate, selectedTab, 
         .filter((anchor) => anchor.href === ${JSON.stringify(url)});
       const targets = rows.flatMap((anchor) =>
         [...(anchor.parentElement?.querySelectorAll('button[title^="Copy "], button:not([title])[data-matrx-title^="Copy "]') ?? [])]);
-      return { selected: tab?.textContent?.trim() === expectedTab, rowCount: rows.length,
+      return { selected: tab?.firstChild?.textContent?.trim() === expectedTab, rowCount: rows.length,
         targetCount: targets.length };
     })()`,
       ),
