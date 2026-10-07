@@ -1,0 +1,24 @@
+{"schema":1,"at":"2026-10-07T07:13:32.267Z","runId":"d47-manual-prior-route-node-retry-20261007","path":"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/d47-manual-prior-route-node-retry-20261007.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-07T07:14:39.480Z","runId":"d47-manual-prior-route-node-retry-20261007","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":12.64,"requiredMemoryGiB":4,"oneMinuteLoad":2.62,"logicalCpus":10,"cpuBusyFraction":0.18142857142857144,"swapUsedMiB":2881.56,"repoFreeGiB":1681.1576499938965,"profileFreeGiB":23.28369903564453,"safetyFreeGiB":23.28369903564453,"systemFreeGiB":23.28369903564453},"cpuBusySamples":[0.06,0.08,0.32,0.12,0.28,0.24,0.17],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+✔ hosted artifact upload preserves every routed showcase native receipt (1.158333ms)
+✔ explicit stale case dispatches the native driver with opt-in and exact artifact identity (0.745916ms)
+✔ ordinary case clears inherited stale opt-in and unrelated cases have no showcase route (0.061958ms)
+✔ D47 route binds the exact CI development artifact to its own native result (0.048291ms)
+✔ D47 route propagates only an explicit supported inverse order (0.369041ms)
+✔ D47 stale-only route keeps the exact artifact and isolated native output (0.0685ms)
+✔ D47 manual-prior route selects the existing saved replay driver (0.035083ms)
+✔ public D47 route uses its own exact-artifact native receipt and never inherits fixture ordering (0.036542ms)
+✔ stale route refuses wrong artifact identity before child dispatch (0.74075ms)
+✔ stale preflight refuses missing approved fixture before resource admission (159.129375ms)
+✔ approved stale preflight reaches credential-ready without resource or browser setup (75.096833ms)
+✔ D47 preflight requires real admin credentials and device organization (156.007125ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 462.444209
+{"schema":1,"at":"2026-10-07T07:14:40.040Z","runId":"d47-manual-prior-route-node-retry-20261007","childExitCode":0,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-07T07:14:40.077Z","runId":"d47-manual-prior-route-node-retry-20261007","admitted":true,"resourceInvalid":false,"exitCode":0,"decision":"valid","code":"RESOURCE_FINAL_DECISION"}
