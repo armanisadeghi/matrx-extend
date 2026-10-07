@@ -204,6 +204,9 @@ set +e
 PATH="$SANDBOX/bin:$PATH" bash release.sh --message "guard run" > "$SANDBOX/failed-out" 2>&1
 FAILED_STATUS=$?
 set -e
+# The nested release log names the step that stopped it (export, gate, build);
+# the sandbox is deleted on exit, so keep a copy for the failure dump below.
+cp tmp/release-logs/latest.log "$SANDBOX/failed-release.log" 2>/dev/null || true
 FAILED=0
 check() { if eval "$2"; then echo "  ok    $1"; else echo "  FAIL  $1"; FAILED=1; fi; }
 # Contention uses a real live owner; fake only sleeping so the old 60s steal
@@ -484,6 +487,7 @@ if [[ $FAILED -ne 0 ]]; then
   echo "--- catch-up output ---"; tail -30 "$SANDBOX/catchup-out" 2>/dev/null
   echo "--- ship output ---"; tail -30 "$SANDBOX/ship-out" 2>/dev/null
   echo "--- failed release output ---"; tail -30 "$SANDBOX/failed-out"
+  echo "--- failed release log ---"; tail -60 "$SANDBOX/failed-release.log" 2>/dev/null
   echo "--- passed release output ---"; tail -30 "$SANDBOX/passed-out"
   echo "--- failed second candidate output ---"; grep -E "^(RELEASE STOPPED|gate=|ERROR )" "$SANDBOX/race-failed-out" 2>/dev/null; tail -20 "$SANDBOX/race-failed-out" 2>/dev/null
   echo "--- tag race output ---"; tail -20 "$SANDBOX/tag-race-out" 2>/dev/null
