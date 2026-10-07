@@ -1,0 +1,21 @@
+{"schema":1,"at":"2026-10-07T11:05:57.402Z","runId":"t57-public-cleanup-race-final-20261007","path":"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/t57-public-cleanup-race-final-20261007.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-07T11:07:04.590Z","runId":"t57-public-cleanup-race-final-20261007","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":11.84,"requiredMemoryGiB":4,"oneMinuteLoad":3.96,"logicalCpus":10,"cpuBusyFraction":0.09285714285714286,"swapUsedMiB":2650.19,"repoFreeGiB":1680.6739692687988,"profileFreeGiB":23.239009857177734,"safetyFreeGiB":23.239009857177734,"systemFreeGiB":23.239009857177734},"cpuBusySamples":[0.12,0.08,0.07,0.06,0.08,0.06,0.18],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+✔ public response identity is exact across URL and body without exposing either (1.075ms)
+✔ CDP failure categories never retain URLs, credentials, or raw messages (0.231625ms)
+✔ extension capture proof requires its own hook and an attached owned tab (0.775583ms)
+✔ controller continues original paused responses in order and disables interception (159.15625ms)
+✔ canceled old release still attempts current release and every owned cleanup step (106.642125ms)
+✔ a response body settling after cleanup cannot append a late pause observation (1.5565ms)
+✔ disable and detach failures independently preserve later cleanup attempts (0.642583ms)
+✔ preflight requires two matching real request identities, new document and delivery lifecycle (0.262875ms)
+✔ actual verdict rejects constant and missing-evidence mutations in memory (17.547125ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 363.587875
+{"schema":1,"at":"2026-10-07T11:07:05.047Z","runId":"t57-public-cleanup-race-final-20261007","childExitCode":0,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-07T11:07:05.103Z","runId":"t57-public-cleanup-race-final-20261007","admitted":true,"resourceInvalid":false,"exitCode":0,"decision":"valid","code":"RESOURCE_FINAL_DECISION"}

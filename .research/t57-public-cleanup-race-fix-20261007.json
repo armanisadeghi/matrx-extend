@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "scope": "Bounded QA follow-up to the independent diagnostics review; no product, native, workflow, or acceptance-scenario change",
+  "peer_source": ".research/t57-release-diagnostics-peer-20261007.json",
+  "repair": {
+    "late_pause": "Cleanup marks the controller closed and removes CDP listeners before continuing held requests. An in-flight Fetch.getResponseBody completion or rejection after closure cannot append a pause, increment unmatched count, start another continuation, or change lifecycle facts. The held request is still continued during cleanup.",
+    "cleanup_label": "A held response whose body is still pending is labeled unclassified_held_response; it is not falsely assigned old or current before the response observation exists.",
+    "failure_controls": "Focused in-memory controls inject Fetch.disable failure and detach failure separately. Each confirms later teardown is attempted, cleanup remains unverified, and raw secret-bearing errors never enter facts.",
+    "acceptance": "The existing strict preflight success predicate is unchanged. A late body completion, failed disable, or failed detach remains unverified. Cancellation is not recorded as delivered callback."
+  },
+  "source_sha256": {
+    "tests/browser/showcase-d47-public-race-preflight.mjs": "1aa521557bfe7eb2a6444baecb8e01427e9f83493830fad4658c5d05c4ca931d",
+    "tests/browser/showcase-d47-public-race-preflight.test.mjs": "4cfa358cb7424ebcb88f587fcf6b887aa1a4f947725ddb006c0dba5755fe3ce7"
+  },
+  "guarded_verification": [
+    {
+      "run_id": "t57-public-cleanup-race-test-20261007",
+      "decision": "child_failed; resource admitted and valid",
+      "result": "8 passed, 1 failed: test exposed an inaccurate current label for an in-flight body read; no product verdict",
+      "full_sanitized_stdout": ".research/t57-public-cleanup-race-test-20261007.stdout",
+      "stdout_sha256": "00ab66aff404c2a972c2a1f7e6aaf883d2db3a7f629492044cac091965f5062d",
+      "journal": "docs/stabilization/resource-journals/t57-public-cleanup-race-test-20261007.jsonl",
+      "journal_sha256": "9985d1b2401d36016d8ae161d0b34634611b9192e3901335ba7d115635f1f019"
+    },
+    {
+      "run_id": "t57-public-cleanup-race-final-20261007",
+      "decision": "valid",
+      "result": "9 passed, 0 failed, including late body completion, separate disable/detach faults, cancellation cleanup, and constant/missing-evidence mutants",
+      "full_sanitized_stdout": ".research/t57-public-cleanup-race-final-20261007.stdout",
+      "stdout_sha256": "952f4496909ac77e27caf5e0c80c6526e01e76c27698590c73739b3705fdd74b",
+      "journal": "docs/stabilization/resource-journals/t57-public-cleanup-race-final-20261007.jsonl",
+      "journal_sha256": "68e739af14331abaa194d52c2299f65ce9da6ba2efd0e3810ddde2748d76e44b"
+    }
+  ],
+  "status": "qa_source_follow_up_review_ready; D47 original bounded closure unchanged; broader T57 unverified",
+  "limit": "No native evidence or scenario overhaul was attempted. Fresh independent source review is required before any separately authorized native retry."
+}

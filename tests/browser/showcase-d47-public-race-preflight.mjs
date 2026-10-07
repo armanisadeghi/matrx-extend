@@ -186,10 +186,12 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
   let activeLoader;
   let closed = false;
   const onRequest = (event) => {
+    if (closed) return;
     if (event.requestId && event.frameId === mainFrame)
       requests.set(event.requestId, { frame_id: event.frameId, loader_id: event.loaderId });
   };
   const onContext = ({ context }) => {
+    if (closed) return;
     if (context.auxData?.isDefault && context.auxData.frameId === mainFrame && context.uniqueId)
       facts.contexts.push({
         unique_id: context.uniqueId,
@@ -198,11 +200,13 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
       });
   };
   const onFrame = ({ frame }) => {
+    if (closed) return;
     if (frame.id === mainFrame) activeLoader = frame.loaderId;
   };
   const onTerminal =
     (kind) =>
     ({ requestId }) => {
+      if (closed) return;
       terminal.set(requestId, kind);
       for (const item of facts.paused) if (item.network_id === requestId) item.lifecycle = kind;
     };
@@ -210,12 +214,13 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
   const onFailed = onTerminal('failed');
   const continueUnmatched = (requestId) => {
     const pending = cdp.send('Fetch.continueRequest', { requestId }).catch(() => {
-      facts.unmatched_target_count++;
+      if (!closed) facts.unmatched_target_count++;
     });
     passthrough.add(pending);
     void pending.finally(() => passthrough.delete(pending));
   };
   const onPaused = async (event) => {
+    if (closed) return;
     const network = requests.get(event.networkId);
     const identity = publicRaceRequestIdentity(event.request, expectedPath);
     const target = identity !== null;
@@ -255,9 +260,11 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
       )
         throw new Error('public_race_response_body_encoding_invalid');
       const bytes = Buffer.from(response.body, response.base64Encoded ? 'base64' : 'utf8');
+      if (closed) return;
       item.response_sha256 = digest(bytes);
       facts.paused.push(item);
     } catch {
+      if (closed) return;
       facts.unmatched_target_count++;
       held.delete(event.requestId);
       continueUnmatched(event.requestId);
@@ -324,9 +331,23 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
   async function cleanup() {
     if (closed) return;
     closed = true;
+    // A body read may still settle after teardown. It owns a held request, which
+    // we continue below, but its continuation must not append a late receipt.
+    cdp.off('Network.requestWillBeSent', onRequest);
+    cdp.off('Runtime.executionContextCreated', onContext);
+    cdp.off('Page.frameNavigated', onFrame);
+    cdp.off('Network.loadingFinished', onFinished);
+    cdp.off('Network.loadingFailed', onFailed);
+    cdp.off('Fetch.requestPaused', onPaused);
     let ok = true;
     for (const requestId of held.keys()) {
-      const step = held.get(requestId) === facts.paused[0] ? 'old' : 'current';
+      const item = held.get(requestId);
+      const step =
+        item === facts.paused[0]
+          ? 'old'
+          : item === facts.paused[1]
+            ? 'current'
+            : 'unclassified_held_response';
       try {
         await cdp.send('Fetch.continueRequest', { requestId });
         facts.cleanup_attempts.push({ step, outcome: 'continued' });
