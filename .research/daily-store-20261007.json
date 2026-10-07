@@ -73,8 +73,28 @@
     "/Users/armanisadeghi/code/common-docs/operations/scheduled-tasks.md"
   ],
   "open_questions": [
-    "A guarded dashboard run remains outstanding and is owned by the parent; retain the Oct 7 schedule ownership until the guarded check and guest acceptance finish.",
-    "The dashboard review-state observation did not inspect Google email or the Notifications page.",
-    "Current source versus the 0.2.205 Store package was outside this dashboard-only check."
-  ]
+    "No newer eligible Store ZIP established by bounded release inventory; no upload made.",
+    "Guest proof is separately recorded in .research/daily-guest-20261007.json; neither check establishes overall health."
+  ],
+  "guarded_recheck": {
+    "observed_at": "2026-10-07T16:23:30Z",
+    "run_id": "daily-store-guarded-20261007-02",
+    "journal": "docs/stabilization/resource-journals/daily-store-guarded-20261007-02.jsonl",
+    "decision": "valid",
+    "published_version": "0.2.205",
+    "draft_version": "0.2.205",
+    "status": "Published - public",
+    "pending_review": false,
+    "reviewer_action_observed": false,
+    "upload_enabled": true,
+    "method": "Fresh Chrome native AX after page reload and renewed authenticated session; exact primary Package plus Published and Draft status pages.",
+    "access_recovery": "Existing saved Google password and AI Matrx Vault authenticator copy/paste succeeded; no credentials or codes recorded.",
+    "limits": [
+      "No Google email inspection.",
+      "Initial first worker observation was unguarded and cached; superseded by this fresh authenticated recheck.",
+      "First guarded launch refused due to an ending prior source test process; verified process exited before second launch."
+    ],
+    "dashboard_changes": "none",
+    "human_action_required": false
+  }
 }
