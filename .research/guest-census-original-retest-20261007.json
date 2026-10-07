@@ -299,5 +299,15 @@
     "Member and admin census results remain unverified.",
     "No inventory promotion or defect-state transition is made by this report.",
     "The hosted workflow output did not record Chrome version; observed_chrome_version is unavailable."
-  ]
+  ],
+  "browser_installation_provenance": {
+    "source": "GitHub Actions37624678750 install log; hosted harness source at4ba1a20e",
+    "installed_browser": "Chromium141.0.7390.37",
+    "playwright_revision": "1194",
+    "playwright_package": "playwright-core@1.56.1",
+    "installation_evidence_time": "2026-10-07T13:00:51.9453450Z",
+    "launch_source": "scripts/hosted-guest-acceptance.mjs installs bundled Chromium; tests/browser/browser-runtime.mjs defaults to chromium.executablePath unless explicitly overridden.",
+    "observed_running_browser_version": null,
+    "limitation": "Installation and default-launch source evidence only. No running browser version was captured in the census result. Cannot establish current documented WebMCP149+ native support."
+  }
 }
