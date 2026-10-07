@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "task_id": "picker-channels-native-20261007",
+  "defect_id": "EXT-D-0042",
+  "feature_id": "EXT-F-1012",
+  "case_ids": ["EXT-F-1012-T24", "EXT-F-1012-T51"],
+  "status": "passed_bounded",
+  "scope": "One guarded hosted native showcase-stale-admin attempt validating genuine stale ITEM_DETECTED and RESULT delivery after B starts. D42 remains in-fix; no inventory transition, product repair, Store, or release claim.",
+  "source_readiness": {
+    "diagnostic_peer": ".research/picker-diagnostic-final-peer-20261007.json",
+    "missing_races_record": ".research/picker-missing-races-20261007.json",
+    "race_peer": ".research/picker-race-peer-20261007.json",
+    "native_execution_authorized_after": "Settings lane A terminal and temporary-secret cleanup; fresh macos-15 host preflight",
+    "driver_checkout_sha": "0369b9b6d631bd262ca3c00d4fa371b03cadb8f2",
+    "d42_product_source_comparison": "No changes to src/lib/data-pattern/list-picker-relay.ts, src/lib/data-pattern/list-picker.ts, src/features/showcase/tabs/ListPatternTab.tsx, or src/lib/messaging/schemas.ts from frozen artifact source 91e152208490a05c3dc1f15bdadbdaafc80dad64 through workflow checkout 0369b9b6d631bd262ca3c00d4fa371b03cadb8f2. The native driver and safe receipt diagnostics came from the reviewed pushed workflow checkout.",
+    "lane_a_precondition": {
+      "previous_settings_run_id": 37696455741,
+      "previous_attempt_terminal": true,
+      "previous_resource_invalid": true,
+      "shared_secrets_absent_before_stage": true
+    }
+  },
+  "dispatch": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "ref": "main",
+    "event": "workflow_dispatch",
+    "acceptance_lane": "A",
+    "runner_label": "macos-15",
+    "acceptance_case": "showcase-stale-admin",
+    "development_run_id": 37686627159,
+    "development_artifact_id": 11512366176,
+    "release_run_id": "",
+    "published_store_crx": false,
+    "workflow_run_id": 37697860472,
+    "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37697860472",
+    "workflow_checkout_sha": "0369b9b6d631bd262ca3c00d4fa371b03cadb8f2",
+    "terminal": {
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-07T22:42:31Z",
+      "completed_at": "2026-10-07T22:49:56Z"
+    },
+    "observation": "Retained exact workflow run ID and polled at 60-second intervals; no duplicate dispatch or retry.",
+    "runner_architecture": "ARM64",
+    "runner_id": 1000096547
+  },
+  "frozen_artifact": {
+    "ci_run_id": 37686627159,
+    "artifact_id": 11512366176,
+    "artifact_name": "matrx-extend-development-test-91e152208490a05c3dc1f15bdadbdaafc80dad64-37686627159-1",
+    "artifact_digest": "sha256:f8ec812264f0299722ee82d7cc1db74bfdeeed8485dd51dd3e300473fc95218b",
+    "artifact_size_bytes": 13616520,
+    "artifact_expired": false,
+    "ci_conclusion": "success",
+    "source_sha": "91e152208490a05c3dc1f15bdadbdaafc80dad64",
+    "version": "0.2.388",
+    "tree_sha256": "885c5699340ee04aa02bb836f68ef5448b17f3f91850d294abcc37b73bf4a5a0",
+    "receipt_and_provenance_match": true,
+    "expected_development_extension_id_observed": true,
+    "receipt": "docs/stabilization/evidence/showcase-d42-native/run37692910351/frozen-artifact/ci-build-receipt.json",
+    "provenance": "docs/stabilization/evidence/showcase-d42-native/run37692910351/frozen-artifact/ci-build-provenance.json",
+    "validation": "GitHub run and exact artifact metadata were rechecked before dispatch; the hosted workflow's existing importer and development identity checks passed."
+  },
+  "native_result": {
+    "uploaded_artifact_id": 11516451811,
+    "uploaded_artifact_name": "hosted-guest-37697860472-1",
+    "uploaded_artifact_digest": "sha256:4108b6ab5efed2aceba782c0edb879e19f98f4f4da4606bad7a5235b60210405",
+    "uploaded_artifact_size_bytes": 64091,
+    "uploaded_artifact_expired": false,
+    "driver_receipt": "docs/stabilization/evidence/showcase-d42-native/run37697860472/sanitized-receipt.json",
+    "stage": "complete",
+    "native_stage": "exercise_panel",
+    "status": "passed_bounded",
+    "loaded_extension_id_verified": true,
+    "side_panel_context_verified": true,
+    "passed_cases": [
+      "guest_nonchat_control_and_showcase_gate",
+      "real_admin_signin_and_device_organization",
+      "genuine_A_exit_relay_rejected_while_B_active",
+      "same_page_cancel_A_start_B",
+      "current_B_detection_relayed",
+      "B_card_field_done_extract",
+      "ordinary_page_click_after_cancel",
+      "genuine_A_detected_rejected_B_extracted",
+      "genuine_A_result_rejected_B_extracted"
+    ],
+    "new_channel_observations": {
+      "stale_item_detected": {
+        "status": "pass",
+        "stale_relay_stamped": true,
+        "same_tab_and_document": true,
+        "current_B_rows": 3
+      },
+      "stale_result": {
+        "status": "pass",
+        "stale_relay_stamped": true,
+        "same_tab_and_document": true,
+        "current_B_rows": 3
+      }
+    },
+    "bounded_existing_observations": {
+      "stale_exit_rejected_while_B_active": true,
+      "current_B_detection_and_result": true,
+      "three_fixture_rows_and_titles": true,
+      "repick_cancel_and_ordinary_page_click": true
+    },
+    "unverified_d42_criteria": [
+      "delayed A cancellation injection after B starts",
+      "deferred picker installation across replacement",
+      "fresh content-script reinjection and exact one-detection listener count",
+      "signed-in nonadmin role gating"
+    ],
+    "receipt_sha256": "1339ca4007628030a2b967e2e2658cddad6cc0cb1b23c5cd887913fc2697ea4c"
+  },
+  "resource_verdict": {
+    "resource_invalid": false,
+    "journals": [
+      {
+        "path": "docs/stabilization/evidence/showcase-d42-native/run37697860472/resource-journals/hosted-package-37697860472-1.jsonl",
+        "sha256": "78fc0ef0bf18528be7f5fc6189f75b301fd264fedcfb50ee3d11b2600bdce1fa",
+        "decision": "valid",
+        "admitted": true,
+        "exit_code": 0,
+        "resource_invalid": false,
+        "events": 4
+      },
+      {
+        "path": "docs/stabilization/evidence/showcase-d42-native/run37697860472/resource-journals/hosted-browser-37697860472-1.jsonl",
+        "sha256": "5ef497d98ba2f76301acf4737bea4bdaa7381bf5fd4c2eaaa8e21c570d63aac8",
+        "decision": "valid",
+        "admitted": true,
+        "exit_code": 0,
+        "resource_invalid": false,
+        "events": 4
+      },
+      {
+        "path": "docs/stabilization/evidence/showcase-d42-native/run37697860472/resource-journals/hosted-guest-37697860472-1.jsonl",
+        "sha256": "4e141daae0095155d3dff395142304130b27935d9fe6fa177f03436647e3a8a7",
+        "decision": "valid",
+        "admitted": true,
+        "exit_code": 0,
+        "resource_invalid": false,
+        "events": 6
+      }
+    ],
+    "excluded_unrelated_historical_journals": [
+      "hosted-browser-37105304739-1.jsonl",
+      "hosted-package-37105304739-1.jsonl",
+      "hosted-guest-37105304739-1.jsonl"
+    ],
+    "exclusion_reason": "The hosted upload path included unrelated historical journal files; only journals containing this attempt's exact run ID are retained here."
+  },
+  "credential_handling": {
+    "canonical_preflight": "passed using requireHostedAcceptanceCredential('showcase-stale-admin'), including profileOrganizationConfig validation",
+    "private_sources": [
+      "sibling aidream .env (mode 0600)",
+      "test-results/admin-profile-approved-organization-private.json (mode 0600)"
+    ],
+    "secret_names": [
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON",
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON"
+    ],
+    "both_absent_before_stage": true,
+    "values_streamed_via_stdin": true,
+    "values_or_account_identifiers_retained": false,
+    "deleted_immediately_after_terminal": true,
+    "absence_verified_after_delete": true
+  },
+  "defect_disposition": {
+    "state": "in-fix",
+    "closed": false,
+    "reason": "Only stale ITEM_DETECTED and RESULT were added to this native proof; delayed cancellation, deferred installation, reinjection/listener count, and nonadmin gating remain unverified."
+  },
+  "evidence_directory": "docs/stabilization/evidence/showcase-d42-native/run37697860472"
+}

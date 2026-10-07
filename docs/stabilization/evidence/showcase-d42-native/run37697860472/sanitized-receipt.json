@@ -1,0 +1,868 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0042",
+  "status": "passed_bounded",
+  "stage": "complete",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "source_sha": "91e152208490a05c3dc1f15bdadbdaafc80dad64",
+    "run_id": 37686627159,
+    "artifact_id": 11512366176,
+    "tree_sha256": "885c5699340ee04aa02bb836f68ef5448b17f3f91850d294abcc37b73bf4a5a0",
+    "version": "0.2.388"
+  },
+  "cases": [
+    {
+      "id": "guest_nonchat_control_and_showcase_gate",
+      "status": "pass",
+      "evidence": {
+        "scrape_visible": true,
+        "showcase_absent": true
+      }
+    },
+    {
+      "id": "real_admin_signin_and_device_organization",
+      "status": "pass",
+      "evidence": {
+        "rendered": true
+      }
+    },
+    {
+      "id": "genuine_A_exit_relay_rejected_while_B_active",
+      "status": "pass",
+      "evidence": {
+        "old_session_id": "be56cfc4-538a-4362-a94d-1697ba0fcf4c",
+        "relay_tab_id": 48829550,
+        "relay_document_id": "B03ADBEDF1EB104F3F928ACFBB9B79C7",
+        "B_picking": true
+      }
+    },
+    {
+      "id": "same_page_cancel_A_start_B",
+      "status": "pass",
+      "evidence": {
+        "page_unchanged": true,
+        "one_overlay": true
+      }
+    },
+    {
+      "id": "current_B_detection_relayed",
+      "status": "pass",
+      "evidence": {
+        "B_session_id": "598d020d-fcb5-448b-bebd-109886deccb5",
+        "different_from_A": true,
+        "same_tab_and_document_as_A": true
+      }
+    },
+    {
+      "id": "B_card_field_done_extract",
+      "status": "pass",
+      "evidence": {
+        "fixture_rows": 3,
+        "titles_observed": true
+      }
+    },
+    {
+      "id": "ordinary_page_click_after_cancel",
+      "status": "pass",
+      "evidence": {
+        "click_count": 1
+      }
+    },
+    {
+      "id": "genuine_A_detected_rejected_B_extracted",
+      "status": "pass",
+      "evidence": {
+        "A_session_id": "a248d8b4-858d-4eb6-8474-b0fddff99e06",
+        "B_session_id": "3c44b8f7-b762-4f7e-b921-90ebdd7067ef",
+        "same_tab_and_document": true,
+        "stale_relay_stamped": true,
+        "B_rows": 3
+      }
+    },
+    {
+      "id": "genuine_A_result_rejected_B_extracted",
+      "status": "pass",
+      "evidence": {
+        "A_session_id": "2362d647-d4a0-42eb-b91c-2a513763a5d2",
+        "B_session_id": "aa71516e-c4cb-4468-aecc-919b5b9f1781",
+        "same_tab_and_document": true,
+        "stale_relay_stamped": true,
+        "B_rows": 3
+      }
+    }
+  ],
+  "unverified_criteria": [
+    "delayed A cancellation injection after B starts",
+    "deferred installation across replacement",
+    "new content-script context reinjection and exact listener count",
+    "nonadmin role gating"
+  ],
+  "failure_code": null,
+  "organization_diagnostic": {
+    "substage": "organization_identity_compare",
+    "observations": {
+      "admin_role_verified": true,
+      "picker_available": true,
+      "picker_has_selection": false,
+      "selection_required": true,
+      "menu_open": true,
+      "visible_option_count": 58,
+      "exact_match_count": 1,
+      "exact_visible_match_count": 1,
+      "target_in_viewport": false,
+      "target_center_hit": false,
+      "archive_filter": "unknown",
+      "storage_has_uuid": true,
+      "storage_name_matches": true,
+      "rendered_email_matches": true,
+      "rendered_role_matches": true,
+      "rendered_profile_matches": true,
+      "rendered_organization_matches": true
+    }
+  },
+  "selection_diagnostic": {
+    "substage": "field_wait",
+    "observations": {
+      "card_count": 3,
+      "overlay_count": 1,
+      "card_visible": true,
+      "card_center_hit": false,
+      "scope_choice_count": 0,
+      "three_card_choice_count": 0,
+      "badge_three_items": true,
+      "picked_item_count": 1
+    },
+    "pointer_samples": {
+      "before_click": {
+        "viewport": {
+          "width": 601,
+          "height": 498
+        },
+        "card_rect": {
+          "x": 8,
+          "y": 79.875,
+          "width": 585,
+          "height": 65.90625
+        },
+        "field_rect": null,
+        "picked_item_count": null,
+        "picker_panel_rect": {
+          "x": 239,
+          "y": 16,
+          "width": 346,
+          "height": 110
+        },
+        "center_in_viewport": true,
+        "center_hit_kind": "picker_panel",
+        "interior_hit_kinds": [
+          "card",
+          "picker_panel",
+          "picker_panel",
+          "card",
+          "picker_panel",
+          "picker_panel",
+          "card",
+          "card",
+          "card"
+        ]
+      },
+      "field_before_click": {
+        "viewport": {
+          "width": 601,
+          "height": 498
+        },
+        "card_rect": null,
+        "field_rect": {
+          "x": 8,
+          "y": 79.875,
+          "width": 585,
+          "height": 28
+        },
+        "picked_item_count": 0,
+        "picker_panel_rect": {
+          "x": 239,
+          "y": 16,
+          "width": 346,
+          "height": 132
+        },
+        "center_in_viewport": true,
+        "center_hit_kind": "picker_panel",
+        "interior_hit_kinds": [
+          "picker_panel",
+          "field",
+          "picker_panel",
+          "picker_panel",
+          "field",
+          "picker_panel",
+          "picker_panel",
+          "field",
+          "picker_panel"
+        ]
+      },
+      "field_after_click": {
+        "viewport": {
+          "width": 601,
+          "height": 498
+        },
+        "card_rect": null,
+        "field_rect": {
+          "x": 8,
+          "y": 79.875,
+          "width": 585,
+          "height": 28
+        },
+        "picked_item_count": 1,
+        "picker_panel_rect": {
+          "x": 239,
+          "y": 16,
+          "width": 346,
+          "height": 161
+        },
+        "center_in_viewport": true,
+        "center_hit_kind": "picker_panel",
+        "interior_hit_kinds": [
+          "picker_panel",
+          "field",
+          "picker_panel",
+          "picker_panel",
+          "field",
+          "picker_panel",
+          "picker_panel",
+          "field",
+          "picker_panel"
+        ]
+      }
+    }
+  },
+  "stale_diagnostic": null,
+  "completion_diagnostic": {
+    "boundaries": [
+      {
+        "stage": "done_B_click",
+        "status": "passed",
+        "before": {
+          "overlay": {
+            "attached": true,
+            "done_present": true,
+            "done_disabled": false,
+            "done_has_area": true,
+            "done_center_in_viewport": true,
+            "done_center_hit": true,
+            "picked_count": 1
+          },
+          "panel": {
+            "ready": true,
+            "start": false,
+            "picking": false,
+            "cancel": false,
+            "extract": false,
+            "selectedField": false,
+            "rowCount": false,
+            "hasFirst": false,
+            "hasSecond": false,
+            "hasThird": false
+          },
+          "relay": {
+            "observer_available": true,
+            "current_detection_stamped": true,
+            "result_raw": false,
+            "result_stamped": false
+          }
+        },
+        "after": {
+          "overlay": {
+            "attached": false,
+            "done_present": false,
+            "done_disabled": null,
+            "done_has_area": false,
+            "done_center_in_viewport": false,
+            "done_center_hit": false,
+            "picked_count": 0
+          },
+          "panel": {
+            "ready": true,
+            "start": false,
+            "picking": false,
+            "cancel": false,
+            "extract": true,
+            "selectedField": true,
+            "rowCount": false,
+            "hasFirst": false,
+            "hasSecond": false,
+            "hasThird": false
+          },
+          "relay": {
+            "observer_available": true,
+            "current_detection_stamped": true,
+            "result_raw": true,
+            "result_stamped": true
+          }
+        }
+      },
+      {
+        "stage": "done_B_detach",
+        "status": "passed",
+        "before": {
+          "overlay": {
+            "attached": false,
+            "done_present": false,
+            "done_disabled": null,
+            "done_has_area": false,
+            "done_center_in_viewport": false,
+            "done_center_hit": false,
+            "picked_count": 0
+          },
+          "panel": {
+            "ready": true,
+            "start": false,
+            "picking": false,
+            "cancel": false,
+            "extract": true,
+            "selectedField": true,
+            "rowCount": false,
+            "hasFirst": false,
+            "hasSecond": false,
+            "hasThird": false
+          },
+          "relay": {
+            "observer_available": true,
+            "current_detection_stamped": true,
+            "result_raw": true,
+            "result_stamped": true
+          }
+        },
+        "after": {
+          "overlay": {
+            "attached": false,
+            "done_present": false,
+            "done_disabled": null,
+            "done_has_area": false,
+            "done_center_in_viewport": false,
+            "done_center_hit": false,
+            "picked_count": 0
+          },
+          "panel": {
+            "ready": true,
+            "start": false,
+            "picking": false,
+            "cancel": false,
+            "extract": true,
+            "selectedField": true,
+            "rowCount": false,
+            "hasFirst": false,
+            "hasSecond": false,
+            "hasThird": false
+          },
+          "relay": {
+            "observer_available": true,
+            "current_detection_stamped": true,
+            "result_raw": true,
+            "result_stamped": true
+          }
+        }
+      },
+      {
+        "stage": "done_B_builder",
+        "status": "passed",
+        "before": {
+          "overlay": {
+            "attached": false,
+            "done_present": false,
+            "done_disabled": null,
+            "done_has_area": false,
+            "done_center_in_viewport": false,
+            "done_center_hit": false,
+            "picked_count": 0
+          },
+          "panel": {
+            "ready": true,
+            "start": false,
+            "picking": false,
+            "cancel": false,
+            "extract": true,
+            "selectedField": true,
+            "rowCount": false,
+            "hasFirst": false,
+            "hasSecond": false,
+            "hasThird": false
+          },
+          "relay": {
+            "observer_available": true,
+            "current_detection_stamped": true,
+            "result_raw": true,
+            "result_stamped": true
+          }
+        },
+        "after": {
+          "overlay": {
+            "attached": false,
+            "done_present": false,
+            "done_disabled": null,
+            "done_has_area": false,
+            "done_center_in_viewport": false,
+            "done_center_hit": false,
+            "picked_count": 0
+          },
+          "panel": {
+            "ready": true,
+            "start": false,
+            "picking": false,
+            "cancel": false,
+            "extract": true,
+            "selectedField": true,
+            "rowCount": false,
+            "hasFirst": false,
+            "hasSecond": false,
+            "hasThird": false
+          },
+          "relay": {
+            "observer_available": true,
+            "current_detection_stamped": true,
+            "result_raw": true,
+            "result_stamped": true
+          }
+        }
+      },
+      {
+        "stage": "extract_B_click",
+        "status": "passed",
+        "before": {
+          "overlay": {
+            "attached": false,
+            "done_present": false,
+            "done_disabled": null,
+            "done_has_area": false,
+            "done_center_in_viewport": false,
+            "done_center_hit": false,
+            "picked_count": 0
+          },
+          "panel": {
+            "ready": true,
+            "start": false,
+            "picking": false,
+            "cancel": false,
+            "extract": true,
+            "selectedField": true,
+            "rowCount": false,
+            "hasFirst": false,
+            "hasSecond": false,
+            "hasThird": false
+          },
+          "relay": {
+            "observer_available": true,
+            "current_detection_stamped": true,
+            "result_raw": true,
+            "result_stamped": true
+          }
+        },
+        "after": {
+          "overlay": {
+            "attached": false,
+            "done_present": false,
+            "done_disabled": null,
+            "done_has_area": false,
+            "done_center_in_viewport": false,
+            "done_center_hit": false,
+            "picked_count": 0
+          },
+          "panel": {
+            "ready": true,
+            "start": false,
+            "picking": false,
+            "cancel": false,
+            "extract": false,
+            "selectedField": true,
+            "rowCount": false,
+            "hasFirst": false,
+            "hasSecond": false,
+            "hasThird": false
+          },
+          "relay": {
+            "observer_available": true,
+            "current_detection_stamped": true,
+            "result_raw": true,
+            "result_stamped": true
+          }
+        }
+      },
+      {
+        "stage": "extract_B_rows",
+        "status": "passed",
+        "before": {
+          "overlay": {
+            "attached": false,
+            "done_present": false,
+            "done_disabled": null,
+            "done_has_area": false,
+            "done_center_in_viewport": false,
+            "done_center_hit": false,
+            "picked_count": 0
+          },
+          "panel": {
+            "ready": true,
+            "start": false,
+            "picking": false,
+            "cancel": false,
+            "extract": false,
+            "selectedField": true,
+            "rowCount": false,
+            "hasFirst": false,
+            "hasSecond": false,
+            "hasThird": false
+          },
+          "relay": {
+            "observer_available": true,
+            "current_detection_stamped": true,
+            "result_raw": true,
+            "result_stamped": true
+          }
+        },
+        "after": {
+          "overlay": {
+            "attached": false,
+            "done_present": false,
+            "done_disabled": null,
+            "done_has_area": false,
+            "done_center_in_viewport": false,
+            "done_center_hit": false,
+            "picked_count": 0
+          },
+          "panel": {
+            "ready": true,
+            "start": false,
+            "picking": false,
+            "cancel": false,
+            "extract": true,
+            "selectedField": true,
+            "rowCount": true,
+            "hasFirst": true,
+            "hasSecond": true,
+            "hasThird": true
+          },
+          "relay": {
+            "observer_available": true,
+            "current_detection_stamped": true,
+            "result_raw": true,
+            "result_stamped": true
+          }
+        }
+      },
+      {
+        "stage": "repick_click",
+        "status": "passed",
+        "before": {
+          "overlay": {
+            "attached": false,
+            "done_present": false,
+            "done_disabled": null,
+            "done_has_area": false,
+            "done_center_in_viewport": false,
+            "done_center_hit": false,
+            "picked_count": 0
+          },
+          "panel": {
+            "ready": true,
+            "start": false,
+            "picking": false,
+            "cancel": false,
+            "extract": true,
+            "selectedField": true,
+            "rowCount": true,
+            "hasFirst": true,
+            "hasSecond": true,
+            "hasThird": true
+          },
+          "relay": {
+            "observer_available": true,
+            "current_detection_stamped": true,
+            "result_raw": true,
+            "result_stamped": true
+          }
+        },
+        "after": {
+          "overlay": {
+            "attached": false,
+            "done_present": false,
+            "done_disabled": null,
+            "done_has_area": false,
+            "done_center_in_viewport": false,
+            "done_center_hit": false,
+            "picked_count": 0
+          },
+          "panel": {
+            "ready": true,
+            "start": false,
+            "picking": false,
+            "cancel": false,
+            "extract": true,
+            "selectedField": true,
+            "rowCount": false,
+            "hasFirst": true,
+            "hasSecond": false,
+            "hasThird": false
+          },
+          "relay": {
+            "observer_available": true,
+            "current_detection_stamped": true,
+            "result_raw": true,
+            "result_stamped": true
+          }
+        }
+      },
+      {
+        "stage": "repick_attach",
+        "status": "passed",
+        "before": {
+          "overlay": {
+            "attached": true,
+            "done_present": true,
+            "done_disabled": false,
+            "done_has_area": true,
+            "done_center_in_viewport": true,
+            "done_center_hit": true,
+            "picked_count": 0
+          },
+          "panel": {
+            "ready": true,
+            "start": false,
+            "picking": false,
+            "cancel": false,
+            "extract": true,
+            "selectedField": true,
+            "rowCount": false,
+            "hasFirst": true,
+            "hasSecond": false,
+            "hasThird": false
+          },
+          "relay": {
+            "observer_available": true,
+            "current_detection_stamped": true,
+            "result_raw": true,
+            "result_stamped": true
+          }
+        },
+        "after": {
+          "overlay": {
+            "attached": true,
+            "done_present": true,
+            "done_disabled": false,
+            "done_has_area": true,
+            "done_center_in_viewport": true,
+            "done_center_hit": true,
+            "picked_count": 0
+          },
+          "panel": {
+            "ready": true,
+            "start": false,
+            "picking": false,
+            "cancel": false,
+            "extract": true,
+            "selectedField": true,
+            "rowCount": false,
+            "hasFirst": true,
+            "hasSecond": false,
+            "hasThird": false
+          },
+          "relay": {
+            "observer_available": true,
+            "current_detection_stamped": true,
+            "result_raw": true,
+            "result_stamped": true
+          }
+        }
+      },
+      {
+        "stage": "cancel_click",
+        "status": "passed",
+        "before": {
+          "overlay": {
+            "attached": true,
+            "done_present": true,
+            "done_disabled": false,
+            "done_has_area": true,
+            "done_center_in_viewport": true,
+            "done_center_hit": true,
+            "picked_count": 0
+          },
+          "panel": {
+            "ready": true,
+            "start": false,
+            "picking": false,
+            "cancel": false,
+            "extract": true,
+            "selectedField": true,
+            "rowCount": false,
+            "hasFirst": true,
+            "hasSecond": false,
+            "hasThird": false
+          },
+          "relay": {
+            "observer_available": true,
+            "current_detection_stamped": true,
+            "result_raw": true,
+            "result_stamped": true
+          }
+        },
+        "after": {
+          "overlay": {
+            "attached": false,
+            "done_present": false,
+            "done_disabled": null,
+            "done_has_area": false,
+            "done_center_in_viewport": false,
+            "done_center_hit": false,
+            "picked_count": 0
+          },
+          "panel": {
+            "ready": true,
+            "start": false,
+            "picking": false,
+            "cancel": false,
+            "extract": true,
+            "selectedField": true,
+            "rowCount": true,
+            "hasFirst": true,
+            "hasSecond": true,
+            "hasThird": true
+          },
+          "relay": {
+            "observer_available": true,
+            "current_detection_stamped": true,
+            "result_raw": true,
+            "result_stamped": true
+          }
+        }
+      },
+      {
+        "stage": "cancel_detach",
+        "status": "passed",
+        "before": {
+          "overlay": {
+            "attached": false,
+            "done_present": false,
+            "done_disabled": null,
+            "done_has_area": false,
+            "done_center_in_viewport": false,
+            "done_center_hit": false,
+            "picked_count": 0
+          },
+          "panel": {
+            "ready": true,
+            "start": false,
+            "picking": false,
+            "cancel": false,
+            "extract": true,
+            "selectedField": true,
+            "rowCount": true,
+            "hasFirst": true,
+            "hasSecond": true,
+            "hasThird": true
+          },
+          "relay": {
+            "observer_available": true,
+            "current_detection_stamped": true,
+            "result_raw": true,
+            "result_stamped": true
+          }
+        },
+        "after": {
+          "overlay": {
+            "attached": false,
+            "done_present": false,
+            "done_disabled": null,
+            "done_has_area": false,
+            "done_center_in_viewport": false,
+            "done_center_hit": false,
+            "picked_count": 0
+          },
+          "panel": {
+            "ready": true,
+            "start": false,
+            "picking": false,
+            "cancel": false,
+            "extract": true,
+            "selectedField": true,
+            "rowCount": true,
+            "hasFirst": true,
+            "hasSecond": true,
+            "hasThird": true
+          },
+          "relay": {
+            "observer_available": true,
+            "current_detection_stamped": true,
+            "result_raw": true,
+            "result_stamped": true
+          }
+        }
+      },
+      {
+        "stage": "normal_page_click",
+        "status": "passed",
+        "before": {
+          "overlay": {
+            "attached": false,
+            "done_present": false,
+            "done_disabled": null,
+            "done_has_area": false,
+            "done_center_in_viewport": false,
+            "done_center_hit": false,
+            "picked_count": 0
+          },
+          "panel": {
+            "ready": true,
+            "start": false,
+            "picking": false,
+            "cancel": false,
+            "extract": true,
+            "selectedField": true,
+            "rowCount": true,
+            "hasFirst": true,
+            "hasSecond": true,
+            "hasThird": true
+          },
+          "relay": {
+            "observer_available": true,
+            "current_detection_stamped": true,
+            "result_raw": true,
+            "result_stamped": true
+          }
+        },
+        "after": {
+          "overlay": {
+            "attached": false,
+            "done_present": false,
+            "done_disabled": null,
+            "done_has_area": false,
+            "done_center_in_viewport": false,
+            "done_center_hit": false,
+            "picked_count": 0
+          },
+          "panel": {
+            "ready": true,
+            "start": false,
+            "picking": false,
+            "cancel": false,
+            "extract": true,
+            "selectedField": true,
+            "rowCount": true,
+            "hasFirst": true,
+            "hasSecond": true,
+            "hasThird": true
+          },
+          "relay": {
+            "observer_available": true,
+            "current_detection_stamped": true,
+            "result_raw": true,
+            "result_stamped": true
+          }
+        }
+      }
+    ]
+  },
+  "auth_stage": "admin_extension_auth_completion",
+  "loaded_extension": {
+    "expected_id_observed": true,
+    "side_panel_context": true
+  }
+}
