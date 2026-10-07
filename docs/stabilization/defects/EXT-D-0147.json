@@ -64,16 +64,20 @@
     "docs/stabilization/resource-journals/native-ai-pair-catalog-20261007.jsonl",
     "docs/stabilization/resource-journals/native-ai-pair-docs-20261007.jsonl",
     "docs/stabilization/resource-journals/native-ai-pair-green-20261007.jsonl",
-    "docs/stabilization/resource-journals/native-ai-pair-compile-20261007.jsonl"
+    "docs/stabilization/resource-journals/native-ai-pair-compile-20261007.jsonl",
+    ".research/native-ai-pair-fresh-review-20261007.json"
   ],
   "build_receipt": null,
   "reproducibility": "Deterministic exported-function RED on the prior source; native unverified",
   "verification": {
-    "source": "Initial guarded RED and GREEN/compile passed; independent peer found pair omission. Guarded pair RED showed false unavailable, then final focused suite passed 4/4 and guarded pnpm compile passed. Guarded catalog and DB-sourced tool docs generation passed. Fresh source review pending.",
+    "source": "Fresh review ef05349b marks Translator pair finding ADDRESSED and source contract PASS with no new breakage. A and B overall PARTIAL: native execution and executed return-expected mutant remain unverified. Guard-strength worker assigned; native remains open.",
     "native": "unverified",
     "release": "pending permitted release host"
   },
-  "fix_shas": [],
+  "fix_shas": [
+    "eb8eca4981bd2e01e59bbe1239a9299ac4088336",
+    "fc09e3817e3352f5c0c17559fe4ce018f8bdf5ba"
+  ],
   "transition_history": [
     {
       "at": "2026-10-06T23:45:25Z",
@@ -95,5 +99,5 @@
     }
   ],
   "closure_requirement": "Guarded RED/GREEN and typecheck, independent source review, native warm and post-reload execution on an exact loaded artifact, then release verification.",
-  "next_action": "Fresh peer reviews pair-aware source on the follow-up commit. Native owner must verify capability availability and execution on the exact loaded build, separately for side-panel manual Run and agent background dispatch; resolve service-worker exposure before closing."
+  "next_action": "Finish admitted safe mutation proof, then verify side-panel manual Run and background agent dispatch separately on an exact loaded artifact; resolve service-worker capability exposure before closure."
 }
