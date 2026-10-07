@@ -66,5 +66,33 @@
       "src/lib/data-pattern/run-interactive.ts: runNetworkCapturePattern consumes only openDocumentNetworkCapture CDP events"
     ],
     "smallest_connected_guard": "With a manual capture active in a mounted sidepanel hook and a saved replay active on the same tab, emit a real networkRelayIsolated window message that reaches the background NET_CAPTURE_EVENT broadcaster and a distinct CDP-bound replay response; assert the manual list receives the manual event while the saved replay resolves only the CDP current-document rows. Remove/redirect the channel boundary in scratch to prove RED. Native proof remains separate."
+  },
+  "reproduction": {
+    "provenance": "Report-only follow-up. The commands and assertion summaries below reconstruct the observed executions from this task transcript; no test was rerun. Resource journals preserve admission and child exit, not full Vitest output. Scratch mutant files and full stdout were removed/not retained.",
+    "current_targets_sha256": {
+      "src/lib/data-pattern/document-network-capture.ts": "c65b4678be7e49829f4f346926d9ff9dbdce8b7b8506be23565abf644dba3596",
+      "tests/unit/document-network-capture.test.ts": "b7776531cba8145fb1bca0e3b0424e0ce924a29146decbe93fc6d062f7ee2d91"
+    },
+    "executed_test_source_difference": "Mutant runs used the earlier test copy that still named the prior-run test manual and prior-run and posted an inert window message. The final committed test removed that message and narrowed the title; the exact earlier scratch-test hash was not retained. The production source was unchanged.",
+    "scratch_procedure": [
+      "Constant gut check: copy tests/unit/document-network-capture.test.ts to tests/unit/.d47-isolation-constant-mutant.test.ts; replace exactly `import { runNetworkCapturePattern } from '@/lib/data-pattern/run-interactive';` with `const runNetworkCapturePattern = async () => [{ title: 'Brooklyn Bowl' }];`.",
+      "For source mutants, copy src/lib/data-pattern/document-network-capture.ts to tests/unit/.d47-document-capture-mutant.ts and replace `from './network-tap';` with `from '@/lib/data-pattern/network-tap';` to preserve the original dependency. Copy the test to tests/unit/.d47-isolation-source-mutant.test.ts and prepend `vi.mock('@/lib/data-pattern/document-network-capture', async () => await import('./.d47-document-capture-mutant'));`.",
+      "Old-document mutant: in the scratch source only, replace the bindingCalled branch sequence `context.uniqueId !== documentContext.uniqueId ||\\n        oldContexts.has(context.uniqueId)` with `false`. The earlier acceptCaptureNonce and claimDocumentContext checks stay intact.",
+      "Prior-run mutant: recopy the unchanged production source into the scratch source, then replace the bindingCalled condition `method === 'Runtime.bindingCalled' && params.name === bindingName` with `method === 'Runtime.bindingCalled' && true`.",
+      "Delete only the two scratch files after their run; never alter the shared production module. The scratch names above were deleted after execution."
+    ],
+    "exact_runner_pattern": "node scripts/stabilization-resource.mjs run --run-id <recorded-run-id> --profile-dir /Volumes/Samsung2TB/code/matrx-extend -- pnpm exec vitest run --maxWorkers=1 <scratch-or-original-test-path>",
+    "observed_assertions": {
+      "d47-isolation-constant-red-20261007": "3 new tests failed at waitForReload: expected one Page.reload call but received zero; 14 other tests passed.",
+      "d47-isolation-source-red-20261007": "5 failures total; stale-only saved replay got rows [{title: Prior venue}] instead of no-match error; higher-old-sequence saved replay got Prior venue instead of Brooklyn Bowl; old/current order capture-layer tests each received 2 onEvent calls; capture-layer stale-only received 1 event.",
+      "d47-isolation-run-binding-red-20261007": "1 failure total: second saved replay got [{title: Earlier run late}] instead of [{title: Current run}]; 16 other tests passed.",
+      "d47-isolation-final-green-20261007": "17/17 passed on final committed test source."
+    },
+    "executed_commands": [
+      "node scripts/stabilization-resource.mjs run --run-id d47-isolation-constant-red-20261007 --profile-dir /Volumes/Samsung2TB/code/matrx-extend -- pnpm exec vitest run --maxWorkers=1 tests/unit/.d47-isolation-constant-mutant.test.ts",
+      "node scripts/stabilization-resource.mjs run --run-id d47-isolation-source-red-20261007 --profile-dir /Volumes/Samsung2TB/code/matrx-extend -- pnpm exec vitest run --maxWorkers=1 tests/unit/.d47-isolation-source-mutant.test.ts",
+      "node scripts/stabilization-resource.mjs run --run-id d47-isolation-run-binding-red-20261007 --profile-dir /Volumes/Samsung2TB/code/matrx-extend -- pnpm exec vitest run --maxWorkers=1 tests/unit/.d47-isolation-source-mutant.test.ts",
+      "node scripts/stabilization-resource.mjs run --run-id d47-isolation-final-green-20261007 --profile-dir /Volumes/Samsung2TB/code/matrx-extend -- pnpm exec vitest run --maxWorkers=1 tests/unit/document-network-capture.test.ts"
+    ]
   }
 }
