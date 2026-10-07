@@ -155,7 +155,7 @@ it('holds a real first saved-run request through a distinct second saved-run res
     document: 'second',
   });
   expect((await get(`${origin}/control/document-race/release-prior-saved`)).status).toBe(200);
-  expect((await held[0]).json()).toEqual({
+  expect((await held[0]!).json()).toEqual({
     events: [{ eventName: 'Moonlit Transit' }],
     document: 'prior',
   });
