@@ -1,0 +1,56 @@
+{
+  "id": "EXT-D-0158",
+  "feature_id": "EXT-F-1012",
+  "case_ids": ["EXT-F-1012-T24", "EXT-F-1012-T51"],
+  "surface": "Testing infrastructure / picker native listener instrumentation",
+  "auth_mode": "admin native scenario",
+  "title": "Picker listener tracker may throw on untracked event registration before replacement picker initializes",
+  "severity": "S2: invalid test instrumentation blocks native reinjection verification; product failure not established",
+  "priority": "P1",
+  "state": "fixed",
+  "owner": "root/picker_reinject_escalation",
+  "reproduction": [
+    "Run showcase-stale-admin after enabling listener-tracking hook.",
+    "Reinject exact frozen picker bundle; it registers a WXT document event outside tracked click/mouseover events.",
+    "Inspect tracker behavior for an untracked event: tracked() can return false, but caller uses tracked(...)?.add(listener).",
+    "Verify whether false.add throws before replacement picker main assigns new start/teardown hooks."
+  ],
+  "expected": "Instrumentation observes tracked events and transparently forwards every untracked listener registration without throwing.",
+  "actual": "Confirmed exact frozen bundle reinjection abort: tracked() returned false for WXT optionless document event, and false?.add threw before new picker main. Native retained hook identities/one overlay/listeners matched causal RED.",
+  "evidence": [
+    ".research/picker-lifecycle-native-20261007.json",
+    ".research/picker-direct-probe-native-20261007.json",
+    ".research/picker-reinject-escalation-20261007.json",
+    ".research/seo-picker-independent-peer-20261007.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-07T23:42:10.809517+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Escalation identified precise instrumentation candidate; causal reproduction in progress."
+    },
+    {
+      "at": "2026-10-07T23:46:08.856193+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Exact frozen-bundle RED confirmed native-matching instrumentation exception."
+    },
+    {
+      "at": "2026-10-07T23:46:08.856193+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Astra escalation repaired null-safe event/capture classification."
+    },
+    {
+      "at": "2026-10-07T23:46:08.856193+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Exactbundle selfverifiedGREEN and independent source RED/GREEN plus9focusedtests pass; native retest pending."
+    }
+  ],
+  "closure_requirement": "Causal frozen-bundle red/green proof, fresh source review, then resource-valid native reinjection and surrounding scenarios; no globalD42closure.",
+  "root_cause": "Optional chaining does not suppress false; capture classifier returned boolean instead of null for untracked events/options.",
+  "fix_commits": ["eb9ee865"],
+  "next_action": "One guarded native original reinjection retest after auditA37703766572 terminal/secretcleanup. D42 remains separate and in-fix."
+}

@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "task_id": "picker-reinject-escalation-20261007",
+  "defect_id": "EXT-D-0158",
+  "related_defect_id": "EXT-D-0042",
+  "status": "source_repaired_native_retest_pending",
+  "scope": "Bounded source diagnosis and repair only. No native run, build, release, credential access, subagent, or product edit.",
+  "repair_commit": "eb9ee865",
+  "cause": {
+    "boundary": "tests/browser/showcase-stale-runtime-boundary.mjs: armListenerCount",
+    "failure": "tracked() returned boolean false for omitted, false, or object options. Optional chaining skips null/undefined only; false?.add(listener) and false?.delete(listener) throw.",
+    "real_trigger": "The exact WXT list-picker loader constructs ContentScriptContext before calling main; listenForNewerScripts registers document.addEventListener(script-started, handler) without options. The armed observer throws before main replaces __matrxListPickerStart.",
+    "symptom_chain": "The old start hook remains and the following start callback remounts the old module: unchanged start/teardown identities, one overlay, one click listener, one hover listener. An intercepted installation count does not prove successful file startup.",
+    "classification": "Acceptance-driver instrumentation defect; no evidence here requires a picker product change."
+  },
+  "frozen_product": {
+    "ci_run_id": 37698216289,
+    "artifact_id": 11516342905,
+    "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "version": "0.2.391",
+    "picker_file": "/tmp/audit-selected-native-ci-37698216289/.output/chrome-mv3/content-scripts/list-picker.js",
+    "picker_file_sha256": "f1c01974128704dd6355ef7843187502e03df845e3b28e0d342b9809b7da6b3e",
+    "product_bytes_modified": false
+  },
+  "hypotheses": [
+    {
+      "cause": "Loader intentionally retains module hooks",
+      "prediction": "Same frozen bundle reevaluation retains hooks without instrumentation",
+      "result": "Rejected by prior bare double-evaluation and this repaired-observer run; main assigns a new mount function."
+    },
+    {
+      "cause": "Observer and start callback are in different worlds",
+      "prediction": "Direct callback cannot see the pinned observer marker",
+      "result": "Rejected by native run37702650394 same_world_as_observer=true; reproduced in one Happy DOM realm."
+    },
+    {
+      "cause": "Observer aborts WXT loader before main",
+      "prediction": "Arm the real tracker then reevaluate frozen bytes: TypeError and retained hooks; correct only tracker null semantics and hooks become distinct",
+      "result": "Confirmed causal red then green with unchanged frozen bytes."
+    }
+  ],
+  "exact_bundle_reproduction": {
+    "environment": "Node v25.6.0, installed Happy DOM, actual armShowcaseStaleBoundary executed through a CDP-shaped evaluation adapter. This is source selfverification, not Chrome/native evidence.",
+    "sequence": [
+      "Verify frozen file SHA256.",
+      "Evaluate exact file once; mount then teardown picker to establish both hooks.",
+      "Arm real runtime boundary and listener observer; start active session and capture hooks.",
+      "Evaluate exact file again in same realm; catch loader exception for observation only.",
+      "Call remaining/new start hook for same session and inspect identities, DOM overlay count, listener counts.",
+      "On repaired code teardown and require zero tracked listeners; restore observer."
+    ],
+    "red": {
+      "exception": "tracked(...)?.add is not a function",
+      "start_distinct": false,
+      "teardown_distinct": false,
+      "overlay_count": 1,
+      "click_count": 1,
+      "hover_count": 1,
+      "exit_code": 1
+    },
+    "green": {
+      "exception": null,
+      "start_distinct_after_install": true,
+      "teardown_distinct_after_install": false,
+      "start_distinct_after_start": true,
+      "teardown_distinct_after_start": true,
+      "overlay_count": 1,
+      "click_count": 1,
+      "hover_count": 1,
+      "after_teardown": {
+        "click_count": 0,
+        "hover_count": 0
+      },
+      "exit_code": 0
+    },
+    "note": "Teardown is assigned during mount, so it correctly becomes distinct only after start, not merely after install. Native loader error propagation was not modeled or claimed."
+  },
+  "repair": {
+    "files": [
+      "tests/browser/showcase-stale-runtime-boundary.mjs",
+      "tests/browser/showcase-stale-runtime-boundary.test.mjs"
+    ],
+    "behavior": "Return null for untracked listeners; normalize boolean and object capture options; continue forwarding original arguments. No criteria weakened and no event/picker result synthesized. Existing stale, deferred-install, and callback-world checks remain."
+  },
+  "verification": {
+    "durable_red": "node --test tests/browser/showcase-stale-runtime-boundary.test.mjs failed with unwanted TypeError tracked(...)?.add is not a function on omitted WXT listener options before the repair.",
+    "focused_green": {
+      "command": "node --test tests/browser/showcase-stale-runtime-boundary.test.mjs tests/browser/showcase-stale-diagnostic.test.mjs",
+      "passed": 9,
+      "failed": 0
+    },
+    "typecheck": {
+      "command": "pnpm compile",
+      "exit_code": 0
+    },
+    "format": "pnpm exec biome format --write on all changed files",
+    "mutations": {
+      "method": "In-memory text mutations written only into temporary scratch copies, then node --test --test-name-pattern=listener observer; scratch copies removed. Shared source never weakened.",
+      "caught": [
+        "gut replacement: add observer returns undefined without doing work",
+        "native remove silently skipped",
+        "all capture event types counted as click",
+        "object capture option ignored"
+      ],
+      "each_exit_code": 1,
+      "strengthening": "Initial all-events-tracked mutation survived because snapshot followed removal. Added zero-count assertion while untracked listener is installed; rerun killed all four mutants."
+    },
+    "sibling_census": "rg for options === true && and tracked(...)? .add/.delete in tests/browser and src found only this tracker pair. Both add and remove consume the same corrected classifier."
+  },
+  "limits": [
+    "No native browser acceptance in this lane.",
+    "D42 remains open; fresh peer must rerun complete stale/lifecycle acceptance on same frozen product with repaired driver.",
+    "Post-reinjection detection, three-row extraction, native listener teardown and ordinary page click remain unverified.",
+    "Signed-in nonadmin role gating remains unverified.",
+    "Root owns independent review, canonical defect/inventory and review-queue updates."
+  ]
+}

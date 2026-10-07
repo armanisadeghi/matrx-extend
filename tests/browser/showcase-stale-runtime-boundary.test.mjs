@@ -9,7 +9,7 @@ import {
   assertFreshShowcasePickerContext,
 } from './showcase-stale-runtime-boundary.mjs';
 
-test('each held A channel stays outside Chrome until its exact envelope is released', async () => {
+async function createRuntimeBoundaryFixture() {
   const delivered = [];
   const cancelled = [];
   const pageListeners = new Map();
@@ -64,6 +64,12 @@ test('each held A channel stays outside Chrome until its exact envelope is relea
     context: () => ({ newCDPSession: async () => cdp }),
   };
   const boundary = await armShowcaseStaleBoundary(page, runtime.id);
+  return { boundary, delivered, cancelled, pageListeners, document, runtime, world };
+}
+
+test('each held A channel stays outside Chrome until its exact envelope is released', async () => {
+  const { boundary, delivered, cancelled, document, runtime, world } =
+    await createRuntimeBoundaryFixture();
   await boundary.holdNext(STALE_PICKER_KINDS.exit);
   const a = '11111111-1111-4111-8111-111111111111';
   const b = '22222222-2222-4222-8222-222222222222';
@@ -241,4 +247,36 @@ test('refuses default or foreign extension picker worlds', async () => {
       /showcase_picker_isolated_context_missing/,
     );
   }
+});
+
+// EXT-D-0158: rejecting omitted options aborts WXT before fresh picker hooks install.
+test('listener observer forwards every option form and counts only capture listeners', async () => {
+  const { boundary, document, pageListeners } = await createRuntimeBoundaryFixture();
+  await boundary.armListenerCount();
+  // WXT registers its script-started listener without options before installing hooks.
+  // The observer must forward all legal option forms, including untracked events.
+  for (const options of [undefined, false, {}, { capture: false }, true, { capture: true }]) {
+    function scriptStarted() {}
+    assert.doesNotThrow(() =>
+      document.addEventListener('wxt:script-started', scriptStarted, options),
+    );
+    assert.equal(pageListeners.has('wxt:script-started:scriptStarted'), true);
+    assert.deepEqual(await boundary.listenerSnapshot(), { click_count: 0, hover_count: 0 });
+    assert.doesNotThrow(() =>
+      document.removeEventListener('wxt:script-started', scriptStarted, options),
+    );
+    assert.equal(pageListeners.has('wxt:script-started:scriptStarted'), false);
+  }
+  function bubbleClick() {}
+  document.addEventListener('click', bubbleClick);
+  assert.deepEqual(await boundary.listenerSnapshot(), { click_count: 0, hover_count: 0 });
+  assert.equal(pageListeners.has('click:bubbleClick'), true);
+  document.removeEventListener('click', bubbleClick);
+  function objectCapture() {}
+  document.addEventListener('click', objectCapture, { capture: true });
+  assert.deepEqual(await boundary.listenerSnapshot(), { click_count: 1, hover_count: 0 });
+  document.removeEventListener('click', objectCapture, true);
+  assert.deepEqual(await boundary.listenerSnapshot(), { click_count: 0, hover_count: 0 });
+  await boundary.closeListenerCount();
+  await boundary.close();
 });

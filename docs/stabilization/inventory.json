@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-07T23:27:33.885597+00:00",
+  "updated_at": "2026-10-07T23:46:08.856193+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -16131,35 +16131,16 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "seo-current-ci-20261002-02",
-              "artifact_version": "0.2.175",
-              "artifact_source_sha": "b41fd0b367dd8142987013a07f77a34d2a03a4c6",
-              "detail": "Bounded native checks pass on exact CI artifact; full case dimensions remain unverified. Original guest spinner D76 independently retested and closed. One Wikipedia metadata-door candidate unavailable.",
-              "observed_subtargets": [
-                {
-                  "case_id": "EXT-F-1008-T01",
-                  "subtarget": "new_url_replaces_visible_title",
-                  "status": "pass",
-                  "evidence": {
-                    "twoDistinctPublicTitles": true
-                  }
-                },
-                {
-                  "case_id": "EXT-F-1008-T01",
-                  "subtarget": "reload_audits_current_url",
-                  "status": "pass",
-                  "evidence": {
-                    "currentUrl": "https://www.iana.org/domains/reserved",
-                    "currentTitleMatched": true,
-                    "headingsPresenceMatched": true,
-                    "reselectedAfterReload": true
-                  }
-                }
-              ],
+              "passed_subtargets": ["new_url_replaces_visible_title", "reload_audits_current_url"],
+              "unverified_dimensions": ["one audit per URL", "slow-old-result race"],
+              "run_id": "37702963336",
+              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+              "build_version": "0.2.391",
               "evidence": [
-                "docs/stabilization/runs/seo-current-ci-20261002-02.json",
-                "docs/stabilization/reports/seo-native-final-peer-20261002.json"
-              ]
+                ".research/guest-seo-native-20261007.json",
+                ".research/seo-picker-independent-peer-20261007.json"
+              ],
+              "release_scope": "Exact frozen guest development artifact; broaderdimensions/member/admin/Store unverified."
             }
           },
           "result_history": [
@@ -16195,6 +16176,41 @@
               "artifact_version": "0.2.173",
               "detail": "Two public titles, new URL replacement and panel reload observed; exactly-once and slow old result race unverified. Airbnb remained running; cause under investigation. Later boundary run confirmed actual stuck spinner after page completed; EXT-D-0076 active.",
               "evidence": ["docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json"]
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "seo-current-ci-20261002-02",
+                "artifact_version": "0.2.175",
+                "artifact_source_sha": "b41fd0b367dd8142987013a07f77a34d2a03a4c6",
+                "detail": "Bounded native checks pass on exact CI artifact; full case dimensions remain unverified. Original guest spinner D76 independently retested and closed. One Wikipedia metadata-door candidate unavailable.",
+                "observed_subtargets": [
+                  {
+                    "case_id": "EXT-F-1008-T01",
+                    "subtarget": "new_url_replaces_visible_title",
+                    "status": "pass",
+                    "evidence": {
+                      "twoDistinctPublicTitles": true
+                    }
+                  },
+                  {
+                    "case_id": "EXT-F-1008-T01",
+                    "subtarget": "reload_audits_current_url",
+                    "status": "pass",
+                    "evidence": {
+                      "currentUrl": "https://www.iana.org/domains/reserved",
+                      "currentTitleMatched": true,
+                      "headingsPresenceMatched": true,
+                      "reselectedAfterReload": true
+                    }
+                  }
+                ],
+                "evidence": [
+                  "docs/stabilization/runs/seo-current-ci-20261002-02.json",
+                  "docs/stabilization/reports/seo-native-final-peer-20261002.json"
+                ]
+              }
             }
           ]
         },
@@ -16214,24 +16230,16 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "seo-current-ci-20261002-02",
-              "artifact_version": "0.2.175",
-              "artifact_source_sha": "b41fd0b367dd8142987013a07f77a34d2a03a4c6",
-              "detail": "Bounded native checks pass on exact CI artifact; full case dimensions remain unverified. Original guest spinner D76 independently retested and closed. One Wikipedia metadata-door candidate unavailable.",
-              "observed_subtargets": [
-                {
-                  "case_id": "EXT-F-1008-T02",
-                  "subtarget": "manual_button_returns_to_current_page",
-                  "status": "pass",
-                  "evidence": {
-                    "currentTitlePreserved": true
-                  }
-                }
-              ],
+              "passed_subtargets": ["manual_button_returns_to_current_page"],
+              "unverified_dimensions": ["fresh capture", "stale advice replacement after re-audit"],
+              "run_id": "37702963336",
+              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+              "build_version": "0.2.391",
               "evidence": [
-                "docs/stabilization/runs/seo-current-ci-20261002-02.json",
-                "docs/stabilization/reports/seo-native-final-peer-20261002.json"
-              ]
+                ".research/guest-seo-native-20261007.json",
+                ".research/seo-picker-independent-peer-20261007.json"
+              ],
+              "release_scope": "Exact frozen guest development artifact; broaderdimensions/member/admin/Store unverified."
             }
           },
           "result_history": [
@@ -16263,6 +16271,30 @@
               "artifact_version": "0.2.173",
               "detail": "Trusted re-audit preserved current public title; stale advice/failure dimensions unverified.",
               "evidence": ["docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json"]
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "seo-current-ci-20261002-02",
+                "artifact_version": "0.2.175",
+                "artifact_source_sha": "b41fd0b367dd8142987013a07f77a34d2a03a4c6",
+                "detail": "Bounded native checks pass on exact CI artifact; full case dimensions remain unverified. Original guest spinner D76 independently retested and closed. One Wikipedia metadata-door candidate unavailable.",
+                "observed_subtargets": [
+                  {
+                    "case_id": "EXT-F-1008-T02",
+                    "subtarget": "manual_button_returns_to_current_page",
+                    "status": "pass",
+                    "evidence": {
+                      "currentTitlePreserved": true
+                    }
+                  }
+                ],
+                "evidence": [
+                  "docs/stabilization/runs/seo-current-ci-20261002-02.json",
+                  "docs/stabilization/reports/seo-native-final-peer-20261002.json"
+                ]
+              }
             }
           ]
         },
@@ -16282,38 +16314,23 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "seo-current-ci-20261002-02",
-              "artifact_version": "0.2.175",
-              "artifact_source_sha": "b41fd0b367dd8142987013a07f77a34d2a03a4c6",
-              "detail": "Bounded native checks pass on exact CI artifact; full case dimensions remain unverified. Original guest spinner D76 independently retested and closed. One Wikipedia metadata-door candidate unavailable.",
-              "observed_subtargets": [
-                {
-                  "case_id": "EXT-F-1008-T03",
-                  "subtarget": "about_blank_clear_error_without_stale_audit",
-                  "status": "pass",
-                  "evidence": {
-                    "scopeValid": true,
-                    "expectedErrorVisible": true,
-                    "staleAuditAbsent": true,
-                    "copyAuditAbsent": true,
-                    "retryOffered": true
-                  }
-                },
-                {
-                  "case_id": "EXT-F-1008-T03",
-                  "subtarget": "public_page_recovers_after_restricted_url",
-                  "status": "pass",
-                  "evidence": {
-                    "publicTitleMatched": true,
-                    "headingsPresenceMatched": true,
-                    "auditErrorAbsent": true
-                  }
-                }
+              "passed_subtargets": [
+                "about_blank_clear_error_without_stale_audit",
+                "public_page_recovers_after_restricted_url"
               ],
+              "unverified_dimensions": [
+                "unreachable HTTP(S)",
+                "other restricted schemes",
+                "reload dimension"
+              ],
+              "run_id": "37702963336",
+              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+              "build_version": "0.2.391",
               "evidence": [
-                "docs/stabilization/runs/seo-current-ci-20261002-02.json",
-                "docs/stabilization/reports/seo-native-final-peer-20261002.json"
-              ]
+                ".research/guest-seo-native-20261007.json",
+                ".research/seo-picker-independent-peer-20261007.json"
+              ],
+              "release_scope": "Exact frozen guest development artifact; broaderdimensions/member/admin/Store unverified."
             }
           },
           "result_history": [
@@ -16349,6 +16366,44 @@
               "artifact_version": "0.2.173",
               "detail": "about:blank cleared prior data, showed error/Retry; return to public page recovered. Other restricted/unreachable states unverified.",
               "evidence": ["docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json"]
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "seo-current-ci-20261002-02",
+                "artifact_version": "0.2.175",
+                "artifact_source_sha": "b41fd0b367dd8142987013a07f77a34d2a03a4c6",
+                "detail": "Bounded native checks pass on exact CI artifact; full case dimensions remain unverified. Original guest spinner D76 independently retested and closed. One Wikipedia metadata-door candidate unavailable.",
+                "observed_subtargets": [
+                  {
+                    "case_id": "EXT-F-1008-T03",
+                    "subtarget": "about_blank_clear_error_without_stale_audit",
+                    "status": "pass",
+                    "evidence": {
+                      "scopeValid": true,
+                      "expectedErrorVisible": true,
+                      "staleAuditAbsent": true,
+                      "copyAuditAbsent": true,
+                      "retryOffered": true
+                    }
+                  },
+                  {
+                    "case_id": "EXT-F-1008-T03",
+                    "subtarget": "public_page_recovers_after_restricted_url",
+                    "status": "pass",
+                    "evidence": {
+                      "publicTitleMatched": true,
+                      "headingsPresenceMatched": true,
+                      "auditErrorAbsent": true
+                    }
+                  }
+                ],
+                "evidence": [
+                  "docs/stabilization/runs/seo-current-ci-20261002-02.json",
+                  "docs/stabilization/reports/seo-native-final-peer-20261002.json"
+                ]
+              }
             }
           ]
         },
@@ -16408,36 +16463,23 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "seo-current-ci-20261002-02",
-              "artifact_version": "0.2.175",
-              "artifact_source_sha": "b41fd0b367dd8142987013a07f77a34d2a03a4c6",
-              "detail": "Bounded native checks pass on exact CI artifact; full case dimensions remain unverified. Original guest spinner D76 independently retested and closed. One Wikipedia metadata-door candidate unavailable.",
-              "observed_subtargets": [
-                {
-                  "case_id": "EXT-F-1008-T07",
-                  "subtarget": "guest_menu_offers_text_and_ai_but_hides_json",
-                  "status": "pass",
-                  "evidence": {
-                    "textChoice": true,
-                    "agentChoice": true,
-                    "jsonAbsent": true
-                  }
-                },
-                {
-                  "case_id": "EXT-F-1008-T07",
-                  "subtarget": "guest_role_gate_after_reload",
-                  "status": "pass",
-                  "evidence": {
-                    "textChoice": true,
-                    "agentChoice": true,
-                    "jsonAbsent": true
-                  }
-                }
+              "passed_subtargets": [
+                "guest_menu_offers_text_and_ai_but_hides_json",
+                "guest_role_gate_after_reload"
               ],
+              "unverified_dimensions": [
+                "actual clipboard output",
+                "JSON contents",
+                "member/admin gates"
+              ],
+              "run_id": "37702963336",
+              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+              "build_version": "0.2.391",
               "evidence": [
-                "docs/stabilization/runs/seo-current-ci-20261002-02.json",
-                "docs/stabilization/reports/seo-native-final-peer-20261002.json"
-              ]
+                ".research/guest-seo-native-20261007.json",
+                ".research/seo-picker-independent-peer-20261007.json"
+              ],
+              "release_scope": "Exact frozen guest development artifact; broaderdimensions/member/admin/Store unverified."
             }
           },
           "result_history": [
@@ -16473,6 +16515,42 @@
               "artifact_version": "0.2.173",
               "detail": "Guest menu offers text and AI and hides JSON before/after reload; actual clipboard payload and other modes unverified.",
               "evidence": ["docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json"]
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "seo-current-ci-20261002-02",
+                "artifact_version": "0.2.175",
+                "artifact_source_sha": "b41fd0b367dd8142987013a07f77a34d2a03a4c6",
+                "detail": "Bounded native checks pass on exact CI artifact; full case dimensions remain unverified. Original guest spinner D76 independently retested and closed. One Wikipedia metadata-door candidate unavailable.",
+                "observed_subtargets": [
+                  {
+                    "case_id": "EXT-F-1008-T07",
+                    "subtarget": "guest_menu_offers_text_and_ai_but_hides_json",
+                    "status": "pass",
+                    "evidence": {
+                      "textChoice": true,
+                      "agentChoice": true,
+                      "jsonAbsent": true
+                    }
+                  },
+                  {
+                    "case_id": "EXT-F-1008-T07",
+                    "subtarget": "guest_role_gate_after_reload",
+                    "status": "pass",
+                    "evidence": {
+                      "textChoice": true,
+                      "agentChoice": true,
+                      "jsonAbsent": true
+                    }
+                  }
+                ],
+                "evidence": [
+                  "docs/stabilization/runs/seo-current-ci-20261002-02.json",
+                  "docs/stabilization/reports/seo-native-final-peer-20261002.json"
+                ]
+              }
             }
           ]
         },
@@ -16508,142 +16586,33 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "seo-current-ci-20261002-02",
-              "artifact_version": "0.2.175",
-              "artifact_source_sha": "b41fd0b367dd8142987013a07f77a34d2a03a4c6",
-              "detail": "Bounded native checks pass on exact CI artifact; full case dimensions remain unverified. Original guest spinner D76 independently retested and closed. One Wikipedia metadata-door candidate unavailable.",
-              "observed_subtargets": [
-                {
-                  "case_id": "EXT-F-1008-T09",
-                  "subtarget": "page_0_title_and_headings",
-                  "status": "pass",
-                  "evidence": {
-                    "publicTitle": "Example Domain",
-                    "titleMatches": true,
-                    "headingsPresenceMatches": true
-                  }
-                },
-                {
-                  "case_id": "EXT-F-1008-T09",
-                  "subtarget": "page_1_title_and_headings",
-                  "status": "pass",
-                  "evidence": {
-                    "publicTitle": "IANA-managed Reserved Domains",
-                    "titleMatches": true,
-                    "headingsPresenceMatches": true
-                  }
-                },
-                {
-                  "case_id": "EXT-F-1008-T09",
-                  "subtarget": "sparse_public_detail_groups",
-                  "status": "pass",
-                  "evidence": {
-                    "descriptionAbsent": true,
-                    "canonicalAbsent": true,
-                    "groupsMatchPublicDom": true
-                  }
-                },
-                {
-                  "case_id": "EXT-F-1008-T09",
-                  "subtarget": "rich_public_detail_groups_and_canonical_door",
-                  "status": "pass",
-                  "evidence": {
-                    "descriptionMatchesPublicDom": true,
-                    "canonicalMatchesPublicDom": true,
-                    "groupsMatchPublicDom": true,
-                    "outboundAnchorSafe": true
-                  }
-                },
-                {
-                  "case_id": "EXT-F-1008-T09",
-                  "subtarget": "canonical_outbound_opens_expected_public_tab",
-                  "status": "pass",
-                  "evidence": {
-                    "trustedInput": true,
-                    "destinationMatchesPublicDom": true
-                  }
-                },
-                {
-                  "case_id": "EXT-F-1008-T09",
-                  "subtarget": "guest_manual_link_counts_match_live_dom",
-                  "status": "pass",
-                  "evidence": {
-                    "url": "https://en.wikipedia.org/wiki/HTML",
-                    "internal": 1785,
-                    "external": 411
-                  }
-                },
-                {
-                  "case_id": "EXT-F-1008-T09",
-                  "subtarget": "guest_manual_image_alt_counts_match_live_dom",
-                  "status": "pass",
-                  "evidence": {
-                    "url": "https://en.wikipedia.org/wiki/HTML",
-                    "total": 30,
-                    "missingAlt": 12
-                  }
-                },
-                {
-                  "case_id": "EXT-F-1008-T09",
-                  "subtarget": "guest_manual_readability_display_is_populated_and_explained",
-                  "status": "pass",
-                  "evidence": {
-                    "publicBodyHasText": true,
-                    "displayed": {
-                      "words": "10,488",
-                      "sentences": "786",
-                      "score": "44.48",
-                      "summary": "Difficult \u2014 college"
-                    },
-                    "metricValueCorrectness": "unverified"
-                  }
-                },
-                {
-                  "case_id": "EXT-F-1008-T09",
-                  "subtarget": "guest_manual_performance_reflects_current_navigation",
-                  "status": "pass",
-                  "evidence": {
-                    "pageResponseStatus": 200,
-                    "exposedNavigation": {
-                      "type": "navigate",
-                      "durationMs": 563,
-                      "transferSizeBytes": 123852,
-                      "responseStatus": 200
-                    },
-                    "displayed": {
-                      "status": "200",
-                      "navigation": "navigate",
-                      "duration": "563 ms",
-                      "transfer": "121 KB"
-                    }
-                  }
-                },
-                {
-                  "case_id": "EXT-F-1008-T09",
-                  "subtarget": "guest_manual_hreflang_and_schema_doors_match_page",
-                  "status": "unverified",
-                  "reason": "The public DOM did not expose unique hreflang and openable schema door candidates."
-                },
-                {
-                  "case_id": "EXT-F-1008-T09",
-                  "subtarget": "guest_airbnb_hreflang_and_schema_doors_match_public_dom",
-                  "status": "pass",
-                  "evidence": {
-                    "sourceUrl": "https://www.airbnb.com/",
-                    "alternate": {
-                      "lang": "es-US",
-                      "href": "https://es.airbnb.com/"
-                    },
-                    "schemaType": "WebSite",
-                    "schemaUrl": "https://schema.org/WebSite",
-                    "trustedInput": true
-                  }
-                }
+              "passed_subtargets": [
+                "page_0_title_and_headings",
+                "page_1_title_and_headings",
+                "sparse_public_detail_groups",
+                "rich_public_detail_groups_and_canonical_door",
+                "canonical_outbound_opens_expected_public_tab",
+                "guest_manual_link_counts_match_live_dom",
+                "guest_manual_image_alt_counts_match_live_dom",
+                "guest_manual_readability_display_is_populated_and_explained",
+                "guest_manual_performance_reflects_current_navigation"
               ],
+              "unverified_subtargets": [
+                {
+                  "name": "guest_manual_hreflang_and_schema_doors_match_page",
+                  "reason": "Public DOM had no unique hreflang and openable schema door candidates."
+                },
+                "metric value correctness",
+                "broken social preview image and detail controls outside bounded driver"
+              ],
+              "run_id": "37702963336",
+              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+              "build_version": "0.2.391",
               "evidence": [
-                "docs/stabilization/runs/seo-current-ci-20261002-02.json",
-                "docs/stabilization/reports/seo-native-final-peer-20261002.json"
-              ]
+                ".research/guest-seo-native-20261007.json",
+                ".research/seo-picker-independent-peer-20261007.json"
+              ],
+              "release_scope": "Exact frozen guest development artifact; broaderdimensions/member/admin/Store unverified."
             }
           },
           "result_history": [
@@ -16711,6 +16680,148 @@
               "artifact_version": "0.2.173",
               "detail": "Sparse/rich details, MDN canonical click and Wikipedia exact public DOM counts observed; metadata/schema doors and Airbnb audit unverified.",
               "evidence": ["docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json"]
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "seo-current-ci-20261002-02",
+                "artifact_version": "0.2.175",
+                "artifact_source_sha": "b41fd0b367dd8142987013a07f77a34d2a03a4c6",
+                "detail": "Bounded native checks pass on exact CI artifact; full case dimensions remain unverified. Original guest spinner D76 independently retested and closed. One Wikipedia metadata-door candidate unavailable.",
+                "observed_subtargets": [
+                  {
+                    "case_id": "EXT-F-1008-T09",
+                    "subtarget": "page_0_title_and_headings",
+                    "status": "pass",
+                    "evidence": {
+                      "publicTitle": "Example Domain",
+                      "titleMatches": true,
+                      "headingsPresenceMatches": true
+                    }
+                  },
+                  {
+                    "case_id": "EXT-F-1008-T09",
+                    "subtarget": "page_1_title_and_headings",
+                    "status": "pass",
+                    "evidence": {
+                      "publicTitle": "IANA-managed Reserved Domains",
+                      "titleMatches": true,
+                      "headingsPresenceMatches": true
+                    }
+                  },
+                  {
+                    "case_id": "EXT-F-1008-T09",
+                    "subtarget": "sparse_public_detail_groups",
+                    "status": "pass",
+                    "evidence": {
+                      "descriptionAbsent": true,
+                      "canonicalAbsent": true,
+                      "groupsMatchPublicDom": true
+                    }
+                  },
+                  {
+                    "case_id": "EXT-F-1008-T09",
+                    "subtarget": "rich_public_detail_groups_and_canonical_door",
+                    "status": "pass",
+                    "evidence": {
+                      "descriptionMatchesPublicDom": true,
+                      "canonicalMatchesPublicDom": true,
+                      "groupsMatchPublicDom": true,
+                      "outboundAnchorSafe": true
+                    }
+                  },
+                  {
+                    "case_id": "EXT-F-1008-T09",
+                    "subtarget": "canonical_outbound_opens_expected_public_tab",
+                    "status": "pass",
+                    "evidence": {
+                      "trustedInput": true,
+                      "destinationMatchesPublicDom": true
+                    }
+                  },
+                  {
+                    "case_id": "EXT-F-1008-T09",
+                    "subtarget": "guest_manual_link_counts_match_live_dom",
+                    "status": "pass",
+                    "evidence": {
+                      "url": "https://en.wikipedia.org/wiki/HTML",
+                      "internal": 1785,
+                      "external": 411
+                    }
+                  },
+                  {
+                    "case_id": "EXT-F-1008-T09",
+                    "subtarget": "guest_manual_image_alt_counts_match_live_dom",
+                    "status": "pass",
+                    "evidence": {
+                      "url": "https://en.wikipedia.org/wiki/HTML",
+                      "total": 30,
+                      "missingAlt": 12
+                    }
+                  },
+                  {
+                    "case_id": "EXT-F-1008-T09",
+                    "subtarget": "guest_manual_readability_display_is_populated_and_explained",
+                    "status": "pass",
+                    "evidence": {
+                      "publicBodyHasText": true,
+                      "displayed": {
+                        "words": "10,488",
+                        "sentences": "786",
+                        "score": "44.48",
+                        "summary": "Difficult \u2014 college"
+                      },
+                      "metricValueCorrectness": "unverified"
+                    }
+                  },
+                  {
+                    "case_id": "EXT-F-1008-T09",
+                    "subtarget": "guest_manual_performance_reflects_current_navigation",
+                    "status": "pass",
+                    "evidence": {
+                      "pageResponseStatus": 200,
+                      "exposedNavigation": {
+                        "type": "navigate",
+                        "durationMs": 563,
+                        "transferSizeBytes": 123852,
+                        "responseStatus": 200
+                      },
+                      "displayed": {
+                        "status": "200",
+                        "navigation": "navigate",
+                        "duration": "563 ms",
+                        "transfer": "121 KB"
+                      }
+                    }
+                  },
+                  {
+                    "case_id": "EXT-F-1008-T09",
+                    "subtarget": "guest_manual_hreflang_and_schema_doors_match_page",
+                    "status": "unverified",
+                    "reason": "The public DOM did not expose unique hreflang and openable schema door candidates."
+                  },
+                  {
+                    "case_id": "EXT-F-1008-T09",
+                    "subtarget": "guest_airbnb_hreflang_and_schema_doors_match_public_dom",
+                    "status": "pass",
+                    "evidence": {
+                      "sourceUrl": "https://www.airbnb.com/",
+                      "alternate": {
+                        "lang": "es-US",
+                        "href": "https://es.airbnb.com/"
+                      },
+                      "schemaType": "WebSite",
+                      "schemaUrl": "https://schema.org/WebSite",
+                      "trustedInput": true
+                    }
+                  }
+                ],
+                "evidence": [
+                  "docs/stabilization/runs/seo-current-ci-20261002-02.json",
+                  "docs/stabilization/reports/seo-native-final-peer-20261002.json"
+                ]
+              }
             }
           ]
         },
@@ -19716,7 +19827,7 @@
           "expected": [
             "Done transfers candidates into editor; Restart clears current picker selection and begins again."
           ],
-          "defect_ids": ["EXT-D-0045", "EXT-D-0143"],
+          "defect_ids": ["EXT-D-0045", "EXT-D-0143", "EXT-D-0158"],
           "dimensions": ["warm", "reload", "auth-transition", "service-error"],
           "results": {
             "admin": {
@@ -20355,7 +20466,7 @@
             "Fresh manual picking offers an understandable scope choice where nested repeated groups exist; selected scope determines actual extracted rows."
           ],
           "dimensions": ["warm", "reload", "navigation", "cancel"],
-          "defect_ids": ["EXT-D-0043", "EXT-D-0045", "EXT-D-0143"],
+          "defect_ids": ["EXT-D-0043", "EXT-D-0045", "EXT-D-0143", "EXT-D-0158"],
           "results": {
             "admin": {
               "status": "partial",
@@ -20807,7 +20918,8 @@
             "EXT-D-0078",
             "EXT-D-0141",
             "EXT-D-0142",
-            "EXT-D-0143"
+            "EXT-D-0143",
+            "EXT-D-0158"
           ],
           "run_ids": [
             "showcase-live-discovery-001",

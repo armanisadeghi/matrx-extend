@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "scope": "Independent read-only evidence and source review of guest SEO b96081f9 and picker listener-tracker fix eb9ee865 plus report 26f2a458. No native run, build, release, credential use, or product edit.",
+  "guest_seo": {
+    "verdict_A_actual_scope": "PARTIAL: hosted guest workflow 37702963336 and guest job completed successfully on CI development artifact 11516342905. The original native result records 16 passed bounded subtargets and one unverified hreflang/schema door; it explicitly reports partial. EXT-F-1008-T01, T02, T03, T07, and T09 therefore remain partial, and full F1008 is unverified.",
+    "verdict_B_evidence_quality": "PASS for bounded evidence: original driver result and three exact-run resource journals have hashes matching the report; all journals show admitted and valid final decisions, with a healthy guest watch. Both screenshot hashes also match. Case IDs map to the inventory's C01, C02, C03, C07, and C09 controls, whose expected dimensions exceed these observations. No promotion to Store/current-main behavior is supported.",
+    "independent_checks": [
+      "gh run view 37702963336: completed, success, guest job success, head 70694860733359b037203542c7a77d38d3b28a8a.",
+      "SHA256 recomputed for original result, three resource journals, and two screenshots; all six matched .research/guest-seo-native-20261007.json.",
+      "Original result counted 16 pass and one unverified target; its build tree before/after equals 04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793."
+    ],
+    "open_dimensions": [
+      "T01 one audit per URL and old-result race; T02 fresh capture and stale advice; T03 unreachable HTTP(S), other restricted schemes, reload; T07 actual clipboard content and member/admin gates.",
+      "T09 exact metric correctness, broken social preview, and hreflang/schema doors; the observed public DOM lacked unique openable candidates.",
+      "T04-T06/T08 persistence/history/diff and T10-T14 recommendations/Chat/social actions; all member/admin modes."
+    ]
+  },
+  "picker_D158": {
+    "verdict_A_actual_scope": "PASS for source repair/readiness; native acceptance still pending. This repairs test instrumentation only. It does not close D158 or D42, or establish post-reinjection detection, three-row extraction, native listener cleanup, ordinary clicks, or nonadmin gating.",
+    "verdict_B_evidence_quality": "PASS for source and focused guard: the old tracker returned false for untracked events and false?.add throws; the replacement returns null, normalizes boolean/object capture, and forwards every original add/remove call. The committed test checks optionless and other untracked registrations while installed, capture counts, and removal. The exact frozen picker file hash matches its reported SHA256, and its WXT listenForNewerScripts call registers without options. The report's Happy DOM whole-bundle red/green is source self-verification rather than a preserved native receipt.",
+    "independent_checks": [
+      "node --test tests/browser/showcase-stale-runtime-boundary.test.mjs tests/browser/showcase-stale-diagnostic.test.mjs: 9 passed, 0 failed.",
+      "Running the new focused listener test against eb9ee865^ in a temporary copy failed as expected with tracked(...)?.add is not a function; current source passed.",
+      "SHA256 of /tmp/audit-selected-native-ci-37698216289/.output/chrome-mv3/content-scripts/list-picker.js is f1c01974128704dd6355ef7843187502e03df845e3b28e0d342b9809b7da6b3e; source includes optionless addEventListener/removeEventListener in listenForNewerScripts."
+    ],
+    "remaining": "A resource-valid native rerun of the full picker reinjection path with this repaired driver is required before native closure."
+  },
+  "findings": []
+}

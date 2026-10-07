@@ -119,8 +119,11 @@ export async function armShowcaseStaleBoundary(page, extensionId) {
         const originalRemove = document.removeEventListener.bind(document);
         const click = new Set();
         const hover = new Set();
-        const tracked = (type, options) => options === true &&
-          (type === 'click' ? click : type === 'mouseover' ? hover : null);
+        const tracked = (type, options) => {
+          const capture = typeof options === 'boolean' ? options : options?.capture === true;
+          if (!capture) return null;
+          return type === 'click' ? click : type === 'mouseover' ? hover : null;
+        };
         const add = (type, listener, options) => {
           tracked(type, options)?.add(listener);
           return originalAdd(type, listener, options);
