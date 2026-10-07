@@ -492,6 +492,13 @@ if [[ $FAILED -ne 0 ]]; then
   echo "--- failed second candidate output ---"; grep -E "^(RELEASE STOPPED|gate=|ERROR )" "$SANDBOX/race-failed-out" 2>/dev/null; tail -20 "$SANDBOX/race-failed-out" 2>/dev/null
   echo "--- tag race output ---"; tail -20 "$SANDBOX/tag-race-out" 2>/dev/null
   echo "--- merge conflict output ---"; tail -20 "$SANDBOX/conflict-out" 2>/dev/null
+  # Every nested release's own log: the steps (snapshot export, gates) write
+  # their errors only there, and the sandbox is deleted on exit.
+  for log in "$SANDBOX"/*/tmp/release-logs/release-*.log; do
+    [[ -f "$log" ]] || continue
+    echo "--- nested release log ${log#"$SANDBOX"/} ---"
+    grep -av '^?? ' "$log" | tail -25
+  done
   exit 1
 fi
 echo "PASS"
