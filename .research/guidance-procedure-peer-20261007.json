@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent-source-procedure-review",
+  "reviewed_commit": "ad7156dd",
+  "reviewed_path": ".research/contained-procedure-gaps-20261007.json",
+  "scope": ["EXT-F-4139-T01", "EXT-F-4140-T01"],
+  "A_procedure_completeness_reproducibility": {
+    "verdict": "conditional-pass-source-procedure-only",
+    "evidence": "The proposal gives an executable signed-in Tools → Catalog path, exact save-returned UUID fixture, positive get and delete, missing and invalid-input branches, member/admin separation, reload, and exact-ID cleanup. It retains cloud checks as separate claims. No browser, storage, service, or cloud run occurred in this review.",
+    "findings": [
+      {
+        "severity": "Important",
+        "location": ".research/contained-procedure-gaps-20261007.json:39",
+        "finding": "The 'independent second-profile hydration' alternative does not say that the second profile must authenticate as the same principal and have the relevant organization/access context. A member profile cannot establish hydration of an admin user's note merely by being a second profile. Specify same-principal fresh profile/device for this alternative, or use an authorized exact-ID scoped row read. Keep separate member/admin fixtures and never copy extension storage between them."
+      },
+      {
+        "severity": "Important",
+        "location": ".research/contained-procedure-gaps-20261007.json:35",
+        "finding": "The cleanup rule requires cloud confirmation even when the asynchronous save never created a row. In that case a delete update can return success with zero rows and no tombstone, so absence of the exact cloud UUID is the correct cleanup observation, while cloud persistence/deletion coverage stays unverified. Require exact-ID absence or tombstone according to whether a live row was first observed; track any unobserved cloud state as an open limit."
+      }
+    ]
+  },
+  "B_source_doctrine": {
+    "verdict": "pass-with-source-limits",
+    "evidence": [
+      "src/features/tools/ToolsView.tsx:390-463 validates JSON and Zod before direct handler.run; it sets conversationId and assignedTabId to null and displays inline output/error.",
+      "src/lib/tools/handlers/guidance.ts:31-110 defines save/get/delete schemas and the exact positive and missing response shapes.",
+      "src/lib/guidance/storage.ts:97-139 stores by UUID locally, uses an index for delete existence, and starts cloud calls without awaiting them.",
+      "src/lib/guidance/cloud-sync.ts:137-210 and src/lib/supabase/queries.ts:1370-1445 show best-effort upsert/delete and tombstone hydration; local result does not prove a remote mutation.",
+      "docs/stabilization/inventory.json:66920-67165 preserves the existing case IDs, signed-in modes, and storage requirement. The proposal changes no canonical status."
+    ],
+    "limits": [
+      "getGuidanceItem catches chrome.storage.local errors and returns null; a missing response alone cannot distinguish absence from a storage-read fault (src/lib/guidance/storage.ts:74-82). Corroborate with a known-good owned positive read in the same run; do not claim the missing response alone proves healthy storage.",
+      "deleteGuidanceRow returns true when the update has no error, without confirming an affected row (src/lib/supabase/queries.ts:1412-1427). Require exact-ID row state for cloud claims.",
+      "No runtime execution, tests, permit, build receipt, or cloud read was performed by this read-only peer lane."
+    ]
+  }
+}
