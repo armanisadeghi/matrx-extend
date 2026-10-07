@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
   assessD47ManualRelease,
+  assessD47PriorSavedTransition,
   assessD47StaleTrace,
   assessD47Trace,
   captureD47SaveClick,
@@ -287,6 +288,123 @@ test('current request provenance accepts both Chrome event orderings and context
     assessD47Trace(trace('context_destroyed', 7), options).current_packet_before_commit,
     true,
   );
+});
+
+test('prior saved replay accepts retained commit-before-context order only inside the same-frame run window', () => {
+  // Retained native orders: first packet 6, clear 8, commit 9, context 10, handshake 11, packet 12.
+  const firstContext = {
+    order: 4,
+    kind: 'context_created',
+    tab_id: 7,
+    id: 9,
+    unique_id: 'first-document',
+    frame_id: 'main',
+  };
+  const firstPacket = {
+    order: 6,
+    kind: 'binding',
+    tab_id: 7,
+    context_id: 9,
+    binding_name: '__matrx_capture_first',
+    target_packet: true,
+  };
+  const secondPacket = {
+    order: 12,
+    kind: 'binding',
+    tab_id: 7,
+    context_id: 10,
+    binding_name: '__matrx_capture_second',
+    target_packet: true,
+    current_payload: true,
+    old_payload: false,
+    url: `${origin}/api/document-race`,
+    method: 'GET',
+    source: 'fetch',
+    request_body_key: 'none',
+    status: 200,
+    body_sha256: expectedBodySha256,
+    request_sequence: 1,
+  };
+  const retained = [
+    firstContext,
+    firstPacket,
+    { order: 8, kind: 'contexts_cleared', tab_id: 7 },
+    { order: 9, kind: 'frame_navigated', tab_id: 7, frame_id: 'main', current_fixture: true },
+    {
+      order: 10,
+      kind: 'context_created',
+      tab_id: 7,
+      id: 10,
+      unique_id: 'second-document',
+      frame_id: 'main',
+    },
+    {
+      order: 11,
+      kind: 'binding',
+      tab_id: 7,
+      context_id: 10,
+      binding_name: '__matrx_capture_second',
+      handshake: true,
+    },
+    secondPacket,
+  ];
+  const input = { origin, firstContext, firstPacket, secondPacket, expectedBodySha256 };
+  // The former driver predicate rejects the observed native sequence.
+  assert.equal(
+    retained.some((event) => event.kind === 'frame_navigated' && event.order > 10),
+    false,
+  );
+  const result = assessD47PriorSavedTransition(retained, input);
+  assert.equal(result.ok, true);
+  assert.equal(result.commit_order, 9);
+  for (const [change, reason] of [
+    [
+      (events) => {
+        events[3].frame_id = 'other-frame';
+      },
+      'current_frame_commit_missing',
+    ],
+    [
+      (events) => {
+        events[3].tab_id = 8;
+      },
+      'current_frame_commit_missing',
+    ],
+    [
+      (events) => {
+        events[3].order = 5;
+      },
+      'current_frame_commit_missing',
+    ],
+    [
+      (events) => {
+        events[3].order = 13;
+      },
+      'current_frame_commit_missing',
+    ],
+    [
+      (events) => {
+        events.splice(3, 1);
+      },
+      'current_frame_commit_missing',
+    ],
+    [
+      (events) => {
+        events[4].unique_id = 'first-document';
+      },
+      'current_context_identity_missing',
+    ],
+    [
+      (events) => {
+        events[6].body_sha256 = 'b'.repeat(64);
+      },
+      'current_request_identity_mismatch',
+    ],
+  ]) {
+    const changed = retained.map((event) => ({ ...event }));
+    change(changed);
+    assert.equal(assessD47PriorSavedTransition(changed, input).reason, reason);
+  }
 });
 
 test('stale-only provenance requires a current nonmatching packet and refuses any matching target', () => {

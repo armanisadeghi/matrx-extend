@@ -125,7 +125,10 @@ export function assessD47ManualRelease({
   return { verdict: 'invalid', reason: 'manual_release_lifecycle_mismatch' };
 }
 
-export function assessD47Trace(observed, { origin, oldPageContext, expectedBodySha256 }) {
+export function assessD47Trace(
+  observed,
+  { origin, oldPageContext, expectedBodySha256, commitAfterOrder, commitBeforeOrder },
+) {
   assert.ok(Array.isArray(observed), 'trace_missing');
   const fail = (reason) => ({ ok: false, reason });
   const contexts = observed.filter((event) => event.kind === 'context_created');
@@ -146,6 +149,7 @@ export function assessD47Trace(observed, { origin, oldPageContext, expectedBodyS
     !context?.unique_id ||
     !context.frame_id ||
     context.unique_id === old.unique_id ||
+    context.tab_id !== old.tab_id ||
     context.frame_id !== old.frame_id ||
     context.order >= current.order
   )
@@ -177,7 +181,9 @@ export function assessD47Trace(observed, { origin, oldPageContext, expectedBodyS
       event.frame_id === context.frame_id &&
       event.tab_id === current.tab_id &&
       event.current_fixture &&
-      event.order > old.order,
+      event.order > old.order &&
+      (commitAfterOrder === undefined || event.order > commitAfterOrder) &&
+      (commitBeforeOrder === undefined || event.order < commitBeforeOrder),
   );
   if (!commit) return fail('current_frame_commit_missing');
   const oldTerminal = observed.find(
@@ -199,6 +205,37 @@ export function assessD47Trace(observed, { origin, oldPageContext, expectedBodyS
     commit_order: commit.order,
     old_terminal_kind: oldTerminal.kind,
   };
+}
+
+/** Assess a saved replay using the first packet as the transition boundary. */
+export function assessD47PriorSavedTransition(
+  observed,
+  { origin, firstContext, firstPacket, secondPacket, expectedBodySha256 },
+) {
+  const fail = (reason) => ({ ok: false, reason });
+  if (
+    !firstContext?.unique_id ||
+    !firstPacket?.binding_name ||
+    firstPacket.context_id !== firstContext.id ||
+    firstPacket.tab_id !== firstContext.tab_id ||
+    !secondPacket ||
+    secondPacket.order <= firstPacket.order ||
+    secondPacket.context_id === firstPacket.context_id ||
+    secondPacket.binding_name === firstPacket.binding_name
+  )
+    return fail('prior_saved_transition_identity_missing');
+  const transition = [firstContext, ...observed.filter((event) => event.order > firstPacket.order)];
+  const assessment = assessD47Trace(transition, {
+    origin,
+    oldPageContext: firstContext,
+    expectedBodySha256,
+    commitAfterOrder: firstPacket.order,
+    commitBeforeOrder: secondPacket.order,
+  });
+  if (!assessment.ok) return assessment;
+  if (secondPacket.order !== assessment.packet_order)
+    return fail('prior_saved_second_packet_mismatch');
+  return assessment;
 }
 
 // Stale-only still needs a positive packet from the current document. The

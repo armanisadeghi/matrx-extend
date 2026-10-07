@@ -13,6 +13,7 @@ import { approvedAdminOrganizationName, signInSettings } from './settings-native
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 import {
   assessD47ManualRelease,
+  assessD47PriorSavedTransition,
   assessD47StaleTrace,
   assessD47Trace,
   captureD47SaveClick,
@@ -811,30 +812,17 @@ try {
                 event.id === secondPacket.context_id &&
                 event.tab_id === secondPacket.tab_id,
             );
-            assert.ok(
-              secondContext?.unique_id &&
-                secondContext.unique_id !== firstContext.unique_id &&
-                secondContext.frame_id === firstContext.frame_id,
-              'second_run_document_identity_missing',
+            assert.ok(secondContext?.unique_id, 'second_run_document_identity_missing');
+            report.prior_saved.second.trace = assessD47PriorSavedTransition(
+              secondBeforeRelease.observed,
+              {
+                origin,
+                firstContext,
+                firstPacket,
+                secondPacket,
+                expectedBodySha256: secondHash,
+              },
             );
-            const secondCommit = secondBeforeRelease.observed.find(
-              (event) =>
-                event.kind === 'frame_navigated' &&
-                event.current_fixture &&
-                event.tab_id === secondPacket.tab_id &&
-                event.frame_id === secondContext.frame_id &&
-                event.order > secondContext.order,
-            );
-            assert.ok(secondCommit, 'second_run_navigation_commit_missing');
-            const secondTrace = [
-              firstContext,
-              ...secondBeforeRelease.observed.filter((event) => event.order > firstPacket.order),
-            ];
-            report.prior_saved.second.trace = assessD47Trace(secondTrace, {
-              origin,
-              oldPageContext: firstContext,
-              expectedBodySha256: secondHash,
-            });
             assert.equal(
               report.prior_saved.second.trace.ok,
               true,
@@ -845,7 +833,7 @@ try {
               binding_changed: secondPacket.binding_name !== firstPacket.binding_name,
               binding_sha256: createHash('sha256').update(secondPacket.binding_name).digest('hex'),
               packet_order: secondPacket.order,
-              commit_order: secondCommit.order,
+              commit_order: report.prior_saved.second.trace.commit_order,
             };
             const observeSecondSavedTerminal = async (label) => {
               const terminal = { sample_count: 0, last: null };

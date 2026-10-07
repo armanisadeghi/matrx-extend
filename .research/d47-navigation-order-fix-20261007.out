@@ -1,0 +1,29 @@
+✔ manual late response requires a finished write after the current binding trace (1.082666ms)
+✔ seed discovery only ends after capture window reaches terminal UI (0.05275ms)
+✔ Save click receipt preserves safe target failure before dispatch (0.536417ms)
+✔ Save click receipt orders returned release before first post-click observation (156.890459ms)
+✔ Save click receipt separates dispatch failure from first read failure (312.010041ms)
+✔ current request provenance accepts both Chrome event orderings and context teardown forms (0.326083ms)
+✔ prior saved replay accepts retained commit-before-context order only inside the same-frame run window (0.286417ms)
+✔ stale-only provenance requires a current nonmatching packet and refuses any matching target (0.212375ms)
+✔ stale-only terminal cannot be certified by silence, a wrong error, or a stale preview (0.079584ms)
+✔ trace refuses swapped request identity, old payload and absent positive control (0.165542ms)
+✔ probe cleanup removes listener and detaches even after removal fails (0.099417ms)
+✔ failure receipt retains safe class and stage but strips raw error text (0.103958ms)
+✔ live target receipt distinguishes absent, hidden, disabled, duplicate and renamed controls before teardown (1185.589125ms)
+✔ live target receipt preserves the exact failed transport boundary without private messages (12.6405ms)
+✔ target guard kills constant-success and skipped-disabled classification in memory (15.752334ms)
+✔ Run waits for fresh exact host and enabled row without dispatching to a stale or unrelated page (427.052875ms)
+✔ semantic title guard kills title-only lookup and reversed native-title precedence in memory (862.917667ms)
+✔ old default deadline is RED before actual capture timer and cleanup; derived deadline observes the actual result (242.697667ms)
+✔ derived wait follows changed actual capture configuration and refuses a different recipe (41.234166ms)
+✔ terminal wait guard detects constant success without observing the operation (27.303541ms)
+✔ budget derivation refuses unobservable caller settings instead of assuming the default (4.759542ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3361.087625

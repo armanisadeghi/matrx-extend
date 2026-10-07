@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "scope": "D47 prior-saved native driver navigation-order correction; source and focused guard only",
+  "source_evidence": {
+    "workflow_run": 37597422020,
+    "diagnosis": ".research/d47-prior-saved-native-diagnosis-20261007.json",
+    "retained_event_orders": {
+      "first_packet": 6,
+      "contexts_cleared": 8,
+      "second_navigation_commit": 9,
+      "second_context": 10,
+      "second_handshake": 11,
+      "second_packet": 12
+    },
+    "old_driver_predicate": "second_navigation_commit.order > second_context.order",
+    "old_driver_result": "RED: 9 > 10 is false; native driver stopped before second saved terminal or held release"
+  },
+  "repair": "The prior-saved driver delegates navigation correlation to assessD47Trace with a commit window after the first target packet and before the second. It retains same-tab/frame/current-fixture, distinct document and binding identity, context teardown, handshake, exact second response identity/body, and before/after-release saved-result observations.",
+  "guard": {
+    "command": "node --test tests/browser/showcase-d47-driver-evidence.test.mjs",
+    "stdout_path": ".research/d47-navigation-order-fix-20261007.out",
+    "stdout_sha256": "98df9ee580b1cca09e08667ae28d7ed24c890c6dfe3831400014bb9ecf281acf",
+    "result": "21 passed, 0 failed",
+    "controls": "Retained 6,8,9,10,11,12 shape passes; wrong frame, wrong tab, commit before first packet, commit after second packet, absent commit, reused context and wrong second body fail. Test also asserts the former after-new-context predicate is false for the retained positive trace."
+  },
+  "source_sha256": {
+    "tests/browser/showcase-d47-driver-evidence.mjs": "c1df5455bc132cb12f55e9ef2787624a0c5b5c9bbb37903c9bcd82ff3853c41b",
+    "tests/browser/showcase-d47-document-lifecycle.mjs": "be0562096ddda4b50342ca9b2e097816cd2c732de2d978e5022e246dd95e8e72",
+    "tests/browser/showcase-d47-driver-evidence.test.mjs": "aac5c2e0f98c4fcfd97982856475cc3beacbe67899c4f180c5581a0017b2ec39"
+  },
+  "additional_checks": [
+    "node --check tests/browser/showcase-d47-document-lifecycle.mjs: exit 0",
+    "git diff --check: exit 0",
+    "Biome formatted the three tracked source files"
+  ],
+  "limit": "No browser or native rerun, release, database action, or D47/T57 pass claim. The prior-saved second saved result and delayed old callback remain unverified."
+}
