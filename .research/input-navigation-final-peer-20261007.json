@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_source_and_procedure_only",
+  "reviewed_commit": "b672d0affe68a0d7cda04038f0cf65a85109a5b3",
+  "reviewed_proposal": ".research/input-navigation-procedures-20261007.json",
+  "prior_review": ".research/input-navigation-peer-20261007.json",
+  "runtime_executed": false,
+  "finding_disposition": {
+    "A1_focus": "ADDRESSED_AS_EXPLICIT_UNVERIFIED_PRECONDITION: cdp_input_type still cannot be certified executable until a native focus and field-value smoke succeeds. The source sends Input.insertText without focusing an element, and side-panel Run may shift focus.",
+    "A2_navigation_timeout": "ADDRESSED: the revised procedure treats a loading/timeout result as failed or inconclusive and no longer asserts waitForLoad guarantees complete.",
+    "A3_stale_ref": "ADDRESSED: it saves the ref from the verification read_page, refreshes the page, then tests that ref before another read_page can reassign attributes.",
+    "B1_permissions": "ADDRESSED_AS_EXPLICIT_UNVERIFIED_DIMENSION: all four inventory cases retain permissions work outside direct Tools Run. No malformed-input or invalid-tab result is called a permission denial.",
+    "B2_cdp_cleanup": "ADDRESSED: the revised procedure records attachment/banner state immediately, distinguishes explicit detach from idle or worker detach, and preserves unrelated tabs."
+  },
+  "verdict_A_executable_fidelity": {
+    "status": "PARTIAL_ACCEPT_FOR_DIRECT_MANUAL_PROCEDURES_ONLY",
+    "per_case": {
+      "EXT-F-4105-T01": "ACCEPT_CONDITIONAL: source supports numeric tab_id, bounds-based click, checked=true readback and schema refusal; page hit and attachment remain native-unverified.",
+      "EXT-F-4106-T01": "NOT_YET_EXECUTABLE_POSITIVE: schema and Input.insertText payload match source, but the required focus/value smoke is unresolved and no reproducible focus-preserving sequence has been established.",
+      "EXT-F-4151-T01": "ACCEPT_CONDITIONAL: string tab_id/ref/value, positive result, refresh-stale ref and invalid-tab refusal match source; actual page effects remain native-unverified.",
+      "EXT-F-4152-T01": "ACCEPT_WITH_CORRECTION: route, invalid-tab refusal and timeout limitation match source. Obtain actual status from list_open_tabs for the owned ID, since ordinary tab UI does not expose chrome.tabs.Tab.status."
+    },
+    "finding": {
+      "id": "A4",
+      "severity": "minor",
+      "case": "EXT-F-4152-T01",
+      "location": ".research/input-navigation-procedures-20261007.json proposed_case_patches EXT-F-4152-T01 steps[1]",
+      "issue": "The step requires status complete in both returned result and tab UI, but ordinary Chrome tab UI does not display the tabs API status field.",
+      "correction": "After navigate, run list_open_tabs with {} in Tools, locate the same owned tab ID, and require its status=complete alongside returned status=complete and the visually loaded Web form. Treat absence or loading as inconclusive or failure.",
+      "evidence": "src/lib/tools/handlers/tabs.ts:38-64 returns id and status; src/lib/tools/handlers/action.ts:18-30 returns navigation status; src/features/tools/ToolsView.tsx:390-491 exposes manual output."
+    }
+  },
+  "verdict_B_quality_and_coverage": {
+    "status": "ACCEPT_AS_BOUNDED_SOURCE_PROPOSAL_NOT_INVENTORY_COMPLETION",
+    "decision": "The corrected procedures may be used as direct-handler test guidance if the navigation status instruction is corrected and the CDP type positive remains conditional. Preserve the original inventory permissions dimension and all unverified member/admin cells. A separate dispatcher route and Deny observation are required for permission coverage; source review and Tools Run do not supply them.",
+    "coverage_limits": [
+      "No native browser execution, build, database query, credentials, or source/inventory edit was performed.",
+      "No positive, reload, member, admin, debugger attach, focus, dispatcher refusal or permission outcome is verified by this review.",
+      "The CDP type focus requirement is a test prerequisite, not an observed fact; a paired click remains a hypothesis until it survives side-panel Run and changes the intended input."
+    ]
+  },
+  "sources_checked": [
+    "src/lib/tools/handlers/cdp.ts:64-84,330-397",
+    "src/lib/tools/handlers/canonical.ts:65-85,377-489",
+    "src/lib/tools/handlers/action.ts:18-30,105-149,237-258",
+    "src/lib/tools/handlers/page-refs.ts:278-281,348-354,397-432",
+    "src/lib/tools/handlers/tabs.ts:38-64",
+    "src/features/tools/ToolsView.tsx:390-491,525-576",
+    "src/lib/tools/dispatch.ts:823-837",
+    "docs/stabilization/inventory.json:51015-51030,51151-51166,59077-59092,59217-59232"
+  ]
+}
