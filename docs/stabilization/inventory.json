@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-07T23:14:28.478294+00:00",
+  "updated_at": "2026-10-07T23:27:33.885597+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -6019,21 +6019,22 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37696764772",
-              "source_sha": "4801dbd72c99d0ff157c16cb51926587bdf95618",
-              "build_version": "0.2.391",
+              "run_id": "37701201664",
+              "source_sha": "eb4182d3032ccef6a9317fcc34d5274a01deac39",
+              "build_version": "0.2.392",
               "evidence": [
-                ".research/desktop-guest-native-20261007.json",
-                ".research/parallel-native-evidence-peer-20261007.json"
+                ".research/desktop-remaining-native-20261007.json",
+                ".research/lifecycle-desktop-final-review-20261007.json"
               ],
               "verified_substeps": [
-                "Pair save refusal retained input and showed retry; retry persisted synthetic value; overlapping pair saves retained the latest submission."
+                "Owned HTTP fixture Forget Cancel preserved the controlled pair code.",
+                "Injected storage.remove refusal kept the controlled pairing and exposed an error.",
+                "Retry removed the browser pairing."
               ],
               "remaining_criteria": [
-                "The case requires transport-sensitive visibility and HTTP Forget confirmation. Pair removal was unverified because HTTP transport and product confirmation were unavailable; no engine health is inferred."
+                "This HTTP fixture does not prove current live transport, real engine pairing acceptance, or a healthy desktop-engine connection."
               ],
-              "observed_at": "2026-10-07T22:43:08.259405+00:00",
-              "release_scope": "Frozen CI development artifact only; no Store/current-main/healthy-engine claim."
+              "release_scope": "Frozen development artifact; Settings Page.reload, not full extension Reload or Store."
             }
           },
           "result_history": [
@@ -6059,6 +6060,27 @@
                 ],
                 "release_scope": "Exact CI development artifact; not frozen public176 or full Store installation/update acceptance.",
                 "supplemental_run_id": "desktop-settings-forget-reset-guest-20261003-01"
+              }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37696764772",
+                "source_sha": "4801dbd72c99d0ff157c16cb51926587bdf95618",
+                "build_version": "0.2.391",
+                "evidence": [
+                  ".research/desktop-guest-native-20261007.json",
+                  ".research/parallel-native-evidence-peer-20261007.json"
+                ],
+                "verified_substeps": [
+                  "Pair save refusal retained input and showed retry; retry persisted synthetic value; overlapping pair saves retained the latest submission."
+                ],
+                "remaining_criteria": [
+                  "The case requires transport-sensitive visibility and HTTP Forget confirmation. Pair removal was unverified because HTTP transport and product confirmation were unavailable; no engine health is inferred."
+                ],
+                "observed_at": "2026-10-07T22:43:08.259405+00:00",
+                "release_scope": "Frozen CI development artifact only; no Store/current-main/healthy-engine claim."
               }
             }
           ]
@@ -6314,6 +6336,29 @@
                 "observed_at": "2026-10-07T22:43:08.259405+00:00",
                 "release_scope": "Frozen CI development artifact only; no Store/current-main/healthy-engine claim."
               }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37701201664",
+                "source_sha": "eb4182d3032ccef6a9317fcc34d5274a01deac39",
+                "build_version": "0.2.392",
+                "evidence": [
+                  ".research/desktop-remaining-native-20261007.json",
+                  ".research/lifecycle-desktop-final-review-20261007.json"
+                ],
+                "verified_substeps": [
+                  "Ports 1 and 65535 saved.",
+                  "Ports 0 and 65536 were rejected while 65535 remained saved.",
+                  "Nondigits were filtered; blank cleared the override and validation error; the cleared value persisted across Settings Page.reload."
+                ],
+                "remaining_criteria": [
+                  "This receipt does not observe worker rediscovery or a healthy engine connection; it earns no rediscovery claim."
+                ],
+                "release_scope": "Frozen development artifact; Settings Page.reload, not full extension Reload or Store."
+              },
+              "note": "Prior separate complete T46 pass37699338786 retained; never combine different builds into a new pass."
             }
           ],
           "attempt_history": [
@@ -6459,22 +6504,22 @@
           "dimensions": ["warm", "reload"],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": "37696764772",
-              "source_sha": "4801dbd72c99d0ff157c16cb51926587bdf95618",
-              "build_version": "0.2.391",
+              "status": "pass",
+              "run_id": "37701201664",
+              "source_sha": "eb4182d3032ccef6a9317fcc34d5274a01deac39",
+              "build_version": "0.2.392",
               "evidence": [
-                ".research/desktop-guest-native-20261007.json",
-                ".research/parallel-native-evidence-peer-20261007.json"
+                ".research/desktop-remaining-native-20261007.json",
+                ".research/lifecycle-desktop-final-review-20261007.json"
               ],
               "verified_substeps": [
-                "Failed clear preserved confirmation and saved values; retry cleared local/session state, left zero unexplained keys, and signed the guest out after reload."
+                "Cancel preserved the complete observed census (six local and one session value).",
+                "Injected reset refusal retained the confirmation path and prior values; retry cleared the prior local/session values with zero unexplained keys and signed out after Settings Page.reload."
               ],
               "remaining_criteria": [
-                "The inventory case requires Cancel preservation; CASE=full did not exercise Cancel."
+                "The reload observed was CDP Page.reload of the Settings page, not a full Chrome extension Reload. No Store or current-main product-build claim follows from this frozen development artifact."
               ],
-              "observed_at": "2026-10-07T22:43:08.259405+00:00",
-              "release_scope": "Frozen CI development artifact only; no Store/current-main/healthy-engine claim."
+              "release_scope": "Frozen development artifact; Settings Page.reload, not full extension Reload or Store."
             }
           },
           "previous_results": [
@@ -6550,6 +6595,27 @@
                   }
                 ],
                 "supplemental_run_id": "desktop-settings-forget-reset-guest-20261003-01"
+              }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37696764772",
+                "source_sha": "4801dbd72c99d0ff157c16cb51926587bdf95618",
+                "build_version": "0.2.391",
+                "evidence": [
+                  ".research/desktop-guest-native-20261007.json",
+                  ".research/parallel-native-evidence-peer-20261007.json"
+                ],
+                "verified_substeps": [
+                  "Failed clear preserved confirmation and saved values; retry cleared local/session state, left zero unexplained keys, and signed the guest out after reload."
+                ],
+                "remaining_criteria": [
+                  "The inventory case requires Cancel preservation; CASE=full did not exercise Cancel."
+                ],
+                "observed_at": "2026-10-07T22:43:08.259405+00:00",
+                "release_scope": "Frozen CI development artifact only; no Store/current-main/healthy-engine claim."
               }
             }
           ]
@@ -19693,6 +19759,18 @@
               ],
               "detail": "New stale ITEM_DETECTED/RESULT rejection with positive B selection/extraction3rows each; all3 resources valid, independently reviewed. Remaining lifecycle races/nonadmin and broader case dimensions unverified.",
               "acceptance_credit": "bounded new substeps only"
+            },
+            {
+              "mode": "admin",
+              "status": "partial",
+              "run_id": "37700751092",
+              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+              "build_version": "0.2.391",
+              "evidence": [
+                ".research/picker-lifecycle-native-20261007.json",
+                ".research/lifecycle-desktop-final-review-20261007.json"
+              ],
+              "detail": "Resource-valid child_failed at reinjection distinct-context check. Existing stale channels plus delayed cancellation/deferred installation passed with positive B3rows. Reinjection detection/extraction/teardown and nonadmin remain unverified; no overallcase pass."
             }
           ]
         },
@@ -20319,6 +20397,18 @@
               ],
               "detail": "New stale ITEM_DETECTED/RESULT rejection with positive B selection/extraction3rows each; all3 resources valid, independently reviewed. Remaining lifecycle races/nonadmin and broader case dimensions unverified.",
               "acceptance_credit": "bounded new substeps only"
+            },
+            {
+              "mode": "admin",
+              "status": "partial",
+              "run_id": "37700751092",
+              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+              "build_version": "0.2.391",
+              "evidence": [
+                ".research/picker-lifecycle-native-20261007.json",
+                ".research/lifecycle-desktop-final-review-20261007.json"
+              ],
+              "detail": "Resource-valid child_failed at reinjection distinct-context check. Existing stale channels plus delayed cancellation/deferred installation passed with positive B3rows. Reinjection detection/extraction/teardown and nonadmin remain unverified; no overallcase pass."
             }
           ]
         },
