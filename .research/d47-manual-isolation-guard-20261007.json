@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0047",
+  "scope": "Source-only candidate guard for manual NET_CAPTURE_EVENT versus saved CDP replay; no native, build, release or DB work",
+  "status": "BLOCKED_ENV: baseline green, required production mutation and constant-output gut check unproved",
+  "candidate_test": "tests/unit/d47-manual-replay-isolation.test.tsx",
+  "candidate_test_sha256_after_format": "a64d73056e2f29869cb83ac2082d053430b40cd60733d210d76da35a1440b3f8",
+  "production_sha256": {
+    "src/lib/data-pattern/run-interactive.ts": "ec8af7d4e75da1997c2dcb3064b8484fe26bae4d1d3413b56bebd3e88fd93046",
+    "src/lib/background/bootstrap.ts": "2bca290b635f12b60d77e8eb9def04ac1ec26ecd5aaa92ac22a98eeae2eb4918",
+    "src/hooks/use-network-capture.ts": "9d1541ab204dd7241104c6ed061a5e033f6a10d46632c8fa5e57e2d9dc133263",
+    "src/lib/data-pattern/network-tap.ts": "663aeb03df15855c5702de7736becb30e66ca97c3f13099f81f819406c163668"
+  },
+  "connected_boundary": "The test calls real bootstrapBackground (registerHandlers receives NET_CAPTURE_EVENT), real networkRelayIsolated, a mounted real useNetworkCapture hook, and real runNetworkCapturePattern/startDocumentNetworkCapture. Chrome messaging and CDP are controlled boundary doubles. The manual message arrives while the old document is active before Page.reload resumes; the current saved response arrives through CDP after reload. Two saved outputs differ (Brooklyn Bowl, The Fonda Theatre).",
+  "runs": [
+    {
+      "run_id": "d47-manual-guard-first-20261007",
+      "decision": "child_failed",
+      "result": "Harness omitted chrome.debugger.sendCommand; saved capture refused as unavailable before intended assertion. Repaired in test."
+    },
+    {
+      "run_id": "d47-manual-guard-second-20261007",
+      "decision": "valid",
+      "result": "One-output connected guard passed."
+    },
+    {
+      "run_id": "d47-manual-guard-two-output-green-20261007",
+      "decision": "valid",
+      "result": "Two-output connected guard passed, 1/1 test."
+    },
+    {
+      "run_id": "d47-manual-constant-red-20261007",
+      "decision": "child_failed",
+      "result": "NO MUTANT VERDICT: scratch Vitest failed before collection because .wxt/tsconfig.json was absent. Error TSCONFIG_ERROR, 0 tests."
+    }
+  ],
+  "journal_location": "docs/stabilization/resource-journals/<run-id>.jsonl; each run admitted and resourceInvalid false",
+  "scratch_constant_mutation": {
+    "path": "/tmp/d47-manual-source-mutate-20261007/src/lib/data-pattern/run-interactive.ts",
+    "exact_change": "Insert return [{ title: 'Brooklyn Bowl' }]; as the first statement of runNetworkCapturePattern.",
+    "command": "TMPDIR=/tmp/d47-manual-mutant-constant-profile node scripts/stabilization-resource.mjs run --run-id d47-manual-constant-red-20261007 --profile-dir /tmp/d47-manual-mutant-constant-profile -- pnpm exec vitest run --maxWorkers=1 tests/unit/d47-manual-replay-isolation.test.tsx",
+    "root_cause": "The minimal scratch copy had src, tests, vitest config, package and node_modules but omitted generated .wxt/tsconfig.json. Vitest aborted before test collection."
+  },
+  "next_mutation": "In a complete scratch checkout, import on and CHANNELS in run-interactive.ts, then subscribe runNetworkCapturePattern to NET_CAPTURE_EVENT and pass stamped manual events into consumeEvent with this replay's capture_id/document_key. The manual response has the same URL/method and request_sequence 999; if the production-owned channel boundary is weakened, it should replace the CDP response and fail the final saved-row assertion. Restore source from the shared checkout before running the untouched green check.",
+  "limit": "This candidate is not a proven forcing guard until both executed production-owned channel-mix RED and constant-output RED succeed for the intended assertion, followed by untouched GREEN. It cannot close EXT-D-0047 or T57."
+}
