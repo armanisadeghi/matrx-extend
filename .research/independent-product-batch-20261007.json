@@ -85,12 +85,13 @@
       "native_driver_sha256": "98dd19e4ab8afe04e5222e5d057357485ff01985cd0eb00d11dafeff4216e405",
       "behavior_observed": false,
       "screenshot_files": [],
-      "underlying_assertion_location": "tests/browser/settings-local-controls-acceptance.mjs:378"
+      "underlying_assertion_location": "tests/browser/settings-local-controls-acceptance.mjs:378",
+      "native_result_evidence": ".research/settings-retry-37686070986/settings-local-controls-acceptance.json"
     },
     "product_verdict": "none; no Settings control behavior was observed and no product defect is inferred"
   },
   "resource_journals": {
-    "capture": "The uploaded run artifact omitted the resource-journal paths. Each journal event below is reconstructed verbatim from the hosted job log JSON records; these are not represented as downloaded journal files or original-journal hashes.",
+    "capture": "Correction: original completed journals WERE present under the nested artifact extraction root matrx-extend/matrx-extend/docs/stabilization/resource-journals. Root inspected exact current-run files; stale37105304739 files excluded. Historical stdout reconstruction is retained as supporting evidence, not substituted for these originals.",
     "hosted_job_log_sha256": "410ccaaf65513003d6f34ca2cffa7faae00c065166ae7685b52753bd3ef3ce86",
     "hosted_job_log_scratch_path": "/Volumes/Samsung2TB/.scratch/independent-product-batch-37686070986/job.log",
     "event_streams": {
@@ -264,14 +265,64 @@
         "resource_invalid": false,
         "exit_code": 1
       }
-    }
+    },
+    "completed_original_files": [
+      {
+        "path": ".research/settings-retry-37686070986/hosted-package-37686070986-1.jsonl",
+        "sha256": "026a3f456ec2ed88dd9eb7d07faa2f0b219f3fa9df4880c7dfb8592efffd4734",
+        "final": {
+          "schema": 1,
+          "at": "2026-10-07T21:00:47.325Z",
+          "runId": "hosted-package-37686070986-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      },
+      {
+        "path": ".research/settings-retry-37686070986/hosted-browser-37686070986-1.jsonl",
+        "sha256": "9c876cc34846c848ee3f85421fdef4e1918dfc8cb9c0aa66344fd4e83ac29418",
+        "final": {
+          "schema": 1,
+          "at": "2026-10-07T21:02:46.566Z",
+          "runId": "hosted-browser-37686070986-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      },
+      {
+        "path": ".research/settings-retry-37686070986/hosted-guest-37686070986-1.jsonl",
+        "sha256": "206214a51f5943d8118afb5a235aefe6181f4205c1ca7f8991ed11c718e7176d",
+        "final": {
+          "schema": 1,
+          "at": "2026-10-07T21:04:45.088Z",
+          "runId": "hosted-guest-37686070986-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 1,
+          "decision": "child_failed",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      }
+    ]
   },
   "hosted_output_artifact": {
     "name": "hosted-guest-37686070986-1",
     "artifact_id": 11510794410,
     "size_bytes": 5409,
     "sha256": "c241b6408bb1b85bc1885a27ca9fe6813a1ec3bcb67af96f356e0093f1cd05ce",
-    "contents": ["test-results/settings-local-controls-acceptance.json"],
+    "contents": [
+      "test-results/settings-local-controls-acceptance.json",
+      "docs/stabilization/resource-journals/hosted-package-37686070986-1.jsonl",
+      "docs/stabilization/resource-journals/hosted-browser-37686070986-1.jsonl",
+      "docs/stabilization/resource-journals/hosted-guest-37686070986-1.jsonl",
+      "Three stale37105304739 journal files: excluded from evidence."
+    ],
     "screenshots_present": false
   },
   "limitations": [
@@ -279,6 +330,6 @@
     "All four mapped cases remain unverified: EXT-F-1003-T22, EXT-F-1003-T37, EXT-F-1003-T46, EXT-F-1003-T70.",
     "No inventory statuses are changed by this evidence; coordinator owns inventory reconciliation.",
     "A prior same-case attempt ended with an invalid resource verdict; this retry exposed a distinct harness/artifact version mismatch. No blind retry is recommended; root owns diagnosis and repair.",
-    "Resource event summaries come from job stdout, not completed journal files; no native acceptance credit can be established from this attempt."
+    "Completed original journals establish resource-valid child failure, but no Settings behavior was executed; no native acceptance credit."
   ]
 }

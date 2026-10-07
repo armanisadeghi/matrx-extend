@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "scope": "real isolated Chrome-for-Testing native side panel; signed-out guest",
+  "build": {
+    "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "preconditions": [
+    "Owned disposable profile",
+    "Extension receipt and tree hash verified",
+    "Guest panel settled before interaction"
+  ],
+  "cases": [
+    {
+      "id": "EXT-F-1003-T22",
+      "role": "guest",
+      "status": "unverified",
+      "steps": [],
+      "criteria": [
+        {
+          "name": "setup completed",
+          "status": "unverified",
+          "evidence": "development receipt must match package\n+ actual - expected\n\n+ '0.2.387'\n- '0.2.388'\n         ^\n"
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": null
+    },
+    {
+      "id": "EXT-F-1003-T37",
+      "role": "guest",
+      "status": "unverified",
+      "steps": [],
+      "criteria": [
+        {
+          "name": "setup completed",
+          "status": "unverified",
+          "evidence": "development receipt must match package\n+ actual - expected\n\n+ '0.2.387'\n- '0.2.388'\n         ^\n"
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": null
+    },
+    {
+      "id": "EXT-F-1003-T46",
+      "role": "guest",
+      "status": "unverified",
+      "steps": [],
+      "criteria": [
+        {
+          "name": "setup completed",
+          "status": "unverified",
+          "evidence": "development receipt must match package\n+ actual - expected\n\n+ '0.2.387'\n- '0.2.388'\n         ^\n"
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": null
+    },
+    {
+      "id": "EXT-F-1003-T70",
+      "role": "guest",
+      "status": "unverified",
+      "steps": [],
+      "criteria": [
+        {
+          "name": "setup completed",
+          "status": "unverified",
+          "evidence": "development receipt must match package\n+ actual - expected\n\n+ '0.2.387'\n- '0.2.388'\n         ^\n"
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": null
+    }
+  ],
+  "setup_error": "development receipt must match package\n+ actual - expected\n\n+ '0.2.387'\n- '0.2.388'\n         ^\n",
+  "status": "unverified"
+}
