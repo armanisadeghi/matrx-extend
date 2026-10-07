@@ -1,0 +1,138 @@
+{
+  "date": "2026-10-07",
+  "task": "lane B native guest SEO acceptance",
+  "status": "partial",
+  "workflow": {
+    "run_id": 37702963336,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37702963336",
+    "conclusion": "success",
+    "job": "guest",
+    "runner_label": "macos-15",
+    "duration": "6m20s",
+    "case": "guest-seo",
+    "lane": "B",
+    "artifact_mode": "CI development artifact"
+  },
+  "selected_artifact": {
+    "workflow_run_id": 37698216289,
+    "workflow_run_conclusion": "success",
+    "workflow_run_head_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "artifact_id": 11516342905,
+    "artifact_expired": false,
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "version": "0.2.391",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+    "imported_source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "imported_source_claim": "exact_pushed_commit_only",
+    "github_artifact_digest": "sha256:927854cfdda6e57d272277653e0b4c507720c29d74978da235d80c064c1017ee"
+  },
+  "native_run": {
+    "identity": "genuinely signed-out guest",
+    "role_or_organization": "none; no auth, member/admin fixture, secrets, or .env reads",
+    "browser_version": "not recorded in uploaded driver result",
+    "resource_admission": "all three exact run journals admitted; all final decisions valid; guest watch healthy; no invalidation",
+    "build_identity_rechecked": true,
+    "build_tree_sha256_before_and_after": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+    "manual_build_or_release": false
+  },
+  "case_results": {
+    "EXT-F-1008-T01": {
+      "status": "partial",
+      "passed_subtargets": ["new_url_replaces_visible_title", "reload_audits_current_url"],
+      "unverified_dimensions": ["one audit per URL", "slow-old-result race"]
+    },
+    "EXT-F-1008-T02": {
+      "status": "partial",
+      "passed_subtargets": ["manual_button_returns_to_current_page"],
+      "unverified_dimensions": ["fresh capture", "stale advice replacement after re-audit"]
+    },
+    "EXT-F-1008-T03": {
+      "status": "partial",
+      "passed_subtargets": [
+        "about_blank_clear_error_without_stale_audit",
+        "public_page_recovers_after_restricted_url"
+      ],
+      "unverified_dimensions": [
+        "unreachable HTTP(S)",
+        "other restricted schemes",
+        "reload dimension"
+      ]
+    },
+    "EXT-F-1008-T07": {
+      "status": "partial",
+      "passed_subtargets": [
+        "guest_menu_offers_text_and_ai_but_hides_json",
+        "guest_role_gate_after_reload"
+      ],
+      "unverified_dimensions": ["actual clipboard output", "JSON contents", "member/admin gates"]
+    },
+    "EXT-F-1008-T09": {
+      "status": "partial",
+      "passed_subtargets": [
+        "page_0_title_and_headings",
+        "page_1_title_and_headings",
+        "sparse_public_detail_groups",
+        "rich_public_detail_groups_and_canonical_door",
+        "canonical_outbound_opens_expected_public_tab",
+        "guest_manual_link_counts_match_live_dom",
+        "guest_manual_image_alt_counts_match_live_dom",
+        "guest_manual_readability_display_is_populated_and_explained",
+        "guest_manual_performance_reflects_current_navigation"
+      ],
+      "unverified_subtargets": [
+        {
+          "name": "guest_manual_hreflang_and_schema_doors_match_page",
+          "reason": "Public DOM had no unique hreflang and openable schema door candidates."
+        },
+        "metric value correctness",
+        "broken social preview image and detail controls outside bounded driver"
+      ]
+    }
+  },
+  "broader_unverified": [
+    "EXT-F-1008-T01 through T03 dimensions listed above",
+    "T04-T06 and T08 database save, history, and diff",
+    "T07 actual clipboard content and role modes beyond guest",
+    "T09 controls outside this bounded run and absent public metadata doors",
+    "T10-T14 recommendations, Chat staging, and social snippet actions",
+    "all member and admin SEO modes",
+    "Store artifact behavior and current-main behavior beyond selected development artifact"
+  ],
+  "evidence": {
+    "bundle": ".research/guest-seo-native-20261007/",
+    "uploaded_driver_result_original": {
+      "path": ".research/guest-seo-native-20261007/seo-guest-acceptance.original.json.txt",
+      "sha256": "43593cf6129afb5a74ebc2193b5752af6ed2279d8a11425c051fefc998ac5728"
+    },
+    "resource_journals": [
+      {
+        "path": ".research/guest-seo-native-20261007/hosted-browser-37702963336-1.jsonl",
+        "sha256": "f1be32f0cc07bd94b00f06568af09795a8d1f6d7bb8bb1026638db1ee07a20fd"
+      },
+      {
+        "path": ".research/guest-seo-native-20261007/hosted-guest-37702963336-1.jsonl",
+        "sha256": "5bf265d2763e944ec4ed9aaf07cc28055142e701d84c6ed6af6815977bd6ff2d"
+      },
+      {
+        "path": ".research/guest-seo-native-20261007/hosted-package-37702963336-1.jsonl",
+        "sha256": "e9989a5dcc69dba2089d1a63d7a3f145796569653625d0d4515412e1342edf4e"
+      }
+    ],
+    "screenshots": [
+      {
+        "path": ".research/guest-seo-native-20261007/native-side-panel.png",
+        "sha256": "7014b991b2908b07a38bb4189bff80a010f94ac1615c42aad08cc55b60de4276"
+      },
+      {
+        "path": ".research/guest-seo-native-20261007/normal-target-after-open.png",
+        "sha256": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89"
+      }
+    ],
+    "excluded": [
+      "Three historical 37105304739 resource journals from the uploaded archive; only three journals matching run 37702963336 were retained."
+    ]
+  },
+  "scope_note": "This is bounded case evidence only; it does not promote the full feature, other auth modes, Store coverage, or whole-product health."
+}
