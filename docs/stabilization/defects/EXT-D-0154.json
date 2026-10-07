@@ -1,0 +1,50 @@
+{
+  "id": "EXT-D-0154",
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T12", "EXT-F-1007-T13"],
+  "surface": "Testing infrastructure / Scrape media native interactions",
+  "auth_mode": "guest observed; shared driver also used by signed-in modes",
+  "title": "Media copy driver races restored result pane and rejects tooltip-migrated titles",
+  "severity": "S2: prevents trustworthy media acceptance; product defect not established",
+  "priority": "P1: unblock exhaustive Scrape guest retest",
+  "state": "in-fix",
+  "owner": "root/scrape_link_repair",
+  "preconditions": [
+    "Original native run37670744036, frozen development0.2.385 source87f6649b; use the controlled clinic page from that run and signed-out profile."
+  ],
+  "reproduction": [
+    "Run the hosted guest-scrape-development case using the original driver; capture links then open the forms link and close its new tab.",
+    "Immediately attempt Copy on the appointments row. The recorded pointer lookup has zero matches during the selected-tab restoration gap.",
+    "For the independently identified sibling condition, hover a Copy tooltip so title is represented by data-matrx-title; the first repair readiness accepts the button but the actual pointer resolver still finds zero."
+  ],
+  "expected": "Wait for the correct result pane and exact unique row/control to be ready, then exercise a real trusted pointer click; missing, ambiguous or wrong-tab controls must still fail.",
+  "actual": "Original driver queried before pane restoration; first source repair also disagreed with the pointer resolver about tooltip-migrated titles. No product failure is proven.",
+  "evidence": [
+    ".research/parallel-scrape-product-20261007.json",
+    ".research/scrape-links-repair-20261007.json",
+    ".research/scrape-links-repair-peer-20261007.json"
+  ],
+  "fix_commits": ["f8c0ad58"],
+  "transition_history": [
+    {
+      "at": "2026-10-07T21:05:54.818023+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Registered original reproducible driver failure and independent review finding; historical original observation preserved in evidence."
+    },
+    {
+      "at": "2026-10-07T21:05:54.818023+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Source guard reproduces restoration race; independent reviewer confirms readiness/pointer selector mismatch."
+    },
+    {
+      "at": "2026-10-07T21:05:54.818023+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "First repair failed independent source review; worker repairing actual target resolver and causal tests."
+    }
+  ],
+  "closure_requirement": "Independent source review plus guarded native original and surrounding Video/Links warm/reload retest; do not promote feature-wide or other-mode health.",
+  "next_action": "Complete selector repair, fresh review, then run owned lane B on frozen artifact with completed valid resource journals."
+}

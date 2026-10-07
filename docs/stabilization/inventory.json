@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-07T15:47:18.263750+00:00",
+  "updated_at": "2026-10-07T21:05:54.818023+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -4831,7 +4831,7 @@
             "Reload/reopen Settings in the still-signed-out guest session; confirm the same guidance and absence of the selector."
           ],
           "expected": [
-            "The guest sees “Sign in to choose”; no organization selector or guest organization-choice action is exposed, and the guest guidance remains after reload."
+            "The guest sees \u201cSign in to choose\u201d; no organization selector or guest organization-choice action is exposed, and the guest guidance remains after reload."
           ],
           "dimensions": ["warm", "reload"],
           "results": {
@@ -4855,7 +4855,7 @@
             "Verify the real signed-in principal is an ordinary non-admin member using the displayed account/role and known test-principal provenance."
           ],
           "steps": [
-            "Open Settings > Organization signed in with no device organization set; verify Choose… and required-selection guidance without implicit organization choice.",
+            "Open Settings > Organization signed in with no device organization set; verify Choose\u2026 and required-selection guidance without implicit organization choice.",
             "Choose an existing authorized test organization explicitly; verify Acting as displays it.",
             "Perform a full extension Reload and confirm the organization persists."
           ],
@@ -4877,7 +4877,7 @@
             "Verify the real signed-in principal is the authorized admin using the displayed account/role and known test-principal provenance."
           ],
           "steps": [
-            "Open Settings > Organization signed in with no device organization set; verify Choose… and required-selection guidance without implicit organization choice.",
+            "Open Settings > Organization signed in with no device organization set; verify Choose\u2026 and required-selection guidance without implicit organization choice.",
             "Choose an existing authorized test organization explicitly; verify Acting as displays it.",
             "Perform a full extension Reload and confirm the organization persists."
           ],
@@ -5058,7 +5058,7 @@
             "Reload/reopen Settings in the same guest state; confirm the unavailable-state guidance remains."
           ],
           "expected": [
-            "The guest sees “Choose an organization above” and no agent picker or selection action; this unavailable-state guidance remains after reload."
+            "The guest sees \u201cChoose an organization above\u201d and no agent picker or selection action; this unavailable-state guidance remains after reload."
           ],
           "dimensions": ["warm", "reload"],
           "results": {
@@ -5572,7 +5572,7 @@
             "Reload the extension and reopen Settings; repeat the expand/collapse check for visible sections."
           ],
           "expected": [
-            "Every section available to this role opens and closes without losing or mislabeling its content; role-gated sections stay absent. Empty Data/SEO cards truthfully show “No options yet”."
+            "Every section available to this role opens and closes without losing or mislabeling its content; role-gated sections stay absent. Empty Data/SEO cards truthfully show \u201cNo options yet\u201d."
           ],
           "dimensions": ["warm", "reload"],
           "results": {
@@ -5601,7 +5601,7 @@
             "Reload the extension and reopen Settings; repeat the expand/collapse check for visible sections."
           ],
           "expected": [
-            "Every section available to this role opens and closes without losing or mislabeling its content; role-gated sections stay absent. Empty Data/SEO cards truthfully show “No options yet”."
+            "Every section available to this role opens and closes without losing or mislabeling its content; role-gated sections stay absent. Empty Data/SEO cards truthfully show \u201cNo options yet\u201d."
           ],
           "dimensions": ["warm", "reload"]
         },
@@ -5622,7 +5622,7 @@
             "Reload the extension and reopen Settings; repeat the expand/collapse check for visible sections."
           ],
           "expected": [
-            "Every section available to this role opens and closes without losing or mislabeling its content; role-gated sections stay absent. Empty Data/SEO cards truthfully show “No options yet”."
+            "Every section available to this role opens and closes without losing or mislabeling its content; role-gated sections stay absent. Empty Data/SEO cards truthfully show \u201cNo options yet\u201d."
           ],
           "dimensions": ["warm", "reload"],
           "results": {
@@ -6675,11 +6675,11 @@
                     "docs/stabilization/reports/cookies-prompt-semantics.json",
                     "docs/stabilization/reports/native-denial-operator-005.json"
                   ],
-                  "detail": "Ruling inferred from official Chrome warning semantics and current broad-host manifest, corroborated by actual no-prompt OFF→ON observation. Not a denial pass. Re-evaluate on browser/manifest warning-policy change."
+                  "detail": "Ruling inferred from official Chrome warning semantics and current broad-host manifest, corroborated by actual no-prompt OFF\u2192ON observation. Not a denial pass. Re-evaluate on browser/manifest warning-policy change."
                 },
                 "current-grant-removal-reload": {
                   "status": "unverified",
-                  "detail": "Current005 only observed UI OFF→ON; prior build grant/removal/reload remains historical."
+                  "detail": "Current005 only observed UI OFF\u2192ON; prior build grant/removal/reload remains historical."
                 }
               }
             }
@@ -6914,7 +6914,7 @@
           ],
           "steps": ["Select all, agent, pilot, parallel and webmcp receipt filters."],
           "expected": [
-            "Visible receipt rows and counts match selected origin; empty filter shows “No receipts with origin=…”; all restores every row."
+            "Visible receipt rows and counts match selected origin; empty filter shows \u201cNo receipts with origin=\u2026\u201d; all restores every row."
           ],
           "dimensions": ["warm", "reload"]
         },
@@ -7237,7 +7237,7 @@
             "Reload the extension and reopen Settings; inspect Account and the footer action again."
           ],
           "expected": [
-            "Email is shown as unavailable (—), no Name or admin badge appears, and the footer action is Sign in both before and after reload."
+            "Email is shown as unavailable (\u2014), no Name or admin badge appears, and the footer action is Sign in both before and after reload."
           ],
           "dimensions": ["warm", "reload"]
         },
@@ -14439,7 +14439,7 @@
                     "build": "development0.2.215/source3536b5cb",
                     "run_id": "37214124282",
                     "evidence": [".research/scrape-transition-native-diagnostic.json"],
-                    "detail": "Warm native medium/icon/large removals verified with exact before/after identities, trusted pointer events, Images retained and count3→2→1→empty. Later control sequence failed with Article selected; earlier third-removal inference refuted. Fullreload and otherroles unverified."
+                    "detail": "Warm native medium/icon/large removals verified with exact before/after identities, trusted pointer events, Images retained and count3\u21922\u21921\u2192empty. Later control sequence failed with Article selected; earlier third-removal inference refuted. Fullreload and otherroles unverified."
                   }
                 }
               }
@@ -14885,7 +14885,7 @@
           ],
           "steps": ["Open Scrape before capturing, then navigate active tab to another URL."],
           "expected": [
-            "Empty state invites capture; previous page’s content and Saved badge clear after navigation."
+            "Empty state invites capture; previous page\u2019s content and Saved badge clear after navigation."
           ],
           "dimensions": ["warm", "reload"],
           "results": {
@@ -15366,7 +15366,8 @@
             "EXT-D-0132",
             "EXT-D-0135",
             "EXT-D-0138",
-            "EXT-D-0139"
+            "EXT-D-0139",
+            "EXT-D-0154"
           ],
           "run_ids": [
             "guest-local-001",
@@ -24564,7 +24565,7 @@
           ],
           "steps": [
             "With the controlled page active and its identity unresolved, open Data and record whether the notice displays the current identity error or checking message and Retry. Confirm no page-key-dependent picker or pattern extraction action is available while pageKey is absent.",
-            "Click this Data notice’s Retry once. Record the chrome.tabs.query result. If it returns an active tab and this lookup remains current, record the subsequent top-frame chrome.webNavigation.getFrame result; retain only sanitized tab/document identity evidence.",
+            "Click this Data notice\u2019s Retry once. Record the chrome.tabs.query result. If it returns an active tab and this lookup remains current, record the subsequent top-frame chrome.webNavigation.getFrame result; retain only sanitized tab/document identity evidence.",
             "Keep the fixture's lookup unresolved for this attempt. Record the explicit unavailable-identity error, that Retry remains available, and that no field-picker injection or saved/matched pattern extraction starts without a pageKey.",
             "Allow the controlled fixture's subsequent lookup to resolve for the current active tab. Record the returned current tab ID, top-frame document ID and pageKey; verify the notice disappears and page-dependent actions become available only for that identity.",
             "Repeat with an active-tab switch while the lookup is pending. Verify a stale reply for the prior tab/document cannot become the current identity; the resulting identity and any enabled page-dependent actions must correspond to the currently active tab and its document."
