@@ -3,11 +3,7 @@
   "task": "structured source-only procedure proposals for stylesheet tools",
   "created_at": "2026-10-07",
   "status": "proposals-authored-runtime-unverified",
-  "scope": [
-    "EXT-F-4125-T01",
-    "EXT-F-4126-T01",
-    "EXT-F-4167-T01"
-  ],
+  "scope": ["EXT-F-4125-T01", "EXT-F-4126-T01", "EXT-F-4167-T01"],
   "source_anchors": [
     {
       "path": "src/lib/tools/handlers/privileged.ts",
@@ -60,13 +56,8 @@
       "name": "inject_stylesheet",
       "case_id": "EXT-F-4125-T01",
       "title": "Controlled manual execution: inject_stylesheet",
-      "control_ids": [
-        "EXT-F-4125-C01"
-      ],
-      "roles": [
-        "member",
-        "admin"
-      ],
+      "control_ids": ["EXT-F-4125-C01"],
+      "roles": ["member", "admin"],
       "status": "unverified",
       "steps": [
         "Meet procedure_prerequisites for the selected role; record the current resource permit and receipt. In that role's Chrome profile, open https://www.aimatrx.com/matrx-extend-demo in a new tab and record its exact tab ID. Confirm the visible h1 reads 'A clear three-stage browser workflow'.",
@@ -111,13 +102,8 @@
       "name": "remove_stylesheet",
       "case_id": "EXT-F-4126-T01",
       "title": "Controlled manual execution: remove_stylesheet",
-      "control_ids": [
-        "EXT-F-4126-C01"
-      ],
-      "roles": [
-        "member",
-        "admin"
-      ],
+      "control_ids": ["EXT-F-4126-C01"],
+      "roles": ["member", "admin"],
       "status": "unverified",
       "steps": [
         "Meet procedure_prerequisites for the selected role; open https://www.aimatrx.com/matrx-extend-demo in a new tab in that role's Chrome profile, record its tab ID, and capture the visible h1 baseline.",
@@ -162,15 +148,8 @@
       "name": "stylesheet",
       "case_id": "EXT-F-4167-T01",
       "title": "Controlled manual execution: stylesheet",
-      "control_ids": [
-        "EXT-F-4167-C01",
-        "EXT-F-4167-C02",
-        "EXT-F-4167-C03"
-      ],
-      "roles": [
-        "member",
-        "admin"
-      ],
+      "control_ids": ["EXT-F-4167-C01", "EXT-F-4167-C02", "EXT-F-4167-C03"],
+      "roles": ["member", "admin"],
       "status": "unverified",
       "steps": [
         "Meet procedure_prerequisites for the selected role; open https://www.aimatrx.com/matrx-extend-demo in a new tab in that role's Chrome profile, record its tab ID, and capture the visible h1 baseline.",
@@ -184,9 +163,7 @@
         "action=remove calls removeCSS and restores the captured baseline for this run's own exact CSS only.",
         "Unknown/missing action or invalid schema values produce no style change."
       ],
-      "negative_cases": [
-        "Do not use remove branch against a style not created by this run."
-      ],
+      "negative_cases": ["Do not use remove branch against a style not created by this run."],
       "controls_coverage": {
         "EXT-F-4167-C01": "Invoke canonical stylesheet through the manual runner; dispatcher dimension deferred.",
         "EXT-F-4167-C02": "Action inject visibly changes the public demo page's h1.",

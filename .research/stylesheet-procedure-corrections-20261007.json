@@ -15,7 +15,7 @@
     },
     {
       "finding": "The prior proposal had no concrete h1 fixture route/page.",
-      "correction": "Bound proposals to the existing /referrals route from tests/browser/scrape-guest-native-acceptance.mjs, whose exact page title and h1 are Harbor Dental referral hours and whose server is runNativeSidepanelQa with an ephemeral localhost port. Instructions require the active URL and tab ID; historical port 49199 is not assumed."
+      "correction": "The earlier /referrals target was not manually reachable: tests/browser/native-sidepanel-qa-harness.mjs creates its localhost server only inside the automated run. Procedures now use https://www.aimatrx.com/matrx-extend-demo, the fixed publicDemoUrl explicitly allowed by that harness, in a new tab opened in the tester's selected signed-in role profile. A read-only fetch on 2026-10-06 found title 'Matrx Extend Demo Page - AI Matrx', a visible main article, and one h1, 'A clear three-stage browser workflow'. Before each run, confirm the route and visible h1 still exist; record the new tab ID, capture baseline, apply/remove the exact same CSS on that tab, verify restoration, and close only that tab."
     },
     {
       "finding": "Permission boundary was not executable or safely denied.",
@@ -23,8 +23,8 @@
     }
   ],
   "remaining_limits": [
-    "The existing /referrals launcher establishes a guest profile; source does not establish that its ephemeral URL is currently available in member/admin profiles. Each role must stop unverified if its own profile cannot reach the active owned route.",
+    "Member/admin execution assumes the tester already has a signed-in profile and current resource permit/receipt; this procedure does not create or independently verify role access. CSS visibility/removal and actual profile access remain runtime-unverified.",
     "No browser, runtime, tests, build, credentials, inventory changes, or source changes were used.",
-    "All three role-specific procedures remain proposals and every result remains unverified."
+    "All three procedures remain unverified. No independent review has occurred on this correction round; any earlier independent review covered the prior text only and is not evidence for these edits."
   ]
 }
