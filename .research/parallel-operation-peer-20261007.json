@@ -3,6 +3,7 @@
   "role": "fresh independent operational and source reviewer",
   "reviewed_commits": {
     "extension_docs": "85b6cc5d1e53bdd3b4a67c2fc93f2563ea1c1884",
+    "extension_docs_correction": "569a0619",
     "hosted_lane_admission": "1a91e500058ebb45ec24c53323446af7b05ad96a",
     "common_docs": "b632b1f69"
   },
@@ -22,24 +23,24 @@
     ]
   },
   "B_quality_verdict": {
-    "result": "workflow pass; documentation correction requested",
+    "result": "pass at source/documentation scope",
     "evidence": [
       "The focused test parses both workflows, executes the actual Bash admission step for every selectable case and auth variant, and verifies closed A/B grouping, diagnostic ownership and guard-call preservation. Its recorded RED against the old global group and unsafe B admission failed both tests; current GREEN passed 2/2.",
       "Independent rerun of the focused test passed 2/2 and neighboring hosted route tests passed 26/26. The reviewed extension commits passed git diff --check.",
       "The workflow change does not alter product handlers, resource guard implementation, credentials or release actions."
     ],
-    "findings": [
+    "resolved_findings": [
       {
         "severity": "Important",
         "location": "docs/stabilization/PLAN.md:137",
-        "problem": "The operative blockers table says the current release script pushes before checks and instructs its repair, conflicting with PLAN.md:117 and release.sh:757-786, which check the candidate before atomic publication.",
-        "impact": "A resumed worker could repeat a historical repair or misstate release safety instead of testing current product cases."
+        "problem": "The initial operative blockers table called the historical push-before-checks defect current.",
+        "resolution": "Follow-up documentation commit 569a0619 identifies the September finding as historical and requires inspection of the current release path."
       },
       {
         "severity": "Minor",
         "location": "docs/stabilization/PLAN.md:138-140",
-        "problem": "The continuity and baseline text still says no persistent wakeup exists and refers to a capped baseline, while the active daily and hourly automations and the October 7 operating policy already supersede that planning state.",
-        "impact": "The resume instructions can mislead an operator about the current cadence."
+        "problem": "The initial continuity and baseline text said no persistent wakeup existed and referred to the capped baseline.",
+        "resolution": "Follow-up documentation commit 569a0619 names the active automations and directs runnable batches to proceed."
       }
     ]
   },
@@ -49,5 +50,5 @@
     "git diff --check HEAD~2..HEAD: pass",
     "Read active automation TOML: ACTIVE, FREQ=DAILY at 09:00, target thread unchanged"
   ],
-  "next_action": "Correct the two stale operative plan rows, then dispatch bounded native A/B cases with separate host/profile/fixture evidence and complete journals; preserve unverified status until those runs finish."
+  "next_action": "Dispatch bounded native A/B cases with separate host/profile/fixture evidence and complete journals; preserve unverified status until those runs finish."
 }
