@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-07 15:32 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-07T12:42:43+00:00. 205 features · 768 cases · 1350 controls · 152 linked defect records.
+Generated 2026-10-07 15:34 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-07T12:42:43+00:00. 205 features · 768 cases · 1350 controls · 152 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -182,8 +182,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: profile-member-retest-189-01, .research/profile-member-retest189.json
 - EXT-F-0002-T10 · member: Pass. Independent strict full reload observed saved identity/org/token while Account was initially guest, then exact signed-in control appeared under existing readiness bound; all reload cases passed and original absence restored.
   Evidence / build / date recorded: profile-member-final-189-05, 2026-10-04T01:29:17.055381+00:00, ['.research/profile-member-final-189-native.json', 'docs/stabilization/resource-journals/profile-member-final-189-05.jsonl', '.research/profile-escalated-boundary-peer.json']
-- EXT-F-0002-T11 · guest: Partial. Original frozen0.2.366 guest readiness before/after passes; observedChrome141.0.7390.37. Census54 observed,26 mapped,27 unmapped,1 structural,0 unsupported/inaccessible/blocked. Still incomplete; Account screenshot not uploaded (D152). No current-main, member/admin, or product behavior acceptance.
-  Evidence / build / date recorded: 37641053827, .research/guest-census-provenance-native-20261007.json
+- EXT-F-0002-T11 · guest: Partial. Frozen0.2.366 guest readiness before/after and actual Account screenshot upload/pixels pass (D152 closed); observedChrome141.0.7390.37. Census54observed,26mapped,27unknown,1structural,0unsupported/inaccessible/blocked remains incomplete. No current-main, member/admin, or product behavior acceptance.
+  Evidence / build / date recorded: 37643142383, .research/guest-screenshot-upload-retest-20261007.json
 
 **Other remaining work:** Concrete procedure and evidence required before executing each control.; EXT-D-0136 closed: startup owner metadata race repaired; independent actual-wrapper retest and hostedCI37245762934 pass. No product coverage promoted.
 
