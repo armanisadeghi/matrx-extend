@@ -1,0 +1,48 @@
+{
+  "reviewed_commit": "3a5c8e6d460c5e284d27d83ea3b0fc72367c0e55",
+  "review_mode": "fresh independent source-only review; no browser, heavy test, build, or product authorship",
+  "scope": "EXT-D-0153; required nonChat surface accounting, empty-surface completeness, and private UI label redaction",
+  "verdict_a": {
+    "status": "PARTIAL",
+    "supported": [
+      "The saved causal red run reproduced immediate empty capture for deferred Scrape content and false completeness for present zero-control surfaces.",
+      "The final guarded run recorded 35 passed, 0 failed with resource decision valid; its output includes the delayed-control, empty-surface, timeout, and redaction tests.",
+      "For a discovered navigation tab, empty or absent surface data now adds tab:<label> to missing_required_regions; an unready surface also adds an inaccessible region."
+    ],
+    "gaps": [
+      {
+        "severity": "important",
+        "code": "required_nonchat_tab_omission_can_escape_completeness",
+        "evidence": "tests/browser/takeover-visible-census.mjs:803-806 derives visibleTabs only from observation.navigation.mapped, then checks surfaces only for those labels. The census diagnosis says Scrape, Data, and SEO are available to every role (.research/empty-surface-census-diagnosis-20261007.json). If one of those required tabs is absent from the observed navigation, no required-tab check adds it to missing_required_regions. The committed empty-surface fixture includes all three navigation labels, so it does not force this omission case."
+      },
+      {
+        "severity": "important",
+        "code": "native_outcome_unverified",
+        "evidence": "Both the decomposed evidence and fix report explicitly leave the original-artifact receipt-bound native census open. The report does not establish whether the original panes eventually rendered or remained blank."
+      }
+    ]
+  },
+  "verdict_b": {
+    "status": "PASS_WITH_GAPS",
+    "supported": [
+      "The collector waits for a tab-specific visible witness and two consecutive same-count reads before declaring readiness.",
+      "Timeouts preserve only fixed stage, tab, pane-presence, witness, and count diagnostics; raw labels continue through the existing known-label mapping or keyed fingerprint path.",
+      "Saved red and final green evidence is causally relevant: the red fails at both original conditions, and the final guarded run passes the revised forcing tests."
+    ],
+    "gaps": [
+      {
+        "severity": "important",
+        "code": "required_tab_inventory_not_enforced",
+        "evidence": "The completion predicate treats the observed navigation as the entire required-tab set. It needs an explicit required nonChat tab contract (at least Scrape, Data, and SEO for the guest census) and a forcing case where one is absent."
+      }
+    ]
+  },
+  "checks": {
+    "saved_causal_red": "Inspected .research/empty-surface-census-red-20261007.stdout: 32 passed, 2 failed; failures match deferred control capture (0 vs 1) and empty surfaces not listed missing.",
+    "saved_intermediate_green_attempts": "Inspected both; they failed on harness/test assertion issues recorded in the fix report, not treated as passing evidence.",
+    "saved_final_guarded_run": "Inspected .research/empty-surface-census-decomposed-20261007.stdout: 35 passed, 0 failed; resource final decision valid.",
+    "reviewer_execution": "No tests or browser launched, per source-only lane.",
+    "native_census": "Not verified in this lane; remains open."
+  },
+  "recommendation": "Keep EXT-D-0153 open until required nonChat tabs are checked even when absent from observed navigation, with a forcing test for omission, and the original-artifact native census records rendered controls or explicit unready/empty diagnostics."
+}
