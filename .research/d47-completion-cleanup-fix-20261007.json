@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "scope": "Browser driver completion and owned-resource cleanup only; no product behavior, native browser replay, build, release, credentials, or unrelated D47 case changed.",
+  "source_cause": {
+    "premature_completion": "The terminal waiter accepted an exact current preview while the saved replay still reported running=true. PatternsTab renders the exact recipe row's Run button disabled with a spinner while runningId matches, and clears runningId/runNote in its finally block. The body-wide progress text was diagnostic, not a reliable completion gate.",
+    "observer_cleanup": "The driver removed its worker observer in its outer finally, after runNativeSidepanelQa had torn down the owned browser and CDP session; removal was unconfirmed in the native receipt.",
+    "recipe_cleanup": "The prior native replay left its run-created recipe persisted; the exact owned row was subsequently deleted under the guarded DB cleanup receipt .research/d47-owned-recipe-cleanup-20261007.json. Future driver runs need to remove only their own recipe while the panel is live."
+  },
+  "repair": {
+    "terminal": "The driver reads the exact recipe row's live Run control in the active Patterns pane. Success requires the exact current-only preview, enabled non-spinning Run control, no visible pane error, and a complete available observation. Missing controls or booleans stay unverified through the source-derived deadline.",
+    "observer": "Removal now runs inside exercisePanel before the native harness closes its browser and requires Runtime.evaluate to confirm the listener is absent; cleanup failure keeps the case unverified and preserves an earlier primary failure.",
+    "recipe": "The generated recipe name, fixture host, and creation lower-bound UTC are retained for recovery. During the live panel callback, the driver targets the exact row and host, checks the exact confirmation title, dispatches trusted Delete pattern input, and waits for absence in the loaded host list. Missing, failed, or unavailable cleanup remains explicit unverified. The fixture process still stops in outer finally."
+  },
+  "guards": {
+    "chromium_dom_green": {
+      "run_id": "d47-completion-green-20261007-1",
+      "decision": "valid",
+      "result": "8/8 pass"
+    },
+    "driver_evidence_green": {
+      "run_id": "d47-driver-cleanup-green-20261007-2",
+      "decision": "valid",
+      "result": "14/14 pass"
+    },
+    "constant_success_mutant": {
+      "run_id": "d47-run-state-mutant-20261007-1",
+      "decision": "admitted child_failed",
+      "result": "7/8 pass; exact-row live-state guard rejects constant-success reader"
+    },
+    "interim_success_mutant": {
+      "run_id": "d47-interim-mutant-20261007-1",
+      "decision": "admitted child_failed",
+      "result": "7/8 pass; guard rejects the former terminal predicate that accepted a still-running result"
+    },
+    "non_product_environment_attempt": "d47-completion-source-20261007-1 admitted but failed before browser launch because the default Playwright module was absent; d47-completion-source-20261007-2 used the existing local runtime and passed 8/8. The first driver-evidence run d47-driver-cleanup-green-20261007-1 failed 3/14 because its old synthetic positive fixture omitted the newly required terminal fields; after supplying those fields from the harness state, d47-driver-cleanup-green-20261007-2 passed 14/14.",
+    "source_parse_and_format": "node --check on lifecycle and driver-evidence tests, git diff --check, and Biome formatting completed."
+  },
+  "native_acceptance": "UNVERIFIED: this lane did not run the signed-in native replay. Source and controlled Chromium DOM tests cannot certify terminal completion, observer removal, or recipe deletion in a fresh installed artifact. Preserve the existing D47/T57 acceptance limits and require a fresh native receipt.",
+  "credential_values_recorded": false,
+  "other_records_touched": false
+}

@@ -196,6 +196,10 @@ export async function waitD47SavedTerminal({
         'observation_unavailable',
       ].map((key) => [key, state?.[key] === true]),
     );
+    safe.observation_unavailable =
+      state?.observation_unavailable !== false ||
+      typeof state?.running !== 'boolean' ||
+      typeof state?.error_present !== 'boolean';
     safe.header_status = ['absent', 'exact', 'mismatch'].includes(state?.header_status)
       ? state.header_status
       : 'unavailable';
@@ -206,7 +210,17 @@ export async function waitD47SavedTerminal({
       : 'unavailable';
     const elapsed = now() - started;
     record({ elapsed_ms: elapsed, remaining_ms: Math.max(0, deadline - now()), ...safe });
-    if (safe.exact_recipe && safe.current_row && !safe.old_row) return safe;
+    if (
+      safe.exact_recipe &&
+      safe.current_row &&
+      !safe.old_row &&
+      safe.running === false &&
+      safe.error_present === false &&
+      safe.observation_unavailable === false &&
+      safe.header_status === 'exact' &&
+      safe.preview_status === 'current_only'
+    )
+      return safe;
     if (elapsed >= budget.timeout_ms) throw new Error('saved_current_result_not_observed');
     await sleep(Math.min(budget.poll_ms, deadline - now()));
   }

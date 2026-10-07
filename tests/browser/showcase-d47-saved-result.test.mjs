@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { after, before, test } from 'node:test';
 import { resolveBrowserRuntime } from './browser-runtime.mjs';
-import { readD47SavedResult } from './showcase-d47-saved-result.mjs';
+import { readD47SavedResult, readD47SavedRunState } from './showcase-d47-saved-result.mjs';
 import { waitD47SavedTerminal } from './showcase-d47-terminal-budget.mjs';
 
 if (
@@ -176,4 +176,83 @@ test('a renamed result column cannot certify the saved recipe', async () => {
   const result = await observe(markup().replace('<th>events</th>', '<th>wrongName</th>'));
   assert.equal(result.saved.exact_recipe, true);
   assert.equal(result.saved.current_row, false);
+});
+
+test('exact saved row remains nonterminal until its live Run control clears', async () => {
+  const frame = (button, error = '') => `${markup()}
+    <div role="tablist"><button role="tab" data-state="active" aria-controls="patterns-pane">Patterns</button></div>
+    <div id="patterns-pane" data-state="active">
+      ${error ? `<div class="text-destructive">${error}</div>` : ''}
+      <div class="group"><span class="truncate text-sm font-medium">${recipe}</span>
+        ${button}</div>
+    </div>`;
+  const cases = [
+    [
+      frame('<button title="Run pattern" disabled><svg class="animate-spin"></svg></button>'),
+      true,
+      false,
+      false,
+    ],
+    [frame('<button title="Run pattern"></button>'), false, false, false],
+    [frame('<button title="Run pattern"></button>', 'Replay failed'), false, true, false],
+    [frame('<button title="Run pattern" disabled></button>'), false, false, true],
+    [markup(), false, false, true],
+  ];
+  for (const [html, running, error, unavailable] of cases) {
+    await page.setContent(html);
+    const source =
+      process.env.D47_RUN_STATE_MUTANT === 'constant_success'
+        ? '() => ({ running: false, error_present: false, observation_unavailable: false })'
+        : readD47SavedRunState.toString();
+    const state = await page.evaluate(`(${source})(document, ${JSON.stringify(recipe)})`);
+    assert.deepEqual(state, {
+      running,
+      error_present: error,
+      observation_unavailable: unavailable,
+    });
+    let tick = 0;
+    const observation = {
+      exact_recipe: true,
+      current_row: true,
+      old_row: false,
+      header_status: 'exact',
+      preview_status: 'current_only',
+      ...state,
+    };
+    const waiter =
+      process.env.D47_TERMINAL_MUTANT === 'interim_success'
+        ? eval(`(${waitD47SavedTerminal.toString().replace('safe.running === false &&', '')})`)
+        : waitD47SavedTerminal;
+    const run = waiter({
+      budget: { timeout_ms: 1, poll_ms: 1 },
+      read: async () => observation,
+      record: () => {},
+      now: () => tick,
+      sleep: async (ms) => {
+        tick += ms;
+      },
+    });
+    if (running || error || unavailable)
+      await assert.rejects(run, /saved_current_result_not_observed/);
+    else assert.equal((await run).running, false);
+  }
+  let tick = 0;
+  await assert.rejects(
+    waitD47SavedTerminal({
+      budget: { timeout_ms: 1, poll_ms: 1 },
+      read: async () => ({
+        exact_recipe: true,
+        current_row: true,
+        old_row: false,
+        header_status: 'exact',
+        preview_status: 'current_only',
+      }),
+      record: () => {},
+      now: () => tick,
+      sleep: async (ms) => {
+        tick += ms;
+      },
+    }),
+    /saved_current_result_not_observed/,
+  );
 });

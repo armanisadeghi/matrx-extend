@@ -50,3 +50,45 @@ export function readD47SavedResult(doc, recipe) {
             : 'other',
   };
 }
+
+/** Observe the exact saved row's live Run control, which PatternsTab clears in finally. */
+export function readD47SavedRunState(doc, recipe) {
+  const visible = (element) =>
+    Boolean(element?.getClientRects().length) &&
+    doc.defaultView.getComputedStyle(element).visibility === 'visible';
+  const tab = [...doc.querySelectorAll('[role="tablist"] [role="tab"]')].find(
+    (element) => element.textContent.trim() === 'Patterns',
+  );
+  const pane = tab ? doc.getElementById(tab.getAttribute('aria-controls') ?? '') : null;
+  const active =
+    tab?.getAttribute('data-state') === 'active' &&
+    pane?.getAttribute('data-state') === 'active' &&
+    visible(pane);
+  const rows = active
+    ? [...pane.querySelectorAll('div.group')].filter((row) =>
+        [...row.querySelectorAll('span.truncate.text-sm.font-medium')].some(
+          (name) => name.textContent.trim() === recipe && visible(name),
+        ),
+      )
+    : [];
+  const buttons =
+    rows.length === 1
+      ? [...rows[0].querySelectorAll('button')].filter(
+          (button) =>
+            (button.getAttribute('title') ?? button.getAttribute('data-matrx-title')) ===
+              'Run pattern' && visible(button),
+        )
+      : [];
+  const button = buttons.length === 1 ? buttons[0] : null;
+  const spinner = Boolean(button?.querySelector('.animate-spin'));
+  const error =
+    active &&
+    [...pane.querySelectorAll('.text-destructive')].some(
+      (element) => visible(element) && Boolean(element.textContent.trim()),
+    );
+  return {
+    running: spinner,
+    error_present: Boolean(error),
+    observation_unavailable: !button || (button.disabled && !spinner),
+  };
+}

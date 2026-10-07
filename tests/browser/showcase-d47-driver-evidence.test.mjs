@@ -496,7 +496,12 @@ async function terminalTimeHarness({
       read: async () => ({
         exact_recipe: rows !== null && !wrongRecipe,
         current_row: rows?.[0]?.eventName === 'Canyon Frequency',
+        old_row: false,
         running: rows === null,
+        error_present: productError !== null,
+        observation_unavailable: false,
+        header_status: rows === null ? 'absent' : wrongRecipe ? 'mismatch' : 'exact',
+        preview_status: rows === null ? 'absent' : 'current_only',
         private_text: 'must not enter evidence',
       }),
       record: (sample) => samples.push(sample),
