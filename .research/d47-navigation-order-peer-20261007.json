@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "scope": "Independent source and retained-evidence review of D47 prior-saved navigation-order repair; no browser, native rerun, build, database action, secret access, source edit, or child agent",
+  "reviewed_commits": {
+    "source_repair": "be9b611e5268f012bdf80aa7a155e54a7b2f0b22",
+    "guarded_evidence": "5f4893c9"
+  },
+  "A_repair_and_actual_acceptance": {
+    "source_verdict": "pass for the narrow driver correction; one native retry is supported",
+    "basis": "The native failure retained first packet 6, contexts cleared 8, same-tab/frame current-fixture commit 9, distinct second context 10, handshake 11, and second packet 12. The old predicate demanded commit > second context and rejected 9 > 10. The driver now calls assessD47PriorSavedTransition. That helper requires first packet < commit < second packet through assessD47Trace, which also checks same tab/frame/current fixture, distinct context identity, context teardown, matching binding handshake, exact GET/fetch/200 request and second body SHA-256, and absence of an old target packet in this transition. The actual driver still waits for the exact second saved terminal and Silver Meridian page result both before and after releasing the held first response.",
+    "actual_native_verdict": "unverified",
+    "native_limit": "Workflow run 37597422020 stopped at the obsolete second-navigation assertion, before the second saved terminal or held release. The guarded Node check does not observe the installed extension, a second saved result, or delivery of a delayed old callback. D47/T57 acceptance cannot be claimed from this repair."
+  },
+  "B_quality_and_evidence": {
+    "verdict": "pass for the narrow source and guard",
+    "guard_run_id": "d47-navigation-order-guarded-20261007",
+    "guard_stdout_sha256": "a5e9db6d71600afcf7a0cf85737f0f49e5f7893e5d56740c7d773c28218332b8",
+    "guard_journal_sha256": "0dd0a0b921fc9713568415a784cc18fc8c3890a5cdf93b19f4e72bca5a1d62f3",
+    "guard_result": "Journal independently records RESOURCE_ADMITTED, childExitCode 0, resourceInvalid false, and RESOURCE_FINAL_DECISION valid. Matching stdout records 21 passed, 0 failed. The focused case accepts retained 6,8,9,10,11,12 and rejects wrong frame, wrong tab, commit before first packet, commit after second packet, missing commit, reused context, and wrong second body.",
+    "excluded_attempt": "The earlier unguarded 21/21 Node run had no resource admission or terminal journal and is excluded from campaign acceptance.",
+    "source_sha256_verified": {
+      "tests/browser/showcase-d47-driver-evidence.mjs": "c1df5455bc132cb12f55e9ef2787624a0c5b5c9bbb37903c9bcd82ff3853c41b",
+      "tests/browser/showcase-d47-document-lifecycle.mjs": "be0562096ddda4b50342ca9b2e097816cd2c732de2d978e5022e246dd95e8e72",
+      "tests/browser/showcase-d47-driver-evidence.test.mjs": "aac5c2e0f98c4fcfd97982856475cc3beacbe67899c4f180c5581a0017b2ec39"
+    },
+    "review_method": "Read the exact source-repair diff, wired driver, shared assessor, focused test, guard stdout, terminal journal, and current file hashes. Did not rerun the test under this review brief."
+  },
+  "findings": [],
+  "next_step": "Run one guarded native prior-saved retry using the repaired driver. Require exact second saved result before and after held response release, classify whether the old callback was actually delivered, and retain its source/artifact identity and terminal resource journal."
+}
