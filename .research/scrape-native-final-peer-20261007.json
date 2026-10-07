@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "lane": "independent-source-and-persisted-evidence-review",
+  "reviewed_native_report": ".research/scrape-semantic-native-20261007.json",
+  "reviewed_seo_report": ".research/seo-identity-candidates-20261007.json",
+  "outcome_verdict_A": "pass-bounded-native-scrape-mapping-only",
+  "quality_verdict_B": "pass-with-explicit-incomplete-census-and-image-limits",
+  "seo_candidate_audit_verdict": "pass-source-only-candidates-unbound-to-receipt",
+  "checks": [
+    "Original and sanitized native receipt SHA-256 values match the report; their only JSON difference is the rewritten guest-account-readiness screenshot path. The earlier original receipt hash also matches.",
+    "All three resource journal hashes and quoted final-decision rows match. Package and browser decisions are valid; guest decision is child_failed with resourceInvalid false and exitCode 1. The report correctly records workflow failure and census driver exit 2, with no product-behavior verdict.",
+    "The receipt identifies frozen development artifact 0.2.366, source d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef, tree 9e7c2db499a2c1fed0a8b3ea6facfa88a13f3c2c26ba7f9b9d2d1f216310236c, Chrome 141.0.7390.37, extension cihdmkcdjjckfhjpgoedmgfpoljebaml, and guest before and after. Archive/tree values are receipt/report assertions; no independent archive bytes were available in this review.",
+    "The three rendered Scrape buttons map once each to C19, C01 and C02; exact source title literals exist in frozen and current Scrape source, and inventory controls match their actions. New Scrape count is 3 total, 3 mapped, 0 unknown; the previous same-artifact run was 3 total, 0 mapped, 3 unknown.",
+    "Overall unknown count is 33, down from 35. The change is three fewer Scrape unknowns and one additional Data unknown. Current unknowns reconcile as navigation 2, Chat 16, Data 2, SEO 12 and Settings section action 1. Receipt status remains incomplete.",
+    "Both PNG hashes match. Pixels show guest Chat and a partial Settings Account/Appearance/Chat view, not Scrape or the full Settings pane. Scrape mapping is receipt-backed, not screenshot-backed; no claim that every pane was visually inspected is warranted.",
+    "The 16 SEO candidates have matching static source strings or titles, branch conditions and inventory families in the compared paths. Frozen-to-current SEO path diff is empty. Candidate report correctly leaves all 12 fingerprint-only observations unbound, and notes dynamic history and agent labels, repeated finding actions, shared Copy components and privacy-sensitive uncertainty. No fingerprint or DOM-order identity is inferred."
+  ],
+  "findings": [],
+  "limits": [
+    "No live browser session, heavy test or product behavior exercise was performed by this reviewer.",
+    "The native run is an incomplete guest visibility census. It does not establish member/admin coverage, current-main health, all control states, or operational correctness of capture.",
+    "No independent archive/tree rehash was possible from the saved evidence; the receipt and report agree on artifact identity."
+  ]
+}
