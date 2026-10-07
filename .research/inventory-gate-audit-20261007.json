@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "task_id": "inventory-gate-audit-20261007",
+  "audited_at": "2026-10-07",
+  "repository_head_at_audit": "b378592a56c15854507212960c18fd744fce1996",
+  "canonical_inventory": "docs/stabilization/inventory.json",
+  "canonical_inventory_sha256": "ce2fe7681d6c1fb691130825b5aabf67738524b6b1f65a2d2375c03e033b7623",
+  "verdict": "INCOMPLETE_SOURCE_AND_NATIVE_VISIBILITY_GATE; runtime_acceptance_is_separate",
+  "counts": {
+    "features": 205,
+    "controls": 1349,
+    "cases": 767,
+    "inventory_status": {
+      "complete": 16,
+      "source-complete": 19,
+      "source-listed-pending-reconciliation": 167,
+      "source-control-reconciliation-pending": 1,
+      "source-listed-procedure-needed": 1,
+      "source-reconciled-procedure-needed": 1
+    },
+    "cases_missing_steps_or_expected": 42,
+    "features_with_guest_member_admin_applicability_entries": 205
+  },
+  "interpretation": "The 167 source-listed-pending-reconciliation rows are existing tool feature records, not 167 missing features. They share an imported-source/catalog reconciliation readiness gap. Do not convert source-inventory completion into runtime passes; inventory cells remain their own evidence axis.",
+  "highest_priority_gaps": [
+    {
+      "priority": 1,
+      "class": "native_auth_visibility_discovery",
+      "blocking": true,
+      "runtime_required": true,
+      "runtime_behavior_test_required": false,
+      "evidence": {
+        "gate": "source-census-peer-reviewed-native-visibility-pending",
+        "inventory_source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
+        "prior_observation": "docs/stabilization/reports/takeover-native-census-089-002.json",
+        "observed": "Old 0.2.89 guest profile: five guest navigation tabs and 11 recognized Settings section labels; 16 aria-expanded buttons total, five unclassified. Member/admin visibility unverified; primary Chrome/Store state unverified."
+      },
+      "action": "The first gate-closing observation is a current-receipt, read-only native visibility census: in isolated guest, ordinary-member, and admin profiles, enumerate visible sidepanel entry points and visible control labels/section labels across the inventoried surfaces, map each to existing feature/control IDs and applicability, and resolve the five formerly unclassified expanded buttons. Record the actual build channel; source already says the popup is excluded from Store builds. Do not click controls or infer behavior, permission enforcement, persistence, or backend access.",
+      "resolvable_without_behavior_testing": false,
+      "why": "Plan \u00a7 Mandate requires source controls reconciled with actual guest/admin/member visibility and permission/build gates; old guest-only visibility cannot certify the current auth matrix. This is observation/discovery, not a pass/fail feature test."
+    },
+    {
+      "priority": 2,
+      "class": "source_scope_reconciliation",
+      "blocking": true,
+      "runtime_required": false,
+      "runtime_behavior_test_required": false,
+      "evidence": {
+        "inventory_source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
+        "latest_bounded_audit": ".research/inventory-current-delta-20261006.json (inventory snapshot 528ea0b; inspected source 9db45d3; explicitly says source SHA is not current)",
+        "source_review": "docs/stabilization/reports/inventory-source-review.json (source head f70ecd4)",
+        "scope_examples": [
+          "EXT-F-2011 C53/C54 and T10/T11 are already present; do not rediscover as missing.",
+          "EXT-F-1012 C50/T60 are already present; do not confuse their separate runtime evidence needs with source scope."
+        ]
+      },
+      "action": "Re-run a source-only delta from the pinned inventory source through the current HEAD, mapping changed user-facing components, entrypoints, audience/permission/build gates, and registered tool routes to existing IDs; only add/reconcile source-backed controls where the mapping fails. Preserve existing IDs and distinguish implementation changes from new user-visible controls.",
+      "resolvable_without_behavior_testing": true,
+      "why": "The inventory source SHA is stale and the existing delta audit explicitly says its inspected source is not current. A fresh bounded source mapping can settle whether newer changes add or remove scope without executing product behavior."
+    },
+    {
+      "priority": 3,
+      "class": "known_source_control_mismatch",
+      "blocking": true,
+      "runtime_required": false,
+      "runtime_behavior_test_required": false,
+      "evidence": {
+        "feature": "EXT-F-2002",
+        "status": "source-control-reconciliation-pending",
+        "reports": [
+          ".research/capture-controls-reconcile-20261006.json",
+          ".research/inventory-procedure-peer-20261006.json",
+          ".research/inventory-procedure-applied-20261006.json"
+        ],
+        "unresolved_controls": ["EXT-F-2002-C08", "EXT-F-2002-C10"],
+        "additional_mapping": "C06 lists four verdicts while current ResolveMenu has six; C18/C19 exist but their mapping to the two omitted catalog actions needs explicit reconciliation. The procedure peer also rejects claiming guest coverage via the member/admin-only T01."
+      },
+      "action": "Source-reconcile C08 (per-source capture-intensity picker absent from current source) and C10 (paste editor has no cancel control) as source-absent/owner-intent-unresolved without deleting/reusing IDs; map the six actual verdict actions to distinct existing/new controls, and keep guest denial coverage distinct from T01. Retain current source-present C20-C28 mappings. Do not claim those actions executed.",
+      "resolvable_without_behavior_testing": true,
+      "why": "The remaining question is source-to-control identity and applicability, already narrowed by a source census and peer review; runtime testing cannot make an absent control appear in the inventory."
+    },
+    {
+      "priority": 4,
+      "class": "tool_catalog_and_binding_census",
+      "blocking": true,
+      "runtime_required": "source_and_read_only_live_metadata",
+      "runtime_behavior_test_required": false,
+      "evidence": {
+        "tool_feature_rows": 169,
+        "distinct_inventory_tool_names": 168,
+        "last_catalog_mapping": ".research/inventory-current-catalog-delta-20261007.json (recorded HEAD 9ee66a9)",
+        "peer": ".research/inventory-catalog-delta-peer-20261007.json (source verdict supported_with_limits; its recorded current HEAD was already stale)",
+        "integration": ".research/inventory-catalog-integration-20261007.json corrected 2 stale schemas and 39 positional indices without changing IDs/controls/cells; source schemas for all rows and current live bindings were not proven.",
+        "live_binding_evidence": "inventory tool rows point to .research/tool-binding-readonly-census.json as_of 2026-10-04T18:25:16Z"
+      },
+      "action": "Against current HEAD, re-derive each tool feature\u2019s exact name/schema/permission/admin/surface mapping from the current imported registry and generated catalog; explicitly classify EXT-F-4130 records as a server route, retain EXT-F-4058/EXT-F-4156 as legacy/canonical wait_for rows with the executable mapping stated, and refresh the read-only live tool.definition/tool.binding advertisement census.",
+      "resolvable_without_behavior_testing": true,
+      "why": "Source/catalog mapping and a read-only DB binding query are discovery evidence; neither proves advertisement in a request, role access, permission outcome, or execution."
+    }
+  ],
+  "procedure_design_not_scope_census": [
+    {
+      "feature_case_ids": [
+        "EXT-F-4070-T01",
+        "EXT-F-4089-T01",
+        "EXT-F-4090-T01",
+        "EXT-F-4092-T01",
+        "EXT-F-4093-T01",
+        "EXT-F-4095-T01",
+        "EXT-F-4096-T01",
+        "EXT-F-4106-T01",
+        "EXT-F-4118-T01",
+        "EXT-F-4119-T01",
+        "EXT-F-4120-T01",
+        "EXT-F-4121-T01",
+        "EXT-F-4122-T01",
+        "EXT-F-4123-T01",
+        "EXT-F-4124-T01",
+        "EXT-F-4127-T01",
+        "EXT-F-4128-T01",
+        "EXT-F-4129-T01",
+        "EXT-F-4130-T01",
+        "EXT-F-4131-T01",
+        "EXT-F-4132-T01",
+        "EXT-F-4133-T01",
+        "EXT-F-4134-T01",
+        "EXT-F-4135-T01",
+        "EXT-F-4136-T01",
+        "EXT-F-4137-T01",
+        "EXT-F-4138-T01",
+        "EXT-F-4141-T01",
+        "EXT-F-4143-T01",
+        "EXT-F-4145-T01",
+        "EXT-F-4148-T01",
+        "EXT-F-4149-T01",
+        "EXT-F-4150-T01",
+        "EXT-F-4156-T01",
+        "EXT-F-4157-T01",
+        "EXT-F-4158-T01",
+        "EXT-F-4159-T01",
+        "EXT-F-4160-T01",
+        "EXT-F-4162-T01",
+        "EXT-F-4163-T01",
+        "EXT-F-4168-T01",
+        "EXT-F-4169-T01"
+      ],
+      "count": 42,
+      "evidence": "Direct parse of current docs/stabilization/inventory.json: each has empty/missing steps or expected and design_status=needed.",
+      "classification": "Procedure design gap; source/fixture-specific drafting can start without runtime, but execution requires controlled fixtures and the PLAN resource/build receipt. Does not mean feature/control is missing from the census."
+    }
+  ],
+  "not_inventory_census_blockers": "Current runtime cells being unverified, open D47/T57 outcomes, UI behavior, permission enforcement, persistence, backend/RLS, and release health remain acceptance blockers but do not by themselves mean the source feature/control inventory is incomplete. Keep these results unverified and out of scope for this audit.",
+  "files_reviewed": [
+    "docs/stabilization/PLAN.md",
+    "docs/stabilization/INVENTORY-CONTRACT.md",
+    "docs/stabilization/inventory.json",
+    "docs/stabilization/COORDINATOR.md",
+    "docs/stabilization/reports/inventory-source-review.json",
+    "docs/stabilization/reports/inventory-gate-review.json",
+    "docs/stabilization/reports/takeover-native-census-089-002.json",
+    ".research/inventory-current-delta-20261006.json",
+    ".research/inventory-procedure-peer-20261006.json",
+    ".research/capture-controls-reconcile-20261006.json",
+    ".research/inventory-procedure-applied-20261006.json",
+    ".research/inventory-current-catalog-delta-20261007.json",
+    ".research/inventory-catalog-delta-peer-20261007.json",
+    ".research/inventory-catalog-integration-20261007.json",
+    ".research/tool-binding-readonly-census.json"
+  ]
+}
