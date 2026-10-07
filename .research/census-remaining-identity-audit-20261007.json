@@ -1,0 +1,181 @@
+{
+  "task_id": "census-remaining-identity-audit-20261007",
+  "scope": "EXT-D-0151/T11 read-only source and receipt identity audit; navigation two unknowns, Settings one unknown, Chat sixteen unknowns",
+  "evidence": {
+    "receipt": ".research/empty-surface-native-retest-20261007/evidence/native-receipt-sanitized.json",
+    "receipt_artifact": "0.2.366",
+    "receipt_source_sha": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+    "receipt_status": "incomplete",
+    "role": "guest",
+    "inventory": "docs/stabilization/inventory.json"
+  },
+  "classes": [
+    {
+      "class": "navigation",
+      "unknown_count": 2,
+      "receipt_provenance": "Both are buttons outside_panel, dom_order 6 and 7; labels are fingerprinted. Their paths do not authorize identity by themselves.",
+      "source_proven": [
+        {
+          "candidate_label": "Site access",
+          "source": "src/components/SiteAccessControl.tsx title and aria-label",
+          "kind": "button",
+          "region": "tab-strip adjacent action",
+          "inventory_id": "EXT-F-1001-C06"
+        },
+        {
+          "candidate_label": "Account",
+          "source": "src/components/UserMenu.tsx title fallback",
+          "kind": "button",
+          "region": "tab-strip adjacent action",
+          "inventory_id": "EXT-F-1001-C04"
+        },
+        {
+          "candidate_label": "Open Scrape",
+          "source": "src/entrypoints/sidepanel/App.tsx popupCaptureClaimFailed alert",
+          "kind": "button",
+          "region": "panel alert above tablist",
+          "inventory_id": "EXT-F-1001-C01",
+          "condition": "conditional; shown only after popup capture claim failure"
+        },
+        {
+          "candidate_label": "Open Vault",
+          "source": "src/entrypoints/sidepanel/App.tsx assistance shortcut",
+          "kind": "button",
+          "region": "tab-strip adjacent action",
+          "inventory_id": "EXT-F-1001-C03",
+          "condition": "conditional; assistance is non-none and current tab is not Vault"
+        },
+        {
+          "candidate_label": "Chat, Scrape, Data, SEO, Settings",
+          "source": "src/entrypoints/sidepanel/App.tsx TabsTrigger title values",
+          "kind": "tab",
+          "region": "tablist",
+          "inventory_id": "EXT-F-1001-C01",
+          "condition": "static labels; guest-accessible source tabs"
+        }
+      ],
+      "status": "unresolved_identity; source proves candidate labels and inventory IDs, but receipt does not establish the exact two joins",
+      "next_minimal_proof": "For a fresh receipt, capture exact accessible name/title and region for each candidate with the existing kind. Match exact observed label plus source condition; otherwise preserve fingerprint."
+    },
+    {
+      "class": "Settings_section",
+      "unknown_count": 1,
+      "receipt_provenance": {
+        "kind": "button",
+        "classification": "action",
+        "region": "tabpanel",
+        "section": "Settings",
+        "source_observed": ".sections.unmapped[0]"
+      },
+      "source_proven": [
+        {
+          "label": "Advanced agent capabilities",
+          "source_reference": "src/features/settings/SettingsView.tsx:665 (Collapsible label, guarded by isAdmin)",
+          "inventory_id": "EXT-F-1003-C10",
+          "kind": "button",
+          "guest_source_visibility": "hidden by isAdmin gate"
+        }
+      ],
+      "status": "unknown row is not identified; Advanced agent capabilities is the only source-listed Settings section absent from the ten mapped section labels, but guest source gate predicts it hidden. This is an exact candidate and an applicability discrepancy to resolve, not a confirmed join.",
+      "next_minimal_proof": "At next observation, expose the exact accessible name for the single section button. If it is Advanced agent capabilities, record the guest visibility mismatch against EXT-F-1003-C10; otherwise preserve fingerprint and add the observed label only if source proves it."
+    },
+    {
+      "class": "Chat",
+      "unknown_count": 16,
+      "receipt_provenance": "Sixteen fingerprint-only rows in Chat tabpanel: fifteen buttons and one textarea. Receipt contains DOM paths/order but no readable labels; no identity is assigned from those positions.",
+      "source_proven": [
+        {
+          "label": "New chat",
+          "source_reference": "src/features/chat/ChatView.tsx:890-899 title=\"New chat\"",
+          "inventory_id": "EXT-F-2013-C03",
+          "kind": "button"
+        },
+        {
+          "label": "History popover / refresh / select",
+          "source_reference": "src/features/chat/ChatView.tsx:899-906 <HistoryMenu>",
+          "inventory_id": "EXT-F-2013-C04",
+          "kind": "button"
+        },
+        {
+          "label": "Task panel chip",
+          "source_reference": "src/features/chat/ChatView.tsx:877 <TaskPanelChip>",
+          "inventory_id": "EXT-F-2013-C05",
+          "kind": "button"
+        },
+        {
+          "label": "Ask/Act permission mode popover",
+          "source_reference": "src/features/chat/ChatView.tsx:880-885 <PermissionModeChip>",
+          "inventory_id": "EXT-F-2013-C06",
+          "kind": "button"
+        },
+        {
+          "label": "Conversation customization popover",
+          "source_reference": "src/features/chat/ChatView.tsx:1694-1710 ComposerSettingsChip",
+          "inventory_id": "EXT-F-2013-C07",
+          "kind": "button"
+        },
+        {
+          "label": "Composer draft",
+          "source_reference": "src/features/chat/ChatView.tsx:1503-1518 textarea",
+          "inventory_id": "EXT-F-2013-C08",
+          "kind": "textarea"
+        },
+        {
+          "label": "Microphone",
+          "source_reference": "src/features/chat/ChatView.tsx:1528-1565 handleMicClick button",
+          "inventory_id": "EXT-F-2013-C09",
+          "kind": "button"
+        },
+        {
+          "label": "Send / stop / interrupt",
+          "source_reference": "src/features/chat/ChatView.tsx:1570-1665 composer action buttons",
+          "inventory_id": "EXT-F-2013-C10",
+          "kind": "button"
+        },
+        {
+          "label": "Suggestion chip",
+          "source_reference": "src/features/chat/ChatView.tsx:1241-1262 suggestion button",
+          "inventory_id": "EXT-F-2013-C11",
+          "kind": "button"
+        },
+        {
+          "label": "Select agent from dropdown",
+          "source_reference": "src/features/chat/ChatView.tsx:850-863 AgentListDropdown",
+          "inventory_id": "EXT-F-2013-C18",
+          "kind": "button"
+        },
+        {
+          "label": "Select language",
+          "source_reference": "src/features/chat/ChatView.tsx:878 <LanguagePicker> and src/features/chat/LanguagePicker.tsx",
+          "inventory_id": "EXT-F-2013-C19",
+          "kind": "button"
+        },
+        {
+          "label": "Sandbox picker",
+          "source_reference": "src/features/chat/ChatView.tsx:879 <SandboxPickerChip>",
+          "inventory_id": "EXT-F-2013-C41",
+          "kind": "button"
+        },
+        {
+          "label": "Attachment chips",
+          "source_reference": "src/features/chat/ChatView.tsx:1522-1523 GoogleFileAttachmentChip / ContextRulesComposerChip; attachment children require exact source match",
+          "inventory_id": "EXT-F-2013-C17",
+          "kind": "button"
+        },
+        {
+          "label": "Copy entire conversation",
+          "source_reference": "src/features/chat/ChatView.tsx:883-888 <CopyConversationButton>",
+          "inventory_id": "EXT-F-2013-C55",
+          "kind": "button"
+        }
+      ],
+      "status": "16 identities unresolved. The list is a bounded static-label allowlist only; candidate IDs do not map receipt fingerprints. Dynamic/private text and any label absent from this list remain fingerprint-only.",
+      "next_minimal_proof": "For each fresh Chat element, read exact accessible name/title/placeholder and kind; exact-match only against this allowlist and confirm component source. Keep dynamic/private content fingerprinted."
+    }
+  ],
+  "limits": [
+    "No behavior test, browser interaction, or product edit was performed.",
+    "No HMAC or DOM order was decoded or used as identity evidence.",
+    "This audit does not close the census or claim runtime behavior acceptance."
+  ]
+}
