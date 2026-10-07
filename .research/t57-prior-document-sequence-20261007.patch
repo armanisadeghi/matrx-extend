@@ -1,0 +1,500 @@
+diff --git a/tests/browser/showcase-d47-public-initial-load.mjs b/tests/browser/showcase-d47-public-initial-load.mjs
+index fbb00c7a..bf3746f9 100644
+--- a/tests/browser/showcase-d47-public-initial-load.mjs
++++ b/tests/browser/showcase-d47-public-initial-load.mjs
+@@ -565,8 +565,24 @@ async function run() {
+             report.stage = 'public_race_interception_setup';
+             interception = await createPublicRacePreflight(page, report, response.endpoint_shape);
+             captureProbe = await installPublicCaptureProbe(await attachWorker(), page.url());
+-            report.stage = 'saved_replay';
++            // This ordinary public page load starts the prior document's real
++            // Algolia request before the saved replay owns a new navigation.
++            report.stage = 'public_race_prior_document_load';
++            await resourceAction(() => page.reload({ waitUntil: 'commit' }));
++            await interception.oldPaused();
++            assert.equal(new URL(page.url()).host, siteHost, 'public_race_old_host_mismatch');
++            const beforeRun = await exactRecipeVisible(panel, ownedRecipe);
++            interception.facts.old_paused_before_replay =
++              beforeRun.exact_row === true &&
++              beforeRun.running === false &&
++              interception.facts.paused[0]?.lifecycle === 'pending';
++            assert.equal(
++              interception.facts.old_paused_before_replay,
++              true,
++              'public_race_old_not_prior_to_replay',
++            );
+           }
++          report.stage = 'saved_replay';
+           await publicTrustedClick(
+             panel,
+             {
+@@ -579,35 +595,63 @@ async function run() {
+           );
+           await allow(panel);
+           if (racePreflight) {
+-            report.stage = 'public_race_old_paused';
+-            await interception.oldPaused();
+-            const replayAtPause = await exactRecipeVisible(panel, ownedRecipe);
+-            const runAtPause = await evaluate(
+-              panel,
+-              `(() => (${readD47SavedRunState.toString()})(document, ${JSON.stringify(ownedRecipe)}))()`,
+-            );
+-            interception.facts.exact_row_at_old_pause = replayAtPause.exact_row === true;
+-            interception.facts.running_at_old_pause = runAtPause.running === true;
+-            interception.facts.activity_observation_available_at_old_pause =
+-              runAtPause.observation_unavailable === false;
+-            interception.facts.active_replay_at_old_pause =
+-              interception.facts.exact_row_at_old_pause &&
+-              interception.facts.running_at_old_pause &&
+-              interception.facts.activity_observation_available_at_old_pause;
+-            interception.facts.extension_capture_at_old_pause = await captureProbe.attest();
+-            report.stage = 'public_race_navigation';
+-            await resourceAction(() => page.goto(pageUrl, { waitUntil: 'commit' }));
+-            assert.equal(
+-              new URL(page.url()).host,
+-              siteHost,
+-              'public_race_navigation_host_mismatch',
+-            );
+             report.stage = 'public_race_current_paused';
+             await interception.currentPaused();
++            interception.facts.extension_capture_at_current_pause = await captureProbe.attest();
+             report.stage = 'public_race_release';
+             await interception.releaseInOrder();
+             await requireResourceHealth();
+-            report.status = 'preflight_runtime_observed';
++            const current = interception.facts.paused[1];
++            const currentContext = interception.facts.contexts.find(
++              (context) => context.loader_id === current.loader_id,
++            );
++            const binding = await waitFor(
++              'public_current_binding_packet',
++              () => captureProbe.packets(),
++              (packets) =>
++                packets.some(
++                  (packet) =>
++                    packet.context_unique_id === currentContext?.unique_id &&
++                    packet.url_sha256 === current.url_sha256 &&
++                    packet.request_body_key === `sha256:${current.body_sha256}` &&
++                    packet.response_sha256 === current.response_sha256 &&
++                    packet.request_sequence >= 1,
++                ),
++              budget.timeout_ms,
++            );
++            interception.facts.current_binding_matches_response = binding.some(
++              (packet) =>
++                packet.context_unique_id === currentContext?.unique_id &&
++                packet.url_sha256 === current.url_sha256 &&
++                packet.request_body_key === `sha256:${current.body_sha256}` &&
++                packet.response_sha256 === current.response_sha256 &&
++                packet.request_sequence >= 1,
++            );
++            report.stage = 'saved_terminal';
++            const terminal = await waitFor(
++              'public_saved_terminal',
++              async () => {
++                const state = await exactRecipeVisible(panel, ownedRecipe);
++                const run = await evaluate(
++                  panel,
++                  `(() => (${readD47SavedRunState.toString()})(document, ${JSON.stringify(ownedRecipe)}))()`,
++                );
++                const combined = {
++                  ...state,
++                  running: run.running,
++                  unavailable: run.observation_unavailable,
++                };
++                return { ...combined, outcome: classifyPublicReplay(combined) };
++              },
++              (state) => state?.outcome !== 'unverified',
++              budget.timeout_ms,
++            );
++            report.saved_result = terminal;
++            interception.facts.terminal_outcome = terminal.outcome;
++            report.status =
++              terminal.outcome === 'captured_initial_request'
++                ? 'observed_bounded'
++                : 'honest_guidance_observed';
+           } else {
+             report.stage = 'saved_terminal';
+             const started = performance.now();
+@@ -660,7 +704,10 @@ async function run() {
+               report.public_race_preflight.verdict = assessPublicRacePreflight(interception.facts);
+               if (
+                 racePreflight &&
+-                report.public_race_preflight.verdict !== 'timing_interception_feasible'
++                ![
++                  'prior_document_released_current_verified',
++                  'prior_document_cancelled_current_verified',
++                ].includes(report.public_race_preflight.verdict)
+               )
+                 primary ??= new Error('public_race_preflight_unverified');
+             } catch {
+diff --git a/tests/browser/showcase-d47-public-race-preflight.mjs b/tests/browser/showcase-d47-public-race-preflight.mjs
+index ac5c233b..a2386275 100644
+--- a/tests/browser/showcase-d47-public-race-preflight.mjs
++++ b/tests/browser/showcase-d47-public-race-preflight.mjs
+@@ -63,17 +63,27 @@ export function assessPublicRacePreflight(facts) {
+     facts.contexts.find((context) => context.loader_id === facts.paused[0].loader_id)?.unique_id ===
+       facts.contexts.find((context) => context.loader_id === facts.paused[1].loader_id)
+         ?.unique_id ||
+-    facts.release_order.join(',') !== 'old,current' ||
+-    facts.paused.some((item) => item.lifecycle !== 'finished') ||
++    facts.release_attempts.map((attempt) => attempt.step).join(',') !== 'old,current' ||
++    facts.release_attempts[1].outcome !== 'continued' ||
++    (facts.paused[0].lifecycle === 'finished' &&
++      facts.release_attempts[0].outcome !== 'continued') ||
++    (facts.paused[0].lifecycle === 'failed' &&
++      facts.release_attempts[0].outcome !== 'cdp_rejected') ||
++    facts.paused[1].lifecycle !== 'finished' ||
++    !['finished', 'failed'].includes(facts.paused[0].lifecycle) ||
+     facts.paused.some((item) => !/^[a-f0-9]{64}$/.test(item.response_sha256 ?? '')) ||
+-    facts.active_replay_at_old_pause !== true ||
+-    facts.extension_capture_at_old_pause !== true ||
++    facts.old_paused_before_replay !== true ||
++    facts.extension_capture_at_current_pause !== true ||
++    facts.current_binding_matches_response !== true ||
++    !['captured_initial_request', 'honest_retrigger_guidance'].includes(facts.terminal_outcome) ||
+     facts.capture_probe_cleanup !== 'removed_detached' ||
+     facts.unmatched_target_count !== 0 ||
+     facts.cleanup !== 'disabled_detached'
+   )
+     return 'unverified';
+-  return 'timing_interception_feasible';
++  return facts.paused[0].lifecycle === 'finished'
++    ? 'prior_document_released_current_verified'
++    : 'prior_document_cancelled_current_verified';
+ }
+ 
+ // The worker's chrome.debugger event is the extension-side positive signal.
+@@ -98,13 +108,41 @@ export async function installPublicCaptureProbe(worker, pageUrl) {
+       const tabs = await chrome.tabs.query({ url: 'https://hn.algolia.com/*' });
+       const exact = tabs.filter(tab => tab.url === expected && Number.isInteger(tab.id));
+       if (exact.length !== 1) return false;
+-      const state = { tabId: exact[0].id, handshake: false, detached: false };
++      const state = { tabId: exact[0].id, handshake: false, detached: false,
++        contexts: {}, hooks: {}, packets: [] };
+       const listener = (source, method, params = {}) => {
+-        if (source.tabId !== state.tabId || source.sessionId || method !== 'Runtime.bindingCalled' ||
++        if (source.tabId !== state.tabId || source.sessionId) return;
++        if (method === 'Runtime.executionContextCreated') {
++          const context = params.context;
++          if (context?.auxData?.isDefault && context.uniqueId)
++            state.contexts[context.id] = context.uniqueId;
++          return;
++        }
++        if (method !== 'Runtime.bindingCalled' ||
+             !String(params.name).startsWith('__matrx_capture_')) return;
+         try {
+           const packet = JSON.parse(params.payload);
+-          if (packet?.__matrx_capture_hook === 'network-tap') state.handshake = true;
++          if (packet?.__matrx_capture_hook === 'network-tap') {
++            state.handshake = true;
++            state.hooks[params.executionContextId] = params.name;
++          } else if (state.hooks[params.executionContextId] === params.name &&
++              packet?.method === 'POST' && packet?.status === 200 &&
++              typeof packet.url === 'string' && typeof packet.body === 'string' &&
++              typeof packet.request_body_key === 'string' &&
++              Number.isSafeInteger(packet.request_sequence) && !packet.body_truncated) {
++            const contextId = params.executionContextId;
++            void (async () => {
++              const hash = async value => [...new Uint8Array(await crypto.subtle.digest(
++                'SHA-256', new TextEncoder().encode(value)))]
++                .map(byte => byte.toString(16).padStart(2, '0')).join('');
++              const [urlSha, bodySha] = await Promise.all([hash(packet.url), hash(packet.body)]);
++              state.packets.push({ binding_name: params.name,
++                context_unique_id: state.contexts[contextId] ?? null,
++                url_sha256: urlSha, response_sha256: bodySha,
++                request_body_key: packet.request_body_key,
++                request_sequence: packet.request_sequence });
++            })().catch(() => { /* incomplete probe remains unverified */ });
++          }
+         } catch { /* no raw payload leaves the worker */ }
+       };
+       const detach = (source) => { if (source.tabId === state.tabId) state.detached = true; };
+@@ -143,6 +181,13 @@ export async function installPublicCaptureProbe(worker, pageUrl) {
+       });
+       return result.result?.value === true;
+     },
++    async packets() {
++      const result = await worker.send('Runtime.evaluate', {
++        expression: `globalThis.__d47PublicCaptureProbe?.state.packets ?? []`,
++        returnByValue: true,
++      });
++      return result.result?.value ?? [];
++    },
+     async cleanup() {
+       let result;
+       try {
+@@ -169,11 +214,10 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
+     cleanup_attempts: [],
+     unmatched_target_count: 0,
+     cleanup: 'pending',
+-    active_replay_at_old_pause: false,
+-    exact_row_at_old_pause: false,
+-    running_at_old_pause: false,
+-    activity_observation_available_at_old_pause: false,
+-    extension_capture_at_old_pause: false,
++    old_paused_before_replay: false,
++    extension_capture_at_current_pause: false,
++    current_binding_matches_response: false,
++    terminal_outcome: 'unverified',
+     capture_probe_cleanup: 'pending',
+   };
+   report.public_race_preflight = facts;
+@@ -296,6 +340,9 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
+       facts.release_attempts.push({ step: name, outcome: 'continued' });
+       return true;
+     } catch (error) {
++      // Chrome may already have canceled this old-document request during the
++      // replay's navigation. A recorded loadingFailed is its terminal state.
++      if (item.lifecycle === 'failed') held.delete(entry[0]);
+       facts.release_attempts.push({
+         step: name,
+         outcome: 'cdp_rejected',
+@@ -409,11 +456,13 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
+     async releaseInOrder() {
+       const old = await release(0, 'old');
+       const current = await release(1, 'current');
+-      if (!old || !current) throw new Error('public_race_release_failed');
++      if (!current) throw new Error('public_race_current_release_failed');
+       await wait(
+         () => facts.paused.every((item) => item.lifecycle !== 'pending'),
+         'public_race_lifecycle_missing',
+       );
++      if (!old && facts.paused[0].lifecycle !== 'failed')
++        throw new Error('public_race_old_release_unclassified');
+     },
+     cleanup,
+   };
+diff --git a/tests/browser/showcase-d47-public-race-preflight.test.mjs b/tests/browser/showcase-d47-public-race-preflight.test.mjs
+index f4a65e49..a7180d2a 100644
+--- a/tests/browser/showcase-d47-public-race-preflight.test.mjs
++++ b/tests/browser/showcase-d47-public-race-preflight.test.mjs
+@@ -1,4 +1,5 @@
+ import assert from 'node:assert/strict';
++import { createHash, webcrypto } from 'node:crypto';
+ import { EventEmitter } from 'node:events';
+ import { readFile } from 'node:fs/promises';
+ import test from 'node:test';
+@@ -17,6 +18,43 @@ const request = {
+   postData: '{"query":"OpenAI"}',
+ };
+ 
++test('routed public scenario starts the old page request before Run and never navigates again', async () => {
++  const source = await readFile(
++    new URL('./showcase-d47-public-initial-load.mjs', import.meta.url),
++    'utf8',
++  );
++  const check = (text) => {
++    const prior = text.indexOf("await resourceAction(() => page.reload({ waitUntil: 'commit' }))");
++    const old = text.indexOf('await interception.oldPaused()', prior);
++    const run = text.indexOf("semanticTitle: 'Run pattern'", old);
++    const current = text.indexOf('await interception.currentPaused()', run);
++    assert.ok(
++      prior >= 0 && prior < old && old < run && run < current,
++      'prior_document_must_precede_new_saved_replay',
++    );
++    assert.doesNotMatch(
++      text.slice(run, current),
++      /page\.(?:goto|reload)\(/,
++      'new_replay_must_own_its_single_navigation',
++    );
++  };
++  check(source);
++  assert.throws(
++    () => check(source.replace('await interception.oldPaused();', '')),
++    /prior_document_must_precede_new_saved_replay/,
++  );
++  assert.throws(
++    () =>
++      check(
++        source.replace(
++          'await interception.currentPaused();',
++          'await page.goto(pageUrl); await interception.currentPaused();',
++        ),
++      ),
++    /new_replay_must_own_its_single_navigation/,
++  );
++});
++
+ test('public response identity is exact across URL and body without exposing either', () => {
+   const identity = publicRaceRequestIdentity(request);
+   assert.match(identity.identity_sha256, /^[a-f0-9]{64}$/);
+@@ -75,6 +113,8 @@ test('extension capture proof requires its own hook and an attached owned tab',
+     hasListener: (listener) => detachers.has(listener),
+   };
+   const sandbox = {
++    crypto: webcrypto,
++    TextEncoder,
+     chrome: {
+       tabs: { query: async () => [{ id: 47, url: 'https://hn.algolia.com/?q=OpenAI' }] },
+       debugger: {
+@@ -97,12 +137,42 @@ test('extension capture proof requires its own hook and an attached owned tab',
+   const probe = await installPublicCaptureProbe(worker, 'https://hn.algolia.com/?q=OpenAI');
+   try {
+     assert.equal(await probe.attest(), false);
++    for (const listener of listeners)
++      listener({ tabId: 47 }, 'Runtime.executionContextCreated', {
++        context: { id: 9, uniqueId: 'current-context', auxData: { isDefault: true } },
++      });
+     for (const listener of listeners)
+       listener({ tabId: 47 }, 'Runtime.bindingCalled', {
+         name: '__matrx_capture_current',
++        executionContextId: 9,
+         payload: '{"__matrx_capture_hook":"network-tap"}',
+       });
+     assert.equal(await probe.attest(), true);
++    for (const listener of listeners)
++      listener({ tabId: 47 }, 'Runtime.bindingCalled', {
++        name: '__matrx_capture_current',
++        executionContextId: 9,
++        payload: JSON.stringify({
++          method: 'POST',
++          status: 200,
++          url: request.url,
++          body: '{"hits":[]}',
++          request_body_key: 'sha256:body',
++          request_sequence: 1,
++          body_truncated: false,
++        }),
++      });
++    await new Promise((resolve) => setImmediate(resolve));
++    assert.deepEqual(JSON.parse(JSON.stringify(await probe.packets())), [
++      {
++        binding_name: '__matrx_capture_current',
++        context_unique_id: 'current-context',
++        url_sha256: createHash('sha256').update(request.url).digest('hex'),
++        response_sha256: createHash('sha256').update('{"hits":[]}').digest('hex'),
++        request_body_key: 'sha256:body',
++        request_sequence: 1,
++      },
++    ]);
+     attached = false;
+     assert.equal(await probe.attest(), false);
+     attached = true;
+@@ -175,8 +245,10 @@ test('controller continues original paused responses in order and disables inter
+     await controller.oldPaused();
+     pause('new');
+     await controller.currentPaused();
+-    controller.facts.active_replay_at_old_pause = true;
+-    controller.facts.extension_capture_at_old_pause = true;
++    controller.facts.old_paused_before_replay = true;
++    controller.facts.extension_capture_at_current_pause = true;
++    controller.facts.current_binding_matches_response = true;
++    controller.facts.terminal_outcome = 'captured_initial_request';
+     await controller.releaseInOrder();
+   } finally {
+     await controller.cleanup();
+@@ -204,7 +276,10 @@ test('controller continues original paused responses in order and disables inter
+       .map((call) => call.args.requestId),
+     ['hold-old', 'hold-new'],
+   );
+-  assert.equal(assessPublicRacePreflight(controller.facts), 'timing_interception_feasible');
++  assert.equal(
++    assessPublicRacePreflight(controller.facts),
++    'prior_document_released_current_verified',
++  );
+ });
+ 
+ test('canceled old release still attempts current release and every owned cleanup step', async () => {
+@@ -254,7 +329,8 @@ test('canceled old release still attempts current release and every owned cleanu
+   await controller.oldPaused();
+   pause('new');
+   await controller.currentPaused();
+-  await assert.rejects(controller.releaseInOrder(), /public_race_release_failed/);
++  cdp.emit('Network.loadingFailed', { requestId: 'old' });
++  await controller.releaseInOrder();
+   await controller.cleanup();
+   assert.deepEqual(controller.facts.release_attempts, [
+     { step: 'old', outcome: 'cdp_rejected', error_category: 'request_no_longer_intercepted' },
+@@ -263,11 +339,11 @@ test('canceled old release still attempts current release and every owned cleanu
+   assert.deepEqual(controller.facts.release_order, ['current']);
+   assert.deepEqual(
+     calls.filter((call) => call.method === 'Fetch.continueRequest').map((call) => call.requestId),
+-    ['hold-old', 'hold-new', 'hold-old'],
++    ['hold-old', 'hold-new'],
+   );
+   assert.equal(calls.at(-2).method, 'Fetch.disable');
+   assert.equal(calls.at(-1).method, 'detach');
+-  assert.equal(controller.facts.cleanup, 'unverified');
++  assert.equal(controller.facts.cleanup, 'disabled_detached');
+   assert.equal(assessPublicRacePreflight(controller.facts), 'unverified');
+   assert.equal(JSON.stringify(report).includes('private.example'), false);
+ });
+@@ -415,30 +491,49 @@ const valid = {
+     { unique_id: 'new-context', frame_id: 'main', loader_id: 'new' },
+   ],
+   release_order: ['old', 'current'],
++  release_attempts: [
++    { step: 'old', outcome: 'continued' },
++    { step: 'current', outcome: 'continued' },
++  ],
+   unmatched_target_count: 0,
+   cleanup: 'disabled_detached',
+-  active_replay_at_old_pause: true,
+-  extension_capture_at_old_pause: true,
++  old_paused_before_replay: true,
++  extension_capture_at_current_pause: true,
+   capture_probe_cleanup: 'removed_detached',
++  current_binding_matches_response: true,
++  terminal_outcome: 'captured_initial_request',
+ };
+ 
+ test('preflight requires two matching real request identities, new document and delivery lifecycle', () => {
+   const mutants = [
+     { paused: valid.paused.slice(0, 1) },
+-    { paused: [{ ...valid.paused[0], lifecycle: 'failed' }, valid.paused[1]] },
++    {
++      paused: [{ ...valid.paused[0], lifecycle: 'failed' }, valid.paused[1]],
++      release_attempts: [
++        { step: 'old', outcome: 'cdp_rejected' },
++        { step: 'current', outcome: 'continued' },
++      ],
++    },
+     { paused: [valid.paused[0], { ...valid.paused[1], identity_sha256: 'different' }] },
+     { paused: [valid.paused[0], { ...valid.paused[1], loader_id: 'old' }] },
+     { contexts: [valid.contexts[0], { ...valid.contexts[1], unique_id: 'old-context' }] },
+-    { release_order: ['current', 'old'] },
++    { release_attempts: [...valid.release_attempts].reverse() },
+     { unmatched_target_count: 1 },
+     { cleanup: 'unverified' },
+-    { active_replay_at_old_pause: false },
+-    { extension_capture_at_old_pause: false },
++    { old_paused_before_replay: false },
++    { extension_capture_at_current_pause: false },
++    { current_binding_matches_response: false },
++    { terminal_outcome: 'unverified' },
+     { capture_probe_cleanup: 'unverified' },
+     { paused: [{ ...valid.paused[0], response_sha256: undefined }, valid.paused[1]] },
+   ];
+   const cases = [valid, ...mutants.map((mutant) => ({ ...valid, ...mutant }))];
+-  const expected = ['timing_interception_feasible', ...mutants.map(() => 'unverified')];
++  const expected = [
++    'prior_document_released_current_verified',
++    ...mutants.map((_, index) =>
++      index === 1 ? 'prior_document_cancelled_current_verified' : 'unverified',
++    ),
++  ];
+   assert.deepEqual(cases.map(assessPublicRacePreflight), expected);
+ });
+ 
+@@ -456,16 +551,16 @@ test('actual verdict rejects constant and missing-evidence mutations in memory',
+   };
+   const constant = await load(
+     'export function assessPublicRacePreflight(facts) {',
+-    "export function assessPublicRacePreflight(facts) { return 'timing_interception_feasible';",
++    "export function assessPublicRacePreflight(facts) { return 'prior_document_released_current_verified';",
+   );
+-  const noLease = await load('facts.extension_capture_at_old_pause !== true ||', 'false ||');
++  const noLease = await load('facts.extension_capture_at_current_pause !== true ||', 'false ||');
+   const noDigest = await load(
+     "facts.paused.some((item) => !/^[a-f0-9]{64}$/.test(item.response_sha256 ?? '')) ||",
+     'false ||',
+   );
+   const checks = [
+-    [constant, { ...valid, extension_capture_at_old_pause: false }],
+-    [noLease, { ...valid, extension_capture_at_old_pause: false }],
++    [constant, { ...valid, extension_capture_at_current_pause: false }],
++    [noLease, { ...valid, extension_capture_at_current_pause: false }],
+     [
+       noDigest,
+       { ...valid, paused: [{ ...valid.paused[0], response_sha256: undefined }, valid.paused[1]] },
