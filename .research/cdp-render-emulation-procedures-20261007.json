@@ -1,0 +1,245 @@
+{
+  "schema_version": 1,
+  "artifact_type": "inventory-case-procedure-patch",
+  "task_id": "cdp-render-emulation-procedures-20261007",
+  "patch_id": "cdp-render-emulation-procedures-20261007",
+  "source": {
+    "source_inventory": "docs/stabilization/inventory.json",
+    "scope": "Source-traced executable procedure proposals for EXT-F-4103-T01, EXT-F-4111-T01, EXT-F-4113-T01, and EXT-F-4114-T01 only. No inventory, status, runtime, browser, build, permission, storage, cloud, or test-result changes.",
+    "source_files_reviewed": [
+      "docs/stabilization/PLAN.md",
+      "docs/stabilization/inventory.json",
+      "src/features/tools/ToolsView.tsx",
+      "src/lib/tools/handlers/_active-tab.ts",
+      "src/lib/tools/handlers/cdp.ts",
+      "src/lib/cdp/client.ts",
+      ".research/cdp-lifecycle-procedures-20261007.json"
+    ],
+    "anchors": [
+      "docs/stabilization/PLAN.md:24-41 (receipt, warm/reload and resource gates)",
+      "docs/stabilization/inventory.json:60444-60465 (4103 case and member/admin modes), 61930-61951 (4111), 62283-62304 (4113 admin-only), 62415-62436 (4114 admin-only)",
+      "src/features/tools/ToolsView.tsx:390-429,453-460,525-545 (manual JSON runner, Zod validation, direct handler invocation and controls)",
+      "src/lib/tools/handlers/_active-tab.ts:10-20,23-40 (manual runner uses focused tab when assignedTabId is null)",
+      "src/lib/tools/handlers/cdp.ts:111-281 (screenshot schema, layout/capture, returned media and persistence behavior), 498-524 (PDF schema and bytes), 562-623 (emulation/clear schemas and CDP commands)",
+      "src/lib/cdp/client.ts:271-301,352-388 (attachment listing and ownership lifecycle)",
+      ".research/cdp-lifecycle-procedures-20261007.json:shared_setup (resource receipt, target ownership, manual runner, exact-owned cleanup and gate limits)"
+    ],
+    "limits": [
+      "Tools → Catalog → Run validates the local args schema then invokes handler.run directly with permissionMode='act' and assignedTabId=null. It bypasses dispatcher admin, Ask/Act, and required_optional_permissions checks; manual positive or negative results cannot establish those gates or advertised agent routing.",
+      "Existing applicability is preserved exactly: screenshot/PDF member and admin; emulate/clear admin only. Guest access and permission-denial enforcement remain unverified gaps; no applicability or inventory status is changed.",
+      "The screenshot handler returns inline image_base64 when persistence is unavailable and otherwise a cloud reference, with capture metadata; persistence failure alone can still return inline-only success. Inspect actual decoded image pixels. PDF returns pdf_base64 and decoded byte_length; inspect actual rendered PDF pages and content.",
+      "Emulation success is only an acknowledgement. Verify live page viewport/device signals on the owned target after applying and after clearing. Clear reports success without CDP calls when the handler's attachment tracker says the tab is unattached, so the procedure verifies the attached positive path and observes resulting page state.",
+      "Member use of admin-only cleanup/list helpers in the manual runner is diagnostic cleanup reachability only and does not prove member dispatcher gates. Never detach a baseline or unrelated debugger session."
+    ]
+  },
+  "selectedCaseIDs": ["EXT-F-4103-T01", "EXT-F-4111-T01", "EXT-F-4113-T01", "EXT-F-4114-T01"],
+  "shared_setup": {
+    "resource_and_build": [
+      "Before any future execution, obtain the existing stabilization resource permit and a receipt with every field required by docs/stabilization/PLAN.md: source SHA and dirty-source hash when applicable, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile and auth/role/org state, permissions, backend identity, fixture IDs, timestamp, login method, principal provenance, real data origin, build/env flags, response interception, mocks and seeded browser state. Identify the controlled public target. Do not record secrets or unrelated profile/storage contents.",
+      "Use only the existing signed-in member/admin profiles specified per case. Required debugger optional permission must already be granted; do not request, revoke, or change permission. If absent, record the positive branch unavailable/not run. Run one warm pass, then use Chrome Reload on the exact receipt-bound unpacked extension, wait, reopen the side panel, refocus the owned page, and repeat as the post-reload pass. Panel reopen or page refresh is not extension reload. If source/output identity changes, require a matching receipt. No browser/build/runtime execution occurred while authoring."
+    ],
+    "owned_target_and_cleanup": [
+      "For each profile/pass, create one fresh tab owned by this run at https://example.org/ and keep it focused for calls omitting tab_id. Before any operation, run cdp_attached_tabs {} and record the full baseline. If the owned page appears already debugger-attached or ownership is ambiguous, abandon it without detaching anything.",
+      "After a handler that attaches, list attached tabs and identify the owned attachment only from exactly one new ID over baseline while the newly created target remains focused and no concurrent attachment activity occurred. Preserve every baseline entry. Use an explicit tab_id only after this exact ID is established from the owned target and list delta. If ambiguous, stop without cleanup guesses.",
+      "At end of each pass, call cdp_detach only with the exact uniquely established owned ID; verify it disappears and every baseline entry remains, then verify the debugger banner is gone on the owned page. Close only this run's owned example.org tab. Never capture or operate on unrelated tabs/screens, detach all, or detach a baseline entry. If cleanup fails, stop and report the owned ID. Member cleanup via admin-only manual handlers is diagnostic reachability and proves no admin gate."
+    ],
+    "manual_runner": [
+      "In the signed-in side panel open Tools → Catalog, choose All handlers if needed, search the exact handler, expand it, enter the listed JSON object in its runner textarea, and press Run. Record only the relevant result/error. The runner invokes handlers directly after local Zod validation and bypasses dispatcher authorization and optional-permission checks.",
+      "Keep the owned target focused at every call that omits tab_id. Use invalid string values only for schema-negative probes; they are rejected before handler invocation and must leave attached-tab state unchanged. Do not use guessed positive tab IDs or deliberately target another tab."
+    ],
+    "visual_and_state_observation": [
+      "For image/PDF outputs, inspect decoded artifact content, not only ok, base64 presence, or byte counts. Decode only this run's public fixture output to a temporary local artifact; visually inspect the full image or each PDF page and confirm recognizable rendered content from the owned public page. Do not upload or persist evidence beyond the authorized receipt.",
+      "For emulation, use Chrome DevTools attached only to the owned tab to evaluate and record window.innerWidth, window.innerHeight, window.devicePixelRatio, matchMedia('(max-width: 600px)').matches, and navigator.userAgent before, during, and after. These are observations of actual page state; do not infer behavior from the handler's {ok:true} response."
+    ]
+  },
+  "case_updates": {
+    "EXT-F-4103-T01": {
+      "feature_id": "EXT-F-4103",
+      "title": "Controlled manual execution: cdp_full_page_screenshot",
+      "control_ids": ["EXT-F-4103-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "procedure-proposal-runtime-unverified",
+      "preconditions": [
+        "Complete shared receipt/resource, permission, owned-target, and manual-runner setup independently in the existing member and admin profiles. Preserve the inventory's two listed modes and do not infer one role's result from the other.",
+        "Use the fresh owned https://example.org/ page. Do not assume screenshot defaults: the schema defaults profile to auto and full_page to true; format, quality and capture_scale are optional. Record the actual result profile/format/scale/dimensions."
+      ],
+      "steps": [
+        "Warm pass: focus the owned page, record attached-tabs baseline, and run cdp_full_page_screenshot with {}. Require a successful result, then list attachments and establish the one owned delta. If output has image_base64, decode that value; if it returns a persisted file reference, open only that returned image URL/reference. Inspect the actual pixels and confirm the public page content is recognizable from top through below-the-fold when full_page is true. Record MIME/format, reported dimensions, capture_scale and decoded byte length; compare image dimensions with reported width/height. Do not accept base64 presence alone as proof.",
+        "Run schema-negative input {\"format\":\"gif\"}; require runner schema rejection and unchanged attachment list. Run a valid explicit deterministic capture {\"profile\":\"auto\",\"format\":\"png\",\"full_page\":true,\"capture_scale\":1}; decode/visually inspect it and confirm reported format/dimensions agree with the actual image. Do not assume a profile max dimension or a particular page height; use the returned metadata and decoded image dimensions.",
+        "Detach only the owned delta and verify baseline preservation and banner removal. Reload the extension; recapture a fresh attachment baseline and repeat both positive captures, content inspection, and exact-owned cleanup in the warm profile. Repeat the full sequence independently as a post-reload pass, then repeat both passes in the admin profile."
+      ],
+      "expected": [
+        "A successful result has ok:true and either inline image_base64 or a persisted screenshot reference, plus media/format and dimension metadata. The decoded image is a valid image with pixel dimensions equal to reported width/height and visibly contains the owned public page. Actual dimensions, encoded size, profile resolution and persistence outcome are runtime values, not fixed expectations.",
+        "Invalid format is rejected by the runner before handler invocation and does not change attached-tab state. Valid capture auto-attaches and retains the debugger session for explicit cleanup. Persistence failure may still produce inline-only image output; assess content in either result path.",
+        "The procedure is a source-derived proposal; no runtime status is promoted."
+      ],
+      "dimensions": [
+        "valid-public-page",
+        "actual-image-content",
+        "full-page-capture",
+        "schema-negative",
+        "debugger-permission-present",
+        "member",
+        "admin",
+        "warm",
+        "extension-reload",
+        "owned-target-cleanup"
+      ],
+      "source_evidence": [
+        "src/lib/tools/handlers/cdp.ts:111-281",
+        "src/features/tools/ToolsView.tsx:390-429,453-460,525-545",
+        "src/lib/tools/handlers/_active-tab.ts:10-20,23-40",
+        "src/lib/cdp/client.ts:271-301,352-388",
+        "docs/stabilization/inventory.json:60444-60465"
+      ],
+      "access_context_permission_limits": [
+        "Manual direct handler execution does not test dispatcher admin, Ask/Act, debugger permission denial/enforcement, or agent routing. Run the existing member and admin modes independently; guest remains outside this case.",
+        "The screenshot handler is privileged and requires optional debugger permission. Do not alter permission settings; an absent permission means not run/unavailable, not a proven denial."
+      ],
+      "limits": [
+        "No browser execution, image inspection, test, build, or inventory status update occurred while authoring. If returned persistence points outside the owned run or its public page output cannot be inspected, stop and record that limitation without claiming content verification."
+      ]
+    },
+    "EXT-F-4111-T01": {
+      "feature_id": "EXT-F-4111",
+      "title": "Controlled manual execution: cdp_print_pdf",
+      "control_ids": ["EXT-F-4111-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "procedure-proposal-runtime-unverified",
+      "preconditions": [
+        "Complete shared receipt/resource, permission, owned-target, and manual-runner setup independently in member and admin profiles. Keep the fresh owned public page focused.",
+        "The handler exposes only landscape and print_background options: defaults are landscape false and print_background true. Do not add paper-size, margin, scale, or page-range assumptions to the expected result."
+      ],
+      "steps": [
+        "Warm pass: focus owned https://example.org/, record attached-tabs baseline, and run cdp_print_pdf with {}. Establish the unique owned attachment delta. Decode pdf_base64 from this result into a temporary PDF, open/render it, and inspect every page: confirm it is a valid PDF with visible recognizable content from the owned public page. Record page count and decoded byte count; require byte_length equals decoded PDF length. Do not treat ok/base64 or byte_length by itself as content proof.",
+        "Run schema-negative {\"landscape\":\"yes\"}; require runner schema rejection and unchanged attachment list. Then run {\"landscape\":true,\"print_background\":false} on the same owned page, decode/render the returned PDF, and visually verify page content and orientation against the rendered artifact itself. No fixed page count, paper dimensions, or content bytes are assumed.",
+        "Detach only the unique owned delta and verify baseline entries remain and banner is gone. Reload the extension, recapture baseline, repeat both valid PDFs and actual page inspection, then exact-owned cleanup. Repeat warm and post-reload sequences independently in the admin profile."
+      ],
+      "expected": [
+        "Successful output is {ok:true,pdf_base64:<data>,byte_length:<decoded byte count>}; decoded bytes form an openable PDF with actual rendered text/graphics from the owned public page, and byte_length equals decoded bytes. Page count and dimensions follow Chrome print behavior and are observed, not invented.",
+        "Invalid boolean type is rejected before handler invocation and leaves attachments unchanged. Valid PDF calls attach and retain the debugger session for exact owned cleanup."
+      ],
+      "dimensions": [
+        "valid-public-page",
+        "actual-pdf-content",
+        "orientation-option",
+        "background-option",
+        "schema-negative",
+        "debugger-permission-present",
+        "member",
+        "admin",
+        "warm",
+        "extension-reload",
+        "owned-target-cleanup"
+      ],
+      "source_evidence": [
+        "src/lib/tools/handlers/cdp.ts:498-524",
+        "src/features/tools/ToolsView.tsx:390-429,453-460,525-545",
+        "src/lib/tools/handlers/_active-tab.ts:10-20,23-40",
+        "src/lib/cdp/client.ts:271-301,352-388",
+        "docs/stabilization/inventory.json:61930-61951"
+      ],
+      "access_context_permission_limits": [
+        "Manual direct handler execution does not test dispatcher admin, Ask/Act, debugger permission denial/enforcement, or agent routing. Run member and admin modes independently; guest remains outside this case.",
+        "The handler is privileged and requires optional debugger permission. An absent permission means not run/unavailable, not a proven denial."
+      ],
+      "limits": [
+        "No runtime, PDF rendering, test, build, or inventory status update occurred while authoring. Do not claim content verified unless decoded PDF pages are actually rendered and inspected."
+      ]
+    },
+    "EXT-F-4113-T01": {
+      "feature_id": "EXT-F-4113",
+      "title": "Controlled manual execution: cdp_emulate_device",
+      "control_ids": ["EXT-F-4113-C01"],
+      "modes": ["admin"],
+      "design_status": "procedure-proposal-runtime-unverified",
+      "preconditions": [
+        "Complete shared receipt/resource, permission, owned-target, and manual-runner setup in the existing admin profile only. This case is inventory-applicable to admin only.",
+        "Use a fresh owned public tab; before any handler call, attach only through this procedure and establish the exact owned attachment delta. Observe baseline page viewport values with the shared DevTools evaluation on the owned tab."
+      ],
+      "steps": [
+        "Warm pass: record baseline viewport values and attached-tab baseline on owned https://example.org/. Run cdp_emulate_device with {\"width\":390,\"height\":844,\"device_scale_factor\":3,\"mobile\":true,\"user_agent\":\"Matrx-owned-device-emulation-check\"}. These are explicit schema-valid test values, not claimed platform defaults. After success, confirm the page's actual window.innerWidth/innerHeight, devicePixelRatio, max-width media query and userAgent reflect the requested emulation (allow Chrome page-specific viewport conventions; record observed values). Capture an owned screenshot and visually confirm its pixel content; use returned dimensions only as an additional observation.",
+        "Run schema-negative {\"width\":99,\"height\":844}; require local schema rejection and confirm the observed emulated page state remains unchanged. Do not use malformed tab IDs or another tab.",
+        "Run cdp_clear_emulation {\"tab_id\":<owned id>} as the attached positive cleanup of emulation, then observe the same five page values again. Confirm metrics return to the pre-emulation baseline and the user agent no longer equals the supplied override; record any browser-specific residual state. Clear does not detach, so verify the owned debugger attachment still exists, then cdp_detach only the exact owned delta and verify baseline preserved/banner gone.",
+        "Reload the extension, use the same still-owned target only if it remains open and unambiguous; recapture a fresh attached-list baseline, re-establish owned attachment if needed, observe a fresh page baseline, and repeat apply, schema-negative, state verification, clear, state verification, and exact cleanup."
+      ],
+      "expected": [
+        "Emulate returns {ok:true}, but acceptance requires observed live page state to change consistently with explicit width 390, height 844, DPR 3, mobile media behavior, and the supplied UA. Record exact observed values; do not require UA spoof success from the acknowledgement alone.",
+        "width 99 is rejected by the local schema before CDP invocation and leaves observed state unchanged. Clear returns {ok:true}; attached-path acceptance requires metrics and UA observations to return to baseline. cdp_clear_emulation does not detach the debugger session.",
+        "Admin only is the existing applicability. The proposal does not promote runtime status."
+      ],
+      "dimensions": [
+        "actual-viewport-state",
+        "device-scale-factor",
+        "mobile-mode",
+        "user-agent-override",
+        "schema-negative",
+        "clear-state-restoration",
+        "debugger-permission-present",
+        "admin",
+        "warm",
+        "extension-reload",
+        "owned-target-cleanup"
+      ],
+      "source_evidence": [
+        "src/lib/tools/handlers/cdp.ts:562-593",
+        "src/lib/tools/handlers/cdp.ts:596-623",
+        "src/features/tools/ToolsView.tsx:390-429,453-460,525-545",
+        "src/lib/cdp/client.ts:271-301,352-388",
+        "docs/stabilization/inventory.json:62283-62304"
+      ],
+      "access_context_permission_limits": [
+        "Admin-only inventory mode is preserved. Manual runner does not establish admin dispatcher enforcement, Ask/Act behavior, debugger permission denial/enforcement, or agent routing. Guest/member outcomes are not inferred.",
+        "The positive path requires existing debugger permission; do not change permission. Manual member use of cdp_detach for owned cleanup would be diagnostic reachability only and proves no admin gate."
+      ],
+      "limits": [
+        "No runtime or browser execution occurred. CDP acknowledgment alone is insufficient; if page-state observations do not change/restore, record the mismatch rather than passing based on ok:true."
+      ]
+    },
+    "EXT-F-4114-T01": {
+      "feature_id": "EXT-F-4114",
+      "title": "Controlled manual execution: cdp_clear_emulation",
+      "control_ids": ["EXT-F-4114-C01"],
+      "modes": ["admin"],
+      "design_status": "procedure-proposal-runtime-unverified",
+      "preconditions": [
+        "Complete shared receipt/resource, permission, owned-target, and manual-runner setup in admin profile. This case is inventory-applicable to admin only.",
+        "Establish a fresh owned target and unique attachment; first apply a known explicit emulation with cdp_emulate_device on this same owned tab. Clear has no attachment side effect and its source returns ok:true immediately if the tab is not attached, so this setup is necessary to exercise the actual clear commands."
+      ],
+      "steps": [
+        "Warm pass: create/focus owned https://example.org/, record baseline viewport observations, and record attached-tabs baseline. Run cdp_emulate_device with {\"width\":390,\"height\":844,\"device_scale_factor\":3,\"mobile\":true,\"user_agent\":\"Matrx-owned-device-emulation-check\"}; verify actual page state changes as in case 4113, then identify the unique owned attachment delta.",
+        "Run cdp_clear_emulation with {\"tab_id\":\"bad\"}; require runner schema rejection and confirm the emulated page state and attachment list are unchanged. Run cdp_clear_emulation with {\"tab_id\":<owned id>}; observe viewport/DPR/mobile media/UA values and require restoration to the recorded pre-emulation baseline. Verify attachment is still present and baseline IDs unchanged.",
+        "Detach only the exact owned delta and verify it disappears, baseline remains, and the banner is gone. Reload the extension; establish fresh baseline and owned attachment, reapply the same explicit emulation, observe state, repeat invalid-input preservation and valid clear-state verification, then exact cleanup."
+      ],
+      "expected": [
+        "Invalid string tab_id is rejected locally and does not invoke the handler or alter state. Valid attached clear returns {ok:true}, sends Emulation.clearDeviceMetricsOverride and attempts Network.setUserAgentOverride with an empty UA; verify actual page viewport state/DPR/media query and UA return to baseline, allowing recorded browser-specific residual values rather than treating ack as proof.",
+        "The clear operation leaves the debugger attachment in place; exact-owned cdp_detach is a separate cleanup step. Admin only remains the existing applicability; member cleanup reachability does not establish gates."
+      ],
+      "dimensions": [
+        "actual-preclear-state",
+        "clear-state-restoration",
+        "invalid-schema-input",
+        "attached-path",
+        "debugger-permission-present",
+        "admin",
+        "warm",
+        "extension-reload",
+        "owned-target-cleanup"
+      ],
+      "source_evidence": [
+        "src/lib/tools/handlers/cdp.ts:562-593",
+        "src/lib/tools/handlers/cdp.ts:596-623",
+        "src/features/tools/ToolsView.tsx:390-429,453-460,525-545",
+        "src/lib/cdp/client.ts:271-301,352-388",
+        "docs/stabilization/inventory.json:62415-62436"
+      ],
+      "access_context_permission_limits": [
+        "Admin-only inventory mode is preserved. Manual direct invocation does not establish admin dispatcher authorization, Ask/Act, debugger permission denial/enforcement, or agent routing. Guest/member results are not inferred.",
+        "Do not change debugger permission. No-attachment clear returns success without exercising CDP clearing and is not accepted as the positive branch."
+      ],
+      "limits": [
+        "No browser/runtime execution occurred. Require observed state restoration after valid clear; do not infer success from returned acknowledgment."
+      ]
+    }
+  }
+}
