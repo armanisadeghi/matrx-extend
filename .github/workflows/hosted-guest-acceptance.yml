@@ -63,6 +63,7 @@ on:
           - current-first
           - old-first
           - stale-only
+          - manual-prior
       scrape_diagnostic_cpu_rate:
         description: Optional owned intake-page CPU diagnostic rate for guest-scrape or guest-scrape-development (for example 4)
         required: false

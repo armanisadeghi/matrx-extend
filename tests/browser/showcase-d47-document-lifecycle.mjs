@@ -12,6 +12,7 @@ import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { approvedAdminOrganizationName, signInSettings } from './settings-native-auth-driver.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 import {
+  assessD47ManualRelease,
   assessD47StaleTrace,
   assessD47Trace,
   captureD47SaveClick,
@@ -41,7 +42,7 @@ import { runShowcaseOrganizationCheckpoint } from './showcase-organization-check
 const repo = resolve(import.meta.dirname, '../..');
 const responseOrder = process.env.MATRX_D47_RESPONSE_ORDER ?? 'current-first';
 assert.ok(
-  ['current-first', 'old-first', 'stale-only'].includes(responseOrder),
+  ['current-first', 'old-first', 'stale-only', 'manual-prior'].includes(responseOrder),
   'd47_response_order_invalid',
 );
 const output =
@@ -62,6 +63,7 @@ const report = {
     current_saved_replay: 'unverified',
     delayed_old_binding: 'unverified',
     cancellation: 'unverified',
+    manual_prior_isolation: 'unverified',
   },
   failure_code: null,
   failure: null,
@@ -553,6 +555,91 @@ try {
             () => status(origin),
             (value) => value?.old_pending === true && value.target_requests === 1,
           );
+          if (responseOrder === 'manual-prior') {
+            stage('manual_prior_capture');
+            await trustedPanelClick(panel, '[role="tablist"] [role="tab"]', 'Network');
+            await waitFor(
+              'manual_capture_start_ready',
+              () =>
+                evaluate(
+                  panel,
+                  `(() => {
+                const tab = [...document.querySelectorAll('[role="tablist"] [role="tab"]')]
+                  .find(x => x.textContent.trim() === 'Network');
+                const pane = tab ? document.getElementById(tab.getAttribute('aria-controls') ?? '') : null;
+                const button = [...(pane?.querySelectorAll('button') ?? [])]
+                  .find(x => x.textContent.trim() === 'Start capture');
+                return tab?.getAttribute('data-state') === 'active' && Boolean(button && !button.disabled);
+              })()`,
+                ),
+              (value) => value === true,
+            );
+            await click(panel, 'button-text', 'Start capture');
+            await waitFor(
+              'manual_capture_recording',
+              () => panelText(panel),
+              (value) => value?.includes('● recording — 0 responses captured'),
+            );
+            await resourceAction(() => page.locator('#manual-prior-request').click());
+            await waitFor(
+              'manual_prior_http',
+              () => status(origin),
+              (value) =>
+                value?.manual_prior_finished === true &&
+                value.old_pending === true &&
+                value.target_requests === 1,
+            );
+            await waitFor(
+              'manual_prior_page_result',
+              () => page.locator('#manual-prior-result').textContent(),
+              (value) => value === 'Moonlit Transit',
+            );
+            report.manual_prior = await waitFor(
+              'manual_prior_network_list',
+              () =>
+                evaluate(
+                  panel,
+                  `(() => {
+                const tab = [...document.querySelectorAll('[role="tablist"] [role="tab"]')]
+                  .find(x => x.textContent.trim() === 'Network');
+                const pane = tab ? document.getElementById(tab.getAttribute('aria-controls') ?? '') : null;
+                const active = tab?.getAttribute('data-state') === 'active' && pane?.getAttribute('data-state') === 'active';
+                const rows = active ? [...pane.querySelectorAll('button.font-mono:has(span.flex-1)')] : [];
+                return {
+                  active: Boolean(active),
+                  exact_request_rows: rows.filter(row => row.textContent.includes('/api/document-race') && row.textContent.includes('GET')).length,
+                  recording: Boolean(active && pane.textContent.includes('● recording — 1 response captured'))
+                };
+              })()`,
+                ),
+              (value) =>
+                value?.active === true &&
+                value.exact_request_rows === 1 &&
+                value.recording === true,
+            );
+            await resourceAction(() => page.locator('#manual-pending-request').click());
+            report.manual_prior.pending_before_replay = await waitFor(
+              'manual_origin_pending',
+              () => status(origin),
+              (value) =>
+                value?.manual_pending === true &&
+                value.old_pending === true &&
+                value.target_requests === 1,
+            );
+            await click(panel, 'button-text', 'Stop');
+            await trustedPanelClick(panel, '[role="tablist"] [role="tab"]', 'Patterns');
+            await waitFor(
+              'manual_return_to_patterns',
+              () => readPatternsObservation(panel, recipe, fixtureHost),
+              (value) => value?.active === true && value.exact_row_visible === true,
+            );
+            report.manual_prior.old_pending_after_ui = (await status(origin)).old_pending === true;
+            assert.equal(
+              report.manual_prior.old_pending_after_ui,
+              true,
+              'old_request_lost_during_manual_capture',
+            );
+          }
           stage('old_context_identity');
           const pageCdp = await page.context().newCDPSession(page);
           const oldContexts = [];
@@ -807,7 +894,7 @@ try {
           );
           assert.equal(
             report.fixture.after_release.old_response_finished ||
-              (responseOrder === 'current-first' &&
+              (['current-first', 'manual-prior'].includes(responseOrder) &&
                 report.fixture.after_release.old_response_aborted),
             true,
             'old_http_terminal_missing',
@@ -817,6 +904,40 @@ try {
             report.fixture.after_release.old_response_finished ? 200 : 409,
             'old_release_status_mismatch',
           );
+          if (responseOrder === 'manual-prior') {
+            report.manual_prior.current_trace_before_release = await waitFor(
+              'current_binding_before_manual_release',
+              async () =>
+                assessD47Trace(await readPassiveWorkerProbe(worker), {
+                  origin,
+                  oldPageContext,
+                  expectedBodySha256: createHash('sha256')
+                    .update(
+                      JSON.stringify({
+                        events: [{ eventName: 'Canyon Frequency' }],
+                        document: 'current',
+                      }),
+                    )
+                    .digest('hex'),
+                }),
+              (value) => value?.ok === true,
+            );
+            stage('release_manual_origin');
+            const manualRelease = await control(origin, 'release-manual');
+            report.manual_prior.release_http_status = manualRelease.status;
+            report.manual_prior.after_release = await status(origin);
+            report.manual_prior.release_assessment = assessD47ManualRelease({
+              releaseHttpStatus: manualRelease.status,
+              pendingBeforeReplay: report.manual_prior.pending_before_replay,
+              currentTrace: report.manual_prior.current_trace_before_release,
+              afterRelease: report.manual_prior.after_release,
+            });
+            assert.notEqual(
+              report.manual_prior.release_assessment.verdict,
+              'invalid',
+              report.manual_prior.release_assessment.reason,
+            );
+          }
           stage('saved_terminal_result');
           report.terminal_observation = {
             sample_count: 0,
@@ -857,7 +978,8 @@ try {
             true,
             'current_page_result_missing',
           );
-          assert.equal(report.saved_result.panel_old, false, 'old_row_visible');
+          if (responseOrder !== 'manual-prior')
+            assert.equal(report.saved_result.panel_old, false, 'old_row_visible');
           stage('binding_evidence');
           const observed = await readPassiveWorkerProbe(worker);
           assert.ok(Array.isArray(observed), 'worker_probe_lost');
@@ -880,11 +1002,31 @@ try {
             ? 'pass'
             : 'unverified';
           report.verdicts.delayed_old_binding = 'architecturally_excluded_observed';
+          if (responseOrder === 'manual-prior') {
+            assert.equal(report.manual_prior?.exact_request_rows, 1, 'manual_list_request_missing');
+            assert.equal(
+              report.terminal_observation.last?.current_row,
+              true,
+              'current_saved_row_missing',
+            );
+            assert.equal(
+              report.terminal_observation.last?.old_row,
+              false,
+              'manual_prior_contaminated_saved_result',
+            );
+            report.verdicts.manual_prior_isolation =
+              report.manual_prior.release_assessment.verdict === 'finished_after_current'
+                ? 'observed_bounded_server_finish'
+                : 'unverified_canceled_before_release';
+          }
         }),
       ),
   });
   assert.equal(native.verified, true);
-  report.status = 'observed_bounded';
+  report.status =
+    report.verdicts.manual_prior_isolation === 'unverified_canceled_before_release'
+      ? 'manual_prior_canceled_unverified'
+      : 'observed_bounded';
 } catch (error) {
   report.failure_code = `${report.stage}_failed`;
   report.failure = sanitizeD47Failure(error, report.stage);

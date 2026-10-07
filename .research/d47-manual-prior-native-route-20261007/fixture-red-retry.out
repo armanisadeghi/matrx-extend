@@ -1,0 +1,48 @@
+{"schema":1,"at":"2026-10-07T07:16:43.062Z","runId":"d47-manual-prior-fixture-red-retry-20261007","path":"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/d47-manual-prior-fixture-red-retry-20261007.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-07T07:17:50.287Z","runId":"d47-manual-prior-fixture-red-retry-20261007","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":12.64,"requiredMemoryGiB":4,"oneMinuteLoad":2.36,"logicalCpus":10,"cpuBusyFraction":0.16999999999999998,"swapUsedMiB":2865.56,"repoFreeGiB":1681.1578254699707,"profileFreeGiB":23.299468994140625,"safetyFreeGiB":23.299468994140625,"systemFreeGiB":23.299468994140625},"cpuBusySamples":[0.06,0.31,0.17,0.28,0.07,0.15,0.15],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - `__dirname` (vitest.config.ts:7:25). Use `import.meta.dirname` instead
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Volumes/Samsung2TB/code/matrx-extend
+
+ ❯ tests/unit/showcase-d47-fixture.test.ts (6 tests | 1 failed) 470ms
+   × manual old-page fetch completes without consuming the held replay request 82ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/showcase-d47-fixture.test.ts > manual old-page fetch completes without consuming the held replay request
+AssertionError: expected { …(2) } to deeply equal { …(2) }
+
+- Expected
++ Received
+
+  {
+-   "document": "prior",
++   "document": "current",
+    "events": [
+      {
+-       "eventName": "Moonlit Transit",
++       "eventName": "Canyon Frequency",
+      },
+    ],
+  }
+
+ ❯ tests/unit/showcase-d47-fixture.test.ts:93:25
+     91|     .toMatchObject({ old_pending: true, target_requests: 1, manual_pri…
+     92|   const manual = await get(`${origin}/api/document-race`, { 'X-D47-Man…
+     93|   expect(manual.json()).toEqual({ events: [{ eventName: 'Moonlit Trans…
+       |                         ^
+     94|   const after = (await get(`${origin}/control/document-race/status`)).…
+     95|   expect(after).toMatchObject({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  00:17:50
+   Duration  800ms (transform 20ms, setup 76ms, import 13ms, tests 470ms, environment 148ms)
+
+{"schema":1,"at":"2026-10-07T07:17:51.710Z","runId":"d47-manual-prior-fixture-red-retry-20261007","childExitCode":1,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-07T07:17:51.747Z","runId":"d47-manual-prior-fixture-red-retry-20261007","admitted":true,"resourceInvalid":false,"exitCode":1,"decision":"child_failed","code":"RESOURCE_FINAL_DECISION"}

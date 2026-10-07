@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "status": "DONE_WITH_CONCERNS",
+  "scope": "Independent source and retained-evidence re-verification of c2a49132; no native browser execution, build, database operation, secret access, or source/test edit",
+  "finding_disposition": {
+    "finding": "manual_late_response_may_never_be_delivered",
+    "status": "ADDRESSED",
+    "evidence": [
+      "tests/browser/showcase-d47-driver-evidence.mjs:95-120 accepts finished_after_current only for HTTP 200, release prestate pending, manual_pending_finished=true, manual_pending_aborted=false. A 409 with aborted prestate and no finish is unverified_canceled_before_release; inconsistent lifecycle evidence is invalid.",
+      "tests/browser/showcase-d47-document-lifecycle.mjs releases only after assessD47Trace returns ok from the current positive binding packet, then records the helper classification. The final verdict maps only finished_after_current to observed_bounded_server_finish; cancellation is explicitly unverified, and the run status becomes manual_prior_canceled_unverified.",
+      "No code labels server finish as browser callback delivery or claims an observed old callback. The existing current-first, old-first and stale-only route branches remain in place."
+    ],
+    "limit": "Addressed at source/oracle level only. There is no native run proving which lifecycle branch the real browser takes."
+  },
+  "verdict_A_product_behavior": {
+    "status": "PARTIAL",
+    "finding_status": "ADDRESSED",
+    "evidence": "The native manual-prior path cannot report bounded server-finish unless the delayed manual HTTP request actually finishes after the current-context positive control. If it was aborted before release (409), the saved current result may still be observed, but the manual-prior isolation verdict and run status stay explicitly unverified. Earlier response-order routes are unchanged by the repair.",
+    "unverified": [
+      "Native manual-prior lifecycle and UI result have not been run or retained.",
+      "Full D47/T57 acceptance and prior saved-run binding isolation remain unverified.",
+      "No browser callback delivery or rejection was observed; the evidence only supports the bounded HTTP/server-finish condition."
+    ]
+  },
+  "verdict_B_quality_evidence": {
+    "status": "PASS_WITH_QUALIFICATION",
+    "guard_quality": "The retained helper tests cover qualifying 200-finished and unverified 409-aborted states, reject lifecycle mismatches, and require both a pending-before-replay record and positive current trace. The driver call order places the current trace before release and carries the classification into report.verdicts and report.status.",
+    "retained_runs": {
+      "green": "20/20 passed; stdout SHA-256 676d8dea2ef860b8561fb531739ea502288ffeb4da8e229a86294b1a804b5ab6; journal SHA-256 e6881cfe01ce78c4660d068f58f5272d53c5e89991ca62436f2c2926c3f4ee47; journal decision valid.",
+      "behavioral_mutant": "1/1 failed at the expected assertion because the mutant mislabeled canceled 409 as finished_after_current; stdout SHA-256 97d78da598e5ae410d5250d055fd9f98a0fb66a9ea169a5a2a69f2851b50cb93; journal SHA-256 d02c4d20f3a2e33fe650527f9c97e68799c3d88131bd3aed29952370dfd37a80; journal decision child_failed as expected.",
+      "initial_attempt": "Excluded as setup failure: Vitest found no test files for the browser .mjs scratch mutant. It is correctly not counted as a behavioral red; stdout SHA-256 0801ccb92f57e35d6c15a8e8fffce781667c471c6a28a3dcf7776511694b07c3; journal SHA-256 3924ceeb8fd29680911378e16f98a2ac0a91065af6019504195061bcd0fefe9c."
+    },
+    "hashes": "Current driver, test, lifecycle source, README, retained mutant source/test, both behavioral-run outputs, and all three journals match the SHA-256 values in .research/d47-manual-prior-oracle-20261007.json. The invalid initial attempt is preserved and explicitly excluded.",
+    "qualification": "These are retained guard results, not independent live-product verification. No tests were run during this peer review."
+  },
+  "remaining_concern": "A canceled manual request may still leave the broader native scenario green as an unverified probe when the current saved result is correct. That is properly distinguished from an observed manual-response isolation pass; delivery-dependent acceptance must remain unverified until a real late manual HTTP finish is captured."
+}

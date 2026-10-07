@@ -105,6 +105,12 @@ test('D47 stale-only route keeps the exact artifact and isolated native output',
   );
 });
 
+test('D47 manual-prior route selects the existing saved replay driver', () => {
+  const route = hostedShowcaseRoute('showcase-d47-admin', prepared, runner, 'manual-prior');
+  assert.equal(route.driver, 'tests/browser/showcase-d47-document-lifecycle.mjs');
+  assert.equal(route.env.MATRX_D47_RESPONSE_ORDER, 'manual-prior');
+});
+
 test('public D47 route uses its own exact-artifact native receipt and never inherits fixture ordering', () => {
   const route = hostedShowcaseRoute('showcase-d47-public-admin', prepared, runner, 'old-first');
   assert.equal(route.driver, 'tests/browser/showcase-d47-public-initial-load.mjs');

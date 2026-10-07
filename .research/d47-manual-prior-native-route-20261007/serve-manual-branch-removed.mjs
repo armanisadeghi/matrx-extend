@@ -315,15 +315,6 @@ const server = createServer(async (request, response) => {
       });
       return;
     }
-    if (racePhase === 'armed' && request.headers['x-d47-manual-observation'] === '1') {
-      response.on('finish', () => {
-        manualPriorFinished = true;
-      });
-      response
-        .writeHead(200, { 'Content-Type': 'application/json' })
-        .end(JSON.stringify(racePayload('prior')));
-      return;
-    }
     raceTargetRequests += 1;
     if (racePhase === 'recovery' && responseOrder === 'stale-only') {
       response.on('finish', () => {

@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "status": "guarded_qa_route_ready_native_unverified",
+  "scope": "QA-only manual/prior browser route; no native run",
+  "source_hashes_sha256": {
+    "tests/browser/showcase-d47-document-lifecycle.mjs": "b4b93a47f60646a3b6af7fa6314be7cc3e27e87c9c23cb74ec6491e3b7637911",
+    "tests/fixtures/showcase-replay/serve.mjs": "0218784141fdb5889b24dc6d2e63d3bd3e960f5d1a095d563b5dbccc94c5844d",
+    "tests/unit/showcase-d47-fixture.test.ts": "84cc9d2e88027dded9fb919995e9887d3a3fb7b305fc42c010fc71d72e6d697b",
+    "scripts/hosted-showcase-route.mjs": "3a7de42fc3eb087f33aa847ca797292daf30c400db2b5358bf627d9798721e77",
+    "scripts/hosted-showcase-route.test.mjs": "fb15dda9bfcf87f6d0dea17da92a32dc8464a0363782331cddd078bc159116fd",
+    ".github/workflows/hosted-guest-acceptance.yml": "7d33ed445c2e3cbceeabb623c2e86cfc10c501a0f16b972ec401a09b416584df",
+    ".research/d47-manual-prior-native-route-20261007/serve-manual-branch-removed.mjs": "32e10dc02b537b2fb3c2e47fd204ffe60276b98b0e2c2f5a61357962f67ca91c"
+  },
+  "mutant": "Remove fixture branch that answers marked manual prior fetch without consuming held old request. New fixture test must fail on prior payload/held count.",
+  "planned_runs": [
+    {
+      "id": "d47-manual-prior-route-node-retry-20261007",
+      "stdout": ".research/d47-manual-prior-native-route-20261007/route-node-retry.out",
+      "command": "node --test scripts/hosted-showcase-route.test.mjs"
+    },
+    {
+      "id": "d47-manual-prior-fixture-green-20261007",
+      "stdout": ".research/d47-manual-prior-native-route-20261007/fixture-green.out",
+      "command": "pnpm exec vitest run --maxWorkers=1 tests/unit/showcase-d47-fixture.test.ts"
+    },
+    {
+      "id": "d47-manual-prior-fixture-red-20261007",
+      "stdout": ".research/d47-manual-prior-native-route-20261007/fixture-red.out",
+      "command": "MATRX_D47_FIXTURE_SERVER=<retained mutant> pnpm exec vitest run --maxWorkers=1 tests/unit/showcase-d47-fixture.test.ts"
+    }
+  ],
+  "prelaunch_note": "Initial route-node attempt refused before child launch because profile directory did not exist; retry was admitted and passed. Fixture hashes refreshed after adding delayed manual-origin request, before fixture launch.",
+  "final_hashes_sha256": {
+    ".github/workflows/hosted-guest-acceptance.yml": "7d33ed445c2e3cbceeabb623c2e86cfc10c501a0f16b972ec401a09b416584df",
+    "scripts/hosted-showcase-route.mjs": "3a7de42fc3eb087f33aa847ca797292daf30c400db2b5358bf627d9798721e77",
+    "scripts/hosted-showcase-route.test.mjs": "fb15dda9bfcf87f6d0dea17da92a32dc8464a0363782331cddd078bc159116fd",
+    "tests/browser/showcase-d47-document-lifecycle.mjs": "73f5eb76895d3f824f528e42cad4864d878fb5f48e9101e62362c21f307ac33d",
+    "tests/fixtures/showcase-replay/README.md": "866abb5fbecd7bd432a562763ec5a0b35071a389a6ec742f83ef50cbac7b1670",
+    "tests/fixtures/showcase-replay/serve.mjs": "0218784141fdb5889b24dc6d2e63d3bd3e960f5d1a095d563b5dbccc94c5844d",
+    "tests/unit/showcase-d47-fixture.test.ts": "84cc9d2e88027dded9fb919995e9887d3a3fb7b305fc42c010fc71d72e6d697b",
+    ".research/d47-manual-prior-native-route-20261007/serve-manual-branch-removed.mjs": "32e10dc02b537b2fb3c2e47fd204ffe60276b98b0e2c2f5a61357962f67ca91c"
+  },
+  "driver_post_green_revision": "After fixture green/red, driver terminal assertion was narrowed to the exact saved preview (not panel-wide text) and Start readiness is awaited; node --check and diff --check pass. No native driver execution is claimed.",
+  "run_results": [
+    {
+      "run_id": "d47-manual-prior-route-node-20261007",
+      "outcome": "refused_before_child",
+      "reason": "profile directory absent",
+      "stdout": ".research/d47-manual-prior-native-route-20261007/route-node.out",
+      "stdout_sha256": "c8d3816787154c4072075440d7c471eec1a701889d5ba0fd8d1dee5fe8ccd073",
+      "journal": "docs/stabilization/resource-journals/d47-manual-prior-route-node-20261007.jsonl",
+      "journal_sha256": "15ad05fc789c16abdbd4b617d2c042bd61ef62fa151b6fbd77a8d92fc60cce55"
+    },
+    {
+      "run_id": "d47-manual-prior-route-node-retry-20261007",
+      "outcome": "valid_green_12_of_12",
+      "stdout": ".research/d47-manual-prior-native-route-20261007/route-node-retry.out",
+      "stdout_sha256": "779d480b958781f542ca1b773624c2a757f60a048258ae9ce3e5c7f606d6b64a",
+      "journal": "docs/stabilization/resource-journals/d47-manual-prior-route-node-retry-20261007.jsonl",
+      "journal_sha256": "9288d7191c010a2e66c54571d50b45e3cfa44a5f5a09cc604976abafe1b57fb3"
+    },
+    {
+      "run_id": "d47-manual-prior-fixture-green-20261007",
+      "outcome": "valid_green_6_of_6",
+      "stdout": ".research/d47-manual-prior-native-route-20261007/fixture-green.out",
+      "stdout_sha256": "f6719765f03c5b0fe2e9125bdbb0c2845c056af4d909fa6cc056be5383e8f371",
+      "journal": "docs/stabilization/resource-journals/d47-manual-prior-fixture-green-20261007.jsonl",
+      "journal_sha256": "c083da7fb719c27e2abe6795572b0f78bd271ef1e652c596af3683b22308b7ac"
+    },
+    {
+      "run_id": "d47-manual-prior-fixture-red-20261007",
+      "outcome": "refused_before_child",
+      "reason": "prior green resource runner still exiting",
+      "stdout": ".research/d47-manual-prior-native-route-20261007/fixture-red.out",
+      "stdout_sha256": "1f146037aa0da085a043b8ecfb4dad734ededd5e6d01e5505f63b5348a684e8b",
+      "journal": "docs/stabilization/resource-journals/d47-manual-prior-fixture-red-20261007.jsonl",
+      "journal_sha256": "0cb696514baec35020b44707b77a980ea877f1d99d5ec637e14f9deb64d25fd8"
+    },
+    {
+      "run_id": "d47-manual-prior-fixture-red-retry-20261007",
+      "outcome": "valid_behavioral_red_1_failed_5_passed",
+      "assertion": "tests/unit/showcase-d47-fixture.test.ts:93 expected prior Moonlit Transit, got current Canyon Frequency after manual branch removal",
+      "stdout": ".research/d47-manual-prior-native-route-20261007/fixture-red-retry.out",
+      "stdout_sha256": "17a4c1bb8cde5933171e56e7ea77333629f570f88c21b1074b1cb2a217649f21",
+      "journal": "docs/stabilization/resource-journals/d47-manual-prior-fixture-red-retry-20261007.jsonl",
+      "journal_sha256": "f76f7e722b94cf54cfaf61cf3edf6614604402dfe12ab609b554aa7709af4b7a"
+    },
+    {
+      "run_id": "d47-manual-prior-biome-20261007",
+      "outcome": "valid_green_checked_1882_files_no_fixes",
+      "stdout": ".research/d47-manual-prior-native-route-20261007/biome.out",
+      "stdout_sha256": "52b2167ef94dfb974e64523a681b925bdb03d7ef722164b20723dd934da3eb4a",
+      "journal": "docs/stabilization/resource-journals/d47-manual-prior-biome-20261007.jsonl",
+      "journal_sha256": "f9d28ebce29306dfcb23e8971983e4b467aec4d16a3f49b96e98bb7f1b1547bc"
+    }
+  ],
+  "observability": "The route uses a real old-page button and ordinary Network Start/Stop. A completed same-URL manual fetch must appear as exactly one visible Network list row; a second manual-origin fetch starts under that tap and remains pending through replay reload. Release follows a positive current binding handshake, packet hash and context assessment. Existing old-target HTTP lifecycle and exact saved-row terminal checks remain.",
+  "native_limit": "No native browser execution, artifact dispatch, local build, release, DB, or secret access in this lane. Server finish or cancellation of an old manual-origin response will be labeled architectural/lifecycle exclusion unless an actual old callback is observed. Earlier-run binding-name isolation remains a separate unverified native branch.",
+  "verification_note": "Node syntax checks passed for driver and fixture; git diff --check passed. Biome check used --diagnostic-level=error and exited 0 with no fixes. The driver post-test change did not change fixture source/test/mutant bytes.",
+  "followup_oracle_repair": {
+    "evidence": ".research/d47-manual-prior-oracle-20261007.json",
+    "finding": ".research/d47-manual-native-route-peer-20261007.json",
+    "status": "guarded_source_repair_native_unverified"
+  }
+}

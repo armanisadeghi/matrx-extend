@@ -52,9 +52,12 @@ async function fixtureOrigin() {
   return origin;
 }
 
-function get(url: string): Promise<{ status: number; text: string; json: () => unknown }> {
+function get(
+  url: string,
+  headers: Record<string, string> = {},
+): Promise<{ status: number; text: string; json: () => unknown }> {
   return new Promise((done, fail) => {
-    httpGet(url, (response) => {
+    httpGet(url, { headers }, (response) => {
       let text = '';
       response.setEncoding('utf8');
       response.on('data', (chunk: string) => {
@@ -71,6 +74,53 @@ function get(url: string): Promise<{ status: number; text: string; json: () => u
     }).on('error', fail);
   });
 }
+
+it('manual old-page fetch completes without consuming the held replay request', async () => {
+  const origin = await fixtureOrigin();
+  const armed = await get(`${origin}/control/document-race/arm?response_order=manual-prior`);
+  expect(armed.status).toBe(200);
+  const oldPage = (await get(`${origin}/document-race/`)).text;
+  expect(oldPage).toContain('id="manual-prior-request"');
+  expect(oldPage).toContain(
+    "fetch('/api/document-race', { headers: { 'X-D47-Manual-Observation': '1' }",
+  );
+  const held = get(`${origin}/api/document-race`);
+  void held.catch(() => undefined);
+  await expect
+    .poll(async () => (await get(`${origin}/control/document-race/status`)).json())
+    .toMatchObject({ old_pending: true, target_requests: 1, manual_prior_finished: false });
+  const manual = await get(`${origin}/api/document-race`, { 'X-D47-Manual-Observation': '1' });
+  expect(manual.json()).toEqual({ events: [{ eventName: 'Moonlit Transit' }], document: 'prior' });
+  const after = (await get(`${origin}/control/document-race/status`)).json();
+  expect(after).toMatchObject({
+    old_pending: true,
+    target_requests: 1,
+    manual_prior_finished: true,
+  });
+  const pendingManual = get(`${origin}/api/document-race`, {
+    'X-D47-Manual-Observation': 'pending',
+  });
+  void pendingManual.catch(() => undefined);
+  await expect
+    .poll(async () => (await get(`${origin}/control/document-race/status`)).json())
+    .toMatchObject({ old_pending: true, manual_pending: true, target_requests: 1 });
+  expect((await get(`${origin}/control/document-race/release-manual`)).status).toBe(409);
+  await get(`${origin}/document-race/`);
+  expect((await get(`${origin}/api/document-race`)).json()).toEqual({
+    events: [{ eventName: 'Canyon Frequency' }],
+    document: 'current',
+  });
+  expect((await get(`${origin}/control/document-race/release-manual`)).status).toBe(200);
+  expect((await pendingManual).json()).toEqual({
+    events: [{ eventName: 'Moonlit Transit' }],
+    document: 'prior',
+  });
+  expect((await get(`${origin}/control/document-race/status`)).json()).toMatchObject({
+    manual_pending_finished: true,
+    target_requests: 2,
+    old_pending: true,
+  });
+});
 
 async function executeFixturePage(html: string, origin: string) {
   const script = /<script>([\s\S]*?)<\/script>/.exec(html)?.[1];

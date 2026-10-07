@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "status": "DONE_WITH_CONCERNS",
+  "scope": "Independent source and retained-evidence review of commit 946c8309; no native browser execution, build, DB operation, or source/test edit",
+  "verdict_A_product_behavior": {
+    "status": "PARTIAL",
+    "supported_by_source": [
+      "The route reuses the signed-in saved Network replay driver and selects manual-prior only for showcase-d47-admin. Earlier current-first, old-first, and stale-only dispatches retain their branches.",
+      "The old fixture page exposes real buttons whose fetches use the same /api/document-race URL. The driver starts ordinary Network capture after old replay HTTP is pending, observes the prior page result and exactly one visible GET row while recording one response, then starts a second request under the active tap.",
+      "The second request is confirmed pending before saved replay. Its release call occurs after assessD47Trace positively checks the current document context, binding handshake, request identity, and current body hash. The terminal oracle reads the exact saved Patterns preview and requires a current-only row."
+    ],
+    "finding": {
+      "severity": "Important",
+      "code": "manual_late_response_may_never_be_delivered",
+      "evidence": "tests/browser/showcase-d47-document-lifecycle.mjs:619-628 confirms pending only before replay; :924-938 accepts either manual_pending_finished or manual_pending_aborted and status 200 or 409; :1004-1016 then marks manual_prior_isolation observed_bounded in either path. tests/fixtures/showcase-replay/serve.mjs:231-256 returns 409 when the held manual response was aborted before release.",
+      "effect": "A green native manual-prior run may never write a late manual-origin response after navigation. That is honest architectural or HTTP lifecycle exclusion, but does not observe a delayed old-page callback being rejected or a completed late manual response being kept out of the saved result. Report the observed branch explicitly and keep delivery-dependent acceptance unverified."
+    },
+    "native_limit": "No native manual-prior run is retained or performed here. Source readiness cannot establish the real UI outcome or full prior-saved-run scope."
+  },
+  "verdict_B_quality_evidence": {
+    "status": "PASS_WITH_QUALIFICATION",
+    "reuse_and_boundary": "The new path uses the existing D47 saved replay, page-key aware manual Network hook, common trace assessor, terminal oracle, hosted artifact route, and fixture server. It does not add a second product capture implementation or alter production files.",
+    "test_strength": "The retained route suite reports 12/12 and fixture suite 6/6. The retained branch-removal mutant reports the expected assertion failure at fixture test line 93, prior Moonlit Transit versus current Canyon Frequency. This proves the fixture's completed manual-response branch, not the native timing or post-navigation response-delivery branch.",
+    "diagnostics_privacy": "The trace probe records fixture-scoped packet identity and a SHA-256 body hash; saved terminal observations retain booleans and classifications. The native driver catches and sanitizes failures. Resource journals for admitted route, fixture, mutant and Biome runs end with valid or expected child_failed decisions; two initial attempts were refused before child launch.",
+    "hashes": "All source, mutant, stdout, and resource-journal SHA-256 values listed in .research/d47-manual-prior-native-route-20261007.json match the retained files. Its source_hashes_sha256 driver value is pre-final; final_hashes_sha256 matches current source.",
+    "limitation": "No native driver execution, current installed artifact, or same-run manual-prior receipt exists in this review. The fixture test releases the pending manual request without a browser navigation, so it does not force the live abort-or-finish decision."
+  },
+  "recommended_disposition": "Keep the route as a bounded native probe. On a future native run, record manual_release_prestate, manual_pending_finished, and manual_pending_aborted in the verdict and call out an aborted request as architectural exclusion. Require an actual finished late manual response before claiming delivered-response isolation; require an observed old binding callback before claiming rejection. Do not promote D47/T57 full acceptance from this branch alone."
+}

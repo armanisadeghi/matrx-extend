@@ -1,0 +1,15 @@
+import { expect, it } from 'vitest';
+import { assessD47ManualRelease } from '../browser/.d47-manual-oracle-mutant.mjs';
+it('a canceled manual request remains unverified after the current packet', () => {
+  expect(assessD47ManualRelease({
+    releaseHttpStatus: 409,
+    pendingBeforeReplay: { manual_pending: true },
+    currentTrace: { ok: true },
+    afterRelease: {
+      current_response_sent: true,
+      manual_release_prestate: 'aborted',
+      manual_pending_finished: false,
+      manual_pending_aborted: true,
+    },
+  })).toEqual({ verdict: 'unverified_canceled_before_release', reason: null });
+});

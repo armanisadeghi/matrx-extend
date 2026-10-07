@@ -1,0 +1,43 @@
+{"schema":1,"at":"2026-10-07T07:30:44.815Z","runId":"d47-manual-oracle-red-retry-20261007","path":"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/d47-manual-oracle-red-retry-20261007.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-07T07:31:52.031Z","runId":"d47-manual-oracle-red-retry-20261007","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":12.48,"requiredMemoryGiB":4,"oneMinuteLoad":1.33,"logicalCpus":10,"cpuBusyFraction":0.06714285714285714,"swapUsedMiB":2849.56,"repoFreeGiB":1681.1044387817383,"profileFreeGiB":23.29094696044922,"safetyFreeGiB":23.29094696044922,"systemFreeGiB":23.29094696044922},"cpuBusySamples":[0.07,0.06,0.06,0.06,0.06,0.09,0.07],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - `__dirname` (vitest.config.ts:7:25). Use `import.meta.dirname` instead
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Volumes/Samsung2TB/code/matrx-extend
+
+ ❯ tests/unit/d47-manual-oracle-mutant.test.ts (1 test | 1 failed) 4ms
+   × a canceled manual request remains unverified after the current packet 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/d47-manual-oracle-mutant.test.ts > a canceled manual request remains unverified after the current packet
+AssertionError: expected { …(2) } to deeply equal { …(2) }
+
+- Expected
++ Received
+
+  {
+    "reason": null,
+-   "verdict": "unverified_canceled_before_release",
++   "verdict": "finished_after_current",
+  }
+
+ ❯ tests/unit/d47-manual-oracle-mutant.test.ts:14:7
+     12|       manual_pending_aborted: true,
+     13|     },
+     14|   })).toEqual({ verdict: 'unverified_canceled_before_release', reason:…
+       |       ^
+     15| });
+     16|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  00:31:52
+   Duration  356ms (transform 25ms, setup 92ms, import 14ms, tests 4ms, environment 148ms)
+
+{"schema":1,"at":"2026-10-07T07:31:52.974Z","runId":"d47-manual-oracle-red-retry-20261007","childExitCode":1,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-07T07:31:53.015Z","runId":"d47-manual-oracle-red-retry-20261007","admitted":true,"resourceInvalid":false,"exitCode":1,"decision":"child_failed","code":"RESOURCE_FINAL_DECISION"}
