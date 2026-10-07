@@ -23,7 +23,7 @@ vi.mock('@/lib/auth/flow', () => ({
 }));
 vi.mock('@/lib/org/active-org', () => ({
   getActiveOrganizationId: async () => state.org,
-  holdForActiveOrganizationId: async () => state.org,
+  requireActiveOrganizationId: async () => state.org,
   isOrganizationNotSelectedError: (e: unknown) =>
     e instanceof Error && e.name === 'OrganizationNotSelectedError',
   isOrganizationNoMembershipsError: (e: unknown) =>

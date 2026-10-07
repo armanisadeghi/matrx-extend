@@ -6,7 +6,6 @@ import { UserMenu } from '@/components/UserMenu';
 import { canAccessSidepanelTab, firstAccessibleSidepanelTab } from '@/config/sidepanel-visibility';
 import { useCapturePickup } from '@/features/capture-ladder/use-capture-pickup';
 import { useNeedsYouCount } from '@/features/capture-ladder/use-needs-you-count';
-import { OrganizationPickerDialog } from '@/features/org/OrganizationPickerDialog';
 import { SavedReplayApprovalHost } from '@/features/showcase/SavedReplayApprovalHost';
 import { LocalBrowserApprovalHost } from '@/features/vault/LocalBrowserApprovalHost';
 import { useActiveTab } from '@/hooks/use-active-tab';
@@ -351,12 +350,6 @@ export function App() {
           be able to appear over any surface. Renders nothing until something
           asks. Guarded by tests/unit/destructive-confirm-guard.ts. */}
         <ConfirmDialogHost />
-        {/* THE organization question. Mounted at App root, outside AuthGate,
-          for the same reason as the three above: a request held for want of
-          an organization can be raised from the service worker while the
-          person is anywhere in the panel. Renders nothing until something
-          asks; see lib/org/active-org.ts § holdForActiveOrganizationId. */}
-        <OrganizationPickerDialog />
         <div className="flex h-full flex-col bg-background text-foreground">
           <AuthGate>
             <LocalBrowserApprovalHost signedIn={signedIn} />

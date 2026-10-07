@@ -286,9 +286,6 @@ export function SettingsView() {
               ) : (
                 <ControlRow
                   label="Acting as"
-                  {...(org.mustChoose
-                    ? { hint: 'Required — every request carries your organization' }
-                    : {})}
                   control={
                     <PillSelect
                       value={org.active?.id ?? NONE}

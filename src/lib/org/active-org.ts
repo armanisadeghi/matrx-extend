@@ -4,60 +4,55 @@
  *
  * ## Why this exists
  *
- * Identity has always been undeniable on this platform because the server
- * resolves it at the very top (matrx_connect `AuthMiddleware`) and nothing
- * routes without it. Organization was not: it was resolved only if a caller
- * happened to send it, and every route invented its own late check. The
- * server now admits an authenticated request ONLY when it carries a verified
+ * The server admits an authenticated request ONLY when it carries a verified
  * organization, so the organization is a per-request fact the client must
- * carry — exactly like the bearer token.
+ * carry — exactly like the bearer token. It travels in `X-Organization-Id`.
  *
- * A token claim would be wrong: a login token outlives an organization
- * switch, so a claim pins a session to one organization and lies the moment
- * the user changes it. The organization travels per request, in
- * `X-Organization-Id`, resolved from an explicit user choice.
+ * ## THE LOAD LADDER (Arman, 2026-10-07; STATE rules 12-14)
  *
- * ## A SAVED "DEFAULT ORGANIZATION" NEVER BUILDS A REQUEST (Arman, 2026-09-19)
+ * The active organization is set ONCE, when this window loads, and is never
+ * none for a signed-in person with at least one membership. In order, each
+ * kept only if it is still a current membership:
  *
- * A user-level saved preference is at most a per-client DISPLAY preference.
- * Nothing that builds a request may read it, and nothing may fall back to any
- * organization the person did not choose. Only a choice the person made ON THIS
- * DEVICE counts.
- * The reason, in his words: *"one missed org check that should have just
- * failed turns into 50 in a month and 5,000 in a year, and suddenly we don't
- * have orgs anymore, we have a user and a default org, which means we just
- * have user now."*
+ *   1. This device's own last choice (`STORAGE_KEYS.ACTIVE_ORGANIZATION`).
+ *   2. The account's last active organization (follows the person across
+ *      devices).
+ *   3. The account's start-up organization setting.
+ *   4. The person's first organization — the oldest active membership.
  *
- * ## Resolution order — three rungs, and the third is a QUESTION
+ * This module is the ONLY reader of the two account columns
+ * (`readAccountOrganizationChoice`). A ladder result is never written back as
+ * the device choice: only a deliberate switch writes the device choice AND
+ * calls `users.set_last_active_organization`. Neither column is ever read to
+ * decide where a request acts beyond this load-time choice (rule 14).
  *
- *   1. This device's stored selection — IF it is still a live membership.
- *   2. Otherwise `null`, ON PURPOSE. `null` is not a failure and never
- *      becomes one: the request is HELD, `holdForActiveOrganizationId()`
- *      raises the picker, the person sets an organization, and the SAME
- *      request proceeds with it. Never "first", "oldest", "most recent",
- *      "system", or a saved preference: a guessed organization writes a
- *      person's work into the wrong tenant, which is the defect class this
- *      whole contract exists to end
- *      (common-docs/systems/architecture/database/projects/no-db-assigned-org/PLAN.md).
+ * Zero memberships is the one honest "none": nothing can be picked, so
+ * requests refuse with {@link OrganizationNoMembershipsError}. There is no
+ * hold, no picker, and no question — the extension is a window that shows the
+ * organization, so it opens on one.
  */
 
 import { ENV, STORAGE_KEYS } from '@/config/env';
 import { getCurrentUser } from '@/lib/auth/flow';
 import { log } from '@/lib/debug/log';
-import { broadcast, on } from '@/lib/messaging/native';
-import { CHANNELS } from '@/lib/messaging/schemas';
 import { getOne, onChange, setOne } from '@/lib/storage/chrome-local';
 import { getSupabase } from '@/lib/supabase/client';
-import { iamDb } from '@/lib/supabase/schemas';
+import { iamDb, usersDb } from '@/lib/supabase/schemas';
 import type { ArchiveFilterValue } from '@ai-matrx/design-system';
 
 export interface MemberOrganization {
   id: string;
   name: string;
   archivedAt?: string | null;
+  /** When the membership began — orders "first organization". */
+  joinedAt?: string | null;
 }
 
-let validatedSelection: { userId: string; organizationId: string } | null = null;
+/**
+ * The organization settled for this execution context. `viaLadder` marks an
+ * answer from rungs 2-4 — held in memory only, never a device choice.
+ */
+let validatedSelection: { userId: string; organizationId: string; viaLadder?: true } | null = null;
 let resolutionInFlight: { userId: string; promise: Promise<MemberOrganization | null> } | null =
   null;
 let observingSelection = false;
@@ -86,11 +81,12 @@ interface StoredActiveOrganization {
 export class OrganizationNotSelectedError extends Error {
   readonly code = 'organization_not_selected';
   /**
-   * Plain-language remedy. Reached only when the panel ASKED and nobody
-   * answered in time — so it points at the question that is still waiting,
-   * not at a setting the person has to go hunting for.
+   * Plain-language remedy. Reached only when the ladder could not settle on
+   * an organization although the person has memberships (a membership read
+   * that raced a change) — switching in Settings settles it.
    */
-  readonly remedy = 'Open the AI Matrx panel and choose your organization, then try again.';
+  readonly remedy =
+    'Open the AI Matrx panel and choose your organization in Settings, then try again.';
 
   constructor(message = 'No organization is selected for this browser.') {
     super(message);
@@ -104,12 +100,10 @@ export function isOrganizationNotSelectedError(err: unknown): err is Organizatio
 }
 
 /**
- * Thrown when a held request settles because the signed-in user belongs to NO
- * organization at all — there is nothing to pick, so waiting out the picker
- * timeout would just be a 120s stall for a person the picker can never help.
- * Distinct from {@link OrganizationNotSelectedError} (which means "you have
- * organizations but never chose one"): this one names the actual remedy —
- * create or join an organization — with the link the app already has for it.
+ * Thrown when the signed-in user belongs to NO organization at all — the one
+ * honest "none". Distinct from {@link OrganizationNotSelectedError} (the ladder
+ * could not settle although memberships exist): this one names the actual
+ * remedy — create or join an organization — with the link the app already has.
  */
 export class OrganizationNoMembershipsError extends Error {
   readonly code = 'organization_no_memberships';
@@ -132,6 +126,8 @@ export function isOrganizationNoMembershipsError(
 interface MembershipRow {
   container_id?: unknown;
   containerId?: unknown;
+  status?: unknown;
+  created_at?: unknown;
 }
 
 /**
@@ -151,13 +147,17 @@ export async function listMemberOrganizations(
     throw new Error(`Could not read your organizations: ${error.message}`);
   }
   const rows: MembershipRow[] = Array.isArray(data) ? (data as MembershipRow[]) : [];
-  const ids = [
-    ...new Set(
-      rows
-        .map((r) => (typeof r.container_id === 'string' ? r.container_id : r.containerId))
-        .filter((id): id is string => typeof id === 'string' && id.length > 0),
-    ),
-  ];
+  // Oldest membership first: "first organization" is the head of this list.
+  const joinedAtById = new Map<string, string | null>();
+  for (const r of rows) {
+    if (r.status !== undefined && r.status !== 'active') continue;
+    const id = typeof r.container_id === 'string' ? r.container_id : r.containerId;
+    if (typeof id !== 'string' || id.length === 0) continue;
+    const joined = typeof r.created_at === 'string' ? r.created_at : null;
+    const prior = joinedAtById.get(id);
+    if (prior === undefined || (joined && (!prior || joined < prior))) joinedAtById.set(id, joined);
+  }
+  const ids = [...joinedAtById.keys()];
   if (ids.length === 0) return [];
 
   let query = iamDb().from('organizations').select('id,name,archived_at').in('id', ids);
@@ -168,11 +168,45 @@ export async function listMemberOrganizations(
     log.error('auth', 'listMemberOrganizations: organization read failed', orgError);
     throw new Error(`Could not read your organizations: ${orgError.message}`);
   }
-  return (orgRows ?? []).map((row) => ({
-    id: String((row as { id: unknown }).id),
-    name: String((row as { name?: unknown }).name ?? 'Untitled organization'),
-    archivedAt: (row as { archived_at?: string | null }).archived_at ?? null,
-  }));
+  return (orgRows ?? [])
+    .map((row) => {
+      const id = String((row as { id: unknown }).id);
+      return {
+        id,
+        name: String((row as { name?: unknown }).name ?? 'Untitled organization'),
+        archivedAt: (row as { archived_at?: string | null }).archived_at ?? null,
+        joinedAt: joinedAtById.get(id) ?? null,
+      };
+    })
+    .sort((a, b) => (a.joinedAt ?? '').localeCompare(b.joinedAt ?? ''));
+}
+
+/**
+ * THE ONLY READER of the account's two organization columns. Used by the load
+ * ladder and nothing else (STATE rules 12 and 14). A failed read throws — a
+ * guessed first organization would hide the person's real last choice.
+ */
+async function readAccountOrganizationChoice(
+  userId: string,
+): Promise<{ lastActive: string | null; startup: string | null }> {
+  const { data, error } = await usersDb()
+    .from('user_preferences')
+    .select('last_active_organization_id,startup_organization_id')
+    .eq('user_id', userId)
+    .maybeSingle();
+  if (error) {
+    log.error('auth', 'organization ladder: account read failed', error);
+    throw new Error(`Could not read your saved organization: ${error.message}`);
+  }
+  const row = (data ?? {}) as {
+    last_active_organization_id?: unknown;
+    startup_organization_id?: unknown;
+  };
+  const pick = (v: unknown) => (typeof v === 'string' && v ? v : null);
+  return {
+    lastActive: pick(row.last_active_organization_id),
+    startup: pick(row.startup_organization_id),
+  };
 }
 
 async function readStoredSelection(): Promise<StoredActiveOrganization | null> {
@@ -190,7 +224,7 @@ async function readStoredSelection(): Promise<StoredActiveOrganization | null> {
  */
 async function validateActiveOrganization(userId: string): Promise<MemberOrganization | null> {
   validatedSelection = null;
-  const generation = selectionGeneration;
+  let generation = selectionGeneration;
   const organizations = await listMemberOrganizations('active');
   const byId = new Map(organizations.map((o) => [o.id, o]));
 
@@ -209,10 +243,24 @@ async function validateActiveOrganization(userId: string): Promise<MemberOrganiz
       organization_id: stored.id,
     });
     await setOne(STORAGE_KEYS.ACTIVE_ORGANIZATION, null);
+    // Our own clear bumped the generation through the storage observer.
+    generation = selectionGeneration;
   }
 
-  validatedSelection = null;
-  return null;
+  // Rungs 2-4: the account's last active organization, its start-up
+  // organization, then the first organization. Each only if still a current
+  // membership. The result is NOT written back as the device choice — only a
+  // deliberate switch does that.
+  if (organizations.length === 0) return null;
+  const account = await readAccountOrganizationChoice(userId);
+  if (selectionGeneration !== generation) return null;
+  const chosen =
+    (account.lastActive ? byId.get(account.lastActive) : undefined) ??
+    (account.startup ? byId.get(account.startup) : undefined) ??
+    organizations[0];
+  if (!chosen) return null;
+  validatedSelection = { userId, organizationId: chosen.id, viaLadder: true };
+  return chosen;
 }
 
 function resolveForUser(userId: string): Promise<MemberOrganization | null> {
@@ -256,147 +304,52 @@ export async function getActiveOrganizationId(): Promise<string | null> {
     return null;
   }
   const stored = await readStoredSelection();
-  if (
-    stored &&
-    validatedSelection?.userId === user.id &&
-    validatedSelection.organizationId === stored.id
-  )
-    return stored.id;
+  if (validatedSelection?.userId === user.id) {
+    // A device choice made after the ladder ran wins (and invalidates the
+    // cache through the storage observer); otherwise the ladder's answer
+    // holds for the life of this window — set once at load.
+    if (stored && validatedSelection.organizationId === stored.id) return stored.id;
+    if (!stored && validatedSelection.viaLadder) return validatedSelection.organizationId;
+  }
   const resolved = await resolveForUser(user.id);
   return resolved?.id ?? null;
 }
 
 /**
- * How long a held request waits for the person to set an organization before
- * it gives up with a remediable failure. A knob, not a constant at a call
- * site (`common-docs/policies/limits-are-knobs-agents-set-them.md`): a caller
- * with a tighter budget passes its own, and nothing hardcodes a number in the
- * middle of a request path.
+ * THE request boundary: the active organization id.
+ *
+ * Never a hold and never a question. A signed-in person with a membership
+ * always has one (the load ladder); the only "none" is zero memberships, which
+ * refuses with a typed error carrying its remedy.
  */
-export const ORGANIZATION_PICK_TIMEOUT_MS = 120_000;
-
-export interface HoldForOrganizationOptions {
-  /** Override the wait. Defaults to `ORGANIZATION_PICK_TIMEOUT_MS`. */
-  timeoutMs?: number;
-}
-
-/** True when a picker request is outstanding on this device. */
-export async function isOrganizationPickerPending(): Promise<boolean> {
-  return (await getOne<boolean>(STORAGE_KEYS.ORGANIZATION_PICKER_PENDING)) === true;
-}
-
-/**
- * Ask the person to set an organization — from ANY context.
- *
- * Two halves, and both are load-bearing:
- *
- *   • The DURABLE FLAG in `chrome.storage.local`. MV3 kills the service
- *     worker and the side panel is usually closed; a message sent to nobody
- *     is a question nobody was asked. The flag is what makes the panel ask
- *     the next time it opens.
- *   • The BROADCAST, so a panel that IS open reacts now instead of on its
- *     next mount.
- *
- * "No receiver" is the normal case, not a failure — `broadcast()` already
- * swallows it. The flag write is never swallowed: losing it loses the
- * question.
- */
-export async function requestOrganizationPicker(): Promise<void> {
-  await setOne(STORAGE_KEYS.ORGANIZATION_PICKER_PENDING, true);
-  broadcast(CHANNELS.ORGANIZATION_PICKER_REQUESTED, {});
-}
-
-/** The question has been answered (or withdrawn) — stop asking. */
-export async function clearOrganizationPickerRequest(): Promise<void> {
-  await setOne(STORAGE_KEYS.ORGANIZATION_PICKER_PENDING, null);
-}
-
-/** Tell me when something, anywhere, asks for the picker. */
-export function onOrganizationPickerRequest(cb: () => void): () => void {
-  return on<unknown, void>(CHANNELS.ORGANIZATION_PICKER_REQUESTED, () => cb());
-}
-
-/**
- * Wait for a valid selection to land in storage, or give up.
- *
- * Re-reads ONCE after subscribing: the selection can arrive between the
- * caller's resolve and this subscription, and a listener that missed the
- * write would wait out the whole timeout for an answer already given.
- */
-function awaitSelection(timeoutMs: number): Promise<string | null> {
-  return new Promise<string | null>((resolve) => {
-    let settled = false;
-    const finish = (value: string | null) => {
-      if (settled) return;
-      settled = true;
-      clearTimeout(timer);
-      unsubscribe();
-      resolve(value);
-    };
-    const timer = setTimeout(() => finish(null), timeoutMs);
-    const unsubscribe = onActiveOrganizationChange((organizationId) => {
-      if (organizationId) finish(organizationId);
-    });
-    void getActiveOrganizationId().then((id) => {
-      if (id) finish(id);
-    });
-  });
-}
-
-/**
- * THE request boundary: an organization id, or the picker and then an
- * organization id.
- *
- * Never "no default organization". When this device has no selection the
- * request does not fail — it is HELD: the picker is raised in whatever
- * context can show it, and the moment the person sets an organization this
- * resolves and the caller's request proceeds with the id they chose. Only a
- * person who never answers produces a failure, and that failure carries a
- * remedy.
- */
-export async function holdForActiveOrganizationId(
-  opts?: HoldForOrganizationOptions,
-): Promise<string> {
+export async function requireActiveOrganizationId(): Promise<string> {
   const resolved = await getActiveOrganizationId();
   if (resolved) return resolved;
-
-  // Zero memberships means there is nothing the picker can ever produce —
-  // settle NOW with the typed refusal instead of holding for the full
-  // timeout on a person the picker cannot help. Still raise the picker (it
-  // shows the same "you have no organization" message in the panel, for
-  // whoever is looking), but never make them, or a silent 120s clock, be the
-  // thing that ends the hold.
   const organizations = await listMemberOrganizations('active');
   if (organizations.length === 0) {
-    await requestOrganizationPicker();
-    log.error('auth', 'held request settled immediately — user has no organization memberships');
+    log.error('auth', 'request refused — user has no organization memberships');
     throw new OrganizationNoMembershipsError();
   }
-
-  await requestOrganizationPicker();
-  log.info('auth', 'request held — waiting for the person to set an organization');
-  const chosen = await awaitSelection(opts?.timeoutMs ?? ORGANIZATION_PICK_TIMEOUT_MS);
-  if (!chosen) {
-    log.error('auth', 'held request gave up — no organization was set in time');
-    throw new OrganizationNotSelectedError();
-  }
-  await clearOrganizationPickerRequest();
-  return chosen;
+  log.error('auth', 'request refused — the organization ladder settled on none');
+  throw new OrganizationNotSelectedError();
 }
 
 /**
- * The active organization id — asking for one if this device has not been
- * told yet.
- *
- * This IS the hold. It used to throw the moment nothing was selected, which
- * put every org-scoped sink one step from "it just failed"; now the sinks
- * that already call it get the picker BEFORE the request and resume after
- * the person answers.
+ * Save the person's switch to their account so the next load, on any device,
+ * opens in it. The write door is `users.set_last_active_organization`; it
+ * refuses a non-membership. The device choice is already stored, so a failed
+ * account write is logged loudly and never undoes the switch here.
  */
-export async function requireActiveOrganizationId(
-  opts?: HoldForOrganizationOptions,
-): Promise<string> {
-  return holdForActiveOrganizationId(opts);
+async function saveLastActiveOrganization(organizationId: string): Promise<void> {
+  const { error } = await getSupabase()
+    .schema('users')
+    .rpc('set_last_active_organization', { p_organization_id: organizationId });
+  if (error) {
+    log.error('auth', 'could not save the last active organization to the account', {
+      organization_id: organizationId,
+      message: error.message,
+    });
+  }
 }
 
 /**
@@ -416,10 +369,7 @@ export async function requireActiveOrganizationId(
 export async function selectActiveOrganization(org: MemberOrganization): Promise<void> {
   if (org.archivedAt) throw new Error('Restore this organization before working in it.');
   await persistSelection(org);
-  // Any explicit choice ANSWERS an outstanding picker request, wherever it
-  // was made from — the panel's dialog, Settings, the frontend bridge. One
-  // writer for the flag, exactly as for the selection itself.
-  await clearOrganizationPickerRequest();
+  await saveLastActiveOrganization(org.id);
   log.info('auth', 'active organization set', { organization_id: org.id, name: org.name });
 }
 

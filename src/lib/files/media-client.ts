@@ -1,6 +1,6 @@
 import { getBackendUrl } from '@/config/backend';
 import { buildHeaders } from '@/lib/api/client';
-import { holdForActiveOrganizationId } from '@/lib/org/active-org';
+import { requireActiveOrganizationId } from '@/lib/org/active-org';
 import { applyOrganizationContextHeader } from '@ai-matrx/agents/matrx';
 import { createMatrxFilesClient } from '@ai-matrx/data/files';
 import type { DurableSrc, MediaClient } from '@ai-matrx/media';
@@ -27,7 +27,7 @@ export async function getScreenshotMediaClient(): Promise<MediaClient> {
     async fetchImpl(input, init) {
       const headers = new Headers(init?.headers ?? (input instanceof Request ? input.headers : {}));
       if (headers.has('Authorization')) {
-        const organizationId = await holdForActiveOrganizationId();
+        const organizationId = await requireActiveOrganizationId();
         const bound = applyOrganizationContextHeader(Object.fromEntries(headers), organizationId);
         return fetch(input, { ...init, headers: bound });
       }

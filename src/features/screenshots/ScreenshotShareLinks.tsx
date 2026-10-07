@@ -1,5 +1,5 @@
 import { ENV } from '@/config/env';
-import { holdForActiveOrganizationId } from '@/lib/org/active-org';
+import { requireActiveOrganizationId } from '@/lib/org/active-org';
 import { getSupabase } from '@/lib/supabase/client';
 import {
   Button,
@@ -129,7 +129,7 @@ export function ScreenshotShareLinks({
       const uses = maxUses ? Number(maxUses) : null;
       if (uses !== null && (!Number.isSafeInteger(uses) || uses < 1))
         throw new Error('Enter a positive whole number of views.');
-      const organizationId = await holdForActiveOrganizationId();
+      const organizationId = await requireActiveOrganizationId();
       const { data, error: writeError } = await getSupabase()
         .rpc('create_share_link', {
           p_resource_type: 'file',
@@ -152,7 +152,7 @@ export function ScreenshotShareLinks({
     });
   const revoke = (id: string) =>
     mutate(async () => {
-      const organizationId = await holdForActiveOrganizationId();
+      const organizationId = await requireActiveOrganizationId();
       const { data, error: writeError } = await getSupabase()
         .rpc('revoke_share_link', { p_link_id: id })
         .setHeader('X-Organization-Id', organizationId);

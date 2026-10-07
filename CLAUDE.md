@@ -94,11 +94,14 @@ authenticated backend call carries `X-Organization-Id` and every org-scoped writ
 the same id. The server refuses an authenticated request without one at the top
 (`aidream@8e5ee0b93`) and never picks one for you. The ONE resolver is
 [src/lib/org/active-org.ts](./src/lib/org/active-org.ts) — never resolve an org at a call
-site, never fall back to the first, signup, or system organization, and never re-add a `whoami` round trip to
+site, never fall back to the signup or system organization, and never re-add a `whoami` round trip to
 ask the server which org it "carried". A new sink attaches the header or refuses to send.
-Only what the person set ON THIS DEVICE counts — a saved account-level default never builds a
-request and the organization created at signup is never a fallback; with nothing set the request
-HOLDS on `holdForActiveOrganizationId()`, the picker opens, and it resumes with their choice.
+**The active organization is set once at load and is never none** (Arman, 2026-10-07): this
+device's last choice → the account's last active organization → its start-up organization → the
+first organization, each only if a current membership. The resolver is the only reader of the two
+account columns; a switch writes the device choice AND `users.set_last_active_organization`.
+There is no hold and no picker; only zero memberships refuses (with a create/join remedy). "Default
+organization" is a retired term in code.
 Guard: `pnpm check:org-default-ban`. Register row EX-T05: `../common-docs/systems/architecture/database/projects/no-db-assigned-org/PLAN.md`.
 
 **Tool system.**

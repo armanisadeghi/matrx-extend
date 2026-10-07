@@ -109,8 +109,9 @@ export const TABLE_SCHEMA = {
   // Membership itself is read through the canonical `mbr_for_user` RPC, never
   // by querying the junction table directly.
   organizations: 'iam',
-  // users.user_preferences — the durable, cross-device default-organization
-  // preference the web app writes. Read-only from this client.
+  // users.user_preferences — the account's last active and start-up
+  // organization (the load ladder's rungs 2-3). Read ONLY by
+  // src/lib/org/active-org.ts; written through the set_* RPC doors.
   user_preferences: 'users',
   // users.user_surface_state — the person's saved context rules (feature
   // `context_rules`, one row per surface key), the SAME rows the web app writes

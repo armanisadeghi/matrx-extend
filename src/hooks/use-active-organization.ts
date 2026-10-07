@@ -19,14 +19,14 @@ import { type ArchiveFilterValue, DEFAULT_ARCHIVE_FILTER } from '@ai-matrx/desig
 import { useCallback, useEffect, useState } from 'react';
 
 export interface UseActiveOrganizationResult {
-  /** The organization every request carries, or null when the user must pick. */
+  /** The organization every request carries (the load ladder's answer); null only for zero memberships or signed out. */
   active: MemberOrganization | null;
   /** Memberships requested by the visible archive filter; archived rows are view-only. */
   organizations: MemberOrganization[];
   loading: boolean;
   /** Non-null when the organizations could not be read at all. */
   error: string | null;
-  /** True when the user is signed in and has NOT got a usable organization. */
+  /** True only when the user is signed in and belongs to no usable organization. */
   mustChoose: boolean;
   choose: (organizationId: string) => Promise<void>;
   reload: () => void;

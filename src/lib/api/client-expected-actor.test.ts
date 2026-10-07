@@ -32,7 +32,7 @@ vi.mock('@/lib/org/active-org', () => ({
   // double would return the CURRENT organization if the hold were ever
   // reached, so a hold wired into that path would show up as a test that no
   // longer fails closed.
-  holdForActiveOrganizationId: async () => state.organizationId,
+  requireActiveOrganizationId: async () => state.organizationId,
   isOrganizationNotSelectedError: (e: unknown) =>
     e instanceof Error && e.name === 'OrganizationNotSelectedError',
   isOrganizationNoMembershipsError: (e: unknown) =>

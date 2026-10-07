@@ -36,7 +36,7 @@ vi.mock('@/lib/org/active-org', () => ({
   // file keeps testing what it is about (the bearer). Provided rather than
   // omitted because client.ts imports it: a missing export would fail the
   // module, which is not the same thing as passing.
-  holdForActiveOrganizationId: async () => '00000000-0000-4000-8000-000000000002',
+  requireActiveOrganizationId: async () => '00000000-0000-4000-8000-000000000002',
   isOrganizationNotSelectedError: (e: unknown) =>
     e instanceof Error && e.name === 'OrganizationNotSelectedError',
   isOrganizationNoMembershipsError: (e: unknown) =>

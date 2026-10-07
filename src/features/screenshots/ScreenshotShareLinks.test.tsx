@@ -2,7 +2,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 const mocks = vi.hoisted(() => ({ rpc: vi.fn(), org: vi.fn() }));
 vi.mock('@/lib/supabase/client', () => ({ getSupabase: () => ({ rpc: mocks.rpc }) }));
-vi.mock('@/lib/org/active-org', () => ({ holdForActiveOrganizationId: mocks.org }));
+vi.mock('@/lib/org/active-org', () => ({ requireActiveOrganizationId: mocks.org }));
 import { ScreenshotShareLinks } from './ScreenshotShareLinks';
 const calls: Array<{
   name: string;

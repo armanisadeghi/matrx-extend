@@ -1,17 +1,9 @@
 /**
- * THE ZERO-MEMBERSHIPS HOLD (residual of Arman, 2026-09-19's organization
- * hold).
+ * THE ZERO-MEMBERSHIPS REFUSAL.
  *
- * A user who belongs to NO organization at all cannot ever answer the
- * picker — there is nothing to pick. Before this fix, `holdForActiveOrganizationId`
- * raised the picker and then waited the full `ORGANIZATION_PICK_TIMEOUT_MS`
- * (120s) regardless, because it could not tell "nobody answered yet" apart
- * from "nobody CAN ever answer". The held request must instead settle
- * immediately with a typed refusal naming the create/join remedy.
- *
- * Same harness as `client-organization-hold.test.ts` — the real
- * `src/lib/org/active-org.ts` runs over a doubled storage/network/Supabase
- * seam, so this proves the actual timing, not a mocked resolver.
+ * A user who belongs to NO organization cannot be given one by any ladder.
+ * The request settles immediately with a typed refusal naming the create/join
+ * remedy — no picker, no hold, nothing sent.
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -25,7 +17,6 @@ const harness = vi.hoisted(() => {
     store,
     watchers,
     memberships: [] as string[],
-    broadcast: vi.fn(),
   };
 });
 
@@ -76,7 +67,6 @@ vi.mock('@/lib/storage/chrome-local', () => ({
     return () => harness.watchers.delete(watcher);
   },
 }));
-vi.mock('@/lib/messaging/native', () => ({ broadcast: harness.broadcast, on: () => () => {} }));
 vi.mock('@/lib/debug/log', () => ({
   log: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), success: vi.fn() },
 }));
@@ -86,7 +76,6 @@ import { STATUS_NO_ORGANIZATION, apiGet } from './client';
 beforeEach(() => {
   harness.store.clear();
   harness.watchers.clear();
-  harness.broadcast.mockClear();
   harness.memberships = []; // the whole point: zero memberships
 });
 
@@ -95,8 +84,8 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-describe('a held request from a user with no organization memberships', () => {
-  it('settles immediately with a create-or-join remedy — never the 120s picker wait', async () => {
+describe('a request from a user with no organization memberships', () => {
+  it('settles immediately with a create-or-join remedy — never a picker wait', async () => {
     vi.useFakeTimers();
     const fetchMock = vi.fn(
       async (_url: string, _init?: RequestInit) => new Response('{}', { status: 200 }),
@@ -118,7 +107,7 @@ describe('a held request from a user with no organization memberships', () => {
     expect(result.error).toMatch(/do not belong to any organization/i);
     expect(result.error).toMatch(/organizations/i); // names the create/join remedy link
     expect(fetchMock).not.toHaveBeenCalled();
-    // The picker was still raised, for whoever is looking at the panel.
-    expect(harness.store.get('matrx.org.picker-pending')).toBe(true);
+    // No question is raised anywhere.
+    expect(harness.store.get('matrx.org.picker-pending')).toBeUndefined();
   });
 });

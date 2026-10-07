@@ -1,47 +1,39 @@
 #!/usr/bin/env tsx
 /**
- * check:org-default-ban — NOTHING THAT BUILDS A REQUEST READS A "DEFAULT
- * ORGANIZATION", AND NOTHING BRINGS BACK AN ORGANIZATION "TYPE".
+ * check:org-default-ban — THE TERM "DEFAULT ORGANIZATION" IS RETIRED, ONLY THE
+ * LOAD LADDER READS THE TWO ACCOUNT COLUMNS, AND NOTHING HOLDS A REQUEST TO ASK.
  *
- * THE RULING (Arman, 2026-09-19). A "default organization" is at most a
- * per-client DISPLAY preference. The user-level saved preference
- * (`users.user_preferences → preferences.organization.defaultOrganizationId`)
- * must never participate in resolving the organization a request acts in, and
- * no organization is ever a fallback. A client may remember the
- * organization the person SET ON THIS DEVICE; with nothing set, the request is
- * HELD, the picker is shown, they set one, and the request proceeds. In his
- * words:
+ * THE RULING (Arman, 2026-10-07; STATE rules 11-14). The active organization
+ * is set once at load and is never none: this device's last choice -> the
+ * account's `last_active_organization_id` -> `startup_organization_id` -> the
+ * first organization. Those columns choose what the window opens to and
+ * nothing else; no request, feature or server reads them to decide where work
+ * lands. His 2026-09-19 reason still stands: "one missed org check that should
+ * have just failed turns into 50 in a month and 5,000 in a year, and suddenly
+ * we don't have orgs anymore, we have a user and a default org."
  *
- *   "one missed org check that should have just failed turns into 50 in a
- *    month and 5,000 in a year, and suddenly we don't have orgs anymore, we
- *    have a user and a default org, which means we just have user now."
+ * WHAT IT FAILS ON (all over a COMMENT-STRIPPED copy of each file, so
+ * documentation of the retired terms is allowed and code is not):
  *
- * So this is not a style rule — it is the ratchet that keeps the rung dead.
- * The resolver rung was deleted from `src/lib/org/active-org.ts`; a well-meant
- * "it already knows their default, just use it" is a one-line re-add, and
- * nothing else in the build would notice.
+ *   1. Any read of `defaultOrganizationId` / `default_organization_id`, and the
+ *      phrase "default organization" in copy or an error string. The term is
+ *      retired (STATE rules 11-12): there is a last active organization and a
+ *      start-up organization, nothing else.
+ *   2. Any file other than `src/lib/org/active-org.ts` (the ladder) naming
+ *      `last_active_organization_id` or `startup_organization_id`. Only the
+ *      load ladder reads the two account columns (rules 12 and 14); the write
+ *      door RPC name `set_last_active_organization` is not a column read.
+ *   3. Any trace of the deleted personal/business organization type.
+ *   4. The retired hold: `holdForActiveOrganizationId`,
+ *      `requestOrganizationPicker`, or the picker storage key / channel.
+ *      A signed-in person with a membership always has an organization; nothing
+ *      asks (Arman, 2026-10-07).
  *
- * WHAT IT FAILS ON (all three over a COMMENT-STRIPPED copy of each `src/`
- * file, so documentation of the dead rung is allowed and code is not):
- *
- *   1. Any read of `defaultOrganizationId` / `default_organization_id`.
- *   2. Any trace of the deleted personal/business organization type
- *      (access ladder: organizations are unlimited and equal). The
- *      `iam.organizations.is_personal` column and the
- *      `current_personal_org_id` / `ensure_personal_organization` RPCs are gone
- *      from the database; `isPersonal` / `is_personal` anywhere, or either RPC
- *      name, is a re-introduction — as a fallback, a sort, or a label.
- *   3. The phrase "default organization" (any case) in copy or an error
- *      string — a screen that says it teaches the concept back into the
- *      product.
- *
- * WHAT IT CANNOT SEE — say so; never let green imply more than it proves.
- * It is a text scan over `src/`, `scripts/` and `tests/`. A preference fetched through a helper that
- * spells nothing out (`prefs.organization[KEY]`) reads green here, and so
- * does the same rung re-added in another repo. What proves the behaviour is
- * `tests/unit/auth-route.test.ts` (the resolver ignores a live saved
- * preference) and `src/lib/api/client-organization-hold.test.ts` (a request
- * holds and resumes with the chosen id).
+ * WHAT IT CANNOT SEE — a text scan over `src/`, `scripts/` and `tests/`. A
+ * column fetched through a helper that spells nothing out reads green here.
+ * What proves the behaviour is `tests/unit/auth-route.test.ts` (the ladder's
+ * four rungs) and `src/lib/api/client-organization-ladder.test.ts` (a request
+ * leaves carrying the ladder's organization without waiting).
  *
  * Run:            pnpm check:org-default-ban
  * Prove it works: pnpm check:org-default-ban:self-test
@@ -63,6 +55,11 @@ const SCAN_ROOTS = ['src', 'scripts', 'tests'];
 /** This guard and its planted fixtures name the banned shapes on purpose. */
 const SELF = ['scripts/check-org-default-ban.ts'];
 
+/** The ONLY files that may name the two account columns: the ladder and its tests. */
+const LADDER = 'src/lib/org/active-org.ts';
+const isLadderOrTest = (file: string) =>
+  file === LADDER || /(^|\/)tests?\//.test(file) || /\.test\.tsx?$/.test(file);
+
 /**
  * The ONE declared escape: `org-default-exempt: <reason, 20+ characters>` on
  * the offending line or the line above it. A test that has to PLANT the banned
@@ -83,6 +80,9 @@ const SAVED_DEFAULT = /default_?organization_?id/i;
 const PERSONAL_ORG_RPC = /\b(?:current_personal_org_id|ensure_personal_organization)\b/;
 const PERSONAL_FLAG = /\b(?:isPersonal|is_personal)\b/;
 const DEFAULT_ORG_PHRASE = /default\s+organization/i;
+const ACCOUNT_COLUMNS = /\b(?:last_active_organization_id|startup_organization_id)\b/;
+const RETIRED_HOLD =
+  /\b(?:holdForActiveOrganizationId|requestOrganizationPicker|ORGANIZATION_PICKER_PENDING|ORGANIZATION_PICKER_REQUESTED)\b/;
 
 export interface Finding {
   file: string;
@@ -128,6 +128,16 @@ export function findingsIn(source: string, file: string): Finding[] {
         line: at,
         reason: 'reads the account-level saved default organization preference',
       });
+    }
+    if (ACCOUNT_COLUMNS.test(line) && !isLadderOrTest(file)) {
+      out.push({
+        file,
+        line: at,
+        reason: `reads an account organization column outside the ladder (${LADDER})`,
+      });
+    }
+    if (RETIRED_HOLD.test(line)) {
+      out.push({ file, line: at, reason: 'uses the retired organization hold / picker' });
     }
     if (PERSONAL_ORG_RPC.test(line)) {
       out.push({ file, line: at, reason: 'calls a deleted personal-organization RPC' });
@@ -249,9 +259,33 @@ function selfTest(): number {
     ],
     [
       'src/lib/org/active-org.ts',
-      '  if (organizations.length === 1) return organizations[0];',
+      '  const { data } = await usersDb().from("user_preferences").select("last_active_organization_id");',
       0,
-      'the sole-membership rung (allowed)',
+      'the ladder reading the account columns (allowed in the ladder module)',
+    ],
+    [
+      'src/lib/brand/new-sink.ts',
+      '  const { data } = await usersDb().from("user_preferences").select("startup_organization_id");',
+      1,
+      'a second reader of the account columns outside the ladder',
+    ],
+    [
+      'src/lib/api/client.ts',
+      '  const held = await holdForActiveOrganizationId();',
+      1,
+      'the retired hold re-added',
+    ],
+    [
+      'src/features/org/Picker.tsx',
+      '  await requestOrganizationPicker();',
+      1,
+      'the retired picker request re-added',
+    ],
+    [
+      'src/lib/org/active-org.ts',
+      '  await getSupabase().schema("users").rpc("set_last_active_organization", { p_organization_id: id });',
+      0,
+      'the write door RPC (allowed everywhere)',
     ],
     [
       'src/lib/brand/new-sink.ts',
@@ -299,6 +333,8 @@ function main(): void {
       !SAVED_DEFAULT.test(source) &&
       !PERSONAL_ORG_RPC.test(source) &&
       !DEFAULT_ORG_PHRASE.test(source) &&
+      !ACCOUNT_COLUMNS.test(source) &&
+      !RETIRED_HOLD.test(source) &&
       !PERSONAL_FLAG.test(source)
     ) {
       continue;
@@ -308,24 +344,20 @@ function main(): void {
 
   if (findings.length === 0) {
     console.log(
-      '✅ check:org-default-ban: no saved-default read, no organization type or its RPCs,\n' +
-        '   and nothing says "default organization". The organization a request acts in comes\n' +
-        '   from what the person set ON THIS DEVICE — or the request is held and they are asked\n' +
-        '   (src/lib/org/active-org.ts § holdForActiveOrganizationId).',
+      '✅ check:org-default-ban: nothing says "default organization", only the ladder reads the\n' +
+        '   two account organization columns, and the hold / picker is gone. The organization a\n' +
+        '   request acts in comes from the load ladder (src/lib/org/active-org.ts).',
     );
     return;
   }
 
-  console.error('\n🚨 A "DEFAULT ORGANIZATION" IS BACK IN THE REQUEST PATH\n');
+  console.error('\n🚨 THE ORGANIZATION LADDER CONTRACT IS BROKEN\n');
   for (const f of findings) console.error(`  ✗ ${f.file}:${f.line} — ${f.reason}`);
   console.error(
-    '\nArman, 2026-09-19: "one missed org check that should have just failed turns into 50 in\n' +
-      "a month and 5,000 in a year, and suddenly we don't have orgs anymore, we have a user and\n" +
-      'a default org, which means we just have user now."\n\n' +
-      "The organization comes from this device's own selection, or from the sole membership, or\n" +
-      'the request is HELD and the person is asked: holdForActiveOrganizationId() in\n' +
-      'src/lib/org/active-org.ts. Never a saved preference, never an organization type,\n' +
-      'never "first".\n',
+    "\nArman, 2026-10-07: the active organization is set once at load — this device's last\n" +
+      "choice, the account's last active organization, the start-up organization, the first\n" +
+      'organization — and is never none. Only src/lib/org/active-org.ts reads the account\n' +
+      'columns; nothing holds a request or asks. "Default organization" is a retired term.\n',
   );
   process.exit(1);
 }

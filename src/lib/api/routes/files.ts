@@ -115,10 +115,9 @@ export async function uploadFile(
   const baseUrl = await getBackendUrl();
   const token = await getAccessToken();
   // Multipart is a request like any other: it carries the organization or it
-  // does not go out. `requireActiveOrganizationId` HOLDS the upload and asks
-  // the person when this device has no selection, and throws a remediable
-  // OrganizationNotSelectedError only if nobody answers — never uploads into
-  // nowhere, never guesses a tenant.
+  // does not go out. `requireActiveOrganizationId` returns the load ladder's
+  // organization and throws a remediable error only for a person with no
+  // memberships — never uploads into nowhere.
   const organizationId = await requireActiveOrganizationId();
   const headers: Record<string, string> = {
     ...(token ? { Authorization: `Bearer ${token}` } : {}),

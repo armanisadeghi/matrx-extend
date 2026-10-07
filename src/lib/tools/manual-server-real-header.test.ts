@@ -16,7 +16,6 @@ vi.mock('@/lib/auth/guest-signature', () => ({ getOrCreateGuestSignature: async 
 vi.mock('@/lib/org/active-org', () => ({
   getActiveOrganizationId: async () => MALFORMED_STORED_ORGANIZATION,
   requireActiveOrganizationId: async () => MALFORMED_STORED_ORGANIZATION,
-  holdForActiveOrganizationId: async () => MALFORMED_STORED_ORGANIZATION,
   OrganizationNotSelectedError: class OrganizationNotSelectedError extends Error {},
   isOrganizationNotSelectedError: () => false,
   isOrganizationNoMembershipsError: () => false,

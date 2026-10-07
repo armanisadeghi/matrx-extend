@@ -29,7 +29,7 @@ const ORG_ID = '00000000-0000-4000-8000-0000000000bb';
 vi.mock('@/config/backend', () => ({ getBackendUrl: async () => 'https://backend.test.invalid' }));
 vi.mock('@/lib/org/active-org', () => ({
   getActiveOrganizationId: async () => ORG_ID,
-  holdForActiveOrganizationId: async () => ORG_ID,
+  requireActiveOrganizationId: async () => ORG_ID,
   isOrganizationNotSelectedError: () => false,
   isOrganizationNoMembershipsError: () => false,
   OrganizationNotSelectedError: class extends Error {},
