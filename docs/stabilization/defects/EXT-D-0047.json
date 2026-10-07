@@ -28,9 +28,9 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Continue remaining T57 branches: stale-only refusal/recovery, manual/prior-run isolation, and causal higher-old-sequence coverage. Public initial capture and completed exact-recipe replay accepted only at frozen0.2.344/source2274d236. No owned native run active.",
+    "next_action": "Execute causal source guards for remaining stale-only/recovery, manual/prior-run and higher-old-sequence branches; no native launch active. Source evidence cannot close full T57.",
     "status": "Independent peer1abea43b accepts bounded old-first saved replay at frozen0.2.338/source651f25d0: observed old/current HTTP finish order, current context/packet, exact settled current-only saved row, valid resources and cleanup. Current-first earlier0.2.337 remains separately bounded. D47in-fix/T57unverified unchanged.",
-    "implementation_agent": "completed: d47_public_endpoint_actual_fix; independent peer d47_actual_endpoint_peer",
+    "implementation_agent": "active: d47_remaining_isolation_guards; source guard execution only, sole heavy-test permit",
     "execution_agent": "completed: d47_actual_endpoint_native; reviewed by d47_public_terminal_peer",
     "native_run_id": 37537634304,
     "workflow_source": "fbcc4311ae6885b67133e55336f692be38881249",
