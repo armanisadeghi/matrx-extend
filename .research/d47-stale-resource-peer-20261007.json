@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "reviewed_run": 37581293963,
+  "scope": "Independent read-only review of the executor report, three retained resource journals, hosted workflow/readiness, guard policy, and guard CPU decision code. No native test, build, database access, source edit, or cleanup was performed.",
+  "verdict_A_runtime_evidence": {
+    "status": "UNVERIFIED_RESOURCE_INVALID",
+    "finding": "The frozen 5fc0ae39 development artifact identity and import checks are reported, but the native guest guard invalidated the run before any D47 terminal receipt. The retained evidence establishes neither a Save click nor recipe persistence, stale-only refusal, fresh recovery, or owned-row/observer cleanup. It supports no product failure or acceptance claim; newer workflow-head app code was outside the frozen artifact scope.",
+    "guard_sequence": "Package and browser guards admitted and finished valid with child exit 0. Native guard admitted at 2026-10-07T06:30:04.581Z with CPU busy 0.0214 and load 0.6 on four logical CPUs. At 06:30:20.827Z CPU busy was 0.98, producing RESOURCE_CPU_PENDING. At 06:30:37.120Z CPU busy remained 0.98 and load rose to 5.27; RESOURCE_WATCH_UNSAFE named RESOURCE_CPU_BUSY and RESOURCE_CPU_HIGH_LOAD_BUSY. The guard emitted a safe-boundary stop, requested SIGTERM of its owned process group, and recorded resourceInvalid=true, exitCode=3 at 06:30:38.735Z.",
+    "attribution_limit": "The first unsafe sample's process census lists owned Chromium 57.2% and helpers 74.4%, 24.5%, and 17.2%, plus owned node 27.7%; provjobd 25% and mds 17.3% also appear. Process percentages are snapshot values and cannot be added to the guard's interval CPU fraction. They show substantial owned browser work during saturation but do not establish a unique root cause, product behavior, or repeatability.",
+    "evidence": [
+      ".research/d47-stale-diagnostic-native-20261007.json",
+      "docs/stabilization/resource-journals/d47-stale-diagnostic-native-37581293963-package.jsonl",
+      "docs/stabilization/resource-journals/d47-stale-diagnostic-native-37581293963-browser.jsonl",
+      "docs/stabilization/resource-journals/d47-stale-diagnostic-native-37581293963-guest.jsonl"
+    ]
+  },
+  "verdict_B_test_and_resource_quality": {
+    "status": "RESOURCE_GUARD_CORRECT; REPORT_HASH_REPAIRED",
+    "finding": "The guard followed its policy: CPU busy >=0.75 is unsafe, and high normalized load with busy >=0.6 is also unsafe; two consecutive unsafe samples stop. The separate readiness checks and 60-second admission window proved capacity before launch, not capacity during Chromium startup. The failed run remained contained and was correctly excluded from acceptance.",
+    "report_integrity": "The initial executor report had one package-journal SHA-256 typo. The executor corrected that field while this review was in progress; a fresh comparison confirms all three reported journal hashes now match the retained files. No journal bytes changed. The mismatch never changed the native invalid verdict.",
+    "limits": "No successful same-artifact stale-only runtime result exists in this run. The earlier run 37578280425 had a valid resource decision but failed inside Save before replay, so it cannot fill this gap. No source defect was reproduced from safe contents in this review."
+  },
+  "smallest_environment_recovery": "For one future attempt, use the existing hosted workflow's sole serialized native slot on a fresh, measured-ready runner; keep the frozen development artifact, same stale-only inputs, existing readiness checks, thresholds, guard, and retained journals. Admit only after its normal full-window check, and stop/report if another CPU episode occurs. Because owned Chromium dominated the observed process census, readiness alone cannot guarantee success; if the next same-run failure repeats, first measure Chromium startup under the existing startup-resource-diagnostic path, then select a demonstrably more capable hosted runner without relaxing policy. Do not call a repeated exit 3 a product failure or dispatch parallel retries.",
+  "review_constraints": "No cleanup target or product fix can be justified from this resource-invalid attempt. The executor reports temporary Actions secrets removed; secret absence was independently confirmed by the root owner, not rechecked in this review."
+}
