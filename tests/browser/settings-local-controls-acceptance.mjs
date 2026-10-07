@@ -19,8 +19,7 @@ const DEV_EXTENSION_DIR = process.env.SETTINGS_DEV_EXTENSION_DIR
   : join(REPO, '.output', 'chrome-mv3-dev');
 const DEV_BUILD_RECEIPT = process.env.SETTINGS_DEV_BUILD_RECEIPT;
 const EXTENSION_ID = 'cihdmkcdjjckfhjpgoedmgfpoljebaml';
-const DISCOVERY_SCAN_START = 22140;
-const DISCOVERY_SCAN_END = 22159;
+const CASE_PORT = 65001;
 const IDS = ['T22', 'T37', 'T46', 'T70'].map((id) => `EXT-F-1003-${id}`);
 const report = {
   schema_version: 1,
@@ -48,17 +47,14 @@ async function startObservedDeadPort() {
   });
   await new Promise((resolveListen, rejectListen) => {
     server.once('error', rejectListen);
-    server.listen(0, '127.0.0.1', () => {
+    server.listen(CASE_PORT, '127.0.0.1', () => {
       server.off('error', rejectListen);
       resolveListen();
     });
   });
   const address = server.address();
   if (!address || typeof address === 'string') throw new Error('observed_port_address_missing');
-  if (address.port >= DISCOVERY_SCAN_START && address.port <= DISCOVERY_SCAN_END) {
-    await new Promise((resolveClose) => server.close(resolveClose));
-    return startObservedDeadPort();
-  }
+  assert.equal(address.port, CASE_PORT, 'T46 fixture must observe the specified port 65001');
   return {
     port: address.port,
     requests,
@@ -570,6 +566,39 @@ try {
               : 'fail',
             reloaded,
           );
+          // Both inclusive endpoints must survive an actual Save and reopened
+          // Settings panel. A display-only change cannot satisfy the storage read.
+          for (const boundary of [1, 65535]) {
+            await replacePort(panel, String(boundary));
+            const accepted = await waitFor(
+              `boundary_${boundary}_saved`,
+              () => port(panel),
+              (s) => s?.saved === boundary && s.value === String(boundary) && s.override,
+            );
+            c.steps.push({
+              phase: 'warm',
+              action: `Save inclusive boundary port ${boundary}`,
+              observation: accepted,
+            });
+            await reloadSettings(panel);
+            await openSection(panel, 'Desktop bridge');
+            const persisted = await port(panel);
+            c.steps.push({
+              phase: 'reload',
+              action: `Read inclusive boundary port ${boundary} after reload`,
+              observation: persisted,
+            });
+            criterion(
+              c,
+              `boundary port ${boundary} saves and persists after reload`,
+              persisted.saved === boundary &&
+                persisted.value === String(boundary) &&
+                persisted.override
+                ? 'pass'
+                : 'fail',
+              { accepted, persisted },
+            );
+          }
           await replacePort(panel, '65536');
           const invalid = await waitFor(
             'invalid_port_error',
@@ -580,7 +609,7 @@ try {
           criterion(
             c,
             'invalid range shows error and retains saved port',
-            invalid.saved === observedPort.port ? 'pass' : 'fail',
+            invalid.saved === 65535 && invalid.value === '65536' ? 'pass' : 'fail',
             invalid,
           );
           await replacePort(panel, '');

@@ -2,9 +2,12 @@ import assert from 'node:assert/strict';
 import { EventEmitter } from 'node:events';
 import { test } from 'node:test';
 import vm from 'node:vm';
-import { armShowcaseStaleBoundary } from './showcase-stale-runtime-boundary.mjs';
+import {
+  STALE_PICKER_KINDS,
+  armShowcaseStaleBoundary,
+} from './showcase-stale-runtime-boundary.mjs';
 
-test('captured A EXIT stays outside Chrome until released; B detection passes through', async () => {
+test('each held A channel stays outside Chrome until its exact envelope is released', async () => {
   const delivered = [];
   const runtime = {
     id: 'cihdmkcdjjckfhjpgoedmgfpoljebaml',
@@ -44,6 +47,7 @@ test('captured A EXIT stays outside Chrome until released; B detection passes th
     context: () => ({ newCDPSession: async () => cdp }),
   };
   const boundary = await armShowcaseStaleBoundary(page, runtime.id);
+  await boundary.holdNext(STALE_PICKER_KINDS.exit);
   const a = '11111111-1111-4111-8111-111111111111';
   const b = '22222222-2222-4222-8222-222222222222';
   const oldExit = { __matrx: true, kind: 'data:list-picker-exit', payload: { session_id: a } };
@@ -54,17 +58,42 @@ test('captured A EXIT stays outside Chrome until released; B detection passes th
   };
   const heldPromise = runtime.sendMessage(oldExit);
   assert.equal(delivered.length, 0);
-  assert.deepEqual((await boundary.snapshot()).held, [{ kind: oldExit.kind, session_id: a }]);
+  assert.deepEqual((await boundary.snapshot()).held, [
+    { kind: oldExit.kind, session_id: a, list_root: null, item_selector: null },
+  ]);
   await runtime.sendMessage(currentDetection);
   assert.deepEqual(delivered, [currentDetection]);
-  assert.deepEqual(await boundary.release(b), { released: false });
-  assert.deepEqual((await boundary.snapshot()).held, [{ kind: oldExit.kind, session_id: a }]);
+  assert.deepEqual(await boundary.release(STALE_PICKER_KINDS.exit, b), { released: false });
+  assert.deepEqual((await boundary.snapshot()).held, [
+    { kind: oldExit.kind, session_id: a, list_root: null, item_selector: null },
+  ]);
   assert.deepEqual(delivered, [currentDetection]);
-  assert.deepEqual(await boundary.release(a), { released: true, ack: true });
+  assert.deepEqual(await boundary.release(STALE_PICKER_KINDS.exit, a), {
+    released: true,
+    ack: true,
+  });
   assert.deepEqual(await heldPromise, { ack: true });
   assert.deepEqual(delivered, [currentDetection, oldExit]);
-  assert.deepEqual(await boundary.release(a), { released: false });
+  assert.deepEqual(await boundary.release(STALE_PICKER_KINDS.exit, a), { released: false });
   assert.deepEqual(delivered, [currentDetection, oldExit]);
+  for (const kind of [STALE_PICKER_KINDS.detected, STALE_PICKER_KINDS.result]) {
+    await boundary.holdNext(kind);
+    const oldMessage = {
+      __matrx: true,
+      kind,
+      payload: { session_id: a, list_root: '#archive', item_selector: '.archive-card' },
+    };
+    const held = runtime.sendMessage(oldMessage);
+    assert.deepEqual((await boundary.snapshot()).held, [
+      { kind, session_id: a, list_root: '#archive', item_selector: '.archive-card' },
+    ]);
+    assert.equal(delivered.includes(oldMessage), false, `${kind} reached Chrome before release`);
+    await assert.rejects(boundary.holdNext(kind), /showcase_previous_message_still_held/);
+    assert.deepEqual(await boundary.release(STALE_PICKER_KINDS.exit, a), { released: false });
+    assert.deepEqual(await boundary.release(kind, a), { released: true, ack: true });
+    assert.deepEqual(await held, { ack: true });
+    assert.equal(delivered.at(-1), oldMessage);
+  }
   await boundary.close();
 });
 

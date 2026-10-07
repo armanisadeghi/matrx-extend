@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
+import { verifyDesktopArtifactIdentity } from './desktop-artifact-identity.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { desktopStorageFaultSource } from './settings-desktop-storage-faults.mjs';
 import {
@@ -24,9 +24,6 @@ const MODE = process.env.MATRX_DESKTOP_SETTINGS_AUTH_MODE ?? 'guest';
 const CASE = process.env.MATRX_DESKTOP_SETTINGS_CASE ?? 'full';
 const OUTPUT = join(REPO, 'test-results', `settings-desktop-native-${randomUUID()}.json`);
 const STORAGE_SALT = randomUUID();
-const SOURCE = '991385d9816b31a568619522e4795c001b4d3a06';
-const RUN_ID = 37129518563;
-const ARTIFACT_ID = 11275878549;
 const PORT_KEY = 'matrxLocalEnginePortOverride';
 const PAIR_KEY = 'matrx.desktop.pairToken';
 // These synthetic values belong only to the disposable test profile. Their
@@ -436,30 +433,15 @@ try {
   assert.ok(EXTENSION_DIR && RECEIPT_PATH, 'desktop_artifact_inputs_required');
   const extensionDir = resolve(EXTENSION_DIR);
   const receiptPath = resolve(RECEIPT_PATH);
-  const receipt = JSON.parse(await readFile(receiptPath, 'utf8'));
-  const imported = extensionDir.match(/\/ci-artifacts\/([a-f0-9]{40})\/(\d+)-(\d+)\/chrome-mv3$/);
-  const importedStatus = JSON.parse(
-    await readFile(join(extensionDir, '..', 'import-status.json'), 'utf8'),
-  );
-  assert.equal(receipt.kind, 'local_dev_unpacked', 'desktop_receipt_kind_refused');
-  assert.equal(receipt.sourceSha ?? imported?.[1], SOURCE, 'desktop_source_mismatch');
-  assert.equal(imported?.[1], SOURCE, 'desktop_source_mismatch');
-  assert.equal(importedStatus.sourceSha, SOURCE, 'desktop_source_mismatch');
-  assert.equal(importedStatus.runId, RUN_ID, 'desktop_run_mismatch');
-  assert.equal(importedStatus.artifactId, ARTIFACT_ID, 'desktop_artifact_mismatch');
-  assert.equal(importedStatus.treeSha256, receipt.treeSha256, 'desktop_tree_mismatch');
-  assert.equal(hashReleaseTree(extensionDir), receipt.treeSha256, 'desktop_tree_mismatch');
-  for (const sha of ['39ee192b', 'cf0877f1', '17b8ea9d'])
-    execFileSync('git', ['merge-base', '--is-ancestor', sha, SOURCE], { cwd: REPO });
-  const manifest = JSON.parse(await readFile(join(extensionDir, 'manifest.json'), 'utf8'));
-  assert.equal(manifest.version, receipt.version, 'desktop_version_mismatch');
-  report.build = {
-    source_sha: SOURCE,
-    run_id: RUN_ID,
-    artifact_id: ARTIFACT_ID,
-    tree_sha256: receipt.treeSha256,
-    version: receipt.version,
-  };
+  const { receipt, build } = await verifyDesktopArtifactIdentity({
+    repo: REPO,
+    extensionDir,
+    receiptPath,
+    sourceSha: process.env.MATRX_DESKTOP_SETTINGS_SOURCE_SHA,
+    runId: process.env.MATRX_DESKTOP_SETTINGS_RUN_ID,
+    artifactId: process.env.MATRX_DESKTOP_SETTINGS_ARTIFACT_ID,
+  });
+  report.build = build;
 
   stage = 'native_panel';
   const run = await runNativeSidepanelQa({

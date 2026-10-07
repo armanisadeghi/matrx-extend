@@ -1,0 +1,46 @@
+{
+  "id": "EXT-D-0157",
+  "feature_id": "EXT-F-1003",
+  "case_ids": ["EXT-F-1003-T43", "EXT-F-1003-T46", "EXT-F-1003-T49"],
+  "surface": "Testing infrastructure / desktop Settings artifact identity",
+  "auth_mode": "guest prelaunch observed; shared driver serves signed-in modes",
+  "title": "Desktop native driver rejects selected CI artifacts against obsolete fixed source/run/artifact IDs",
+  "severity": "S2: blocks verification before UI; product failure not established",
+  "priority": "P1",
+  "state": "in-fix",
+  "owner": "root/desktop_artifact_identity",
+  "preconditions": [
+    "Select successful CI37694579646/artifact11515715192/source61a9b1ca for desktop-settings-guest."
+  ],
+  "reproduction": [
+    "Read desktop driver startup expected artifact identity.",
+    "It requires fixed source991385d9/run37129518563/artifact11275878549 irrespective of current hosted selection.",
+    "Compare selected artifact to constants; driver would reject before UI. No native job launched; source seam causal verification belongs to repair."
+  ],
+  "expected": "Expected source/run/artifact follows explicitly selected importer-verified CI identity, with strict actual manifest/tree/runtime validation.",
+  "actual": "Obsolete fixed identity forces one old artifact despite a newer verified selection.",
+  "evidence": [".research/desktop-guest-batch-20261007.json"],
+  "transition_history": [
+    {
+      "at": "2026-10-07T22:27:17.123128+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Prelaunch source check established deterministic selected-identity mismatch."
+    },
+    {
+      "at": "2026-10-07T22:27:17.123128+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Frozen selection differs from old fixed constants; no product verdict."
+    },
+    {
+      "at": "2026-10-07T22:27:17.123128+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol owns importer-selected identity validation and wrong-artifact refusal guard."
+    }
+  ],
+  "closure_requirement": "Independent source proof of valid selected artifact and mismatch refusal plus guarded native original setup boundary retest; judge product cases separately.",
+  "next_action": "Independent source review then one guarded desktop-settings-guest current-artifact test.",
+  "provenance_note": "Source commit bd7f2088 used already-owned D156 in its message; its desktop repair belongs here. D156 uninterrupted approvals record is untouched."
+}

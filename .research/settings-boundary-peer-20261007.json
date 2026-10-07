@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "e434c60cac578aeb105c5e7400912c881fe95501",
+  "case_id": "EXT-F-1003-T46",
+  "verdict_a": {
+    "status": "READY_FOR_GUARDED_NATIVE_RUN; ACCEPTANCE_PENDING",
+    "reason": "The driver uses trusted Settings input and Save, observes chrome.storage.local plus the displayed input for both inclusive endpoints, reloads the Settings page after each save, and checks 65536 preserves 65535 while showing the invalid value and error. No execution of the changed driver or receipt-bound result exists yet.",
+    "scope_gaps": [
+      "The observed valid port is a disposable ephemeral port rather than the inventory's literal 65001; this covers valid save behavior but not that exact value.",
+      "Page.reload proves Settings panel reload, not full Chrome extension Reload.",
+      "The observed endpoint intentionally returns 503, so healthy desktop connection and real pairing remain unverified.",
+      "This driver covers signed-out guest only; member, admin, and full Settings health need their own evidence."
+    ]
+  },
+  "verdict_b": {
+    "status": "PASS_WITH_BOUNDED_SCOPE",
+    "reason": "The new assertions are causal UI/storage checks rather than unit mirrors. waitFor makes failed saves and missing override visible, the post-reload criterion checks both values, and the invalid criterion checks storage preservation. Existing runCase records failures; T46 finally attempts debugger and override cleanup independently, while the native harness owns disposable profile teardown. The hosted entry runs under stabilization-resource.mjs and the driver verifies a development receipt and output tree before and after interaction.",
+    "minor_limit": "If an endpoint save fails before its criterion, runCase records the failure but subsequent boundary and invalid checks do not run; the native rerun will localize the first failure, not produce a full boundary matrix in that case."
+  },
+  "source_checks": {
+    "node_check": "pass",
+    "biome_check": "pass",
+    "git_diff_check": "pass",
+    "native_execution": "not run by this reviewer"
+  }
+}

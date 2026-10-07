@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-07T22:10:45.972128+00:00",
+  "updated_at": "2026-10-07T22:27:17.123128+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -5372,15 +5372,14 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "hosted-settings-37099860144",
-              "build_version": "0.2.175",
-              "source_sha": "2b554c62e5e52339ba2340636de2e84f57cd4522",
-              "build_tree_sha256": "efbcd70e6d07fa791c29dfb6378e4f06374163d5e0d5bab7b3c8238656a8477b",
+              "run_id": "37693743871",
               "evidence": [
-                "docs/stabilization/runs/hosted-settings-20261003.json",
-                ".research/settings-hosted-retest.json"
+                ".research/frozen-settings-native-retest-20261007.json",
+                ".research/native-batch-evidence-peer-20261007.json"
               ],
-              "detail": "Bounded actual guest controls before/after reload; see exact per-criterion observations. Does not exercise D84 rejected storage/retry or D86 overlapping writes. T70 retains unverified branches."
+              "detail": "Guest admin controls absent warm and after reload; 2/2 criteria. Guest only; other modes retain their own evidence.",
+              "build_variant": "development0.2.387/source14305391",
+              "observed_at": "2026-10-07T22:18:59.711910+00:00"
             }
           },
           "result_history": [
@@ -5440,6 +5439,20 @@
                 "acceptance_credit": false,
                 "detail": "Latest attempted native run on0.2.385; no acceptance credit because final guest resource journal invalidated CPU pending. Internal assertion observations do not replace last accepted build-specific result."
               }
+            },
+            {
+              "mode": "guest",
+              "preserved_at": "2026-10-07T22:18:59.711910+00:00",
+              "status": "pass",
+              "run_id": "hosted-settings-37099860144",
+              "build_version": "0.2.175",
+              "source_sha": "2b554c62e5e52339ba2340636de2e84f57cd4522",
+              "build_tree_sha256": "efbcd70e6d07fa791c29dfb6378e4f06374163d5e0d5bab7b3c8238656a8477b",
+              "evidence": [
+                "docs/stabilization/runs/hosted-settings-20261003.json",
+                ".research/settings-hosted-retest.json"
+              ],
+              "detail": "Bounded actual guest controls before/after reload; see exact per-criterion observations. Does not exercise D84 rejected storage/retry or D86 overlapping writes. T70 retains unverified branches."
             }
           ]
         },
@@ -5779,15 +5792,14 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "hosted-settings-37099860144",
-              "build_version": "0.2.175",
-              "source_sha": "2b554c62e5e52339ba2340636de2e84f57cd4522",
-              "build_tree_sha256": "efbcd70e6d07fa791c29dfb6378e4f06374163d5e0d5bab7b3c8238656a8477b",
+              "run_id": "37693743871",
               "evidence": [
-                "docs/stabilization/runs/hosted-settings-20261003.json",
-                ".research/settings-hosted-retest.json"
+                ".research/frozen-settings-native-retest-20261007.json",
+                ".research/native-batch-evidence-peer-20261007.json"
               ],
-              "detail": "Bounded actual guest controls before/after reload; see exact per-criterion observations. Does not exercise D84 rejected storage/retry or D86 overlapping writes. T70 retains unverified branches."
+              "detail": "Deep clean toggle, reload persistence and original state restoration;3/3 criteria. Guest only; other modes retain their own evidence.",
+              "build_variant": "development0.2.387/source14305391",
+              "observed_at": "2026-10-07T22:18:59.711910+00:00"
             }
           },
           "linked_defects": ["EXT-D-0087"],
@@ -5848,6 +5860,20 @@
                 "acceptance_credit": false,
                 "detail": "Latest attempted native run on0.2.385; no acceptance credit because final guest resource journal invalidated CPU pending. Internal assertion observations do not replace last accepted build-specific result."
               }
+            },
+            {
+              "mode": "guest",
+              "preserved_at": "2026-10-07T22:18:59.711910+00:00",
+              "status": "pass",
+              "run_id": "hosted-settings-37099860144",
+              "build_version": "0.2.175",
+              "source_sha": "2b554c62e5e52339ba2340636de2e84f57cd4522",
+              "build_tree_sha256": "efbcd70e6d07fa791c29dfb6378e4f06374163d5e0d5bab7b3c8238656a8477b",
+              "evidence": [
+                "docs/stabilization/runs/hosted-settings-20261003.json",
+                ".research/settings-hosted-retest.json"
+              ],
+              "detail": "Bounded actual guest controls before/after reload; see exact per-criterion observations. Does not exercise D84 rejected storage/retry or D86 overlapping writes. T70 retains unverified branches."
             }
           ]
         },
@@ -6113,38 +6139,14 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "desktop-settings-guest-20261003-independent01",
-              "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
-              "build_version": "0.2.176",
-              "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+              "run_id": "37693743871",
               "evidence": [
-                ".research/desktop-settings-independent-native.json",
-                ".research/desktop-settings-guard-proof.json",
-                ".research/settings-forget-reset-final.json"
+                ".research/frozen-settings-native-retest-20261007.json",
+                ".research/native-batch-evidence-peer-20261007.json"
               ],
-              "verified_substeps": [
-                "Actual rejected port write showed error and preserved prior value; retry persisted after reload. Held initial read preserved the newer edit and preceded its save; overlapping submissions persisted the latest choice.",
-                "Independent current-artifact UI passed ports1/65535, rejected0/65536 with prior value preserved, filtered nondigits, and blank-clear persistence after reload."
-              ],
-              "remaining_criteria": [
-                "Actual worker rediscovery and desktop connection remain unverified."
-              ],
-              "release_scope": "Exact CI development artifact; not frozen public176 or full Store installation/update acceptance.",
-              "prior_evidence": [
-                {
-                  "status": "pass",
-                  "run_id": "hosted-settings-37099860144",
-                  "build_version": "0.2.175",
-                  "source_sha": "2b554c62e5e52339ba2340636de2e84f57cd4522",
-                  "build_tree_sha256": "efbcd70e6d07fa791c29dfb6378e4f06374163d5e0d5bab7b3c8238656a8477b",
-                  "evidence": [
-                    "docs/stabilization/runs/hosted-settings-20261003.json",
-                    ".research/settings-hosted-retest.json"
-                  ],
-                  "detail": "Bounded actual guest controls before/after reload; see exact per-criterion observations. Does not exercise D84 rejected storage/retry or D86 overlapping writes. T70 retains unverified branches."
-                }
-              ],
-              "supplemental_run_id": "desktop-settings-forget-reset-guest-20261003-01"
+              "detail": "Valid port49206/save/rediscovery/reload, reject65536, clear/reload observed. Endpoint ports1/65535 and healthy desktop connection unverified. Guest only; other modes retain their own evidence.",
+              "build_variant": "development0.2.387/source14305391",
+              "observed_at": "2026-10-07T22:18:59.711910+00:00"
             }
           },
           "linked_defects": ["EXT-D-0086", "EXT-D-0084"],
@@ -6201,6 +6203,43 @@
                 "acceptance_credit": false,
                 "detail": "Latest attempted native run on0.2.385; no acceptance credit because final guest resource journal invalidated CPU pending. Internal assertion observations do not replace last accepted build-specific result."
               }
+            },
+            {
+              "mode": "guest",
+              "preserved_at": "2026-10-07T22:18:59.711910+00:00",
+              "status": "partial",
+              "run_id": "desktop-settings-guest-20261003-independent01",
+              "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+              "build_version": "0.2.176",
+              "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+              "evidence": [
+                ".research/desktop-settings-independent-native.json",
+                ".research/desktop-settings-guard-proof.json",
+                ".research/settings-forget-reset-final.json"
+              ],
+              "verified_substeps": [
+                "Actual rejected port write showed error and preserved prior value; retry persisted after reload. Held initial read preserved the newer edit and preceded its save; overlapping submissions persisted the latest choice.",
+                "Independent current-artifact UI passed ports1/65535, rejected0/65536 with prior value preserved, filtered nondigits, and blank-clear persistence after reload."
+              ],
+              "remaining_criteria": [
+                "Actual worker rediscovery and desktop connection remain unverified."
+              ],
+              "release_scope": "Exact CI development artifact; not frozen public176 or full Store installation/update acceptance.",
+              "prior_evidence": [
+                {
+                  "status": "pass",
+                  "run_id": "hosted-settings-37099860144",
+                  "build_version": "0.2.175",
+                  "source_sha": "2b554c62e5e52339ba2340636de2e84f57cd4522",
+                  "build_tree_sha256": "efbcd70e6d07fa791c29dfb6378e4f06374163d5e0d5bab7b3c8238656a8477b",
+                  "evidence": [
+                    "docs/stabilization/runs/hosted-settings-20261003.json",
+                    ".research/settings-hosted-retest.json"
+                  ],
+                  "detail": "Bounded actual guest controls before/after reload; see exact per-criterion observations. Does not exercise D84 rejected storage/retry or D86 overlapping writes. T70 retains unverified branches."
+                }
+              ],
+              "supplemental_run_id": "desktop-settings-forget-reset-guest-20261003-01"
             }
           ]
         },
@@ -7082,15 +7121,14 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "hosted-settings-37099860144",
-              "build_version": "0.2.175",
-              "source_sha": "2b554c62e5e52339ba2340636de2e84f57cd4522",
-              "build_tree_sha256": "efbcd70e6d07fa791c29dfb6378e4f06374163d5e0d5bab7b3c8238656a8477b",
+              "run_id": "37693743871",
               "evidence": [
-                "docs/stabilization/runs/hosted-settings-20261003.json",
-                ".research/settings-hosted-retest.json"
+                ".research/frozen-settings-native-retest-20261007.json",
+                ".research/native-batch-evidence-peer-20261007.json"
               ],
-              "detail": "Bounded actual guest controls before/after reload; see exact per-criterion observations. Does not exercise D84 rejected storage/retry or D86 overlapping writes. T70 retains unverified branches."
+              "detail": "Identity/readiness/no-update path observed;5passed/5unverified criteria. Alternate API/update branches untested; no full-case pass. Guest only; other modes retain their own evidence.",
+              "build_variant": "development0.2.387/source14305391",
+              "observed_at": "2026-10-07T22:18:59.711910+00:00"
             }
           },
           "result_history": [
@@ -7132,6 +7170,20 @@
                 "acceptance_credit": false,
                 "detail": "Latest attempted native run on0.2.385; no acceptance credit because final guest resource journal invalidated CPU pending. Internal assertion observations do not replace last accepted build-specific result."
               }
+            },
+            {
+              "mode": "guest",
+              "preserved_at": "2026-10-07T22:18:59.711910+00:00",
+              "status": "unverified",
+              "run_id": "hosted-settings-37099860144",
+              "build_version": "0.2.175",
+              "source_sha": "2b554c62e5e52339ba2340636de2e84f57cd4522",
+              "build_tree_sha256": "efbcd70e6d07fa791c29dfb6378e4f06374163d5e0d5bab7b3c8238656a8477b",
+              "evidence": [
+                "docs/stabilization/runs/hosted-settings-20261003.json",
+                ".research/settings-hosted-retest.json"
+              ],
+              "detail": "Bounded actual guest controls before/after reload; see exact per-criterion observations. Does not exercise D84 rejected storage/retry or D86 overlapping writes. T70 retains unverified branches."
             }
           ]
         },
@@ -7810,7 +7862,8 @@
             "EXT-D-0084",
             "EXT-D-0086",
             "EXT-D-0087",
-            "EXT-D-0155"
+            "EXT-D-0155",
+            "EXT-D-0157"
           ],
           "run_ids": [
             "guest-local-001",
@@ -7834,9 +7887,10 @@
             "guest-settings-local-006",
             "guest-settings-dev089-001",
             "hosted-settings-37115406435",
-            "desktop-settings-guest-20261003-independent01"
+            "desktop-settings-guest-20261003-independent01",
+            "37693743871"
           ],
-          "retest_status": "not-run"
+          "retest_status": "Partial surface coverage. Latest independently reviewed 0.2.387 guest run37693743871 verifies only the named case criteria; other cases/modes remain explicitly incomplete."
         },
         "member": {
           "test_status": "unverified",
@@ -14584,6 +14638,47 @@
           "results": {
             "guest": {
               "status": "pass",
+              "run_id": "37693691959",
+              "evidence": [
+                ".research/scrape-counted-native-retest-20261007.json",
+                ".research/native-batch-evidence-peer-20261007.json"
+              ],
+              "detail": "Video Open, exact Copy, remove/add and blank rejection verified warm and full reload; permission restored. Guest only; other modes retain their own evidence.",
+              "build_variant": "development0.2.385/source87f6649b",
+              "observed_at": "2026-10-07T22:18:59.711910+00:00"
+            },
+            "member": {
+              "status": "partial",
+              "run_id": "37263606882",
+              "evidence": ".research/headed-member-native.json",
+              "detail": "Headed Chrome verified via actual CDP command line; warm substeps observed. Repeat controls after full extension reload; verify native link and clipboard outcomes. Empty-media harness failure stops later acceptance.",
+              "build_variant": "development0.2.244/sourceb8158702/CI37233480033/artifact11315305224",
+              "viewport": "600px owned SIDE_PANEL CDP viewport emulation; actual headed browser, not physical resize proof",
+              "verified_at": "2026-10-05T04:38:29.178906+00:00"
+            }
+          },
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "37670744036",
+                "build_version": "0.2.385",
+                "source_sha": "87f6649b4874492a1f8af59cd8703eff0e06424c",
+                "artifact_id": 11503412219,
+                "evidence": [
+                  ".research/parallel-scrape-product-20261007.json",
+                  ".research/parallel-rollout-final-peer-20261007.json"
+                ],
+                "evidence_validity": "resource-valid-incomplete",
+                "acceptance_credit": false,
+                "detail": "Resource-valid warm observations only; full case remains unverified after runner stopped at Links pointer targeting. Prior accepted build-specific results retained; no new full-case pass."
+              }
+            },
+            {
+              "mode": "guest",
+              "preserved_at": "2026-10-07T22:18:59.711910+00:00",
+              "status": "pass",
               "run_id": "37251782627",
               "evidence": ".research/guest-scrape-normal-native.json",
               "detail": "Frozen development244 guest ARM: Video Open/return, exact remove/add, blank rejection, Copy feedback and exact clipboard equality after observation-only scoped grant restored; warm and reload verified.",
@@ -14613,34 +14708,6 @@
                     }
                   }
                 }
-              }
-            },
-            "member": {
-              "status": "partial",
-              "run_id": "37263606882",
-              "evidence": ".research/headed-member-native.json",
-              "detail": "Headed Chrome verified via actual CDP command line; warm substeps observed. Repeat controls after full extension reload; verify native link and clipboard outcomes. Empty-media harness failure stops later acceptance.",
-              "build_variant": "development0.2.244/sourceb8158702/CI37233480033/artifact11315305224",
-              "viewport": "600px owned SIDE_PANEL CDP viewport emulation; actual headed browser, not physical resize proof",
-              "verified_at": "2026-10-05T04:38:29.178906+00:00"
-            }
-          },
-          "result_history": [
-            {
-              "mode": "guest",
-              "result": {
-                "status": "unverified",
-                "run_id": "37670744036",
-                "build_version": "0.2.385",
-                "source_sha": "87f6649b4874492a1f8af59cd8703eff0e06424c",
-                "artifact_id": 11503412219,
-                "evidence": [
-                  ".research/parallel-scrape-product-20261007.json",
-                  ".research/parallel-rollout-final-peer-20261007.json"
-                ],
-                "evidence_validity": "resource-valid-incomplete",
-                "acceptance_credit": false,
-                "detail": "Resource-valid warm observations only; full case remains unverified after runner stopped at Links pointer targeting. Prior accepted build-specific results retained; no new full-case pass."
               }
             }
           ]
@@ -14679,30 +14746,14 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "37251782627",
-              "evidence": ".research/guest-scrape-normal-native.json",
-              "detail": "Frozen development244 guest ARM: Link Open/Copy/remove/blank rejection/add/Cancel verified warm and reload; exact clipboard equality after scoped read grant and permission restoration. Raw partial refers solely to other auth modes, separately unverified.",
-              "build_variant": "development0.2.244/sourceb8158702/CI37233480033/artifact11315305224",
-              "viewport": "owned SIDE_PANEL CDP viewport emulation600px warm/reload; initialphysicalmeasurement360x373; no physicalresize claim",
-              "verified_at": "2026-10-05T01:45:35.094250+00:00",
-              "historical_result": {
-                "status": "pass",
-                "run_id": "37225191131",
-                "evidence": ".research/clipboard126-native.json",
-                "detail": "Exact frozen development231 guest ARM, warm and full extension reload: Open, exact remove/add identities, blank rejection and valid forms; trusted Copy feedback copied, exact fixture equality true after scoped read grant, permission restored. T13 raw receipt partial is solely other auth modes, which remain separately unverified.",
-                "historical_result": {
-                  "status": "partial",
-                  "run_id": "37222954472",
-                  "evidence": ".research/scrape231-recapture-native.json",
-                  "detail": "Exact development231 guest ARM: Open, selective removal, blank/valid Add and Cancel have exact rows/counts warm and after reload. Clipboard readback unavailable (D126), so partial.",
-                  "historical_result": {
-                    "status": "partial",
-                    "run_id": "37221586281",
-                    "evidence": ".research/scrape231-context-diagnostic-native.json",
-                    "detail": "Exact development231 guest ARM: Link Open, selective Remove, blank/valid Add and Cancel reached expected identities/counts. Copy readback unavailable (panel_runtime_exception); full reload/member/admin remain."
-                  }
-                }
-              }
+              "run_id": "37693691959",
+              "evidence": [
+                ".research/scrape-counted-native-retest-20261007.json",
+                ".research/native-batch-evidence-peer-20261007.json"
+              ],
+              "detail": "Links Open, exact Copy, selective removal, blank rejection, valid add and Cancel verified warm and full reload. Guest only; other modes retain their own evidence.",
+              "build_variant": "development0.2.385/source87f6649b",
+              "observed_at": "2026-10-07T22:18:59.711910+00:00"
             },
             "member": {
               "status": "partial",
@@ -14730,6 +14781,35 @@
                 "evidence_validity": "resource-valid-incomplete",
                 "acceptance_credit": false,
                 "detail": "Resource-valid warm observations only; full case remains unverified after runner stopped at Links pointer targeting. Prior accepted build-specific results retained; no new full-case pass."
+              }
+            },
+            {
+              "mode": "guest",
+              "preserved_at": "2026-10-07T22:18:59.711910+00:00",
+              "status": "pass",
+              "run_id": "37251782627",
+              "evidence": ".research/guest-scrape-normal-native.json",
+              "detail": "Frozen development244 guest ARM: Link Open/Copy/remove/blank rejection/add/Cancel verified warm and reload; exact clipboard equality after scoped read grant and permission restoration. Raw partial refers solely to other auth modes, separately unverified.",
+              "build_variant": "development0.2.244/sourceb8158702/CI37233480033/artifact11315305224",
+              "viewport": "owned SIDE_PANEL CDP viewport emulation600px warm/reload; initialphysicalmeasurement360x373; no physicalresize claim",
+              "verified_at": "2026-10-05T01:45:35.094250+00:00",
+              "historical_result": {
+                "status": "pass",
+                "run_id": "37225191131",
+                "evidence": ".research/clipboard126-native.json",
+                "detail": "Exact frozen development231 guest ARM, warm and full extension reload: Open, exact remove/add identities, blank rejection and valid forms; trusted Copy feedback copied, exact fixture equality true after scoped read grant, permission restored. T13 raw receipt partial is solely other auth modes, which remain separately unverified.",
+                "historical_result": {
+                  "status": "partial",
+                  "run_id": "37222954472",
+                  "evidence": ".research/scrape231-recapture-native.json",
+                  "detail": "Exact development231 guest ARM: Open, selective removal, blank/valid Add and Cancel have exact rows/counts warm and after reload. Clipboard readback unavailable (D126), so partial.",
+                  "historical_result": {
+                    "status": "partial",
+                    "run_id": "37221586281",
+                    "evidence": ".research/scrape231-context-diagnostic-native.json",
+                    "detail": "Exact development231 guest ARM: Link Open, selective Remove, blank/valid Add and Cancel reached expected identities/counts. Copy readback unavailable (panel_runtime_exception); full reload/member/admin remain."
+                  }
+                }
               }
             }
           ]
@@ -15381,9 +15461,10 @@
             "37221586281",
             "37222954472",
             "37225191131",
-            "37251782627"
+            "37251782627",
+            "37693691959"
           ],
-          "retest_status": "partial: development244 guest warm/full-reload controls verified with600px SIDE_PANEL viewport emulation; no physicalresizeclaim. Naturalerrorrecovery, deepretry/postreloaddeep and exhaustiveemptystates remain. Member/admin unverified; Store205 predates laterproductfixes."
+          "retest_status": "Partial surface coverage. Latest independently reviewed 0.2.385 guest run37693691959 verifies only the named case criteria; other cases/modes remain explicitly incomplete."
         },
         "member": {
           "test_status": "partial",

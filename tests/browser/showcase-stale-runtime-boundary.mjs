@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 
 const EXIT = 'data:list-picker-exit';
 const DETECTED = 'data:list-picker-item-detected';
+const RESULT = 'data:list-picker-result';
+export const STALE_PICKER_KINDS = { exit: EXIT, detected: DETECTED, result: RESULT };
 
 // CDP evaluates only in the owned fixture page's extension isolated world. This
 // intercepts the producer's real Chrome API call before runtime delivery.
@@ -48,13 +50,13 @@ export async function armShowcaseStaleBoundary(page, extensionId) {
     const runtime = chrome.runtime;
     if (globalThis.__showcaseD42Boundary) return false;
     const original = runtime.sendMessage.bind(runtime);
-    const state = { held: [], observed: [], original, capturedExit: false };
+    const state = { held: [], observed: [], original, holdKind: null, captured: false };
     const intercepted = function(message, ...args) {
       if (message?.__matrx === true &&
-          ['data:list-picker-exit', 'data:list-picker-item-detected'].includes(message.kind)) {
+          ['data:list-picker-exit', 'data:list-picker-item-detected', 'data:list-picker-result'].includes(message.kind)) {
         state.observed.push({ kind: message.kind, session_id: message.payload?.session_id });
-        if (message.kind === 'data:list-picker-exit' && !state.capturedExit) {
-          state.capturedExit = true;
+        if (message.kind === state.holdKind && !state.captured) {
+          state.captured = true;
           return new Promise((resolve, reject) => {
             state.held.push({ message, args, resolve, reject });
           });
@@ -69,19 +71,33 @@ export async function armShowcaseStaleBoundary(page, extensionId) {
   })()`);
   assert.equal(armed, true, 'showcase_picker_runtime_boundary_not_writable');
   return {
+    async holdNext(kind) {
+      assert.ok(Object.values(STALE_PICKER_KINDS).includes(kind), 'showcase_invalid_hold_kind');
+      const result = await run(`(() => {
+        const s = globalThis.__showcaseD42Boundary;
+        if (s.held.length) return false;
+        s.holdKind = ${JSON.stringify(kind)};
+        s.captured = false;
+        return true;
+      })()`);
+      assert.equal(result, true, 'showcase_previous_message_still_held');
+    },
     async snapshot() {
       return run(`(() => {
         const s = globalThis.__showcaseD42Boundary;
-        return { held: s.held.map(x => ({ kind: x.message.kind, session_id: x.message.payload?.session_id })),
+        return { held: s.held.map(x => ({ kind: x.message.kind, session_id: x.message.payload?.session_id,
+          list_root: x.message.payload?.list_root ?? null,
+          item_selector: x.message.payload?.item_selector ?? null })),
           observed: s.observed, url: location.href };
       })()`);
     },
-    async release(sessionId) {
+    async release(kind, sessionId) {
+      assert.ok(Object.values(STALE_PICKER_KINDS).includes(kind), 'showcase_invalid_release_kind');
       assert.match(sessionId, /^[0-9a-f-]{36}$/i, 'showcase_captured_session_id_invalid');
       return run(`(async () => {
         const s = globalThis.__showcaseD42Boundary;
         const held = s.held[0];
-        if (!held || held.message.kind !== ${JSON.stringify(EXIT)} ||
+        if (!held || held.message.kind !== ${JSON.stringify(kind)} ||
             held.message.payload?.session_id !== ${JSON.stringify(sessionId)}) return { released: false };
         s.held.shift();
         try {

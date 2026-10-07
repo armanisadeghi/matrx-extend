@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "picker-diagnostic-final-peer-20261007",
+  "defect_id": "EXT-D-0042",
+  "reviewed_commits": ["8f1b52d0", "49a1c888"],
+  "verdict": "source_ready_native_unverified",
+  "A_native_readiness": {
+    "ready": true,
+    "native_executed_by_this_review": false,
+    "evidence": "The opt-in native driver arms the fixture page's extension isolated-world chrome.runtime.sendMessage boundary, holds the actual A ITEM_DETECTED then RESULT envelope in separate cycles, cancels A, starts B on the same page, releases the captured A envelope via the original runtime method, and waits for its SW-stamped relay. The current B then produces distinct detected/result relays in the same tab and document and extracts three event rows.",
+    "limit": "Only the hosted native run can prove the installed extension follows those paths. Source inspection and focused diagnostic tests do not credit native acceptance."
+  },
+  "B_quality_prior_finding": {
+    "addressed": true,
+    "evidence": "Each cycle wraps actions and waits with a fixed target. A failed A-stamped wait records failed_target=A_stamped for either channel and retains only allowlisted booleans and bounded counts sampled around the failure. The receipt writer includes this diagnostic without raw error text, page text, selectors, IDs, or secrets. Focused tests exercise both channel timeout receipts.",
+    "caveat": "A sampling failure before an action can leave failed_target null; the failed target guarantee applies to action/wait failures after a successful pre-sample."
+  },
+  "source_checks": [
+    "Actual driver wiring reviewed in tests/browser/showcase-picker-native-acceptance.mjs, including both opt-in runMissingChannelCycle calls and B positive assertions.",
+    "Boundary interception and relay observer reviewed in tests/browser/showcase-stale-runtime-boundary.mjs.",
+    "Diagnostic allowlist and both-channel native receipt timeout tests reviewed in tests/browser/showcase-stale-diagnostic.mjs and its test."
+  ],
+  "next_action": "Run the guarded hosted native showcase-stale-admin acceptance against an exact development artifact after the current Settings A terminal and cleanup. Keep EXT-D-0042 in-fix until native acceptance and remaining defect scope pass."
+}

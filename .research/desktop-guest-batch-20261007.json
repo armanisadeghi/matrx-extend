@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "task": "structured native test lane B",
+  "status": "blocked_prelaunch",
+  "scope": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "acceptance_case": "desktop-settings-guest",
+    "runner_label": "macos-15",
+    "lane": "B",
+    "inventory_feature": "EXT-F-1003",
+    "mapped_cases": [
+      "EXT-F-1003-T43",
+      "EXT-F-1003-T46",
+      "EXT-F-1003-T49"
+    ],
+    "controls": [
+      "EXT-F-1003-C15",
+      "EXT-F-1003-C16",
+      "EXT-F-1003-C17"
+    ],
+    "scope_limit": "One guest desktop-settings hosted case only; does not establish complete Settings coverage or healthy desktop-engine connectivity."
+  },
+  "preflight": {
+    "checked_at": "2026-10-07T22:24:00Z",
+    "newest_successful_eligible_ci": {
+      "run_id": 37694579646,
+      "artifact_id": 11515715192,
+      "source_sha": "61a9b1cae81c1a748233600156162f5ec3774caf",
+      "run_status": "completed",
+      "conclusion": "success",
+      "event": "push",
+      "branch": "main",
+      "artifact_expired": false
+    },
+    "older_lead_rejected_as_not_newest": {
+      "run_id": 37686627159,
+      "artifact_id": 11512366176,
+      "source_sha": "91e152208490a05c3dc1f15bdadbdaafc80dad64"
+    },
+    "workflow_inputs": {
+      "active_or_queued_hosted_guest_runs_observed": 0,
+      "lane_b_case_allowed_by_workflow": true
+    },
+    "source_identity_finding": {
+      "driver": "tests/browser/settings-desktop-native-acceptance.mjs",
+      "driver_source_sha_constant": "991385d9816b31a568619522e4795c001b4d3a06",
+      "driver_run_id_constant": 37129518563,
+      "driver_artifact_id_constant": 11275878549,
+      "behavior": "Driver reads the relocated receipt but asserts its source SHA, imported run ID, and imported artifact ID against these hardcoded historical constants. The workflow supplies the artifact directory and receipt only; it does not supply dynamic identity values. The newest eligible artifact therefore cannot pass this preflight.",
+      "current_checkout_package_version": "0.2.391",
+      "uses_current_checkout_version_for_imported_artifact": false,
+      "receipt_is_authoritative_for_dynamic_identity": false
+    },
+    "dispatch": "not_started",
+    "reason": "Known artifact identity mismatch; required stop-and-diagnose-before-launch condition met.",
+    "manual_build_or_release": false
+  },
+  "terminal_run": null,
+  "resource_journals": [],
+  "screenshots": [],
+  "limitations": [
+    "No browser was launched and there is no terminal product verdict.",
+    "No healthy desktop-engine connection is established by this report.",
+    "The prior desktop Settings guest record is partial and does not cover the full Settings surface."
+  ],
+  "next_action": "Repair the hosted driver so imported development artifact identity comes from and is verified against its own receipt/import-status, independently review that preflight, then rerun this one guest case with the newest eligible successful artifact after fresh lane/resource admission."
+}

@@ -1,0 +1,68 @@
+const TARGETS = new Set([
+  'restart_before_A',
+  'A_start',
+  'A_scope',
+  'A_field',
+  'A_capture',
+  'A_cancel',
+  'B_start',
+  'A_release',
+  'A_stamped',
+  'B_scope',
+  'B_detection',
+  'B_stamped',
+  'B_field',
+  'B_done',
+  'B_builder',
+  'B_result',
+  'B_extract',
+]);
+const FLAGS = new Set([
+  'panel_start',
+  'panel_picking',
+  'panel_cancel',
+  'panel_extract',
+  'panel_selected_field',
+  'panel_three_rows',
+  'root_present',
+  'A_held',
+  'A_stamped',
+  'B_detected',
+  'B_stamped',
+  'B_result_stamped',
+]);
+const COUNTS = new Set([
+  'overlay_count',
+  'held_count',
+  'producer_count',
+  'relay_count',
+  'picked_field_count',
+]);
+
+export function createShowcaseStaleDiagnostic(channel) {
+  if (!['detected', 'result'].includes(channel)) throw new Error('invalid_stale_channel');
+  return { channel, target: null, failed_target: null, last_safe: {} };
+}
+
+export function observeShowcaseStaleDiagnostic(diagnostic, values) {
+  for (const [key, value] of Object.entries(values ?? {})) {
+    if (FLAGS.has(key) && typeof value === 'boolean') diagnostic.last_safe[key] = value;
+    if (COUNTS.has(key) && Number.isSafeInteger(value) && value >= 0 && value <= 10000)
+      diagnostic.last_safe[key] = value;
+  }
+}
+
+// Never copy a browser/transport error into the receipt. The caller supplies
+// only fixed labels and bounded observations, including after a failed wait.
+export async function runShowcaseStaleDiagnosticStep(diagnostic, target, sample, action) {
+  if (!TARGETS.has(target)) throw new Error('invalid_stale_target');
+  diagnostic.target = target;
+  observeShowcaseStaleDiagnostic(diagnostic, await sample());
+  try {
+    return await action();
+  } catch (error) {
+    diagnostic.failed_target = target;
+    observeShowcaseStaleDiagnostic(diagnostic, await sample());
+    throw error;
+  }
+}

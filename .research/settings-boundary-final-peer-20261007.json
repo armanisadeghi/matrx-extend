@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "reviewed_commits": [
+    "e434c60cac578aeb105c5e7400912c881fe95501",
+    "347115f8334f683d6a88ec84d948eff6f940cd1f"
+  ],
+  "case_id": "EXT-F-1003-T46",
+  "verdict_a": {
+    "status": "PENDING_NATIVE_ACCEPTANCE",
+    "reason": "The source expresses the requested behavior, but this review did not run the native Chrome acceptance case. No live result or receipt-bound execution is established here.",
+    "scope_gaps": [
+      "The fixture observes the exact 65001 port and deliberately fails if binding it is unavailable; no ephemeral substitute remains.",
+      "The Settings panel reload checks do not constitute a full extension reload.",
+      "The fixture intentionally returns 503, so healthy desktop-engine connectivity is not established."
+    ]
+  },
+  "verdict_b": {
+    "status": "PASS_SOURCE_REVIEW",
+    "reason": "The driver uses replacePort to enter values and click the real Save/Set control. It reads chrome.storage.local and the displayed input after Settings Page.reload for 65001, 1, and 65535. It submits 65536 and checks that the stored value remains 65535. The case requires a fresh disposable profile with no initial override, clears any resulting override in finally, and independently attempts debugger watcher and worker teardown.",
+    "findings": []
+  },
+  "source_checks": {
+    "node_check": "pass: node --check tests/browser/settings-local-controls-acceptance.mjs",
+    "native_execution": "not run; explicitly excluded from this source-only review",
+    "extension_reload": "not claimed",
+    "healthy_engine": "not claimed"
+  }
+}
