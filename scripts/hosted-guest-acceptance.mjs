@@ -7,7 +7,10 @@ import { access, mkdir, readFile, unlink, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { desktopArtifactSelectionEnv } from '../tests/browser/desktop-artifact-identity.mjs';
+import {
+  auditArtifactSelectionEnv,
+  desktopArtifactSelectionEnv,
+} from '../tests/browser/desktop-artifact-identity.mjs';
 import { scrapeNativeSelection } from '../tests/browser/scrape-native-selection.mjs';
 import { matchingCrx3RsaKey } from './crx3-identity.mjs';
 import {
@@ -462,7 +465,11 @@ async function run(prepared, artifactMode) {
           MATRX_PREPARE_RECEIPT: relocatedReceipt,
           MATRX_PREPARE_ADMIN_CREDENTIALS_FILE: adminCredentialsPath,
           ...(acceptanceCase === 'audit-key-admin'
-            ? { MATRX_AUDIT_EXTENSION_DIR: extensionDir, MATRX_AUDIT_RECEIPT: relocatedReceipt }
+            ? {
+                MATRX_AUDIT_EXTENSION_DIR: extensionDir,
+                MATRX_AUDIT_RECEIPT: relocatedReceipt,
+                ...auditArtifactSelectionEnv(prepared),
+              }
             : {}),
         }
       : {}),

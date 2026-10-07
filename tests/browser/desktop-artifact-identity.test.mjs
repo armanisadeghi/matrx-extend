@@ -5,6 +5,7 @@ import { join, resolve } from 'node:path';
 import test from 'node:test';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import {
+  auditArtifactSelectionEnv,
   desktopArtifactSelectionEnv,
   verifyDesktopArtifactIdentity,
 } from './desktop-artifact-identity.mjs';
@@ -59,7 +60,7 @@ async function fixture(sourceSha, runId, artifactId) {
   };
 }
 
-test('selected desktop CI artifact is accepted for two changing source/run/artifact identities', async () => {
+test('desktop and audit callers accept two changing selected CI identities', async () => {
   for (const [index, sourceSha] of sources.entries()) {
     const runId = Date.now() + index;
     const artifactId = runId + 100;
@@ -67,6 +68,7 @@ test('selected desktop CI artifact is accepted for two changing source/run/artif
     try {
       const result = await verifyDesktopArtifactIdentity(input);
       const selectedEnv = desktopArtifactSelectionEnv({ sourceSha, runId, artifactId });
+      const auditEnv = auditArtifactSelectionEnv({ sourceSha, runId, artifactId });
       assert.deepEqual(
         [
           selectedEnv.MATRX_DESKTOP_SETTINGS_SOURCE_SHA,
@@ -79,13 +81,21 @@ test('selected desktop CI artifact is accepted for two changing source/run/artif
         [result.build.source_sha, result.build.run_id, result.build.artifact_id],
         [sourceSha, runId, artifactId],
       );
+      assert.deepEqual(
+        [
+          auditEnv.MATRX_AUDIT_SOURCE_SHA,
+          auditEnv.MATRX_AUDIT_RUN_ID,
+          auditEnv.MATRX_AUDIT_ARTIFACT_ID,
+        ],
+        [sourceSha, String(runId), String(artifactId)],
+      );
     } finally {
       await rm(target, { recursive: true, force: true });
     }
   }
 });
 
-test('desktop selection refuses wrong source, run, artifact, attempt, tree, and runtime', async () => {
+test('shared native selection refuses wrong source, run, artifact, attempt, tree, and runtime', async () => {
   const runId = Date.now() + 10;
   const artifactId = runId + 100;
   const { target, input } = await fixture(sources[0], runId, artifactId);

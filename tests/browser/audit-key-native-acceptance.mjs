@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import {
@@ -17,6 +17,7 @@ import {
   productVerificationSource,
   startSignedRead,
 } from './audit-key-native-receipts.mjs';
+import { verifyDesktopArtifactIdentity } from './desktop-artifact-identity.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { signInSettings, verifyCurrentSettingsIdentity } from './settings-native-auth-driver.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
@@ -25,9 +26,6 @@ import { click, evaluate, openSection, waitFor } from './settings-panel-driver.m
 // extension documents, and one owned disposable browser profile. No key bytes
 // or credentials are transported into the receipt.
 const REPO = resolve(import.meta.dirname, '..', '..');
-const SOURCE = '991385d9';
-const RUN_ID = 37129518563;
-const ARTIFACT_ID = 11275878549;
 const EXTENSION_DIR = process.env.MATRX_AUDIT_EXTENSION_DIR;
 const RECEIPT_PATH = process.env.MATRX_AUDIT_RECEIPT;
 const OUTPUT = join(REPO, 'test-results', `audit-key-native-${randomUUID()}.json`);
@@ -36,8 +34,8 @@ const report = {
   defect: 'EXT-D-0093',
   status: 'unverified',
   source: null,
-  artifact_id: ARTIFACT_ID,
-  run_id: RUN_ID,
+  artifact_id: null,
+  run_id: null,
   cases: [],
   failure_stage: null,
   failure_code: null,
@@ -168,22 +166,18 @@ try {
   assert.ok(EXTENSION_DIR && RECEIPT_PATH, 'audit_artifact_inputs_required');
   const extensionDir = resolve(EXTENSION_DIR);
   const receiptPath = resolve(RECEIPT_PATH);
-  const receipt = JSON.parse(await readFile(receiptPath, 'utf8'));
-  assert.equal(receipt.kind, 'local_dev_unpacked', 'audit_development_receipt_required');
-  const match = extensionDir.match(/\/ci-artifacts\/([a-f0-9]{40})\/(\d+)-(\d+)\/chrome-mv3$/);
-  assert.ok(match, 'audit_artifact_path_refused');
-  assert.equal(Number(match[2]), RUN_ID, 'audit_run_mismatch');
-  const imported = JSON.parse(
-    await readFile(join(extensionDir, '..', 'import-status.json'), 'utf8'),
-  );
-  assert.equal(imported.sourceSha, match[1], 'audit_source_mismatch');
-  assert.equal(imported.artifactId, ARTIFACT_ID, 'audit_artifact_mismatch');
-  assert.equal(imported.runId, RUN_ID, 'audit_run_mismatch');
-  assert.equal(imported.treeSha256, receipt.treeSha256, 'audit_tree_mismatch');
-  assert.ok(match[1].startsWith(SOURCE), 'audit_source_mismatch');
-  execFileSync('git', ['merge-base', '--is-ancestor', match[1], 'HEAD'], { cwd: REPO });
-  assert.equal(hashReleaseTree(extensionDir), receipt.treeSha256, 'audit_tree_mismatch');
-  report.source = { sha: match[1], version: receipt.version, tree_sha256: receipt.treeSha256 };
+  const { receipt, build } = await verifyDesktopArtifactIdentity({
+    repo: REPO,
+    extensionDir,
+    receiptPath,
+    sourceSha: process.env.MATRX_AUDIT_SOURCE_SHA,
+    runId: process.env.MATRX_AUDIT_RUN_ID,
+    artifactId: process.env.MATRX_AUDIT_ARTIFACT_ID,
+  });
+  execFileSync('git', ['merge-base', '--is-ancestor', build.source_sha, 'HEAD'], { cwd: REPO });
+  report.source = { sha: build.source_sha, version: build.version, tree_sha256: build.tree_sha256 };
+  report.run_id = build.run_id;
+  report.artifact_id = build.artifact_id;
 
   const run = await runNativeSidepanelQa({
     headed: true,

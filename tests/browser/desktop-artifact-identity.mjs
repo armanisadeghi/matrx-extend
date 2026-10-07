@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 
-export function desktopArtifactSelectionEnv(prepared) {
+function selectedArtifactIdentity(prepared) {
   assert.match(prepared.sourceSha ?? '', /^[a-f0-9]{40}$/, 'desktop_source_selection_required');
   assert.ok(
     Number.isSafeInteger(prepared.runId) && prepared.runId > 0,
@@ -15,9 +15,27 @@ export function desktopArtifactSelectionEnv(prepared) {
     'desktop_artifact_selection_required',
   );
   return {
-    MATRX_DESKTOP_SETTINGS_SOURCE_SHA: prepared.sourceSha,
-    MATRX_DESKTOP_SETTINGS_RUN_ID: String(prepared.runId),
-    MATRX_DESKTOP_SETTINGS_ARTIFACT_ID: String(prepared.artifactId),
+    sourceSha: prepared.sourceSha,
+    runId: String(prepared.runId),
+    artifactId: String(prepared.artifactId),
+  };
+}
+
+export function desktopArtifactSelectionEnv(prepared) {
+  const selected = selectedArtifactIdentity(prepared);
+  return {
+    MATRX_DESKTOP_SETTINGS_SOURCE_SHA: selected.sourceSha,
+    MATRX_DESKTOP_SETTINGS_RUN_ID: selected.runId,
+    MATRX_DESKTOP_SETTINGS_ARTIFACT_ID: selected.artifactId,
+  };
+}
+
+export function auditArtifactSelectionEnv(prepared) {
+  const selected = selectedArtifactIdentity(prepared);
+  return {
+    MATRX_AUDIT_SOURCE_SHA: selected.sourceSha,
+    MATRX_AUDIT_RUN_ID: selected.runId,
+    MATRX_AUDIT_ARTIFACT_ID: selected.artifactId,
   };
 }
 
