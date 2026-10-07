@@ -57,7 +57,7 @@
         ".research/d47-acceptance-architecture-ruling-20261006.json"
       ],
       "observation": "Installed controlled runs 37558902653/current-first and 37562111314/old-first positively observed a distinct current context and binding packet, matching target requests, current-only exact saved rows and owned cleanup; old HTTP completion is not old callback delivery. Retained real-runner source guard gives old sequence 999 versus current sequence 1 and fails the downstream row assertion when context gates are removed.",
-      "limit": "No retained installed public-site run combines the initial-load recipe with deliberately pending old/current matching requests and their ordered release. The controlled fixture is supplemental under the Showcase plan and cannot itself satisfy the public-site T57 step. No delivered old callback was seen or required under the recorded architectural-exclusion ruling."
+      "limit": "This closes the defect-specific regression/attribution requirement under the recorded architectural-exclusion ruling. T57 separately requires the ordered race under its real-public-site precondition; no retained run combines them. No delivered old callback was seen or required."
     },
     {
       "requirement": "Stale-only response never creates false success and a restored current response recovers",
@@ -83,23 +83,24 @@
     },
     {
       "requirement": "Native provenance, current artifact and owned cleanup are defensible",
-      "status": "PASS_PER_BOUNDED_RUN; NOT_ONE_INTEGRATED_PUBLIC_RACE_RETEST",
+      "status": "PASS_PER_BOUNDED_RUN; INTEGRATED_T57_RETEST_MISSING",
       "evidence": [
         ".research/d47-public-terminal-peer-20261007.json",
         ".research/d47-stale-arm-native-peer-20261007.json",
         ".research/d47-prior-saved-retest-peer-20261007.json"
       ],
       "observation": "Each cited native result identifies its imported CI app tree, hosted workflow/driver provenance, valid package/browser/guest journals, exact recipe terminal state and owned-recipe cleanup. The peer for 37600370555 checks the reviewed QA-only navigation-order repair against frozen 0.2.354.",
-      "limit": "These are different frozen artifacts. Source-path continuity does not turn their separate controlled/public observations into one public-site ordered-race run or a fresh installed retest of current HEAD."
+      "limit": "Different frozen artifacts make each observation bounded. The D47 closure_requirement does not require one artifact for its regression and public replay clauses; T57 remains unverified because its public-site ordered-race case has no receipt."
     }
   ],
   "verdict_A_behavior_and_spec": {
-    "status": "PARTIAL",
-    "passed": "The original missed-initial-request outcome is repaired for an observed real public request; controlled native old-first/current-first and stale-only branches plus causal guards support current-document isolation under the accepted architectural-exclusion mechanism.",
-    "exact_missing_requirement": "T57's public-site precondition and ordered delayed-response steps have not been observed together on one receipt-bound installed development artifact: save a real initial-load Network recipe on a public site, leave a matching prior-document response pending, navigate, release old then current, and show the exact current-document terminal saved output or an honest provenance refusal. A reviewed native trace may classify the old producer as architecturally excluded with positive current binding/context and lifecycle controls; no removed callback route must be fabricated."
+    "defect_closure_requirement": "PASS_WITH_BOUNDED_ARTIFACT_LIMITS",
+    "t57_case": "PARTIAL_UNVERIFIED",
+    "reason": "The original D47 closure_requirement can be satisfied by separate accepted regression/controlled-native isolation and an installed public-site saved replay. The retained current-first, old-first, stale-only, manual/prior-run and higher-old-sequence guards plus peer reviews meet the documented architectural-exclusion proof mechanism. Public HN initial capture and exact saved replay are independently accepted. T57 still requires the old-then-current race under its public-site precondition; no retained receipt shows that combined case.",
+    "exact_missing_t57_requirement": "On a receipt-bound installed development artifact at a real public site, use an owned initial-load Network recipe, hold a matching prior-document response across navigation, release old then current, and verify current-only terminal saved output or honest provenance refusal with positive current context/binding and old lifecycle controls. Architectural exclusion may substitute for an unreachable old binding callback, paired with causal guards."
   },
   "verdict_B_evidence_and_quality": {
-    "status": "PASS_FOR_BOUNDED_CLAIMS; PARTIAL_FOR_CLOSURE",
+    "status": "PASS_FOR_DEFECT_CLOSURE_EVIDENCE; PARTIAL_FOR_T57_CASE",
     "basis": "Fresh independent peers checked original hosted artifacts or retained receipts, source/driver linkage, exact terminal UI, resource journals and cleanup. A retained higher-old-sequence mutation reaches the saved replay row assertion, and manual/prior-run causal guards have separate reviews. Current D47 runtime paths remain unchanged across frozen tested versions. The public and adversarial observations remain split across different artifacts and page types, so no single receipt proves the canonical integrated acceptance step.",
     "limits": [
       "No tests or native rerun in this audit",
@@ -109,8 +110,15 @@
     ]
   },
   "recommended_canonical_transition": {
-    "now": "Keep EXT-D-0047 in-fix and EXT-F-1012-T57 admin unverified; retain bounded PASS claims in evidence detail.",
-    "after_exact_gap": "If an independent peer accepts the integrated public-site ordered-race receipt with current-document terminal output or honest refusal and appropriate lifecycle/provenance controls, move EXT-D-0047 through retest to closed and mark the T57 admin cell pass, with exact artifact and architectural-exclusion limitations recorded. Do not infer full Showcase health or other mode/case closure.",
-    "no_required_callback_route": "The recorded architectural-exclusion ruling explicitly permits positive native exclusion paired with delivered-stale-event causal guards; an old Runtime.bindingCalled callback need not be induced."
+    "defect": "A root closure decision is now supported: record D47 retest as passing and transition in-fix -> closed, citing the separate peer-accepted regression/controlled-native and installed public-site evidence, exact frozen artifact identities, source-path continuity, and architectural-exclusion limit. The closure claim must not say an old callback was delivered/rejected or that current HEAD/new packages were natively tested.",
+    "case": "Keep EXT-F-1012-T57 admin unverified. Its explicit public-site ordered-race scenario is still missing; preserve the exact gap and run it before marking the case pass.",
+    "no_required_callback_route": "The recorded architectural-exclusion ruling permits positive native exclusion paired with delivered-stale-event causal guards; do not recreate the removed callback route."
+  },
+  "governing_scope_interpretation": {
+    "defect_closure_requirement_exact": "Add regression coverage for an initial request racing tap installation and a delayed old-document response arriving after navigation loading; prove current-document attribution and honest retrigger guidance. Then verify saved request replay on a real public website using an installed build.",
+    "showcase_plan_closure_exact": "A defect closes only after original reproduction and surrounding cases pass with a fresh independent verifier. Unit tests are diagnosis/regression evidence, not UI proof. No whole-feature health claim until each applicable inventory cell resolves.",
+    "t57_public_precondition_exact": "Fresh development build; verify receipt and reload the extension and page in Chrome. Use a real public website with a reproducible request during initial document load and an owned recipe. No localhost/test server. Guest/member denial uses EXT-F-1012-T38.",
+    "t57_ordered_step_exact": "Start a replay with an old document response pending; after navigation begins and the new document starts, release the old response and then the current document response.",
+    "interpretation": "The defect-specific closure_requirement deliberately asks for regression coverage of the racing/delayed-response scenarios and then an installed public-site saved replay; it does not say the adversarial race must be staged on the public site or that both must use one artifact. The broader Showcase plan requires fresh independent UI review of original and surrounding behavior; the accepted controlled native sidepanel runs supply bounded UI behavior with positive Chrome controls and peers, while retained causal mutants supply the regression. The public HN run separately supplies real-site installed replay. The 2026-10-06 acceptance ruling said no closure at that checkpoint, before the later positive native and peer receipts; it listed proof conditions, not an immutable hold. T57 is stricter: its public-site precondition applies to its ordered old-then-current steps, so the integrated public-site scenario remains missing for the inventory cell. No requirement is waived or rewritten."
   }
 }
