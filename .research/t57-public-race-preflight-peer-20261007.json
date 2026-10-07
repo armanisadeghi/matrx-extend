@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "role": "fresh independent source verifier; zero implementation authorship",
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "scope": "Review readiness for one bounded native public-site timing-interception preflight only; no native/browser/test/build/workflow dispatch, no production or canonical edits",
+  "provenance": {
+    "implementation_commit": "9ec4119d43a3d94c89342755304ff0486cfbc203",
+    "builder_report_commit": "e604493c",
+    "builder_report": ".research/t57-public-race-preflight-source-20261007.json",
+    "governing_feasibility": ".research/d47-public-race-feasibility-20261007.json",
+    "acceptance": "docs/stabilization/SHOWCASE-PLAN.md:15-25 and docs/stabilization/inventory.json:19740-19760",
+    "review_method": "Inspected builder's exact commit, current source, source tests, retained guarded journals and builder report; no commands that launch tests, build, browser or hosted workflow"
+  },
+  "verdict_a": {
+    "status": "PARTIAL",
+    "scope": "Source route is executable and opt-in for the real public HN hosted case, with exact CI artifact wiring, genuine request response-stage pause/continue and owned-recipe cleanup. Readiness for a success-claiming native capability preflight needs the findings below corrected. Full T57 acceptance remains unverified.",
+    "findings": [
+      {
+        "severity": "Important",
+        "location": "tests/browser/showcase-d47-public-initial-load.mjs:580-582; tests/browser/showcase-d47-public-race-preflight.mjs:39-60",
+        "issue": "The only active-replay gate is a Patterns row/spinner observation. No positive extension-side debugger lease or capture-armed attestation is bound to the old pause. The preflight can label timing_interception_feasible from independent page CDP traffic while the extension's debugger acquisition is absent or has ended.",
+        "why_it_matters": "The explicit prerequisite is response-stage interception while the extension debugger lease is active, so a successful label must include a positive lease/armed signal linked to this run and tab. A native failure remains safely unverified, but a possible false success is not a safe preflight verdict.",
+        "required_correction": "Bind an existing positive extension capture/lease signal to the old paused request or conservatively leave the lease coexistence verdict unverified; keep this a bounded capability check, not a full T57 pass."
+      },
+      {
+        "severity": "Important",
+        "location": "tests/browser/showcase-d47-public-race-preflight.mjs:11-35,113-144,158-164; .research/d47-public-race-feasibility-20261007.json:safe_future_route.sequence[1]",
+        "issue": "The two SHA-256 values identify the request URL and POST body. The controller never obtains or digests either original response body, so the retained receipt cannot independently identify the delayed public responses or substantiate unchanged response contents beyond the no-modification command path.",
+        "why_it_matters": "The feasibility contract requires safe metadata plus a body digest and unchanged continuation of the genuine public response. Request-body identity alone does not meet that response provenance requirement.",
+        "required_correction": "Retain a safe digest of each original response body, or record a technically justified equivalent integrity signal that preserves timing-only continuation and does not emit response bytes. If CDP cannot provide this without consuming or altering the response, mark integrity unverified rather than claiming it."
+      }
+    ],
+    "limits": [
+      "No native run was dispatched, so Chrome CDP co-attachment, public HN repeatability, request cancellation behavior and callback delivery remain unknown.",
+      "Even a corrected successful preflight would establish only interception feasibility; it would not close T57's old/current provenance and terminal-output acceptance."
+    ]
+  },
+  "verdict_b": {
+    "status": "PARTIAL",
+    "positive_evidence": [
+      "Opt-in routing preserves the ordinary public case and binds to the exact CI source/run/artifact identity; no localhost fixture is substituted.",
+      "Fetch uses Response-stage patterns and continueRequest with requestId only; no fulfillRequest, failRequest, body replacement, header override or product-runtime edit occurs.",
+      "The controller records full URL and POST-body hashes without raw URL/body, requires two matching identities, distinct loaders/contexts, ordered releases, finished Network lifecycles and disabled/detached cleanup; failed or ambiguous states are unverified.",
+      "Reviewed guarded source journals show final controller 3/3, existing public 4/4 and route 13/13 after one corrected route assertion. Refused resource attempts and initial failed route attempt are retained rather than counted as passes."
+    ],
+    "findings": [
+      {
+        "severity": "Important",
+        "location": "tests/browser/showcase-d47-public-race-preflight.test.mjs:37-108,138-159",
+        "issue": "The causal mock emits Network.loadingFinished as a direct effect of continueRequest and the verdict mutants exercise supplied facts. They do not guard the missing extension lease attestation or response-body provenance, so the green tests cannot prove the two required preflight gates.",
+        "required_correction": "Add negative controls that make the actual verdict fail when lease/armed proof or response integrity evidence is missing, then retain a green rerun through the authorized guarded test path."
+      }
+    ]
+  },
+  "disposition": "CORRECT_SOURCE_BEFORE_ONE_BOUNDED_NATIVE_PREFLIGHT",
+  "resource_limit": "Reviewer did not run tests under the explicit no-tests brief. The /Users common-docs cross-repo path named in AGENTS.md was unavailable from this checkout; governing acceptance files in this repo were read directly."
+}
