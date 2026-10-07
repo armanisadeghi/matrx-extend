@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0155",
+  "scope": "One guarded signed-out guest Settings retest against the exact previously failing frozen CI development artifact. Native observations are case-bounded; no feature-wide health, Store-readiness, or release claim is made.",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37693743871",
+    "run_id": 37693743871,
+    "head_branch": "main",
+    "head_sha": "34544753cd553ff34677dbba8be99ec1175defc5",
+    "includes_frozen_identity_fix": true,
+    "acceptance_lane": "A",
+    "acceptance_case": "settings-controls",
+    "role": "signed-out guest",
+    "runner_label": "macos-15",
+    "job_id": 113040067866,
+    "job_status": "completed",
+    "job_conclusion": "success",
+    "job_started_at": "2026-10-07T22:07:29Z",
+    "job_completed_at": "2026-10-07T22:13:49Z",
+    "job_duration": "6m20s",
+    "attempts": 1
+  },
+  "frozen_artifact": {
+    "ci_run_id": 37684665825,
+    "artifact_id": 11511120729,
+    "artifact_name": "matrx-extend-development-test-14305391032aaf326c57ce196d50518f0d42f047-37684665825-1",
+    "ci_conclusion": "success",
+    "source_sha": "14305391032aaf326c57ce196d50518f0d42f047",
+    "version": "0.2.387",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "dd75d3643a6339ebac79871bc30d316bb65029f37424a7fa2638fee4d9a507f5",
+    "receipt_sha256": "1b1bf110e0e87c762311e28966dbe0d2ebb3039455075381811e9c746f8f6a18",
+    "provenance_sha256": "2f09dbeffd6709ca0be7c6e78ecb529be992e3d7570cab679ee092e138bb1cb8",
+    "github_archive_digest": "sha256:d2ccf8cc77f60ed0c55a2fad9d7afc91a3a226588c810b84d4f21419493ee904",
+    "verification": "GitHub run/workflow/artifact metadata passed verifyGitHubMetadata; downloaded archive SHA-256 matched GitHub digest; provenance, source-commit package version, manifest, extension ID, and full tree passed verifyDownloadedTree. The native report confirms the loaded 0.2.387 artifact tree and marks build.verified=true. The later workflow checkout was 0.2.388."
+  },
+  "native_outcome": {
+    "status": "partial",
+    "driver_report_status": "unverified",
+    "driver_report_sha256": "a05a30769c2c2c6ee7aeaadd95c24bc704bcc7eed979f8b85f78a7a0172bfb04",
+    "findings": [
+      "The setup/version mismatch is repaired: the exact 0.2.387 imported artifact reached native assertions from workflow head 34544753cd553ff34677dbba8be99ec1175defc5. Artifact identity and tree were verified. The old failed attempt 37686070986 had zero control steps and receives no native acceptance credit.",
+      "EXT-F-1003-T22: PASS, 2/2 recorded criteria. The Advanced agent capabilities section, advanced text, and admin controls were absent before and after Settings reload.",
+      "EXT-F-1003-T37: PASS, 3/3 recorded criteria. Deep clean began false, toggled true, and remained true with the coming-soon hint after reload; cleanup restored the original false value.",
+      "EXT-F-1003-T46: bounded evidence only. All six assertions in this driver run passed for valid port 49206, post-save worker rediscovery, reload persistence, rejection of 65536 while retaining the saved port, clearing the error/override, and persistence after reload. Boundary values 1 and 65535 were not exercised, so this is not a full mapped-case pass.",
+      "EXT-F-1003-T70: partial, 5/10 criteria passed and 5/10 remain unverified. Chrome identity, extension/manifest/receipt/runtime identity, available password-flow API readiness, a real no-update result, and post-reload identity/readiness passed. API-unavailable, update-available, throttled, update-error, and update-API-unavailable branches were not exercised."
+    ],
+    "overall_limit": "Native Settings controls were exercised, but T46 boundary cases and T70 alternate API/update branches remain unverified. Do not promote this to full T46/T70 acceptance or a product-health claim."
+  },
+  "resource_verdicts": [
+    {
+      "run_id": "hosted-package-37693743871-1",
+      "journal": "evidence/resource-journals/hosted-package-37693743871-1.jsonl",
+      "journal_sha256": "bf7fca84ef6f0131b76fed52b8a710146bd4f272956bf112b70e902571b0f569",
+      "event_count": 4,
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "final_decision": "valid",
+      "final_at": "2026-10-07T22:09:23.015Z"
+    },
+    {
+      "run_id": "hosted-browser-37693743871-1",
+      "journal": "evidence/resource-journals/hosted-browser-37693743871-1.jsonl",
+      "journal_sha256": "6f6a1cf93eb73c6d6d0ae643cdbc0f23ff51e2c9beff0fdb96fd2e74a3dae102",
+      "event_count": 4,
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "final_decision": "valid",
+      "final_at": "2026-10-07T22:11:25.507Z"
+    },
+    {
+      "run_id": "hosted-guest-37693743871-1",
+      "journal": "evidence/resource-journals/hosted-guest-37693743871-1.jsonl",
+      "journal_sha256": "6a2f88a17475900a07de98945365c2c93d98e237a52c572d2e422de1ba21ef4f",
+      "event_count": 5,
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "final_decision": "valid",
+      "healthy_watch_count": 1,
+      "final_at": "2026-10-07T22:13:39.554Z"
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "evidence/screenshots/native-side-panel.png",
+      "sha256": "7014b991b2908b07a38bb4189bff80a010f94ac1615c42aad08cc55b60de4276",
+      "observation": "Native side panel showing the signed-out guest surface."
+    },
+    {
+      "path": "evidence/screenshots/normal-target-after-open.png",
+      "sha256": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89",
+      "observation": "Normal browser target used by the harness. These screenshots document the native setup; control-level evidence is the actual observed state and assertions in evidence/settings-local-controls-acceptance.json."
+    }
+  ],
+  "evidence_layout": {
+    "artifact_receipt_and_provenance": "evidence/artifact/",
+    "full_native_assertions_and_steps": "evidence/settings-local-controls-acceptance.json",
+    "current_resource_journals": "evidence/resource-journals/",
+    "screenshots": "evidence/screenshots/",
+    "extraction_note": "The downloaded run artifact contained nested matrx-extend/matrx-extend directories. All three current run journals were read from that nested extraction. Stale hosted-* journals for run 37105304739 were excluded."
+  },
+  "sensitive_output": "No credentials or temporary secret values are included."
+}
