@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "58f41d1e",
+  "scope": "Fresh independent source review of the T27/T61/T62 diagnostic repair. No native, browser, build, or release execution.",
+  "verdict_A_source_readiness_and_native_status": {
+    "status": "source_ready_native_pending",
+    "finding": "The runner sets a case and fixed step before each added storage read, reload, trusted click, wait, and comparison. The outer failure handler now preserves the target and boundary through auditMissingCaseFailure. Existing signed WebMCP receipt, filter, cancel, and confirmed rotation paths remain connected to the driver. T86 still checks zero active-key writes after retry, but direct rotateDeviceKey invocation absence remains open.",
+    "inventory": "Do not promote T27, T61, T62, or T86 based on this source review. The changed runner requires a fresh native run against an exact current artifact."
+  },
+  "verdict_B_diagnostic_and_test_quality": {
+    "status": "prior_important_finding_addressed",
+    "finding": "T27, T61, and T62 failures have distinct allowlisted case and step codes. Diagnostic observations are restricted to known origin, integer counts bounded to 0..1000, and booleans for dialog visibility and unchanged key; the helper drops unknown fields and never copies raw errors, key IDs, receipt rows, or page content. The prior generic audit_native_unverified collapse is avoided at every newly added boundary. Synthetic red controls detect dropped rows, false empty state, and wrong WebMCP count; they establish comparator sensitivity, not native product behavior.",
+    "residual_limit": "The new diagnostic unit tests call the mapper directly; native integration of its outer catch remains unverified until the focused run."
+  },
+  "checks": [
+    "Reviewed 58f41d1e diff and actual runner call sites, catch ordering, signed receipt path, and prior b4625718 finding.",
+    "node --test tests/browser/audit-key-native-case-diagnostics.test.mjs tests/browser/audit-key-native-display.test.mjs tests/browser/audit-key-native-faults.test.mjs: 18 passed, 0 failed."
+  ],
+  "overall": "Prior Important diagnostic gap is addressed in source. Proceed to root-owned native execution while keeping T86 direct invocation criterion open."
+}
