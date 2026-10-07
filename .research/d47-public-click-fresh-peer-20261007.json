@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "reviewed_commit": "9cfe7403cb20e31531a3154cbcfef86930ecccd8",
+  "review_mode": "Fresh independent source, diff, test-oracle, route, dependency, and resource-journal review; no test, browser, build, database, or credential execution",
+  "verdict_a_spec": {
+    "result": "SOURCE_READY_FOR_CURRENT_ARTIFACT_NATIVE; NATIVE_UNVERIFIED",
+    "basis": "The prior blocking callback omission is repaired in the real public driver: its eight trusted click sites, including cleanup, call publicTrustedClick with the report; that wrapper supplies the synchronous recorder required by trustedD47PanelClick. The route still selects this public HN driver and its exact CI development artifact receipt. This removes the known pre-capture failure, but only a fresh hosted native run can establish actual public initial-response capture, exact saved result or honest no-match guidance, and confirmed deletion.",
+    "scope_limit": "This bounded public case alone does not close T57 stale/manual/sequence branches or D47 as a whole. No current-artifact native receipt was reviewed."
+  },
+  "verdict_b_quality": {
+    "result": "PASS_SOURCE_WITH_NATIVE_LIMIT",
+    "findings": [],
+    "evidence": "The new test imports publicTrustedClick from the actual routed driver and exercises the production trustedD47PanelClick, observeD47PanelTarget, and waitFor path with a DOM-backed panel and a CDP transport stand-in. The original undefined-recorder call rejects before any mouse input; corrected Network and exact saved-pattern clicks assert pressed/released input and staged boundary observations, including exact-row and host counts. The guard covers representative clicks, while source inspection confirms all eight production call sites use the same wrapper. The public test is registered in CI, happy-dom is declared and locked, and the hosted route test targets the same driver. Cleanup still verifies row removal; receipt observations retain counts and booleans without selected row text, URL, response body, or credentials."
+  },
+  "recorded_checks": {
+    "source_test": "Builder report says admitted a3 passed 3/3; journal independently confirms admission, child exit 0, and valid final decision. Test stdout was not preserved in the reviewed evidence, so exact count comes from the builder report and test inventory.",
+    "route_test": "Builder report says admitted route-a1 passed 9/9; journal independently confirms admission, child exit 0, and valid final decision. Test stdout was not preserved in the reviewed evidence.",
+    "setup_failures": "a1 was refused before child start due to ENOENT at the resource preflight path. a2 admitted and child exited 1; builder records a happy-dom visibility fixture failure, then changed the fixture. Neither is evidence of product failure; a3 is the corrected admitted run.",
+    "fresh_execution": "none, by source-only brief"
+  },
+  "recommendation": "Accept the callback correction for current-artifact native testing. Keep T57/D47 open pending the exact hosted public native receipt and its observed response, saved terminal outcome, and cleanup."
+}
