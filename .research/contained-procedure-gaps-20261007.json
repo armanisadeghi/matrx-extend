@@ -32,11 +32,11 @@
     "owned_fixture": [
       "In each role/profile, use save_guidance_note through the same manual Tools runner with a unique recognizable domain (for example procedure-guidance.invalid), caption (for example EXT-F-4139-T01 member fixture), and short harmless text (for example owned synthetic guidance note). These are test-created items, never pre-existing user data.",
       "Require save_guidance_note to return {ok:true,id:<UUID>,domain:<chosen domain>}. Record the exact returned UUID privately for subsequent get/delete calls; use no guessed ID for a positive branch. Keep separate IDs for member and admin. Stop that profile if saving fails.",
-      "Keep only the returned IDs and sanitized result evidence. Do not browse, copy, modify, or delete unrelated guidance. After every attempt, clean up each successfully created fixture by its exact returned ID; if cleanup cannot be confirmed locally and in the cloud, record an open cleanup item for that ID and do not claim a full pass."
+      "Keep only the returned IDs and sanitized result evidence. Do not browse, copy, modify, or delete unrelated guidance. After every attempt, clean up each successfully created fixture by its exact returned ID; if cleanup cannot be confirmed locally and by an exact-ID cloud tombstone or exact-ID absence when the save never reached cloud, record an open cleanup item for that ID and do not claim a full pass."
     ],
     "cloud_observation": [
       "Saving and deleting update chrome.storage.local first and start fire-and-forget cloud work. A local {ok:true}, a warm read, or extension reload alone does not prove cloud persistence, sync, or durable deletion.",
-      "For any cloud claim, verify only the exact owned UUID in extend.wbx_guidance using an authorized scoped read or observe an equivalent independent second-profile hydration. After save, require the matching live row and fields; after delete, require a deleted_at tombstone and no live item on a hydrated independent profile. Do not use a broad table dump or inspect unrelated rows. If that observation is unavailable, report cloud sync/deletion unverified while retaining the local handler result.",
+      "For any cloud claim, verify only the exact owned UUID in extend.wbx_guidance using an authorized scoped read or observe an equivalent independent hydration in a separate profile signed in as the same principal. After save, require the matching live row and fields; after delete, require a deleted_at tombstone for a confirmed cloud row and no live item after independent hydration under the same principal. If the save never reached cloud, exact-ID cloud absence is sufficient for cleanup but does not verify cloud deletion. Do not use a broad table dump or inspect unrelated rows. If that observation is unavailable, report cloud sync/deletion unverified while retaining the local handler result.",
       "Cloud hydration runs on signed-in sidepanel mount and merges last-write-wins; a same-profile reload usually retains the local cache and is only a local persistence check. A failed fire-and-forget push or tombstone can leave a cloud mismatch or permit reappearance; record this as a failure or unresolved cloud limit, not a pass."
     ]
   },
@@ -62,7 +62,7 @@
         "Positive get returns {ok:true,item:<owned note>} with exact returned UUID and fixture fields before and after reload.",
         "Missing get returns {ok:false,reason:\"No guidance item with id=procedure-missing-EXT-F-4139-20261007\"}; no item payload.",
         "Invalid {} is rejected by the runner schema and does not call the handler. A found unexpected ID, wrong payload, thrown storage failure, or missing owned item fails the corresponding branch.",
-        "Cloud persistence is claimed only when the exact live cloud row or an independent hydrated copy is observed; otherwise mark that dimension unverified."
+        "Cloud persistence is claimed only when the exact live cloud row or an independently hydrated copy under the same signed-in principal is observed; otherwise mark that dimension unverified."
       ],
       "dimensions": [
         "valid-owned-id",
@@ -107,14 +107,14 @@
         "In Tools → Catalog run delete_guidance_item with {\"id\":\"<exact returned owned UUID>\"}. Require {ok:true,deleted:true}. Immediately run get_guidance_item for that UUID and require the missing result.",
         "Run delete_guidance_item again on the same UUID; require the source-defined missing response and no deleted=true. This checks the absent branch without targeting unrelated data.",
         "Enter {} for delete_guidance_item and select Run; require runner schema mismatch without handler invocation.",
-        "Reload the extension and reopen the side panel. Run get_guidance_item for the exact owned UUID again and require missing. Observe the exact cloud tombstone and independently hydrated absence before asserting durable cloud deletion. If a late push resurrects the row or a second profile sees the note, report failure and repeat cleanup for this owned UUID only.",
-        "Repeat with a distinct owned UUID in the other existing role/profile. At end verify both recorded fixture UUIDs are locally absent and, where cloud observation was available, tombstoned. Track any residual fixture ID as an open cleanup item."
+        "Reload the extension and reopen the side panel. Run get_guidance_item for the exact owned UUID again and require missing. Observe the exact cloud tombstone and independently hydrated absence under the same signed-in principal before asserting durable cloud deletion. If the save never reached cloud, exact-ID cloud absence confirms cleanup only. If a late push resurrects the row or that same-principal profile sees the note, report failure and repeat cleanup for this owned UUID only.",
+        "Repeat with a distinct owned UUID in the other existing role/profile. At end verify both recorded fixture UUIDs are locally absent and, where cloud observation was available, either tombstoned or absent by exact-ID cloud read when the save never reached cloud. Track any residual fixture ID as an open cleanup item."
       ],
       "expected": [
         "The first delete of an existing owned item returns {ok:true,deleted:true}; subsequent get returns {ok:false,reason:\"No guidance item with id=<exact returned owned UUID>\"} before and after reload.",
         "Second delete returns {ok:false,reason:\"No guidance item with id=<exact returned owned UUID>\"}; it does not report deleted=true.",
         "Invalid {} is rejected by the runner schema. A first-delete missing result, surviving local item, unexpected result, or thrown storage failure fails the corresponding branch.",
-        "Local delete success does not prove cloud deletion. Claim remote durability only after observing the exact row tombstone and independent hydrated absence; otherwise mark cloud deletion unverified."
+        "Local delete success does not prove cloud deletion. Claim remote durability only after observing the exact row tombstone and independent same-principal hydrated absence; otherwise mark cloud deletion unverified."
       ],
       "dimensions": [
         "valid-owned-id",
@@ -148,7 +148,7 @@
   },
   "unsupported_scope": [
     "Guest denial, dispatcher permissions, Ask/Act behavior, live binding, and agent request reachability are outside this direct manual Tools path and need separate cases.",
-    "An independent device/profile or scoped cloud-row observation may be unavailable during execution. In that event record cloud persistence and deletion as unverified; do not downgrade the positive local get/delete branches to missing-ID-only coverage."
+    "An independent same-principal device/profile or scoped cloud-row observation may be unavailable during execution. In that event record cloud persistence and deletion as unverified; do not downgrade the positive local get/delete branches to missing-ID-only coverage."
   ],
   "review_notes": [
     "This is a source procedure proposal for existing inventory cases. It changes no canonical inventory, applicability, case IDs, test statuses, or runtime coverage claims.",
