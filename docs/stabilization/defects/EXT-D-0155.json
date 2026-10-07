@@ -7,7 +7,7 @@
   "title": "Native runners reject valid frozen artifacts when workflow checkout version advances",
   "severity": "S2: prevents acceptance before UI; product impact not established",
   "priority": "P1: prerequisite for frozen-artifact batches",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "root/settings_resource_diagnosis",
   "preconditions": [
     "Successful pinned CI37684665825/artifact11511120729/source14305391 is development0.2.387; workflow37686070986 checkout package is0.2.388."
@@ -22,9 +22,10 @@
   "evidence": [
     ".research/independent-product-batch-20261007.json",
     ".research/frozen-artifact-version-repair-20261007.json",
-    ".research/frozen-identity-peer-20261007.json"
+    ".research/frozen-identity-peer-20261007.json",
+    ".research/frozen-identity-final-peer-20261007.json"
   ],
-  "fix_commits": ["bddbee75"],
+  "fix_commits": ["bddbee75", "f6954e09"],
   "verification": "Fresh peer source behavior PASS, quality PARTIAL: add second valid version and prove constant-return guard. Native setup and Settings behavior retest remain pending.",
   "transition_history": [
     {
@@ -44,8 +45,14 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Source fix bddbee75 accepted behaviorally; peer-required forcing test correction in progress."
+    },
+    {
+      "at": "2026-10-07T22:03:29.915565+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Fresh independent source and quality review pass after corrective causal guards. Original frozen-artifact native retest assigned; no product cells promoted."
     }
   ],
   "closure_requirement": "Fresh peer accepts actual identity guard including differing workflow/artifact versions and corrupt artifact refusal, followed by guarded native original Settings setup/controls retest. Keep sibling native scopes explicit.",
-  "next_action": "Finish corrective tests and fresh review, then native frozen Settings retest."
+  "next_action": "Complete assigned guarded original-artifact native retest and independent evidence review before closure."
 }

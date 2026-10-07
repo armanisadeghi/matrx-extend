@@ -7,7 +7,7 @@
   "title": "Media copy driver races restored result pane and rejects tooltip-migrated titles",
   "severity": "S2: prevents trustworthy media acceptance; product defect not established",
   "priority": "P1: unblock exhaustive Scrape guest retest",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "root/scrape_link_repair",
   "preconditions": [
     "Original native run37670744036, frozen development0.2.385 source87f6649b; use the controlled clinic page from that run and signed-out profile."
@@ -24,9 +24,10 @@
     ".research/scrape-links-repair-20261007.json",
     ".research/scrape-links-repair-peer-20261007.json",
     ".research/scrape-selector-final-peer-20261007.json",
-    ".research/scrape-links-native-retest-20261007.json"
+    ".research/scrape-links-native-retest-20261007.json",
+    ".research/scrape-counted-tab-peer-20261007.json"
   ],
-  "fix_commits": ["f8c0ad58", "42a51b13"],
+  "fix_commits": ["f8c0ad58", "42a51b13", "92ddec30"],
   "transition_history": [
     {
       "at": "2026-10-07T21:05:54.818023+00:00",
@@ -63,8 +64,14 @@
       "from": "retest-fail",
       "to": "in-fix",
       "reason": "Fresh Sol escalation owns actual rendered DOM predicate and causal guard repair."
+    },
+    {
+      "at": "2026-10-07T22:03:29.523989+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Fresh independent source and quality review pass after corrective causal guards. Original frozen-artifact native retest assigned; no product cells promoted."
     }
   ],
   "closure_requirement": "Independent source review plus guarded native original and surrounding Video/Links warm/reload retest; do not promote feature-wide or other-mode health.",
-  "next_action": "root/scrape_readiness_escalation repairs demonstrated Video readiness regression; fresh independent review before next native retest."
+  "next_action": "Complete assigned guarded original-artifact native retest and independent evidence review before closure."
 }
