@@ -272,65 +272,74 @@ test('canceled old release still attempts current release and every owned cleanu
   assert.equal(JSON.stringify(report).includes('private.example'), false);
 });
 
-test('a response body settling after cleanup cannot append a late pause observation', async () => {
-  const cdp = new EventEmitter();
-  const calls = [];
-  let resolveBody;
-  let bodyStarted;
-  const bodyStartedPromise = new Promise((resolve) => {
-    bodyStarted = resolve;
-  });
-  const bodyPromise = new Promise((resolve) => {
-    resolveBody = resolve;
-  });
-  cdp.send = async (method, args = {}) => {
-    calls.push({ method, requestId: args.requestId });
-    if (method === 'Page.getFrameTree')
-      return { frameTree: { frame: { id: 'main', loaderId: 'initial' } } };
-    if (method === 'Runtime.enable')
-      queueMicrotask(() =>
-        cdp.emit('Runtime.executionContextCreated', {
-          context: { uniqueId: 'initial-context', auxData: { isDefault: true, frameId: 'main' } },
-        }),
-      );
-    if (method === 'Fetch.getResponseBody') {
-      bodyStarted();
-      return bodyPromise;
-    }
-    return {};
-  };
-  cdp.detach = async () => {
-    calls.push({ method: 'detach' });
-  };
-  const controller = await createPublicRacePreflight(
-    { context: () => ({ newCDPSession: async () => cdp }) },
-    {},
-    '/1/indexes/Item_dev/query',
-    500,
-  );
-  cdp.emit('Network.requestWillBeSent', { requestId: 'old', frameId: 'main', loaderId: 'initial' });
-  cdp.emit('Fetch.requestPaused', {
-    requestId: 'hold-old',
-    networkId: 'old',
-    responseStatusCode: 200,
-    request,
-  });
-  await bodyStartedPromise;
-  await controller.cleanup();
-  const factsAtCleanup = JSON.stringify(controller.facts);
-  resolveBody({ body: '{"hits":[]}', base64Encoded: false });
-  await new Promise((resolve) => setImmediate(resolve));
-  cdp.emit('Network.loadingFinished', { requestId: 'old' });
-  assert.equal(JSON.stringify(controller.facts), factsAtCleanup);
-  assert.equal(controller.facts.paused.length, 0);
-  assert.deepEqual(controller.facts.cleanup_attempts, [
-    { step: 'unclassified_held_response', outcome: 'continued' },
-    { step: 'disable', outcome: 'completed' },
-    { step: 'detach', outcome: 'completed' },
-  ]);
-  assert.equal(calls.at(-2).method, 'Fetch.disable');
-  assert.equal(calls.at(-1).method, 'detach');
-  assert.equal(assessPublicRacePreflight(controller.facts), 'unverified');
+test('a response body resolving or rejecting after cleanup cannot append a late pause observation', async () => {
+  for (const settlement of ['resolve', 'reject']) {
+    const cdp = new EventEmitter();
+    const calls = [];
+    let settleBody;
+    let bodyStarted;
+    const bodyStartedPromise = new Promise((resolve) => {
+      bodyStarted = resolve;
+    });
+    const bodyPromise = new Promise((resolve, reject) => {
+      settleBody = { resolve, reject };
+    });
+    cdp.send = async (method, args = {}) => {
+      calls.push({ method, requestId: args.requestId });
+      if (method === 'Page.getFrameTree')
+        return { frameTree: { frame: { id: 'main', loaderId: 'initial' } } };
+      if (method === 'Runtime.enable')
+        queueMicrotask(() =>
+          cdp.emit('Runtime.executionContextCreated', {
+            context: { uniqueId: 'initial-context', auxData: { isDefault: true, frameId: 'main' } },
+          }),
+        );
+      if (method === 'Fetch.getResponseBody') {
+        bodyStarted();
+        return bodyPromise;
+      }
+      return {};
+    };
+    cdp.detach = async () => {
+      calls.push({ method: 'detach' });
+    };
+    const controller = await createPublicRacePreflight(
+      { context: () => ({ newCDPSession: async () => cdp }) },
+      {},
+      '/1/indexes/Item_dev/query',
+      500,
+    );
+    cdp.emit('Network.requestWillBeSent', {
+      requestId: 'old',
+      frameId: 'main',
+      loaderId: 'initial',
+    });
+    cdp.emit('Fetch.requestPaused', {
+      requestId: 'hold-old',
+      networkId: 'old',
+      responseStatusCode: 200,
+      request,
+    });
+    await bodyStartedPromise;
+    await controller.cleanup();
+    const factsAtCleanup = JSON.stringify(controller.facts);
+    if (settlement === 'resolve') settleBody.resolve({ body: '{"hits":[]}', base64Encoded: false });
+    else settleBody.reject(new Error('Body unavailable https://private.example/?token=secret'));
+    await new Promise((resolve) => setImmediate(resolve));
+    cdp.emit('Network.loadingFinished', { requestId: 'old' });
+    assert.equal(JSON.stringify(controller.facts), factsAtCleanup);
+    assert.equal(controller.facts.paused.length, 0);
+    assert.deepEqual(controller.facts.cleanup_attempts, [
+      { step: 'unclassified_held_response', outcome: 'continued' },
+      { step: 'disable', outcome: 'completed' },
+      { step: 'detach', outcome: 'completed' },
+    ]);
+    assert.equal(calls.at(-2).method, 'Fetch.disable');
+    assert.equal(calls.at(-1).method, 'detach');
+    assert.equal(assessPublicRacePreflight(controller.facts), 'unverified');
+    assert.equal(controller.facts.cleanup, 'disabled_detached');
+    assert.equal(JSON.stringify(controller.facts).includes('private.example'), false);
+  }
 });
 
 test('disable and detach failures independently preserve later cleanup attempts', async () => {

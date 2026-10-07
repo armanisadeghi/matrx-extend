@@ -34,6 +34,17 @@
       "journal_sha256": "68e739af14331abaa194d52c2299f65ce9da6ba2efd0e3810ddde2748d76e44b"
     }
   ],
+  "late_rejection_follow_up": {
+    "peer_source": ".research/t57-public-cleanup-race-peer-20261007.json",
+    "change": "The deferred response-body test now exercises both resolution and secret-bearing rejection after completed cleanup. Each branch asserts no later fact change or extra continuation, truthful disabled_detached cleanup, and unverified overall preflight acceptance.",
+    "test_source_sha256": "bf2537102d995c01aebcf98fd31e58345793a938ec11a879134592e4fb3bddd2",
+    "run_id": "t57-public-late-reject-20261007",
+    "result": "9 passed, 0 failed; resource admitted and valid",
+    "full_sanitized_stdout": ".research/t57-public-late-reject-20261007.stdout",
+    "stdout_sha256": "7ea37da0dc366e82e6f20aa7a91c744b662e89e0dec06765dec1809ecaa6e8da",
+    "journal": "docs/stabilization/resource-journals/t57-public-late-reject-20261007.jsonl",
+    "journal_sha256": "cf78e42321d52267751a1ed096e235c54e53675d8a0b64641975f9c30dbd094a"
+  },
   "status": "qa_source_follow_up_review_ready; D47 original bounded closure unchanged; broader T57 unverified",
   "limit": "No native evidence or scenario overhaul was attempted. Fresh independent source review is required before any separately authorized native retry."
 }
