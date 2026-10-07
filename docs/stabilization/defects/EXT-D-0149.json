@@ -6,7 +6,7 @@
   "title": "Guest visibility census cannot establish Account readiness",
   "surface": "Testing infrastructure / role-visibility census",
   "auth_mode": "guest",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "root/guest_census_account_diagnosis",
   "priority": "P1",
   "severity": "S3",
@@ -44,8 +44,12 @@
   ],
   "expected": "The exact guest artifact and run establish positive guest-role proof, safely identify readiness, and account for every inventoried control and region. Unknown, unsupported, gated, or unaccounted regions leave the census incomplete.",
   "actual": "Run 37621192492 failed at census_guest_account_ready_not_observed. The census did not complete, did not visit all controls, and did not observe positive signed-out guest state. Two Account candidates were unsafe to open; the diagnostic included 15 candidates, 12 mapped and 3 fingerprint-only. No action controls were clicked. This is a native census/readiness failure only; no public product behavior failure or member/admin result is established.",
-  "cause": "Unconfirmed pending actual UI review of the captured screenshots in hosted result artifact 11481804368. Do not infer why the Account candidates were unsafe to open.",
-  "evidence": [".research/guest-visibility-native-20261007.json"],
+  "cause": "Source-confirmed document-wide Settings trigger discovery included global Account controls and the tabpanel itself; duplicate-label refusal prevented opening the real expander. Guest evidence separately looked for Sign in within Account although runtime source places it in the Settings footer. Captured images show earlier guest Chat, not the failed Settings stage; causal source fixtures and the native diagnostic support this diagnosis.",
+  "evidence": [
+    ".research/guest-visibility-native-20261007.json",
+    ".research/guest-census-account-repair-20261007.json",
+    ".research/guest-census-account-peer-20261007.json"
+  ],
   "native_screenshot_paths_in_receipt": [
     "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-zLO2Hj/native-side-panel.png",
     "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-zLO2Hj/normal-target-after-open.png"
@@ -68,18 +72,27 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Diagnosis is assigned; no source cause or public product behavior failure is asserted."
+    },
+    {
+      "at": "2026-10-07T12:53:22.524754+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source repair ac47cc66 independently reviewed in f4998a01; original native reproduction remains pending and no runtime result is promoted."
     }
   ],
   "closure_requirement": "Review the actual captured UI for the exact run, establish a source-supported diagnosis, then rerun the existing guarded workflow with exact frozen artifact/run receipts and positive role proof. Record all unsupported, gated, inaccessible, and unknown regions; keep member/admin unverified until separately observed.",
-  "next_action": "root/guest_census_account_diagnosis: review the exact run screenshots in artifact 11481804368 and diagnose the readiness mismatch without assuming why Account candidates were unsafe; then define a receipt-bound retest using the existing workflow.",
+  "next_action": "Run one guarded guest visibility census with the reviewed driver and a receipt-bound eligible development artifact; require positive observed signed-out state, original Account readiness, and honest unknown/inaccessible region accounting. Independently review native evidence before retest-pass/closed. Member/admin census remains separately pending.",
   "verification": {
     "native": "guest census failed before completeness; positive guest proof unverified",
     "member": "unverified",
     "admin": "unverified",
-    "product_behavior": "no product behavior failure established"
+    "product_behavior": "no product behavior failure established",
+    "source": "Guarded causal RED for trigger scope and Settings footer observation, then24/24 finalGREEN; completed resource journals and stdout in repair evidence folder.",
+    "independent_review": ".research/guest-census-account-peer-20261007.json: source requirements PASS_WITH_NATIVE_PENDING; quality PASS_WITH_LIMITATION."
   },
   "context": {
     "classification": "test infrastructure / census readiness",
     "source_receipt": ".research/guest-visibility-native-20261007.json"
-  }
+  },
+  "fix_shas": ["ac47cc66"]
 }
