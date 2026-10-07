@@ -1,0 +1,25 @@
+{
+  "reviewed_commit": "b4e7d2e9bcf5842f5f383c0bd2493f8a7d019891",
+  "reviewer": "independent peer review",
+  "verdicts": {
+    "A_contract_and_assertions_preserved": {
+      "verdict": "PASS",
+      "basis": "The test still exercises saved replay approval, waits until the real Page.addScriptToEvaluateOnNewDocument setup event is reached, holds that setup until the test releases it, requires Page.reload with the original loader ID, advances a full matching window and separate cleanup timeout, asserts owned debugger detach, rejects stale document rows, and checks that unrelated same-route navigation leaves no current-document row or run bump. The Page.enable delay is confined to the replaceDocument navigation case. Diff scope is one unit-test file plus its research evidence; no product source changed."
+    },
+    "B_quality_and_causality": {
+      "verdict": "PASS",
+      "basis": "The recorded cause matches the old loop: fake time could run out while real asynchronous storage, messaging, and imports had not reached CDP setup. Reapplying that exact prior wait with the forcing-function plant reproduced the original releaseSetup undefined assertion; the plant restored the current test with the recorded SHA-256 2c473bd895f1606dc3bb36ad2483bf0998a7dc7a8fefad86457e7a531fa859a3. The event rendezvous is causally tied to the CDP command itself and has a real 4-second diagnostic deadline."
+    }
+  },
+  "independent_verification": {
+    "focused": "pnpm exec vitest run tests/unit/document-network-saved-ui.test.tsx --maxWorkers=1 --reporter=verbose — 1 file, 5 tests passed; unrelated same-route navigation passed in 260 ms.",
+    "surrounding": "pnpm exec vitest run tests/unit/document-network-saved-ui.test.tsx tests/unit/document-network-capture.test.ts tests/unit/document-network-dispatch.test.ts tests/unit/document-network-approval-remount.test.tsx --maxWorkers=2 --reporter=dot — 4 files, 37 tests passed.",
+    "format_and_json": "Research JSON parses and Biome checks it successfully. Biome reports four existing noExplicitAny warnings in the test file. The working test SHA-256 is 2c473bd895f1606dc3bb36ad2483bf0998a7dc7a8fefad86457e7a531fa859a3.",
+    "incident_resource": "gh run view 37615673755 confirmed the run URL, CI workflow, failed conclusion, and head SHA 2787ed85855444d0f3498d74e02e502cccc164cc, matching the recorded source SHA prefix and incident. This confirms the referenced incident resource; it does not establish a fresh CI pass or native health."
+  },
+  "limitations": [
+    "No fresh full CI run was performed or claimed.",
+    "The test runner emits existing Happy DOM AbortError teardown noise despite passing assertions.",
+    "Four noExplicitAny warnings remain in the test file and predate this repair."
+  ]
+}
