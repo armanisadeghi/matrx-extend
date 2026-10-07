@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "kind": "ci_development_test",
+  "eligibleStore": false,
+  "publish_state": "not_published",
+  "repository": "armanisadeghi/matrx-extend",
+  "workflow": ".github/workflows/ci.yml",
+  "event": "push",
+  "ref": "refs/heads/main",
+  "sourceSha": "4801dbd72c99d0ff157c16cb51926587bdf95618",
+  "runId": 37695854607,
+  "runAttempt": 1,
+  "version": "0.2.391",
+  "expectedExtensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "treeSha256": "6373533ed126d40ce1e2e9f53b569dcb611a03f2c69e386b8ee795eae0f409c2"
+}

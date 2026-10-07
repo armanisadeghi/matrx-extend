@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "defects": [
+    "EXT-D-0084",
+    "EXT-D-0086"
+  ],
+  "scope": "native side-panel storage behavior in an owned disposable profile",
+  "case": "full",
+  "role": "guest",
+  "status": "partial",
+  "build": {
+    "source_sha": "4801dbd72c99d0ff157c16cb51926587bdf95618",
+    "run_id": 37695854607,
+    "artifact_id": 11516070725,
+    "tree_sha256": "6373533ed126d40ce1e2e9f53b569dcb611a03f2c69e386b8ee795eae0f409c2",
+    "version": "0.2.391"
+  },
+  "authentication": {
+    "mode": "guest",
+    "access_token_absent": true,
+    "profile_absent": true,
+    "admin_flag_absent": true
+  },
+  "cases": [
+    {
+      "name": "baseline port saved through trusted UI",
+      "status": "pass",
+      "observation": {
+        "persisted": true
+      }
+    },
+    {
+      "name": "port refusal preserves prior value and offers retry",
+      "status": "pass",
+      "observation": {
+        "prior_saved": true,
+        "error_visible": true
+      }
+    },
+    {
+      "name": "port retry survives panel reload",
+      "status": "pass",
+      "observation": {
+        "persisted": true
+      }
+    },
+    {
+      "name": "overlapping port submissions persist latest after reload",
+      "status": "pass",
+      "observation": {
+        "ordered": true,
+        "persisted": true
+      }
+    },
+    {
+      "name": "delayed initial read preserves edited port and precedes write",
+      "status": "pass",
+      "observation": {
+        "edit_preserved": true,
+        "write_ordered": true,
+        "persisted": true
+      }
+    },
+    {
+      "name": "pair refusal keeps input and visible retry",
+      "status": "pass",
+      "observation": {
+        "error_visible": true,
+        "prior_value_preserved": true
+      }
+    },
+    {
+      "name": "pair retry persisted synthetic value",
+      "status": "pass",
+      "observation": {
+        "persisted": true
+      }
+    },
+    {
+      "name": "overlapping pair submissions persist latest after reload",
+      "status": "pass",
+      "observation": {
+        "ordered": true,
+        "persisted": true
+      }
+    },
+    {
+      "name": "pair-code removal refusal and retry",
+      "status": "unverified",
+      "reason": "HTTP transport and product confirmation are unavailable in this profile"
+    },
+    {
+      "name": "reset refusal keeps confirmation and saved value",
+      "status": "pass",
+      "observation": {
+        "error_visible": true,
+        "retry_available": true,
+        "prior_local_count": 7,
+        "prior_session_count": 1,
+        "prior_values_preserved": true
+      }
+    },
+    {
+      "name": "reset retry clears prior local/session values and signs out after reload",
+      "status": "pass",
+      "observation": {
+        "signed_out": true,
+        "local": {
+          "before": 7,
+          "missing": 2,
+          "identical": 1,
+          "allowedFresh": 4,
+          "unexplained": 0,
+          "unexplainedKeys": []
+        },
+        "session": {
+          "before": 1,
+          "missing": 1,
+          "identical": 0,
+          "allowedFresh": 0,
+          "unexplained": 0,
+          "unexplainedKeys": []
+        },
+        "session_fixture_removed": true
+      }
+    }
+  ],
+  "limits": [
+    "Storage fault injection does not establish a healthy desktop-engine connection.",
+    "Pair-code clear requires an HTTP transport and is not inferred from a stored synthetic code."
+  ],
+  "reset_census": {
+    "local": {
+      "before": 7,
+      "missing": 2,
+      "identical": 1,
+      "allowedFresh": 4,
+      "unexplained": 0,
+      "unexplainedKeys": []
+    },
+    "session": {
+      "before": 1,
+      "missing": 1,
+      "identical": 0,
+      "allowedFresh": 0,
+      "unexplained": 0,
+      "unexplainedKeys": []
+    },
+    "session_fixture_present": false
+  },
+  "artifacts": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-QochJ4"
+}

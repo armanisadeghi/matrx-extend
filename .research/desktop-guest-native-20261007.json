@@ -1,0 +1,197 @@
+{
+  "schema_version": 1,
+  "task": "structured native test lane B",
+  "status": "partial",
+  "feature_id": "EXT-F-1003",
+  "feature_name": "Review and change extension settings",
+  "run": {
+    "workflow": "Hosted guest side-panel acceptance",
+    "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37696764772",
+    "workflow_run_id": 37696764772,
+    "workflow_job_id": 113050300741,
+    "workflow_attempt": 1,
+    "workflow_source_sha": "49a1c888dec059072ab42ab590d07e44620f5b4e",
+    "acceptance_lane": "B",
+    "runner_label": "macos-15",
+    "acceptance_case": "desktop-settings-guest",
+    "terminal_command": "gh run watch 37696764772 --interval 60 --exit-status",
+    "terminal_exit_code": 0,
+    "workflow_conclusion": "success",
+    "started_at": "2026-10-07T22:31:59Z",
+    "completed_at": "2026-10-07T22:38:21Z",
+    "duration_seconds": 382
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "ci_run_id": 37695854607,
+    "ci_artifact_id": 11516070725,
+    "github_artifact_digest": "sha256:a0858c959dbda84919b3a8f95d6ab28b61d4e7e040d28b55aae82b8d21dffc9c",
+    "source_sha": "4801dbd72c99d0ff157c16cb51926587bdf95618",
+    "version": "0.2.391",
+    "expected_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "6373533ed126d40ce1e2e9f53b569dcb611a03f2c69e386b8ee795eae0f409c2",
+    "receipt_provenance": ".research/desktop-guest-native-20261007/evidence/receipts/ci-build-receipt.json and ci-build-provenance.json; receipt tree matches independently hashed downloaded output; native report matches source/run/artifact/tree/version",
+    "published": false
+  },
+  "identity_seam": {
+    "defect_id": "EXT-D-0157",
+    "fix_commits": ["bd7f2088", "a899206b"],
+    "independent_source_review": "2c0d258d",
+    "result": "pass_for_selected_artifact_native_setup",
+    "detail": "The desktop driver accepted the explicitly selected imported CI artifact after matching source/run/artifact identity to import state, receipt tree hash, manifest version, and the downloaded tree. This is separate from the product-control outcomes below."
+  },
+  "authentication": {
+    "mode": "guest",
+    "access_token_absent": true,
+    "profile_absent": true,
+    "admin_flag_absent": true
+  },
+  "mapped_cases": [
+    {
+      "case_id": "EXT-F-1003-T43",
+      "control_id": "EXT-F-1003-C15",
+      "title": "guest: Desktop bridge pairing",
+      "verdict": "partial",
+      "observed": "Pair save refusal retained input and showed retry; retry persisted synthetic value; overlapping pair saves retained the latest submission.",
+      "remaining": "The case requires transport-sensitive visibility and HTTP Forget confirmation. Pair removal was unverified because HTTP transport and product confirmation were unavailable; no engine health is inferred."
+    },
+    {
+      "case_id": "EXT-F-1003-T46",
+      "control_id": "EXT-F-1003-C16",
+      "title": "guest: Desktop engine port",
+      "verdict": "partial",
+      "observed": "Baseline save persisted; failed save preserved the prior value and offered retry; retry persisted across reload; overlapping saves settled in order; delayed initial read preserved the edit before write.",
+      "remaining": "Boundary values 1/65535, blank clear, invalid-range UI, and actual rediscovery were not exercised. Storage fault injection does not establish a healthy engine connection."
+    },
+    {
+      "case_id": "EXT-F-1003-T49",
+      "control_id": "EXT-F-1003-C17",
+      "title": "guest: Clear local data",
+      "verdict": "partial",
+      "observed": "Failed clear preserved confirmation and saved values; retry cleared local/session state, left zero unexplained keys, and signed the guest out after reload.",
+      "remaining": "The inventory case requires Cancel preservation; CASE=full did not exercise Cancel."
+    }
+  ],
+  "native_result": {
+    "path": ".research/desktop-guest-native-20261007/evidence/receipts/native-result.json",
+    "reported_status": "partial",
+    "source_sha": "4801dbd72c99d0ff157c16cb51926587bdf95618",
+    "ci_run_id": 37695854607,
+    "ci_artifact_id": 11516070725,
+    "tree_sha256": "6373533ed126d40ce1e2e9f53b569dcb611a03f2c69e386b8ee795eae0f409c2",
+    "version": "0.2.391",
+    "reset_census": {
+      "local": {
+        "before": 7,
+        "missing": 2,
+        "identical": 1,
+        "allowedFresh": 4,
+        "unexplained": 0
+      },
+      "session": {
+        "before": 1,
+        "missing": 1,
+        "identical": 0,
+        "allowedFresh": 0,
+        "unexplained": 0
+      },
+      "session_fixture_present": false
+    }
+  },
+  "resource_journals": [
+    {
+      "path": "desktop-guest-native-20261007/evidence/resource-journals/hosted-browser-37696764772-1.jsonl",
+      "run_id": "hosted-browser-37696764772-1",
+      "event_count": 4,
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "sha256": "25f130dbac10e71c73fd1915e90678c190b113f427118e059bcde2df03954917"
+    },
+    {
+      "path": "desktop-guest-native-20261007/evidence/resource-journals/hosted-guest-37696764772-1.jsonl",
+      "run_id": "hosted-guest-37696764772-1",
+      "event_count": 5,
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "sha256": "aa758794f8a70687d83b1eb8ad3282efe741a8fadc47e7eaddb5d24591c7bfd3"
+    },
+    {
+      "path": "desktop-guest-native-20261007/evidence/resource-journals/hosted-package-37696764772-1.jsonl",
+      "run_id": "hosted-package-37696764772-1",
+      "event_count": 4,
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "sha256": "99ef4d7a8e17b5edd85f34addc490c61c42a6fa24bbd9d358ea260078903b3eb"
+    }
+  ],
+  "screenshots": [
+    {
+      "path": ".research/desktop-guest-native-20261007/evidence/screenshots/native-side-panel.png",
+      "shows": "Guest side panel shell; it does not show the Settings controls."
+    },
+    {
+      "path": ".research/desktop-guest-native-20261007/evidence/screenshots/normal-target-after-open.png",
+      "shows": "Controlled target page after the side-panel open action; not a Settings control screenshot."
+    }
+  ],
+  "excluded_artifacts": {
+    "stale_journals": [
+      "hosted-browser-37105304739-1.jsonl",
+      "hosted-guest-37105304739-1.jsonl",
+      "hosted-package-37105304739-1.jsonl"
+    ],
+    "reason": "These historical journals were bundled in the hosted artifact and are not evidence for run 37696764772."
+  },
+  "scope_limit": "One existing guest hosted case only. The three mapped inventory cases are partial; no full Settings, member/admin, Store, or healthy desktop-engine claim.",
+  "prior_preflight_record": ".research/desktop-guest-batch-20261007.json",
+  "evidence_files": [
+    {
+      "path": "desktop-guest-native-20261007/evidence/receipts/ci-build-provenance.json",
+      "size_bytes": 527,
+      "sha256": "e6824e26d0b8fddc1cf94d114001d18d7ab8127982920280f43761f540f65a0e"
+    },
+    {
+      "path": "desktop-guest-native-20261007/evidence/receipts/ci-build-receipt.json",
+      "size_bytes": 330,
+      "sha256": "119ab66dd781bbeca921cdd6ea7b14cbef0790b3fc2e52b43065ae66b9ec7fc1"
+    },
+    {
+      "path": "desktop-guest-native-20261007/evidence/receipts/native-result.json",
+      "size_bytes": 3878,
+      "sha256": "8939272770c11c21bf63beb49b6ddf29710a2653c82b5703a9da1b04722dc411"
+    },
+    {
+      "path": "desktop-guest-native-20261007/evidence/resource-journals/hosted-browser-37696764772-1.jsonl",
+      "size_bytes": 988,
+      "sha256": "25f130dbac10e71c73fd1915e90678c190b113f427118e059bcde2df03954917"
+    },
+    {
+      "path": "desktop-guest-native-20261007/evidence/resource-journals/hosted-guest-37696764772-1.jsonl",
+      "size_bytes": 1383,
+      "sha256": "aa758794f8a70687d83b1eb8ad3282efe741a8fadc47e7eaddb5d24591c7bfd3"
+    },
+    {
+      "path": "desktop-guest-native-20261007/evidence/resource-journals/hosted-package-37696764772-1.jsonl",
+      "size_bytes": 994,
+      "sha256": "99ef4d7a8e17b5edd85f34addc490c61c42a6fa24bbd9d358ea260078903b3eb"
+    },
+    {
+      "path": "desktop-guest-native-20261007/evidence/screenshots/native-side-panel.png",
+      "size_bytes": 32358,
+      "sha256": "5c5a9bf599da71fcb97eb766d255f498977ab8ad880ba9698351971375b596cb"
+    },
+    {
+      "path": "desktop-guest-native-20261007/evidence/screenshots/normal-target-after-open.png",
+      "size_bytes": 27078,
+      "sha256": "c939d4f6417b874eefffbe4a8c9bd1cf05088fe2b42ab7a7e13c65d79a024fd2"
+    }
+  ],
+  "next_action": "Root-owned independent native evidence review and inventory reconciliation; do not promote T43/T46/T49 to full pass from this partial batch.",
+  "evidence_directory": ".research/desktop-guest-native-20261007/evidence"
+}
