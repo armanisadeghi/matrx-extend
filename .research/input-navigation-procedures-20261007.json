@@ -29,6 +29,7 @@
     "src/lib/tools/handlers/page-refs.ts:162-225,278-281,348-354,397-432 — read_page ref replacement, bounds and checked output",
     "src/lib/tools/handlers/canonical.ts:65-85,377-489 — activateTab, form_input branch and navigate delegation",
     "src/lib/tools/handlers/action.ts:18-30,105-149,237-258 — navigation result, text-input event behavior and load wait",
+    "src/lib/tools/handlers/tabs.ts:38-64 — list_open_tabs exposes the owned tab ID and actual Tab.status",
     "src/lib/tools/handlers/forms.ts:260-296 — checkbox delegate result",
     "src/lib/tools/types.ts:190-213 — delegated leaf schema validation",
     "src/lib/tools/dispatch.ts:823-837 — dispatcher action/privileged confirmation gate",
@@ -143,12 +144,12 @@
         ],
         "steps": [
           "Tools > Catalog > All handlers > navigate. Record the disposable tab's initial example.com URL and ID. Run {\"tab_id\":\"$TAB_ID\",\"url\":\"https://www.selenium.dev/selenium/web/web-form.html\"} with the actual decimal string ID.",
-          "Inspect the same browser tab after the handler returns; require the full target URL, status complete in both returned result and tab UI, and visible Web form heading/text-input. Compare returned url/title/status with actual state. If status remains loading or the page did not settle, record a failed/inconclusive navigation even if the handler returned after 30 seconds; investigate before repeating.",
+          "After navigate returns, run list_open_tabs with {} in Tools, locate exactly the same owned tab ID, and require status complete there and in navigate's returned result. Separately inspect that tab's full target URL and visible Web form heading/text-input. If the owned row is absent, status remains loading, or the page did not settle, record failed/inconclusive navigation even if the handler returned after 30 seconds; investigate before repeating.",
           "Negative: run {\"tab_id\":\"not-id\",\"url\":\"https://www.selenium.dev/selenium/web/web-form.html\"}; require {\"ok\":false,\"reason\":\"Invalid tab_id: not-id\"} and no navigation of the owned tab.",
           "For post-reload phase, return only the disposable tab to https://example.com/ through normal browser UI, reload the exact extension in chrome://extensions, reacquire tab ID, reopen Tools and repeat. Close only the disposable tab afterward."
         ],
         "expected": [
-          "Positive requires returned url equal to the Selenium target, returned and actual status complete, and the same owned tab visibly showing the Web form page. waitForLoad resolves on either a complete event or a 30-second timer; it does not guarantee complete. A loading/timeout result is failed or inconclusive, not a pass. Its title is observed, not assumed as a fixed oracle.",
+          "Positive requires returned url equal to the Selenium target, returned status complete, list_open_tabs status complete for exactly the owned tab ID, and the same tab visibly showing the Web form page. waitForLoad resolves on either a complete event or a 30-second timer; it does not guarantee complete. A missing/loading tab row or timeout result is failed or inconclusive, not a pass. Its title is observed, not assumed as a fixed oracle.",
           "Invalid tab ID is refused by activateTab before chrome.tabs.update; the owned tab stays on its pre-negative URL.",
           "Manual Run establishes direct canonical routing through navigate_active_tab only; Ask-mode consent, agent assigned-tab isolation and member advertisement remain separate unverified dimensions."
         ],
