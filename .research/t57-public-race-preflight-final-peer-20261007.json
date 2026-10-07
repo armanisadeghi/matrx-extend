@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "role": "fresh independent source re-verifier; zero implementation authorship",
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "scope": "Read-only review of one bounded native public HN preflight readiness; no native run, browser, build, workflow or test dispatch by this reviewer",
+  "provenance": {
+    "source_commit": "8e84f3aa0f2bb31ea42c960457c294f98fd9af8a",
+    "evidence_commit": "a4269c28",
+    "builder_evidence": ".research/t57-public-race-preflight-correction-20261007.json",
+    "prior_peer": ".research/t57-public-race-preflight-peer-20261007.json",
+    "root_review": ".research/t57-public-preflight-root-review-20261007.json",
+    "source_sha256": {
+      "tests/browser/showcase-d47-public-race-preflight.mjs": "6942d3334b22cdc37acce994e75bcda4f3175f63f582cc4f29c0240f4552b571",
+      "tests/browser/showcase-d47-public-race-preflight.test.mjs": "18b76cb228c5f49fc9dbab9a03238ea55a0a4e6246de6fa1c1762b7e45ae1f81",
+      "tests/browser/showcase-d47-public-initial-load.mjs": "8dd2722906c31ad675b9da6889bd421e9c8fbdbcf45f24af06dad82a823eb7b1"
+    }
+  },
+  "verdict_a": {
+    "status": "READY_FOR_ONE_BOUNDED_NATIVE_PREFLIGHT",
+    "basis": "The opt-in public route now requires an extension debugger capture-hook event from the exact HN tab and an attached target while the original old response is paused. It hashes each original response body at the response-stage pause, releases old then current with requestId-only continueRequest, and requires finished lifecycles plus verified observer/controller cleanup. The ordinary public route remains under the unchanged false-by-default environment gate.",
+    "prior_findings": [
+      {
+        "finding": "Positive extension capture proof while old response paused",
+        "status": "ADDRESSED",
+        "evidence": "tests/browser/showcase-d47-public-race-preflight.mjs:68-143; tests/browser/showcase-d47-public-initial-load.mjs:564-587; verdict gate at preflight.mjs:57"
+      },
+      {
+        "finding": "Digest of each original public response, not just request identity",
+        "status": "ADDRESSED",
+        "evidence": "tests/browser/showcase-d47-public-race-preflight.mjs:229-242; verdict gate at preflight.mjs:55"
+      }
+    ],
+    "remaining_blockers": [],
+    "limit": "No native preflight has run. Chrome co-attachment, genuine HN timing/repeatability, cancellation, and old/current callback delivery remain unverified. This readiness verdict does not pass T57."
+  },
+  "verdict_b": {
+    "status": "PASS_AT_REVIEWED_SCOPE",
+    "prior_findings": [
+      {
+        "finding": "Executed real SUT constant and causal lease/digest mutations with retained assertion RED and clean GREEN",
+        "status": "ADDRESSED",
+        "evidence": "tests/browser/showcase-d47-public-race-preflight.test.mjs:229-253; retained guarded final test journal 10f78ca640033587461245ec40ec6f2f5202324496a1d5d42a50204c8dd8e3a3; driver journal 4c3b5f72e6c6b1b7e82fa89e5bba29fcac80f03db75eba7c8554d99c2c8f59f2"
+      }
+    ],
+    "additional_checks": [
+      "Exact source file SHA-256 values match builder evidence; retained final and driver journal hashes and valid admitted exit-zero decisions match the files.",
+      "The response-stage controller sends no fulfillRequest, failRequest, altered body or header; held requests are continued, Fetch is disabled, and page CDP detached on cleanup. Worker probe listeners are removed and its CDP observer detached before a feasible verdict.",
+      "The false-by-default MATRX_D47_PUBLIC_RACE_PREFLIGHT gate and exact CI source/run/artifact binding remain intact; reviewed diff contains no product or canonical edits."
+    ],
+    "limits": "Mocked source checks cannot establish native Chrome protocol behavior. The review brief barred this reviewer from running tests, browser or workflows; test claims are based on source and retained guarded journals."
+  },
+  "disposition": "ROOT_MAY_ROUTE_ONE_BOUNDED_EXACT_ARTIFACT_NATIVE_PUBLIC_HN_PREFLIGHT",
+  "response_constraint": "Any third-party traffic may only be delayed and resumed; no fulfillment, editing or replacement is authorized."
+}
