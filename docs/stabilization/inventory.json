@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-07T02:40:28.167181+00:00",
+  "updated_at": "2026-10-07T02:55:57.853718+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -60450,18 +60450,56 @@
             "member",
             "admin"
           ],
-          "design_status": "needed",
+          "design_status": "source-reviewed-runtime-unverified",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Before any future execution, obtain the existing stabilization resource permit and a receipt with every field required by docs/stabilization/PLAN.md: source SHA and dirty-source hash when applicable, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile and auth/role/org state, permissions, backend identity, fixture IDs, timestamp, login method, principal provenance, real data origin, build/env flags, response interception, mocks and seeded browser state. Identify the controlled public target. Do not record secrets or unrelated profile/storage contents.",
+            "Use only the existing signed-in member/admin profiles specified per case. Required debugger optional permission must already be granted; do not request, revoke, or change permission. If absent, record the positive branch unavailable/not run. Run one warm pass, then use Chrome Reload on the exact receipt-bound unpacked extension, wait, reopen the side panel, refocus the owned page, and repeat as the post-reload pass. Panel reopen or page refresh is not extension reload. If source/output identity changes, require a matching receipt. No browser/build/runtime execution occurred while authoring.",
+            "For each profile/pass, create one fresh tab owned by this run at the public tall fixture https://en.wikipedia.org/wiki/Artificial_intelligence and keep it focused for calls omitting tab_id. Before any operation, run cdp_attached_tabs {} and record the full baseline. If the owned page appears already debugger-attached or ownership is ambiguous, abandon it without detaching anything.",
+            "After a handler that attaches, list attached tabs and identify the owned attachment only from exactly one new ID over baseline while the newly created target remains focused and no concurrent attachment activity occurred. Preserve every baseline entry. Use an explicit tab_id only after this exact ID is established from the owned target and list delta. If ambiguous, stop without cleanup guesses.",
+            "At end of each pass, call cdp_detach only with the exact uniquely established owned ID; verify it disappears and every baseline entry remains, then verify the debugger banner is gone on the owned page. Close only the exact owned tab created for this pass, using the owned tab ID established by this run. Never capture or operate on unrelated tabs/screens, detach all, or detach a baseline entry. If cleanup fails, stop and report the owned ID. Member cleanup via admin-only manual handlers is diagnostic reachability and proves no admin gate.",
+            "In the signed-in side panel open Tools \u2192 Catalog, choose All handlers if needed, search the exact handler, expand it, enter the listed JSON object in its runner textarea, and press Run. Record only the relevant result/error. The runner invokes handlers directly after local Zod validation and bypasses dispatcher authorization and optional-permission checks.",
+            "Keep the owned target focused at every call that omits tab_id. Use invalid string values only for schema-negative probes; they are rejected before handler invocation and must leave attached-tab state unchanged. Do not use guessed positive tab IDs or deliberately target another tab.",
+            "For screenshot/PDF outputs, inspect decoded artifact content, not only ok, base64 presence, or byte counts. For screenshot inline output, decode image_base64. If screenshot output has only file_id/file_url omitted, open Files \u2192 Captures for the owned page; select the capture by its returned screenshot/file ID and use the existing capture card open action, which opens the canonical file viewer by file ID. Confirm the image pixels show the owned fixture. If this existing UI route cannot resolve the returned ID, record content inspection unavailable and do not pass from metadata.",
+            "For emulation, do not open Chrome DevTools on the owned tab while the extension debugger is attached. Use cdp_full_page_screenshot with {\"full_page\":false,\"format\":\"png\"} as the existing same-extension CDP observation route. Its source reads Page.getLayoutMetrics and reports cssLayoutViewport client width/height; decode/open the returned image and inspect actual viewport pixels. Record width/height before, after apply, after schema-negative, and after clear, with cdp_attached_tabs showing the owned attachment immediately before valid clear. The available source does not provide noncompeting page UA, DPR, or matchMedia readback; leave those observations unresolved rather than inferring them from handler acknowledgments.",
+            "Complete shared receipt/resource, permission, owned-target, and manual-runner setup independently in the existing member and admin profiles. Preserve the inventory two listed modes and do not infer one role result from the other.",
+            "The owned fixture is https://en.wikipedia.org/wiki/Artificial_intelligence. Before capture, confirm its title/top heading and a below-fold References heading, scroll the owned page to the bottom to observe that landmark, then return to top. The page must visibly scroll and the full-page result height must exceed the current viewport height; if either landmark or height condition is absent, stop and mark the fixture branch unavailable rather than silently skipping it."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Warm pass: focus the owned tall fixture, record attached-tabs baseline, verify top heading and below-fold References landmark by scrolling the page to the bottom and back, then run cdp_full_page_screenshot with {}. Require a successful result and establish the one owned attachment delta. If output has image_base64, decode it; if it returns only a cloud file ID, resolve it through Files \u2192 Captures and the existing capture-card file viewer route described in shared_setup. Inspect actual pixels from the top heading through the bottom References landmark. Require returned full-page image height greater than the viewport height observed in the browser UI; record MIME/format, dimensions, scale and decoded byte length. Do not accept base64 presence or a metadata-only cloud reference as content proof.",
+            "Run schema-negative input {\"format\":\"gif\"}; require runner schema rejection and unchanged attachment list. Run a valid explicit capture {\"profile\":\"auto\",\"format\":\"png\",\"full_page\":true,\"capture_scale\":1}; inspect decoded/resolved image pixels again, confirm top and bottom landmarks both appear, and verify the returned image dimensions against actual decoded pixels. Do not assume a profile max dimension or fixed page dimensions.",
+            "Detach only the owned delta and verify baseline preservation and banner removal. Reload the extension; use the same fixture only if it remains the owned target and unambiguous, otherwise create a fresh owned fixture. Recapture baseline and repeat full-page positive captures, schema-negative preservation, pixel inspection and exact cleanup in the warm and post-reload passes. Repeat both passes independently in the admin profile."
+          ],
+          "expected": [
+            "Successful output has ok:true and either inline image_base64 or a persisted screenshot reference. The resolved decoded image must be valid, show the owned fixture title/top heading and below-fold References landmark, and have actual pixel dimensions matching reported width/height. Image height must be greater than the browser viewport height recorded for that page. Persistence outcome and dimensions are runtime-dependent.",
+            "Invalid format is rejected before handler invocation and does not change attached-tab state. Valid capture attaches and retains the debugger session. When persistence returns file_id without URL, content verification uses Files \u2192 Captures and its existing canonical file viewer; if unavailable, the content branch is explicitly unverified. Persistence failure may instead return inline-only image output.",
+            "The procedure is a source-derived proposal; no runtime status is promoted."
+          ],
           "dimensions": [
             "valid-input",
             "invalid-input",
             "permissions",
-            "reload"
+            "reload",
+            "valid-public-page",
+            "actual-image-content",
+            "full-page-capture",
+            "schema-negative",
+            "debugger-permission-present",
+            "member",
+            "admin",
+            "warm",
+            "extension-reload",
+            "owned-target-cleanup"
+          ],
+          "procedure_evidence": [
+            ".research/cdp-render-emulation-procedures-20261007.json",
+            ".research/cdp-render-corrected-peer-20261007.json",
+            ".research/cdp-render-target-final-peer-20261007.json"
+          ],
+          "procedure_limits": [
+            "Manual direct handler execution does not test dispatcher admin, Ask/Act, debugger permission denial/enforcement, or agent routing. Run the existing member and admin modes independently; guest remains outside this case.",
+            "The screenshot handler is privileged and requires optional debugger permission. Do not alter permission settings; an absent permission means not run/unavailable, not a proven denial.",
+            "No browser execution, image inspection, test, build, or inventory status update occurred while authoring. The named public fixture is conditional on the actual page exposing the title and References landmarks and a scrollable height at execution time; if not, the step explicitly stops as unavailable. Cloud file-ID content is not proven unless the existing Files UI resolves and displays the actual pixels.",
+            "Manual Tools execution cannot establish the presence or absence of dispatcher admin or optional-permission enforcement. Member cleanup is direct handler reachability only."
           ]
         }
       ],
@@ -61936,18 +61974,56 @@
             "member",
             "admin"
           ],
-          "design_status": "needed",
+          "design_status": "source-reviewed-runtime-unverified",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Before any future execution, obtain the existing stabilization resource permit and a receipt with every field required by docs/stabilization/PLAN.md: source SHA and dirty-source hash when applicable, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile and auth/role/org state, permissions, backend identity, fixture IDs, timestamp, login method, principal provenance, real data origin, build/env flags, response interception, mocks and seeded browser state. Identify the controlled public target. Do not record secrets or unrelated profile/storage contents.",
+            "Use only the existing signed-in member/admin profiles specified per case. Required debugger optional permission must already be granted; do not request, revoke, or change permission. If absent, record the positive branch unavailable/not run. Run one warm pass, then use Chrome Reload on the exact receipt-bound unpacked extension, wait, reopen the side panel, refocus the owned page, and repeat as the post-reload pass. Panel reopen or page refresh is not extension reload. If source/output identity changes, require a matching receipt. No browser/build/runtime execution occurred while authoring.",
+            "For each profile/pass, create one fresh tab owned by this run at the public tall fixture https://en.wikipedia.org/wiki/Artificial_intelligence and keep it focused for calls omitting tab_id. Before any operation, run cdp_attached_tabs {} and record the full baseline. If the owned page appears already debugger-attached or ownership is ambiguous, abandon it without detaching anything.",
+            "After a handler that attaches, list attached tabs and identify the owned attachment only from exactly one new ID over baseline while the newly created target remains focused and no concurrent attachment activity occurred. Preserve every baseline entry. Use an explicit tab_id only after this exact ID is established from the owned target and list delta. If ambiguous, stop without cleanup guesses.",
+            "At end of each pass, call cdp_detach only with the exact uniquely established owned ID; verify it disappears and every baseline entry remains, then verify the debugger banner is gone on the owned page. Close only the exact owned tab created for this pass, using the owned tab ID established by this run. Never capture or operate on unrelated tabs/screens, detach all, or detach a baseline entry. If cleanup fails, stop and report the owned ID. Member cleanup via admin-only manual handlers is diagnostic reachability and proves no admin gate.",
+            "In the signed-in side panel open Tools \u2192 Catalog, choose All handlers if needed, search the exact handler, expand it, enter the listed JSON object in its runner textarea, and press Run. Record only the relevant result/error. The runner invokes handlers directly after local Zod validation and bypasses dispatcher authorization and optional-permission checks.",
+            "Keep the owned target focused at every call that omits tab_id. Use invalid string values only for schema-negative probes; they are rejected before handler invocation and must leave attached-tab state unchanged. Do not use guessed positive tab IDs or deliberately target another tab.",
+            "For screenshot/PDF outputs, inspect decoded artifact content, not only ok, base64 presence, or byte counts. For screenshot inline output, decode image_base64. If screenshot output has only file_id/file_url omitted, open Files \u2192 Captures for the owned page; select the capture by its returned screenshot/file ID and use the existing capture card open action, which opens the canonical file viewer by file ID. Confirm the image pixels show the owned fixture. If this existing UI route cannot resolve the returned ID, record content inspection unavailable and do not pass from metadata.",
+            "For emulation, do not open Chrome DevTools on the owned tab while the extension debugger is attached. Use cdp_full_page_screenshot with {\"full_page\":false,\"format\":\"png\"} as the existing same-extension CDP observation route. Its source reads Page.getLayoutMetrics and reports cssLayoutViewport client width/height; decode/open the returned image and inspect actual viewport pixels. Record width/height before, after apply, after schema-negative, and after clear, with cdp_attached_tabs showing the owned attachment immediately before valid clear. The available source does not provide noncompeting page UA, DPR, or matchMedia readback; leave those observations unresolved rather than inferring them from handler acknowledgments.",
+            "Complete shared receipt/resource, permission, owned-target, and manual-runner setup independently in member and admin profiles. Keep the fresh owned https://en.wikipedia.org/wiki/Artificial_intelligence page focused, as specified by shared setup.",
+            "The handler exposes only landscape and print_background options: defaults are landscape false and print_background true. Do not add paper-size, margin, scale, or page-range assumptions to the expected result."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Warm pass: focus the exact owned https://en.wikipedia.org/wiki/Artificial_intelligence fixture, record attached-tabs baseline, and run cdp_print_pdf with {}. Establish the unique owned attachment delta. Decode pdf_base64 from this result into a temporary PDF, open/render it, and inspect every page: confirm it is a valid PDF with visible recognizable content from the owned public page. Record page count and decoded byte count; require byte_length equals decoded PDF length. Do not treat ok/base64 or byte_length by itself as content proof.",
+            "Run schema-negative {\"landscape\":\"yes\"}; require runner schema rejection and unchanged attachment list. Then run {\"landscape\":true,\"print_background\":false} on the same owned Wikipedia fixture, decode/render the returned PDF, and visually verify page content and orientation against the rendered artifact itself. No fixed page count, paper dimensions, or content bytes are assumed.",
+            "Detach only the unique owned delta and verify baseline entries remain and banner is gone. Reload the extension, recapture baseline, repeat both valid PDFs and actual page inspection, then exact-owned cleanup. Repeat warm and post-reload sequences independently in the admin profile."
+          ],
+          "expected": [
+            "Successful output is {ok:true,pdf_base64:<data>,byte_length:<decoded byte count>}; decoded bytes form an openable PDF with actual rendered text/graphics from the owned public page, and byte_length equals decoded bytes. Page count and dimensions follow Chrome print behavior and are observed, not invented.",
+            "Invalid boolean type is rejected before handler invocation and leaves attachments unchanged. Valid PDF calls attach and retain the debugger session for exact owned cleanup."
+          ],
           "dimensions": [
             "valid-input",
             "invalid-input",
             "permissions",
-            "reload"
+            "reload",
+            "valid-public-page",
+            "actual-pdf-content",
+            "orientation-option",
+            "background-option",
+            "schema-negative",
+            "debugger-permission-present",
+            "member",
+            "admin",
+            "warm",
+            "extension-reload",
+            "owned-target-cleanup"
+          ],
+          "procedure_evidence": [
+            ".research/cdp-render-emulation-procedures-20261007.json",
+            ".research/cdp-render-corrected-peer-20261007.json",
+            ".research/cdp-render-target-final-peer-20261007.json"
+          ],
+          "procedure_limits": [
+            "Manual direct handler execution does not test dispatcher admin, Ask/Act, debugger permission denial/enforcement, or agent routing. Run member and admin modes independently; guest remains outside this case.",
+            "The handler is privileged and requires optional debugger permission. An absent permission means not run/unavailable, not a proven denial.",
+            "No runtime, PDF rendering, test, build, or inventory status update occurred while authoring. Do not claim content verified unless decoded PDF pages are actually rendered and inspected.",
+            "Manual Tools execution cannot establish the presence or absence of dispatcher admin or optional-permission enforcement. Member cleanup is direct handler reachability only."
           ]
         }
       ],
@@ -62288,18 +62364,59 @@
           "modes": [
             "admin"
           ],
-          "design_status": "needed",
+          "design_status": "source-reviewed-partial-runtime-unverified",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Before any future execution, obtain the existing stabilization resource permit and a receipt with every field required by docs/stabilization/PLAN.md: source SHA and dirty-source hash when applicable, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile and auth/role/org state, permissions, backend identity, fixture IDs, timestamp, login method, principal provenance, real data origin, build/env flags, response interception, mocks and seeded browser state. Identify the controlled public target. Do not record secrets or unrelated profile/storage contents.",
+            "Use only the existing signed-in member/admin profiles specified per case. Required debugger optional permission must already be granted; do not request, revoke, or change permission. If absent, record the positive branch unavailable/not run. Run one warm pass, then use Chrome Reload on the exact receipt-bound unpacked extension, wait, reopen the side panel, refocus the owned page, and repeat as the post-reload pass. Panel reopen or page refresh is not extension reload. If source/output identity changes, require a matching receipt. No browser/build/runtime execution occurred while authoring.",
+            "For each profile/pass, create one fresh tab owned by this run at the public tall fixture https://en.wikipedia.org/wiki/Artificial_intelligence and keep it focused for calls omitting tab_id. Before any operation, run cdp_attached_tabs {} and record the full baseline. If the owned page appears already debugger-attached or ownership is ambiguous, abandon it without detaching anything.",
+            "After a handler that attaches, list attached tabs and identify the owned attachment only from exactly one new ID over baseline while the newly created target remains focused and no concurrent attachment activity occurred. Preserve every baseline entry. Use an explicit tab_id only after this exact ID is established from the owned target and list delta. If ambiguous, stop without cleanup guesses.",
+            "At end of each pass, call cdp_detach only with the exact uniquely established owned ID; verify it disappears and every baseline entry remains, then verify the debugger banner is gone on the owned page. Close only the exact owned tab created for this pass, using the owned tab ID established by this run. Never capture or operate on unrelated tabs/screens, detach all, or detach a baseline entry. If cleanup fails, stop and report the owned ID. Member cleanup via admin-only manual handlers is diagnostic reachability and proves no admin gate.",
+            "In the signed-in side panel open Tools \u2192 Catalog, choose All handlers if needed, search the exact handler, expand it, enter the listed JSON object in its runner textarea, and press Run. Record only the relevant result/error. The runner invokes handlers directly after local Zod validation and bypasses dispatcher authorization and optional-permission checks.",
+            "Keep the owned target focused at every call that omits tab_id. Use invalid string values only for schema-negative probes; they are rejected before handler invocation and must leave attached-tab state unchanged. Do not use guessed positive tab IDs or deliberately target another tab.",
+            "For screenshot/PDF outputs, inspect decoded artifact content, not only ok, base64 presence, or byte counts. For screenshot inline output, decode image_base64. If screenshot output has only file_id/file_url omitted, open Files \u2192 Captures for the owned page; select the capture by its returned screenshot/file ID and use the existing capture card open action, which opens the canonical file viewer by file ID. Confirm the image pixels show the owned fixture. If this existing UI route cannot resolve the returned ID, record content inspection unavailable and do not pass from metadata.",
+            "For emulation, do not open Chrome DevTools on the owned tab while the extension debugger is attached. Use cdp_full_page_screenshot with {\"full_page\":false,\"format\":\"png\"} as the existing same-extension CDP observation route. Its source reads Page.getLayoutMetrics and reports cssLayoutViewport client width/height; decode/open the returned image and inspect actual viewport pixels. Record width/height before, after apply, after schema-negative, and after clear, with cdp_attached_tabs showing the owned attachment immediately before valid clear. The available source does not provide noncompeting page UA, DPR, or matchMedia readback; leave those observations unresolved rather than inferring them from handler acknowledgments.",
+            "Complete shared receipt/resource, permission, owned-target, and manual-runner setup in the existing admin profile only. This case is inventory-applicable to admin only.",
+            "Do not invoke Chrome DevTools on the owned tab after extension debugger attachment. Source-traced observation uses cdp_full_page_screenshot, whose CDP layout metrics report the owned page viewport width and height and whose decoded image provides actual rendered viewport pixels."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Warm pass: focus owned fixture and record attached-tabs baseline. Capture a baseline viewport image with cdp_full_page_screenshot {\"full_page\":false,\"format\":\"png\"}; record reported width/height and inspect actual image. Run cdp_emulate_device with {\"width\":390,\"height\":844,\"device_scale_factor\":3,\"mobile\":true,\"user_agent\":\"Matrx-owned-device-emulation-check\"}. After success, take another visible-viewport screenshot through the same handler. Require observed viewport width/height and rendered pixels to reflect the requested narrow viewport. Record that the source has no safe route to read back actual page UA, DPR, or matchMedia while preserving the debugger session; these remain unresolved, not inferred from {ok:true}.",
+            "Run schema-negative {\"width\":99,\"height\":844}; require runner schema rejection. Take another visible-viewport screenshot and verify width/height and rendered pixels remain consistent with the applied emulation. Verify cdp_attached_tabs still contains the exact owned ID.",
+            "Immediately before valid clear, run cdp_attached_tabs and require the exact owned ID still present. Run cdp_clear_emulation {\"tab_id\":<owned id>}, then observe via another visible-viewport screenshot. Require viewport width/height to return to the baseline and inspect restored rendered pixels. Record UA/DPR/media-query restoration as unverified due lack of a noncompeting supported readback. Verify clear left debugger attachment in place, then detach only the exact owned delta and verify baseline preserved/banner gone.",
+            "Reload the extension; establish a fresh owned target and attachment baseline, take baseline screenshot, reapply the same emulation, repeat schema-negative preservation, require attachment presence before valid clear, verify viewport dimensions and pixels return to baseline, then exact-owned cleanup."
+          ],
+          "expected": [
+            "Emulate returns {ok:true}, but acceptance requires independent evidence from the existing screenshot handler: the reported cssLayoutViewport dimensions change to the requested 390 by 844 and the decoded image shows the resulting viewport rendering. Record actual results; do not pass solely on acknowledgment.",
+            "Width 99 is rejected before handler invocation; a subsequent screenshot and attachment list should show unchanged emulated state. Before valid clear the owned attachment must still appear in cdp_attached_tabs, ensuring the handler does not take its unattached early return.",
+            "After valid clear, screenshot viewport dimensions and rendered pixels return to baseline. Actual user-agent, DPR, and media-query states cannot be read back by an available source-supported noncompeting route and remain explicit gaps. Admin-only applicability is preserved; no runtime status is promoted."
+          ],
           "dimensions": [
             "valid-input",
             "invalid-input",
             "permissions",
-            "reload"
+            "reload",
+            "actual-viewport-state",
+            "device-scale-factor",
+            "mobile-mode",
+            "user-agent-override",
+            "schema-negative",
+            "clear-state-restoration",
+            "debugger-permission-present",
+            "admin",
+            "warm",
+            "extension-reload",
+            "owned-target-cleanup"
+          ],
+          "procedure_evidence": [
+            ".research/cdp-render-emulation-procedures-20261007.json",
+            ".research/cdp-render-corrected-peer-20261007.json",
+            ".research/cdp-render-target-final-peer-20261007.json"
+          ],
+          "procedure_limits": [
+            "Admin-only inventory mode is preserved. Manual runner does not establish admin dispatcher enforcement, Ask/Act behavior, debugger permission denial/enforcement, or agent routing. Guest/member outcomes are not inferred.",
+            "No Chrome DevTools session may be opened on the owned tab because it can detach the extension-owned debugger. No source-supported UA/DPR/matchMedia readback is available; these measurements remain gaps.",
+            "Positive branch requires the existing debugger permission. Do not alter permission settings.",
+            "No browser/runtime execution occurred. Viewport dimensions and rendered pixels can be observed with the same extension CDP screenshot handler, but UA, DPR, and matchMedia cannot be verified without a noncompeting source-supported route; keep those dimensions unverified.",
+            "Manual Tools execution cannot establish the presence or absence of dispatcher admin or optional-permission enforcement. Member cleanup is direct handler reachability only."
           ]
         }
       ],
@@ -62420,18 +62537,57 @@
           "modes": [
             "admin"
           ],
-          "design_status": "needed",
+          "design_status": "source-reviewed-partial-runtime-unverified",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Before any future execution, obtain the existing stabilization resource permit and a receipt with every field required by docs/stabilization/PLAN.md: source SHA and dirty-source hash when applicable, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile and auth/role/org state, permissions, backend identity, fixture IDs, timestamp, login method, principal provenance, real data origin, build/env flags, response interception, mocks and seeded browser state. Identify the controlled public target. Do not record secrets or unrelated profile/storage contents.",
+            "Use only the existing signed-in member/admin profiles specified per case. Required debugger optional permission must already be granted; do not request, revoke, or change permission. If absent, record the positive branch unavailable/not run. Run one warm pass, then use Chrome Reload on the exact receipt-bound unpacked extension, wait, reopen the side panel, refocus the owned page, and repeat as the post-reload pass. Panel reopen or page refresh is not extension reload. If source/output identity changes, require a matching receipt. No browser/build/runtime execution occurred while authoring.",
+            "For each profile/pass, create one fresh tab owned by this run at the public tall fixture https://en.wikipedia.org/wiki/Artificial_intelligence and keep it focused for calls omitting tab_id. Before any operation, run cdp_attached_tabs {} and record the full baseline. If the owned page appears already debugger-attached or ownership is ambiguous, abandon it without detaching anything.",
+            "After a handler that attaches, list attached tabs and identify the owned attachment only from exactly one new ID over baseline while the newly created target remains focused and no concurrent attachment activity occurred. Preserve every baseline entry. Use an explicit tab_id only after this exact ID is established from the owned target and list delta. If ambiguous, stop without cleanup guesses.",
+            "At end of each pass, call cdp_detach only with the exact uniquely established owned ID; verify it disappears and every baseline entry remains, then verify the debugger banner is gone on the owned page. Close only the exact owned tab created for this pass, using the owned tab ID established by this run. Never capture or operate on unrelated tabs/screens, detach all, or detach a baseline entry. If cleanup fails, stop and report the owned ID. Member cleanup via admin-only manual handlers is diagnostic reachability and proves no admin gate.",
+            "In the signed-in side panel open Tools \u2192 Catalog, choose All handlers if needed, search the exact handler, expand it, enter the listed JSON object in its runner textarea, and press Run. Record only the relevant result/error. The runner invokes handlers directly after local Zod validation and bypasses dispatcher authorization and optional-permission checks.",
+            "Keep the owned target focused at every call that omits tab_id. Use invalid string values only for schema-negative probes; they are rejected before handler invocation and must leave attached-tab state unchanged. Do not use guessed positive tab IDs or deliberately target another tab.",
+            "For screenshot/PDF outputs, inspect decoded artifact content, not only ok, base64 presence, or byte counts. For screenshot inline output, decode image_base64. If screenshot output has only file_id/file_url omitted, open Files \u2192 Captures for the owned page; select the capture by its returned screenshot/file ID and use the existing capture card open action, which opens the canonical file viewer by file ID. Confirm the image pixels show the owned fixture. If this existing UI route cannot resolve the returned ID, record content inspection unavailable and do not pass from metadata.",
+            "For emulation, do not open Chrome DevTools on the owned tab while the extension debugger is attached. Use cdp_full_page_screenshot with {\"full_page\":false,\"format\":\"png\"} as the existing same-extension CDP observation route. Its source reads Page.getLayoutMetrics and reports cssLayoutViewport client width/height; decode/open the returned image and inspect actual viewport pixels. Record width/height before, after apply, after schema-negative, and after clear, with cdp_attached_tabs showing the owned attachment immediately before valid clear. The available source does not provide noncompeting page UA, DPR, or matchMedia readback; leave those observations unresolved rather than inferring them from handler acknowledgments.",
+            "Complete shared receipt/resource, permission, owned-target, and manual-runner setup in admin profile. This case is inventory-applicable to admin only.",
+            "Establish a fresh owned target and unique attachment, capture baseline viewport dimensions/pixels with cdp_full_page_screenshot {\"full_page\":false,\"format\":\"png\"}, then apply explicit emulation on this same owned tab. DevTools must not be opened on this target; it can detach the extension debugger."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Warm pass: create/focus owned fixture, record attached-tabs baseline, capture baseline viewport image through cdp_full_page_screenshot with full_page false and PNG format, then apply cdp_emulate_device with width 390, height 844, DPR 3, mobile true and the named UA. Capture another viewport image and require actual viewport dimensions/rendered pixels to change; note UA/DPR/media-query readback is not available safely.",
+            "Run cdp_clear_emulation {\"tab_id\":\"bad\"}; require runner schema rejection, unchanged attachment list and unchanged emulated viewport dimensions/pixels. Immediately before valid clear, run cdp_attached_tabs and require the exact owned attachment ID still present.",
+            "Run cdp_clear_emulation {\"tab_id\":<owned id>}; observe another viewport screenshot and require dimensions/rendered pixels restored to the original baseline. Do not claim UA/DPR/media-query restoration because the available source has no noncompeting readback. Verify attached ID remains present; clear must not detach. Detach only the exact owned delta and verify it disappears while baseline remains and banner is gone.",
+            "Reload the extension, establish a fresh owned attachment, capture baseline viewport, reapply the same explicit emulation, repeat invalid-input preservation, require owned attachment immediately before valid clear, verify viewport restoration from screenshot, and perform exact-owned cleanup."
+          ],
+          "expected": [
+            "Invalid string tab_id is rejected locally and leaves state unchanged.",
+            "Valid attached clear returns {ok:true} and source sends Emulation.clearDeviceMetricsOverride plus a best-effort empty user-agent override. Acceptance requires actual viewport width/height and rendered image to return to baseline; UA/DPR/media query remain gaps without a source-supported noncompeting readback.",
+            "Clear leaves the debugger attachment in place. Admin only remains the inventory applicability. Member cleanup via admin-only manual handlers is diagnostic and proves no gates."
+          ],
           "dimensions": [
             "valid-input",
             "invalid-input",
             "permissions",
-            "reload"
+            "reload",
+            "actual-preclear-state",
+            "clear-state-restoration",
+            "invalid-schema-input",
+            "attached-path",
+            "debugger-permission-present",
+            "admin",
+            "warm",
+            "extension-reload",
+            "owned-target-cleanup"
+          ],
+          "procedure_evidence": [
+            ".research/cdp-render-emulation-procedures-20261007.json",
+            ".research/cdp-render-corrected-peer-20261007.json",
+            ".research/cdp-render-target-final-peer-20261007.json"
+          ],
+          "procedure_limits": [
+            "Admin-only applicability is preserved. Manual invocation does not establish admin dispatcher authorization, Ask/Act, debugger permission denial/enforcement, or agent routing. Guest/member results are not inferred.",
+            "No Chrome DevTools on the owned target after extension attach. UA/DPR/media-query restoration remains unverified because no noncompeting source-supported readback is available.",
+            "Do not change debugger permission. An unattached clear that returns success without issuing CDP commands is not a positive execution.",
+            "No runtime or browser execution occurred. Require viewport dimensions and actual rendered pixels to restore after clear; handler acknowledgment is insufficient. UA, DPR and matchMedia remain explicit observation gaps.",
+            "Manual Tools execution cannot establish the presence or absence of dispatcher admin or optional-permission enforcement. Member cleanup is direct handler reachability only."
           ]
         }
       ],

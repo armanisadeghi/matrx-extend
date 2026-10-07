@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent-source-peer-review",
+  "reviewed_artifact": ".research/cdp-render-emulation-procedures-20261007.json",
+  "reviewed_commit": "eabefde4a185be753df12275e07471383549043a",
+  "review_scope": "Source-only review of the target-consistency correction against .research/cdp-render-corrected-peer-20261007.json. No browser, tests, build, source fix, database, or inventory changes. Procedures remain runtime-unverified.",
+  "verdict_A_spec": {
+    "EXT-F-4103-T01": "Prior conditional acceptance remains: Wikipedia top/References landmarks, scrollability, decoded full-page pixels, and conditional file-ID viewer provide the proposed content checks; live fixture and pixels remain unverified.",
+    "EXT-F-4111-T01": "Prior target inconsistency is addressed. Shared setup creates and focuses an owned Wikipedia page, and both PDF positives explicitly use that same owned page. The exact owned tab is closed after the pass.",
+    "EXT-F-4113-T01": "Prior partial acceptance remains: same-extension screenshot dimensions/pixels are the proposed evidence. Actual UA, DPR, and matchMedia effects remain explicitly unresolved.",
+    "EXT-F-4114-T01": "Prior partial acceptance remains: screenshot dimensions/pixels are the proposed clear-restoration evidence, with the owned attachment checked immediately before clear. UA, DPR, and matchMedia restoration remain explicitly unresolved."
+  },
+  "verdict_B_quality_source_truth": "The eabefde4 correction consistently aligns the shared owned page, PDF positive steps, and exact-tab cleanup. Screenshot landmarks and emulation observations still point to that shared owned page. No unintended behavioral or scope change is present in the commit. One pre-existing wording contradiction remains in shared_setup.owned_target_and_cleanup: ‘Member cleanup via admin-only manual handlers is diagnostic reachability and proves no admin gate.’ The source-grounded manual-runner limits say direct handler invocation bypasses dispatcher authorization, so this cannot prove a lack of an admin gate.",
+  "prior_finding_mapping": [
+    {
+      "prior_issue": "PDF target differed from the Wikipedia owned target and cleanup named example.org",
+      "disposition": "addressed by eabefde4: PDF steps now use the owned Wikipedia fixture, and cleanup closes only the exact pass-owned tab ID",
+      "evidence": ".research/cdp-render-emulation-procedures-20261007.json shared_setup.owned_target_and_cleanup and case_updates.EXT-F-4111-T01"
+    },
+    {
+      "prior_issue": "Screenshot fixture, cloud image inspection path, and noncompeting emulation observation limits",
+      "disposition": "remain conditionally or partially addressed as in the prior peer review; no runtime claim is added",
+      "evidence": ".research/cdp-render-emulation-procedures-20261007.json shared_setup.visual_and_state_observation and cases EXT-F-4103-T01, EXT-F-4113-T01, EXT-F-4114-T01"
+    }
+  ],
+  "remaining_finding": {
+    "severity": "Important",
+    "location": ".research/cdp-render-emulation-procedures-20261007.json shared_setup.owned_target_and_cleanup",
+    "problem": "The final sentence says member cleanup through admin-only manual handlers ‘proves no admin gate,’ while the same procedure and ToolsView source evidence state that the manual runner bypasses dispatcher authorization.",
+    "impact": "This overstates what the member-profile manual run establishes. It proves diagnostic handler reachability only, not ordinary-member dispatcher access or the absence of an admin gate.",
+    "required_correction": "Change the phrase to say it proves no dispatcher access outcome, consistent with the per-case access_context_permission_limits and prior lifecycle procedure. This wording predates eabefde4 and is not introduced by the target correction."
+  },
+  "source_checks": [
+    "Commit diff eabefde4 changes only shared target/cleanup wording and the PDF target wording; it adds no procedure behavior or scope.",
+    "The prior peer report's screenshot, PDF, emulation, and cleanup limits remain intact; the new PDF target matches the shared Wikipedia fixture in setup and positive steps.",
+    "ToolsView manual-runner source evidence cited by the procedure states direct handler invocation bypasses dispatcher authorization; admin gate conclusions therefore remain unproven."
+  ],
+  "limits": [
+    "No runtime page, PDF, screenshot, viewer, debugger ownership, extension reload, test, build, or inventory state was exercised or changed.",
+    "This review evaluates the proposed procedure and source-backed limits only; it does not establish screenshot/PDF rendering or emulation behavior."
+  ]
+}
