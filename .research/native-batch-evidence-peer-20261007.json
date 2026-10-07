@@ -28,7 +28,7 @@
     "resource_journals": "The hosted-package, hosted-browser, and hosted-guest journals all match run 37692910351, show RESOURCE_ADMITTED and RESOURCE_FINAL_DECISION valid, child exit 0, and resourceInvalid false. All three reported SHA-256 hashes match retained files.",
     "artifact_identity": "Frozen CI provenance and receipt agree on source 91e152208490a05c3dc1f15bdadbdaafc80dad64, version 0.2.388, and tree digest; the native receipt names the same source, version, and digest. This is a development artifact, not a Store release.",
     "screenshots": "Both PNG SHA-256 hashes match the report. Visual inspection shows a generic signed-out side panel and a runner-owned research-brief setup page. Neither depicts the A/B picker interaction; the receipt supplies that proof.",
-    "credential_cleanup": "The report states that both temporary secret names were deleted and verified absent after terminal completion. Curated native artifacts contain no credential values or account identifiers; they do not independently prove secret deletion, so cleanup is credited as reported operational handling only.",
+    "credential_cleanup": "The report states that both temporary secret names were deleted and verified absent after terminal completion. The root coordinator separately reported a live gh secret-list count of zero for those exact two names, without reading values. This independent review did not perform that check; the curated native artifacts themselves do not prove deletion and contain no credential values or account identifiers.",
     "qualification": "The controlled three-card fixture proves extraction for that fixture. It does not establish the full T51 real-calendar and alternate nested-list acceptance."
   },
   "sources": [
