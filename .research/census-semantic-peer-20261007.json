@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "b2a1efad",
+  "review_type": "independent source-only; no native/browser rerun",
+  "A_outcome": {
+    "verdict": "PASS_WITH_NATIVE_LIMIT",
+    "basis": "The exact section, source-rendered row label, observed kind, and unique-row guard identify eight historical Settings nodes as six existing controls. Pair code and port input/button nodes remain separate observations of aggregate inventory controls. No current native pass or behavioral outcome is established.",
+    "native_limit": "Historical guest receipt 37645860520 only; latest guest receipt 37651810572 retains 33 raw unknowns and its current fingerprints have not been identity-matched by this review."
+  },
+  "B_source_quality": {
+    "verdict": "PASS",
+    "basis": "SettingsView.tsx rows and inventory descriptions align with all eight map entries; collector emits static row_label only for exact source shapes, HMACs control labels and values, and mapper requires a unique section/label/kind relation. Changed, cross-section, wrong-kind and duplicated rows stay unknown.",
+    "evidence": "Committed plant-red2 stdout and completed resource journal show the map-empty mutation failed three relevant assertions (child exit 1, valid admitted run), restoration byte-identical; captured-green stdout and completed journal show 38/38 passing (child exit 0, valid decision). This establishes a useful guard but does not substitute for native observation.",
+    "privacy": "No raw selected value or action text introduced in the map. Known static row_label is exposed only for allowlisted source relations; unknown row_label is dropped from output provenance."
+  },
+  "candidate_audit": {
+    "verdict": "SOURCE_CANDIDATES_ONLY",
+    "basis": "Frozen-source strings and listed inventory IDs generally match the cited source and control descriptions. The report correctly leaves current receipt fingerprints unresolved and requires fresh exact, scoped observed labels; dynamic names, titles and input values must remain private.",
+    "missing_controls": [
+      {
+        "source": "src/components/AddToProjectButton.tsx:118-128",
+        "control": "Scrape header Add this page to a project",
+        "inventory_id": null
+      },
+      {
+        "source": "src/features/scrape/ScrapeView.tsx:302-312",
+        "control": "Scrape Retry page check",
+        "inventory_id": null
+      },
+      {
+        "source": "src/components/PageIdentityNotice.tsx:7-17",
+        "control": "Data identity notice Retry",
+        "inventory_id": null
+      }
+    ],
+    "qualification": "Navigation Open Scrape is conditionally a popup alert action routed to the Scrape tab; C01 is a broad navigation-tab inventory control, so verify the alert action is intentionally covered before treating that candidate as an exact control identity. Duplicate Sign in/Retry and source title vs actual accessible name require scoped fresh observation."
+  },
+  "findings": []
+}
