@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent_source_review",
+  "reviewed_commits": [
+    {
+      "sha": "2ab49a49f4cfbdeaae713a9850f20f0bd094e95d",
+      "subject": "test: restore role visibility census on verified CI artifact"
+    },
+    {
+      "sha": "00a19a14553252c7a25c6f4fc440197ae49dbaeb",
+      "subject": "test: mark intercepted or unmapped visibility census incomplete"
+    }
+  ],
+  "verdict_A_requirement_coverage": {
+    "verdict": "PARTIAL — SOURCE-ONLY; NATIVE ACCEPTANCE PENDING",
+    "basis": [
+      "The hosted route adds guest, member, and admin cases; member/admin preflight requires their hosted identity fixtures, and the driver delegates authentication to signInSettings. The driver validates imported CI development artifact source/run/artifact/tree identity before startup and checks extension ID/version after observation.",
+      "The observation is bounded to navigation, tab-pane controls, Settings sections, and Settings controls. It does not activate action controls. Non-GET/HEAD/OPTIONS HTTP(S) requests on the sidepanel and extension-worker targets are aborted and force an incomplete result; unknown labels and inaccessible regions also force incomplete.",
+      "Coverage is incomplete: the two control selectors enumerate buttons, switches, comboboxes, and inputs but omit anchors. The canonical inventory includes EXT-F-1003-C39, the visible OpenUrl anchor in SettingsView.tsx; that control is absent from census observations and can be missed without making the result incomplete.",
+      "Completeness does not require expected regions to be present. With empty observation buckets, zero blocked requests, and no inaccessible_regions, censusCompleteness returns complete=true. In particular, a present Settings tab with no discovered section headers can be reported complete. The source test explicitly treats an empty census as complete.",
+      "Unknown text is not emitted in plaintext, but deterministic unsalted SHA-256 plus length does not guarantee confidentiality for guessable or low-entropy private labels; it also enables cross-run correlation. Treat the artifact as potentially sensitive until this fingerprint policy is addressed."
+    ],
+    "disposition": "Do not accept a complete census from this source as proof of all visible controls. Fix selector and expected-region coverage, and settle the label-fingerprint privacy model before relying on reports."
+  },
+  "verdict_B_quality_and_safety": {
+    "verdict": "PARTIAL — GOOD SAFETY BOUNDARIES, INSUFFICIENT COMPLETENESS GUARD",
+    "basis": [
+      "Artifact provenance is verified before native startup, the output is written with mode 0600, raw unknown labels are hashed in the extension document, and the driver records navigation actions and blocked-request categories without URL or body details.",
+      "The second commit improves the initial implementation by retaining observations when inspection fails and marking intercepted requests, unmapped labels, and inaccessible regions incomplete. The repair report accurately distinguishes observation from action behavior and says native role runs remain pending.",
+      "The completeness unit test uses an empty observation as its passing case, so it codifies a vacuous success rather than proving that expected visible regions were inventoried. This is a material weakness in the forcing guard.",
+      "The census only guards sidepanel and extension-worker targets; it does not establish a browser-wide no-write boundary. This is declared in the repair report and is acceptable only with the current no-action scope and without claiming general write prevention."
+    ]
+  },
+  "source_evidence": [
+    "tests/browser/takeover-visible-census.mjs:188-204 and 248-255: Settings and tab-pane control selectors omit anchors.",
+    "tests/browser/takeover-visible-census.mjs:339-352: completeness checks only observed bucket counts, blocked requests, and recorded inaccessible regions.",
+    "tests/browser/takeover-visible-census.test.mjs:72-91: the empty observation is asserted complete; unmapped/inaccessible/blocked cases are then checked against that baseline.",
+    "docs/stabilization/inventory.json:4657-4659: EXT-F-1003-C39 names the visible Organizations navigation control.",
+    "src/features/settings/SettingsView.tsx:313-324 and src/components/OpenUrl.tsx:46-66: the archived-membership control is rendered as an anchor.",
+    "tests/browser/takeover-visible-census.mjs:131-135, 198-203, 251-254: unknown labels leave the page only as deterministic SHA-256 and length."
+  ],
+  "verification": {
+    "performed": "Read-only inspection of the two named commit diffs, current census source, existing source test, role auth helper, hosted route, and cited inventory/UI source.",
+    "not_performed": [
+      "No tests, browser, build, credential access, hosted workflow, or native profile was run.",
+      "No guest/member/admin runtime observations were made; none are inferred from source tests."
+    ]
+  },
+  "limitations": [
+    "This is a source review, not proof of native rendering, role gating, request interception behavior, or absence of writes at runtime.",
+    "The current repair report's status source_ready_native_unverified is appropriately explicit about pending native runs, but its claimed trustworthy complete census is not yet supported by the selectors/completeness predicate reviewed here."
+  ]
+}
