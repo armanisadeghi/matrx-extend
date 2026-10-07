@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent-source-re-review",
+  "reviewed_patch": ".research/cdp-network-procedures-20261007.json",
+  "reviewed_commit": "948938b0",
+  "prior_review": ".research/cdp-network-fresh-review-20261007.json",
+  "scope": ["EXT-F-4107-T01", "EXT-F-4108-T01", "EXT-F-4109-T01", "EXT-F-4110-T01"],
+  "verdict_A_spec_procedure": "ACCEPTED_FOR_INVENTORY_AS_PROPOSALS: the four procedures now provide source-aligned, controlled positive and schema-negative paths for member and admin, warm and extension-reload passes, and owned-tab cleanup. They are not executed acceptance results. The inventory's debugger permission-denial dimension remains explicitly unresolved and must not be certified from the manual runner.",
+  "verdict_B_quality_truth": "PASS_SOURCE_ONLY: all six prior findings are addressed in the corrected text without a new substantive source contradiction. The manual runner's direct handler call, full body display/broadcast, destructive drain/filter order, stop semantics, and conditional owned attachment cleanup match the reviewed source. This verdict does not validate live behavior or dispatcher enforcement.",
+  "prior_finding_mapping": [
+    {
+      "prior_finding": "Permission-negative coverage was treated as unavailable without an explicit unresolved inventory dimension.",
+      "status": "addressed_as_explicit_gap",
+      "evidence": ".research/cdp-network-procedures-20261007.json shared_setup.unresolved_coverage and shared_setup.manual_runner; src/features/tools/ToolsView.tsx:414-419,447-462",
+      "limit": "A separately authorized dispatcher-path procedure is still required for permission-denial verification."
+    },
+    {
+      "prior_finding": "Drain max-boundary negatives occurred after the queue was consumed.",
+      "status": "addressed",
+      "evidence": ".research/cdp-network-procedures-20261007.json case_updates.EXT-F-4108-T01.steps; src/lib/tools/handlers/cdp.ts:417-444; src/lib/cdp/client.ts:430-435",
+      "limit": "A preservation pass requires an observed completed public record after each rejected max; an empty fixture is explicitly unresolved."
+    },
+    {
+      "prior_finding": "Invalid stop argument occurred after capture stopped and detached.",
+      "status": "addressed",
+      "evidence": ".research/cdp-network-procedures-20261007.json case_updates.EXT-F-4109-T01.steps; src/lib/cdp/client.ts:421-428",
+      "limit": "Continued capture requires observed records from completed public reloads; no records means no proof."
+    },
+    {
+      "prior_finding": "Get-body procedure incorrectly said the manual runner would not display the response body.",
+      "status": "addressed",
+      "evidence": ".research/cdp-network-procedures-20261007.json shared_setup.manual_runner and case_updates.EXT-F-4110-T01.steps; src/features/tools/ToolsView.tsx:447-477,490-499,570-577",
+      "limit": "The public body appears in Output and TOOL_TIMELINE_EVENT; the procedure limits durable evidence to metadata."
+    },
+    {
+      "prior_finding": "A public POST/request-body fixture was incorrectly framed as required for response-body retrieval.",
+      "status": "addressed",
+      "evidence": ".research/cdp-network-procedures-20261007.json shared_setup.limits and case_updates.EXT-F-4110-T01.limits; src/lib/cdp/client.ts:437-444",
+      "limit": "The selected case uses Network.getResponseBody from an owned completed public GET."
+    },
+    {
+      "prior_finding": "Start failure after debugger attachment lacked exact-owned-ID cleanup.",
+      "status": "addressed",
+      "evidence": ".research/cdp-network-procedures-20261007.json shared_setup.target_ownership_and_cleanup and case_updates.EXT-F-4107-T01.steps; src/lib/cdp/client.ts:407-419",
+      "limit": "Only a unique new attachment matching the receipt-owned target may be detached."
+    }
+  ],
+  "case_verdicts": {
+    "EXT-F-4107-T01": "ACCEPTED_PROPOSAL: start positive, idempotence, schema-negative, Network.enable failure cleanup, and owned detach are source-aligned.",
+    "EXT-F-4108-T01": "ACCEPTED_PROPOSAL: both invalid max values precede valid drains of newly queued public records; URL filtering is correctly excluded from preservation proof.",
+    "EXT-F-4109-T01": "ACCEPTED_PROPOSAL: invalid stop occurs during active capture; subsequent records are required before the real stop, then empty drain and retained attachment are checked.",
+    "EXT-F-4110-T01": "ACCEPTED_PROPOSAL: request ID comes from a completed owned public text GET; body visibility and possible Chrome eviction are stated truthfully."
+  },
+  "new_substantive_findings": [],
+  "limits": "Source-only review of the four selected procedures and current handler/manual-runner code. No browser, build, tests, database operation, permission change, or live receipt was run. No inventory status or runtime outcome is promoted. The dispatcher permission-denial and agent-routing paths remain unverified by these manual procedures."
+}
