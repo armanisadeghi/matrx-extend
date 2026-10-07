@@ -1,0 +1,60 @@
+{
+  "status": "DONE",
+  "reviewed_commit": "d68a1db3",
+  "scope": "Independent source/schema fidelity review of proposed EXT-F-4137-T01, EXT-F-4138-T01, and EXT-F-4141-T01 procedures. No runtime execution.",
+  "verdict_A": {
+    "label": "PASS",
+    "summary": "The procedures describe source-supported manual executions and distinguish those results from dispatcher/auth behavior and durable cloud state.",
+    "evidence": [
+      "ToolsView.tsx parses JSON (blank becomes {}), validates local handler Zod args, then calls handler.run directly with permissionMode=act and assignedTabId=null; it does not run the dispatcher gate.",
+      "guidance.ts requires nonempty domain/text on save, but list_guidance domain is optional; an empty string takes the unfiltered branch. Guidance storage writes item and index locally before fire-and-forget cloud sync; delete removes local state before fire-and-forget cloud delete.",
+      "Highlight list accepts page/site/all and positive limits up to 1000; explicit URL bypasses assigned-tab lookup. Page query matches exact URL; site derives hostname and matches exact stored domain. Read errors return []; malformed rows are skipped.",
+      "Proposed procedures include owned IDs/fixtures, valid positive assertions, negative input checks, reloads, exact-target cleanup, and explicit limits on cloud/auth conclusions."
+    ]
+  },
+  "verdict_B": {
+    "label": "PASS",
+    "summary": "Review package preserves separate behavior and quality judgments, does not convert source review into runtime evidence, and avoids broad cleanup or inferred access results.",
+    "evidence": [
+      "Unfiltered guidance reads are explicitly redacted in retained evidence; highlight absence is not accepted as proof of access denial or successful database reads.",
+      "Cloud durability and deletion claims require exact-ID observation or independent same-principal hydration; failures and unresolved cleanup remain open by ID.",
+      "Procedure calls are limited to three existing inventory cases; no behavior or permissions are invented for highlight listing."
+    ]
+  },
+  "precise_findings": [
+    {
+      "severity": "informational",
+      "finding": "The proposal's parent-domain guidance assertion is source-correct but easy to read backwards: a note saved on procedure-guidance.invalid matches a filter of sub.procedure-guidance.invalid; the inverse is not guaranteed.",
+      "evidence": "src/lib/guidance/storage.ts:34-38, 84-86",
+      "disposition": "Current step uses the correct direction; preserve that exact fixture/filter pairing."
+    },
+    {
+      "severity": "limitation",
+      "finding": "Highlight query source declares the table as extend.wbx_highlight and uses the current client query path, while the checked-in historical migration describes an older public.wbx_highlight shape. Source inspection cannot certify deployed schema, live RLS policy, or current backend rows.",
+      "evidence": "src/lib/highlights/queries.ts:31-34, 60-84; migrations/2026_05_20_wbx_highlight.sql:21-55; src/lib/supabase/queries.ts schema notes",
+      "disposition": "Keep the proposed live exact-ID row check and RLS caveat; do not treat the migration mirror or inventory metadata as live-schema proof."
+    },
+    {
+      "severity": "limitation",
+      "finding": "The manual runner's direct handler call means its action/read result does not establish permission-gate behavior, advertised agent execution, guest access, or member/admin authorization differences.",
+      "evidence": "src/features/tools/ToolsView.tsx:390-463; src/lib/tools/handlers/guidance.ts:40-109; src/lib/tools/handlers/highlights.ts:39-77",
+      "disposition": "Already stated in shared setup and unresolved dimensions; keep dispatcher/auth coverage separate."
+    },
+    {
+      "severity": "limitation",
+      "finding": "Guidance save/delete returns local handler success before asynchronous cloud work settles. Reload in the same profile only demonstrates local persistence; local get/list cannot verify the cloud row or tombstone.",
+      "evidence": "src/lib/guidance/storage.ts:97-139; src/lib/guidance/cloud-sync.ts:137-165, 167-210",
+      "disposition": "The proposal correctly requires independent exact-ID cloud evidence for cloud claims and tracks unresolved cleanup."
+    },
+    {
+      "severity": "limitation",
+      "finding": "A missing highlight in list output can result from a failed query (empty array) or dropped malformed row, not only absence or RLS. The tool does not expose a success/error distinction for the underlying read.",
+      "evidence": "src/lib/highlights/queries.ts:36-47, 60-84; src/lib/tools/handlers/highlights.ts:53-77",
+      "disposition": "The proposal correctly requires independent fixture-row confirmation and rejects empty-list-only access conclusions."
+    }
+  ],
+  "verification_limits": [
+    "No browser, build, tests, database access, or runtime execution performed, as required by the review lane.",
+    "Live binding, deployed schema/RLS, actual role behavior, extension permissions, sync completion, and cleanup outcomes remain unverified."
+  ]
+}
