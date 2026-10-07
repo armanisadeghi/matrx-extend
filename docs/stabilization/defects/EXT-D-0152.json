@@ -24,7 +24,7 @@
   "verification": {
     "source": "Exact guest PNG path added to workflow; independent native operator source-check accepted matching path.",
     "native": "Corrected uploader not yet run; screenshot pixels remain unverified.",
-    "remote": "Push received GitHub Internal Server Error; publication not yet confirmed."
+    "remote": "Source fix1e366f07 reached origin/main through3254a188 after GitHub writes recovered."
   },
   "transition_history": [
     {
@@ -53,5 +53,5 @@
     }
   ],
   "closure_requirement": "Fresh guarded original-artifact census uploads exact readiness PNG; independent pixel inspection confirms Account/Sign in guest state.",
-  "next_action": "Restore main push, then guarded retest of corrected uploader; never infer pixels from path alone."
+  "next_action": "Follow active guarded original-artifact retest37643142383 through terminal and inspect uploaded Account PNG. Do not infer pixels from path alone."
 }
