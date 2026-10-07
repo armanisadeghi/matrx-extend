@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "sanitized_dispatch_evidence",
+  "read_only_observations": {
+    "artifact_run": "37666263406 success, push, source 87f6649b4874492a1f8af59cd8703eff0e06424c",
+    "artifact": "11503412219, unexpired, matrx-extend-development-test-87f6649b4874492a1f8af59cd8703eff0e06424c-37666263406-1",
+    "active_workflow_snapshot": "Only unrelated CI push run 37670082995 was in progress; no hosted workflow_dispatch run was listed.",
+    "runner_case_preflight": "settings-controls selects tests/browser/settings-local-controls-acceptance.mjs and requires a CI development receipt; credential preflight does not require guest credentials."
+  },
+  "dispatch_errors": [
+    {
+      "ref": "7de49783f53c92ef6ff6883f77fbb18ee793741a",
+      "sanitized_error": "HTTP 422: No ref found"
+    },
+    {
+      "ref": "781f6431ee1ec6c2f77a0ec03c67fb1635bb5a98",
+      "sanitized_error": "HTTP 422: No ref found"
+    }
+  ],
+  "raw_sensitive_output": "None collected or retained."
+}

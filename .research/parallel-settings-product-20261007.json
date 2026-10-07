@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "lane": "A",
+  "scope": "One existing hosted native Settings controls guest case; no whole-surface claim",
+  "acceptance_case": "settings-controls",
+  "intended_inventory_cases": [
+    "EXT-F-1003-T22",
+    "EXT-F-1003-T37",
+    "EXT-F-1003-T46",
+    "EXT-F-1003-T70"
+  ],
+  "preflight": {
+    "case_role": "signed-out guest",
+    "credential_staging": "The selected case does not require or stage member/admin credentials; preflight maps those secrets only to member/admin case names.",
+    "shared_fixture_mutation": "No member/admin fixture or shared scrape fixture is selected.",
+    "assertion_mapping": "The existing native runner exercises T22 guest admin-section visibility warm and after reload; T37 Deep clean hint, toggle, persistence, and restore; T46 desktop-port valid save, invalid range, blank clear and rediscovery; T70 About identity/readiness/update behavior.",
+    "limitations_from_existing_runner": "The runner itself leaves rediscovery and unsupported alternate update/API branches unverified unless directly observed."
+  },
+  "artifact": {
+    "ci_run_id": 37666263406,
+    "ci_run_status": "success",
+    "ci_run_event": "push",
+    "source_sha": "87f6649b4874492a1f8af59cd8703eff0e06424c",
+    "artifact_id": 11503412219,
+    "artifact_name": "matrx-extend-development-test-87f6649b4874492a1f8af59cd8703eff0e06424c-37666263406-1",
+    "artifact_expired": false
+  },
+  "dispatch": {
+    "status": "not_created",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "requested_inputs": {
+      "acceptance_lane": "A",
+      "runner_label": "macos-15",
+      "acceptance_case": "settings-controls",
+      "development_run_id": 37666263406,
+      "development_artifact_id": 11503412219
+    },
+    "attempts": [
+      {
+        "ref": "7de49783f53c92ef6ff6883f77fbb18ee793741a",
+        "result": "GitHub HTTP 422: No ref found"
+      },
+      {
+        "ref": "781f6431ee1ec6c2f77a0ec03c67fb1635bb5a98",
+        "result": "GitHub HTTP 422: No ref found"
+      }
+    ],
+    "stop_reason": "Two dispatch environment/ref failures reached the lane handoff limit. No third attempt was made.",
+    "pre_dispatch_active_runs": [
+      {
+        "id": 37670082995,
+        "workflow": "CI",
+        "event": "push",
+        "status": "in_progress",
+        "note": "Unrelated CI push run; it was not waited on. No in-progress hosted workflow-dispatch run appeared in the repository-wide snapshot."
+      }
+    ]
+  },
+  "product_result": {
+    "status": "unverified_no_run",
+    "actual_behavior_assertions": [],
+    "case_results": [
+      {
+        "id": "EXT-F-1003-T22",
+        "status": "unverified",
+        "reason": "No hosted browser run was created."
+      },
+      {
+        "id": "EXT-F-1003-T37",
+        "status": "unverified",
+        "reason": "No hosted browser run was created."
+      },
+      {
+        "id": "EXT-F-1003-T46",
+        "status": "unverified",
+        "reason": "No hosted browser run was created."
+      },
+      {
+        "id": "EXT-F-1003-T70",
+        "status": "unverified",
+        "reason": "No hosted browser run was created."
+      }
+    ],
+    "product_defects": [],
+    "run_id": null,
+    "terminal_state": null,
+    "extension_version": null,
+    "chrome_version": null,
+    "receipt": null,
+    "resource_journals": [],
+    "screenshots": [],
+    "journal_note": "No hosted job was created, so no run receipt, journals, screenshots, or three current journals exist for inspection."
+  },
+  "evidence_file": ".research/parallel-settings-product-20261007-evidence.json",
+  "limitations": [
+    "This report records dispatch/preflight evidence only. It is not native product evidence.",
+    "No product defect was inferred from the inability to dispatch."
+  ]
+}
