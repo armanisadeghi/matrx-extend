@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "review": "independent source-only peer review",
+  "reviewed_proposal": ".research/webmcp-procedures-20261007.json",
+  "reviewed_head": "4b6cf5ac25c4976ab6a54b43c756f28c89ee34c1",
+  "scope": "Source and current inventory review only; no browser, build, test, database, or execution claims.",
+  "verdicts": {
+    "A_source_correctness": {
+      "verdict": "pass_with_clarifications",
+      "findings": [
+        {
+          "severity": "low",
+          "finding": "The proposal correctly preserves inventory case IDs, control IDs, admin mode, and the four dimensions for EXT-F-4118-T01, EXT-F-4119-T01, EXT-F-4120-T01, and EXT-F-4162-T01. The leaf handler schemas/tiers/admin flags, canonical router branches/tierFor, permission catalog entries, and assigned-tab behavior agree with the inspected source.",
+          "evidence": [
+            "docs/stabilization/inventory.json:53487-53825,61851-61995",
+            "src/lib/tools/handlers/webmcp.ts:24-165",
+            "src/lib/tools/handlers/canonical-mergers.ts:255-290",
+            "src/lib/tools/handlers/_active-tab.ts:1-39",
+            "src/lib/tools/catalog.ts:203-206"
+          ]
+        },
+        {
+          "severity": "low",
+          "finding": "Clarify the invalid-input distinction: malformed JSON is rejected by the ToolsView form parser before any dispatcher call; a valid JSON non-object can exercise schema rejection. ToolsView also safe-parses locally and runs handler.run directly, bypassing dispatch permission/admin gates. The proposal states these boundaries in places, but its combined phrasing could still imply malformed JSON reaches the dispatcher.",
+          "evidence": [
+            "src/features/tools/ToolsView.tsx:379-451",
+            "src/lib/tools/dispatch.ts:687-770"
+          ]
+        },
+        {
+          "severity": "low",
+          "finding": "For reload checks, ensure the owned fixture page's own script re-registers its benign tool after page reload. If it does not, re-establish the fixture using the same observed native API before the post-reload list/call assertion; do not interpret a lost page registration as extension failure or claim a positive call. The proposal's 'only if page script does so naturally' condition points in this direction but should be explicit because a DevTools-only registration does not survive reload.",
+          "evidence": [
+            "src/lib/tools/handlers/webmcp.ts:72-160",
+            "src/lib/webmcp/register.ts:88-161"
+          ]
+        }
+      ]
+    },
+    "B_procedure_quality": {
+      "verdict": "pass_with_clarifications",
+      "findings": [
+        {
+          "severity": "low",
+          "finding": "The positive bar is sound: it requires real page feature observation, actual registration/list content, and for call cases a returned value plus independent visible side-effect readback. The explicit no-polyfill rule and unsupported/unresolved treatment prevent a missing native API from becoming a false positive.",
+          "evidence": [".research/webmcp-procedures-20261007.json:2-11"]
+        },
+        {
+          "severity": "low",
+          "finding": "Make the 4118 comparison explicitly source-aware: webmcp_check_availability counts only modelContext.tools, whereas webmcp_list_page_tools prefers getTools(). If the browser exposes getTools() without a tools array, report that observed shape and the handler's tool_count of 0 as a source limitation; do not treat it as catalog parity or native unavailability.",
+          "evidence": [
+            "src/lib/tools/handlers/webmcp.ts:34-47",
+            "src/lib/tools/handlers/webmcp.ts:68-103"
+          ]
+        },
+        {
+          "severity": "low",
+          "finding": "Permission/admin/Ask-Act claims are appropriately deferred to a separately authorized dispatcher/UI phase. The manual runner sets assignedTabId:null, directly calls handler.run, and uses the focused tab, so it cannot establish those gates or pinned-tab behavior.",
+          "evidence": [
+            "src/features/tools/ToolsView.tsx:430-465",
+            "src/lib/tools/dispatch.ts:687-845",
+            "src/lib/tools/dispatch.ts:1450-1530"
+          ]
+        }
+      ]
+    }
+  },
+  "execution_status": "not_executed",
+  "recommendation": "Accept the proposal after the three procedural clarifications above; current inventory reconciliation and resource approval remain prerequisites, and no runtime conclusion is supported by this review."
+}
