@@ -1,0 +1,14 @@
+{
+  "status": "Three source-reviewed manual procedures integrated; runtime unverified",
+  "case_ids": ["EXT-F-4125-T01", "EXT-F-4126-T01", "EXT-F-4167-T01"],
+  "source_commits": ["f3a85b89", "d735c159"],
+  "peer_commit": "b5357733",
+  "missing_steps_expected_before": 67,
+  "missing_steps_expected_after": 64,
+  "invariants": "Feature cells, applicability, controls, case IDs and mode assignments unchanged. Prior peer artifact restored byte-identically to f9efbcad.",
+  "limits": [
+    "Dispatcher and permission denial remain unverified.",
+    "Inventory persist/persistent schema drift remains explicit; actual schemas strip unknown keys.",
+    "Real member/admin browser verification remains outstanding."
+  ]
+}
