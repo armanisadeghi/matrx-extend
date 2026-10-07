@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "reviewed_source": "9ec4119d",
+  "peer": ".research/t57-public-race-preflight-peer-20261007.json",
+  "decision": "No native success-claiming preflight until source correction and fresh independent review",
+  "required_corrections": [
+    "Positive extension debugger lease/capture-armed evidence while old response paused; spinner alone is insufficient.",
+    "Hash the actual original old/current response bodies without serializing or modifying their contents.",
+    "Execute the real SUT replacement and causal mutations against the test seam with retained assertion RED, clean GREEN, exact source/output hashes and resource journals. The literal array comparator in original test lines153-157 does not execute replacement of assessPublicRacePreflight."
+  ],
+  "owner": "/root/public_preflight_evidence_fix",
+  "limits": "No native run; D47 stays closed and T57 unverified. Original route/source tests only prove their bounded recorded scope."
+}
