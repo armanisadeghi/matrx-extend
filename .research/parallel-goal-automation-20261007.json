@@ -23,5 +23,13 @@
   "evidence_limits": [
     "No product health claim follows from goal/documentation/automation alignment.",
     "Independent guard review does not establish actual simultaneous native test success."
-  ]
+  ],
+  "current_observation": {
+    "observed_at": "2026-10-07T22:45:42.453077+00:00",
+    "app_goal_status": "active",
+    "app_goal_objective": "Old inventory-first text remains immutable through available goal API; approved PLAN governs.",
+    "automation_status": "ACTIVE",
+    "approved_parallel_prompt_verified": true,
+    "evidence": "get_goal plus automation view and local automation.toml readback; no automation settings changed."
+  }
 }
