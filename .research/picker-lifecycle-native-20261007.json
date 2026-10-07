@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "task_id": "picker-lifecycle-native-20261007",
+  "defect_id": "EXT-D-0042",
+  "scope": "One guarded hosted showcase-stale-admin attempt for stale channels, delayed cancellation, deferred installation, and reinjection/listener cleanup. No product edit, build, release, retry, nonadmin test, or D42 closure.",
+  "execution": {
+    "workflow_run_id": 37700751092,
+    "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37700751092",
+    "workflow": "hosted-guest-acceptance.yml",
+    "lane": "A",
+    "runner": "macos-15",
+    "started_at": "2026-10-07T23:10:53Z",
+    "terminal_at": "2026-10-07T23:17:51Z",
+    "conclusion": "failure",
+    "workflow_checkout_sha": "424c2fb7eff7b3f4f6a7426d0a60113ace4a89c7",
+    "workflow_driver_sha": "424c2fb7eff7b3f4f6a7426d0a60113ace4a89c7",
+    "workflow_driver_blob_sha": "4879cc095dd3e03075a1853943fb7b0a05492d9f",
+    "native_step_started_at": "2026-10-07T23:15:49Z",
+    "native_step_terminal_at": "2026-10-07T23:17:44Z",
+    "attempt_count": 1,
+    "retry": false
+  },
+  "frozen_artifact": {
+    "ci_run_id": 37698216289,
+    "artifact_id": 11516342905,
+    "artifact_digest": "sha256:927854cfdda6e57d272277653e0b4c507720c29d74978da235d80c064c1017ee",
+    "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "source_version": "0.2.391",
+    "tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+    "ci_run_conclusion": "success",
+    "receipt_and_provenance_match": true,
+    "receipt_record": ".research/audit-selected-native-evidence/receipts/ci-build-receipt.json",
+    "provenance_record": ".research/audit-selected-native-evidence/receipts/ci-build-provenance.json",
+    "artifact_mode": "CI development test; not a Store artifact",
+    "source_comparison": "The relevant list-picker product files were unchanged from the frozen artifact source through the workflow checkout. The native acceptance driver did change and ran from workflow checkout 424c2fb7eff7b3f4f6a7426d0a60113ace4a89c7."
+  },
+  "resource_verdict": {
+    "package": {
+      "journal": ".research/picker-lifecycle-native-evidence/run37700751092-curated/resource-journals/hosted-package-37700751092-1.jsonl",
+      "sha256": "45a8206779b7bf85742c7e4dd1b13adf187bc4174a2ad501563edb400d0cd888",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "journal": ".research/picker-lifecycle-native-evidence/run37700751092-curated/resource-journals/hosted-browser-37700751092-1.jsonl",
+      "sha256": "2c79e94d49be8f407e5547d3a9624713e012adc60bb923cac8cd3030f5760b67",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "native": {
+      "journal": ".research/picker-lifecycle-native-evidence/run37700751092-curated/resource-journals/hosted-guest-37700751092-1.jsonl",
+      "sha256": "f143c3d72efaadad5b74f7b22390ded09520e407c89289597b7aa9eea76a4005",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    },
+    "interpretation": "The runner failure is not an invalid-resource verdict. All three current run journals have a final decision."
+  },
+  "native_result": {
+    "receipt": ".research/picker-lifecycle-native-evidence/run37700751092-curated/showcase-picker-native-result.json",
+    "receipt_sha256": "5361ae0010e38305fa46546f2689e90ceefd4d1afdb33d67af409079641a5b09",
+    "status": "unverified",
+    "stage": "select_B_result",
+    "failure_code": "select_B_result_failed",
+    "failed_target": "lifecycle_reinject",
+    "channel": "reinject",
+    "last_safe": {
+      "panel_start": false,
+      "panel_picking": true,
+      "panel_three_rows": false,
+      "overlay_count": 1,
+      "relay_count": 32,
+      "context_start_distinct": false,
+      "context_teardown_distinct": false,
+      "install_count": 2,
+      "listener_click_count": 1,
+      "listener_hover_count": 1
+    },
+    "failure_boundary": "The second installation did not yield distinct start and teardown function references. The assertion stopped before crediting post-reinjection B extraction and listener cleanup. One click and one hover listener were observed at the last safe checkpoint."
+  },
+  "bounded_observations": {
+    "admin_identity_and_device_organization": "pass",
+    "prior_stale_exit_cycle": "pass",
+    "stale_item_detected_after_B_started": "pass; B extracted three rows",
+    "stale_result_after_B_started": "pass; B extracted three rows",
+    "delayed_A_cancel_after_B_started": "pass; B extracted three rows and page remained unchanged",
+    "deferred_A_install_across_replacement": "pass; two installations, obsolete A start count zero, B extracted three rows",
+    "reinjection_fresh_context_identity": "fail; both identity-distinctness values false",
+    "reinjected_listener_teardown_and_positive_B_extraction": "unverified; assertion stopped before these checks",
+    "signed_in_nonadmin_role_gate": "unverified; not exercised"
+  },
+  "credentials": {
+    "canonical_preflight": "passed through requireHostedAcceptanceCredential('showcase-stale-admin') and profileOrganizationConfig",
+    "secret_names": [
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "values_recorded": false,
+    "deleted_after_terminal": true,
+    "both_names_absent_verified_after_terminal": true
+  },
+  "evidence_curation": {
+    "preserved": [
+      "one sanitized native result receipt",
+      "the three current run resource journals"
+    ],
+    "excluded": [
+      "three stale uploaded journals for run 37105304739",
+      "two generic harness screenshots"
+    ],
+    "no_product_edit": true
+  },
+  "defect_disposition": {
+    "state": "in-fix",
+    "closed": false,
+    "reason": "Reinjection context identity assertion failed; listener cleanup after reinjection and signed-in nonadmin gating remain unverified.",
+    "next_action": "Coordinator to diagnose the lifecycle_reinject identity mismatch from the fixed target and last-safe observations. This lane made no retry; D42 remains open."
+  }
+}
