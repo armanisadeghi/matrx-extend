@@ -1,0 +1,239 @@
+{
+  "schema_version": 1,
+  "status": "source-reviewed executable procedures; no browser execution or pass claim",
+  "inventory_gate": "Procedures preserve existing IDs, controls, modes, and dimensions. Execute only after the owning runner approves source inventory reconciliation and resource permit.",
+  "method_note": "Current checked-in handlers use document.modelContext, awaited getTools(), and executeTool(registeredTool,input). The supplied documentary review was prepared against an older source shape; source references below describe this checkout and must be matched to the exact artifact SHA recorded by the runner.",
+  "cases": [
+    {
+      "id": "EXT-F-4118-T01",
+      "feature_id": "EXT-F-4118",
+      "tool": "webmcp_check_availability",
+      "control_ids": [
+        "EXT-F-4118-C01"
+      ],
+      "modes": [
+        "admin"
+      ],
+      "dimensions": [
+        "valid-input",
+        "invalid-input",
+        "permissions",
+        "reload"
+      ],
+      "preconditions": [
+        "Run only after the owning runner approves inventory reconciliation and the resource permit. Record UTC time, Chrome version/channel, extension ID, source commit SHA, exact built artifact path plus SHA-256 and displayed version, profile identity, signed-in role, and the extension reload timestamp. Load that exact artifact in an owned disposable profile; confirm the side panel reports the same build identity. Repeat the build receipt after each full extension reload.",
+        "Use a secure-context page served from an origin you own (localhost is suitable), with a visible unique marker, a counter initialized to 0, and a read-only way to inspect both. In page DevTools, inspect the actual `document.modelContext` and method types. Do not polyfill or replace native objects. For documented local testing, use Chrome 149+ with `chrome://flags/#enable-webmcp-testing` enabled and relaunch; Chrome 149 is the documented Origin Trial start, not a claim of general stable availability. Record the exact channel/build and flag state. If that flag or native API is absent, stop native-positive steps and mark them unresolved. If the actual native API is missing or incompatible, stop native-positive steps and record them unresolved; do not substitute a mock.",
+        "Register a unique benign fixture tool on that owned page using the observed native API: await `document.modelContext.registerTool({name, description, inputSchema, execute})`; define an object schema requiring `nonce:string`; its `execute` callback increments the visible counter once and returns `{nonce, counter, fixtureMarker}`. Await registration, then independently verify `await document.modelContext.getTools()` contains the unique tool once. Keep the exact registration code and observed schema/method signatures in the evidence receipt. Never call unrelated page tools.",
+        "Keep a second owned tab open with a different unique marker and, if native WebMCP is available there, a different fixture tool name. For manual Tools runs, focus the intended page immediately before each run: ToolsView invokes `handler.run` directly with `assignedTabId:null`, so the handler resolves the currently focused tab. A manual run does not prove dispatcher validation, admin gating, permissions, Ask/Act confirmation, or assigned-tab pinning.",
+        "For syntactically malformed text, use the Tools JSON editor and capture its `Invalid JSON` parser error before execution. For schema rejection, enter valid JSON with a wrong top-level type (for example `null`) and capture `Schema mismatch`; do not call either result a native API failure. For branch-level invalid values, use valid JSON that parses against the route schema and observe the handler's own structured result.",
+        "For the dispatcher lane, use a real agent invocation or real WebMCP page-to-extension call, record the exact authorized caller/role and permission state, and capture the actual gate or confirmation UI. Check one read-tier branch and the action-tier call branch separately. An admin positive proves no negative role gate. External action calls require confirmation in both Ask and Act modes; decline once and verify no page side effect. Keep the feature-test procedure and inventory cell unexecuted until this run occurs.",
+        "Run on the original assigned tab A, then switch focus to tab B while the real agent call is in flight. Confirm the effect remains on A and B is unchanged. Start a fresh call assigned to A, close A before dispatch completes, and confirm an explicit origin-tab failure with no effect on B. For the external page-origin path, separately use the captured originating tab ID and verify a closed origin returns `webmcp: origin tab unavailable`.",
+        "After page reload, let the owned page's own script register again and repeat discovery/call with a fresh nonce and baseline. Then fully reload the exact extension artifact, verify its ID/version/path and fresh build receipt, reload the page, re-register using the native API, and repeat. To obtain the receipt, inspect the real native catalog, find `matrx.list_open_tabs`, and invoke the discovered RegisteredTool with `await document.modelContext.executeTool(tool, {})`; capture the extension-generated audit/resource receipt with `origin=webmcp`, call/tool identity, completion outcome, and timestamp. This is the documented read-only receipt check; manual Tools runs are not such receipts. Cleanup by unregistering only if the native API supports it, otherwise close the owned profile/page; verify no fixture page or owned registration remains. Preserve no unrelated page state."
+      ],
+      "steps": [
+        "On focused fixture tab A, record `await document.modelContext.getTools()` and its count. In Tools > Catalog > All handlers, run `webmcp_check_availability` with `{}`. Require `available:true` and `tool_count` equal to the awaited native catalog length. Repeat once after registering the unique fixture tool and verify the count increases by one. Save the independent DevTools observation and handler output together.",
+        "Run the malformed-text and valid-JSON-wrong-top-level-type checks described above. Record parser/schema errors as local input validation outcomes; neither should invoke the page API.",
+        "Attempt a no-native-API case only on an actual browser/page context where direct inspection proves `document.modelContext.getTools` is absent; do not delete or shadow the native property. If no such genuine context exists, record unavailable branch not exercised. Attempt a restricted browser tab only if one is available; record the Chrome scripting rejection separately from WebMCP unavailable. Also run with no selected tab if the real Tools UI can produce that state, expecting `No active tab`.",
+        "Perform the separate dispatcher lane for this read-tier, admin-only handler: verify exact advertised availability for the admin before invocation, then use an authorized member profile/call to verify the actual admin rejection. Do not infer member denial from the admin success or the manual badge. Check the assigned-tab and closed-origin steps in the common preconditions using a real dispatcher path.",
+        "Complete the page reload and full extension reload sequence in the common preconditions; retain pre/post build receipts, direct native catalog observations, outputs, tab markers, and cleanup result."
+      ],
+      "expected": [
+        "A valid native positive requires observed real `document.modelContext.getTools`, an awaited catalog, and `available:true` with matching length. If native detection or the result differs, capture the exact shape/error and leave positive unresolved; no polyfill or guessed browser-version explanation counts.",
+        "No-tab and Chrome scripting failures are bounded handler errors. A native API absence is only established by direct observation on that exact page/build. Manual output demonstrates handler execution only; role, advertisement, permission and assigned-tab claims require the separate dispatcher evidence.",
+        "For admin/member distinction, an admin positive does not prove the member gate. Capture actual dispatcher result and preserve no-run/no-side-effect evidence for a denied member call."
+      ],
+      "source_references": [
+        "src/lib/tools/handlers/webmcp.ts:24-52",
+        "src/lib/tools/handlers/_active-tab.ts:1-38",
+        "src/features/tools/ToolsView.tsx:390-465",
+        "src/lib/tools/dispatch.ts:1448-1527",
+        "docs/feature-tests.md:2068-2092",
+        ".research/webmcp-native-contract-check-20261007.json:documented_facts"
+      ],
+      "limits": [
+        "The procedure is a plan, not an observation. It does not claim any Chrome build exposes the API.",
+        "Current handlers use document.modelContext and awaited getTools per current source. The separate supplied 2026-10-07 documentary check describes an older local-source shape; re-check the source SHA attached to the eventual artifact before execution.",
+        "The exact-name DB metadata census is dated 2026-10-04; it does not prove current agent advertisement or authorization."
+      ]
+    },
+    {
+      "id": "EXT-F-4119-T01",
+      "feature_id": "EXT-F-4119",
+      "tool": "webmcp_list_page_tools",
+      "control_ids": [
+        "EXT-F-4119-C01"
+      ],
+      "modes": [
+        "admin"
+      ],
+      "dimensions": [
+        "valid-input",
+        "invalid-input",
+        "permissions",
+        "reload"
+      ],
+      "preconditions": [
+        "Run only after the owning runner approves inventory reconciliation and the resource permit. Record UTC time, Chrome version/channel, extension ID, source commit SHA, exact built artifact path plus SHA-256 and displayed version, profile identity, signed-in role, and the extension reload timestamp. Load that exact artifact in an owned disposable profile; confirm the side panel reports the same build identity. Repeat the build receipt after each full extension reload.",
+        "Use a secure-context page served from an origin you own (localhost is suitable), with a visible unique marker, a counter initialized to 0, and a read-only way to inspect both. In page DevTools, inspect the actual `document.modelContext` and method types. Do not polyfill or replace native objects. For documented local testing, use Chrome 149+ with `chrome://flags/#enable-webmcp-testing` enabled and relaunch; Chrome 149 is the documented Origin Trial start, not a claim of general stable availability. Record the exact channel/build and flag state. If that flag or native API is absent, stop native-positive steps and mark them unresolved. If the actual native API is missing or incompatible, stop native-positive steps and record them unresolved; do not substitute a mock.",
+        "Register a unique benign fixture tool on that owned page using the observed native API: await `document.modelContext.registerTool({name, description, inputSchema, execute})`; define an object schema requiring `nonce:string`; its `execute` callback increments the visible counter once and returns `{nonce, counter, fixtureMarker}`. Await registration, then independently verify `await document.modelContext.getTools()` contains the unique tool once. Keep the exact registration code and observed schema/method signatures in the evidence receipt. Never call unrelated page tools.",
+        "Keep a second owned tab open with a different unique marker and, if native WebMCP is available there, a different fixture tool name. For manual Tools runs, focus the intended page immediately before each run: ToolsView invokes `handler.run` directly with `assignedTabId:null`, so the handler resolves the currently focused tab. A manual run does not prove dispatcher validation, admin gating, permissions, Ask/Act confirmation, or assigned-tab pinning.",
+        "For syntactically malformed text, use the Tools JSON editor and capture its `Invalid JSON` parser error before execution. For schema rejection, enter valid JSON with a wrong top-level type (for example `null`) and capture `Schema mismatch`; do not call either result a native API failure. For branch-level invalid values, use valid JSON that parses against the route schema and observe the handler's own structured result.",
+        "For the dispatcher lane, use a real agent invocation or real WebMCP page-to-extension call, record the exact authorized caller/role and permission state, and capture the actual gate or confirmation UI. Check one read-tier branch and the action-tier call branch separately. An admin positive proves no negative role gate. External action calls require confirmation in both Ask and Act modes; decline once and verify no page side effect. Keep the feature-test procedure and inventory cell unexecuted until this run occurs.",
+        "Run on the original assigned tab A, then switch focus to tab B while the real agent call is in flight. Confirm the effect remains on A and B is unchanged. Start a fresh call assigned to A, close A before dispatch completes, and confirm an explicit origin-tab failure with no effect on B. For the external page-origin path, separately use the captured originating tab ID and verify a closed origin returns `webmcp: origin tab unavailable`.",
+        "After page reload, let the owned page's own script register again and repeat discovery/call with a fresh nonce and baseline. Then fully reload the exact extension artifact, verify its ID/version/path and fresh build receipt, reload the page, re-register using the native API, and repeat. To obtain the receipt, inspect the real native catalog, find `matrx.list_open_tabs`, and invoke the discovered RegisteredTool with `await document.modelContext.executeTool(tool, {})`; capture the extension-generated audit/resource receipt with `origin=webmcp`, call/tool identity, completion outcome, and timestamp. This is the documented read-only receipt check; manual Tools runs are not such receipts. Cleanup by unregistering only if the native API supports it, otherwise close the owned profile/page; verify no fixture page or owned registration remains. Preserve no unrelated page state."
+      ],
+      "steps": [
+        "On tab A after native registration, independently collect `await document.modelContext.getTools()` and locate the unique fixture. Run `webmcp_list_page_tools` with `{}`. Require `ok:true`, `count===tools.length`, and exactly one matching item with the fixture name, description, and input schema. Compare every reported field to the native RegisteredTool values; redact unrelated tool names from retained evidence.",
+        "Run malformed JSON and valid wrong-top-level JSON validation checks. On an actually observed page without `document.modelContext.getTools`, run `{}` and require the handler's `WebMCP unavailable` shape. If there is no real absent-API page, leave that branch unverified. On a restricted tab, record scripting failure independently.",
+        "Run the dispatcher lane for read-tier/admin-only: verify the admin can invoke the advertised branch and a member is rejected by the real dispatcher before handler side effects. Check original-tab pinning across focus switch and explicit closed-origin behavior in the common preconditions.",
+        "Reload page and verify the page script re-registers once; rerun the list and compare to fresh `getTools()`. Fully reload the exact extension artifact, record a fresh receipt, reload page, re-register, and repeat. Capture real external `matrx.*` resource receipt and cleanup as specified above."
+      ],
+      "expected": [
+        "A positive requires actual native registration, native awaited discovery, matching list count and matching fixture metadata. Empty list, unavailable, mocked objects, and stale pre-reload observations are not positives.",
+        "Schema/parser errors, unavailable native API, scripting failures, admin denial, and closed origin are distinct outcomes; preserve each exact result and its evidence. Admin success does not prove member denial.",
+        "Manual Tools execution establishes only direct handler behavior. Current source does not claim that inventory metadata alone proves the handler is advertised to an agent."
+      ],
+      "source_references": [
+        "src/lib/tools/handlers/webmcp.ts:54-104",
+        "src/lib/tools/handlers/_active-tab.ts:1-38",
+        "src/features/tools/ToolsView.tsx:390-465",
+        "src/lib/tools/dispatch.ts:1448-1527",
+        "docs/feature-tests.md:2068-2092",
+        ".research/webmcp-native-contract-check-20261007.json:documented_facts"
+      ],
+      "limits": [
+        "No browser execution or positive native result is claimed by this proposal.",
+        "Use the current artifact's source SHA to resolve any difference between the supplied documentary review and checked-in handlers.",
+        "The source-level handler enumerates all tools visible to the native same-origin API; it does not establish cross-origin discovery or exposure policy."
+      ]
+    },
+    {
+      "id": "EXT-F-4120-T01",
+      "feature_id": "EXT-F-4120",
+      "tool": "webmcp_call_page_tool",
+      "control_ids": [
+        "EXT-F-4120-C01"
+      ],
+      "modes": [
+        "admin"
+      ],
+      "dimensions": [
+        "valid-input",
+        "invalid-input",
+        "permissions",
+        "reload"
+      ],
+      "preconditions": [
+        "Run only after the owning runner approves inventory reconciliation and the resource permit. Record UTC time, Chrome version/channel, extension ID, source commit SHA, exact built artifact path plus SHA-256 and displayed version, profile identity, signed-in role, and the extension reload timestamp. Load that exact artifact in an owned disposable profile; confirm the side panel reports the same build identity. Repeat the build receipt after each full extension reload.",
+        "Use a secure-context page served from an origin you own (localhost is suitable), with a visible unique marker, a counter initialized to 0, and a read-only way to inspect both. In page DevTools, inspect the actual `document.modelContext` and method types. Do not polyfill or replace native objects. For documented local testing, use Chrome 149+ with `chrome://flags/#enable-webmcp-testing` enabled and relaunch; Chrome 149 is the documented Origin Trial start, not a claim of general stable availability. Record the exact channel/build and flag state. If that flag or native API is absent, stop native-positive steps and mark them unresolved. If the actual native API is missing or incompatible, stop native-positive steps and record them unresolved; do not substitute a mock.",
+        "Register a unique benign fixture tool on that owned page using the observed native API: await `document.modelContext.registerTool({name, description, inputSchema, execute})`; define an object schema requiring `nonce:string`; its `execute` callback increments the visible counter once and returns `{nonce, counter, fixtureMarker}`. Await registration, then independently verify `await document.modelContext.getTools()` contains the unique tool once. Keep the exact registration code and observed schema/method signatures in the evidence receipt. Never call unrelated page tools.",
+        "Keep a second owned tab open with a different unique marker and, if native WebMCP is available there, a different fixture tool name. For manual Tools runs, focus the intended page immediately before each run: ToolsView invokes `handler.run` directly with `assignedTabId:null`, so the handler resolves the currently focused tab. A manual run does not prove dispatcher validation, admin gating, permissions, Ask/Act confirmation, or assigned-tab pinning.",
+        "For syntactically malformed text, use the Tools JSON editor and capture its `Invalid JSON` parser error before execution. For schema rejection, enter valid JSON with a wrong top-level type (for example `null`) and capture `Schema mismatch`; do not call either result a native API failure. For branch-level invalid values, use valid JSON that parses against the route schema and observe the handler's own structured result.",
+        "For the dispatcher lane, use a real agent invocation or real WebMCP page-to-extension call, record the exact authorized caller/role and permission state, and capture the actual gate or confirmation UI. Check one read-tier branch and the action-tier call branch separately. An admin positive proves no negative role gate. External action calls require confirmation in both Ask and Act modes; decline once and verify no page side effect. Keep the feature-test procedure and inventory cell unexecuted until this run occurs.",
+        "Run on the original assigned tab A, then switch focus to tab B while the real agent call is in flight. Confirm the effect remains on A and B is unchanged. Start a fresh call assigned to A, close A before dispatch completes, and confirm an explicit origin-tab failure with no effect on B. For the external page-origin path, separately use the captured originating tab ID and verify a closed origin returns `webmcp: origin tab unavailable`.",
+        "After page reload, let the owned page's own script register again and repeat discovery/call with a fresh nonce and baseline. Then fully reload the exact extension artifact, verify its ID/version/path and fresh build receipt, reload the page, re-register using the native API, and repeat. To obtain the receipt, inspect the real native catalog, find `matrx.list_open_tabs`, and invoke the discovered RegisteredTool with `await document.modelContext.executeTool(tool, {})`; capture the extension-generated audit/resource receipt with `origin=webmcp`, call/tool identity, completion outcome, and timestamp. This is the documented read-only receipt check; manual Tools runs are not such receipts. Cleanup by unregistering only if the native API supports it, otherwise close the owned profile/page; verify no fixture page or owned registration remains. Preserve no unrelated page state."
+      ],
+      "steps": [
+        "On tab A, verify the native fixture exists once and read visible counter N. In Tools > Catalog > All handlers run `{\"name\":\"<unique fixture name>\",\"arguments\":{\"nonce\":\"<fresh nonce>\"}}`. Require `ok:true`, returned nonce/fixture marker, returned counter N+1, and independent visible counter N+1. Verify tab B marker and counter are unchanged.",
+        "Run `{\"name\":\"unknown-<unique suffix>\",\"arguments\":{}}` and require `ok:false` with not-found reason and unchanged counter. Run valid outer JSON with `arguments:null`, a string, an array, and an object with a deliberately invalid fixture field; record handler/native errors separately. The handler itself rejects non-object arguments before calling `executeTool`; only the fixture's own schema execution demonstrates its schema response.",
+        "Submit missing/empty name as valid JSON and capture schema mismatch; malformed JSON must produce parser error. On actual API-absent page, capture `WebMCP unavailable`; on restricted tab capture Chrome scripting error. Do not fabricate API absence or interpret these as permission denials.",
+        "In the separate real dispatcher lane, capture admin-only gate for member and correct action-tier confirmation for admin. Test Ask and Act: external page-origin calls still require user confirmation in both; decline and verify counter unchanged, then approve one fresh nonce and verify exactly one increment. Confirm optional Chrome permission state and any permission denial separately from confirmation UI. Run A-to-B switch and closed-A checks from common preconditions.",
+        "After page reload, register again, establish a new N, and repeat once. Fully reload the exact extension artifact, refresh build receipt, reload/re-register page, and repeat with fresh nonce. Capture the actual external `origin=webmcp` resource receipt and clean up."
+      ],
+      "expected": [
+        "A native positive requires discovered RegisteredTool passed to the current handler's `executeTool(tool, input)` path, returned nonce/marker, and independent one-step visible side effect. An API mock, handler-only fabricated result, or return value without counter readback is not a positive.",
+        "Unknown name, non-object arguments, fixture schema rejection, API absence, restricted-tab scripting failure, dispatcher permission denial, admin denial, declined confirmation and closed origin have distinct expected evidence. Confirm no counter change for every denied/failed attempt.",
+        "Manual handler execution bypasses dispatcher permission and confirmation gates; an admin manual positive cannot establish any negative role gate or Ask/Act behavior."
+      ],
+      "source_references": [
+        "src/lib/tools/handlers/webmcp.ts:107-151",
+        "src/lib/tools/handlers/_active-tab.ts:1-38",
+        "src/features/tools/ToolsView.tsx:390-465",
+        "src/lib/tools/dispatch.ts:1448-1585",
+        "docs/feature-tests.md:2068-2092",
+        ".research/webmcp-native-contract-check-20261007.json:documented_facts"
+      ],
+      "limits": [
+        "No browser execution or native invocation is claimed by this proposal.",
+        "The handler checks the `arguments` value is an object and invokes `executeTool`; it does not itself validate against the page tool's inputSchema.",
+        "The present source has no required_optional_permissions on this leaf; runtime scripting errors remain distinct from the dispatcher confirmation and admin gates."
+      ]
+    },
+    {
+      "id": "EXT-F-4162-T01",
+      "feature_id": "EXT-F-4162",
+      "tool": "chrome_webmcp",
+      "control_ids": [
+        "EXT-F-4162-C01",
+        "EXT-F-4162-C02",
+        "EXT-F-4162-C03",
+        "EXT-F-4162-C04"
+      ],
+      "modes": [
+        "admin"
+      ],
+      "dimensions": [
+        "valid-input",
+        "invalid-input",
+        "permissions",
+        "reload"
+      ],
+      "preconditions": [
+        "Run only after the owning runner approves inventory reconciliation and the resource permit. Record UTC time, Chrome version/channel, extension ID, source commit SHA, exact built artifact path plus SHA-256 and displayed version, profile identity, signed-in role, and the extension reload timestamp. Load that exact artifact in an owned disposable profile; confirm the side panel reports the same build identity. Repeat the build receipt after each full extension reload.",
+        "Use a secure-context page served from an origin you own (localhost is suitable), with a visible unique marker, a counter initialized to 0, and a read-only way to inspect both. In page DevTools, inspect the actual `document.modelContext` and method types. Do not polyfill or replace native objects. For documented local testing, use Chrome 149+ with `chrome://flags/#enable-webmcp-testing` enabled and relaunch; Chrome 149 is the documented Origin Trial start, not a claim of general stable availability. Record the exact channel/build and flag state. If that flag or native API is absent, stop native-positive steps and mark them unresolved. If the actual native API is missing or incompatible, stop native-positive steps and record them unresolved; do not substitute a mock.",
+        "Register a unique benign fixture tool on that owned page using the observed native API: await `document.modelContext.registerTool({name, description, inputSchema, execute})`; define an object schema requiring `nonce:string`; its `execute` callback increments the visible counter once and returns `{nonce, counter, fixtureMarker}`. Await registration, then independently verify `await document.modelContext.getTools()` contains the unique tool once. Keep the exact registration code and observed schema/method signatures in the evidence receipt. Never call unrelated page tools.",
+        "Keep a second owned tab open with a different unique marker and, if native WebMCP is available there, a different fixture tool name. For manual Tools runs, focus the intended page immediately before each run: ToolsView invokes `handler.run` directly with `assignedTabId:null`, so the handler resolves the currently focused tab. A manual run does not prove dispatcher validation, admin gating, permissions, Ask/Act confirmation, or assigned-tab pinning.",
+        "For syntactically malformed text, use the Tools JSON editor and capture its `Invalid JSON` parser error before execution. For schema rejection, enter valid JSON with a wrong top-level type (for example `null`) and capture `Schema mismatch`; do not call either result a native API failure. For branch-level invalid values, use valid JSON that parses against the route schema and observe the handler's own structured result.",
+        "For the dispatcher lane, use a real agent invocation or real WebMCP page-to-extension call, record the exact authorized caller/role and permission state, and capture the actual gate or confirmation UI. Check one read-tier branch and the action-tier call branch separately. An admin positive proves no negative role gate. External action calls require confirmation in both Ask and Act modes; decline once and verify no page side effect. Keep the feature-test procedure and inventory cell unexecuted until this run occurs.",
+        "Run on the original assigned tab A, then switch focus to tab B while the real agent call is in flight. Confirm the effect remains on A and B is unchanged. Start a fresh call assigned to A, close A before dispatch completes, and confirm an explicit origin-tab failure with no effect on B. For the external page-origin path, separately use the captured originating tab ID and verify a closed origin returns `webmcp: origin tab unavailable`.",
+        "After page reload, let the owned page's own script register again and repeat discovery/call with a fresh nonce and baseline. Then fully reload the exact extension artifact, verify its ID/version/path and fresh build receipt, reload the page, re-register using the native API, and repeat. To obtain the receipt, inspect the real native catalog, find `matrx.list_open_tabs`, and invoke the discovered RegisteredTool with `await document.modelContext.executeTool(tool, {})`; capture the extension-generated audit/resource receipt with `origin=webmcp`, call/tool identity, completion outcome, and timestamp. This is the documented read-only receipt check; manual Tools runs are not such receipts. Cleanup by unregistering only if the native API supports it, otherwise close the owned profile/page; verify no fixture page or owned registration remains. Preserve no unrelated page state."
+      ],
+      "steps": [
+        "On focused tab A, run `{\"action\":\"check\"}`. Compare its delegated result to a direct run of `webmcp_check_availability` and to the awaited native catalog count. Then run `{\"action\":\"list\"}` and compare the delegated list to direct `webmcp_list_page_tools` and the native RegisteredTool fixture. Record each branch separately for C02 and C03.",
+        "Run `{\"action\":\"call\",\"tool_name\":\"<unique fixture name>\",\"arguments\":{\"nonce\":\"<fresh nonce>\"}}`; require returned nonce/marker and exactly one independent counter increment. Record as C04. Verify tab B remains unchanged.",
+        "Run a syntactically valid unknown action (for example `{\"action\":\"bad\"}`) through Tools and capture schema mismatch before handler execution. Run call without tool_name and with unknown tool name; require their distinct bounded handler errors and no counter change. Separately run malformed JSON and valid JSON `null` to distinguish form parser from schema validation.",
+        "Run check/list against an actual API-absent context only if direct page observation proves absence; otherwise mark that branch unverified. Record restricted-tab scripting failure separately. In the real dispatcher lane, check admin success and member denial separately, read-tier confirmation policy for check/list, action-tier confirmation for call in Ask and Act, denial with unchanged counter, and approval with one increment. The canonical row has no declared required permissions while leaf handlers declare activeTab+scripting; record dispatcher and actual Chrome execution permission outcomes separately.",
+        "Exercise origin-tab switch and closed-origin behavior through the real agent/dispatcher path. The canonical tool's `tierFor` makes check/list read-tier and call action-tier; verify the observed controls match. Then page reload and full exact-artifact extension reload, fresh build receipts, native re-registration, all three branch repeats, external resource receipt and cleanup."
+      ],
+      "expected": [
+        "Each canonical branch must delegate to its corresponding current leaf and agree with its leaf result. Positive call requires actual native discovery, execution output and independent counter readback.",
+        "Invalid action is rejected by the outer route schema; missing tool_name is a handler-level error after route parsing; unknown page tool is a leaf execution result. Malformed JSON and wrong top-level JSON are UI parser/schema failures, respectively.",
+        "Admin positive does not prove member denial. A manual Tools run does not establish dispatcher permission enforcement, runtime permission state, assigned-tab behavior or confirmation. Capture actual UI and no-side-effect evidence for every denied call.",
+        "The 2026-10-04 census records canonical DB metadata active and exact-name leaf metadata absent. It does not establish current advertisement of leaves, role visibility, or callability; verify live request/dispatcher evidence rather than claiming it from the census."
+      ],
+      "source_references": [
+        "src/lib/tools/handlers/canonical-mergers.ts:255-290",
+        "src/lib/tools/handlers/webmcp.ts:24-151",
+        "src/lib/tools/handlers/_active-tab.ts:1-38",
+        "src/features/tools/ToolsView.tsx:390-465",
+        "src/lib/tools/dispatch.ts:1448-1585",
+        "docs/feature-tests.md:2068-2092",
+        "docs/stabilization/inventory.json:61836-61980",
+        ".research/webmcp-native-contract-check-20261007.json:documented_facts"
+      ],
+      "limits": [
+        "No browser execution or native positive is claimed by this proposal.",
+        "The supplied native contract review is documentary and has no runtime observation. Current handler code is the source of truth for the tested artifact.",
+        "The canonical catalog record's missing required_permissions entry does not prove Chrome scripting will succeed; runtime failure, dispatcher permission checks, and confirmation are separate outcomes."
+      ]
+    }
+  ],
+  "source_references": [
+    "src/lib/tools/handlers/webmcp.ts:24-151",
+    "src/lib/tools/handlers/canonical-mergers.ts:255-290",
+    "src/lib/tools/handlers/_active-tab.ts:1-38",
+    "src/features/tools/ToolsView.tsx:390-465",
+    "src/lib/tools/dispatch.ts:1448-1585",
+    "src/lib/tools/catalog.ts:204-206",
+    "src/lib/tools/registry.ts:60-110",
+    "docs/feature-tests.md:2068-2092",
+    "docs/stabilization/inventory.json:EXT-F-4118/4119/4120/4162",
+    ".research/webmcp-native-contract-check-20261007.json"
+  ],
+  "global_limits": [
+    "This file replaces only proposed preconditions/steps/expected for the four existing T01 cases; it does not edit inventory, status cells, runtime behavior, or permissions metadata.",
+    "No browser, native API, artifact, user role, dispatcher outcome, or resource receipt was inspected in this authoring lane; every runtime assertion remains unverified until the runner executes the procedure.",
+    "Official API and Chrome enablement statements are limited to the supplied 2026-10-07 primary-source research. Treat the Community Group spec as mutable draft; do not infer stable availability or a Chrome version from source comments.",
+    "Reconciliation and inventory ownership remain with the owning runner; exact-name binding census is dated and does not prove live advertisement."
+  ]
+}
