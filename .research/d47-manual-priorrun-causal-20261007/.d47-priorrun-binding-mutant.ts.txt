@@ -1,0 +1,537 @@
+import { acquireSession } from '@/lib/cdp/client';
+import {
+  type CapturedNetEvent,
+  cleanupNetworkTapMain,
+  networkTapCleanupPresent,
+  networkTapMain,
+} from './network-tap';
+
+export interface DocumentCaptureOptions {
+  tabId: number;
+  captureId: string;
+  maxBodyBytes: number;
+  /** The caller's per-run duration also bounds Chrome's reload command. */
+  timeoutMs: number;
+  /** Per-run budget supplied by the caller; no global queue limit. */
+  earlyBufferBytes: number;
+  signal: AbortSignal;
+  onEvent: (event: CapturedNetEvent & { capture_id: string; document_key: string }) => void;
+  onFailure: (error: Error) => void;
+  expectedPage?: { url: string; documentId: string };
+  onArmed?: () => void;
+}
+
+type CleanupTarget = { documentId: string; contextUniqueId: string };
+
+/** Runs only in the SW, so all CDP clients share attachment ownership. */
+export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) {
+  if (!chrome.debugger?.sendCommand)
+    throw new Error('Document-start capture is unavailable in this browser.');
+  for (const budget of [opts.maxBodyBytes, opts.earlyBufferBytes, opts.timeoutMs]) {
+    if (!Number.isSafeInteger(budget) || budget <= 0)
+      throw new Error('Capture byte budgets must be positive integers.');
+  }
+  const lease = await acquireSession(opts.tabId);
+  const bindingName = `__matrx_capture_${opts.captureId.replaceAll('-', '_')}`;
+  let scriptId: string | null = null;
+  let bindingAdded = false;
+  let closed = false;
+  let closePromise: Promise<string | null> | null = null;
+  let settleSetup!: () => void;
+  const setupSettled = new Promise<void>((resolve) => {
+    settleSetup = resolve;
+  });
+  let reloadIssued = false;
+  let mainFrame = '';
+  let initialUrl = '';
+  let initialLoaderId = '';
+  let reloadLoaderId: string | null = null;
+  let committed = false;
+  let documentContext: { id: number; uniqueId: string } | null = null;
+  let replayDocumentReplaced = false;
+  let captureNonce: string | null = null;
+  let captureNonceSettled = false;
+  let settleCaptureNonce: (nonce: string | null) => void = () => {};
+  const captureNonceReady = new Promise<string | null>((resolve) => {
+    settleCaptureNonce = (nonce) => {
+      if (captureNonceSettled) return;
+      captureNonceSettled = true;
+      resolve(nonce);
+    };
+  });
+  let cleanupTarget: CleanupTarget | null = null;
+  let cleanupTargetPromise: Promise<CleanupTarget | null> | null = null;
+  const oldContexts = new Set<string>();
+  const contexts = new Map<number, { uniqueId: string; frameId: string; isDefault: boolean }>();
+  const hookNoncesByContext = new Map<number, string>();
+  const early: Array<{ event: CapturedNetEvent; bytes: number }> = [];
+  let earlyBytes = 0;
+  const canonicalUrl = (url: string) => {
+    const parsed = new URL(url);
+    parsed.hash = '';
+    return parsed.href;
+  };
+  const assertOpen = () => {
+    if (closed || opts.signal.aborted) throw new Error('Network replay was cancelled.');
+  };
+  const captureCleanupTarget = () => {
+    // Cleanup identity is available as soon as the accepted context reports
+    // its hook nonce. Event delivery remains commit-gated below; only teardown
+    // must work if the user stops between context creation and frame commit.
+    if (!documentContext || !captureNonce || cleanupTargetPromise) return;
+    const context = documentContext;
+    const nonce = captureNonce;
+    // `executeScript` reports the Chrome document ID of the document in which
+    // its MAIN-world function ran. The probe confirms that this *capture's*
+    // hook is present before we retain that ID for cleanup.
+    cleanupTargetPromise = chrome.scripting
+      .executeScript({
+        target: { tabId: opts.tabId },
+        world: 'MAIN',
+        func: networkTapCleanupPresent,
+        args: [bindingName, nonce],
+      })
+      .then(([result]) => {
+        if (!result?.documentId || result.result !== true)
+          throw new Error('Chrome could not bind cleanup to the replay document.');
+        // A replacement document must never become a cleanup target. In that
+        // case the exact document ID below either no longer exists or is not
+        // used at all, matching the former CDP unique-context behavior.
+        if (replayDocumentReplaced || documentContext?.uniqueId !== context.uniqueId) return null;
+        cleanupTarget = { documentId: result.documentId, contextUniqueId: context.uniqueId };
+        return cleanupTarget;
+      });
+    // The close path observes this promise and reports a bounded failure. Keep
+    // the background identity probe from becoming an unhandled rejection first.
+    void cleanupTargetPromise.catch(() => undefined);
+  };
+
+  const close = (): Promise<string | null> => {
+    if (closePromise) return closePromise;
+    closed = true;
+    early.length = 0;
+    chrome.debugger.onDetach.removeListener(onDetach);
+    opts.signal.removeEventListener('abort', onAbort);
+    closePromise = (async () => {
+      await setupSettled;
+      // Chrome may never settle a command after a stalled reload. Keep every
+      // removal attempt alive, but do not let it strand the caller or lease.
+      const removals: Promise<unknown>[] = [];
+      if (scriptId)
+        removals.push(
+          lease.send('Page.removeScriptToEvaluateOnNewDocument', { identifier: scriptId }),
+        );
+      if (documentContext)
+        removals.push(
+          (async () => {
+            const nonce = captureNonce ?? (await captureNonceReady);
+            if (!nonce || replayDocumentReplaced) return;
+            captureCleanupTarget();
+            const target = await cleanupTargetPromise;
+            if (
+              !target ||
+              replayDocumentReplaced ||
+              documentContext?.uniqueId !== target.contextUniqueId
+            )
+              return;
+            await chrome.scripting.executeScript({
+              target: {
+                tabId: opts.tabId,
+                documentIds: [target.documentId],
+              } as chrome.scripting.InjectionTarget,
+              world: 'MAIN',
+              func: cleanupNetworkTapMain,
+              args: [bindingName, nonce],
+            });
+          })(),
+        );
+      if (bindingAdded) removals.push(lease.send('Runtime.removeBinding', { name: bindingName }));
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      const deadline = new Promise<false>((resolve) => {
+        timer = setTimeout(() => resolve(false), opts.timeoutMs);
+      });
+      try {
+        const removed = await Promise.race([
+          Promise.allSettled(removals).then((results) =>
+            results.every((r) => r.status === 'fulfilled'),
+          ),
+          deadline,
+        ]);
+        // Releasing a borrowed lease never detaches its pre-existing debugger.
+        // For an owned lease, Chrome's detach acknowledgement is also bounded.
+        const released = await Promise.race([
+          lease.release().then(
+            () => true,
+            () => false,
+          ),
+          deadline,
+        ]);
+        if ((!removed || !released) && !detached)
+          throw new Error(
+            'Capture stopped, but Chrome did not confirm removal of every capture hook or debugger release. Reload the tab before capturing again.',
+          );
+      } finally {
+        if (timer !== undefined) clearTimeout(timer);
+        chrome.debugger.onEvent.removeListener(onEvent);
+      }
+      return replayDocumentReplaced ? null : (cleanupTarget?.documentId ?? null);
+    })();
+    return closePromise;
+  };
+  const fail = (message: string) => {
+    if (closed) return;
+    void close().then(
+      () => opts.onFailure(new Error(message)),
+      (error: unknown) => {
+        opts.onFailure(error instanceof Error ? error : new Error(String(error)));
+      },
+    );
+  };
+  let detached = false;
+  const onDetach = (source: chrome.debugger.Debuggee) => {
+    if (source.tabId !== opts.tabId) return;
+    detached = true;
+    settleCaptureNonce(null);
+    fail('Chrome detached the capture or closed the tab. Start the saved replay again.');
+  };
+  const onAbort = () => fail('Network replay was cancelled.');
+  const emit = (event: CapturedNetEvent) => {
+    if (!documentContext || closed) return;
+    opts.onEvent({
+      ...event,
+      tab_id: opts.tabId,
+      capture_id: opts.captureId,
+      document_key: documentContext.uniqueId,
+    });
+  };
+  const flush = () => {
+    if (!committed || !documentContext) return;
+    for (const { event } of early.splice(0)) emit(event);
+    earlyBytes = 0;
+  };
+  const acceptCaptureNonce = (contextId: number, nonce: string) => {
+    const context = contexts.get(contextId);
+    if (
+      !reloadIssued ||
+      !documentContext ||
+      !context?.isDefault ||
+      context.frameId !== mainFrame ||
+      context.uniqueId !== documentContext.uniqueId ||
+      oldContexts.has(context.uniqueId)
+    )
+      return;
+    if (captureNonce && captureNonce !== nonce) {
+      replayDocumentReplaced = true;
+      settleCaptureNonce(null);
+      fail('The replay document reported conflicting capture hooks. Run the recipe again.');
+      return;
+    }
+    captureNonce = nonce;
+    settleCaptureNonce(nonce);
+    captureCleanupTarget();
+  };
+  const claimDocumentContext = () => {
+    if (!reloadLoaderId || documentContext || closed) return;
+    const candidates = [...contexts.entries()].filter(
+      ([, context]) =>
+        context.frameId === mainFrame && context.isDefault && !oldContexts.has(context.uniqueId),
+    );
+    if (candidates.length !== 1) return;
+    const [id, context] = candidates[0]!;
+    documentContext = { id, uniqueId: context.uniqueId };
+    flush();
+    const nonce = hookNoncesByContext.get(id);
+    if (nonce) acceptCaptureNonce(id, nonce);
+    captureCleanupTarget();
+  };
+  const onEvent = (
+    source: chrome.debugger.Debuggee & { sessionId?: string },
+    method: string,
+    raw?: object,
+  ) => {
+    if (source.tabId !== opts.tabId || source.sessionId) return;
+    const params = (raw ?? {}) as Record<string, unknown>;
+    // Close keeps this one listener alive only long enough to receive the
+    // capture hook handshake. It never accepts post-close page data.
+    if (closed && method !== 'Runtime.bindingCalled') return;
+    if (method === 'Runtime.executionContextCreated') {
+      const context = params.context as {
+        id: number;
+        uniqueId: string;
+        auxData?: { frameId?: string; isDefault?: boolean };
+      };
+      if (!context?.uniqueId) {
+        if (context?.auxData?.isDefault && context.auxData.frameId === mainFrame)
+          fail('Chrome did not provide a unique document context. Capture is unavailable.');
+        return;
+      }
+      const frameId = context.auxData?.frameId ?? '';
+      contexts.set(context.id, {
+        uniqueId: context.uniqueId,
+        frameId,
+        isDefault: context.auxData?.isDefault === true,
+      });
+      if (!reloadIssued) oldContexts.add(context.uniqueId);
+      else if (
+        frameId === mainFrame &&
+        context.auxData?.isDefault &&
+        !oldContexts.has(context.uniqueId)
+      ) {
+        if (documentContext && documentContext.uniqueId !== context.uniqueId) {
+          replayDocumentReplaced = true;
+          settleCaptureNonce(null);
+          fail('The page changed again during replay. Run the recipe on the intended document.');
+          return;
+        }
+        claimDocumentContext();
+      }
+    } else if (method === 'Page.frameStartedNavigating' && params.frameId === mainFrame) {
+      const loaderId = params.loaderId;
+      const navigationType = params.navigationType;
+      const url = params.url;
+      // CDP may announce one navigation more than once with the same loader.
+      if (
+        reloadLoaderId &&
+        loaderId === reloadLoaderId &&
+        typeof url === 'string' &&
+        canonicalUrl(url) === initialUrl
+      )
+        return;
+      if (
+        !reloadIssued ||
+        reloadLoaderId ||
+        (navigationType !== 'reload' && navigationType !== 'reloadBypassingCache') ||
+        typeof loaderId !== 'string' ||
+        !loaderId ||
+        loaderId === initialLoaderId ||
+        typeof url !== 'string' ||
+        canonicalUrl(url) !== initialUrl
+      ) {
+        replayDocumentReplaced = true;
+        settleCaptureNonce(null);
+        fail(
+          'The page started another navigation during replay. Run the recipe on the intended document.',
+        );
+        return;
+      }
+      reloadLoaderId = loaderId;
+      claimDocumentContext();
+    } else if (method === 'Page.navigatedWithinDocument' && params.frameId === mainFrame) {
+      fail('The page route changed during replay. Run the recipe on the intended page.');
+    } else if (method === 'Page.frameNavigated') {
+      const frame = params.frame as {
+        id?: string;
+        parentId?: string;
+        url?: string;
+        loaderId?: string;
+      };
+      if (!frame || frame.parentId) return;
+      if (!mainFrame) {
+        fail('The page navigated while capture was preparing. Run again.');
+        return;
+      }
+      if (frame.id !== mainFrame) return;
+      if (
+        !reloadIssued ||
+        committed ||
+        !reloadLoaderId ||
+        frame.loaderId !== reloadLoaderId ||
+        !frame.url ||
+        canonicalUrl(frame.url) !== initialUrl
+      ) {
+        if (committed) {
+          replayDocumentReplaced = true;
+          settleCaptureNonce(null);
+        }
+        fail(
+          'The page navigated away while replay was preparing or listening. Run the recipe on the intended page.',
+        );
+        return;
+      }
+      committed = true;
+      flush();
+      captureCleanupTarget();
+    } else if (method === 'Runtime.bindingCalled' && true) {
+      const context = contexts.get(Number(params.executionContextId));
+      if (
+        !reloadIssued ||
+        !documentContext ||
+        !context?.isDefault ||
+        context.frameId !== mainFrame ||
+        context.uniqueId !== documentContext.uniqueId ||
+        oldContexts.has(context.uniqueId)
+      )
+        return;
+      if (typeof params.payload !== 'string') return;
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(params.payload);
+      } catch {
+        if (closed) return;
+        fail('The page returned malformed capture data.');
+        return;
+      }
+      const handshake = parsed as { __matrx_capture_hook?: unknown; nonce?: unknown } | null;
+      if (
+        handshake?.__matrx_capture_hook === 'network-tap' &&
+        typeof handshake.nonce === 'string' &&
+        /^[a-f0-9]{32}$/.test(handshake.nonce)
+      ) {
+        const contextId = Number(params.executionContextId);
+        hookNoncesByContext.set(contextId, handshake.nonce);
+        acceptCaptureNonce(contextId, handshake.nonce);
+        return;
+      }
+      if (closed) return;
+      const e = parsed as Partial<CapturedNetEvent> | null;
+      if (
+        !e ||
+        (e.source !== 'fetch' && e.source !== 'xhr') ||
+        typeof e.url !== 'string' ||
+        typeof e.method !== 'string' ||
+        typeof e.body !== 'string' ||
+        typeof e.status !== 'number' ||
+        typeof e.ts_ms !== 'number' ||
+        typeof e.body_size !== 'number' ||
+        typeof e.body_truncated !== 'boolean' ||
+        !Number.isSafeInteger(e.request_sequence)
+      ) {
+        fail('The page returned incomplete capture data.');
+        return;
+      }
+      if (new TextEncoder().encode(e.body).byteLength > opts.maxBodyBytes) {
+        fail('A captured response exceeded this run’s byte budget.');
+        return;
+      }
+      // Whitelist the established response contract. Never forward raw headers or request bodies.
+      const event: CapturedNetEvent = {
+        source: e.source,
+        url: e.url,
+        method: e.method,
+        body: e.body,
+        status: e.status,
+        ts_ms: e.ts_ms,
+        body_size: e.body_size,
+        body_truncated: e.body_truncated,
+        request_sequence: e.request_sequence!,
+        ...(typeof e.request_body_key === 'string' &&
+          /^(none|unavailable|sha256:[a-f0-9]{64})$/.test(e.request_body_key) && {
+            request_body_key: e.request_body_key,
+          }),
+        ...(typeof e.content_type === 'string' && { content_type: e.content_type }),
+      };
+      if (!committed) {
+        const bytes = new TextEncoder().encode(params.payload).byteLength;
+        if (earlyBytes + bytes > opts.earlyBufferBytes) {
+          fail(
+            'Capture started, but document confirmation exceeded this run’s early-event byte budget. Increase the capture budget and run again.',
+          );
+          return;
+        }
+        early.push({ event, bytes });
+        earlyBytes += bytes;
+      } else emit(event);
+    } else if (method === 'Runtime.executionContextDestroyed') {
+      const id = Number(params.executionContextId);
+      if (documentContext?.id === id) {
+        replayDocumentReplaced = true;
+        settleCaptureNonce(null);
+        fail('The replay document was replaced. Run the recipe again.');
+      }
+      contexts.delete(id);
+    } else if (method === 'Runtime.executionContextsCleared') {
+      if (documentContext) {
+        replayDocumentReplaced = true;
+        settleCaptureNonce(null);
+        fail('The replay document was replaced. Run the recipe again.');
+      }
+      contexts.clear();
+    }
+  };
+  chrome.debugger.onEvent.addListener(onEvent);
+  chrome.debugger.onDetach.addListener(onDetach);
+  opts.signal.addEventListener('abort', onAbort, { once: true });
+  const arm = async () => {
+    try {
+      assertOpen();
+      await lease.send('Page.enable');
+      assertOpen();
+      const tree = await lease.send<{
+        frameTree: { frame: { id: string; url: string; loaderId: string } };
+      }>('Page.getFrameTree');
+      assertOpen();
+      mainFrame = tree.frameTree.frame.id;
+      initialUrl = canonicalUrl(tree.frameTree.frame.url);
+      initialLoaderId = tree.frameTree.frame.loaderId;
+      if (!initialLoaderId)
+        throw new Error(
+          'Chrome did not identify the approved page loader. Capture is unavailable.',
+        );
+      await lease.send('Runtime.enable');
+      assertOpen();
+      await lease.send('Runtime.addBinding', { name: bindingName });
+      bindingAdded = true;
+      assertOpen();
+      const script = await lease.send<{ identifier: string }>(
+        'Page.addScriptToEvaluateOnNewDocument',
+        {
+          source: `if (window === window.top) (${networkTapMain.toString()})(${JSON.stringify(opts.maxBodyBytes)}, ${JSON.stringify(bindingName)});`,
+        },
+      );
+      scriptId = script.identifier;
+      assertOpen();
+      // Approval binds both document and SPA route. Recheck after potentially slow
+      // CDP setup, immediately before issuing the reload of that approved page.
+      if (opts.expectedPage) {
+        const [tab, frames] = await Promise.all([
+          chrome.tabs.get(opts.tabId),
+          chrome.scripting.executeScript({ target: { tabId: opts.tabId }, func: () => null }),
+        ]);
+        assertOpen();
+        if (
+          tab.url !== opts.expectedPage.url ||
+          frames[0]?.documentId !== opts.expectedPage.documentId ||
+          initialUrl !== canonicalUrl(opts.expectedPage.url)
+        ) {
+          throw new Error('The approved page changed before reload. Run the saved recipe again.');
+        }
+      }
+      reloadIssued = true;
+      // All setup resources are known now. Closing while Page.reload is pending
+      // can remove the script and release the lease without waiting for Chrome.
+      settleSetup();
+      opts.onArmed?.();
+      let reloadTimer: ReturnType<typeof setTimeout> | undefined;
+      let abortReload: (() => void) | undefined;
+      const interrupted = new Promise<never>((_resolve, reject) => {
+        abortReload = () => reject(new Error('Network replay was cancelled.'));
+        opts.signal.addEventListener('abort', abortReload, { once: true });
+        reloadTimer = setTimeout(
+          () =>
+            reject(
+              new Error(
+                'Chrome did not confirm the page reload in time. Capture stopped; the page may still reload. Run again.',
+              ),
+            ),
+          opts.timeoutMs,
+        );
+      });
+      try {
+        await Promise.race([lease.send('Page.reload', { loaderId: initialLoaderId }), interrupted]);
+        assertOpen();
+      } finally {
+        if (reloadTimer !== undefined) clearTimeout(reloadTimer);
+        if (abortReload) opts.signal.removeEventListener('abort', abortReload);
+      }
+    } finally {
+      settleSetup();
+    }
+  };
+  try {
+    await arm();
+    return { close };
+  } catch (error) {
+    await close();
+    throw error;
+  }
+}

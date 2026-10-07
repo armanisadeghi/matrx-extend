@@ -28,7 +28,7 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Complete remaining prior-saved-run native isolation and retained manual/prior-run causal evidence; preserve bounded frozen-artifact scopes and cancellation limits.",
+    "next_action": "Complete native prior-saved-run isolation, then audit full T57 closure against all retained scopes and remaining lifecycle dimensions. Source causal proof now retained and independently reviewed for higher-old sequence, manual-channel merge and prior-run binding. Do not infer natural callback delivery from synthetic source tests.",
     "status": "Fresh peer8ad248c2 accepts bounded manual-prior native37588499593 on frozen0.2.350/source82f3c440: real manual UI response positive control and second manual request pending before replay, current-document positive trace before held manual HTTP200/server finish, exact settled current-only saved row, owned-recipe cleanup and three valid resource journals. Server finish does not prove old callback delivery/rejection. Prior saved-run isolation, cancellation and fullT57 remain unverified.",
     "implementation_agent": "completed: d47_save_click_evidence_fix; 19/19 resource-valid source checks, fresh independent bounded source review accepted",
     "execution_agent": "completed: /root/d47_manual_native_execution; independently reviewed by /root/d47_manual_native_receipt_peer",
@@ -160,7 +160,9 @@
     "manual_prior_oracle_report": ".research/d47-manual-prior-oracle-20261007.json",
     "manual_prior_oracle_peer": ".research/d47-manual-oracle-final-peer-20261007.json",
     "manual_prior_native_report": ".research/d47-manual-native-20261007.json",
-    "manual_prior_native_peer": ".research/d47-manual-native-receipt-peer-20261007.json"
+    "manual_prior_native_peer": ".research/d47-manual-native-receipt-peer-20261007.json",
+    "manual_priorrun_causal_report": ".research/d47-manual-priorrun-causal-20261007.json",
+    "manual_priorrun_causal_peer": ".research/d47-manual-priorrun-causal-peer-20261007.json"
   },
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
   "verification_status": "Independent reviews accept bounded current-first0.2.337 and old-first0.2.338 fixture replay. Fresh peer8dfbdee1 supports public initial capture, saved exact-recipe completed replay with hits and UI cleanup on frozen0.2.344/source2274d236/native37571487114, with valid resources. Whole-panel quiescence, selected organization context and post-checkbox receipt-level mask evidence are not established. Manual/prior-run isolation remains outstanding. D47 in-fix/T57 unverified. Fresh peerb583ec01 accepts native37582763499 stale-only refusal and fresh current saved replay recovery on frozen0.2.347/source5fc0ae39 with valid resources and owned-recipe cleanup. Fresh peer964c19d0 also accepts retained higher-old-sequence causal source proof: removing current-document guard admits old seq999 over current seq1; constant shortcut fails and untouched suite passes17/17, all resource-valid. This completes the bounded stale-only branch; manual/prior-run isolation and full-case acceptance remain unverified.",
@@ -210,12 +212,14 @@
     "cost_if_wrong": "Broader behavior could be falsely certified; do not promote full T57 or organization/masking cells from this receipt."
   },
   "source_guard_ruling": {
-    "decision": "Accept bounded guard structure, preserve qualified causal execution evidence; no native status promotion.",
+    "decision": "Accept bounded causal source evidence with separate explicit native limits.",
     "evidence": [
       ".research/d47-isolation-guards-peer-20261007.json",
-      ".research/d47-manual-final-peer-20261007.json"
+      ".research/d47-manual-final-peer-20261007.json",
+      ".research/d47-manual-priorrun-causal-20261007.json",
+      ".research/d47-manual-priorrun-causal-peer-20261007.json"
     ],
-    "reason": "Independent reviewers trace real production paths and forcing assertions; journals corroborate exits but cannot independently bind exact failing assertions and mutation bytes to each run.",
+    "reason": "Peer303e60f5 accepts retained bounded manual-channel/prior-run-binding causal proof: exact mutant/source/test bytes and hashes, full assertion stdout, two resource-valid behavioral REDs and untouched18/18GREEN. The manual mutant explicitly merges a forged manual envelope into the replay collector; this detects cross-channel merge regression, not natural Chrome delivery. Earlier missing-output qualification is lifted for these two source branches only. Native prior-saved-run isolation, callback delivery/rejection and cancellation remain unverified.",
     "cost_if_wrong": "Could overstate mutation coverage; do not call those failures independently reproduced, attach run-bound hashes/output on future executions. Full case stays unverified."
   }
 }

@@ -1,0 +1,302 @@
+// @vitest-environment jsdom
+// A manual NET_CAPTURE_EVENT must never become a saved replay response.
+import { act, cleanup, renderHook } from '@testing-library/react';
+import { afterEach, expect, it, vi } from 'vitest';
+
+const h = vi.hoisted(() => ({
+  listeners: new Map<string, Array<(payload: any, sender?: any) => unknown>>(),
+  send: vi.fn(),
+  release: vi.fn(),
+  acquire: vi.fn(),
+  tab: {
+    id: 37,
+    url: 'https://electronic.vegas/calendar/',
+    documentId: 'manual-document',
+    pageKey: 'manual-document',
+  },
+}));
+vi.mock('@/lib/cdp/client', () => ({ acquireSession: h.acquire, reconcileOnBoot: vi.fn() }));
+vi.mock('@/hooks/use-active-tab', () => ({
+  useActiveTab: () => h.tab,
+  isCurrentPageIdentity: (key: string | null) => key === h.tab.pageKey,
+}));
+vi.mock('@/lib/messaging/native', () => ({
+  on: (kind: string, callback: (payload: any, sender?: any) => unknown) => {
+    const list = h.listeners.get(kind) ?? [];
+    list.push(callback);
+    h.listeners.set(kind, list);
+    return () =>
+      h.listeners.set(
+        kind,
+        (h.listeners.get(kind) ?? []).filter((fn) => fn !== callback),
+      );
+  },
+  broadcast: (kind: string, payload: unknown) => {
+    for (const callback of [...(h.listeners.get(kind) ?? [])]) callback(payload, {});
+  },
+  send: vi.fn(),
+}));
+// These are SW boot services outside the two capture channels.
+vi.mock('@/lib/agenda/scanner', () => ({
+  registerAgendaNotificationClicks: vi.fn(),
+  scanAndNotify: vi.fn(),
+  startAgendaScanner: vi.fn(),
+}));
+vi.mock('@/lib/audio/audible-log', () => ({ startAudibleLog: vi.fn() }));
+vi.mock('@/lib/auth/flow', () => ({ refreshAccessToken: vi.fn() }));
+vi.mock('@/lib/auth/identity', () => ({ logExtensionIdentityOnce: vi.fn() }));
+vi.mock('@/lib/auth/safari-background', () => ({ registerSafariAuthorizationBackground: vi.fn() }));
+vi.mock('@/lib/debug/bridge-traffic', () => ({
+  hydrateBridgeTrafficEnabled: vi.fn(),
+  recordBridgeTraffic: vi.fn(),
+}));
+vi.mock('@/lib/debug/log', () => ({
+  log: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), success: vi.fn() },
+  startDebugRelay: vi.fn(),
+}));
+vi.mock('@/lib/demos/event-capture', () => ({ onCapturedEvent: vi.fn() }));
+vi.mock('@/lib/desktop/bridge', () => ({
+  desktopRpc: vi.fn(),
+  probeDesktop: vi.fn(async () => ({ transport: 'none', health: null, lastChecked: 1 })),
+  startDesktopProbeAlarm: vi.fn(),
+}));
+vi.mock('@/lib/desktop/discovery', () => ({
+  invalidateEnginePortCache: vi.fn(),
+  resetEngineDiscoveryBackoff: vi.fn(),
+}));
+vi.mock('@/lib/desktop/local-browser/controller', () => ({ startLocalBrowserController: vi.fn() }));
+vi.mock('@/lib/desktop/native', () => ({ resetNativeProbeBackoff: vi.fn() }));
+vi.mock('@/lib/desktop/types', () => ({ desktopHealthSnapshotKey: vi.fn(() => 'health') }));
+vi.mock('@/lib/desktop/ws-client', () => ({
+  connectWs: vi.fn(),
+  installWsRouter: vi.fn(),
+  shouldBackgroundReopenWs: vi.fn(() => false),
+}));
+vi.mock('@/lib/desktop/ws-invoke', () => ({ registerWsReverseInvocationHandler: vi.fn() }));
+vi.mock('@/lib/frontend-bridge/broadcast', () => ({
+  connectBroadcast: vi.fn(),
+  disconnectBroadcast: vi.fn(),
+}));
+vi.mock('@/lib/frontend-bridge/handler', () => ({
+  FRONTEND_RPC_CHANNEL: 'frontend:rpc',
+  FrontendRpcEnvelopeSchema: { safeParse: vi.fn() },
+  handleFrontendRpc: vi.fn(),
+}));
+vi.mock('@/lib/realtime/host', () => ({ stopRealtimeHost: vi.fn() }));
+vi.mock('@/lib/scheduler-host', () => ({
+  startSchedulerHost: vi.fn(),
+  stopSchedulerHost: vi.fn(),
+}));
+vi.mock('@/lib/scheduler-host/handlers/ping', () => ({}));
+vi.mock('@/lib/broker/sw-host', () => ({
+  clearBrokerCacheOnSignOut: vi.fn(),
+  registerBrokerHandlers: vi.fn(),
+}));
+vi.mock('@/lib/context-menus/setup', () => ({ setupContextMenus: vi.fn() }));
+vi.mock('@/lib/credentials/assistance-status', () => ({
+  reconcileCredentialAssistanceActionOnBoot: vi.fn(async () => undefined),
+  registerCredentialAssistanceStatus: vi.fn(),
+}));
+vi.mock('@/lib/credentials/capture-candidates', () => ({
+  registerCredentialCaptureHost: vi.fn(),
+  rehydrateCredentialCaptureCandidates: vi.fn(),
+}));
+vi.mock('@/lib/credentials/generation-host', () => ({ registerGeneratedPasswordHost: vi.fn() }));
+vi.mock('@/lib/credentials/inline-suggestions-host', () => ({
+  registerInlineCredentialSuggestionHost: vi.fn(),
+}));
+vi.mock('@/lib/origin-allowlist', () => ({ matchesAllowedOrigin: vi.fn() }));
+vi.mock('@/lib/settings/persisted', () => ({ readDefaultPermissionMode: vi.fn() }));
+vi.mock('@/lib/stream/active-runs', () => ({ hasRecentActiveStream: vi.fn(async () => false) }));
+vi.mock('@/lib/stream/offscreen-proxy', () => ({
+  cancelStream: vi.fn(),
+  deferOffscreenAcquisitionUntil: vi.fn(),
+  ensureOffscreen: vi.fn(),
+  startStream: vi.fn(),
+}));
+vi.mock('@/lib/supabase/client', () => ({ setSupabaseSession: vi.fn() }));
+vi.mock('@/lib/supabase/queries', () => ({ lookupCapturedByUrl: vi.fn() }));
+vi.mock('@/lib/tools/dispatch', () => ({
+  handleWebmcpCall: vi.fn(),
+  recordAssignedTab: vi.fn(),
+  runLocalNetworkDiscovery: vi.fn(),
+  runLocalSavedPattern: vi.fn(),
+  startToolDispatcher: vi.fn(),
+}));
+vi.mock('@/lib/webmcp/register', () => ({ registerToolsOnActiveTab: vi.fn() }));
+vi.mock('@/state/pilot', () => ({
+  getPilotSessionSnapshotAsync: vi.fn(async () => ({ active: false })),
+  usePilotStore: { getState: () => ({ isGroupValid: vi.fn() }) },
+}));
+
+import { useNetworkCapture } from '@/hooks/use-network-capture';
+import { bootstrapBackground } from '@/lib/background/bootstrap';
+import { networkRelayIsolated } from '@/lib/data-pattern/network-tap';
+vi.mock('@/lib/data-pattern/run-interactive', async () =>
+  await import('@/lib/data-pattern/.d47-manual-priorrun-mutant'),
+);
+import { runNetworkCapturePattern } from '@/lib/data-pattern/run-interactive';
+import { CHANNELS } from '@/lib/messaging/schemas';
+
+afterEach(() => {
+  cleanup();
+  vi.useRealTimers();
+  vi.unstubAllGlobals();
+});
+
+it('keeps a concurrent manual response out of the saved replay result', async () => {
+  vi.useFakeTimers();
+  let currentTitle = 'Brooklyn Bowl';
+  const cdpEvents = new Set<(source: { tabId: number }, method: string, params: object) => void>();
+  const emit = (method: string, params: object) => {
+    for (const fn of cdpEvents) fn({ tabId: 37 }, method, params);
+  };
+  let binding = '';
+  let releaseReload!: () => void;
+  const reloadGate = new Promise<void>((resolve) => {
+    releaseReload = resolve;
+  });
+  h.acquire.mockResolvedValue({ send: h.send, release: h.release });
+  h.release.mockResolvedValue(undefined);
+  h.send.mockImplementation(async (method: string, params: Record<string, any>) => {
+    if (method === 'Page.getFrameTree')
+      return {
+        frameTree: { frame: { id: 'main-frame', url: h.tab.url, loaderId: 'original-loader' } },
+      };
+    if (method === 'Runtime.enable')
+      emit('Runtime.executionContextCreated', {
+        context: { id: 1, uniqueId: 'prior', auxData: { frameId: 'main-frame', isDefault: true } },
+      });
+    if (method === 'Runtime.addBinding') binding = params.name;
+    if (method === 'Page.addScriptToEvaluateOnNewDocument') return { identifier: 'replay-script' };
+    if (method === 'Page.reload') {
+      await reloadGate;
+      emit('Page.frameStartedNavigating', {
+        frameId: 'main-frame',
+        loaderId: 'new-loader',
+        navigationType: 'reload',
+        url: h.tab.url,
+      });
+      emit('Runtime.executionContextCreated', {
+        context: {
+          id: 2,
+          uniqueId: 'current',
+          auxData: { frameId: 'main-frame', isDefault: true },
+        },
+      });
+      emit('Runtime.bindingCalled', {
+        name: binding,
+        executionContextId: 2,
+        payload: JSON.stringify({
+          source: 'fetch',
+          method: 'GET',
+          url: 'https://electronic.vegas/api/events',
+          body: JSON.stringify({ events: [{ title: currentTitle }] }),
+          request_body_key: 'none',
+          request_sequence: 1,
+          status: 200,
+          ts_ms: 1,
+          body_size: 37,
+          body_truncated: false,
+        }),
+      });
+      emit('Page.frameNavigated', {
+        frame: { id: 'main-frame', url: h.tab.url, loaderId: 'new-loader' },
+      });
+      emit('Runtime.bindingCalled', {
+        name: binding,
+        executionContextId: 2,
+        payload: JSON.stringify({ __matrx_capture_hook: 'network-tap', nonce: 'a'.repeat(32) }),
+      });
+    }
+    return {};
+  });
+  const runtimeMessage = vi.fn((envelope: { kind: string; payload: unknown }) => {
+    // Chrome delivers this content-script message to the registered SW handler.
+    for (const callback of h.listeners.get(envelope.kind) ?? [])
+      callback(envelope.payload, { tab: { id: 37 }, documentId: 'manual-document' });
+    return Promise.resolve({ ack: true });
+  });
+  Object.assign(chrome, {
+    runtime: {
+      id: 'extension',
+      sendMessage: runtimeMessage,
+      onMessage: { addListener: vi.fn(), removeListener: vi.fn() },
+      onConnect: { addListener: vi.fn() },
+    },
+    alarms: { onAlarm: { addListener: vi.fn() } },
+    tabs: { onUpdated: { addListener: vi.fn() } },
+    scripting: {
+      executeScript: vi.fn(async () => [{ documentId: 'replayed-document', result: true }]),
+    },
+    debugger: {
+      sendCommand: vi.fn(),
+      onEvent: {
+        addListener: (fn: (source: { tabId: number }, method: string, params: object) => void) =>
+          cdpEvents.add(fn),
+        removeListener: (fn: (source: { tabId: number }, method: string, params: object) => void) =>
+          cdpEvents.delete(fn),
+      },
+      onDetach: { addListener: vi.fn(), removeListener: vi.fn() },
+    },
+  });
+  bootstrapBackground();
+  const hook = renderHook(useNetworkCapture);
+  await act(async () => hook.result.current.start());
+  networkRelayIsolated();
+  const config = {
+    url_filter: 'https://electronic.vegas/api/events',
+    method: 'GET',
+    key_path: 'events',
+    body_match: 'ignore',
+  };
+  const runReplay = () =>
+    runNetworkCapturePattern(config, 37, { initiation: 'user', timeoutMs: 100 });
+  const replay = runReplay();
+  for (let i = 0; i < 100 && !h.send.mock.calls.some(([method]) => method === 'Page.reload'); i++)
+    await Promise.resolve();
+  expect(h.send.mock.calls.some(([method]) => method === 'Page.reload')).toBe(true);
+  await act(async () => {
+    window.dispatchEvent(
+      new MessageEvent('message', {
+        source: window,
+        data: {
+          __matrx_net: true,
+          event: {
+            source: 'fetch',
+            method: 'GET',
+            url: 'https://electronic.vegas/api/events',
+            body: '{"events":[{"title":"Manual prior response"}]}',
+            request_body_key: 'none',
+            request_sequence: 999,
+            status: 200,
+            ts_ms: 2,
+            body_size: 49,
+            body_truncated: false,
+          },
+        },
+      }),
+    );
+  });
+  expect(runtimeMessage).toHaveBeenCalledWith(
+    expect.objectContaining({ kind: CHANNELS.NET_CAPTURE_EVENT }),
+  );
+  expect(hook.result.current.events.map((event) => event.body)).toEqual([
+    '{"events":[{"title":"Manual prior response"}]}',
+  ]);
+  releaseReload();
+  for (let i = 0; i < 20; i++) await Promise.resolve();
+  await vi.advanceTimersByTimeAsync(100);
+  expect(await replay).toEqual([{ title: 'Brooklyn Bowl' }]);
+  currentTitle = 'The Fonda Theatre';
+  const second = runReplay();
+  for (
+    let i = 0;
+    i < 100 && h.send.mock.calls.filter(([method]) => method === 'Page.reload').length < 2;
+    i++
+  )
+    await Promise.resolve();
+  expect(h.send.mock.calls.filter(([method]) => method === 'Page.reload')).toHaveLength(2);
+  await vi.advanceTimersByTimeAsync(100);
+  expect(await second).toEqual([{ title: 'The Fonda Theatre' }]);
+});
