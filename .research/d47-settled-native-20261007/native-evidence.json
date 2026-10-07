@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "run_id": 37558902653,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "status": "observed_bounded",
+  "source_artifact": {
+    "development_run_id": 37558363826,
+    "source_sha": "823724eb97ab6887f4c41a6096054a831da849dc",
+    "artifact_id": 11456086365,
+    "artifact_digest": "sha256:fd4fbbf39c878996b4a54c5c59b24afdae98d22bc0ec40d8580b4f124f45f107",
+    "version": "0.2.337",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "a1a5691549cf15ee5b212ebf712eef31ef1942c7ac6d73835a49c9505ac10e1e",
+    "ci_receipt_sha256": "1b3b799a86c79da98255ca81c204fb02423a9a867bded0ca2e2417759bb8042e",
+    "provenance_sha256": "13bf9aa75ad9381ac4b42dc6b7692a50ccf9995cb11043c7b15065fee0627d58",
+    "lockfile_sha256": "873379be301b01bc5c3795f2011c486fea5543f3c5c0bc7841a7be1ccbcabe73",
+    "import_verdict": "exact_pushed_commit_only"
+  },
+  "workflow": {
+    "run_head_sha": "fdae9c4b8eb421cabbea41bb6156bd34d847262d",
+    "workflow_sha256": "25e8c7ad79505bf05d9dbae3dcea5aeaae270cf7512e3357d564f5d57b496bdd",
+    "artifact_source_vs_workflow_head": "workflow, lockfile, hosted driver, and D47 harness paths unchanged"
+  },
+  "run": {
+    "runner": "macos-15",
+    "case": "showcase-d47-admin",
+    "status": "completed",
+    "conclusion": "success",
+    "started_at": "2026-10-07T01:48:31Z",
+    "completed_at": "2026-10-07T01:55:57Z",
+    "native_artifact_id": 11456545136,
+    "native_artifact_name": "hosted-guest-37558902653-1",
+    "native_artifact_sha256": "sha256:2623d5c9b2ed01ac8958e93ad6e219f9c1151dbaefa18aeb89daac6e380b0dc7",
+    "original_receipt_sha256": "9d902d39796a9a2d876cfc36b90f2206f55279f9cc1ec50be3b8670c81e78f87"
+  },
+  "resource_decisions": {
+    "evidence_source": "hosted run job logs",
+    "package": { "decision": "valid", "admitted": true, "resource_invalid": false, "exit_code": 0 },
+    "browser": { "decision": "valid", "admitted": true, "resource_invalid": false, "exit_code": 0 },
+    "guest": { "decision": "valid", "admitted": true, "resource_invalid": false, "exit_code": 0 }
+  },
+  "replay": {
+    "owned_recipe_name": "Codex D47 document race d861e50b-9a47-4e46-9901-bd266deb2f0e",
+    "fixture_old_response_pending_before_release": true,
+    "fixture_old_response_finished_after_current_response": true,
+    "binding_handshake_observed": true,
+    "binding_current_target_packets": 1,
+    "binding_old_payload_observed": false,
+    "contexts_cleared_observed": true,
+    "current_response_body_sha256": "f98b5b68b8f45441831808df62c253a986cda3c55df85a76015ffeaa4d14c3e8",
+    "terminal_sample": {
+      "elapsed_ms": 20370.211958999993,
+      "exact_recipe": true,
+      "current_row": true,
+      "old_row": false,
+      "running": false,
+      "error_present": false,
+      "header_status": "exact",
+      "preview_status": "current_only"
+    },
+    "current_saved_replay": "pass",
+    "delayed_old_binding": "architecturally_excluded_observed",
+    "cancellation": "unverified"
+  },
+  "cleanup": {
+    "probe_cleanup_field": null,
+    "probe_cleanup_interpretation": "An active probe was evidenced by its handshake and packet. Null means the helper recorded no remove/detach failures; removal asserts chrome.debugger.onEvent.hasListener(listener) is false.",
+    "owned_recipe_cleanup": "removed",
+    "owned_recipe_absence_observed": true,
+    "hosted_run_terminal": true,
+    "temporary_admin_secret_staged": true,
+    "temporary_organization_secret_staged": true,
+    "both_temporary_secrets_deleted": true,
+    "both_secret_names_absence_verified": true,
+    "secret_values_recorded": false
+  },
+  "observed_source_hashes": {
+    "runner": "ec8af7d4e75da1997c2dcb3064b8484fe26bae4d1d3413b56bebd3e88fd93046",
+    "core": "c65b4678be7e49829f4f346926d9ff9dbdce8b7b8506be23565abf644dba3596",
+    "handler": "fa1eb3990d5611c597004b23999829d42d3833a6765f79d3865bedc8267d62cb",
+    "panel_driver": "a2c9d3f1f98151d678e57ea8909fc6a9fbe4e2851d59f1fd3811a901168d904f"
+  },
+  "limits": [
+    "This is a bounded native replay on the controlled document-race fixture, not full EXT-D-0047/T57 closure.",
+    "The old response completed at the fixture server; no old binding payload was observed. This does not prove old callback delivery or cancellation.",
+    "The downloaded receipt did not persist an explicit listener-removed boolean; successful removal is inferred from active-probe evidence, null cleanup failures, and the helper assertion.",
+    "The public-site initial-load case and surrounding cases remain unverified.",
+    "The development artifact is not a Store artifact."
+  ]
+}

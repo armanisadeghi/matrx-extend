@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "status": "observed_bounded",
+  "conclusion": "On the exact imported v0.2.337 development artifact, the real signed-in admin replay reached a settled exact current-only saved result. The old fixture response finished server-side after the current response, while the binding observer saw only the current packet. The exact run-created recipe was deleted and absence observed; listener removal had no reported failure.",
+  "run": {
+    "id": 37558902653,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37558902653",
+    "workflow": "Hosted guest side-panel acceptance",
+    "workflow_head_sha": "fdae9c4b8eb421cabbea41bb6156bd34d847262d",
+    "case": "showcase-d47-admin",
+    "runner": "macos-15",
+    "status": "completed",
+    "conclusion": "success",
+    "started_at": "2026-10-07T01:48:31Z",
+    "completed_at": "2026-10-07T01:55:57Z"
+  },
+  "source_artifact": {
+    "ci_run_id": 37558363826,
+    "source_sha": "823724eb97ab6887f4c41a6096054a831da849dc",
+    "artifact_id": 11456086365,
+    "artifact_digest": "sha256:fd4fbbf39c878996b4a54c5c59b24afdae98d22bc0ec40d8580b4f124f45f107",
+    "version": "0.2.337",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "a1a5691549cf15ee5b212ebf712eef31ef1942c7ac6d73835a49c9505ac10e1e",
+    "lockfile_sha256": "873379be301b01bc5c3795f2011c486fea5543f3c5c0bc7841a7be1ccbcabe73",
+    "workflow_sha256": "25e8c7ad79505bf05d9dbae3dcea5aeaae270cf7512e3357d564f5d57b496bdd",
+    "workflow_driver_harness_lock_equivalence": "The workflow file, lockfile, hosted acceptance driver, and D47 harness paths are unchanged from source 823724eb to dispatched head fdae9c4b.",
+    "import_verdict": "exact_pushed_commit_only"
+  },
+  "native_artifact": {
+    "id": 11456545136,
+    "name": "hosted-guest-37558902653-1",
+    "digest": "sha256:2623d5c9b2ed01ac8958e93ad6e219f9c1151dbaefa18aeb89daac6e380b0dc7",
+    "original_receipt_sha256": "9d902d39796a9a2d876cfc36b90f2206f55279f9cc1ec50be3b8670c81e78f87",
+    "sanitized_subset": ".research/d47-settled-native-20261007/native-evidence.json",
+    "resource_final_decisions": ".research/d47-settled-native-20261007/resource-final-decisions.jsonl"
+  },
+  "resource": {
+    "evidence_source": "hosted run job logs",
+    "phase_decisions": {
+      "package": { "decision": "valid", "admitted": true, "resource_invalid": false, "exit_code": 0 },
+      "browser": { "decision": "valid", "admitted": true, "resource_invalid": false, "exit_code": 0 },
+      "guest": { "decision": "valid", "admitted": true, "resource_invalid": false, "exit_code": 0 }
+    },
+    "cleanup": "All three guarded phase children exited 0 and all wrappers recorded RESOURCE_FINAL_DECISION valid with resourceInvalid false."
+  },
+  "observations": {
+    "owned_recipe_name": "Codex D47 document race d861e50b-9a47-4e46-9901-bd266deb2f0e",
+    "terminal_sample": {
+      "elapsed_ms": 20370.211958999993,
+      "exact_recipe": true,
+      "current_row": true,
+      "old_row": false,
+      "running": false,
+      "error_present": false,
+      "header_status": "exact",
+      "preview_status": "current_only"
+    },
+    "old_response_pending_before_release": true,
+    "old_response_finished_after_current_response": true,
+    "binding_handshake_observed": true,
+    "binding_target_packet_count": 1,
+    "current_packet_body_sha256": "f98b5b68b8f45441831808df62c253a986cda3c55df85a76015ffeaa4d14c3e8",
+    "old_payload_observed": false,
+    "contexts_cleared_observed": true,
+    "current_saved_replay": "pass",
+    "delayed_old_binding": "architecturally_excluded_observed",
+    "cancellation": "unverified"
+  },
+  "cleanup": {
+    "owned_recipe": "Exact run-created recipe deleted; driver waited until its exact row was absent.",
+    "probe_cleanup": "The observer was active. probe_cleanup was null, meaning no remove/detach failures were returned. The removal helper asserts onEvent.hasListener is false.",
+    "temporary_secrets": {
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON": { "staged": true, "deleted": true, "absence_verified": true },
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON": { "staged": true, "deleted": true, "absence_verified": true },
+      "values_recorded": false
+    }
+  },
+  "scope_limit": "This one bounded fixture replay does not close EXT-D-0047/T57. Public-site initial-load behavior, old callback delivery/cancellation, and surrounding cases remain unverified. The development artifact is not a Store artifact.",
+  "independent_review": "Root should obtain the required fresh peer assessment before treating this evidence as accepted."
+}
