@@ -34,10 +34,17 @@
     ".research/uninterrupted-final-review-20261007.json"
   ],
   "verification": {
-    "source": "Repair written and independent final review pending; automatic CI will validate exact pushed unit.",
+    "source": "Independent final source review PASS by inspection; code15df9e35 pushed to main. Executable checks, causal RED/GREEN and native acceptance unverified.",
     "local_checks": "Refused RESOURCE_DISK_LOW: system/safety free19.2369GiB below20GiB. Canonical dev-caches --apply freed0; no guard bypass.",
     "native": "Unverified: local unpacked artifact0.2.173 predates fix. Current artifact must be bound to source and independently exercised warm/reload.",
-    "release": "Pending; workspace forbids manually initiating release/build on this Mac."
+    "release": "Pending; workspace forbids manually initiating release/build on this Mac.",
+    "automatic_ci": {
+      "repair_run": 37694242525,
+      "repair_run_outcome": "cancelled before jobs; not test evidence",
+      "descendant_run": 37694485512,
+      "descendant_sha": "ef6ea2cce86ffd8d93d9662e22caaf3b02222e2c",
+      "status": "pending at report checkpoint; no test verdict"
+    }
   },
   "transition_history": [
     {
@@ -60,6 +67,7 @@
     }
   ],
   "closure_requirement": "Guarded checks and independent native original/parallel/concurrent approvals/Ask control/Pilot opposing modes with warm and full reload proof; source tests alone cannot close.",
-  "next_action": "Finish independent source review; push exact paths to main, inspect automatic CI; retest exact current artifact on permitted host. Do not close on stale build or resource refusal.",
-  "review_queue_id": "bf959dba-5441-45a1-b06e-ec013cb21fb5"
+  "next_action": "Inspect automatic CI descendant containing15df9e35 and repair any in-scope failures. Run focused guards, compile, catalog/docs tools and causal tests on admitted host; independently retest current artifact Act/Ask, parallel initial action/restart, Pilot opposing mode and concurrent remembered approvals warm/reload. Release owner must claim permitted-host release; this Mac cannot manually initiate build/release. Keep defect in-fix and queue submitted/verifying until required gates pass.",
+  "review_queue_id": "bf959dba-5441-45a1-b06e-ec013cb21fb5",
+  "code_shas": ["15df9e3571b526a42b4e61980ebcc865c644ee6b"]
 }
