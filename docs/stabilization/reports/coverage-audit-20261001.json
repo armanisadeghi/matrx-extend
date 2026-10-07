@@ -1382,11 +1382,11 @@
   "current_verified_checkpoint": {
     "source_release": "0.2.205",
     "release_commit": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
-    "release_claim": "Authenticated primary Store dashboard confirmed submission success at approximately 05:57 UTC October 4: 0.2.205 Pending review, 0.2.176 Published, automatic publication enabled. The earlier 0.2.181 submission was cancelled because its 403-only guest allowance classifier missed the reproduced live HTTP 402 refusal; that submission is historical. D97 and D112 await publication and actual Store-installed 0.2.205 acceptance. D96 remains unclosed pending signed-in owner-table HTTP 200 proof and Store verification. No full extension health claim.",
+    "release_claim": "Last authenticated primary Store check, October 6 at 18:20 UTC: 0.2.205 Published \u2014 public and draft 0.2.205, with no pending review or reviewer action. Evidence: .research/daily-store-20261006.json; canonical release record: common-docs/systems/apps/extension/CHROME-WEB-STORE.md. Publication is confirmed; D97/D112 still need their remaining actual Store-installed acceptance, and D96 still needs signed-in owner-table HTTP 200 and published verification. No overall health claim.",
     "local_artifact": "Exact submitted Store 0.2.205 ZIP from hosted strict release run 37180303468, artifact 11294843385, source 2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3, SHA-256 6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26. This is a release package, not an installed Store build. Separate Profile development 0.2.189 evidence remains scoped to that older artifact.",
     "native_notes": "Independent exact 0.2.205 Store payload loaded unpacked with only its public manifest key adapted: four real fresh-guest answers, fifth live HTTP 402 guest_ai_allowance_used with free-account remedy/no Retry, and returning exhausted-guest panel reload/New chat with a second distinct live HTTP 402 and same remedy. Signed-in non-admin Chat answered with admin check HTTP 200/zero rows. The organization-present probe was source-fixed at bef9a4de after its string/object mismatch, and independent source/narrow-guard review 216c24c0 passed. The historical local receipt remains false. Corrected hosted local-development-ZIP 0.2.205 member run 37182939504 passed organization presence, canonical non-admin HTTP 200/zero rows and a real Chat answer; D113 is closed. Evidence: .research/hosted-member205-final.json. That hosted member run does not verify the Store ZIP, full organization lifecycle, or a Store installation. See .research/guest-402-native-acceptance.json, .research/guest-returning-final-acceptance.json, and .research/member-org-diagnostic-repair.json. Historical Profile 0.2.189 bounded results are retained in inventory; none certify Store 0.2.205.",
     "supersession": "Only this current checkpoint is updated; historical audit counts below remain dated snapshots. Current coverage totals are generated from inventory and defect records.",
-    "updated_at": "2026-10-04T06:58:36Z"
+    "updated_at": "2026-10-07T01:54:59.500247+00:00"
   },
   "major_gaps_and_next_actions": [
     {
@@ -1404,7 +1404,7 @@
     {
       "priority": "P1",
       "scope": "Current install and native breadth",
-      "gap": "Strict exact 0.2.176 release gates passed and the frozen published artifact has bounded native guest acceptance. The separate 0.2.177 development artifact is provenance-verified, with native acceptance not run. Guest Chat grounding/reload, signed-in non-admin Chat, admin Files error/Retry and admin Saved captures selection race have narrow native passes. Personal Chrome reload, broad guest/member/admin sidepanel/content-script/service-worker/offscreen coverage and signout privacy remain unverified.",
+      "gap": "Published 0.2.205 has bounded unpacked public-CRX evidence; this is not actual Store-installed lifecycle acceptance. The last resource-valid stable-server guest check is October 5 run37356729984. October 6 checks produced replies but failed deployment-stability or resource-validity gates, so current-server acceptance remains unverified. Development artifacts and their bounded case results carry separate receipts. Personal Chrome reload, broad guest/member/admin sidepanel/content-script/service-worker/offscreen coverage and signout privacy remain unverified.",
       "next": "Bind native runs to current artifact receipt, real user surface and persona; preserve admission guard."
     },
     {
@@ -1427,7 +1427,7 @@
     },
     {
       "priority": "P2",
-      "scope": "D69–D71 latest batch",
+      "scope": "D69\u2013D71 latest batch",
       "gap": "D69 archived org visibility is bounded native-verified, but archived/stale choice and held-request paths remain open. D70 Guidance read-error/retry and D71 records cross-org runtime scope are source/release-verified; current native behavior remains unverified.",
       "next": "Use the current checkpoint/report to run only the unverified paths."
     },
