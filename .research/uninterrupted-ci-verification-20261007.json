@@ -1,0 +1,40 @@
+{
+  "at": "2026-10-07T22:21:02.368806+00:00",
+  "repair_sha": "15df9e3571b526a42b4e61980ebcc865c644ee6b",
+  "verified_sha": "61a9b1cae81c1a748233600156162f5ec3774caf",
+  "ci_run": 37694579646,
+  "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37694579646",
+  "conclusion": "success",
+  "guards": {
+    "targeted_tests": 11,
+    "verdict": "pass",
+    "total_tests_passed": 2175,
+    "skipped_tests": 6,
+    "test_files_passed": 305,
+    "skipped_test_files": 2,
+    "log_excerpt": [
+      "checks\tUnit tests\t2026-10-07T22:14:27.8812505Z  \u2713 tests/unit/conversation-trust-across-runs.test.ts (4 tests) 441ms",
+      "checks\tUnit tests\t2026-10-07T22:15:00.4048415Z  \u2713 tests/unit/parallel-permission-mode.test.ts (2 tests) 44ms",
+      "checks\tUnit tests\t2026-10-07T22:15:06.8641862Z  \u2713 tests/unit/dispatch-run-meta-concurrency.test.ts (2 tests) 107ms",
+      "checks\tUnit tests\t2026-10-07T22:15:21.0238518Z  \u2713 tests/unit/browser-dom-permission-mode.test.ts (3 tests) 6ms",
+      "checks\tUnit tests\t2026-10-07T22:15:38.5696562Z  Test Files  305 passed | 2 skipped (307)",
+      "checks\tUnit tests\t2026-10-07T22:15:38.5708809Z       Tests  2175 passed | 6 skipped (2181)"
+    ]
+  },
+  "typecheck": "pass",
+  "lint": "pass",
+  "resource_safety_and_browser_harness_regressions": "pass",
+  "artifact": {
+    "id": 11515715192,
+    "name": "matrx-extend-development-test-61a9b1cae81c1a748233600156162f5ec3774caf-37694579646-1",
+    "bytes": 13623977,
+    "native_acceptance": "unverified"
+  },
+  "limitations": [
+    "No causal pre-repair RED or mutation/gut-check proof; pending permitted-host guard run.",
+    "No current-build live Act/Ask/parallel/restart/remember native acceptance.",
+    "Catalog/docs regeneration and strict release gates remain pending permitted host; no tool definitions/args/descriptions changed.",
+    "Chrome storage failure remains warned best effort and cannot guarantee remembered-choice durability.",
+    "No release manually initiated; workspace forbids it from this Mac."
+  ]
+}
