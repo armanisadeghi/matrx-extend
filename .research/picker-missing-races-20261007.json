@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "picker-missing-races-20261007",
+  "defect_id": "EXT-D-0042",
+  "feature_id": "EXT-F-1012",
+  "case_ids": ["EXT-F-1012-T24", "EXT-F-1012-T51"],
+  "status": "source_ready_native_unverified",
+  "scope": "Add the two original missing stale event channels, ITEM_DETECTED and RESULT, to the existing opt-in showcase-stale-admin native controller. The prior EXIT case and B positive control remain in place.",
+  "entrypoint": "MATRX_SHOWCASE_STALE_BOUNDARY=1 node tests/browser/showcase-picker-native-acceptance.mjs",
+  "causal_sequence": [
+    "Arm the existing extension-isolated-world Chrome runtime.sendMessage interception for one channel at a time; no event payload is synthesized by the native driver.",
+    "Start A from the sidepanel and select the separate two-card archive fixture. For ITEM_DETECTED, hold its actual scope announcement. For RESULT, let A detection stage the builder, select a field, click Done, and hold the actual result.",
+    "Cancel A from the sidepanel, start B on the same page and tab, then release the unchanged A envelope through the captured original runtime.sendMessage function.",
+    "Observe A's SW-stamped relay with session, tab, and document identity. Assert B stays active with one overlay and no A root. Select B's three-card events fixture, observe distinct B detection and stamped result in the same tab/document, and extract all three expected event titles."
+  ],
+  "forcing_function": "A stale handler that stages A detection makes B's root non-null before B selection. One that accepts A result closes B or populates A's builder. A dropped/replaced envelope loses its stamped relay or session identity. A broken current session fails B detection, result, builder, or extraction assertions.",
+  "local_checks": {
+    "command": "node --test tests/browser/showcase-stale-runtime-boundary.test.mjs && node --check tests/browser/showcase-picker-native-acceptance.mjs && pnpm exec biome check tests/browser/showcase-picker-native-acceptance.mjs tests/browser/showcase-stale-runtime-boundary.mjs tests/browser/showcase-stale-runtime-boundary.test.mjs && node JSON parse of this report",
+    "result": "passed; 2 hook tests plus syntax, code format/lint, and report parse checks",
+    "limit": "The hook unit tests use simulated messages to test interception mechanics. Only a guarded hosted native run can credit real producer and stamped relay behavior."
+  },
+  "native_result": "UNVERIFIED: this lane cannot run a heavy native build, hosted workflow, or release from this machine. No installed extension acceptance is claimed.",
+  "artifact_preconditions": "Existing hosted route requires an exact successful CI development artifact, matching source/run/artifact identifiers, receipt/tree digest, approved admin organization, and admitted resource journals.",
+  "remaining_defect_scope": [
+    "Delayed A cancellation injection after B starts",
+    "Deferred installation across replacement",
+    "New content context reinjection and exact listener count",
+    "Signed-in nonadmin role gating"
+  ],
+  "next_action": "Fresh independent code review, then one resource-admitted hosted showcase-stale-admin run against an exact CI development artifact built from this pushed source. Keep EXT-D-0042 in-fix until remaining channels and native acceptance pass."
+}
