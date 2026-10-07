@@ -27,8 +27,8 @@
     "Compare the returned availability/result with the API's actual availability and dedicated session operation. In a native extension run, reload the exact build and repeat Tools > Catalog > Internal delegates > ai_check_availability followed by the named ai_* operation."
   ],
   "expected": "The capability report discovers each top-level task API independently; each operation calls its documented task method and returns its actual result.",
-  "actual": "getAi only inspected all top-level task APIs inside a LanguageModel-present branch. Dedicated task sessions were then called with prompt(), although Chrome documents summarize(), translate(), detect(), and proofread(). Detection also mislabeled ranked objects as strings, and malformed proofreading could return the original input as success. This is source-confirmed; no current Chrome operation has been observed yet.",
-  "cause": "A LanguageModel gate in shared getAi discovery and a PromptSession type reused for four distinct native task APIs.",
+  "actual": "getAi only inspected all top-level task APIs inside a LanguageModel-present branch. Dedicated task sessions were then called with prompt(), although Chrome documents summarize(), translate(), detect(), and proofread(). Detection also mislabeled ranked objects as strings, and malformed proofreading could return the original input as success. Independent peer review then found Translator.availability called without its required source/target pair, making a present Translator falsely report unavailable. This is source-confirmed; no current Chrome operation has been observed yet.",
+  "cause": "A LanguageModel gate in shared getAi discovery, a PromptSession type reused for distinct native task APIs, and a generic availability probe that omitted Translator's required language-pair options.",
   "cause_sibling_census": [
     "Affected shared discovery consumers: checkAvailability, fullCapabilityReport, summarize, translate, detectLanguage, proofread. Prompt-only calls through quickPrompt are separate.",
     "writer and rewriter are reported by fullCapabilityReport but have no exported task operation in client.ts; independent top-level discovery applies to both.",
@@ -38,7 +38,11 @@
   "allowed_files": [
     "src/lib/onbox-ai/client.ts",
     "src/lib/onbox-ai/client.test.ts",
+    "src/lib/tools/handlers/onbox-ai.ts",
     "docs/feature-tests.md",
+    "docs/TOOLS.generated.md",
+    "types/tool-catalog.json",
+    "types/tool-catalog.md",
     "docs/stabilization/defects/EXT-D-0147.json",
     ".research/native-ai-capability-fix-20261006.json"
   ],
@@ -54,16 +58,26 @@
     "docs/stabilization/resource-journals/native-ai-capability-green-20261006.jsonl",
     "docs/stabilization/resource-journals/native-ai-capability-compile-20261006.jsonl",
     "docs/stabilization/resource-journals/native-ai-capability-final-test-20261006.jsonl",
-    "docs/stabilization/resource-journals/native-ai-capability-final-compile-20261006.jsonl"
+    "docs/stabilization/resource-journals/native-ai-capability-final-compile-20261006.jsonl",
+    ".research/native-ai-capability-peer-20261006.json",
+    "docs/stabilization/resource-journals/native-ai-pair-red-20261007.jsonl",
+    "docs/stabilization/resource-journals/native-ai-pair-catalog-20261007.jsonl",
+    "docs/stabilization/resource-journals/native-ai-pair-docs-20261007.jsonl",
+    "docs/stabilization/resource-journals/native-ai-pair-green-20261007.jsonl",
+    "docs/stabilization/resource-journals/native-ai-pair-compile-20261007.jsonl",
+    ".research/native-ai-pair-fresh-review-20261007.json"
   ],
   "build_receipt": null,
   "reproducibility": "Deterministic exported-function RED on the prior source; native unverified",
   "verification": {
-    "source": "Guarded RED showed two expected failures; final guarded focused suite passed 4/4 and final guarded pnpm compile passed; independent source review pending",
+    "source": "Fresh review ef05349b marks Translator pair finding ADDRESSED and source contract PASS with no new breakage. A and B overall PARTIAL: native execution and executed return-expected mutant remain unverified. Guard-strength worker assigned; native remains open.",
     "native": "unverified",
     "release": "pending permitted release host"
   },
-  "fix_shas": [],
+  "fix_shas": [
+    "eb8eca4981bd2e01e59bbe1239a9299ac4088336",
+    "fc09e3817e3352f5c0c17559fe4ce018f8bdf5ba"
+  ],
   "transition_history": [
     {
       "at": "2026-10-06T23:45:25Z",
@@ -85,5 +99,5 @@
     }
   ],
   "closure_requirement": "Guarded RED/GREEN and typecheck, independent source review, native warm and post-reload execution on an exact loaded artifact, then release verification.",
-  "next_action": "Independently review source. Native owner must verify capability availability and execution on the exact loaded build, separately for side-panel manual Run and agent background dispatch; resolve service-worker exposure before closing."
+  "next_action": "Finish admitted safe mutation proof, then verify side-panel manual Run and background agent dispatch separately on an exact loaded artifact; resolve service-worker capability exposure before closure."
 }

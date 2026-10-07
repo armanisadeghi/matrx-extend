@@ -185,7 +185,7 @@ export async function waitD47SavedTerminal({
     } catch {
       state = { observation_unavailable: true };
     }
-    // Monotonic durations, booleans only. Never retain body text or exceptions.
+    // Retain scoped booleans and fixture-only classifications; never retain DOM text or exceptions.
     const safe = Object.fromEntries(
       [
         'exact_recipe',
@@ -196,9 +196,17 @@ export async function waitD47SavedTerminal({
         'observation_unavailable',
       ].map((key) => [key, state?.[key] === true]),
     );
+    safe.header_status = ['absent', 'exact', 'mismatch'].includes(state?.header_status)
+      ? state.header_status
+      : 'unavailable';
+    safe.preview_status = ['absent', 'current_only', 'old_only', 'mixed', 'other'].includes(
+      state?.preview_status,
+    )
+      ? state.preview_status
+      : 'unavailable';
     const elapsed = now() - started;
     record({ elapsed_ms: elapsed, remaining_ms: Math.max(0, deadline - now()), ...safe });
-    if (safe.exact_recipe && safe.current_row) return safe;
+    if (safe.exact_recipe && safe.current_row && !safe.old_row) return safe;
     if (elapsed >= budget.timeout_ms) throw new Error('saved_current_result_not_observed');
     await sleep(Math.min(budget.poll_ms, deadline - now()));
   }

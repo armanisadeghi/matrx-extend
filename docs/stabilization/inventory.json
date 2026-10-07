@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-06T23:47:41.410701+00:00",
+  "updated_at": "2026-10-07T00:15:06.303794+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -50275,7 +50275,8 @@
       "missing_items": [],
       "readiness_gaps": [
         "Confirm current catalog against imported source registry before source inventory signoff",
-        "Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification."
+        "Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification.",
+        "EXT-D-0147: source repair has guarded regression/typecheck evidence; native warm/reload capability success and separate background-dispatch execution remain unverified."
       ],
       "applicability": {
         "guest": {
@@ -50351,13 +50352,17 @@
         },
         "member": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0147"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         },
         "admin": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0147"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         }
@@ -50455,7 +50460,8 @@
       "missing_items": [],
       "readiness_gaps": [
         "Confirm current catalog against imported source registry before source inventory signoff",
-        "Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification."
+        "Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification.",
+        "EXT-D-0147: source repair has guarded regression/typecheck evidence; native warm/reload capability success and separate background-dispatch execution remain unverified."
       ],
       "applicability": {
         "guest": {
@@ -50537,13 +50543,17 @@
         },
         "member": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0147"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         },
         "admin": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0147"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         }
@@ -51004,7 +51014,8 @@
       "missing_items": [],
       "readiness_gaps": [
         "Confirm current catalog against imported source registry before source inventory signoff",
-        "Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification."
+        "Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification.",
+        "EXT-D-0147: source repair has guarded regression/typecheck evidence; native warm/reload capability success and separate background-dispatch execution remain unverified."
       ],
       "applicability": {
         "guest": {
@@ -51086,13 +51097,17 @@
         },
         "member": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0147"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         },
         "admin": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0147"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         }
@@ -51171,7 +51186,8 @@
       "missing_items": [],
       "readiness_gaps": [
         "Confirm current catalog against imported source registry before source inventory signoff",
-        "Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification."
+        "Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification.",
+        "EXT-D-0147: source repair has guarded regression/typecheck evidence; native warm/reload capability success and separate background-dispatch execution remain unverified."
       ],
       "applicability": {
         "guest": {
@@ -51251,13 +51267,17 @@
         },
         "member": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0147"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         },
         "admin": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0147"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         }
@@ -51336,7 +51356,8 @@
       "missing_items": [],
       "readiness_gaps": [
         "Confirm current catalog against imported source registry before source inventory signoff",
-        "Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification."
+        "Manual Internal delegates procedure source-reviewed; real capability success, unavailable branch, member/admin warm/reload, dispatcher permissions and live advertisement remain unverified. See .research/native-ai-procedure-peer-20261006.json and .research/native-ai-fixture-peer-20261006.json. Historical exact-name binding absence is not current DB verification.",
+        "EXT-D-0147: source repair has guarded regression/typecheck evidence; native warm/reload capability success and separate background-dispatch execution remain unverified."
       ],
       "applicability": {
         "guest": {
@@ -51416,13 +51437,17 @@
         },
         "member": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0147"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         },
         "admin": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0147"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         }

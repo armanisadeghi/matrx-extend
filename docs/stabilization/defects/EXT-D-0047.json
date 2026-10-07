@@ -28,8 +28,8 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Before another native retry, independently diagnose recipe-label predicate: product applies uppercase CSS but driver searches case-sensitive body.innerText. Preserve exact recipe identity/visibility/current-result scope. Current run resourceinvalid independently prevents acceptance. No native job active; sourceAI verification owns manualpermit.",
-    "status": "Run37548083191 terminal resource-invalid highCPU. Last recorded sample current_row=true/exact_recipe=false; labeltext notretained, no productacceptance established.",
+    "next_action": "Fresh peer055c090c identified acceptance false positive for current marker plus unexpected preview data. d47_exact_preview_fix owns exact-row correction/regression; tests wait on native-AI guard-strength permit. After fresh review, verify current successful CI artifact/source/lock before one guarded native run. No native run active.",
+    "status": "Latest native run37548083191 remains resource-invalid. Driver-only label/preview repair passed guarded real Chromium fixture5/5, existing driver14/14, constant-success mutant4expected failures. Native acceptance remains unverified.",
     "implementation_agent": "completed: d47_owned_reload_fix; d47_navigation_replacement_fix; d47_ci_contract_repair",
     "execution_agent": "completed: d47_import_native",
     "native_run_id": 37537634304,
@@ -77,7 +77,11 @@
     "hosted_import_fix_commit": "d4decbe3",
     "hosted_import_fix_report": ".research/d47-hosted-import-fix-20261006.json",
     "hosted_import_peer_commit": "336467d2",
-    "hosted_import_peer_report": ".research/d47-hosted-import-peer-20261006.json"
+    "hosted_import_peer_report": ".research/d47-hosted-import-peer-20261006.json",
+    "label_diagnosis_report": ".research/d47-label-check-20261006.json",
+    "label_fix_commit": "bbd40641",
+    "label_fix_report": ".research/d47-label-fix-20261006.json",
+    "label_peer_report": ".research/d47-label-fresh-peer-20261007.json"
   },
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
   "verification_status": "Current independentevidencepeer e7a67bcd confirms initialrequest timing and documentidentity controlled regressions (including meaningful identitymutation), plus bounded installed initialHN capture and saved10row replay on8b0f8adc/9ea6687b. Delayed matching prior-document response with higher old sequence is still nativeUNVERIFIED; T57 and original D47 closure remain incomplete. No current runtime was run by evidencepeer.",

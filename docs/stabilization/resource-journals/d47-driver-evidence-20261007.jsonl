@@ -1,0 +1,3 @@
+{"schema":1,"at":"2026-10-07T00:18:03.964Z","runId":"d47-driver-evidence-20261007","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-07T00:18:04.009Z","runId":"d47-driver-evidence-20261007","processEvidence":{"matches":[{"pid":10807,"ppid":13929,"processStart":"Tue Oct  6 17:16:50 2026","executable":"node","reason":"script-operand"}],"overflow":0},"code":"RESOURCE_LEGACY_RUNNER_BUSY"}
+{"schema":1,"at":"2026-10-07T00:18:04.012Z","runId":"d47-driver-evidence-20261007","admitted":false,"resourceInvalid":false,"exitCode":2,"decision":"refused","code":"RESOURCE_FINAL_DECISION"}

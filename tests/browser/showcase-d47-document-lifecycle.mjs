@@ -23,6 +23,7 @@ import {
   terminalBudgetPaths,
   waitD47SavedTerminal,
 } from './showcase-d47-terminal-budget.mjs';
+import { readD47SavedResult } from './showcase-d47-saved-result.mjs';
 import { runShowcaseOrganizationCheckpoint } from './showcase-organization-checkpoint.mjs';
 
 const repo = resolve(import.meta.dirname, '../..');
@@ -587,10 +588,9 @@ try {
               panel,
               `(() => {
             const text = document.body.innerText;
+            const saved = (${readD47SavedResult.toString()})(document, ${JSON.stringify(recipe)});
             return {
-              exact_recipe: text.includes(${JSON.stringify(`Last run: ${recipe}`)}),
-              current_row: text.includes('Canyon Frequency'),
-              old_row: text.includes('Moonlit Transit'),
+              ...saved,
               running: text.includes('Listening in the reloaded document') || text.includes('checking for other matches'),
               error_present: [...document.querySelectorAll('.text-destructive')].some(el => el.getBoundingClientRect().height > 0 && el.textContent.trim())
             };

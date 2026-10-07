@@ -20,6 +20,12 @@
  */
 
 export type Availability = 'unavailable' | 'downloadable' | 'downloading' | 'available';
+export type CapabilityAvailability = Availability | 'requires-language-pair';
+
+export interface TranslationPair {
+  sourceLanguage: string;
+  targetLanguage: string;
+}
 
 export interface OnboxResult<T> {
   ok: boolean;
@@ -77,7 +83,7 @@ interface PromptSession {
 
 interface TaskModel<Session> {
   create: (opts?: Record<string, unknown>) => Promise<Session>;
-  availability?: () => Promise<Availability>;
+  availability?: (opts?: TranslationPair) => Promise<Availability>;
 }
 
 interface SummarizerSession {
@@ -124,10 +130,28 @@ function getAi(): AnyAi | null {
   return Object.keys(ai).length > 0 ? ai : null;
 }
 
+export function checkAvailability(
+  capability?: Exclude<keyof AnyAi, 'translator'>,
+): Promise<Availability>;
+export function checkAvailability(
+  capability: 'translator',
+  languagePair?: TranslationPair,
+): Promise<CapabilityAvailability>;
 export async function checkAvailability(
   capability: keyof AnyAi = 'languageModel',
-): Promise<Availability> {
+  languagePair?: TranslationPair,
+): Promise<CapabilityAvailability> {
   const ai = getAi();
+  if (capability === 'translator') {
+    const translator = ai?.translator;
+    if (!translator || typeof translator.availability !== 'function') return 'unavailable';
+    if (!languagePair) return 'requires-language-pair';
+    try {
+      return await translator.availability(languagePair);
+    } catch {
+      return 'unavailable';
+    }
+  }
   const cap = ai?.[capability];
   if (!cap || typeof cap.availability !== 'function') return 'unavailable';
   try {
@@ -137,7 +161,9 @@ export async function checkAvailability(
   }
 }
 
-export async function fullCapabilityReport(): Promise<Record<string, Availability>> {
+export async function fullCapabilityReport(
+  languagePair?: TranslationPair,
+): Promise<Record<string, CapabilityAvailability>> {
   const ai = getAi();
   if (!ai) {
     return {
@@ -150,7 +176,7 @@ export async function fullCapabilityReport(): Promise<Record<string, Availabilit
       rewriter: 'unavailable',
     };
   }
-  const out: Record<string, Availability> = {};
+  const out: Record<string, CapabilityAvailability> = {};
   for (const key of [
     'languageModel',
     'summarizer',
@@ -160,7 +186,10 @@ export async function fullCapabilityReport(): Promise<Record<string, Availabilit
     'writer',
     'rewriter',
   ] as const) {
-    out[key] = await checkAvailability(key);
+    out[key] =
+      key === 'translator'
+        ? await checkAvailability('translator', languagePair)
+        : await checkAvailability(key);
   }
   return out;
 }

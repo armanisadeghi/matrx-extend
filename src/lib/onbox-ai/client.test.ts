@@ -1,5 +1,12 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { detectLanguage, fullCapabilityReport, proofread, summarize, translate } from './client';
+import {
+  checkAvailability,
+  detectLanguage,
+  fullCapabilityReport,
+  proofread,
+  summarize,
+  translate,
+} from './client';
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -19,7 +26,12 @@ describe('on-device task API discovery', () => {
       create: async () => ({ summarize: summarizeText, destroy: summarizerDestroy }),
     });
     vi.stubGlobal('Translator', {
-      availability: async () => 'available',
+      availability: async (pair?: { sourceLanguage: string; targetLanguage: string }) => {
+        if (!pair) throw new TypeError('Translator.availability requires a language pair');
+        return pair.sourceLanguage === 'en' && pair.targetLanguage === 'es'
+          ? 'available'
+          : 'unavailable';
+      },
       create: async () => ({ translate: translateText }),
     });
     vi.stubGlobal('LanguageDetector', {
@@ -35,10 +47,19 @@ describe('on-device task API discovery', () => {
     expect(report).toMatchObject({
       languageModel: 'unavailable',
       summarizer: 'available',
-      translator: 'available',
+      translator: 'requires-language-pair',
       languageDetector: 'available',
       proofreader: 'available',
     });
+    expect(
+      await checkAvailability('translator', { sourceLanguage: 'en', targetLanguage: 'es' }),
+    ).toBe('available');
+    expect(
+      await checkAvailability('translator', { sourceLanguage: 'en', targetLanguage: 'zz' }),
+    ).toBe('unavailable');
+    expect(
+      (await fullCapabilityReport({ sourceLanguage: 'en', targetLanguage: 'es' })).translator,
+    ).toBe('available');
     expect(await summarize('The public library opens at nine.')).toMatchObject({
       ok: true,
       data: 'The library opens at nine.',
