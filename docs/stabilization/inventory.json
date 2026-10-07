@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-07T10:34:09.089934+00:00",
+  "updated_at": "2026-10-07T10:50:02.552798+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -19796,9 +19796,13 @@
                 ".research/d47-prior-saved-retest-peer-20261007.json",
                 ".research/d47-prior-saved-native-diagnosis-20261007.json",
                 ".research/d47-navigation-order-peer-20261007.json",
-                ".research/d47-original-closure-audit-20261007.json"
+                ".research/d47-original-closure-audit-20261007.json",
+                ".research/t57-public-race-preflight-correction-20261007.json",
+                ".research/t57-public-race-preflight-final-peer-20261007.json",
+                ".research/t57-public-race-native-20261007.json",
+                ".research/t57-public-race-native-peer-20261007.json"
               ],
-              "detail": "D47 original defect closed after fresh independent requirement audit39e564ba; accepted bounded regression/native isolation and public HN initial capture/saved completed replay satisfy the original defect closure clauses. T57 remains unverified: its public-site precondition applies to the ordered prior/current response race, not yet observed together. Preserve existing receipt-specific evidence; source continuity across frozen builds supports the mechanism, not native acceptance of newer versions/packages. No observed old callback delivery/rejection; architecture-exclusion ruling applies. Mask/org/cancellation and unrelated cases are not promoted.",
+              "detail": "Original D47 remains closed under independent audit39e564ba. Full T57 remains unverified. Native preflight37608190442 on exact0.2.360/62142e74 imported artifact11474839620 captured/saved a genuine public HN request and paused two matching HTTP200 responses with original-body hashes and distinct loaders. Extension capture-hook attestation was positive; composite row/activity predicate false is inconclusive. Old lifecycle failed, current finished, first release did not complete and exact protocol exception was not retained; release order empty, no terminal saved result/refusal. Fresh peer95f4475c classifies driver/browser lifecycle boundary, not proved product defect. All permits admitted/resourceInvalid=false despite guest child_failed exit1. Owned recipe/probe removed and both temporary secret names independently absent; interception cleanup unverified. Accepted architectural-exclusion ruling still applies; no old callback delivery inferred.",
               "remaining_criteria": [
                 "Receipt-bound installed development extension on a real public site: an owned initial-load Network recipe, matching prior response pending across navigation, old-then-current release, exact current-only terminal saved output or honest provenance refusal, positive current context/binding and lifecycle controls, independent review."
               ]
@@ -19807,7 +19811,7 @@
           "proof_ruling": "2026-10-06 root technical ruling: see .research/d47-acceptance-architecture-ruling-20261006.json. A native architectural-exclusion trace with positively observed current binding/packet, exact contexts, old request lifecycle and terminal saved result may supplement delivered-stale-event causal guards. Neither cancellation alone nor current-only rows nor empty event arrays prove exclusion. Retain public-site same-artifact replay, both response orders, higher old sequence, stale-only refusal and cleanup; no existing result is promoted.",
           "execution": {
             "owner": "/root/d47_prior_saved_native_execution",
-            "status": "native-preflight-dispatched",
+            "status": "terminal-preflight-failure-unverified",
             "run_id": 37608190442,
             "workflow_source": "05e220857bfaed9fa94027ff6728ad212ba6ddf5",
             "app_source": "62142e748d2e83eae1a97a07e9a2d388f22aeab2",
@@ -19816,7 +19820,16 @@
             "artifact_id": 11474839620,
             "app_tree_sha256": "e41e0fe5243284e1781a2c997078a05bd4ae50f68a3543914a21e13a18d9ddc7",
             "source_review": ".research/t57-public-race-preflight-final-peer-20261007.json",
-            "next_action": "Wait this exact run to authoritative terminal status; remove both ephemeral secrets; inspect receipt and all resource journals; obtain fresh independent receipt review. No second native launch authorized. Capability preflight cannot promote full T57."
+            "next_action": "Repair the QA diagnostic boundary before another native attempt: capture sanitized first-release substep and CDP error class; separate exact-row/activity observations and use positive capture evidence; verify cleanup even when navigation cancels a paused request. Then independently review and perform one bounded public-site run under the accepted architectural-exclusion ruling. Do not require recreating an old callback route; no full-case pass without positive current context/binding and terminal saved result or honest refusal.",
+            "workflow_conclusion": "failure",
+            "failure_stage": "public_race_release",
+            "report": ".research/t57-public-race-native-20261007.json",
+            "peer": ".research/t57-public-race-native-peer-20261007.json",
+            "resource_integrity": "All three admitted/resourceInvalid=false; guest child_failed exit1, not resource invalidation.",
+            "temporary_secret_names_absent": true,
+            "owned_recipe_cleanup": "removed",
+            "capture_probe_cleanup": "removed_detached",
+            "interception_cleanup": "unverified"
           }
         },
         {
