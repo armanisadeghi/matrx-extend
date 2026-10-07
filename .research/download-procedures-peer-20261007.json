@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent-source-procedure-review",
+  "reviewed_commit": "9a8cc9eac6f1c6477e7c32a2f594c78b7df51467",
+  "review_scope": "Three proposed T01 manual download procedures, their seven controls, member/admin modes, source argument behavior, fixture prerequisites, cleanup, and privacy. Source review only; no runtime acceptance.",
+  "verdict_a_procedural_adequacy": {
+    "status": "PARTIAL",
+    "summary": "The control and mode mapping is complete and the valid/invalid arguments match the manual runner and handlers. List and confirm are runnable after the owned completed fixture is observed. Positive download_url and cancel branches correctly remain fixture-pending. The unsafe nonexistent-ID action and incomplete cleanup instructions require revision before these procedures are handed to a runner.",
+    "by_case": {
+      "EXT-F-4087-T01": "PARTIAL: member/admin, warm/reload, valid/invalid paths are specified; positive execution awaits an owned HTTP(S) endpoint. Shared completed fixture cleanup is omitted from this case.",
+      "EXT-F-4088-T01": "PARTIAL: member/admin, warm/reload, schema-negative and positive cancellation are specified; positive execution awaits a controlled in-progress download. A guessed nonexistent-ID negative is unsafe, and shared fixture cleanup is omitted.",
+      "EXT-F-4154-T01": "PARTIAL: C01 through C05 are mapped to list, confirm, cancel, download_url, and invalid input for both roles; list/confirm can run with the completed fixture. Cancel and download_url await missing owned fixtures. Canonical list needs an empty-profile precondition before it can satisfy the stated privacy boundary."
+    }
+  },
+  "verdict_b_quality_privacy": {
+    "status": "FAIL",
+    "summary": "The proposal accurately separates manual handler invocation from dispatcher authorization and avoids inventing runtime outcomes, but its list privacy claim and negative cancellation safety do not follow from source behavior. Its file cleanup does not account for every fixture it mandates."
+  },
+  "findings": [
+    {
+      "severity": "Important",
+      "location": ".research/download-procedures-20261007.json:14,181",
+      "source_anchor": "src/lib/tools/handlers/canonical.ts:580; src/lib/tools/handlers/browser-data.ts:179-199; src/features/tools/ToolsView.tsx:494-499",
+      "finding": "The proposal says to restrict queries to the owned filename/ID and to inspect only its row, but canonical action=list delegates with an empty filter. It searches the newest 50 downloads and renders the full result, including URLs and paths, in the manual runner.",
+      "impact": "A merely disposable profile may still contain unrelated downloads; the instruction cannot prevent their retrieval or display. Require a newly created profile whose download history is confirmed empty before adding only owned fixtures, and stop on any unexpected row without recording it. Do not claim the canonical list is query-scoped."
+    },
+    {
+      "severity": "Important",
+      "location": ".research/download-procedures-20261007.json:111",
+      "source_anchor": "src/lib/tools/handlers/downloads.ts:60-70",
+      "finding": "The negative cancel step uses a 'reserved nonexistent positive integer' without establishing that the ID is absent. The handler passes any parsed integer directly to chrome.downloads.cancel.",
+      "impact": "If the guessed ID exists, this test can cancel a download and falsely report a safe negative. Remove this optional API-negative action or establish absence against the exact isolated profile immediately before invocation, with no concurrent download activity; retain the schema-negative as the safe invalid-input check."
+    },
+    {
+      "severity": "Important",
+      "location": ".research/download-procedures-20261007.json:13,60,113",
+      "source_anchor": "tests/browser/fixtures/chrome-local-download.html:5",
+      "finding": "Shared setup creates a completed synthetic download for every case, while the leaf cleanup steps cover only files created by each leaf call or its slow fixture. They omit the shared completed fixture's file and do not explicitly verify deletion of the disposable profile/download history.",
+      "impact": "A run can claim cleanup while leaving a created file or profile data. Either create the completed fixture only for canonical list/confirm or include its exact recorded path and profile removal in every applicable case's cleanup, with absence checks and unverified status on failure."
+    }
+  ],
+  "accepted_source_findings": [
+    "Manual Tools Run validates Zod locally and calls handler.run directly with permissionMode='act'; it cannot establish dispatcher Ask/Act or role gating.",
+    "download_url uses a URL schema, optional filename, conflict=uniquify and save_as=false defaults, then immediate ID search; Chrome's final state must be checked later.",
+    "cancel_download requires an integer ID and does not catch API errors; the canonical router parses a string ID and rejects NaN before delegation.",
+    "Canonical confirm searches the exact ID and returns ok:true with an item or null; it is a read, not an approval action.",
+    "The completed local HTML/TXT fixture exists in source but is not runtime-proven. No reviewed owned HTTP(S) endpoint or slow cancellation fixture exists, so positive results and cleanup remain unverified.",
+    "The 2026-10-04 DB binding census is historical and cannot prove present agent advertisement. The reviewed procedure supports manual Catalog execution only."
+  ],
+  "evidence_limit": "No browser, build, test, DB query, network request, permission change, or cleanup was run. All three feature cells remain unverified; these are proposed procedures, not acceptance results.",
+  "source_files_read": [
+    ".research/download-procedures-20261007.json",
+    "docs/stabilization/inventory.json",
+    "docs/stabilization/PLAN.md",
+    "src/features/tools/ToolsView.tsx",
+    "src/lib/tools/handlers/downloads.ts",
+    "src/lib/tools/handlers/canonical.ts",
+    "src/lib/tools/handlers/browser-data.ts",
+    "src/lib/tools/dispatch.ts",
+    "src/lib/tools/categories.ts",
+    "src/lib/tools/catalog.ts",
+    "src/lib/tools/types.ts",
+    "tests/browser/fixtures/chrome-local-download.html",
+    "tests/browser/fixtures/chrome-local-download.txt"
+  ]
+}
