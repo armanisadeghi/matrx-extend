@@ -115,12 +115,21 @@ export function mapObservation(scope, observations) {
   assert.ok(['navigation', 'section', 'settings_control', 'surface_control'].includes(scope));
   const mapped = [];
   const unmapped = [];
+  const structural = [];
   for (const item of observations) {
+    if (item.classification === 'structural') {
+      structural.push({
+        kind: item.kind,
+        provenance: item.provenance,
+        ...(item.label_fingerprint ? { label_fingerprint: item.label_fingerprint } : {}),
+      });
+      continue;
+    }
     const label = item.label;
     const id =
-      scope === 'navigation' && isKnownTab(label)
+      scope === 'navigation' && item.classification === 'navigation' && isKnownTab(label)
         ? 'EXT-F-1001-C01'
-        : scope === 'section' && settingsSections.has(label)
+        : scope === 'section' && item.classification === 'section' && settingsSections.has(label)
           ? 'EXT-F-1003-C10'
           : scope === 'settings_control'
             ? (controlsByLabel.get(label) ?? controlAliases.get(label))
@@ -129,16 +138,36 @@ export function mapObservation(scope, observations) {
               : undefined;
     if (id) {
       const feature = featureById.get(id.split('-C')[0]);
-      mapped.push({ id, label, applicability: feature?.applicability?.[ROLE] ?? null });
+      mapped.push({
+        id,
+        label,
+        applicability: feature?.applicability?.[ROLE] ?? null,
+        ...(item.classification ? { classification: item.classification } : {}),
+        ...(item.provenance ? { provenance: item.provenance } : {}),
+      });
     } else {
-      assert.match(
-        item.label_fingerprint ?? '',
-        /^[a-f0-9]{64}$/,
-        'census_unkeyed_unknown_refused',
-      );
+      if (item.label)
+        assert.ok(
+          scope === 'navigation'
+            ? isKnownTab(item.label)
+            : scope === 'section'
+              ? settingsSections.has(item.label)
+              : scope === 'settings_control'
+                ? controlsByLabel.has(item.label) || controlAliases.has(item.label)
+                : uniqueControlIds.has(item.label),
+          'census_unkeyed_unknown_refused',
+        );
+      else
+        assert.match(
+          item.label_fingerprint ?? '',
+          /^[a-f0-9]{64}$/,
+          'census_unkeyed_unknown_refused',
+        );
       unmapped.push({
         kind: item.kind,
-        label_fingerprint: item.label_fingerprint,
+        ...(item.label ? { label: item.label } : { label_fingerprint: item.label_fingerprint }),
+        ...(item.classification ? { classification: item.classification } : {}),
+        ...(item.provenance ? { provenance: item.provenance } : {}),
       });
     }
   }
@@ -147,8 +176,14 @@ export function mapObservation(scope, observations) {
     mapped,
     unmapped_count: unmapped.length,
     unmapped,
+    structural_count: structural.length,
+    structural,
+    action_count: observations.filter((item) => item.classification === 'action').length,
     unsupported_trigger_count: ['navigation', 'section'].includes(scope)
-      ? observations.filter((item) => item.safe_to_open === false).length
+      ? observations.filter(
+          (item) =>
+            ['navigation', 'section'].includes(item.classification) && item.safe_to_open === false,
+        ).length
       : 0,
   };
 }
@@ -162,6 +197,29 @@ function fingerprintScript(key) {
     await keyPromise, new TextEncoder().encode(label)))].map((byte) => byte.toString(16).padStart(2, '0')).join('');`;
 }
 
+// Only structural DOM facts and source-owned anchors leave the page. Attribute text,
+// hrefs, input values, and generated IDs can contain private data.
+const provenanceScript = `const safeRole = (el) => {
+  const role = el.getAttribute('role');
+  return /^(tablist|tab|tabpanel|button|link|switch|combobox|checkbox|radio|menuitem|option)$/.test(role ?? '') ? role : null;
+};
+const provenance = (el, order) => {
+  const path = []; let node = el;
+  while (node?.nodeType === 1 && path.length < 8) {
+    const tag = node.tagName.toLowerCase();
+    const siblings = [...(node.parentElement?.children ?? [])].filter(child => child.tagName === node.tagName);
+    path.unshift(tag + ':' + siblings.indexOf(node));
+    node = node.parentElement;
+  }
+  const region = el.closest('[role="tabpanel"]') ? 'tabpanel'
+    : el.closest('[role="tablist"]') ? 'tablist'
+      : el.closest('header') ? 'header' : 'outside_panel';
+  const anchor = el.getAttribute('data-census-id');
+  return { tag: el.tagName.toLowerCase(), role: safeRole(el),
+    dom_order: order, region, dom_path: path.join('/'),
+    ...(anchor && /^EXT-F-[0-9]{4}-C[0-9]{2}$/.test(anchor) ? { source_anchor: anchor } : {}) };
+};`;
+
 export function discoveryExpression(scope, fingerprintKey) {
   const captureTab = scope === 'navigation';
   const selector = CONTROL_SELECTOR;
@@ -170,6 +228,7 @@ export function discoveryExpression(scope, fingerprintKey) {
     const known = new Set(${JSON.stringify(knownLabels)});
     const captureTab = ${captureTab};
     ${fingerprintScript(fingerprintKey)}
+    ${provenanceScript}
     const visible = (el) => { const r = el.getBoundingClientRect(), s = getComputedStyle(el);
       return r.width > 0 && r.height > 0 && s.display !== 'none' &&
         s.visibility !== 'hidden' && !el.closest('[inert]'); };
@@ -185,15 +244,24 @@ export function discoveryExpression(scope, fingerprintKey) {
       : !el.closest('[role="tablist"]') &&
         !sectionContents.some(content => content.contains(el)) &&
         (!el.closest('details') || el.tagName === 'SUMMARY'));
-    return Promise.all(triggers.map(async (el) => { const label = (el.getAttribute('aria-label') || el.getAttribute('title') ||
+    return Promise.all(triggers.map(async (el, order) => { const label = (el.getAttribute('aria-label') || el.getAttribute('title') ||
           el.getAttribute('data-matrx-title') || el.textContent || '').trim().slice(0, 256);
         const nativeShape = captureTab
           ? el.matches('button[role="tab"][title][aria-controls]') && el.title === label
           : el.matches('button[aria-expanded][aria-controls]') && el.textContent.trim() === label;
-        const sameLabel = triggers.filter(other => (other.getAttribute('aria-label') ||
+        const sameLabel = triggers.filter(other =>
+          (captureTab ? other.matches('[role="tab"]') : other.matches('[aria-expanded], summary')) &&
+          (other.getAttribute('aria-label') ||
           other.getAttribute('title') || other.getAttribute('data-matrx-title') || other.textContent || '').trim().slice(0, 256) === label);
-        return { kind: el.getAttribute('role') || el.tagName.toLowerCase(),
+        const classification = captureTab
+          ? el.matches('[role="tablist"]') ? 'structural'
+            : el.matches('[role="tab"]') ? 'navigation' : 'action'
+          : el.matches('[role="tabpanel"]') ? 'structural'
+            : el.matches('[aria-expanded], summary') ? 'section' : 'action';
+        return { kind: safeRole(el) || el.tagName.toLowerCase(),
+          classification, provenance: provenance(el, order),
           safe_to_open: nativeShape && !el.disabled && sameLabel.length === 1 &&
+            classification === (captureTab ? 'navigation' : 'section') &&
             (known.has(label) || (captureTab && /^[1-9][0-9]* pages? need your browser$/.test(label))),
           ...(known.has(label) || (captureTab && /^[1-9][0-9]* pages? need your browser$/.test(label))
             ? { label } : { label_fingerprint: await fingerprint(label) }) };
@@ -315,6 +383,7 @@ export function settingsControlsExpression(section, fingerprintKey) {
   return `(async () => {
     const known = new Set(${JSON.stringify([...controlsByLabel.keys(), ...controlAliases.keys()])});
     ${fingerprintScript(fingerprintKey)}
+    ${provenanceScript}
     const header = [...document.querySelectorAll('button[aria-expanded]')]
       .find((el) => el.textContent.trim() === ${JSON.stringify(section)});
     const id = header?.getAttribute('aria-controls');
@@ -323,10 +392,11 @@ export function settingsControlsExpression(section, fingerprintKey) {
     const visible = (el) => { const r = el.getBoundingClientRect(), s = getComputedStyle(el);
       return r.width > 0 && r.height > 0 && s.display !== 'none' && s.visibility !== 'hidden'; };
     return Promise.all([...content.querySelectorAll(${JSON.stringify(CONTROL_SELECTOR)})]
-      .filter(visible).map(async (el) => { const label = (el.getAttribute('aria-label') ||
+      .filter(visible).map(async (el, order) => { const label = (el.getAttribute('aria-label') ||
         (el.tagName === 'A' ? el.textContent : null) || el.getAttribute('title') ||
         el.closest('label')?.textContent || el.textContent || '').trim().slice(0, 256);
-        return { kind: el.getAttribute('role') || el.tagName.toLowerCase(),
+        return { kind: safeRole(el) || el.tagName.toLowerCase(),
+          provenance: { ...provenance(el, order), section: ${JSON.stringify(section)} },
           ...(known.has(label) ? { label } : { label_fingerprint: await fingerprint(label) }) };
       }));
   })()`;
@@ -346,6 +416,7 @@ async function census(panel, fingerprintKey) {
     inaccessible_regions.push({ region: 'settings_tab', reason: 'absent' });
   // Trusted clicks only on direct tab triggers. Profile and action controls stay untouched.
   for (const tab of navigationRaw) {
+    if (tab.classification !== 'navigation') continue;
     if (!isKnownTab(tab.label) || !tab.safe_to_open) {
       inaccessible_regions.push({
         region: 'unmapped_tab',
@@ -372,6 +443,7 @@ async function census(panel, fingerprintKey) {
         `(async () => {
       const known = new Set(${JSON.stringify([...uniqueControlIds.keys()])});
       ${fingerprintScript(fingerprintKey)}
+      ${provenanceScript}
       const tab = document.querySelector('button[role="tab"][title=${JSON.stringify(tab.label)}]');
       const pane = tab?.getAttribute('aria-controls')
         ? document.getElementById(tab.getAttribute('aria-controls')) : null;
@@ -379,10 +451,11 @@ async function census(panel, fingerprintKey) {
       const visible = (el) => { const r = el.getBoundingClientRect(), s = getComputedStyle(el);
         return r.width > 0 && r.height > 0 && s.display !== 'none' && s.visibility !== 'hidden'; };
       return Promise.all([...pane.querySelectorAll(${JSON.stringify(CONTROL_SELECTOR)})]
-        .filter(visible).map(async (el) => { const label = (el.getAttribute('aria-label') ||
+        .filter(visible).map(async (el, order) => { const label = (el.getAttribute('aria-label') ||
           (el.tagName === 'A' ? el.textContent : null) || el.getAttribute('title') ||
           el.getAttribute('data-matrx-title') || el.textContent || '').trim().slice(0, 256);
-          return { kind: el.getAttribute('role') || el.tagName.toLowerCase(),
+          return { kind: safeRole(el) || el.tagName.toLowerCase(),
+            provenance: { ...provenance(el, order), tab: ${JSON.stringify(tab.label)} },
             ...(known.has(label) ? { label } : { label_fingerprint: await fingerprint(label) }) };
         }));
     })()`,
@@ -428,6 +501,7 @@ async function census(panel, fingerprintKey) {
   const sections = mapObservation('section', sectionRaw);
   const controls = {};
   for (const section of sectionRaw) {
+    if (section.classification !== 'section') continue;
     if (!settingsSections.has(section.label) || !section.safe_to_open) {
       inaccessible_regions.push({
         region: 'unmapped_expander',

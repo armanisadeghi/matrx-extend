@@ -277,6 +277,39 @@ test('discovery retains untitled and alternate tab shapes but only permits mappe
   assert.doesNotMatch(JSON.stringify(observed), /Private|href|workspace/);
 });
 
+test('census distinguishes structural containers and actions from unopened regions with safe provenance', async () => {
+  const context =
+    domContext(`<header><div role="tablist" tabindex="0"><button role="tab" title="Settings" aria-controls="settings" data-state="active">Settings</button></div><button role="Private account email" aria-label="Private account email">Private account email</button></header>
+    <div role="tabpanel" id="settings" data-state="active"><button aria-expanded="true" aria-controls="account">Account</button><button>Private action</button></div>`);
+  const key = randomBytes(32).toString('base64');
+  const navigation = await vm.runInNewContext(discoveryExpression('navigation', key), context);
+  const sections = await vm.runInNewContext(discoveryExpression('section', key), context);
+  assert.equal(
+    navigation.map((item) => item.classification).join(','),
+    'structural,navigation,action',
+  );
+  assert.equal(sections.map((item) => item.classification).join(','), 'section,action');
+  assert.equal(navigation[0].safe_to_open, false);
+  assert.equal(
+    navigation[1].safe_to_open,
+    true,
+    'a structural parent must not make its real Settings tab ambiguous',
+  );
+  assert.equal(navigation[2].safe_to_open, false);
+  assert.equal(sections[1].safe_to_open, false);
+  assert.equal(navigation[2].provenance.tag, 'button');
+  assert.equal(navigation[2].provenance.region, 'header');
+  assert.equal(typeof navigation[2].provenance.dom_order, 'number');
+  assert.equal(navigation[2].provenance.role, null);
+  assert.doesNotMatch(
+    JSON.stringify({ navigation, sections }),
+    /Private account email|Private action/,
+  );
+  assert.equal(JSON.stringify({ navigation, sections }).includes(key), false);
+  assert.equal(mapObservation('navigation', navigation).structural_count, 1);
+  assert.equal(mapObservation('navigation', navigation).action_count, 1);
+});
+
 test('discovery retains summary, non-button expanders and unclassified section controls', async () => {
   const context =
     domContext(`<button role="tab" title="Settings" aria-controls="settings" data-state="active">Settings</button>

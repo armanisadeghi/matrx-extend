@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0151",
+  "scope": "Source-only guest visibility census classification and privacy-safe DOM provenance",
+  "status": "source_repaired_guarded_tests_pass",
+  "confirmed_cause": "The same-label safety comparison included a structural tablist whose inherited text equals its child Settings tab. That made the genuine tab unsafe even though it was the only direct Settings trigger.",
+  "repair": "Compare labels only among direct tab or section triggers. Keep structural containers and actions in census accounting without treating them as unopened regions. Report safe structural provenance and constrain role values before serialization.",
+  "privacy": "Unknown labels remain HMAC fingerprints. DOM text, input values, hrefs, arbitrary role attributes, and the HMAC key are absent from observations. The fixture assertion targets its actual private strings rather than the public classification value action.",
+  "causal_red": {
+    "run_id": "census-provenance-decomposed-red-20261007-01",
+    "stdout": ".research/guest-census-provenance-decomposed-red-20261007-01.stdout",
+    "resource_journal": "docs/stabilization/resource-journals/census-provenance-decomposed-red-20261007-01.jsonl",
+    "result": "Resource admitted; 24 pass, 1 assertion failure: real Settings tab safe_to_open was false."
+  },
+  "green": {
+    "run_id": "census-provenance-decomposed-green-20261007-01",
+    "stdout": ".research/guest-census-provenance-decomposed-green-20261007-01.stdout",
+    "resource_journal": "docs/stabilization/resource-journals/census-provenance-decomposed-green-20261007-01.jsonl",
+    "result": "Resource admitted and valid; 25 pass, 0 fail across census and hosted profile route tests."
+  },
+  "history_limit": "The predecessor report lists earlier red and green resource journals, but their exact raw stdout was not persisted. This report does not claim to reconstruct it.",
+  "remaining_limit": "No native browser, extension build, release, deploy, or live guest observation was in this implementation lane."
+}

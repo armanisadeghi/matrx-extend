@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0151",
+  "status": "handoff_unverified",
+  "scope": "Source-only guest census classification and privacy-safe provenance; no native observation, build, release, or database operation",
+  "confirmed_cause": "The census admits a tablist and ordinary action buttons among navigation/section candidates, then records every unsafe candidate as an inaccessible region. A tablist inherits Settings text from its child and the same-label check rejects the real Settings tab. HMAC equality across unlike elements cannot establish element identity.",
+  "source_changes_unverified": [
+    "tests/browser/takeover-visible-census.mjs",
+    "tests/browser/takeover-visible-census.test.mjs"
+  ],
+  "guarded_runs": [
+    {
+      "run_id": "census-provenance-red-20261007-01",
+      "journal": "docs/stabilization/resource-journals/census-provenance-red-20261007-01.jsonl",
+      "result": "Resource command admission refused; not a causal RED"
+    },
+    {
+      "run_id": "census-provenance-red-20261007-02",
+      "journal": "docs/stabilization/resource-journals/census-provenance-red-20261007-02.jsonl",
+      "result": "Valid resource; 24 pass, 1 causal assertion failure for missing classification/provenance"
+    },
+    {
+      "run_id": "census-provenance-green-20261007-01",
+      "journal": "docs/stabilization/resource-journals/census-provenance-green-20261007-01.jsonl",
+      "result": "Valid resource; 23 pass, 2 fail: cross-VM array equality in new test and known-label alternate expander accounting"
+    },
+    {
+      "run_id": "census-provenance-green-20261007-02",
+      "journal": "docs/stabilization/resource-journals/census-provenance-green-20261007-02.jsonl",
+      "result": "Valid resource; 24 pass, 1 fail: new fixture omitted active tab state"
+    },
+    {
+      "run_id": "census-provenance-green-20261007-03",
+      "journal": "docs/stabilization/resource-journals/census-provenance-green-20261007-03.jsonl",
+      "result": "Valid resource; 24 pass, 1 fail: privacy assertion matches intended classification word action; output also shows structural tablist falsely makes real Settings tab unsafe"
+    }
+  ],
+  "stdout": "Full guarded command output is present in task tool results; no separate raw stdout file was created.",
+  "next_action": "Fresh implementation seat should fix same-label comparison to consider only comparable direct triggers, narrow the privacy assertion to private DOM text, then run the admitted guarded test and verify that unknown actions stay counted but are never clicked or called inaccessible regions. Preserve all unknown fingerprints and guest signed-out proof. No current-main or product verdict is established."
+}
