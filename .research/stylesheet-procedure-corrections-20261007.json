@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "artifact_type": "stylesheet-procedure-source-review-corrections",
+  "reviewed_peer": ".research/stylesheet-procedure-peer-20261007.json",
+  "proposal": ".research/stylesheet-procedures-20261007.json",
+  "status": "corrected-source-only-runtime-unverified",
+  "findings": [
+    {
+      "finding": "Unknown persistent/persist keys are stripped by non-strict Zod object schemas and may still execute the handler.",
+      "correction": "Removed unknown-key inputs from negative cases and documented the catalog/source mismatch as unresolved. No rejection or no-mutation claim remains."
+    },
+    {
+      "finding": "The prior proposal invoked dispatcher execution without an executable trigger.",
+      "correction": "Removed dispatcher execution steps. Explicitly marked dispatcher, privileged confirmation/denial, Pilot scope and routing NOT EXECUTABLE in manual cases because the inventory defers agent calls to Chat/Pilot and PLAN.md defers those surfaces to Wave D."
+    },
+    {
+      "finding": "The prior proposal had no concrete h1 fixture route/page.",
+      "correction": "Bound proposals to the existing /referrals route from tests/browser/scrape-guest-native-acceptance.mjs, whose exact page title and h1 are Harbor Dental referral hours and whose server is runNativeSidepanelQa with an ephemeral localhost port. Instructions require the active URL and tab ID; historical port 49199 is not assumed."
+    },
+    {
+      "finding": "Permission boundary was not executable or safely denied.",
+      "correction": "Require receipt-bound manifest permission data and separately record the handler API result. No supported safe activeTab denial/activation procedure was found; this dimension remains unverified, not covered by manual success."
+    }
+  ],
+  "remaining_limits": [
+    "The existing /referrals launcher establishes a guest profile; source does not establish that its ephemeral URL is currently available in member/admin profiles. Each role must stop unverified if its own profile cannot reach the active owned route.",
+    "No browser, runtime, tests, build, credentials, inventory changes, or source changes were used.",
+    "All three role-specific procedures remain proposals and every result remains unverified."
+  ]
+}
