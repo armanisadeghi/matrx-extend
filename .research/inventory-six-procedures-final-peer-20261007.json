@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "report_type": "independent_source_review_of_corrected_procedure_design",
+  "task_id": "inventory-six-procedures-20261007",
+  "reviewed_artifact": ".research/inventory-six-procedures-20261007.json",
+  "reviewed_commits": [
+    "b378592a56c15854507212960c18fd744fce1996",
+    "28295377"
+  ],
+  "reviewer_checkout_head": "28295377",
+  "scope": "Independent source-only review of the corrected six manual procedures against current handler, runner, manifest, UI, and inventory source. No test, browser, product, runtime, database, credential, or canonical inventory actions were performed.",
+  "verdicts": {
+    "A_procedure_accuracy": "PARTIAL. The catalog-surface, tab-group listing/update, screenshot response-shape, memo-profile, and GIF buffer-sequencing corrections are reflected. Four cases are source-accurate as written. EXT-F-4143 still asks for an impossible scripting-permission revocation in this build, and EXT-F-4129 still misstates debugger as optional and requests a revocation of a required permission.",
+    "B_quality_and_limits": "PARTIAL. The procedures accurately describe the manual runner's direct handler invocation and its bypass of dispatcher authorization. Evidence hygiene and fixture ownership are strong. Cleanup remains incomplete for uploaded screenshot/GIF files because the inspected UI exposes no supported file-delete path; the screenshot gallery explicitly deletes only the index row. The report must not call those artifacts cleaned. No runtime or product success is established."
+  },
+  "findings": [
+    {
+      "verdict": "A_procedure_accuracy",
+      "case_id": "EXT-F-4143-T01",
+      "severity": "Important",
+      "location": ".research/inventory-six-procedures-20261007.json:140; wxt.config.ts:72",
+      "finding": "The procedure says to revoke scripting, rerun screenshot_region, and restore the grant. This build declares scripting in the required permissions array. The step cannot be performed as written in Chrome's normal extension permission controls, so this negative observation is not runnable.",
+      "evidence": "wxt.config.ts includes 'scripting' in permissions. screenshot_region uses chrome.scripting.executeScript as well as captureVisibleTab and document helpers, so a single scripting-revocation outcome would not isolate its capture behavior.",
+      "correction": "Remove the scripting-revocation step and its restore instruction. Keep the schema-negative case and state that this manual procedure does not test dispatcher permission denial.",
+      "cleanup_status": "Screenshot-row deletion is supported by the Screenshots gallery, but that operation explicitly leaves the image file in Files. Uploaded-file cleanup has no supported delete path established by inspected source and must remain outstanding."
+    },
+    {
+      "verdict": "A_procedure_accuracy",
+      "case_id": "EXT-F-4129-T01",
+      "severity": "Important",
+      "location": ".research/inventory-six-procedures-20261007.json:195-211; wxt.config.ts:85-87",
+      "finding": "The precondition calls debugger an optional permission to grant and expects a debugger attachment prompt. This build comments that Chrome forbids debugger in optional_permissions and declares it as required. The final step also proposes revoking debugger, which cannot be removed as an optional grant in this build.",
+      "evidence": "wxt.config.ts declares 'debugger' in required permissions and explicitly says keeping it required is the only way to keep CDP and network capture working. The recording handler calls the debugger-backed startRecording path directly.",
+      "correction": "Change the precondition to confirm the loaded extension has its declared debugger permission and remove the permission-grant/revocation observation. Do not promise an in-run attachment prompt unless an independently supported source path establishes one.",
+      "cleanup_status": "Local download removal is described separately. Uploaded GIF deletion through Files is not supported by any file-delete control found in the inspected Files UI/source; keep uploaded-file cleanup outstanding until a supported owning deletion path is established and verified."
+    },
+    {
+      "verdict": "B_quality_and_limits",
+      "case_id": "EXT-F-4143-T01",
+      "severity": "Important",
+      "location": ".research/inventory-six-procedures-20261007.json:151-154; src/features/screenshots/ScreenshotsView.tsx:268-285",
+      "finding": "The cleanup correctly separates the screenshot index row from the uploaded image, but implies both can be deleted through Screenshots and Files UI. Source confirms gallery deletion removes only the wbx_screenshot row and explicitly says the image file stays in Files. The inspected Files UI exposes open, attach, and family actions, with no supported file deletion control.",
+      "evidence": "ScreenshotsView's confirmation says the image file remains in Files and calls deleteScreenshot(id). FilesView has no file-delete action in the inspected view; the destructive-operation registry also describes deleteScreenshot as deleting only the screenshot index row.",
+      "correction": "Keep gallery row removal as an independently verifiable cleanup action. Mark cloud file cleanup explicitly outstanding unless an owning, supported deletion workflow is identified and independently verified."
+    },
+    {
+      "verdict": "B_quality_and_limits",
+      "case_id": "EXT-F-4129-T01",
+      "severity": "Important",
+      "location": ".research/inventory-six-procedures-20261007.json:221-222; src/features/files/FilesView.tsx",
+      "finding": "The procedure requires deleting the uploaded GIF through Files UI, but the inspected Files UI/source has no supported file-delete action. It cannot guarantee the uploaded cloud object is removed.",
+      "evidence": "FilesView provides file opening, family inspection, and attachment controls; repository search found no file-delete action in the Files view or corresponding file route. The recording handler uploads the GIF to cld_files before download.",
+      "correction": "Retain uploaded-file cleanup as explicitly outstanding unless a supported deletion workflow is supplied. Do not report the case clean based only on deleting the local download or clearing recording memory."
+    }
+  ],
+  "case_verdicts": [
+    {
+      "feature_id": "EXT-F-4096",
+      "case_id": "EXT-F-4096-T01",
+      "accuracy": "PASS",
+      "quality_limits": "The handler schema accepts an optional integer tab_id and returns inline mhtml_base64 plus byte_length on success. The permission is optional, so the API-level revocation observation is at least structurally possible. The runner's result panel can display the archive; the procedure correctly restricts evidence and clears it."
+    },
+    {
+      "feature_id": "EXT-F-4095",
+      "case_id": "EXT-F-4095-T01",
+      "accuracy": "PASS",
+      "quality_limits": "Both leaf tools require the sessions optional permission; the catalog defaults to Agent surface and the preamble now selects All handlers. Exact session_id use avoids restoring unrelated sessions. The pre-run listing is called out as a precondition and the fixture is matched by its unique title and URL."
+    },
+    {
+      "feature_id": "EXT-F-4163",
+      "case_id": "EXT-F-4163-T01",
+      "accuracy": "PASS",
+      "quality_limits": "The procedure uses the canonical router schema, a true fractional-ID schema negative, and checks collapsed state only after the explicit update. get_tab_groups queries all Chrome groups/tabs globally, and the procedure now scopes the fixture by owned tab IDs and window ID. The optional permission observation is explicitly conditional on Chrome permitting a grant change."
+    },
+    {
+      "feature_id": "EXT-F-4143",
+      "case_id": "EXT-F-4143-T01",
+      "accuracy": "PARTIAL",
+      "quality_limits": "The selector/format/zero-width inputs and inline-versus-cloud result distinction match the handler. The scripting-revocation step is not runnable because scripting is required by this build. Cloud upload and screenshot-row insertion may succeed independently; cleanup for the file must remain outstanding."
+    },
+    {
+      "feature_id": "EXT-F-4093",
+      "case_id": "EXT-F-4093-T01",
+      "accuracy": "PASS",
+      "quality_limits": "The hostname and note/hints input satisfy the handler schema; repeating the write reloads the stored map and deduplicates the note. The dedicated disposable profile bounds the key side effect and is correctly discarded because no product delete control is exposed. This is returned-state evidence from a write path, not an independent read-only inspection."
+    },
+    {
+      "feature_id": "EXT-F-4129",
+      "case_id": "EXT-F-4129-T01",
+      "accuracy": "PARTIAL",
+      "quality_limits": "Start/stop/export/clear sequencing, positive-frame requirement, reload-before-positive-export probe, and expected zero clear after export match source. Debugger is required, not optional, and the permission revoke/grant steps do not fit the current manifest. Uploaded-file cleanup is unsupported in inspected Files UI and must stay outstanding."
+    }
+  ],
+  "confirmed_corrections": [
+    "The shared preamble now selects All handlers before searching the internal recently-closed leaves; ToolsView defaults to canonical Agent surface.",
+    "tab_groups identifies group state from a global list and asserts collapsed:true only after the explicit update.",
+    "screenshot_region distinguishes the cloud image_ref response from inline image_base64 and records file_id and screenshot_id independently.",
+    "The domain-memo case uses and discards a dedicated disposable Chrome profile because the product surface has no memo-delete control.",
+    "The GIF procedure requires positive frames, tests service-worker loss only after a confirmed restart and before the positive export, and expects clear to return zero after export."
+  ],
+  "shared_limits": [
+    "ToolsView safe-parses local handler input and calls handler.run directly with permissionMode='act' and assignedTabId=null. This manual path bypasses dispatcher permission authorization and role checks; it does not prove DB binding activation or agent advertisement.",
+    "No test, browser, build, product, runtime, database, or credential action was performed. No procedure execution or runtime success is established.",
+    "Current checkout contains unrelated shared dirty changes, including a tab_groups create/collapsed repair. The procedure intentionally tests collapsed only after update and does not depend on that change; no shared dirty file was edited by this review.",
+    "Cross-repo extension system-of-record files referenced by the repository instructions were not available in the mounted docs roots; this review is limited to the requested commits and local source/fixtures."
+  ],
+  "source_files_reviewed": [
+    "wxt.config.ts",
+    "src/features/tools/ToolsView.tsx",
+    "src/lib/tools/handlers/optional-perms.ts",
+    "src/lib/tools/handlers/canonical-mergers.ts",
+    "src/lib/tools/handlers/tabs.ts",
+    "src/lib/tools/handlers/extract.ts",
+    "src/lib/screenshot/persist.ts",
+    "src/lib/tools/handlers/memory.ts",
+    "src/lib/chat/context/domain-memo.ts",
+    "src/lib/tools/handlers/record.ts",
+    "src/lib/recording/state.ts",
+    "src/features/screenshots/ScreenshotsView.tsx",
+    "src/features/files/FilesView.tsx",
+    "src/lib/destructive/operations.ts",
+    "docs/stabilization/inventory.json",
+    "types/tool-catalog.json",
+    ".research/inventory-six-procedures-peer-20261007.json"
+  ]
+}
