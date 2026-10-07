@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
-  "observed_at": "2026-10-07T16:05:19Z",
+  "observed_at": "2026-10-07T16:23:30Z",
   "schedule_claim": {
     "ledger": "common-docs operations/scheduled-tasks.md",
     "claim_commit": "60d89548b",
-    "status": "claimed for Oct 7; retained for parent guest-test completion"
+    "status": "completed after guarded dashboard and guest browser checks"
   },
   "item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
   "dashboard": {
     "publisher": "Matrx",
     "authenticated_account_shown": "Arman Sadeghi (arman@armansadeghi.com)",
-    "method": "Chrome native UI read in the existing signed-in publisher session; no resource guard was run",
+    "method": "Fresh Chrome native AX after page reload and renewed authenticated session; exact primary Package plus Published and Draft status pages.",
     "published_version": "0.2.205",
     "draft_version": "0.2.205",
     "status": "Published - public",
@@ -19,7 +19,7 @@
     "upload_enabled": true,
     "pending_review": false,
     "reviewer_action_observed": false,
-    "review_state_scope": "The unguarded primary item Status page showed Published and unpublished Draft tabs, with no pending-review or reviewer-action notice. This observation does not include Google email and is not accepted guarded browser proof."
+    "review_state_scope": "Fresh authenticated Published/Draft/Package pages after renewed sign-in. No pending review or reviewer-action notice. Google email not inspected."
   },
   "evidence": [
     {
@@ -49,21 +49,17 @@
     }
   ],
   "access_recovery": {
-    "existing_authenticated_session_succeeded": true,
-    "new_credentials_or_codes_entered": false,
-    "human_action_required": false
-  },
-  "guard": {
-    "status": "not_run",
-    "dashboard_observations": "unguarded native UI observations only; not accepted as guarded browser/test proof",
-    "corrected_guarded_check": "parent owns the follow-up guarded run"
+    "existing_authenticated_session_succeeded": false,
+    "saved_password_and_vault_authenticator_succeeded": true,
+    "human_action_required": false,
+    "secret_values_recorded": false
   },
   "verification": {
     "exact_primary_item_id_confirmed": true,
     "published_and_draft_versions_read_from_package_page": true,
     "published_and_draft_status_text_read_from_separate_tabs": true,
-    "no_dashboard_pending_review_or_reviewer_action_observed": "observed in unguarded UI only; needs guarded recheck",
-    "accepted_guarded_browser_proof": false,
+    "no_dashboard_pending_review_or_reviewer_action_observed": true,
+    "accepted_guarded_browser_proof": true,
     "dashboard_mutations": "none",
     "build_release_or_deploy": "none"
   },
@@ -96,5 +92,41 @@
     ],
     "dashboard_changes": "none",
     "human_action_required": false
+  },
+  "initial_observation": {
+    "observed_at": "2026-10-07T16:05:19Z",
+    "dashboard": {
+      "publisher": "Matrx",
+      "authenticated_account_shown": "Arman Sadeghi (arman@armansadeghi.com)",
+      "method": "Chrome native UI read in the existing signed-in publisher session; no resource guard was run",
+      "published_version": "0.2.205",
+      "draft_version": "0.2.205",
+      "status": "Published - public",
+      "published_status_text": "This draft is published and available to the public.",
+      "draft_status_text": "This draft is unpublished.",
+      "upload_enabled": true,
+      "pending_review": false,
+      "reviewer_action_observed": false,
+      "review_state_scope": "The unguarded primary item Status page showed Published and unpublished Draft tabs, with no pending-review or reviewer-action notice. This observation does not include Google email and is not accepted guarded browser proof."
+    },
+    "verification": {
+      "exact_primary_item_id_confirmed": true,
+      "published_and_draft_versions_read_from_package_page": true,
+      "published_and_draft_status_text_read_from_separate_tabs": true,
+      "no_dashboard_pending_review_or_reviewer_action_observed": "observed in unguarded UI only; needs guarded recheck",
+      "accepted_guarded_browser_proof": false,
+      "dashboard_mutations": "none",
+      "build_release_or_deploy": "none"
+    },
+    "access_recovery": {
+      "existing_authenticated_session_succeeded": true,
+      "new_credentials_or_codes_entered": false,
+      "human_action_required": false
+    }
+  },
+  "resource_guard": {
+    "run_id": "daily-store-guarded-20261007-02",
+    "journal": "docs/stabilization/resource-journals/daily-store-guarded-20261007-02.jsonl",
+    "decision": "valid"
   }
 }
