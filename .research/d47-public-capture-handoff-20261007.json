@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "status": "source_handoff_known_red",
+  "original_run_id": 37566057766,
+  "original_receipt_sha256": "bacc3af5f109efbcf37005ea9682e9d396acbe367eb0eef6ab0df70c9b0502f7",
+  "original_receipt_observation": "The original native receipt reached initial_capture, then failed with an AssertionError before recording candidate count or preview. Zero versus multiple candidates remains unknown.",
+  "source_finding": "NetworkTab shortens displayed URLs to 80 characters and can omit the queries path from a row label. The former driver required that path in the label before inspecting the full selected URL. This is a source-proven selector gap; it does not establish that it caused the original native failure.",
+  "endpoint_host_proof": "unverified; the current in-progress source assumes the selected API endpoint host is hn.algolia.com, but the original receipt contains no selected URL or host. A fresh owner must establish the real API host from trusted public-site evidence before accepting this condition.",
+  "guard_runs": [
+    { "run_id": "d47-capture-guard-20261007-a", "resource_decision": "child_failed", "cause": "New test used deepStrictEqual across happy-dom realms; test setup failure." },
+    { "run_id": "d47-capture-guard-20261007-b", "resource_decision": "valid", "cause": "Diagnostic-only row census test passed before selector repair." },
+    { "run_id": "d47-capture-guard-20261007-c", "resource_decision": "child_failed", "cause": "Synthetic buttons lacked explicit visibility; trusted click refused them." },
+    { "run_id": "d47-capture-guard-20261007-d", "resource_decision": "valid", "cause": "Shortened-label selector repair guard passed before host/path tightening." },
+    { "run_id": "d47-capture-guard-20261007-e", "resource_decision": "child_failed", "cause": "Final guard has stale exact_candidates expectation: it expects zero although the second synthetic row now includes queries, so the observed count is one. Final source is unverified." }
+  ],
+  "dirty_owned_paths": [
+    "tests/browser/showcase-d47-public-initial-load.mjs",
+    "tests/browser/showcase-d47-public-initial-load.test.mjs"
+  ],
+  "next_action": "Fresh takeover should verify the actual public API endpoint host and path, correct the stale test expectation, review selected-row synchronization and ambiguity handling, then run the exact guarded source test once. Keep D47 and T57 unverified pending a fresh native acceptance run."
+}
