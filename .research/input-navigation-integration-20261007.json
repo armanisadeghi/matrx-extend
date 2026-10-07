@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "status": "partial_procedure_integration",
+  "cases": ["EXT-F-4105-T01", "EXT-F-4151-T01", "EXT-F-4152-T01"],
+  "missing_steps_expected_before": 54,
+  "missing_steps_expected_after": 51,
+  "not_integrated": {
+    "EXT-F-4106-T01": "Requires native focus/value smoke before positive procedure is executable."
+  },
+  "review": ".research/input-navigation-final-peer-20261007.json",
+  "last_corrections": [
+    "c97bfa24 list_open_tabs status oracle independently checked by root against tabs.ts list_open_tabs returning t.status",
+    "9a506c6f clarifies tester may choose Deny; no human-only blocker"
+  ],
+  "preserved": "No test results promoted, original permissions dimensions and design_status=needed retained. Shared setup embedded in each case for self-contained execution."
+}

@@ -51020,12 +51020,42 @@
           "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "https://www.selenium.dev/selenium/web/web-form.html is Selenium's public Web form demo. Its observed page lists a text input, default checkbox, select, and submit button. Never enter a credential, choose a file, or submit the form. Before execution verify the live page still presents the named controls; if it has changed, stop and keep the case unverified.",
+            "Admit the appropriate resource permit. In separate member and admin profiles load the exact candidate development extension, record source commit, lockfile hash, build receipt, extension ID/version/Loaded from path in chrome://extensions, Chrome version, and signed-in role. Tools is sign-in gated; guest has no manual Tools case. Do not infer member dispatcher access from a direct manual run.",
+            "Open only a disposable public-demo tab. In Tools > Catalog choose All handlers; run list_open_tabs with {} and record the one tab ID whose full URL matches the demo. Keep that tab selected when running CDP input; canonical form_input and navigate require the same ID as a decimal string. Do not use an unrelated or authenticated tab.",
+            "Search each exact name, open its row, verify the displayed input schema and tier, enter the complete JSON, click Run, and inspect the inline output/error plus the real page. The manual runner validates Zod then calls handler.run with permissionMode=act and assignedTabId=null; it bypasses dispatcher approval and cannot establish the agent's assigned-tab or role/permission enforcement.",
+            "Warm: where all case-specific preconditions are met, execute positive and negative segments after loading the candidate extension without a preceding full extension Reload; record result, visible page state, tab ID, and immediate debugger banner/attachment delta.",
+            "Post-reload: where all case-specific preconditions are met, use chrome://extensions Reload for that exact extension, confirm the same extension ID/version/path, reopen Tools, refresh the disposable demo page, reacquire its tab ID and any read_page ref/bounds, then repeat the same segments. A web-page refresh or side-panel reopen alone is insufficient.",
+            "All four inventory permissions dimensions remain unresolved. The two CDP input handlers declare privileged tier and debugger; debugger is a base manifest permission with no Settings revoke switch. The direct Tools Run path skips requestConfirmation and optional-permission checks. A future separately mapped Chat/Pilot dispatcher denial needs the exact tool advertised to the tested role, a known owned tab, Ask mode for action tools or the mandatory privileged card for CDP, the tester choosing Deny in the actual approval UI, and an unchanged-page oracle. No such live route or refusal was established by this source-only proposal. Malformed JSON, stale refs and invalid tab IDs are not permission tests.",
+            "Admin only: record cdp_attached_tabs baseline and the owned debugger banner, then record the owned attachment/banner immediately after each positive CDP run. If still attached, use cdp_detach for exactly the owned ID and confirm disappearance. If it has already idle-detached or a worker restart swept it, record that state without claiming explicit cleanup; cdp_attached_tabs is only the current worker's in-memory set. Member: do not use admin-only helpers through the manual gate bypass; close only the disposable demo tab and confirm its banner clears. Preserve pre-existing attachments and unrelated tabs.",
+            "Chrome with debugger capability, signed-in member/admin, exact loaded build, disposable Selenium Web form tab and numeric tab ID.",
+            "The live page shows an unchecked Default checkbox. Run read_page with {\"tab_id\":\"$TAB_ID\",\"include_bounds\":true}; identify that visible checkbox's unique type=checkbox row, unchecked state and fresh viewport bounds. If ambiguous, stop."
           ],
-          "steps": [],
-          "expected": [],
-          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"]
+          "steps": [
+            "Admin records cdp_attached_tabs baseline; member records the owned tab and debugger-banner state without the admin-only helper. Record the checkbox's current checked state. Calculate x=round(bounds.x+bounds.w/2), y=round(bounds.y+bounds.h/2); verify the target center is inside the visible viewport and is the checkbox, then focus the owned tab.",
+            "Tools > Catalog > All handlers > cdp_input_click_xy. Run {\"x\":$X,\"y\":$Y,\"button\":\"left\",\"click_count\":1,\"tab_id\":$TAB_ID} with numeric replacements from the same fresh read_page output.",
+            "Immediately after the positive run, record the owned debugger banner or admin attachment delta before idle timeout/restart can remove it. Observe the real checkbox checked state and repeat read_page for the same owned tab; require the default checkbox row now checked. Do not click Submit.",
+            "Schema-negative: run {\"x\":\"bad\",\"y\":$Y,\"tab_id\":$TAB_ID}; verify inline Schema mismatch and unchanged checkbox state. Record an attach failure separately if Chrome refuses the debugger; it is an environment/error outcome, not a permission-denial pass.",
+            "Repeat warm and post-reload phases in shared setup, recomputing coordinates after each page load. Clean up only the owned attachment/tab."
+          ],
+          "expected": [
+            "Positive inline output is {\"ok\":true}; the exact default checkbox visibly changes from unchecked to checked and read_page confirms checked=true. Output alone is insufficient.",
+            "Malformed x is rejected before Input.dispatchMouseEvent and leaves the checkbox unchanged. No permission claim follows from this schema refusal.",
+            "Record attachment/banner state immediately after input. Explicit cleanup, already-detached state and an owned-tab close are distinct outcomes; absence at a later check alone does not prove no attach occurred or that cdp_detach ran."
+          ],
+          "dimensions": [
+            "valid-input",
+            "invalid-input",
+            "permissions",
+            "reload",
+            "member",
+            "admin"
+          ],
+          "source_procedure_review": {
+            "report": ".research/input-navigation-procedures-20261007.json",
+            "peer": ".research/input-navigation-final-peer-20261007.json",
+            "scope": "Direct manual handler procedure only; design_status remains needed because dispatcher permissions unresolved; runtime unverified."
+          }
         }
       ],
       "cells": {
@@ -59082,12 +59112,43 @@
           "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "https://www.selenium.dev/selenium/web/web-form.html is Selenium's public Web form demo. Its observed page lists a text input, default checkbox, select, and submit button. Never enter a credential, choose a file, or submit the form. Before execution verify the live page still presents the named controls; if it has changed, stop and keep the case unverified.",
+            "Admit the appropriate resource permit. In separate member and admin profiles load the exact candidate development extension, record source commit, lockfile hash, build receipt, extension ID/version/Loaded from path in chrome://extensions, Chrome version, and signed-in role. Tools is sign-in gated; guest has no manual Tools case. Do not infer member dispatcher access from a direct manual run.",
+            "Open only a disposable public-demo tab. In Tools > Catalog choose All handlers; run list_open_tabs with {} and record the one tab ID whose full URL matches the demo. Keep that tab selected when running CDP input; canonical form_input and navigate require the same ID as a decimal string. Do not use an unrelated or authenticated tab.",
+            "Search each exact name, open its row, verify the displayed input schema and tier, enter the complete JSON, click Run, and inspect the inline output/error plus the real page. The manual runner validates Zod then calls handler.run with permissionMode=act and assignedTabId=null; it bypasses dispatcher approval and cannot establish the agent's assigned-tab or role/permission enforcement.",
+            "Warm: where all case-specific preconditions are met, execute positive and negative segments after loading the candidate extension without a preceding full extension Reload; record result, visible page state, tab ID, and immediate debugger banner/attachment delta.",
+            "Post-reload: where all case-specific preconditions are met, use chrome://extensions Reload for that exact extension, confirm the same extension ID/version/path, reopen Tools, refresh the disposable demo page, reacquire its tab ID and any read_page ref/bounds, then repeat the same segments. A web-page refresh or side-panel reopen alone is insufficient.",
+            "All four inventory permissions dimensions remain unresolved. The two CDP input handlers declare privileged tier and debugger; debugger is a base manifest permission with no Settings revoke switch. The direct Tools Run path skips requestConfirmation and optional-permission checks. A future separately mapped Chat/Pilot dispatcher denial needs the exact tool advertised to the tested role, a known owned tab, Ask mode for action tools or the mandatory privileged card for CDP, the tester choosing Deny in the actual approval UI, and an unchanged-page oracle. No such live route or refusal was established by this source-only proposal. Malformed JSON, stale refs and invalid tab IDs are not permission tests.",
+            "Admin only: record cdp_attached_tabs baseline and the owned debugger banner, then record the owned attachment/banner immediately after each positive CDP run. If still attached, use cdp_detach for exactly the owned ID and confirm disappearance. If it has already idle-detached or a worker restart swept it, record that state without claiming explicit cleanup; cdp_attached_tabs is only the current worker's in-memory set. Member: do not use admin-only helpers through the manual gate bypass; close only the disposable demo tab and confirm its banner clears. Preserve pre-existing attachments and unrelated tabs.",
+            "signed-in member/admin, decimal string tab ID and public demo Text input visibly present. The page is not a credential or submission fixture.",
+            "Run read_page with {\"tab_id\":\"$TAB_ID\"} and identify one fresh ref for the visible non-password Text input; do not guess a ref or reuse it after navigation/read_page reassigns attributes."
           ],
-          "steps": [],
-          "expected": [],
-          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"]
+          "steps": [
+            "Tools > Catalog > All handlers > form_input. Run {\"tab_id\":\"$TAB_ID\",\"ref\":\"$TEXT_REF\",\"value\":\"matrx-4151\"} using the exact fresh ref and decimal string tab ID.",
+            "Inspect the real Text input and run read_page to verify value matrx-4151. This read_page removes/reassigns all data-matrx-ref attributes, so save the NEW ref it now reports for the same Text input as $REF_BEFORE_REFRESH. Do not click Submit or enter secrets.",
+            "Refresh the web page normally; before any new read_page, run {\"tab_id\":\"$TAB_ID\",\"ref\":\"$REF_BEFORE_REFRESH\",\"value\":\"matrx-stale\"}. Require {\"ok\":false,\"reason\":\"No element for $REF_BEFORE_REFRESH\"} and unchanged input. This isolates page-refresh invalidation from the earlier read_page reassignment. Separately use {\"tab_id\":\"not-id\",\"ref\":\"$REF_BEFORE_REFRESH\",\"value\":\"matrx-4151\"} for explicit invalid-tab refusal.",
+            "Repeat warm and post-reload phases; reacquire a fresh ref after every page refresh and extension Reload."
+          ],
+          "expected": [
+            "Positive returns {\"ok\":true,\"tag\":\"input\"} and the exact field visibly contains matrx-4151. activateTab can switch browser focus; compare the same owned tab ID before/after.",
+            "The ref saved from the last read_page before page refresh returns No element for that ref after refresh, with no intervening read_page; the refreshed field stays unchanged. Invalid tab ID returns {\"ok\":false,\"reason\":\"Invalid tab_id: not-id\"}. Neither is an approval-denial test.",
+            "The form remains unsubmitted and no unrelated tab is changed."
+          ],
+          "dimensions": [
+            "valid-input",
+            "invalid-input",
+            "permissions",
+            "reload",
+            "stale-ref-error",
+            "invalid-tab-error",
+            "member",
+            "admin"
+          ],
+          "source_procedure_review": {
+            "report": ".research/input-navigation-procedures-20261007.json",
+            "peer": ".research/input-navigation-final-peer-20261007.json",
+            "scope": "Direct manual handler procedure only; design_status remains needed because dispatcher permissions unresolved; runtime unverified."
+          }
         }
       ],
       "cells": {
@@ -59221,12 +59282,42 @@
           "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "https://www.selenium.dev/selenium/web/web-form.html is Selenium's public Web form demo. Its observed page lists a text input, default checkbox, select, and submit button. Never enter a credential, choose a file, or submit the form. Before execution verify the live page still presents the named controls; if it has changed, stop and keep the case unverified.",
+            "Admit the appropriate resource permit. In separate member and admin profiles load the exact candidate development extension, record source commit, lockfile hash, build receipt, extension ID/version/Loaded from path in chrome://extensions, Chrome version, and signed-in role. Tools is sign-in gated; guest has no manual Tools case. Do not infer member dispatcher access from a direct manual run.",
+            "Open only a disposable public-demo tab. In Tools > Catalog choose All handlers; run list_open_tabs with {} and record the one tab ID whose full URL matches the demo. Keep that tab selected when running CDP input; canonical form_input and navigate require the same ID as a decimal string. Do not use an unrelated or authenticated tab.",
+            "Search each exact name, open its row, verify the displayed input schema and tier, enter the complete JSON, click Run, and inspect the inline output/error plus the real page. The manual runner validates Zod then calls handler.run with permissionMode=act and assignedTabId=null; it bypasses dispatcher approval and cannot establish the agent's assigned-tab or role/permission enforcement.",
+            "Warm: where all case-specific preconditions are met, execute positive and negative segments after loading the candidate extension without a preceding full extension Reload; record result, visible page state, tab ID, and immediate debugger banner/attachment delta.",
+            "Post-reload: where all case-specific preconditions are met, use chrome://extensions Reload for that exact extension, confirm the same extension ID/version/path, reopen Tools, refresh the disposable demo page, reacquire its tab ID and any read_page ref/bounds, then repeat the same segments. A web-page refresh or side-panel reopen alone is insufficient.",
+            "All four inventory permissions dimensions remain unresolved. The two CDP input handlers declare privileged tier and debugger; debugger is a base manifest permission with no Settings revoke switch. The direct Tools Run path skips requestConfirmation and optional-permission checks. A future separately mapped Chat/Pilot dispatcher denial needs the exact tool advertised to the tested role, a known owned tab, Ask mode for action tools or the mandatory privileged card for CDP, the tester choosing Deny in the actual approval UI, and an unchanged-page oracle. No such live route or refusal was established by this source-only proposal. Malformed JSON, stale refs and invalid tab IDs are not permission tests.",
+            "Admin only: record cdp_attached_tabs baseline and the owned debugger banner, then record the owned attachment/banner immediately after each positive CDP run. If still attached, use cdp_detach for exactly the owned ID and confirm disappearance. If it has already idle-detached or a worker restart swept it, record that state without claiming explicit cleanup; cdp_attached_tabs is only the current worker's in-memory set. Member: do not use admin-only helpers through the manual gate bypass; close only the disposable demo tab and confirm its banner clears. Preserve pre-existing attachments and unrelated tabs.",
+            "signed-in member/admin, disposable tab with recorded decimal string ID and an initial public https://example.com/ page. Verify the Selenium demo target responds and displays Web form before invoking navigation; stop if unavailable.",
+            "Use the exact target URL https://www.selenium.dev/selenium/web/web-form.html. The force argument is accepted but unused by this handler; omit it and do not claim force behavior."
           ],
-          "steps": [],
-          "expected": [],
-          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"]
+          "steps": [
+            "Tools > Catalog > All handlers > navigate. Record the disposable tab's initial example.com URL and ID. Run {\"tab_id\":\"$TAB_ID\",\"url\":\"https://www.selenium.dev/selenium/web/web-form.html\"} with the actual decimal string ID.",
+            "After navigate returns, run list_open_tabs with {} in Tools, locate exactly the same owned tab ID, and require status complete there and in navigate's returned result. Separately inspect that tab's full target URL and visible Web form heading/text-input. If the owned row is absent, status remains loading, or the page did not settle, record failed/inconclusive navigation even if the handler returned after 30 seconds; investigate before repeating.",
+            "Negative: run {\"tab_id\":\"not-id\",\"url\":\"https://www.selenium.dev/selenium/web/web-form.html\"}; require {\"ok\":false,\"reason\":\"Invalid tab_id: not-id\"} and no navigation of the owned tab.",
+            "For post-reload phase, return only the disposable tab to https://example.com/ through normal browser UI, reload the exact extension in chrome://extensions, reacquire tab ID, reopen Tools and repeat. Close only the disposable tab afterward."
+          ],
+          "expected": [
+            "Positive requires returned url equal to the Selenium target, returned status complete, list_open_tabs status complete for exactly the owned tab ID, and the same tab visibly showing the Web form page. waitForLoad resolves on either a complete event or a 30-second timer; it does not guarantee complete. A missing/loading tab row or timeout result is failed or inconclusive, not a pass. Its title is observed, not assumed as a fixed oracle.",
+            "Invalid tab ID is refused by activateTab before chrome.tabs.update; the owned tab stays on its pre-negative URL.",
+            "Manual Run establishes direct canonical routing through navigate_active_tab only; Ask-mode consent, agent assigned-tab isolation and member advertisement remain separate unverified dimensions."
+          ],
+          "dimensions": [
+            "valid-input",
+            "invalid-input",
+            "permissions",
+            "reload",
+            "invalid-tab-error",
+            "member",
+            "admin"
+          ],
+          "source_procedure_review": {
+            "report": ".research/input-navigation-procedures-20261007.json",
+            "peer": ".research/input-navigation-final-peer-20261007.json",
+            "scope": "Direct manual handler procedure only; design_status remains needed because dispatcher permissions unresolved; runtime unverified."
+          }
         }
       ],
       "cells": {
