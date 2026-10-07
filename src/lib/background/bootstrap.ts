@@ -20,6 +20,7 @@ import {
   registerAgendaNotificationClicks,
   scanAndNotify,
   startAgendaScanner,
+  stopAgendaScanner,
 } from '@/lib/agenda/scanner';
 import { startAudibleLog } from '@/lib/audio/audible-log';
 import { refreshAccessToken } from '@/lib/auth/flow';
@@ -162,7 +163,7 @@ export function bootstrapBackground(): void {
   // ── 3. Alarms — also synchronous registration.
   setupAlarms();
   startDesktopProbeAlarm();
-  startAgendaScanner();
+  void startAgendaScanner();
   registerAgendaNotificationClicks();
 
   // ── 3. Async housekeeping: restore the Supabase identity BEFORE any
@@ -955,6 +956,7 @@ function registerSchedulerHostUserWatcher(): void {
     const next = change.newValue as UserProfile | undefined;
     if (next?.id) {
       void startSchedulerHost(next.id);
+      void startAgendaScanner();
       // Sign-in occurs in the sidepanel, while the long-lived bridge clients
       // live here in the SW. Rehydrate this context before reconnecting
       // Broadcast or querying owner-RLS app_instances for a remote desktop.
@@ -965,6 +967,7 @@ function registerSchedulerHostUserWatcher(): void {
       });
     } else {
       void stopSchedulerHost();
+      void stopAgendaScanner();
       void disconnectBroadcast();
       // Both holders are gone; drop the realm's realtime manager too. Its write
       // ledger and its actor identity belong to the user who just left, and a

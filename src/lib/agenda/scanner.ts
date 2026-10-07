@@ -18,7 +18,7 @@
  * immediately and validates UX before we wire auto-execution.
  */
 
-import { ALARMS } from '@/config/env';
+import { ALARMS, STORAGE_KEYS } from '@/config/env';
 import { log } from '@/lib/debug/log';
 import { send as msgSend } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -37,11 +37,35 @@ import {
 const NOTIFICATION_PREFIX = 'matrx-agenda:';
 const SCAN_PERIOD_MIN = 1;
 
-export function startAgendaScanner(): void {
+/**
+ * Signed-out, every sch_task read runs as `anon` and Postgres answers
+ * "permission denied for table sch_task" once a minute. The scanner is
+ * therefore armed only while a session exists: signed-out it neither polls
+ * nor keeps its alarm; the sign-in watcher in bootstrap re-arms it.
+ */
+async function hasSession(): Promise<boolean> {
+  try {
+    const stored = await chrome.storage.local.get([STORAGE_KEYS.ACCESS_TOKEN]);
+    return !!stored[STORAGE_KEYS.ACCESS_TOKEN];
+  } catch {
+    return false;
+  }
+}
+
+export async function startAgendaScanner(): Promise<void> {
+  if (!(await hasSession())) {
+    await stopAgendaScanner();
+    return;
+  }
   chrome.alarms.create(ALARMS.AGENDA_SCAN, { periodInMinutes: SCAN_PERIOD_MIN });
   // First scan immediately on SW boot too — the alarm period doesn't fire
   // until ~1 min after creation.
   void scanAndNotify();
+}
+
+/** Stop the scan timer (sign-out, or no session at boot). */
+export async function stopAgendaScanner(): Promise<void> {
+  await chrome.alarms.clear(ALARMS.AGENDA_SCAN).catch(() => undefined);
 }
 
 /**
@@ -60,6 +84,11 @@ export function scanAndNotify(): Promise<void> {
 }
 
 async function doScan(): Promise<void> {
+  // A stale alarm can outlive sign-out; never query as anon.
+  if (!(await hasSession())) {
+    await stopAgendaScanner();
+    return;
+  }
   let due: AgendaTask[] = [];
   try {
     due = await listDueForSurface('chrome-extension-chat', { limit: 10 });
