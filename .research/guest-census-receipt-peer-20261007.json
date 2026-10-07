@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "327d3b89",
+  "review_scope": "Fresh source-only review of guest census receipt metadata and Account readiness screenshot; no tests, browser, build, database, release, or subagent work.",
+  "verdict_A_intended_evidence_behavior": {
+    "verdict": "SOURCE_SEQUENCE_ACCEPTED; NATIVE_BEHAVIOR_UNVERIFIED",
+    "browser_metadata": "The driver uses the browserSession passed by runNativeSidepanelQa, which is the harness's existing owned browser CDP connection. Browser.getVersion is read at the start of exercisePanel; only product and protocolVersion are copied into the result. The checks reject malformed or missing values. No command line or browser payload is serialized.",
+    "guest_readiness": "In the guest path, prepareGuestObservation opens Settings, waits for a safe Account section, expands it, and waits for observeGuestAuthentication. That observation throws unless the Account content is visible, enabled Sign in is visible, Sign out is absent, and access token, refresh token, profile, and admin role are absent. The screenshot call occurs only after this positive proof returns, while the Account section remains expanded; it captures the attached side-panel target, not the signed-in page target.",
+    "native_gap": "This source inspection establishes intended sequencing only. The newly added Browser.getVersion and Page.captureScreenshot calls have not been exercised in the native browser. The 25 fixture tests recorded in the completion receipt do not establish native product or census acceptance."
+  },
+  "verdict_B_privacy_quality": {
+    "verdict": "BLOCKED_ON_EXISTING_FILE_PERMISSION_GUARANTEE",
+    "finding": "The screenshot is written with writeFile(path, bytes, { mode: 0o600 }). Node applies mode only when creating a new file; if the deterministic screenshot path already exists with broader permissions, writeFile truncates and overwrites it without changing that mode. Therefore reruns do not guarantee the requested restrictive permissions.",
+    "recommended_correction": "After writing, explicitly chmod the screenshot to 0o600 (and consider validating the resulting PNG before recording its path), or create the file with an approach that refuses an existing path and then verify its mode. Ensure a prior broader-permission file is covered by the correction's verification before native execution.",
+    "privacy_observation": "The captured image is the visible extension side panel after signed-out proof in the harness-owned fresh profile. The report stores only its path. No private signed-in screenshot path is introduced by this guest-only branch."
+  },
+  "source_review": {
+    "files": [
+      "tests/browser/takeover-visible-census.mjs",
+      "tests/browser/native-sidepanel-qa-harness.mjs",
+      "tests/browser/settings-panel-driver.mjs",
+      "tests/browser/takeover-visible-census.test.mjs"
+    ],
+    "unrelated_dirty_file_preserved": "docs/stabilization/reports/workspace-sync-guest-incident-20261003.json"
+  },
+  "native_dispatch": "Do not treat this review as native readiness acceptance until the screenshot permission guarantee is fixed. After correction, a native run can verify the actual CDP version values, screenshot output, and mode on disk."
+}
