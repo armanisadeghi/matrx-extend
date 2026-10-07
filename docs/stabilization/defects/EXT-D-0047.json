@@ -28,10 +28,10 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Verify corrected CI then execute ONE guarded ARM prior-saved native run against a validated exact development artifact, using approved private credentials. Independently review receipt and resource journals before changing T57 status. Never infer callback delivery from server completion; canceled request remains unverified for delivery.",
+    "next_action": "Audit original D47/T57 closure requirements against retained independent evidence and relevant source identity across frozen artifacts. Identify only genuinely missing required proof, separating unrelated org/masking/cancellation cases. Architectural exclusion is already an accepted mechanism; do not invent a requirement to observe a removed callback route. If required scope remains missing, execute that exact case; otherwise transition defect through recorded retest/closure states.",
     "status": "Fresh peer8ad248c2 accepts bounded manual-prior native37588499593 on frozen0.2.350/source82f3c440: real manual UI response positive control and second manual request pending before replay, current-document positive trace before held manual HTTP200/server finish, exact settled current-only saved row, owned-recipe cleanup and three valid resource journals. Server finish does not prove old callback delivery/rejection. Prior saved-run isolation, cancellation and fullT57 remain unverified.",
     "implementation_agent": "completed: /root/d47_prior_saved_native_route",
-    "execution_agent": "running: /root/d47_prior_saved_native_execution; ONE corrected ARM native retry37600370555. No duplicate.",
+    "execution_agent": "completed: /root/d47_prior_saved_native_execution; no native/source job active; fresh peer /root/d47_prior_saved_retest_peer accepted bounded result.",
     "native_run_id": 37537634304,
     "workflow_source": "fbcc4311ae6885b67133e55336f692be38881249",
     "development_artifact_id": 11440764124,
@@ -41,7 +41,7 @@
     "first_native_outcome": "resource-valid child failure at save_recipe/recipe_saved_not_observed; no replay verdict; product versus driver cause unknown",
     "second_native_evidence": ".research/d47-save-native-20261006.json",
     "second_native_outcome": "resource-valid child failure; name_matches=false with enabled Save and no visible error; Save not clicked and no replay verdict",
-    "temporary_secret_cleanup": "Both temporary Actions secrets removed at terminal37597422020; root names-only check returned empty.",
+    "temporary_secret_cleanup": "Both names removed at terminal37600370555 and root names-only check returned empty.",
     "input_repair_commit": "83a6148f",
     "input_repair_review_commit": "d1c00968",
     "third_native_evidence": ".research/d47-input-native-20261006.json",
@@ -166,7 +166,7 @@
     "prior_saved_route_commit": "7fe949ed",
     "prior_saved_route_report": ".research/d47-prior-saved-native-route-20261007.json",
     "prior_saved_route_peer": ".research/d47-prior-saved-route-peer-20261007.json",
-    "prior_saved_route_status": "Resource-valid native37597422020 failed second_saved_trace because bespoke driver expected navigation after new context; retained Chrome trace navigation9 precedes context10. First saved result passed; second actual result and delayed release remain unverified. Exact owned recipe removed; both Actions secrets independently confirmed absent. Independent diagnosis e82d020c; narrow correction underway.",
+    "prior_saved_route_status": "Fresh peer93d69b96 accepts bounded native prior-saved retry37600370555 on frozen0.2.354/c53c6e0a/artifact11470764778 with reviewed QA f52c1f74: held saved-run request arrival1 precedes firstfinish2; distinct second context/binding and positive trace; exact second current-only idle saved result and live page before and after HTTP200 release; prior_saved_finished=true and prior_saved_aborted=false. Initial old-document request abort is a separate lifecycle. No old binding callback observed. Three current-run resource journals valid; ownedrecipe removed; both temporary secrets independently absent. FullT57 remains unverified pending whole-case closure audit; no newer-runtime/package acceptance.",
     "prior_saved_route_correction_commit": "4e146c84",
     "prior_saved_route_correction_report": ".research/d47-prior-saved-route-correction-20261007.json",
     "prior_saved_route_corrected_peer": ".research/d47-prior-saved-corrected-peer-20261007.json",
@@ -181,10 +181,12 @@
     "navigation_order_peer": ".research/d47-navigation-order-peer-20261007.json",
     "prior_saved_native_retry_run_id": 37600370555,
     "prior_saved_native_retry_workflow_source": "f52c1f74149746104990468a47b0863118da7ce1",
-    "prior_saved_native_retry_scope": "Frozen app0.2.354/c53c6e0a/artifact11470764778, exacttree. Newer lock catch-up affects design-system/kit/records only, not nodebuiltins/localQA or pinned Playwright1.56.1/TS; importer/sharedharness/workflow unchanged. Root explicitly accepts frozenexperiment with reviewed QA fix; newer version/packages remain untested."
+    "prior_saved_native_retry_scope": "Frozen app0.2.354/c53c6e0a/artifact11470764778, exacttree. Newer lock catch-up affects design-system/kit/records only, not nodebuiltins/localQA or pinned Playwright1.56.1/TS; importer/sharedharness/workflow unchanged. Root explicitly accepts frozenexperiment with reviewed QA fix; newer version/packages remain untested.",
+    "prior_saved_native_retry_report": ".research/d47-prior-saved-native-retest-20261007.json",
+    "prior_saved_native_retry_peer": ".research/d47-prior-saved-retest-peer-20261007.json"
   },
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
-  "verification_status": "Independent reviews accept bounded current-first0.2.337 and old-first0.2.338 fixture replay. Fresh peer8dfbdee1 supports public initial capture, saved exact-recipe completed replay with hits and UI cleanup on frozen0.2.344/source2274d236/native37571487114, with valid resources. Whole-panel quiescence, selected organization context and post-checkbox receipt-level mask evidence are not established. Manual/prior-run isolation remains outstanding. D47 in-fix/T57 unverified. Fresh peerb583ec01 accepts native37582763499 stale-only refusal and fresh current saved replay recovery on frozen0.2.347/source5fc0ae39 with valid resources and owned-recipe cleanup. Fresh peer964c19d0 also accepts retained higher-old-sequence causal source proof: removing current-document guard admits old seq999 over current seq1; constant shortcut fails and untouched suite passes17/17, all resource-valid. This completes the bounded stale-only branch; manual/prior-run isolation and full-case acceptance remain unverified.",
+  "verification_status": "Bounded independent evidence now covers current-first0.2.337, old-first0.2.338, public initial capture/save/completed replay0.2.344, stale-only refusal/fresh recovery0.2.347, manual-prior server finish0.2.350, and prior-saved two-run isolation0.2.354. Retained source mutants independently verify higher-old-sequence, manual-channel merge and prior-run binding controls. Native callbacks were architecturally excluded/not observed; no delivered-old-callback claim. FullT57 unverified pending requirement-by-requirement audit and source-scope reconciliation; mask/org and cancellation observations are not inferred.",
   "source_report": "docs/stabilization/reports/showcase-network-final-peer.json",
   "transition_history": [
     {
