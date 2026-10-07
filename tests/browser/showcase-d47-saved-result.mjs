@@ -14,23 +14,31 @@ export function readD47SavedResult(doc, recipe) {
   const exactRecipe = Boolean(header && header.textContent.trim() === `Last run: ${recipe}`);
   const preview = header?.nextElementSibling;
   const previewVisible = visible(preview);
-  const cells = previewVisible
-    ? [...preview.querySelectorAll('tbody td')]
-        .filter(visible)
-        .map((cell) => cell.textContent.trim())
-    : [];
-  const currentCell = cells.includes('Canyon Frequency');
-  const oldCell = cells.includes('Moonlit Transit');
+  const tables = previewVisible ? [...preview.querySelectorAll('table')].filter(visible) : [];
+  const table = tables.length === 1 ? tables[0] : null;
+  const headings = table ? [...table.querySelectorAll('thead th')].filter(visible) : [];
+  const rows = table ? [...table.querySelectorAll('tbody tr')].filter(visible) : [];
+  const cells = rows.flatMap((row) => [...row.querySelectorAll('td')].filter(visible));
+  // The saved fixture extracts events[*].eventName: exactly one current event.
+  const exactResult =
+    tables.length === 1 &&
+    headings.length === 1 &&
+    headings[0].textContent.trim() === 'eventName' &&
+    rows.length === 1 &&
+    cells.length === 1 &&
+    cells[0].textContent.trim() === 'Canyon Frequency';
+  const oldCell = cells.some((cell) => cell.textContent.trim() === 'Moonlit Transit');
+  const currentCell = cells.some((cell) => cell.textContent.trim() === 'Canyon Frequency');
   return {
     exact_recipe: exactRecipe,
-    current_row: Boolean(exactRecipe && previewVisible && currentCell),
+    current_row: Boolean(exactRecipe && previewVisible && exactResult),
     old_row: Boolean(previewVisible && oldCell),
     header_status: !header ? 'absent' : exactRecipe ? 'exact' : 'mismatch',
     preview_status: !previewVisible
       ? 'absent'
       : currentCell && oldCell
         ? 'mixed'
-        : currentCell
+        : exactResult
           ? 'current_only'
           : oldCell
             ? 'old_only'

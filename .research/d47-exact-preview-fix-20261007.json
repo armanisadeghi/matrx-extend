@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "scope": "Driver-only exact visible saved-result predicate and Chromium DOM regression; no product edit or native acceptance run.",
+  "fixture_contract": "The saved Network Capture recipe extracts events[*].eventName from a current response containing one event with eventName Canyon Frequency. ResultPreview TableView renders that one row as one eventName column and one Canyon Frequency cell.",
+  "repair": "The reader now accepts the exact visible recipe header only with exactly one visible table, one eventName heading, one result row, and one Canyon Frequency cell. Extra rows, duplicate current values, extra cells, renamed headings, and the named old value fail.",
+  "evidence": {
+    "permissive_red": "d47-exact-preview-permissive-red-20261007: resource admitted; in-memory former permissive current-cell predicate failed the new unexpected-result and renamed-column assertions, 5 pass / 2 fail.",
+    "green": "d47-exact-preview-green2-20261007: resource admitted; real Chromium DOM tests 7 pass / 0 fail.",
+    "constant_success_mutant": "d47-exact-preview-constant-red-20261007: resource admitted; executed in-memory constant-success reader failed six negative tests, 1 pass / 6 fail.",
+    "intermediate": "d47-exact-preview-green-20261007: resource admitted; one preexisting mixed-row assertion still expected current_row=true. After exact-result semantics changed, the expected value was corrected to false and the full test passed on the next run. This was test adaptation, not a product failure."
+  },
+  "limits": [
+    "The DOM fixture tests the driver observation seam; it does not establish native extension saved replay or old callback delivery.",
+    "D47/T57 remains open pending native acceptance."
+  ]
+}

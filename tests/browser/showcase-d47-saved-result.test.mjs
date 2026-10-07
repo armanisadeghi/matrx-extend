@@ -4,7 +4,10 @@ import { resolveBrowserRuntime } from './browser-runtime.mjs';
 import { readD47SavedResult } from './showcase-d47-saved-result.mjs';
 import { waitD47SavedTerminal } from './showcase-d47-terminal-budget.mjs';
 
-if (process.env.D47_READER_MUTANT && process.env.D47_READER_MUTANT !== 'constant_success') {
+if (
+  process.env.D47_READER_MUTANT &&
+  !['constant_success', 'permissive_preview'].includes(process.env.D47_READER_MUTANT)
+) {
   throw new Error('unrecognized_d47_reader_mutant');
 }
 
@@ -42,7 +45,11 @@ async function observe(html) {
   const readerSource =
     process.env.D47_READER_MUTANT === 'constant_success'
       ? '() => ({ exact_recipe: true, current_row: true, old_row: false, header_status: "exact", preview_status: "current_only" })'
-      : readD47SavedResult.toString();
+      : process.env.D47_READER_MUTANT === 'permissive_preview'
+        ? readD47SavedResult
+            .toString()
+            .replace('previewVisible && exactResult)', 'previewVisible && currentCell)')
+        : readD47SavedResult.toString();
   return page.evaluate(
     ({ source, expected }) => {
       const read = (0, eval)(`(${source})`);
@@ -92,7 +99,7 @@ test('a preview containing both current and old rows cannot certify the terminal
     markup({ row: 'Canyon Frequency</td></tr><tr><td>Moonlit Transit' }),
   );
   assert.equal(result.saved.exact_recipe, true);
-  assert.equal(result.saved.current_row, true);
+  assert.equal(result.saved.current_row, false);
   assert.equal(result.saved.old_row, true);
   assert.equal(result.saved.preview_status, 'mixed');
   let clock = 0;
@@ -108,4 +115,42 @@ test('a preview containing both current and old rows cannot certify the terminal
     }),
     /saved_current_result_not_observed/,
   );
+});
+
+test('a current cell alongside any unexpected saved result cannot certify the terminal result', async () => {
+  const cases = [
+    markup({ row: 'Canyon Frequency</td></tr><tr><td>Wrong Frequency' }).replace('1 row', '2 rows'),
+    markup({ row: 'Canyon Frequency</td></tr><tr><td>Canyon Frequency' }).replace(
+      '1 row',
+      '2 rows',
+    ),
+    markup({ row: 'Canyon Frequency</td><td>Wrong Frequency' }).replace(
+      '<th>eventName</th>',
+      '<th>eventName</th><th>otherEvent</th>',
+    ),
+  ];
+  for (const html of cases) {
+    const result = await observe(html);
+    assert.equal(result.saved.exact_recipe, true);
+    assert.equal(result.saved.current_row, false);
+    let clock = 0;
+    await assert.rejects(
+      waitD47SavedTerminal({
+        budget: { timeout_ms: 1, poll_ms: 1 },
+        read: async () => result.saved,
+        record: () => {},
+        now: () => clock,
+        sleep: async (ms) => {
+          clock += ms;
+        },
+      }),
+      /saved_current_result_not_observed/,
+    );
+  }
+});
+
+test('a renamed result column cannot certify the saved recipe', async () => {
+  const result = await observe(markup().replace('<th>eventName</th>', '<th>wrongName</th>'));
+  assert.equal(result.saved.exact_recipe, true);
+  assert.equal(result.saved.current_row, false);
 });
