@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "status": "observed_bounded",
+  "conclusion": "One guarded hosted macos-15 old-first native replay completed on exact imported v0.2.338 development artifact. Both old and current target requests were pending before release; old HTTP finished server-side first, then current. The saved recipe settled with exactly the current row and no old row. The observer saw the current-document binding packet and no old binding packet. Exact run-owned recipe deletion and observer removal completed. This is bounded fixture evidence, not whole-case closure.",
+  "run": {
+    "id": 37562111314,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37562111314",
+    "workflow": "Hosted guest side-panel acceptance",
+    "workflow_head_sha": "f3163aa8398b65d0efccbcde6b1a257dc60b6e54",
+    "case": "showcase-d47-admin",
+    "response_order_input": "old-first",
+    "runner": "macos-15",
+    "runner_arch": "ARM64",
+    "status": "completed",
+    "conclusion": "success",
+    "started_at": "2026-10-07T02:28:02Z",
+    "completed_at": "2026-10-07T02:36:08Z"
+  },
+  "source_artifact": {
+    "ci_run_id": 37561174202,
+    "source_sha": "651f25d05e8538ed880c07a3294b81672eec0694",
+    "artifact_id": 11457371389,
+    "artifact_digest": "sha256:ba9503bd03acf1c381630fbabdcafb2aec6bd843e35b498d24f99779ee7feb80",
+    "version": "0.2.338",
+    "tree_sha256": "6b7b241d95110aac82f6636beab40ee0c64da56e43eea4b1b2ca6f5eb22a5fcf",
+    "workflow_sha256": "4bb3935f3fa27d7d5755d62318f09746d3d89f49bfd7b0b5dc9d3486f939e890",
+    "lockfile_sha256": "f1e33e7795b9c287401ab6e93f26cbc20f11048038fe148a200495053184de5e",
+    "driver_sha256": "25cb7d201c38735d899b92c5ecd5292045ec16ffa885b0230ddc75ae4429eaad",
+    "workflow_driver_harness_lock_equivalence": "git diff --quiet from source 651f25d0 to dispatched workflow head f3163aa8 passed for workflow, lockfile, importer, hosted route, resource guard, D47 driver/evidence, and fixture source paths. Changes after the artifact source were documentation/research plus an unrelated release-ship-path test script.",
+    "import_verdict": "exact_pushed_commit_only"
+  },
+  "native_artifact": {
+    "id": 11457487361,
+    "name": "hosted-guest-37562111314-1",
+    "digest": "sha256:cfdb473368ce6b3c0ea98d353f3132647a29f702763df8ed279655184705fbfe",
+    "original_receipt_sha256": "40473d708d927bd5d3654a6a847ef965e8c3eb315eaa11d96c28d16265509bb2",
+    "sanitized_subset": ".research/d47-oldfirst-native-20261007/native-evidence.json",
+    "resource_final_decisions": ".research/d47-oldfirst-native-20261007/resource-final-decisions.jsonl"
+  },
+  "resource": {
+    "evidence_source": "hosted artifact journals and job logs",
+    "phase_decisions": {
+      "package": {
+        "decision": "valid",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "journal_sha256": "20c1af8f5b696bc02dba85fe83f45cabe009e701772009a5d2f4e32afb2fb91f"
+      },
+      "browser": {
+        "decision": "valid",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "journal_sha256": "4abc80add3e13e9b854715e78441e58020038518b286fc74516c2f2054b90688"
+      },
+      "guest": {
+        "decision": "valid",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "journal_sha256": "958a051b1ecf8db380e0ec27b59e473c3515668674cfaad29aae63a6c4452d0c"
+      }
+    }
+  },
+  "observations": {
+    "owned_recipe_name": "Codex D47 document race 703f0daf-a190-4ee2-baea-6036be8c2e82",
+    "old_and_current_pending_before_release": true,
+    "pre_release_response_finish_order": [],
+    "old_release_http_status": 200,
+    "old_release_prestate": "pending",
+    "old_release_outcome": "server_finished",
+    "old_response_aborted": false,
+    "old_response_finished": true,
+    "current_pending_after_old_finish": true,
+    "observed_response_finish_order": ["old", "current"],
+    "current_response_finished": true,
+    "terminal_sample": {
+      "elapsed_ms": 20213.53783300001,
+      "remaining_ms": 29786.461207999993,
+      "exact_recipe": true,
+      "current_row": true,
+      "old_row": false,
+      "running": false,
+      "error_present": false,
+      "observation_unavailable": false,
+      "header_status": "exact",
+      "preview_status": "current_only"
+    },
+    "page_phase_current": true,
+    "page_result_current": true,
+    "panel_current": true,
+    "panel_old": false,
+    "old_context_cleared": "contexts_cleared",
+    "current_context_order": 4,
+    "current_handshake_order": 5,
+    "current_packet_order": 6,
+    "binding_target_packet_count": 1,
+    "current_packet_body_sha256": "f98b5b68b8f45441831808df62c253a986cda3c55df85a76015ffeaa4d14c3e8",
+    "old_binding_packet_observed": false,
+    "current_saved_replay": "pass",
+    "delayed_old_binding": "architecturally_excluded_observed",
+    "cancellation": "unverified"
+  },
+  "cleanup": {
+    "owned_recipe": "Exact run-created recipe deleted; driver waited for its exact row to be absent.",
+    "probe_cleanup": "Observer was installed; probe_cleanup null reports no remove/detach failure. Removal helper asserts listener absence.",
+    "temporary_secrets": {
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON": {
+        "staged": true,
+        "deleted": true,
+        "absence_verified": true
+      },
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON": {
+        "staged": true,
+        "deleted": true,
+        "absence_verified": true
+      },
+      "values_recorded": false
+    }
+  },
+  "scope_limit": "Server-side old response finish does not prove delivery to old-page JavaScript or an old Runtime.bindingCalled callback. No old binding packet arrived; this supports the architectural exclusion observation only with the positive current controls. The controlled localhost replay does not close T57 public-site initial-load, stale-only recovery, prior-run isolation, or surrounding cases. This is a development artifact, not a Store build.",
+  "independent_review": "Fresh reviewer is inspecting the original run artifact separately; this report does not self-certify whole-case acceptance."
+}
