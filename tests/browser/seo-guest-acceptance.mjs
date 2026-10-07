@@ -9,8 +9,8 @@ import { randomUUID } from 'node:crypto';
 import { open, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifact.mjs';
+import { verifyFrozenArtifactIdentity } from '../../scripts/frozen-artifact-identity.mjs';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
-import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
@@ -103,14 +103,13 @@ async function buildIdentity() {
     readFile(join(REPO, 'package.json'), 'utf8').then(JSON.parse),
   ]);
   if (DEV_BUILD_RECEIPT !== undefined) requireLocalDevReceipt(receipt, EXTENSION_DIR);
-  if (!RELEASE_ARTIFACT_OVERRIDE) {
+  if (DEV_BUILD_RECEIPT === undefined && !RELEASE_ARTIFACT_OVERRIDE) {
     assert.equal(manifest.version, pkg.version, 'manifest matches current package');
     assert.equal(receipt.version, pkg.version, 'receipt matches current package');
   }
-  assert.equal(manifest.version, receipt.version, 'manifest matches artifact receipt');
+  verifyFrozenArtifactIdentity({ extensionDir: EXTENSION_DIR, manifest, receipt });
   if (DEV_BUILD_RECEIPT !== undefined)
     assert.ok(manifest.key, 'development build has a stable key');
-  assert.equal(hashReleaseTree(EXTENSION_DIR), receipt.treeSha256, 'artifact matches receipt');
   return {
     ...(DEV_BUILD_RECEIPT !== undefined && {
       kind: receipt.kind,

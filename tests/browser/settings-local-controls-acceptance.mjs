@@ -4,6 +4,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { join, resolve } from 'node:path';
+import { verifyFrozenArtifactIdentity } from '../../scripts/frozen-artifact-identity.mjs';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
@@ -375,14 +376,8 @@ try {
     const manifest = JSON.parse(await readFile(join(DEV_EXTENSION_DIR, 'manifest.json'), 'utf8'));
     receipt = JSON.parse(await readFile(DEV_BUILD_RECEIPT, 'utf8'));
     requireLocalDevReceipt(receipt, DEV_EXTENSION_DIR);
-    assert.equal(receipt.version, packageJson.version, 'development receipt must match package');
-    assert.equal(manifest.version, receipt.version, 'development manifest must match receipt');
+    verifyFrozenArtifactIdentity({ extensionDir: DEV_EXTENSION_DIR, manifest, receipt });
     assert.ok(manifest.key, 'development manifest must carry its stable key');
-    assert.equal(
-      hashReleaseTree(DEV_EXTENSION_DIR),
-      receipt.treeSha256,
-      'development tree must match receipt',
-    );
     report.build = {
       ...report.build,
       kind: receipt.kind,

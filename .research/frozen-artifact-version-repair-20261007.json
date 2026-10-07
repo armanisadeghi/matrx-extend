@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "cause": "Three native acceptance drivers compared an immutable development artifact's receipt/manifest version to the later hosted workflow checkout package version. The imported CI artifact was already verified against package.json at its own source SHA, so a valid frozen 0.2.387 artifact failed when the workflow checkout had advanced to 0.2.388.",
+  "trigger_evidence": ".research/independent-product-batch-20261007.json: hosted run 37686070986 had frozen CI artifact 14305391032aaf326c57ce196d50518f0d42f047 at 0.2.387, workflow checkout 0d36f5cb713f660e61e41e41f810d00a2446259d at 0.2.388, and stopped before native Settings assertions at the receipt/package comparison.",
+  "repair": "The Settings, SEO guest, and contained-navigation drivers now verify the artifact's actual manifest version and tree hash against its own receipt through one shared helper. Development artifact paths no longer require the workflow checkout package version to match. Existing package-version checks for locally selected release artifacts remain in place.",
+  "provenance_boundary": "The hosted development importer still runs verifyImportedNativeEvidence, which checks imported path, source SHA, CI receipt, provenance, source-commit package version, manifest, and tree before the driver starts. Each driver still requires a local development receipt and native harness provenance. The new helper rejects manifest/receipt version mismatch or any artifact tree mismatch.",
+  "verification": {
+    "red": "Before the helper existed, node --test tests/browser/frozen-artifact-identity.test.mjs failed. The new source integration assertion would also reject all three original checkout-version comparisons.",
+    "green": "Focused test verifies a 0.2.387 artifact passes independently of a later checkout, rejects a wrong manifest version, rejects a wrong receipt hash, and rejects a mutated tree. All three driver sources are checked for shared helper use and development-version isolation.",
+    "native": "Not run in this lane; root owns fresh hosted acceptance and completed resource-journal judgment."
+  },
+  "product_verdict": "No Settings, SEO, or navigation behavior was exercised by this source repair. Previously unverified native cases remain unverified.",
+  "sensitive_output": "No credentials or tokens included."
+}
