@@ -1,0 +1,240 @@
+{
+  "schema_version": 1,
+  "artifact_type": "inventory-case-procedure-patch",
+  "task_id": "cdp-network-procedures-20261007",
+  "patch_id": "cdp-network-procedures-20261007",
+  "source": {
+    "source_inventory": "docs/stabilization/inventory.json",
+    "scope": "Source-traced executable proposal for exactly EXT-F-4107-T01, EXT-F-4108-T01, EXT-F-4109-T01, and EXT-F-4110-T01. No inventory/status/applicability/runtime edits or claims.",
+    "source_files_reviewed": [
+      "docs/stabilization/PLAN.md",
+      "docs/stabilization/inventory.json",
+      "src/features/tools/ToolsView.tsx",
+      "src/lib/tools/handlers/_active-tab.ts",
+      "src/lib/tools/handlers/cdp.ts",
+      "src/lib/cdp/client.ts",
+      ".research/cdp-lifecycle-procedures-20261007.json"
+    ],
+    "anchors": [
+      "docs/stabilization/PLAN.md:24-34 (receipt, warm/reload and runtime identity contract)",
+      "docs/stabilization/inventory.json:61132-61152 (4107 case and mode/applicability), 61293-61313 (4108), 61445-61465 (4109), 61603-61623 (4110)",
+      "src/features/tools/ToolsView.tsx:390-429,453-460 (JSON parse, Zod validation, direct handler.run; assignedTabId null)",
+      "src/lib/tools/handlers/_active-tab.ts:10-20,33-39 (manual runner resolves focused tab)",
+      "src/lib/tools/handlers/cdp.ts:396-485 (schemas and outputs)",
+      "src/lib/cdp/client.ts:230-264,407-444 (event records, start/stop/drain/body semantics)"
+    ],
+    "limits": [
+      "Tools → Catalog → Run calls handler.run directly with permissionMode=act, conversationId=null and assignedTabId=null after schema validation. It bypasses dispatcher admin, Ask/Act and required_optional_permissions checks; these proposals cannot certify dispatcher gates or tool routing.",
+      "The inventory lists member and admin for all four selected cases. Execute both roles independently in their existing profiles; preserve these modes exactly. Guest is inventory-applicable=false because Tools UI requires sign-in; this patch does not change or retest that access case.",
+      "The currently available deterministic public target is https://example.org/. It can yield public response bodies, but no known deterministic public POST/request-body fixture is established by reviewed source. These procedures test response body retrieval only; request-body capture remains a setup gap and is not inferred.",
+      "Network records include URLs, request/response headers, error text and timestamps. Inspect only URL host/path, method, status, mime type, request_id and finished/failed booleans needed for this controlled public fixture; do not copy body/header values or unrelated records into evidence."
+    ]
+  },
+  "selectedCaseIDs": ["EXT-F-4107-T01", "EXT-F-4108-T01", "EXT-F-4109-T01", "EXT-F-4110-T01"],
+  "shared_setup": {
+    "resource_and_build": [
+      "Before a future execution, obtain the existing stabilization resource permit and a receipt with all fields required by docs/stabilization/PLAN.md: source SHA and dirty-source hash when applicable, lockfile and output hashes, WXT mode, extension runtime ID, Chrome version, profile, auth/role/org state, permissions, backend identity, fixture IDs, timestamp, login method, principal provenance, real data origin, build/env flags, response interception, mocks and seeded browser state. Identify the controlled public target. Do not include secrets or unrelated profile/storage contents.",
+      "Use existing signed-in member and admin test profiles independently. Do not change accounts, roles, orgs, permission settings or membership. Required debugger permission must already be present; if absent, mark the operation unavailable/not run and stop without using the manual result as a permission denial.",
+      "For each role, complete a warm sequence and then use Chrome Reload on the exact receipt-bound unpacked extension, wait for reload, reopen the side panel, refocus/reload the owned target and repeat. This is extension reload, not panel reopen or HMR. If source/output identity changes, stop pending matching receipt. No build, browser or runtime execution occurred while authoring."
+    ],
+    "target_ownership_and_cleanup": [
+      "Create one fresh tab in the selected profile at https://example.org/ and retain its exact tab ID from the browser UI/owned-tab creation receipt; never guess an ID. Keep it focused for calls omitting tab_id. Before capture, run cdp_attached_tabs {} and record baseline. If the target appears already debugger-attached or ownership is ambiguous, abandon it without detaching anything.",
+      "For cdp_network_capture_start {}, use its returned tab_id only after verifying it equals the focused owned target tab ID; list attached tabs and require exactly one new ID over baseline, equal to that target, with no concurrent debugger activity. This delta is the owned attachment. Preserve every baseline ID. If mismatch/ambiguous, stop and do not detach.",
+      "After cdp_network_capture_stop, verify capture is stopped via a new empty cdp_network_capture_drain on the owned target; then invoke cdp_detach only for the exact owned delta ID and verify it disappears while baseline IDs remain and the banner is gone. Close only the owned example.org tab. If exact detach fails, stop and report that observed ID; never use detach-all. Repeat setup and cleanup independently for post-reload and each listed role."
+    ],
+    "manual_runner": [
+      "Open signed-in side panel → Tools → Catalog, choose All handlers if needed, search exact handler, expand, enter the stated JSON and Run. Keep the owned target focused. Record outputs locally after sanitizing; never save raw body, headers, full unrelated URLs, or secrets.",
+      "The runner validates args with each handler Zod schema before directly calling handler.run. Schema-invalid checks should yield a runner “Schema mismatch” and must not mutate capture state. Manual execution is diagnostic handler reachability only; it cannot establish dispatcher permission/admin/mode behavior."
+    ]
+  },
+  "case_updates": {
+    "EXT-F-4107-T01": {
+      "feature_id": "EXT-F-4107",
+      "title": "Controlled manual execution: cdp_network_capture_start",
+      "control_ids": ["EXT-F-4107-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "procedure-proposal-runtime-unverified",
+      "preconditions": [
+        "Complete shared receipt/resource, permissions, role, target ownership and manual-runner setup. Run separately in the member and admin profile.",
+        "Use only the fresh owned https://example.org/ target. Required debugger permission must already be granted; do not change it. Keep that target focused for omitted tab_id.",
+        "At each warm and post-extension-reload pass, capture a fresh cdp_attached_tabs baseline and derive the owned target ID only from the owned target creation receipt plus the unique attachment delta. Never use unrelated tab/request identifiers."
+      ],
+      "steps": [
+        "Warm pass: create/focus the owned public tab, list cdp_attached_tabs {} as baseline, confirm no existing debugger session/banner on that tab. Run cdp_network_capture_start {\"tab_id\":\"bad\"}; require runner schema rejection and an unchanged attachment list, then run cdp_network_capture_start {}. Require {ok:true,tab_id:<id>} where id equals the exact owned tab ID, and exactly one new attachment delta equal to it; preserve baseline entries. If not unique/equal, stop without cleanup of any unowned ID.",
+        "After successful start, reload the owned page once to produce public GET responses while capture is active. Do not submit forms or navigate to a private/authenticated page. Verify start is idempotent by calling cdp_network_capture_start {\"tab_id\":<owned id>} once more; expect success without a second attachment delta.",
+        "Run cdp_network_capture_stop {\"tab_id\":<owned id>}, then drain with {\"tab_id\":<owned id>} and verify no records remain (if records were not previously drained). Detach only the unique owned delta via cdp_detach, verify baseline preserved and owned ID absent, close the owned tab. Repeat complete sequence post-extension-reload."
+      ],
+      "expected": [
+        "Valid focused owned target returns {ok:true,tab_id:<same owned ID>} and creates exactly one owned attachment delta; repeated start on active capture returns {ok:true,tab_id:<same ID>} without duplicating attachment.",
+        "The owned reload while capture active can generate records; start itself returns no records. Stop returns {ok:true}; it clears capture buffers and disables Network when attached but leaves debugger attachment present for explicit owned cleanup.",
+        "Safe negative: {\"tab_id\":\"bad\"} is rejected by local schema before handler invocation; capture/attachment state remains unchanged. Do not use invalid integer targets."
+      ],
+      "dimensions": [
+        "valid-owned-tab",
+        "repeat-start",
+        "schema-negative",
+        "capture-enabled",
+        "member",
+        "admin",
+        "debugger-permission-present",
+        "warm",
+        "extension-reload",
+        "owned-target-cleanup"
+      ],
+      "source_evidence": ["src/lib/tools/handlers/cdp.ts:396-415", "src/lib/cdp/client.ts:407-419"],
+      "access_context_permission_limits": [
+        "Procedure proposal only; runtime/browser/build/test not run and no inventory status promoted.",
+        "Manual direct handler execution does not prove dispatcher admin, Ask/Act, optional debugger permission denial/enforcement, or advertised agent routing.",
+        "Run independently in both existing inventory modes: member and admin. Do not infer one role result from the other; guest remains governed by its separate Tools UI access case.",
+        "Only operate on the owned focused public target and attachment ID established from this run; never guess tab or request IDs."
+      ],
+      "limits": [
+        "No deterministic public request-body fixture is established by reviewed source; this case does not claim request-body coverage.",
+        "No raw response body, headers or unrelated network content belongs in evidence."
+      ]
+    },
+    "EXT-F-4108-T01": {
+      "feature_id": "EXT-F-4108",
+      "title": "Controlled manual execution: cdp_network_capture_drain",
+      "control_ids": ["EXT-F-4108-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "procedure-proposal-runtime-unverified",
+      "preconditions": [
+        "Complete shared receipt/resource, permissions, role, target ownership and manual-runner setup. Run separately in the member and admin profile.",
+        "Use only the fresh owned https://example.org/ target. Required debugger permission must already be granted; do not change it. Keep that target focused for omitted tab_id.",
+        "At each warm and post-extension-reload pass, capture a fresh cdp_attached_tabs baseline and derive the owned target ID only from the owned target creation receipt plus the unique attachment delta. Never use unrelated tab/request identifiers."
+      ],
+      "steps": [
+        "Warm pass: fresh target and baseline; start capture with cdp_network_capture_start {} and verify unique owned delta. Reload the owned https://example.org/ tab while capture is active, wait for it to finish, then drain once with {\"tab_id\":<owned id>,\"max\":2000}. Do not set url_contains: source splices up to max records before applying the URL filter, so filtered-out rows would also be consumed.",
+        "Inspect only safe metadata for records from host example.org: require each record has a nonempty request_id, url, method and ts_ms; count equals records.length; finished or failed is present for returned completed records. Derive subsequent request IDs only from these returned records. Call drain again with same tab_id/max and expect an empty batch after the first batch consumed all available records. If more than 2000 events occurred, repeat drains until empty, preserving every batch locally only as sanitized metadata.",
+        "Run schema negatives {\"tab_id\":<owned id>,\"max\":0} and {\"tab_id\":<owned id>,\"max\":2001}; expect schema rejection and no handler call. Stop capture, verify an additional drain is empty, detach only exact owned delta, preserve baseline and close owned target. Repeat after extension Reload with fresh target/baseline."
+      ],
+      "expected": [
+        "Valid result is {ok:true,count:n,records:[...]}, count equals records.length and is at most max. Drain removes the first max buffered rows; a second drain is empty when all queued records fit in the first.",
+        "The URL filter is applied after destructive splice; do not use it for the acceptance sequence and do not claim filtered-out records are retained. Non-completed in-flight requests are not drained until loadingFinished/loadingFailed events.",
+        "max 0 and max 2001 are rejected by schema before handler and leave queued records available for the subsequent valid drain."
+      ],
+      "dimensions": [
+        "public-page-network-records",
+        "drain-consumes-buffer",
+        "max-boundaries",
+        "schema-negative",
+        "member",
+        "admin",
+        "debugger-permission-present",
+        "warm",
+        "extension-reload",
+        "owned-target-cleanup"
+      ],
+      "source_evidence": [
+        "src/lib/tools/handlers/cdp.ts:417-444",
+        "src/lib/cdp/client.ts:230-264,430-435"
+      ],
+      "access_context_permission_limits": [
+        "Procedure proposal only; runtime/browser/build/test not run and no inventory status promoted.",
+        "Manual direct handler execution does not prove dispatcher admin, Ask/Act, optional debugger permission denial/enforcement, or advertised agent routing.",
+        "Run independently in both existing inventory modes: member and admin. Do not infer one role result from the other; guest remains governed by its separate Tools UI access case.",
+        "Only operate on the owned focused public target and attachment ID established from this run; never guess tab or request IDs."
+      ],
+      "limits": [
+        "No deterministic public request-body fixture is established by reviewed source; this case does not claim request-body coverage.",
+        "No raw response body, headers or unrelated network content belongs in evidence."
+      ]
+    },
+    "EXT-F-4109-T01": {
+      "feature_id": "EXT-F-4109",
+      "title": "Controlled manual execution: cdp_network_capture_stop",
+      "control_ids": ["EXT-F-4109-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "procedure-proposal-runtime-unverified",
+      "preconditions": [
+        "Complete shared receipt/resource, permissions, role, target ownership and manual-runner setup. Run separately in the member and admin profile.",
+        "Use only the fresh owned https://example.org/ target. Required debugger permission must already be granted; do not change it. Keep that target focused for omitted tab_id.",
+        "At each warm and post-extension-reload pass, capture a fresh cdp_attached_tabs baseline and derive the owned target ID only from the owned target creation receipt plus the unique attachment delta. Never use unrelated tab/request identifiers."
+      ],
+      "steps": [
+        "Warm pass: create/focus fresh owned target; capture attached-tabs baseline; start capture with cdp_network_capture_start {} and verify the unique owned attachment delta. Reload the public target to queue completed requests.",
+        "Call cdp_network_capture_stop {\"tab_id\":<owned id>} and expect {ok:true}. Then call cdp_network_capture_drain {\"tab_id\":<owned id>} and expect {ok:true,count:0,records:[]} because stop deletes the buffer. Verify cdp_attached_tabs still contains the owned ID (stop disables capture, it does not detach).",
+        "Call stop a second time on same owned target; source returns {ok:true} when no capture buffer exists. Drain remains empty. Detach only the exact owned delta, verify list baseline preserved/owned ID gone and banner gone; close owned tab. Repeat after extension Reload with a fresh baseline and target.",
+        "Safe negative: {\"tab_id\":\"bad\"} must fail runner schema validation before stop handler and leave existing capture active; prove unchanged by draining queued record metadata only if present, then finish normal stop/cleanup. Avoid invalid integer tab IDs."
+      ],
+      "expected": [
+        "First stop returns {ok:true}, deletes buffered/in-flight capture state, and attempts Network.disable if attached; it does not detach the CDP tab.",
+        "A post-stop drain is empty. A second stop with no buffer is a successful no-op.",
+        "Schema-invalid string tab_id is rejected before handler and does not stop capture; do not claim permission denial."
+      ],
+      "dimensions": [
+        "stop-clears-capture",
+        "stop-preserves-attachment",
+        "repeat-stop",
+        "schema-negative",
+        "member",
+        "admin",
+        "debugger-permission-present",
+        "warm",
+        "extension-reload",
+        "owned-target-cleanup"
+      ],
+      "source_evidence": ["src/lib/tools/handlers/cdp.ts:446-460", "src/lib/cdp/client.ts:421-428"],
+      "access_context_permission_limits": [
+        "Procedure proposal only; runtime/browser/build/test not run and no inventory status promoted.",
+        "Manual direct handler execution does not prove dispatcher admin, Ask/Act, optional debugger permission denial/enforcement, or advertised agent routing.",
+        "Run independently in both existing inventory modes: member and admin. Do not infer one role result from the other; guest remains governed by its separate Tools UI access case.",
+        "Only operate on the owned focused public target and attachment ID established from this run; never guess tab or request IDs."
+      ],
+      "limits": [
+        "No deterministic public request-body fixture is established by reviewed source; this case does not claim request-body coverage.",
+        "No raw response body, headers or unrelated network content belongs in evidence."
+      ]
+    },
+    "EXT-F-4110-T01": {
+      "feature_id": "EXT-F-4110",
+      "title": "Controlled manual execution: cdp_network_get_body",
+      "control_ids": ["EXT-F-4110-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "procedure-proposal-runtime-unverified",
+      "preconditions": [
+        "Complete shared receipt/resource, permissions, role, target ownership and manual-runner setup. Run separately in the member and admin profile.",
+        "Use only the fresh owned https://example.org/ target. Required debugger permission must already be granted; do not change it. Keep that target focused for omitted tab_id.",
+        "At each warm and post-extension-reload pass, capture a fresh cdp_attached_tabs baseline and derive the owned target ID only from the owned target creation receipt plus the unique attachment delta. Never use unrelated tab/request identifiers."
+      ],
+      "steps": [
+        "Warm pass: create/focus fresh owned public target, record attached-tabs baseline, start capture and verify unique owned delta. Reload https://example.org/ while capture is active; wait for the document request to complete.",
+        "Drain with {\"tab_id\":<owned id>,\"max\":2000}; select only a returned record whose host is example.org, method is GET, finished=true, and mime_type is a text type. Obtain request_id exclusively from that drained record; never invent one. If no eligible response record appears, record positive fixture setup gap and stop this body assertion without substituting another request.",
+        "Call cdp_network_get_body {\"tab_id\":<owned id>,\"request_id\":\"<exact returned request_id>\"} before stop. Require {ok:true,body:<string>,base64_encoded:<boolean>}. If base64_encoded is false, body should be nonempty text. If true, decode transiently as base64 and verify decoded byte length is nonzero; do not store, display or include body content in evidence. Do not infer textual content for base64 responses.",
+        "Run safe schema-negative {\"tab_id\":<owned id>,\"request_id\":\"\"}; runner must reject minLength before handler. Then stop capture, verify drain empty, detach only exact owned delta, preserve baseline, close tab. Repeat from fresh baseline after extension Reload."
+      ],
+      "expected": [
+        "Drain exposes request_id from Network.requestWillBeSent and queues only loadingFinished/loadingFailed events; using that exact drained ID preserves provenance.",
+        "For an eligible completed public text GET, get_body returns {ok:true,body:string,base64_encoded:boolean}; check encoding flag explicitly. Decode base64 only transiently when true; never assert a literal body or serialize response content.",
+        "Empty request_id is rejected by schema before handler. No fabricated request ID or arbitrary body-fetch probe is allowed. If the public fixture does not yield a completed text response or Chrome has evicted its body, report fixture/setup limitation or observed failure; do not guess another ID."
+      ],
+      "dimensions": [
+        "returned-request-id-provenance",
+        "response-body-text-or-base64",
+        "empty-id-schema-negative",
+        "body-retrieval-before-stop",
+        "member",
+        "admin",
+        "debugger-permission-present",
+        "warm",
+        "extension-reload",
+        "owned-target-cleanup"
+      ],
+      "source_evidence": [
+        "src/lib/tools/handlers/cdp.ts:463-485",
+        "src/lib/cdp/client.ts:230-264,437-444"
+      ],
+      "access_context_permission_limits": [
+        "Procedure proposal only; runtime/browser/build/test not run and no inventory status promoted.",
+        "Manual direct handler execution does not prove dispatcher admin, Ask/Act, optional debugger permission denial/enforcement, or advertised agent routing.",
+        "Run independently in both existing inventory modes: member and admin. Do not infer one role result from the other; guest remains governed by its separate Tools UI access case.",
+        "Only operate on the owned focused public target and attachment ID established from this run; never guess tab or request IDs."
+      ],
+      "limits": [
+        "This positively exercises response-body retrieval only; a deterministic public POST/request-body fixture was not found in reviewed source.",
+        "A response body may be unavailable after browser eviction or protocol timing; record the observed result without inventing a replacement request ID."
+      ]
+    }
+  }
+}
