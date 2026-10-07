@@ -124,6 +124,7 @@
     ["node", "--test", "tests/browser/showcase-d47-driver-evidence.test.mjs"],
     ["node", "--test", "tests/browser/showcase-d47-saved-result.test.mjs"],
     ["node", "--test", "tests/browser/showcase-d47-worker-probe.test.mjs"],
+    ["node", "--test", "tests/browser/showcase-d47-public-race-preflight.test.mjs"],
     ["node", "tests/browser/settings-local-reset-acceptance.mjs"],
     ["bash", "release.sh", "--message", "EXT-D-0002 validated release integration"],
     ["bash", "release.sh", "--message", "EXT-D-0006 validated permission controls"],

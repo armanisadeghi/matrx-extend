@@ -130,6 +130,20 @@ test('public D47 route uses its own exact-artifact native receipt and never inhe
   assert.equal(route.env.MATRX_SHOWCASE_CI_SOURCE_SHA, prepared.sourceSha);
   assert.equal(route.env.MATRX_SHOWCASE_RECEIPT, prepared.relocatedReceipt);
   assert.equal(route.env.MATRX_D47_RESPONSE_ORDER, undefined);
+  assert.equal(route.env.MATRX_D47_PUBLIC_RACE_PREFLIGHT, undefined);
+  const preflight = hostedShowcaseRoute(
+    'showcase-d47-public-admin',
+    prepared,
+    runner,
+    'current-first',
+    true,
+  );
+  assert.equal(preflight.driver, route.driver);
+  assert.equal(preflight.env.MATRX_D47_PUBLIC_RACE_PREFLIGHT, '1');
+  assert.throws(
+    () => hostedShowcaseRoute('showcase-d47-admin', prepared, runner, 'current-first', true),
+    /d47_public_race_preflight_case_invalid/,
+  );
 });
 
 test('stale route refuses wrong artifact identity before child dispatch', () => {

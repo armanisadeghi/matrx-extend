@@ -6,6 +6,7 @@ export function hostedShowcaseRoute(
   prepared,
   runner,
   d47ResponseOrder = 'current-first',
+  publicRacePreflight = false,
 ) {
   if (
     ![
@@ -23,6 +24,10 @@ export function hostedShowcaseRoute(
       ),
       'd47_response_order_invalid',
     );
+  assert.ok(
+    !publicRacePreflight || acceptanceCase === 'showcase-d47-public-admin',
+    'd47_public_race_preflight_case_invalid',
+  );
   assert.equal(prepared.kind, 'ci_development_test', 'showcase_ci_artifact_required');
   assert.match(prepared.sourceSha ?? '', /^[a-f0-9]{40}$/, 'showcase_ci_source_required');
   assert.match(String(prepared.runId ?? ''), /^[1-9][0-9]*$/, 'showcase_ci_run_required');
@@ -49,6 +54,9 @@ export function hostedShowcaseRoute(
       MATRX_SHOWCASE_STALE_BOUNDARY: acceptanceCase === 'showcase-stale-admin' ? '1' : undefined,
       MATRX_D47_RESPONSE_ORDER:
         acceptanceCase === 'showcase-d47-admin' ? d47ResponseOrder : undefined,
+      ...(acceptanceCase === 'showcase-d47-public-admin' && publicRacePreflight
+        ? { MATRX_D47_PUBLIC_RACE_PREFLIGHT: '1' }
+        : {}),
     },
   };
 }

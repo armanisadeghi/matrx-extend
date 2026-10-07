@@ -65,6 +65,11 @@ on:
           - stale-only
           - manual-prior
           - prior-saved
+      d47_public_race_preflight:
+        description: Timing-only public response pause preflight for showcase-d47-public-admin
+        required: false
+        default: false
+        type: boolean
       scrape_diagnostic_cpu_rate:
         description: Optional owned intake-page CPU diagnostic rate for guest-scrape or guest-scrape-development (for example 4)
         required: false
@@ -265,6 +270,7 @@ jobs:
           MATRX_HOSTED_PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx == true && '0.2.205' || '' }}
           MATRX_HOSTED_ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
           MATRX_D47_RESPONSE_ORDER: ${{ inputs.d47_response_order }}
+          MATRX_D47_PUBLIC_RACE_PREFLIGHT: ${{ inputs.d47_public_race_preflight == true && '1' || '0' }}
           MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE: ${{ inputs.scrape_diagnostic_cpu_rate }}
           MATRX_SCRAPE_AUTH_MODE: ${{ inputs.scrape_auth_mode }}
           MATRX_SCRAPE_WIDTH_MODE: ${{ inputs.scrape_width_mode }}

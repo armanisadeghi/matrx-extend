@@ -341,6 +341,7 @@ async function run(prepared, artifactMode) {
       attempt: process.env.GITHUB_RUN_ATTEMPT,
     },
     process.env.MATRX_D47_RESPONSE_ORDER || 'current-first',
+    process.env.MATRX_D47_PUBLIC_RACE_PREFLIGHT === '1',
   );
   const needsApprovedAdminOrganization =
     Boolean(showcaseRoute) || (scrapeRoute && scrapeSelection.mode === 'admin');

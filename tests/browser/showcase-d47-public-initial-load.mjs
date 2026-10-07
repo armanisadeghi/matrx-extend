@@ -18,6 +18,10 @@ import {
   trustedD47PanelClick,
 } from './showcase-d47-driver-evidence.mjs';
 import { readD47SavedRunState } from './showcase-d47-saved-result.mjs';
+import {
+  assessPublicRacePreflight,
+  createPublicRacePreflight,
+} from './showcase-d47-public-race-preflight.mjs';
 import { deriveD47TerminalBudget, terminalBudgetPaths } from './showcase-d47-terminal-budget.mjs';
 import { runShowcaseOrganizationCheckpoint } from './showcase-organization-checkpoint.mjs';
 
@@ -356,6 +360,7 @@ async function run() {
     failure: null,
   };
   let ownedRecipe;
+  const racePreflight = process.env.MATRX_D47_PUBLIC_RACE_PREFLIGHT === '1';
   try {
     const extensionDir = process.env.MATRX_SHOWCASE_EXTENSION_DIR;
     const receiptPath = process.env.MATRX_SHOWCASE_RECEIPT;
@@ -412,6 +417,7 @@ async function run() {
         reopenPanel,
       }) => {
         let primary;
+        let interception;
         try {
           report.stage = 'signin';
           const auth = await resourceAction(() =>
@@ -552,6 +558,11 @@ async function run() {
           );
           report.owned_recipe.creation = 'observed_in_patterns';
           report.stage = 'saved_replay';
+          if (racePreflight) {
+            report.stage = 'public_race_interception_setup';
+            interception = await createPublicRacePreflight(page, report, response.endpoint_shape);
+            report.stage = 'saved_replay';
+          }
           await publicTrustedClick(
             panel,
             {
@@ -563,37 +574,75 @@ async function run() {
             report,
           );
           await allow(panel);
-          report.stage = 'saved_terminal';
-          const started = performance.now();
-          const observations = [];
-          const terminal = await waitFor(
-            'public_saved_terminal',
-            async () => {
-              const state = await exactRecipeVisible(panel, ownedRecipe);
-              const run = await evaluate(
-                panel,
-                `(() => (${readD47SavedRunState.toString()})(document, ${JSON.stringify(ownedRecipe)}))()`,
-              );
-              const combined = {
-                ...state,
-                running: run.running,
-                unavailable: run.observation_unavailable,
-              };
-              const outcome = classifyPublicReplay(combined);
-              observations.push({ elapsed_ms: performance.now() - started, ...combined, outcome });
-              return { ...combined, outcome };
-            },
-            (state) => state?.outcome !== 'unverified',
-            budget.timeout_ms,
-          );
-          report.saved_result = { ...terminal, sample_count: observations.length };
-          report.status =
-            terminal.outcome === 'captured_initial_request'
-              ? 'observed_bounded'
-              : 'honest_guidance_observed';
+          if (racePreflight) {
+            report.stage = 'public_race_old_paused';
+            await interception.oldPaused();
+            const replayAtPause = await exactRecipeVisible(panel, ownedRecipe);
+            interception.facts.active_replay_at_old_pause =
+              replayAtPause.exact_row === true && replayAtPause.running === true;
+            report.stage = 'public_race_navigation';
+            await resourceAction(() => page.goto(pageUrl, { waitUntil: 'commit' }));
+            assert.equal(
+              new URL(page.url()).host,
+              siteHost,
+              'public_race_navigation_host_mismatch',
+            );
+            report.stage = 'public_race_current_paused';
+            await interception.currentPaused();
+            report.stage = 'public_race_release';
+            await interception.releaseInOrder();
+            await requireResourceHealth();
+            report.status = 'preflight_runtime_observed';
+          } else {
+            report.stage = 'saved_terminal';
+            const started = performance.now();
+            const observations = [];
+            const terminal = await waitFor(
+              'public_saved_terminal',
+              async () => {
+                const state = await exactRecipeVisible(panel, ownedRecipe);
+                const run = await evaluate(
+                  panel,
+                  `(() => (${readD47SavedRunState.toString()})(document, ${JSON.stringify(ownedRecipe)}))()`,
+                );
+                const combined = {
+                  ...state,
+                  running: run.running,
+                  unavailable: run.observation_unavailable,
+                };
+                const outcome = classifyPublicReplay(combined);
+                observations.push({
+                  elapsed_ms: performance.now() - started,
+                  ...combined,
+                  outcome,
+                });
+                return { ...combined, outcome };
+              },
+              (state) => state?.outcome !== 'unverified',
+              budget.timeout_ms,
+            );
+            report.saved_result = { ...terminal, sample_count: observations.length };
+            report.status =
+              terminal.outcome === 'captured_initial_request'
+                ? 'observed_bounded'
+                : 'honest_guidance_observed';
+          }
         } catch (error) {
           primary = error;
         } finally {
+          if (interception) {
+            try {
+              await interception.cleanup();
+              report.public_race_preflight.verdict = assessPublicRacePreflight(interception.facts);
+              if (
+                racePreflight &&
+                report.public_race_preflight.verdict !== 'timing_interception_feasible'
+              )
+                primary ??= new Error('public_race_preflight_unverified');
+            } catch {
+              primary ??= new Error('public_race_interception_cleanup_failed');
+            }
+          }
           if (ownedRecipe) {
             try {
               report.owned_recipe.cleanup = await removeOwnedRecipe(panel, ownedRecipe, report);
