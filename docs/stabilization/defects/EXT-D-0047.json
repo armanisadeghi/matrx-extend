@@ -28,9 +28,9 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Finish independent source review of Save diagnostic correction 3d5ee733, then admit one frozen-artifact native stale-only refusal/fresh-recovery retest after successful CI and resource preflight. Native37578280425 failed before replay; dispatch unknown. No stale-only acceptance credit.",
+    "next_action": "Admit one frozen-artifact native stale-only refusal/fresh-recovery retest after successful CI and resource preflight, using independently reviewed Save diagnostic correction3d5ee733. Native37578280425 failed before replay; dispatch unknown. No stale-only acceptance credit.",
     "status": "Independent peer1abea43b accepts bounded old-first saved replay at frozen0.2.338/source651f25d0: observed old/current HTTP finish order, current context/packet, exact settled current-only saved row, valid resources and cleanup. Current-first earlier0.2.337 remains separately bounded. D47in-fix/T57unverified unchanged.",
-    "implementation_agent": "completed: d47_save_click_evidence_fix; guarded source tests 19/19, independent review in progress",
+    "implementation_agent": "completed: d47_save_click_evidence_fix; 19/19 resource-valid source checks, fresh independent bounded source review accepted",
     "execution_agent": "completed: d47_stale_only_native; native37578280425 failed before replay, save click boundary",
     "native_run_id": 37537634304,
     "workflow_source": "fbcc4311ae6885b67133e55336f692be38881249",
@@ -138,7 +138,8 @@
     "stale_only_cleanup": ".research/d47-stale-owned-cleanup-20261007.json",
     "stale_only_native_report": ".research/d47-stale-only-native-20261007.json",
     "save_click_evidence_report": ".research/d47-save-click-evidence-fix-20261007.json",
-    "save_click_evidence_commit": "3d5ee733"
+    "save_click_evidence_commit": "3d5ee733",
+    "save_click_evidence_peer": ".research/d47-save-click-evidence-peer-20261007.json"
   },
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
   "verification_status": "Independent reviews accept bounded current-first0.2.337 and old-first0.2.338 fixture replay. Fresh peer8dfbdee1 supports public initial capture, saved exact-recipe completed replay with hits and UI cleanup on frozen0.2.344/source2274d236/native37571487114, with valid resources. Whole-panel quiescence, selected organization context and post-checkbox receipt-level mask evidence are not established. Stale-only recovery, manual/prior-run isolation and causal higher-old-sequence coverage remain outstanding. D47 in-fix/T57 unverified.",
