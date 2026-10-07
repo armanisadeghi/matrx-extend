@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "task_id": "settings-observed-mapping-peer-20261007",
+  "evidence_run_id": 37645860520,
+  "artifact_version": "0.2.366",
+  "artifact_source_sha": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+  "reviewed_source_commit": "45ee8732dda67ad5bb5b22136798c19c3d361d51",
+  "inventory_source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
+  "A_mapping_proof": {
+    "mapping_basis": "Exact section + observed source-rendered row_label + kind + reviewed source component relationship + existing inventory control description. No fingerprint inversion or behavioral result inference.",
+    "nodes": [
+      {
+        "label_fingerprint": "9a841b5cd1c7f6bd3a0dec642171f86e4291abcc43ff6b7f0a5064b06d828957",
+        "dom_path": "div:1/div:0/div:0/div:0/div:0/div:0/div:1/button:0",
+        "kind": "combobox",
+        "section": "Appearance",
+        "row_label": "Theme",
+        "source_proof": {
+          "inventory": "docs/stabilization/inventory.json:4555",
+          "source": "src/features/settings/SettingsView.tsx:335-348",
+          "relation": "Appearance ControlRow label Theme contains PillSelect; observed combobox."
+        },
+        "exact_control_id": "EXT-F-1003-C02",
+        "unresolved_reason": null
+      },
+      {
+        "label_fingerprint": "e455e4f75cc43d1b012f7c368324cc1d263c2e1bc98145e8c96dcb8d4360c034",
+        "dom_path": "div:1/div:0/div:0/div:0/div:0/div:1/div:1/button:0",
+        "kind": "combobox",
+        "section": "Chat",
+        "row_label": "Default mode",
+        "source_proof": {
+          "inventory": "docs/stabilization/inventory.json:4565",
+          "source": "src/features/settings/SettingsView.tsx:393-408",
+          "relation": "Chat ControlRow label Default mode contains PillSelect; observed combobox."
+        },
+        "exact_control_id": "EXT-F-1003-C04",
+        "unresolved_reason": null
+      },
+      {
+        "label_fingerprint": "2489748079adccf45b1a997d62341aff618e7275c62f4b4e78c877daa3bfb0c7",
+        "dom_path": "div:1/div:0/div:0/div:0/div:0/div:2/div:1/button:0",
+        "kind": "combobox",
+        "section": "Chat",
+        "row_label": "Default speed",
+        "source_proof": {
+          "inventory": "docs/stabilization/inventory.json:4570",
+          "source": "src/features/settings/SettingsView.tsx:408-426",
+          "relation": "Chat ControlRow label Default speed contains PillSelect; observed combobox."
+        },
+        "exact_control_id": "EXT-F-1003-C05",
+        "unresolved_reason": null
+      },
+      {
+        "label_fingerprint": "80b3e2cc611c43cc8e562dc70c0d65d01d34485474f8c2c81e7b910e713625fb",
+        "dom_path": "div:1/div:0/div:0/div:0/div:0/div:2/div:1/button:0",
+        "kind": "combobox",
+        "section": "Scrape",
+        "row_label": "Auto-scrape mode",
+        "source_proof": {
+          "inventory": "docs/stabilization/inventory.json:4691",
+          "source": "src/features/settings/SettingsView.tsx:503-520",
+          "relation": "Scrape ControlRow label Auto-scrape mode contains PillSelect; distinct from Auto-scrape on load switch."
+        },
+        "exact_control_id": "EXT-F-1003-C29",
+        "unresolved_reason": null
+      },
+      {
+        "label_fingerprint": "89d948397cd887af06383c2ba8914b12749aa54e68ea4e1ce6406971b4e29df2",
+        "dom_path": "div:8/div:1/div:0/div:0/div:0/div:0/div:1/input:0",
+        "kind": "input",
+        "section": "Desktop bridge",
+        "row_label": "Pair code",
+        "source_proof": {
+          "inventory": "docs/stabilization/inventory.json:4620",
+          "source": "src/features/settings/SettingsView.tsx:567-618",
+          "relation": "Desktop bridge pairing aggregate; source renders Pair code Input and Pair Button in one row/container."
+        },
+        "exact_control_id": "EXT-F-1003-C15",
+        "unresolved_reason": null
+      },
+      {
+        "label_fingerprint": "f0bca04413a7234a431ce9ff39b197076203f840e2eb8bcf46fb37fa43606c11",
+        "dom_path": "div:8/div:1/div:0/div:0/div:0/div:0/div:1/button:0",
+        "kind": "button",
+        "section": "Desktop bridge",
+        "row_label": "Pair code",
+        "source_proof": {
+          "inventory": "docs/stabilization/inventory.json:4620",
+          "source": "src/features/settings/SettingsView.tsx:567-618",
+          "relation": "Desktop bridge pairing aggregate; source renders Pair code Input and Pair Button in one row/container."
+        },
+        "exact_control_id": "EXT-F-1003-C15",
+        "unresolved_reason": null
+      },
+      {
+        "label_fingerprint": "89d948397cd887af06383c2ba8914b12749aa54e68ea4e1ce6406971b4e29df2",
+        "dom_path": "div:8/div:1/div:0/div:0/div:0/div:0/div:2/input:0",
+        "kind": "input",
+        "section": "Desktop bridge",
+        "row_label": "Local engine port",
+        "source_proof": {
+          "inventory": "docs/stabilization/inventory.json:4625",
+          "source": "src/features/settings/SettingsView.tsx:630-660",
+          "relation": "Desktop engine port aggregate; source renders Local engine port Input and save Button in one row/container."
+        },
+        "exact_control_id": "EXT-F-1003-C16",
+        "unresolved_reason": null
+      },
+      {
+        "label_fingerprint": "2af15e182aad69b553f6c8f31aac33deb677db6aafadd069ffc1515bc767ba0e",
+        "dom_path": "div:8/div:1/div:0/div:0/div:0/div:0/div:2/button:0",
+        "kind": "button",
+        "section": "Desktop bridge",
+        "row_label": "Local engine port",
+        "source_proof": {
+          "inventory": "docs/stabilization/inventory.json:4625",
+          "source": "src/features/settings/SettingsView.tsx:630-660",
+          "relation": "Desktop engine port aggregate; source renders Local engine port Input and save Button in one row/container."
+        },
+        "exact_control_id": "EXT-F-1003-C16",
+        "unresolved_reason": null
+      }
+    ],
+    "mapped_node_count": 8,
+    "logical_control_count": 6,
+    "same_row_aggregate_note": "Pair code input/button both map to C15; Local engine port input/button both map to C16. Each node remains separate. These are aggregate controls whose existing inventory definitions cover the input/action pair; no missing atomic control is established."
+  },
+  "B_privacy_coverage": {
+    "raw_unmapped_count_preserved": 27,
+    "raw_observation_file_modified": false,
+    "derived_resolved_node_count_same_run_only": 8,
+    "derived_residual_of_original_unmapped_count_same_run_only": 19,
+    "native_census_complete": false,
+    "behavioral_pass_inferred": false,
+    "privacy_observation": "Run was bounded guest observation; signed-out state remained observed and no access/refresh token or profile was present before or after; blocked HTTP mutations=0.",
+    "coverage_limit": "Evidence is limited to this frozen guest 0.2.366 artifact and these eight observed nodes. Original raw 27 unknown count remains unchanged; resolving these labels is not a complete census and says nothing about persistence, member/admin behavior, or current product health."
+  },
+  "deterministic_collector_mapping": {
+    "safe_without_per_run_hmac_registry": true,
+    "rule": "Use exact normalized semantic row label + section + observed kind, and require a unique reviewed source/inventory relation. Where sibling node kinds share one documented aggregate row, map each node separately to that aggregate control ID.",
+    "guard": "Unknown, ambiguous, changed, or duplicate labels remain unmapped; no index/path-based identity and no HMAC inversion."
+  }
+}
