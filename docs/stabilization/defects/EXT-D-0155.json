@@ -7,7 +7,7 @@
   "title": "Native runners reject valid frozen artifacts when workflow checkout version advances",
   "severity": "S2: prevents acceptance before UI; product impact not established",
   "priority": "P1: prerequisite for frozen-artifact batches",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root/settings_resource_diagnosis",
   "preconditions": [
     "Successful pinned CI37684665825/artifact11511120729/source14305391 is development0.2.387; workflow37686070986 checkout package is0.2.388."
@@ -23,10 +23,12 @@
     ".research/independent-product-batch-20261007.json",
     ".research/frozen-artifact-version-repair-20261007.json",
     ".research/frozen-identity-peer-20261007.json",
-    ".research/frozen-identity-final-peer-20261007.json"
+    ".research/frozen-identity-final-peer-20261007.json",
+    ".research/frozen-settings-native-retest-20261007.json",
+    ".research/native-batch-evidence-peer-20261007.json"
   ],
   "fix_commits": ["bddbee75", "f6954e09"],
-  "verification": "Fresh peer source behavior PASS, quality PARTIAL: add second valid version and prove constant-return guard. Native setup and Settings behavior retest remain pending.",
+  "verification": "Original frozen0.2.387 artifact passes setup and reaches native Settings from newer workflow checkout; strict identity source checks and valid native journals independently accepted. Testing-infrastructure closure; SEO/navigation sibling UI coverage remains unverified.",
   "transition_history": [
     {
       "at": "2026-10-07T22:00:57.574346+00:00",
@@ -51,8 +53,22 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Fresh independent source and quality review pass after corrective causal guards. Original frozen-artifact native retest assigned; no product cells promoted."
+    },
+    {
+      "at": "2026-10-07T22:18:59.711910+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Original frozen0.2.387 artifact passes setup and reaches native Settings from newer workflow checkout; strict identity source checks and valid native journals independently accepted. Testing-infrastructure closure; SEO/navigation sibling UI coverage remains unverified."
+    },
+    {
+      "at": "2026-10-07T22:18:59.711910+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Independent original-reproduction and surrounding-scope review supports closure; broader feature/mode health remains in inventory."
     }
   ],
   "closure_requirement": "Fresh peer accepts actual identity guard including differing workflow/artifact versions and corrupt artifact refusal, followed by guarded native original Settings setup/controls retest. Keep sibling native scopes explicit.",
-  "next_action": "Complete assigned guarded original-artifact native retest and independent evidence review before closure."
+  "next_action": "Continue separately tracked unverified product cases; no overall health claim.",
+  "retest_run_id": "37693743871",
+  "verification_status": "Original frozen0.2.387 artifact passes setup and reaches native Settings from newer workflow checkout; strict identity source checks and valid native journals independently accepted. Testing-infrastructure closure; SEO/navigation sibling UI coverage remains unverified."
 }

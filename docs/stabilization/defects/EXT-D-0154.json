@@ -7,7 +7,7 @@
   "title": "Media copy driver races restored result pane and rejects tooltip-migrated titles",
   "severity": "S2: prevents trustworthy media acceptance; product defect not established",
   "priority": "P1: unblock exhaustive Scrape guest retest",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root/scrape_link_repair",
   "preconditions": [
     "Original native run37670744036, frozen development0.2.385 source87f6649b; use the controlled clinic page from that run and signed-out profile."
@@ -25,7 +25,9 @@
     ".research/scrape-links-repair-peer-20261007.json",
     ".research/scrape-selector-final-peer-20261007.json",
     ".research/scrape-links-native-retest-20261007.json",
-    ".research/scrape-counted-tab-peer-20261007.json"
+    ".research/scrape-counted-tab-peer-20261007.json",
+    ".research/scrape-counted-native-retest-20261007.json",
+    ".research/native-batch-evidence-peer-20261007.json"
   ],
   "fix_commits": ["f8c0ad58", "42a51b13", "92ddec30"],
   "transition_history": [
@@ -70,8 +72,22 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Fresh independent source and quality review pass after corrective causal guards. Original frozen-artifact native retest assigned; no product cells promoted."
+    },
+    {
+      "at": "2026-10-07T22:18:59.711910+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Original guest Links and Video sibling native actions passed warm and full reload on frozen0.2.385, valid journals, independent native review. Testing-infrastructure closure only."
+    },
+    {
+      "at": "2026-10-07T22:18:59.711910+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Independent original-reproduction and surrounding-scope review supports closure; broader feature/mode health remains in inventory."
     }
   ],
   "closure_requirement": "Independent source review plus guarded native original and surrounding Video/Links warm/reload retest; do not promote feature-wide or other-mode health.",
-  "next_action": "Complete assigned guarded original-artifact native retest and independent evidence review before closure."
+  "next_action": "Continue separately tracked unverified product cases; no overall health claim.",
+  "retest_run_id": "37693691959",
+  "verification_status": "Original guest Links and Video sibling native actions passed warm and full reload on frozen0.2.385, valid journals, independent native review. Testing-infrastructure closure only."
 }
