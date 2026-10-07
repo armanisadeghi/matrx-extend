@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent_source_review",
+  "reviewed_commit": "266dd7ee31e747c370ca1c8fc8412945660cd08c",
+  "source_report": ".research/role-visibility-census-escalation-20261007.json",
+  "verdict_A_requirement_coverage": "PARTIAL — SOURCE-READY; NATIVE EVIDENCE OPEN",
+  "verdict_B_quality_and_safety": "PASS FOR SOURCE-ONLY SCOPE; LIMITS DISCLOSED",
+  "findings": [
+    {"severity":"Resolved","location":"tests/browser/takeover-visible-census.mjs:86-189, 330-429","finding":"Alternate semantic/focusable navigation and section triggers are inventoried; unknown labels are HMAC-fingerprinted, and unsupported/duplicate/disabled triggers prevent completeness and are never clicked."},
+    {"severity":"Resolved","location":"tests/browser/takeover-visible-census.mjs:192-246, 466-510, 568-572","finding":"Guest evidence requires visible enabled Sign in, absent sign-out/profile/access/refresh/admin state, and repeats after census; missing either observation blocks completeness. Member/admin report signInSettings role and rendered identity fields."},
+    {"severity":"Open limitation","location":"tests/browser/takeover-visible-census.mjs:170-179, 574-579","finding":"Discovery covers semantic/native/focusable light-DOM controls; shadow DOM and unmarked controls are not certified. HTTP write interception is limited to sidepanel/worker; blocked POST/RPC reads can make a run incomplete."}
+  ],
+  "evidence_resolution": "Guarded RED log shows four causal assertion failures; GREEN and FINAL logs plus all three completed resource journals match admitted=true/resourceInvalid=false and final decisions (child_failed, valid, valid). Exact source SHA, CI run ID, artifact ID, tree digest, extension ID, and version checks are present. Prior selector/guest findings are resolved in source; no native reports were run or reviewed.",
+  "safety": "Only direct tab navigation and settings expansion are invoked; action controls are not clicked. No native claims, browser runs, tests, builds, database access, credentials, or writes performed by reviewer.",
+  "verification": "Read-only source/diff/log/journal review; no tests rerun. git diff --check on reviewed commit reported trailing whitespace in saved RED log blank lines only.",
+  "native_gaps": ["Receipt-bound guest/member/admin native observations remain required before behavior or role-visibility acceptance."]
+}
