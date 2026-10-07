@@ -23,7 +23,7 @@
     },
     {
       "path": "src/lib/tools/dispatch.ts",
-      "lines": "763-810,850-920",
+      "lines": "763-837,1146-1172,1210-1229",
       "evidence": "Normal delegated dispatch enforces admin_only, required optional permissions and confirmation for privileged calls. These gates are outside the direct Tools manual runner path and are not tested by these procedures."
     },
     {
@@ -50,7 +50,7 @@
   "procedure_prerequisites": {
     "execution": "No execution occurred in this lane. Before any future run, obtain the current stabilization resource permit and create the full receipt required by docs/stabilization/PLAN.md § Build and reload contract. Bind it to an allowed, already verified development artifact and its exact source/build/runtime identity under the machine constraints; do not create a local build for this procedure. If no allowed artifact can be verified against the current source and runtime, stop and leave the case unverified. Rebuild/reload only when that contract requires it, and record the separate extension Reload and page reload actions. Never put secrets or cookie outputs in the receipt.",
     "roles": "Run each case only in the signed-in admin mode listed by inventory. Do not run these case IDs as member or guest: source and inventory mark the handlers admin_only and member/guest not applicable. A direct manual Tools run in another role would bypass that check and cannot establish access behavior.",
-    "fixture": "Use only the synthetic cookie fixture below, on the reserved non-resolving host cookie-procedure.invalid. Do not navigate to an authenticated site, use a real account cookie, omit the name filter, or use getAll. The cookie is created solely by this run through the extension API. If the exact fixture name already exists before the run, stop and report a collision; do not read, overwrite, or delete a pre-existing cookie. The expected value is synthetic and harmless; do not copy raw output into evidence.",
+    "fixture": "Use only the synthetic cookie fixture below, on the reserved non-resolving host cookie-procedure.invalid. Do not navigate to an authenticated site, use a real account cookie, omit the name filter, or use getAll. The cookie is created solely by this run through the extension API. If the exact fixture name already exists before the run, the exact-name preflight may render that one cookie object inline; stop immediately without inspecting or copying its value, and do not overwrite or delete the existing cookie. The exact URL/name filter still bounds the read. The expected value is synthetic and harmless; do not copy raw output into evidence.",
     "fixture_input": {
       "url": "https://cookie-procedure.invalid/",
       "name": "matrx_cookie_fixture_20261007_01",
@@ -82,7 +82,7 @@
       "modes": ["admin"],
       "status": "unverified",
       "steps": [
-        "Satisfy the shared receipt, role, build and permission prerequisites. Confirm the exact fixture URL/name is absent using get_cookies with {\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\"}; require {ok:true,count:0,cookies:[]}. If present or the result is ambiguous, stop without reading or deleting it.",
+        "Satisfy the shared receipt, role, build and permission prerequisites. Confirm the exact fixture URL/name is absent using get_cookies with {\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\"}; require {ok:true,count:0,cookies:[]}. If present or the result is ambiguous, stop immediately without inspecting or copying its value and without overwriting or deleting it.",
         "Create the harmless fixture through set_cookie with {\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\",\"value\":\"safe-fixture-value\",\"path\":\"/\",\"secure\":true,\"http_only\":false,\"same_site\":\"lax\"}. Require successful result before continuing; if creation fails, stop.",
         "In Tools, run get_cookies with exactly {\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\"}. Inspect the inline result locally. Do not copy its cookie object or value into notes/evidence.",
         "Delete this run's exact fixture with delete_cookie using {\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\"}. Then run the same name-filtered get again and verify absence. Record only pass/fail counts and cleanup outcome, never raw cookie output.",
@@ -114,7 +114,7 @@
       "modes": ["admin"],
       "status": "unverified",
       "steps": [
-        "Satisfy the shared receipt, role, build and permission prerequisites. Verify the exact fixture URL/name is absent with get_cookies and the exact URL/name input; if it exists or the result is ambiguous, stop without mutation.",
+        "Satisfy the shared receipt, role, build and permission prerequisites. Verify the exact fixture URL/name is absent with get_cookies and the exact URL/name input; if it exists or the result is ambiguous, stop immediately without inspecting or copying its value and without overwriting or deleting it.",
         "In Tools, run set_cookie with exactly {\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\",\"value\":\"safe-fixture-value\",\"path\":\"/\",\"secure\":true,\"http_only\":false,\"same_site\":\"lax\"}. Require {ok:true,cookie:<cookie>} and locally confirm the synthetic name/value and selected attributes; never copy the cookie object/value into evidence.",
         "Verify creation through get_cookies with exactly {\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\"}. Require one match and locally compare its synthetic value; do not save raw output.",
         "Clean up with delete_cookie using the exact fixture URL/name and confirm a subsequent exact-name get returns count 0. Record cleanup outcome.",
@@ -146,7 +146,7 @@
       "modes": ["admin"],
       "status": "unverified",
       "steps": [
-        "Satisfy the shared receipt, role, build and permission prerequisites. Confirm the exact fixture URL/name is absent with the bounded get_cookies URL+name query; if it exists or the result is ambiguous, stop without deleting it.",
+        "Satisfy the shared receipt, role, build and permission prerequisites. Confirm the exact fixture URL/name is absent with the bounded get_cookies URL+name query; if it exists or the result is ambiguous, stop immediately without inspecting or copying its value and without overwriting or deleting it.",
         "Create this run's synthetic fixture with set_cookie using {\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\",\"value\":\"safe-fixture-value\",\"path\":\"/\",\"secure\":true,\"http_only\":false,\"same_site\":\"lax\"}; require success, then verify one exact-name match before deletion.",
         "Run delete_cookie with exactly {\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\"}. Require {ok:true,removed:<cookie>} for the cookie just created in this run. Do not copy raw output.",
         "Run get_cookies with the exact fixture URL/name and require {ok:true,count:0,cookies:[]}. This proves the owned fixture is absent after deletion.",
@@ -178,7 +178,7 @@
       "modes": ["admin"],
       "status": "unverified",
       "steps": [
-        "Satisfy the shared receipt, role, build and permission prerequisites. The control list includes whole-tool invocation plus get, set and delete. Confirm the exact fixture URL/name is absent using action=get with {\"action\":\"get\",\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\"}; if present or ambiguous, stop without mutation.",
+        "Satisfy the shared receipt, role, build and permission prerequisites. The control list includes whole-tool invocation plus get, set and delete. Confirm the exact fixture URL/name is absent using action=get with {\"action\":\"get\",\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\"}; if present or ambiguous, stop immediately without inspecting or copying its value and without overwriting or deleting it.",
         "Exercise the set branch using exactly {\"action\":\"set\",\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\",\"value\":\"safe-fixture-value\",\"path\":\"/\",\"secure\":true,\"http_only\":false,\"same_site\":\"lax\"}. Require a successful delegated set result and then verify one exact-name match with action=get.",
         "Exercise the get branch with exactly {\"action\":\"get\",\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\"}. Confirm locally the one result is the synthetic fixture; never copy raw output.",
         "Exercise the delete branch with exactly {\"action\":\"delete\",\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\"}. Then get again with the same URL/name and require count 0. This cleanup is required even if earlier action controls succeeded.",
