@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "reviewed_builder_commit": "a9ed51dd",
+  "review_mode": "fresh independent read-only source and recorded-evidence review; no native browser replay",
+  "verdict_a_spec": {
+    "result": "PARTIAL",
+    "terminal_saved_current": "Source gate requires the exact generated recipe header, exact current-only preview, live exact-row Run control settled, and no pane error or unavailable observation (showcase-d47-saved-result.mjs:2-93; showcase-d47-terminal-budget.mjs:179-225). This is source-supported, native-unverified.",
+    "observer_cleanup": "PARTIAL: normal installed path removes and confirms the listener inside exercisePanel before harness teardown (showcase-d47-document-lifecycle.mjs:216-243,350-360; native-sidepanel-qa-harness.mjs:1391-1477). A lost installation acknowledgement can leave the listener installed but marked uninstalled; cleanup then detaches without removal.",
+    "owned_recipe_cleanup": "Source path records a unique generated name and host before save, targets the exact visible row and confirmation title, and waits for its absence in a loaded host list before browser teardown (showcase-d47-document-lifecycle.mjs:168-214,493-504). This is source-supported, native-unverified.",
+    "failure_preservation": "Exercise error remains primary; observer and recipe cleanup failures are recorded and prevent a clean pass when there was no earlier failure (showcase-d47-document-lifecycle.mjs:216-243).",
+    "native_acceptance": "UNVERIFIED: the builder report contains controlled Chromium DOM and driver guard evidence only. A fresh signed-in installed-artifact replay is still required; guards alone never establish user-visible terminal output or persisted cleanup."
+  },
+  "verdict_b_quality": {
+    "result": "FAIL",
+    "positive": "The terminal predicate uses exact-row DOM state instead of body-wide progress text; the reported 8/8 DOM and 14/14 driver guards include constant-success and interim-success mutants that fail as expected (.research/d47-completion-cleanup-fix-20261007.json). Cleanup is inside the harness callback and preserves the first error.",
+    "finding": "Important: listener installation is not atomic with probeInstalled. Runtime.evaluate installs chrome.debugger.onEvent listener and global probe before acknowledgement (showcase-d47-document-lifecycle.mjs:293-340); probeInstalled becomes true only after the awaited call returns (same file:621-625). If CDP applies the evaluation but drops its reply, withD47Cleanup calls cleanupD47Probe(worker,false), which skips remove and merely detaches (showcase-d47-driver-evidence.mjs:22-35). This violates confirmed observer removal before teardown on a realistic partial failure.",
+    "test_gap": "New tests cover the terminal helper and existing probe cleanup when installed=true/false, but do not force the partial-install acknowledgement failure through the real driver lifecycle. The recorded guard results do not close this gap."
+  },
+  "open_items": [
+    "Repair and force-test partial observer installation so cleanup checks/removes an existing listener even when installation acknowledgement is lost, while preserving the primary failure.",
+    "Run fresh signed-in native acceptance on a current installed artifact and verify exact user-visible terminal result, observer removal, and run-owned recipe absence. Broader D47/T57 acceptance remains open."
+  ]
+}
