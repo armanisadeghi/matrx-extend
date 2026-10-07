@@ -614,6 +614,8 @@ async function main() {
   );
   let observation;
   let interception;
+  let observedBrowser;
+  let guestReadinessScreenshot;
   const fingerprintKey = randomBytes(32).toString('base64');
   const native = await runNativeSidepanelQa({
     headed: true,
@@ -621,7 +623,14 @@ async function main() {
     localDevReceiptPath: RECEIPT,
     expectedRelease: { version: receipt.version, treeSha256: evidence.treeSha256 },
     expectedExtensionId: EXPECTED_ID,
-    exercisePanel: async ({ page, panel, activatePanel, attachWorker }) => {
+    exercisePanel: async ({ page, panel, browserSession, activatePanel, attachWorker }) => {
+      const browserVersion = await browserSession.send('Browser.getVersion');
+      assert.match(browserVersion.product ?? '', /^(?:Chrome|HeadlessChrome)\/[0-9.]+$/);
+      assert.match(browserVersion.protocolVersion ?? '', /^[0-9]+\.[0-9]+$/);
+      observedBrowser = {
+        product: browserVersion.product,
+        protocol_version: browserVersion.protocolVersion,
+      };
       let authentication;
       if (ROLE !== 'guest') {
         const signedIn = await signInSettings({
@@ -648,7 +657,12 @@ async function main() {
       try {
         panelGuard = await mutationGuard(panel);
         workerGuard = await mutationGuard(worker);
-        if (ROLE === 'guest') authentication = await prepareGuestObservation(panel, fingerprintKey);
+        if (ROLE === 'guest') {
+          authentication = await prepareGuestObservation(panel, fingerprintKey);
+          const { data } = await panel.send('Page.captureScreenshot', { format: 'png' });
+          guestReadinessScreenshot = `${OUTPUT}.guest-account-readiness.png`;
+          await writeFile(guestReadinessScreenshot, Buffer.from(data, 'base64'), { mode: 0o600 });
+        }
         observation = { authentication, ...(await census(panel, fingerprintKey)) };
         if (ROLE === 'guest') {
           await openSection(panel, 'Account');
@@ -686,6 +700,10 @@ async function main() {
       tree_sha256: evidence.treeSha256,
     },
     ...observation,
+    observed_browser: observedBrowser,
+    ...(guestReadinessScreenshot && {
+      guest_account_readiness_screenshot: guestReadinessScreenshot,
+    }),
     completeness,
     interception,
     unmapped_total: completeness.unmapped_total,

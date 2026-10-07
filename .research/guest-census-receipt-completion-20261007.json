@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "scope": "Guest census receipt completeness before original native retest",
+  "driver": "tests/browser/takeover-visible-census.mjs",
+  "change": [
+    "Read Browser.getVersion from the existing native browser CDP session and retain only product and protocol_version in the census result.",
+    "After positive guest Account and signed-out storage observation, capture the attached side panel as a PNG beside MATRX_CENSUS_OUTPUT with mode 0600 and include its path in the result."
+  ],
+  "preserved": "Census classification, completeness, unknowns, and before/after role proof are unchanged.",
+  "guarded_check": {
+    "command": "node scripts/stabilization-resource.mjs run --run-id guest-census-receipt-completion-20261007 -- node --test tests/browser/takeover-visible-census.test.mjs scripts/hosted-profile-route.test.mjs",
+    "journal": "docs/stabilization/resource-journals/guest-census-receipt-completion-20261007.jsonl",
+    "resource_admitted": true,
+    "resource_invalid": false,
+    "exit_code": 0,
+    "tests_passed": 25,
+    "tests_failed": 0
+  },
+  "native_limit": "No native browser retest was run in this bounded change; the new CDP version and screenshot operations remain unverified until the original guest run. This is not product or census coverage acceptance."
+}
