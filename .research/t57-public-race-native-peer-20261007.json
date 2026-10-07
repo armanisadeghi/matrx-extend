@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "role": "fresh independent native receipt verifier; zero QA authorship or rerun",
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "run": {
+    "id": 37608190442,
+    "workflow_source": "05e220857bfaed9fa94027ff6728ad212ba6ddf5",
+    "reviewed_driver_source": "8e84f3aa0f2bb31ea42c960457c294f98fd9af8a",
+    "frozen_app_source": "62142e748d2e83eae1a97a07e9a2d388f22aeab2",
+    "frozen_app_version": "0.2.360",
+    "frozen_app_ci_run": 37606653249,
+    "frozen_app_artifact_id": 11474839620,
+    "frozen_app_tree_sha256": "e41e0fe5243284e1781a2c997078a05bd4ae50f68a3543914a21e13a18d9ddc7",
+    "receipt_artifact_identity_matches": true,
+    "preflight_flag": true
+  },
+  "evidence": {
+    "public_executor_report": ".research/t57-public-race-native-20261007.json",
+    "private_raw_receipt_sha256": "b2990a4cf2664a00cc8c1dd8cb6f9556d56ae0ee7ce2d836e5d7e92ed533977e",
+    "private_failed_step_log_sha256": "31d31980de1a63c3644691d3a6505e7b7656395966a9d505ee1ffad5e2ec553d",
+    "current_run_journals": {
+      "package": {
+        "sha256": "e564f0036a03cacae69815281c2859ae59609cc1a64e0dab5ad4e12bc672568a",
+        "run_id": "hosted-package-37608190442-1",
+        "admitted": true,
+        "resource_invalid": false,
+        "decision": "valid",
+        "exit_code": 0
+      },
+      "browser": {
+        "sha256": "9b0ab9331f9789b66abf2acfb1e8b6ba94c45c09529f9a9c73d86809bf1f93cd",
+        "run_id": "hosted-browser-37608190442-1",
+        "admitted": true,
+        "resource_invalid": false,
+        "decision": "valid",
+        "exit_code": 0
+      },
+      "guest": {
+        "sha256": "ef5f350007113f0b0a418db409081a3ac1a63557e63341a7a29e3c2e763e695b",
+        "run_id": "hosted-guest-37608190442-1",
+        "admitted": true,
+        "resource_invalid": false,
+        "decision": "child_failed",
+        "exit_code": 1
+      }
+    },
+    "source_sha256": {
+      "workflow": "6eca96863fd1a4fd9c22846ac8b55f787e1f8da0bffbf18512cd3cf4455048b6",
+      "preflight_controller": "6942d3334b22cdc37acce994e75bcda4f3175f63f582cc4f29c0240f4552b571",
+      "native_driver": "8dd2722906c31ad675b9da6889bd421e9c8fbdbcf45f24af06dad82a823eb7b1"
+    }
+  },
+  "verdict_a_behavior_capability": {
+    "status": "PARTIAL_NATIVE_OBSERVATION_T57_UNVERIFIED",
+    "positive": [
+      "Frozen unpacked extension was imported from the exact pushed CI artifact; native panel context resolved to the expected extension.",
+      "Public hn.algolia.com traffic without injected fetch produced a selected HTTP 200 Algolia response and visible response preview; the temporary saved pattern was observed in Patterns.",
+      "Two genuine response-stage pauses carried identical URL, POST-body, request-identity, and response-body SHA-256 values, with distinct network and loader identities in observed main-frame contexts.",
+      "The extension debugger capture-hook probe attested while the old response was paused; unmatched target count was zero."
+    ],
+    "negative_or_unmeasured": [
+      "The saved replay was not observed as active at the old pause: the driver's exact-row AND spinner-based running predicate was false. The receipt does not expose either component separately at that instant, so it cannot distinguish an inactive replay from an insufficient activity oracle.",
+      "The old request's network lifecycle was failed after navigation; the current request's lifecycle was finished. The old response's HTTP 200 and body digest are evidence of response interception, not late callback delivery.",
+      "Release order remained empty. The driver recorded no old-then-current delivery, no saved current result, and no refusal outcome; saved_result is null.",
+      "The preflight verdict and entire T57 acceptance remain unverified. No product defect is proved by this run."
+    ]
+  },
+  "verdict_b_evidence_source_quality": {
+    "status": "BOUNDARY_PROVEN_EXACT_EXCEPTION_UNCAPTURED",
+    "classification": "Native driver / browser request lifecycle boundary, with an additional uncertain replay-activity oracle; no resource invalidation or proved product failure.",
+    "first_failure_boundary": "After both response pauses and before the first successful release receipt. The driver enters releaseInOrder(), whose first operation awaits Fetch.continueRequest for the old held response before appending 'old'. The receipt has an empty release_order and old lifecycle 'failed'. The first operation did not complete successfully; the sanitized failure is only unclassified_error at public_race_release, so its exact CDP exception and whether the held-map assertion or continueRequest threw are not retained.",
+    "resource_semantics": "All three current-run permits were admitted and resourceInvalid=false. Guest decision child_failed reports the native child exit 1; it is not a resource-exhaustion or resource-refusal verdict. Package/browser decisions were valid. The raw native observations remain usable as bounded facts despite no acceptance pass.",
+    "source_limit": "The source verdict explicitly requires two finished lifecycles, old/current release order, active replay at old pause, and verified interception cleanup. Several of those are absent. A source-level test and its earlier review cannot replace native delivery evidence.",
+    "cleanup": {
+      "temporary_pattern": "removed",
+      "extension_capture_probe": "removed_detached",
+      "interception_controller": "unverified",
+      "temporary_actions_secret_names": "both absent after terminal, independently checked by root"
+    }
+  },
+  "next_safe_action": "Preserve this failed native receipt as a bounded diagnostic. In the driver, add sanitized capture of the first release substep and CDP error class, and establish a reliable positive active-replay signal before release. Determine whether navigation inherently cancels the held old request; if so, choose a real browser sequence that keeps the old request deliverable without altering third-party responses. Independently verify interception cleanup. Then run one exact-artifact bounded native preflight; claim T57 only after ordered real callback delivery and the saved result or honest refusal are observed.",
+  "scope_limit": "Read-only peer diagnosis. No QA, browser, build, workflow, product, canonical, or cleanup action was performed here."
+}
