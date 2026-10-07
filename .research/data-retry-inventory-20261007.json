@@ -58,6 +58,6 @@
   "limitations": [
     "No tests, browser, native runtime, build, or behavior verification was run in this source-only inventory lane.",
     "The proposed test is design-needed until the exact controlled native failure/recovery fixture prerequisite is supplied.",
-    "The cross-repository extension system-of-record path in the supplied AGENTS.md was not present in this checkout at its stated /Users/armanisadeghi/code/common-docs location; the source-only comparison and peer proposal were available locally."
+    "The supplied AGENTS.md names a stale cross-repository alias at /Users/armanisadeghi/code/common-docs/systems/clients/extension, which is absent; the canonical /Users/armanisadeghi/code/common-docs/systems/apps/extension path exists and was available. The local source-only comparison and peer proposal were also available."
   ]
 }
