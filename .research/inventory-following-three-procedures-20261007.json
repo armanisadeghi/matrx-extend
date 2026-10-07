@@ -22,7 +22,7 @@
   ],
   "sharedreceipt_preamble": [
     "Before each proposed run, first satisfy the resource permit and create a fresh PLAN-compliant receipt: source SHA and dirty-source hash if applicable, lockfile hash, output hash, WXT mode, loaded runtime extension ID, Chrome version, profile label, auth/role/device-org state, permissions, backend identity, fixture IDs and timestamp. Also record login method, principal provenance, real data origin, build/env flags, response interception, mocks and seeded browser state. Store no secrets, tokens, session values or unrelated page contents.",
-    "Use the existing unpacked development artifact bound to the receipt. Confirm loaded ID, source/output identity and build fingerprint. Wait for build completion, reload the extension when required, reopen extension pages and the actual side panel/Tools route, and reload the target fixture tab. Identify service-worker and offscreen builds separately before acting; if identity is unavailable, stop and leave the run unverified. HMR is not acceptance evidence.",
+    "Use the existing unpacked development artifact bound to the receipt. Confirm the loaded extension ID, source/output identity and build fingerprint for the extension UI executing the test. Wait for build completion, reload the extension when required, reopen extension pages and the actual side panel/Tools route, and reload the target fixture tab. These direct-handler procedures do not require separate service-worker or offscreen build identities; their lifecycle remains outside scope. HMR is not acceptance evidence.",
     "Run the case separately in genuine signed-in member and admin profiles. These Tools procedures do not target guest mode. Record role, active device organization, and the activeTab/scripting grant state for each profile; don't infer one profile's result from the other.",
     "Start the already-owned fixture server only under the resource permit, following tests/fixtures/showcase-replay/README.md. Open its announced loopback calendar URL and record the chosen port and owned fixture tab. The fixture is synthetic and loopback-only. Close only that owned tab and stop only the fixture server process started for the run during cleanup.",
     "Actual route for each run: extension side panel > Tools > Catalog > All handlers > search exact handler name > expand > inspect displayed local JSON schema > enter the exact JSON below in Test runner > Run. ToolsView validates the local schema and invokes handler.run directly with permissionMode=act and assignedTabId=null; handlers requiring the page therefore use the focused active tab in the current window. Focus the owned calendar tab immediately before Run.",
@@ -92,14 +92,14 @@
       "steps": [
         "With the owned calendar fixture tab focused, run {\"kinds\":[\"json_ld\",\"microdata\"],\"ld_type\":\"Event\",\"itemtype\":\"Event\"}.",
         "Run {\"kinds\":[\"microdata\"],\"itemtype\":\"NoSuchType\"} as a valid no-match filter control.",
-        "Run {\"kinds\":[\"microdata\"],\"unexpected\":true} as an invalid-schema control; confirm it is rejected in the Tools runner before handler invocation.",
+        "Run {\"kinds\":[\"not-a-kind\"]} as an invalid-enum control; confirm it is rejected in the Tools runner before handler invocation.",
         "Reload the extension, reopen the side panel and Tools route, reload and focus the owned fixture tab, then repeat the first input. Record the reload observation separately.",
         "Close only the owned fixture tab and stop only the fixture server started for this case."
       ],
       "expected": [
         "Positive result has ok=true, json_ld contains the Event records from the fixture @graph, microdata contains the three top-level Event items, schema_org_types includes Event and nested Place where found, and counts matches the returned json_ld and microdata array lengths. Do not hardcode exact snapshot metadata or claim exhaustive parity with the separate Showcase UI.",
         "NoSuchType is valid input and returns an empty microdata array with microdata count 0; this is a no-match result, not a validation error.",
-        "Unknown property is rejected as a schema mismatch before handler.run, with no extraction result presented as a successful call.",
+        "The invalid kinds enum is rejected by the schema before handler.run, with no extraction result presented as a successful call.",
         "Reloaded positive output is recorded independently and remains synthetic fixture evidence only; dispatch, binding, lifecycle and permission-denial dimensions remain unverified."
       ],
       "dimensions": [
