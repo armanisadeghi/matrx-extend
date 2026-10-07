@@ -1,0 +1,91 @@
+{
+  "id": "EXT-D-0149",
+  "feature_id": "EXT-F-0002",
+  "feature_ids": [
+    "EXT-F-0002"
+  ],
+  "case_ids": [
+    "EXT-F-0002-T11"
+  ],
+  "title": "Guest visibility census cannot establish Account readiness",
+  "surface": "Testing infrastructure / role-visibility census",
+  "auth_mode": "guest",
+  "state": "in-fix",
+  "owner": "root/guest_census_account_diagnosis",
+  "priority": "P1",
+  "severity": "S3",
+  "user_impact": "Guest role visibility remains unverified because the test census stopped before positive role proof and complete control accounting. No public product behavior failure is established.",
+  "reported_by": "Native guest visibility census receipt on 2026-10-07",
+  "exact_run": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "run_id": 37621192492,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37621192492",
+    "acceptance_case": "visibility-census-guest",
+    "checkout_sha": "a62f6e5e75b0a034a37d30f5e9a333792006317f",
+    "terminal_status": "failure",
+    "started_at": "2026-10-07T12:28:17Z",
+    "completed_at": "2026-10-07T12:34:52Z"
+  },
+  "exact_artifact": {
+    "development_run_id": 37619740064,
+    "development_artifact_id": 11482071536,
+    "runtime_source_sha": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+    "runtime_version": "0.2.366",
+    "artifact_archive_sha256": "eebbeb6d4c63cffab1c4462acf5b69e081336c3795782c54d3a5e8ba554e9ebb",
+    "artifact_tree_sha256": "9e7c2db499a2c1fed0a8b3ea6facfa88a13f3c2c26ba7f9b9d2d1f216310236c",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "hosted_result_artifact_id": 11481804368,
+    "hosted_result_artifact_sha256": "c8c4af91b2fba61800909d76bb98c93e2595dbe5a2de14e922ca10930f94ab01"
+  },
+  "preconditions": [
+    "Use the existing standalone public development fixture and existing hosted workflow inputs; retain current-run frozen development run/artifact IDs.",
+    "Use a fresh disposable guest profile under the existing resource guards and require positive role proof before interpreting visibility."
+  ],
+  "reproduction": [
+    "Run .github/workflows/hosted-guest-acceptance.yml with acceptance_case=visibility-census-guest and the current-run frozen development_run_id=37619740064 and development_artifact_id=11482071536.",
+    "Inspect only the exact run receipt and safe census diagnostics. Require positive signed-out guest-state proof and complete accounting of all controls/regions; preserve unknown, unsupported, inaccessible, or gated regions as incomplete.",
+    "In run 37621192492, observe the terminal assertion census_guest_account_ready_not_observed before census completion. The diagnostic records two Account candidates with safe_to_open=false, 15 candidates total (12 mapped, 3 fingerprint-only), and no inaccessible-region count because the assertion stopped completeness accounting."
+  ],
+  "expected": "The exact guest artifact and run establish positive guest-role proof, safely identify readiness, and account for every inventoried control and region. Unknown, unsupported, gated, or unaccounted regions leave the census incomplete.",
+  "actual": "Run 37621192492 failed at census_guest_account_ready_not_observed. The census did not complete, did not visit all controls, and did not observe positive signed-out guest state. Two Account candidates were unsafe to open; the diagnostic included 15 candidates, 12 mapped and 3 fingerprint-only. No action controls were clicked. This is a native census/readiness failure only; no public product behavior failure or member/admin result is established.",
+  "cause": "Unconfirmed pending actual UI review of the captured screenshots in hosted result artifact 11481804368. Do not infer why the Account candidates were unsafe to open.",
+  "evidence": [
+    ".research/guest-visibility-native-20261007.json"
+  ],
+  "native_screenshot_paths_in_receipt": [
+    "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-zLO2Hj/native-side-panel.png",
+    "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-zLO2Hj/normal-target-after-open.png"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-07T12:42:43Z",
+      "from": null,
+      "to": "open",
+      "reason": "Registered from exact terminal guest census receipt; only census readiness is known."
+    },
+    {
+      "at": "2026-10-07T12:42:44Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Assigned to guest census diagnosis; actual UI review is pending and root cause remains unconfirmed."
+    },
+    {
+      "at": "2026-10-07T12:42:45Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Diagnosis is assigned; no source cause or public product behavior failure is asserted."
+    }
+  ],
+  "closure_requirement": "Review the actual captured UI for the exact run, establish a source-supported diagnosis, then rerun the existing guarded workflow with exact frozen artifact/run receipts and positive role proof. Record all unsupported, gated, inaccessible, and unknown regions; keep member/admin unverified until separately observed.",
+  "next_action": "root/guest_census_account_diagnosis: review the exact run screenshots in artifact 11481804368 and diagnose the readiness mismatch without assuming why Account candidates were unsafe; then define a receipt-bound retest using the existing workflow.",
+  "verification": {
+    "native": "guest census failed before completeness; positive guest proof unverified",
+    "member": "unverified",
+    "admin": "unverified",
+    "product_behavior": "no product behavior failure established"
+  },
+  "context": {
+    "classification": "test infrastructure / census readiness",
+    "source_receipt": ".research/guest-visibility-native-20261007.json"
+  }
+}
