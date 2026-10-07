@@ -304,7 +304,7 @@ const TabGroupsArgs = z.object({
   color: z
     .enum(['grey', 'blue', 'red', 'yellow', 'green', 'pink', 'purple', 'cyan', 'orange'])
     .optional(),
-  /** For update. */
+  /** For create/update. */
   collapsed: z.boolean().optional(),
 });
 type TabGroupsArgs = z.infer<typeof TabGroupsArgs>;
@@ -321,7 +321,7 @@ export const tab_groups: ToolHandler<TabGroupsArgs, unknown> = {
       if (!args.tab_ids?.length) return { ok: false, reason: "'tab_ids' required for create" };
       return delegate(
         create_tab_group,
-        { tab_ids: args.tab_ids, title: args.title, color: args.color },
+        { tab_ids: args.tab_ids, title: args.title, color: args.color, collapsed: args.collapsed },
         ctx,
       );
     }

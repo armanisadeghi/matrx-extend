@@ -3598,6 +3598,13 @@ In Structured data or Showcase Patterns, run a saved pattern, then switch pages 
 - **Steps:** Run `chrome_history` action=recent limit=3; `chrome_cookies` set with expires_in_seconds=3600 then inspect the cookie in DevTools; `tabs` close a tab_id; `wait_for` condition=network_idle on another tab's id; `get_request_body` with a string tab_id; `request_user_takeover` with both texts and a tab_id.
 - **Expected:** 3 history rows; the cookie has an expiry one hour out; the tab closes; network_idle resolves for the named tab; the body returns (or a named reason, never "No active tab"); the takeover card shows both texts with the named tab in front. Unit proof: `src/lib/tools/handlers/canonical-delegate-contract.test.ts`.
 
+### Tab groups create preserves collapsed state (EXT-D-0148, EXT-F-4163-T01)
+
+- **What it does:** The canonical `tab_groups` create action passes `collapsed` through to Chrome's group creation handler.
+- **Where to test:** Signed-in Tools tab → Run `tab_groups`, with two disposable browser tabs and the `tabs` and `tabGroups` permissions granted.
+- **Steps:** Create a group with `{"action":"create","tab_ids":[A,B],"title":"Test group","color":"blue","collapsed":true}` using the actual IDs of the disposable tabs. Read it with `tab_groups` list. Then expand the group, create a second disposable group with `collapsed:false`, and read it again. Remove both groups after the check.
+- **Expected:** The first group is collapsed immediately and lists `collapsed:true`; the second is expanded and lists `collapsed:false`. Title, color, and tab membership are preserved. Regression guard: `src/lib/tools/handlers/canonical-delegate-contract.test.ts`.
+
 ### Records filtered date aggregates (EXT-D-0091)
 
 - **What it does:** Preserves scalar and date-window match filters in the store aggregate call; date buckets group by the period once.

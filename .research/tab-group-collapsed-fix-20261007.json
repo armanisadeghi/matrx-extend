@@ -1,0 +1,81 @@
+{
+  "id": "EXT-D-0148",
+  "feature_id": "EXT-F-4163",
+  "case_id": "EXT-F-4163-T01",
+  "surface": "canonical tab_groups create action",
+  "source_baseline": "0c79b7f7",
+  "original_input": {
+    "action": "create",
+    "tab_ids": [3, 4],
+    "title": "Research",
+    "color": "blue",
+    "collapsed": true
+  },
+  "expected_leaf_args": {
+    "tab_ids": [3, 4],
+    "title": "Research",
+    "color": "blue",
+    "collapsed": true
+  },
+  "actual_leaf_args_before_fix": {
+    "tab_ids": [3, 4],
+    "title": "Research",
+    "color": "blue"
+  },
+  "false_case": {
+    "input": { "action": "create", "tab_ids": [7], "collapsed": false },
+    "expected_leaf_args": { "tab_ids": [7], "collapsed": false },
+    "actual_leaf_args_before_fix": { "tab_ids": [7] }
+  },
+  "cause": "The canonical create branch omitted collapsed while assembling the create_tab_group delegate arguments. The leaf's schema and Chrome update call support collapsed on creation.",
+  "contract_nuance": "The DB-generated description names collapse under update and the prior inline comment said update only. The merger's explicit charter is to preserve every underlying handler capability; the public schema accepts collapsed on create without error. This repair preserves that existing leaf capability.",
+  "sibling_census": [
+    "create: all exposed fields tab_ids, title, color, collapsed forwarded after repair",
+    "update: group_id, title, color, collapsed were already forwarded",
+    "add/remove/list: all exposed action fields were already forwarded",
+    "create_tab_group leaf also supports window_id, but canonical schema does not expose it; separate contract-scope gap left for review"
+  ],
+  "red": {
+    "run_id": "ext-d-0148-tab-groups-red2-20261007",
+    "journal": "docs/stabilization/resource-journals/ext-d-0148-tab-groups-red2-20261007.jsonl",
+    "command": "pnpm exec vitest run --maxWorkers=1 src/lib/tools/handlers/canonical-delegate-contract.test.ts",
+    "verdict": "2 expected collapsed create failures; 71 sibling passes; resource valid",
+    "captured_assertions": [
+      "public 'collapsed'=true never reached create_tab_group: {\"tab_ids\":[3,4],\"title\":\"Research\",\"color\":\"blue\"}: expected false to be true",
+      "public 'collapsed'=false never reached create_tab_group: {\"tab_ids\":[7]}: expected false to be true"
+    ],
+    "captured_test_summary": "Test Files 1 failed (1); Tests 2 failed | 71 passed (73)"
+  },
+  "green": {
+    "run_id": "ext-d-0148-tab-groups-green-20261007",
+    "journal": "docs/stabilization/resource-journals/ext-d-0148-tab-groups-green-20261007.jsonl",
+    "verdict": "73/73 cases passed; resource valid",
+    "captured_test_summary": "Test Files 1 passed (1); Tests 73 passed (73)"
+  },
+  "typecheck": {
+    "run_id": "ext-d-0148-tab-groups-compile2-20261007",
+    "journal": "docs/stabilization/resource-journals/ext-d-0148-tab-groups-compile2-20261007.jsonl",
+    "verdict": "pnpm compile passed; resource valid"
+  },
+  "catalog": {
+    "run_id": "ext-d-0148-tab-groups-catalog-20261007",
+    "journal": "docs/stabilization/resource-journals/ext-d-0148-tab-groups-catalog-20261007.jsonl",
+    "verdict": "167 tools regenerated; resource valid"
+  },
+  "docs_tools": {
+    "run_id": "ext-d-0148-tab-groups-docs-20261007",
+    "journal": "docs/stabilization/resource-journals/ext-d-0148-tab-groups-docs-20261007.jsonl",
+    "verdict": "81 DB-sourced tools regenerated; resource valid"
+  },
+  "sha256": {
+    "source": "7614bebcdc29a7e49b9a08eb141643814ca72dddeaba71278295065609012a2e",
+    "test": "b7de482cfa370f89d8d088e2f1e681b429c9fc5ee11f5484e5db995e1e08a84b",
+    "red_journal": "7170ed33ca5714d4885d67cefeccd2cc2913e56d5c808e1b3c46a6a8ac0701e1",
+    "green_journal": "9c1872f89c40db3b9c47678d78f905d76d2533a0b9fef038a3d99502e14d8961",
+    "compile_journal": "af3ea4bff9b20a9ba7cd8dad9a365514e67d29d1bae8d4e1d32ac2afcf4aa875",
+    "catalog_journal": "1f87bbe96423674cdc84a5b99c1556338749a9fcce8780bb2ec2d55e99c36d71",
+    "docs_journal": "3ac7c79395d42ceb2d63c483ed5275654b922ac4b96262676e4b962994431fd2"
+  },
+  "native": "unverified",
+  "release": "unverified"
+}

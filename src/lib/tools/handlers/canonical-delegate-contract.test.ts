@@ -181,7 +181,12 @@ const cases: Case[] = [
   { tool: mergers.tab_groups, args: { action: 'list' }, leaf: 'get_tab_groups' },
   {
     tool: mergers.tab_groups,
-    args: { action: 'create', tab_ids: [3, 4], title: 'Research', color: 'blue' },
+    args: { action: 'create', tab_ids: [3, 4], title: 'Research', color: 'blue', collapsed: true },
+    leaf: 'create_tab_group',
+  },
+  {
+    tool: mergers.tab_groups,
+    args: { action: 'create', tab_ids: [7], collapsed: false },
     leaf: 'create_tab_group',
   },
   {
