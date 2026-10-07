@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "role": "fresh independent read-only native-receipt reviewer; zero implementation authorship",
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "review_scope": "One manual-prior hosted native run 37588499593 against frozen installed development artifact 11466709788 from source 82f3c440; no new browser execution, build, release, database access, credentials, or product edits.",
+  "verdict_A_product_spec": {
+    "bounded_manual_prior": "PASS_WITH_EXPLICIT_LIMIT",
+    "full_D47_T57": "UNVERIFIED",
+    "basis": [
+      "The installed side panel recorded exactly one old-document manual GET response before replay, while a second manual-origin request and the ordinary old target request were pending. The fixture reported two document loads and the current target response finished before the old response.",
+      "A current-document context (order 4), binding handshake (5), and exact current response packet (6) followed old-context clearing (2) and current-frame navigation (3). The packet had the expected URL, method, status, response hash, and sequence 1; no old target binding packet was recorded.",
+      "Only after that positive current trace, release-manual returned HTTP 200 with prior pending prestate, server finish true, and abort false. The exact saved recipe ended with a current row, no old row, no running state, no error, and current-only preview; the owned recipe was removed."
+    ],
+    "limits": [
+      "The late prior response is proven to finish at the fixture server. The receipt does not prove the old browser context received it, emitted a Runtime.bindingCalled callback, or that the extension rejected such a callback. Architectural exclusion is supported by context teardown and the current binding positive control, not direct observation of a rejected old callback.",
+      "The earlier saved-run binding-name isolation branch, cancellation, same-URL/SPA navigation during approval or capture, panel/tab close, and complete T57 acceptance were not exercised by this one run. The defect remains in-fix.",
+      "This verdict applies to installed version 0.2.350/source 82f3c440 with the separately identified workflow/QA driver at 736d09f0; it is not a current-main runtime pass."
+    ]
+  },
+  "verdict_B_evidence_quality": {
+    "status": "PASS_WITH_QUALIFICATIONS",
+    "provenance": "The workflow stdout records showcase-d47-admin, manual-prior, CI run 37587070036/artifact 11466709788, exact imported source 82f3c440 and prepared tree hash 8a01a24694dd8ffcfaacc0ad7b53cf2e52a136a78181d3f77a40f228792152ed. The raw receipt repeats those identities. The workflow route selects the real D47 lifecycle driver; source hashes in the report match the checked files. Diff from the app source to workflow source is empty for src, package/lock, fixture, importer, shared harness and workflow among checked paths; only the D47 driver/helper differ among those paths, and their hashes match the reviewed oracle. This establishes a frozen installed-app test with a later QA oracle, not whole-source identity.",
+    "resource_validity": "Package, browser and guest journals match the reported SHA-256 hashes, each records admitted true, resourceInvalid false, exitCode 0 and decision valid. The guest stdout hash matches the report and records the exact import and successful artifact upload.",
+    "oracle": "The actual helper requires pending-before-replay, a positive current trace, current response sent, release HTTP 200, prior pending prestate, finished true and aborted false before labeling finished_after_current. A canceled 409 is labeled unverified; inconsistent states are invalid. The driver takes the positive trace before release and derives the bounded verdict from that helper. The raw receipt satisfies the finished branch. The exact saved terminal reader supplies current_row=true, old_row=false, running=false and current_only preview, so a panel-wide current text match alone is not the pass oracle.",
+    "qualifications": [
+      "The raw receipt and stdout are retained in a private untracked directory and therefore are not present in the pushed public evidence commit; this review checked the original local files and their hashes. Future reviewers need the private retained artifact or GitHub run artifact to independently recheck the same observations.",
+      "Resource journals and workflow success alone do not prove product behavior. This review relies on the raw receipt plus the exact driver and fixture logic; it did not replay the browser or independently inspect the hosted artifact bytes."
+    ]
+  },
+  "evidence": {
+    "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37588499593",
+    "report_commit": "501069353fe119a4b491c0987b904aa05b29a011",
+    "report": ".research/d47-manual-native-20261007.json",
+    "raw_receipt": ".research/d47-manual-native-20261007/private/_temp/showcase-d47-native-37588499593-1.json",
+    "raw_receipt_sha256": "9e871b4242ad56ce22bfcf464a32eb325c9a2e63e1d67d62fa463764dba65778",
+    "stdout_sha256": "4ff395457bc2e807ebecede4939b82fd2e6f8dd73e29dc36d3fe1f798a435673",
+    "journal_sha256": {
+      "package": "64edf7465152a8221614b007007b75477829a362611e15831786bb698f27e723",
+      "browser": "fce87a33e20e2e2d2d1da2a5b83bcb2bdd171ba16c0aefc62ba7a3281c4c723e",
+      "guest": "d17b26477b7b440826aa06243d03a2a237bc741031e8913fb9c4ac6b76ea165d"
+    }
+  },
+  "finding": "No discrepancy in the report's bounded claim. Do not promote this to browser-delivered old-callback rejection or full defect closure.",
+  "status": "DONE_WITH_CONCERNS"
+}
