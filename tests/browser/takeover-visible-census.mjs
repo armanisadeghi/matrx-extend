@@ -355,8 +355,13 @@ export async function frameGuestAccount(panel, authentication) {
         return r.width > 0 && r.height > 0 && r.bottom > 0 && r.right > 0 &&
           r.top < innerHeight && r.left < innerWidth;
       };
-      return { account_header_in_viewport: inViewport(header),
-        account_content_in_viewport: inViewport(content), sign_in_in_viewport: inViewport(signIn) };
+      const fullyInViewport = el => { if (!el) return false;
+        const r = el.getBoundingClientRect();
+        return r.width > 0 && r.height > 0 && r.top >= 0 && r.left >= 0 &&
+          r.bottom <= innerHeight && r.right <= innerWidth;
+      };
+      return { account_header_in_viewport: fullyInViewport(header),
+        account_content_in_viewport: inViewport(content), sign_in_in_viewport: fullyInViewport(signIn) };
     })()`,
     );
   } catch (cause) {

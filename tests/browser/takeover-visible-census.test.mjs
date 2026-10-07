@@ -628,3 +628,43 @@ test('guest screenshot refuses capture when Account remains outside the viewport
   );
   assert.equal(scrollAttempted, true);
 });
+
+test('guest screenshot refuses a one-pixel Account header or Sign in sliver', async () => {
+  for (const sliver of ['header', 'sign_in']) {
+    const context = domContext(guestHtml);
+    context.innerHeight = 400;
+    context.innerWidth = 400;
+    const header = context.document.querySelector('button[aria-expanded]');
+    const signIn = [...context.document.querySelectorAll('button')].find(
+      (button) => button.textContent.trim() === 'Sign in',
+    );
+    header.scrollIntoView = () => {};
+    context.document.defaultView.HTMLElement.prototype.getBoundingClientRect = function () {
+      const clipped = this === (sliver === 'header' ? header : signIn);
+      return {
+        width: 100,
+        height: 20,
+        top: clipped ? -19 : 20,
+        bottom: clipped ? 1 : 40,
+        left: 10,
+        right: 110,
+      };
+    };
+    const panel = {
+      send: async (method, params) => {
+        assert.equal(method, 'Runtime.evaluate', 'capture must refuse a sliver');
+        return { result: { value: vm.runInNewContext(params.expression, context) } };
+      },
+    };
+    await assert.rejects(
+      () => captureGuestReadiness(panel, '/unused', { signed_out_observed: true }),
+      (error) => {
+        assert.equal(error.receiptDiagnostic.stage, 'guest_account_viewport');
+        assert.equal(error.receiptDiagnostic.account_content_in_viewport, true);
+        assert.equal(error.receiptDiagnostic.account_header_in_viewport, sliver !== 'header');
+        assert.equal(error.receiptDiagnostic.sign_in_in_viewport, sliver !== 'sign_in');
+        return true;
+      },
+    );
+  }
+});
