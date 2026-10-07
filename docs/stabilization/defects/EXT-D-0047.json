@@ -28,9 +28,9 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Source diagnosis owns sole guarded source-test permit to repair initial_capture diagnostics after public native37566057766 failed its exactly-one matching POST200 response assertion before recording count. Zero versus multiple candidates and product versus oracle remain unknown. No saved recipe was created. Require meaningful original-failure guard and fresh independent source review before another native run.",
+    "next_action": "Await successful exact-current development CI artifact, then run one guarded hosted public initial-load replay with reviewed selector3faf5ac9. Independent peer1840fa66 accepts full actual API endpoint matching, selected preview synchronization and redacted before-assert diagnostics. Original37566057766 zero-versus-multiple capture count remains unknowable. Newer dependency lock is not covered by prior guarded source run; validate through current CI and frozen runtime receipt. Do not close T57 until public replay and remaining stale/manual/sequence cases pass.",
     "status": "Independent peer1abea43b accepts bounded old-first saved replay at frozen0.2.338/source651f25d0: observed old/current HTTP finish order, current context/packet, exact settled current-only saved row, valid resources and cleanup. Current-first earlier0.2.337 remains separately bounded. D47in-fix/T57unverified unchanged.",
-    "implementation_agent": "active: d47_public_capture_diagnosis",
+    "implementation_agent": "completed: d47_public_selector_escalation; independent peer d47_capture_final_peer",
     "execution_agent": "completed: d47_public_native_execution",
     "native_run_id": 37537634304,
     "workflow_source": "fbcc4311ae6885b67133e55336f692be38881249",
@@ -53,7 +53,7 @@
     "run_boundary_repair_commit": "0917cc61",
     "run_boundary_review_commit": "5425d283",
     "run_boundary_review": ".research/d47-run-readiness-peer-20261006.json",
-    "pending_ci_run_id": null,
+    "pending_ci_run_id": 37568283957,
     "latest_native_evidence": ".research/d47-oldfirst-native-20261007.json",
     "terminal_diagnosis": ".research/d47-terminal-diagnosis-20261006.json",
     "owned_reload_fix_commit": "86046a88",
@@ -106,7 +106,11 @@
     "public_upload_fix_report": ".research/d47-public-upload-fix-20261007.json",
     "public_upload_peer_report": ".research/d47-public-upload-peer-20261007.json",
     "latest_public_native_run_id": 37566057766,
-    "latest_public_native_evidence": ".research/d47-public-native-20261007.json"
+    "latest_public_native_evidence": ".research/d47-public-native-20261007.json",
+    "public_capture_fix_report": ".research/d47-public-capture-final-fix-20261007.json",
+    "public_capture_peer_report": ".research/d47-public-capture-final-peer-20261007.json",
+    "public_capture_fix_commit": "3faf5ac9",
+    "public_capture_peer_commit": "1840fa66"
   },
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
   "verification_status": "Independent peers accept bounded current-first native37558902653 on frozen0.2.337 and old-first37562111314 on frozen0.2.338: settled current-only saved output, current binding/context evidence, actual old HTTP finish, valid resources and cleanup. Neither observed old binding callback delivery. Public-site driver callback correction9cfe7403 is independently source accepted by d4497d11; no public native run yet. Public initial-load, stale-only recovery, manual/prior-run isolation and causal higher-old-sequence coverage remain required. D47 in-fix/T57 unverified; later dependency state is not certified.",

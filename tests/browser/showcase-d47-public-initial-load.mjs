@@ -33,6 +33,115 @@ export function publicTrustedClick(panel, target, report) {
   });
 }
 
+// The row labels are already shortened by NetworkTab. Keep them in memory only
+// for the trusted click; the receipt gets counts and booleans, never row text.
+export async function inspectPublicCaptureCandidates(panel, report) {
+  const observed = await evaluate(
+    panel,
+    `(() => {
+      const rows = [...document.querySelectorAll('button.font-mono:has(span.flex-1)')];
+      const text = rows.map((row) => row.textContent.trim());
+      const post200 = (value) => value.includes('POST') && value.includes('200');
+      const host = (value) => value.toLowerCase().includes('algolia');
+      const path = (value) => value.includes('queries');
+      return {
+        counts: {
+          visible_rows: rows.length,
+          post_200_rows: text.filter(post200).length,
+          algolia_rows: text.filter(host).length,
+          algolia_post_200_rows: text.filter((value) => post200(value) && host(value)).length,
+          query_label_rows: text.filter(path).length,
+          exact_candidates: text.filter((value) => post200(value) && host(value) && path(value)).length,
+        },
+        candidates: text.filter((value) => post200(value) && host(value)),
+      };
+    })()`,
+  );
+  report.capture_observations ??= {};
+  report.capture_observations.list = observed.counts;
+  return observed.candidates;
+}
+
+// HN's public bundle initializes application UJ5WYC0L7X. Its search client
+// uses the DSN host with the three numbered Algolia fallback hosts.
+const publicSearchHosts = [
+  'uj5wyc0l7x-dsn.algolia.net',
+  'uj5wyc0l7x-1.algolianet.com',
+  'uj5wyc0l7x-2.algolianet.com',
+  'uj5wyc0l7x-3.algolianet.com',
+];
+
+async function readSelectedCapture(panel, candidate, report) {
+  return waitFor(
+    'public_capture_selection',
+    async () => {
+      const preview = await evaluate(
+        panel,
+        `(() => {
+          const rows = [...document.querySelectorAll('button.font-mono:has(span.flex-1)')];
+          const selected = rows.filter(row => row.classList.contains('ring-1'));
+          const input = document.querySelector('#network-replay-url-filter');
+          const box = input?.closest('.space-y-2');
+          const fullUrl = box?.querySelector('.font-mono.break-all')?.textContent.trim() ?? '';
+          let selectedUrl = null;
+          try { selectedUrl = new URL(fullUrl); } catch {}
+          const text = box?.innerText ?? '';
+          const names = [...document.querySelectorAll('label')].map(el => el.textContent.trim());
+          return {
+            selected_rows: selected.length,
+            selected_row_matches: selected.length === 1 && selected[0].textContent.trim() === ${JSON.stringify(candidate)},
+            preview_url_matches: Boolean(fullUrl) && fullUrl === input?.value,
+            post_200: text.includes('POST · 200'),
+            target_host: selectedUrl?.protocol === 'https:' && ${JSON.stringify(publicSearchHosts)}.includes(selectedUrl?.host),
+            query_endpoint: selectedUrl?.pathname === '/1/indexes/*/queries',
+            hits_preview: text.includes('hits') && document.body.innerText.includes('rows extracted'),
+            credential_key_present: names.some(name => name.toLowerCase().includes('x-algolia-api-key')),
+            credential_masked: (input?.value ?? '').includes('x-algolia-api-key=[credential]'),
+          };
+        })()`,
+      );
+      report.capture_observations.last_preview = preview;
+      return preview;
+    },
+    (preview) => preview.selected_row_matches && preview.preview_url_matches,
+  );
+}
+
+export async function selectPublicCaptureResponse(panel, report) {
+  const candidates = await inspectPublicCaptureCandidates(panel, report);
+  report.capture_observations.previews = [];
+  const matches = [];
+  for (const candidate of candidates) {
+    await publicTrustedClick(
+      panel,
+      { selector: 'button.font-mono:has(span.flex-1)', text: candidate },
+      report,
+    );
+    const preview = await readSelectedCapture(panel, candidate, report);
+    report.capture_observations.previews.push(preview);
+    if (preview.post_200 && preview.target_host && preview.query_endpoint)
+      matches.push({ candidate, preview });
+  }
+  report.capture_observations.matched_previews = matches.length;
+  assert.equal(matches.length, 1, 'public_initial_post_ambiguous');
+  const match = matches[0];
+  if (candidates.at(-1) !== match.candidate)
+    await publicTrustedClick(
+      panel,
+      { selector: 'button.font-mono:has(span.flex-1)', text: match.candidate },
+      report,
+    );
+  const finalPreview = await readSelectedCapture(panel, match.candidate, report);
+  report.capture = finalPreview;
+  report.capture_observations.preview = finalPreview;
+  assert.ok(
+    finalPreview.post_200 && finalPreview.target_host && finalPreview.query_endpoint,
+    'public_initial_selection_mismatch',
+  );
+  assert.equal(finalPreview.hits_preview, true, 'public_initial_response_missing');
+  return finalPreview;
+}
+
 // The only two acceptable terminal observations: actual exact-recipe rows, or
 // the product's specific no-match remedy after its document-start capture.
 export function classifyPublicReplay(observation) {
@@ -218,6 +327,7 @@ async function run() {
     target: { host: siteHost, public: true, injected_fetch: false },
     artifact: null,
     capture: null,
+    capture_observations: {},
     saved_result: null,
     owned_recipe: null,
     click_observations: [],
@@ -322,47 +432,22 @@ async function run() {
           await allow(panel);
           await waitFor(
             'public_capture_terminal',
-            () =>
-              evaluate(
+            async () => {
+              const state = await evaluate(
                 panel,
                 `(() => ({
             discovering: Boolean(document.querySelector('[role="status"]')?.textContent.includes('Capturing page load') || document.body.innerText.includes('● page load —')),
             responses: document.body.innerText.includes('responses captured · stopped') || document.body.innerText.includes('response captured · stopped'),
             error: Boolean(document.querySelector('.text-destructive'))
           }))()`,
-              ),
+              );
+              report.capture_observations.terminal = state;
+              return state;
+            },
             discoveryTerminal,
             30000,
           );
-          const candidates = await evaluate(
-            panel,
-            `(() => [...document.querySelectorAll('button.font-mono:has(span.flex-1)')].filter(el => el.textContent.includes('POST') && el.textContent.includes('200') && el.textContent.toLowerCase().includes('algolia') && el.textContent.includes('queries')).map(el => el.textContent.trim()))()`,
-          );
-          assert.equal(candidates.length, 1, 'public_initial_post_ambiguous');
-          await publicTrustedClick(
-            panel,
-            {
-              selector: 'button.font-mono:has(span.flex-1)',
-              text: candidates[0],
-            },
-            report,
-          );
-          const response = await evaluate(
-            panel,
-            `(() => {
-            const input = document.querySelector('#network-replay-url-filter');
-            const box = input?.closest('.space-y-2');
-            const text = box?.innerText ?? '';
-            const names = [...document.querySelectorAll('label')].filter(el => el.textContent.trim().startsWith('Treat ')).map(el => ({ name: el.textContent.trim(), checked: el.querySelector('input')?.checked }));
-            return { post_200: text.includes('POST · 200'), query_endpoint: (input?.value ?? '').includes('/1/indexes/*/queries'), hits_preview: text.includes('hits') && document.body.innerText.includes('rows extracted'), credential_key_present: names.some(el => el.name.toLowerCase().includes('x-algolia-api-key')), credential_masked: (input?.value ?? '').includes('x-algolia-api-key=[credential]') };
-          })()`,
-          );
-          report.capture = response;
-          assert.equal(
-            response.post_200 && response.query_endpoint && response.hits_preview,
-            true,
-            'public_initial_response_missing',
-          );
+          const response = await selectPublicCaptureResponse(panel, report);
           // An unknown query credential key must be marked before persistence.
           if (response.credential_key_present) {
             const credential = await evaluate(
