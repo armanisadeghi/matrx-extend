@@ -28,6 +28,13 @@ extension ID or intended-folder hash alone does not establish the running build.
   the registered server tool test door under the signed-in person and selected
   organization.
 
+### Native on-device task APIs (EXT-D-0147)
+
+- **What it does:** discovers Summarizer, Translator, LanguageDetector, and Proofreader independently of LanguageModel and calls each API's dedicated operation.
+- **Where to test:** a receipt-bound unpacked Chrome build, signed-in side panel → Tools → Catalog → Internal delegates; test the agent-dispatched route separately because it runs in a different browser context.
+- **Steps:** in the same loaded build, run `ai_check_availability` with `{}`; when a dedicated API reports available, run its named `ai_summarize`, `ai_translate`, `ai_detect_language`, or `ai_proofread` tool with controlled text. Repeat after a full extension reload and side-panel reopen. Also record the report when LanguageModel is unavailable and a dedicated API is present.
+- **Expected:** each reported dedicated capability reflects its own availability; an available API's tool returns a real task result using its native operation. A missing API reports unavailable or a clear failure. The manual side-panel result does not prove the agent-dispatched service-worker path; record that path independently before closure.
+
 ### Sidepanel browser module load and speech
 
 - **What it does:** the sidepanel opens with Settings and Scrape available, while

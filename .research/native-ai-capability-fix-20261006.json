@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "task_id": "native-ai-capability-fix-20261006",
+  "defect_id": "EXT-D-0147",
+  "scope": "Shared onbox-ai task-capability discovery and dedicated API operation methods",
+  "status": "source-repaired; independent and native review pending",
+  "source_evidence": [
+    "src/lib/onbox-ai/client.ts: getAi gates all top-level task APIs on LanguageModel presence; exported task operations call PromptSession.prompt",
+    "src/lib/tools/handlers/onbox-ai.ts: ai_check_availability, ai_summarize, ai_translate, ai_detect_language, ai_proofread consume those exports",
+    "src/features/tools/ToolsView.tsx:453: manual Run invokes handlers directly in side-panel document",
+    "src/lib/tools/dispatch.ts:869,1554: agent-dispatched calls invoke handlers in background service worker"
+  ],
+  "primary_api_contracts": {
+    "summarizer": "https://developer.chrome.com/docs/ai/summarizer-api — session.summarize(text)",
+    "translator": "https://developer.chrome.com/docs/ai/translator-api — session.translate(text)",
+    "languageDetector": "https://developer.chrome.com/docs/ai/language-detection — session.detect(text), returning ranked objects",
+    "proofreader": "https://developer.chrome.com/docs/ai/proofreader-api — session.proofread(text), returning correctedInput and corrections"
+  },
+  "guard": {
+    "path": "src/lib/onbox-ai/client.test.ts",
+    "forces": "Independent top-level task APIs with LanguageModel absent must report availability and execute their documented operation, while all-absent capabilities remain unavailable",
+    "red": "2 expected failures: independent top-level APIs incorrectly reported unavailable and obsolete origin-trial namespace incorrectly reported available; one all-absent negative passed",
+    "green": "4 focused exported-function tests pass; final compile passes",
+    "resource_journals": [
+      "docs/stabilization/resource-journals/native-ai-capability-red-20261006.jsonl",
+      "docs/stabilization/resource-journals/native-ai-capability-green-20261006.jsonl",
+      "docs/stabilization/resource-journals/native-ai-capability-compile-20261006.jsonl",
+      "docs/stabilization/resource-journals/native-ai-capability-final-test-20261006.jsonl",
+      "docs/stabilization/resource-journals/native-ai-capability-final-compile-20261006.jsonl"
+    ]
+  },
+  "native": {
+    "verdict": "unverified",
+    "gap": "No exact-build side-panel or agent-dispatch execution run. Chrome docs say Summarizer and LanguageDetector are unavailable in Web Workers, so the background agent route may need a separate document-context execution path."
+  },
+  "release": "unverified; no browser, service, build, or release launched in this lane",
+  "independent_review": "pending",
+  "next_action": "Obtain independent source review; native owner separately tests panel and agent routes on exact loaded artifact. Do not close from source-only evidence."
+}

@@ -4,9 +4,8 @@
  * Proofreader, Writer, Rewriter).
  *
  * Why a wrapper:
- *   - The exact global name has shifted across Chrome versions
- *     (`window.ai`, `self.ai`, `chrome.aiOriginTrial`, top-level `LanguageModel`).
- *     We try each in turn and degrade gracefully when none is found.
+ *   - Chrome exposes each built-in capability as a separate top-level global.
+ *     Discovery checks them independently and degrades gracefully when absent.
  *   - The Prompt API is multimodal — text + image + audio — but only when the
  *     session is created with the right `expectedInputs`. The wrapper picks
  *     the right options based on the call-site.
@@ -76,36 +75,53 @@ interface PromptSession {
   destroy?: () => void;
 }
 
+interface TaskModel<Session> {
+  create: (opts?: Record<string, unknown>) => Promise<Session>;
+  availability?: () => Promise<Availability>;
+}
+
+interface SummarizerSession {
+  summarize: (text: string) => Promise<string>;
+  destroy?: () => void;
+}
+
+interface TranslatorSession {
+  translate: (text: string) => Promise<string>;
+  destroy?: () => void;
+}
+
+interface LanguageDetectorSession {
+  detect: (text: string) => Promise<Array<{ detectedLanguage: string; confidence: number }>>;
+  destroy?: () => void;
+}
+
+interface ProofreaderSession {
+  proofread: (text: string) => Promise<{ correctedInput: string; corrections?: unknown }>;
+  destroy?: () => void;
+}
+
 type AnyAi = {
   languageModel?: PromptModel;
-  summarizer?: PromptModel;
-  translator?: PromptModel;
-  languageDetector?: PromptModel;
-  proofreader?: PromptModel;
-  writer?: PromptModel;
-  rewriter?: PromptModel;
+  summarizer?: TaskModel<SummarizerSession>;
+  translator?: TaskModel<TranslatorSession>;
+  languageDetector?: TaskModel<LanguageDetectorSession>;
+  proofreader?: TaskModel<ProofreaderSession>;
+  writer?: TaskModel<unknown>;
+  rewriter?: TaskModel<unknown>;
 };
 
 function getAi(): AnyAi | null {
   const g = globalThis as unknown as Record<string, unknown>;
-  // Chrome stable surface — top-level globals.
-  if (typeof g.LanguageModel !== 'undefined') {
-    const top: AnyAi = {};
-    if (g.LanguageModel) top.languageModel = g.LanguageModel as PromptModel;
-    if (g.Summarizer) top.summarizer = g.Summarizer as PromptModel;
-    if (g.Translator) top.translator = g.Translator as PromptModel;
-    if (g.LanguageDetector) top.languageDetector = g.LanguageDetector as PromptModel;
-    if (g.Proofreader) top.proofreader = g.Proofreader as PromptModel;
-    if (g.Writer) top.writer = g.Writer as PromptModel;
-    if (g.Rewriter) top.rewriter = g.Rewriter as PromptModel;
-    if (Object.keys(top).length > 0) return top;
-  }
-  // Older origin-trial shape under `ai`.
-  if (typeof g.ai === 'object' && g.ai !== null) return g.ai as AnyAi;
-  // Extension-only origin trial namespace.
-  const c = g.chrome as { aiOriginTrial?: AnyAi } | undefined;
-  if (c?.aiOriginTrial) return c.aiOriginTrial;
-  return null;
+  const ai: AnyAi = {};
+  if (g.LanguageModel) ai.languageModel = g.LanguageModel as PromptModel;
+  if (g.Summarizer) ai.summarizer = g.Summarizer as TaskModel<SummarizerSession>;
+  if (g.Translator) ai.translator = g.Translator as TaskModel<TranslatorSession>;
+  if (g.LanguageDetector)
+    ai.languageDetector = g.LanguageDetector as TaskModel<LanguageDetectorSession>;
+  if (g.Proofreader) ai.proofreader = g.Proofreader as TaskModel<ProofreaderSession>;
+  if (g.Writer) ai.writer = g.Writer as TaskModel<unknown>;
+  if (g.Rewriter) ai.rewriter = g.Rewriter as TaskModel<unknown>;
+  return Object.keys(ai).length > 0 ? ai : null;
 }
 
 export async function checkAvailability(
@@ -267,7 +283,7 @@ export async function summarize(
         firedAt: Date.now(),
       });
       const session = await ai.summarizer.create(createOptions);
-      const out = await session.prompt(text);
+      const out = await session.summarize(text);
       session.destroy?.();
       return { ok: true, data: out };
     } catch (err) {
@@ -302,7 +318,7 @@ export async function translate(
         firedAt: Date.now(),
       });
       const session = await ai.translator.create(createOptions);
-      const out = await session.prompt(text);
+      const out = await session.translate(text);
       session.destroy?.();
       return { ok: true, data: out };
     } catch (err) {
@@ -319,7 +335,7 @@ export async function translate(
 export async function detectLanguage(
   text: string,
   opts?: { onRequest?: OnboxOnRequest },
-): Promise<OnboxResult<string[]>> {
+): Promise<OnboxResult<Array<{ detectedLanguage: string; confidence: number }>>> {
   const ai = getAi();
   if (!ai?.languageDetector) {
     return { ok: false, reason: 'languageDetector API unavailable' };
@@ -333,11 +349,19 @@ export async function detectLanguage(
       firedAt: Date.now(),
     });
     const session = await ai.languageDetector.create();
-    const out = (await session.prompt(text)) as unknown;
+    const out = await session.detect(text);
     session.destroy?.();
-    // The detector returns either a string or an array of {detectedLanguage, confidence}
-    if (Array.isArray(out)) return { ok: true, data: out as string[] };
-    return { ok: true, data: [String(out)] };
+    if (
+      !Array.isArray(out) ||
+      !out.every(
+        (candidate) =>
+          typeof candidate?.detectedLanguage === 'string' &&
+          typeof candidate.confidence === 'number',
+      )
+    ) {
+      return { ok: false, reason: 'languageDetector returned invalid candidates' };
+    }
+    return { ok: true, data: out };
   } catch (err) {
     return { ok: false, reason: (err as Error).message };
   }
@@ -358,17 +382,14 @@ export async function proofread(
         firedAt: Date.now(),
       });
       const session = await ai.proofreader.create();
-      const out = (await session.prompt(text)) as unknown as
-        | {
-            correctedInput?: string;
-            corrections?: unknown;
-          }
-        | string;
+      const out = await session.proofread(text);
       session.destroy?.();
-      if (typeof out === 'string') return { ok: true, data: { correctedInput: out } };
+      if (!out || typeof out.correctedInput !== 'string') {
+        return { ok: false, reason: 'proofreader returned no correctedInput' };
+      }
       return {
         ok: true,
-        data: { correctedInput: out?.correctedInput ?? text, corrections: out?.corrections },
+        data: { correctedInput: out.correctedInput, corrections: out.corrections },
       };
     } catch (err) {
       console.warn('[onbox-ai] proofreader failed; falling back', err);

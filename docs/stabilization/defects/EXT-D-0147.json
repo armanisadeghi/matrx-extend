@@ -1,0 +1,89 @@
+{
+  "id": "EXT-D-0147",
+  "feature_id": "EXT-F-4045",
+  "feature_ids": ["EXT-F-4045", "EXT-F-4046", "EXT-F-4049", "EXT-F-4050", "EXT-F-4051"],
+  "case_ids": [
+    "EXT-F-4045-T01",
+    "EXT-F-4046-T01",
+    "EXT-F-4049-T01",
+    "EXT-F-4050-T01",
+    "EXT-F-4051-T01"
+  ],
+  "title": "Native task APIs are hidden without LanguageModel and invoked through the wrong method",
+  "surface": "Tools > Catalog > Internal delegates; on-device AI wrappers",
+  "auth_mode": "member/admin",
+  "state": "in-fix",
+  "owner": "native-ai-capability-fix",
+  "priority": "P1",
+  "severity": "S2",
+  "reported_by": "Source investigation of the current native-AI test procedures on 2026-10-06",
+  "preconditions": [
+    "A Chrome document context exposes a top-level native Summarizer, Translator, LanguageDetector, or Proofreader API while LanguageModel is absent.",
+    "For the manual Tools route, use the receipt-bound loaded extension and signed-in member/admin profile. Native browser availability remains unverified."
+  ],
+  "reproduction": [
+    "With LanguageModel absent and a dedicated task API present, call fullCapabilityReport or checkAvailability for that task API.",
+    "Call the corresponding exported summarize, translate, detectLanguage, or proofread function with controlled text.",
+    "Compare the returned availability/result with the API's actual availability and dedicated session operation. In a native extension run, reload the exact build and repeat Tools > Catalog > Internal delegates > ai_check_availability followed by the named ai_* operation."
+  ],
+  "expected": "The capability report discovers each top-level task API independently; each operation calls its documented task method and returns its actual result.",
+  "actual": "getAi only inspected all top-level task APIs inside a LanguageModel-present branch. Dedicated task sessions were then called with prompt(), although Chrome documents summarize(), translate(), detect(), and proofread(). Detection also mislabeled ranked objects as strings, and malformed proofreading could return the original input as success. This is source-confirmed; no current Chrome operation has been observed yet.",
+  "cause": "A LanguageModel gate in shared getAi discovery and a PromptSession type reused for four distinct native task APIs.",
+  "cause_sibling_census": [
+    "Affected shared discovery consumers: checkAvailability, fullCapabilityReport, summarize, translate, detectLanguage, proofread. Prompt-only calls through quickPrompt are separate.",
+    "writer and rewriter are reported by fullCapabilityReport but have no exported task operation in client.ts; independent top-level discovery applies to both.",
+    "build-browser-dom-state.ts has a separate lightweight onbox_ai_available check that also keys on LanguageModel; it is outside this bounded client repair and remains an open routing question.",
+    "ToolsView.tsx calls handler.run in the side-panel document; agent-dispatched calls route through dispatch.ts in the background service worker. Official Chrome documentation says Summarizer and LanguageDetector are unavailable in Web Workers, so panel and agent execution require separate native evidence; agent routing may need a separate document-context repair."
+  ],
+  "allowed_files": [
+    "src/lib/onbox-ai/client.ts",
+    "src/lib/onbox-ai/client.test.ts",
+    "docs/feature-tests.md",
+    "docs/stabilization/defects/EXT-D-0147.json",
+    ".research/native-ai-capability-fix-20261006.json"
+  ],
+  "evidence": [
+    "src/lib/onbox-ai/client.ts getAi and exported task operations",
+    "src/lib/tools/handlers/onbox-ai.ts tool callers",
+    ".research/native-ai-procedures-20261006.json cases EXT-F-4045..4053",
+    "https://developer.chrome.com/docs/ai/summarizer-api",
+    "https://developer.chrome.com/docs/ai/translator-api",
+    "https://developer.chrome.com/docs/ai/language-detection",
+    "https://developer.chrome.com/docs/ai/proofreader-api",
+    "docs/stabilization/resource-journals/native-ai-capability-red-20261006.jsonl",
+    "docs/stabilization/resource-journals/native-ai-capability-green-20261006.jsonl",
+    "docs/stabilization/resource-journals/native-ai-capability-compile-20261006.jsonl",
+    "docs/stabilization/resource-journals/native-ai-capability-final-test-20261006.jsonl",
+    "docs/stabilization/resource-journals/native-ai-capability-final-compile-20261006.jsonl"
+  ],
+  "build_receipt": null,
+  "reproducibility": "Deterministic exported-function RED on the prior source; native unverified",
+  "verification": {
+    "source": "Guarded RED showed two expected failures; final guarded focused suite passed 4/4 and final guarded pnpm compile passed; independent source review pending",
+    "native": "unverified",
+    "release": "pending permitted release host"
+  },
+  "fix_shas": [],
+  "transition_history": [
+    {
+      "at": "2026-10-06T23:45:25Z",
+      "from": null,
+      "to": "open",
+      "reason": "Current source and Chrome primary API contracts identify a concrete native-AI discrepancy."
+    },
+    {
+      "at": "2026-10-06T23:45:25Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Shared discovery and method-call causes localized; native runtime remains unverified."
+    },
+    {
+      "at": "2026-10-06T23:59:38Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Guarded red/green and final compile pass; source repair awaits independent review and native acceptance."
+    }
+  ],
+  "closure_requirement": "Guarded RED/GREEN and typecheck, independent source review, native warm and post-reload execution on an exact loaded artifact, then release verification.",
+  "next_action": "Independently review source. Native owner must verify capability availability and execution on the exact loaded build, separately for side-panel manual Run and agent background dispatch; resolve service-worker exposure before closing."
+}
