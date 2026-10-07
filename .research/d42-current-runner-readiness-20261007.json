@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0042",
+  "date": "2026-10-07",
+  "scope": "Source-only audit of the current hosted showcase runner; no API query, browser, test, credential, build, or release action was performed.",
+  "verdict": "The hosted `showcase-stale-admin` case is source-runnable against a recorded successful CI development artifact. It exercises the same-tab A-to-B stale EXIT case and a B positive detection/extraction path, but it is only a partial run of D42's mandatory acceptance criteria.",
+  "next_run": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "dispatch_event": "workflow_dispatch",
+    "inputs": {
+      "acceptance_lane": "A",
+      "runner_label": "macos-15",
+      "acceptance_case": "showcase-stale-admin",
+      "release_run_id": "",
+      "development_run_id": "37545299309",
+      "development_artifact_id": "11449894309",
+      "published_store_crx": false
+    },
+    "artifact_provenance_recorded": {
+      "ci_conclusion": "success",
+      "source_sha": "fa2720fcf21ba5476e81d13f3b4454020bb3bf54",
+      "version": "0.2.332",
+      "tree_sha256": "d10fad71bbc3b1501d2027596b87754cf2f19350586c32f3636dba37da5c67b3",
+      "source": ".research/d47-budget-native-20261006.json"
+    },
+    "recipe": "Dispatch Hosted guest side-panel acceptance from main with the inputs above. The importer must revalidate the exact run/artifact provenance and receipt/tree at execution; this lane did not requery hosted metadata. The workflow's approved admin and organization fixture secrets are required.",
+    "route": "scripts/hosted-showcase-route.mjs selects tests/browser/showcase-picker-native-acceptance.mjs and sets MATRX_SHOWCASE_STALE_BOUNDARY=1 for showcase-stale-admin."
+  },
+  "coverage": [
+    {
+      "mandatory_case": "Start A on repeating event cards, cancel A, start B on the same tab/document/URL.",
+      "runner": "Covered: owned /events fixture, same page, one B overlay and B picking state asserted.",
+      "anchors": [
+        "tests/browser/showcase-picker-native-acceptance.mjs:230-275",
+        "tests/browser/showcase-picker-native-acceptance.mjs:321-324"
+      ]
+    },
+    {
+      "mandatory_case": "Hold and deliver stale A ITEM_DETECTED after B starts; prove A does not stage selectors.",
+      "runner": "Not covered. Boundary arm/release captures only `data:list-picker-exit`.",
+      "anchors": [
+        "tests/browser/showcase-picker-native-acceptance.mjs:248-260",
+        "tests/browser/showcase-picker-native-acceptance.mjs:284-319"
+      ]
+    },
+    {
+      "mandatory_case": "Hold and deliver stale A RESULT after B starts; prove A does not overwrite B's builder.",
+      "runner": "Not covered. No stale result hold/release or old-result builder assertion exists in this driver path.",
+      "anchors": [
+        "tests/browser/showcase-picker-native-acceptance.mjs:248-260",
+        "tests/browser/showcase-picker-native-acceptance.mjs:284-319"
+      ]
+    },
+    {
+      "mandatory_case": "Hold and deliver stale A EXIT after B starts; prove B remains usable.",
+      "runner": "Covered for EXIT: genuine A overlay exit is held, A canceled, B started, then A is released through the runtime boundary; stamped session/tab/document are observed and B remains picking with one overlay.",
+      "anchors": [
+        "tests/browser/showcase-picker-native-acceptance.mjs:248-260",
+        "tests/browser/showcase-picker-native-acceptance.mjs:284-319"
+      ]
+    },
+    {
+      "mandatory_case": "Positive control: B detection and B result populate and extract the selected field.",
+      "runner": "Covered at bounded level: current B detection producer/session and stamped relay are checked, then field selection, Done, Extract, and all three fixture rows/titles are asserted. The B result relay identity itself is not separately asserted by this pass path.",
+      "anchors": [
+        "tests/browser/showcase-picker-native-acceptance.mjs:325-392",
+        "tests/browser/showcase-picker-native-acceptance.mjs:394-448"
+      ]
+    },
+    {
+      "mandatory_case": "Defer A cancellation injection, start B, then execute delayed cancellation; B remains usable.",
+      "runner": "Not covered by this native driver. Source-level producer checks are not native delivery proof.",
+      "anchors": [
+        "tests/browser/showcase-picker-native-acceptance.mjs:248-319",
+        "docs/stabilization/defects/EXT-D-0042.json:13"
+      ]
+    },
+    {
+      "mandatory_case": "Reinject a second content context; one card click yields exactly one detection; ordinary click works after close.",
+      "runner": "Partial only: ordinary click count 1 after repick cancel is asserted, but there is no second-context injection or exact detection-listener count.",
+      "anchors": [
+        "tests/browser/showcase-picker-native-acceptance.mjs:449-464",
+        "docs/stabilization/defects/EXT-D-0042.json:14"
+      ]
+    }
+  ],
+  "d143_assessment": {
+    "state": "closed for its bounded driver-specific reproduction; it does not remain a source or dispatch blocker.",
+    "source_resolution": "The current driver uses a reachable pointer point validated with elementFromPoint for card and field clicks; completion checks cover Done, extraction, repick cancel, and ordinary page click. These are the exact historical driver failure boundaries recorded in D143.",
+    "limits": "D143 closure evidence is scoped to frozen 0.2.307 and its reviewed driver. It does not establish current 0.2.332 native behavior or close D42.",
+    "anchors": [
+      "docs/stabilization/defects/EXT-D-0143.json:15",
+      "docs/stabilization/defects/EXT-D-0143.json:103-136",
+      "tests/browser/showcase-card-driver.mjs:1-30",
+      "tests/browser/showcase-picker-native-acceptance.mjs:394-464"
+    ]
+  },
+  "source_verdict_limits": [
+    "The recorded successful artifact run/artifact IDs and source provenance come from existing repository evidence; hosted metadata was not refreshed in this audit.",
+    "No native result is claimed for the candidate artifact.",
+    "D42 remains open: three stale event channels are required separately, plus delayed cancellation, reinjection/listener cleanup, and nonadmin role gating."
+  ],
+  "primary_sources": [
+    "docs/stabilization/defects/EXT-D-0042.json",
+    "docs/stabilization/defects/EXT-D-0143.json",
+    "scripts/hosted-showcase-route.mjs",
+    "tests/browser/showcase-picker-native-acceptance.mjs",
+    "tests/browser/showcase-card-driver.mjs",
+    ".github/workflows/hosted-guest-acceptance.yml",
+    ".research/d47-budget-native-20261006.json",
+    ".research/showcase-repick-native-final.json"
+  ]
+}
