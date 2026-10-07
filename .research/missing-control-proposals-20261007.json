@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "task_id": "missing-control-proposals-20261007",
+  "type": "source-only-inventory-proposal",
+  "source_comparison": {
+    "frozen_source_sha": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+    "current_head": "78a1c64467f2d3fabe5ae7ceedd9b443a1ccaf07",
+    "source_files_changed_since_frozen": [],
+    "inventory_changed_since_frozen": true,
+    "basis": "The four compared source files are byte-identical between frozen source and current HEAD. The inventory differs, but matching C19/T19 and C34/T32 entries already exist in frozen inventory and remain in current inventory.",
+    "source_files_compared": [
+      "src/components/AddToProjectButton.tsx",
+      "src/features/scrape/ScrapeView.tsx",
+      "src/components/PageIdentityNotice.tsx",
+      "src/features/data/DataView.tsx"
+    ]
+  },
+  "proposals": [
+    {
+      "candidate": "Scrape Add page to project",
+      "source": {
+        "path": "src/components/AddToProjectButton.tsx",
+        "line": 124,
+        "kind": "button",
+        "literal": "Add this page to a project",
+        "attribute": "title",
+        "render_condition": "ScrapeView renders AddToProjectButton in the page header; variant=icon selects this exact title. The button is disabled when url is falsy."
+      },
+      "inventory": {
+        "status": "existing_match",
+        "feature_id": "EXT-F-1007",
+        "control_id": "EXT-F-1007-C19",
+        "case_id": "EXT-F-1007-T19",
+        "evidence": "docs/stabilization/inventory.json; same IDs and labels/actions exist at frozen source SHA."
+      },
+      "applicable_modes": {
+        "values": ["guest", "member", "admin"],
+        "basis": "T19 explicitly lists these modes; ScrapeView renders the header control without an auth conditional."
+      },
+      "procedure_gap": "None for inventory identity. T19 covers completing or cancelling the chooser; this proposal makes no behavioral-pass claim."
+    },
+    {
+      "candidate": "Scrape Retry page check",
+      "source": {
+        "path": "src/features/scrape/ScrapeView.tsx",
+        "lines": [302, 312],
+        "kind": "button",
+        "literal": "Retry page check",
+        "attribute": "text",
+        "render_condition": "Shown only when tab.pageKey is absent; invokes refreshActiveTabIdentity."
+      },
+      "inventory": {
+        "status": "existing_match",
+        "feature_id": "EXT-F-1007",
+        "control_id": "EXT-F-1007-C34",
+        "case_id": "EXT-F-1007-T32",
+        "evidence": "docs/stabilization/inventory.json; same IDs and labels/actions exist at frozen source SHA."
+      },
+      "applicable_modes": {
+        "values": ["guest", "member", "admin"],
+        "basis": "T32 explicitly lists these modes; the retry render condition has no auth check."
+      },
+      "procedure_gap": "None for this Scrape placement. T32 already includes retry while transport fails, recovery, stale identity, and a late-reply race; runtime outcomes remain unverified here."
+    },
+    {
+      "candidate": "Data page-identity notice Retry",
+      "source": {
+        "path": "src/components/PageIdentityNotice.tsx",
+        "lines": [7, 17],
+        "kind": "button",
+        "literal": "Retry",
+        "attribute": "text",
+        "render_condition": "Notice is absent when tab.pageKey is truthy; otherwise displays identityError or a checking message plus Retry. DataView mounts the notice unconditionally."
+      },
+      "inventory": {
+        "status": "shared_control_match_with_surface_coverage_gap",
+        "feature_id": "EXT-F-2005",
+        "reuse_control_id": "EXT-F-1007-C34",
+        "proposed_new_control_id": "EXT-F-2005-C32",
+        "proposed_case_id": "EXT-F-2005-T05",
+        "evidence": "C34 already records the same refreshActiveTabIdentity action in EXT-F-1007; EXT-F-2005 currently ends at C31/T04 and has no page-identity retry case.",
+        "proposed_control_label": "Retry"
+      },
+      "applicable_modes": {
+        "values": ["guest", "member", "admin"],
+        "basis": "EXT-F-2005 applicability records guest/member/admin as applicable; src/config/sidepanel-visibility.ts:23 and src/entrypoints/sidepanel/App.tsx:397 expose Data to those roles, and DataView mounts PageIdentityNotice at line 448 without an auth conditional. The button itself appears when pageKey is absent."
+      },
+      "existing_case_coverage": "EXT-F-1007-T32 covers the Scrape placement and retry behavior, but not the Data placement or its surrounding extraction affordances.",
+      "necessary_procedure_gap": "If inventory cases are feature-local, add T05 referencing C34 or proposed C32. On Data with pageKey absent, observe the notice and click Retry; verify another identity lookup, explicit continued failure, and that page-dependent extraction stays unavailable until the current identity resolves. No pass is claimed."
+    }
+  ],
+  "limits": [
+    "Source and inventory audit only; no test, browser, native, build, or behavior verification was run.",
+    "The Data case/control IDs are collision-free proposals, not committed inventory edits."
+  ]
+}
