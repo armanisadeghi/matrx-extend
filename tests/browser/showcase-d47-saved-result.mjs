@@ -19,16 +19,21 @@ export function readD47SavedResult(doc, recipe) {
   const headings = table ? [...table.querySelectorAll('thead th')].filter(visible) : [];
   const rows = table ? [...table.querySelectorAll('tbody tr')].filter(visible) : [];
   const cells = rows.flatMap((row) => [...row.querySelectorAll('td')].filter(visible));
-  // The saved fixture extracts events[*].eventName: exactly one current event.
+  // The driver saves the selected response at key_path=[] (no JsonTree selection).
+  // rowsFromBody yields the root object; ResultPreview stringifies its events array.
   const exactResult =
     tables.length === 1 &&
-    headings.length === 1 &&
-    headings[0].textContent.trim() === 'eventName' &&
+    headings.length === 2 &&
+    headings[0].textContent.trim() === 'events' &&
+    headings[1].textContent.trim() === 'document' &&
     rows.length === 1 &&
-    cells.length === 1 &&
-    cells[0].textContent.trim() === 'Canyon Frequency';
-  const oldCell = cells.some((cell) => cell.textContent.trim() === 'Moonlit Transit');
-  const currentCell = cells.some((cell) => cell.textContent.trim() === 'Canyon Frequency');
+    cells.length === 2 &&
+    cells[0].textContent.trim() === '[{"eventName":"Canyon Frequency"}]' &&
+    cells[1].textContent.trim() === 'current';
+  const oldCell = cells.some((cell) => cell.textContent.includes('"eventName":"Moonlit Transit"'));
+  const currentCell = cells.some((cell) =>
+    cell.textContent.includes('"eventName":"Canyon Frequency"'),
+  );
   return {
     exact_recipe: exactRecipe,
     current_row: Boolean(exactRecipe && previewVisible && exactResult),
