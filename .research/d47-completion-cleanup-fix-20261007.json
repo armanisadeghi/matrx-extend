@@ -13,6 +13,14 @@
     "observer": "Removal now runs inside exercisePanel before the native harness closes its browser and requires Runtime.evaluate to confirm the listener is absent; cleanup failure keeps the case unverified and preserves an earlier primary failure.",
     "recipe": "The generated recipe name, fixture host, and creation lower-bound UTC are retained for recovery. During the live panel callback, the driver targets the exact row and host, checks the exact confirmation title, dispatches trusted Delete pattern input, and waits for absence in the loaded host list. Missing, failed, or unavailable cleanup remains explicit unverified. The fixture process still stops in outer finally."
   },
+  "acknowledgement_gap_followup": {
+    "peer_review": ".research/d47-completion-fresh-review-20261007.json found that Runtime.evaluate could install the listener while its acknowledgement was lost, leaving probeInstalled false and skipping removal.",
+    "repair": "The driver marks installation attempted immediately before Runtime.evaluate and always checks removal after an attempted evaluation. The probe is globally recorded before addListener, so removal is idempotent if evaluation never ran. Removal confirms the listener is absent before worker detach; failure is recorded without replacing the original install error.",
+    "focused_guard": "d47-probe-ack-green-20261007-2 resource-valid, 3/3 pass. Initial d47-probe-ack-green-20261007-1 was resource-valid 2/3 failure because the test fake made cleanup evaluation unavailable too; the fake was corrected to fail only installation evaluation.",
+    "mutations": "d47-probe-ack-mutant-20261007-1 resource-admitted child_failed 2/3: acknowledgement-only state leaves one listener after detach. d47-probe-constant-mutant-20261007-1 resource-admitted child_failed 2/3: constant-success installer fails the actual-install assertion.",
+    "ci": "The focused probe guard is called beside the existing D47 driver guard in .github/workflows/ci.yml.",
+    "lint": "The first guarded Biome check d47-probe-biome-errors-20261007-1 found noUnsafeFinally in recipe cleanup and noGlobalEval in the earlier terminal mutation test, along with formatting/import ordering. Those were corrected; d47-probe-biome-green-20261007-1 was resource-valid exit 0."
+  },
   "guards": {
     "chromium_dom_green": {
       "run_id": "d47-completion-green-20261007-1",

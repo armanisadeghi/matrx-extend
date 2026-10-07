@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { after, before, test } from 'node:test';
+import { runInNewContext } from 'node:vm';
 import { resolveBrowserRuntime } from './browser-runtime.mjs';
 import { readD47SavedResult, readD47SavedRunState } from './showcase-d47-saved-result.mjs';
 import { waitD47SavedTerminal } from './showcase-d47-terminal-budget.mjs';
@@ -221,7 +222,9 @@ test('exact saved row remains nonterminal until its live Run control clears', as
     };
     const waiter =
       process.env.D47_TERMINAL_MUTANT === 'interim_success'
-        ? eval(`(${waitD47SavedTerminal.toString().replace('safe.running === false &&', '')})`)
+        ? runInNewContext(
+            `(${waitD47SavedTerminal.toString().replace('safe.running === false &&', '')})`,
+          )
         : waitD47SavedTerminal;
     const run = waiter({
       budget: { timeout_ms: 1, poll_ms: 1 },
