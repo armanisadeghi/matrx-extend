@@ -257,7 +257,6 @@ export const CATEGORY_BY_TOOL: Record<string, ToolCategory> = {
   get_form_fields: 'reading',
   extract_table: 'reading',
   extract_microdata: 'reading',
-  fetch_url_as_markdown: 'reading',
   mutation_watch: 'reading',
   list_highlights: 'reading',
 
@@ -503,7 +502,6 @@ export const CANONICAL_SURFACE: ReadonlySet<string> = new Set([
   'get_computed_style',
   'extract_microdata',
   'extract_table',
-  'fetch_url_as_markdown',
   'mutation_watch',
   'list_highlights',
   'screenshot_region',

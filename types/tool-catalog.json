@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-07T04:15:37.599Z",
+  "generated_at": "2026-10-07T05:08:22.784Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_chrome_categories",
@@ -95,7 +95,6 @@
     "chrome_tab_audio_inspect",
     "mutation_watch",
     "extract_microdata",
-    "fetch_url_as_markdown",
     "wait_for",
     "read_pdf",
     "ai",
@@ -228,7 +227,6 @@
     "mutation_watch",
     "extract_microdata",
     "data_patterns",
-    "fetch_url_as_markdown",
     "computer",
     "form_input",
     "navigate",
@@ -394,7 +392,6 @@
     "mutation_watch",
     "extract_microdata",
     "data_patterns",
-    "fetch_url_as_markdown",
     "computer",
     "form_input",
     "navigate",
@@ -473,7 +470,6 @@
         "mutation_watch",
         "extract_microdata",
         "data_patterns",
-        "fetch_url_as_markdown",
         "read_pdf"
       ]
     },
@@ -7048,59 +7044,6 @@
       "required_optional_permissions": [],
       "admin_only": false,
       "surface_bundles": [
-        "pilot",
-        "pilot+privileged"
-      ],
-      "supported_browsers": [
-        "chrome",
-        "firefox",
-        "safari"
-      ]
-    },
-    {
-      "name": "fetch_url_as_markdown",
-      "tier": "read",
-      "category": "reading",
-      "input_schema": {
-        "type": "object",
-        "properties": {
-          "url": {
-            "type": "string",
-            "format": "uri"
-          },
-          "use_session": {
-            "type": "boolean",
-            "default": false
-          },
-          "follow_redirects": {
-            "type": "boolean",
-            "default": true
-          },
-          "user_agent": {
-            "type": "string"
-          },
-          "max_chars": {
-            "type": "integer",
-            "exclusiveMinimum": 0,
-            "maximum": 2000000,
-            "default": 200000
-          },
-          "include_extras": {
-            "type": "boolean",
-            "default": false
-          }
-        },
-        "required": [
-          "url"
-        ],
-        "additionalProperties": false,
-        "$schema": "http://json-schema.org/draft-07/schema#"
-      },
-      "required_permissions": [],
-      "required_optional_permissions": [],
-      "admin_only": false,
-      "surface_bundles": [
-        "assistant",
         "pilot",
         "pilot+privileged"
       ],
