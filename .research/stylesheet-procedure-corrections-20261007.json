@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "artifact_type": "stylesheet-procedure-source-review-corrections",
+  "reviewed_peer": ".research/stylesheet-procedure-peer-20261007.json",
+  "proposal": ".research/stylesheet-procedures-20261007.json",
+  "status": "corrected-source-only-runtime-unverified",
+  "findings": [
+    {
+      "finding": "Unknown persistent/persist keys are stripped by non-strict Zod object schemas and may still execute the handler.",
+      "correction": "Removed unknown-key inputs from negative cases and documented the catalog/source mismatch as unresolved. No rejection or no-mutation claim remains."
+    },
+    {
+      "finding": "The prior proposal invoked dispatcher execution without an executable trigger.",
+      "correction": "Removed dispatcher execution steps. Explicitly marked dispatcher, privileged confirmation/denial, Pilot scope and routing NOT EXECUTABLE in manual cases because the inventory defers agent calls to Chat/Pilot and PLAN.md defers those surfaces to Wave D."
+    },
+    {
+      "finding": "The prior proposal had no concrete h1 fixture route/page.",
+      "correction": "The earlier /referrals target was not manually reachable: tests/browser/native-sidepanel-qa-harness.mjs creates its localhost server only inside the automated run. Procedures now use https://www.aimatrx.com/matrx-extend-demo, the fixed publicDemoUrl explicitly allowed by that harness, in a new tab opened in the tester's selected signed-in role profile. A read-only fetch on 2026-10-06 found title 'Matrx Extend Demo Page - AI Matrx', a visible main article, and one h1, 'A clear three-stage browser workflow'. Before each run, confirm the route and visible h1 still exist; record the new tab ID, capture baseline, apply/remove the exact same CSS on that tab, verify restoration, and close only that tab."
+    },
+    {
+      "finding": "Permission boundary was not executable or safely denied.",
+      "correction": "Require receipt-bound manifest permission data and separately record the handler API result. No supported safe activeTab denial/activation procedure was found; this dimension remains unverified, not covered by manual success."
+    }
+  ],
+  "remaining_limits": [
+    "Member/admin execution assumes the tester already has a signed-in profile and current resource permit/receipt; this procedure does not create or independently verify role access. CSS visibility/removal and actual profile access remain runtime-unverified.",
+    "No browser, runtime, tests, build, credentials, inventory changes, or source changes were used.",
+    "All three procedures remain unverified. No independent review has occurred on this correction round; any earlier independent review covered the prior text only and is not evidence for these edits."
+  ]
+}
