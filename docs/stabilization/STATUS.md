@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-07 11:38 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-07T10:50:02.552798+00:00. 205 features · 767 cases · 1349 controls · 148 linked defect records.
+Generated 2026-10-07 12:05 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-07T12:04:19.739246+00:00. 205 features · 767 cases · 1349 controls · 148 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -3695,7 +3695,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4149-T01 Controlled manual execution: fetch_url_as_markdown | N/A | Unverified | Unverified | EXT-F-4149-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Current source has no registered executable handler or generated catalog row, so C01/T01 cannot run against this build. Retirement, replacement, applicability, and owner intent remain unresolved; runtime cells remain unverified.
 
 
 ### computer (EXT-F-4150)

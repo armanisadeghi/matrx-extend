@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-07T10:50:02.552798+00:00",
+  "updated_at": "2026-10-07T12:04:19.739246+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -22461,10 +22461,10 @@
         },
         {
           "id": "EXT-F-2002-C06",
-          "label": "Verdict buttons accept/gated/dead-link/retry",
+          "label": "Resolve verdict: accept as is, gated, dead link, retry, wrong content, or ignore",
           "action": "Submit the chosen source verdict",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Verdict buttons accept/gated/dead-link/retry (Submit the chosen source verdict) on Tasks capture flow in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Resolve presents all six verdicts (accept as is, gated, dead link, retry after a prior attempt, wrong content, ignore) and submits the chosen verdict on Tasks capture flow in source-applicable roles; include refusal and reload where state persists."
         },
         {
           "id": "EXT-F-2002-C08",
@@ -59140,21 +59140,27 @@
       "id": "EXT-F-4149",
       "name": "fetch_url_as_markdown",
       "surface": "Tools / registered executor",
-      "entry_points": ["Tools manual runner; advertised agent calls deferred with Chat/Pilot"],
+      "entry_points": ["Historical Tools manual entry; no executable handler or generated client catalog record in the current source"],
       "controls": [
         {
           "id": "EXT-F-4149-C01",
           "label": "Invoke fetch_url_as_markdown",
-          "action": "Run through manual tool executor with valid, controlled inputs"
+          "action": "Run through manual tool executor with valid, controlled inputs",
+          "source_reconciliation": {
+            "status": "source-absent-current-build-nonrunnable",
+            "reason": "No current handler, registry import, category entry, or generated catalog row. Historical ID retained; retirement, replacement, applicability, and owner intent unresolved.",
+            "evidence": ".research/inventory-current-source-reconcile-20261007.json; .research/inventory-reconciliation-peer-20261007.json"
+          }
         }
       ],
       "source_anchors": [
-        "types/tool-catalog.json",
-        "src/lib/tools/registry.ts",
-        "src/features/tools/ToolsView.tsx",
-        "src/config/sidepanel-visibility.ts:31"
+        "src/lib/tools/handlers/fetch.ts (removed; historical anchor)",
+        "src/lib/tools/registry.ts (no current import)",
+        "src/lib/tools/categories.ts (no current category entry)",
+        "types/tool-catalog.json (no current row)",
+        ".research/inventory-current-source-reconcile-20261007.json",
+        ".research/inventory-reconciliation-peer-20261007.json"
       ],
-      "catalog_record_index": 147,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -59194,16 +59200,16 @@
       "surface_bundles": ["assistant", "pilot", "pilot+privileged"],
       "tier": "read",
       "live_binding": {
-        "metadata_state": "active",
+        "metadata_state": "inactive",
         "exact_name_match": true,
         "definition_count": 1,
-        "definition_active_values": [true],
+        "definition_active_values": [false],
         "extension_binding_count": 1,
-        "extension_binding_active_values": [true],
-        "active_definition_and_extension_binding": true,
-        "evidence": ".research/tool-binding-readonly-census.json",
-        "as_of": "2026-10-04T18:25:16Z",
-        "query_scope": "Exact inventory tool names in tool.definition and tool.binding for executor_name=chrome-extension; surface_defaults queried for chrome-extension defaults. Per-feature comparison uses exact tool name; duplicate wait_for rows share matching metadata.",
+        "extension_binding_active_values": [false],
+        "active_definition_and_extension_binding": false,
+        "evidence": ".research/tool-binding-inventory-census-20261007.json",
+        "as_of": "2026-10-07T11:48:17Z",
+        "query_scope": "Current canonical DB snapshot of chrome-extension definition/binding pairs and two surface defaults; exact-name inactive row reported for this name.",
         "limits": [
           "Metadata presence does not prove advertisement in a request, role availability, permission outcome, organization access, runtime execution, or product health.",
           "Absent exact-name metadata is unresolved metadata coverage; it does not establish a product defect or that the feature is manual-only."
@@ -59213,16 +59219,15 @@
         "has_chrome_extension_binding_metadata": true,
         "definition_metadata": [
           {
-            "is_active": true,
+            "is_active": false,
             "tier": "read",
-            "category": "reading",
             "admin_only": false
           }
         ],
         "chrome_extension_bindings": [
           {
             "executor": "chrome-extension",
-            "is_active": true
+            "is_active": false
           }
         ],
         "direct_surface_default_inclusions": [
@@ -59233,11 +59238,10 @@
       "name_collision": false,
       "dependency_class": "local",
       "wave": "A",
-      "inventory_status": "source-listed-pending-reconciliation",
+      "inventory_status": "source-absent-current-build-nonrunnable",
       "missing_items": [],
       "readiness_gaps": [
-        "Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required",
-        "Confirm current catalog against imported source registry before source inventory signoff"
+        "Current source has no registered executable handler or generated catalog row, so C01/T01 cannot run against this build. Retirement, replacement, applicability, and owner intent remain unresolved; runtime cells remain unverified."
       ],
       "applicability": {
         "guest": {
@@ -59373,7 +59377,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 148,
+      "catalog_record_index": 147,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -59579,7 +59583,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 149,
+      "catalog_record_index": 148,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -59748,7 +59752,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 150,
+      "catalog_record_index": 149,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -59977,7 +59981,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 151,
+      "catalog_record_index": 150,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -60231,7 +60235,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 152,
+      "catalog_record_index": 151,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -60430,7 +60434,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 153,
+      "catalog_record_index": 152,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -60614,7 +60618,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 154,
+      "catalog_record_index": 153,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -60767,7 +60771,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 155,
+      "catalog_record_index": 154,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -60910,7 +60914,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 156,
+      "catalog_record_index": 155,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -61059,7 +61063,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 157,
+      "catalog_record_index": 156,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -61251,7 +61255,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 158,
+      "catalog_record_index": 157,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -61448,7 +61452,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 159,
+      "catalog_record_index": 158,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -61645,7 +61649,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 160,
+      "catalog_record_index": 159,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -61807,7 +61811,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 161,
+      "catalog_record_index": 160,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -62014,7 +62018,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 162,
+      "catalog_record_index": 161,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -62208,7 +62212,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 163,
+      "catalog_record_index": 162,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -62405,7 +62409,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 164,
+      "catalog_record_index": 163,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -62590,7 +62594,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 165,
+      "catalog_record_index": 164,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -62770,7 +62774,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 166,
+      "catalog_record_index": 165,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -62916,7 +62920,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 167,
+      "catalog_record_index": 166,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -63054,6 +63058,7 @@
     }
   ],
   "notes": [
+    "2026-10-07 source-only metadata reconciliation: current generated catalog indices corrected for EXT-F-4150–4169; canonical DB snapshot reports 84 chrome-extension binding names, 81 active definition/binding pairs and 3 inactive pairs (capture_credential, evaluate_javascript, fetch_url_as_markdown), with 80 active bound names on each listed surface. Older per-feature binding detail remains dated to its original observation unless individually updated here; absent-definition names were not guessed. Current metadata does not prove request advertisement, role access, permission outcome, or runtime execution. EXT-F-4149 source is absent/current-build nonrunnable; retirement, replacement, applicability and owner intent remain unresolved. See .research/tool-binding-inventory-census-20261007.json and .research/inventory-reconciliation-peer-20261007.json.",
     "Independent source census passed. Runtime test execution still requires safe resource admission, fresh build receipt, concrete per-case steps and fixtures.",
     "Remote75cfb09 inventory reconciliation includes Source status, Vault match-error retry, popup recovery, deferred Chat/Pilot context and terminal cases. Runtime proof remains tied to frozen0.2.56 until a new integration.",
     "2026-09-27 source reconciliation to 528ea0b: changed source paths mapped in takeover-inventory-reconciled.json. Current-source native results remain unverified; historical case receipts retain their original build provenance.",

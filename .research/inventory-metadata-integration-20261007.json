@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "task_id": "inventory-metadata-integration-20261007",
+  "integrated_at": "2026-10-07T12:05:35.225224+00:00",
+  "basis": [
+    ".research/inventory-current-source-reconcile-20261007.json",
+    ".research/tool-binding-inventory-census-20261007.json",
+    ".research/inventory-reconciliation-peer-20261007.json"
+  ],
+  "peer_commit": "3f91a36d",
+  "scope": "Source and metadata reconciliation only; no browser, build, tests, release, or database write.",
+  "canonical_inventory": "docs/stabilization/inventory.json",
+  "canonical_sha256": "5a46b2f08946f584b6906defee3327d77a954c09e072151cbad842305c718913",
+  "changed_feature_ids": [
+    "EXT-F-2002",
+    "EXT-F-4149",
+    "EXT-F-4150",
+    "EXT-F-4151",
+    "EXT-F-4152",
+    "EXT-F-4153",
+    "EXT-F-4154",
+    "EXT-F-4155",
+    "EXT-F-4156",
+    "EXT-F-4157",
+    "EXT-F-4158",
+    "EXT-F-4159",
+    "EXT-F-4160",
+    "EXT-F-4161",
+    "EXT-F-4162",
+    "EXT-F-4163",
+    "EXT-F-4164",
+    "EXT-F-4165",
+    "EXT-F-4166",
+    "EXT-F-4167",
+    "EXT-F-4168",
+    "EXT-F-4169"
+  ],
+  "catalog_indices_corrected": 20,
+  "catalog_index_verification": "Every corrected zero-based index maps to the same named record in current types/tool-catalog.json.",
+  "current_binding_snapshot": {
+    "executor": "chrome-extension",
+    "binding_rows": 84,
+    "active_definition_binding_pairs": 81,
+    "inactive_pairs": 3,
+    "listed_surfaces_active_bound_names_each": 80,
+    "source": ".research/tool-binding-inventory-census-20261007.json",
+    "interpretation": "Connected DB metadata only; prior per-feature rows remain dated unless individually updated. Missing definitions are not inferred."
+  },
+  "source_absence": "EXT-F-4149/C01 retained; no current handler or catalog row; T01 nonrunnable on this build. Retirement, replacement, owner intent, and applicability unresolved; all runtime cells unverified.",
+  "preserved": {
+    "features": 205,
+    "cases": 767,
+    "controls": 1349,
+    "case_objects": true,
+    "applicability": true,
+    "runtime_cells": true,
+    "wait_for_ids": [
+      "EXT-F-4058",
+      "EXT-F-4156"
+    ],
+    "records_server_route": "EXT-F-4130 retained"
+  },
+  "capture_verdicts": "EXT-F-2002-C06 aggregate label/test design covers six source verdicts, with retry conditional; C14-C19 stable. C08/C10 owner intent unresolved.",
+  "tracker_regenerated": [
+    "docs/stabilization/CHECKLIST.md",
+    "docs/stabilization/STATUS.md",
+    "docs/stabilization/STATUS.html"
+  ],
+  "limitations": [
+    "Current DB query was not repeated by this integrator; corrected census provenance and independent peer review used.",
+    "No runtime, role, permission, request advertisement, retirement, or feature acceptance conclusion."
+  ]
+}
