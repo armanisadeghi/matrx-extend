@@ -31,7 +31,7 @@
     "next_action": "Verify corrected CI then execute ONE guarded ARM prior-saved native run against a validated exact development artifact, using approved private credentials. Independently review receipt and resource journals before changing T57 status. Never infer callback delivery from server completion; canceled request remains unverified for delivery.",
     "status": "Fresh peer8ad248c2 accepts bounded manual-prior native37588499593 on frozen0.2.350/source82f3c440: real manual UI response positive control and second manual request pending before replay, current-document positive trace before held manual HTTP200/server finish, exact settled current-only saved row, owned-recipe cleanup and three valid resource journals. Server finish does not prove old callback delivery/rejection. Prior saved-run isolation, cancellation and fullT57 remain unverified.",
     "implementation_agent": "completed: /root/d47_prior_saved_native_route",
-    "execution_agent": "Native37597422020 terminal failure; no native job active. /root/d47_navigation_order_fix owns sole source-test repair slot.",
+    "execution_agent": "running: /root/d47_prior_saved_native_execution; ONE corrected ARM native retry37600370555. No duplicate.",
     "native_run_id": 37537634304,
     "workflow_source": "fbcc4311ae6885b67133e55336f692be38881249",
     "development_artifact_id": 11440764124,
@@ -175,7 +175,13 @@
     "prior_saved_artifact_id": 11470764778,
     "prior_saved_app_source": "c53c6e0a",
     "prior_saved_workflow_source": "47930011",
-    "prior_saved_native_diagnosis": ".research/d47-prior-saved-native-diagnosis-20261007.json"
+    "prior_saved_native_diagnosis": ".research/d47-prior-saved-native-diagnosis-20261007.json",
+    "navigation_order_fix": "be9b611e",
+    "navigation_order_guarded_evidence": ".research/d47-navigation-order-fix-20261007.json",
+    "navigation_order_peer": ".research/d47-navigation-order-peer-20261007.json",
+    "prior_saved_native_retry_run_id": 37600370555,
+    "prior_saved_native_retry_workflow_source": "f52c1f74149746104990468a47b0863118da7ce1",
+    "prior_saved_native_retry_scope": "Frozen app0.2.354/c53c6e0a/artifact11470764778, exacttree. Newer lock catch-up affects design-system/kit/records only, not nodebuiltins/localQA or pinned Playwright1.56.1/TS; importer/sharedharness/workflow unchanged. Root explicitly accepts frozenexperiment with reviewed QA fix; newer version/packages remain untested."
   },
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
   "verification_status": "Independent reviews accept bounded current-first0.2.337 and old-first0.2.338 fixture replay. Fresh peer8dfbdee1 supports public initial capture, saved exact-recipe completed replay with hits and UI cleanup on frozen0.2.344/source2274d236/native37571487114, with valid resources. Whole-panel quiescence, selected organization context and post-checkbox receipt-level mask evidence are not established. Manual/prior-run isolation remains outstanding. D47 in-fix/T57 unverified. Fresh peerb583ec01 accepts native37582763499 stale-only refusal and fresh current saved replay recovery on frozen0.2.347/source5fc0ae39 with valid resources and owned-recipe cleanup. Fresh peer964c19d0 also accepts retained higher-old-sequence causal source proof: removing current-document guard admits old seq999 over current seq1; constant shortcut fails and untouched suite passes17/17, all resource-valid. This completes the bounded stale-only branch; manual/prior-run isolation and full-case acceptance remain unverified.",
