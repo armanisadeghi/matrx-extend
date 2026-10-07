@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-07T02:33:12.444837+00:00",
+  "updated_at": "2026-10-07T02:40:28.167181+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -24950,7 +24950,7 @@
           "results": {
             "admin": {
               "status": "unverified",
-              "run_id": "showcase-d47-native-37558902653-1",
+              "run_id": "showcase-d47-native-37562111314-1",
               "evidence": [
                 "docs/stabilization/runs/showcase-network-current-001.json",
                 "docs/stabilization/runs/showcase-d49-native-retest-001.json",
@@ -24963,9 +24963,11 @@
                 ".research/d47-native-result-peer-20261007.json",
                 ".research/d47-owned-recipe-cleanup-20261007.json",
                 ".research/d47-settled-native-20261007.json",
-                ".research/d47-settled-native-peer-20261007.json"
+                ".research/d47-settled-native-peer-20261007.json",
+                ".research/d47-oldfirst-native-20261007.json",
+                ".research/d47-oldfirst-native-peer-20261007.json"
               ],
-              "detail": "Independent peer9f70b303 accepts resource-valid native37558902653 on frozen0.2.337/source823724eb: exact saved current-only root result at settled running=false/no error, new-context handshake/packet and old-context clearing. OldHTTP completed after current; no oldcallback delivered (architectural exclusion, not callback rejection). Active observer removal/detach and exact run-owned recipe UI deletion/absence verified. FullT57 remains unverified: this controlled localhost fixture does not satisfy the public-site initial-load precondition; inverse order, stale-only recovery, manual/prior-run isolation and causal higher-old-sequence coverage remain required. Later dependency lock is not certified."
+              "detail": "Independent peer1abea43b accepts resource-valid old-first native37562111314 at frozen0.2.338/source651f25d0: distinct pending requests finished old then current, fresh current-document handshake/exact packet, exact settled current-only saved result with no loading/error, observer and exact owned-recipe cleanup. Earlier current-first proof remains frozen0.2.337/run37558902653/peer9f70b303. Neither delivered an old binding callback; architectural exclusion is not callback-rejection proof. FullT57 remains unverified: public-site initial-load precondition, stale-only refusal/recovery, manual/prior-run isolation and separate causal higher-old-sequence guard coverage remain required."
             }
           },
           "proof_ruling": "2026-10-06 root technical ruling: see .research/d47-acceptance-architecture-ruling-20261006.json. A native architectural-exclusion trace with positively observed current binding/packet, exact contexts, old request lifecycle and terminal saved result may supplement delivered-stale-event causal guards. Neither cancellation alone nor current-only rows nor empty event arrays prove exclusion. Retain public-site same-artifact replay, both response orders, higher old sequence, stale-only refusal and cleanup; no existing result is promoted."
