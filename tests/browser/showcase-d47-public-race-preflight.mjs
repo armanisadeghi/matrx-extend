@@ -231,7 +231,10 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
       const response = await cdp.send('Fetch.getResponseBody', { requestId: event.requestId });
       if (typeof response?.body !== 'string' || typeof response?.base64Encoded !== 'boolean')
         throw new Error('public_race_response_body_unavailable');
-      if (response.base64Encoded && !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(response.body))
+      if (
+        response.base64Encoded &&
+        !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(response.body)
+      )
         throw new Error('public_race_response_body_encoding_invalid');
       const bytes = Buffer.from(response.body, response.base64Encoded ? 'base64' : 'utf8');
       item.response_sha256 = digest(bytes);
