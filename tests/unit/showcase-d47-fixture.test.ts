@@ -147,6 +147,20 @@ it('holds a real first saved-run request through a distinct second saved-run res
       prior_saved_pending: true,
       target_requests: 2,
     });
+  const arrival = (await get(`${origin}/control/document-race/status`)).json() as {
+    prior_saved_held_arrival_order: number | null;
+    prior_saved_first_finish_order: number | null;
+  };
+  expect(arrival.prior_saved_held_arrival_order).toBeTypeOf('number');
+  expect(arrival.prior_saved_first_finish_order).toBeTypeOf('number');
+  if (
+    arrival.prior_saved_held_arrival_order === null ||
+    arrival.prior_saved_first_finish_order === null
+  )
+    throw new Error('first_saved_arrival_order_missing');
+  expect(arrival.prior_saved_held_arrival_order).toBeLessThan(
+    arrival.prior_saved_first_finish_order,
+  );
   expect((await get(`${origin}/control/document-race/release-prior-saved`)).status).toBe(409);
   expect((await get(`${origin}/document-race/`)).text).toContain('id="phase">current');
   const second = await get(`${origin}/api/document-race`);
@@ -155,7 +169,9 @@ it('holds a real first saved-run request through a distinct second saved-run res
     document: 'second',
   });
   expect((await get(`${origin}/control/document-race/release-prior-saved`)).status).toBe(200);
-  expect((await held[0]!).json()).toEqual({
+  const heldResponse = held[0];
+  if (!heldResponse) throw new Error('held_first_saved_request_missing');
+  expect((await heldResponse).json()).toEqual({
     events: [{ eventName: 'Moonlit Transit' }],
     document: 'prior',
   });
@@ -165,6 +181,41 @@ it('holds a real first saved-run request through a distinct second saved-run res
     prior_saved_finished: true,
     target_requests: 3,
   });
+});
+
+it('receives the held first-run request before finishing the first saved response', async () => {
+  const origin = await fixtureOrigin();
+  await get(`${origin}/document-race/`);
+  await get(`${origin}/control/document-race/arm?response_order=prior-saved`);
+  await get(`${origin}/document-race/`);
+  const old = get(`${origin}/api/document-race`);
+  void old.catch(() => undefined);
+  await expect
+    .poll(async () => (await get(`${origin}/control/document-race/status`)).json())
+    .toMatchObject({ old_pending: true, target_requests: 1 });
+  await get(`${origin}/document-race/`);
+  const first = get(`${origin}/api/document-race`);
+  void first.catch(() => undefined);
+  await expect
+    .poll(async () => (await get(`${origin}/control/document-race/status`)).json())
+    .toMatchObject({ target_requests: 2 });
+  expect((await get(`${origin}/control/document-race/status`)).json()).toMatchObject({
+    prior_saved_first_pending: true,
+    prior_saved_first_finished: false,
+    prior_saved_held_arrival_order: null,
+    prior_saved_first_finish_order: null,
+  });
+  const held = get(`${origin}/api/document-race`, { 'X-D47-Prior-Saved': 'held' });
+  void held.catch(() => undefined);
+  expect((await first).json()).toEqual({
+    events: [{ eventName: 'Canyon Frequency' }],
+    document: 'current',
+  });
+  const after = (await get(`${origin}/control/document-race/status`)).json() as {
+    prior_saved_held_arrival_order: number;
+    prior_saved_first_finish_order: number;
+  };
+  expect(after.prior_saved_held_arrival_order).toBeLessThan(after.prior_saved_first_finish_order);
 });
 
 async function executeFixturePage(
