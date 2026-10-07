@@ -80,7 +80,8 @@
         "query_endpoint": false,
         "hits_preview": false,
         "credential_key_present": true,
-        "credential_masked": false
+        "credential_masked": false,
+        "timing_limit": "Observed before the driver's explicit credential-key masking checkbox stage; does not establish post-checkbox exposure."
       },
       "matched_previews": 0
     },
@@ -141,6 +142,6 @@
     },
     "values_recorded": false
   },
-  "conclusion": "The fixed receipt now shows zero exact candidates despite one selected POST 200 Algolia response, because the selected preview passed host and row/URL synchronization checks but failed the query-endpoint predicate. The capture was not established, no recipe or replay was produced, and no recipe deletion ran. Credential-key presence with an unmasked preview is separately recorded as a privacy concern. This run does not establish a product capture failure or T57 acceptance.",
-  "next_action": "Source owner should diagnose the actual selected public endpoint identity and credential masking behavior, correct the source guard/product path, and obtain fresh independent review before any later native retest. This lane did not change source or dispatch another run."
+  "conclusion": "The fixed receipt now shows zero exact candidates despite one selected POST 200 Algolia response, because the selected preview passed host and row/URL synchronization checks but failed the query-endpoint predicate. The capture was not established, no recipe or replay was produced, and no recipe deletion ran. The credential masking boolean was captured before the driver's explicit masking checkbox stage and does not establish post-checkbox exposure. This run does not establish a product capture failure or T57 acceptance.",
+  "next_action": "Source owner should diagnose the actual selected public endpoint identity and correct the query-endpoint qualification, then obtain fresh independent review before any later native retest. This lane did not change source or dispatch another run."
 }
