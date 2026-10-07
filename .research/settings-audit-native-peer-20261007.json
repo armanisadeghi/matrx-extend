@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "review_type": "fresh_independent_evidence_review",
+  "review_scope": "Read-only review of committed native receipts and stabilization inventory; no browser, build, release, or workflow dispatch by this reviewer.",
+  "settings_t46": {
+    "verdict_A_scope_acceptance": {
+      "status": "pass_for_bounded_guest_T46",
+      "case": "EXT-F-1003-T46",
+      "reason": "The signed-out guest native side-panel driver records 8/8 passing criteria: 65001 saved, Save-bounded worker rediscovery, readback after Settings Page.reload, inclusive ports 1 and 65535 saved and read back, 65536 rejected with the prior saved port retained, and blank input clearing the override and stale error with null after another Settings Page.reload.",
+      "scope": "One frozen successful development artifact (source d10719c667c87b578689f1cdecf23e2a637d3207, version 0.2.391, extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml, tree SHA256 39c001784e5566e54c5862f3db31f5688aafead51c418b7c52ccc3ec1c924410) in run 37699338786, guest job 113058758927. Workflow checkout a03c0c5f522b7f542936c06a47c40a163ebd3d4e is the harness revision, not the tested product source.",
+      "limits": [
+        "The fixture intentionally returned HTTP 503 to GET /health. Worker rediscovery entry and post-probe broadcast were observed; healthy desktop-engine connectivity was not established.",
+        "The in-case persistence check used Settings Page.reload. It does not establish persistence across a full extension Reload or a Store update.",
+        "The two screenshots show setup surfaces, not the final port-control states. Detailed native driver states carry the T46 result.",
+        "This verdict covers T46 only. T22/T37 driver passes and T70 unverified branches are outside this claim; no global Settings or current-main health conclusion follows."
+      ]
+    },
+    "verdict_B_evidence_quality": {
+      "status": "pass_with_scope_limits",
+      "reason": "The raw T46 case contains ten ordered warm/reload observations and eight passing criteria. The Save trace shows worker entry and completion breakpoints and a GET /health. All three exact-run nested resource journals end RESOURCE_FINAL_DECISION valid, resourceInvalid=false, exitCode=0; no stale journal was used.",
+      "evidence": [
+        ".research/settings-valid-native-20261007.json",
+        ".research/settings-valid-native-20261007/evidence/raw/settings-local-controls-acceptance.json (SHA256 7be8a18491dd65c1a265e8ecd77191982277fcdf52f16ace3c6541565e6169e6)",
+        ".research/settings-valid-native-20261007/evidence/raw/resource-journals/hosted-package-37699338786-1.jsonl (SHA256 fe0e9670b781a85d7c003c862a4588b7f68d31bfade57384ae059e0e702ca)",
+        ".research/settings-valid-native-20261007/evidence/raw/resource-journals/hosted-browser-37699338786-1.jsonl (SHA256 d136bec4f5514aee9aba0363d5706405170fb52ad3219e0e55cb1d58c379bf56)",
+        ".research/settings-valid-native-20261007/evidence/raw/resource-journals/hosted-guest-37699338786-1.jsonl (SHA256 261eac21d7c1a6600558c5ae9ffbc6b63cf9cee2bac6b38a106409eb8469613b)",
+        "docs/stabilization/inventory.json EXT-F-1003-T46"
+      ],
+      "findings": []
+    }
+  },
+  "audit_admin": {
+    "status": "pending_exact_run_evidence",
+    "run_id": 37699585477,
+    "note": "Admin audit-key verdict will be added after the selected native receipt is available; no claim is made from prior audit runs."
+  }
+}
