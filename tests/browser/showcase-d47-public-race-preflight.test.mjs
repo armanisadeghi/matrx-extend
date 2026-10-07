@@ -68,7 +68,9 @@ test('extension capture proof requires its own hook and an attached owned tab', 
       method === 'Runtime.enable'
         ? {}
         : { result: { value: await runInNewContext(args.expression, sandbox) } },
-    detach: async () => { detached = true; },
+    detach: async () => {
+      detached = true;
+    },
   };
   const probe = await installPublicCaptureProbe(worker, 'https://hn.algolia.com/?q=OpenAI');
   try {
@@ -108,7 +110,10 @@ test('controller continues original paused responses in order and disables inter
         0,
       );
     if (method === 'Fetch.getResponseBody')
-      return { body: args.requestId === 'hold-old' ? '{"hits":[]}' : '{"hits":[{"id":47}]}', base64Encoded: false };
+      return {
+        body: args.requestId === 'hold-old' ? '{"hits":[]}' : '{"hits":[{"id":47}]}',
+        base64Encoded: false,
+      };
     if (method === 'Fetch.continueRequest')
       cdp.emit('Network.loadingFinished', {
         requestId: args.requestId === 'hold-old' ? 'old' : 'new',
@@ -167,9 +172,14 @@ test('controller continues original paused responses in order and disables inter
   );
   assert.equal(calls.at(-2).method, 'Fetch.disable');
   assert.equal(calls.at(-1).method, 'detach');
-  assert.notEqual(controller.facts.paused[0].response_sha256, controller.facts.paused[1].response_sha256);
+  assert.notEqual(
+    controller.facts.paused[0].response_sha256,
+    controller.facts.paused[1].response_sha256,
+  );
   assert.deepEqual(
-    calls.filter((call) => call.method === 'Fetch.getResponseBody').map((call) => call.args.requestId),
+    calls
+      .filter((call) => call.method === 'Fetch.getResponseBody')
+      .map((call) => call.args.requestId),
     ['hold-old', 'hold-new'],
   );
   assert.equal(assessPublicRacePreflight(controller.facts), 'timing_interception_feasible');
@@ -227,10 +237,15 @@ test('preflight requires two matching real request identities, new document and 
 });
 
 test('actual verdict rejects constant and missing-evidence mutations in memory', async () => {
-  const source = await readFile(new URL('./showcase-d47-public-race-preflight.mjs', import.meta.url), 'utf8');
+  const source = await readFile(
+    new URL('./showcase-d47-public-race-preflight.mjs', import.meta.url),
+    'utf8',
+  );
   const load = async (from, to) => {
     assert.ok(source.includes(from), 'mutation_seam_missing');
-    const module = await import(`data:text/javascript;base64,${Buffer.from(source.replace(from, to)).toString('base64')}`);
+    const module = await import(
+      `data:text/javascript;base64,${Buffer.from(source.replace(from, to)).toString('base64')}`
+    );
     return module.assessPublicRacePreflight;
   };
   const constant = await load(
@@ -245,7 +260,10 @@ test('actual verdict rejects constant and missing-evidence mutations in memory',
   const checks = [
     [constant, { ...valid, extension_capture_at_old_pause: false }],
     [noLease, { ...valid, extension_capture_at_old_pause: false }],
-    [noDigest, { ...valid, paused: [{ ...valid.paused[0], response_sha256: undefined }, valid.paused[1]] }],
+    [
+      noDigest,
+      { ...valid, paused: [{ ...valid.paused[0], response_sha256: undefined }, valid.paused[1]] },
+    ],
   ];
   for (const [mutant, input] of checks) {
     assert.equal(assessPublicRacePreflight(input), 'unverified');
