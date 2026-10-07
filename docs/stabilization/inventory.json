@@ -57762,12 +57762,59 @@
           "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Before each proposed run, first satisfy the resource permit and create a fresh PLAN-compliant receipt: source SHA and dirty-source hash if applicable, lockfile hash, output hash, WXT mode, loaded runtime extension ID, Chrome version, profile label, auth/role/device-org state, permissions, backend identity, fixture IDs and timestamp. Also record login method, principal provenance, real data origin, build/env flags, response interception, mocks and seeded browser state. Store no secrets, tokens, session values or unrelated page contents.",
+            "Use the existing unpacked development artifact bound to the receipt. Confirm the loaded extension ID, source/output identity and build fingerprint for the extension UI executing the test. Wait for build completion, reload the extension when required, reopen extension pages and the actual side panel/Tools route, and reload the target fixture tab. These direct-handler procedures do not require separate service-worker or offscreen build identities; their lifecycle remains outside scope. HMR is not acceptance evidence.",
+            "Run the case separately in genuine signed-in member and admin profiles. These Tools procedures do not target guest mode. Record role, active device organization, and the activeTab/scripting grant state for each profile; don't infer one profile's result from the other.",
+            "Start the already-owned fixture server only under the resource permit, following tests/fixtures/showcase-replay/README.md. Open its announced loopback calendar URL and record the chosen port and owned fixture tab. The fixture is synthetic and loopback-only. Close only that owned tab and stop only the fixture server process started for the run during cleanup.",
+            "Actual route for each run: extension side panel > Tools > Catalog > All handlers > search exact handler name > expand > inspect displayed local JSON schema > enter the exact JSON below in Test runner > Run. ToolsView validates the local schema and invokes handler.run directly with permissionMode=act and assignedTabId=null; handlers requiring the page therefore use the focused active tab in the current window. Focus the owned calendar tab immediately before Run.",
+            "The manual runner is a direct-handler route. It bypasses dispatch.ts approval, per-tool permission enforcement and live tool.binding advertisement. A displayed success or error does not prove agent dispatch, effective permission-denial behavior, role gate behavior, or live binding. The proposed warm and reload checks do not cover DevTools-closed idle service-worker restart, navigation transition, permission-denied recovery or offline recovery; keep those dimensions unverified.",
+            "Use shared receipt/reload preamble. The fixture contains two tables; target #event-schedule explicitly so the result is deterministic and does not depend on largest-table area."
           ],
-          "steps": [],
-          "expected": [],
-          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"]
+          "steps": [
+            "With the owned calendar fixture tab focused, run {\"selector\":\"#event-schedule\",\"max_rows\":10,\"normalize\":true,\"compute_header_paths\":true}.",
+            "Run {\"selector\":\"#no-such-table\"} as a negative selector control.",
+            "Run {\"selector\":\"#events\"} as a matched-but-not-table control.",
+            "Reload the extension, reopen the side panel and Tools route, reload and focus the owned fixture tab, then repeat the first input. Record the reload observation separately.",
+            "Close only the owned fixture tab and stop only the fixture server started for this case."
+          ],
+          "expected": [
+            "Positive result has ok=true, table_kind=table, 3 body rows and 3 columns; columns identify Event, Start and Venue. The rows contain Moonlit Transit, Velvet Current and Canyon Frequency in that order. Fixture source shows no merged cells; output should not claim a merged-cell case was tested.",
+            "Missing selector returns ok=false with reason 'No element matched the selector'.",
+            "#events matches a DIV but no table/grid ancestor or descendant, so result is ok=false with a source-shaped reason identifying a non-table element. No page content is changed.",
+            "Reloaded positive output is recorded independently; it does not establish idle-worker restart, navigation, permission denial, or offline recovery."
+          ],
+          "dimensions": [
+            "valid-input",
+            "invalid-input",
+            "permissions",
+            "reload",
+            "member",
+            "admin",
+            "loopback-synthetic-fixture",
+            "explicit-html-table-selector",
+            "invalid-selector",
+            "matched-nontable",
+            "activeTab-scripting-state",
+            "direct-handler",
+            "extension-reload",
+            "dispatcher-unverified",
+            "permission-denial-unverified",
+            "cold-idle-restart-unverified",
+            "navigation-unverified",
+            "offline-recovery-unverified",
+            "owned-fixture-cleanup"
+          ],
+          "procedure_source_review": {
+            "proposal": ".research/inventory-following-three-procedures-20261007.json",
+            "peer": ".research/inventory-following-three-final-peer-20261007.json",
+            "source_anchors": [
+              "src/lib/tools/handlers/extract.ts:28-148",
+              "src/lib/tools/catalog.ts:178",
+              "src/features/tools/ToolsView.tsx:346-462,510-545",
+              "tests/fixtures/showcase-replay/calendar/index.html:65-80"
+            ],
+            "limits": "Source-only direct-handler synthetic fixture procedures. No runtime/mode results promoted. Original dimensions retained, design_status remains needed; dispatcher, permissions, cold-idle lifecycle, navigation and offline recovery remain unverified."
+          }
         }
       ],
       "cells": {
@@ -58382,12 +58429,62 @@
           "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Before each proposed run, first satisfy the resource permit and create a fresh PLAN-compliant receipt: source SHA and dirty-source hash if applicable, lockfile hash, output hash, WXT mode, loaded runtime extension ID, Chrome version, profile label, auth/role/device-org state, permissions, backend identity, fixture IDs and timestamp. Also record login method, principal provenance, real data origin, build/env flags, response interception, mocks and seeded browser state. Store no secrets, tokens, session values or unrelated page contents.",
+            "Use the existing unpacked development artifact bound to the receipt. Confirm the loaded extension ID, source/output identity and build fingerprint for the extension UI executing the test. Wait for build completion, reload the extension when required, reopen extension pages and the actual side panel/Tools route, and reload the target fixture tab. These direct-handler procedures do not require separate service-worker or offscreen build identities; their lifecycle remains outside scope. HMR is not acceptance evidence.",
+            "Run the case separately in genuine signed-in member and admin profiles. These Tools procedures do not target guest mode. Record role, active device organization, and the activeTab/scripting grant state for each profile; don't infer one profile's result from the other.",
+            "Start the already-owned fixture server only under the resource permit, following tests/fixtures/showcase-replay/README.md. Open its announced loopback calendar URL and record the chosen port and owned fixture tab. The fixture is synthetic and loopback-only. Close only that owned tab and stop only the fixture server process started for the run during cleanup.",
+            "Actual route for each run: extension side panel > Tools > Catalog > All handlers > search exact handler name > expand > inspect displayed local JSON schema > enter the exact JSON below in Test runner > Run. ToolsView validates the local schema and invokes handler.run directly with permissionMode=act and assignedTabId=null; handlers requiring the page therefore use the focused active tab in the current window. Focus the owned calendar tab immediately before Run.",
+            "The manual runner is a direct-handler route. It bypasses dispatch.ts approval, per-tool permission enforcement and live tool.binding advertisement. A displayed success or error does not prove agent dispatch, effective permission-denial behavior, role gate behavior, or live binding. The proposed warm and reload checks do not cover DevTools-closed idle service-worker restart, navigation transition, permission-denied recovery or offline recovery; keep those dimensions unverified.",
+            "Use shared receipt/reload preamble. The #api-result element begins with a stable prompt. Its existing Load 16 October API result button fetches the fixture's fixed synthetic response and updates that element; no extension test code or page script injection is needed."
           ],
-          "steps": [],
-          "expected": [],
-          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"]
+          "steps": [
+            "Focus the owned calendar fixture tab. Run {\"selector\":\"#api-result\",\"duration_ms\":5000,\"kinds\":[\"children\",\"text\"],\"max_events\":20}.",
+            "While the runner waits for its five-second window, click the fixture page's visible 'Load 16 October API result' button once. Do not click either button before the watcher is running.",
+            "Run {\"selector\":\"#no-such-element\",\"duration_ms\":1000,\"kinds\":[\"text\"]} as the negative target control.",
+            "Run {\"duration_ms\":1000,\"kinds\":[\"text\"]} as the missing-target schema control; it must reject before handler.run because ref or selector is required.",
+            "Reload the extension, reopen the side panel and Tools route, reload and focus the owned fixture tab. Start the positive watcher again, click the same visible fixture button while its window is active, and record the reload observation separately.",
+            "Close only the owned fixture tab and stop only the fixture server started for this case."
+          ],
+          "expected": [
+            "Positive result has ok=true, duration_ms approximately the requested 5000 ms, total_events > 0, truncated=false, and events containing text and/or children changes associated with #api-result. At least one text event's after value contains the fixture's 16 October event data (Moonlit Transit and/or Velvet Current); timestamp precision and exact event count are not fixed.",
+            "A selector with no match returns ok=false and reason 'element not found'.",
+            "Missing selector is rejected by the argument schema before a watch runs.",
+            "Reloaded positive watcher is recorded independently. If the click is not made during the active window, no mutation result can be inferred; do not label the tool defective from that setup miss.",
+            "Watcher cleanup is source-defined at the end of the duration: MutationObserver and any IntersectionObserver disconnect before the result resolves. No persistence or page mutation is performed by the handler."
+          ],
+          "dimensions": [
+            "valid-input",
+            "invalid-input",
+            "permissions",
+            "reload",
+            "member",
+            "admin",
+            "loopback-synthetic-fixture",
+            "observed-child-and-text-mutation",
+            "missing-selector-target",
+            "missing-required-selector",
+            "activeTab-scripting-state",
+            "direct-handler",
+            "extension-reload",
+            "dispatcher-unverified",
+            "permission-denial-unverified",
+            "cold-idle-restart-unverified",
+            "navigation-unverified",
+            "offline-recovery-unverified",
+            "owned-fixture-cleanup"
+          ],
+          "procedure_source_review": {
+            "proposal": ".research/inventory-following-three-procedures-20261007.json",
+            "peer": ".research/inventory-following-three-final-peer-20261007.json",
+            "source_anchors": [
+              "src/lib/tools/handlers/extras.ts:157-270,280-348",
+              "src/lib/tools/catalog.ts:184",
+              "src/features/tools/ToolsView.tsx:346-462,510-545",
+              "tests/fixtures/showcase-replay/calendar/index.html:90-105",
+              "tests/fixtures/showcase-replay/serve.mjs:519-545"
+            ],
+            "limits": "Source-only direct-handler synthetic fixture procedures. No runtime/mode results promoted. Original dimensions retained, design_status remains needed; dispatcher, permissions, cold-idle lifecycle, navigation and offline recovery remain unverified."
+          }
         }
       ],
       "cells": {
@@ -58524,12 +58621,61 @@
           "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Before each proposed run, first satisfy the resource permit and create a fresh PLAN-compliant receipt: source SHA and dirty-source hash if applicable, lockfile hash, output hash, WXT mode, loaded runtime extension ID, Chrome version, profile label, auth/role/device-org state, permissions, backend identity, fixture IDs and timestamp. Also record login method, principal provenance, real data origin, build/env flags, response interception, mocks and seeded browser state. Store no secrets, tokens, session values or unrelated page contents.",
+            "Use the existing unpacked development artifact bound to the receipt. Confirm the loaded extension ID, source/output identity and build fingerprint for the extension UI executing the test. Wait for build completion, reload the extension when required, reopen extension pages and the actual side panel/Tools route, and reload the target fixture tab. These direct-handler procedures do not require separate service-worker or offscreen build identities; their lifecycle remains outside scope. HMR is not acceptance evidence.",
+            "Run the case separately in genuine signed-in member and admin profiles. These Tools procedures do not target guest mode. Record role, active device organization, and the activeTab/scripting grant state for each profile; don't infer one profile's result from the other.",
+            "Start the already-owned fixture server only under the resource permit, following tests/fixtures/showcase-replay/README.md. Open its announced loopback calendar URL and record the chosen port and owned fixture tab. The fixture is synthetic and loopback-only. Close only that owned tab and stop only the fixture server process started for the run during cleanup.",
+            "Actual route for each run: extension side panel > Tools > Catalog > All handlers > search exact handler name > expand > inspect displayed local JSON schema > enter the exact JSON below in Test runner > Run. ToolsView validates the local schema and invokes handler.run directly with permissionMode=act and assignedTabId=null; handlers requiring the page therefore use the focused active tab in the current window. Focus the owned calendar tab immediately before Run.",
+            "The manual runner is a direct-handler route. It bypasses dispatch.ts approval, per-tool permission enforcement and live tool.binding advertisement. A displayed success or error does not prove agent dispatch, effective permission-denial behavior, role gate behavior, or live binding. The proposed warm and reload checks do not cover DevTools-closed idle service-worker restart, navigation transition, permission-denied recovery or offline recovery; keep those dimensions unverified.",
+            "Use shared receipt/reload preamble. The loopback calendar has a three-Event JSON-LD @graph and three Event Microdata cards with nested Place items; it is synthetic, not real public-page acceptance."
           ],
-          "steps": [],
-          "expected": [],
-          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"]
+          "steps": [
+            "With the owned calendar fixture tab focused, run {\"kinds\":[\"json_ld\",\"microdata\"],\"ld_type\":\"Event\",\"itemtype\":\"Event\"}.",
+            "Run {\"kinds\":[\"microdata\"],\"itemtype\":\"NoSuchType\"} as a valid no-match filter control.",
+            "Run {\"kinds\":[\"not-a-kind\"]} as an invalid-enum control; confirm it is rejected in the Tools runner before handler invocation.",
+            "Reload the extension, reopen the side panel and Tools route, reload and focus the owned fixture tab, then repeat the first input. Record the reload observation separately.",
+            "Close only the owned fixture tab and stop only the fixture server started for this case."
+          ],
+          "expected": [
+            "Positive result has ok=true, json_ld contains the Event records from the fixture @graph, microdata contains the three top-level Event items, schema_org_types includes Event and nested Place where found, and counts matches the returned json_ld and microdata array lengths. Do not hardcode exact snapshot metadata or claim exhaustive parity with the separate Showcase UI.",
+            "NoSuchType is valid input and returns an empty microdata array with microdata count 0; this is a no-match result, not a validation error.",
+            "The invalid kinds enum is rejected by the schema before handler.run, with no extraction result presented as a successful call.",
+            "Reloaded positive output is recorded independently and remains synthetic fixture evidence only; dispatch, binding, lifecycle and permission-denial dimensions remain unverified."
+          ],
+          "dimensions": [
+            "valid-input",
+            "invalid-input",
+            "permissions",
+            "reload",
+            "member",
+            "admin",
+            "loopback-synthetic-fixture",
+            "json-ld-filter",
+            "microdata-filter",
+            "valid-no-match-filter",
+            "invalid-schema",
+            "activeTab-scripting-state",
+            "direct-handler",
+            "extension-reload",
+            "dispatcher-unverified",
+            "permission-denial-unverified",
+            "cold-idle-restart-unverified",
+            "navigation-unverified",
+            "offline-recovery-unverified",
+            "owned-fixture-cleanup"
+          ],
+          "procedure_source_review": {
+            "proposal": ".research/inventory-following-three-procedures-20261007.json",
+            "peer": ".research/inventory-following-three-final-peer-20261007.json",
+            "source_anchors": [
+              "src/lib/tools/handlers/microdata.ts:21-162",
+              "src/lib/data-pattern/modes/microdata.ts:69-152",
+              "src/lib/tools/catalog.ts:187",
+              "src/features/tools/ToolsView.tsx:346-462,510-545",
+              "tests/fixtures/showcase-replay/calendar/index.html:8-64"
+            ],
+            "limits": "Source-only direct-handler synthetic fixture procedures. No runtime/mode results promoted. Original dimensions retained, design_status remains needed; dispatcher, permissions, cold-idle lifecycle, navigation and offline recovery remain unverified."
+          }
         }
       ],
       "cells": {

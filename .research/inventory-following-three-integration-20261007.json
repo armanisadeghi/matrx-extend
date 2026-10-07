@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "status": "partial_procedure_integration",
+  "cases": ["EXT-F-4142-T01", "EXT-F-4147-T01", "EXT-F-4146-T01"],
+  "missing_steps_expected_before": 45,
+  "missing_steps_expected_after": 42,
+  "review": ".research/inventory-following-three-final-peer-20261007.json",
+  "limits": "No runtime results/mode cells promoted. Direct-handler synthetic-fixture procedures only. Original dimensions preserved; design_status remains needed. Relevant running context identity required; unrelated offscreen startup is not a precondition."
+}
