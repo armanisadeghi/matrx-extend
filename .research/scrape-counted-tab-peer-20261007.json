@@ -1,0 +1,35 @@
+{
+  "task_id": "scrape-counted-tab-peer-20261007",
+  "reviewer_role": "fresh independent verifier; zero source or test authorship",
+  "reviewed_commit": "92ddec30e972ea1508764af9e1cdbc87d403910d",
+  "status": "done_with_native_acceptance_pending",
+  "verdict_a_source_readiness_and_native": {
+    "source": "pass",
+    "native_acceptance": "pending",
+    "ready_for_guarded_native_retest": true,
+    "evidence": [
+      "ScrapeView renders a literal Video text child followed by a count span when the count is positive. The screenshot from run 37688019001 shows Video 2 selected with two video rows and Copy controls; the receipt reports selected=false, rowCount=1, targetCount=1 before any Copy pointer input.",
+      "On a counted selected Video DOM, the previous full-text predicate returned scrape_media_copy_target_ready_not_observed with selected=false, rowCount=1, targetCount=1; the repaired first-child predicate returned selected=true, rowCount=1, targetCount=1.",
+      "The readiness predicate resolves the current active Scrape pane and aria-selected result tab, then requires the exact destination href and one Copy target in that tab's content. A wrong selected Images tab with the Video row still mounted is rejected in the focused test.",
+      "The subsequent trusted pointer selector uses the same active pane, selected result tab, exact href, and Copy title or tooltip-migrated data-matrx-title target contract. The existing guard covers both title variants with real pointer resolution."
+    ],
+    "cannot_verify": [
+      "No native run contains reviewed commit 92ddec30. Guest Video Copy feedback and clipboard equality, subsequent Video controls, Links T13, reload, and other role cells remain unverified."
+    ],
+    "findings": []
+  },
+  "verdict_b_doctrine_quality": {
+    "status": "pass",
+    "evidence": [
+      "The one-line repair uses the same firstChild label convention as the existing native result-tab click and Scrape observers. It adds no product path, fallback, dependency, or permission change.",
+      "The focused regression is causal: the old predicate fails on the counted selected Video fixture and the current predicate passes. The fixture also rejects the wrong selected tab, preserving fail-closed behavior.",
+      "Fresh node --test tests/browser/scrape-native-media-actions.test.mjs passed 22/22 with no skips. Fresh Biome check passed for the two touched browser files."
+    ],
+    "findings": []
+  },
+  "prior_failure_rulings": [
+    "The earlier Links restoration race and title/data-matrx-title pointer mismatch remain covered by the current selected-tab readiness and pointer alignment. Run 37688019001 failed at a distinct counted-label comparison before the repaired pointer path could run.",
+    "The previous native failure is not a product Copy failure: no trusted Copy action occurred. A new native run is required before claiming behavior or acceptance."
+  ],
+  "next_action": "Root owner may launch one guarded guest native retest using a frozen artifact and reviewed runner containing 92ddec30, then inspect Video and Links open, trusted Copy, feedback, clipboard, resource journal, and the remaining acceptance cases."
+}
