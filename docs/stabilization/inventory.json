@@ -19820,7 +19820,7 @@
             "artifact_id": 11474839620,
             "app_tree_sha256": "e41e0fe5243284e1781a2c997078a05bd4ae50f68a3543914a21e13a18d9ddc7",
             "source_review": ".research/t57-public-race-preflight-final-peer-20261007.json",
-            "next_action": "Repair the QA diagnostic boundary before another native attempt: capture sanitized first-release substep and CDP error class; separate exact-row/activity observations and use positive capture evidence; verify cleanup even when navigation cancels a paused request. Then independently review and perform one bounded public-site run under the accepted architectural-exclusion ruling. Do not require recreating an old callback route; no full-case pass without positive current context/binding and terminal saved result or honest refusal.",
+            "next_action": "Diagnostics repair a28945dc independently accepted at source scope; fix peer cleanup body-read race and focused cleanup failure controls, then independently review. Before another native run, correct the double-navigation sequence to an old-document request pending BEFORE the new saved replay. Evaluate positive current binding/context/request identity and recipe terminal result or honest refusal under architectural exclusion; do not demand old callback delivery. T57 remains unverified and original D47 remains closed.",
             "workflow_conclusion": "failure",
             "failure_stage": "public_race_release",
             "report": ".research/t57-public-race-native-20261007.json",
@@ -19829,7 +19829,13 @@
             "temporary_secret_names_absent": true,
             "owned_recipe_cleanup": "removed",
             "capture_probe_cleanup": "removed_detached",
-            "interception_cleanup": "unverified"
+            "interception_cleanup": "unverified",
+            "diagnostics_repair": {
+              "commit": "a28945dc",
+              "report": ".research/t57-public-release-diagnostics-fix-20261007.json",
+              "peer": ".research/t57-release-diagnostics-peer-20261007.json",
+              "remaining": "Async pause-handler cleanup race and failure branch controls; source scenario sequencing before native retry."
+            }
           }
         },
         {
