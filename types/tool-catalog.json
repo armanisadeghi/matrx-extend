@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-07T13:29:04.847Z",
+  "generated_at": "2026-10-07T13:43:07.622Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_chrome_categories",
@@ -683,7 +683,7 @@
     {
       "category": "webmcp",
       "label": "Page-registered tools",
-      "description": "Discover and call tools that pages have registered via `navigator.modelContext.registerTool` (Chrome 146+). The `chrome_webmcp` mega-tool lets the agent enumerate the page's tool catalog and invoke specific tools. Admin-only experimental capability.",
+      "description": "Discover and call tools registered by the current page through WebMCP.",
       "list_tool": "list_webmcp_tools",
       "admin_only": true,
       "tool_names": [
