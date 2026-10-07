@@ -41,7 +41,7 @@
     "scope_limits": [
       "Settings Page.reload is not a full extension Reload.",
       "The fixture intentionally returns HTTP 503; healthy desktop-engine connectivity is not established.",
-      "The downloaded acceptance artifact had no screenshots or raw resource journal; resource events are summarized from the exact run log."
+      "Two setup screenshots are retained; neither captures the final post-boundary state."
     ]
   },
   "evidence": {
@@ -50,13 +50,29 @@
       "raw/ci-build-receipt.json",
       "raw/ci-build-provenance.json",
       "raw/settings-local-controls-acceptance.json",
+      "raw/resource-journals/hosted-guest-37696455741-1.jsonl",
       "t46-guest-native-receipt.json",
       "resource-summary.json",
+      "screenshots/native-side-panel.png",
+      "screenshots/normal-target-after-open.png",
       "screenshots/availability.json"
     ],
     "native_report_sha256": "a9034e979ee31f193579cde0215cd86ba272391ba278dd9316fb3c1d7a5f229b",
     "native_artifact_id": 11516145523,
     "native_artifact_digest": "sha256:222e41c65d9ba565b56be1e0ce39fde5e51a01276ae7ebb379bcd612e8e405e9",
-    "stale_run_371053_excluded": true
+    "stale_run_371053_excluded": true,
+    "resource_journal_sha256": "8b1ee99aed7f13a4b77c0d39e7ff9ab33346cdf72a64fa4b36e58dee6cda09ae",
+    "screenshots": [
+      {
+        "path": "native-side-panel.png",
+        "sha256": "5fb54ef5bd93c6a9508be08ca65895e78167c2753effc94bf6eb93c018b38ac0",
+        "observation": "Native side panel showing the signed-out guest surface; setup screenshot only."
+      },
+      {
+        "path": "normal-target-after-open.png",
+        "sha256": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89",
+        "observation": "Normal browser target after open; setup screenshot only."
+      }
+    ]
   }
 }

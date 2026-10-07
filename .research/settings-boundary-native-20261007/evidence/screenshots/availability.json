@@ -1,8 +1,19 @@
 {
   "schema_version": 1,
   "run_id": 37696455741,
-  "status": "not_available_in_downloaded_artifact",
-  "downloaded_artifact": "hosted-guest-37696455741-1",
-  "artifact_files": ["settings-local-controls-acceptance.json"],
-  "note": "The workflow upload contained the native JSON report only. No PNG/JPEG screenshot or raw resource journal was present; no screenshot is inferred or fabricated."
+  "status": "available",
+  "source": "nested exact-run acceptance artifact preserved by parallel-native-evidence-peer-20261007",
+  "screenshots": [
+    {
+      "path": "native-side-panel.png",
+      "sha256": "5fb54ef5bd93c6a9508be08ca65895e78167c2753effc94bf6eb93c018b38ac0",
+      "observation": "Native side panel showing the signed-out guest surface; setup screenshot only."
+    },
+    {
+      "path": "normal-target-after-open.png",
+      "sha256": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89",
+      "observation": "Normal browser target after open; setup screenshot only."
+    }
+  ],
+  "limit": "Neither screenshot captures the final state after the T46 boundary sequence."
 }

@@ -1,19 +1,30 @@
 {
   "schema_version": 1,
   "run_id": 37696455741,
-  "source": "GitHub Actions failed-step log for this exact run; no raw resource journal was present in the downloaded run artifact",
+  "journal_path": "raw/resource-journals/hosted-guest-37696455741-1.jsonl",
+  "journal_sha256": "8b1ee99aed7f13a4b77c0d39e7ff9ab33346cdf72a64fa4b36e58dee6cda09ae",
+  "event_count": 6,
   "events": [
+    {
+      "code": "RESOURCE_JOURNAL_OPENED",
+      "at": "2026-10-07T22:33:48.905Z"
+    },
     {
       "code": "RESOURCE_ADMITTED",
       "at": "2026-10-07T22:34:56.731Z",
       "reasons": [],
       "sample": {
+        "pressureLevel": 1,
         "availableMemoryGiB": 5.81,
         "requiredMemoryGiB": 4,
         "oneMinuteLoad": 1.25,
         "logicalCpus": 3,
         "cpuBusyFraction": 0.16,
-        "repoFreeGiB": 43.611351013183594
+        "swapUsedMiB": 0,
+        "repoFreeGiB": 43.611351013183594,
+        "profileFreeGiB": 43.611351013183594,
+        "safetyFreeGiB": 43.611351013183594,
+        "systemFreeGiB": 43.611351013183594
       }
     },
     {
@@ -21,32 +32,28 @@
       "at": "2026-10-07T22:35:12.997Z",
       "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
       "sample": {
+        "pressureLevel": 1,
         "availableMemoryGiB": 5.67,
         "requiredMemoryGiB": 4,
         "oneMinuteLoad": 2.31,
         "logicalCpus": 3,
         "cpuBusyFraction": 0.81,
-        "repoFreeGiB": 43.5399169921875
+        "swapUsedMiB": 0,
+        "repoFreeGiB": 43.5399169921875,
+        "profileFreeGiB": 43.5399169921875,
+        "safetyFreeGiB": 43.5399169921875,
+        "systemFreeGiB": 43.5399169921875
       }
     },
     {
       "code": "RESOURCE_PROCESS_ATTRIBUTION",
-      "at": "2026-10-07T22:35:13.073Z",
-      "process_names": [
-        "MTLCompilerServi",
-        "diskutil",
-        "Chromium Helper",
-        "diskarbitrationd",
-        "node",
-        "launchd",
-        "authd",
-        "storagekitd"
-      ]
+      "at": "2026-10-07T22:35:13.073Z"
     },
     {
       "code": "RESOURCE_JOB_EXIT",
       "at": "2026-10-07T22:35:24.724Z",
-      "childExitCode": 0
+      "childExitCode": 0,
+      "childSignal": null
     },
     {
       "code": "RESOURCE_FINAL_DECISION",
@@ -57,5 +64,7 @@
       "decision": "invalid"
     }
   ],
-  "stale_journals": "run 371053 was excluded; it is unrelated to this attempt"
+  "final_decision": "invalid",
+  "native_acceptance_credit": "none; resource journal invalidates the run-level acceptance result",
+  "stale_journal_handling": "371053 journals excluded; this evidence contains only run 37696455741"
 }
