@@ -1,0 +1,57 @@
+{
+  "id": "EXT-D-0152",
+  "feature_id": "EXT-F-0002",
+  "case_ids": ["EXT-F-0002-T11"],
+  "surface": "Testing infrastructure / hosted evidence upload",
+  "auth_mode": "guest",
+  "title": "Guest Account readiness screenshot is omitted from hosted artifact",
+  "severity": "S3",
+  "priority": "P1",
+  "state": "fixed",
+  "owner": "root",
+  "reproduction": [
+    "Run hosted visibility-census-guest at be19faca using original CI37619740064/artifact11482071536.",
+    "Inspect terminal run37641053827 result: guest_account_readiness_screenshot points to test-results/visibility-census-guest.json.guest-account-readiness.png.",
+    "Inspect uploaded artifact manifest: that PNG is missing; available native-side-panel.png shows earlier Chat, not Account."
+  ],
+  "expected": "Guest-only Account screenshot recorded in result is included in uploaded evidence and can be inspected independently.",
+  "actual": "Workflow uploads census JSON but omits adjacent readiness PNG; visual readiness cannot be verified after runner ends.",
+  "evidence": [
+    ".research/guest-census-provenance-native-20261007.json",
+    ".research/guest-census-receipt-correction-20261007.json"
+  ],
+  "fix_shas": ["1e366f07"],
+  "verification": {
+    "source": "Exact guest PNG path added to workflow; independent native operator source-check accepted matching path.",
+    "native": "Corrected uploader not yet run; screenshot pixels remain unverified.",
+    "remote": "Push received GitHub Internal Server Error; publication not yet confirmed."
+  },
+  "transition_history": [
+    {
+      "at": "2026-10-07T15:11:01.307452+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Observed missing screenshot in exact terminal native artifact."
+    },
+    {
+      "at": "2026-10-07T15:11:01.307452+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Confirmed mismatch between driver output and upload allowlist."
+    },
+    {
+      "at": "2026-10-07T15:11:01.307452+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Bounded exact guest-only upload path correction assigned."
+    },
+    {
+      "at": "2026-10-07T15:11:01.307452+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source correction1e366f07 accepted; native delivery remains pending."
+    }
+  ],
+  "closure_requirement": "Fresh guarded original-artifact census uploads exact readiness PNG; independent pixel inspection confirms Account/Sign in guest state.",
+  "next_action": "Restore main push, then guarded retest of corrected uploader; never infer pixels from path alone."
+}
