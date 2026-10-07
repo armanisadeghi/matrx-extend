@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "task_id": "guest-unmapped-reconciliation-peer-20261007",
+  "reviewed": {
+    "reconciliation": ".research/guest-unmapped-reconciliation-20261007.json",
+    "native_evidence": ".research/guest-census-provenance-native-20261007/evidence/visibility-census-guest.json",
+    "frozen_source_sha": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+    "inventory": "docs/stabilization/inventory.json"
+  },
+  "verdict": "accounting_sound_candidate_set_correction_required",
+  "A_mapping_evidence": {
+    "accounting": "PASS: the 27 reconciliation observations match the native receipt's 2 navigation + 16 Chat + 1 Settings-section + 8 settings-control unknowns exactly once. All 27 remain unmapped; 22 have candidate sets and 5 correctly have none.",
+    "candidate_review": "Candidate IDs resolve to the stated inventory controls and source scopes. Keep every candidate as a lead only; no fingerprint-to-control attribution is proven.",
+    "correction": {
+      "observations": [5, 6, 7],
+      "add_candidate_inventory_id": "EXT-F-2013-C41",
+      "reason": "Frozen ChatView.tsx:876-884 renders TaskPanelChip, LanguagePicker, SandboxPickerChip, PermissionModeChip in sequence. The inventory defines C41 as Open compute target picker at docs/stabilization/inventory.json:27663-27668. Since these three observed nodes are not individually source-bound, C41 belongs in their possible candidate sets; adding it does not establish which node is the picker.",
+      "keep_unresolved": true
+    },
+    "source_citations": [
+      "Native totals and fingerprints: .research/guest-census-provenance-native-20261007/evidence/visibility-census-guest.json (navigation, surfaces.Chat, sections, controls).",
+      "DOM discovery and HMAC-only labels: tests/browser/takeover-visible-census.mjs at d68a1db3:211-229, 240-267; the census deliberately omits hrefs, input values, and generated IDs at :201.",
+      "Header order: src/features/chat/ChatView.tsx at d68a1db3:876-884.",
+      "C41 inventory definition: docs/stabilization/inventory.json at d68a1db3:27663-27668.",
+      "Settings controls: src/features/settings/SettingsView.tsx at d68a1db3:333-349, 408-423, 567-603, 630-649, 820-840; Settings extractor emits kind and HMAC label only at tests/browser/takeover-visible-census.mjs:211-229."
+    ]
+  },
+  "B_privacy_and_quality": {
+    "strengths": [
+      "The report preserves 27 unresolved observations and does not reverse or expose run-key HMAC labels.",
+      "It correctly treats equal fingerprints as equal extracted labels, not as control identity, and keeps source candidates separate from mapped IDs.",
+      "The native census remains explicitly incomplete; source-order evidence is not represented as runtime ownership."
+    ],
+    "limitations": [
+      "The three Chat header candidate sets omit C41 until corrected above.",
+      "Source order and DOM paths constrain scope but cannot prove individual ownership where conditional or composite controls affect rendered nodes."
+    ]
+  },
+  "smallest_existing_source_observation_improvement": {
+    "next_action": "Extend tests/browser/takeover-visible-census.mjs settingsControlsExpression to emit a safe row-label relation for each observed node: the source-rendered ControlRow label for PillSelect controls, and only the static placeholder/adjacent source label for the two Desktop bridge pairs. Keep section, kind, and path/order with that relation so the exact observed node is linked to the SettingsView rendering.",
+    "privacy_boundary": "Never serialize input values, selected values, URLs, generated IDs, arbitrary surrounding text, or reverse HMACs; retain HMAC for other extracted labels.",
+    "proof_boundary": "A source_anchor path alone does not prove ownership. Require the native node's observed DOM relationship to the source-rendered static label, then cite the frozen JSX that renders that relationship."
+  },
+  "scope": "Independent source/evidence review only; no inventory or code edits, runtime retest, browser, database, build, or tests."
+}
