@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "scope": "Read-only diagnosis of frozen 0.2.366 guest visibility census surface buckets",
+  "artifact": {
+    "version": "0.2.366",
+    "source_sha": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+    "native_run_id": 37643142383,
+    "receipt": ".research/guest-screenshot-upload-retest-20261007/evidence/A-native-original-repro/test-results/visibility-census-guest.json"
+  },
+  "observed": {
+    "guest_signed_out": true,
+    "navigation_tabs": ["Chat", "Scrape", "Data", "SEO", "Settings"],
+    "direct_tab_actions": ["Scrape", "Data", "SEO"],
+    "surface_totals": { "Scrape": 0, "Data": 0, "SEO": 0 },
+    "inaccessible_regions": [],
+    "missing_required_regions": [],
+    "complete": false,
+    "reason_complete_is_currently_false": "The receipt has 27 unmapped items, independently of the three zero surface buckets."
+  },
+  "expected": "Once each guest tab has rendered, Scrape, Data, and SEO each expose at least one visible control. Even before page identity resolves, Scrape renders Retry page check, Data renders Pick fields on this page, and SEO renders Audit this page; disabled controls remain visible.",
+  "source_findings": [
+    {
+      "finding": "The frozen source declares all three tabs available to everyone and mounts their TabsContent under Suspense with a spinner fallback. The view modules contain unconditional visible controls after render.",
+      "evidence": [
+        "src/config/sidepanel-visibility.ts:22",
+        "src/entrypoints/sidepanel/App.tsx:118",
+        "src/entrypoints/sidepanel/App.tsx:136",
+        "src/entrypoints/sidepanel/App.tsx:602",
+        "src/features/scrape/ScrapeView.tsx:729",
+        "src/features/data/DataView.tsx:745",
+        "src/features/seo/SeoView.tsx:333"
+      ]
+    },
+    {
+      "finding": "The census waits for the tab trigger's active state, then samples the pane exactly once. It does not wait for lazy content or a tab-specific visible control. An existing but still empty pane becomes a zero-total bucket, not an inaccessible region.",
+      "evidence": [
+        "tests/browser/takeover-visible-census.mjs:601",
+        "tests/browser/takeover-visible-census.mjs:610",
+        "tests/browser/takeover-visible-census.mjs:632"
+      ]
+    },
+    {
+      "finding": "Completeness requires a surface object for each visible tab but imposes no nonzero or readiness condition on its total. Thus empty buckets can leave missing_required_regions empty and can pass completeness if the independent unmapped, unsupported, blocked, and inaccessible counts are zero.",
+      "evidence": [
+        "tests/browser/takeover-visible-census.mjs:718",
+        "tests/browser/takeover-visible-census.mjs:740",
+        "tests/browser/takeover-visible-census.mjs:749"
+      ]
+    }
+  ],
+  "diagnosis": {
+    "confirmed": "The census has a false-completeness condition for present but empty visible tab buckets. The frozen guest receipt exhibits the condition's input shape, although its overall status is incomplete for a different reason.",
+    "runtime_hypothesis": "Lazy Suspense fallback or pre-render tab content was sampled immediately after the tab became active. This fits the three adjacent zero buckets but is not proven without a native trace of pane markup, chunk load, and a later control sample.",
+    "not_established": "The evidence does not prove a product rendering failure, nor whether the native run eventually displayed the controls after the sample."
+  },
+  "priority": "P1 for census acceptance integrity; product severity remains unverified",
+  "smallest_correction": "For each opened visible tab, wait for a pane-specific stable readiness witness and then collect its controls. Mark a missing witness or zero-control surface as a missing required region with the tab name, rather than accepting the mere presence of a pane object. Preserve raw observation on timeout so a product blank state remains distinguishable from collector timing.",
+  "forcing_test_requirement": "At the actual census collection seam, simulate a tab trigger becoming active before lazy content appears: assert that the collector waits and records the later Scrape/Data/SEO controls. In a second case leave the pane empty: assert missing_required_regions includes each affected tab and complete is false with every other completeness count zero. The guard must fail against current collection and completeness behavior before correction and pass afterward.",
+  "next_action": "Native owner should inspect the frozen run's pane screenshot/markup and delayed DOM on the same three tabs to distinguish transient lazy loading from a persistent product blank state, then implement the collector readiness and completeness guard. No code, test, browser, build, or database run was performed in this lane."
+}
