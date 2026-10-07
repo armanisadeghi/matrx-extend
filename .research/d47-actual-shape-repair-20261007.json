@@ -1,0 +1,102 @@
+{
+  "status": "observer_repaired_native_acceptance_unverified",
+  "source_commit": "cfa475f2",
+  "integration_commit": "b268006e738fde274947d752e100ab9c225e1a89",
+  "scope": [
+    "tests/browser/showcase-d47-saved-result.mjs",
+    "tests/browser/showcase-d47-saved-result.test.mjs"
+  ],
+  "contract_trace": [
+    "Native driver selects seed response then Save pattern without JsonTree selection.",
+    "NetworkTab selectEvent resets extractKeyPath=[]; SaveAsPattern persists config.key_path verbatim.",
+    "runSavedPattern delegates to approved data_patterns runner; runNetworkCapturePattern passes config.key_path to rowsFromBody.",
+    "rowsFromBody with [] returns one root object {events:[{eventName:\"Canyon Frequency\"}],document:\"current\"}.",
+    "PatternsTab setsRows(data); ResultPreview defaults to table, unions root keys events/document and JSON.stringify renders nested events."
+  ],
+  "hypotheses": {
+    "uppercase_header": "Previously repaired textContent identity remains required and covered.",
+    "incorrect_saved_shape": "Confirmed: old observer rejects actual root and accepts artificial eventName-only row.",
+    "stale_or_mixed_data": "Exact root shape rejects wrong document, nested extra/stale events, duplicate events, extra rows and columns."
+  },
+  "runs": {
+    "original_red": {
+      "journal": "docs/stabilization/resource-journals/d47-root-shape-red-20261007.jsonl",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-07T00:38:53.899Z",
+        "runId": "d47-root-shape-red-20261007",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    "corrected_green": {
+      "journal": "docs/stabilization/resource-journals/d47-root-shape-green-20261007.jsonl",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-07T00:40:19.290Z",
+        "runId": "d47-root-shape-green-20261007",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    "wrong_column_mutant": {
+      "journal": "docs/stabilization/resource-journals/d47-root-event_name_only-20261007.jsonl",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-07T00:41:45.058Z",
+        "runId": "d47-root-event_name_only-20261007",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    "constant_success_mutant": {
+      "journal": "docs/stabilization/resource-journals/d47-root-constant_success-20261007.jsonl",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-07T00:43:07.362Z",
+        "runId": "d47-root-constant_success-20261007",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    "permissive_mutant": {
+      "journal": "docs/stabilization/resource-journals/d47-root-permissive_preview-20261007.jsonl",
+      "final": {
+        "schema": 1,
+        "at": "2026-10-07T00:44:29.985Z",
+        "runId": "d47-root-permissive_preview-20261007",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    }
+  },
+  "results": {
+    "original_red": "3 passed, 4 failed, including actual root current_row false and artificial eventName-only preview incorrectly accepted",
+    "corrected_green": "7 passed, 0 failed",
+    "wrong_column_mutant": "5 passed, 2 failed",
+    "constant_success_mutant": "1 passed, 6 failed",
+    "permissive_mutant": "Rejected; child exit 1"
+  },
+  "execution": "Reader executed as page expression from function source in headless Chrome; no page eval reconstruction. Mutants in memory only; all launches sequential under resource guard.",
+  "limits": [
+    "DOM guard is shaped from traced production source, not a live native acceptance run.",
+    "No product/driver edits, installs, builds, native runs or credential access.",
+    "Full D47 native acceptance remains unverified."
+  ],
+  "cleanup": "All test browsers closed in after hook; all five wrappers finalized without resource invalidation; sequential mutant shell exited."
+}
