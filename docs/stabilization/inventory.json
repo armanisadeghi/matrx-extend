@@ -1069,48 +1069,56 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37655683227",
-              "evidence": ".research/settings-semantic-native-20261007.json",
-              "mapping_review": ".research/settings-semantic-native-fresh-peer-20261007.json",
+              "run_id": "37661031247",
+              "evidence": ".research/scrape-semantic-native-20261007.json",
+              "mapping_review": ".research/scrape-native-final-peer-20261007.json",
               "defect_ids": ["EXT-D-0149", "EXT-D-0151", "EXT-D-0152", "EXT-D-0153"],
-              "detail": "Frozen0.2.366: eight Settings nodes now map to six reviewed IDs; Settings controls unknown0, separate section action unknown1. Overall35unknown observations (prior33: Settings-8, SEO+11, Data-1) keep census incomplete. Positive guest before/after; no inaccessible/unsupported/blocked regions. All resources admitted without invalidation; guest acceptance exits on incomplete census. Fresh peer accepts bounded mapping only; no behavior/current-main/member/admin acceptance.",
+              "detail": "Same frozen0.2.366 native receipt maps Scrape C19/C01/C02 (3/3) and preserves eight Settings mappings. Overall33unknown: navigation2, Chat16, Data2, SEO12, Settings section action1. Prior35 reconciles Scrape-3/Data+1; no cross-run fingerprint identity. Positive guest before/after and valid admitted resources; acceptance fails on incomplete census. Fresh peer accepts bounded control identity only, not behavior/current-main/member/admin acceptance.",
               "historical_result": {
                 "status": "partial",
-                "run_id": "37651810572",
-                "evidence": ".research/empty-surface-native-retest-20261007.json",
+                "run_id": "37655683227",
+                "evidence": ".research/settings-semantic-native-20261007.json",
+                "mapping_review": ".research/settings-semantic-native-fresh-peer-20261007.json",
                 "defect_ids": ["EXT-D-0149", "EXT-D-0151", "EXT-D-0152", "EXT-D-0153"],
-                "detail": "Same frozen0.2.366 artifact now observes Scrape3/Data2/SEO1 visible controls versus previous0/0/0. Guest identity proven before/after. Unknown observations33 keep census incomplete; no inaccessible/unsupported/blocked regions. Package/browser guards valid; guest resourceInvalid=false, wrapper child_failed on intended incomplete-census exit2. Prior8-node Settings mapping remains scoped to historical37645860520 and is not transferred by fingerprints. No feature behavior/current-main/member/admin acceptance.",
+                "detail": "Frozen0.2.366: eight Settings nodes now map to six reviewed IDs; Settings controls unknown0, separate section action unknown1. Overall35unknown observations (prior33: Settings-8, SEO+11, Data-1) keep census incomplete. Positive guest before/after; no inaccessible/unsupported/blocked regions. All resources admitted without invalidation; guest acceptance exits on incomplete census. Fresh peer accepts bounded mapping only; no behavior/current-main/member/admin acceptance.",
                 "historical_result": {
                   "status": "partial",
-                  "run_id": "37645860520",
-                  "evidence": ".research/settings-census-label-native-20261007.json",
-                  "mapping_review": ".research/settings-observed-mapping-peer-20261007.json",
+                  "run_id": "37651810572",
+                  "evidence": ".research/empty-surface-native-retest-20261007.json",
                   "defect_ids": ["EXT-D-0149", "EXT-D-0151", "EXT-D-0152", "EXT-D-0153"],
-                  "detail": "Frozen0.2.366 guest signed-out proof and Settings row labels observed on eight nodes, independently mapped to six existing controls. Raw census remains54observed/26mapped/27unknown/1structural; derived residual19 of original unknowns remains. Empty Scrape/Data/SEO D153 regions imply undiscovered nodes. Census incomplete; no current-main, member/admin, or product behavior acceptance.",
+                  "detail": "Same frozen0.2.366 artifact now observes Scrape3/Data2/SEO1 visible controls versus previous0/0/0. Guest identity proven before/after. Unknown observations33 keep census incomplete; no inaccessible/unsupported/blocked regions. Package/browser guards valid; guest resourceInvalid=false, wrapper child_failed on intended incomplete-census exit2. Prior8-node Settings mapping remains scoped to historical37645860520 and is not transferred by fingerprints. No feature behavior/current-main/member/admin acceptance.",
                   "historical_result": {
                     "status": "partial",
-                    "run_id": "37643142383",
-                    "evidence": ".research/guest-screenshot-upload-retest-20261007.json",
+                    "run_id": "37645860520",
+                    "evidence": ".research/settings-census-label-native-20261007.json",
+                    "mapping_review": ".research/settings-observed-mapping-peer-20261007.json",
                     "defect_ids": ["EXT-D-0149", "EXT-D-0151", "EXT-D-0152", "EXT-D-0153"],
-                    "detail": "Frozen0.2.366 guest readiness before/after and actual Account screenshot upload/pixels pass (D152 closed); observedChrome141.0.7390.37. Census54observed,26mapped,27unknown,1structural,0unsupported/inaccessible/blocked remains incomplete. No current-main, member/admin, or product behavior acceptance.",
+                    "detail": "Frozen0.2.366 guest signed-out proof and Settings row labels observed on eight nodes, independently mapped to six existing controls. Raw census remains54observed/26mapped/27unknown/1structural; derived residual19 of original unknowns remains. Empty Scrape/Data/SEO D153 regions imply undiscovered nodes. Census incomplete; no current-main, member/admin, or product behavior acceptance.",
                     "historical_result": {
                       "status": "partial",
-                      "run_id": "37641053827",
-                      "evidence": ".research/guest-census-provenance-native-20261007.json",
-                      "defect_ids": ["EXT-D-0149", "EXT-D-0151", "EXT-D-0152"],
-                      "detail": "Original frozen0.2.366 guest readiness before/after passes; observedChrome141.0.7390.37. Census54 observed,26 mapped,27 unmapped,1 structural,0 unsupported/inaccessible/blocked. Still incomplete; Account screenshot not uploaded (D152). No current-main, member/admin, or product behavior acceptance.",
+                      "run_id": "37643142383",
+                      "evidence": ".research/guest-screenshot-upload-retest-20261007.json",
+                      "defect_ids": ["EXT-D-0149", "EXT-D-0151", "EXT-D-0152", "EXT-D-0153"],
+                      "detail": "Frozen0.2.366 guest readiness before/after and actual Account screenshot upload/pixels pass (D152 closed); observedChrome141.0.7390.37. Census54observed,26mapped,27unknown,1structural,0unsupported/inaccessible/blocked remains incomplete. No current-main, member/admin, or product behavior acceptance.",
                       "historical_result": {
                         "status": "partial",
-                        "run_id": "37624678750",
-                        "evidence": ".research/guest-census-original-retest-20261007.json",
-                        "defect_ids": ["EXT-D-0149", "EXT-D-0151"],
-                        "detail": "Original Account readiness and before/after guest proof pass on frozen0.2.366. Full census incomplete:54 observed,26 mapped,28 unmapped,4 unsupported,4 inaccessible. Native peer accepted bounded readiness with evidence limitations; no current-main or product behavior acceptance.",
+                        "run_id": "37641053827",
+                        "evidence": ".research/guest-census-provenance-native-20261007.json",
+                        "defect_ids": ["EXT-D-0149", "EXT-D-0151", "EXT-D-0152"],
+                        "detail": "Original frozen0.2.366 guest readiness before/after passes; observedChrome141.0.7390.37. Census54 observed,26 mapped,27 unmapped,1 structural,0 unsupported/inaccessible/blocked. Still incomplete; Account screenshot not uploaded (D152). No current-main, member/admin, or product behavior acceptance.",
                         "historical_result": {
-                          "status": "fail",
-                          "run_id": "37621192492",
-                          "evidence": ".research/guest-visibility-native-20261007.json",
-                          "defect_ids": ["EXT-D-0149"],
-                          "detail": "Native guest census stopped at census_guest_account_ready_not_observed before positive signed-out guest proof or complete region accounting. The two Account candidates were not safe to open; 15 candidates were reported (12 mapped, 3 fingerprint-only). This is a census readiness failure; no product behavior failure is claimed."
+                          "status": "partial",
+                          "run_id": "37624678750",
+                          "evidence": ".research/guest-census-original-retest-20261007.json",
+                          "defect_ids": ["EXT-D-0149", "EXT-D-0151"],
+                          "detail": "Original Account readiness and before/after guest proof pass on frozen0.2.366. Full census incomplete:54 observed,26 mapped,28 unmapped,4 unsupported,4 inaccessible. Native peer accepted bounded readiness with evidence limitations; no current-main or product behavior acceptance.",
+                          "historical_result": {
+                            "status": "fail",
+                            "run_id": "37621192492",
+                            "evidence": ".research/guest-visibility-native-20261007.json",
+                            "defect_ids": ["EXT-D-0149"],
+                            "detail": "Native guest census stopped at census_guest_account_ready_not_observed before positive signed-out guest proof or complete region accounting. The two Account candidates were not safe to open; 15 candidates were reported (12 mapped, 3 fingerprint-only). This is a census readiness failure; no product behavior failure is claimed."
+                          }
                         }
                       }
                     }
