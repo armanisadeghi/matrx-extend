@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-07T02:55:57.853718+00:00",
+  "updated_at": "2026-10-07T04:01:32.053263+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -20,7 +20,9 @@
     ".research/inventory-current-delta-20261006.json",
     ".research/inventory-delta-peer-20261006.json",
     ".research/inventory-procedure-gap-20261006.json",
-    ".research/inventory-procedure-peer-20261006.json"
+    ".research/inventory-procedure-peer-20261006.json",
+    ".research/inventory-current-catalog-delta-20261007.json",
+    ".research/inventory-catalog-delta-peer-20261007.json"
   ],
   "features": [
     {
@@ -64465,10 +64467,6 @@
           },
           "tab_id": {
             "type": "integer"
-          },
-          "persist": {
-            "type": "boolean",
-            "default": false
           }
         },
         "required": [
@@ -64552,7 +64550,7 @@
             "Remove only the exact CSS string this run inserted, on the exact owned public-demo tab ID; verify baseline appearance returns. If extension/page reload has already unloaded the injected stylesheet, record that boundary and do not claim remove_stylesheet removed it. Close only the newly opened tab owned by this run after evidence capture. Never enumerate, remove, or delete any other stylesheet or style record.",
             "Follow PLAN.md \u00a7 Build and reload contract: separate extension Reload from target page reload; rebuild/reload only when source/manifest/permissions/config/environment changes require it, verify the runtime build identity, reopen sidepanel and refocus/reload only the owned public-demo tab. Injected CSS is document-scoped in this handler path; treat page reload as a fresh baseline and repeat inject/visual check/owned exact removal rather than expecting persistence.",
             "No executable delegated dispatcher path is in scope for these manual cases: inventory entry points defer advertised agent calls to Chat/Pilot, and stabilization PLAN.md defers Chat/Pilot to Wave D. Do not attempt to manufacture a tool event or claim dispatcher/confirmation coverage here. Privileged confirmation, denial, Pilot scope, dispatcher routing and actual activeTab gate behavior remain explicitly NOT EXECUTABLE in this manual lane and unverified for later Chat/Pilot work.",
-            "Inventory/catalog drift only: inject leaf schema lists persist; canonical stylesheet schema lists persistent; live Zod schemas omit unknown-key strictness, so these fields are stripped and execution may proceed. Do not submit either key as a negative or valid option and do not claim rejection/no effect."
+            "Historical inventory persist/persistent entries were corrected after source review; neither is a current input. Live Zod schemas strip unknown keys, so supplying these fields may still execute the handler. Do not submit either key as a negative or valid option and do not claim rejection/no effect."
           ],
           "steps": [
             "Meet procedure_prerequisites for the selected role; record the current resource permit and receipt. In that role's Chrome profile, open https://www.aimatrx.com/matrx-extend-demo in a new tab and record its exact tab ID. Confirm the visible h1 reads 'A clear three-stage browser workflow'.",
@@ -64718,7 +64716,7 @@
             "Remove only the exact CSS string this run inserted, on the exact owned public-demo tab ID; verify baseline appearance returns. If extension/page reload has already unloaded the injected stylesheet, record that boundary and do not claim remove_stylesheet removed it. Close only the newly opened tab owned by this run after evidence capture. Never enumerate, remove, or delete any other stylesheet or style record.",
             "Follow PLAN.md \u00a7 Build and reload contract: separate extension Reload from target page reload; rebuild/reload only when source/manifest/permissions/config/environment changes require it, verify the runtime build identity, reopen sidepanel and refocus/reload only the owned public-demo tab. Injected CSS is document-scoped in this handler path; treat page reload as a fresh baseline and repeat inject/visual check/owned exact removal rather than expecting persistence.",
             "No executable delegated dispatcher path is in scope for these manual cases: inventory entry points defer advertised agent calls to Chat/Pilot, and stabilization PLAN.md defers Chat/Pilot to Wave D. Do not attempt to manufacture a tool event or claim dispatcher/confirmation coverage here. Privileged confirmation, denial, Pilot scope, dispatcher routing and actual activeTab gate behavior remain explicitly NOT EXECUTABLE in this manual lane and unverified for later Chat/Pilot work.",
-            "Inventory/catalog drift only: inject leaf schema lists persist; canonical stylesheet schema lists persistent; live Zod schemas omit unknown-key strictness, so these fields are stripped and execution may proceed. Do not submit either key as a negative or valid option and do not claim rejection/no effect."
+            "Historical inventory persist/persistent entries were corrected after source review; neither is a current input. Live Zod schemas strip unknown keys, so supplying these fields may still execute the handler. Do not submit either key as a negative or valid option and do not claim rejection/no effect."
           ],
           "steps": [
             "Meet procedure_prerequisites for the selected role; open https://www.aimatrx.com/matrx-extend-demo in a new tab in that role's Chrome profile, record its tab ID, and capture the visible h1 baseline.",
@@ -66071,7 +66069,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 130,
+      "catalog_record_index": 129,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -66236,7 +66234,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 131,
+      "catalog_record_index": 130,
       "input_schema": {
         "anyOf": [
           {
@@ -66479,7 +66477,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 132,
+      "catalog_record_index": 131,
       "input_schema": {
         "type": "object",
         "properties": {},
@@ -66629,7 +66627,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 133,
+      "catalog_record_index": 132,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -66829,7 +66827,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 134,
+      "catalog_record_index": 133,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -67042,7 +67040,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 135,
+      "catalog_record_index": 134,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -67198,7 +67196,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 136,
+      "catalog_record_index": 135,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -67365,7 +67363,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 137,
+      "catalog_record_index": 136,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -67519,7 +67517,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 138,
+      "catalog_record_index": 137,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -67721,7 +67719,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 139,
+      "catalog_record_index": 138,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -67922,7 +67920,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 140,
+      "catalog_record_index": 139,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -68092,7 +68090,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 141,
+      "catalog_record_index": 140,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -68264,7 +68262,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 142,
+      "catalog_record_index": 141,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -68483,7 +68481,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 143,
+      "catalog_record_index": 142,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -68627,7 +68625,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 144,
+      "catalog_record_index": 143,
       "input_schema": {
         "type": "object",
         "properties": {},
@@ -68775,7 +68773,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 145,
+      "catalog_record_index": 144,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -68956,7 +68954,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 146,
+      "catalog_record_index": 145,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -69155,7 +69153,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 147,
+      "catalog_record_index": 146,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -69385,7 +69383,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 148,
+      "catalog_record_index": 147,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -69626,7 +69624,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 149,
+      "catalog_record_index": 148,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -69857,7 +69855,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 150,
+      "catalog_record_index": 149,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -70022,7 +70020,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 151,
+      "catalog_record_index": 150,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -70243,7 +70241,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 152,
+      "catalog_record_index": 151,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -70461,7 +70459,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 153,
+      "catalog_record_index": 152,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -70643,7 +70641,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 154,
+      "catalog_record_index": 153,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -70825,7 +70823,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 155,
+      "catalog_record_index": 154,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -71007,7 +71005,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 156,
+      "catalog_record_index": 155,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -71173,7 +71171,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 157,
+      "catalog_record_index": 156,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -71344,7 +71342,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 158,
+      "catalog_record_index": 157,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -71556,7 +71554,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 159,
+      "catalog_record_index": 158,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -71773,7 +71771,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 160,
+      "catalog_record_index": 159,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -71982,7 +71980,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 161,
+      "catalog_record_index": 160,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -72171,7 +72169,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 162,
+      "catalog_record_index": 161,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -72378,7 +72376,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 163,
+      "catalog_record_index": 162,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -72594,7 +72592,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 164,
+      "catalog_record_index": 163,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -72818,7 +72816,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 165,
+      "catalog_record_index": 164,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -73031,7 +73029,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 166,
+      "catalog_record_index": 165,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -73048,9 +73046,6 @@
           },
           "tab_id": {
             "type": "integer"
-          },
-          "persistent": {
-            "type": "boolean"
           }
         },
         "required": [
@@ -73156,7 +73151,7 @@
             "Remove only the exact CSS string this run inserted, on the exact owned public-demo tab ID; verify baseline appearance returns. If extension/page reload has already unloaded the injected stylesheet, record that boundary and do not claim remove_stylesheet removed it. Close only the newly opened tab owned by this run after evidence capture. Never enumerate, remove, or delete any other stylesheet or style record.",
             "Follow PLAN.md \u00a7 Build and reload contract: separate extension Reload from target page reload; rebuild/reload only when source/manifest/permissions/config/environment changes require it, verify the runtime build identity, reopen sidepanel and refocus/reload only the owned public-demo tab. Injected CSS is document-scoped in this handler path; treat page reload as a fresh baseline and repeat inject/visual check/owned exact removal rather than expecting persistence.",
             "No executable delegated dispatcher path is in scope for these manual cases: inventory entry points defer advertised agent calls to Chat/Pilot, and stabilization PLAN.md defers Chat/Pilot to Wave D. Do not attempt to manufacture a tool event or claim dispatcher/confirmation coverage here. Privileged confirmation, denial, Pilot scope, dispatcher routing and actual activeTab gate behavior remain explicitly NOT EXECUTABLE in this manual lane and unverified for later Chat/Pilot work.",
-            "Inventory/catalog drift only: inject leaf schema lists persist; canonical stylesheet schema lists persistent; live Zod schemas omit unknown-key strictness, so these fields are stripped and execution may proceed. Do not submit either key as a negative or valid option and do not claim rejection/no effect."
+            "Historical inventory persist/persistent entries were corrected after source review; neither is a current input. Live Zod schemas strip unknown keys, so supplying these fields may still execute the handler. Do not submit either key as a negative or valid option and do not claim rejection/no effect."
           ],
           "steps": [
             "Meet procedure_prerequisites for the selected role; open https://www.aimatrx.com/matrx-extend-demo in a new tab in that role's Chrome profile, record its tab ID, and capture the visible h1 baseline.",
@@ -73243,7 +73238,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 167,
+      "catalog_record_index": 166,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -73419,7 +73414,7 @@
         "src/features/tools/ToolsView.tsx",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 168,
+      "catalog_record_index": 167,
       "input_schema": {
         "type": "object",
         "properties": {
