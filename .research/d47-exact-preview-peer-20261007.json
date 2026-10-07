@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "reviewed_source_commit": "55b66d85bfeda9ede4a88736c8732cbe6179219e",
+  "integrated_source_head": "cf88117b6398b05e6ceb7b5bd57fc4922a01d6a4",
+  "scope": "Fresh read-only source and retained-evidence review; no test, browser, build, job, or native replay was run in this lane.",
+  "verdict_A_functional_scope": {
+    "status": "NOT_ADDRESSED_FOR_ACTUAL_SAVED_REPLAY",
+    "prior_important_finding": "ADDRESSED at the controlled DOM seam: current plus unexpected, duplicate, or old rows and extra cells no longer set current_row=true.",
+    "new_breakage": "IMPORTANT: the exact-result shape does not match the recipe saved by the native D47 driver. NetworkTab.selectEvent resets extractKeyPath to []; the driver selects the response and saves without selecting a JsonTree path. The persisted key_path=[] makes rowsFromBody return the root object as one row. The current fixture response root is {events:[{eventName:'Canyon Frequency'}],document:'current'}, so TableView renders events and document headings with cells '[{\"eventName\":\"Canyon Frequency\"}]' and 'current'. The reader requires one eventName heading and a Canyon Frequency cell; it will reject this correct saved replay and time out.",
+    "native_extension_acceptance": "UNVERIFIED: Chromium DOM fixture tests the reader with a hand-written eventName table; no new installed-extension replay or old callback delivery was observed. D47/T57 must remain open."
+  },
+  "verdict_B_doctrine_quality": {
+    "status": "IMPORTANT_GAP",
+    "guard": "The retained resource journals show admitted permissive-reader red (child exit 1), green2 (exit 0), and constant-success red (exit 1). The builder reports 5 pass/2 fail, 7 pass/0 fail, and 1 pass/6 fail respectively. These exercise real Chromium DOM, but the positive markup assumes the eventName column rather than the native saved root-row schema.",
+    "new_breakage_assessment": "The stricter check is sound for its hand-written one-column markup, but it is a false negative for the actual saved fixture. No product source changed. Align the reader and real-DOM fixture with the saved root-row table, then prove a current marker plus arbitrary unexpected result still fails."
+  },
+  "findings": [
+    {
+      "severity": "Important",
+      "title": "Exact observer rejects the native driver's saved root-response table",
+      "evidence": "tests/browser/showcase-d47-document-lifecycle.mjs:398-409 selects a response and starts Save without a JsonTree path click. src/features/showcase/tabs/NetworkTab.tsx:73-77 initializes extractKeyPath=[] and :383-390 persists it. src/lib/data-pattern/run-interactive.ts:303-324 returns the root JSON object for an empty path. tests/fixtures/showcase-replay/serve.mjs:30-33 makes the current payload events=[{eventName:Canyon Frequency}], document=current; ResultPreview.tsx:204-240 renders headings events/document and cells '[{\"eventName\":\"Canyon Frequency\"}]'/'current'. tests/browser/showcase-d47-saved-result.mjs:23-29 requires only eventName/Canyon Frequency. The valid fixture markup in showcase-d47-saved-result.test.mjs:39 encodes the incorrect one-column shape.",
+      "impact": "The saved-terminal wait cannot pass on the expected correct replay, so the driver cannot establish D47/T57 acceptance.",
+      "required_followup": "Check the saved root-row table exactly in the observer and Chromium guard, retaining mixed-result refusal; native acceptance remains separate."
+    }
+  ],
+  "evidence": [
+    "git show 55b66d85 (builder's own source commit)",
+    "integrated source at cf88117b (merge cleared before review report)",
+    ".research/d47-exact-preview-fix-20261007.json",
+    "docs/stabilization/resource-journals/d47-exact-preview-{permissive-red,green2,constant-red}-20261007.jsonl"
+  ]
+}
