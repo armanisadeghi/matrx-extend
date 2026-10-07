@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-D-0156",
+  "lane": "desktop native artifact identity",
+  "status": "source_fix_ready_for_independent_review_native_unverified",
+  "cause": "The desktop Settings native driver compared the selected development artifact against frozen source, run, and artifact IDs from an older CI build. The hosted importer had selected and verified a newer artifact, so the driver's preflight rejected it before native browser work.",
+  "repair": "The hosted importer passes its verified selected source SHA, run ID, and artifact ID to the driver. The driver checks those values against the imported path, import-status, receipt, tree hash, manifest version, and required repair ancestry. Missing selections are refused.",
+  "source_proof": {
+    "reported_selected_run_id": 37694579646,
+    "reported_selected_artifact_id": 11515715192,
+    "reported_selected_source_sha": "61a9b1cae81c1a748233600156162f5ec3774caf",
+    "frozen_driver_run_id": 37129518563,
+    "frozen_driver_artifact_id": 11275878549,
+    "frozen_driver_source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+    "report": ".research/desktop-guest-batch-20261007.json"
+  },
+  "verification": {
+    "focused_test": "node --test tests/browser/desktop-artifact-identity.test.mjs",
+    "focused_test_result": "pass: two selected identities accepted; mismatched source, run, artifact, attempt, tree, and runtime refused",
+    "typecheck": "pnpm compile: pass",
+    "native_guest": "not_run_by_this_source_repair_lane"
+  },
+  "sibling_census": [
+    {
+      "file": "tests/browser/audit-key-native-acceptance.mjs",
+      "finding": "Admin audit-key native driver also pins run 37129518563 and artifact 11275878549 and a source prefix; outside this desktop-settings-owned lane."
+    }
+  ],
+  "next_action": "Independent source review, then an admitted hosted desktop-settings-guest run against the newest eligible successful development artifact."
+}

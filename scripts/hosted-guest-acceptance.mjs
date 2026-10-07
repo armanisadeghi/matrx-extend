@@ -7,6 +7,7 @@ import { access, mkdir, readFile, unlink, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { desktopArtifactSelectionEnv } from '../tests/browser/desktop-artifact-identity.mjs';
 import { scrapeNativeSelection } from '../tests/browser/scrape-native-selection.mjs';
 import { matchingCrx3RsaKey } from './crx3-identity.mjs';
 import {
@@ -427,6 +428,7 @@ async function run(prepared, artifactMode) {
       ? {
           MATRX_DESKTOP_SETTINGS_EXTENSION_DIR: extensionDir,
           MATRX_DESKTOP_SETTINGS_RECEIPT: relocatedReceipt,
+          ...desktopArtifactSelectionEnv(prepared),
           MATRX_DESKTOP_SETTINGS_AUTH_MODE: acceptanceCase.slice('desktop-settings-'.length),
         }
       : {}),
