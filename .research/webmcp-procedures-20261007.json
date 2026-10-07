@@ -4,7 +4,8 @@
   "inventory_gate": "Do not execute until source inventory reconciliation and resource permit are approved by the owning runner.",
   "shared_setup": [
     "Record exact source SHA, built extension artifact hash/version, Chrome version, extension ID, admin identity, timestamp, and owned disposable profile. Load that exact artifact and confirm the sidepanel uses it; repeat after extension and target-page reload.",
-    "Serve an owned localhost HTTPS or HTTP page with a visible unique fixture marker, output area, and counter initialized to 0. In page script, inspect the actual navigator.modelContext object and its registerTool/getTools/tools/callTool members; record observed shape. Register a uniquely named benign tool only when native registerTool is present, with inputSchema for {nonce:string}, a run implementation that increments the visible counter once and returns {nonce,counter,fixtureMarker}. Read the page DOM separately after calls. Use no navigator.modelContext polyfill or fake API.",
+    "Serve an owned localhost HTTP page with a visible unique fixture marker, output area, and counter initialized to 0. Its own page script must inspect the actual navigator.modelContext object and registerTool/getTools/tools/callTool members on every load, record their observed shape, and register a uniquely named benign tool only when native registerTool is present. Give that tool an inputSchema for {nonce:string} and a run implementation that increments the visible counter once and returns {nonce,counter,fixtureMarker}; read the page DOM separately after calls. Use no navigator.modelContext polyfill or fake API. If the observed native API shape cannot support the proposed registration/list/call fixture, mark the native positive unverified and open a defect lead for source/API mismatch rather than claiming a pass.",
+    "Keep malformed JSON and valid but schema-invalid JSON distinct: the Tools form parser rejects malformed text before handler execution; a real dispatcher schema gate must receive syntactically valid non-object JSON to demonstrate schema rejection. A direct manual handler.run call cannot prove dispatcher validation or permission enforcement.",
     "For each manual Tools run, first focus the owned page tab and verify its marker. Keep another tab with a different marker open. The manual runner has assignedTabId:null and resolves the currently focused tab; a dispatcher/agent run latches assignedTabId and must stay on its original tab if focus changes, or return No active tab if it closes.",
     "Record original page tool catalog/counter and cleanup by closing the disposable page/profile or unregistering the owned tool if the actual API supports it. Never invoke tools registered by unrelated pages."
   ],
@@ -13,26 +14,17 @@
       "id": "EXT-F-4118-T01",
       "feature_id": "EXT-F-4118",
       "tool": "webmcp_check_availability",
-      "control_ids": [
-        "EXT-F-4118-C01"
-      ],
-      "modes": [
-        "admin"
-      ],
-      "dimensions": [
-        "valid-input",
-        "invalid-input",
-        "permissions",
-        "reload"
-      ],
+      "control_ids": ["EXT-F-4118-C01"],
+      "modes": ["admin"],
+      "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
       "steps": [
-        "On the native fixture page, Tools > webmcp_check_availability > Run with {}. Compare available and tool_count against direct page inspection of navigator.modelContext and its tools array; do not infer registerTool support from available alone.",
-        "Try malformed JSON in the Tools form and a non-object argument through the real dispatcher schema gate; capture validation failures without counting a direct handler call as schema enforcement.",
+        "On the native fixture page, Tools > webmcp_check_availability > Run with {}. Compare available with direct observation of navigator.modelContext. Compare tool_count only with modelContext.tools array length when that array exists; this handler does not call getTools(), whereas the list handler prefers getTools().",
+        "Try malformed JSON in the Tools form and record form-parser rejection before handler execution. Separately pass syntactically valid non-object JSON through the real dispatcher schema gate; capture its schema rejection without counting direct handler.run as validation.",
         "Run on an owned page without navigator.modelContext in the same real browser, if available, expecting available:false and tool_count:0; no fake deletion or replacement of the API. Also test a restricted chrome:// tab and no selected tab, expecting a bounded ok:false reason rather than a crash.",
         "Reload page and extension, reconfirm build receipt, focus fixture, rerun and compare response; verify the separate tab marker was never consulted."
       ],
       "expected": [
-        "Native positive requires direct browser feature observation and available:true; tool_count matches array length when exposed. If API absent, record unsupported and leave native-positive unresolved.",
+        "Native positive requires direct browser feature observation and available:true. If tools is an array, tool_count matches its length; if only getTools() exists, record tool_count:0 as this handler's source limitation, not catalog parity or native unavailability. If API absent or shape incompatible, leave native-positive unresolved and record a defect lead.",
         "Manual runner alone proves only direct handler execution; admin/member/guest permission outcomes require dispatcher and UI access checks in a separate authorized execution phase."
       ]
     },
@@ -40,22 +32,13 @@
       "id": "EXT-F-4119-T01",
       "feature_id": "EXT-F-4119",
       "tool": "webmcp_list_page_tools",
-      "control_ids": [
-        "EXT-F-4119-C01"
-      ],
-      "modes": [
-        "admin"
-      ],
-      "dimensions": [
-        "valid-input",
-        "invalid-input",
-        "permissions",
-        "reload"
-      ],
+      "control_ids": ["EXT-F-4119-C01"],
+      "modes": ["admin"],
+      "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
       "steps": [
         "After native registration succeeds, focus fixture tab and run webmcp_list_page_tools with {} in Tools. Compare count and the uniquely named tool's name, description and input_schema with direct page getTools() when present, otherwise tools array; redact unrelated names from evidence.",
-        "Repeat with malformed JSON and schema-invalid non-object input through dispatcher validation; record rejection. On a browser/page without native modelContext, verify {ok:false,reason:'WebMCP unavailable'}; on a restricted tab verify a bounded scripting error.",
-        "Reload page, re-register only if page script does so naturally, then reload extension and rerun with fresh receipt. Confirm fixture tool appears once and the unrelated second tab's tool does not appear."
+        "Try malformed JSON in the Tools form and require form-parser rejection before execution; separately send syntactically valid non-object JSON through dispatcher validation and record schema rejection. On a browser/page without native modelContext, verify {ok:false,reason:'WebMCP unavailable'}; on a restricted tab verify a bounded scripting error.",
+        "Reload the owned page: its own script must re-register the benign tool using the observed native API. If it does not, re-establish the fixture with that same native API before any post-reload assertion; a DevTools-only registration is not assumed to persist. Reload extension, rerun with fresh receipt, confirm fixture tool appears once and unrelated second-tab tool is absent."
       ],
       "expected": [
         "Native positive requires an actual page registration plus matching list content; an empty list or unavailable branch is only a negative result.",
@@ -66,22 +49,13 @@
       "id": "EXT-F-4120-T01",
       "feature_id": "EXT-F-4120",
       "tool": "webmcp_call_page_tool",
-      "control_ids": [
-        "EXT-F-4120-C01"
-      ],
-      "modes": [
-        "admin"
-      ],
-      "dimensions": [
-        "valid-input",
-        "invalid-input",
-        "permissions",
-        "reload"
-      ],
+      "control_ids": ["EXT-F-4120-C01"],
+      "modes": ["admin"],
+      "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
       "steps": [
         "With the owned native tool present, record counter N. In Tools run {\"name\":\"<unique fixture tool>\",\"arguments\":{\"nonce\":\"<unique nonce>\"}}. Check {ok:true,result:{nonce,counter:N+1,fixtureMarker}} and independently read visible page counter N+1; verify no change in the second tab.",
         "Call an unknown tool name and malformed page-tool args; require ok:false with bounded reason and unchanged counter. Submit missing or empty name through dispatcher schema validation; malformed JSON must fail in the Tools form.",
-        "Check API-absent page returns WebMCP unavailable and restricted tab yields scripting error without side effect. Reload page/extension, establish new counter baseline and repeat native call once with a new nonce."
+        "Check API-absent page returns WebMCP unavailable and restricted tab yields scripting error without side effect. Reload page and extension; require the owned page script to re-register through the observed native API, or re-establish that fixture before the post-reload assertion. Establish new counter baseline and repeat native call once with a new nonce."
       ],
       "expected": [
         "Native positive requires both returned content and independent page side-effect readback; unavailable, unknown-tool, or mocked API results are not positives.",
@@ -92,25 +66,13 @@
       "id": "EXT-F-4162-T01",
       "feature_id": "EXT-F-4162",
       "tool": "chrome_webmcp",
-      "control_ids": [
-        "EXT-F-4162-C01",
-        "EXT-F-4162-C02",
-        "EXT-F-4162-C03",
-        "EXT-F-4162-C04"
-      ],
-      "modes": [
-        "admin"
-      ],
-      "dimensions": [
-        "valid-input",
-        "invalid-input",
-        "permissions",
-        "reload"
-      ],
+      "control_ids": ["EXT-F-4162-C01", "EXT-F-4162-C02", "EXT-F-4162-C03", "EXT-F-4162-C04"],
+      "modes": ["admin"],
+      "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
       "steps": [
         "In Tools run {\"action\":\"check\"} and {\"action\":\"list\" on the owned native fixture. Compare delegated responses with leaf cases and independently inspected API/catalog; these branches resolve read tier via tierFor.",
-        "Run {\"action\":\"call\",\"tool_name\":\"<unique fixture tool>\",\"arguments\":{\"nonce\":\"<unique nonce>\"}}; require matching result and independently observed counter increment. Repeat after page and extension reload with fresh receipt.",
-        "Run call without tool_name, call with unknown name, invalid action, non-object JSON, and malformed form JSON. Expect explicit missing-name/unknown-tool or schema/form rejection with counter unchanged. Check API-absent and restricted-tab responses.",
+        "Run {\"action\":\"call\",\"tool_name\":\"<unique fixture tool>\",\"arguments\":{\"nonce\":\"<unique nonce>\"}}; require matching result and independently observed counter increment. After page and extension reload, confirm the owned page script re-registered via the observed native API, or re-establish that fixture, then repeat with a fresh receipt.",
+        "Run call without tool_name and with unknown name; require bounded handler failure and unchanged counter. Submit invalid action and syntactically valid non-object JSON through the dispatcher schema gate; require schema rejection. Submit malformed JSON in the Tools form; require form-parser rejection before execution. Check API-absent and restricted-tab responses.",
         "In separately authorized dispatcher flow, verify guest cannot open Tools, member cannot invoke admin-only tool, admin check/list are read-tier, admin call is action-tier with correct Ask/Act control, and assigned tab stays pinned while focused tab changes. Capture actual authorization and confirmation UI outcomes rather than treating manual runs as proof."
       ],
       "expected": [
@@ -131,7 +93,7 @@
   ],
   "unresolved_dimensions": [
     "Inventory source/catalog reconciliation gate remains pending; no case executed.",
-    "Native registerTool/getTools/callTool availability and signature require observation in the exact browser build; source comments about Chrome version are not runtime evidence.",
+    "Native registerTool/getTools/tools/callTool availability and signatures must be observed in the exact browser build. A shape incompatible with this source-based fixture leaves native positive unverified and creates a defect lead; source comments about Chrome version are not runtime evidence.",
     "Current inventory's granular exact-name tool.definition/binding metadata was absent in the 2026-10-04 census; canonical chrome_webmcp metadata was active. Refresh before claiming agent advertisement.",
     "Manual Tools runner bypasses dispatcher permission gate and uses focused tab; separate authorized agent/dispatcher runs are required for full guest/member/admin, Ask/Act, optional-permission, and assigned-tab matrix."
   ]
