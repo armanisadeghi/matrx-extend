@@ -1069,28 +1069,36 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37643142383",
-              "evidence": ".research/guest-screenshot-upload-retest-20261007.json",
+              "run_id": "37645860520",
+              "evidence": ".research/settings-census-label-native-20261007.json",
+              "mapping_review": ".research/settings-observed-mapping-peer-20261007.json",
               "defect_ids": ["EXT-D-0149", "EXT-D-0151", "EXT-D-0152", "EXT-D-0153"],
-              "detail": "Frozen0.2.366 guest readiness before/after and actual Account screenshot upload/pixels pass (D152 closed); observedChrome141.0.7390.37. Census54observed,26mapped,27unknown,1structural,0unsupported/inaccessible/blocked remains incomplete. No current-main, member/admin, or product behavior acceptance.",
+              "detail": "Frozen0.2.366 guest signed-out proof and Settings row labels observed on eight nodes, independently mapped to six existing controls. Raw census remains54observed/26mapped/27unknown/1structural; derived residual19 of original unknowns remains. Empty Scrape/Data/SEO D153 regions imply undiscovered nodes. Census incomplete; no current-main, member/admin, or product behavior acceptance.",
               "historical_result": {
                 "status": "partial",
-                "run_id": "37641053827",
-                "evidence": ".research/guest-census-provenance-native-20261007.json",
-                "defect_ids": ["EXT-D-0149", "EXT-D-0151", "EXT-D-0152"],
-                "detail": "Original frozen0.2.366 guest readiness before/after passes; observedChrome141.0.7390.37. Census54 observed,26 mapped,27 unmapped,1 structural,0 unsupported/inaccessible/blocked. Still incomplete; Account screenshot not uploaded (D152). No current-main, member/admin, or product behavior acceptance.",
+                "run_id": "37643142383",
+                "evidence": ".research/guest-screenshot-upload-retest-20261007.json",
+                "defect_ids": ["EXT-D-0149", "EXT-D-0151", "EXT-D-0152", "EXT-D-0153"],
+                "detail": "Frozen0.2.366 guest readiness before/after and actual Account screenshot upload/pixels pass (D152 closed); observedChrome141.0.7390.37. Census54observed,26mapped,27unknown,1structural,0unsupported/inaccessible/blocked remains incomplete. No current-main, member/admin, or product behavior acceptance.",
                 "historical_result": {
                   "status": "partial",
-                  "run_id": "37624678750",
-                  "evidence": ".research/guest-census-original-retest-20261007.json",
-                  "defect_ids": ["EXT-D-0149", "EXT-D-0151"],
-                  "detail": "Original Account readiness and before/after guest proof pass on frozen0.2.366. Full census incomplete:54 observed,26 mapped,28 unmapped,4 unsupported,4 inaccessible. Native peer accepted bounded readiness with evidence limitations; no current-main or product behavior acceptance.",
+                  "run_id": "37641053827",
+                  "evidence": ".research/guest-census-provenance-native-20261007.json",
+                  "defect_ids": ["EXT-D-0149", "EXT-D-0151", "EXT-D-0152"],
+                  "detail": "Original frozen0.2.366 guest readiness before/after passes; observedChrome141.0.7390.37. Census54 observed,26 mapped,27 unmapped,1 structural,0 unsupported/inaccessible/blocked. Still incomplete; Account screenshot not uploaded (D152). No current-main, member/admin, or product behavior acceptance.",
                   "historical_result": {
-                    "status": "fail",
-                    "run_id": "37621192492",
-                    "evidence": ".research/guest-visibility-native-20261007.json",
-                    "defect_ids": ["EXT-D-0149"],
-                    "detail": "Native guest census stopped at census_guest_account_ready_not_observed before positive signed-out guest proof or complete region accounting. The two Account candidates were not safe to open; 15 candidates were reported (12 mapped, 3 fingerprint-only). This is a census readiness failure; no product behavior failure is claimed."
+                    "status": "partial",
+                    "run_id": "37624678750",
+                    "evidence": ".research/guest-census-original-retest-20261007.json",
+                    "defect_ids": ["EXT-D-0149", "EXT-D-0151"],
+                    "detail": "Original Account readiness and before/after guest proof pass on frozen0.2.366. Full census incomplete:54 observed,26 mapped,28 unmapped,4 unsupported,4 inaccessible. Native peer accepted bounded readiness with evidence limitations; no current-main or product behavior acceptance.",
+                    "historical_result": {
+                      "status": "fail",
+                      "run_id": "37621192492",
+                      "evidence": ".research/guest-visibility-native-20261007.json",
+                      "defect_ids": ["EXT-D-0149"],
+                      "detail": "Native guest census stopped at census_guest_account_ready_not_observed before positive signed-out guest proof or complete region accounting. The two Account candidates were not safe to open; 15 candidates were reported (12 mapped, 3 fingerprint-only). This is a census readiness failure; no product behavior failure is claimed."
+                    }
                   }
                 }
               }
@@ -7826,6 +7834,24 @@
         }
       ],
       "runtime_evidence": [
+        {
+          "run_id": "37645860520",
+          "mode": "guest",
+          "build": "0.2.366",
+          "status": "partial",
+          "report": ".research/settings-census-label-native-20261007.json",
+          "independent_mapping": ".research/settings-observed-mapping-peer-20261007.json",
+          "observed": "Eight Settings nodes with source-rendered section, row label, and kind map to six existing control IDs: C02, C04, C05, C15, C16, C29. Pair code and Local engine port each have separate input/button nodes within one documented aggregate control.",
+          "control_ids": [
+            "EXT-F-1003-C02",
+            "EXT-F-1003-C04",
+            "EXT-F-1003-C05",
+            "EXT-F-1003-C15",
+            "EXT-F-1003-C16",
+            "EXT-F-1003-C29"
+          ],
+          "limits": "Visibility observation only on frozen guest artifact. Raw 27 unknowns are unchanged; derived residual is 19. Empty Scrape/Data/SEO D153 regions imply undiscovered nodes. Census incomplete; no persistence, behavior, current-main, member, or admin result."
+        },
         {
           "run_id": "native-0267-reload-001",
           "mode": "admin",

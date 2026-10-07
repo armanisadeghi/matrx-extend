@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "task_id": "settings-observation-integration-20261007",
+  "native_run_id": 37645860520,
+  "evidence": [
+    ".research/settings-census-label-native-20261007.json",
+    ".research/settings-observed-mapping-peer-20261007.json"
+  ],
+  "inventory_changes": {
+    "feature": "EXT-F-1003",
+    "observed_node_count": 8,
+    "existing_control_count": 6,
+    "control_ids": [
+      "EXT-F-1003-C02",
+      "EXT-F-1003-C04",
+      "EXT-F-1003-C05",
+      "EXT-F-1003-C15",
+      "EXT-F-1003-C16",
+      "EXT-F-1003-C29"
+    ],
+    "t11_guest_status": "partial",
+    "historical_result_preserved": true,
+    "raw_unknown_count_preserved": 27,
+    "derived_residual_unknown_count": 19,
+    "census_complete": false
+  },
+  "preserved_states": {
+    "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
+    "scope_complete": false,
+    "feature_behavior_results_unchanged": true,
+    "member_admin_t11_unchanged": true,
+    "source_and_driver_unchanged": true,
+    "raw_receipt_unchanged": true
+  },
+  "limits": [
+    "Frozen guest 0.2.366 visibility observation only",
+    "Empty Scrape/Data/SEO D153 regions imply undiscovered nodes",
+    "No behavior, persistence, current-main, member/admin or release-gate pass"
+  ]
+}
