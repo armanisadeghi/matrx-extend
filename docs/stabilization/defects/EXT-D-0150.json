@@ -12,8 +12,8 @@
   "title": "WebMCP discovery, invocation and registration use an obsolete native API contract",
   "surface": "Tools / WebMCP and extension page-tool registration",
   "auth_mode": "admin",
-  "state": "in-fix",
-  "owner": "root/webmcp_origin_tab_fix",
+  "state": "fixed",
+  "owner": "root",
   "priority": "P1",
   "severity": "S2",
   "user_impact": "A page implementing the currently documented native interface cannot be discovered, invoked or registered through the obsolete interface. Native browser reproduction remains pending; source-boundary failure is reproduced.",
@@ -33,13 +33,16 @@
     ".research/webmcp-native-red-20261007.stdout",
     "docs/stabilization/resource-journals/webmcp-native-red-20261007.jsonl",
     ".research/webmcp-native-contract-repair-20261007.json",
-    ".research/webmcp-native-contract-peer-20261007.json"
+    ".research/webmcp-native-contract-peer-20261007.json",
+    ".research/webmcp-origin-tab-repair-20261007.json",
+    ".research/webmcp-origin-final-peer-20261007.json"
   ],
   "verification": {
-    "source": "Native API boundary repaired in db2ecc8d; guarded causal3/3RED then5/5GREEN, final typecheck/catalog/docs valid. No native proof.",
+    "source": "API boundary db2ecc8d and origin-tab correction87bb6a5c pushed. API causal3/3 RED then5/5 GREEN; receiver and dispatcher causalRED; final30/30 GREEN and final typecheck valid. Catalog/docs valid. Two failed typechecks were incomplete test-fixture typing and were corrected; not product runtime failures.",
     "native": "unverified; existing guest harness installed Chromium141, older than documented149+ origin-trial support. This is not evidence of product native behavior.",
-    "independent_review": "83faf01c: API source boundary accepted; origin-tab routing and contradictory older acceptance procedures require repair.",
-    "release": "not submitted"
+    "independent_review": "c3ea3e6c: routing and procedure findings addressed; source contract and quality accepted. Native acceptance remains open.",
+    "release": "not submitted",
+    "automatic_ci": "API repair merge6fbf8a0b passed CI37629542966. Latest routing repair full-CI status unverified: GitHub API returned rate-limit403 at2026-10-07T13:56:34Z; no repeated polling or full-trunk health claim."
   },
   "transition_history": [
     {
@@ -59,9 +62,15 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Bounded sibling implementation repair assigned; preserve native acceptance as pending."
+    },
+    {
+      "at": "2026-10-07T13:58:41.259399+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "API and tab-routing source corrections pushed, causal and surrounding source checks/typecheck passed, fresh peer accepted. Native original reproduction remains unverified; no retest-pass or closure."
     }
   ],
   "closure_requirement": "Independent source review plus native original discovery/call/registration reproduction and surrounding failure/reload cases in a supporting receipt-bound browser. No source fixture alone closes this defect.",
-  "fix_shas": ["db2ecc8d"],
-  "next_action": "Reproduce and repair dropped WebMCP sender tab identity and stale API/confirmation procedures; fresh independent re-review, then supported-browser native acceptance."
+  "fix_shas": ["db2ecc8d", "87bb6a5c"],
+  "next_action": "Revise held WebMCP inventory procedure proposals to the reviewed native contract, independently review/integrate them without runtime promotion, then use a supporting receipt-bound browser for original discovery/call/registration, origin-tab switch/closure and surrounding cases. Recheck latest automaticCI after API availability returns."
 }

@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-07 13:23 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-07T12:42:43+00:00. 205 features · 768 cases · 1350 controls · 150 linked defect records.
+Generated 2026-10-07 13:58 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-07T12:42:43+00:00. 205 features · 768 cases · 1350 controls · 150 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -1911,7 +1911,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0150
 
-**Linked defects:** [EXT-D-0150](defects/EXT-D-0150.json) (in-fix)
+**Linked defects:** [EXT-D-0150](defects/EXT-D-0150.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -3284,7 +3284,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0150
 
-**Linked defects:** [EXT-D-0150](defects/EXT-D-0150.json) (in-fix)
+**Linked defects:** [EXT-D-0150](defects/EXT-D-0150.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -3299,7 +3299,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0150
 
-**Linked defects:** [EXT-D-0150](defects/EXT-D-0150.json) (in-fix)
+**Linked defects:** [EXT-D-0150](defects/EXT-D-0150.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -3314,7 +3314,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0150
 
-**Linked defects:** [EXT-D-0150](defects/EXT-D-0150.json) (in-fix)
+**Linked defects:** [EXT-D-0150](defects/EXT-D-0150.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -3871,7 +3871,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0150
 
-**Linked defects:** [EXT-D-0150](defects/EXT-D-0150.json) (in-fix)
+**Linked defects:** [EXT-D-0150](defects/EXT-D-0150.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
