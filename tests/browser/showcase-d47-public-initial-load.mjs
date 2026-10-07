@@ -20,6 +20,7 @@ import {
 import {
   assessPublicRacePreflight,
   createPublicRacePreflight,
+  installPublicCaptureProbe,
 } from './showcase-d47-public-race-preflight.mjs';
 import { readD47SavedRunState } from './showcase-d47-saved-result.mjs';
 import { deriveD47TerminalBudget, terminalBudgetPaths } from './showcase-d47-terminal-budget.mjs';
@@ -415,9 +416,11 @@ async function run() {
         resourceAction,
         requireResourceHealth,
         reopenPanel,
+        attachWorker,
       }) => {
         let primary;
         let interception;
+        let captureProbe;
         try {
           report.stage = 'signin';
           const auth = await resourceAction(() =>
@@ -561,6 +564,7 @@ async function run() {
           if (racePreflight) {
             report.stage = 'public_race_interception_setup';
             interception = await createPublicRacePreflight(page, report, response.endpoint_shape);
+            captureProbe = await installPublicCaptureProbe(await attachWorker(), page.url());
             report.stage = 'saved_replay';
           }
           await publicTrustedClick(
@@ -580,6 +584,7 @@ async function run() {
             const replayAtPause = await exactRecipeVisible(panel, ownedRecipe);
             interception.facts.active_replay_at_old_pause =
               replayAtPause.exact_row === true && replayAtPause.running === true;
+            interception.facts.extension_capture_at_old_pause = await captureProbe.attest();
             report.stage = 'public_race_navigation';
             await resourceAction(() => page.goto(pageUrl, { waitUntil: 'commit' }));
             assert.equal(
@@ -630,6 +635,15 @@ async function run() {
         } catch (error) {
           primary = error;
         } finally {
+          if (captureProbe) {
+            try {
+              await captureProbe.cleanup();
+              interception.facts.capture_probe_cleanup = 'removed_detached';
+            } catch {
+              interception.facts.capture_probe_cleanup = 'unverified';
+              primary ??= new Error('public_capture_probe_cleanup_failed');
+            }
+          }
           if (interception) {
             try {
               await interception.cleanup();

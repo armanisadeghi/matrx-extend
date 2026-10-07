@@ -1,9 +1,12 @@
 import assert from 'node:assert/strict';
 import { EventEmitter } from 'node:events';
+import { readFile } from 'node:fs/promises';
 import test from 'node:test';
+import { runInNewContext } from 'node:vm';
 import {
   assessPublicRacePreflight,
   createPublicRacePreflight,
+  installPublicCaptureProbe,
   publicRaceRequestIdentity,
 } from './showcase-d47-public-race-preflight.mjs';
 
@@ -34,6 +37,61 @@ test('public response identity is exact across URL and body without exposing eit
   assert.equal(publicRaceRequestIdentity({ ...request, postData: undefined }), null);
 });
 
+test('extension capture proof requires its own hook and an attached owned tab', async () => {
+  const listeners = new Set();
+  const detachers = new Set();
+  let attached = true;
+  let detached = false;
+  const events = {
+    addListener: (listener) => listeners.add(listener),
+    removeListener: (listener) => listeners.delete(listener),
+    hasListener: (listener) => listeners.has(listener),
+  };
+  const detachEvents = {
+    addListener: (listener) => detachers.add(listener),
+    removeListener: (listener) => detachers.delete(listener),
+    hasListener: (listener) => detachers.has(listener),
+  };
+  const sandbox = {
+    chrome: {
+      tabs: { query: async () => [{ id: 47, url: 'https://hn.algolia.com/?q=OpenAI' }] },
+      debugger: {
+        onEvent: events,
+        onDetach: detachEvents,
+        getTargets: async () => [{ tabId: 47, attached }],
+      },
+    },
+  };
+  sandbox.globalThis = sandbox;
+  const worker = {
+    send: async (method, args) =>
+      method === 'Runtime.enable'
+        ? {}
+        : { result: { value: await runInNewContext(args.expression, sandbox) } },
+    detach: async () => { detached = true; },
+  };
+  const probe = await installPublicCaptureProbe(worker, 'https://hn.algolia.com/?q=OpenAI');
+  try {
+    assert.equal(await probe.attest(), false);
+    for (const listener of listeners)
+      listener({ tabId: 47 }, 'Runtime.bindingCalled', {
+        name: '__matrx_capture_current',
+        payload: '{"__matrx_capture_hook":"network-tap"}',
+      });
+    assert.equal(await probe.attest(), true);
+    attached = false;
+    assert.equal(await probe.attest(), false);
+    attached = true;
+    for (const listener of detachers) listener({ tabId: 47 });
+    assert.equal(await probe.attest(), false);
+  } finally {
+    await probe.cleanup();
+  }
+  assert.equal(detached, true);
+  assert.equal(listeners.size, 0);
+  assert.equal(detachers.size, 0);
+});
+
 test('controller continues original paused responses in order and disables interception', async () => {
   const cdp = new EventEmitter();
   const calls = [];
@@ -49,6 +107,8 @@ test('controller continues original paused responses in order and disables inter
           }),
         0,
       );
+    if (method === 'Fetch.getResponseBody')
+      return { body: args.requestId === 'hold-old' ? '{"hits":[]}' : '{"hits":[{"id":47}]}', base64Encoded: false };
     if (method === 'Fetch.continueRequest')
       cdp.emit('Network.loadingFinished', {
         requestId: args.requestId === 'hold-old' ? 'old' : 'new',
@@ -89,10 +149,12 @@ test('controller continues original paused responses in order and disables inter
     pause('new');
     await controller.currentPaused();
     controller.facts.active_replay_at_old_pause = true;
+    controller.facts.extension_capture_at_old_pause = true;
     await controller.releaseInOrder();
   } finally {
     await controller.cleanup();
   }
+  controller.facts.capture_probe_cleanup = 'removed_detached';
   assert.deepEqual(
     calls
       .filter((call) => call.method === 'Fetch.continueRequest')
@@ -105,6 +167,11 @@ test('controller continues original paused responses in order and disables inter
   );
   assert.equal(calls.at(-2).method, 'Fetch.disable');
   assert.equal(calls.at(-1).method, 'detach');
+  assert.notEqual(controller.facts.paused[0].response_sha256, controller.facts.paused[1].response_sha256);
+  assert.deepEqual(
+    calls.filter((call) => call.method === 'Fetch.getResponseBody').map((call) => call.args.requestId),
+    ['hold-old', 'hold-new'],
+  );
   assert.equal(assessPublicRacePreflight(controller.facts), 'timing_interception_feasible');
 });
 
@@ -115,6 +182,7 @@ const valid = {
       frame_id: 'main',
       loader_id: 'old',
       identity_sha256: 'same',
+      response_sha256: 'a'.repeat(64),
       lifecycle: 'finished',
     },
     {
@@ -122,6 +190,7 @@ const valid = {
       frame_id: 'main',
       loader_id: 'new',
       identity_sha256: 'same',
+      response_sha256: 'b'.repeat(64),
       lifecycle: 'finished',
     },
   ],
@@ -133,6 +202,8 @@ const valid = {
   unmatched_target_count: 0,
   cleanup: 'disabled_detached',
   active_replay_at_old_pause: true,
+  extension_capture_at_old_pause: true,
+  capture_probe_cleanup: 'removed_detached',
 };
 
 test('preflight requires two matching real request identities, new document and delivery lifecycle', () => {
@@ -146,14 +217,38 @@ test('preflight requires two matching real request identities, new document and 
     { unmatched_target_count: 1 },
     { cleanup: 'unverified' },
     { active_replay_at_old_pause: false },
+    { extension_capture_at_old_pause: false },
+    { capture_probe_cleanup: 'unverified' },
+    { paused: [{ ...valid.paused[0], response_sha256: undefined }, valid.paused[1]] },
   ];
   const cases = [valid, ...mutants.map((mutant) => ({ ...valid, ...mutant }))];
   const expected = ['timing_interception_feasible', ...mutants.map(() => 'unverified')];
   assert.deepEqual(cases.map(assessPublicRacePreflight), expected);
-  // Executed constant-return negative control: a permissive oracle must fail
-  // on the same canceled, ambiguous, wrong-order and failed-cleanup inputs.
-  assert.notDeepEqual(
-    cases.map(() => 'timing_interception_feasible'),
-    expected,
+});
+
+test('actual verdict rejects constant and missing-evidence mutations in memory', async () => {
+  const source = await readFile(new URL('./showcase-d47-public-race-preflight.mjs', import.meta.url), 'utf8');
+  const load = async (from, to) => {
+    assert.ok(source.includes(from), 'mutation_seam_missing');
+    const module = await import(`data:text/javascript;base64,${Buffer.from(source.replace(from, to)).toString('base64')}`);
+    return module.assessPublicRacePreflight;
+  };
+  const constant = await load(
+    'export function assessPublicRacePreflight(facts) {',
+    "export function assessPublicRacePreflight(facts) { return 'timing_interception_feasible';",
   );
+  const noLease = await load('facts.extension_capture_at_old_pause !== true ||', 'false ||');
+  const noDigest = await load(
+    "facts.paused.some((item) => !/^[a-f0-9]{64}$/.test(item.response_sha256 ?? '')) ||",
+    'false ||',
+  );
+  const checks = [
+    [constant, { ...valid, extension_capture_at_old_pause: false }],
+    [noLease, { ...valid, extension_capture_at_old_pause: false }],
+    [noDigest, { ...valid, paused: [{ ...valid.paused[0], response_sha256: undefined }, valid.paused[1]] }],
+  ];
+  for (const [mutant, input] of checks) {
+    assert.equal(assessPublicRacePreflight(input), 'unverified');
+    assert.throws(() => assert.equal(mutant(input), 'unverified'), { name: 'AssertionError' });
+  }
 });

@@ -10,8 +10,8 @@ const searchHosts = new Set([
 const searchPaths = new Set(['/1/indexes/Item_dev/query', '/1/indexes/Item_dev_sort_date/query']);
 const digest = (value) => createHash('sha256').update(value).digest('hex');
 
-// Keep URL, query credentials and POST data in memory. Receipts contain only
-// hashes and lifecycle identities; the response body is never read or replaced.
+// Keep URL, query credentials, POST data and response bytes in memory. Receipts
+// contain only hashes and lifecycle identities; no response is replaced.
 export function publicRaceRequestIdentity(request, expectedPath) {
   let url;
   try {
@@ -52,12 +52,97 @@ export function assessPublicRacePreflight(facts) {
         ?.unique_id ||
     facts.release_order.join(',') !== 'old,current' ||
     facts.paused.some((item) => item.lifecycle !== 'finished') ||
+    facts.paused.some((item) => !/^[a-f0-9]{64}$/.test(item.response_sha256 ?? '')) ||
     facts.active_replay_at_old_pause !== true ||
+    facts.extension_capture_at_old_pause !== true ||
+    facts.capture_probe_cleanup !== 'removed_detached' ||
     facts.unmatched_target_count !== 0 ||
     facts.cleanup !== 'disabled_detached'
   )
     return 'unverified';
   return 'timing_interception_feasible';
+}
+
+// The worker's chrome.debugger event is the extension-side positive signal.
+// Keep the hook nonce and payload inside the worker; only booleans leave it.
+export async function installPublicCaptureProbe(worker, pageUrl) {
+  const removeExpression = `(() => {
+    const p = globalThis.__d47PublicCaptureProbe;
+    if (!p) return true;
+    chrome.debugger.onEvent.removeListener(p.listener);
+    chrome.debugger.onDetach.removeListener(p.detach);
+    const removed = !chrome.debugger.onEvent.hasListener(p.listener) &&
+      !chrome.debugger.onDetach.hasListener(p.detach);
+    if (removed) delete globalThis.__d47PublicCaptureProbe;
+    return removed;
+  })()`;
+  try {
+    await worker.send('Runtime.enable');
+    const installed = await worker.send('Runtime.evaluate', {
+      expression: `(async () => {
+      if (globalThis.__d47PublicCaptureProbe) throw new Error('public_probe_already_installed');
+      const expected = ${JSON.stringify(pageUrl)};
+      const tabs = await chrome.tabs.query({ url: 'https://hn.algolia.com/*' });
+      const exact = tabs.filter(tab => tab.url === expected && Number.isInteger(tab.id));
+      if (exact.length !== 1) return false;
+      const state = { tabId: exact[0].id, handshake: false, detached: false };
+      const listener = (source, method, params = {}) => {
+        if (source.tabId !== state.tabId || source.sessionId || method !== 'Runtime.bindingCalled' ||
+            !String(params.name).startsWith('__matrx_capture_')) return;
+        try {
+          const packet = JSON.parse(params.payload);
+          if (packet?.__matrx_capture_hook === 'network-tap') state.handshake = true;
+        } catch { /* no raw payload leaves the worker */ }
+      };
+      const detach = (source) => { if (source.tabId === state.tabId) state.detached = true; };
+      globalThis.__d47PublicCaptureProbe = { expected, state, listener, detach };
+      chrome.debugger.onEvent.addListener(listener);
+      chrome.debugger.onDetach.addListener(detach);
+      return true;
+      })()`,
+      awaitPromise: true,
+      returnByValue: true,
+    });
+    assert.equal(installed.result?.value, true, 'public_capture_probe_install_failed');
+  } catch (error) {
+    try {
+      await worker.send('Runtime.evaluate', { expression: removeExpression, returnByValue: true });
+    } finally {
+      await worker.detach();
+    }
+    throw error;
+  }
+  return {
+    async attest() {
+      const result = await worker.send('Runtime.evaluate', {
+        expression: `(async () => {
+          const p = globalThis.__d47PublicCaptureProbe;
+          if (!p) return false;
+          const tabs = await chrome.tabs.query({ url: 'https://hn.algolia.com/*' });
+          const exact = tabs.filter(tab => tab.url === p.expected && tab.id === p.state.tabId);
+          if (exact.length !== 1) return false;
+          const targets = await chrome.debugger.getTargets();
+          return p.state.handshake && !p.state.detached &&
+            targets.some(target => target.tabId === p.state.tabId && target.attached === true);
+        })()`,
+        awaitPromise: true,
+        returnByValue: true,
+      });
+      return result.result?.value === true;
+    },
+    async cleanup() {
+      let result;
+      try {
+        result = await worker.send('Runtime.evaluate', {
+          expression: removeExpression,
+          returnByValue: true,
+        });
+      } finally {
+        await worker.detach();
+      }
+      assert.equal(result.result?.value, true, 'public_capture_probe_cleanup_unverified');
+    },
+  };
 }
 
 export async function createPublicRacePreflight(page, report, expectedPath, timeoutMs = 20000) {
@@ -70,6 +155,8 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
     unmatched_target_count: 0,
     cleanup: 'pending',
     active_replay_at_old_pause: false,
+    extension_capture_at_old_pause: false,
+    capture_probe_cleanup: 'pending',
   };
   report.public_race_preflight = facts;
   const requests = new Map();
@@ -110,7 +197,7 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
     passthrough.add(pending);
     void pending.finally(() => passthrough.delete(pending));
   };
-  const onPaused = (event) => {
+  const onPaused = async (event) => {
     const network = requests.get(event.networkId);
     const identity = publicRaceRequestIdentity(event.request, expectedPath);
     const target = identity !== null;
@@ -139,8 +226,21 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
       continueUnmatched(event.requestId);
       return;
     }
-    facts.paused.push(item);
     held.set(event.requestId, item);
+    try {
+      const response = await cdp.send('Fetch.getResponseBody', { requestId: event.requestId });
+      if (typeof response?.body !== 'string' || typeof response?.base64Encoded !== 'boolean')
+        throw new Error('public_race_response_body_unavailable');
+      if (response.base64Encoded && !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(response.body))
+        throw new Error('public_race_response_body_encoding_invalid');
+      const bytes = Buffer.from(response.body, response.base64Encoded ? 'base64' : 'utf8');
+      item.response_sha256 = digest(bytes);
+      facts.paused.push(item);
+    } catch {
+      facts.unmatched_target_count++;
+      held.delete(event.requestId);
+      continueUnmatched(event.requestId);
+    }
   };
   cdp.on('Network.requestWillBeSent', onRequest);
   cdp.on('Runtime.executionContextCreated', onContext);
