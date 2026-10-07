@@ -1,0 +1,52 @@
+{
+  "title": "Independent final gate review: WebMCP procedure replacements",
+  "reviewed_proposal": ".research/webmcp-current-procedures-20261007.json",
+  "proposal_commit": "b9ea24ccd259a47f94f18d0122aaf5301abaf048",
+  "review_date": "2026-10-07",
+  "scope": "Fresh zero-authorship source, parity, and official Chrome contract review. No browser, native runtime, tests, build, database, or release actions were performed.",
+  "verdict_a_coverage_and_executability": {
+    "verdict": "PASS",
+    "finding_ids": [],
+    "summary": "All four original T01 case IDs, control IDs, admin modes, and valid-input/invalid-input/permissions/reload dimensions match the inventory at 14be7f57. The procedure now defines a run-scoped B trigger, A-side listener, exact native RegisteredTool discovery and invocation, correlated acceptance/result/error, and a separate release signal. Check proves A routing through its count-only output against unequal contemporaneous native catalog sizes; list proves A routing with A-only and B-only fixture names; action retains the held callback and A-only side-effect oracle."
+  },
+  "verdict_b_quality_and_doctrine": {
+    "verdict": "PASS",
+    "finding_ids": [],
+    "summary": "The changed procedures match the current handler and router behavior and the official imperative API contract. The permission-negative branch is correctly marked inapplicable because these handlers declare no required optional permissions; real admin denial, confirmation, manifest/host access, and Chrome scripting failures remain distinct reachable observations. The local-flag instructions no longer imply a Chrome 149 minimum. Private audit output is constrained to receipt metadata, with tab data redacted and owned-profile cleanup specified. No new correctness or executability breakage found."
+  },
+  "prior_finding_dispositions": [
+    {
+      "id": "A2",
+      "status": "RESOLVED",
+      "evidence": "The shared precondition now specifies a unique runId/requestId Trigger A message, B-active send, A-only matching listener, exact discovery from awaited getTools(), invocation with native executeTool(discoveredTool,input), and correlated accepted plus result/error responses at B. Release remains a separate message used only after action entry."
+    },
+    {
+      "id": "B3",
+      "status": "RESOLVED",
+      "evidence": "All cases mark optional-permission dispatcher denial source-inapplicable for these handlers and record real admin denial, action confirmation, loaded activeTab/scripting/host access, and actual restricted-tab executeScript rejection as separate reachable boundaries. Current leaf and canonical handler definitions have no required_optional_permissions; dispatcher checks are conditional on that declaration."
+    },
+    {
+      "id": "B4",
+      "status": "RESOLVED",
+      "evidence": "The procedure requires a Chrome build that actually exposes the local testing flag and records its actual channel/version/flag state. It describes Chrome 149 only as the documented Origin Trial start. This matches Chrome's current overview, which separately gives the local flag steps and Origin Trial start."
+    }
+  ],
+  "coverage_parity": {
+    "baseline": "git show 14be7f57:docs/stabilization/inventory.json",
+    "checked": ["EXT-F-4118-T01", "EXT-F-4119-T01", "EXT-F-4120-T01", "EXT-F-4162-T01"],
+    "result": "Each case's id, control_ids, modes, and dimensions exactly match the baseline records."
+  },
+  "source_evidence": [
+    "src/lib/tools/handlers/webmcp.ts:24-151 — check returns available/tool_count only; list returns names and schemas; call discovers and executes a real tool and validates object arguments.",
+    "src/lib/tools/handlers/canonical-mergers.ts:255-290 — canonical check/list/call delegation and read/read/action tierFor.",
+    "src/lib/tools/dispatch.ts:793 and 1519 — optional permission denial is conditional on required_optional_permissions.",
+    "src/lib/tools/dispatch.ts:1448-1555 — external caller admin gate, effective tier, and action confirmation.",
+    "src/lib/webmcp/register.ts:78-183 and src/entrypoints/webmcp-bridge.content.ts:1-110 — actual extension registrations and page-to-extension call bridge.",
+    "https://developer.chrome.com/docs/ai/webmcp/imperative-api — registerTool, awaited getTools, and executeTool with a discovered RegisteredTool.",
+    "https://developer.chrome.com/docs/ai/webmcp — local testing flag instructions and separate Chrome 149 Origin Trial start."
+  ],
+  "limits": [
+    "No browser/API runtime, artifact identity, live advertisement, caller role, permissions, dispatcher outcome, audit receipt, or cleanup was observed. This review accepts procedure executability from source and contract only; it does not claim a runtime pass.",
+    "No test, browser, native, build, database, or release action was performed."
+  ]
+}
