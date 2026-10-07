@@ -1,7 +1,13 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "task": "read-only native role visibility census source repair",
-  "status": "source_ready_native_unverified",
+  "status": "source-review-required",
+  "commits": {
+    "initial_route": "2ab49a49f4cfbdeaae713a9850f20f0bd094e95d",
+    "initial_completeness_repair": "00a19a14553252c7a25c6f4fc440197ae49dbaeb",
+    "peer_findings_repair": "059aed3a3a5a4bd3ea8d05ce3cc2399e80de31a8"
+  },
+  "peer_review": ".research/role-visibility-census-peer-20261007.json",
   "scope": {
     "roles": ["guest", "member", "admin"],
     "artifact_channel": "successful CI development test artifact only",
@@ -9,25 +15,32 @@
     "interaction": "direct sidepanel tab navigation and Settings section expansion only",
     "excluded": ["Profile route", "control activation", "backend product writes", "destructive actions"]
   },
-  "source_evidence": [
-    "tests/browser/takeover-visible-census.mjs verifies imported CI artifact source/run/artifact/tree identity before native startup and native extension ID/version after observation",
-    "scripts/hosted-guest-acceptance.mjs routes visibility-census-guest/member/admin through the existing hosted CI importer and one resource guard per selected case",
-    "scripts/hosted-profile-route.mjs requires hosted member/admin auth fixtures at preflight; the native driver uses signInSettings for first-party web and extension identity checks",
-    "the driver enumerates visible navigation, active tab controls, Settings sections and expanded section controls; unknown labels are SHA-256 digested inside the extension document and returned as counts/fingerprints, never raw private row text",
-    "Fetch interception on sidepanel and extension worker aborts non-GET/HEAD/OPTIONS HTTP(S) requests during census, records each blocked boundary by safe category, and marks the visibility observation incomplete",
-    "the driver records every trusted direct-tab and Settings-section navigation action; inaccessible regions and unmapped controls each make completeness false"
+  "repair_evidence": [
+    "Both tab-pane and Settings content queries now share the full control selector: buttons, actual anchors, inputs, selects, textareas, editable elements, and interactive ARIA roles.",
+    "The exact Settings DOM expression observes the source OpenUrl anchor and maps its visible text to EXT-F-1003-C39 without returning its href.",
+    "Completeness requires nonempty navigation, the Settings tab, all 11 source-present Settings headers, inspected visible tab panes, and inspected visible Settings section content; any unmapped label, inaccessible region, or blocked request still makes it incomplete.",
+    "Unknown labels are HMAC-SHA-256 fingerprinted inside the extension document with a fresh random 256-bit key per driver run. The key is never persisted or included in output; raw unknown text and length never leave the document.",
+    "A raw unknown label arriving at mapObservation is rejected before reporting, so a missing browser-side fingerprint cannot silently fall back to a deterministic hash.",
+    "The anchor and empty-observation guards failed on the previous source: 0 observed anchors versus 1 expected, and empty census complete=true versus false expected. The targeted tests then passed after repair."
   ],
-  "source_ids": {
-    "navigation": "EXT-F-1001-C01",
-    "settings_sections": "EXT-F-1003-C10",
-    "settings_controls": "exact inventory labels and four current-source aliases",
-    "other_surface_controls": "unique exact inventory control labels; ambiguous and unknown labels remain explicitly unmapped"
+  "verification": {
+    "targeted_source_tests": "node --test tests/browser/takeover-visible-census.test.mjs: 7 passed",
+    "hosted_route_tests": "node --test scripts/hosted-profile-route.test.mjs: 9 passed in the combined pre-format run",
+    "format": "Biome targeted check passed",
+    "native_browser": "not run",
+    "hosted_workflow": "not dispatched"
+  },
+  "available_prior_artifact": {
+    "ci_run_id": 37617370485,
+    "artifact_id": 11480383589,
+    "source_sha": "00a19a14553252c7a25c6f4fc440197ae49dbaeb",
+    "note": "Reported by the coordinator as successful; this repair lane did not import or run it."
   },
   "known_limits": [
-    "No native browser or hosted workflow was dispatched by this source lane; guest/member/admin observations remain pending.",
-    "This is observation/discovery. A mapped control means a label was visible, not that its action, permission, persistence, or backend access worked.",
-    "An unknown label is reported by count and fingerprint. Its text needs a separate privacy-safe source reconciliation before an ID can be assigned.",
-    "A blocked POST may be a read-only RPC. The census records rpc_post_unclassified and refuses to infer missing controls or complete visibility from the altered UI.",
-    "Fetch interception covers sidepanel and extension worker targets. Other browser targets are outside this source guard; no action controls are clicked."
+    "A fresh independent source review is required before native role observations. No guest, member, or admin runtime visibility is claimed.",
+    "A mapped control is label visibility only; behavior, permissions, persistence, and backend access remain unverified.",
+    "Blocked POST/RPC requests may include reads. Their safe boundary categories are reported and the altered UI cannot yield complete visibility.",
+    "Fetch interception covers sidepanel and extension-worker targets. Other browser targets remain outside this source guard; no action controls are clicked.",
+    "The Settings anchor case is conditional on an archived organization being rendered in the native role profile; source tests prove capture when present, not presence in every profile."
   ]
 }
