@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "7fe949ed856d4581c1b6310dd44657b60da36ad0",
+  "review_scope": "Independent static peer review of the prior-saved QA route and retained evidence; no native Chrome execution or test rerun",
+  "verdict_A_acceptance_fitness": "fix_before_native_launch",
+  "verdict_B_quality_forcing_evidence": "partial_forcing_evidence_with_route_gap",
+  "findings": [
+    {
+      "severity": "Important",
+      "location": "tests/browser/showcase-d47-document-lifecycle.mjs:847",
+      "issue": "The held first-run response is released before the second saved result reaches an exact, idle terminal preview and before the live page is checked for Silver Meridian. Those positive checks occur at lines 864-882, after release. A test that requires a settled second run before stale delivery cannot establish that ordering and may pass when late delivery and second completion race.",
+      "required_fix": "Wait for the second exact saved terminal and Silver Meridian live page result before calling release-prior-saved; then observe them again after release and classify any old callback separately."
+    },
+    {
+      "severity": "Important",
+      "location": "tests/browser/showcase-d47-document-lifecycle.mjs:690",
+      "issue": "The first status poll proves that the extra held request exists after the first HTTP response, but does not prove it was received while the first saved run was still active. The fixture starts both fetches in one script, yet the server does not retain arrival order relative to first response finish or the UI run interval.",
+      "required_fix": "Record a fixture-side held-request arrival marker and assert it precedes first response finish or another observable first-run completion boundary."
+    }
+  ],
+  "positive_observations": [
+    "Two trusted Run pattern clicks target the exact persisted row; first and second body hashes, binding names, context IDs and navigation are independently checked.",
+    "The second preview reader rejects the first row and has an executed constant-success RED; fixture mutant changes only the second event and yields one behavioral assertion RED with six sibling tests green.",
+    "Server finish, browser abort and an observed old binding packet are represented as distinct outcomes; server finish alone is labeled callback_not_observed.",
+    "The recipe name is generated for this run, deleted through the exact Patterns row and its disappearance is checked; cleanup failure makes the route fail."
+  ],
+  "evidence_integrity": {
+    "source_hashes": "All nine source SHA-256 values in the builder ledger match current files.",
+    "retained_mutant_hash": "515b1e4d6de2524378ec978e71570eb022fdd4c6ed87a112e09fdab6cee76a97 matches.",
+    "valid_run_artifacts": "Five listed final stdout and resource-journal SHA-256 pairs match; final green and clean RED journals report admitted resources and child exit 0/1 as claimed.",
+    "excluded_attempts": "The refused batched route run, missing-Playwright setup run, and teardown socket-reset attempt were not counted as behavioral RED."
+  },
+  "limits": "No installed-artifact native Chrome trace exists yet. Static review cannot establish actual saved-run isolation or callback delivery. Do not release on this evidence alone."
+}
