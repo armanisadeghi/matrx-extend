@@ -64,8 +64,12 @@
     }
   ],
   "receipt": {
-    "curated_path": "docs/stabilization/evidence/desktop-settings-remaining-native/run37701201664/receipt.json",
-    "sha256": "9ec3797b238d6dc59a32b15066ca446acd000b07ae9514019ae6b098d1b74482",
+    "original_upload_path": "matrx-extend/matrx-extend/test-results/settings-desktop-native-b080b8a4-6508-46d7-bbe4-db5d03ae88a6.json",
+    "raw_copy_path": "docs/stabilization/evidence/desktop-settings-remaining-native/run37701201664/receipt.raw.json.txt",
+    "raw_sha256": "9ec3797b238d6dc59a32b15066ca446acd000b07ae9514019ae6b098d1b74482",
+    "normalized_copy_path": "docs/stabilization/evidence/desktop-settings-remaining-native/run37701201664/receipt.json",
+    "normalized_copy_sha256": "f42c746733ae884a9c9ef51d30234507c0a34861f88d95951779a6b0a73ca897",
+    "normalization_note": "The raw uploaded receipt is preserved byte-for-byte as .raw.json.txt. receipt.json is its Biome-formatted readable copy; both contain the same JSON value.",
     "status": "pass",
     "role": "guest",
     "authentication": {
