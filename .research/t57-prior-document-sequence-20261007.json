@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "date": "2026-10-07",
+  "lane": "QA-only prior-document sequence; bounded incomplete handoff",
+  "base_head": "2829537750bcda86a2e3dc15229de5d2b76602e1",
+  "status": "HANDOFF_AFTER_TWO_ADMITTED_REPAIR_FAILURES",
+  "scope": {
+    "product_changes": false,
+    "canonical_changes": false,
+    "native_launch": false,
+    "build_or_release": false,
+    "source_changes_uncommitted": [
+      "tests/browser/showcase-d47-public-initial-load.mjs",
+      "tests/browser/showcase-d47-public-race-preflight.mjs",
+      "tests/browser/showcase-d47-public-race-preflight.test.mjs"
+    ],
+    "patch_preserves_exact_diff": ".research/t57-prior-document-sequence-20261007.patch"
+  },
+  "genuine_prior_trigger": "After owned recipe is saved and visible, the public HN driver enables response-stage interception and uses ordinary page.reload({waitUntil: commit}) on the same HN query URL. It awaits an HTTP 200 Algolia response with old main-frame loader/context and requires its lifecycle pending before clicking the exact saved Run control. No fetch injection or response/request modification. Historical native public run recorded matching real HN Algolia responses across two navigations; this changed sequence has not run natively.",
+  "changed_intent": [
+    "Prior request begins before saved replay; removed second page.goto after Run.",
+    "Extension-worker observer records binding handshake and SHA-256 URL/response and request-body key for a current-context packet; intended current response and exact recipe terminal result are required.",
+    "Old canceled lifecycle is explicitly distinguished from released old response, consistent with accepted architectural exclusion ruling."
+  ],
+  "test_history": [
+    {
+      "run_id": "t57-prior-sequence-20261007",
+      "result": "refused",
+      "reason": "combined two-file node --test command absent from resource allowlist; no test ran"
+    },
+    {
+      "run_id": "t57-prior-sequence-controller-20261007",
+      "result": "admitted_resource_valid_child_failed",
+      "reason": "one stale expected array treated old cancellation as unverified; expectation corrected"
+    },
+    {
+      "run_id": "t57-prior-sequence-controller-green-20261007",
+      "result": "refused",
+      "reason": "RESOURCE_LEGACY_RUNNER_BUSY; no test ran"
+    },
+    {
+      "run_id": "t57-prior-sequence-controller-green2-20261007",
+      "result": "admitted_resource_valid_child_failed",
+      "reason": "probe unit expected one hashed packet but observed []; canceled-old release throws ReferenceError: item is not defined at helper line 345"
+    }
+  ],
+  "fresh_owner_actions": [
+    "Repair undefined item reference in release catch using held entry. Determine why probe unit packet array remains empty; verify asynchronous digest/test synchronization and worker observer contract without weakening packet identity checks.",
+    "Rerun one guarded source test at a time with the exact allowlisted command, retain full sanitized output and terminal journal, then run public driver source test if warranted.",
+    "Review native feasibility separately; current lane makes no T57 pass or D47 reopening/closure claim."
+  ],
+  "evidence_sha256": {
+    "tests/browser/showcase-d47-public-initial-load.mjs": "eba5944bd9cc281c6d6b0c638b9829f569a6fd89b75704aadf52bd707617accc",
+    "tests/browser/showcase-d47-public-race-preflight.mjs": "d000bf6013f2f7fd304af40207ab6946b64ea9f178e599b55e5c5cb56a3eeb05",
+    "tests/browser/showcase-d47-public-race-preflight.test.mjs": "f64f548c1e6a0870ea96b231c9a002004eda6be636e8eb2fdc4d16a14cfdb7b2",
+    ".research/t57-prior-document-sequence-20261007.patch": "2b8cd3daeb4fa6ffed1f1a6df3349283b9019fa04e1936116315f5af2662fd30",
+    ".research/t57-prior-sequence-20261007.stdout": "7cdc9418eb2aea5b623f04f94aeac7d61a6ecc2b2e1b99f01bdf0d8ae748370d",
+    ".research/t57-prior-sequence-controller-20261007.stdout": "a1ba5b8f1c108ddc147f6f97d53a498e90fe77f2dfbbca475becd5a0fa614a32",
+    ".research/t57-prior-sequence-controller-green-20261007.stdout": "bde29a7a7aa0ce7f30dd5072c27f7a86287fac2df224af6d90a2f34ab0a7e948",
+    ".research/t57-prior-sequence-controller-green2-20261007.stdout": "34ee3e0739ebc1305b671714def32226b00a98f6634b437b5b566c8a074e2365",
+    "docs/stabilization/resource-journals/t57-prior-sequence-20261007.jsonl": "6f34e6770dfd746ea3012961a2974fcd4aecd39d93888ff7cd8b2e9b9519d36e",
+    "docs/stabilization/resource-journals/t57-prior-sequence-controller-20261007.jsonl": "a69157891eea03d17534a53efa693b23fe32bbab0fd2e35054e600b2918fddb1",
+    "docs/stabilization/resource-journals/t57-prior-sequence-controller-green-20261007.jsonl": "b6e62a899a2d2f38ca9dec9fdb7fe3a78dbfc2ed95709008f388e85ede45ac0b",
+    "docs/stabilization/resource-journals/t57-prior-sequence-controller-green2-20261007.jsonl": "397a242a7f2594c7f3f1fed795a34f947d593882641cc56d1bf37c248da257d3"
+  },
+  "limits": "Two distinct admitted repair tests failed. No further code/test attempt was made after second failure. Uncommitted QA changes intentionally remain in the shared tree for immediate fresh-seat repair. The patch and full sanitized outputs are retained remotely with this report; failing QA source is not pushed."
+}

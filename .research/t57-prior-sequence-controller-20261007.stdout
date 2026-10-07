@@ -1,0 +1,58 @@
+{"schema":1,"at":"2026-10-07T11:18:46.759Z","runId":"t57-prior-sequence-controller-20261007","path":"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/t57-prior-sequence-controller-20261007.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-07T11:19:53.969Z","runId":"t57-prior-sequence-controller-20261007","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":12,"requiredMemoryGiB":4,"oneMinuteLoad":1.41,"logicalCpus":10,"cpuBusyFraction":0.08,"swapUsedMiB":2650.19,"repoFreeGiB":1680.650619506836,"profileFreeGiB":1680.650619506836,"safetyFreeGiB":23.227886199951172,"systemFreeGiB":23.227886199951172},"cpuBusySamples":[0.08,0.07,0.08,0.07,0.08,0.1,0.08],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+✔ public response identity is exact across URL and body without exposing either (1.430333ms)
+✔ CDP failure categories never retain URLs, credentials, or raw messages (0.226875ms)
+✔ extension capture proof requires its own hook and an attached owned tab (3.867125ms)
+✔ controller continues original paused responses in order and disables interception (156.538458ms)
+✔ canceled old release still attempts current release and every owned cleanup step (106.285125ms)
+✔ a response body resolving or rejecting after cleanup cannot append a late pause observation (3.436542ms)
+✔ disable and detach failures independently preserve later cleanup attempts (0.690917ms)
+✖ preflight requires two matching real request identities, new document and delivery lifecycle (3.196334ms)
+✔ actual verdict rejects constant and missing-evidence mutations in memory (15.332125ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 8
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 362.607583
+
+✖ failing tests:
+
+test at tests/browser/showcase-d47-public-race-preflight.test.mjs:462:1
+✖ preflight requires two matching real request identities, new document and delivery lifecycle (3.196334ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  ... Skipped lines
+  
+    [
+      'prior_document_released_current_verified',
+      'unverified',
+  +   'prior_document_cancelled_current_verified',
+      'unverified',
+      'unverified',
+      'unverified',
+      'unverified',
+      'unverified',
+  ...
+      'unverified',
+  -   'unverified'
+    ]
+  
+      at TestContext.<anonymous> (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/showcase-d47-public-race-preflight.test.mjs:487:10)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'prior_document_released_current_verified', 'unverified', 'prior_document_cancelled_current_verified', 'unverified', 'unverified', 'unverified', 'unverified', 'unverified', 'unverified', 'unverified', 'unverified', 'unverified', 'unverified', 'unverified', 'unverified' ],
+    expected: [ 'prior_document_released_current_verified', 'unverified', 'unverified', 'unverified', 'unverified', 'unverified', 'unverified', 'unverified', 'unverified', 'unverified', 'unverified', 'unverified', 'unverified', 'unverified', 'unverified' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+{"schema":1,"at":"2026-10-07T11:19:54.429Z","runId":"t57-prior-sequence-controller-20261007","childExitCode":1,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-07T11:19:54.479Z","runId":"t57-prior-sequence-controller-20261007","admitted":true,"resourceInvalid":false,"exitCode":1,"decision":"child_failed","code":"RESOURCE_FINAL_DECISION"}

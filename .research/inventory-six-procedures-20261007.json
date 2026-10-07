@@ -7,9 +7,9 @@
   "scope": "Six existing nonChat/Pilot manual-tool cases whose steps and expected arrays are empty. This is procedure design from current source, not behavior evidence or runtime status promotion.",
   "shared_preamble": [
     "Before each case, use the coordinator-issued resource permit and record its current build receipt: source SHA and dirty-source hash, lockfile and output hashes, WXT mode, loaded extension runtime ID and source directory, Chrome version, profile label, signed-in role and selected organization when required, relevant grants, backend identity, fixture IDs, and timestamp. Omit secrets and page contents.",
-    "Use the actual side-panel Tools > Catalog manual runner in the loaded extension. Search the exact tool name, expand its row, paste the listed JSON into the test runner, and press Run. This path validates with the handler's Zod argsSchema and calls handler.run directly. It bypasses dispatcher permission and role gates; role labels, optional-permission denial, and database binding advertisements are not established by a manual-run result. Capture the visible result or schema error and receipt reference, not credentials, base64 image/MHTML, GIF bytes, or unrestricted page text.",
+    "Use the actual side-panel Tools > Catalog manual runner in the loaded extension. The catalog defaults to Agent surface; select All handlers before searching list_recently_closed or restore_recently_closed. Search the exact tool name, expand its row, paste the listed JSON into the test runner, and press Run. This path validates with the handler's Zod argsSchema and calls handler.run directly. It bypasses dispatcher permission and role gates; role labels, optional-permission denial, and database binding advertisements are not established by a manual-run result. Capture only the specific output fields listed below and the receipt reference, not credentials, page text, URLs unless needed privately for fixture identity, MHTML archive data, image bytes, or GIF contents.",
     "Replace each uppercase fixture placeholder with the exact value recorded for the disposable fixture before pasting JSON (tab and group IDs as JSON integers; a session ID as a JSON string). Keep the resolved input in the private run receipt only when needed for cleanup.",
-    "After any extension reload required by the coordinator receipt, reopen the side panel and confirm the same loaded runtime identity before repeating the safe positive case. Only the tested surfaces need to run: these procedures do not require forcing an unrelated offscreen document. Keep target fixtures disposable and owned; remove created tabs/groups, local memo keys, screenshots, and uploaded GIF artifacts as listed per case."
+    "After any extension reload required by the coordinator receipt, reopen the side panel and confirm the same loaded runtime identity before repeating the safe positive case. Only the tested surfaces need to run: these procedures do not require forcing an unrelated offscreen document. Keep target fixtures disposable and owned; remove created tabs/groups, discard the dedicated memo-test profile, and track screenshot rows, uploaded files, and local GIF downloads as separate cleanup artifacts."
   ],
   "cases": [
     {
@@ -30,7 +30,7 @@
       ],
       "steps": [
         "In Tools > Catalog, search chrome_save_page_as_mhtml and enter {\"tab_id\": FIXTURE_TAB_ID} with the actual integer ID.",
-        "Run once and record only ok, byte_length, and whether mhtml_base64 is non-empty; do not copy or retain the page archive.",
+        "Run once and record only ok, byte_length, and whether mhtml_base64 is non-empty; do not copy, screenshot, or retain the page archive. Clear the visible result panel immediately after recording those fields.",
         "Reload the extension according to the receipt, reopen Tools, repeat the same positive input, and compare the result shape and positive byte count.",
         "For the declared-schema negative input, enter {\"tab_id\": 1.5} and run. Confirm the UI reports Schema mismatch before the handler is invoked.",
         "As a permission-denial observation, revoke pageCapture in chrome://extensions for the unpacked extension and retry the positive input; record the observed result without treating it as dispatcher-gate evidence. Restore the grant before finishing."
@@ -63,14 +63,14 @@
       ],
       "steps": [
         "Open one tab to the unique fixture URL, record its title, then close that tab from Chrome.",
-        "Run list_recently_closed from Tools and identify the fixture entry by exact title/URL; record its session ID privately for this run.",
+        "Select All handlers in the Tools Catalog surface selector, run list_recently_closed, and identify the fixture entry by its unique local title and URL; record only its session ID privately for this run.",
         "Run restore_recently_closed with {\"session_id\": \"FIXTURE_SESSION_ID\"} using that exact returned ID.",
-        "Verify Chrome reopened the fixture tab at the owned URL, then reload the extension and repeat list_recently_closed to check that the restored fixture is no longer pending as a closed session.",
+        "Verify Chrome reopened the fixture tab at the owned URL, then reload the extension, select All handlers again, and repeat list_recently_closed to check that the restored fixture is no longer pending as a closed session.",
         "For the declared-schema negative input, enter {\"session_id\": 123} and confirm Schema mismatch before invocation.",
         "With sessions revoked, retry only the exact fixture session ID and record the Chrome API outcome; restore the grant after the observation."
       ],
       "expected": [
-        "The exact fixture session is restored and the returned result identifies a restored tab/window; no unrelated session is opened.",
+        "The exact fixture session is restored. Inspect only the nested restored result needed to confirm the owned fixture tab/window returned; do not copy the full result or unrelated session data.",
         "After reload, a fresh recently-closed listing no longer identifies that fixture as closed.",
         "A numeric session_id is rejected by the string schema before handler invocation.",
         "The revoked-permission result is only an API-level observation because the direct runner bypasses dispatcher permission gating."
@@ -96,16 +96,16 @@
         "Run in Chrome with signed-in member/admin profiles as applicable. The handler has no role-specific branch."
       ],
       "steps": [
-        "Run {\"action\":\"list\"} and record the baseline groups affecting only the test window.",
-        "Run {\"action\":\"create\",\"tab_ids\":[TAB_A,TAB_B],\"title\":\"Codex disposable group\",\"color\":\"cyan\",\"collapsed\":false}; record the returned group_id.",
+        "Run {\"action\":\"list\"} and record the global baseline group IDs; identify any groups containing the two owned fixture tab IDs and their window ID.",
+        "Run {\"action\":\"create\",\"tab_ids\":[TAB_A,TAB_B],\"title\":\"Codex disposable group\",\"color\":\"cyan\"}; record the returned group_id.",
         "Run {\"action\":\"update\",\"group_id\":GROUP_ID,\"title\":\"Codex group updated\",\"color\":\"blue\",\"collapsed\":true}; then run list and verify both tabs and updated properties belong to that group.",
         "Create a third disposable fixture tab, run {\"action\":\"add\",\"group_id\":GROUP_ID,\"tab_ids\":[TAB_C]}, then run {\"action\":\"remove\",\"tab_ids\":[TAB_C]} and verify the third tab is ungrouped while the original two remain grouped.",
-        "Reload the extension, run list again, and confirm Chrome's group state remains visible across extension reload.",
+        "Reload the extension, run list again, and confirm the group identified by the two owned tab IDs remains visible with the updated properties.",
         "For the declared-schema negative input, run {\"action\":\"create\",\"tab_ids\":[1.25]} and confirm Schema mismatch before Chrome is called.",
         "As a permission-denial observation, remove the tabGroups permission if Chrome permits that grant change, run list, capture the observed API outcome, and restore the original permission state."
       ],
       "expected": [
-        "Create returns ok:true and a group ID; update/add/remove return successful results, and list reflects exactly the requested group membership, title, color, and collapsed state.",
+        "Create returns ok:true and a group ID; update/add/remove return successful results. The global list identifies the group by its owned tab IDs and reports the updated title, color, and collapsed:true state after the explicit update.",
         "Fractional tab ID is rejected by the array item integer schema.",
         "Reload does not erase Chrome-owned tab-group state.",
         "Permission behavior observed through this manual runner is not evidence of dispatcher gate enforcement."
@@ -133,20 +133,20 @@
       ],
       "steps": [
         "Run {\"selector\":\"#procedure-target\",\"padding\":0,\"format\":\"png\"} from the focused fixture tab.",
-        "Record ok, dimensions, format, and whether a durable screenshot_id/file_id reference was returned; do not save image_base64 or the image itself as evidence.",
+        "Record ok, dimensions, format, and the presence of file_id and screenshot_id independently; record identifiers only in the private cleanup receipt. Do not save image_base64, URLs, image_ref payloads, or the image itself as evidence.",
         "Reload the extension, focus the same fixture tab, run the positive input again, and verify a new capture result with positive dimensions.",
         "For the declared-schema negative input, run {\"rect\":{\"x\":0,\"y\":0,\"w\":0,\"h\":20}} and confirm Schema mismatch before capture.",
-        "If persistence returned a durable row, reopen the Screenshots gallery and verify the owned capture survives reload; if persistence was unavailable, record the honest inline-only result and leave persistence unverified.",
+        "After reload, inspect the Screenshots gallery for the owned capture if screenshot_id was returned. If only file_id was returned, track the uploaded file separately and record the missing index row; if both IDs are null, record the inline-only response and leave persistence unverified.",
         "With scripting revoked, repeat the positive input once only as an API-level denial observation; restore the grant afterward."
       ],
       "expected": [
-        "The positive result is ok:true with PNG format and positive width/height; its crop corresponds to the fixture element. A durable row is expected only when the existing persistence path succeeds.",
+        "The positive result is ok:true with PNG format and positive width/height. Successful file upload returns a cloud image_ref with file_id and possibly screenshot_id, and may omit image_base64; an unavailable/failed upload returns inline image_base64 with null identifiers. A file upload and screenshot index row can succeed independently.",
         "A zero-width rectangle fails the positive-number schema and causes no capture.",
-        "A durable screenshot appears in the gallery after extension reload; inline-only fallback is explicitly not counted as durable persistence success.",
+        "A returned screenshot_id appears in the gallery after extension reload. Track file_id and screenshot_id separately; inline-only fallback is not durable persistence success.",
         "Direct invocation does not establish dispatcher enforcement of activeTab or scripting permissions."
       ],
       "cleanup": [
-        "Delete only the screenshot row created by this run through the Screenshots gallery and reread the gallery to verify its removal.",
+        "Delete the screenshot row created by this run through the Screenshots gallery, then reread to verify row removal. Separately delete the uploaded file identified by file_id through its owning Files surface and reread to verify file removal. Keep either cleanup outstanding until that artifact is independently verified gone.",
         "Close the fixture tab and restore the scripting grant to its original state."
       ]
     },
@@ -161,8 +161,7 @@
         "docs/stabilization/inventory.json: EXT-F-4093"
       ],
       "preconditions": [
-        "Use an isolated disposable Chrome profile and a unique test hostname, for example memo-procedure-20261007.invalid, not a production domain.",
-        "Read and preserve only that exact hostname's preexisting matrx.domain_memos entry, if any; do not expose unrelated storage values."
+        "Create a new disposable Chrome profile used only for this case and use a unique test hostname, for example memo-procedure-20261007.invalid, not a production domain. Do not use a profile containing preexisting domain memos."
       ],
       "steps": [
         "Run {\"domain\":\"memo-procedure-20261007.invalid\",\"note\":\"procedure receipt marker\",\"hints\":{\"procedure_key\":\"procedure-value\"}}.",
@@ -177,8 +176,7 @@
         "No browser permission or role gate exists in this handler; manual execution provides no evidence about agent advertisement or role policy."
       ],
       "cleanup": [
-        "Remove only the exact matrx.domain_memos entry for memo-procedure-20261007.invalid from the disposable profile's extension storage; if an entry existed before the case, restore that exact entry.",
-        "Reread only that hostname key and verify it matches the preserved pre-run state."
+        "Discard the dedicated disposable Chrome profile to remove the test memo. The inspected product surface has no memo-delete control; do not claim exact-key cleanup through a user-facing UI."
       ]
     },
     {
@@ -194,30 +192,31 @@
         "docs/stabilization/inventory.json: EXT-F-4129"
       ],
       "preconditions": [
-        "Use an owned local fixture tab with a visible nonsensitive marker and a disposable signed-in profile/org whose existing file upload path is available for the export action.",
+        "Use an owned local fixture tab with a visible nonsensitive marker and a dedicated disposable signed-in profile/org whose existing file upload path is available for the export action.",
         "Grant the debugger optional permission before starting; use a profile where the Chrome debugger attachment prompt is expected and can be accepted by the operator. The direct runner itself does not implement the normal tier/permission prompt.",
         "Set a unique filename such as codex-procedure-20261007.gif and note the returned file ID privately so the uploaded artifact can be removed through the Files surface."
       ],
       "steps": [
-        "With the fixture tab ID as a digit string, run {\"action\":\"start_recording\",\"tab_id\":\"FIXTURE_TAB_ID\"}; wait for the visible recording state, then make two harmless page interactions on the fixture.",
-        "Run {\"action\":\"stop_recording\",\"tab_id\":\"FIXTURE_TAB_ID\"}; record only frame_count and duration_ms.",
-        "Run {\"action\":\"export\",\"tab_id\":\"FIXTURE_TAB_ID\",\"download\":true,\"filename\":\"codex-procedure-20261007.gif\"}; record ok, frame count, download ID, and file ID, but omit the URL and file contents from evidence.",
-        "Run {\"action\":\"clear\",\"tab_id\":\"FIXTURE_TAB_ID\"} after export and verify cleared_frames is zero or otherwise accurately reflects the already-consumed buffer.",
-        "Reload the extension and confirm a new export without starting a recording returns the source-declared no-buffer error.",
+        "With the fixture tab ID as a digit string, run {\"action\":\"start_recording\",\"tab_id\":\"FIXTURE_TAB_ID\"}; confirm the result is {ok:true,recording:true}, keep the fixture tab focused and visible, make two harmless page interactions, and wait at least one second for frames.",
+        "Run {\"action\":\"stop_recording\",\"tab_id\":\"FIXTURE_TAB_ID\"}; require frame_count > 0 and record only frame_count and duration_ms.",
+        "Reload the extension and confirm the loaded runtime identity. Run export once before starting another recording; expect the no-buffer error only after confirming the extension/service worker restarted.",
+        "Repeat start_recording, focused fixture interactions, and stop_recording to create a fresh buffer. Require frame_count > 0 before continuing.",
+        "Run {\"action\":\"export\",\"tab_id\":\"FIXTURE_TAB_ID\",\"download\":true,\"filename\":\"codex-procedure-20261007.gif\"}; record success and the file/download IDs only in the private cleanup receipt. The result contains a URL; do not copy it or include GIF bytes in evidence.",
+        "Run {\"action\":\"clear\",\"tab_id\":\"FIXTURE_TAB_ID\"} after successful export and expect cleared_frames:0 because export already consumed and cleared the buffer.",
         "For the declared-schema negative input, run {\"action\":\"pause\",\"tab_id\":\"FIXTURE_TAB_ID\"} and confirm Schema mismatch before recording code runs.",
         "If permission denial is observed, revoke debugger only after clearing state, attempt start once, record the Chrome API response, and restore the grant."
       ],
       "expected": [
-        "Start succeeds with recording:true; stop reports positive frame_count and nonnegative duration; export succeeds with a downloaded GIF and an uploaded file identity; clear releases remaining in-memory recording state.",
-        "The export uses the backend upload path even when download:true; the result's file ID is sensitive fixture metadata and stays out of general evidence.",
-        "After extension reload, the service-worker recording buffer is absent, so export reports that no recording is buffered.",
+        "Each positive start returns recording:true; each stop must report positive frame_count and nonnegative duration. Successful download:true export returns an uploaded file identity and download ID; clear after export returns zero frames.",
+        "The export uses the backend upload path even when download:true. Keep file_id and download_id in the private cleanup receipt; omit file_url and GIF contents from general evidence.",
+        "Only the pre-positive-export reload probe demonstrates service-worker buffer loss, and only when the extension/service worker restart is confirmed.",
         "Unknown action pause fails enum validation before handler invocation.",
         "This direct path does not verify the normal dispatcher permission prompt, role policy, or live binding."
       ],
       "cleanup": [
-        "Delete the exact uploaded GIF file through the Files UI and reread to verify removal; remove the uniquely named local download from the disposable profile.",
-        "Run clear for the fixture tab, close that owned tab, and restore debugger permission to its original state.",
-        "If export or cleanup fails, retain a private receipt containing only enough fixture identity to finish cleanup; do not call the case clean until the uploaded artifact is verified removed."
+        "Delete the uploaded GIF through the Files UI using its private file ID, then reread to verify the uploaded object is gone. Separately remove the uniquely named local download and verify its removal.",
+        "Run clear for the fixture tab, close that owned tab, and restore debugger permission to its original state. Discard the dedicated disposable Chrome profile after all owned artifacts are removed.",
+        "If export or cleanup fails, retain a private receipt containing only enough fixture identity to finish cleanup; keep uploaded-file and local-download cleanup statuses independent and do not call the case clean until both are verified removed."
       ]
     }
   ],
@@ -225,7 +224,7 @@
     "The inventory source SHA is the inspected checkout HEAD, b68129726c37041eecf27ed1ff9303b62d733fd5. Recheck it before applying these patches; source and inventory can change in the shared checkout.",
     "All six are direct Tools manual-runner procedures. ToolsView safe-parses each local handler schema, then calls handler.run directly with permissionMode act and assignedTabId null. It bypasses dispatcher permission authorization and does not prove role availability, DB tool.definition/tool.binding activation, agent advertisement, or normal agent tab assignment.",
     "Optional permission revocation steps are observations of browser API behavior only. They are not substitutes for a real dispatcher-denial case. Do not infer product success, source completeness, or runtime status from this source-only report.",
-    "EXT-F-4093 cleanup uses Chrome extension storage for one unique disposable hostname because no domain-memo deletion UI is present in the inspected feature sources. Screenshot and GIF backend cleanup require successful real UI deletion and reread; otherwise retain cleanup as outstanding.",
+    "EXT-F-4093 cleanup uses a newly created disposable Chrome profile that is discarded after the case because no domain-memo deletion UI is present in the inspected feature sources. Screenshot cleanup tracks the screenshot row and uploaded file independently; GIF cleanup tracks the uploaded file and local download independently. Keep any unverified cleanup outstanding.",
     "No browser, build, test, database, credential, or product action was run. No existing dimensions, case IDs, or runtime status cells were changed."
   ],
   "source_files_reviewed": [
