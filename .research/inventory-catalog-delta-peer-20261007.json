@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "purpose": "Independent source-only verification of the inventory/current catalog delta receipt.",
+  "captured_at": "2026-10-07T03:58:18Z",
+  "inputs": {
+    "delta_receipt": ".research/inventory-current-catalog-delta-20261007.json",
+    "inventory": "docs/stabilization/inventory.json",
+    "current_generated_catalog": "types/tool-catalog.json",
+    "actual_source_checked": [
+      "src/lib/tools/handlers/privileged.ts",
+      "src/lib/tools/handlers/canonical-mergers.ts",
+      "src/lib/tools/handlers/action.ts",
+      "src/lib/tools/handlers/canonical.ts",
+      "src/lib/tools/registry.ts",
+      "src/lib/tools/server-catalog.ts",
+      "src/features/tools/ToolsView.tsx"
+    ]
+  },
+  "A_spec_reconciliation": {
+    "status": "supported_with_limits",
+    "machine_check": {
+      "delta_mapping_rows": 169,
+      "inventory_tool_feature_rows": 169,
+      "current_generated_client_catalog_rows": 168,
+      "distinct_inventory_tool_names": 168,
+      "distinct_generated_catalog_names": 167,
+      "exact_name_matched_inventory_rows": 168,
+      "exact_payload_matched_rows": 166,
+      "payload_fields_compared": [
+        "input_schema",
+        "required_permissions",
+        "required_optional_permissions",
+        "admin_only",
+        "surface_bundles",
+        "tier"
+      ],
+      "server_catalog_rows": 1,
+      "mapping_rows_recomputed_without_disagreement": 169,
+      "input_hashes_rechecked_and_matching": "11/11",
+      "numeric_indices_matching_current_name": 129,
+      "numeric_indices_stale": 39,
+      "stale_index_feature_ids": [
+        "EXT-F-4131",
+        "EXT-F-4132",
+        "EXT-F-4133",
+        "EXT-F-4134",
+        "EXT-F-4135",
+        "EXT-F-4136",
+        "EXT-F-4137",
+        "EXT-F-4138",
+        "EXT-F-4139",
+        "EXT-F-4140",
+        "EXT-F-4141",
+        "EXT-F-4142",
+        "EXT-F-4143",
+        "EXT-F-4144",
+        "EXT-F-4145",
+        "EXT-F-4146",
+        "EXT-F-4147",
+        "EXT-F-4148",
+        "EXT-F-4149",
+        "EXT-F-4150",
+        "EXT-F-4151",
+        "EXT-F-4152",
+        "EXT-F-4153",
+        "EXT-F-4154",
+        "EXT-F-4155",
+        "EXT-F-4156",
+        "EXT-F-4157",
+        "EXT-F-4158",
+        "EXT-F-4159",
+        "EXT-F-4160",
+        "EXT-F-4161",
+        "EXT-F-4162",
+        "EXT-F-4163",
+        "EXT-F-4164",
+        "EXT-F-4165",
+        "EXT-F-4166",
+        "EXT-F-4167",
+        "EXT-F-4168",
+        "EXT-F-4169"
+      ],
+      "duplicate_name_feature_ids_preserved": {
+        "wait_for": ["EXT-F-4058", "EXT-F-4156"]
+      }
+    },
+    "source_supported_corrections": [
+      {
+        "feature_id": "EXT-F-4125",
+        "tool_name": "inject_stylesheet",
+        "correction": "Remove input_schema.properties.persist from inventory metadata.",
+        "evidence": "privileged.ts InjectStylesheetArgs has css and optional tab_id; handler forwards only css and tab_id to insertCSS."
+      },
+      {
+        "feature_id": "EXT-F-4167",
+        "tool_name": "stylesheet",
+        "correction": "Remove input_schema.properties.persistent from inventory metadata.",
+        "evidence": "canonical-mergers.ts StylesheetArgs has action, css and optional tab_id; both branches forward only css and tab_id to leaf handlers."
+      },
+      {
+        "feature_ids": ["EXT-F-4131", "EXT-F-4169"],
+        "correction": "For all 39 IDs EXT-F-4131 through EXT-F-4169, refresh catalog_record_index from exact current catalog name matches; retain every feature ID and all non-index inventory fields.",
+        "evidence": "Independent exact-name and payload comparison gives current candidate indices for each row; each of the 39 existing numeric indices is one position beyond its current exact-name catalog entry in the checked-in artifact."
+      }
+    ],
+    "server_capability": {
+      "feature_id": "EXT-F-4130",
+      "tool_name": "records",
+      "classification_supported": "server_catalog / Tools UI server entry; no generated client catalog index",
+      "evidence": "server-catalog.ts declares records with execution=server; ToolsView combines SERVER_CATALOG with client handlers and has a manual server-tool route.",
+      "runtime_or_database_execution_verified": false
+    }
+  },
+  "B_evidence_quality": {
+    "status": "qualified",
+    "strengths": [
+      "The delta's 11 input hashes all match the present files, and every mapping row's exact name/candidate indices/payload-match indices were independently recomputed.",
+      "Both removed parameters are confirmed against the actual current Zod schemas and their handler/merger forwarding behavior.",
+      "The delta explicitly treats live-binding evidence as historical and does not promote it to current database proof."
+    ],
+    "limitations": [
+      "The delta records repository HEAD 9ee66a9d3f692ba1193790b33f366f33e15d69dc, while current HEAD is f1340e9545a0f0af7bfc6e590ed3b84a32c40886. Its listed input hashes match, but the recorded HEAD is not current provenance.",
+      "The 166 payload matches are inventory-to-generated-artifact comparisons; schemas for those rows were not all independently re-derived from source in this review.",
+      "types/tool-catalog.json is checked-in generated data; no catalog generation was run, so these findings do not prove source-to-artifact freshness.",
+      "The two wait_for catalog/inventory rows retain distinct IDs and schemas, but registry.ts deliberately registers canonical_handlers after action_handlers and uses last-write-wins name resolution. The duplicate rows do not prove two separately addressable runtime handlers.",
+      "The records classification is source/UI routing evidence only. No live DB binding, backend execution, browser run, or runtime behavior was checked."
+    ],
+    "not_established": [
+      "current database definition or extension binding state",
+      "advertisement, role access, permissions, runtime execution, or product health",
+      "current generated catalog matching every handler source schema"
+    ]
+  },
+  "scope_boundary": {
+    "authoritative_inventory_modified": false,
+    "feature_ids_controls_role_cells_or_statuses_removed": false,
+    "database_browser_tests_build_or_catalog_generation_used": false,
+    "recommendation": "The two schema-property removals and 39 positional-index refreshes are safe narrow inventory metadata corrections. Preserve both wait_for feature rows and the records server-route row; do not infer or record DB/runtime verification from this reconciliation."
+  }
+}
