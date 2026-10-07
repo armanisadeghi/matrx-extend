@@ -18,12 +18,12 @@ import {
   sanitizeD47Failure,
   trustedD47PanelClick,
 } from './showcase-d47-driver-evidence.mjs';
+import { readD47SavedResult } from './showcase-d47-saved-result.mjs';
 import {
   deriveD47TerminalBudget,
   terminalBudgetPaths,
   waitD47SavedTerminal,
 } from './showcase-d47-terminal-budget.mjs';
-import { readD47SavedResult } from './showcase-d47-saved-result.mjs';
 import { runShowcaseOrganizationCheckpoint } from './showcase-organization-checkpoint.mjs';
 
 const repo = resolve(import.meta.dirname, '../..');

@@ -50,16 +50,14 @@ async function observe(html) {
             .toString()
             .replace('previewVisible && exactResult)', 'previewVisible && currentCell)')
         : readD47SavedResult.toString();
-  return page.evaluate(
-    ({ source, expected }) => {
-      const read = (0, eval)(`(${source})`);
-      return {
-        old_predicate: document.body.innerText.includes(`Last run: ${expected}`),
-        saved: read(document, expected),
-      };
-    },
-    { source: readerSource, expected: recipe },
-  );
+  // The reader runs inside the page as a Playwright expression string built from its
+  // source, so the page never needs eval to rebuild it.
+  const expected = JSON.stringify(recipe);
+  const oldNeedle = JSON.stringify(`Last run: ${recipe}`);
+  return page.evaluate(`({
+    old_predicate: document.body.innerText.includes(${oldNeedle}),
+    saved: (${readerSource})(document, ${expected}),
+  })`);
 }
 
 test('CSS uppercase defeats the old body innerText predicate but preserves exact source identity', async () => {
