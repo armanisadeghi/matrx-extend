@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "status": "review_ready_native_unverified",
+  "addresses_review": ".research/d47-prior-saved-route-peer-20261007.json",
+  "scope": "QA-only correction to prior-saved native route, fixture timing and fixture test; no native, runtime, build, auth, database, release or secret work",
+  "correction": {
+    "held_arrival": "Fixture records monotonic held-request arrival and first response finish markers; first response cannot finish until held request reaches server. Driver requires both safe integer markers and held arrival < first finish before accepting first saved run. Direct fixture test confirms first response remains pending without held sibling.",
+    "second_completion": "Driver positively checks distinct second binding/context/current body, then exact idle second saved preview and Silver Meridian live page before releasing held first-run HTTP. It repeats exact preview and live page checks after release; callback delivery remains separately classified.",
+    "typescript": "Indexed held test request is narrowed with explicit missing-request failure before awaiting; prior TS2532 no longer occurs.",
+    "local_install": "Initial compile failed only because local @ai-matrx/kit 0.22.2 lacked ./download; guarded frozen-lockfile ignore-scripts install restored locked 0.28.1 without package/lock edits, and compile passed twice."
+  },
+  "source_hashes_sha256": {
+    "tests/browser/showcase-d47-document-lifecycle.mjs": "06ccdfe875a1b752c524c834d5947c283112ef776271b6623d50b8b5903c36fb",
+    "tests/fixtures/showcase-replay/serve.mjs": "4d14bacf9d126eab8af35f4c66380afbff838ef0f4682ea9d3ba18e24236a794",
+    "tests/unit/showcase-d47-fixture.test.ts": "e5d7ad0a7d46d76680ac062c4d19ddeb88b51f5d2ae92189ee0a704f2f851236"
+  },
+  "retained_mutant": {
+    "path": ".research/d47-prior-saved-route-correction-20261007/serve-arrival-retained-mutant.mjs",
+    "sha256": "8edd2f6ed21981d16ebe529e86024a5ace36e961998d264daf32ec8eb6acc2f7",
+    "change": "Remove held-response gate from first saved response; scratch mutation run by plant.py and restored; final retained bytes differ from source only by that gate."
+  },
+  "runs": [
+    {
+      "run_id": "d47-prior-saved-correction-compile-20261007",
+      "outcome": "valid_child_failure_stale_local_kit_0_22_2",
+      "stdout": ".research/d47-prior-saved-route-correction-20261007/compile.out",
+      "stdout_sha256": "f8ee978e8e85057242c334bef132d7095374fa28fddac336bc507721f6abb807",
+      "journal": "docs/stabilization/resource-journals/d47-prior-saved-correction-compile-20261007.jsonl",
+      "journal_sha256": "05608db2b07e29f0d07e4e26907e7423dc7508a4f4b455743f37e4fa242830f8"
+    },
+    {
+      "run_id": "d47-prior-saved-correction-fixture-green-20261007",
+      "outcome": "valid_green_7_of_7_before_direct_gate_test",
+      "stdout": ".research/d47-prior-saved-route-correction-20261007/fixture-green.out",
+      "stdout_sha256": "2498d3259893ea6617b4ea7586537ffa6eae739ad5b98b317723e98c63f7ef61",
+      "journal": "docs/stabilization/resource-journals/d47-prior-saved-correction-fixture-green-20261007.jsonl",
+      "journal_sha256": "153aacd93854f1a6f7ccdcba2fd7a3a82574a19e28954cd9a9855bbbb3937bc0"
+    },
+    {
+      "run_id": "d47-prior-saved-correction-install-20261007",
+      "outcome": "valid_local_lock_install_kit_0_28_1",
+      "stdout": ".research/d47-prior-saved-route-correction-20261007/install.out",
+      "stdout_sha256": "1673c669cca11f121174dc06d86f3be26416ebd78101aa31e128a0b07c6893ef",
+      "journal": "docs/stabilization/resource-journals/d47-prior-saved-correction-install-20261007.jsonl",
+      "journal_sha256": "1c7814dbce5c903b2dd0b907832ecd8f9a8c8b1837d137c4ab6c9d05431bb24a"
+    },
+    {
+      "run_id": "d47-prior-saved-correction-compile-retry-20261007",
+      "outcome": "valid_green_after_install",
+      "stdout": ".research/d47-prior-saved-route-correction-20261007/compile-retry.out",
+      "stdout_sha256": "973630adf23ac981c4d87afce3696d5de1cdf00d65b642f0dfa0839245d06dc1",
+      "journal": "docs/stabilization/resource-journals/d47-prior-saved-correction-compile-retry-20261007.jsonl",
+      "journal_sha256": "7e458fdf3efd5bed091dddda044646f7f038541e6cd957f5974b21dfded8620c"
+    },
+    {
+      "run_id": "d47-prior-saved-correction-final-fixture-green-20261007",
+      "outcome": "valid_green_8_of_8",
+      "stdout": ".research/d47-prior-saved-route-correction-20261007/final-fixture-green.out",
+      "stdout_sha256": "cbc7fad8c6599968ff5942839d6e449716381cbdfcdb77fb54347411535e18ba",
+      "journal": "docs/stabilization/resource-journals/d47-prior-saved-correction-final-fixture-green-20261007.jsonl",
+      "journal_sha256": "a69b6c93239dfbc631c4f228dc45f8d2986f2cc9e82d3c066126fc9efbf02992"
+    },
+    {
+      "run_id": "d47-prior-saved-correction-arrival-red-20261007",
+      "outcome": "valid_behavioral_red_2_failed_6_passed",
+      "stdout": ".research/d47-prior-saved-route-correction-20261007/arrival-red.out",
+      "stdout_sha256": "dd2dac201c0f03317111e4cefdb2b4ecbdd37f7b063e81d0fac78409c0551565",
+      "journal": "docs/stabilization/resource-journals/d47-prior-saved-correction-arrival-red-20261007.jsonl",
+      "journal_sha256": "780acce640cbbe4ea79586736a7521c0cb757ae75dcb99db14fd10cbce6630eb"
+    },
+    {
+      "run_id": "d47-prior-saved-correction-final-compile-20261007",
+      "outcome": "valid_green_after_final_test_edit",
+      "stdout": ".research/d47-prior-saved-route-correction-20261007/final-compile.out",
+      "stdout_sha256": "ffc11a734d53197a29fdac220676d3dfd09de6b3922c3f62da9ba4532ecad857",
+      "journal": "docs/stabilization/resource-journals/d47-prior-saved-correction-final-compile-20261007.jsonl",
+      "journal_sha256": "ba553c1b7adcd2cb895880d9407e9ad83ab0768c194f61f5abf0870d37f95edd"
+    }
+  ],
+  "forcing_result": "Arrival-gate mutant causes real fixture first response to finish before held arrival: page-script order assertion observes 2 !< 1, direct pending assertion observes finished=true; six siblings pass, no setup/unhandled error. Untouched final fixture 8/8 and final compile exit0 under valid resource journals.",
+  "native_limit": "No installed-artifact native execution or natural old binding callback observation. Server finish and cancellation are bounded separately; full D47/T57 remains unverified pending native route execution and independent review."
+}

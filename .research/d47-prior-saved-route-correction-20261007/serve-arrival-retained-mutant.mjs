@@ -50,7 +50,7 @@ let priorSavedHeldArrivalOrder = null;
 let priorSavedFirstFinishOrder = null;
 let priorSavedEventOrder = 0;
 const finishFirstSavedResponse = () => {
-  if (!priorSavedFirstResponse || !priorSavedResponse || priorSavedFirstFinished) return;
+  if (!priorSavedFirstResponse || priorSavedFirstFinished) return;
   const first = priorSavedFirstResponse;
   first
     .writeHead(200, { 'Content-Type': 'application/json' })

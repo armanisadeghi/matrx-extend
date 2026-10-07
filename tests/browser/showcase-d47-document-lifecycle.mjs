@@ -693,7 +693,10 @@ try {
               (value) =>
                 value?.prior_saved_first_finished === true &&
                 value.prior_saved_pending === true &&
-                value.target_requests === 2,
+                value.target_requests === 2 &&
+                Number.isSafeInteger(value.prior_saved_held_arrival_order) &&
+                Number.isSafeInteger(value.prior_saved_first_finish_order) &&
+                value.prior_saved_held_arrival_order < value.prior_saved_first_finish_order,
             );
             stage('first_saved_terminal');
             report.prior_saved.first.terminal = { sample_count: 0, last: null };
@@ -844,6 +847,32 @@ try {
               packet_order: secondPacket.order,
               commit_order: secondCommit.order,
             };
+            const observeSecondSavedTerminal = async (label) => {
+              const terminal = { sample_count: 0, last: null };
+              await waitD47SavedTerminal({
+                budget: terminalBudget,
+                read: () =>
+                  evaluate(
+                    panel,
+                    `(() => ({
+                  ...(${readD47SavedResult.toString()})(document, ${JSON.stringify(recipe)}, 'second'),
+                  ...(${readD47SavedRunState.toString()})(document, ${JSON.stringify(recipe)})
+                }))()`,
+                  ),
+                record: (value) => {
+                  terminal.sample_count++;
+                  terminal.last = value;
+                },
+              });
+              const pagePhase = await page.locator('#phase').textContent();
+              const pageResult = await page.locator('#result').textContent();
+              assert.equal(pagePhase, 'current', `${label}_page_phase_missing`);
+              assert.equal(pageResult, 'Silver Meridian', `${label}_page_result_missing`);
+              return { ...terminal, page_phase_current: true, page_result_second: true };
+            };
+            stage('second_saved_terminal_before_release');
+            report.prior_saved.second.before_release =
+              await observeSecondSavedTerminal('before_release');
             stage('release_prior_saved_http');
             const delayedRelease = await control(origin, 'release-prior-saved');
             report.prior_saved.delayed = {
@@ -861,25 +890,9 @@ try {
               report.prior_saved.delayed.lifecycle.prior_saved_finished ? 200 : 409,
               'prior_saved_release_status_mismatch',
             );
-            stage('second_saved_terminal');
-            report.prior_saved.second.terminal = { sample_count: 0, last: null };
-            await waitD47SavedTerminal({
-              budget: terminalBudget,
-              read: () =>
-                evaluate(
-                  panel,
-                  `(() => ({
-                ...(${readD47SavedResult.toString()})(document, ${JSON.stringify(recipe)}, 'second'),
-                ...(${readD47SavedRunState.toString()})(document, ${JSON.stringify(recipe)})
-              }))()`,
-                ),
-              record: (value) => {
-                report.prior_saved.second.terminal.sample_count++;
-                report.prior_saved.second.terminal.last = value;
-              },
-            });
-            assert.equal(await page.locator('#phase').textContent(), 'current');
-            assert.equal(await page.locator('#result').textContent(), 'Silver Meridian');
+            stage('second_saved_terminal_after_release');
+            report.prior_saved.second.after_release =
+              await observeSecondSavedTerminal('after_release');
             const afterRelease = await readPassiveWorkerProbe(worker);
             const latePackets = afterRelease.filter(
               (event) =>
