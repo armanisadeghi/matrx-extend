@@ -7,8 +7,8 @@
 > common-docs/systems/agents/agent-tools/STATE.md).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-10-07T04:15:39.027Z
-Total tools: 82
+Generated: 2026-10-07T05:08:23.319Z
+Total tools: 81
 
 ## ai
 
@@ -540,14 +540,6 @@ _read_
 Extract one table on the active page as structured JSON: native <table> (thead/tbody, rowspan/colspan, multi-row headers) or ARIA role=table/grid. Target: `ref` from read_page (preferred), else `selector` (CSS), else the largest visible table. Returns { ok, table_kind, columns: [{index, path: [header levels]}], rows: [{index, cells: [{value, is_header, colspan?, rowspan?}]}], merged_cells, row_count, column_count, header_row_count, truncated } or { ok: false, reason }. One call instead of cell-by-cell scraping.
 
 **Parameters:** `ref` (string); `max_rows` (integer); `selector` (string); `normalize` (boolean); `compute_header_paths` (boolean)
-
-### `fetch_url_as_markdown`
-
-_read_
-
-Fetch an HTTP(S) URL and return its readable content as Markdown — the same defuddle + readability + turndown pipeline the Scrape tab uses against the active page, but pointed at any URL without opening a tab. Returns { title, markdown, byline, excerpt, extractor, word_count, reading_time_minutes, metadata, ld_json, http_status, final_url, content_type, truncated }. Pass `use_session: true` to attach the user's cookies (paywalled / logged-in pages). Pass `include_extras: true` to also get links / images / videos / SEO audit. Non-HTML URLs (PDFs, JSON, etc.) are rejected with a clear error — use `read_pdf` for PDFs.
-
-**Parameters:** `url` (string, required); `max_chars` (integer); `user_agent` (string); `use_session` (boolean); `include_extras` (boolean); `follow_redirects` (boolean)
 
 ### `find`
 

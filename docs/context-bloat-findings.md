@@ -144,7 +144,6 @@ enough to seem like the right answer to "give me the content".
 | `read_page` | core | element list with refs |
 | `read_active_page` | page | full scrape (md + media + JSON-LD + SEO) |
 | `get_page_text` | page | clean article text |
-| `fetch_url_as_markdown` | page | same pipeline, any URL, no tab needed |
 | `extract_microdata` | page | structured-data only |
 | `get_page_links` | page | anchors only |
 | `find_text_on_page` | page | text substring/regex hits |
@@ -233,24 +232,6 @@ because the local map isn't sent over the wire — the catalog dump emits
 a `core_bundle` that doesn't match canonical intent.
 
 **Action:** reconcile when convenient. Low risk; documentation-only.
-
-## 13. `get_page_text` vs `fetch_url_as_markdown` — not duplicates (confirmed)
-
-Both legitimate. Different jobs:
-- `get_page_text` — active tab, in-page Readability extract, plain text,
-  ~50-line handler. Fast, lightweight.
-  [page-refs.ts:684](../src/lib/tools/handlers/page-refs.ts#L684)
-- `fetch_url_as_markdown` — any URL via offscreen fetch + full scrape
-  pipeline (defuddle + readability + turndown + SEO collectors), returns
-  markdown with rich metadata.
-  [fetch.ts:50](../src/lib/tools/handlers/fetch.ts#L50)
-
-Shipped 2026-05-05 per [tools-roadmap.md:132](../.research/tools-roadmap.md#L132).
-`fetch_url_as_markdown` is **not** in the canonical 27-tool set — it
-landed *after* the 2026-05-04 audit and was never classified. Should be
-added to the canonical doc with "extension-only" disposition, or pitched.
-
----
 
 ## Open questions for next traces
 

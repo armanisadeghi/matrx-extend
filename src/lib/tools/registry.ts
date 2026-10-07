@@ -36,7 +36,6 @@ import { download_handlers } from '@/lib/tools/handlers/downloads';
 import { education_handlers } from '@/lib/tools/handlers/education';
 import { extract_handlers } from '@/lib/tools/handlers/extract';
 import { extras_handlers } from '@/lib/tools/handlers/extras';
-import { fetch_handlers } from '@/lib/tools/handlers/fetch';
 import { form_action_handlers, form_read_handlers } from '@/lib/tools/handlers/forms';
 import { google_handlers } from '@/lib/tools/handlers/google-email-send';
 import { guidance_handlers } from '@/lib/tools/handlers/guidance';
@@ -134,8 +133,6 @@ const ALL: AnyToolHandler[] = [
   ...microdata_handlers,
   // Saved extraction patterns (Showcase/Data cross-working)
   ...data_pattern_handlers,
-  // ─── URL fetch + parse → markdown (shares scrape pipeline) ─────────────
-  ...fetch_handlers,
   // ─── canonical routers ─────────────────────────────────────────────────
   // Registered LAST so canonical names (`wait_for`, etc.) win over any
   // legacy handler with the same name — last-write-wins in BY_NAME.

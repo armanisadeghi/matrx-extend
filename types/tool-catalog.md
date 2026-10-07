@@ -1,14 +1,14 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-10-07T04:15:37.599Z
+Generated: 2026-10-07T05:08:22.784Z
 
-- **Total tools:** 168
-- **Assistant bundle:** 75 tools (read-only)
-- **Pilot bundle:** 142 tools (read + action + ask-user)
-- **Pilot+privileged bundle:** 168 tools
+- **Total tools:** 167
+- **Assistant bundle:** 74 tools (read-only)
+- **Pilot bundle:** 141 tools (read + action + ask-user)
+- **Pilot+privileged bundle:** 167 tools
 
 
-## Tier: read (75)
+## Tier: read (74)
 
 ### `list_chrome_categories`
 
@@ -1731,49 +1731,6 @@ Generated: 2026-10-07T04:15:37.599Z
   },
   "additionalProperties": false,
   "default": {},
-  "$schema": "http://json-schema.org/draft-07/schema#"
-}
-```
-
-### `fetch_url_as_markdown`
-
-- **Required permissions:** (none)
-- **Surface bundles:** assistant, pilot, pilot+privileged
-
-```json
-{
-  "type": "object",
-  "properties": {
-    "url": {
-      "type": "string",
-      "format": "uri"
-    },
-    "use_session": {
-      "type": "boolean",
-      "default": false
-    },
-    "follow_redirects": {
-      "type": "boolean",
-      "default": true
-    },
-    "user_agent": {
-      "type": "string"
-    },
-    "max_chars": {
-      "type": "integer",
-      "exclusiveMinimum": 0,
-      "maximum": 2000000,
-      "default": 200000
-    },
-    "include_extras": {
-      "type": "boolean",
-      "default": false
-    }
-  },
-  "required": [
-    "url"
-  ],
-  "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }
 ```

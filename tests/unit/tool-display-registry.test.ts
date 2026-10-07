@@ -45,6 +45,9 @@ const ALLOWED_NON_CANONICAL = new Set<string>([
   'webmcp',
   'record_gif',
   'take_screenshot',
+  // Retired from the live tool catalog; retain its renderer so existing
+  // timeline entries remain readable.
+  'fetch_url_as_markdown',
   'memory',
   // internal / discovery / server-side rows
   'load_chrome_tools',

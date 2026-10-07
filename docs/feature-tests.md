@@ -603,64 +603,6 @@ Every entry follows this shape:
   If they diverge, a bug landed in only one path; the test recipe is
   to fix the shared mode in `src/lib/data-pattern/modes/`.
 
-### fetch_url_as_markdown
-- **What it does:** Fetch any HTTP(S) URL and return its readable
-  content as Markdown — same defuddle + readability + turndown
-  pipeline the Scrape tab uses against the active page, but pointed
-  at any URL without opening a tab. Runs in the offscreen document
-  (SW lacks DOMParser).
-- **Where to test:** Tools tab → `fetch_url_as_markdown`. Cross-check
-  with the **Scrape** tab on the same URL.
-- **Steps:**
-  1. Tools tab → `fetch_url_as_markdown` → Run with
-     `{ "url": "https://en.wikipedia.org/wiki/Service_worker" }`.
-  2. Inspect `markdown` (the article body), `title`, `metadata`,
-     `extractor` (defuddle / readability / fallback), `word_count`,
-     `http_status: 200`, `final_url`.
-  3. Cross-check: open that URL in a tab, switch to **Scrape** tab,
-     capture — the markdown should match (within whitespace
-     differences from defuddle's confidence threshold).
-- **Expected:**
-  - `ok: true`, `markdown` populated, `metadata.og` and
-    `metadata.twitter` filled when the page declares them.
-  - `truncated: false` for typical articles; `truncated: true`
-    only when content exceeds `max_chars` (default 200_000).
-- **Edge cases worth poking:**
-  - Non-HTML URL (PDF, JSON):
-    `{ "url": "https://example.com/file.pdf" }` →
-    `{ ok: false, reason: "Non-HTML content-type: ..." }`. Use
-    `read_pdf` for PDFs.
-  - Cookies-aware fetch: `{ "url": "...", "use_session": true }`
-    will send the user's cookies. Required for paywalled /
-    logged-in pages.
-  - Redirect chain: `final_url` shows where the fetch ended up.
-  - 404 / 5xx: `ok: false, http_status: 404, reason: "HTTP 404 ..."`.
-  - Big article: `{ "url": "...", "max_chars": 5000 }` →
-    `truncated: true`.
-  - Extras: `{ "url": "...", "include_extras": true }` populates
-    `links`, `images`, `videos`, `seo` (otherwise omitted to keep
-    payloads small).
-- **Cross-check parity:** if the agent tool's `markdown` diverges
-  from the Scrape tab's output for the same URL, the bug is in the
-  shared `src/lib/scrape/pipeline.ts` — fix once, both surfaces
-  recover.
-- **MDX/Mintlify docs (regression):** docs sites that render
-  paragraphs as `<span data-as="p">` (not real `<p>`) and code as
-  Shiki-highlighted line spans used to (a) collapse every paragraph
-  into one space-joined blob and (b) drop code blocks entirely.
-  `normalizeSemanticMarkup` (in `pipeline.ts`, runs on a clone before
-  extraction) renames `[data-as]` block tags to real tags and rebuilds
-  each highlighted code block as a clean `<pre><code>`, **replacing the
-  whole `.code-block` chrome wrapper** (copy/feedback buttons) rather
-  than just the inner `<pre>` — otherwise Defuddle scores the
-  button-laden wrapper as non-content and prunes the code with it.
-  - **Test:** `fetch_url_as_markdown` on a Cartesia docs page, e.g.
-    `https://docs.cartesia.ai/use-the-api/tts-websocket/buffering`.
-  - **Expected:** paragraphs are blank-line separated (not run
-    together); fenced code blocks (```` ```json ````) appear with
-    their source intact. Unit coverage:
-    `tests/unit/normalize-markup.test.ts`.
-
 ### read_pdf
 
 - **What it does:** Reads the text of a PDF the agent has as a `file_id`, or one open in a tab (`tab_id`; the bytes upload first). Calls aidream `POST /utilities/pdf/extract-text-remote` and reads its event stream. `page_start` / `page_end` (1-based, inclusive) read only that slice; the result carries `page_count` (pages read), `total_pages`, `page_start`, `page_end`, `text` (with page markers), `truncated`.
@@ -2545,8 +2487,7 @@ Every entry follows this shape:
   notice instead of freezing on "Capturing…".
 - **Parallel runs:** text renders once (was doubled).
 - **Scrape:** Save while signed out shows a red failure line (was silent
-  fake-success); a failed "Scroll & capture" retries WITH scrolling;
-  fetch_url_as_markdown returns the FETCHED page's metadata/links.
+  fake-success); a failed "Scroll & capture" retries WITH scrolling.
 - **SEO:** audit a link-heavy page — internal/external link counts are real
   numbers (they were hardcoded 0); chrome:// pages explain themselves.
   During a public page navigation that emits a second loading event, the SEO
@@ -2562,24 +2503,18 @@ Every entry follows this shape:
   `POST /seo/public/page-audit` re-fetches the URL, so it can't see an SPA, a
   signed-in page, or `localhost`). Its counting rules are a deliberate mirror of
   `matrx_scraper/seo_audit.py` and had drifted.
-- **Where to test:** SEO tab, plus Tools tab → `fetch_url_as_markdown`.
+- **Where to test:** SEO tab.
 - **Steps:**
   1. SEO tab on any article page → Audit. Note **Words** and the heading count.
   2. Compare against the same URL run through the server's page-audit.
   3. Open a page whose nav uses `javascript:void(0)` or `mailto:` links, or one
      with blank `<h2>` wrappers in a card grid (most marketing sites). Audit.
-  4. Tools tab → `fetch_url_as_markdown` with `include_extras: true` on any
-     article URL. Inspect the `seo` block in the result.
 - **Expected:**
   - Heading list contains no blank entries, and the count matches the server's.
   - `javascript:`/`mailto:`/`tel:`/`#frag` links are counted in NEITHER
     internal nor external (they used to inflate external).
   - `flesch_reading_ease` matches the server's score for the same text, and a
     genuine score of `0` is reported as `0` (it used to become `null`).
-  - In the `fetch_url_as_markdown` result: `seo.url` is the FETCHED page's URL
-    (was `""`), `seo.word_count` is non-zero (was always 0), and
-    `seo.links.internal` is non-zero on a page with same-host links (every link
-    used to count as external because the parsed Document has no location).
 - **Edge cases:** a subdomain link (`blog.example.com` from `example.com`) counts
   as **external** — that matches the Python and is intentional. `chrome://`
   pages still refuse with the restricted-URL message.
