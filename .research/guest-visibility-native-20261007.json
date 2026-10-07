@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "artifact_type": "hosted_guest_visibility_census",
+  "status": "incomplete_discovery_gap",
+  "run": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "run_id": 37621192492,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37621192492",
+    "terminal_status": "failure",
+    "started_at": "2026-10-07T12:28:17Z",
+    "completed_at": "2026-10-07T12:34:52Z",
+    "inputs": {
+      "acceptance_case": "visibility-census-guest",
+      "runner_label": "macos-15",
+      "runner_architecture": "ARM64",
+      "development_run_id": 37619740064,
+      "development_artifact_id": 11482071536
+    },
+    "checkout_sha": "a62f6e5e75b0a034a37d30f5e9a333792006317f"
+  },
+  "runtime_artifact": {
+    "source_sha": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+    "version": "0.2.366",
+    "current_repository_package_version": "0.2.367",
+    "version_boundary": "Frozen successful CI development artifact. Runtime/config/lock comparison was equivalent; package version was the only difference from current main in those paths.",
+    "ci_run_id": 37619740064,
+    "artifact_id": 11482071536,
+    "artifact_archive_sha256": "eebbeb6d4c63cffab1c4462acf5b69e081336c3795782c54d3a5e8ba554e9ebb",
+    "artifact_tree_sha256": "9e7c2db499a2c1fed0a8b3ea6facfa88a13f3c2c26ba7f9b9d2d1f216310236c",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "import_result": "exact_pushed_commit_only"
+  },
+  "harness": {
+    "source_reviewed_commit": "266dd7ee31e747c370ca1c8fc8412945660cd08c",
+    "independent_peer_commit": "a62f6e5e75b0a034a37d30f5e9a333792006317f",
+    "independent_peer_report": ".research/role-visibility-census-escalation-peer-20261007.json",
+    "driver_path": "tests/browser/takeover-visible-census.mjs",
+    "driver_sha256": "339ca36d01e6939bdf15d8d670632021e85499c75a9fbed5ff03974561c52eb1",
+    "observed_chrome_version": null,
+    "profile": "fresh disposable hosted guest-resource-profile",
+    "guest_signed_out_state": "not observed; run stopped before the required positive signed-out observation"
+  },
+  "observations": {
+    "census_complete": false,
+    "full_inventory_controls_visited": false,
+    "failure_stage": "Settings/Account readiness discovery, before the census completed",
+    "candidate_elements_in_failure_diagnostic": 15,
+    "mapped_candidate_observations": 12,
+    "unmapped_fingerprinted_candidates": 3,
+    "unmapped_label_fingerprints": [
+      "621caba0bed98d84903690db461d1e0e16d42aae39192db86f54819b81184033",
+      "7a0ec0c06ce2c869ca91f27a071f37d4404cc7e71be9b6ec1a9178355b918b89",
+      "990a174a9a7c264595eee8e2a765553195ae5909a64439320ce84c5327f72c8f"
+    ],
+    "mapped_candidates": [
+      { "label": "Account", "control_id": "EXT-F-1003-C10", "safe_to_open": false },
+      { "label": "Account", "control_id": "EXT-F-1003-C10", "safe_to_open": false },
+      { "label": "Organization", "control_id": "EXT-F-1003-C10", "safe_to_open": true },
+      { "label": "Appearance", "control_id": "EXT-F-1003-C10", "safe_to_open": true },
+      { "label": "Chat", "control_id": "EXT-F-1003-C10", "safe_to_open": true },
+      { "label": "Privacy", "control_id": "EXT-F-1003-C10", "safe_to_open": true },
+      { "label": "Scrape", "control_id": "EXT-F-1003-C10", "safe_to_open": true },
+      { "label": "Data", "control_id": "EXT-F-1003-C10", "safe_to_open": true },
+      { "label": "SEO", "control_id": "EXT-F-1003-C10", "safe_to_open": true },
+      { "label": "Desktop bridge", "control_id": "EXT-F-1003-C10", "safe_to_open": true },
+      { "label": "Data & reset", "control_id": "EXT-F-1003-C10", "safe_to_open": true },
+      { "label": "About", "control_id": "EXT-F-1003-C10", "safe_to_open": true }
+    ],
+    "inaccessible_region_count": null,
+    "inaccessible_region_note": "Not emitted because the readiness assertion stopped the driver before completeness accounting.",
+    "positive_guest_visibility_verdict": "unverified",
+    "classification": "Discovery/readiness gap; not a product behavior failure. No inventory cell is promoted."
+  },
+  "failure": {
+    "exact_assertion": "census_guest_account_ready_not_observed",
+    "native_acceptance_exit_code": 2,
+    "guard_child_exit_code": 1,
+    "resource_invalid": false,
+    "detail": "The census could not safely identify/open a unique Account readiness trigger. The diagnostic reported two disabled/unsupported Account candidates, one unsupported tabpanel candidate, and three unmapped fingerprinted candidates; action controls were not clicked."
+  },
+  "resource_guards": [
+    {
+      "run_id": "hosted-package-37621192492-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 0,
+      "decision": "valid",
+      "journal": ".research/guest-visibility-native-20261007/resource-journals/hosted-package-37621192492-1.jsonl"
+    },
+    {
+      "run_id": "hosted-browser-37621192492-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 0,
+      "decision": "valid",
+      "journal": ".research/guest-visibility-native-20261007/resource-journals/hosted-browser-37621192492-1.jsonl"
+    },
+    {
+      "run_id": "hosted-guest-37621192492-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 1,
+      "decision": "child_failed",
+      "journal": ".research/guest-visibility-native-20261007/resource-journals/hosted-guest-37621192492-1.jsonl"
+    }
+  ],
+  "hosted_result_artifact": {
+    "artifact_id": 11481804368,
+    "name": "hosted-guest-37621192492-1",
+    "sha256": "c8c4af91b2fba61800909d76bb98c93e2595dbe5a2de14e922ca10930f94ab01",
+    "sanitized_inspection": "Only this run's three resource journals were extracted and inspected. Screenshot files and unrelated stale journals packaged by the workflow were not opened or copied. No full census report was generated."
+  },
+  "scope_limits": [
+    "Only guest visibility discovery was attempted; no intentional behavior, persistence, permission-denial, or backend access tests were run.",
+    "The workflow's HTTP guard and census limits remain those stated in the independent source review; this incomplete run establishes no general no-write guarantee.",
+    "No member/admin observation or role comparison is established."
+  ]
+}
