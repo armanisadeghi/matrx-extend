@@ -1,0 +1,42 @@
+{
+  "observed_at": "2026-10-07T19:00:35.794835+00:00",
+  "scope": "Simultaneous hosted lane admission; product verdicts pending.",
+  "lanes": [
+    {
+      "lane": "A",
+      "run_id": 37671048453,
+      "jobs": [
+        {
+          "id": 112962612642,
+          "status": "in_progress",
+          "started_at": "2026-10-07T18:59:36Z",
+          "completed_at": null,
+          "runner_id": 1000095959,
+          "runner_name": "GitHub Actions 1000095959",
+          "labels": ["macos-15"]
+        }
+      ]
+    },
+    {
+      "lane": "B",
+      "run_id": 37670744036,
+      "jobs": [
+        {
+          "id": 112961571116,
+          "status": "in_progress",
+          "started_at": "2026-10-07T18:57:13Z",
+          "completed_at": null,
+          "runner_id": 1000095956,
+          "runner_name": "GitHub Actions 1000095956",
+          "labels": ["macos-15"]
+        }
+      ]
+    }
+  ],
+  "all_observed_in_progress": true,
+  "distinct_runner_ids": true,
+  "limits": [
+    "Runner identity and overlapping job timestamps establish independent hosted job admission, not product success.",
+    "Per-host resource journals and terminal behavior receipts still required."
+  ]
+}
