@@ -504,16 +504,14 @@ test('guest capture frames Account after signed-out proof and restricts an exist
     header.scrollIntoView = () => {
       scrolled = true;
     };
-    context.document.defaultView.HTMLElement.prototype.getBoundingClientRect = function () {
-      return {
-        width: 100,
-        height: 20,
-        top: scrolled ? 20 : 800,
-        bottom: scrolled ? 40 : 820,
-        left: 10,
-        right: 110,
-      };
-    };
+    context.document.defaultView.HTMLElement.prototype.getBoundingClientRect = () => ({
+      width: 100,
+      height: 20,
+      top: scrolled ? 20 : 800,
+      bottom: scrolled ? 40 : 820,
+      left: 10,
+      right: 110,
+    });
     const calls = [];
     const panel = {
       async send(method, params) {
