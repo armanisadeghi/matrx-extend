@@ -14,7 +14,8 @@
 # The current release contract: fetch and merge remote main with local commits;
 # refuse conflicts; regenerate generated files; bump; validate the exact tree;
 # build Store and local candidates; only then push main and its tag. A foreign
-# push restarts generation, checks and packaging against the new merged tree.
+# push restarts generation, checks and packaging against the new merged tree —
+# as soon as it is seen (origin is polled during checks), not only at the push.
 # A failed check or build leaves main, tags and installed bundles untouched.
 # The full detail of every run: tmp/release-logs/release-<stamp>.log.
 set -uo pipefail
@@ -53,7 +54,10 @@ REMOTE="origin"
 BRANCH="main"
 WEBSTORE_UPLOAD_URL="https://chrome.google.com/webstore/devconsole"
 GENERATED_PATHS=(types/python-generated types/tool-catalog.json types/tool-catalog.md docs/TOOLS.generated.md)
-SHIP_PUSH_ATTEMPTS=5
+# A lost race costs only the time until the race is SEEN (origin is polled
+# while checks and the build run), so the bound is wall time, not five tries.
+SHIP_RACE_LIMIT=40
+SHIP_RACE_BUDGET_SECS=3600
 SHIP_START=$SECONDS
 GIT_ABS_DIR="$(git rev-parse --absolute-git-dir 2>/dev/null)"
 
@@ -160,6 +164,7 @@ commit_message() {
 SNAP_ROOTS=()
 cleanup() {
     local d
+    declare -F stop_background >/dev/null && stop_background
     for d in ${SNAP_ROOTS[@]+"${SNAP_ROOTS[@]}"}; do [[ -n "$d" && -d "$d" ]] && rm -rf -- "$d"; done
     release_lock_cleanup
 }
@@ -421,16 +426,104 @@ mint_gate_auth() {
     log "server-contract gate session minted for organization ${AIDREAM_ORGANIZATION_ID:-?}"
 }
 
+# ── Background jobs + race watch ─────────────────────────────────────────────
+# origin/main is pushed by other agents every one to three minutes, and one
+# candidate's checks + build take three to four. Until 2026-10-06 a race was
+# only discovered by the rejected push at the END of that window, so a busy
+# main lost all five races (v0.2.341, 17 min, nothing published). Origin is now
+# polled while the candidate is checked and built; the moment main moves or the
+# tag is claimed, the stale candidate is abandoned and a new one starts at once.
+# Every gate still runs, in full, on the exact candidate that is pushed.
+BG_PIDS=()
+RACE_POLL_SECS="${RELEASE_RACE_POLL_SECS:-15}"
+ORIGIN_MOVED="<origin moved>"   # FAILED_CHECK value when run_checks was abandoned by a race
+kill_tree() {
+    local kid kids
+    kids="$(pgrep -P "$1" 2>/dev/null)"
+    kill -TERM "$1" 2>/dev/null
+    for kid in $kids; do kill_tree "$kid"; done
+}
+stop_background() {
+    local p
+    for p in ${BG_PIDS[@]+"${BG_PIDS[@]}"}; do kill_tree "$p"; done
+    for p in ${BG_PIDS[@]+"${BG_PIDS[@]}"}; do wait "$p" 2>/dev/null; done
+    BG_PIDS=()
+}
+origin_moved() {  # 0 when origin main left BASE or NEW_TAG was claimed; unreachable = not moved (the push decides)
+    local refs head
+    refs="$(bounded 20 git ls-remote "$REMOTE" "refs/heads/$BRANCH" "refs/tags/$NEW_TAG" 2>/dev/null)" || return 1
+    head="$(awk -v ref="refs/heads/$BRANCH" '$2 == ref { print $1 }' <<< "$refs")"
+    [[ -n "$head" && "$head" != "$BASE" ]] && return 0
+    grep -q "refs/tags/$NEW_TAG\$" <<< "$refs"
+}
+await_background() {  # rc-file... → 0 once each job wrote its rc; 1 when origin moved first (jobs stopped)
+    local f all next=$((SECONDS + RACE_POLL_SECS))
+    while :; do
+        all=true
+        for f in "$@"; do [[ -f "$f" ]] || { all=false; break; }; done
+        $all && return 0
+        if (( SECONDS >= next )); then
+            if origin_moved; then stop_background; return 1; fi
+            next=$((SECONDS + RACE_POLL_SECS))
+        fi
+        sleep 1
+    done
+}
+run_check_job() {  # name secs cmd → $JOBS/check-<name>.out and, last, .rc
+    ( cd "$CHECK_SNAP" && eval "bounded $2 $3" ) < /dev/null > "$JOBS/check-$1.out" 2>&1
+    echo $? > "$JOBS/check-$1.rc.tmp" && mv -f "$JOBS/check-$1.rc.tmp" "$JOBS/check-$1.rc"
+}
+BUILD_STARTED=false
+start_build() {  # packages the candidate beside the checks; publication still waits for every verdict
+    STORE_CANDIDATE="$BUILD_SNAP/.output/${PROJECT_NAME}-${NEW_VERSION}-store.zip"
+    LOCAL_CANDIDATE="$BUILD_SNAP/.output/${PROJECT_NAME}-${NEW_VERSION}-local.zip"
+    ( build_zips < /dev/null > "$JOBS/build.out" 2>&1
+      echo $? > "$JOBS/build.rc.tmp" && mv -f "$JOBS/build.rc.tmp" "$JOBS/build.rc" ) &
+    BG_PIDS+=("$!")
+    BUILD_STARTED=true
+}
+
+# Checks before PARALLEL_FROM run one at a time, cheapest first, so a stale
+# package, type or lint failure stops before the unit tests or a build start.
+# From PARALLEL_FROM on, every check runs at once beside the package build; the
+# verdicts are read in declared order, so the failure reported is the one a
+# serial run would have reported first.
+PARALLEL_FROM="unit-tests"
 FAILED_CHECK=""
 run_checks() {
-    local row name secs rc
+    local row name secs cmd parallel=false waiting=() rows=()
     FAILED_CHECK=""
+    BUILD_STARTED=false
     for row in "${CHECKS[@]}"; do
         IFS='|' read -r name secs _ _ _ cmd <<< "$row"
-        ( cd "$CHECK_SNAP" && eval "bounded $secs $cmd" ) > "$JOBS/check-$name.out" 2>&1
-        rc=$?
-        { echo "--- check $name (exit $rc) ---"; cat "$JOBS/check-$name.out"; } >> "$RELEASE_LOG_FILE"
-        if [[ "$rc" != 0 ]]; then
+        if [[ "$name" == "$PARALLEL_FROM" ]]; then
+            parallel=true
+            if origin_moved; then FAILED_CHECK="$ORIGIN_MOVED"; return 1; fi
+            start_build
+        fi
+        if $parallel; then
+            run_check_job "$name" "$secs" "$cmd" &
+            BG_PIDS+=("$!")
+            waiting+=("$JOBS/check-$name.rc")
+            rows+=("$name|$cmd")
+        else
+            run_check_job "$name" "$secs" "$cmd"
+            check_verdict "$name" "$cmd" || return 1
+        fi
+    done
+    $BUILD_STARTED || start_build
+    if [[ ${#waiting[@]} -gt 0 ]] && ! await_background "${waiting[@]}"; then
+        FAILED_CHECK="$ORIGIN_MOVED"; return 1
+    fi
+    for row in ${rows[@]+"${rows[@]}"}; do
+        check_verdict "${row%%|*}" "${row#*|}" || return 1
+    done
+}
+check_verdict() {  # name cmd → 0 on pass; on failure report it and return 1
+    local name="$1" cmd="$2" rc
+    rc="$(cat "$JOBS/check-$name.rc")"
+    { echo "--- check $name (exit $rc) ---"; cat "$JOBS/check-$name.out"; } >> "$RELEASE_LOG_FILE"
+    if [[ "$rc" != 0 ]]; then
             if [[ "$name" == unit-tests && "${GITHUB_ACTIONS:-}" == true ]]; then
                 # Keep ordinary Vitest failure context in the hosted job log.
                 # Credentials are read from this process environment, never
@@ -529,7 +622,6 @@ NODE
             FAILED_CHECK="$name"
             return 1
         fi
-    done
 }
 
 # ── @ai-matrx catch-up: a package published mid-release is not a stopped release ─
@@ -612,9 +704,25 @@ REMOTE_TAGS="$(git ls-remote --tags "$REMOTE" 'refs/tags/v*')" \
     || hard_stop "cannot read remote tags — nothing was pushed"
 RACES=0
 PUSHED=false
-while (( RACES < SHIP_PUSH_ATTEMPTS )); do
+note_race() {  # where — origin moved: drop this candidate, refetch, and stop only at the race budget
+    local i
+    stop_background
+    for (( i = ATTEMPT_ROOTS_FROM; i < ${#SNAP_ROOTS[@]}; i++ )); do
+        [[ -n "${SNAP_ROOTS[i]}" && -d "${SNAP_ROOTS[i]}" ]] && rm -rf -- "${SNAP_ROOTS[i]}"
+    done
+    fetch_main || hard_stop "cannot reach $REMOTE/$BRANCH after a $1 race — nothing was published"
+    REMOTE_TAGS="$(git ls-remote --tags "$REMOTE" 'refs/tags/v*')" \
+        || hard_stop "cannot read remote tags after a $1 race — nothing was published"
+    RACES=$((RACES + 1))
+    log "lost $1 race $RACES — revalidating the new candidate"
+    if (( RACES >= SHIP_RACE_LIMIT || SECONDS - SHIP_START >= SHIP_RACE_BUDGET_SECS )); then
+        hard_stop "lost the branch/tag race $RACES times in $((SECONDS - SHIP_START))s — nothing was published"
+    fi
+}
+while :; do
     # A foreign main advance changes the candidate. Re-merge, regenerate,
     # bump, check and build from the beginning; old verdicts never transfer.
+    ATTEMPT_ROOTS_FROM=${#SNAP_ROOTS[@]}
     base_tree
     verify_installed_dependency_inputs
     log "release tree assembled on ${BASE:0:9}"
@@ -633,16 +741,20 @@ while (( RACES < SHIP_PUSH_ATTEMPTS )); do
     SNAP_ROOTS+=("$JOBS")
     $SKIP_CATALOG || mint_gate_auth
     if ! run_checks; then
+        # Origin moved while this candidate was checked: it can no longer be pushed.
+        [[ "$FAILED_CHECK" == "$ORIGIN_MOVED" ]] && { note_race validation; continue; }
         # A fresh candidate on the caught-up lockfile; every check runs again on it.
         [[ "$FAILED_CHECK" == matrx-packages ]] && catch_up_matrx_packages && continue
         hard_stop "mandatory checks failed for $NEW_TAG — nothing was pushed"
     fi
     mandate_scan_step
-    STORE_CANDIDATE="$BUILD_SNAP/.output/${PROJECT_NAME}-${NEW_VERSION}-store.zip"
-    LOCAL_CANDIDATE="$BUILD_SNAP/.output/${PROJECT_NAME}-${NEW_VERSION}-local.zip"
-    if ! build_zips >> "$RELEASE_LOG_FILE" 2>&1; then
+    # The package build started beside the parallel checks (start_build).
+    await_background "$JOBS/build.rc" || { note_race packaging; continue; }
+    cat "$JOBS/build.out" >> "$RELEASE_LOG_FILE"
+    if [[ "$(cat "$JOBS/build.rc")" != 0 ]]; then
         hard_stop "candidate package validation failed for $NEW_TAG — nothing was pushed"
     fi
+    BG_PIDS=()
     report_excluded_dirty
     # Local fixture hook: a foreign commit can land at the last possible point.
     [[ -n "${RELEASE_TEST_BEFORE_PUSH:-}" ]] && bash -c "$RELEASE_TEST_BEFORE_PUSH" >/dev/null 2>&1
@@ -658,10 +770,9 @@ while (( RACES < SHIP_PUSH_ATTEMPTS )); do
     if [[ "$(git rev-parse "$REMOTE/$BRANCH")" == "$previous_base" ]] && ! tag_taken "$NEW_TAG"; then
         hard_stop "atomic push rejected without a branch or tag race — nothing was published"
     fi
-    RACES=$((RACES + 1))
-    log "lost push race $RACES — revalidating the new candidate"
+    note_race push
 done
-$PUSHED || hard_stop "lost the branch/tag race $SHIP_PUSH_ATTEMPTS times — nothing was published"
+$PUSHED || hard_stop "no candidate was published — nothing was published"
 
 # Publication uses only the already validated SHA and its candidate artifacts.
 quiet git update-ref "refs/tags/$NEW_TAG" "$RELEASE_SHA" \

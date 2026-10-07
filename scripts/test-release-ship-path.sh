@@ -127,6 +127,14 @@ case " \$* " in
   *" lint "*) [ -f "$SANDBOX/fail-lint" ] && exit 1 ;;
   *" exec vitest run --maxWorkers=4 "*)
     git rev-parse HEAD >> "$SANDBOX/checked-shas"
+    # A foreign push lands while this candidate's unit tests are still running.
+    if [ -f "$SANDBOX/race-during" ] && [ ! -f "$SANDBOX/raced-during" ]; then
+      touch "$SANDBOX/raced-during"
+      ( cd "$SANDBOX/other" && git pull -q origin main && echo during > race-during.txt && git add -A \
+        && git -c user.name=t -c user.email=t@t commit -qm race-during && git push -q origin main ) >/dev/null 2>&1
+      echo \$\$ > "$SANDBOX/race-during-pids"
+      sleep 30 & echo \$! >> "$SANDBOX/race-during-pids"; wait
+    fi
     if [ -f "$SANDBOX/fail-tests" ]; then
       echo " FAIL  tests/unit/release-contract.test.ts"
       echo "      Tests  2 failed | 10 passed (12)"
@@ -481,10 +489,33 @@ check "the caught-up lockfile is in the release"       'git show origin/main:pnp
 check "the catch-up commit is in main"                 '[[ -n "$(git log --format=%s --grep="catch up @ai-matrx packages" origin/main)" ]]'
 check "the package gate ran again on the new candidate" '[[ $(( $(grep -c "check:matrx-packages" "$SANDBOX/pnpm-calls") - PKG_CHECKS_BEFORE )) -eq 2 ]]'
 check "the replaced candidate leaves no ERROR"         '! grep -q "^ERROR .*matrx-packages failed" "$SANDBOX/catchup-out"'
+
+# Other agents push main every minute or two; one candidate takes minutes to
+# check. A push that lands WHILE the checks run must be seen then (2026-10-06:
+# v0.2.341 lost five races, each found only by a rejected push at the end).
+# The stale candidate is abandoned at once and the next one is checked in full.
+echo "release — a race seen during validation"
+touch "$SANDBOX/race-during"
+DURING_START=$SECONDS
+set +e
+RELEASE_RACE_POLL_SECS=1 PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/race-during-out" 2>&1
+DURING_STATUS=$?
+set -e
+DURING_SECS=$((SECONDS - DURING_START))
+rm -f "$SANDBOX/race-during"
+git fetch -q origin 2>/dev/null || true
+check "the race ran during validation"                 '[[ -f "$SANDBOX/raced-during" ]]'
+check "release after a mid-check race exits zero"      '[[ $DURING_STATUS -eq 0 ]] && grep -q "  pushed" "$SANDBOX/race-during-out"'
+check "the race was seen during validation, not at push" 'grep -q "lost validation race 1" tmp/release-logs/latest.log && ! grep -q "lost push race" tmp/release-logs/latest.log'
+check "the stale candidate was abandoned at once"      '[[ $DURING_SECS -lt 30 ]]'
+check "the foreign mid-check push survived"            'git cat-file -e origin/main:race-during.txt'
+check "published SHA is the last fully checked SHA"    '[[ "$(tail -1 "$SANDBOX/checked-shas")" == "$(git rev-parse origin/main)" ]]'
+check "the abandoned check left no process behind"     '[[ -s "$SANDBOX/race-during-pids" ]] && ! (for p in $(cat "$SANDBOX/race-during-pids"); do kill -0 "$p" 2>/dev/null && exit 0; done; exit 1)'
 cd "$SANDBOX/checkout"
 
 if [[ $FAILED -ne 0 ]]; then
   echo "--- catch-up output ---"; tail -30 "$SANDBOX/catchup-out" 2>/dev/null
+  echo "--- mid-check race output ---"; tail -30 "$SANDBOX/race-during-out" 2>/dev/null
   echo "--- ship output ---"; tail -30 "$SANDBOX/ship-out" 2>/dev/null
   echo "--- failed release output ---"; tail -30 "$SANDBOX/failed-out"
   echo "--- failed release log ---"; tail -60 "$SANDBOX/failed-release.log" 2>/dev/null
