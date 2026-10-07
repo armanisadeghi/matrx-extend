@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "551e1b9d",
+  "reviewed_record": ".research/d47-remaining-isolation-20261007.json",
+  "scope": "Independent zero-authorship review of retained source-level higher-old-sequence replay evidence; no test, build, database, or native browser run by this reviewer.",
+  "verdict_a_causal_invariant": {
+    "status": "PASS_SCOPED",
+    "invariant": "An old document response with request_sequence 999 cannot replace the current replay document response with request_sequence 1.",
+    "evidence": [
+      "The saved replay test calls production runNetworkCapturePattern, which opens production document-network-transport and startDocumentNetworkCapture; CDP events are supplied at the browser boundary.",
+      "The test emits current-context Brooklyn Bowl sequence 1, then old-context Prior venue sequence 999, and asserts the extracted Brooklyn Bowl row at test line 393.",
+      "The retained scratch capture module removes the two old/current context predicates only in Runtime.bindingCalled. With that mutation, the replay matcher receives both packets and its sequence comparison selects Prior venue; the recorded failure is the row assertion, not setup or import failure.",
+      "The untouched original source and test recorded 17/17 passing. The constant-output runner mutation failed all three saved replay tests before Page.reload, showing that a constant Brooklyn Bowl result cannot pass the orchestration checks."
+    ],
+    "limits": [
+      "This is a controlled source-level capture/replay run, not a native extension or public-site observation.",
+      "The retained evidence does not promote the full D47/T57 case or repair earlier native, manual, or prior-run isolation records."
+    ]
+  },
+  "verdict_b_test_source_evidence_quality": {
+    "status": "PASS_WITH_MINOR_RECORD_GAP",
+    "evidence": [
+      "All five prelaunch file hashes and all six stdout/journal hashes in the record match the retained bytes or unchanged production files.",
+      "Each of the three run journals records RESOURCE_ADMITTED, RESOURCE_JOB_EXIT, and RESOURCE_FINAL_DECISION with resourceInvalid false; child exit codes agree with the corresponding test stdout.",
+      "Diffing retained files against the original source and test confirms the constant runner replacement, the higher-old test's scratch-module injection, and the capture guard removal. The higher-old mutant retains the rest of production capture logic and redirects its network-tap import to the production alias for scratch placement.",
+      "The higher-old red run failed five behavioral assertions, including the saved replay row assertion at line 393, while 12 tests still passed. The original green run passed all 17 tests."
+    ],
+    "minor_record_gap": "higher-old-source.patch omits the scratch module's relative-to-alias network-tap import adjustment. The retained full source copy exposes it, and the adjustment is necessary only for the scratch file location; the patch alone is not a complete reconstruction recipe.",
+    "limits": [
+      "No independent rerun was requested or performed; this verdict checks the retained run artifacts and source linkage.",
+      "The CDP inputs are controlled synthetic boundary events rather than a captured native-browser fixture."
+    ]
+  }
+}
