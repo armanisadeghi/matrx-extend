@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "status": "partial_procedure_integration",
+  "cases": ["EXT-F-4115-T01", "EXT-F-4116-T01", "EXT-F-4117-T01"],
+  "missing_steps_expected_before": 51,
+  "missing_steps_expected_after": 48,
+  "review": ".research/diagnostic-read-final-peer-20261007.json",
+  "limits": "No runtime results promoted; source-ready conditional public fixtures, required debugger precheck, permission-denial design unresolved. Shared setup and actual URLs embedded in each case."
+}

@@ -52775,12 +52775,35 @@
           "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "After admitted resource permit, in separate disposable Chrome profiles for member and admin load the exact candidate extension. Record source commit, lockfile hash, build receipt, extension ID/version/Loaded from path, browser version, signed-in role, and target tab ID. In each profile confirm this Chrome build declares debugger as a required manifest permission and independently check chrome.permissions.contains({permissions:['debugger']}) in that profile's extension context before the positive Tools run; admin may also inspect Settings > Advanced agent capabilities > DevTools Protocol installation-granted status. There is no optional debugger switch or request gesture: a false/unavailable status is a build/browser permission precondition failure, not a handler result. Guest cannot reach signed-in Tools; guest denial is a separate Tools UI case.",
+            "Focus only the disposable public Selenium tab. In Tools > Catalog choose All handlers; search the exact handler name, verify its privileged tier/schema, enter the listed JSON with the owned decimal string tab_id, Run, and read inline output/error. list_open_tabs {} identifies the exact URL and tab ID. No account or credential page may be captured, and do not copy full network headers or unrelated console text into evidence.",
+            "Run a warm pass without an immediately preceding full extension Reload. Then Reload that exact extension in chrome://extensions, confirm ID/version/path, reopen Tools, reload the public fixture in an owned tab, reacquire tab ID, rearm capture and repeat. A page reload or side-panel reopen alone is not an extension Reload. Service-worker restart may clear in-memory CDP buffers, so no warm request_id or console count carries into post-reload.",
+            "Tools Run calls handler.run directly with permissionMode=act and assignedTabId=null; it bypasses dispatcher confirmation and does not prove privileged-card denial, request-time role advertisement, or assigned-tab isolation. All three original permissions dimensions remain unresolved. A separate dispatcher case needs a proven exact advertised call for each tested role, a baseline capture state before the call, the tester choosing Deny in the actual privileged approval UI, a structured denial result, and an unchanged owned page/capture state. The current manual route cannot supply that approval card, and source metadata alone does not prove an executable agent-call route; do not claim these separate cases designed or run. Malformed input, missing required debugger permission, and CDP attach failure are not privileged-card denial.",
+            "Admin records cdp_attached_tabs and owned debugger banner before and immediately after positive capture, then uses cdp_detach only for the exact new owned tab ID if still attached and verifies disappearance. If already idle/worker-detached, record that state separately. Member must not use admin-only helpers through the manual gate bypass; close only the disposable owned tab and verify its banner clears. Preserve all baseline attachments and unrelated tabs.",
+            "Public fixture: https://www.selenium.dev/selenium/web/bidi/logEntryAdded.html; Visible #consoleLog button invokes helloWorld(), which calls console.log('Hello, world!'). The page also has a separate console-error button. Verify the served page still has this exact button/function before native execution; if it changed, stop as fixture unavailable.",
+            "In this role/profile, independently verify the candidate Chrome extension includes and currently has its required debugger permission before positive capture; no optional debugger toggle exists. If absent, stop as build/browser precondition failure.",
+            "open only the public Selenium log-entry fixture in a disposable tab. Verify the visible #consoleLog control and its helloWorld console.log('Hello, world!') source before execution.",
+            "Record exact owned tab ID; capture must start before clicking #consoleLog. Any prior console buffer or debugger attachment on that tab requires a fresh disposable tab, not an assumed empty buffer."
           ],
-          "steps": [],
-          "expected": [],
-          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"]
+          "steps": [
+            "Warm: in Tools run read_console_messages {\"tab_id\":\"$TAB_ID\",\"auto_start\":true,\"pattern\":\"^Hello, world!$\",\"clear\":false}. Require {ok:true,count:0,messages:[]} before the page action; this arms Runtime capture. If nonempty, stop and use a fresh disposable tab.",
+            "Click the web page's visible #consoleLog button once through ordinary browser UI, without submitting anything. In Tools run the same read_console_messages JSON again; inspect only the matching output fields.",
+            "Positive: require exactly one message with level log, text Hello, world!, owned Selenium URL and a timestamp after capture was armed. Re-run with clear:false to confirm peek retains it; then run the same pattern with clear:true to consume it and one final clear:false read that returns count 0. Record the owned attachment/banner immediately after the first positive read.",
+            "Empty filter: run {\"tab_id\":\"$TAB_ID\",\"auto_start\":false,\"pattern\":\"^absent-4115$\",\"clear\":false}; require count 0 without treating it as proof the whole buffer is empty. Schema-negative: {\"tab_id\":\"$TAB_ID\",\"limit\":0} must show Schema mismatch and no handler execution.",
+            "Repeat all positive/empty/error segments after full extension Reload on a fresh/rearmed tab. Use exact owned attachment cleanup from shared setup."
+          ],
+          "expected": [
+            "After the page button, the inline result has ok:true,count:1 and exact log text/level from the public fixture; before the button and after explicit consumption, the exact-match query is empty. Generic page console noise is not an oracle.",
+            "clear:false peeks; clear:true removes up to limit before regex filtering, so only use clear:true after isolating this disposable fixture. A regex miss returns zero matching messages, not a buffer-wide absence claim.",
+            "limit:0 is local schema rejection, not debugger denial. No unrelated page or console buffer is read or cleared.",
+            "This direct Tools procedure does not verify the original permissions dimension; a separate proven dispatcher invocation and privileged-card Deny result are still needed for each role."
+          ],
+          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
+          "source_procedure_review": {
+            "report": ".research/diagnostic-read-procedures-20261007.json",
+            "peer": ".research/diagnostic-read-final-peer-20261007.json",
+            "scope": "Direct manual handler only; design_status=needed and original permission dimensions retained; all runtime unverified."
+          }
         }
       ],
       "cells": {
@@ -52928,12 +52951,34 @@
           "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "After admitted resource permit, in separate disposable Chrome profiles for member and admin load the exact candidate extension. Record source commit, lockfile hash, build receipt, extension ID/version/Loaded from path, browser version, signed-in role, and target tab ID. In each profile confirm this Chrome build declares debugger as a required manifest permission and independently check chrome.permissions.contains({permissions:['debugger']}) in that profile's extension context before the positive Tools run; admin may also inspect Settings > Advanced agent capabilities > DevTools Protocol installation-granted status. There is no optional debugger switch or request gesture: a false/unavailable status is a build/browser permission precondition failure, not a handler result. Guest cannot reach signed-in Tools; guest denial is a separate Tools UI case.",
+            "Focus only the disposable public Selenium tab. In Tools > Catalog choose All handlers; search the exact handler name, verify its privileged tier/schema, enter the listed JSON with the owned decimal string tab_id, Run, and read inline output/error. list_open_tabs {} identifies the exact URL and tab ID. No account or credential page may be captured, and do not copy full network headers or unrelated console text into evidence.",
+            "Run a warm pass without an immediately preceding full extension Reload. Then Reload that exact extension in chrome://extensions, confirm ID/version/path, reopen Tools, reload the public fixture in an owned tab, reacquire tab ID, rearm capture and repeat. A page reload or side-panel reopen alone is not an extension Reload. Service-worker restart may clear in-memory CDP buffers, so no warm request_id or console count carries into post-reload.",
+            "Tools Run calls handler.run directly with permissionMode=act and assignedTabId=null; it bypasses dispatcher confirmation and does not prove privileged-card denial, request-time role advertisement, or assigned-tab isolation. All three original permissions dimensions remain unresolved. A separate dispatcher case needs a proven exact advertised call for each tested role, a baseline capture state before the call, the tester choosing Deny in the actual privileged approval UI, a structured denial result, and an unchanged owned page/capture state. The current manual route cannot supply that approval card, and source metadata alone does not prove an executable agent-call route; do not claim these separate cases designed or run. Malformed input, missing required debugger permission, and CDP attach failure are not privileged-card denial.",
+            "Admin records cdp_attached_tabs and owned debugger banner before and immediately after positive capture, then uses cdp_detach only for the exact new owned tab ID if still attached and verifies disappearance. If already idle/worker-detached, record that state separately. Member must not use admin-only helpers through the manual gate bypass; close only the disposable owned tab and verify its banner clears. Preserve all baseline attachments and unrelated tabs.",
+            "Public fixture: https://www.selenium.dev/selenium/web/web-form.html; The public GET response contains the literal <title>Web form</title> and form controls. Recheck live bytes/status at execution time; do not treat this dated hash as a permanent server guarantee.",
+            "In this role/profile, independently verify the candidate Chrome extension includes and currently has its required debugger permission before positive capture; no optional debugger toggle exists. If absent, stop as build/browser precondition failure.",
+            "open the public Selenium Web form in a new disposable tab and confirm current HTTP 200, title marker and visible form before capture. Capture only this unauthenticated tab.",
+            "Record exact owned tab ID. A fresh tab or clean capture is needed; read_network_requests drains records on every call even when clear:false. It returns request metadata, not inline response bodies."
           ],
-          "steps": [],
-          "expected": [],
-          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"]
+          "steps": [
+            "Warm: in Tools run read_network_requests {\"tab_id\":\"$TAB_ID\",\"url_pattern\":\"/selenium/web/web-form.html\",\"auto_start\":true,\"limit\":100}; require count 0 before triggering a new request; this arms Network capture after the initial load. If nonzero, begin with a fresh owned tab.",
+            "Reload only that Web form tab once through normal browser UI; wait for the visible Web form. Run the identical read_network_requests JSON promptly; record all matching safe URL/status/method/request_id fields from this disposable tab. A clean pass has exactly one completed final public document GET with status 200, finished:true, failed not true, mime_type text/html and nonempty request_id. If multiple same-URL records or a redirect occur, classify against the observed page/fixture before judging the handler; select only the completed final 200 GET for 4117 and stop if ambiguous. Do not persist headers or unrelated URLs.",
+            "Immediately record owned debugger banner/admin attachment delta. Re-run the same filter without another reload; require count 0 because drainNetworkCapture splices the buffer. Use a unique impossible URL substring in a fresh/no-new-request read for the empty filter. Schema-negative: {\"tab_id\":\"$TAB_ID\",\"limit\":0} must show Schema mismatch.",
+            "Repeat warm and post-extension-Reload phases with a fresh request_id. For 4117, do not detach, close the tab, stop Network capture or reload the extension before get_request_body; then perform exact owned cleanup."
+          ],
+          "expected": [
+            "The bounded positive record identifies the actual post-arm public document GET, completion, HTTP 200 and text/html, with request_id usable while the same CDP session lives. A response before capture was armed is not evidence.",
+            "A second read with no new navigation returns count 0 because the implementation drains all queued records before URL filtering. include_body and clear inputs are accepted but unused by this handler; do not claim they changed behavior.",
+            "limit:0 is schema refusal, not permission denial. A missing, failed or unfinished final document record leaves positive unverified. Extra matching records or redirects require fixture/browser classification and are not by themselves a handler defect.",
+            "This direct Tools procedure does not verify the original permissions dimension; a separate proven dispatcher invocation and privileged-card Deny result are still needed for each role."
+          ],
+          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
+          "source_procedure_review": {
+            "report": ".research/diagnostic-read-procedures-20261007.json",
+            "peer": ".research/diagnostic-read-final-peer-20261007.json",
+            "scope": "Direct manual handler only; design_status=needed and original permission dimensions retained; all runtime unverified."
+          }
         }
       ],
       "cells": {
@@ -53064,12 +53109,34 @@
           "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "After admitted resource permit, in separate disposable Chrome profiles for member and admin load the exact candidate extension. Record source commit, lockfile hash, build receipt, extension ID/version/Loaded from path, browser version, signed-in role, and target tab ID. In each profile confirm this Chrome build declares debugger as a required manifest permission and independently check chrome.permissions.contains({permissions:['debugger']}) in that profile's extension context before the positive Tools run; admin may also inspect Settings > Advanced agent capabilities > DevTools Protocol installation-granted status. There is no optional debugger switch or request gesture: a false/unavailable status is a build/browser permission precondition failure, not a handler result. Guest cannot reach signed-in Tools; guest denial is a separate Tools UI case.",
+            "Focus only the disposable public Selenium tab. In Tools > Catalog choose All handlers; search the exact handler name, verify its privileged tier/schema, enter the listed JSON with the owned decimal string tab_id, Run, and read inline output/error. list_open_tabs {} identifies the exact URL and tab ID. No account or credential page may be captured, and do not copy full network headers or unrelated console text into evidence.",
+            "Run a warm pass without an immediately preceding full extension Reload. Then Reload that exact extension in chrome://extensions, confirm ID/version/path, reopen Tools, reload the public fixture in an owned tab, reacquire tab ID, rearm capture and repeat. A page reload or side-panel reopen alone is not an extension Reload. Service-worker restart may clear in-memory CDP buffers, so no warm request_id or console count carries into post-reload.",
+            "Tools Run calls handler.run directly with permissionMode=act and assignedTabId=null; it bypasses dispatcher confirmation and does not prove privileged-card denial, request-time role advertisement, or assigned-tab isolation. All three original permissions dimensions remain unresolved. A separate dispatcher case needs a proven exact advertised call for each tested role, a baseline capture state before the call, the tester choosing Deny in the actual privileged approval UI, a structured denial result, and an unchanged owned page/capture state. The current manual route cannot supply that approval card, and source metadata alone does not prove an executable agent-call route; do not claim these separate cases designed or run. Malformed input, missing required debugger permission, and CDP attach failure are not privileged-card denial.",
+            "Admin records cdp_attached_tabs and owned debugger banner before and immediately after positive capture, then uses cdp_detach only for the exact new owned tab ID if still attached and verifies disappearance. If already idle/worker-detached, record that state separately. Member must not use admin-only helpers through the manual gate bypass; close only the disposable owned tab and verify its banner clears. Preserve all baseline attachments and unrelated tabs.",
+            "Public fixture: https://www.selenium.dev/selenium/web/web-form.html; The public GET response contains the literal <title>Web form</title> and form controls. Recheck live bytes/status at execution time; do not treat this dated hash as a permanent server guarantee.",
+            "In this role/profile, independently verify the candidate Chrome extension includes and currently has its required debugger permission before positive capture; no optional debugger toggle exists. If absent, stop as build/browser precondition failure.",
+            "complete the 4116 arm/reload/read segment on the same disposable public Selenium Web form tab. Keep its exact completed GET request_id, tab ID and live CDP attachment; no extension Reload, tab close, detach or Network.disable between capture and body read.",
+            "This handler's name is misleading: it delegates to Network.getResponseBody for a captured request ID. It does not return a POST request payload. Recheck the public page's current HTTP 200 text/html source and literal <title>Web form</title> marker before treating the body as an oracle."
           ],
-          "steps": [],
-          "expected": [],
-          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"]
+          "steps": [
+            "In Tools > Catalog > All handlers open get_request_body and run {\"tab_id\":\"$TAB_ID\",\"request_id\":\"$CAPTURED_REQUEST_ID\"}, replacing both values with the just-observed 4116 result from this tab/session.",
+            "Positive: require ok:true, nonempty body and base64_encoded boolean. Decode only if true; require decoded UTF-8 HTML includes the exact <title>Web form</title> marker and visible form-control text from the independently checked public fixture. Do not record the full body or headers in the inventory receipt.",
+            "Error: run {\"tab_id\":\"$TAB_ID\",\"request_id\":\"missing-request-id-4117\"}; require ok:false with an explicit CDP reason, and verify the owned page/tab is unchanged. Schema-negative: {\"tab_id\":\"$TAB_ID\",\"request_id\":\"\"} must show Schema mismatch before CDP.",
+            "After full extension Reload, recapture a new completed GET through 4116 in the new worker/session and repeat; do not reuse the warm request_id. Clean up only the owned attachment/tab after body and errors are recorded."
+          ],
+          "expected": [
+            "The actual body from the exact captured public GET decodes to HTML with the independently verified title marker. A nonempty body alone, an old request_id, or an unrelated document is insufficient.",
+            "Unknown request_id returns a structured ok:false reason; empty request_id is rejected by local schema. Neither demonstrates permission denial.",
+            "A body failure after detach/restart or a changed public page is an environment/fixture limit until a fresh same-session positive control is run; do not infer that the product cannot read bodies.",
+            "This direct Tools procedure does not verify the original permissions dimension; a separate proven dispatcher invocation and privileged-card Deny result are still needed for each role."
+          ],
+          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
+          "source_procedure_review": {
+            "report": ".research/diagnostic-read-procedures-20261007.json",
+            "peer": ".research/diagnostic-read-final-peer-20261007.json",
+            "scope": "Direct manual handler only; design_status=needed and original permission dimensions retained; all runtime unverified."
+          }
         }
       ],
       "cells": {
