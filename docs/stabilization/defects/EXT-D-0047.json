@@ -28,9 +28,9 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Implementation owner d47_completion_cleanup_fix has sole source-test permit to repair settled-result observation, in-lifetime observer cleanup and exact owned-recipe cleanup. No native run admitted. Preserve latest bounded native evidence; fullcase remains unverified.",
+    "next_action": "Verify current green automatic CI and exact artifact/source/lock receipt, then admit one guarded native D47 replay to verify settled exact-recipe completion and in-session observer/owned-recipe cleanup. No native job admitted. Preserve public-site initial-load, inverse response order, stale-only refusal and surrounding-case requirements; full T57 remains unverified.",
     "status": "Run37554362947 resource-valid success on frozen0.2.334/a6e: exact saved current root result plus current-context handshake/packet observed. Last sample running=true; oldHTTP finished but oldcallback absent. Independentpeer477695bc preserves D47in-fix/T57unverified. Exact owned DBrecipe removed and absence verified; passive probe removal unconfirmed.",
-    "implementation_agent": "d47_completion_cleanup_fix",
+    "implementation_agent": "completed: d47_completion_cleanup_fix",
     "execution_agent": "completed: d47_root_observer_native",
     "native_run_id": 37537634304,
     "workflow_source": "fbcc4311ae6885b67133e55336f692be38881249",
@@ -53,7 +53,7 @@
     "run_boundary_repair_commit": "0917cc61",
     "run_boundary_review_commit": "5425d283",
     "run_boundary_review": ".research/d47-run-readiness-peer-20261006.json",
-    "pending_ci_run_id": null,
+    "pending_ci_run_id": 37558363826,
     "latest_native_evidence": ".research/d47-root-observer-native-20261007.json",
     "terminal_diagnosis": ".research/d47-terminal-diagnosis-20261006.json",
     "owned_reload_fix_commit": "86046a88",
@@ -89,7 +89,11 @@
     "actual_shape_peer_commit": "48de45db",
     "actual_shape_peer_report": ".research/d47-root-shape-peer-20261007.json",
     "latest_native_peer": ".research/d47-native-result-peer-20261007.json",
-    "latest_recipe_cleanup": ".research/d47-owned-recipe-cleanup-20261007.json"
+    "latest_recipe_cleanup": ".research/d47-owned-recipe-cleanup-20261007.json",
+    "completion_cleanup_commits": ["a9ed51dd", "823724eb"],
+    "completion_cleanup_report": ".research/d47-completion-cleanup-fix-20261007.json",
+    "completion_cleanup_review": ".research/d47-ack-cleanup-fresh-peer-20261007.json",
+    "completion_cleanup_status": "Independent source review553aacb1 accepts lost-ack correction and finds no new breakage; native remains unverified. Focused probe3/3, constant-success and ack-only mutations rejected, resource-valid zero-error lint. Initial CI37557265676 failed lint; correction requires fresh integrated CI."
   },
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
   "verification_status": "Current independentevidencepeer e7a67bcd confirms initialrequest timing and documentidentity controlled regressions (including meaningful identitymutation), plus bounded installed initialHN capture and saved10row replay on8b0f8adc/9ea6687b. Delayed matching prior-document response with higher old sequence is still nativeUNVERIFIED; T57 and original D47 closure remain incomplete. No current runtime was run by evidencepeer.",
