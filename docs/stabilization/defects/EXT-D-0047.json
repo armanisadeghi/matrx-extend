@@ -28,9 +28,9 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Remaining native stale-only refusal/recovery and manual/prior-run isolation acceptance. Source guards now cover saved replay stale-only/fresh recovery, prior binding, higher-old-sequence, and manual relay isolation; peers accept bounded source structure, but original per-run stdout/mutant hashes are not attached to journal evidence. Preserve this qualification; future causal runs must capture sanitized output and per-run source hashes. No owned test or native run active.",
+    "next_action": "Implement/review bounded native stale-only refusal and fresh recovery case in existing lifecycle fixture/driver. Await CI37575718195 on cb2739e4 separately; no native dispatch active. Source guards do not close remaining browser acceptance.",
     "status": "Independent peer1abea43b accepts bounded old-first saved replay at frozen0.2.338/source651f25d0: observed old/current HTTP finish order, current context/packet, exact settled current-only saved row, valid resources and cleanup. Current-first earlier0.2.337 remains separately bounded. D47in-fix/T57unverified unchanged.",
-    "implementation_agent": "completed: d47_remaining_isolation_guards, d47_manual_isolation_guard, d47_manual_mutation_repair; peers complete",
+    "implementation_agent": "active: d47_stale_only_native_driver; sole source-test permit",
     "execution_agent": "completed: d47_actual_endpoint_native; reviewed by d47_public_terminal_peer",
     "native_run_id": 37537634304,
     "workflow_source": "fbcc4311ae6885b67133e55336f692be38881249",
