@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "09b072425d59f9d9fd586aa9659cbb9075b2b1bd",
+  "reviewed_artifact": ".research/diagnostic-read-procedures-20261007.json",
+  "scope": ["EXT-F-4115-T01", "EXT-F-4116-T01", "EXT-F-4117-T01"],
+  "verdict_a_executable_fidelity": "conditional_acceptance_for_direct_manual_positive_and_schema_negative_paths; native_execution_unverified",
+  "verdict_b_quality_coverage": "important_gaps_before_exhaustive_inventory_integration",
+  "confirmed": [
+    "The three handler schemas accept decimal-string tab_id and locally reject limit:0 or empty request_id as proposed. Tools Run validates locally then invokes handler.run with permissionMode=act and assignedTabId=null, bypassing dispatcher gates.",
+    "Console capture must be armed before the click. clear:false peeks; clear:true consumes the first limit records before filtering. The public Selenium fixture currently has #consoleLog calling console.log('Hello, world!').",
+    "Network capture must be armed before the document reload. read_network_requests consumes queued records even with clear:false and filters by URL afterward. The public Web form currently returns HTTP 200 text/html and contains the title marker.",
+    "get_request_body delegates to Network.getResponseBody and therefore reads the completed GET response body by request_id in the same live CDP session. Calling it a POST request-payload test would be false coverage.",
+    "A full extension Reload and fresh capture/request_id are correctly distinguished from a page reload; detach and worker restart can clear in-memory buffers."
+  ],
+  "findings": [
+    {
+      "severity": "Important",
+      "location": ".research/diagnostic-read-procedures-20261007.json:19",
+      "issue": "The shared setup does not explicitly grant and verify Chrome's optional debugger permission in each disposable member/admin profile before positive Tools runs. The manual runner bypasses the dispatcher's optional-permission check, while the handlers still need debugger attach. An attach failure would otherwise be ambiguous and the proposed positive procedure may be blocked at its first step.",
+      "correction": "Add a setup step to enable Advanced agent capabilities in Settings through the user gesture and verify chrome.permissions.contains({permissions:['debugger']}) or an equivalent visible permission state in each profile; record a refusal as an environment/permission-gate outcome, never as a handler result. Do not use a programmatic grant shortcut."
+    },
+    {
+      "severity": "Important",
+      "location": ".research/diagnostic-read-procedures-20261007.json:22",
+      "issue": "The original three cases retain a permissions dimension, but the proposal only says that a separate dispatcher run should prove advertisement and choose Deny. It supplies no repeatable prompt, capture timing, expected denial result, or role-specific evidence path. The direct Tools runs cannot establish this dimension; all permissions cells must remain unresolved.",
+      "correction": "Integrate the three direct-manual paths as bounded source-grounded procedures only. Add separately executable dispatcher permission cases with an exact advertised call, captured pre-denial state, actual privileged card Deny action, expected structured denial and unchanged capture state; keep their results pending until run."
+    },
+    {
+      "severity": "Minor",
+      "location": ".research/diagnostic-read-procedures-20261007.json:77",
+      "issue": "Requiring exactly one completed document record is a strict oracle and can fail if Chrome emits an additional same-URL record or the public server redirects while still delivering the page. Such a result needs classification before calling the handler defective.",
+      "correction": "Record every matching URL/status/method/request_id in the disposable tab, select the one completed final 200 document GET for 4117, and classify duplicates/redirects as fixture or browser behavior unless they contradict the observed page. Preserve the strict single-record expectation as a clean-pass criterion, not a generic product defect."
+    }
+  ],
+  "acceptance_boundary": "The direct manual proposals can populate preconditions, steps and expected results for valid-input, invalid-input and reload design. They cannot mark member/admin runtime cells verified or close the permissions dimension. Preserve the original modes and dimensions, and leave actual execution to the admitted native-browser test.",
+  "verification": {
+    "methods": [
+      "read-only source and proposed-commit inspection",
+      "read-only HTTP GET of the two public fixture pages"
+    ],
+    "native_browser": "not_run_by_brief",
+    "automated_tests": "not_run_by_brief",
+    "public_fixtures": "Both returned HTTP 200 text/html on 2026-10-07; current source still contains the cited controls/title. External content may change."
+  }
+}
