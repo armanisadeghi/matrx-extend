@@ -7,8 +7,8 @@
   "title": "Empty visible tab buckets satisfy region presence without rendered-control readiness",
   "severity": "S3",
   "priority": "P1",
-  "state": "in-fix",
-  "owner": "root/empty_surface_census_fix",
+  "state": "fixed",
+  "owner": "root/empty_surface_native_retest",
   "user_impact": "Coverage could falsely appear complete after unrelated unknowns are resolved. Existing native runs remain incomplete; no product rendering failure is established.",
   "preconditions": [
     "Frozen0.2.366 guest native37643142383; source d68a1db3; collector before D153 repair."
@@ -22,10 +22,12 @@
   "actual": "Bucket existence suffices; active trigger can be sampled before controls mount. Whether native zero counts reflect lazy timing or a persistent product blank remains unproven.",
   "evidence": [
     ".research/empty-surface-census-diagnosis-20261007.json",
-    ".research/guest-screenshot-upload-retest-20261007.json"
+    ".research/guest-screenshot-upload-retest-20261007.json",
+    ".research/empty-surface-census-decomposed-20261007.json",
+    ".research/empty-surface-census-final-peer-20261007.json"
   ],
   "verification": {
-    "source": "Confirmed completeness hole by independent source diagnosis74286169; forcing tests and repair pending.",
+    "source": "Commits3a5c8e6d and bcb60647 independently source-accepted09216d66. Original empty-readiness RED preserved; omission plant RED restored; final guarded GREEN36/36 valid. Native original-artifact retest pending.",
     "native": "Zero Scrape/Data/SEO buckets observed on original artifact; runtime cause unproven.",
     "product": "No behavior failure or health conclusion."
   },
@@ -47,8 +49,14 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Sol owns bounded collector readiness and completeness repair with guarded forcing tests."
+    },
+    {
+      "at": "2026-10-07T16:25:35.977496+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Fresh independent source review accepts empty/unready and missing universal tab guards; native closure remains open."
     }
   ],
   "closure_requirement": "Independent source review and original-artifact native retest either observe rendered controls or explicitly report unready/empty regions; never accept empty presence as complete.",
-  "next_action": "Finish forcing RED/GREEN with saved stdout and guarded journals; fresh peer then one native retest."
+  "next_action": "One original-artifact native visibility census after source acceptance; observe real rendered controls or explicit unready diagnostics. Never promote feature behavior from census evidence."
 }
