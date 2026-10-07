@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "status": "observed_bounded",
+  "conclusion": "The frozen development artifact produced the exact current saved Network replay result in the extension side panel. The delayed old request completed at the fixture server, but no old-document callback reached the observed binding. The accepted architectural-exclusion route is supported at this bounded scope; cancellation and a completed replay lifecycle remain unverified.",
+  "run": {
+    "id": 37554362947,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37554362947",
+    "workflow": "Hosted guest side-panel acceptance",
+    "event": "workflow_dispatch",
+    "workflow_head_sha": "0827b918896f3505871d24eae7d1164636141eaf",
+    "attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "runner": "macos-15",
+    "case": "showcase-d47-admin",
+    "started_at": "2026-10-07T00:54:16Z",
+    "completed_at": "2026-10-07T01:02:13Z"
+  },
+  "artifact_input": {
+    "development_run_id": 37553646030,
+    "development_source_sha": "a6e0ef68d40ad8661baf7be7e6518783f85c173d",
+    "development_artifact_id": 11454177514,
+    "development_artifact_digest": "sha256:fbb938f1fffc4207cef4fec88db4c50521fa0f55f935508c6c3ecf9cf1dc53b9",
+    "version": "0.2.334",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "af369f6123075b97d677bbd71cca7625f8b20f3173d89dcce23a758da9741425",
+    "receipt_sha256": "a4286d175d1860d1fd3f6936f3b2b13b2daf1243e0682c99f5c68c9d6c133cea",
+    "provenance_sha256": "e2536e30a5340eb3fa8d9ad59b8a13afe78378ec988db38bbbe8fa1a64593c14",
+    "current_test_artifact_importer": "passed; archive digest, run provenance, receipt, manifest, and unpacked tree verified"
+  },
+  "source_equivalence": {
+    "compared_source_sha": "a6e0ef68d40ad8661baf7be7e6518783f85c173d",
+    "workflow_head_sha": "0827b918896f3505871d24eae7d1164636141eaf",
+    "product_and_d47_harness_paths_changed": false,
+    "lockfile_changed": true,
+    "artifact_lockfile_sha256": "ef1a6c7fed62bc7c64b26bc85fd6db2da061bbb1fabd6064abc2a9c12d478994",
+    "workflow_head_lockfile_sha256": "36c25f8d9f54bcf21226249279f8c6776011100974f13a76d3e58678976788f6",
+    "lockfile_delta": "Only @ai-matrx/alchemy changed from 0.13.0 to 0.14.0 and its two snapshot references changed. The accepted run tested the frozen 0.13.0 artifact; it does not certify the later lockfile state."
+  },
+  "resource": {
+    "evidence_source": "Hosted run job logs; final journals were not present in the uploaded native artifact.",
+    "phase_decisions": {
+      "package": {
+        "decision": "valid",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "available_memory_gib": 5.88,
+        "required_memory_gib": 4,
+        "one_minute_load": 6.33,
+        "cpu_busy_fraction": 0.084
+      },
+      "browser": {
+        "decision": "valid",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "available_memory_gib": 5.88,
+        "required_memory_gib": 4,
+        "one_minute_load": 2.04,
+        "cpu_busy_fraction": 0.086
+      },
+      "guest": {
+        "decision": "valid",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "available_memory_gib": 5.74,
+        "required_memory_gib": 4,
+        "one_minute_load_at_final": 1.92,
+        "transient_cpu_pending": true,
+        "cpu_recovered_before_exit": true
+      }
+    },
+    "cleanup": "All three phase children exited 0 and each resource wrapper recorded RESOURCE_FINAL_DECISION valid. Workflow completed and uploaded its artifact."
+  },
+  "observation": {
+    "stage": "binding_evidence",
+    "native_status": "observed_bounded",
+    "fixture": {
+      "old_response_pending_before_release": true,
+      "current_response_sent": true,
+      "old_response_finished_after_release": true,
+      "old_response_aborted": false,
+      "old_release_http_status": 200,
+      "old_release_outcome": "server_finished"
+    },
+    "document_context": {
+      "old_context_created": true,
+      "old_context_cleared": true,
+      "current_frame_navigated": true,
+      "current_context_created": true
+    },
+    "binding": {
+      "current_context_handshake_observed": true,
+      "current_payload_observed": true,
+      "current_payload_request_sequence": 1,
+      "old_payload_observed": false,
+      "binding_trace_order_valid": true
+    },
+    "saved_result": {
+      "exact_recipe_header_observed": true,
+      "exact_root_result_observed": true,
+      "visible_table_columns": ["events", "document"],
+      "current_event": "Canyon Frequency",
+      "document_marker": "current",
+      "old_event_visible": false,
+      "current_saved_replay_verdict": "pass"
+    },
+    "saved_result_wait": {
+      "sample_count": 158,
+      "last_sample_elapsed_ms": 19994.34,
+      "last_sample_exact_recipe": true,
+      "last_sample_current_row": true,
+      "last_sample_old_row": false,
+      "last_sample_running": true,
+      "meaning": "The exact current result was observed while the replay still reported running; settled completion was not observed."
+    },
+    "old_context_verdict": "The fixture server completed the old HTTP response (200); this is not proof that the old callback was delivered to the extension. No old binding payload was observed after the new context handshake. The bounded result records the prior-document route as architecturally excluded, consistent with the accepted ruling; cancellation remains unverified.",
+    "verdicts": {
+      "current_saved_replay": "pass_at_frozen_artifact_scope",
+      "delayed_old_binding": "architecturally_excluded_observed_at_bounded_scope",
+      "old_callback_delivery": "not_observed",
+      "cancellation": "unverified",
+      "settled_replay_completion": "unverified"
+    },
+    "observer_cleanup": {
+      "probe_cleanup": ["remove_failed"],
+      "worker_detach": "no detach failure was recorded",
+      "interpretation": "The temporary passive debugger listener removal was not confirmed; this is a test-observer cleanup limitation, not evidence that an old application payload was delivered."
+    },
+    "failure_code": null
+  },
+  "temporary_secrets": {
+    "credential_preflight": "passed locally before staging",
+    "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON": {
+      "staged_for_run": true,
+      "deleted_after_terminal": true,
+      "absence_verified": true
+    },
+    "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON": {
+      "staged_for_run": true,
+      "deleted_after_terminal": true,
+      "absence_verified": true
+    },
+    "values_recorded": false
+  },
+  "native_result_artifact": {
+    "id": 11453289288,
+    "name": "hosted-guest-37554362947-1",
+    "digest": "sha256:f41929cc9abde8af1f1ab862799d00f3f2cd0716b58a9210b7fa72beba129358",
+    "size_bytes": 64832,
+    "result_file_sha256": "ed403eea2891091b0916a40e52a995387d46d538d4f6d05284fa127e1b0cba63",
+    "uploaded_files": ["showcase-d47-native-37554362947-1.json"],
+    "screenshots_included": false
+  },
+  "scope_limit": "This one bounded native run supports exact current saved-result observation and the accepted architectural exclusion route for this frozen artifact. It does not close EXT-D-0047/T57, prove old callback cancellation or delivery, prove the replay settled, or certify the later alchemy 0.14.0 lockfile. The defect remains in-fix.",
+  "cleanup": {
+    "hosted_job_terminal": true,
+    "hosted_child_processes": "all guarded phases exited with code 0",
+    "temporary_secrets_absent": true,
+    "local_test_or_browser_launched": false
+  }
+}
