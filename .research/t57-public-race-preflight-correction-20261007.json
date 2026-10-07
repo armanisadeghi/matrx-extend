@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "role": "QA-only correction after independent source peer; no native dispatch",
+  "peer_report": ".research/t57-public-race-preflight-peer-20261007.json",
+  "source_commit": "8e84f3aa",
+  "source_sha256": {
+    "tests/browser/showcase-d47-public-race-preflight.mjs": "6942d3334b22cdc37acce994e75bcda4f3175f63f582cc4f29c0240f4552b571",
+    "tests/browser/showcase-d47-public-race-preflight.test.mjs": "18b76cb228c5f49fc9dbab9a03238ea55a0a4e6246de6fa1c1762b7e45ae1f81",
+    "tests/browser/showcase-d47-public-initial-load.mjs": "8dd2722906c31ad675b9da6889bd421e9c8fbdbcf45f24af06dad82a823eb7b1"
+  },
+  "finding_mapping": {
+    "extension_lease": "The extension service worker installs a passive chrome.debugger listener before saved replay. The old-pause gate requires the capture-hook handshake from this tab, the same exact owned HN tab, a currently attached debugger target, and no detach event. Missing evidence leaves the verdict unverified.",
+    "original_response_integrity": "For each exact 200 response-stage pause, Fetch.getResponseBody reads the original response in memory; only a SHA-256 digest is retained. Fetch.continueRequest sends requestId alone. Absent or invalid body/digest leaves the verdict unverified. No remote response is fulfilled, replaced, or edited.",
+    "causal_tests": "The real assessPublicRacePreflight function is imported from in-memory source with constant-return, lease-gate deletion, and digest-gate deletion mutations. Each mutant executes and triggers an AssertionError on a negative input while the clean function returns unverified; the controller test feeds two distinct response bodies through Fetch.getResponseBody.",
+    "cleanup": "Probe listener removal and worker CDP detachment are required before feasible verdict; all paused requests are continued and Fetch disabled/page CDP detached in the existing controller cleanup. Failure leaves the result unverified."
+  },
+  "runs": [
+    {
+      "run_id": "t57-public-race-correction-test-20261007",
+      "command": "node --test tests/browser/showcase-d47-public-race-preflight.test.mjs",
+      "resource_wrapper": "node scripts/stabilization-resource.mjs run --run-id ID --profile-dir PROFILE -- COMMAND",
+      "journal": "docs/stabilization/resource-journals/t57-public-race-correction-test-20261007.jsonl",
+      "journal_sha256": "af2b667b0688ecc3af6995168142d54cd24e26d80058b71241f8db2318d7a1dc",
+      "final_decision": {
+        "schema": 1,
+        "at": "2026-10-07T10:19:17.771Z",
+        "runId": "t57-public-race-correction-test-20261007",
+        "admitted": false,
+        "resourceInvalid": false,
+        "exitCode": 2,
+        "decision": "refused",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "stdout_full": "{\"schema\":1,\"at\":\"2026-10-07T10:19:17.732Z\",\"runId\":\"t57-public-race-correction-test-20261007\",\"path\":\"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/t57-public-race-correction-test-20261007.pending.jsonl\",\"code\":\"RESOURCE_JOURNAL_OPENED\"}\n{\"schema\":1,\"at\":\"2026-10-07T10:19:17.757Z\",\"runId\":\"t57-public-race-correction-test-20261007\",\"detail\":\"ENOENT: no such file or directory, stat '/Volumes/Samsung2TB/code/.stabilization-scratch/t57-public-race-correction'\",\"code\":\"RESOURCE_MEASUREMENT_FAILED\"}\n{\"schema\":1,\"at\":\"2026-10-07T10:19:17.771Z\",\"runId\":\"t57-public-race-correction-test-20261007\",\"admitted\":false,\"resourceInvalid\":false,\"exitCode\":2,\"decision\":\"refused\",\"code\":\"RESOURCE_FINAL_DECISION\"}\n"
+    },
+    {
+      "run_id": "t57-public-race-correction-test2-20261007",
+      "command": "node --test tests/browser/showcase-d47-public-race-preflight.test.mjs",
+      "resource_wrapper": "node scripts/stabilization-resource.mjs run --run-id ID --profile-dir PROFILE -- COMMAND",
+      "journal": "docs/stabilization/resource-journals/t57-public-race-correction-test2-20261007.jsonl",
+      "journal_sha256": "178a2d8212772daceafc2803aacb38e1ffa82fa328fd11aabd283b83135a9626",
+      "final_decision": {
+        "schema": 1,
+        "at": "2026-10-07T10:20:31.019Z",
+        "runId": "t57-public-race-correction-test2-20261007",
+        "admitted": false,
+        "resourceInvalid": false,
+        "exitCode": 2,
+        "decision": "refused",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "stdout_full": "{\"schema\":1,\"at\":\"2026-10-07T10:19:22.174Z\",\"runId\":\"t57-public-race-correction-test2-20261007\",\"path\":\"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/t57-public-race-correction-test2-20261007.pending.jsonl\",\"code\":\"RESOURCE_JOURNAL_OPENED\"}\n{\"schema\":1,\"at\":\"2026-10-07T10:20:31.003Z\",\"runId\":\"t57-public-race-correction-test2-20261007\",\"sample\":{\"pressureLevel\":1,\"availableMemoryGiB\":11.52,\"requiredMemoryGiB\":4,\"oneMinuteLoad\":6.33,\"logicalCpus\":10,\"cpuBusyFraction\":0.23714285714285716,\"swapUsedMiB\":2666.19,\"repoFreeGiB\":1680.8272819519043,\"profileFreeGiB\":23.243759155273438,\"safetyFreeGiB\":23.243759155273438,\"systemFreeGiB\":23.243759155273438},\"cpuBusySamples\":[0.85,0.07,0.1,0.1,0.07,0.34,0.13],\"reasons\":[\"RESOURCE_PRESSURE_UNSAFE\"],\"swapWindowSeconds\":60,\"code\":\"RESOURCE_PREFLIGHT_REFUSED\"}\n{\"schema\":1,\"at\":\"2026-10-07T10:20:31.019Z\",\"runId\":\"t57-public-race-correction-test2-20261007\",\"admitted\":false,\"resourceInvalid\":false,\"exitCode\":2,\"decision\":\"refused\",\"code\":\"RESOURCE_FINAL_DECISION\"}\n"
+    },
+    {
+      "run_id": "t57-public-race-correction-test3-20261007",
+      "command": "node --test tests/browser/showcase-d47-public-race-preflight.test.mjs",
+      "resource_wrapper": "node scripts/stabilization-resource.mjs run --run-id ID --profile-dir PROFILE -- COMMAND",
+      "journal": "docs/stabilization/resource-journals/t57-public-race-correction-test3-20261007.jsonl",
+      "journal_sha256": "4df67f36a05d3d5e31a24325b0b1f249b2fd0a8ed9248ffa4d35892a4513fea5",
+      "final_decision": {
+        "schema": 1,
+        "at": "2026-10-07T10:22:00.611Z",
+        "runId": "t57-public-race-correction-test3-20261007",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "stdout_full": "{\"schema\":1,\"at\":\"2026-10-07T10:20:52.996Z\",\"runId\":\"t57-public-race-correction-test3-20261007\",\"path\":\"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/t57-public-race-correction-test3-20261007.pending.jsonl\",\"code\":\"RESOURCE_JOURNAL_OPENED\"}\n{\"schema\":1,\"at\":\"2026-10-07T10:22:00.214Z\",\"runId\":\"t57-public-race-correction-test3-20261007\",\"mode\":\"run\",\"policySchema\":1,\"sample\":{\"pressureLevel\":1,\"availableMemoryGiB\":11.68,\"requiredMemoryGiB\":4,\"oneMinuteLoad\":2.95,\"logicalCpus\":10,\"cpuBusyFraction\":0.09000000000000001,\"swapUsedMiB\":2666.19,\"repoFreeGiB\":1680.8261528015137,\"profileFreeGiB\":23.244762420654297,\"safetyFreeGiB\":23.244762420654297,\"systemFreeGiB\":23.244762420654297},\"cpuBusySamples\":[0.15,0.14,0.06,0.07,0.08,0.07,0.06],\"reasons\":[],\"swapWindowSeconds\":60,\"code\":\"RESOURCE_ADMITTED\"}\n✔ public response identity is exact across URL and body without exposing either (0.864ms)\n✔ extension capture proof requires its own hook and an attached owned tab (1.112833ms)\n✔ controller continues original paused responses in order and disables interception (159.175792ms)\n✔ preflight requires two matching real request identities, new document and delivery lifecycle (0.364ms)\n✔ actual verdict rejects constant and missing-evidence mutations in memory (7.5465ms)\nℹ tests 5\nℹ suites 0\nℹ pass 5\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 239.12225\n{\"schema\":1,\"at\":\"2026-10-07T10:22:00.551Z\",\"runId\":\"t57-public-race-correction-test3-20261007\",\"childExitCode\":0,\"childSignal\":null,\"code\":\"RESOURCE_JOB_EXIT\"}\n{\"schema\":1,\"at\":\"2026-10-07T10:22:00.611Z\",\"runId\":\"t57-public-race-correction-test3-20261007\",\"admitted\":true,\"resourceInvalid\":false,\"exitCode\":0,\"decision\":\"valid\",\"code\":\"RESOURCE_FINAL_DECISION\"}\n"
+    },
+    {
+      "run_id": "t57-public-race-correction-final-test-20261007",
+      "command": "node --test tests/browser/showcase-d47-public-race-preflight.test.mjs",
+      "resource_wrapper": "node scripts/stabilization-resource.mjs run --run-id ID --profile-dir PROFILE -- COMMAND",
+      "journal": "docs/stabilization/resource-journals/t57-public-race-correction-final-test-20261007.jsonl",
+      "journal_sha256": "10f78ca640033587461245ec40ec6f2f5202324496a1d5d42a50204c8dd8e3a3",
+      "final_decision": {
+        "schema": 1,
+        "at": "2026-10-07T10:24:04.137Z",
+        "runId": "t57-public-race-correction-final-test-20261007",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "stdout_full": "{\"schema\":1,\"at\":\"2026-10-07T10:22:56.562Z\",\"runId\":\"t57-public-race-correction-final-test-20261007\",\"path\":\"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/t57-public-race-correction-final-test-20261007.pending.jsonl\",\"code\":\"RESOURCE_JOURNAL_OPENED\"}\n{\"schema\":1,\"at\":\"2026-10-07T10:24:03.757Z\",\"runId\":\"t57-public-race-correction-final-test-20261007\",\"mode\":\"run\",\"policySchema\":1,\"sample\":{\"pressureLevel\":1,\"availableMemoryGiB\":11.68,\"requiredMemoryGiB\":4,\"oneMinuteLoad\":2.86,\"logicalCpus\":10,\"cpuBusyFraction\":0.07428571428571429,\"swapUsedMiB\":2666.19,\"repoFreeGiB\":1680.8528518676758,\"profileFreeGiB\":23.25311279296875,\"safetyFreeGiB\":23.25311279296875,\"systemFreeGiB\":23.25311279296875},\"cpuBusySamples\":[0.06,0.08,0.08,0.08,0.07,0.08,0.07],\"reasons\":[],\"swapWindowSeconds\":60,\"code\":\"RESOURCE_ADMITTED\"}\n✔ public response identity is exact across URL and body without exposing either (0.809833ms)\n✔ extension capture proof requires its own hook and an attached owned tab (1.078916ms)\n✔ controller continues original paused responses in order and disables interception (158.79075ms)\n✔ preflight requires two matching real request identities, new document and delivery lifecycle (0.3395ms)\n✔ actual verdict rejects constant and missing-evidence mutations in memory (6.814334ms)\nℹ tests 5\nℹ suites 0\nℹ pass 5\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 235.811542\n{\"schema\":1,\"at\":\"2026-10-07T10:24:04.086Z\",\"runId\":\"t57-public-race-correction-final-test-20261007\",\"childExitCode\":0,\"childSignal\":null,\"code\":\"RESOURCE_JOB_EXIT\"}\n{\"schema\":1,\"at\":\"2026-10-07T10:24:04.137Z\",\"runId\":\"t57-public-race-correction-final-test-20261007\",\"admitted\":true,\"resourceInvalid\":false,\"exitCode\":0,\"decision\":\"valid\",\"code\":\"RESOURCE_FINAL_DECISION\"}\n"
+    },
+    {
+      "run_id": "t57-public-race-correction-driver-test-20261007",
+      "command": "node --test tests/browser/showcase-d47-public-initial-load.test.mjs",
+      "resource_wrapper": "node scripts/stabilization-resource.mjs run --run-id ID --profile-dir PROFILE -- COMMAND",
+      "journal": "docs/stabilization/resource-journals/t57-public-race-correction-driver-test-20261007.jsonl",
+      "journal_sha256": "4c3b5f72e6c6b1b7e82fa89e5bba29fcac80f03db75eba7c8554d99c2c8f59f2",
+      "final_decision": {
+        "schema": 1,
+        "at": "2026-10-07T10:25:32.754Z",
+        "runId": "t57-public-race-correction-driver-test-20261007",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "stdout_full": "{\"schema\":1,\"at\":\"2026-10-07T10:24:24.806Z\",\"runId\":\"t57-public-race-correction-driver-test-20261007\",\"path\":\"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/t57-public-race-correction-driver-test-20261007.pending.jsonl\",\"code\":\"RESOURCE_JOURNAL_OPENED\"}\n{\"schema\":1,\"at\":\"2026-10-07T10:25:32.013Z\",\"runId\":\"t57-public-race-correction-driver-test-20261007\",\"mode\":\"run\",\"policySchema\":1,\"sample\":{\"pressureLevel\":1,\"availableMemoryGiB\":11.68,\"requiredMemoryGiB\":4,\"oneMinuteLoad\":1.32,\"logicalCpus\":10,\"cpuBusyFraction\":0.07,\"swapUsedMiB\":2666.19,\"repoFreeGiB\":1680.8528480529785,\"profileFreeGiB\":23.24825668334961,\"safetyFreeGiB\":23.24825668334961,\"systemFreeGiB\":23.24825668334961},\"cpuBusySamples\":[0.06,0.07,0.07,0.09,0.06,0.07,0.07],\"reasons\":[],\"swapWindowSeconds\":60,\"code\":\"RESOURCE_ADMITTED\"}\n✔ public saved replay requires exact terminal rows or exact no-match remedy (1.041916ms)\n✔ constant success and permissive guidance mutants are rejected by the oracle cases (0.0665ms)\n✔ public capture selects the actual HN single-index response after a shortened label and records only redacted evidence (18.314458ms)\n✔ public driver records each trusted click boundary before dispatching the selected control (107.163667ms)\nℹ tests 4\nℹ suites 0\nℹ pass 4\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 610.43975\n{\"schema\":1,\"at\":\"2026-10-07T10:25:32.706Z\",\"runId\":\"t57-public-race-correction-driver-test-20261007\",\"childExitCode\":0,\"childSignal\":null,\"code\":\"RESOURCE_JOB_EXIT\"}\n{\"schema\":1,\"at\":\"2026-10-07T10:25:32.754Z\",\"runId\":\"t57-public-race-correction-driver-test-20261007\",\"admitted\":true,\"resourceInvalid\":false,\"exitCode\":0,\"decision\":\"valid\",\"code\":\"RESOURCE_FINAL_DECISION\"}\n"
+    },
+    {
+      "run_id": "t57-public-race-correction-gate-test-20261007",
+      "command": "node --test tests/browser/showcase-d47-public-race-preflight.test.mjs",
+      "resource_wrapper": "node scripts/stabilization-resource.mjs run --run-id ID --profile-dir PROFILE -- COMMAND",
+      "journal": "docs/stabilization/resource-journals/t57-public-race-correction-gate-test-20261007.jsonl",
+      "journal_sha256": "8761909771cf7597dc53fbb3536b861aeeae8f0212f01983ca8c1779336b7bcd",
+      "final_decision": {
+        "schema": 1,
+        "at": "2026-10-07T10:26:57.965Z",
+        "runId": "t57-public-race-correction-gate-test-20261007",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "stdout_full": "{\"schema\":1,\"at\":\"2026-10-07T10:25:50.346Z\",\"runId\":\"t57-public-race-correction-gate-test-20261007\",\"path\":\"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/t57-public-race-correction-gate-test-20261007.pending.jsonl\",\"code\":\"RESOURCE_JOURNAL_OPENED\"}\n{\"schema\":1,\"at\":\"2026-10-07T10:26:57.576Z\",\"runId\":\"t57-public-race-correction-gate-test-20261007\",\"mode\":\"run\",\"policySchema\":1,\"sample\":{\"pressureLevel\":1,\"availableMemoryGiB\":11.68,\"requiredMemoryGiB\":4,\"oneMinuteLoad\":0.99,\"logicalCpus\":10,\"cpuBusyFraction\":0.08857142857142859,\"swapUsedMiB\":2658.19,\"repoFreeGiB\":1680.8528327941895,\"profileFreeGiB\":23.241737365722656,\"safetyFreeGiB\":23.241737365722656,\"systemFreeGiB\":23.241737365722656},\"cpuBusySamples\":[0.14,0.07,0.16,0.06,0.06,0.07,0.06],\"reasons\":[],\"swapWindowSeconds\":60,\"code\":\"RESOURCE_ADMITTED\"}\n✔ public response identity is exact across URL and body without exposing either (0.806625ms)\n✔ extension capture proof requires its own hook and an attached owned tab (1.177875ms)\n✔ controller continues original paused responses in order and disables interception (157.666833ms)\n✔ preflight requires two matching real request identities, new document and delivery lifecycle (0.440459ms)\n✔ actual verdict rejects constant and missing-evidence mutations in memory (7.678ms)\nℹ tests 5\nℹ suites 0\nℹ pass 5\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 237.745417\n{\"schema\":1,\"at\":\"2026-10-07T10:26:57.907Z\",\"runId\":\"t57-public-race-correction-gate-test-20261007\",\"childExitCode\":0,\"childSignal\":null,\"code\":\"RESOURCE_JOB_EXIT\"}\n{\"schema\":1,\"at\":\"2026-10-07T10:26:57.965Z\",\"runId\":\"t57-public-race-correction-gate-test-20261007\",\"admitted\":true,\"resourceInvalid\":false,\"exitCode\":0,\"decision\":\"valid\",\"code\":\"RESOURCE_FINAL_DECISION\"}\n"
+    }
+  ],
+  "limits": [
+    "The first two attempts were guard refusals before any test child: missing profile directory, then unsafe pressure. They are environment evidence, not test failures or a source RED.",
+    "No native public-site workflow was dispatched. Chrome debugger co-attachment, genuine HN repeatability, cancellation behavior, old/current callback delivery, and T57 acceptance remain unverified.",
+    "The in-memory SUT mutants provide source guard RED evidence only; no production or shared QA file was weakened on disk."
+  ],
+  "next_action": "Fresh independent review of commit 8e84f3aa and this evidence, then root-owned one bounded exact-artifact native public HN preflight if accepted.",
+  "protocol_basis": "https://chromedevtools.github.io/devtools-protocol/tot/Fetch/"
+}
