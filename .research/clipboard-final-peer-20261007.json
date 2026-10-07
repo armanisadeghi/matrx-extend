@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "artifact_type": "clipboard-final-procedure-peer-review",
+  "reviewed_artifact": ".research/clipboard-procedures-20261007.json",
+  "reviewed_commit": "45dc0744a0cd0ab42bd2fa8f23651e7ca09cf82c",
+  "runtime_status": "unverified",
+  "a_procedure_usability": {
+    "verdict": "The four prior procedural findings are addressed; the proposals are usable for controlled direct-handler checks, subject to the stated disposable OS clipboard and focus conditions.",
+    "addressed_findings": [
+      {
+        "id": "P1",
+        "status": "addressed",
+        "evidence": "get_clipboard now checks/grants clipboardRead in Settings on the disposable profile, records prior state, and treats manual-run failures as exact observations rather than dispatcher denial."
+      },
+      {
+        "id": "P2",
+        "status": "addressed",
+        "evidence": "Each case requires reloading the identified existing extension and recording exact-handler availability, displayed schema, and relevant permission state; unchecked dimensions remain unverified with a reason."
+      },
+      {
+        "id": "P3",
+        "status": "addressed",
+        "evidence": "The shared runner rule requires confirming the owned HTTPS tab is selected immediately before every positive, invalid, setup, or cleanup Run, and recording only its owned URL."
+      },
+      {
+        "id": "P4",
+        "status": "addressed",
+        "evidence": "A final cleanup requires an exact result and, on failure, removal of the OS context from use until an owned local clear; prior clipboard contents are never inspected or claimed restored."
+      }
+    ],
+    "new_procedural_breaks": [],
+    "notes": [
+      "The clipboard case also clears its fixture before the shared final cleanup; this is redundant but safe and does not imply restoration of prior contents.",
+      "The exact expected clipboard results remain proposals, not observations. If the disposable OS-level clipboard or focused target condition is unavailable, the procedure itself directs the operator to stop or leave the dimension unverified."
+    ]
+  },
+  "b_source_quality": {
+    "verdict": "The corrected artifact provides specific, relevant source references and keeps direct-runner limitations distinct from dispatcher behavior; independent source-code verification was outside this review, so the cited implementation details remain unverified here.",
+    "runtime_status": "unverified",
+    "source_inspection": "not performed",
+    "limits": [
+      "No browser execution, tests, build, source-code inspection, inventory mutation, database access, secret access, or role/permission result was performed or observed.",
+      "No runtime or member/admin outcome is established by this review."
+    ]
+  }
+}
