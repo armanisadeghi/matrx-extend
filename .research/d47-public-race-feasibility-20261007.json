@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "role": "read-only public-site D47 ordered-race feasibility",
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "scope": "Source and retained-evidence audit only. No browser, test, build, workflow, release, implementation, or new acceptance claim.",
+  "verdict": "EXISTING_ROUTE_CANNOT_EXECUTE_INTEGRATED_PUBLIC_RACE_AS_IS",
+  "basis": {
+    "acceptance_contract": "SHOWCASE-PLAN.md requires installed extension exercised on real public sites and explicitly excludes localhost/test-server acceptance. Inventory T57 requires initial-load recipe capture or honest guidance, a prior-document response held across navigation, old then current release, and provenance-based output comparison.",
+    "existing_public_route": "The public HN driver opens https://hn.algolia.com/?q=OpenAI, captures the real initial page-load request, saves an owned recipe, runs it once, observes a terminal exact result or honest guidance, then removes the recipe. It has no held-response state, response-order control, or navigation between old and current releases.",
+    "existing_ordered_race_route": "The document-lifecycle driver starts tests/fixtures/showcase-replay/serve.mjs on 127.0.0.1, calls its /control/document-race endpoints, and uses fixtureHost for the saved recipe. Its held requests and page results are controlled fixture traffic. Reusing this route would violate the public-site acceptance contract; substituting fixture output for HN output would also break real-response provenance.",
+    "retained_audit": "The original closure audit already records the precise unresolved integrated step: no receipt-bound installed run combines initial-load public recipe capture with matching prior/current responses held and released in order. Separate public replay and fixture race receipts do not compose into that run."
+  },
+  "evidence_anchors": [
+    {
+      "path": "docs/stabilization/SHOWCASE-PLAN.md",
+      "lines": "15-25",
+      "fact": "Installed-extension acceptance uses real public websites; localhost and test-server fixture results are not acceptance."
+    },
+    {
+      "path": "docs/stabilization/inventory.json",
+      "lines": "19740-19755",
+      "fact": "T57 requires initial-load capture or honest retrigger guidance, old response pending across navigation, old then current release, and current-document provenance."
+    },
+    {
+      "path": "tests/browser/showcase-d47-public-initial-load.mjs",
+      "lines": "24-26, 440-454, 553-593",
+      "fact": "The native public driver uses real HN/Algolia traffic, saves and runs the recipe once, and observes exact result or honest guidance. No response hold or cross-document release appears in this path."
+    },
+    {
+      "path": "tests/browser/showcase-d47-document-lifecycle.mjs",
+      "lines": "94-115, 538-556, 688-700, 861-895",
+      "fact": "The ordered race is controlled by a spawned local fixture server and explicit release endpoints; the prior-saved case validates distinct second-run traces and before/after terminal state against fixture data."
+    },
+    {
+      "path": "src/lib/data-pattern/document-network-capture.ts",
+      "lines": "434-448, 451-465",
+      "fact": "A document/context replacement invalidates the active replay and reports that the replay document was replaced; the capture owns a Chrome debugger event listener and arms Page reload handling."
+    },
+    {
+      "path": ".research/d47-original-closure-audit-20261007.json",
+      "lines": "31-42, 89-111",
+      "fact": "The integrated public ordered-race evidence remains missing; existing evidence is deliberately bounded to separate public and controlled runs."
+    }
+  ],
+  "safe_future_route": {
+    "status": "POSSIBLE_ONLY_WITH_A_NEW_RECEIPT_BOUND_DRIVER_PATH_AND_NATIVE_INTERCEPTION_PREFLIGHT",
+    "sequence": [
+      "Use the existing exact-artifact native harness and public HN initial-capture/save path; keep a uniquely named owned recipe and the real HN page as the only target.",
+      "After a saved replay starts, pause only the exact matching real HN request at the network response stage using browser protocol timing interception. Do not fulfill, synthesize, replace, edit, or replay a response body. Record only safe match metadata and a body digest; continue the original network response unchanged.",
+      "While the old response is pending, navigate/reload the same owned tab to HN and positively observe the new main-frame execution context. Pause the matching current response, continue the old response first and the current response second, and record lifecycle outcomes for both. If navigation cancels either request or either exact match is absent/ambiguous, classify the ordered step unverified rather than treating cancellation as delivery.",
+      "Use the existing positive worker/binding trace approach to record the current run's handshake, matching packet, context identity, and commit order. Require the exact current saved terminal result after current release, or an explicit honest document-replaced/no-match refusal. Absence of an old callback alone is not a pass; retain current positive control and old-request lifecycle evidence, and preserve the existing delivered-stale-event causal guards.",
+      "Remove only the uniquely owned recipe and disable/detach only interception state established by this run. Independently review the exact artifact, source/driver identity, trace, terminal UI, and cleanup."
+    ],
+    "interception_classification": "Timing-only interception of genuine remote HN network traffic. It may delay an already received response and then continue that same response unchanged; it must never provide or alter response content. This would be new native-driver instrumentation, not a capability exercised by either existing D47 route.",
+    "preflight_gates": [
+      "Prove the current native harness can observe and pause the owned public target's response-stage Fetch event while the extension's own debugger lease is active, or establish a safe sequencing point that avoids concurrent debugger attachment without changing product runtime behavior.",
+      "Require a unique actual HN request matching the saved matcher and stable request identity across the navigation. If HN emits no matching current response, different request identity, or an ambiguous response, stop with unverified setup rather than substituting a fixture or synthetic response.",
+      "Prove the intercepted request resumes unchanged and retain independent old/current lifecycle facts; an aborted request or server-side finish is not equivalent to delivered callback evidence."
+    ]
+  },
+  "technical_blocker": "No existing D47 public driver provides response-stage pause/continue or an old-then-current navigation sequence, while the only existing ordered driver is coupled to a localhost controlled server. Therefore no currently executable route satisfies the integrated public T57 step. A source/harness extension and a native interception-ownership preflight are prerequisites; source inspection alone cannot claim that response-stage interception will coexist safely with the extension debugger or that HN will reproduce the exact matching request across navigation.",
+  "claim_limit": "This report establishes route feasibility from source and evidence only. It neither proves browser-level interception feasibility nor changes T57/D47 status. The proposed timing-only route must be reviewed and executed against real public traffic before it can support acceptance."
+}
