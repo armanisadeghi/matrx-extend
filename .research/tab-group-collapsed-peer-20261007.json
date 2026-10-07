@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "review": "fresh independent review of repair commit 13f95e1f5cbf7732e39580fad0c7030f58425359 for EXT-D-0148",
+  "verdict_a_source_capability": {
+    "status": "PASS",
+    "finding": "The canonical create delegate now forwards the exposed collapsed boolean to the existing create_tab_group leaf, preserving both true and false. The change matches the canonical merger's no-capability-loss charter.",
+    "evidence": [
+      "The owned source diff changes only the collapsed field comment and adds collapsed: args.collapsed to the create delegate arguments; the two new guarded cases cover true and false.",
+      "The leaf schema accepts collapsed?: boolean and its Chrome tabGroups.update call receives args.collapsed, confirming this is an existing leaf capability.",
+      "The create mapping still forwards tab_ids, title, and color; update and add/remove/list mappings are unchanged. No sibling field regression is visible in the source diff.",
+      "The previous inline comment and DB description scoped collapse to update. As the canonical defect record correctly notes, accepted schema input alone does not establish a defect; the source repair is justified by the existing leaf capability and merger charter."
+    ],
+    "separate_discovery": "The leaf also accepts window_id, which the canonical schema does not expose. This remains a separate contract-scope discovery and is outside this exposed-field forwarding repair."
+  },
+  "verdict_b_evidence_quality": {
+    "status": "PASS_WITH_LIMITS",
+    "finding": "The supplied evidence package supports the claimed source repair and verification sequence. The source/test and five successful-or-failing run journal hashes match the report. Native behavior remains unverified, so this review does not close native acceptance.",
+    "evidence": [
+      "The fix report records guarded RED with exactly two collapsed forwarding failures and 71 sibling passes, followed by GREEN 73/73; the corresponding red2 and green journals show admitted runs and the expected child exit codes. The journals themselves contain resource decisions, not stdout, so counts are corroborated by the fix report rather than independently visible in journal text.",
+      "The compile2, catalog, and docs journals each record an admitted run with child exit code 0 and a valid final decision; the fix report identifies pnpm compile, 167-tool catalog generation, and 81-tool docs generation respectively.",
+      "SHA-256 checks match the fix report for canonical-mergers.ts, canonical-delegate-contract.test.ts, and the red2, green, compile2, catalog, and docs journals.",
+      "The initial RED and initial compile journals are explicitly refused attempts; the report relies on the later admitted red2 and compile2 runs, which is appropriate."
+    ],
+    "limits": [
+      "No independent test, browser, or native Chrome run was performed in this review.",
+      "The fix report records native and release status as unverified; the canonical defect must remain open for native verification."
+    ]
+  },
+  "scope": "No product code, tests, canonical defect record, browser state, or release artifacts were changed by this peer review."
+}
