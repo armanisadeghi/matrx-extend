@@ -14,6 +14,7 @@ import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 import {
   assessD47StaleTrace,
   assessD47Trace,
+  captureD47SaveClick,
   cleanupD47Probe,
   discoveryTerminal,
   sanitizeD47Failure,
@@ -71,6 +72,7 @@ let probeWorker;
 let probeInstallAttempted = false;
 let activePanel;
 let saveObservation = null;
+let saveClickEvidence = null;
 let patternsObservation = null;
 let ownedRecipe = null;
 let ownedHost = null;
@@ -499,7 +501,13 @@ try {
             false,
             'save_button_disabled',
           );
-          await click(panel, 'button-text', 'Save');
+          saveClickEvidence = {};
+          report.save_click = saveClickEvidence;
+          await captureD47SaveClick(
+            panel,
+            () => readSaveObservation(panel, recipe),
+            saveClickEvidence,
+          );
           const saveState = await waitFor(
             'recipe_save_terminal',
             async () => {
@@ -890,6 +898,7 @@ try {
     saved_result: report.saved_result,
     trace_assessment: report.trace_assessment ?? null,
     save_observation: saveObservation,
+    save_click: saveClickEvidence,
     patterns_observation: patternsObservation,
     native_stage: report.native_stage ?? null,
     auth_stage: report.auth_stage ?? null,

@@ -1,5 +1,66 @@
 import assert from 'node:assert/strict';
-import { evaluate, waitFor } from './settings-panel-driver.mjs';
+import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
+
+const SAVE_CLICK_CODES = new Set([
+  'pointer_initial_evaluation_failed',
+  'pointer_page_sample_failed',
+  'pointer_target_not_unique',
+  'pointer_followup_evaluation_failed',
+  'pointer_stable_hit_not_observed',
+  'pointer_press_dispatch_failed',
+  'pointer_release_dispatch_failed',
+]);
+const SAVE_CLICK_PHASES = new Set([
+  'target_selected',
+  'press_attempted',
+  'press_returned',
+  'release_attempted',
+  'release_returned',
+]);
+
+export function safeD47SaveClickFailure(error) {
+  const failure = error?.driverFailure;
+  const safeCount = (value) => (Number.isInteger(value) && value >= 0 ? value : null);
+  return {
+    code: SAVE_CLICK_CODES.has(failure?.code) ? failure.code : 'unclassified_error',
+    sample_stage: [
+      'target_resolution',
+      'visibility_filter',
+      'scroll_preparation',
+      'clipping_geometry',
+      'hit_testing',
+      'animation_observation',
+    ].includes(failure?.sampleStage)
+      ? failure.sampleStage
+      : null,
+    matched_target_count: safeCount(failure?.matchedTargetCount),
+    visible_match_count: safeCount(failure?.visibleMatchCount),
+    hit_target: typeof failure?.hitTarget === 'boolean' ? failure.hitTarget : null,
+    stable_samples: safeCount(failure?.stableSamples),
+  };
+}
+
+export async function captureD47SaveClick(panel, readObservation, evidence) {
+  evidence.entered = true;
+  evidence.completed = false;
+  evidence.phase = 'entered';
+  try {
+    await click(panel, 'button-text', 'Save', (phase) => {
+      if (SAVE_CLICK_PHASES.has(phase)) evidence.phase = phase;
+    });
+    evidence.completed = true;
+  } catch (error) {
+    evidence.error = safeD47SaveClickFailure(error);
+    throw error;
+  }
+  try {
+    evidence.first_post_click_read = { observation: await readObservation() };
+  } catch (error) {
+    evidence.first_post_click_read = {
+      error_code: sanitizeD47Failure(error, 'save_first_post_click_read').message_code,
+    };
+  }
+}
 
 export function discoveryTerminal(state) {
   return state?.discovering === false && state.responses === true && state.error === false;

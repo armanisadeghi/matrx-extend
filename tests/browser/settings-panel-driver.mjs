@@ -110,7 +110,7 @@ export function activeTabPanelExpression(title) {
   })()`;
 }
 
-export async function click(panel, kind, label) {
+export async function click(panel, kind, label, onPhase = undefined) {
   const pointerSample = () =>
     evaluate(
       panel,
@@ -493,7 +493,9 @@ export async function click(panel, kind, label) {
     error.pointerDiagnostic = location?.pointerDiagnostic ?? { sample_unavailable: true };
     throw error;
   }
+  onPhase?.('target_selected');
   try {
+    onPhase?.('press_attempted');
     await panel.send('Input.dispatchMouseEvent', {
       type: 'mousePressed',
       x: location.x,
@@ -501,10 +503,12 @@ export async function click(panel, kind, label) {
       button: 'left',
       clickCount: 1,
     });
+    onPhase?.('press_returned');
   } catch {
     throw pointerFailure('pointer_press_dispatch_failed', location);
   }
   try {
+    onPhase?.('release_attempted');
     await panel.send('Input.dispatchMouseEvent', {
       type: 'mouseReleased',
       x: location.x,
@@ -512,6 +516,7 @@ export async function click(panel, kind, label) {
       button: 'left',
       clickCount: 1,
     });
+    onPhase?.('release_returned');
   } catch {
     throw pointerFailure('pointer_release_dispatch_failed', location);
   }

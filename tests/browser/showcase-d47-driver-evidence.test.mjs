@@ -3,8 +3,10 @@ import { test } from 'node:test';
 import {
   assessD47StaleTrace,
   assessD47Trace,
+  captureD47SaveClick,
   cleanupD47Probe,
   discoveryTerminal,
+  safeD47SaveClickFailure,
   sanitizeD47Failure,
 } from './showcase-d47-driver-evidence.mjs';
 import { isD47StaleRefusal } from './showcase-d47-saved-result.mjs';
@@ -72,6 +74,138 @@ test('seed discovery only ends after capture window reaches terminal UI', () => 
   assert.equal(discoveryTerminal({ discovering: false, responses: true, error: false }), true);
   assert.equal(discoveryTerminal({ discovering: false, responses: false, error: false }), false);
   assert.equal(discoveryTerminal({ discovering: false, responses: true, error: true }), false);
+});
+
+test('Save click receipt preserves safe target failure before dispatch', async () => {
+  const evidence = {};
+  const sends = [];
+  await assert.rejects(
+    captureD47SaveClick(
+      {
+        async send(method) {
+          sends.push(method);
+          return { result: { value: { count: 2, matchedCount: 2 } } };
+        },
+      },
+      async () => {
+        throw new Error('read must not run');
+      },
+      evidence,
+    ),
+    /unique visible pointer target/,
+  );
+  assert.deepEqual(sends, ['Runtime.evaluate']);
+  assert.deepEqual(evidence, {
+    entered: true,
+    completed: false,
+    phase: 'entered',
+    error: {
+      code: 'pointer_target_not_unique',
+      sample_stage: null,
+      matched_target_count: 2,
+      visible_match_count: 2,
+      hit_target: false,
+      stable_samples: 0,
+    },
+  });
+  assert.deepEqual(
+    safeD47SaveClickFailure({
+      driverFailure: {
+        code: 'https://private/?token=secret',
+        matchedTargetCount: 'secret',
+        sampleStage: 'private_stage',
+        hitTarget: 'secret',
+        stableSamples: -1,
+      },
+    }),
+    {
+      code: 'unclassified_error',
+      sample_stage: null,
+      matched_target_count: null,
+      visible_match_count: null,
+      hit_target: null,
+      stable_samples: null,
+    },
+  );
+});
+
+test('Save click receipt orders returned release before first post-click observation', async () => {
+  const events = [];
+  const evidence = {};
+  const panel = {
+    async send(method, args) {
+      if (method === 'Runtime.evaluate') {
+        events.push('sample');
+        return {
+          result: {
+            value: { count: 1, matchedCount: 1, x: 20, y: 30, hitTarget: true, animating: false },
+          },
+        };
+      }
+      events.push(args.type);
+      return {};
+    },
+  };
+  await captureD47SaveClick(
+    panel,
+    async () => {
+      events.push('first_read');
+      return { popover_visible: false, saved_summary_visible: true };
+    },
+    evidence,
+  );
+  assert.deepEqual(events.slice(-3), ['mousePressed', 'mouseReleased', 'first_read']);
+  assert.deepEqual(evidence, {
+    entered: true,
+    completed: true,
+    phase: 'release_returned',
+    first_post_click_read: { observation: { popover_visible: false, saved_summary_visible: true } },
+  });
+});
+
+test('Save click receipt separates dispatch failure from first read failure', async () => {
+  const sample = {
+    result: {
+      value: { count: 1, matchedCount: 1, x: 20, y: 30, hitTarget: true, animating: false },
+    },
+  };
+  const pressEvidence = {};
+  await assert.rejects(
+    captureD47SaveClick(
+      {
+        async send(method, args) {
+          if (method === 'Runtime.evaluate') return sample;
+          if (args.type === 'mousePressed') throw new Error('https://private/?token=secret');
+          return {};
+        },
+      },
+      async () => {
+        throw new Error('read must not run');
+      },
+      pressEvidence,
+    ),
+  );
+  assert.equal(pressEvidence.phase, 'press_attempted');
+  assert.equal(pressEvidence.completed, false);
+  assert.equal(pressEvidence.error.code, 'pointer_press_dispatch_failed');
+  assert.equal(pressEvidence.first_post_click_read, undefined);
+  const readEvidence = {};
+  await captureD47SaveClick(
+    {
+      async send(method) {
+        return method === 'Runtime.evaluate' ? sample : {};
+      },
+    },
+    async () => {
+      throw new Error('https://private/?token=secret');
+    },
+    readEvidence,
+  );
+  assert.equal(readEvidence.completed, true);
+  assert.equal(readEvidence.phase, 'release_returned');
+  assert.deepEqual(readEvidence.first_post_click_read, {
+    error_code: 'unclassified_error',
+  });
 });
 
 test('current request provenance accepts both Chrome event orderings and context teardown forms', () => {

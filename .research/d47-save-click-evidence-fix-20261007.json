@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "scope": "Save click evidence only; no native run, product behavior, selector, timeout, acceptance oracle, database, build, or release change",
+  "source_failure": "native run 37578280425 stopped inside generic Save click; sanitized receipt lost driverFailure and first post-click read never ran",
+  "repair": "Record click entered/completed, allowlisted pointer target and hit counts, actual helper phases around pressed/released CDP calls, and separate first post-click observation or sanitized read-error code. Attempted dispatch is distinguished from returned dispatch; neither proves application receipt.",
+  "safe_receipt_proof": [
+    "two visible Save targets produce pointer_target_not_unique, counts 2/2, no Input dispatch",
+    "press transport exception produces pointer_press_dispatch_failed at press_attempted, not a false completed click",
+    "returned mouseReleased precedes first post-click observation",
+    "first post-click read exception stores only unclassified_error, while completed click remains true",
+    "raw URL/token-like error code and malformed fields are excluded by allowlist"
+  ],
+  "test_command": "node scripts/stabilization-resource.mjs run --run-id <run_id> --profile-dir /Volumes/Samsung2TB/code/matrx-extend -- node --test tests/browser/showcase-d47-driver-evidence.test.mjs",
+  "runs": [
+    {
+      "run_id": "d47-save-click-evidence-test-20261007-a",
+      "journal": "docs/stabilization/resource-journals/d47-save-click-evidence-test-20261007-a.jsonl",
+      "journal_sha256": "d8caac77859580a20400d1a5284a59f630ccaeb9e6cb86444874526acecf12dd",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit": 0,
+      "test_result": "19 passed, 0 failed",
+      "source_test_hashes": "not captured before first formatting pass"
+    },
+    {
+      "run_id": "d47-save-click-evidence-test-20261007-final",
+      "journal": "docs/stabilization/resource-journals/d47-save-click-evidence-test-20261007-final.jsonl",
+      "journal_sha256": "2ba8fe79ce7f913019cef2015238cc3458aaf26c5f415cc280c73f9c19459119",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit": 0,
+      "test_result": "19 passed, 0 failed",
+      "source_test_sha256": {
+        "tests/browser/settings-panel-driver.mjs": "a37776dfa52215c17734f44261c28c588386e72d51f2d5d5d6882b99042b6ff9",
+        "tests/browser/showcase-d47-document-lifecycle.mjs": "992d62bf6d521a471e6f5523de271c4ec1b19ab4fecc6b43394658216f21c304",
+        "tests/browser/showcase-d47-driver-evidence.mjs": "fc6c3b9859a39b6aa2e5769dc42408e4dda79098ed58458e62c5e1d8431ef5ea",
+        "tests/browser/showcase-d47-driver-evidence.test.mjs": "8c8d7425680ced6d383ea91836880ea3d86b9fb321fd1deffad86cc68b253b91"
+      }
+    },
+    {
+      "run_id": "d47-save-click-evidence-test-20261007-importfinal",
+      "journal": "docs/stabilization/resource-journals/d47-save-click-evidence-test-20261007-importfinal.jsonl",
+      "journal_sha256": "6598fbbaa10deae2f822393402b0844b8931dd1f9cd4aa59c093df493fc69681",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit": 0,
+      "test_result": "19 passed, 0 failed",
+      "source_test_sha256": {
+        "tests/browser/settings-panel-driver.mjs": "a37776dfa52215c17734f44261c28c588386e72d51f2d5d5d6882b99042b6ff9",
+        "tests/browser/showcase-d47-document-lifecycle.mjs": "3aff7abc15abeeca56614026b8572c8f4b0dac4c289980079322439854a29f33",
+        "tests/browser/showcase-d47-driver-evidence.mjs": "fc6c3b9859a39b6aa2e5769dc42408e4dda79098ed58458e62c5e1d8431ef5ea",
+        "tests/browser/showcase-d47-driver-evidence.test.mjs": "c9aeed1b91ac88890d56949549f24e254f25e0ce2913bb9f8d2b0a1c1fbafa27"
+      }
+    },
+    {
+      "run_id": "d47-save-click-evidence-test-20261007-recorded",
+      "journal": "docs/stabilization/resource-journals/d47-save-click-evidence-test-20261007-recorded.jsonl",
+      "journal_sha256": "f624a0e07758864b74f1559d7a4e2af13b4d968e6a30462f0bba5676b4710dc5",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit": 0,
+      "test_result": "19 passed, 0 failed",
+      "source_test_sha256": {
+        "tests/browser/settings-panel-driver.mjs": "a37776dfa52215c17734f44261c28c588386e72d51f2d5d5d6882b99042b6ff9",
+        "tests/browser/showcase-d47-document-lifecycle.mjs": "3aff7abc15abeeca56614026b8572c8f4b0dac4c289980079322439854a29f33",
+        "tests/browser/showcase-d47-driver-evidence.mjs": "fc6c3b9859a39b6aa2e5769dc42408e4dda79098ed58458e62c5e1d8431ef5ea",
+        "tests/browser/showcase-d47-driver-evidence.test.mjs": "c9aeed1b91ac88890d56949549f24e254f25e0ce2913bb9f8d2b0a1c1fbafa27"
+      },
+      "stdout_path": ".research/d47-save-click-evidence-test-20261007-recorded.out",
+      "stdout_sha256": "b7085adb33b26f1112f7ff952fc48840a6df911a51df99547f493d1c1c292e8e"
+    }
+  ],
+  "lint": "pnpm exec biome check on four touched files exited 0; three pre-existing style warnings",
+  "process_correction": "The first three launches did not retain stdout or all source/test hashes. The fourth exact guarded launch redirected both streams to the owned .out file before starting; future lanes should capture stdout and hashes up front. Earlier runs are corroboration only.",
+  "remaining": "Fresh independent review of the optional shared settings-panel-driver phase callback; full native stale-only replay and T57 acceptance remain unverified."
+}
