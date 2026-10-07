@@ -11,9 +11,7 @@
       "dirty_paths": [],
       "stashes": [],
       "unmerged_branches": [],
-      "worktrees": [
-        "/Volumes/Samsung2TB/code  0276d4d [main]"
-      ],
+      "worktrees": ["/Volumes/Samsung2TB/code  0276d4d [main]"],
       "fetch_verified": true
     },
     {
@@ -26,9 +24,7 @@
       "dirty_paths": [],
       "stashes": [],
       "unmerged_branches": [],
-      "worktrees": [
-        "/Volumes/Samsung2TB/code/aidream  14c58181e2 [main]"
-      ],
+      "worktrees": ["/Volumes/Samsung2TB/code/aidream  14c58181e2 [main]"],
       "fetch_verified": true
     },
     {
@@ -41,9 +37,7 @@
       "dirty_paths": [],
       "stashes": [],
       "unmerged_branches": [],
-      "worktrees": [
-        "/Volumes/Samsung2TB/code/ai-matrx  f6c041846f [main]"
-      ],
+      "worktrees": ["/Volumes/Samsung2TB/code/ai-matrx  f6c041846f [main]"],
       "fetch_verified": true
     },
     {
@@ -61,9 +55,7 @@
       ],
       "stashes": [],
       "unmerged_branches": [],
-      "worktrees": [
-        "/Volumes/Samsung2TB/code/matrx-extend  0b315220 [main]"
-      ],
+      "worktrees": ["/Volumes/Samsung2TB/code/matrx-extend  0b315220 [main]"],
       "fetch_verified": true
     },
     {
@@ -76,9 +68,7 @@
       "dirty_paths": [],
       "stashes": [],
       "unmerged_branches": [],
-      "worktrees": [
-        "/Volumes/Samsung2TB/code/matrx-local  98c06b1f [main]"
-      ],
+      "worktrees": ["/Volumes/Samsung2TB/code/matrx-local  98c06b1f [main]"],
       "fetch_verified": true
     },
     {
@@ -91,9 +81,7 @@
       "dirty_paths": [],
       "stashes": [],
       "unmerged_branches": [],
-      "worktrees": [
-        "/Volumes/Samsung2TB/code/matrx-sandbox  9399769 [main]"
-      ],
+      "worktrees": ["/Volumes/Samsung2TB/code/matrx-sandbox  9399769 [main]"],
       "fetch_verified": true
     },
     {
@@ -106,9 +94,7 @@
       "dirty_paths": [],
       "stashes": [],
       "unmerged_branches": [],
-      "worktrees": [
-        "/Volumes/Samsung2TB/code/matrx-ship  c67276c [main]"
-      ],
+      "worktrees": ["/Volumes/Samsung2TB/code/matrx-ship  c67276c [main]"],
       "fetch_verified": true
     },
     {
@@ -121,9 +107,7 @@
       "dirty_paths": [],
       "stashes": [],
       "unmerged_branches": [],
-      "worktrees": [
-        "/Volumes/Samsung2TB/code/my-matrx  0f05c28 [main]"
-      ],
+      "worktrees": ["/Volumes/Samsung2TB/code/my-matrx  0f05c28 [main]"],
       "fetch_verified": true
     },
     {
@@ -136,9 +120,7 @@
       "dirty_paths": [],
       "stashes": [],
       "unmerged_branches": [],
-      "worktrees": [
-        "/Volumes/Samsung2TB/code/matrx-common-docs  bc49a62cb [main]"
-      ],
+      "worktrees": ["/Volumes/Samsung2TB/code/matrx-common-docs  bc49a62cb [main]"],
       "fetch_verified": true
     },
     {
@@ -151,9 +133,7 @@
       "dirty_paths": [],
       "stashes": [],
       "unmerged_branches": [],
-      "worktrees": [
-        "/Volumes/Samsung2TB/code/matrx-package-template  2e16e02 [main]"
-      ],
+      "worktrees": ["/Volumes/Samsung2TB/code/matrx-package-template  2e16e02 [main]"],
       "fetch_verified": true
     }
   ]
