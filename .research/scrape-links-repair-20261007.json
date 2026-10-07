@@ -1,8 +1,8 @@
 {
   "task_id": "scrape-links-repair-20261007",
   "lane": "guest Scrape warm Links acceptance driver",
-  "status": "source_repair_ready_native_retest_pending",
-  "source_commit": "f8c0ad58",
+  "status": "source_review_addressed_native_retest_pending",
+  "source_commits": ["f8c0ad58", "42a51b13"],
   "original_run": {
     "id": 37670744036,
     "case": "EXT-F-1007-T13",
@@ -21,17 +21,23 @@
   },
   "repair": {
     "files": [
+      "tests/browser/settings-panel-driver.mjs",
       "tests/browser/scrape-native-media-actions.mjs",
       "tests/browser/scrape-native-media-actions.test.mjs"
     ],
-    "behavior": "Bounded DOM readiness polling precedes the native Copy click after the opened tab closes. Missing, sibling, wrong-tab, and duplicate targets still fail; resource admission and trusted pointer clicking are unchanged."
+    "behavior": "Bounded DOM readiness polling precedes the native Copy click after the opened tab closes. Readiness and pointer resolution both accept an ordinary Copy title or a tooltip-migrated data-matrx-title. Missing, sibling, wrong-tab, and duplicate targets still fail; resource admission and trusted pointer clicking are unchanged."
   },
   "verification": {
     "causal_red": "Before the repair, the selected-tab restoration test failed with pointer_target_not_unique and the sibling-target rejection test failed with Missing expected rejection.",
-    "green": "node --test tests/browser/scrape-native-media-actions.test.mjs: 20 passed, 0 failed after formatting and mutation restore.",
-    "mutation": "plant.py changed readiness acceptance to unconditional true for the focused test; it failed with pointer_target_not_unique, then restored the source byte-for-byte.",
-    "format": "pnpm exec biome format --write on both changed .mjs files; git diff --check passed.",
+    "green": "node --test tests/browser/scrape-native-media-actions.test.mjs tests/browser/settings-native-auth-driver.test.mjs: 31 passed, 0 failed after formatting and mutation restore.",
+    "mutation": "plant.py changed readiness acceptance to unconditional true for the restoration test, then reverted the pointer resolver to title-only for the tooltip-migration test. Each failed with pointer_target_not_unique and restored its source byte-for-byte.",
+    "format": "pnpm exec biome format --write on three changed .mjs files; the ignored .research JSON was passed through Biome stdin formatting and compared byte-for-byte; git diff --check passed.",
     "native": "pending independent hosted run on a fresh development artifact from this source or newer"
+  },
+  "independent_review_followup": {
+    "review": ".research/scrape-links-repair-peer-20261007.json",
+    "finding": "Readiness accepted a data-matrx-title-only Copy button while the native pointer resolver matched only title.",
+    "resolution": "The real pointer resolver and readiness check now use the same title or tooltip-migrated title contract. A focused DOM test invokes the actual native pointer resolver for both forms and confirms trusted mouse dispatch."
   },
   "limitations": [
     "The original hosted run used an older artifact and stopped before the remaining Scrape lifecycle cases.",
