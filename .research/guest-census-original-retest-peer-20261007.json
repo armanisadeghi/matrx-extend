@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent_native_review",
+  "reviewed_artifact": ".research/guest-census-original-retest-20261007.json",
+  "reviewed_defect": "docs/stabilization/defects/EXT-D-0149.json",
+  "run_id": 37624678750,
+  "reviewed_commit": "139ce38a6817812f225a45b07143a4e935d388f2",
+  "verdict_a_original_readiness_reproduction": {
+    "verdict": "PASS — original Account-readiness reproduction resolved for this frozen guest run",
+    "basis": [
+      "The run is bound to the exact development run 37619740064 / artifact 11482071536, runtime 0.2.366, source d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef, extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml, and matching tree/archive hashes recorded in the original defect. The hosted harness uses the reviewed readiness fix ac47cc66; the retest report binds the harness checkout and driver hashes.",
+      "The census passed the Account readiness checkpoint, opened the unique Account section within active Settings, and recorded account_visible=true with enabled sign_in_visible=true. No product action control was clicked.",
+      "Before and after census observations both record guest role, signed_out_observed=true, Sign in visible, Sign out absent, and no stored access token, refresh token, profile, or admin role. The harness reads these named keys from chrome.storage.local and checks visible controls in the active Settings panel.",
+      "This resolves the original readiness-discovery failure for this run and frozen runtime. It does not establish complete guest visibility or behavior acceptance."
+    ]
+  },
+  "verdict_b_evidence_quality": {
+    "verdict": "PASS_WITH_LIMITATION",
+    "basis": [
+      "The census result JSON reports native_panel_verified=true and contains the positive readiness and before/after auth observations. The hosted result artifact is identified in the original defect; the retest report records the exact workflow run and result JSON digest.",
+      "All three hosted resource journals are present. Package and browser jobs ended valid; the guest job was admitted with resource_invalid=false and ended child_failed because the census returned incomplete. That child failure is consistent with the reported assertion and is not a resource-invalid run or proof of product failure.",
+      "Artifact scope is explicit: only the frozen 0.2.366 runtime plus reviewed harness readiness retest is supported. Current main was 0.2.368 with a later @supabase/postgrest-js lock delta; current-main census evidence is not established. The report records the current-main and frozen lock hashes and limits evidence transfer accordingly.",
+      "The census is honestly incomplete: 54 observed, 26 mapped, 28 unmapped, 4 unsupported triggers, 4 inaccessible regions, and 0 blocked requests. It has no missing required regions, but that does not make the full inventory complete."
+    ]
+  },
+  "limitations": [
+    "The saved native-side-panel screenshot shows earlier guest Chat, not the later Settings readiness stage; the target-page screenshot is not readiness evidence. The positive Account and auth/storage evidence comes from the run's captured DOM/storage observations in the census result, without a matching Settings-stage screenshot for visual cross-check.",
+    "Chrome version and browser provenance are unavailable in the hosted output; no observed_chrome_version is recorded.",
+    "The run proves only the named readiness predicate and the before/after guest state for frozen 0.2.366. It does not prove behavior, persistence, permission denial, backend access, or member/admin visibility."
+  ],
+  "disposition": {
+    "EXT-D-0149": "Count the original Account-readiness reproduction as resolved for this frozen run. Keep the defect's retest/closure record scoped to readiness; if closure requires its stated complete-region accounting, leave that broader closure condition pending because this census is incomplete.",
+    "EXT-F-0002-T11_and_overall_guest_census": "Do not promote to pass or product fail. Preserve broader guest census/T11 as unverified/incomplete pending unknown and inaccessible region resolution; member/admin remain unverified."
+  },
+  "verification": {
+    "performed": "Read-only review of the retest receipt, census result JSON, all three resource journals, screenshots, defect record, source harness observation contract, and prior independent source review.",
+    "not_performed": [
+      "No tests, browser, database, build, source edits, or new hosted run were performed."
+    ]
+  }
+}
