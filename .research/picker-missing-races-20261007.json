@@ -4,7 +4,7 @@
   "defect_id": "EXT-D-0042",
   "feature_id": "EXT-F-1012",
   "case_ids": ["EXT-F-1012-T24", "EXT-F-1012-T51"],
-  "status": "source_ready_native_unverified",
+  "status": "source_ready_native_unverified_diagnostics_added",
   "scope": "Add the two original missing stale event channels, ITEM_DETECTED and RESULT, to the existing opt-in showcase-stale-admin native controller. The prior EXIT case and B positive control remain in place.",
   "entrypoint": "MATRX_SHOWCASE_STALE_BOUNDARY=1 node tests/browser/showcase-picker-native-acceptance.mjs",
   "causal_sequence": [
@@ -14,10 +14,11 @@
     "Observe A's SW-stamped relay with session, tab, and document identity. Assert B stays active with one overlay and no A root. Select B's three-card events fixture, observe distinct B detection and stamped result in the same tab/document, and extract all three expected event titles."
   ],
   "forcing_function": "A stale handler that stages A detection makes B's root non-null before B selection. One that accepts A result closes B or populates A's builder. A dropped/replaced envelope loses its stamped relay or session identity. A broken current session fails B detection, result, builder, or extraction assertions.",
+  "failure_diagnostic": "Each new stale-channel step sets a fixed target before the browser action or wait. On failure, the receipt retains the channel, failed target, and last safe booleans/counts for panel state, overlay/picked-field count, held/produced messages, and stamped relays. It never copies raw errors, selectors, IDs, credentials, or page text into the diagnostic. A failed A-stamped wait is distinguishable from A capture, cancellation, B detection, B result, and extraction failures.",
   "local_checks": {
-    "command": "node --test tests/browser/showcase-stale-runtime-boundary.test.mjs && node --check tests/browser/showcase-picker-native-acceptance.mjs && pnpm exec biome check tests/browser/showcase-picker-native-acceptance.mjs tests/browser/showcase-stale-runtime-boundary.mjs tests/browser/showcase-stale-runtime-boundary.test.mjs && node JSON parse of this report",
-    "result": "passed; 2 hook tests plus syntax, code format/lint, and report parse checks",
-    "limit": "The hook unit tests use simulated messages to test interception mechanics. Only a guarded hosted native run can credit real producer and stamped relay behavior."
+    "command": "node --test tests/browser/showcase-stale-runtime-boundary.test.mjs tests/browser/showcase-stale-diagnostic.test.mjs && node --check tests/browser/showcase-picker-native-acceptance.mjs && pnpm exec biome check on the touched browser files && node JSON parse of this report",
+    "result": "passed; 2 hook tests, 3 diagnostic tests including failed native-receipt timeout probes for both channels, syntax, code format/lint, and report parse checks",
+    "limit": "The hook unit tests use simulated messages and the timeout probes use synthetic secret-like errors only to test receipt safety. Only a guarded hosted native run can credit real producer and stamped relay behavior."
   },
   "native_result": "UNVERIFIED: this lane cannot run a heavy native build, hosted workflow, or release from this machine. No installed extension acceptance is claimed.",
   "artifact_preconditions": "Existing hosted route requires an exact successful CI development artifact, matching source/run/artifact identifiers, receipt/tree digest, approved admin organization, and admitted resource journals.",

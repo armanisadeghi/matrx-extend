@@ -33,6 +33,10 @@ import {
   stageShowcaseSelection,
 } from './showcase-selection-diagnostic.mjs';
 import {
+  createShowcaseStaleDiagnostic,
+  runShowcaseStaleDiagnosticStep,
+} from './showcase-stale-diagnostic.mjs';
+import {
   STALE_PICKER_KINDS,
   armShowcaseStaleBoundary,
   observeShowcaseRelay,
@@ -79,6 +83,7 @@ const report = {
   failure_code: null,
   organization_diagnostic: null,
   selection_diagnostic: null,
+  stale_diagnostic: null,
   completion_diagnostic: { boundaries: [] },
 };
 let selectionPage = null;
@@ -119,53 +124,137 @@ async function configRoot(panel) {
   );
 }
 
-async function runMissingChannelCycle({ kind, page, panel, boundary, resourceAction }) {
+async function runMissingChannelCycle({ kind, page, panel, boundary, resourceAction, diagnostic }) {
   const label = kind === STALE_PICKER_KINDS.detected ? 'detected' : 'result';
-  await resourceAction(() => click(panel, 'button-text', 'Restart'));
-  await waitFor(
-    `showcase_${label}_ready`,
-    () => panelState(panel),
-    (state) => state?.start,
+  let oldSessionId = null;
+  let currentSessionId = null;
+  const sample = async () => {
+    const [panelRead, rootRead, overlayRead, pickedRead, producerRead, relayRead] =
+      await Promise.allSettled([
+        panelState(panel),
+        configRoot(panel),
+        page.locator('#matrx-list-picker-host').count(),
+        page.locator('#matrx-list-picker-host .picked-item').count(),
+        boundary.snapshot(),
+        readShowcaseRelays(panel),
+      ]);
+    const panelValue = panelRead.status === 'fulfilled' ? panelRead.value : null;
+    const producer = producerRead.status === 'fulfilled' ? producerRead.value : null;
+    const relays = relayRead.status === 'fulfilled' ? relayRead.value : null;
+    return {
+      ...(panelValue && {
+        panel_start: panelValue.start === true,
+        panel_picking: panelValue.picking === true,
+        panel_cancel: panelValue.cancel === true,
+        panel_extract: panelValue.extract === true,
+        panel_selected_field: panelValue.selectedField === true,
+        panel_three_rows: panelValue.rowCount === true,
+      }),
+      ...(rootRead.status === 'fulfilled' && { root_present: rootRead.value !== null }),
+      ...(overlayRead.status === 'fulfilled' && { overlay_count: overlayRead.value }),
+      ...(pickedRead.status === 'fulfilled' && { picked_field_count: pickedRead.value }),
+      ...(producer && {
+        held_count: producer.held.length,
+        producer_count: producer.observed.length,
+        A_held: producer.held.some(
+          (event) => event.kind === kind && event.session_id === oldSessionId,
+        ),
+        B_detected: producer.observed.some(
+          (event) =>
+            event.kind === STALE_PICKER_KINDS.detected && event.session_id === currentSessionId,
+        ),
+      }),
+      ...(Array.isArray(relays) && {
+        relay_count: relays.length,
+        A_stamped: relays.some(
+          (event) =>
+            event.kind === kind &&
+            event.session_id === oldSessionId &&
+            Number.isInteger(event.tab_id) &&
+            typeof event.document_id === 'string',
+        ),
+        B_stamped: relays.some(
+          (event) =>
+            event.kind === STALE_PICKER_KINDS.detected &&
+            event.session_id === currentSessionId &&
+            Number.isInteger(event.tab_id),
+        ),
+        B_result_stamped: relays.some(
+          (event) =>
+            event.kind === STALE_PICKER_KINDS.result &&
+            event.session_id === currentSessionId &&
+            Number.isInteger(event.tab_id),
+        ),
+      }),
+    };
+  };
+  const step = (target, action) =>
+    runShowcaseStaleDiagnosticStep(diagnostic, target, sample, action);
+  await step('restart_before_A', () =>
+    resourceAction(() => click(panel, 'button-text', 'Restart')),
+  );
+  await step('restart_before_A', () =>
+    waitFor(
+      `showcase_${label}_ready`,
+      () => panelState(panel),
+      (state) => state?.start,
+    ),
   );
   assert.equal(await configRoot(panel), null, `showcase_${label}_prior_config_remains`);
-  await boundary.holdNext(kind);
+  await step('A_start', () => boundary.holdNext(kind));
   stage(`start_A_${label}`);
-  await resourceAction(() => click(panel, 'button-text', 'Pick an example item'));
-  await (await pickedOverlay(page)).waitFor({ state: 'attached' });
-  await waitFor(
-    `showcase_A_${label}_picking`,
-    () => panelState(panel),
-    (state) => state?.picking,
+  await step('A_start', () =>
+    resourceAction(() => click(panel, 'button-text', 'Pick an example item')),
   );
-  await resourceAction(() =>
-    clickReachableShowcaseCard(page.locator('#archive article.archive-card').first()),
+  await step('A_start', async () => (await pickedOverlay(page)).waitFor({ state: 'attached' }));
+  await step('A_start', () =>
+    waitFor(
+      `showcase_A_${label}_picking`,
+      () => panelState(panel),
+      (state) => state?.picking,
+    ),
   );
-  await chooseScopeIfNeeded(page, 2);
-  await waitFor(
-    `showcase_A_${label}_scope`,
-    async () => (await pickedOverlay(page)).locator('.badge').allTextContents(),
-    (labels) => labels.some((value) => value.includes('2 items')),
+  await step('A_scope', () =>
+    resourceAction(() =>
+      clickReachableShowcaseCard(page.locator('#archive article.archive-card').first()),
+    ),
+  );
+  await step('A_scope', () => chooseScopeIfNeeded(page, 2));
+  await step('A_scope', () =>
+    waitFor(
+      `showcase_A_${label}_scope`,
+      async () => (await pickedOverlay(page)).locator('.badge').allTextContents(),
+      (labels) => labels.some((value) => value.includes('2 items')),
+    ),
   );
   if (kind === STALE_PICKER_KINDS.result) {
-    await resourceAction(() =>
-      clickReachableShowcaseTarget(
-        page.locator('#archive article.archive-card h2').first(),
-        'field',
+    await step('A_field', () =>
+      resourceAction(() =>
+        clickReachableShowcaseTarget(
+          page.locator('#archive article.archive-card h2').first(),
+          'field',
+        ),
       ),
     );
-    await waitFor(
-      'showcase_A_result_field',
-      async () => (await pickedOverlay(page)).locator('.picked-item').count(),
-      (count) => count === 1,
+    await step('A_field', () =>
+      waitFor(
+        'showcase_A_result_field',
+        async () => (await pickedOverlay(page)).locator('.picked-item').count(),
+        (count) => count === 1,
+      ),
     );
-    await resourceAction(() => page.locator('#matrx-list-picker-host button#done').click());
+    await step('A_field', () =>
+      resourceAction(() => page.locator('#matrx-list-picker-host button#done').click()),
+    );
   }
-  const captured = await waitFor(
-    `showcase_A_${label}_captured`,
-    () => boundary.snapshot(),
-    (value) => value?.held?.length === 1 && value.held[0]?.kind === kind,
+  const captured = await step('A_capture', () =>
+    waitFor(
+      `showcase_A_${label}_captured`,
+      () => boundary.snapshot(),
+      (value) => value?.held?.length === 1 && value.held[0]?.kind === kind,
+    ),
   );
-  const oldSessionId = captured.held[0].session_id;
+  oldSessionId = captured.held[0].session_id;
   assert.match(oldSessionId, /^[0-9a-f-]{36}$/i, `showcase_A_${label}_session_missing`);
   const oldPattern = captured.held[0];
   assert.ok(
@@ -185,49 +274,61 @@ async function runMissingChannelCycle({ kind, page, panel, boundary, resourceAct
     `showcase_A_${label}_wrong_fixture`,
   );
   if (kind === STALE_PICKER_KINDS.result)
-    await waitFor(
-      `showcase_A_${label}_scope_staged`,
-      () => configRoot(panel),
-      (root) => root !== null,
+    await step('A_capture', () =>
+      waitFor(
+        `showcase_A_${label}_scope_staged`,
+        () => configRoot(panel),
+        (root) => root !== null,
+      ),
     );
   stage(`cancel_A_${label}`);
-  await resourceAction(() =>
-    click(panel, 'button-text', kind === STALE_PICKER_KINDS.detected ? 'Cancel' : 'Restart'),
+  await step('A_cancel', () =>
+    resourceAction(() =>
+      click(panel, 'button-text', kind === STALE_PICKER_KINDS.detected ? 'Cancel' : 'Restart'),
+    ),
   );
-  await waitFor(
-    `showcase_A_${label}_cleared`,
-    () => panelState(panel),
-    (state) => state?.start,
+  await step('A_cancel', () =>
+    waitFor(
+      `showcase_A_${label}_cleared`,
+      () => panelState(panel),
+      (state) => state?.start,
+    ),
   );
-  await (await pickedOverlay(page)).waitFor({ state: 'detached' });
+  await step('A_cancel', async () => (await pickedOverlay(page)).waitFor({ state: 'detached' }));
   assert.equal(await configRoot(panel), null, `showcase_A_${label}_config_not_cleared`);
   const observedBeforeB = (await boundary.snapshot()).observed.length;
   stage(`start_B_${label}`);
-  await resourceAction(() => click(panel, 'button-text', 'Pick an example item'));
-  await (await pickedOverlay(page)).waitFor({ state: 'attached' });
-  await waitFor(
-    `showcase_B_${label}_picking`,
-    () => panelState(panel),
-    (state) => state?.picking,
+  await step('B_start', () =>
+    resourceAction(() => click(panel, 'button-text', 'Pick an example item')),
+  );
+  await step('B_start', async () => (await pickedOverlay(page)).waitFor({ state: 'attached' }));
+  await step('B_start', () =>
+    waitFor(
+      `showcase_B_${label}_picking`,
+      () => panelState(panel),
+      (state) => state?.picking,
+    ),
   );
   assert.equal((await boundary.snapshot()).url, page.url(), `showcase_${label}_page_changed`);
   stage(`release_A_${label}`);
   assert.deepEqual(
-    await resourceAction(() => boundary.release(kind, oldSessionId)),
+    await step('A_release', () => resourceAction(() => boundary.release(kind, oldSessionId))),
     { released: true, ack: true },
     `showcase_A_${label}_not_delivered`,
   );
-  const relays = await waitFor(
-    `showcase_A_${label}_stamped`,
-    () => readShowcaseRelays(panel),
-    (events) =>
-      events?.some(
-        (event) =>
-          event.kind === kind &&
-          event.session_id === oldSessionId &&
-          Number.isInteger(event.tab_id) &&
-          typeof event.document_id === 'string',
-      ),
+  const relays = await step('A_stamped', () =>
+    waitFor(
+      `showcase_A_${label}_stamped`,
+      () => readShowcaseRelays(panel),
+      (events) =>
+        events?.some(
+          (event) =>
+            event.kind === kind &&
+            event.session_id === oldSessionId &&
+            Number.isInteger(event.tab_id) &&
+            typeof event.document_id === 'string',
+        ),
+    ),
   );
   const oldRelay = relays.find(
     (event) =>
@@ -244,31 +345,39 @@ async function runMissingChannelCycle({ kind, page, panel, boundary, resourceAct
     `showcase_A_${label}_removed_B`,
   );
   stage(`select_B_${label}`);
-  await resourceAction(() =>
-    clickReachableShowcaseCard(page.locator('#events article.event-card').first()),
+  await step('B_scope', () =>
+    resourceAction(() =>
+      clickReachableShowcaseCard(page.locator('#events article.event-card').first()),
+    ),
   );
-  await chooseScopeIfNeeded(page);
-  await waitFor(
-    `showcase_B_${label}_scope`,
-    async () => (await pickedOverlay(page)).locator('.badge').allTextContents(),
-    (labels) => labels.some((value) => value.includes('3 items')),
+  await step('B_scope', () => chooseScopeIfNeeded(page));
+  await step('B_scope', () =>
+    waitFor(
+      `showcase_B_${label}_scope`,
+      async () => (await pickedOverlay(page)).locator('.badge').allTextContents(),
+      (labels) => labels.some((value) => value.includes('3 items')),
+    ),
   );
-  const currentRoot = await waitFor(
-    `showcase_B_${label}_root`,
-    () => configRoot(panel),
-    (root) => root !== null,
+  const currentRoot = await step('B_scope', () =>
+    waitFor(
+      `showcase_B_${label}_root`,
+      () => configRoot(panel),
+      (root) => root !== null,
+    ),
   );
   assert.notEqual(currentRoot, oldPattern.list_root, `showcase_B_${label}_retained_A_root`);
-  const produced = await waitFor(
-    `showcase_B_${label}_detected`,
-    () => boundary.snapshot(),
-    (value) =>
-      value?.observed
-        ?.slice(observedBeforeB)
-        .some(
-          (event) =>
-            event.kind === STALE_PICKER_KINDS.detected && event.session_id !== oldSessionId,
-        ),
+  const produced = await step('B_detection', () =>
+    waitFor(
+      `showcase_B_${label}_detected`,
+      () => boundary.snapshot(),
+      (value) =>
+        value?.observed
+          ?.slice(observedBeforeB)
+          .some(
+            (event) =>
+              event.kind === STALE_PICKER_KINDS.detected && event.session_id !== oldSessionId,
+          ),
+    ),
   );
   const current = produced.observed.findLast(
     (event, index) =>
@@ -276,53 +385,68 @@ async function runMissingChannelCycle({ kind, page, panel, boundary, resourceAct
       event.kind === STALE_PICKER_KINDS.detected &&
       event.session_id !== oldSessionId,
   );
+  currentSessionId = current?.session_id ?? null;
   assert.match(current.session_id, /^[0-9a-f-]{36}$/i, `showcase_B_${label}_session_missing`);
-  const currentRelays = await waitFor(
-    `showcase_B_${label}_stamped`,
-    () => readShowcaseRelays(panel),
-    (events) =>
-      events?.some(
-        (event) =>
-          event.kind === STALE_PICKER_KINDS.detected &&
-          event.session_id === current.session_id &&
-          event.tab_id === oldRelay.tab_id &&
-          event.document_id === oldRelay.document_id,
-      ),
+  const currentRelays = await step('B_stamped', () =>
+    waitFor(
+      `showcase_B_${label}_stamped`,
+      () => readShowcaseRelays(panel),
+      (events) =>
+        events?.some(
+          (event) =>
+            event.kind === STALE_PICKER_KINDS.detected &&
+            event.session_id === current.session_id &&
+            event.tab_id === oldRelay.tab_id &&
+            event.document_id === oldRelay.document_id,
+        ),
+    ),
   );
   assert.ok(currentRelays, `showcase_B_${label}_relay_missing`);
-  await resourceAction(() =>
-    clickReachableShowcaseTarget(page.locator('#events article.event-card h2').first(), 'field'),
+  await step('B_field', () =>
+    resourceAction(() =>
+      clickReachableShowcaseTarget(page.locator('#events article.event-card h2').first(), 'field'),
+    ),
   );
-  await waitFor(
-    `showcase_B_${label}_field`,
-    async () => (await pickedOverlay(page)).locator('.picked-item').count(),
-    (count) => count === 1,
+  await step('B_field', () =>
+    waitFor(
+      `showcase_B_${label}_field`,
+      async () => (await pickedOverlay(page)).locator('.picked-item').count(),
+      (count) => count === 1,
+    ),
   );
-  await resourceAction(() => page.locator('#matrx-list-picker-host button#done').click());
-  await (await pickedOverlay(page)).waitFor({ state: 'detached' });
-  await waitFor(
-    `showcase_B_${label}_builder`,
-    () => panelState(panel),
-    (state) => state?.selectedField && state.extract,
+  await step('B_done', () =>
+    resourceAction(() => page.locator('#matrx-list-picker-host button#done').click()),
   );
-  const currentResult = await waitFor(
-    `showcase_B_${label}_result_stamped`,
-    () => readShowcaseRelays(panel),
-    (events) =>
-      events?.some(
-        (event) =>
-          event.kind === STALE_PICKER_KINDS.result &&
-          event.session_id === current.session_id &&
-          event.tab_id === oldRelay.tab_id &&
-          event.document_id === oldRelay.document_id,
-      ),
+  await step('B_done', async () => (await pickedOverlay(page)).waitFor({ state: 'detached' }));
+  await step('B_builder', () =>
+    waitFor(
+      `showcase_B_${label}_builder`,
+      () => panelState(panel),
+      (state) => state?.selectedField && state.extract,
+    ),
+  );
+  const currentResult = await step('B_result', () =>
+    waitFor(
+      `showcase_B_${label}_result_stamped`,
+      () => readShowcaseRelays(panel),
+      (events) =>
+        events?.some(
+          (event) =>
+            event.kind === STALE_PICKER_KINDS.result &&
+            event.session_id === current.session_id &&
+            event.tab_id === oldRelay.tab_id &&
+            event.document_id === oldRelay.document_id,
+        ),
+    ),
   );
   assert.ok(currentResult, `showcase_B_${label}_result_missing`);
-  await resourceAction(() => click(panel, 'button-text', 'Extract'));
-  await waitFor(
-    `showcase_B_${label}_rows`,
-    () => panelState(panel),
-    (state) => state?.rowCount && state.hasFirst && state.hasSecond && state.hasThird,
+  await step('B_extract', () => resourceAction(() => click(panel, 'button-text', 'Extract')));
+  await step('B_extract', () =>
+    waitFor(
+      `showcase_B_${label}_rows`,
+      () => panelState(panel),
+      (state) => state?.rowCount && state.hasFirst && state.hasSecond && state.hasThird,
+    ),
   );
   passed(`genuine_A_${label}_rejected_B_extracted`, {
     A_session_id: oldSessionId,
@@ -334,6 +458,28 @@ async function runMissingChannelCycle({ kind, page, panel, boundary, resourceAct
 }
 
 try {
+  if (
+    ['stale_detected_wait', 'stale_result_wait'].includes(
+      process.env.MATRX_SHOWCASE_DIAGNOSTIC_PROBE,
+    )
+  ) {
+    const channel =
+      process.env.MATRX_SHOWCASE_DIAGNOSTIC_PROBE === 'stale_detected_wait' ? 'detected' : 'result';
+    stage(`release_A_${channel}`);
+    report.stale_diagnostic = createShowcaseStaleDiagnostic(channel);
+    await runShowcaseStaleDiagnosticStep(
+      report.stale_diagnostic,
+      'A_stamped',
+      async () => ({ overlay_count: 1, held_count: 0, panel_picking: true, A_stamped: false }),
+      () =>
+        waitFor(
+          `showcase_A_${channel}_stamped`,
+          () => 'private@example.invalid?token=secret',
+          () => false,
+          1,
+        ),
+    );
+  }
   if (
     ['card_click', 'scope_choice', 'field_click', 'field_wait'].includes(
       process.env.MATRX_SHOWCASE_DIAGNOSTIC_PROBE,
@@ -703,20 +849,25 @@ try {
       );
       passed('ordinary_page_click_after_cancel', { click_count: 1 });
       if (boundary) {
+        report.stale_diagnostic = createShowcaseStaleDiagnostic('detected');
         await runMissingChannelCycle({
           kind: STALE_PICKER_KINDS.detected,
           page,
           panel,
           boundary,
           resourceAction,
+          diagnostic: report.stale_diagnostic,
         });
+        report.stale_diagnostic = createShowcaseStaleDiagnostic('result');
         await runMissingChannelCycle({
           kind: STALE_PICKER_KINDS.result,
           page,
           panel,
           boundary,
           resourceAction,
+          diagnostic: report.stale_diagnostic,
         });
+        report.stale_diagnostic = null;
       }
       await boundary?.close();
       await requireResourceHealth();
