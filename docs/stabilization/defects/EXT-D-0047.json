@@ -28,10 +28,10 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Source old-first path independently reviewed at849e0ae5; constant-success telemetry rejected and clean fixture4/4 passed under valid resources at09334779. Await successful exact-artifact CI, then admit one old-first native run. No native job active. Public-site initial-load and remaining fullT57 branches stay unverified; do not rerun accepted current-first case.",
+    "next_action": "d47_oldfirst_native_execution owns sole manual heavy/native permit for one old-first hosted case. Root verified CI37561174202 successful at651f25d0; executor must verify exact artifact and current runtime/harness/lock equivalence, credential preflight, one guarded dispatch and terminal cleanup. No other heavy test admitted.",
     "status": "Run37558902653 on frozen0.2.337/source823724eb passed all resource phases and reached exact settled current-only saved result. Independentpeer9f70b303 accepts bounded result, current handshake/packet/context clearing, observer cleanup and exact owned-recipe removal. OldHTTP finished after current; no old binding callback observed. D47in-fix/T57unverified remain unchanged.",
     "implementation_agent": "completed: d47_reverse_order_case",
-    "execution_agent": "completed: d47_settled_native",
+    "execution_agent": "active: d47_oldfirst_native_execution",
     "native_run_id": 37537634304,
     "workflow_source": "fbcc4311ae6885b67133e55336f692be38881249",
     "development_artifact_id": 11440764124,
