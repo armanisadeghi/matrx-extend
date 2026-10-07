@@ -52,5 +52,20 @@
     "Dispatcher admin, Ask/Act, optional-permission denial, guest applicability, and agent routing remain unverified; manual Tools runner is not evidence for those gates.",
     "Warm and extension-reload passes, attached-tabs baselines, unique owned delta checks, and exact-owned cleanup remain required.",
     "No runtime promotion, test, browser, build, or database activity occurred."
-  ]
+  ],
+  "round2_correction": {
+    "reviewed_peer": ".research/cdp-render-corrected-peer-20261007.json",
+    "finding": "The shared setup created a Wikipedia target while the PDF procedure named example.org, and shared cleanup also hardcoded example.org.",
+    "resolution": "The PDF positive steps and preconditions now name the exact owned Wikipedia fixture. Shared cleanup closes the exact owned tab established for that pass by its recorded ID; it no longer names example.org. The same tall public fixture is consistently used across cases.",
+    "evidence": [
+      ".research/cdp-render-emulation-procedures-20261007.json: shared_setup.owned_target_and_cleanup and case_updates.EXT-F-4111-T01.preconditions/steps",
+      "docs/stabilization/inventory.json:61930-61951 (PDF control and member/admin applicability)",
+      "src/lib/tools/handlers/cdp.ts:498-524 (PDF consumes the selected owned tab and returns pdf_base64/decoded byte_length)"
+    ],
+    "preserved_gaps": [
+      "UA, DPR, and matchMedia observation remain explicitly unverified.",
+      "Manual-runner dispatcher, permission, admin, and agent-routing gaps remain unchanged."
+    ],
+    "status": "proposal-corrected-runtime-unverified"
+  }
 }
