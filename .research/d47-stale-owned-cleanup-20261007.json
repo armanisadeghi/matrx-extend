@@ -1,0 +1,13 @@
+{
+  "defect_id": "EXT-D-0047",
+  "native_run": 37578280425,
+  "observed_at": "2026-10-07T06:01:36.857504+00:00",
+  "operation": "read-only count via connected Supabase MCP",
+  "schema_table": "extend.wbx_pattern",
+  "scope": "Exact unique run-owned recipe name plus auto-suffix prefix; no unrelated rows or values read.",
+  "owned_name": "Codex D47 document race fec0684b-1f8b-4a44-9ddb-b359b92993fa",
+  "exact_count": 0,
+  "name_and_suffix_count": 0,
+  "cleanup": "No persisted run-owned recipe remains at query time; no delete performed.",
+  "limit": "Absence now does not prove whether Save was clicked or inserted then removed. Native failure boundary remains unclassified save-stage; stale/refusal/recovery not exercised."
+}
