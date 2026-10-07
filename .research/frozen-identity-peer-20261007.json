@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "bddbee75cccbdcf23c663fc60d9ff4ea4e24211e",
+  "scope": "Independent source review of frozen native artifact identity; no implementation authorship or native run",
+  "verdict_a_source_readiness": {
+    "status": "PASS",
+    "finding": "The three edited native drivers accept a receipt and manifest from a frozen 0.2.387 development artifact when the checkout is 0.2.388. Their helper still rejects a manifest/receipt version mismatch and an artifact tree mismatch. Existing checkout-package checks remain for local release paths.",
+    "evidence": [
+      "The old Settings development assertion rejects 0.2.387 receipt against 0.2.388 checkout; the new helper accepts that same intact historical artifact.",
+      "A separate source exercise changed the on-disk manifest to 0.2.388 and received artifact_manifest_version_mismatch; adding a file received artifact_tree_mismatch.",
+      "node --test tests/browser/frozen-artifact-identity.test.mjs: 2 passed.",
+      "The hosted importer verifies CI receipt, provenance, source-commit package version, manifest and tree before driver launch; native-sidepanel-qa-harness verifies the loaded artifact again."
+    ],
+    "native_status": "PENDING: no native Settings, SEO or contained-navigation behavior was exercised in this review."
+  },
+  "verdict_b_quality": {
+    "status": "PARTIAL",
+    "finding": "The implementation is narrow and retains provenance boundaries. Its committed test does not prove a causal RED: the recorded pre-fix failure was a missing helper module, and the driver source regex is a change detector rather than a behavior test. The test uses only one valid version and does not catch a helper that returns a fixed 0.2.387 version after performing the two checks.",
+    "impact": "Source behavior was independently exercised here, but the committed regression guard should be strengthened to fail on the original valid-historical-artifact rejection and on a second valid artifact version. This does not change the native pending status."
+  },
+  "evidence_quality_correction": {
+    "finding": "The observed-failure report says the uploaded artifact omitted resource-journal paths and reconstructs events only from stdout. The extracted uploaded artifact actually contains completed journals for the current run, alongside stale journals from run 37105304739.",
+    "current_run_final_decisions": {
+      "hosted-package-37686070986-1": "valid; exitCode 0; resourceInvalid false",
+      "hosted-browser-37686070986-1": "valid; exitCode 0; resourceInvalid false",
+      "hosted-guest-37686070986-1": "child_failed; exitCode 1; resourceInvalid false"
+    },
+    "product_implication": "The guest step failed before native assertions because of the old version comparison; completed journal evidence gives no native acceptance credit."
+  }
+}
