@@ -50,6 +50,47 @@ test('active Scrape, Data, and SEO tabs wait for their deferred visible controls
   }
 });
 
+test('Scrape source-owned button titles map only in their tab with one observed node each', async () => {
+  const labels = [
+    ['Add this page to a project', 'EXT-F-1007-C19'],
+    ['Capture the page exactly as it is right now', 'EXT-F-1007-C01'],
+    [
+      'Scroll the page top→bottom to load lazy content (images, infinite-scroll items), then capture. Better for dynamic pages.',
+      'EXT-F-1007-C02',
+    ],
+  ];
+  const html = `<button role="tab" title="Scrape" aria-controls="pane">Scrape</button>
+    <div role="tabpanel" id="pane">
+      ${labels.map(([title], index) => `<button title="${title}"><svg></svg>${['', 'Capture', 'Scroll & capture'][index]}</button>`).join('')}
+      <button title="Private page value"><svg></svg></button>
+      <button aria-label="Add this page to a project"><svg></svg></button>
+      <button title="Add this page to a project now"><svg></svg></button>
+    </div>`;
+  const key = randomBytes(32).toString('base64');
+  const observed = await collectTabSurface(guestPanel(domContext(html)), 'Scrape', key, 400);
+  assert.equal(observed.ready, true, 'visible capture actions complete Scrape readiness');
+  const mapped = mapObservation('surface_control', observed.raw);
+  assert.deepEqual(
+    mapped.mapped.map(({ id }) => id),
+    labels.map(([, id]) => id),
+  );
+  assert.equal(mapped.unmapped_count, 3);
+  assert.ok(mapped.unmapped.every((item) => /^[a-f0-9]{64}$/.test(item.label_fingerprint)));
+  assert.doesNotMatch(JSON.stringify(mapped), /Private page value/);
+  assert.doesNotMatch(JSON.stringify(mapped), /project now/);
+
+  const wrongTab = observed.raw.map((item) => ({
+    ...item,
+    provenance: { ...item.provenance, tab: 'Data' },
+  }));
+  assert.equal(mapObservation('surface_control', wrongTab).mapped.length, 0);
+  const wrongKind = observed.raw.map((item) => ({ ...item, kind: 'link' }));
+  assert.equal(mapObservation('surface_control', wrongKind).mapped.length, 0);
+  const duplicate = mapObservation('surface_control', [observed.raw[0], observed.raw[0]]);
+  assert.equal(duplicate.mapped.length, 0);
+  assert.equal(duplicate.unmapped_count, 2);
+});
+
 test('present but empty visible surfaces cannot complete an otherwise clean census', () => {
   const empty = { total: 0, mapped: [], unmapped_count: 0, unmapped: [] };
   const filled = { ...empty, total: 1, mapped: [{ label: 'Visible control' }] };

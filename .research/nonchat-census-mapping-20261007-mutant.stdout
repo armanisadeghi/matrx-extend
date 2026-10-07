@@ -1,0 +1,65 @@
+PLANTED in /Volumes/Samsung2TB/code/matrx-extend/tests/browser/takeover-visible-census.mjs
+RESTORED /Volumes/Samsung2TB/code/matrx-extend/tests/browser/takeover-visible-census.mjs sha=2543259de842 original_sha=2543259de842 IDENTICAL
+----- command output (tail) -----
+✔ known inventory labels map to source IDs while new visible controls stay explicit and private (1.956625ms)
+✔ source-reviewed Settings rows map each observed node without revealing selected values (0.565625ms)
+✔ Settings row mapping leaves changed, cross-section, wrong-kind and duplicate evidence unknown (0.172709ms)
+✔ browser version failures expose fixed safe diagnostics without transport content (0.722792ms)
+✔ backend mutation attempt is aborted without retaining URL or request body (0.571042ms)
+✔ unknown labels, inaccessible regions, and intercepted RPCs each prevent completeness (0.463666ms)
+✔ Settings census observes the actual OpenUrl anchor as C39 without emitting its href (5.206167ms)
+✔ unknown DOM labels use a fresh keyed fingerprint without raw text or correlation (5.821583ms)
+✔ Settings census links only exact source-rendered row labels to observed controls (5.47625ms)
+✔ Desktop bridge census links each input and button only to its exact static row (4.063792ms)
+✔ direct census invocation refuses before browser or credentials without resource guard (97.657375ms)
+✔ hosted census role preflight requires real auth only for member and admin (0.218834ms)
+✔ discovery retains untitled and alternate tab shapes but only permits mapped native triggers (2.55325ms)
+✔ census distinguishes structural containers and actions from unopened regions with safe provenance (4.231417ms)
+✔ discovery retains summary, non-button expanders and unclassified section controls (3.169ms)
+✔ Settings section readiness uses its active panel while retaining unknown section triggers (3.121667ms)
+✔ Settings readiness refuses an inactive panel or duplicate Account expanders inside it (2.091292ms)
+✔ guest evidence requires observed signed-out account and absent credentials (0.94175ms)
+✔ guest observation refuses every contradictory or missing auth signal without leaking identity (7.021875ms)
+✔ discovery contract detects an in-memory narrowed selector and constant-result replacement (4.070291ms)
+✔ guest contract detects a constant signed-out replacement (3.7925ms)
+✔ guest capture frames Account after signed-out proof and restricts an existing screenshot (2.829208ms)
+✔ guest screenshot failures retain stage and last safe observations without payloads (1.477084ms)
+✔ guest screenshot refuses capture when Account remains outside the viewport (0.818667ms)
+✔ guest screenshot refuses a one-pixel Account header or Sign in sliver (1.430791ms)
+ℹ tests 39
+ℹ suites 0
+ℹ pass 38
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1646.97975
+
+✖ failing tests:
+
+test at tests/browser/takeover-visible-census.test.mjs:53:1
+✖ Scrape source-owned button titles map only in their tab with one observed node each (414.360541ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    [
+  -   'EXT-F-1007-C19',
+      'EXT-F-1007-C01',
+  +   'EXT-F-1007-C01',
+      'EXT-F-1007-C02'
+    ]
+
+      at TestContext.<anonymous> (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/takeover-visible-census.test.mjs:73:10)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'EXT-F-1007-C01', 'EXT-F-1007-C01', 'EXT-F-1007-C02' ],
+    expected: [ 'EXT-F-1007-C19', 'EXT-F-1007-C01', 'EXT-F-1007-C02' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+{"schema":1,"at":"2026-10-07T17:25:25.985Z","runId":"nonchat-scrape-census-mutant-20261007-01","childExitCode":1,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-07T17:25:26.034Z","runId":"nonchat-scrape-census-mutant-20261007-01","admitted":true,"resourceInvalid":false,"exitCode":1,"decision":"child_failed","code":"RESOURCE_FINAL_DECISION"}
+---------------------------------
+VERDICT: RED (rc=1, expected RED)

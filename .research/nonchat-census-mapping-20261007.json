@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "task_id": "nonchat-census-mapping-20261007",
+  "defect_id": "EXT-D-0151",
+  "case_id": "EXT-F-0002-T11",
+  "status": "source_verified_native_pending",
+  "source_class": "Scrape header Add to Project and two capture buttons with static source-owned title attributes",
+  "source_evidence": {
+    "paths": [
+      "src/components/AddToProjectButton.tsx",
+      "src/features/scrape/ScrapeView.tsx"
+    ],
+    "frozen_source_sha": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+    "current_source_diff_from_frozen": "none on these source files",
+    "inventory_ids": [
+      "EXT-F-1007-C19",
+      "EXT-F-1007-C01",
+      "EXT-F-1007-C02"
+    ],
+    "rule": "Only a button in the Scrape tab with the exact observed source title maps, and only if the same title occurs once in that observation. A copied aria-label, changed title, wrong tab, wrong kind, duplicate, and private title stay unknown."
+  },
+  "frozen_receipt": {
+    "path": ".research/settings-semantic-native-20261007/evidence/native-receipt-original.json",
+    "source_sha": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+    "unknown_total": 35,
+    "scrape_unknown": 3,
+    "identity_result": "unresolved: the three Scrape records contain run-specific fingerprints and safe structural provenance, not observed labels or titles; no ID is assigned to them from this receipt"
+  },
+  "verification": {
+    "red": {
+      "run_id": "nonchat-scrape-census-red-20261007-01",
+      "result": "admitted valid resource; assertion failure on missing three mappings, 38 pass/1 fail",
+      "stdout": ".research/nonchat-census-mapping-20261007-red.stdout",
+      "journal": "docs/stabilization/resource-journals/nonchat-scrape-census-red-20261007-01.jsonl"
+    },
+    "green": {
+      "run_id": "nonchat-scrape-census-ready-20261007-01",
+      "result": "admitted valid resource; 39 pass/0 fail on ready Scrape fixture and surrounding tests",
+      "stdout": ".research/nonchat-census-mapping-20261007-ready.stdout",
+      "journal": "docs/stabilization/resource-journals/nonchat-scrape-census-ready-20261007-01.jsonl"
+    },
+    "mutation": {
+      "run_id": "nonchat-scrape-census-mutant-20261007-01",
+      "result": "swapping C19 to C01 failed the named test, 38 pass/1 fail; plant.py restored source",
+      "stdout": ".research/nonchat-census-mapping-20261007-mutant.stdout",
+      "journal": "docs/stabilization/resource-journals/nonchat-scrape-census-mutant-20261007-01.jsonl"
+    },
+    "additional_green_runs": [
+      {
+        "run_id": "nonchat-scrape-census-green-20261007-01",
+        "stdout": ".research/nonchat-census-mapping-20261007-green.stdout",
+        "journal": "docs/stabilization/resource-journals/nonchat-scrape-census-green-20261007-01.jsonl"
+      },
+      {
+        "run_id": "nonchat-scrape-census-final-20261007-01",
+        "stdout": ".research/nonchat-census-mapping-20261007-final.stdout",
+        "journal": "docs/stabilization/resource-journals/nonchat-scrape-census-final-20261007-01.jsonl"
+      }
+    ]
+  },
+  "limits": [
+    "No new native census was dispatched; current frozen fingerprint-only observations remain unresolved.",
+    "This maps one bounded Scrape source class only; remaining non-Chat, Chat, and Pilot unknowns remain open.",
+    "No product behavior, member/admin acceptance, release, or deployment is claimed."
+  ],
+  "next_action": "Fresh independent source review, then one guarded native observation on a reviewed exact artifact to determine which currently rendered controls actually match these titles."
+}

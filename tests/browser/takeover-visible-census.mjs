@@ -88,6 +88,17 @@ const settingsRowControls = new Map([
   ['Desktop bridge|Local engine port|input', 'EXT-F-1003-C16'],
   ['Desktop bridge|Local engine port|button', 'EXT-F-1003-C16'],
 ]);
+// Exact, source-owned titles on ScrapeView's header and capture buttons.
+// The text inside capture buttons changes with capture state, so only their
+// static title may identify them. Other tabs and duplicate nodes remain unknown.
+const scrapeButtonTitles = new Map([
+  ['Add this page to a project', 'EXT-F-1007-C19'],
+  ['Capture the page exactly as it is right now', 'EXT-F-1007-C01'],
+  [
+    'Scroll the page top→bottom to load lazy content (images, infinite-scroll items), then capture. Better for dynamic pages.',
+    'EXT-F-1007-C02',
+  ],
+]);
 const settingsSections = new Set([
   'Account',
   'Organization',
@@ -133,6 +144,16 @@ export function mapObservation(scope, observations) {
   const unmapped = [];
   const structural = [];
   const rowCounts = new Map();
+  const scrapeTitleCounts = new Map();
+  if (scope === 'surface_control')
+    for (const item of observations)
+      if (
+        item.kind === 'button' &&
+        item.provenance?.tab === 'Scrape' &&
+        item.provenance?.source_title === true &&
+        scrapeButtonTitles.has(item.label)
+      )
+        scrapeTitleCounts.set(item.label, (scrapeTitleCounts.get(item.label) ?? 0) + 1);
   if (scope === 'settings_control')
     for (const item of observations) {
       const { section, row_label: rowLabel } = item.provenance ?? {};
@@ -172,7 +193,14 @@ export function mapObservation(scope, observations) {
           : scope === 'settings_control'
             ? (controlsByLabel.get(label) ?? controlAliases.get(label) ?? rowId)
             : scope === 'surface_control'
-              ? uniqueControlIds.get(label)
+              ? scrapeButtonTitles.has(label)
+                ? item.kind === 'button' &&
+                  provenance?.tab === 'Scrape' &&
+                  provenance?.source_title === true &&
+                  scrapeTitleCounts.get(label) === 1
+                  ? scrapeButtonTitles.get(label)
+                  : undefined
+                : uniqueControlIds.get(label)
               : undefined;
     if (id) {
       const feature = featureById.get(id.split('-C')[0]);
@@ -192,7 +220,7 @@ export function mapObservation(scope, observations) {
               ? settingsSections.has(item.label)
               : scope === 'settings_control'
                 ? controlsByLabel.has(item.label) || controlAliases.has(item.label)
-                : uniqueControlIds.has(item.label),
+                : uniqueControlIds.has(item.label) || scrapeButtonTitles.has(item.label),
           'census_unkeyed_unknown_refused',
         );
       else
@@ -627,6 +655,7 @@ export async function collectTabSurface(panel, tabLabel, fingerprintKey, timeout
       panel,
       `(async () => {
       const known = new Set(${JSON.stringify([...uniqueControlIds.keys()])});
+      const scrapeTitles = new Set(${JSON.stringify([...scrapeButtonTitles.keys()])});
       ${fingerprintScript(fingerprintKey)}
       ${provenanceScript}
       const tab = document.querySelector('button[role="tab"][title=${JSON.stringify(tabLabel)}]');
@@ -643,9 +672,13 @@ export async function collectTabSurface(panel, tabLabel, fingerprintKey, timeout
         .map(async (el, order) => { const label = (el.getAttribute('aria-label') ||
           (el.tagName === 'A' ? el.textContent : null) || el.getAttribute('title') ||
           el.getAttribute('data-matrx-title') || el.textContent || '').trim().slice(0, 256);
+          const sourceTitle = ${JSON.stringify(tabLabel)} === 'Scrape' &&
+            el.tagName === 'BUTTON' && scrapeTitles.has(label) && el.getAttribute('title') === label;
           return { kind: safeRole(el) || el.tagName.toLowerCase(),
-            provenance: { ...provenance(el, order), tab: ${JSON.stringify(tabLabel)} },
-            ...(known.has(label) ? { label } : { label_fingerprint: await fingerprint(label) }) };
+            provenance: { ...provenance(el, order), tab: ${JSON.stringify(tabLabel)},
+              ...(sourceTitle ? { source_title: true } : {}) },
+            ...(known.has(label) || sourceTitle
+              ? { label } : { label_fingerprint: await fingerprint(label) }) };
         }));
       return { pane_present: true, witness_visible, raw };
     })()`,
