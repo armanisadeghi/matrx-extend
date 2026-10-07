@@ -1,0 +1,15 @@
+{
+  "status": "source procedures integrated with explicit partial emulation scope; runtime unverified",
+  "case_ids": ["EXT-F-4103-T01", "EXT-F-4111-T01", "EXT-F-4113-T01", "EXT-F-4114-T01"],
+  "proposal_commits": ["4b960fba", "5229c6e0", "eabefde4"],
+  "peer_commits": ["da07edc8", "5ac19e4f"],
+  "missing_steps_expected_before": 71,
+  "missing_steps_expected_after": 67,
+  "scope_limits": [
+    "Screenshot requires actual tall public fixture and resolvable content; unavailable viewer is not a pass.",
+    "Emulation procedures cover viewport/layout and pixels only; UA, DPR and matchMedia readback remain unresolved.",
+    "Permission-denial and dispatcher enforcement remain unverified."
+  ],
+  "minor_wording_adjudication": "The final peer flagged ambiguous phrase proves no admin gate. In context the proposal repeatedly states dispatcher bypass; root accepts it as no gate evidence, not an assertion of gate absence, and adds an explicit non-inference limitation to every integrated case. No runtime or permission result is promoted.",
+  "invariants": "All feature cells, case results, applicability, control IDs and case IDs unchanged."
+}
