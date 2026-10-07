@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "artifact_type": "source-peer-review-corrections",
+  "task_id": "cdp-render-emulation-corrections-20261007",
+  "reviewed_artifact": ".research/cdp-render-emulation-procedures-20261007.json",
+  "reviewed_peer": ".research/cdp-render-emulation-peer-20261007.json",
+  "scope": "Address the source-only peer findings for screenshot fixture/content resolution and emulation observation. No runtime, build, browser, database, inventory, or case-status changes.",
+  "findings_addressed": [
+    {
+      "finding": "Screenshot fixture did not guarantee below-fold content.",
+      "resolution": "Changed the proposed target to the public Artificial intelligence article on Wikipedia. The procedure now requires the page to scroll, verifies its top heading and below-fold References landmark by scrolling, and requires full-page image height to exceed the viewport. If any condition is absent at execution time, the step stops and records the branch unavailable; it cannot silently skip the below-fold proof.",
+      "evidence": [
+        "docs/stabilization/PLAN.md:24-41 (receipt and execution guardrails)",
+        "src/lib/tools/handlers/cdp.ts:155-204 (Page.getLayoutMetrics content size and viewport capture sizing)"
+      ],
+      "status": "addressed-in-proposal; runtime-unverified"
+    },
+    {
+      "finding": "Cloud screenshot result may return a file ID without a URL, leaving no executable pixel-inspection route.",
+      "resolution": "Added the existing Files → Captures route: captures are indexed for the current page, the capture card's open action opens the canonical frontend file viewer by file_id. If the viewer cannot resolve the returned ID, the procedure explicitly leaves content inspection unavailable and does not pass from metadata.",
+      "evidence": [
+        "src/features/files/FilesView.tsx:316-339 (capture list and onOpen uses /files/f/{file_id})",
+        "src/features/files/FilesView.tsx:406-438 (capture card open action)",
+        "src/lib/screenshot/persist.ts:45-67,157-182 (cloud image reference and screenshot saved/indexed flow)"
+      ],
+      "status": "addressed-in-proposal; UI route runtime-unverified"
+    },
+    {
+      "finding": "Chrome DevTools on the extension-debugger-owned tab can detach the extension debugger, making clear take its unattached success branch.",
+      "resolution": "Removed DevTools inspection. Emulation and clear procedures now use cdp_full_page_screenshot on the same owned tab with full_page=false. This source-supported same-extension CDP route reads Page.getLayoutMetrics for cssLayoutViewport client width/height and returns the captured viewport pixels. The procedure requires the owned attachment ID to be present immediately before clear and requires dimensions/pixels to return to baseline after clear.",
+      "evidence": [
+        "src/lib/tools/handlers/cdp.ts:155-204 (same-handler layout viewport measurement and screenshot capture)",
+        "src/lib/tools/handlers/cdp.ts:562-623 (emulation and clear commands; unattached clear short-circuit)",
+        "src/lib/cdp/client.ts:128-137 (external detach removes tracked attachment)",
+        "src/features/tools/ToolsView.tsx:390-429,453-460 (manual run path and active-tab semantics)"
+      ],
+      "status": "addressed-for-viewport-and-pixels; runtime-unverified"
+    },
+    {
+      "finding": "No source-supported, noncompeting route reads actual UA, DPR, and matchMedia state while preserving the debugger attachment.",
+      "resolution": "Source review found no such route. Procedures explicitly leave UA, DPR, and media-query readback/restoration unresolved and never infer them from {ok:true}. No invented endpoint or DevTools workaround was added.",
+      "evidence": [
+        "src/lib/tools/handlers/cdp.ts:562-623 (writes metrics/UA override and clear, but returns no page-state values)",
+        "src/lib/tools/handlers/extract.ts:590-605 (existing DPR probe uses chrome.scripting.executeScript, but its caller is not an existing manual CDP observation control)",
+        "src/lib/tools/handlers/cdp.ts:155-204 (available source-backed viewport and pixel measurements)"
+      ],
+      "status": "explicit-gap-retained"
+    }
+  ],
+  "preserved": [
+    "Exact inventory modes and control IDs remain unchanged: screenshot/PDF member and admin; emulate/clear admin only.",
+    "Dispatcher admin, Ask/Act, optional-permission denial, guest applicability, and agent routing remain unverified; manual Tools runner is not evidence for those gates.",
+    "Warm and extension-reload passes, attached-tabs baselines, unique owned delta checks, and exact-owned cleanup remain required.",
+    "No runtime promotion, test, browser, build, or database activity occurred."
+  ]
+}
