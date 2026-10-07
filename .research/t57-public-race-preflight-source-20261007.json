@@ -1,0 +1,507 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "scope": "QA-only executable feasibility preflight, no native workflow dispatch and no production change",
+  "source_commit": "9ec4119d",
+  "route": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "acceptance_case": "showcase-d47-public-admin",
+    "input": "d47_public_race_preflight=true",
+    "driver": "tests/browser/showcase-d47-public-initial-load.mjs",
+    "ordinary_public_receipt_default": "unchanged when input is false",
+    "artifact": "existing exact CI development source SHA, run ID, artifact ID, tree SHA and version"
+  },
+  "preflight_contract": {
+    "site": "public HN/Algolia",
+    "source": "installed extension captures initial public response and saves a uniquely owned recipe before preflight",
+    "interception": "CDP Fetch Response stage on the owned page target; original responses only; continueRequest with requestId only",
+    "identity": "HTTPS approved Algolia host, selected exact endpoint path, POST, full URL digest, request body digest, frame, loader, Network ID and unique execution context; no raw URL, query, request or response body in receipt",
+    "order": "pause old response, observe active saved replay, navigate same tab and observe new context and matching current response, continue old then current",
+    "verdict": "timing_interception_feasible only if both Network requests finish, identities match, loader/context differ, no ambiguity, and interception cleanup succeeds; otherwise unverified",
+    "cleanup": "all held and unmatched paused requests resumed, Fetch disabled, CDP session detached in finally, run-owned recipe deleted by existing route"
+  },
+  "guarded_runs": {
+    "source": {
+      "path": "docs/stabilization/resource-journals/t57-public-race-source-20261007.jsonl",
+      "sha256": "31ec3a31884ffea730988ae3b2622a606b56d8a86aa6a30d98017e7c79c72fe5",
+      "final_decision": "refused",
+      "child_exit_code": null,
+      "events": [
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:00:58.895Z",
+          "runId": "t57-public-race-source-20261007",
+          "code": "RESOURCE_JOURNAL_OPENED"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:00:58.900Z",
+          "runId": "t57-public-race-source-20261007",
+          "code": "RESOURCE_COMMAND_NOT_ALLOWED:see docs/stabilization/resource-policy.json"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:00:58.903Z",
+          "runId": "t57-public-race-source-20261007",
+          "admitted": false,
+          "resourceInvalid": false,
+          "exitCode": 2,
+          "decision": "refused",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      ]
+    },
+    "source-test": {
+      "path": "docs/stabilization/resource-journals/t57-public-race-source-test-20261007.jsonl",
+      "sha256": "3e2856d876612fbd057a476bcefc4ad7a67c6606c95196b11d8edaa99f39362b",
+      "final_decision": "valid",
+      "child_exit_code": 0,
+      "events": [
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:01:21.908Z",
+          "runId": "t57-public-race-source-test-20261007",
+          "code": "RESOURCE_JOURNAL_OPENED"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:02:29.131Z",
+          "runId": "t57-public-race-source-test-20261007",
+          "mode": "run",
+          "policySchema": 1,
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.32,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 1.56,
+            "logicalCpus": 10,
+            "cpuBusyFraction": 0.09714285714285716,
+            "swapUsedMiB": 2674.19,
+            "repoFreeGiB": 1680.988124847412,
+            "profileFreeGiB": 1680.988124847412,
+            "safetyFreeGiB": 23.242115020751953,
+            "systemFreeGiB": 23.242115020751953
+          },
+          "cpuBusySamples": [
+            0.07,
+            0.07,
+            0.09,
+            0.16,
+            0.14,
+            0.07,
+            0.08
+          ],
+          "reasons": [],
+          "swapWindowSeconds": 60,
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:02:29.277Z",
+          "runId": "t57-public-race-source-test-20261007",
+          "childExitCode": 0,
+          "childSignal": null,
+          "code": "RESOURCE_JOB_EXIT"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:02:29.317Z",
+          "runId": "t57-public-race-source-test-20261007",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      ]
+    },
+    "existing-test": {
+      "path": "docs/stabilization/resource-journals/t57-public-race-existing-test-20261007.jsonl",
+      "sha256": "0ff3e01a9f3c34dc9107a60fc90624c974c8629223258dbaa8f97835aab65787",
+      "final_decision": "valid",
+      "child_exit_code": 0,
+      "events": [
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:02:48.115Z",
+          "runId": "t57-public-race-existing-test-20261007",
+          "code": "RESOURCE_JOURNAL_OPENED"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:03:55.336Z",
+          "runId": "t57-public-race-existing-test-20261007",
+          "mode": "run",
+          "policySchema": 1,
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.16,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 1.6399999999999997,
+            "logicalCpus": 10,
+            "cpuBusyFraction": 0.16714285714285712,
+            "swapUsedMiB": 2674.19,
+            "repoFreeGiB": 1680.9880104064941,
+            "profileFreeGiB": 1680.9880104064941,
+            "safetyFreeGiB": 23.241302490234375,
+            "systemFreeGiB": 23.241302490234375
+          },
+          "cpuBusySamples": [
+            0.07,
+            0.16,
+            0.09,
+            0.1,
+            0.21,
+            0.27,
+            0.27
+          ],
+          "reasons": [],
+          "swapWindowSeconds": 60,
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:03:55.982Z",
+          "runId": "t57-public-race-existing-test-20261007",
+          "childExitCode": 0,
+          "childSignal": null,
+          "code": "RESOURCE_JOB_EXIT"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:03:56.035Z",
+          "runId": "t57-public-race-existing-test-20261007",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      ]
+    },
+    "controller-test": {
+      "path": "docs/stabilization/resource-journals/t57-public-race-controller-test-20261007.jsonl",
+      "sha256": "b98b5a595253613ccb432f0c18c74a1ff73191f5469bafbfa424d57317fcd2dc",
+      "final_decision": "valid",
+      "child_exit_code": 0,
+      "events": [
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:06:26.192Z",
+          "runId": "t57-public-race-controller-test-20261007",
+          "code": "RESOURCE_JOURNAL_OPENED"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:07:33.399Z",
+          "runId": "t57-public-race-controller-test-20261007",
+          "mode": "run",
+          "policySchema": 1,
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 1.58,
+            "logicalCpus": 10,
+            "cpuBusyFraction": 0.13000000000000003,
+            "swapUsedMiB": 2674.19,
+            "repoFreeGiB": 1680.9867858886719,
+            "profileFreeGiB": 1680.9867858886719,
+            "safetyFreeGiB": 23.256534576416016,
+            "systemFreeGiB": 23.256534576416016
+          },
+          "cpuBusySamples": [
+            0.15,
+            0.15,
+            0.17,
+            0.16,
+            0.15,
+            0.07,
+            0.06
+          ],
+          "reasons": [],
+          "swapWindowSeconds": 60,
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:07:33.616Z",
+          "runId": "t57-public-race-controller-test-20261007",
+          "childExitCode": 0,
+          "childSignal": null,
+          "code": "RESOURCE_JOB_EXIT"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:07:33.661Z",
+          "runId": "t57-public-race-controller-test-20261007",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      ]
+    },
+    "route-test": {
+      "path": "docs/stabilization/resource-journals/t57-public-race-route-test-20261007.jsonl",
+      "sha256": "99e460cfcae4c9913a0dd393b67abdd046bd2688018c624894abc011aed22ac4",
+      "final_decision": "refused",
+      "child_exit_code": null,
+      "events": [
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:07:37.525Z",
+          "runId": "t57-public-race-route-test-20261007",
+          "code": "RESOURCE_JOURNAL_OPENED"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:07:37.575Z",
+          "runId": "t57-public-race-route-test-20261007",
+          "processEvidence": {
+            "matches": [
+              {
+                "pid": 90488,
+                "ppid": 13929,
+                "processStart": "Wed Oct  7 03:06:26 2026",
+                "executable": "node",
+                "reason": "script-operand"
+              }
+            ],
+            "overflow": 0
+          },
+          "code": "RESOURCE_LEGACY_RUNNER_BUSY"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:07:37.578Z",
+          "runId": "t57-public-race-route-test-20261007",
+          "admitted": false,
+          "resourceInvalid": false,
+          "exitCode": 2,
+          "decision": "refused",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      ]
+    },
+    "route-retry": {
+      "path": "docs/stabilization/resource-journals/t57-public-race-route-retry-20261007.jsonl",
+      "sha256": "90b90becaba83f0852baf069d2d6a1222362e3a1fe794b3ea778a9f1720f29d9",
+      "final_decision": "child_failed",
+      "child_exit_code": 1,
+      "events": [
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:07:53.324Z",
+          "runId": "t57-public-race-route-retry-20261007",
+          "code": "RESOURCE_JOURNAL_OPENED"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:09:00.546Z",
+          "runId": "t57-public-race-route-retry-20261007",
+          "mode": "run",
+          "policySchema": 1,
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 1.06,
+            "logicalCpus": 10,
+            "cpuBusyFraction": 0.06571428571428571,
+            "swapUsedMiB": 2674.19,
+            "repoFreeGiB": 1680.9860038757324,
+            "profileFreeGiB": 1680.9860038757324,
+            "safetyFreeGiB": 23.253299713134766,
+            "systemFreeGiB": 23.253299713134766
+          },
+          "cpuBusySamples": [
+            0.08,
+            0.07,
+            0.06,
+            0.06,
+            0.06,
+            0.06,
+            0.07
+          ],
+          "reasons": [],
+          "swapWindowSeconds": 60,
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:09:01.092Z",
+          "runId": "t57-public-race-route-retry-20261007",
+          "childExitCode": 1,
+          "childSignal": null,
+          "code": "RESOURCE_JOB_EXIT"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:09:01.132Z",
+          "runId": "t57-public-race-route-retry-20261007",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 1,
+          "decision": "child_failed",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      ]
+    },
+    "route-fixed": {
+      "path": "docs/stabilization/resource-journals/t57-public-race-route-fixed-20261007.jsonl",
+      "sha256": "a9d926817e9ac71650b7574564b44c2b9f15213e01aaab9d84dab47f4ba9fbff",
+      "final_decision": "valid",
+      "child_exit_code": 0,
+      "events": [
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:09:18.644Z",
+          "runId": "t57-public-race-route-fixed-20261007",
+          "code": "RESOURCE_JOURNAL_OPENED"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:10:25.867Z",
+          "runId": "t57-public-race-route-fixed-20261007",
+          "mode": "run",
+          "policySchema": 1,
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 0.9099999999999999,
+            "logicalCpus": 10,
+            "cpuBusyFraction": 0.0642857142857143,
+            "swapUsedMiB": 2674.19,
+            "repoFreeGiB": 1680.9859886169434,
+            "profileFreeGiB": 1680.9859886169434,
+            "safetyFreeGiB": 23.252880096435547,
+            "systemFreeGiB": 23.252880096435547
+          },
+          "cpuBusySamples": [
+            0.06,
+            0.06,
+            0.07,
+            0.06,
+            0.07,
+            0.06,
+            0.07
+          ],
+          "reasons": [],
+          "swapWindowSeconds": 60,
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:10:26.404Z",
+          "runId": "t57-public-race-route-fixed-20261007",
+          "childExitCode": 0,
+          "childSignal": null,
+          "code": "RESOURCE_JOB_EXIT"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:10:26.444Z",
+          "runId": "t57-public-race-route-fixed-20261007",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      ]
+    },
+    "final-test": {
+      "path": "docs/stabilization/resource-journals/t57-public-race-final-test-20261007.jsonl",
+      "sha256": "bf4ba59d39114f42b8ee9dc794d90e95f9ee8e0d5709e94bb88120e467d89d1f",
+      "final_decision": "valid",
+      "child_exit_code": 0,
+      "events": [
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:10:48.879Z",
+          "runId": "t57-public-race-final-test-20261007",
+          "code": "RESOURCE_JOURNAL_OPENED"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:11:56.107Z",
+          "runId": "t57-public-race-final-test-20261007",
+          "mode": "run",
+          "policySchema": 1,
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.16,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 0.8499999999999999,
+            "logicalCpus": 10,
+            "cpuBusyFraction": 0.0642857142857143,
+            "swapUsedMiB": 2674.19,
+            "repoFreeGiB": 1680.985996246338,
+            "profileFreeGiB": 1680.985996246338,
+            "safetyFreeGiB": 23.250720977783203,
+            "systemFreeGiB": 23.250720977783203
+          },
+          "cpuBusySamples": [
+            0.07,
+            0.07,
+            0.07,
+            0.06,
+            0.06,
+            0.06,
+            0.06
+          ],
+          "reasons": [],
+          "swapWindowSeconds": 60,
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:11:56.317Z",
+          "runId": "t57-public-race-final-test-20261007",
+          "childExitCode": 0,
+          "childSignal": null,
+          "code": "RESOURCE_JOB_EXIT"
+        },
+        {
+          "schema": 1,
+          "at": "2026-10-07T10:11:56.360Z",
+          "runId": "t57-public-race-final-test-20261007",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      ]
+    }
+  },
+  "source_test_child_stdout": {
+    "source-test": "\u2714 public response identity is exact across URL and body without exposing either (1.078334ms)\n\u2714 preflight requires two matching real request identities, new document and delivery lifecycle (0.130125ms)\n\u2139 tests 2\n\u2139 suites 0\n\u2139 pass 2\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 69.831583",
+    "existing-test": "\u2714 public saved replay requires exact terminal rows or exact no-match remedy (1.370625ms)\n\u2714 constant success and permissive guidance mutants are rejected by the oracle cases (0.06975ms)\n\u2714 public capture selects the actual HN single-index response after a shortened label and records only redacted evidence (17.450125ms)\n\u2714 public driver records each trusted click boundary before dispatching the selected control (106.283334ms)\n\u2139 tests 4\n\u2139 suites 0\n\u2139 pass 4\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 554.089375",
+    "controller-test": "\u2714 public response identity is exact across URL and body without exposing either (1.088958ms)\n\u2714 controller continues original paused responses in order and disables interception (52.773083ms)\n\u2714 preflight requires two matching real request identities, new document and delivery lifecycle (0.145ms)\n\u2139 tests 3\n\u2139 suites 0\n\u2139 pass 3\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 122.330958",
+    "route-fixed": "\u2714 hosted artifact upload preserves every routed showcase native receipt (1.149625ms)\n\u2714 explicit stale case dispatches the native driver with opt-in and exact artifact identity (0.541167ms)\n\u2714 ordinary case clears inherited stale opt-in and unrelated cases have no showcase route (0.054ms)\n\u2714 D47 route binds the exact CI development artifact to its own native result (0.046042ms)\n\u2714 D47 route propagates only an explicit supported inverse order (0.384292ms)\n\u2714 D47 stale-only route keeps the exact artifact and isolated native output (0.070083ms)\n\u2714 D47 manual-prior route selects the existing saved replay driver (0.035833ms)\n\u2714 D47 prior-saved route dispatches two-run native driver on the same exact artifact (0.041542ms)\n\u2714 public D47 route uses its own exact-artifact native receipt and never inherits fixture ordering (0.442459ms)\n\u2714 stale route refuses wrong artifact identity before child dispatch (0.453709ms)\n\u2714 stale preflight refuses missing approved fixture before resource admission (156.430916ms)\n\u2714 approved stale preflight reaches credential-ready without resource or browser setup (74.571125ms)\n\u2714 D47 preflight requires real admin credentials and device organization (152.159583ms)\n\u2139 tests 13\n\u2139 suites 0\n\u2139 pass 13\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 452.306917",
+    "final-test": "\u2714 public response identity is exact across URL and body without exposing either (0.930833ms)\n\u2714 controller continues original paused responses in order and disables interception (54.173083ms)\n\u2714 preflight requires two matching real request identities, new document and delivery lifecycle (0.171333ms)\n\u2139 tests 3\n\u2139 suites 0\n\u2139 pass 3\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 123.0465"
+  },
+  "failed_route_test": {
+    "run_id": "t57-public-race-route-retry-20261007",
+    "reason": "one exact-object assertion in stale route saw an added undefined preflight env key; fixed by omitting the key outside selected preflight",
+    "result": "12 passed, 1 failed; final route-fixed rerun passed 13 of 13",
+    "full_stdout_retained_in_task_tool_output": true
+  },
+  "negative_controls": {
+    "input_mutants": "wrong body/URL/method, one request, failed lifecycle, changed identity, reused loader/context, reversed release, extra match, failed cleanup, inactive replay all rejected by executed source test",
+    "constant_success": "executed constant-return comparator differs from expected mixed feasibility/unverified outcomes",
+    "controller_causality": "mock CDP emits loadingFinished only on continueRequest; source test requires old/current command order and cleanup commands"
+  },
+  "limits": [
+    "Source tests use controlled CDP event metadata, not live browser response bytes. They do not prove concurrent debugger attachment, public HN reproducibility, or callback delivery into the new document.",
+    "No native acceptance workflow was dispatched; no T57 or D47 status was changed.",
+    "The failed route stdout is retained in this task transcript, while its full resource journal is committed; successful child stdout is embedded above."
+  ],
+  "next_action": "Fresh independent source review of exact commit, then root-owned native preflight on an exact current CI artifact; classify any canceled or absent old/current response as unverified."
+}
