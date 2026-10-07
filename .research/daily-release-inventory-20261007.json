@@ -1,0 +1,231 @@
+{
+  "observed_at": "2026-10-07T16:10:07.802863+00:00",
+  "scope": "Read-only hosted release inventory; no build or release initiated",
+  "latest_hosted_release_runs": [
+    {
+      "conclusion": "success",
+      "createdAt": "2026-10-04T05:34:52Z",
+      "databaseId": 37180303468,
+      "headSha": "996b2a173c54ebbca654e1ddf7fe6fb08e23cf57",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2026-10-03T21:40:38Z",
+      "databaseId": 37155938434,
+      "headSha": "fb441ec53ed43a33a7dc99082930fa191e1b8b69",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2026-10-03T07:19:27Z",
+      "databaseId": 37105966615,
+      "headSha": "7faa2849407654ee052599f9b924d822a456868e",
+      "status": "completed"
+    }
+  ],
+  "recent_artifacts": [
+    {
+      "id": 11496660012,
+      "name": "matrx-extend-development-test-03a3fb7d71b47b95b43ad0495b398c1fd9ebae68-37647747410-1",
+      "expired": false
+    },
+    {
+      "id": 11494719410,
+      "name": "matrx-extend-development-test-742861693bfc2352461c75d8f9edee6c21fa3035-37646855595-1",
+      "expired": false
+    },
+    {
+      "id": 11494689897,
+      "name": "matrx-extend-development-test-81caf1b3bdd57858b336b602c91e8c0dd69023b6-37647508795-1",
+      "expired": false
+    },
+    {
+      "id": 11494662846,
+      "name": "matrx-extend-development-test-636d00857f774a7b15fe70032dd9c35cef44c015-37645649424-1",
+      "expired": false
+    },
+    {
+      "id": 11494355642,
+      "name": "matrx-extend-development-test-1768350204f14b0ca2c1e9289f766f2044e51bc5-37643646546-1",
+      "expired": false
+    },
+    {
+      "id": 11493663401,
+      "name": "matrx-extend-development-test-45ee8732dda67ad5bb5b22136798c19c3d361d51-37645126111-1",
+      "expired": false
+    },
+    {
+      "id": 11493304470,
+      "name": "hosted-guest-37645860520-1",
+      "expired": false
+    },
+    {
+      "id": 11493253123,
+      "name": "matrx-extend-development-test-5af0528302885d0edd63e5fb5c68ed06a180733f-37644407033-1",
+      "expired": false
+    },
+    {
+      "id": 11492850407,
+      "name": "matrx-extend-development-test-1211ff2c8564e773386cc6ac89d6e0f959912124-37639964038-1",
+      "expired": false
+    },
+    {
+      "id": 11492724650,
+      "name": "hosted-guest-37643142383-1",
+      "expired": false
+    },
+    {
+      "id": 11492309736,
+      "name": "matrx-extend-development-test-f7a20eee1198ee53db3ef05954251c3beae0e422-37642987820-1",
+      "expired": false
+    },
+    {
+      "id": 11491574186,
+      "name": "hosted-guest-37641053827-1",
+      "expired": false
+    },
+    {
+      "id": 11490722261,
+      "name": "matrx-extend-development-test-327d3b8907d96fc553960a6b88fe4f6416ea50cf-37637089883-1",
+      "expired": false
+    },
+    {
+      "id": 11490361462,
+      "name": "matrx-extend-development-test-6030be070510acb2a4e0fa6def0ae354ffcb5a4a-37636145348-1",
+      "expired": false
+    },
+    {
+      "id": 11490349757,
+      "name": "matrx-extend-development-test-cf835b9aab7c7c1aba21b8ad0d4183b646a3364e-37639144641-1",
+      "expired": false
+    },
+    {
+      "id": 11490148417,
+      "name": "matrx-extend-development-test-943361429fafd932c084bef24ff8b8e5d0e67698-37638007117-1",
+      "expired": false
+    },
+    {
+      "id": 11488476918,
+      "name": "matrx-extend-development-test-2186df19cded3f06c33bcd9f0ecd4829c2335906-37635467812-1",
+      "expired": false
+    },
+    {
+      "id": 11486866785,
+      "name": "matrx-extend-development-test-d1cd4be2afd20fe61e957f83eb0bb29e06a33b55-37630999417-1",
+      "expired": false
+    },
+    {
+      "id": 11486441082,
+      "name": "matrx-extend-development-test-6fbf8a0b0aec0978492d3f589160b7b5e340b63b-37629542966-1",
+      "expired": false
+    },
+    {
+      "id": 11486150505,
+      "name": "matrx-extend-development-test-51bda6a4edfb63d42586c410956a2e823bcf38c8-37628645115-1",
+      "expired": false
+    },
+    {
+      "id": 11486063275,
+      "name": "matrx-extend-development-test-58d78da31be187d0cf95ad918b0226c237892cac-37630027086-1",
+      "expired": false
+    },
+    {
+      "id": 11485915937,
+      "name": "matrx-extend-development-test-7252a23acd48fe84ded73b56ef0700d4203852e4-37627567277-1",
+      "expired": false
+    },
+    {
+      "id": 11485680141,
+      "name": "matrx-extend-development-test-d6e2324e0d067c7ccc8c2821af64bc0ebd180c19-37626943617-1",
+      "expired": false
+    },
+    {
+      "id": 11484625837,
+      "name": "matrx-extend-development-test-06854583841d5fa448f28e93625e5561da44469e-37625455979-1",
+      "expired": false
+    },
+    {
+      "id": 11484560021,
+      "name": "matrx-extend-development-test-4b6cf5ac25c4976ab6a54b43c756f28c89ee34c1-37624878940-1",
+      "expired": false
+    },
+    {
+      "id": 11484428313,
+      "name": "matrx-extend-development-test-3d2a5d94cdd3e88ad5bee1026aeb77d0603218d7-37626237085-1",
+      "expired": false
+    },
+    {
+      "id": 11483254668,
+      "name": "hosted-guest-37624678750-1",
+      "expired": false
+    },
+    {
+      "id": 11483203786,
+      "name": "matrx-extend-development-test-eaa8608f2ac0610fd887b11428e23653ec768a21-37624108269-1",
+      "expired": false
+    },
+    {
+      "id": 11482071536,
+      "name": "matrx-extend-development-test-d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef-37619740064-1",
+      "expired": false
+    },
+    {
+      "id": 11481980421,
+      "name": "matrx-extend-development-test-34a7a35e141add84493262fa15462362389dae83-37619360237-1",
+      "expired": false
+    },
+    {
+      "id": 11481804368,
+      "name": "hosted-guest-37621192492-1",
+      "expired": false
+    },
+    {
+      "id": 11481201203,
+      "name": "matrx-extend-development-test-d6678732d36b2d39afd8b718946f3405a82a7ad2-37618606023-1",
+      "expired": false
+    },
+    {
+      "id": 11480811253,
+      "name": "matrx-extend-development-test-2da7b00da9067d2a03740fa9e5c923a6fd74e587-37616076138-1",
+      "expired": false
+    },
+    {
+      "id": 11480409128,
+      "name": "matrx-extend-development-test-1498779eb58a16939f5ec6365c5808aa67ccf0ec-37617520063-1",
+      "expired": false
+    },
+    {
+      "id": 11480407285,
+      "name": "matrx-extend-development-test-a93c23833aabcd8bfa053cb0dcb7468a5ebc9f19-37616733857-1",
+      "expired": false
+    },
+    {
+      "id": 11480383589,
+      "name": "matrx-extend-development-test-00a19a14553252c7a25c6f4fc440197ae49dbaeb-37617370485-1",
+      "expired": false
+    },
+    {
+      "id": 11479574562,
+      "name": "matrx-extend-development-test-adecd35f095e18bcc489d7da80eba94ea2e8966c-37614952561-1",
+      "expired": false
+    },
+    {
+      "id": 11479546679,
+      "name": "matrx-extend-development-test-b378592a56c15854507212960c18fd744fce1996-37613140520-1",
+      "expired": false
+    },
+    {
+      "id": 11479098031,
+      "name": "matrx-extend-development-test-2829537750bcda86a2e3dc15229de5d2b76602e1-37613792894-1",
+      "expired": false
+    },
+    {
+      "id": 11479030849,
+      "name": "matrx-extend-development-test-5be3b3260306c0f8a0dcafd2e596c8284f4d5cd4-37612623786-1",
+      "expired": false
+    }
+  ],
+  "new_eligible_store_candidate_found": false,
+  "limitation": "Bounded latest hosted release runs and recent40 artifact audit; development-test bundles cannot substitute for Store ZIP and release receipts. Latest hosted release remains published205 run37180303468. No guest/nonadmin acceptance for a newer Store package established."
+}
