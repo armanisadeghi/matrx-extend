@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "lane": "one guarded hosted real public initial-load saved Network replay",
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "reviewed_selector_commit": "3faf5ac94a1fd18e6d6aa0135866f8811ad2a2ec",
+  "fresh_peer": ".research/d47-public-capture-final-peer-20261007.json",
+  "status": "bounded_native_failure_unverified",
+  "run": {
+    "id": 37568984323,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37568984323",
+    "workflow": "Hosted guest side-panel acceptance",
+    "event": "workflow_dispatch",
+    "case": "showcase-d47-public-admin",
+    "runner": "macos-15",
+    "runner_arch": "ARM64",
+    "workflow_head_sha": "b6611743bec42432a2ecc36614b0801878460926",
+    "status": "completed",
+    "conclusion": "failure",
+    "failed_step": "Exercise the selected Chrome side-panel case",
+    "native_artifact_id": 11459483651
+  },
+  "source_artifact": {
+    "ci_run_id": 37568407390,
+    "ci_conclusion": "success",
+    "source_sha": "1840fa6640cce74fde0c25e60b69d449fc2b7297",
+    "artifact_id": 11459462815,
+    "artifact_path": "test-results/ci-artifacts/1840fa6640cce74fde0c25e60b69d449fc2b7297/37568407390-1",
+    "version": "0.2.341",
+    "tree_sha256": "65283c7c45a39d85287a0e3533056945d2efd5ae79e3a653c06fbcf766835e74",
+    "dispatch_head_sha": "b6611743bec42432a2ecc36614b0801878460926",
+    "source_to_dispatch_equivalence": "Runtime, public driver and test, hosted wrapper and route, hosted workflow, importer, and lockfile are byte-identical. Intervening differences were documentation, generated tool catalog, release-path files, and package version metadata; artifact version remains the exact tested 0.2.341 build.",
+    "sha256": {
+      "public_driver": "ca124735a0a1f2ff9e8128162ddd724d0361fc238be34863f441001cd70cf2be",
+      "public_driver_test": "39cc4673a52a32940889e7fdc8b7514c72f69aaa8be9f45a5c58564a1ea060c4",
+      "hosted_wrapper": "40014f8daf5fb1b72371661fc44776aeed86f54c140ee05e017c34ecffe50e1e",
+      "hosted_route": "4652d6c7528535aff9ba37e748b7e09e15f55bf2966ba3d6433ed787f08d8a0f",
+      "hosted_workflow": "3ef47a3bb7347fadbf3442454369c30c67984625302fdefbcd929c85e2bff3ce",
+      "artifact_importer": "4148676bef8fd80576c46d32b5687fdd24ba6e6d700dd11b38d1c85aacc9a46d",
+      "pnpm_lock": "0dc4d749041157290538a2472162ea8ee4c78a7d622d58e4fd36b1e45522c8ef"
+    }
+  },
+  "original_receipt": {
+    "run_id": 37566057766,
+    "local_path": "test-results/d47-public-native-private-37566057766/_temp/showcase-d47-public-native-37566057766-1.json",
+    "sha256": "bacc3af5f109efbcf37005ea9682e9d396acbe367eb0eef6ab0df70c9b0502f7",
+    "limitation": "Original receipt omitted the initial-capture candidate count, so zero versus multiple candidates was unknown."
+  },
+  "receipt": {
+    "local_private_path": "test-results/d47-public-retest-private-37568984323/_temp/showcase-d47-public-native-37568984323-1.json",
+    "sha256": "3b3d3b59fe95707c994793897efdf2c63948a022b8f8a2540407d1a5e4b716a5",
+    "status": "unverified",
+    "stage": "initial_capture",
+    "failure": {
+      "name": "AssertionError",
+      "message_code": "unclassified_error"
+    },
+    "capture": null,
+    "capture_observations": {
+      "terminal": {
+        "discovering": false,
+        "responses": true,
+        "error": false
+      },
+      "list": {
+        "visible_rows": 10,
+        "post_200_rows": 2,
+        "algolia_rows": 8,
+        "algolia_post_200_rows": 1,
+        "query_label_rows": 0,
+        "exact_candidates": 0
+      },
+      "selected_preview": {
+        "count": 1,
+        "selected_rows": 1,
+        "selected_row_matches": true,
+        "preview_url_matches": true,
+        "post_200": true,
+        "target_host": true,
+        "query_endpoint": false,
+        "hits_preview": false,
+        "credential_key_present": true,
+        "credential_masked": false
+      },
+      "matched_previews": 0
+    },
+    "saved_result": null,
+    "owned_recipe": null,
+    "saved_replay": "not_reached",
+    "owned_recipe_cleanup": {
+      "status": "not_created; no deletion was attempted",
+      "verified_absent": false
+    },
+    "click_observations": {
+      "target_evaluation_cycles": 2,
+      "each_click_resolved_one_visible_enabled_target": true,
+      "center_hits_target": true
+    },
+    "organization_observations": {
+      "admin_role_verified": true,
+      "picker_selection_required": true,
+      "exact_visible_option_count": 1,
+      "target_in_viewport": false,
+      "target_center_hit": false,
+      "rendered_identity_and_organization_checks": true
+    }
+  },
+  "resource": {
+    "package": {
+      "decision": "valid",
+      "exit_code": 0,
+      "resource_invalid": false,
+      "journal_sha256": "2cb4214494f792db123a2321c648e1cdf1b178280b9920847600c3c09535d02f"
+    },
+    "browser": {
+      "decision": "valid",
+      "exit_code": 0,
+      "resource_invalid": false,
+      "journal_sha256": "f38325ba32517f94ac4552c6b7cdc0088f43f17a826cf5ed71abfeff74e16d27"
+    },
+    "guest": {
+      "decision": "child_failed",
+      "exit_code": 1,
+      "resource_invalid": false,
+      "admitted": true,
+      "journal_sha256": "5867256db982f6084fcce5d0aa47f107e441102baabce19b10d358bc1cdd0fc8"
+    }
+  },
+  "cleanup": {
+    "temporary_secrets": {
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON": {
+        "staged": true,
+        "deleted": true,
+        "absence_verified": true
+      },
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON": {
+        "staged": true,
+        "deleted": true,
+        "absence_verified": true
+      }
+    },
+    "values_recorded": false
+  },
+  "conclusion": "The fixed receipt now shows zero exact candidates despite one selected POST 200 Algolia response, because the selected preview passed host and row/URL synchronization checks but failed the query-endpoint predicate. The capture was not established, no recipe or replay was produced, and no recipe deletion ran. Credential-key presence with an unmasked preview is separately recorded as a privacy concern. This run does not establish a product capture failure or T57 acceptance.",
+  "next_action": "Source owner should diagnose the actual selected public endpoint identity and credential masking behavior, correct the source guard/product path, and obtain fresh independent review before any later native retest. This lane did not change source or dispatch another run."
+}
