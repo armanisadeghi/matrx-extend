@@ -1,0 +1,41 @@
+{"schema":1,"at":"2026-10-07T14:46:14.010Z","runId":"guest-receipt-correction-20261007-b","path":"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/guest-receipt-correction-20261007-b.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-07T14:47:21.213Z","runId":"guest-receipt-correction-20261007-b","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":12.8,"requiredMemoryGiB":4,"oneMinuteLoad":1.59,"logicalCpus":10,"cpuBusyFraction":0.044285714285714296,"swapUsedMiB":3016.31,"repoFreeGiB":1680.0347633361816,"profileFreeGiB":1680.0347633361816,"safetyFreeGiB":22.933574676513672,"systemFreeGiB":22.933574676513672},"cpuBusySamples":[0.03,0.01,0.1,0.08,0.07,0.01,0.01],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+✔ Profile route passes exact CI artifact identity and extended admin mode to the native driver (1.311291ms)
+✔ Profile route refuses absent or wrong case and non-CI evidence (0.773541ms)
+✔ hosted Profile preflight refuses before credentials or runtime setup (170.701666ms)
+✔ Profile organization fixture requires a private approved name (0.138584ms)
+✔ Showcase and Scrape admin routes require the approved fixture before browser setup (158.685042ms)
+✔ hosted Profile stages an exclusive private organization fixture for the native driver (3.740375ms)
+✔ every hosted Profile phase refuses before browser setup with valid private inputs (593.283542ms)
+✔ other hosted acceptance still passes credential preflight without runtime setup (73.764875ms)
+✔ non-Profile package and browser phases retain resource admission (147.472916ms)
+✔ known inventory labels map to source IDs while new visible controls stay explicit and private (1.707875ms)
+✔ browser version failures expose fixed safe diagnostics without transport content (0.260416ms)
+✔ backend mutation attempt is aborted without retaining URL or request body (0.165167ms)
+✔ unknown labels, inaccessible regions, and intercepted RPCs each prevent completeness (0.25775ms)
+✔ Settings census observes the actual OpenUrl anchor as C39 without emitting its href (7.999083ms)
+✔ unknown DOM labels use a fresh keyed fingerprint without raw text or correlation (4.941292ms)
+✔ direct census invocation refuses before browser or credentials without resource guard (83.964083ms)
+✔ hosted census role preflight requires real auth only for member and admin (0.225791ms)
+✔ discovery retains untitled and alternate tab shapes but only permits mapped native triggers (3.061417ms)
+✔ census distinguishes structural containers and actions from unopened regions with safe provenance (2.639792ms)
+✔ discovery retains summary, non-button expanders and unclassified section controls (2.265167ms)
+✔ Settings section readiness uses its active panel while retaining unknown section triggers (3.344667ms)
+✔ Settings readiness refuses an inactive panel or duplicate Account expanders inside it (2.349583ms)
+✔ guest evidence requires observed signed-out account and absent credentials (1.365875ms)
+✔ guest observation refuses every contradictory or missing auth signal without leaking identity (8.220916ms)
+✔ discovery contract detects an in-memory narrowed selector and constant-result replacement (6.110041ms)
+✔ guest contract detects a constant signed-out replacement (3.952958ms)
+✔ guest capture frames Account after signed-out proof and restricts an existing screenshot (4.317791ms)
+✔ guest screenshot failures retain stage and last safe observations without payloads (3.84075ms)
+✔ guest screenshot refuses capture when Account remains outside the viewport (0.866583ms)
+ℹ tests 29
+ℹ suites 0
+ℹ pass 29
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1218.764958
+{"schema":1,"at":"2026-10-07T14:47:22.531Z","runId":"guest-receipt-correction-20261007-b","childExitCode":0,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-07T14:47:22.572Z","runId":"guest-receipt-correction-20261007-b","admitted":true,"resourceInvalid":false,"exitCode":0,"decision":"valid","code":"RESOURCE_FINAL_DECISION"}

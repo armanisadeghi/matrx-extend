@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "source_corrected_fixture_verified_native_pending",
+  "base_commit": "cf835b9a",
+  "scope": "Three receipt-quality findings from guest-census-receipt-peer-20261007.json; D151 classification, provenance, private labels, and unknown accounting unchanged.",
+  "changes": [
+    "Existing screenshot files are chmod 0600 before truncation and writing; new files are opened with mode 0600.",
+    "Browser version, Account framing, screenshot send, base64/PNG decode, and screenshot write/close failures carry fixed stages and targets with last safe booleans or counts. No transport error, URL, or payload is serialized.",
+    "Guest Account is scrolled and its header, content, and Sign in control must intersect the sidepanel viewport after positive signed-out proof and before capture. Capture refuses a failed viewport check."
+  ],
+  "verification": {
+    "command": "node scripts/stabilization-resource.mjs run --run-id guest-receipt-correction-20261007-b -- node --test tests/browser/takeover-visible-census.test.mjs scripts/hosted-profile-route.test.mjs",
+    "run_id": "guest-receipt-correction-20261007-b",
+    "resource_decision": "valid",
+    "tests_passed": 29,
+    "tests_failed": 0,
+    "stdout": ".research/guest-census-receipt-correction-20261007.stdout.txt",
+    "stdout_sha256": "dabf918e46aa09b8282debca2b25ca7796014adcb3145eac4c1ed8b2234a3979",
+    "completed_journal": "docs/stabilization/resource-journals/guest-receipt-correction-20261007-b.jsonl",
+    "completed_journal_sha256": "97870e9dc22de6babc90153729c19acb7e8abdc39aace91cf1abc3d93486a66c",
+    "guard_evidence": [
+      "An existing 0644 screenshot is overwritten and observed as 0600 with new bytes.",
+      "Capture is never called without signed-out proof or when scrolling leaves Account outside the viewport.",
+      "Browser transport/validation and screenshot send/decode/write failures expose stage, target, and safe state without private payloads."
+    ]
+  },
+  "limitations": [
+    "No native browser launch or image inspection in this lane; fresh source reviewer and authorized native operator must establish native readiness.",
+    "The separate dirty workspace-sync ledger was preserved without edits."
+  ]
+}

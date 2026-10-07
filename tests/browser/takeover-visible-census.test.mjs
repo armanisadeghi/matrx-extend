@@ -1,17 +1,22 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { randomBytes, webcrypto } from 'node:crypto';
+import { mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import test from 'node:test';
 import vm from 'node:vm';
 import { Window } from 'happy-dom';
 import { requireHostedAcceptanceCredential } from '../../scripts/hosted-profile-route.mjs';
 import {
   CONTROL_SELECTOR,
+  captureGuestReadiness,
   censusCompleteness,
   discoveryExpression,
   mapObservation,
   mutationGuard,
   observeGuestAuthentication,
+  readBrowserVersion,
   settingsControlsExpression,
 } from './takeover-visible-census.mjs';
 
@@ -33,6 +38,38 @@ test('known inventory labels map to source IDs while new visible controls stay e
   assert.throws(
     () => mapObservation('navigation', [{ kind: 'tab', label: 'A private title' }]),
     /census_unkeyed_unknown_refused/,
+  );
+});
+
+test('browser version failures expose fixed safe diagnostics without transport content', async () => {
+  for (const session of [
+    {
+      send: async () => {
+        throw new Error('private browser payload');
+      },
+    },
+    { send: async () => ({ product: 'private browser payload', protocolVersion: '1.3' }) },
+  ]) {
+    await assert.rejects(
+      () => readBrowserVersion(session),
+      (error) => {
+        assert.equal(error.message, 'census_receipt_boundary_failed');
+        assert.equal(error.receiptDiagnostic.target, 'owned_browser');
+        assert.equal(error.receiptDiagnostic.version_observed, false);
+        assert.doesNotMatch(JSON.stringify(error.receiptDiagnostic), /private/);
+        return true;
+      },
+    );
+  }
+  assert.deepEqual(
+    await readBrowserVersion({
+      send: async () => ({
+        product: 'Chrome/133.0.0.0',
+        protocolVersion: '1.3',
+        commandLine: 'private',
+      }),
+    }),
+    { product: 'Chrome/133.0.0.0', protocol_version: '1.3' },
   );
 });
 
@@ -450,4 +487,144 @@ test('guest contract detects a constant signed-out replacement', async () => {
   await verify(observeGuestAuthentication);
   const constant = await observeGuestAuthentication(guestPanel(domContext(guestHtml)));
   await assert.rejects(() => verify(async () => constant), /Missing expected rejection/);
+});
+
+test('guest capture frames Account after signed-out proof and restricts an existing screenshot', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'census-receipt-'));
+  try {
+    const output = join(directory, 'guest.json');
+    const screenshot = `${output}.guest-account-readiness.png`;
+    await writeFile(screenshot, 'old private pixels', { mode: 0o644 });
+    await (await import('node:fs/promises')).chmod(screenshot, 0o644);
+    const context = domContext(guestHtml);
+    let scrolled = false;
+    context.innerHeight = 400;
+    context.innerWidth = 400;
+    const header = context.document.querySelector('button[aria-expanded]');
+    header.scrollIntoView = () => {
+      scrolled = true;
+    };
+    context.document.defaultView.HTMLElement.prototype.getBoundingClientRect = function () {
+      return {
+        width: 100,
+        height: 20,
+        top: scrolled ? 20 : 800,
+        bottom: scrolled ? 40 : 820,
+        left: 10,
+        right: 110,
+      };
+    };
+    const calls = [];
+    const panel = {
+      async send(method, params) {
+        calls.push(method);
+        if (method === 'Runtime.evaluate')
+          return { result: { value: vm.runInNewContext(params.expression, context) } };
+        assert.equal(method, 'Page.captureScreenshot');
+        assert.equal(scrolled, true);
+        return { data: Buffer.from('89504e470d0a1a0a', 'hex').toString('base64') };
+      },
+    };
+    await assert.rejects(
+      () => captureGuestReadiness(panel, output, { signed_out_observed: false }),
+      /census_guest_signed_out_unverified/,
+    );
+    assert.equal(calls.length, 0);
+    assert.equal(
+      await captureGuestReadiness(panel, output, { signed_out_observed: true }),
+      screenshot,
+    );
+    assert.deepEqual(calls, ['Runtime.evaluate', 'Page.captureScreenshot']);
+    assert.equal((await stat(screenshot)).mode & 0o777, 0o600);
+    assert.equal((await readFile(screenshot)).toString('hex'), '89504e470d0a1a0a');
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('guest screenshot failures retain stage and last safe observations without payloads', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'census-receipt-'));
+  try {
+    const context = domContext(guestHtml);
+    context.innerHeight = 400;
+    context.innerWidth = 400;
+    context.document.querySelector('button[aria-expanded]').scrollIntoView = () => {};
+    context.document.defaultView.HTMLElement.prototype.getBoundingClientRect = () => ({
+      width: 100,
+      height: 20,
+      top: 20,
+      bottom: 40,
+      left: 10,
+      right: 110,
+    });
+    const panel = (screenshot) => ({
+      send: async (method, params) =>
+        method === 'Runtime.evaluate'
+          ? { result: { value: vm.runInNewContext(params.expression, context) } }
+          : screenshot(),
+    });
+    for (const [output, screenshot, stage] of [
+      [
+        join(directory, 'send'),
+        () => {
+          throw new Error('private transport');
+        },
+        'guest_screenshot_send',
+      ],
+      [join(directory, 'decode'), () => ({ data: 'private payload' }), 'guest_screenshot_decode'],
+      [
+        join(directory, 'missing', 'write'),
+        () => ({ data: Buffer.from('89504e470d0a1a0a', 'hex').toString('base64') }),
+        'guest_screenshot_write',
+      ],
+    ]) {
+      await assert.rejects(
+        () => captureGuestReadiness(panel(screenshot), output, { signed_out_observed: true }),
+        (error) => {
+          assert.equal(error.message, 'census_receipt_boundary_failed');
+          assert.equal(error.receiptDiagnostic.stage, stage);
+          assert.equal(error.receiptDiagnostic.target, 'sidepanel_account');
+          assert.equal(error.receiptDiagnostic.signed_out_observed, true);
+          assert.equal(error.receiptDiagnostic.account_header_in_viewport, true);
+          assert.doesNotMatch(JSON.stringify(error.receiptDiagnostic), /private|missing/);
+          return true;
+        },
+      );
+    }
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('guest screenshot refuses capture when Account remains outside the viewport', async () => {
+  const context = domContext(guestHtml);
+  context.innerHeight = 400;
+  context.innerWidth = 400;
+  let scrollAttempted = false;
+  context.document.querySelector('button[aria-expanded]').scrollIntoView = () => {
+    scrollAttempted = true;
+  };
+  context.document.defaultView.HTMLElement.prototype.getBoundingClientRect = () => ({
+    width: 100,
+    height: 20,
+    top: 800,
+    bottom: 820,
+    left: 10,
+    right: 110,
+  });
+  const panel = {
+    send: async (method, params) => {
+      assert.equal(method, 'Runtime.evaluate', 'capture must not start without viewport proof');
+      return { result: { value: vm.runInNewContext(params.expression, context) } };
+    },
+  };
+  await assert.rejects(
+    () => captureGuestReadiness(panel, '/unused', { signed_out_observed: true }),
+    (error) => {
+      assert.equal(error.receiptDiagnostic.stage, 'guest_account_viewport');
+      assert.equal(error.receiptDiagnostic.account_header_in_viewport, false);
+      return true;
+    },
+  );
+  assert.equal(scrollAttempted, true);
 });

@@ -2,7 +2,7 @@
 /** Receipt-bound, read-only native visibility discovery for a fresh role profile. */
 import assert from 'node:assert/strict';
 import { randomBytes } from 'node:crypto';
-import { readFile, writeFile } from 'node:fs/promises';
+import { open, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifact.mjs';
@@ -307,6 +307,131 @@ export async function observeGuestAuthentication(panel) {
     'census_guest_signed_out_unverified',
   );
   return { role: 'guest', signed_out_observed: true, ...state };
+}
+
+function receiptBoundary(stage, target, safe, cause) {
+  const error = new Error('census_receipt_boundary_failed', { cause });
+  error.receiptDiagnostic = { stage, target, ...safe };
+  return error;
+}
+
+export async function readBrowserVersion(browserSession) {
+  let version;
+  try {
+    version = await browserSession.send('Browser.getVersion');
+  } catch (cause) {
+    throw receiptBoundary(
+      'browser_version_send',
+      'owned_browser',
+      { version_observed: false },
+      cause,
+    );
+  }
+  if (
+    !/^(?:Chrome|HeadlessChrome)\/[0-9.]+$/.test(version?.product ?? '') ||
+    !/^[0-9]+\.[0-9]+$/.test(version?.protocolVersion ?? '')
+  )
+    throw receiptBoundary('browser_version_validate', 'owned_browser', { version_observed: false });
+  return { product: version.product, protocol_version: version.protocolVersion };
+}
+
+export async function frameGuestAccount(panel, authentication) {
+  assert.equal(authentication?.signed_out_observed, true, 'census_guest_signed_out_unverified');
+  let frame;
+  try {
+    frame = await evaluate(
+      panel,
+      `(() => {
+      const pane = ${activeTabPanelExpression('Settings')};
+      const headers = [...(pane?.querySelectorAll('button[aria-expanded="true"][aria-controls]') ?? [])]
+        .filter(el => el.textContent.trim() === 'Account');
+      const header = headers.length === 1 ? headers[0] : null;
+      const content = header ? document.getElementById(header.getAttribute('aria-controls')) : null;
+      const signIn = [...(pane?.querySelectorAll('button') ?? [])]
+        .find(el => el.textContent.trim() === 'Sign in' && !el.disabled);
+      if (header && content && signIn) header.scrollIntoView({ block: 'start', inline: 'nearest' });
+      const inViewport = el => { if (!el) return false;
+        const r = el.getBoundingClientRect();
+        return r.width > 0 && r.height > 0 && r.bottom > 0 && r.right > 0 &&
+          r.top < innerHeight && r.left < innerWidth;
+      };
+      return { account_header_in_viewport: inViewport(header),
+        account_content_in_viewport: inViewport(content), sign_in_in_viewport: inViewport(signIn) };
+    })()`,
+    );
+  } catch (cause) {
+    throw receiptBoundary(
+      'guest_account_frame',
+      'sidepanel_account',
+      {
+        signed_out_observed: true,
+        account_header_in_viewport: false,
+        account_content_in_viewport: false,
+        sign_in_in_viewport: false,
+      },
+      cause,
+    );
+  }
+  if (
+    !frame?.account_header_in_viewport ||
+    !frame.account_content_in_viewport ||
+    !frame.sign_in_in_viewport
+  )
+    throw receiptBoundary('guest_account_viewport', 'sidepanel_account', {
+      signed_out_observed: true,
+      account_header_in_viewport: frame?.account_header_in_viewport === true,
+      account_content_in_viewport: frame?.account_content_in_viewport === true,
+      sign_in_in_viewport: frame?.sign_in_in_viewport === true,
+    });
+  return frame;
+}
+
+export async function captureGuestReadiness(panel, output, authentication) {
+  const frame = await frameGuestAccount(panel, authentication);
+  const safe = {
+    signed_out_observed: true,
+    ...frame,
+    screenshot_received: false,
+    bytes_decoded: 0,
+  };
+  let response;
+  try {
+    response = await panel.send('Page.captureScreenshot', { format: 'png' });
+  } catch (cause) {
+    throw receiptBoundary('guest_screenshot_send', 'sidepanel_account', safe, cause);
+  }
+  safe.screenshot_received = typeof response?.data === 'string';
+  let bytes;
+  try {
+    if (
+      !safe.screenshot_received ||
+      !/^[A-Za-z0-9+/]+={0,2}$/.test(response.data) ||
+      response.data.length % 4 !== 0
+    )
+      throw new Error('invalid_screenshot_data');
+    bytes = Buffer.from(response.data, 'base64');
+    if (bytes.length < 8 || bytes.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a')
+      throw new Error('invalid_png_header');
+    safe.bytes_decoded = bytes.length;
+  } catch (cause) {
+    throw receiptBoundary('guest_screenshot_decode', 'sidepanel_account', safe, cause);
+  }
+  const path = `${output}.guest-account-readiness.png`;
+  let handle;
+  try {
+    handle = await open(path, 'a+', 0o600);
+    await handle.chmod(0o600);
+    await handle.truncate(0);
+    await handle.writeFile(bytes);
+  } catch (cause) {
+    throw receiptBoundary('guest_screenshot_write', 'sidepanel_account', safe, cause);
+  } finally {
+    if (handle)
+      await handle.close().catch((cause) => {
+        throw receiptBoundary('guest_screenshot_close', 'sidepanel_account', safe, cause);
+      });
+  }
+  return path;
 }
 
 async function prepareGuestObservation(panel, fingerprintKey) {
@@ -624,13 +749,7 @@ async function main() {
     expectedRelease: { version: receipt.version, treeSha256: evidence.treeSha256 },
     expectedExtensionId: EXPECTED_ID,
     exercisePanel: async ({ page, panel, browserSession, activatePanel, attachWorker }) => {
-      const browserVersion = await browserSession.send('Browser.getVersion');
-      assert.match(browserVersion.product ?? '', /^(?:Chrome|HeadlessChrome)\/[0-9.]+$/);
-      assert.match(browserVersion.protocolVersion ?? '', /^[0-9]+\.[0-9]+$/);
-      observedBrowser = {
-        product: browserVersion.product,
-        protocol_version: browserVersion.protocolVersion,
-      };
+      observedBrowser = await readBrowserVersion(browserSession);
       let authentication;
       if (ROLE !== 'guest') {
         const signedIn = await signInSettings({
@@ -659,9 +778,7 @@ async function main() {
         workerGuard = await mutationGuard(worker);
         if (ROLE === 'guest') {
           authentication = await prepareGuestObservation(panel, fingerprintKey);
-          const { data } = await panel.send('Page.captureScreenshot', { format: 'png' });
-          guestReadinessScreenshot = `${OUTPUT}.guest-account-readiness.png`;
-          await writeFile(guestReadinessScreenshot, Buffer.from(data, 'base64'), { mode: 0o600 });
+          guestReadinessScreenshot = await captureGuestReadiness(panel, OUTPUT, authentication);
         }
         observation = { authentication, ...(await census(panel, fingerprintKey)) };
         if (ROLE === 'guest') {
@@ -727,6 +844,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url))
       `${JSON.stringify({
         code: error?.message?.startsWith('census_') ? error.message : 'census_unverified',
         role: ROLE ?? 'unknown',
+        ...(error?.receiptDiagnostic ? { diagnostic: error.receiptDiagnostic } : {}),
       })}\n`,
     );
     process.exitCode = 2;
