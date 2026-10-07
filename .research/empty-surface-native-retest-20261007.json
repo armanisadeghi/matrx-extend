@@ -27,13 +27,16 @@
     "failure_stage": "Exercise the selected Chrome side-panel case",
     "failure_observation": {
       "assertion": "AssertionError [ERR_ASSERTION]: native side-panel acceptance exited 2",
-      "native_process_output": {
+      "census_driver_exit_code": 2,
+      "census_driver_output": {
         "status": "incomplete",
         "role": "guest",
         "unmapped_total": 33
       },
-      "cause": "Census completeness gate exited 2 because 33 observations remain unmapped; unknowns are preserved, not treated as a resource failure.",
-      "workflow_wrapper_exit_code": 1
+      "acceptance_child_exit_code": 2,
+      "stabilization_resource_wrapper_exit_code": 1,
+      "wrapper_interpretation": "The stabilization-resource wrapper reports child_failed because its acceptance child exited 2; resourceInvalid remains false.",
+      "cause": "Census completeness gate exited 2 because 33 observations remain unmapped; unknowns are preserved, not treated as a resource failure."
     },
     "single_attempt": true,
     "no_retry_or_duplicate": true,
@@ -344,5 +347,37 @@
     "resource_readiness": "PASS_VALID_PACKAGE_AND_BROWSER; GUEST_CHILD_FAILED_AFTER_CENSUS_EXIT",
     "overall_census": "INCOMPLETE_33_UNMAPPED",
     "behavioral_pass_claimed": false
+  },
+  "same_artifact_comparison": {
+    "previous_native_run_id": 37645860520,
+    "previous_workflow_artifact_id": 11493304470,
+    "previous_original_receipt_path": ".research/settings-census-label-native-20261007/evidence/visibility-census-guest.json",
+    "previous_original_receipt_sha256": "8e0e6b5ca0e034014dcac51ec0e1a6347cadc84b5777f80abf2d870a7b0851cf",
+    "same_frozen_artifact_identity": true,
+    "artifact_key": {
+      "version": "0.2.366",
+      "source_sha": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+      "ci_run_id": 37619740064,
+      "artifact_id": 11482071536,
+      "tree_sha256": "9e7c2db499a2c1fed0a8b3ea6facfa88a13f3c2c26ba7f9b9d2d1f216310236c"
+    },
+    "previous_required_surface_controls": {
+      "Scrape": 0,
+      "Data": 0,
+      "SEO": 0
+    },
+    "current_required_surface_controls": {
+      "Scrape": 3,
+      "Data": 2,
+      "SEO": 1
+    },
+    "newly_observed_controls": 6,
+    "interpretation": "The exact same version/source/run/artifact/tree hash previously yielded zero required-surface controls; this native retest yields six. This proves capture changed on the frozen artifact, while the current 33 unknowns still keep completeness false."
+  },
+  "closure_boundary": {
+    "scope": "EXT-D-0153 native capture and census completeness only.",
+    "product_behavior_cases_closed": false,
+    "behavioral_pass_claimed": false,
+    "remaining_result": "All required surfaces yielded rendered controls, but 33 observations remain unknown and the census completeness gate remains incomplete."
   }
 }
