@@ -1,0 +1,188 @@
+{
+  "schema_version": 1,
+  "task_id": "seo-identity-candidates-20261007",
+  "purpose": "Source-only mapping candidates for the 12 unknown SEO button observations in .research/settings-semantic-native-20261007/evidence/native-receipt-original.json. Candidates identify static source-owned labels and their inventory controls; they do not assign any receipt fingerprint.",
+  "source_comparison": {
+    "frozen_revision": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+    "current_revision": "b8358ee0a3b3dc4a17b012c20cbdc1b138fe0db9",
+    "paths_compared": [
+      "src/features/seo/SeoView.tsx",
+      "src/features/seo/SeoVerdict.tsx",
+      "src/features/seo/AiRecommendations.tsx",
+      "src/features/seo/AuditIssueList.tsx",
+      "src/features/seo/SeoDetails.tsx"
+    ],
+    "result": "No source diff on the SEO feature paths between frozen and current revisions. The source-backed candidate labels, conditions, and control IDs below therefore apply to both revisions.",
+    "limit": "This comparison does not establish that current runtime rendering matches either source revision."
+  },
+  "mapping_candidates": [
+    {
+      "source_label": "Audit this page",
+      "label_source": "button text",
+      "source": "src/features/seo/SeoView.tsx:332-340",
+      "nearest_stable_context": "SEO footer action",
+      "render_condition": "An audit has not yet been produced; page identity is available for enabling the action, though the button remains rendered while disabled.",
+      "existing_inventory_control_id": "EXT-F-1008-C02",
+      "inventory_label": "Manual audit/re-audit"
+    },
+    {
+      "source_label": "Re-audit",
+      "label_source": "button text",
+      "source": "src/features/seo/SeoView.tsx:332-340",
+      "nearest_stable_context": "SEO footer action",
+      "render_condition": "A live audit exists and no saved snapshot is being viewed.",
+      "existing_inventory_control_id": "EXT-F-1008-C02",
+      "inventory_label": "Manual audit/re-audit"
+    },
+    {
+      "source_label": "Retry",
+      "label_source": "button text",
+      "source": "src/features/seo/SeoView.tsx:353-363",
+      "nearest_stable_context": "SEO page-identity notice below the footer",
+      "render_condition": "The active tab has no pageKey; bind only with the identity-notice context because Retry is reused elsewhere.",
+      "existing_inventory_control_id": "EXT-F-1008-C03",
+      "inventory_label": "Restricted/unreachable page"
+    },
+    {
+      "source_label": "Saved audits for this URL",
+      "label_source": "title attribute; button also contains history icon and dynamic saved-count text",
+      "source": "src/features/seo/SeoView.tsx:225-236",
+      "nearest_stable_context": "SEO header, adjacent to SEO audit heading",
+      "render_condition": "History contains at least one entry.",
+      "existing_inventory_control_id": "EXT-F-1008-C05",
+      "inventory_label": "History open/close and saved snapshot"
+    },
+    {
+      "source_label": "Live",
+      "label_source": "button text",
+      "source": "src/features/seo/SeoView.tsx:289-304",
+      "nearest_stable_context": "Saved snapshot banner in the SEO content area",
+      "render_condition": "A saved snapshot is open; button returns to the live audit.",
+      "existing_inventory_control_id": "EXT-F-1008-C05",
+      "inventory_label": "History open/close and saved snapshot"
+    },
+    {
+      "source_label": "Copy audit",
+      "label_source": "CopyMenu title",
+      "source": "src/features/seo/SeoView.tsx:238-260",
+      "nearest_stable_context": "SEO header trailing action",
+      "render_condition": "Live or saved audit signals are available.",
+      "existing_inventory_control_id": "EXT-F-1008-C07",
+      "inventory_label": "Copy audit formats and role gate"
+    },
+    {
+      "source_label": "Save / Saved",
+      "label_source": "button text; label changes after successful save",
+      "source": "src/features/seo/SeoView.tsx:342-350",
+      "nearest_stable_context": "SEO footer, adjacent to manual audit action",
+      "render_condition": "A live audit exists and no saved snapshot is being viewed; Save changes to Saved when savedId exists.",
+      "existing_inventory_control_id": "EXT-F-1008-C04",
+      "inventory_label": "Save audit and failure recovery"
+    },
+    {
+      "source_label": "Get recommendations",
+      "label_source": "button text",
+      "source": "src/features/seo/AiRecommendations.tsx:76-86",
+      "nearest_stable_context": "AI recommendations card",
+      "render_condition": "No recommendation text, no active run, and no error.",
+      "existing_inventory_control_id": "EXT-F-1008-C10",
+      "inventory_label": "AI recommendation start/stop/retry"
+    },
+    {
+      "source_label": "Stop",
+      "label_source": "button text",
+      "source": "src/features/seo/AiRecommendations.tsx:91-109",
+      "nearest_stable_context": "AI recommendations card running-status row",
+      "render_condition": "Recommendation generation is running.",
+      "existing_inventory_control_id": "EXT-F-1008-C10",
+      "inventory_label": "AI recommendation start/stop/retry"
+    },
+    {
+      "source_label": "Try again",
+      "label_source": "button text",
+      "source": "src/features/seo/AiRecommendations.tsx:111-124",
+      "nearest_stable_context": "AI recommendations card error block",
+      "render_condition": "Recommendation generation failed and error is rendered.",
+      "existing_inventory_control_id": "EXT-F-1008-C10",
+      "inventory_label": "AI recommendation start/stop/retry"
+    },
+    {
+      "source_label": "Copy recommendations",
+      "label_source": "CopyButton title",
+      "source": "src/features/seo/AiRecommendations.tsx:68-73",
+      "nearest_stable_context": "AI recommendations heading row trailing action",
+      "render_condition": "Recommendation text exists.",
+      "existing_inventory_control_id": "EXT-F-1008-C11",
+      "inventory_label": "AI recommendation copy/regenerate/agent link"
+    },
+    {
+      "source_label": "Regenerate",
+      "label_source": "button text",
+      "source": "src/features/seo/AiRecommendations.tsx:144-154",
+      "nearest_stable_context": "AI recommendations card footer after generated text",
+      "render_condition": "Recommendation text exists and generation is not running.",
+      "existing_inventory_control_id": "EXT-F-1008-C11",
+      "inventory_label": "AI recommendation copy/regenerate/agent link"
+    },
+    {
+      "source_label": "Stage every finding in the chat composer for the agent",
+      "label_source": "title attribute; visible text is Fix all",
+      "source": "src/features/seo/SeoVerdict.tsx:109-119",
+      "nearest_stable_context": "SEO verdict card header action",
+      "render_condition": "More than one finding exists.",
+      "existing_inventory_control_id": "EXT-F-1008-C13",
+      "inventory_label": "Stage all SEO fixes in Chat"
+    },
+    {
+      "source_label": "Copy the meta tags this page is missing",
+      "label_source": "CopyButton title",
+      "source": "src/features/seo/SeoVerdict.tsx:134-144",
+      "nearest_stable_context": "Social findings section heading",
+      "render_condition": "At least one social finding exists and a social snippet is available.",
+      "existing_inventory_control_id": "EXT-F-1008-C14",
+      "inventory_label": "Copy missing social meta tags"
+    },
+    {
+      "source_label": "Ask the agent to fix this",
+      "label_source": "title and aria-label",
+      "source": "src/features/seo/SeoVerdict.tsx:157-160,195-203",
+      "nearest_stable_context": "Action at the end of one SEO finding row",
+      "render_condition": "At least one finding row is rendered.",
+      "existing_inventory_control_id": "EXT-F-1008-C12",
+      "inventory_label": "Stage one SEO fix in Chat"
+    },
+    {
+      "source_label": "Open",
+      "label_source": "OpenUrl button text",
+      "source": "src/features/seo/SeoVerdict.tsx:149-155",
+      "nearest_stable_context": "Indexability finding action for a canonical mismatch",
+      "render_condition": "A canonical mismatch finding is present and its canonical URL is available.",
+      "existing_inventory_control_id": "EXT-F-1008-C09",
+      "inventory_label": "SEO details and links"
+    }
+  ],
+  "explicitly_unresolved": [
+    {
+      "case": "Receipt fingerprints",
+      "reason": "Source code cannot derive the per-run fingerprint preimage or bind any fingerprint to a candidate. None of the 12 observations is assigned by order, DOM path, fingerprint, or shape."
+    },
+    {
+      "case": "Saved history entry buttons",
+      "reason": "Each row's accessible text contains a locale-formatted timestamp, computed summary, and optional word count. These are dynamic; source supports the History control family EXT-F-1008-C05, but no stable exact label candidate exists."
+    },
+    {
+      "case": "Agent/Mandate link in recommendations",
+      "reason": "Its title varies with mandateKey and its visible text includes dynamic agentName or a default-agent fallback. The visible value may be user/config dependent, so leave it unresolved absent a census-supported stable accessible-name rule; inventory family is EXT-F-1008-C11."
+    },
+    {
+      "case": "CopyMenu and CopyButton rendered elements",
+      "reason": "The static titles are source-owned, but their actual button accessible-name behavior is implemented in the shared component. A candidate can be bound only if the census captures the same title/text/aria source; otherwise the visible nested menu item labels (Summary (text), For AI agent, JSON) are separate menu state and require fresh source-backed observation."
+    },
+    {
+      "case": "Current unknown set membership",
+      "reason": "The frozen receipt only gives 12 button fingerprints and unhelpful paths. The current source lists possible controls across several state-dependent branches; it does not prove which branches appeared in that run. No behavioral pass or complete mapping is claimed."
+    }
+  ],
+  "source_inventory": "docs/stabilization/inventory.json: EXT-F-1008 and controls C01-C14; candidate control IDs are taken from those exact records.",
+  "behavioral_status": "Not assessed. No browser, native, test, or behavioral pass was performed."
+}
