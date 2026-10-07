@@ -1,18 +1,30 @@
 {
   "schema_version": 1,
   "reviewed_commit": "327d3b89",
-  "review_scope": "Fresh source-only review of guest census receipt metadata and Account readiness screenshot; no tests, browser, build, database, release, or subagent work.",
+  "review_scope": "Fresh source-only review of guest census receipt metadata and Account readiness screenshot, including PLAN.md Runner diagnostic acceptance; no tests, browser, build, database, release, or subagent work.",
   "verdict_A_intended_evidence_behavior": {
     "verdict": "SOURCE_SEQUENCE_ACCEPTED; NATIVE_BEHAVIOR_UNVERIFIED",
     "browser_metadata": "The driver uses the browserSession passed by runNativeSidepanelQa, which is the harness's existing owned browser CDP connection. Browser.getVersion is read at the start of exercisePanel; only product and protocolVersion are copied into the result. The checks reject malformed or missing values. No command line or browser payload is serialized.",
-    "guest_readiness": "In the guest path, prepareGuestObservation opens Settings, waits for a safe Account section, expands it, and waits for observeGuestAuthentication. That observation throws unless the Account content is visible, enabled Sign in is visible, Sign out is absent, and access token, refresh token, profile, and admin role are absent. The screenshot call occurs only after this positive proof returns, while the Account section remains expanded; it captures the attached side-panel target, not the signed-in page target.",
+    "guest_readiness": "In the guest path, prepareGuestObservation opens Settings, waits for a safe Account section, expands it, and waits for observeGuestAuthentication. That observation throws unless the Account content is visible, enabled Sign in is visible, Sign out is absent, and access token, refresh token, profile, and admin role are absent. The screenshot call occurs only after this positive proof returns and captures the attached side-panel target, not the signed-in page target. However, this does not guarantee that Account is in the captured viewport: openSection skips click (whose pointer path scrolls the target into view) when Account is already expanded, and observeGuestAuthentication's visibility predicate checks nonzero rect and CSS visibility but does not check viewport intersection. Page.captureScreenshot has no clip/viewport preparation step, and source does not inspect the resulting pixels. Thus the code proves signed-out DOM state before capture, but does not prove the screenshot visibly frames that state.",
     "native_gap": "This source inspection establishes intended sequencing only. The newly added Browser.getVersion and Page.captureScreenshot calls have not been exercised in the native browser. The 25 fixture tests recorded in the completion receipt do not establish native product or census acceptance."
   },
   "verdict_B_privacy_quality": {
-    "verdict": "BLOCKED_ON_EXISTING_FILE_PERMISSION_GUARANTEE",
-    "finding": "The screenshot is written with writeFile(path, bytes, { mode: 0o600 }). Node applies mode only when creating a new file; if the deterministic screenshot path already exists with broader permissions, writeFile truncates and overwrites it without changing that mode. Therefore reruns do not guarantee the requested restrictive permissions.",
-    "recommended_correction": "After writing, explicitly chmod the screenshot to 0o600 (and consider validating the resulting PNG before recording its path), or create the file with an approach that refuses an existing path and then verify its mode. Ensure a prior broader-permission file is covered by the correction's verification before native execution.",
-    "privacy_observation": "The captured image is the visible extension side panel after signed-out proof in the harness-owned fresh profile. The report stores only its path. No private signed-in screenshot path is introduced by this guest-only branch."
+    "verdict": "BLOCKED_ON_PERMISSION_GUARANTEE_AND_RUNNER_DIAGNOSTICS; SCREENSHOT_FRAMING_UNPROVEN",
+    "findings": [
+      {
+        "issue": "Existing screenshot file permissions are not restricted",
+        "source_proof": "The branch writes with writeFile(path, bytes, { mode: 0o600 }) to the deterministic OUTPUT + suffix path. On an existing path, writeFile truncates and overwrites without applying the creation mode, so a prior broader mode persists."
+      },
+      {
+        "issue": "New Browser.getVersion, screenshot, and file-write boundaries lack fixed failure diagnostics",
+        "source_proof": "PLAN.md Runner diagnostic acceptance requires each potentially failing boundary to record a fixed stage/target and last safe booleans or counts; an opaque unverified catch is insufficient. Browser.getVersion send/assert, Page.captureScreenshot send, Buffer.from, and writeFile are unwrapped. The top-level catch emits only an existing census_* message or census_unverified plus role, and the harness is only at its broad exercise_panel stage. The report therefore cannot identify which added boundary failed or the safe observation immediately before it. No raw error or payload is serialized, which preserves the privacy constraint but does not satisfy stage diagnostics."
+      },
+      {
+        "issue": "The screenshot is not source-guaranteed to show the Account readiness UI",
+        "source_proof": "When Account is already expanded, openSection does not call click; click is the path in settings-panel-driver.mjs that scrolls a target into view. observeGuestAuthentication checks element rect width/height and CSS visibility, but not viewport intersection. The subsequent Page.captureScreenshot uses default capture parameters without scrolling, clipping, or pixel verification. Therefore source proves signed-out DOM state precedes the screenshot, but not that the Account state appears in the screenshot."
+      }
+    ],
+    "privacy_observation": "The guest-only branch captures the attached side-panel target and records only the screenshot path. It does not add a signed-in screenshot path, raw browser command line, auth URL, error, storage value, token, or unrestricted page text."
   },
   "source_review": {
     "files": [
@@ -23,5 +35,5 @@
     ],
     "unrelated_dirty_file_preserved": "docs/stabilization/reports/workspace-sync-guest-incident-20261003.json"
   },
-  "native_dispatch": "Do not treat this review as native readiness acceptance until the screenshot permission guarantee is fixed. After correction, a native run can verify the actual CDP version values, screenshot output, and mode on disk."
+  "native_dispatch": "This source review does not establish native readiness acceptance. The permission guarantee and fixed safe diagnostics are confirmed gaps; screenshot framing is unproven because source does not ensure or inspect viewport pixels. A later native result cannot be inferred from the 25 recorded fixture tests."
 }
