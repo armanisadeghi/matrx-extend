@@ -3,7 +3,11 @@
   "task": "structured source-only procedure proposals for stylesheet tools",
   "created_at": "2026-10-07",
   "status": "proposals-authored-runtime-unverified",
-  "scope": ["EXT-F-4125-T01", "EXT-F-4126-T01", "EXT-F-4167-T01"],
+  "scope": [
+    "EXT-F-4125-T01",
+    "EXT-F-4126-T01",
+    "EXT-F-4167-T01"
+  ],
   "source_anchors": [
     {
       "path": "src/lib/tools/handlers/privileged.ts",
@@ -26,8 +30,8 @@
       "evidence": "inject_stylesheet and remove_stylesheet declare activeTab and scripting as required permissions."
     },
     {
-      "path": "tests/browser/scrape-guest-native-acceptance.mjs",
-      "evidence": "Existing owned fixture defines /referrals as a standalone page with title 'Harbor Dental referral hours' and one visible h1 with that text; it is served through runNativeSidepanelQa's exact in-memory route map. The port is assigned at runtime, so use the current run's observed URL and tab ID, never historical localhost:49199. This acceptance runner is guest-profile setup; it does not itself provide member/admin auth."
+      "path": "tests/browser/native-sidepanel-qa-harness.mjs",
+      "evidence": "The harness allows the fixed publicDemoUrl https://www.aimatrx.com/matrx-extend-demo and waits for main article to become visible. A read-only fetch on 2026-10-06 returned title 'Matrx Extend Demo Page - AI Matrx' and exactly one h1, 'A clear three-stage browser workflow'. The route is public and does not depend on an ephemeral owned-fixture server; recheck the route and heading before each manual run."
     },
     {
       "path": "docs/stabilization/reports/inventory-tools.json",
@@ -36,18 +40,18 @@
   ],
   "procedure_prerequisites": {
     "execution": "Not performed in this lane. Before each eventual run, acquire the current stabilization resource permit and create a current receipt using docs/stabilization/PLAN.md § Build and reload contract. Include source SHA and dirty-source hash when applicable, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, auth/role/org, permissions, backend identity, fixture IDs, timestamp, login/provenance/data origin, flags, interception/mocks and seeded state. Never include secrets.",
-    "target": "Fixture identity is source-grounded: tests/browser/scrape-guest-native-acceptance.mjs supplies ownedPages['/referrals'] with title 'Harbor Dental referral hours', visible <h1>Harbor Dental referral hours</h1>, and a referral-coordinator paragraph; runNativeSidepanelQa serves that exact route over localhost using a runtime-selected port. For manual use, the route's current server must already be running and the member/admin Chrome profile must navigate to its current URL recorded in the active fixture receipt. Never assume historical port 49199 or use a personal page. The inspected launcher is guest-profile acceptance setup and does not itself create member/admin auth; if no active owned route is available to the intended profile, stop and leave that role unverified.",
+    "target": "Open https://www.aimatrx.com/matrx-extend-demo in a new tab in the selected member or admin Chrome profile. This is an existing public page allowed by tests/browser/native-sidepanel-qa-harness.mjs; the current read-only fetch found title 'Matrx Extend Demo Page - AI Matrx', a visible main article, and one h1 reading 'A clear three-stage browser workflow'. Before the run, confirm the URL remains exactly this route and the visible target h1 still exists; if the route or target has changed/unavailable, stop and record that role as unverified. Record the newly opened tab's ID as owned; injection/removal affects only that tab. Do not use historical localhost ports or a personal page.",
     "fixture_css": "For a page with a visible h1, use the same exact CSS string on injection and removal: h1 { color: rgb(190, 24, 93) !important; background-color: rgb(255, 237, 213) !important; }. Capture baseline and post-call visible h1 computed color/background through the page UI/observation. The distinct visual values are a proposed fixture input, not an observed result.",
     "permission_boundary": "The source/catalog declares required activeTab and scripting permissions; optional permissions are empty. Record the receipt-bound manifest permissions and actual handler API result separately. Tools manual Run bypasses dispatcher approval and cannot prove permission enforcement. No supported safe permission-denial procedure for activeTab is established in the inspected source, and activeTab's tab-scoped grant cannot be inferred from the manifest declaration; leave permission-denial/activation proof unresolved.",
-    "cleanup": "Remove only the exact CSS string this run inserted, on the exact owned tab ID; verify baseline appearance returns. If extension/page reload has already unloaded the injected stylesheet, record that boundary and do not claim remove_stylesheet removed it. Close only the owned fixture tab after evidence capture. Never enumerate, remove, or delete any other stylesheet or style record.",
-    "reload": "Follow PLAN.md § Build and reload contract: separate extension Reload from target page reload; rebuild/reload only when source/manifest/permissions/config/environment changes require it, verify the runtime build identity, reopen sidepanel and refocus/reload only the owned fixture. Injected CSS is document-scoped in this handler path; treat page reload as a fresh baseline and repeat inject/visual check/owned exact removal rather than expecting persistence.",
+    "cleanup": "Remove only the exact CSS string this run inserted, on the exact owned public-demo tab ID; verify baseline appearance returns. If extension/page reload has already unloaded the injected stylesheet, record that boundary and do not claim remove_stylesheet removed it. Close only the newly opened tab owned by this run after evidence capture. Never enumerate, remove, or delete any other stylesheet or style record.",
+    "reload": "Follow PLAN.md § Build and reload contract: separate extension Reload from target page reload; rebuild/reload only when source/manifest/permissions/config/environment changes require it, verify the runtime build identity, reopen sidepanel and refocus/reload only the owned public-demo tab. Injected CSS is document-scoped in this handler path; treat page reload as a fresh baseline and repeat inject/visual check/owned exact removal rather than expecting persistence.",
     "dispatcher_boundary": "No executable delegated dispatcher path is in scope for these manual cases: inventory entry points defer advertised agent calls to Chat/Pilot, and stabilization PLAN.md defers Chat/Pilot to Wave D. Do not attempt to manufacture a tool event or claim dispatcher/confirmation coverage here. Privileged confirmation, denial, Pilot scope, dispatcher routing and actual activeTab gate behavior remain explicitly NOT EXECUTABLE in this manual lane and unverified for later Chat/Pilot work.",
     "persistent_field": "Inventory/catalog drift only: inject leaf schema lists persist; canonical stylesheet schema lists persistent; live Zod schemas omit unknown-key strictness, so these fields are stripped and execution may proceed. Do not submit either key as a negative or valid option and do not claim rejection/no effect."
   },
   "role_and_dispatcher_limits": {
-    "guest": "Inventory marks these Tools UI cases not applicable because Tools requires sign-in; record N/A for these case IDs. If assessing guest access, use the separate Tools UI negative-access case, not a claim that the handler itself was inaccessible. The existing owned fixture launcher described here is guest-profile setup only and is not evidence for these guest-N/A handler cases.",
-    "member": "Applicable according to inventory. Run the manual Tools handler only in a signed-in ordinary-member profile with the owned /referrals fixture route available to that profile. Manual Run proves direct handler behavior only. Dispatcher/approval and permission-denial dimensions are NOT EXECUTABLE here and remain unverified. If the available fixture launcher presents only its guest profile, do not substitute it for member evidence.",
-    "admin": "Applicable according to inventory. Run the manual Tools handler only in a signed-in admin profile with the owned /referrals fixture route available to that profile. Admin success cannot replace member evidence. Manual Run proves direct handler behavior only; dispatcher/approval and permission-denial dimensions are NOT EXECUTABLE here and remain unverified.",
+    "guest": "Inventory marks these Tools UI cases not applicable because Tools requires sign-in; record N/A for these case IDs. If assessing guest access, use the separate Tools UI negative-access case, not a claim that the handler itself was inaccessible.",
+    "member": "Applicable according to inventory. Open the fixed public demo URL in a newly owned tab inside a signed-in ordinary-member profile. Manual Run proves direct handler behavior only. Dispatcher/approval and permission-denial dimensions are NOT EXECUTABLE here and remain unverified.",
+    "admin": "Applicable according to inventory. Open the fixed public demo URL in a newly owned tab inside a signed-in admin profile. Admin success cannot replace member evidence. Manual Run proves direct handler behavior only; dispatcher/approval and permission-denial dimensions are NOT EXECUTABLE here and remain unverified.",
     "visual_verdict": "A returned {ok:true} is API completion only. Require visible h1 color/background change after inject and captured baseline restoration after exact remove; no behavior has been observed in this source-only lane."
   },
   "cases": [
@@ -56,16 +60,21 @@
       "name": "inject_stylesheet",
       "case_id": "EXT-F-4125-T01",
       "title": "Controlled manual execution: inject_stylesheet",
-      "control_ids": ["EXT-F-4125-C01"],
-      "roles": ["member", "admin"],
+      "control_ids": [
+        "EXT-F-4125-C01"
+      ],
+      "roles": [
+        "member",
+        "admin"
+      ],
       "status": "unverified",
       "steps": [
-        "Meet procedure_prerequisites for the selected role; record the current resource permit and receipt. Open the owned /referrals fixture route from tests/browser/scrape-guest-native-acceptance.mjs (use the current ephemeral URL and tab ID from its receipt, not a guessed port) in a newly owned tab and record its exact tab ID.",
+        "Meet procedure_prerequisites for the selected role; record the current resource permit and receipt. In that role's Chrome profile, open https://www.aimatrx.com/matrx-extend-demo in a new tab and record its exact tab ID. Confirm the visible h1 reads 'A clear three-stage browser workflow'.",
         "Observe and record the h1 baseline color and background. In Tools, locate inject_stylesheet, enter exactly {\"css\":\"h1 { color: rgb(190, 24, 93) !important; background-color: rgb(255, 237, 213) !important; }\",\"tab_id\":<owned-tab-id>} and click Run. The integer placeholder must be replaced by the receipt's actual owned tab ID.",
-        "Record inline handler output and separately observe the owned fixture h1. Require the proposed pink text and peach background to be visible before assigning a visual pass.",
-        "On the same owned tab, run remove_stylesheet with the exact CSS and tab_id above; confirm the h1 returns to its captured baseline. This is cleanup only; the separate remove case owns that control verdict.",
+        "Record inline handler output and separately observe the demo page's visible h1. Require the proposed pink text and peach background to be visible before assigning a visual pass.",
+        "On the same owned tab, run remove_stylesheet with the exact CSS and tab_id above; confirm the demo h1 returns to its captured baseline. This is cleanup only; the separate remove case owns that control verdict.",
         "Run invalid-input checks separately in the same manual runner: empty css, numeric css, string tab_id. Record each schema rejection and verify the fixture appearance did not change. Do not include unknown keys: Zod strips them and the handler may execute.",
-        "Reload the owned page and record baseline restoration. If a fresh-build/reload case is required, perform the PLAN.md reload sequence with a new receipt and repeat on this owned tab; do not assert CSS survives document reload."
+        "After recording removal, reload the owned public-demo tab and confirm its baseline returns. Close only this newly opened tab after capturing evidence. If a fresh-build/reload case is required, perform the PLAN.md reload sequence with a new receipt and repeat on a newly opened tab; do not assert CSS survives document reload."
       ],
       "expected_observations": [
         "Valid manual call returns {ok:true}; this alone remains insufficient for visual acceptance.",
@@ -81,7 +90,6 @@
         "EXT-F-4125-C01": "Invoke inject_stylesheet through the manual runner with controlled valid input; dispatcher dimension deferred."
       },
       "unresolved_dimensions": [
-        "The current ephemeral /referrals URL must be available to this signed-in role profile; source only proves the route/page definition and the guest acceptance launcher, not member/admin profile availability.",
         "Delegated calls, privileged confirmation/denial, Pilot scope and dispatcher routing are NOT EXECUTABLE here because the advertised agent entry points are deferred Chat/Pilot surfaces.",
         "No safe activeTab denial/activation procedure is established. Record declared manifest permissions and handler API outcome separately; permission-denial coverage remains unverified."
       ],
@@ -103,19 +111,24 @@
       "name": "remove_stylesheet",
       "case_id": "EXT-F-4126-T01",
       "title": "Controlled manual execution: remove_stylesheet",
-      "control_ids": ["EXT-F-4126-C01"],
-      "roles": ["member", "admin"],
+      "control_ids": [
+        "EXT-F-4126-C01"
+      ],
+      "roles": [
+        "member",
+        "admin"
+      ],
       "status": "unverified",
       "steps": [
-        "Meet procedure_prerequisites for the selected role and open the current owned /referrals URL in a newly owned tab; record its exact tab ID and baseline h1 appearance.",
+        "Meet procedure_prerequisites for the selected role; open https://www.aimatrx.com/matrx-extend-demo in a new tab in that role's Chrome profile, record its tab ID, and capture the visible h1 baseline.",
         "In Tools, locate inject_stylesheet and enter exactly {\"css\":\"h1 { color: rgb(190, 24, 93) !important; background-color: rgb(255, 237, 213) !important; }\",\"tab_id\":<owned-tab-id>}; click Run. Require its distinct visible effect before continuing.",
         "In Tools, locate remove_stylesheet and enter exactly {\"css\":\"h1 { color: rgb(190, 24, 93) !important; background-color: rgb(255, 237, 213) !important; }\",\"tab_id\":<owned-tab-id>}; click Run. Record API output and separately observe restoration of the owned h1 baseline.",
         "For each invalid input, use the same baseline page: empty css, numeric css, and string tab_id. Record each schema rejection and confirm no visible change; do not include unknown keys because Zod strips them and the handler may execute.",
         "Reload the owned page only after recording the warm removal result. On reload, expect natural document baseline; do not call that proof of remove_stylesheet. For post-extension-reload coverage, start from a fresh receipt and re-establish this run's own style before removing it.",
-        "If the valid remove call fails after the test-owned injection, reload only the owned /referrals tab to clear this document-scoped style; record failure and do not treat reload as a remove_stylesheet pass."
+        "If the valid remove call fails after this run's injection, reload only the newly opened public-demo tab to clear this document-scoped style; record failure and do not treat reload as a remove_stylesheet pass. Close that tab after evidence capture."
       ],
       "expected_observations": [
-        "Precondition injection visibly changes only the owned h1.",
+        "Precondition injection visibly changes the owned tab's demo h1.",
         "Valid remove returns {ok:true} and restores the owned h1's captured baseline appearance.",
         "Cleanup is scoped to the exact same CSS and owned tab ID; never remove another run's or page's style."
       ],
@@ -127,7 +140,6 @@
       },
       "unresolved_dimensions": [
         "Chrome removal matching behavior for the exact CSS string and document lifetime is not observed here; preserve exact bytes and record outcome.",
-        "The current ephemeral /referrals URL must be available to this signed-in role profile; source only proves the route/page definition and the guest acceptance launcher, not member/admin profile availability.",
         "Delegated calls, privileged confirmation/denial, Pilot scope and dispatcher routing are NOT EXECUTABLE here because the advertised agent entry points are deferred Chat/Pilot surfaces.",
         "No safe activeTab denial/activation procedure is established. Record declared manifest permissions and handler API outcome separately; permission-denial coverage remains unverified.",
         "If the remove API fails, page reload is safe cleanup for this run-owned document but is not evidence that remove_stylesheet worked."
@@ -150,11 +162,18 @@
       "name": "stylesheet",
       "case_id": "EXT-F-4167-T01",
       "title": "Controlled manual execution: stylesheet",
-      "control_ids": ["EXT-F-4167-C01", "EXT-F-4167-C02", "EXT-F-4167-C03"],
-      "roles": ["member", "admin"],
+      "control_ids": [
+        "EXT-F-4167-C01",
+        "EXT-F-4167-C02",
+        "EXT-F-4167-C03"
+      ],
+      "roles": [
+        "member",
+        "admin"
+      ],
       "status": "unverified",
       "steps": [
-        "Meet procedure_prerequisites for the selected role, open the existing /referrals fixture route in a newly owned tab, and capture its exact ID and h1 baseline.",
+        "Meet procedure_prerequisites for the selected role; open https://www.aimatrx.com/matrx-extend-demo in a new tab in that role's Chrome profile, record its tab ID, and capture the visible h1 baseline.",
         "In Tools, locate stylesheet and enter {\"action\":\"inject\",\"css\":\"h1 { color: rgb(190, 24, 93) !important; background-color: rgb(255, 237, 213) !important; }\",\"tab_id\":<owned-tab-id>}. Run, record inline output, and independently confirm the visible h1 changed.",
         "On the same owned tab, run {\"action\":\"remove\",\"css\":\"h1 { color: rgb(190, 24, 93) !important; background-color: rgb(255, 237, 213) !important; }\",\"tab_id\":<owned-tab-id>} through Tools. Require restoration of the captured h1 baseline. This exercises the canonical remove branch through the manual handler call only.",
         "Check invalid inputs one at a time: action=unknown, missing action, empty css, numeric css, string tab_id. Record schema rejection and confirm no visible change. Do not include unknown keys: Zod strips them and the handler may execute.",
@@ -165,14 +184,15 @@
         "action=remove calls removeCSS and restores the captured baseline for this run's own exact CSS only.",
         "Unknown/missing action or invalid schema values produce no style change."
       ],
-      "negative_cases": ["Do not use remove branch against a style not created by this run."],
+      "negative_cases": [
+        "Do not use remove branch against a style not created by this run."
+      ],
       "controls_coverage": {
         "EXT-F-4167-C01": "Invoke canonical stylesheet through the manual runner; dispatcher dimension deferred.",
-        "EXT-F-4167-C02": "Action inject visibly changes the owned fixture page.",
-        "EXT-F-4167-C03": "Action remove restores the owned fixture baseline after this run's injection."
+        "EXT-F-4167-C02": "Action inject visibly changes the public demo page's h1.",
+        "EXT-F-4167-C03": "Action remove restores the public demo page's captured baseline after this run's injection."
       },
       "unresolved_dimensions": [
-        "The current ephemeral /referrals URL must be available to this signed-in role profile; source only proves the route/page definition and the guest acceptance launcher, not member/admin profile availability.",
         "Delegated calls, privileged confirmation/denial, Pilot scope and dispatcher routing are NOT EXECUTABLE here because the advertised agent entry points are deferred Chat/Pilot surfaces.",
         "No safe activeTab denial/activation procedure is established. Record declared manifest permissions and handler API outcome separately; permission-denial coverage remains unverified."
       ],
@@ -196,6 +216,6 @@
     "tests_or_builds_run": false,
     "credentials_used": false,
     "inventory_edited": false,
-    "results": "Source-only manual procedures use the existing /referrals owned fixture route when its server is active and same-role profile can reach it. No runtime result is claimed. Dispatcher and permission-denial dimensions remain explicitly unverified/deferred."
+    "results": "Procedures use the existing public demo route https://www.aimatrx.com/matrx-extend-demo in a newly opened tab owned by each member/admin run. Source confirms the harness already uses this fixed route; read-only fetch on 2026-10-06 confirmed the title, visible main article, and unique target h1. No browser/runtime behavior is claimed. Dispatcher and permission-denial dimensions remain explicitly unverified/deferred."
   }
 }
