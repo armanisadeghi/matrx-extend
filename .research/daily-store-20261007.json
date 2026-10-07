@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-07T16:05:19Z",
+  "schedule_claim": {
+    "ledger": "common-docs operations/scheduled-tasks.md",
+    "claim_commit": "60d89548b",
+    "status": "claimed for Oct 7; retained for parent guest-test completion"
+  },
+  "item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+  "dashboard": {
+    "publisher": "Matrx",
+    "authenticated_account_shown": "Arman Sadeghi (arman@armansadeghi.com)",
+    "method": "Chrome native UI read in the existing signed-in publisher session; no resource guard was run",
+    "published_version": "0.2.205",
+    "draft_version": "0.2.205",
+    "status": "Published - public",
+    "published_status_text": "This draft is published and available to the public.",
+    "draft_status_text": "This draft is unpublished.",
+    "upload_enabled": true,
+    "pending_review": false,
+    "reviewer_action_observed": false,
+    "review_state_scope": "The unguarded primary item Status page showed Published and unpublished Draft tabs, with no pending-review or reviewer-action notice. This observation does not include Google email and is not accepted guarded browser proof."
+  },
+  "evidence": [
+    {
+      "surface": "Publisher Items list",
+      "route": "https://chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f",
+      "observed": "Primary Matrx Extend entry shows version 0.2.205 and Published - public. Separate duplicate draft entry is ID pifjakncjcpnkjbdlijgddhiipdlfbde, version 0.1.16, status Draft."
+    },
+    {
+      "surface": "Primary item Status, Draft tab",
+      "route": "https://chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/status",
+      "observed": "Header identifies Status: Published - public and the exact primary item ID; Draft tab says This draft is unpublished."
+    },
+    {
+      "surface": "Primary item Status, Published tab",
+      "route": "https://chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/status/published",
+      "observed": "Published tab says This draft is published and available to the public."
+    },
+    {
+      "surface": "Primary item Package page",
+      "route": "https://chrome.google.com/webstore/devconsole/e4b11279-db70-4683-908f-a65d87d5431f/hnfolienncfklkgmdjjmhhegglimlamg/edit/package",
+      "observed": "Draft and Published package tables both show version 0.2.205; Upload new package button is enabled."
+    },
+    {
+      "surface": "Release artifact audit",
+      "source": "Parent read-only audit, reported 2026-10-07",
+      "observed": "Latest successful release.yml run remains 37180303468 from Oct 4 for 0.2.205. The recent 40 GitHub artifacts are development-test bundles or native receipts; no newer Store ZIP was found."
+    }
+  ],
+  "access_recovery": {
+    "existing_authenticated_session_succeeded": true,
+    "new_credentials_or_codes_entered": false,
+    "human_action_required": false
+  },
+  "guard": {
+    "status": "not_run",
+    "dashboard_observations": "unguarded native UI observations only; not accepted as guarded browser/test proof",
+    "corrected_guarded_check": "parent owns the follow-up guarded run"
+  },
+  "verification": {
+    "exact_primary_item_id_confirmed": true,
+    "published_and_draft_versions_read_from_package_page": true,
+    "published_and_draft_status_text_read_from_separate_tabs": true,
+    "no_dashboard_pending_review_or_reviewer_action_observed": "observed in unguarded UI only; needs guarded recheck",
+    "accepted_guarded_browser_proof": false,
+    "dashboard_mutations": "none",
+    "build_release_or_deploy": "none"
+  },
+  "files": [
+    ".research/daily-store-20261007.json",
+    "/Users/armanisadeghi/code/common-docs/systems/apps/extension/CHROME-WEB-STORE.md",
+    "/Users/armanisadeghi/code/common-docs/operations/scheduled-tasks.md"
+  ],
+  "open_questions": [
+    "A guarded dashboard run remains outstanding and is owned by the parent; retain the Oct 7 schedule ownership until the guarded check and guest acceptance finish.",
+    "The dashboard review-state observation did not inspect Google email or the Notifications page.",
+    "Current source versus the 0.2.205 Store package was outside this dashboard-only check."
+  ]
+}
