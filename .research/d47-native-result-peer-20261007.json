@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "lane": "independent read-only review of frozen native result; no browser, test, DB, or service mutation",
+  "reviewed_native_run": 37554362947,
+  "reviewed_source": "a6e0ef68d40ad8661baf7be7e6518783f85c173d",
+  "reviewed_development_artifact": 11454177514,
+  "reviewed_result_artifact": 11453289288,
+  "raw_result_sha256": "ed403eea2891091b0916a40e52a995387d46d538d4f6d05284fa127e1b0cba63",
+  "source_of_evidence": [
+    "Downloaded original hosted-guest-37554362947-1 artifact with gh run download; inspected showcase-d47-native-37554362947-1.json directly and verified its SHA-256 against the executor report.",
+    "gh run view confirms completed success at workflow head 0827b918896f3505871d24eae7d1164636141eaf; job logs show package, browser, and guest phase RESOURCE_FINAL_DECISION valid, each exit 0.",
+    "Read frozen a6e0ef68 browser driver and saved-result/terminal-budget helpers, canonical T57 inventory, original D47 defect, architecture ruling, and existing controlled-guard report."
+  ],
+  "verdict_A_actual_behavior": {
+    "status": "BOUNDED_NATIVE_CURRENT_SAVED_RESULT_PROVEN; FULL_T57_UNVERIFIED",
+    "proven": [
+      "Raw receipt records pre-run old main-frame context, contexts_cleared, main-frame navigation, and a different current context, in that order. The passive worker observer records a real handshake and current target response packet for the same new-context binding, with GET, sequence 1, status 200 and expected current-body SHA-256.",
+      "Fixture records the old HTTP response pending before Run and server-finished after release with HTTP 200; the current response was sent. The raw receipt records no old binding packet. Together with the separately reviewed producer architecture, this supports bounded exclusion of the ordinary prior-document callback path; it does not show a delivered old callback being rejected.",
+      "The frozen driver checked the exact newly saved recipe header and its visible root result table, including columns events/document, exact Canyon Frequency/current cells, and absence of Moonlit Transit. The raw last sample confirms exact_recipe=true, current_row=true, old_row=false. This is stronger than a panel-wide text coincidence."
+    ],
+    "limits": [
+      "Last raw saved-result sample at 19,994 ms has running=true. The helper returns as soon as exact current rows appear, so settled saved-run completion and post-window stability were not observed.",
+      "The old server response finished, but callback delivery, actual cancellation, and a higher old request_sequence at the extension boundary were not observed. The native result must be labeled architectural/lifecycle exclusion, not old-callback rejection.",
+      "This localhost fixture released current before old. Canonical T57 also requires the reverse order and installed public-site initial-load replay. This run cannot replace those checks."
+    ]
+  },
+  "verdict_B_evidence_quality": {
+    "status": "CREDIBLE_BOUNDED_PROOF; INCOMPLETE_ACCEPTANCE",
+    "strengths": [
+      "Original result artifact hash matches the executor report; the receipt's positive context, handshake, current packet, exact recipe, and exact row fields support the narrow claim independently of its status label.",
+      "Resource validity is corroborated by the hosted job logs. Source comparison shows no D47 product or browser-driver path change from artifact source to workflow head."
+    ],
+    "findings": [
+      {
+        "severity": "Important",
+        "ref": "tests/browser/showcase-d47-terminal-budget.mjs:209; original artifact terminal_observation.last",
+        "finding": "waitD47SavedTerminal returns on a current row while the exact saved run remains running. The native success label therefore proves an interim saved result, not terminal completion."
+      },
+      {
+        "severity": "Important",
+        "ref": "original result artifact probe_cleanup; tests/browser/showcase-d47-document-lifecycle.mjs:679",
+        "finding": "probe_cleanup is [remove_failed]. Passive observer removal was not confirmed, so cleanup acceptance remains open even though the result was written and the hosted job exited cleanly."
+      },
+      {
+        "severity": "Important",
+        "ref": "docs/stabilization/inventory.json:24930; .research/d47-acceptance-architecture-ruling-20261006.json",
+        "finding": "The native fixture is localhost and current-response-first. Public-site initial-request replay, old-response-first order, stale-only terminal refusal/recovery, and manual/prior-run isolation through actual saved UI remain separately required."
+      },
+      {
+        "severity": "Important",
+        "ref": "pnpm-lock.yaml diff a6e0ef68..0827b918; original result artifact artifact",
+        "finding": "The native run tested frozen 0.2.334 artifact 11454177514 built from a6e0ef68 with @ai-matrx/alchemy 0.13.0. Workflow head 0827b918 updated the lockfile to 0.14.0; no current-latest installed-artifact conclusion follows."
+      }
+    ],
+    "controlled_guard_scope": "Existing .research/d47-current-guards-20261006.json reports real saved-UI old-sequence-999/current-sequence-1 guard green and identity-removal mutant red. It reports inverse order and stale-only at core level, while inverse-order saved UI and stale-only terminal recovery were not run. These are separate source/doubled-environment results, not observations in native run 37554362947."
+  },
+  "recommended_case_status": "Keep EXT-D-0047 in-fix and EXT-F-1012-T57 unverified. Add the bounded frozen-artifact current saved-result and architectural-exclusion evidence to tracking without declaring full closure. Require settled exact-recipe terminal result, observer cleanup, public-site initial-load saved replay, remaining order/stale-only/manual-prior guards, and current artifact provenance before promotion.",
+  "tests_run_by_peer": "None; this lane was explicitly read-only. Original native receipt, hosted job state/logs, source, and prior guard evidence were inspected."
+}
