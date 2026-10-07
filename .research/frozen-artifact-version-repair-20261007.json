@@ -5,10 +5,18 @@
   "repair": "The Settings, SEO guest, and contained-navigation drivers now verify the artifact's actual manifest version and tree hash against its own receipt through one shared helper. Development artifact paths no longer require the workflow checkout package version to match. Existing package-version checks for locally selected release artifacts remain in place.",
   "provenance_boundary": "The hosted development importer still runs verifyImportedNativeEvidence, which checks imported path, source SHA, CI receipt, provenance, source-commit package version, manifest, and tree before the driver starts. Each driver still requires a local development receipt and native harness provenance. The new helper rejects manifest/receipt version mismatch or any artifact tree mismatch.",
   "verification": {
-    "red": "Before the helper existed, node --test tests/browser/frozen-artifact-identity.test.mjs failed. The new source integration assertion would also reject all three original checkout-version comparisons.",
-    "green": "Focused test verifies a 0.2.387 artifact passes independently of a later checkout, rejects a wrong manifest version, rejects a wrong receipt hash, and rejects a mutated tree. All three driver sources are checked for shared helper use and development-version isolation.",
-    "native": "Not run in this lane; root owns fresh hosted acceptance and completed resource-journal judgment."
+    "red": "Causal pre-fix evidence is hosted run 37686070986: the old Settings driver rejected intact artifact receipt 0.2.387 against workflow checkout package 0.2.388 before native interaction. Independent review .research/frozen-identity-peer-20261007.json replayed the old assertion against that historical artifact. The initial committed test failure from a missing helper module was only implementation scaffolding, not causal proof.",
+    "green": "Two distinct intact artifacts, 0.2.387 and 0.2.388, produce their own versions and tree hashes from the actual helper. The 0.2.387 fixture survives a later checkout version; wrong manifest version, wrong receipt hash, and mutated tree fail. A separate source wiring assertion checks that all three drivers call the helper and gates local checkout-package checks away from development mode; that assertion is a change detector, not a behavior test.",
+    "native": "Not run in this lane; root owns fresh hosted acceptance and completed resource-journal judgment.",
+    "constant_return_mutation": "A scratch-only copy of the helper replaced its returned version with fixed 0.2.387 while retaining manifest/tree checks. The focused test failed on the second valid fixture: actual 0.2.387 versus expected 0.2.388. Scratch directory was removed; production helper was unchanged.",
+    "commands": [
+      "node --test tests/browser/frozen-artifact-identity.test.mjs: 2 passed",
+      "pnpm compile: passed",
+      "pnpm exec biome check on five owned source/test files: passed",
+      "node --check on four source files: passed"
+    ]
   },
   "product_verdict": "No Settings, SEO, or navigation behavior was exercised by this source repair. Previously unverified native cases remain unverified.",
-  "sensitive_output": "No credentials or tokens included."
+  "sensitive_output": "No credentials or tokens included.",
+  "defect_id": "EXT-D-0155"
 }

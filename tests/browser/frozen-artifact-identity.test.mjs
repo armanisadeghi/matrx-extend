@@ -9,9 +9,12 @@ import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 test('frozen artifact uses its own receipt version and tree', () => {
   const extensionDir = mkdtempSync(join(tmpdir(), 'matrx-frozen-artifact-'));
   try {
-    const manifest = { manifest_version: 3, version: '0.2.387', key: 'test-key' };
-    writeFileSync(join(extensionDir, 'manifest.json'), JSON.stringify(manifest));
-    const receipt = { version: '0.2.387', treeSha256: hashReleaseTree(extensionDir) };
+    const artifact = (version) => {
+      const manifest = { manifest_version: 3, version, key: 'test-key' };
+      writeFileSync(join(extensionDir, 'manifest.json'), JSON.stringify(manifest));
+      return { manifest, receipt: { version, treeSha256: hashReleaseTree(extensionDir) } };
+    };
+    const { manifest, receipt } = artifact('0.2.387');
 
     // The workflow checkout can already have advanced to 0.2.388.
     assert.equal(
@@ -41,6 +44,12 @@ test('frozen artifact uses its own receipt version and tree', () => {
       () => verifyFrozenArtifactIdentity({ extensionDir, manifest, receipt }),
       /artifact_tree_mismatch/,
     );
+    rmSync(join(extensionDir, 'changed.txt'));
+    const current = artifact('0.2.388');
+    assert.deepEqual(verifyFrozenArtifactIdentity({ extensionDir, ...current }), {
+      version: '0.2.388',
+      treeSha256: current.receipt.treeSha256,
+    });
   } finally {
     rmSync(extensionDir, { recursive: true, force: true });
   }
