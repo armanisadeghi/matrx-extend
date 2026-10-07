@@ -1,0 +1,33 @@
+{
+  "reviewed_commit": "668f7d4eba1a7d10e4cd5a97328c8ba6dbf41c49",
+  "review_mode": "fresh independent source-only review; no product, test, browser, build, or canonical inventory edits",
+  "verdict_a": {
+    "status": "PARTIAL",
+    "finding": "The three procedures use the actual Tools > Catalog > All handlers > search/expand > Test runner route. Source confirms ToolsView validates local handler args and invokes handler.run directly with permissionMode=act and assignedTabId=null. The proposal correctly limits its claims about dispatcher gates, live DB bindings, auth/role observations, and runtime evidence. The batch and screenshot inputs/results match their handlers; the tabs procedure covers all 13 inventoried controls.",
+    "required_corrections": [
+      "EXT-F-4153-T01 step 1 expects tabs action=active to identify the fixture, but direct manual execution supplies assignedTabId=null; getAssignedTab falls back to the focused tab, which can be the side panel's window context and is not guaranteed to be fixture A/B. Make an owned fixture explicitly active in the browser before that call, verify the returned ID against it, or omit this assertion and use info/list with explicit fixture IDs.",
+      "The shared preamble weakens the PLAN requirement to verify service-worker/offscreen running build identity from a mandatory check to 'if available'. Preserve the plan gate: when the contexts are not independently identifiable, leave that lifecycle dimension unverified and do not proceed as if build identity were established.",
+      "All three procedures only cover a warm run plus extension reload. PLAN.md's build/reload contract also calls for cold/idle restart with DevTools closed, controlled page navigation, and relevant permission-denied/offline recovery. Add explicit steps where relevant, or mark those dimensions/cases unverified and keep them outside the claimed procedure coverage; current reload-only steps do not satisfy that contract."
+    ],
+    "source_evidence": [
+      "src/features/tools/ToolsView.tsx:125-210,346-462,510-545",
+      "src/lib/tools/handlers/_active-tab.ts:10-39",
+      "src/lib/tools/handlers/batch.ts:24-94",
+      "src/lib/tools/handlers/read.ts:136-183,331-455",
+      "src/lib/tools/handlers/canonical.ts:479-559",
+      "src/lib/tools/handlers/tabs.ts:38-65,143-171,174-230,250-330",
+      "docs/stabilization/PLAN.md:24-32,41-51"
+    ]
+  },
+  "verdict_b": {
+    "status": "PASS_WITH_GAPS",
+    "finding": "The proposal is careful about evidence provenance: it labels itself source-procedure-proposed-unverified, does not fabricate runtime receipts, and explicitly separates direct handler behavior from dispatcher/approval/permission and live-binding claims. Its negative cases are source-backed: unknown and action-tier nested batch calls are itemized failures, empty calls fail the local schema, screenshot invalid mode fails validation, and tabs missing-argument paths return explicit failures. Fixture IDs and no-persistence screenshot runs reduce accidental side effects.",
+    "gaps": "The three accuracy corrections above are still required before these are ready to use as complete PLAN-conforming procedures. The procedure source anchors point to source files but omit some precise line references and the receipt template omits the PLAN's required login method, principal provenance, data origin, build/env flags, interception, mocks, and seeded browser state. No runtime acceptance is expected or claimed in this source-procedure review."
+  },
+  "limitations": [
+    "No Chrome/UI run, build, tests, resource permit, or runtime receipt was performed in this review lane.",
+    "This review does not establish that either profile, permission state, backend, or controlled fixture currently exists; those remain execution-time facts.",
+    "The checkout had unrelated pre-existing modifications and untracked files; this report is the only path authored by this reviewer."
+  ],
+  "recommendation": "Revise the tabs active-tab expectation, retain the mandatory running-context identity gate, and explicitly cover or exclude the missing lifecycle/recovery dimensions before integrating the three procedure proposals. Keep all three cases unverified until executed with the PLAN receipt and resource journal."
+}
