@@ -1,0 +1,28 @@
+{"schema":1,"at":"2026-10-07T05:28:35.913Z","runId":"d47guard_driver_evidence_20261007","path":"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/d47guard_driver_evidence_20261007.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-07T05:29:43.119Z","runId":"d47guard_driver_evidence_20261007","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":11.68,"requiredMemoryGiB":4,"oneMinuteLoad":2.5300000000000002,"logicalCpus":10,"cpuBusyFraction":0.14142857142857143,"swapUsedMiB":1983.44,"repoFreeGiB":1681.4534873962402,"profileFreeGiB":1681.4534873962402,"safetyFreeGiB":24.455459594726562,"systemFreeGiB":24.455459594726562},"cpuBusySamples":[0.12,0.15,0.18,0.07,0.21,0.09,0.17],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+✔ seed discovery only ends after capture window reaches terminal UI (0.594875ms)
+✔ current request provenance accepts both Chrome event orderings and context teardown forms (0.198583ms)
+✔ stale-only provenance requires a current nonmatching packet and refuses any matching target (0.184459ms)
+✔ stale-only terminal cannot be certified by silence, a wrong error, or a stale preview (0.059583ms)
+✔ trace refuses swapped request identity, old payload and absent positive control (0.132959ms)
+✔ probe cleanup removes listener and detaches even after removal fails (0.867583ms)
+✔ failure receipt retains safe class and stage but strips raw error text (0.140458ms)
+✔ live target receipt distinguishes absent, hidden, disabled, duplicate and renamed controls before teardown (1257.198417ms)
+✔ live target receipt preserves the exact failed transport boundary without private messages (7.400417ms)
+✔ target guard kills constant-success and skipped-disabled classification in memory (8.422583ms)
+✔ Run waits for fresh exact host and enabled row without dispatching to a stale or unrelated page (424.189875ms)
+✔ semantic title guard kills title-only lookup and reversed native-title precedence in memory (876.212916ms)
+✔ old default deadline is RED before actual capture timer and cleanup; derived deadline observes the actual result (250.2845ms)
+✔ derived wait follows changed actual capture configuration and refuses a different recipe (39.953625ms)
+✔ terminal wait guard detects constant success without observing the operation (21.974625ms)
+✔ budget derivation refuses unobservable caller settings instead of assuming the default (11.440375ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2971.032583
+{"schema":1,"at":"2026-10-07T05:29:46.185Z","runId":"d47guard_driver_evidence_20261007","childExitCode":0,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-07T05:29:46.230Z","runId":"d47guard_driver_evidence_20261007","admitted":true,"resourceInvalid":false,"exitCode":0,"decision":"valid","code":"RESOURCE_FINAL_DECISION"}

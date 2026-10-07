@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "scope": "Guarded source verification only. No application source edits, native browser dispatch, build, release, database access, or secrets were used.",
+  "status": "guarded_source_checks_passed_native_unverified",
+  "runs": [
+    {
+      "run_id": "d47guard_fixture_20261007",
+      "command": ["pnpm", "exec", "vitest", "run", "--maxWorkers=1", "tests/unit/showcase-d47-fixture.test.ts"],
+      "result": "pass",
+      "passed": 5,
+      "failed": 0,
+      "journal": "docs/stabilization/resource-journals/d47guard_fixture_20261007.jsonl",
+      "journal_sha256": "c13718ef50169b8856346cfc89063b63ec60b7bb06df40ed3ad82ac7cb33b3cc",
+      "output": ".research/d47-guarded-fixture-20261007.out",
+      "note": "The test exercises the fixture's scripts against loopback HTTP and verifies stale-only then fresh recovery responses. Vite emitted its existing native configLoader warning."
+    },
+    {
+      "run_id": "d47guard_driver_evidence_20261007",
+      "command": ["node", "--test", "tests/browser/showcase-d47-driver-evidence.test.mjs"],
+      "result": "pass",
+      "passed": 16,
+      "failed": 0,
+      "journal": "docs/stabilization/resource-journals/d47guard_driver_evidence_20261007.jsonl",
+      "journal_sha256": "99f25ebb9ab567e95cc00ab49fde7238ffd58dbc507e2bef1ad1cc8b7999959e",
+      "output": ".research/d47-guarded-driver-evidence-20261007.out"
+    },
+    {
+      "run_id": "d47guard_hosted_route_20261007",
+      "command": ["node", "--test", "scripts/hosted-showcase-route.test.mjs"],
+      "result": "pass",
+      "passed": 11,
+      "failed": 0,
+      "journal": "docs/stabilization/resource-journals/d47guard_hosted_route_20261007.jsonl",
+      "journal_sha256": "ab46ea5a3a4c86ae20d8c0eea404f9426b386e67766467279f93abdbfd4399a6",
+      "output": ".research/d47-guarded-hosted-route-20261007.out"
+    },
+    {
+      "run_id": "d47guard_worker_probe_20261007",
+      "command": ["node", "--test", "tests/browser/showcase-d47-worker-probe.test.mjs"],
+      "result": "pass",
+      "passed": 3,
+      "failed": 0,
+      "journal": "docs/stabilization/resource-journals/d47guard_worker_probe_20261007.jsonl",
+      "journal_sha256": "db11922dd245ab473ea3be5a5dded8e07d14e94cccea295e6a445f0e5a5b2158",
+      "output": ".research/d47-guarded-worker-probe-20261007.out"
+    },
+    {
+      "run_id": "d47guard_saved_dom_20261007",
+      "command": ["node", "--test", "tests/browser/showcase-d47-saved-result.test.mjs"],
+      "result": "pass",
+      "passed": 9,
+      "failed": 0,
+      "journal": "docs/stabilization/resource-journals/d47guard_saved_dom_20261007.jsonl",
+      "journal_sha256": "e7f26e0ea849b2b079fbce760315df71bb8712a09eb47b529346804d0ac2ec44",
+      "output": ".research/d47-guarded-saved-dom-20261007.out",
+      "runtime": "Existing Codex Playwright runtime via MATRX_PLAYWRIGHT_MODULE and installed Chrome via MATRX_CHROME_PATH."
+    }
+  ],
+  "source_sha256": {
+    "fixture_server": "765753345981e7fee1cfa284eb548599e1f2da3c255544394c6d4a4c3babd10c",
+    "driver": "80613383a7554a654a94c170675574059a222ec56718e8b52c69d1770159af70",
+    "saved_result_reader": "290e555c74846e6e0032d7319e1634f08af6a5e6bb15f4d2bdd42e9a665c7d7d",
+    "terminal_budget": "758f8f3802555caf901f72f22241d66a95acec69d270a9da0b45085519efca06",
+    "worker_probe": "3e31dee50defe7f7ee383620536c0491a5917162fc898ab68d69734dc5d3f144"
+  },
+  "test_sha256": {
+    "fixture": "6a082f9faa566be2d26a928a34af1e7de11b8e4cf37497ae313801c9bf53358f",
+    "driver_evidence": "33b4be267332072dcb8a68c8b99c0be8e5f69bc42535ff2199c5f4c159938a46",
+    "hosted_route": "2ba74b7476f49cc1f1bb85c45e5f699946fdf4c66a1678c6461418cf9c692c40",
+    "worker_probe": "0564eae2bea7f577d3b2bd4ebb90d3d34a6f6867a92794e3f916d7c125a93660",
+    "saved_result_dom": "4cfd722dad13beddffd6a3a1af3b18a6357524db99b4ef1512ecac85892d90f8"
+  },
+  "remaining_gap": "No source-test DOM gap remains. No native extension run or installed-artifact observation was performed; runtime stale-callback behavior remains unverified here."
+}
