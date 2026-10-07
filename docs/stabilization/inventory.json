@@ -1064,13 +1064,13 @@
             "region-completeness",
             "readiness"
           ],
-          "defect_ids": ["EXT-D-0149"],
+          "defect_ids": ["EXT-D-0149", "EXT-D-0151"],
           "results": {
             "guest": {
               "status": "partial",
               "run_id": "37624678750",
               "evidence": ".research/guest-census-original-retest-20261007.json",
-              "defect_ids": ["EXT-D-0149"],
+              "defect_ids": ["EXT-D-0149", "EXT-D-0151"],
               "detail": "Original Account readiness and before/after guest proof pass on frozen0.2.366. Full census incomplete:54 observed,26 mapped,28 unmapped,4 unsupported,4 inaccessible. Native peer accepted bounded readiness with evidence limitations; no current-main or product behavior acceptance.",
               "historical_result": {
                 "status": "fail",
@@ -1094,7 +1094,14 @@
       "cells": {
         "guest": {
           "test_status": "unverified",
-          "defect_ids": ["EXT-D-0025", "EXT-D-0051", "EXT-D-0056", "EXT-D-0119", "EXT-D-0149"],
+          "defect_ids": [
+            "EXT-D-0025",
+            "EXT-D-0051",
+            "EXT-D-0056",
+            "EXT-D-0119",
+            "EXT-D-0149",
+            "EXT-D-0151"
+          ],
           "run_ids": [],
           "retest_status": "partial: EXT-D-0025 and EXT-D-0051 passed; remaining infrastructure cases unverified"
         },
