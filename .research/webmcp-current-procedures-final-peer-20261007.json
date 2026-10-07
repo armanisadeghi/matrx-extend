@@ -1,0 +1,85 @@
+{
+  "title": "Independent WebMCP procedure final review",
+  "reviewed_proposal": ".research/webmcp-current-procedures-20261007.json",
+  "proposal_commit": "507fa0c4cc46308203df4734da7b88c9d6b2da9a",
+  "prior_review": ".research/webmcp-current-procedures-peer-20261007.json",
+  "review_date": "2026-10-07",
+  "scope": "Independent source and official Chrome documentation review only. No browser, native runtime, tests, build, database, or release actions were performed.",
+  "verdict_a_coverage_and_executability": {
+    "verdict": "PARTIAL",
+    "finding_ids": ["A2"],
+    "summary": "Case IDs, controls, admin modes, and dimensions match the prior inventory. The held callback now forces the action target race and the receipt step constrains tab data. The new B-to-A extension-origin route still lacks an executable trigger handshake, so read/list routing and the related action route cannot be forced as written."
+  },
+  "verdict_b_quality_and_doctrine": {
+    "verdict": "FAIL",
+    "finding_ids": ["B3", "B4"],
+    "summary": "The prior privacy and formatting defects are corrected. The procedure still requires a dispatcher permission-denial result that the current WebMCP handlers cannot produce through their declared optional-permission gate, and it turns Chrome 149's Origin Trial start into an unsupported minimum for local-flag testing."
+  },
+  "coverage_parity": {
+    "baseline": "git show 14be7f57:docs/stabilization/inventory.json",
+    "checked": ["EXT-F-4118-T01", "EXT-F-4119-T01", "EXT-F-4120-T01", "EXT-F-4162-T01"],
+    "result": "All four IDs, control_ids arrays, modes arrays, and dimensions arrays exactly match baseline.",
+    "native_contract": "The current Chrome Imperative API documentation supports registerTool(definition), optional AbortSignal registration options, awaited getTools(), and executeTool(RegisteredTool, object input). Chrome says the Origin Trial starts in Chrome 149 and separately documents the local enable-webmcp-testing flag; it does not state Chrome 149 as the minimum for local-flag testing."
+  },
+  "prior_findings": [
+    {
+      "id": "A1",
+      "status": "RESOLVED",
+      "evidence": "The revised fixture callback signals entered, waits for a matching runId/nonce release, and mutates only after B is focused and releases it. The dispatcher lane explicitly waits for the approval card before focusing B and approving, then checks A=1/B=0."
+    },
+    {
+      "id": "B1",
+      "status": "RESOLVED",
+      "evidence": "The list_open_tabs receipt now constrains all_windows:false and a fixture URL glob, requires owned-only profile/window hygiene, and redacts returned tab data and unrelated browsing fields."
+    },
+    {
+      "id": "B2",
+      "status": "RESOLVED_IN_PROPOSAL",
+      "evidence": "The four control_ids, modes, and dimensions arrays are now single-line Biome style. This final receipt is separately formatted through a non-ignored temporary JSON path."
+    }
+  ],
+  "findings": [
+    {
+      "id": "A2",
+      "verdict": "PARTIAL",
+      "severity": "important",
+      "location": "All four cases, shared fixture precondition and extension-origin routing step",
+      "evidence": "The text says B has a Trigger A button and that A's page script then invokes the discovered extension tool, but it defines only the Release A BroadcastChannel message and its matching release listener. It specifies no trigger message, A-side listener/dispatch behavior, acknowledgement, or per-run response channel. Therefore the B-active check/list proof and the B-active action approval/release proof have an intended boundary but no executable way to cause A to start the extension-origin call. This matters because check/list do not invoke the held fixture callback, and the task specifically requires their routing evidence to be independent of that hold.",
+      "required_resolution": "Specify a unique run-scoped Trigger A message and A-side listener that invokes the exact discovered RegisteredTool with the case input and returns its result to B; require B active before sending and retain the correlated response. Keep the Release A message separate."
+    },
+    {
+      "id": "B3",
+      "verdict": "FAIL",
+      "severity": "important",
+      "location": "EXT-F-4120-T01 steps 4 and expected 2; EXT-F-4162-T01 step 4",
+      "evidence": "The procedure asks for a distinct dispatcher permission denial and for optional Chrome permission-state evidence. Current `handleWebmcpCall` checks `handler.required_optional_permissions` at `src/lib/tools/dispatch.ts:1519`, and the streaming dispatcher checks the same field at `:793`; the three leaf handlers and `chrome_webmcp` declare no such field. The `activeTab`/`scripting` entries in `src/lib/tools/catalog.ts` are catalog permission metadata; they do not create that dispatcher denial branch. Chrome may still reject executeScript on a restricted tab, which the procedure already separates as a runtime scripting failure. As written, the requested dispatcher permission-negative result is not a reachable expected outcome for these handlers.",
+      "required_resolution": "Mark the optional-permission dispatcher-denial branch not applicable for these handlers. Record manifest/host access state and any actual Chrome executeScript rejection separately, and reserve dispatcher denial evidence for the real admin gate or another gate that source proves reachable."
+    },
+    {
+      "id": "B4",
+      "verdict": "FAIL",
+      "severity": "minor",
+      "location": "All four cases, shared WebMCP precondition",
+      "evidence": "The precondition says to use Chrome 149+ for documented local testing with the flag enabled. The current official overview says the Origin Trial starts in Chrome 149 and separately instructs enabling `chrome://flags/#enable-webmcp-testing` for local development; it gives no Chrome 149 minimum for the local-flag route. The nearby caveat limits claims of general availability but does not correct the asserted local-test minimum.",
+      "required_resolution": "Say to use a Chrome build that exposes the documented local testing flag, record its actual channel/version/flag state, and keep Chrome 149 solely as the documented Origin Trial start."
+    }
+  ],
+  "source_evidence": [
+    "src/lib/tools/handlers/webmcp.ts:24-151",
+    "src/lib/tools/handlers/_active-tab.ts:1-38",
+    "src/lib/tools/handlers/canonical-mergers.ts:255-290",
+    "src/lib/tools/dispatch.ts:770-808",
+    "src/lib/tools/dispatch.ts:1448-1555",
+    "src/lib/tools/catalog.ts:34-75",
+    "src/lib/tools/catalog.ts:195-212",
+    "src/lib/webmcp/register.ts:78-183",
+    "src/entrypoints/webmcp-bridge.content.ts:1-110",
+    "src/lib/background/bootstrap.ts:570-594",
+    "https://developer.chrome.com/docs/ai/webmcp/imperative-api",
+    "https://developer.chrome.com/docs/ai/webmcp"
+  ],
+  "limits": [
+    "No native browser/API runtime, built artifact identity, live advertisement, caller role, or resource receipt was inspected; all runtime assertions remain unverified.",
+    "No test, browser, native, build, database, or release action was performed."
+  ]
+}
