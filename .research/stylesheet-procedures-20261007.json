@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "task": "structured source-only procedure proposals for stylesheet tools",
+  "created_at": "2026-10-07",
+  "status": "proposals-authored-runtime-unverified",
+  "scope": ["EXT-F-4125-T01", "EXT-F-4126-T01", "EXT-F-4167-T01"],
+  "source_anchors": [
+    {
+      "path": "src/lib/tools/handlers/privileged.ts",
+      "evidence": "inject_stylesheet and remove_stylesheet require css:string with min length 1; optional integer tab_id; use assigned tab when omitted; call chrome.scripting.insertCSS/removeCSS and return {ok:true} or {ok:false,reason}. Both tier privileged."
+    },
+    {
+      "path": "src/lib/tools/handlers/canonical-mergers.ts",
+      "evidence": "stylesheet accepts action enum inject|remove, css:string min length 1, optional integer tab_id; delegates to the corresponding leaf handler. No persistent argument exists in live source schema."
+    },
+    {
+      "path": "src/features/tools/ToolsView.tsx",
+      "evidence": "Tools tab parses JSON and validates local handler schema, then calls handler.run directly with permissionMode act. Its Run control skips the dispatcher permission gate; UI labels this Test mode bypasses approval. Inline result is handler output, not proof of page appearance."
+    },
+    {
+      "path": "src/lib/tools/dispatch.ts",
+      "evidence": "Normal delegated execution validates schema, checks declared optional permissions, enforces Pilot tab-group scope, then requests confirmation for privileged tools regardless of Ask/Act mode. The stylesheet inventory declares required Chrome permissions activeTab and scripting and no optional permissions."
+    },
+    {
+      "path": "src/lib/tools/catalog.ts",
+      "evidence": "inject_stylesheet and remove_stylesheet declare activeTab and scripting as required permissions."
+    },
+    {
+      "path": "tests/browser/owned-fixture-server.mjs",
+      "evidence": "Existing native fixture server serves only exact in-memory routes and returns 404 for unknown paths; suitable owned-fixture mechanism, but stylesheet-specific page and current URL are not established by this source."
+    },
+    {
+      "path": "docs/stabilization/reports/inventory-tools.json",
+      "evidence": "Preserves feature/case/control IDs, member/admin applicability, guest N/A for Tools UI, and required permission/fixture gates. Its stylesheet input_schema lists persistent although current live canonical source omits it; reconcile before inventory signoff."
+    }
+  ],
+  "procedure_prerequisites": {
+    "execution": "Not performed in this lane. Before each eventual run, acquire the current stabilization resource permit and create a current receipt using docs/stabilization/PLAN.md § Build and reload contract. Include source SHA and dirty-source hash when applicable, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, auth/role/org, permissions, backend identity, fixture IDs, timestamp, login/provenance/data origin, flags, interception/mocks and seeded state. Never include secrets.",
+    "target": "Use only a freshly created or otherwise explicitly owned tab served by the existing exact-route owned fixture server. Record fixture route and tab ID in the run receipt; do not target an unrelated personal tab. No stylesheet-specific fixture route is present in the inspected server source, so prepare/identify that benign route in the execution lane before running.",
+    "fixture_css": "For a page with a visible h1, use the same exact CSS string on injection and removal: h1 { color: rgb(190, 24, 93) !important; background-color: rgb(255, 237, 213) !important; }. Capture baseline and post-call visible h1 computed color/background through the page UI/observation. The distinct visual values are a proposed fixture input, not an observed result.",
+    "permission_boundary": "Inventory says required permissions activeTab and scripting, required_optional_permissions empty, admin_only false. Record actual granted/effective permissions in receipt. A manual Tools-tab Run can bypass approval and cannot establish dispatcher authorization. For dispatcher path, run only through actual delegated call on the owned tab; privileged approval must be presented and explicitly accepted. Do not infer access or permission denial from guest N/A or from a manual runner result.",
+    "cleanup": "Remove only the exact CSS string this run inserted, on the exact owned tab ID; verify baseline appearance returns. If extension/page reload has already unloaded the injected stylesheet, record that boundary and do not claim remove_stylesheet removed it. Close only the owned fixture tab after evidence capture. Never enumerate, remove, or delete any other stylesheet or style record.",
+    "reload": "Follow PLAN.md § Build and reload contract: separate extension Reload from target page reload; rebuild/reload only when source/manifest/permissions/config/environment changes require it, verify the runtime build identity, reopen sidepanel and refocus/reload only the owned fixture. Injected CSS is document-scoped in this handler path; treat page reload as a fresh baseline and repeat inject/visual check/owned exact removal rather than expecting persistence."
+  },
+  "role_and_dispatcher_limits": {
+    "guest": "Inventory marks these Tools UI cases not applicable because Tools requires sign-in; record N/A for these case IDs. If assessing guest access, use the separate Tools UI negative-access case, not a claim that the handler itself was inaccessible.",
+    "member": "Applicable. Run each listed procedure under a signed-in ordinary-member profile. Manual Run proves only the direct user-initiated handler path. Dispatcher confirmation/permission results require the real delegated dispatcher path and must be recorded separately.",
+    "admin": "Applicable. Run each listed procedure under signed-in admin profile. Admin success cannot replace the member run. Manual Run remains approval-bypassing even for admin.",
+    "visual_verdict": "A returned {ok:true} is API completion only. Require the expected visible h1 style change and restoration as independent observations; no result has been observed in this source-only lane."
+  },
+  "cases": [
+    {
+      "feature_id": "EXT-F-4125",
+      "name": "inject_stylesheet",
+      "case_id": "EXT-F-4125-T01",
+      "title": "Controlled manual execution: inject_stylesheet",
+      "control_ids": ["EXT-F-4125-C01"],
+      "roles": ["member", "admin"],
+      "status": "unverified",
+      "steps": [
+        "Meet procedure_prerequisites for the selected role; record the current resource permit and receipt. Open the identified owned fixture route in a newly owned tab and record its exact tab ID.",
+        "Observe and record the h1 baseline color and background. In Tools, locate inject_stylesheet, enter exactly {\"css\":\"h1 { color: rgb(190, 24, 93) !important; background-color: rgb(255, 237, 213) !important; }\",\"tab_id\":<owned-tab-id>} and click Run. The integer placeholder must be replaced by the receipt's actual owned tab ID.",
+        "Record inline handler output and separately observe the owned fixture h1. Require the proposed pink text and peach background to be visible before assigning a visual pass.",
+        "Run invalid-input checks separately in the same manual runner: empty css, numeric css, string tab_id, and an extra persistent property. Record each schema rejection and verify the fixture appearance did not change.",
+        "For dispatcher coverage, separately invoke inject_stylesheet through an actual delegated call on the same owned fixture. Confirm privileged approval appears even when permission mode is Act; deny once and verify no visual change, then accept on a fresh call and verify the visual change. Do not count manual Run as this result.",
+        "Reload the owned page and record baseline restoration. If a fresh-build/reload case is required, perform the PLAN.md reload sequence with a new receipt and repeat on this owned tab; do not assert CSS survives document reload."
+      ],
+      "expected_observations": [
+        "Valid manual call returns {ok:true}; this alone remains insufficient for visual acceptance.",
+        "After valid injection, the owned visible h1 has rgb(190, 24, 93) text and rgb(255, 237, 213) background; after page reload the document returns to its baseline styling.",
+        "Invalid values fail schema validation before handler execution and produce no visible style change.",
+        "In delegated path, privileged denial yields no effect; explicit approval permits effect. Capture each actual result independently."
+      ],
+      "negative_cases": [
+        "css empty string => schema rejection.",
+        "css number => schema rejection.",
+        "tab_id string => schema rejection.",
+        "unknown persistent property => schema rejection under current source schema; inventory catalog currently disagrees and needs reconciliation.",
+        "unowned tab or a tab not authorized by the real delegated/Pilot scope => do not attempt; this is a safety boundary, not a fixture input."
+      ],
+      "controls_coverage": {
+        "EXT-F-4125-C01": "Invoke inject_stylesheet through the manual runner with controlled valid input; separately distinguish true dispatcher path."
+      },
+      "unresolved_dimensions": [
+        "No stylesheet-specific owned fixture route or URL is recorded; execution owner must identify/prepare one and include its ID in receipt.",
+        "The manual runner's direct handler call may not share the dispatcher tab/permission semantics; actual activeTab grant conditions need live observation.",
+        "Whether invalid tab_id values fail at schema only or reach Chrome API should be recorded from actual run; the proposed string case checks schema boundary."
+      ]
+    },
+    {
+      "feature_id": "EXT-F-4126",
+      "name": "remove_stylesheet",
+      "case_id": "EXT-F-4126-T01",
+      "title": "Controlled manual execution: remove_stylesheet",
+      "control_ids": ["EXT-F-4126-C01"],
+      "roles": ["member", "admin"],
+      "status": "unverified",
+      "steps": [
+        "Meet procedure_prerequisites for the selected role and open a new owned fixture tab; record its exact tab ID and baseline h1 appearance.",
+        "Establish only this run's stylesheet by invoking inject_stylesheet on the owned tab with the exact fixture_css string; require its distinct visual effect before continuing.",
+        "In Tools, locate remove_stylesheet and enter exactly {\"css\":\"h1 { color: rgb(190, 24, 93) !important; background-color: rgb(255, 237, 213) !important; }\",\"tab_id\":<owned-tab-id>}; click Run. Record API output and separately observe restoration of the owned h1 baseline.",
+        "Repeat from a fresh owned fixture tab for invalid-input cases: empty css, numeric css, string tab_id, and extra persistent property. Verify schema rejection and that no unrelated page/style was touched.",
+        "Separately exercise the real delegated path: first inject on this owned tab through the dispatcher with explicit privileged approval; then remove through the dispatcher and explicitly approve. Verify visual restoration. A denied remove attempt must leave the owned injected style visible; then clean it up with the exact approved input.",
+        "Reload the owned page only after recording the warm removal result. On reload, expect natural document baseline; do not call that proof of remove_stylesheet. For post-extension-reload coverage, start from a fresh receipt and re-establish this run's own style before removing it."
+      ],
+      "expected_observations": [
+        "Precondition injection visibly changes only the owned h1.",
+        "Valid remove returns {ok:true} and restores the owned h1's captured baseline appearance.",
+        "Invalid input rejects before mutation; denied dispatcher confirmation leaves the owned injected style visible.",
+        "Cleanup is scoped to the exact same CSS and owned tab ID; never remove another run's or page's style."
+      ],
+      "negative_cases": [
+        "Attempting removal with empty css, numeric css, string tab_id, or extra persistent property must fail schema validation.",
+        "Attempting remove before this run injected the exact CSS is excluded from acceptance because it cannot prove removal and may interact with another owner's identical style."
+      ],
+      "controls_coverage": {
+        "EXT-F-4126-C01": "Invoke remove_stylesheet only after this run has visibly injected the exact CSS on its owned target."
+      },
+      "unresolved_dimensions": [
+        "No fixture route is specified in inventory; prepare/identify a page with visible h1 and bind exact tab ID in receipt.",
+        "Chrome removal matching behavior for the exact CSS string and document lifetime is not observed here; preserve exact bytes and record outcome.",
+        "Permission and privileged-confirmation behavior must be recorded from the real delegated path independently of manual runner."
+      ]
+    },
+    {
+      "feature_id": "EXT-F-4167",
+      "name": "stylesheet",
+      "case_id": "EXT-F-4167-T01",
+      "title": "Controlled manual execution: stylesheet",
+      "control_ids": ["EXT-F-4167-C01", "EXT-F-4167-C02", "EXT-F-4167-C03"],
+      "roles": ["member", "admin"],
+      "status": "unverified",
+      "steps": [
+        "Meet procedure_prerequisites for the selected role, create an owned fixture tab, and capture its exact ID and h1 baseline.",
+        "In Tools, locate stylesheet and enter {\"action\":\"inject\",\"css\":\"h1 { color: rgb(190, 24, 93) !important; background-color: rgb(255, 237, 213) !important; }\",\"tab_id\":<owned-tab-id>}. Run, record inline output, and independently confirm the visible h1 changed.",
+        "Enter the same action=inject call through the true delegated path on a fresh owned fixture target. Record privileged approval and verify deny causes no effect; on a separate accepted call verify visible effect.",
+        "On the same owned target, run {\"action\":\"remove\",\"css\":\"h1 { color: rgb(190, 24, 93) !important; background-color: rgb(255, 237, 213) !important; }\",\"tab_id\":<owned-tab-id>}; require baseline appearance restoration. Repeat the real delegated path with explicit approval, with a denied attempt leaving the owned style in place.",
+        "Check invalid inputs one at a time: action=unknown, missing action, empty css, numeric css, string tab_id, and extra persistent property. Record schema rejection and confirm no visible change.",
+        "Reload the owned page to establish lifecycle boundary and observe natural baseline. For a fresh extension build/reload pass, verify the receipt-bound runtime, create a fresh owned target or re-establish only this run's style, then repeat both action branches and exact cleanup."
+      ],
+      "expected_observations": [
+        "action=inject delegates to insertCSS and yields the same visible style change as the leaf handler.",
+        "action=remove delegates to removeCSS and restores the captured baseline for this run's own exact CSS only.",
+        "Unknown/missing action or invalid schema values produce no style change.",
+        "Manual output alone is not visual acceptance; delegated path approval and permission results are separate evidence."
+      ],
+      "negative_cases": [
+        "action=unknown, omitted action, empty css, numeric css, string tab_id, and extra persistent property should be schema-rejected.",
+        "The old catalog record advertises persistent, but current live StylesheetArgs has no persistent key; do not submit it as a valid option. Resolve catalog drift before inventory signoff.",
+        "Do not use remove branch against a style not created by this run."
+      ],
+      "controls_coverage": {
+        "EXT-F-4167-C01": "Invoke canonical stylesheet through manual runner and separately dispatcher.",
+        "EXT-F-4167-C02": "Action inject visibly changes the owned fixture page.",
+        "EXT-F-4167-C03": "Action remove restores the owned fixture baseline after this run's injection."
+      },
+      "unresolved_dimensions": [
+        "Inventory input_schema and current source disagree about persistent; source currently omits the field.",
+        "No stylesheet-specific fixture route or already-minted current build receipt is present in reviewed source; execution remains pending permit and fixture identification.",
+        "Actual dispatcher target binding, activeTab grant behavior and UI confirmation must be observed in the signed-in profiles; the Tools runner cannot establish them."
+      ]
+    }
+  ],
+  "verification": {
+    "source_reviewed": true,
+    "browser_or_runtime_used": false,
+    "tests_or_builds_run": false,
+    "credentials_used": false,
+    "inventory_edited": false,
+    "results": "All three procedures are proposals only; every behavior remains unverified."
+  }
+}
