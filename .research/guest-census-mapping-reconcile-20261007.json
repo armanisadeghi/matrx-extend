@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0149",
+  "purpose": "Bounded source and evidence reconciliation for the original native guest visibility census; no browser or product behavior retest.",
+  "verdict": "repairable_census_classification_and_label_provenance_gap; no fingerprint-to-label attribution established",
+  "boundary": {
+    "receipt": ".research/guest-census-original-retest-20261007.json",
+    "result": ".research/guest-census-original-retest-20261007/evidence/visibility-census-guest.json",
+    "screenshot": ".research/guest-census-original-retest-20261007/evidence/screenshots/native-side-panel.png",
+    "runtime_source_sha": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+    "runtime_version": "0.2.366",
+    "harness_checkout_sha": "4ba1a20e9b0ca5bb8eaac412c4661c990cdf3f86",
+    "current_main_warning": "The 0.2.366 artifact differs from current main (reported package 0.2.368 and @supabase/postgrest-js lock delta). This report does not transfer native visibility to current main."
+  },
+  "observed": {
+    "total": 54,
+    "mapped": 26,
+    "unmapped": 28,
+    "unsupported_triggers": 4,
+    "inaccessible_regions": 4,
+    "blocked_requests": 0,
+    "guest_readiness": "Signed-out guest with Account expanded and Sign in visible before and after census; no action control was clicked.",
+    "failure": "Census incomplete; no public product behavior failure established."
+  },
+  "source_facts": [
+    {
+      "finding": "Navigation discovery scans document, excludes descendants of tabpanels, and admits every CONTROL_SELECTOR match. A tablist is selected via tabindex/role semantics even though it is a container, not a direct tab trigger. The two additional button observations are outside tabpanels but the receipt does not prove which source buttons they are.",
+      "provenance": [
+        "tests/browser/takeover-visible-census.mjs:165",
+        "src/entrypoints/sidepanel/App.tsx at d68a1db3: header TabsList, SiteAccessControl and UserMenu"
+      ],
+      "mapping": "The tablist should be classified as a structural container, never opened or assigned EXT-F-1001-C01. Keep the two buttons as observed action/control candidates until element provenance is captured; neither may be treated as a tab from kind alone."
+    },
+    {
+      "finding": "Settings section discovery scans the active Settings panel outside known section content. Only button[aria-expanded][aria-controls] with a unique known section label is a supported Settings expander. The one fingerprint-only button did not meet that rule. Its HMAC equals the first fingerprint-only Chat button, which establishes equal extracted text in this run, not shared identity or an actual section.",
+      "provenance": [
+        "tests/browser/takeover-visible-census.mjs:165",
+        "src/components/ui/collapsible.tsx at d68a1db3"
+      ],
+      "mapping": "Do not call it a twelfth Settings section or open it. Account for it as a non-section interactive control or source-proven duplicate/structural artifact after provenance capture."
+    },
+    {
+      "finding": "The same 31e96f... fingerprint occurs on the navigation tablist, Chat textarea, and both Desktop bridge inputs. Equal HMACs mean the extractor returned identical text for these unlike elements. Source has inputs with placeholders and a composer textarea, so empty extracted labels are plausible, but the run key was not retained and the exact text cannot be recovered.",
+      "provenance": [
+        "tests/browser/takeover-visible-census.mjs:156",
+        "src/features/chat/ChatView.tsx at d68a1db3: Composer textarea",
+        "src/features/settings/SettingsView.tsx at d68a1db3: Pair code and Local engine port inputs"
+      ],
+      "mapping": "Use source component/ancestor identity and an explicit safe accessible name; do not equate these four controls or assign an ID from the digest."
+    }
+  ],
+  "resolvable_from_source_without_hash_inversion": [
+    {
+      "region": "controls:Appearance",
+      "observed_shape": "one combobox",
+      "source_candidate": "Theme PillSelect",
+      "existing_control_id": "EXT-F-1003-C02",
+      "provenance": "SettingsView.tsx at d68a1db3: Appearance contains one Theme PillSelect; inventory.json EXT-F-1003-C02",
+      "status": "single_source_candidate; fingerprint association still needs element provenance"
+    },
+    {
+      "region": "controls:Chat",
+      "observed_shape": "two comboboxes",
+      "source_candidates": ["Default mode", "Default speed"],
+      "existing_control_ids": ["EXT-F-1003-C04", "EXT-F-1003-C05"],
+      "provenance": "SettingsView.tsx at d68a1db3: guest without active organization sees text in place of Default agent; Default mode and Default speed use PillSelect; inventory.json C04/C05",
+      "status": "candidate pair; order in receipt suggests source order but does not prove digest-to-control pairing"
+    },
+    {
+      "region": "controls:Scrape",
+      "observed_shape": "one combobox alongside mapped Deep clean and Auto-scrape on load",
+      "source_candidate": "Auto-scrape mode",
+      "existing_control_id": "EXT-F-1003-C29",
+      "provenance": "SettingsView.tsx at d68a1db3: Scrape contains one PillSelect; inventory.json EXT-F-1003-C29",
+      "status": "single_source_candidate; fingerprint association still needs element provenance"
+    },
+    {
+      "region": "controls:Desktop bridge",
+      "observed_shape": "two inputs and two buttons",
+      "source_candidates": [
+        "Pair code input and Pair button",
+        "Local engine port input and Set/Save button"
+      ],
+      "existing_control_ids": ["EXT-F-1003-C15", "EXT-F-1003-C16"],
+      "provenance": "SettingsView.tsx at d68a1db3: Desktop bridge has these two input/button pairs when transport is not native; inventory.json C15/C16",
+      "status": "source-supported pair grouping; exact digest-to-button identity and runtime conditions require element provenance"
+    },
+    {
+      "region": "surface:Chat",
+      "observed_shape": "16 fingerprint-only elements: 15 buttons and one textarea",
+      "source_candidates": [
+        "Composer draft EXT-F-2013-C08",
+        "Suggestion chips EXT-F-2013-C11",
+        "Conversation customization EXT-F-2013-C07",
+        "Microphone EXT-F-2013-C09",
+        "Send/stop EXT-F-2013-C10",
+        "header/task/language/history and other Chat controls already represented by EXT-F-2013 IDs"
+      ],
+      "provenance": "Earlier native-side-panel.png visibly shows composer, four suggestion chips and header controls; ChatView.tsx at d68a1db3 has corresponding components; inventory.json EXT-F-2013 controls",
+      "status": "candidate classes only; screenshot is earlier Chat stage and does not establish which receipt fingerprint belongs to which visible control. A single suggestion control ID may cover multiple visible chips."
+    }
+  ],
+  "unresolved_observations": {
+    "navigation": [
+      "31e96f9028ebc574aa4f743c4d1beb70c250233ff4d32edb4bcbe863e098fbdd",
+      "8ce4a8e9a839bd6b0ed9f967ab6cd5c092d9c6a3a27e7a506860de19b8cf594a",
+      "8c2adb1754d1f827cdb63d5e89978b1fe17fdd09b42e6d869e52b5f2d7e78e7d"
+    ],
+    "surface_Chat": [
+      "e8c002c40541a4a56f8035d6f44402196aaa945706181f917a651ad059f4454c",
+      "3d85c3e3ac52252e1a12682bf1ab138c95fe04912c18e312d1b0bb0652151dd7",
+      "48c385effbff894d44d5fe5d33b67706d5c6b5e261fcab0ff0ac0c69adab0e23",
+      "2d7723d02b7271980f8a0199b603b2b8de8f14c010ed9e0c23e454434dc1193b",
+      "c11677ece27d92e6b1dfa63ec9208edb83981569cc064908a35b682b94f749fd",
+      "8242b66816066ab35550edc924c6329f7b2ea3e99b121d95dcab9388578fdda8",
+      "f1b048705d2ce5cac046d77cbef75fa40cc5ee671fa17b1dece6218d2d5043bf",
+      "7549cf47eff47f88aec3c5afbdbd72b3ba2d2017e925f624482dbdec710e793b",
+      "3ce48ba701aef6251999eae10f6e5d5b0295049ccc370b1f811f1c2c84ca4a57",
+      "7c50ac418da5aef69e323a04437ef8b9102b4990bfd03548be0570ad93835114",
+      "31e96f9028ebc574aa4f743c4d1beb70c250233ff4d32edb4bcbe863e098fbdd",
+      "87a623311268845c1755cae5b90fafc99fecd8e6e8a6059efd6b80ba82c02f33",
+      "06d91a1d5650b1bc45cf0ab8876120fda2a8d160a0f880cd3e8ee239862990cd",
+      "ebe64439ba705f069ab38c8221eb5d0b68e091ae4a98d8b2309169964eaa4f3e",
+      "bfd1255387f1ef75d14897bcbaa75278e6c02469e0caf4ca4c5c1510cf08af53",
+      "057641cb719cc516f384e6ea57c6f01b0ed756e5697d5e4a1a06532728915c88"
+    ],
+    "sections": ["e8c002c40541a4a56f8035d6f44402196aaa945706181f917a651ad059f4454c"],
+    "controls_Appearance": ["8d41ac89a13e15f488c06fbcf60d28dea449638e86b8388c949617527bc54761"],
+    "controls_Chat": [
+      "ccf8596c1ad8c2f39814c4baa4745c8757e02e26cdd3b49432c00771f1862a4f",
+      "53f7375dcb796323c56f3e82fcbd10647c5f20a719412100929eb85ee4fcb6e6"
+    ],
+    "controls_Scrape": ["86471576d943ec2260bda66f978a60c1ac924d990f5b9fd12f2b9e4d3b659bb8"],
+    "controls_Desktop_bridge": [
+      "31e96f9028ebc574aa4f743c4d1beb70c250233ff4d32edb4bcbe863e098fbdd",
+      "020ade5245d359e623a4ebda831cd8345b9267886a82148e514d1f0a8a233eec",
+      "31e96f9028ebc574aa4f743c4d1beb70c250233ff4d32edb4bcbe863e098fbdd",
+      "105a2f6719c513beca37cd67f82b460b531ab506fef4db37667915bdf7f8fcb1"
+    ]
+  },
+  "exact_next_repair": [
+    "Keep all 28 observations in the accounting. Split semantic navigation from other outside-tabpanel controls: direct tabs require button[role=tab][title][aria-controls]; a tablist is a structural container; other header or guest actions remain classified and mapped to existing control IDs where proven, not clicked as tabs.",
+    "Settings expanders require the active Settings panel, button[aria-expanded][aria-controls], and source-confirmed section identity. Classify the fingerprint-only button separately; do not open it or claim a missing section until its element provenance is known.",
+    "Add privacy-safe provenance to a guarded observation: scope, DOM order, tag, role, stable source-owned data-census-id or component/control anchor, ancestor region/section ID, and only allowlisted static aria-label/title/placeholder. Never collect values, user text, page content, tokens, or a reusable HMAC key. This is enough to distinguish anonymous inputs/buttons without clicking them.",
+    "Map the source-confirmed Settings controls to existing C02, C04, C05, C29, C15 and C16 only after provenance ties each observed node to its source anchor; map Chat controls similarly against existing EXT-F-2013 IDs. Add an inventory ID only if a provenance-identified source control has no existing coverage; none is demonstrated by this receipt.",
+    "Re-run the existing guarded guest census on an exact receipt-bound artifact and require zero unclassified observations and zero genuinely inaccessible regions, while retaining all action controls in counts and never clicking them. Independently review the new receipt before changing guest inventory status. Member/admin and current-main visibility remain unverified."
+  ],
+  "limits": [
+    "HMAC-SHA256 fingerprints cannot be reversed and the random per-run key is unavailable. Identical fingerprints show identical extracted labels only; different fingerprints do not name controls.",
+    "The two screenshots contain Chat and a public target page, not the Settings census stage. They cannot identify the Settings fingerprints or show the four inaccessible regions.",
+    "Four inaccessible entries are the three non-tab navigation candidates and one non-section candidate. Their region names reflect harness classification, not proof that four product regions exist.",
+    "No new ID, inventory promotion, product behavior verdict, member/admin verdict, or current-main runtime verdict is supported."
+  ]
+}
