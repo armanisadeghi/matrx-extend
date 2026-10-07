@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "task_id": "settings-census-label-relation-peer-20261007",
+  "reviewed_commit": "45ee8732dda67ad5bb5b22136798c19c3d361d51",
+  "frozen_source_sha": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+  "scope": "Independent source and evidence review of safe Settings row-label provenance; no runtime retest or mapping verdict.",
+  "A_source_readiness": {
+    "verdict": "PASS_SOURCE_READY_NATIVE_UNVERIFIED",
+    "source_contrast": "Frozen SettingsView renders Theme, Default mode, Default speed, and Auto-scrape mode as ControlRow label/control pairs. Desktop bridge renders Pair code input/button siblings and Local engine port label/input/button siblings. The prior guest receipt contains exactly four comboboxes and four Desktop bridge controls in these sections, consistent with these source shapes but not proof of changed-driver runtime ownership.",
+    "relation_review": "PillSelect relation requires the direct ControlRow shape and an allowlisted static label; duplicate visible matching rows suppress row_label. Desktop bridge relation requires the exact direct sibling shape, static placeholder/label/button text, and uniqueness among observed matching controls. No missing source-rendered label or demonstrated false relationship was found in the reviewed change.",
+    "native_gate": "UNVERIFIED: the original frozen native receipt predates this driver change. The historical 27 unmapped observations, including eight Settings controls, remain unresolved and completeness remains false."
+  },
+  "B_quality_privacy": {
+    "verdict": "PASS_WITH_LIMITATIONS",
+    "positive_evidence": [
+      "Only fixed allowlisted row labels enter provenance; unmatched, malformed, and duplicate relations remain absent.",
+      "Settings provenance removes syntax-shaped source_anchor. Reviewed code does not serialize input values, selected values, URLs, generated IDs, arbitrary neighboring text, or the HMAC key; unknown extracted labels remain keyed fingerprints.",
+      "The controlled fixtures cover duplicate and unique PillSelect labels, an unknown private row, exact Desktop bridge pairs, and nearby nonmatching text; assertions check that private values, IDs, and text do not appear in serialized observations."
+    ],
+    "test_evidence": "The committed final stdout records 32 passed, 0 failed, and the matching resource journal records admitted=true, resourceInvalid=false, exitCode=0, decision=valid. No tests were rerun for this review.",
+    "red_evidence_limit": "The initial RED run's raw stdout was not saved. The journal records child_failed, but the reported 30/2 test outcome and failure details are not persisted causal failure evidence and are not relied upon here.",
+    "limitations": [
+      "Fixtures validate extraction and privacy against controlled DOM shapes, not the changed driver in native Chrome.",
+      "The 27-observation reconciliation remains incomplete; source shape and DOM order cannot attribute private HMAC fingerprints or prove runtime ownership."
+    ]
+  },
+  "reviewed_evidence": [
+    ".research/settings-census-label-relation-20261007.json",
+    ".research/settings-census-label-relation-20261007.stdout.txt",
+    "docs/stabilization/resource-journals/37643142383-settings-label-final.jsonl",
+    ".research/guest-unmapped-reconciliation-peer-20261007.json",
+    ".research/guest-census-provenance-native-20261007/evidence/visibility-census-guest.json",
+    "tests/browser/takeover-visible-census.mjs",
+    "tests/browser/takeover-visible-census.test.mjs",
+    "src/features/settings/SettingsView.tsx at d68a1db3"
+  ]
+}
