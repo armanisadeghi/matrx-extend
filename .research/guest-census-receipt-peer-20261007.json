@@ -1,39 +1,59 @@
 {
-  "schema_version": 1,
-  "reviewed_commit": "327d3b89",
-  "review_scope": "Fresh source-only review of guest census receipt metadata and Account readiness screenshot, including PLAN.md Runner diagnostic acceptance; no tests, browser, build, database, release, or subagent work.",
+  "schema_version": 2,
+  "reviewed_commit": "934d7e48d4ff854909b686f205ae4a87b1f04640",
+  "review_scope": "Independent source-only review of the guest census receipt correction against original findings, PLAN.md runner diagnostics, implementation, callers, and recorded fixture run; no native browser, tests, build, DB, or release work.",
   "verdict_A_intended_evidence_behavior": {
-    "verdict": "SOURCE_SEQUENCE_ACCEPTED; NATIVE_BEHAVIOR_UNVERIFIED",
-    "browser_metadata": "The driver uses the browserSession passed by runNativeSidepanelQa, which is the harness's existing owned browser CDP connection. Browser.getVersion is read at the start of exercisePanel; only product and protocolVersion are copied into the result. The checks reject malformed or missing values. No command line or browser payload is serialized.",
-    "guest_readiness": "In the guest path, prepareGuestObservation opens Settings, waits for a safe Account section, expands it, and waits for observeGuestAuthentication. That observation throws unless the Account content is visible, enabled Sign in is visible, Sign out is absent, and access token, refresh token, profile, and admin role are absent. The screenshot call occurs only after this positive proof returns and captures the attached side-panel target, not the signed-in page target. However, this does not guarantee that Account is in the captured viewport: openSection skips click (whose pointer path scrolls the target into view) when Account is already expanded, and observeGuestAuthentication's visibility predicate checks nonzero rect and CSS visibility but does not check viewport intersection. Page.captureScreenshot has no clip/viewport preparation step, and source does not inspect the resulting pixels. Thus the code proves signed-out DOM state before capture, but does not prove the screenshot visibly frames that state.",
-    "native_gap": "This source inspection establishes intended sequencing only. The newly added Browser.getVersion and Page.captureScreenshot calls have not been exercised in the native browser. The 25 fixture tests recorded in the completion receipt do not establish native product or census acceptance."
-  },
-  "verdict_B_privacy_quality": {
-    "verdict": "BLOCKED_ON_PERMISSION_GUARANTEE_AND_RUNNER_DIAGNOSTICS; SCREENSHOT_FRAMING_UNPROVEN",
-    "findings": [
+    "verdict": "SOURCE_SEQUENCE_ACCEPTED_WITH_FRAMING_LIMIT; NATIVE_BEHAVIOR_UNVERIFIED",
+    "browser_metadata": "readBrowserVersion(browserSession) receives the harness-owned browser CDP session, validates Chrome product and protocol version, and retains only those fields. The caller assigns this before guest observation; invalid response and transport errors use fixed diagnostics. Native Browser.getVersion behavior remains unverified.",
+    "guest_readiness": "After prepareGuestObservation returns its positive signed-out proof, captureGuestReadiness scrolls the Account header and checks that the header, Account content, and enabled Sign in control intersect the attached sidepanel viewport before Page.captureScreenshot. This closes the original no-scroll/no-viewport-check source gap. The test exercises the guard and ordering through fixtures only. The intersection predicate accepts any positive overlap, including a sliver, and no captured pixels are inspected, so useful visual framing is not fully guaranteed by source.",
+    "original_findings": [
       {
-        "issue": "Existing screenshot file permissions are not restricted",
-        "source_proof": "The branch writes with writeFile(path, bytes, { mode: 0o600 }) to the deterministic OUTPUT + suffix path. On an existing path, writeFile truncates and overwrites without applying the creation mode, so a prior broader mode persists."
+        "finding": "Existing screenshot file permissions are not restricted",
+        "status": "ADDRESSED_IN_SOURCE",
+        "evidence": "captureGuestReadiness opens the deterministic screenshot path, chmods it to 0600 before truncating, then writes bytes; new files are opened with 0600. Fixture coverage overwrites a 0644 file and checks its mode and bytes."
       },
       {
-        "issue": "New Browser.getVersion, screenshot, and file-write boundaries lack fixed failure diagnostics",
-        "source_proof": "PLAN.md Runner diagnostic acceptance requires each potentially failing boundary to record a fixed stage/target and last safe booleans or counts; an opaque unverified catch is insufficient. Browser.getVersion send/assert, Page.captureScreenshot send, Buffer.from, and writeFile are unwrapped. The top-level catch emits only an existing census_* message or census_unverified plus role, and the harness is only at its broad exercise_panel stage. The report therefore cannot identify which added boundary failed or the safe observation immediately before it. No raw error or payload is serialized, which preserves the privacy constraint but does not satisfy stage diagnostics."
+        "finding": "New browser-version, screenshot, decode, and write boundaries lack fixed diagnostics",
+        "status": "ADDRESSED_IN_SOURCE",
+        "evidence": "readBrowserVersion and captureGuestReadiness attach fixed stage/target and safe state. Main serializes only receiptDiagnostic. The harness awaits exercisePanel and its finally cleanup rethrows the original error, so diagnostics reach the census runner catch. No raw cause, transport response, or private payload is serialized."
       },
       {
-        "issue": "The screenshot is not source-guaranteed to show the Account readiness UI",
-        "source_proof": "When Account is already expanded, openSection does not call click; click is the path in settings-panel-driver.mjs that scrolls a target into view. observeGuestAuthentication checks element rect width/height and CSS visibility, but not viewport intersection. The subsequent Page.captureScreenshot uses default capture parameters without scrolling, clipping, or pixel verification. Therefore source proves signed-out DOM state precedes the screenshot, but not that the Account state appears in the screenshot."
+        "finding": "Screenshot framing is not guaranteed to show Account readiness",
+        "status": "PARTIALLY_ADDRESSED_IN_SOURCE",
+        "evidence": "Account is scrolled into view and all three target elements must intersect the viewport before capture. Any positive intersection passes, and the PNG is not pixel-inspected; source therefore proves a viewport precondition but not a clearly framed readiness image."
       }
     ],
-    "privacy_observation": "The guest-only branch captures the attached side-panel target and records only the screenshot path. It does not add a signed-in screenshot path, raw browser command line, auth URL, error, storage value, token, or unrestricted page text."
+    "native_gap": "No native run or screenshot inspection occurred. Fixture tests do not establish owned-panel behavior, observed browser version, screenshot appearance, or native guest census acceptance."
   },
-  "source_review": {
-    "files": [
+  "verdict_B_quality_privacy": {
+    "verdict": "SOURCE_PRIVACY_AND_DIAGNOSTICS_ACCEPTED; NATIVE_PENDING",
+    "evidence": "Existing screenshot permissions are reset to 0600 before truncation. Browser product/protocol are allowlisted and copied; errors expose fixed diagnostics with booleans/counts and never serialize causes. Screenshot capture is limited to the guest branch and attached panel target, with path recorded only after capture succeeds. The correction stdout and completed journal record 29 passing fixture tests, zero failures, and a valid resource decision; they do not claim native acceptance.",
+    "limitations": [
+      "A successful write is not followed by a stat/mode check; the source operation requests 0600 and fixture verifies it, but no native filesystem outcome was observed.",
+      "Viewport proof checks nonzero rectangle intersection but does not enforce a minimum visible area or inspect screenshot pixels.",
+      "No native Browser.getVersion, Account framing, screenshot capture, or native error propagation was observed."
+    ]
+  },
+  "runner_diagnostics": {
+    "plan_requirement": "docs/stabilization/PLAN.md § Runner diagnostic acceptance requires fixed stage/target and last safe booleans or counts, with no raw auth URLs, errors, credentials, tokens, storage values, or unrestricted page text.",
+    "assessment": "The added version, framing, screenshot send/decode/write/close boundaries follow the fixed safe diagnostic shape. main catches exercisePanel failures and emits only code, role, and receiptDiagnostic. The harness's exercise_panel stage is broad, but it does not swallow the original error, so the detailed receipt diagnostic remains available to this runner."
+  },
+  "recorded_run": {
+    "run_id": "guest-receipt-correction-20261007-b",
+    "resource_decision": "valid",
+    "fixture_tests_passed": 29,
+    "fixture_tests_failed": 0,
+    "stdout": ".research/guest-census-receipt-correction-20261007.stdout.txt",
+    "journal": "docs/stabilization/resource-journals/guest-receipt-correction-20261007-b.jsonl",
+    "native_result": "not_run"
+  },
+  "scope_and_worktree": {
+    "source_files_reviewed": [
       "tests/browser/takeover-visible-census.mjs",
       "tests/browser/native-sidepanel-qa-harness.mjs",
-      "tests/browser/settings-panel-driver.mjs",
-      "tests/browser/takeover-visible-census.test.mjs"
+      "tests/browser/takeover-visible-census.test.mjs",
+      "docs/stabilization/PLAN.md"
     ],
     "unrelated_dirty_file_preserved": "docs/stabilization/reports/workspace-sync-guest-incident-20261003.json"
-  },
-  "native_dispatch": "This source review does not establish native readiness acceptance. The permission guarantee and fixed safe diagnostics are confirmed gaps; screenshot framing is unproven because source does not ensure or inspect viewport pixels. A later native result cannot be inferred from the 25 recorded fixture tests."
+  }
 }
