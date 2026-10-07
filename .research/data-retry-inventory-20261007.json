@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "task_id": "data-retry-inventory-20261007",
+  "lane": "source-only-inventory",
+  "status": "inventory-added-runtime-unverified",
+  "feature_id": "EXT-F-2005",
+  "added_ids": {
+    "control_id": "EXT-F-2005-C32",
+    "case_id": "EXT-F-2005-T05"
+  },
+  "collision_check": {
+    "result": "clear-before-edit",
+    "method": "Searched the complete docs/stabilization/inventory.json for both proposed IDs before adding them; the existing Data feature ended at C31/T04. A second repository-wide exact-ID search found neither ID already allocated."
+  },
+  "source_review": {
+    "proposal": ".research/missing-control-proposals-20261007.json",
+    "peer": ".research/settings-semantic-native-fresh-peer-20261007.json",
+    "current_head_at_review": "20d7218e70017be1e185ebde56b98fbaf55ce149",
+    "frozen_source_sha": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+    "reviewed_source_files_identical_to_frozen": [
+      "src/components/PageIdentityNotice.tsx",
+      "src/features/data/DataView.tsx",
+      "src/config/sidepanel-visibility.ts",
+      "src/entrypoints/sidepanel/App.tsx"
+    ],
+    "anchors": {
+      "control_render_and_action": "src/components/PageIdentityNotice.tsx:7-17",
+      "unconditional_data_mount": "src/features/data/DataView.tsx:448",
+      "active_tab_and_document_lookup": "src/hooks/use-active-tab.ts:52-94",
+      "data_tab_guest_visibility": "src/config/sidepanel-visibility.ts:27",
+      "page_identity_gates": [
+        "src/features/data/DataView.tsx:239-240",
+        "src/features/data/DataView.tsx:343-345"
+      ]
+    },
+    "applicable_modes": {
+      "guest": "applicable; Data is registered for everyone and PageIdentityNotice has no auth condition",
+      "member": "applicable; Data is registered for everyone; identity lookup is local",
+      "admin": "applicable; Data is registered for everyone; identity lookup is local"
+    },
+    "shared_control_distinction": "Scrape EXT-F-1007-C34/T32 covers its Retry placement; Data uses the same refreshActiveTabIdentity action through a different PageIdentityNotice placement. The feature-local control and case preserve Data surface coverage."
+  },
+  "fixture_assessment": {
+    "available_route": "tests/unit/saved-run-data-view-health.test.tsx renders DataView, but mocks useActiveTab and refreshActiveTabIdentity and cannot exercise Chrome tabs.query/webNavigation.getFrame or an actual active-tab switch.",
+    "design_status": "needed",
+    "exact_prerequisite": "Provide an owned controlled HTTPS test page and reviewed native fixture/runner that can hold an initial top-frame identity lookup unresolved, permit a later lookup to recover, record tab ID and document ID, and switch active tab during a pending lookup. Current evidence establishes no method for inducing this condition.",
+    "no_fixture_method_invented": true
+  },
+  "runtime_verdicts": {
+    "guest": "unverified",
+    "member": "unverified",
+    "admin": "unverified",
+    "build_reload": "unverified",
+    "lookup_failure": "unverified",
+    "recovery": "unverified",
+    "tab_document_identity": "unverified"
+  },
+  "limitations": [
+    "No tests, browser, native runtime, build, or behavior verification was run in this source-only inventory lane.",
+    "The proposed test is design-needed until the exact controlled native failure/recovery fixture prerequisite is supplied.",
+    "The cross-repository extension system-of-record path in the supplied AGENTS.md was not present in this checkout at its stated /Users/armanisadeghi/code/common-docs location; the source-only comparison and peer proposal were available locally."
+  ]
+}
