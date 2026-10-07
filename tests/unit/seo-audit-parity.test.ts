@@ -98,7 +98,7 @@ describe('seo audit — parity with matrx_scraper/seo_audit.py', () => {
 
   it('measures text on a non-rendered Document via the textContent fallback', () => {
     // happy-dom/DOMParser return '' for innerText on an unrendered doc, which
-    // used to zero word_count for every fetch_url_as_markdown result.
+    // used to zero word_count for every offscreen fetched-page result.
     expect(audit('<p>alpha beta gamma</p>').word_count).toBe(3);
   });
 });
