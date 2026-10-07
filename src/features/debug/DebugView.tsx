@@ -34,6 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@ai-matrx/design-system';
+import { downloadFile } from '@ai-matrx/kit/download';
 import {
   Activity,
   CheckCircle2,
@@ -182,13 +183,11 @@ export function DebugView() {
 
   const downloadAll = () => {
     const text = filtered.slice().reverse().map(formatEventLine).join('\n');
-    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `matrx-extend-debug-${new Date().toISOString().replace(/[:.]/g, '-')}.log`;
-    a.click();
-    URL.revokeObjectURL(url);
+    downloadFile(
+      `matrx-extend-debug-${new Date().toISOString().replace(/[:.]/g, '-')}.log`,
+      text,
+      'text/plain;charset=utf-8',
+    );
   };
 
   return (
