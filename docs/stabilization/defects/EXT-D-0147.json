@@ -1,19 +1,33 @@
 {
   "id": "EXT-D-0147",
   "feature_id": "EXT-F-4045",
-  "feature_ids": ["EXT-F-4045", "EXT-F-4046", "EXT-F-4049", "EXT-F-4050", "EXT-F-4051"],
+  "feature_ids": [
+    "EXT-F-4045",
+    "EXT-F-4046",
+    "EXT-F-4047",
+    "EXT-F-4048",
+    "EXT-F-4049",
+    "EXT-F-4050",
+    "EXT-F-4051",
+    "EXT-F-4052",
+    "EXT-F-4053"
+  ],
   "case_ids": [
     "EXT-F-4045-T01",
     "EXT-F-4046-T01",
+    "EXT-F-4047-T01",
+    "EXT-F-4048-T01",
     "EXT-F-4049-T01",
     "EXT-F-4050-T01",
-    "EXT-F-4051-T01"
+    "EXT-F-4051-T01",
+    "EXT-F-4052-T01",
+    "EXT-F-4053-T01"
   ],
-  "title": "Native task APIs are hidden without LanguageModel and invoked through the wrong method",
+  "title": "Native AI discovery, task methods, and agent execution context",
   "surface": "Tools > Catalog > Internal delegates; on-device AI wrappers",
   "auth_mode": "member/admin",
   "state": "in-fix",
-  "owner": "native-ai-capability-fix",
+  "owner": "root",
   "priority": "P1",
   "severity": "S2",
   "reported_by": "Source investigation of the current native-AI test procedures on 2026-10-06",
@@ -66,7 +80,8 @@
     "docs/stabilization/resource-journals/native-ai-pair-green-20261007.jsonl",
     "docs/stabilization/resource-journals/native-ai-pair-compile-20261007.jsonl",
     ".research/native-ai-pair-fresh-review-20261007.json",
-    ".research/native-ai-guard-strength-20261007.json"
+    ".research/native-ai-guard-strength-20261007.json",
+    ".research/native-ai-route-diagnosis-20261007.json"
   ],
   "build_receipt": null,
   "reproducibility": "Deterministic exported-function RED on the prior source; native unverified",
@@ -100,5 +115,11 @@
     }
   ],
   "closure_requirement": "Guarded RED/GREEN and typecheck, independent source review, native warm and post-reload execution on an exact loaded artifact, then release verification.",
-  "next_action": "Verify side-panel manual Run and background agent dispatch separately on an exact loaded artifact. Resolve service-worker capability exposure and retain all real-browser/role/reload gaps before closure."
+  "next_action": "Verify side-panel manual Run and background agent dispatch separately on an exact loaded artifact. Resolve service-worker capability exposure and retain all real-browser/role/reload gaps before closure.",
+  "routing_diagnosis": {
+    "source_report": ".research/native-ai-route-diagnosis-20261007.json",
+    "diagnosis_commit": "841bfce8",
+    "status": "Source-confirmed unfixed: all nine agent-delegated ai_* handlers execute in the service worker, where Chrome documents their APIs unavailable. Manual panel execution does not verify that route.",
+    "next_action": "Before implementing document routing, measure per-API exposure and availability in the existing side-panel and offscreen documents on a capable receipt-bound Chrome installation, including activation/download constraints. Reuse existing runtime document routing; preserve all nine operations and their real results. Native behavior and downstream effect of the LanguageModel-only context hint remain unverified."
+  }
 }

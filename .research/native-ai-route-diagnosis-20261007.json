@@ -1,0 +1,97 @@
+{
+  "lane": "native-ai-route-diagnosis",
+  "date": "2026-10-07",
+  "source_sha": "fdae9c4b8eb421cabbea41bb6156bd34d847262d",
+  "scope": "Read-only source and primary Chrome API documentation review. No native run, build, test, database call, or product edit in this lane.",
+  "current_truth": "The standalone task discovery and dedicated methods are repaired in the shared client, but the agent-dispatched path still runs the handlers in a Manifest V3 service worker. Chrome documents the Prompt, Summarizer, Translator, Language Detector, and Proofreader APIs as unavailable in Web Workers. The manual Tools route runs those same handlers in the side-panel document. Thus manual success would not establish agent success; current native behavior of the exact installed build remains unverified.",
+  "source_confirmed_findings": [
+    {
+      "finding": "The agent-delegated tool_event reaches the background dispatcher and executes handler.run in the service worker. The ai_* handlers directly invoke the onbox client in that realm; there is no document RPC for them.",
+      "anchors": [
+        "src/lib/background/bootstrap.ts:153-156",
+        "src/lib/tools/dispatch.ts:326-411",
+        "src/lib/tools/dispatch.ts:856-875",
+        "src/lib/tools/handlers/onbox-ai.ts:38-73",
+        "src/lib/tools/handlers/onbox-ai.ts:164-219"
+      ]
+    },
+    {
+      "finding": "The manual Tools Run path calls handler.run in the side-panel document. The onbox client reads globalThis and has no active-tab MAIN-world fallback despite its introductory comment claiming one.",
+      "anchors": [
+        "src/features/tools/ToolsView.tsx:439-462",
+        "src/lib/onbox-ai/client.ts:16-20",
+        "src/lib/onbox-ai/client.ts:119-160",
+        "src/lib/onbox-ai/client.ts:223-241",
+        "src/lib/onbox-ai/client.ts:302-328"
+      ]
+    },
+    {
+      "finding": "A task API available in an extension document can be falsely reported unavailable by agent-dispatched ai_check_availability because fullCapabilityReport and checkAvailability inspect only the worker's globals. The same realm issue reaches all nine ai_* handlers, including Prompt API wrappers. The earlier LanguageModel gate and wrong dedicated task methods are already repaired in current source; do not re-diagnose them as current defects.",
+      "anchors": [
+        "src/lib/onbox-ai/client.ts:119-194",
+        "src/lib/tools/handlers/onbox-ai.ts:38-55",
+        "src/lib/tools/handlers/onbox-ai.ts:101-108",
+        "src/lib/tools/handlers/onbox-ai.ts:310-320",
+        "src/lib/onbox-ai/client.test.ts:13-84"
+      ]
+    },
+    {
+      "finding": "The browser-dom-state onbox_ai_available hint checks LanguageModel and the legacy ai object only, so a document with a standalone task API but no LanguageModel yields false. It is a separate hint path; the source shows no local consumer gating the catalog, so its downstream effect must be checked in the actual server request/agent trace rather than assumed.",
+      "anchors": [
+        "src/lib/chat/build-browser-dom-state.ts:91-103",
+        "src/lib/chat/build-browser-dom-state.ts:181-202",
+        "src/lib/tools/registry.ts:84-85",
+        "src/lib/tools/catalog.ts:145-154"
+      ]
+    },
+    {
+      "finding": "An existing offscreen document and typed runtime message pattern already carries a service-worker tool request into a document for fetch_url_as_markdown. The singleton has a creation barrier and an offscreen handler; reuse this routing infrastructure rather than introducing a second document or tab injection. Chrome limits offscreen extension APIs to runtime messaging.",
+      "anchors": [
+        "src/lib/tools/handlers/fetch.ts:52-76",
+        "src/lib/stream/offscreen-proxy.ts:36-96",
+        "src/lib/messaging/native.ts:61-97",
+        "src/lib/messaging/schemas.ts:48-50",
+        "src/entrypoints/offscreen/main.ts:118-128"
+      ]
+    }
+  ],
+  "chrome_primary_contract": [
+    {
+      "url": "https://developer.chrome.com/docs/ai/prompt-api",
+      "fact": "Prompt API is unavailable in Web Workers; model download and create require checking user activation."
+    },
+    {
+      "url": "https://developer.chrome.com/docs/ai/summarizer-api",
+      "fact": "Summarizer API is unavailable in Web Workers; check user activation before create to trigger download."
+    },
+    {
+      "url": "https://developer.chrome.com/docs/ai/translator-api",
+      "fact": "Translator API is unavailable in Web Workers; availability requires a source/target pair; check user activation before create."
+    },
+    {
+      "url": "https://developer.chrome.com/docs/ai/language-detection",
+      "fact": "Language Detector API is unavailable in Web Workers; check user activation before create to trigger download."
+    },
+    {
+      "url": "https://developer.chrome.com/docs/ai/proofreader-api",
+      "fact": "Proofreader API is unavailable in Web Workers; check user activation before create to trigger download; origin-trial status must be confirmed for the installed build."
+    },
+    {
+      "url": "https://developer.chrome.com/docs/extensions/reference/api/offscreen",
+      "fact": "Offscreen is a window document, permits runtime messaging, and is a singleton per extension profile."
+    }
+  ],
+  "native_unknowns": [
+    "No exact installed-build probe yet confirms which native globals or models are available in side panel versus offscreen, including origin-trial exposure for Proofreader.",
+    "Offscreen documents cannot be focused; this review does not establish that user activation from a panel click or agent delegation transfers into offscreen. The Chrome docs require activation to trigger model download/create, so downloadable states need a tested foreground activation path and an honest result if activation is absent.",
+    "No runtime trace yet confirms whether the false onbox_ai_available hint changes server-side tool advertisement."
+  ],
+  "smallest_reusable_repair_candidate": "Route all ai_* operations and capability probes through one document-context executor using the existing ensureOffscreen plus runtime send/on pattern, returning the existing handler result shapes and actual per-API availability. Keep the tool dispatcher, permission gate, and result delivery in the worker. Have the document executor call the existing onbox client, and make the browser-dom-state hint derive from independent task capability discovery in the same appropriate document realm. Validate offscreen native API exposure first; if unavailable there, use the existing side-panel document path without claiming all contexts are equivalent. Handle downloadable/download-in-progress and missing activation explicitly; do not mask a working document capability as unavailable or assert that a background message carries user activation.",
+  "verification_plan": {
+    "original_repro": "In the exact loaded extension/profile, record each API's typeof and availability in the side panel and offscreen document and the service worker, then invoke the same ai_check_availability and controlled ai_summarize/ai_translate/ai_detect_language/ai_proofread through manual Tools and a real agent tool_delegated event. Capture tool result delivery and first failure at the realm boundary; repeat after extension reload.",
+    "negative": "With no relevant document global, report unavailable with a clear reason; with Translator present but no pair, report requires-language-pair; with a pair known unsupported, report unavailable; with downloadable model and no activation, report download/activation state, not a fabricated successful result. Invalid args must fail validation and must not invoke native create.",
+    "positive": "With a document exposing a dedicated task API while LanguageModel is absent, both manual and delegated routes report that task's real availability and return its real dedicated-method output. Prompt-dependent classify/extract/image/injection controls must likewise execute through the document route when LanguageModel is available. Confirm the result reaches the server tool_results endpoint and agent timeline; verify warm and post-reload behavior on one receipt-bound build."
+  },
+  "limits": "Source diagnosis is decisive about unsupported Web Worker placement per current Chrome documentation. It does not prove installed-build offscreen exposure, model readiness, permission policy, user activation transfer, or successful native execution. No red/green loop was run in this lane because native execution was explicitly reserved to the root native lane.",
+  "defect_id": "EXT-D-0147"
+}
