@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "reviewed_at": "2026-10-07",
+  "role": "independent evidence peer",
+  "scope": [
+    "EXT-F-1003-T46 run 37696455741",
+    "EXT-D-0157 and guest T43/T46/T49 run 37696764772"
+  ],
+  "settings_boundary": {
+    "artifact_id": 11516145523,
+    "artifact_download": "Original ZIP re-downloaded through GitHub API; the exact guest journal, native driver JSON, and two screenshots are preserved byte-for-byte under .research/parallel-native-evidence-peer-20261007/evidence/matrx-extend/matrx-extend/.",
+    "driver_sha256": "a9034e979ee31f193579cde0215cd86ba272391ba278dd9316fb3c1d7a5f229b",
+    "verdict_A_actual_case_acceptance": "unverified: T46 driver records 8/8 passing assertions, but exact guest resource journal ends RESOURCE_FINAL_DECISION invalid, resourceInvalid=true, exitCode=3 after CPU_BUSY/HIGH_LOAD_BUSY. ChildExitCode=0 is insufficient.",
+    "verdict_B_evidence_quality": "important correction: settings-boundary-native-20261007.json claims the downloaded artifact has no raw resource journal or screenshots. The artifact has exact-run guest/browser/package JSONL journals nested under docs/stabilization/resource-journals and two PNGs in test-results/native-sidepanel-qa-EgBpLG. The screenshots show a signed-out panel and target page, not the T46 port control. Curated driver JSON matches the original bytes; the report's artifact availability claim does not.",
+    "inventory_scope": "T46 guest Desktop engine port requires signed-out native Settings, fresh verified build and resource receipt, valid 65001, boundaries 1/65535, invalid range retained, blank clear, Settings reload persistence, and rediscovery separately from persistence. The driver observes these control assertions, but does not establish a full extension Reload or healthy desktop connection. Existing inventory result remains partial; no promotion from this invalid run.",
+    "exact_resource_path": ".research/parallel-native-evidence-peer-20261007/evidence/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37696455741-1.jsonl",
+    "excluded": [
+      "Nested journals ending 37105304739 are stale and unrelated.",
+      "The valid browser sibling journal does not override the invalid guest journal.",
+      "/private/tmp/settings-local-controls-acceptance.json has a different SHA and was not used as exact-run proof."
+    ]
+  },
+  "desktop_guest": {
+    "run_id": 37696764772,
+    "source_report": ".research/desktop-guest-native-20261007.json",
+    "source_commit": "0369b9b6",
+    "verdict_A_actual_case_acceptance": "partial for each of guest T43/T46/T49. T43 proves synthetic pair storage refusal/retry/order, but not transport-sensitive visibility, actual pairing, or HTTP Forget confirmation. T46 proves saved port refusal/retry/order and delayed-read behavior, but not 1/65535, invalid range, blank clear, or rediscovery in this run. T49 proves refusal/retry/reset census and signed-out reload, but not Cancel preservation in this run.",
+    "verdict_B_evidence_quality": "pass for bounded claims: native report is partial, the exact browser/guest/package resource journals all end admitted=true, resourceInvalid=false, decision=valid, exitCode=0, and every listed evidence-file SHA matches bytes on disk. The two screenshots show guest shell and target page, not Settings controls. The report correctly excludes stale 371053 journals and makes no healthy-engine claim.",
+    "d157_setup_verdict": "pass for desktop selected-artifact native setup only: hosted route passes the importer-selected source/run/artifact identity; native verifier checks import status, selected path, receipt, downloaded tree hash, and manifest. The run reached product cases with selected source 4801dbd72c99d0ff157c16cb51926587bdf95618, CI run 37695854607, artifact 11516070725, tree 6373533ed126d40ce1e2e9f53b569dcb611a03f2c69e386b8ee795eae0f409c2, version 0.2.391. Audit-key native sibling is outside this desktop run.",
+    "missing_proof": [
+      "T43 real pairing and HTTP transport Forget confirmation",
+      "T46 inventory port boundaries, invalid range, blank clear, and rediscovery in a valid current run",
+      "T49 Cancel preservation in a valid current run",
+      "Audit-key sibling native selection if closing D157 across both routes"
+    ]
+  },
+  "methods": "Read-only inventory and artifact review; no native test, build, release, or browser run launched."
+}
