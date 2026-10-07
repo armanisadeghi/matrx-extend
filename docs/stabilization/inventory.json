@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-07T01:51:39.886287+00:00",
+  "updated_at": "2026-10-07T02:01:11.768819+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -24950,7 +24950,7 @@
           "results": {
             "admin": {
               "status": "unverified",
-              "run_id": "showcase-d47-native-37554362947-1",
+              "run_id": "showcase-d47-native-37558902653-1",
               "evidence": [
                 "docs/stabilization/runs/showcase-network-current-001.json",
                 "docs/stabilization/runs/showcase-d49-native-retest-001.json",
@@ -24961,9 +24961,11 @@
                 "docs/stabilization/reports/showcase-d47-current-evidence-peer.json",
                 ".research/d47-root-observer-native-20261007.json",
                 ".research/d47-native-result-peer-20261007.json",
-                ".research/d47-owned-recipe-cleanup-20261007.json"
+                ".research/d47-owned-recipe-cleanup-20261007.json",
+                ".research/d47-settled-native-20261007.json",
+                ".research/d47-settled-native-peer-20261007.json"
               ],
-              "detail": "Independent peer477695bc: resource-valid native37554362947 on frozen0.2.334/a6e observed exact saved current root result, current-context handshake/packet and old-context clearing. OldHTTP completed; no oldcallback observed (architectural exclusion, not callback rejection). Last sample still running=true. FullT57 remains unverified: settled completion, observer cleanup, public-site same-artifact replay, reverse order, stale-only recovery and manual/prior-run isolation remain. Exact run-owned DBrecipe deleted and absence verified. Later alchemy lock state is not tested by this artifact."
+              "detail": "Independent peer9f70b303 accepts resource-valid native37558902653 on frozen0.2.337/source823724eb: exact saved current-only root result at settled running=false/no error, new-context handshake/packet and old-context clearing. OldHTTP completed after current; no oldcallback delivered (architectural exclusion, not callback rejection). Active observer removal/detach and exact run-owned recipe UI deletion/absence verified. FullT57 remains unverified: this controlled localhost fixture does not satisfy the public-site initial-load precondition; inverse order, stale-only recovery, manual/prior-run isolation and causal higher-old-sequence coverage remain required. Later dependency lock is not certified."
             }
           },
           "proof_ruling": "2026-10-06 root technical ruling: see .research/d47-acceptance-architecture-ruling-20261006.json. A native architectural-exclusion trace with positively observed current binding/packet, exact contexts, old request lifecycle and terminal saved result may supplement delivered-stale-event causal guards. Neither cancellation alone nor current-only rows nor empty event arrays prove exclusion. Retain public-site same-artifact replay, both response orders, higher old sequence, stale-only refusal and cleanup; no existing result is promoted."
@@ -25152,7 +25154,8 @@
             "showcase-tables-native-20260928",
             "prepare-denial-probe-20261002-01",
             "showcase-reveal-native-37284490515",
-            "showcase-repick-native-37395727468"
+            "showcase-repick-native-37395727468",
+            "showcase-d47-native-37558902653-1"
           ],
           "retest_status": "fail"
         }
