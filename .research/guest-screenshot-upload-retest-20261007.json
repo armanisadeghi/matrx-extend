@@ -1,6 +1,15 @@
 {
   "schema_version": 1,
   "purpose": "Independent one-attempt retest of the EXT-D-0152 guest readiness screenshot uploader using the frozen original development artifact.",
+  "verdict_A_original_repro_native": {
+    "verdict": "PASS_FOR_EXT_D_0152_UPLOAD_AND_PIXELS; FULL_GUEST_CENSUS_INCOMPLETE",
+    "finding": "The exact readiness PNG was included in the hosted artifact and independently inspected. It clearly shows the guest Account readiness state. The same native run remains incomplete overall because 27 census observations are unmapped; this does not negate the uploader retest and is not a product behavior failure."
+  },
+  "verdict_B_quality_privacy": {
+    "verdict": "SOURCE_CHECK_ACCEPTED; GUEST_ONLY_CAPTURE_AND_RESOURCE_EVIDENCE_PRESERVED",
+    "finding": "The workflow and hosted driver match the reviewed source correction with no unreviewed delta. The run used the frozen guest-only artifact, preserved before/after signed-out proof, clicked no product action controls, and recorded zero blocked HTTP mutations. All three owned resource journals are retained; historical journals are separated and excluded from this run's resource verdict.",
+    "limits": "Evidence applies only to the frozen 0.2.366 guest census. It does not establish current-main or Store product health, guest behavior or persistence, permission-denial, backend, member, or admin outcomes."
+  },
   "source_review": {
     "fix_commit": "1e366f07d63beaf1ab80e9ad88ca1cc76f664c8f",
     "current_workflow_commit": "f7a20eee1198ee53db3ef05954251c3beae0e422",
