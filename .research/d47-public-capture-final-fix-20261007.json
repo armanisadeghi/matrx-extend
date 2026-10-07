@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "status": "source_guard_green_native_unverified",
+  "cause_confidence": {
+    "source_selector_gap": "confirmed: NetworkTab.shortenUrl preserves host plus the last part of a long URL; queries can disappear from its label",
+    "original_native_cause": "unknown: original receipt did not record candidate count or previews"
+  },
+  "endpoint_evidence": {
+    "retrieved_utc_date": "2026-10-07",
+    "page": "https://hn.algolia.com/",
+    "public_application_id": "UJ5WYC0L7X",
+    "bundle": "https://hn.algolia.com/public/main-6e634771f729331a3c3c.js",
+    "bundle_sha256": "f48dff8be99597e2f1e8f245c36aa4e989b8b1cdb2f272d1064097d8039fa35c",
+    "observations": [
+      "Live page application_id matches UJ5WYC0L7X.",
+      "Bundle read transporter constructs application ID plus -dsn.algolia.net, with -1/-2/-3.algolianet.com fallback hosts.",
+      "Bundle search method uses path 1/indexes/*/queries."
+    ],
+    "credential_values_recorded": false
+  },
+  "changes": [
+    "Record safe terminal state, row census, last preview, preview classifications and match count before assertions.",
+    "Inspect successful Algolia POST candidates using full selected response URL, exact public application API hosts, HTTPS and exact queries path.",
+    "Wait for the clicked row selection marker and full displayed URL/input agreement; reselect and revalidate the unique response before saving.",
+    "Reject zero/multiple endpoint matches; never select the first arbitrary row."
+  ],
+  "guard_scope": "Actual exported selector and trusted CDP click driver execute against controlled happy-dom DOM; CDP transport supplies selection updates. This is a source guard, not installed-extension or live-product acceptance.",
+  "guard_cases": [
+    "Shortened intended label plus unrelated full queries label selects the intended full endpoint.",
+    "Legacy queries label gate planted in memory in the actual selector fails on the shortened intended response; corrected selector succeeds on the same DOM.",
+    "Two exact API endpoint matches are rejected with count two recorded.",
+    "Page-host response is rejected with count zero and safe host boolean.",
+    "Empty capture census is recorded before rejection.",
+    "Receipts exclude synthetic query values and unrelated host strings."
+  ],
+  "runs": [
+    {
+      "id": "d47-capture-final-20261007-a",
+      "decision": "valid",
+      "tests_passed": 4,
+      "journal": "docs/stabilization/resource-journals/d47-capture-final-20261007-a.jsonl",
+      "journal_sha256": "744f37cdd86acac7610a68fc6195cd6b7fdae74b459f2bf834b09e1c8fb0b2ab"
+    },
+    {
+      "id": "d47-capture-final-20261007-b",
+      "decision": "valid",
+      "tests_passed": 4,
+      "journal": "docs/stabilization/resource-journals/d47-capture-final-20261007-b.jsonl",
+      "journal_sha256": "205f4d1cddf41065907e5ad92909a2394c3794d287ce73cb3fa352e330266696"
+    }
+  ],
+  "source_head_before_commit": "4c49013ccf53e92bd5270570c15a7f53fd53c995",
+  "lock_sha256": "58f79f15f4d6a0e1513d51b0a039efbc542a960012f1c356fff663e44df92ef5",
+  "source_sha256": {
+    "tests/browser/showcase-d47-public-initial-load.mjs": "ca124735a0a1f2ff9e8128162ddd724d0361fc238be34863f441001cd70cf2be",
+    "tests/browser/showcase-d47-public-initial-load.test.mjs": "39cc4673a52a32940889e7fdc8b7514c72f69aaa8be9f45a5c58564a1ea060c4"
+  },
+  "limits": [
+    "No browser, native acceptance, build, release, DB or secrets access performed.",
+    "Original native zero-versus-multiple outcome remains unknown.",
+    "Full T57 remains unverified; independent source review then authorized native acceptance remain necessary."
+  ]
+}
