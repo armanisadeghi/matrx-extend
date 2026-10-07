@@ -28,9 +28,9 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Fix/verify remaining harness acceptance gaps before another native run: observe settled exact-recipe completion, confirm passive-probe cleanup before closing browser, ensure owned recipe cleanup in driver, cover reverse response order and stale-only recovery. Retain same-artifact public-site initial replay and manual/prior-run isolation requirements. Revalidate successful current CI artifact/lock before native admission; no manual/native jobs active.",
+    "next_action": "Implementation owner d47_completion_cleanup_fix has sole source-test permit to repair settled-result observation, in-lifetime observer cleanup and exact owned-recipe cleanup. No native run admitted. Preserve latest bounded native evidence; fullcase remains unverified.",
     "status": "Run37554362947 resource-valid success on frozen0.2.334/a6e: exact saved current root result plus current-context handshake/packet observed. Last sample running=true; oldHTTP finished but oldcallback absent. Independentpeer477695bc preserves D47in-fix/T57unverified. Exact owned DBrecipe removed and absence verified; passive probe removal unconfirmed.",
-    "implementation_agent": "completed: d47_owned_reload_fix; d47_navigation_replacement_fix; d47_ci_contract_repair",
+    "implementation_agent": "d47_completion_cleanup_fix",
     "execution_agent": "completed: d47_root_observer_native",
     "native_run_id": 37537634304,
     "workflow_source": "fbcc4311ae6885b67133e55336f692be38881249",
