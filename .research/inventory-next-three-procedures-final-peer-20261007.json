@@ -1,0 +1,45 @@
+{
+  "reviewed_commit": "6b56ef4baf164a7754a9b8c8fd3dd99cf46066ae",
+  "reviewed_artifact": ".research/inventory-next-three-procedures-20261007.json",
+  "prior_review": ".research/inventory-next-three-procedures-peer-20261007.json",
+  "review_mode": "fresh independent source-only re-verification; zero product authorship; no tests, builds, browser, UI, or canonical inventory edits",
+  "findings": [
+    {
+      "id": "tabs active-tab expectation",
+      "status": "ADDRESSED",
+      "evidence": "The revised step explicitly clicks owned fixture A in Chrome's tab strip immediately before action=active, compares returned ID with fixture A, and treats mismatch or unestablished context as unverified with no later mutations. _active-tab.ts confirms assignedTabId=null falls back to the focused current-window tab."
+    },
+    {
+      "id": "mandatory running service-worker/offscreen build identity",
+      "status": "ADDRESSED",
+      "evidence": "The shared preamble now requires independent identity verification for both contexts before acting; if either cannot be identified, that lifecycle dimension remains unverified and execution does not proceed as if identity were established. This preserves PLAN.md's separate-context requirement."
+    },
+    {
+      "id": "missing lifecycle and recovery dimensions",
+      "status": "ADDRESSED",
+      "evidence": "Cold/idle restart, controlled-page navigation, permission-denied recovery, and offline recovery are explicitly excluded and unverified in the preamble, each procedure's dimensions/limits, and the artifact's explicit_unverified_coverage. Extension reload is described as a separate limited observation, not as those cases."
+    }
+  ],
+  "verdict_a_procedure_accuracy_and_spec": {
+    "status": "PASS",
+    "finding": "The three routes match ToolsView's actual local-schema/manual direct-handler path. Source-backed inputs and expected outcomes match chrome_batch, take_screenshot, and tabs behavior. Fixture targeting and mandatory receipt/context identity gates are materially corrected, and non-exercised dispatcher, permissions, binding, and lifecycle behavior remain outside the claims."
+  },
+  "verdict_b_evidence_and_quality": {
+    "status": "PASS_WITH_LIMITS",
+    "finding": "The proposal names all PLAN receipt provenance fields, requires a resource permit and source/output binding, identifies the direct-handler bypass, and labels every case proposed/unverified. It makes no runtime pass claim. The report and proposal distinguish evidence to collect later from evidence established by this source review.",
+    "limits": [
+      "No Chrome/UI execution, build, tests, receipt, resource journal, or runtime permission/context observation was performed; all three cases remain unverified.",
+      "The artifact source_sha is f271586c026ac2835ef6ee689db37de23b355599; reviewed handler, ToolsView, catalog, generated catalog, and PLAN paths show no relevant changes through reviewed commit 6b56ef4b."
+    ]
+  },
+  "source_evidence": [
+    "docs/stabilization/PLAN.md:24-41",
+    "src/features/tools/ToolsView.tsx:346-462,510-545",
+    "src/lib/tools/handlers/_active-tab.ts:10-39",
+    "src/lib/tools/handlers/batch.ts:24-94",
+    "src/lib/tools/handlers/read.ts:136-183,331-455",
+    "src/lib/tools/handlers/canonical.ts:479-559",
+    "src/lib/tools/handlers/tabs.ts:38-65,143-171,174-230,250-330"
+  ],
+  "recommendation": "Accept the corrected source-only procedure specifications. Keep all three inventory cases unverified until separately executed with the required receipt and resource journal."
+}
