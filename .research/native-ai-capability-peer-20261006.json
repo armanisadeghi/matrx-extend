@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "task_id": "native-ai-capability-peer-20261006",
+  "reviewed_commit": "eb8eca4981bd2e01e59bbe1239a9299ac4088336",
+  "defect_id": "EXT-D-0147",
+  "verdict_a_scope_evidence": {
+    "status": "PARTIAL",
+    "passed": [
+      "getAi discovers each modern top-level task API without LanguageModel and drops obsolete ai/chrome.aiOriginTrial namespaces",
+      "Summarizer, Translator, LanguageDetector, and Proofreader call their dedicated session methods",
+      "LanguageDetector preserves ranked objects; malformed detector and proofreader results no longer become successful output",
+      "Builder records guarded exported-function RED/GREEN and final compile; native side-panel and agent-dispatch runtime remain unverified"
+    ],
+    "missing": [
+      "Translator availability is still checked without sourceLanguage and targetLanguage; a present and usable Translator can be reported unavailable by ai_check_availability. See finding P1."
+    ],
+    "runtime_limit": "Chrome documents these task APIs as unavailable in Web Workers. Manual Tools invokes handlers in the side-panel document; agent dispatch invokes them in a service worker. Neither route was executed on an exact loaded Chrome build, so the source fix cannot close the defect."
+  },
+  "verdict_b_quality": {
+    "status": "PARTIAL",
+    "passed": [
+      "Dedicated task session types replace the misused PromptSession contract",
+      "No obsolete discovery shim remains in the reviewed diff",
+      "Focused tests exercise exported functions and check distinct returned data and native method calls"
+    ],
+    "missing": [
+      "The Translator test double accepts availability() with no arguments, masking the real API contract; add a case whose availability requires the requested language pair.",
+      "The report records RED/GREEN but no executed return-expected mutation or equivalent forcing-test gut check; test strength beyond the observed regression remains unproven."
+    ]
+  },
+  "findings": [
+    {
+      "id": "P1",
+      "priority": "important",
+      "file": "src/lib/onbox-ai/client.ts",
+      "line": 132,
+      "evidence": "checkAvailability calls cap.availability() without options for every capability; fullCapabilityReport calls checkAvailability('translator'). The official Chrome Translator guide checks availability with {sourceLanguage,targetLanguage}, and GoogleChrome's current guide says those options are mandatory and identical to create options. Current test availability stub accepts no options.",
+      "impact": "A valid Translator can be falsely reported unavailable, defeating independent capability discovery and the manual ai_check_availability decision.",
+      "source": "https://developer.chrome.com/docs/ai/translator-api"
+    }
+  ],
+  "review_method": "Inspected exact commit with git show, builder report and resource journals; compared methods, result shapes, worker availability and Translator availability against Chrome primary documentation. No native browser, service, build, or release run in this review.",
+  "next_action": "Resolve P1 in the shared wrapper and force it with an exported-function regression case; re-review both verdicts. Then run exact-build manual and agent routes separately before defect closure."
+}
