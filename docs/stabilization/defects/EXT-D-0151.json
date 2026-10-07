@@ -21,7 +21,7 @@
     "Run the controlled structural/navigation/action fixture via node scripts/stabilization-resource.mjs run --run-id UNIQUE -- node --test tests/browser/takeover-visible-census.test.mjs scripts/hosted-profile-route.test.mjs. Require structural/action accounting separate from true regions, unique direct Settings trigger remains safe, unknown private text remains fingerprinted, and safe DOM provenance persists."
   ],
   "expected": "Only genuine semantic tab/section triggers govern region traversal. Structural and action nodes remain honestly accounted without becoming phantom inaccessible regions. Stable safe DOM/source provenance supports later control mapping; unknown remains incomplete.",
-  "actual": "Original native census misclassified non-region controls and lacked mapping provenance. Source classification and Settings mapping repairs have independent source acceptance; latest completed native run37651810572 has33unknown observations. New mapping native retest37655683227 is pending; no complete census pass.",
+  "actual": "Source classification and Settings mapping repaired; native37655683227 independently proves eight Settings nodes map to six IDs. Full census remains incomplete with35unknown observations; this defect remains fixed pending complete accounting.",
   "evidence": [
     ".research/guest-census-original-retest-20261007.json",
     ".research/guest-census-mapping-reconcile-20261007.json",
@@ -37,12 +37,15 @@
     ".research/census-semantic-mapping-fix-20261007.json",
     ".research/census-semantic-peer-20261007.json",
     ".research/census-identity-audit-takeover-20261007.json",
-    ".research/empty-surface-native-retest-20261007.json"
+    ".research/empty-surface-native-retest-20261007.json",
+    ".research/settings-semantic-native-20261007.json",
+    ".research/settings-semantic-native-fresh-peer-20261007.json",
+    ".research/missing-control-proposals-20261007.json"
   ],
   "verification": {
-    "native": "37651810572 on original frozen0.2.366 observes Scrape3/Data2/SEO1 controls,33unknown observations, zero unsupported/inaccessible/blocked regions, guest identity before/after. D152 uploaded screenshot and D153 collector readiness closed independently. Settings semantic mapping retest37655683227 is pending; no result transferred from historical fingerprints.",
+    "native": "37655683227 frozen0.2.366: eight Settings nodes map to C02/C04/C05/C29/C15/C16, Settings controls unknown0 plus separate section action unknown1. Overall35unknown; prior33 reconciles Settings-8, SEO+11, Data-1. Guest before/after and no blocked/inaccessible/unsupported regions. Resources admitted without invalidation, acceptance fails intentionally on incomplete census.",
     "source": "Classification f2a53199 and row relationships45ee8732 independently accepted. Settings exact section/row/kind/unique mapping b2a1efad has persisted causal plant-red2 failure and38/38 captured-green with valid completed resource journals. Duplicated, changed and wrong-kind relationships remain unknown.",
-    "independent_review": "Source peer73280def accepts Settings outcome with native limit and quality/privacy separately. Remaining source identity audit c5786268 is candidate-only and has three missing inventory IDs; no receipt identity inferred.",
+    "independent_review": "Source73280def and fresh native9c8221b9 accept bounded Settings mapping and quality separately. No product behavior or current-main health certified. Missing-control proposal6ad47e57 source-reviewed: Scrape C19/T19 and C34/T32 already exist; Data Retry requires distinct feature-local coverage (proposed C32/T05), not reuse by shared handler.",
     "product_behavior": "No product failure or pass established."
   },
   "transition_history": [
@@ -72,6 +75,6 @@
     }
   ],
   "closure_requirement": "Fresh independent source review and guarded exact-artifact native census with trustworthy classification/provenance and original ambiguity no longer reproducing. Unknown controls remain incomplete until mapped from evidence; no member/admin or broader product health inferred.",
-  "next_action": "Inspect native retest37655683227 through terminal, obtain fresh independent evidence review, and update T11 only with actual mapped/unknown observations. Resolve remaining unknown identity and three source inventory gaps; member/admin census and all product behavior remain unverified.",
+  "next_action": "Reconcile remaining35 observations with source-owned exact scoped labels, preserving conditional surface states. Integrate independently reviewed Data Retry coverage gap with unverified mode cells. New native census only after reviewed mapping/conditions change; member/admin and product behavior remain unverified.",
   "fix_shas": ["f2a53199", "45ee8732"]
 }

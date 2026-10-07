@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-07 16:37 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-07T15:47:18.263750+00:00. 205 features · 768 cases · 1350 controls · 153 linked defect records.
+Generated 2026-10-07 17:12 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-07T15:47:18.263750+00:00. 205 features · 768 cases · 1350 controls · 153 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -182,8 +182,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: profile-member-retest-189-01, .research/profile-member-retest189.json
 - EXT-F-0002-T10 · member: Pass. Independent strict full reload observed saved identity/org/token while Account was initially guest, then exact signed-in control appeared under existing readiness bound; all reload cases passed and original absence restored.
   Evidence / build / date recorded: profile-member-final-189-05, 2026-10-04T01:29:17.055381+00:00, ['.research/profile-member-final-189-native.json', 'docs/stabilization/resource-journals/profile-member-final-189-05.jsonl', '.research/profile-escalated-boundary-peer.json']
-- EXT-F-0002-T11 · guest: Partial. Same frozen0.2.366 artifact now observes Scrape3/Data2/SEO1 visible controls versus previous0/0/0. Guest identity proven before/after. Unknown observations33 keep census incomplete; no inaccessible/unsupported/blocked regions. Package/browser guards valid; guest resourceInvalid=false, wrapper child_failed on intended incomplete-census exit2. Prior8-node Settings mapping remains scoped to historical37645860520 and is not transferred by fingerprints. No feature behavior/current-main/member/admin acceptance.
-  Evidence / build / date recorded: 37651810572, .research/empty-surface-native-retest-20261007.json
+- EXT-F-0002-T11 · guest: Partial. Frozen0.2.366: eight Settings nodes now map to six reviewed IDs; Settings controls unknown0, separate section action unknown1. Overall35unknown observations (prior33: Settings-8, SEO+11, Data-1) keep census incomplete. Positive guest before/after; no inaccessible/unsupported/blocked regions. All resources admitted without invalidation; guest acceptance exits on incomplete census. Fresh peer accepts bounded mapping only; no behavior/current-main/member/admin acceptance.
+  Evidence / build / date recorded: 37655683227, .research/settings-semantic-native-20261007.json
 
 **Other remaining work:** Concrete procedure and evidence required before executing each control.; EXT-D-0136 closed: startup owner metadata race repaired; independent actual-wrapper retest and hostedCI37245762934 pass. No product coverage promoted.
 
