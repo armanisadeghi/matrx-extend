@@ -1,0 +1,10 @@
+{
+  "status": "source_procedures_integrated_runtime_unverified",
+  "cases": ["EXT-F-4059-T01", "EXT-F-4144-T01", "EXT-F-4155-T01"],
+  "missing_steps_before": 60,
+  "missing_steps_after": 57,
+  "runtime_status_changes": 0,
+  "review": ".research/clipboard-final-peer-20261007.json",
+  "ruling": "Preserve disposable OS clipboard fixture and record failed cleanup; remove proposed account quarantine for harmless synthetic text, which is not required to test or repair the feature.",
+  "preserved": "All existing control IDs, applicability, results and case IDs."
+}
