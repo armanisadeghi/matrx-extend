@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "kind": "local_dev_unpacked",
+  "publish_state": "not_published",
+  "observedAt": "2026-10-07T21:10:34.436Z",
+  "extensionDir": "/home/runner/work/matrx-extend/matrx-extend/.output/chrome-mv3",
+  "version": "0.2.388",
+  "treeSha256": "885c5699340ee04aa02bb836f68ef5448b17f3f91850d294abcc37b73bf4a5a0"
+}
