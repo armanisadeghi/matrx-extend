@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent-source-peer-review",
+  "reviewed_artifact": ".research/cdp-render-emulation-procedures-20261007.json",
+  "reviewed_commit": "5229c6e0260f42af299a121acd70b21e7bbc5b21",
+  "review_scope": "Source only. No browser, test, build, database, or inventory mutation. Verdicts assess proposed procedures, not runtime behavior.",
+  "verdict_A_per_case": {
+    "EXT-F-4103-T01": "accepted as a conditional source-derived procedure, runtime unverified: the public Wikipedia fixture must visibly scroll, expose the named top and below-fold landmarks, and yield decoded full-page pixels taller than the viewport; cloud-only content requires the file-ID viewer to resolve the actual image",
+    "EXT-F-4111-T01": "correction required: shared setup owns a Wikipedia tab, but the PDF positive step says to focus owned example.org; choose one controlled owned page consistently before this procedure is executable; output field and decoded-PDF checks are source-correct",
+    "EXT-F-4113-T01": "accepted as a partial source-derived procedure, runtime unverified: same-extension screenshots can observe reported CSS layout viewport dimensions and rendered pixels without competing DevTools; actual UA, DPR, and matchMedia effects remain unverified",
+    "EXT-F-4114-T01": "accepted as a partial source-derived procedure, runtime unverified: the owned attachment is required immediately before valid clear, and viewport dimensions/pixels are checked afterward; UA, DPR, and media-query restoration remain unverified"
+  },
+  "verdict_B_quality": "One substantive target-ownership inconsistency remains in the PDF case and shared cleanup wording. The three prior Important findings are addressed as conditional source procedures. Manual-runner evidence and screenshot-derived measurements are accurately limited; no runtime or inventory pass is established.",
+  "findings": [
+    {
+      "severity": "Important",
+      "cases": ["EXT-F-4111-T01"],
+      "location": ".research/cdp-render-emulation-procedures-20261007.json:46,48,120",
+      "problem": "Shared setup creates one fresh owned Wikipedia tab for every case, while the PDF warm pass instructs focus of owned https://example.org/ and the shared cleanup says to close the owned example.org tab.",
+      "impact": "The PDF tester cannot follow both target instructions. Switching to an uncreated example.org tab would defeat the unique owned-tab and attachment-delta proof; following Wikipedia would not produce the specified example.org content evidence. The cleanup instruction is wrong for the other three cases as well.",
+      "required_correction": "Make the shared owned target and PDF step agree, and describe cleanup as closing the exact owned tab for that pass."
+    }
+  ],
+  "prior_finding_mapping": [
+    {
+      "prior_issue": "short example.org screenshot fixture lacks below-fold proof",
+      "disposition": "addressed conditionally: Wikipedia fixture, visible References landmark, scrolling and height gates; source review cannot certify the live page or decoded image",
+      "evidence": ".research/cdp-render-emulation-procedures-20261007.json:68-77"
+    },
+    {
+      "prior_issue": "cloud screenshot may return only file_id, with no pixel-inspection route",
+      "disposition": "addressed conditionally: Files Screenshots gallery opens the canonical viewer by capture.file_id; if the upload lacks a screenshot row or the viewer cannot resolve the file, the proposal marks content unverified",
+      "evidence": ".research/cdp-render-emulation-procedures-20261007.json:55,71,77; src/features/files/FilesView.tsx:73-80,316-339; src/lib/screenshot/persist.ts:138-182"
+    },
+    {
+      "prior_issue": "DevTools probe can detach the extension debugger before emulation or clear verification",
+      "disposition": "addressed for partial viewport/pixel evidence: no competing DevTools, screenshot handler uses the same CDP client, and attached-tabs check precedes valid clear; UA/DPR/matchMedia effects are explicitly unresolved",
+      "evidence": ".research/cdp-render-emulation-procedures-20261007.json:35-36,56,164-205,216-255; src/lib/tools/handlers/cdp.ts:155-207,603-610"
+    }
+  ],
+  "source_checks": [
+    "src/lib/tools/handlers/cdp.ts:237-277: screenshot cloud result carries file_id, optional URL, source_width/source_height, size_bytes, and top-level width/height; inline result carries image_base64 and byte_length.",
+    "src/lib/tools/handlers/cdp.ts:155-207: viewport screenshot width/height are calculated from Page.getLayoutMetrics cssLayoutViewport.clientWidth/clientHeight, while pixels come from Page.captureScreenshot. They are evidence of viewport rendering, not independent page-script state or proof of UA, DPR, mobile media behavior.",
+    "src/lib/tools/handlers/cdp.ts:498-520: PDF result fields are pdf_base64 and decoded byte_length; landscape and print_background are the supported options.",
+    "src/lib/tools/handlers/cdp.ts:562-610: emulate returns ok after CDP commands; clear returns ok without commands if the tracker lacks the tab, and its empty-UA override failure is swallowed.",
+    "src/features/tools/ToolsView.tsx:390-462: runner validates Zod and calls handler.run directly. It cannot prove dispatcher authorization, optional-permission denial, Ask/Act gating, or agent routing.",
+    "docs/stabilization/inventory.json:60444-60465,61930-61951,62283-62304,62415-62436: screenshot/PDF are member and admin; emulation/clear are admin only."
+  ],
+  "limits": [
+    "No runtime page, PDF, screenshot, viewer, debugger ownership, or extension reload was exercised in this review.",
+    "The Wikipedia landmark and scroll height are future preconditions, not facts established by this source review.",
+    "Cases 4113 and 4114 are accepted only as partial procedures for CSS viewport and pixels. UA, DPR, matchMedia, and best-effort UA restoration are not covered by these observations."
+  ]
+}
