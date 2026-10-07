@@ -51,6 +51,29 @@
       "qualification": "The curated T12 row omits a standalone blank-video observation although the native driver asserts it before continuing to Add and the terminal run has no failure. This is a transparency limit of the curated receipt, not evidence that the step failed."
     }
   },
+  "settings_D155_review": {
+    "reviewed_report": ".research/frozen-settings-native-retest-20261007.json",
+    "reviewed_commit": "c6ffc442",
+    "workflow_run_id": 37693743871,
+    "artifact_version": "0.2.387",
+    "A_actual_behavior": {
+      "verdict": "PASS_ORIGINAL_SETUP_AND_BOUNDED_GUEST_CONTROLS",
+      "D155_original": "The exact frozen 0.2.387 development artifact loaded and reached native Settings assertions from a newer workflow checkout. This reverses the original pre-browser version mismatch. With the prior independent source review, D155 closure for the original Settings setup defect is supported; SEO/navigation sibling native behavior remains separate.",
+      "T22_guest": "Pass: Advanced agent capabilities text and admin controls absent in both warm and reloaded signed-out Settings; 2/2 criteria.",
+      "T37_guest": "Pass: Deep clean starts false, toggles true, retains true plus coming-soon hint after reload, then cleanup restores false; 3/3 criteria. This is preference behavior, not functional deep cleaning.",
+      "T46_guest": "Partial: valid port 49206 saved and persisted, Save-bounded worker rediscovery entry and post-probe observed, invalid 65536 showed inline error without replacing saved port, and blank clear persisted after reload. All six driver assertions passed, but inventory boundary ports 1 and 65535 and actual healthy desktop connection were not exercised.",
+      "T70_guest": "Partial evidence: current Chrome/manifest/runtime identity, available password-flow API readiness, real no-update response, and post-reload identity/readiness passed 5/10 criteria. API unavailable, update available, throttled, update error, and update API unavailable remain unverified. Retain the inventory case as unverified until its branch criteria are exercised.",
+      "limits": "One signed-out guest run on an unpacked CI development artifact. No Store, feature-wide, or SEO/navigation native acceptance claim."
+    },
+    "B_evidence_quality": {
+      "verdict": "SUFFICIENT_FOR_ORIGINAL_D155_AND_LISTED_BOUNDED_CONTROLS",
+      "artifact_identity": "Retained CI provenance and build receipt agree on source 14305391032aaf326c57ce196d50518f0d42f047, version 0.2.387, development extension ID, and tree digest. Every native case reports that same verified loaded build. The workflow checkout version advanced to 0.2.388; the imported artifact's own identity was used.",
+      "receipt": "The full native assertion receipt records concrete warm/reload states and per-criterion outcomes: T22 2/2 pass, T37 3/3 pass, T46 6/6 driver checks pass but mapped case incomplete, and T70 5 pass/5 unverified. Overall receipt status unverified correctly reflects incomplete broader acceptance.",
+      "resource_journals": "All three current run journals show admission, child exit 0, resourceInvalid false, and final valid decision; reported SHA-256 hashes match retained files. Stale historical journals were excluded.",
+      "screenshots": "Both screenshot hashes match and visual inspection shows signed-out side-panel and ordinary-page setup. They do not depict the Settings control sequence; the full assertion receipt supplies that proof.",
+      "qualification": "T46's worker trace supports Save-bounded rediscovery through a health request and post-probe breakpoint. It does not show a successful desktop connection."
+    }
+  },
   "sources": [
     "docs/stabilization/defects/EXT-D-0042.json",
     "docs/stabilization/inventory.json",
@@ -64,6 +87,10 @@
     "docs/stabilization/defects/EXT-D-0154.json",
     "tests/browser/scrape-guest-native-acceptance.mjs",
     ".research/scrape-counted-native-retest-20261007/evidence/run37693691959/native-scrape-receipt-curated.json",
-    ".research/scrape-counted-native-retest-20261007/evidence/run37693691959/resource-journal-curated.json"
+    ".research/scrape-counted-native-retest-20261007/evidence/run37693691959/resource-journal-curated.json",
+    "docs/stabilization/defects/EXT-D-0155.json",
+    ".research/frozen-settings-native-retest-20261007/evidence/settings-local-controls-acceptance.json",
+    ".research/frozen-settings-native-retest-20261007/evidence/artifact/ci-build-receipt.json",
+    ".research/frozen-settings-native-retest-20261007/evidence/artifact/ci-build-provenance.json"
   ]
 }
