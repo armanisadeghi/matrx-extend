@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "scope": "EXT-D-0150 source routing and feature-test procedure repair; native browser acceptance remains outside this lane",
+  "cause": "The WebMCP page message receiver had sender.tab.id, but dropped it before handleWebmcpCall built a ToolContext with assignedTabId null. Tab-aware handlers then resolved whichever tab was focused when they ran.",
+  "sibling_census": "handleWebmcpCall also serves frontend and desktop calls, which do not carry a page sender tab; their existing context behavior was preserved. The WebMCP listener is the only page-message entry point. Existing tab-aware handlers already refuse a closed assigned tab.",
+  "repair": [
+    "The page listener validates its allowed origin and sender tab, checks that the tab exists, and passes sender.tab.id into external dispatch.",
+    "External dispatch carries the optional assigned tab into ToolContext and returns an explicit origin-tab error if a page tab closes before dispatch.",
+    "Feature-test steps use document.modelContext.getTools and executeTool with a discovered RegisteredTool. External action calls require confirmation in both Ask and Act modes."
+  ],
+  "causal_red": [
+    {
+      "run_id": "webmcp-origin-bootstrap-red-20261007",
+      "assertion": "listener omitted assignedTabId: 17",
+      "stdout": ".research/webmcp-origin-bootstrap-red-20261007.stdout",
+      "completed_journal": "docs/stabilization/resource-journals/webmcp-origin-bootstrap-red-20261007.jsonl",
+      "resource_decision": "child_failed",
+      "child_exit_code": 1
+    },
+    {
+      "run_id": "webmcp-origin-dispatch-red-20261007",
+      "assertion": "dispatcher targeted focused tab 23 instead of origin tab 17",
+      "stdout": ".research/webmcp-origin-dispatch-red-20261007.stdout",
+      "completed_journal": "docs/stabilization/resource-journals/webmcp-origin-dispatch-red-20261007.jsonl",
+      "resource_decision": "child_failed",
+      "child_exit_code": 1
+    }
+  ],
+  "verified": [
+    {
+      "run_id": "webmcp-origin-final-tests-20261007",
+      "result": "7 test files, 30 tests passed; includes listener routing, closed origin, external dispatch, native contract, assigned-tab, frontend bridge and nearby permission checks",
+      "stdout": ".research/webmcp-origin-final-tests-20261007.stdout",
+      "completed_journal": "docs/stabilization/resource-journals/webmcp-origin-final-tests-20261007.jsonl",
+      "resource_decision": "valid",
+      "child_exit_code": 0
+    },
+    {
+      "run_id": "webmcp-origin-verified-compile-20261007",
+      "result": "pnpm compile passed",
+      "stdout": ".research/webmcp-origin-verified-compile-20261007.stdout",
+      "completed_journal": "docs/stabilization/resource-journals/webmcp-origin-verified-compile-20261007.jsonl",
+      "resource_decision": "valid",
+      "child_exit_code": 0
+    }
+  ],
+  "intermediate_runs": [
+    {
+      "run_id": "webmcp-origin-green-20261007",
+      "result": "14 tests passed before the additional close-timing check",
+      "stdout": ".research/webmcp-origin-green-20261007.stdout",
+      "completed_journal": "docs/stabilization/resource-journals/webmcp-origin-green-20261007.jsonl"
+    },
+    {
+      "run_id": "webmcp-origin-surrounding-20261007",
+      "result": "27 nearby tests passed",
+      "stdout": ".research/webmcp-origin-surrounding-20261007.stdout",
+      "completed_journal": "docs/stabilization/resource-journals/webmcp-origin-surrounding-20261007.jsonl"
+    },
+    {
+      "run_id": "webmcp-origin-compile-20261007",
+      "result": "Fixture omitted required Chrome Tab fields; corrected",
+      "stdout": ".research/webmcp-origin-compile-20261007.stdout",
+      "completed_journal": "docs/stabilization/resource-journals/webmcp-origin-compile-20261007.jsonl"
+    },
+    {
+      "run_id": "webmcp-origin-final-compile-20261007",
+      "result": "Fixture omitted Chrome Tab groupId; corrected",
+      "stdout": ".research/webmcp-origin-final-compile-20261007.stdout",
+      "completed_journal": "docs/stabilization/resource-journals/webmcp-origin-final-compile-20261007.jsonl"
+    }
+  ],
+  "limitations": [
+    "No supported native WebMCP browser run was performed in this source-only lane; installed extension acceptance remains unverified.",
+    "No build, release, deployment, database change, or browser run was performed."
+  ]
+}

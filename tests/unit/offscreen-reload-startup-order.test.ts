@@ -4,6 +4,11 @@
  * destroys the fresh socket's owner after it opens.
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { on } from '@/lib/messaging/native';
+import { CHANNELS } from '@/lib/messaging/schemas';
+import { matchesAllowedOrigin } from '@/lib/origin-allowlist';
+import { readDefaultPermissionMode } from '@/lib/settings/persisted';
+import { handleWebmcpCall } from '@/lib/tools/dispatch';
 
 const deferred = <T>() => {
   let resolve!: (value: T) => void;
@@ -91,7 +96,7 @@ vi.mock('@/lib/credentials/inline-suggestions-host', () => ({
 }));
 vi.mock('@/lib/messaging/native', () => ({ broadcast: vi.fn(), on: vi.fn(() => () => undefined) }));
 vi.mock('@/lib/messaging/schemas', () => ({
-  CHANNELS: { DESKTOP_AVAILABILITY: 'desktop:availability' },
+  CHANNELS: { DESKTOP_AVAILABILITY: 'desktop:availability', WEBMCP_CALL: 'webmcp:call' },
 }));
 vi.mock('@/lib/origin-allowlist', () => ({ matchesAllowedOrigin: vi.fn() }));
 vi.mock('@/lib/settings/persisted', () => ({ readDefaultPermissionMode: vi.fn() }));
@@ -174,5 +179,72 @@ describe('reload startup ordering', () => {
     expect(mocks.probe).toHaveBeenCalledOnce();
     expect(mocks.connect).toHaveBeenCalledOnce();
     vi.useRealTimers();
+  });
+});
+
+describe('WebMCP page sender routing', () => {
+  afterEach(() => {
+    vi.resetModules();
+    vi.clearAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  it('binds calls to their origin tab and refuses a sender without a tab', async () => {
+    let originOpen = true;
+    mocks.close.mockResolvedValue(false);
+    vi.mocked(matchesAllowedOrigin).mockReturnValue(true);
+    vi.mocked(readDefaultPermissionMode).mockResolvedValue('act');
+    vi.mocked(handleWebmcpCall).mockResolvedValue({ ok: true, result: 'called' });
+    vi.stubGlobal('chrome', {
+      alarms: { onAlarm: { addListener: vi.fn() } },
+      runtime: { onMessage: { addListener: vi.fn() }, onConnect: { addListener: vi.fn() } },
+      storage: { local: { get: vi.fn(async () => ({})) }, onChanged: { addListener: vi.fn() } },
+      tabs: {
+        onUpdated: { addListener: vi.fn() },
+        get: vi.fn(async (id: number) => {
+          if (!originOpen || id !== 17) throw new Error('No tab with id');
+          return { id };
+        }),
+      },
+    });
+    const { bootstrapBackground } = await import('@/lib/background/bootstrap');
+    bootstrapBackground();
+    const listener = vi.mocked(on).mock.calls.find(([kind]) => kind === CHANNELS.WEBMCP_CALL)?.[1];
+    expect(listener).toBeDefined();
+    const payload = { callId: 'page-tab', toolName: 'read_active_page', args: {} };
+    const sender: chrome.runtime.MessageSender = {
+      tab: {
+        id: 17,
+        url: 'https://aimatrx.com/',
+        index: 0,
+        pinned: false,
+        highlighted: false,
+        windowId: 1,
+        active: false,
+        incognito: false,
+        selected: false,
+        discarded: false,
+        autoDiscardable: true,
+        groupId: -1,
+      },
+    };
+    expect(await listener?.(payload, sender)).toEqual({ ok: true, result: 'called' });
+    expect(handleWebmcpCall).toHaveBeenCalledWith(payload, {
+      permissionMode: 'act',
+      initiator: 'page',
+      assignedTabId: 17,
+    });
+    vi.mocked(handleWebmcpCall).mockClear();
+    expect(await listener?.(payload, { url: 'https://aimatrx.com/' })).toEqual({
+      ok: false,
+      error: 'webmcp: origin tab unavailable',
+    });
+    expect(handleWebmcpCall).not.toHaveBeenCalled();
+    originOpen = false;
+    expect(await listener?.(payload, sender)).toEqual({
+      ok: false,
+      error: 'webmcp: origin tab unavailable',
+    });
+    expect(handleWebmcpCall).not.toHaveBeenCalled();
   });
 });

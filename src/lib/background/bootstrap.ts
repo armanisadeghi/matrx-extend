@@ -575,10 +575,20 @@ function registerHandlers(): void {
     if (!senderUrl || !matchesAllowedOrigin(senderUrl)) {
       return { ok: false, error: 'webmcp: origin not allowed' };
     }
+    const assignedTabId = sender.tab?.id;
+    if (assignedTabId == null) {
+      return { ok: false, error: 'webmcp: origin tab unavailable' };
+    }
+    try {
+      await chrome.tabs.get(assignedTabId);
+    } catch {
+      return { ok: false, error: 'webmcp: origin tab unavailable' };
+    }
     const mode = await readDefaultPermissionMode();
     return handleWebmcpCall(payload, {
       permissionMode: mode,
       initiator: 'page',
+      assignedTabId,
     });
   });
 }

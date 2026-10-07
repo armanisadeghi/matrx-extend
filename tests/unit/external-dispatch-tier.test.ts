@@ -1,4 +1,5 @@
 import { handleWebmcpCall } from '@/lib/tools/dispatch';
+import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
 import type { AnyToolHandler } from '@/lib/tools/types';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
@@ -47,5 +48,50 @@ describe('external dispatcher effective permission tier', () => {
     expect(result).toEqual({ ok: true, result: { status: 'executed' } });
     expect(deps.run).toHaveBeenCalledTimes(1);
     expect(deps.run.mock.calls[0]?.[0]).toEqual({ action: 'read' });
+  });
+
+  it('keeps an external page read on its assigned tab after focus changes, and reports a closed origin', async () => {
+    const tabs = new Set([17, 23]);
+    vi.stubGlobal('chrome', {
+      tabs: {
+        get: vi.fn(async (id: number) => {
+          if (!tabs.has(id)) throw new Error('No tab with id');
+          return { id };
+        }),
+        query: vi.fn(async () => [{ id: 23 }]),
+      },
+    });
+    deps.run.mockImplementation(async (_args, ctx) => {
+      const tabId = await getAssignedTabId(ctx);
+      return tabId == null ? { ok: false, reason: 'No active tab' } : { ok: true, tabId };
+    });
+    const payload = {
+      callId: 'origin-tab-test',
+      toolName: 'test_dynamic_tier',
+      args: { action: 'read' },
+    };
+    expect(
+      await handleWebmcpCall(payload, {
+        permissionMode: 'act',
+        initiator: 'page',
+        assignedTabId: 17,
+      }),
+    ).toEqual({
+      ok: true,
+      result: { ok: true, tabId: 17 },
+    });
+    tabs.delete(17);
+    expect(
+      await handleWebmcpCall(payload, {
+        permissionMode: 'act',
+        initiator: 'page',
+        assignedTabId: 17,
+      }),
+    ).toEqual({
+      ok: false,
+      error: 'webmcp: origin tab unavailable',
+    });
+    expect(chrome.tabs.query).not.toHaveBeenCalled();
+    vi.unstubAllGlobals();
   });
 });

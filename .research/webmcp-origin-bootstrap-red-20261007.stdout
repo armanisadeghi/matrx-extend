@@ -1,0 +1,53 @@
+{"schema":1,"at":"2026-10-07T13:38:21.430Z","runId":"webmcp-origin-bootstrap-red-20261007","path":"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/webmcp-origin-bootstrap-red-20261007.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-07T13:39:28.624Z","runId":"webmcp-origin-bootstrap-red-20261007","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":11.84,"requiredMemoryGiB":4,"oneMinuteLoad":1.24,"logicalCpus":10,"cpuBusyFraction":0.06857142857142857,"swapUsedMiB":2626.19,"repoFreeGiB":1680.5989151000977,"profileFreeGiB":1680.5989151000977,"safetyFreeGiB":23.019771575927734,"systemFreeGiB":23.019771575927734},"cpuBusySamples":[0.07,0.06,0.07,0.07,0.06,0.06,0.09],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - `__dirname` (vitest.config.ts:7:25). Use `import.meta.dirname` instead
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Volumes/Samsung2TB/code/matrx-extend
+
+ ❯ tests/unit/offscreen-reload-startup-order.test.ts (3 tests | 1 failed) 48ms
+     × binds calls to their origin tab and refuses a sender without a tab 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/offscreen-reload-startup-order.test.ts > WebMCP page sender routing > binds calls to their origin tab and refuses a sender without a tab
+AssertionError: expected "vi.fn()" to be called with arguments: [ { callId: 'page-tab', …(2) }, …(1) ]
+
+Received:
+
+  1st vi.fn() call:
+
+@@ -3,10 +3,9 @@
+      "args": {},
+      "callId": "page-tab",
+      "toolName": "read_active_page",
+    },
+    {
+-     "assignedTabId": 17,
+      "initiator": "page",
+      "permissionMode": "act",
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ tests/unit/offscreen-reload-startup-order.test.ts:210:30
+    208|     const sender = { tab: { id: 17, url: 'https://aimatrx.com/' } };
+    209|     expect(await listener?.(payload, sender)).toEqual({ ok: true, resu…
+    210|     expect(handleWebmcpCall).toHaveBeenCalledWith(payload, {
+       |                              ^
+    211|       permissionMode: 'act',
+    212|       initiator: 'page',
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed (3)
+   Start at  06:39:29
+   Duration  440ms (transform 57ms, setup 89ms, import 21ms, tests 48ms, environment 184ms)
+
+{"schema":1,"at":"2026-10-07T13:39:29.734Z","runId":"webmcp-origin-bootstrap-red-20261007","childExitCode":1,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-07T13:39:29.776Z","runId":"webmcp-origin-bootstrap-red-20261007","admitted":true,"resourceInvalid":false,"exitCode":1,"decision":"child_failed","code":"RESOURCE_FINAL_DECISION"}

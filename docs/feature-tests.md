@@ -1740,8 +1740,9 @@ Every entry follows this shape:
      tool calls land with the amber `parallel` chip; the parent call
      itself stays `agent`.
   4. **webmcp** — open devtools console on a connected page (e.g.
-     `aimatrx.com`) and run
-     `await navigator.modelContext.callTool('matrx.get_active_tab', {})`.
+     `aimatrx.com`) in a supported browser with WebMCP enabled. Run
+     `const tools = await document.modelContext.getTools();` then
+     `await document.modelContext.executeTool(tools.find((tool) => tool.name === 'matrx.list_open_tabs'), {})`.
      The new row uses the emerald `webmcp` chip and has
      `conversationId: null` (WebMCP calls aren't tied to a conversation).
   5. Use the chip-set filter at the top of "Recent receipts" to narrow
@@ -2046,19 +2047,19 @@ Every entry follows this shape:
 - **Edge cases worth poking:** Toggle off mid-session then send → no scroll.
   Navigate to a new URL → next first-submit deep-captures again.
 
-### Default mode (ask/act) honored on WebMCP + frontend-bridge tool calls
-- **What it does:** Settings → Default mode = "Act without asking" now applies
-  to tool calls initiated via WebMCP and the frontend bridge (previously those
-  paths read the wrong storage key and always fell back to "ask").
-- **Where to test:** Settings → Default mode; then trigger a WebMCP or
-  frontend-bridge tool call.
+### Default mode and external-caller confirmation
+- **What it does:** External WebMCP and frontend-bridge calls read the saved
+  default permission mode. Action-tier calls from either external caller still
+  require a confirmation card in both modes.
+- **Where to test:** Settings → Default mode, an allowlisted WebMCP page, and
+  the frontend bridge.
 - **Steps:**
   1. Settings → set Default mode to **Act without asking**.
   2. Trigger an action-tier tool via a WebMCP page tool or the frontend bridge.
-- **Expected:** The action runs without an approval card (act mode). Set back to
-  "Ask before acting" → the approval card appears.
-- **Edge cases worth poking:** Privileged-tier tools still confirm even in act
-  mode (unchanged). First-run with no setting persisted → defaults to ask.
+  3. Repeat after setting **Ask before acting**.
+- **Expected:** An approval card identifies the external caller in both modes;
+  denial returns an error and does not run the action. Privileged and ask-user
+  tools are refused from these external paths. First run defaults to Ask.
 
 ### Native WebMCP imperative API
 - **What it does:** The WebMCP tools inspect `document.modelContext`, await its
@@ -2079,7 +2080,11 @@ Every entry follows this shape:
 - **Expected:** The native tool appears once; each successful call returns the
   nonce and advances only the owned page's counter once. Unavailable or
   rejected operations return an explicit failure. A Tools manual run proves
-  handler behavior only; use the dispatcher to verify admin and Ask/Act gates.
+  handler behavior only; use the dispatcher to verify admin and external-caller
+  confirmation gates. For extension-registered tools, invoke a discovered
+  `matrx.*` tool from tab A, focus tab B before its handler runs, and verify
+  the effect remains on A. Start a second call from A, close A before dispatch
+  completes, and verify an explicit failure with no effect on B.
 
 ### "Act without asking" holds for the whole chat turn
 - **What it does:** With the chat header set to "Act without asking", no approval card appears for action tools — including every tool call after the first tool round, after reopening a paused chat, and when the mode comes from Settings → Default mode.
@@ -2429,7 +2434,9 @@ Every entry follows this shape:
 - **Steps:**
   1. Set permission mode to "Act without asking".
   2. From the allow-listed page, invoke an action tool (e.g. `navigate`)
-     through `navigator.modelContext` / the bridge.
+     by finding its `matrx.*` RegisteredTool with
+     `document.modelContext.getTools()` and passing that object and an input
+     object to `document.modelContext.executeTool()`.
   3. Observe the sidepanel.
 - **Expected:** An approval card appears with the rose "Requested by the web
   page you have open — NOT by your agent" banner; the remember-for-this-chat

@@ -1447,12 +1447,19 @@ interface WebmcpCallResponse {
  */
 export async function handleWebmcpCall(
   payload: WebmcpCallPayload,
-  opts: { permissionMode: 'ask' | 'act'; initiator?: ConfirmInitiator },
+  opts: { permissionMode: 'ask' | 'act'; initiator?: ConfirmInitiator; assignedTabId?: number },
 ): Promise<WebmcpCallResponse> {
   const { callId, toolName, args } = payload;
   const initiator: ConfirmInitiator = opts.initiator ?? 'page';
   if (!callId || !toolName) {
     return { ok: false, error: 'webmcp: missing callId or toolName' };
+  }
+  if (initiator === 'page' && opts.assignedTabId != null) {
+    try {
+      await chrome.tabs.get(opts.assignedTabId);
+    } catch {
+      return { ok: false, error: 'webmcp: origin tab unavailable' };
+    }
   }
 
   const handler = lookupTool(toolName);
@@ -1526,7 +1533,7 @@ export async function handleWebmcpCall(
     callId,
     agentName: null,
     permissionMode: opts.permissionMode,
-    assignedTabId: null,
+    assignedTabId: opts.assignedTabId ?? null,
   };
 
   // External action calls ALWAYS confirm — the user's act-mode preference

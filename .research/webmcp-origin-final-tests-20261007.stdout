@@ -1,0 +1,20 @@
+{"schema":1,"at":"2026-10-07T13:47:17.744Z","runId":"webmcp-origin-final-tests-20261007","path":"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/webmcp-origin-final-tests-20261007.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-07T13:48:24.965Z","runId":"webmcp-origin-final-tests-20261007","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":12,"requiredMemoryGiB":4,"oneMinuteLoad":1.48,"logicalCpus":10,"cpuBusyFraction":0.09571428571428574,"swapUsedMiB":2578.19,"repoFreeGiB":1680.5987968444824,"profileFreeGiB":1680.5987968444824,"safetyFreeGiB":23.031368255615234,"systemFreeGiB":23.031368255615234},"cpuBusySamples":[0.06,0.06,0.09,0.3,0.06,0.05,0.05],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - `__dirname` (vitest.config.ts:7:25). Use `import.meta.dirname` instead
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Volumes/Samsung2TB/code/matrx-extend
+
+(node:55796) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:55798) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  7 passed (7)
+      Tests  30 passed (30)
+   Start at  06:48:25
+   Duration  1.95s (transform 175ms, setup 280ms, import 202ms, tests 167ms, environment 698ms)
+
+{"schema":1,"at":"2026-10-07T13:48:27.531Z","runId":"webmcp-origin-final-tests-20261007","childExitCode":0,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-07T13:48:27.575Z","runId":"webmcp-origin-final-tests-20261007","admitted":true,"resourceInvalid":false,"exitCode":0,"decision":"valid","code":"RESOURCE_FINAL_DECISION"}
