@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "reviewed_commit": "c984804ba375dba673ab106c9735a17069c9e0c2",
+  "review_mode": "Independent read-only source, route, receipt, and test-oracle review; no browser, build, test execution, database, or credential access",
+  "verdict_a_spec": {
+    "result": "BLOCKED_SOURCE; NATIVE_UNVERIFIED",
+    "basis": "The new route targets public HN Search and intends to use the extension's Capture page load UI, select an observed 200 POST Algolia queries response, save a run-owned Network pattern, rerun it, and inspect the exact Patterns result or the product's no-match guidance. It does not inject a fetch. However, the mandatory trusted-click callback omission makes the first trusted click fail before Network capture, so this source cannot deliver the public-site observation.",
+    "current_artifact_limit": "No native run or current response is recorded. Prior installed HN evidence and read-only static HTTP/bundle checks in the builder report are historical/preflight evidence, not acceptance on the changed lock or new driver. Keep T57 unverified and D47 open."
+  },
+  "verdict_b_quality": {
+    "result": "FAIL",
+    "findings": [
+      {
+        "severity": "Important",
+        "location": "tests/browser/showcase-d47-public-initial-load.mjs:294; tests/browser/showcase-d47-driver-evidence.mjs:198-205",
+        "issue": "All eight calls to trustedD47PanelClick in the new driver omit its required record argument. The helper calls record before even evaluating the target. The first Network tab click therefore throws TypeError and the public native path cannot reach capture; retry or valid credentials cannot repair it.",
+        "required_remedy": "Pass a recorder at every trusted-click boundary, preserve a red-then-green guard through the actual click path, and then run native acceptance."
+      },
+      {
+        "severity": "Important",
+        "location": "tests/browser/showcase-d47-public-initial-load.test.mjs:1-56",
+        "issue": "The 2/2 source tests and stated constant-success/permissive-guidance mutant checks exercise only classifyPublicReplay with hand-built flags. They do not invoke any actual click, capture, saved-row DOM observation, or cleanup and therefore cannot reject the blocking missing-recorder mutation. The route unit test was edited but not separately executed in the builder's one-permit lane.",
+        "required_remedy": "Add an execution-level guard for the required helper contract and exact route interactions; do not treat classifier oracle green as native or driver readiness."
+      }
+    ],
+    "supported_parts": "Hosted workflow, credential gate, route selection, exact development artifact environment, and CI classifier-test registration are wired. The source plans run-owned UUID recipe deletion in finally and confirms row absence before a verified return. Reports contain booleans, artifact IDs, generated recipe name and sanitized failure code, not response bodies or credential query values."
+  },
+  "evidence": {
+    "source_report": ".research/d47-public-replay-source-20261007.json",
+    "source_checks": "Resource journals record valid admission and source-test child exit 0; this review did not rerun tests under the explicit no-tests lane.",
+    "original_runtime": "unexecuted",
+    "public_response_current_artifact": "unverified",
+    "dependency_lock": "changed after historical native runs, as explicitly noted by the builder"
+  },
+  "recommendation": "Reject source readiness until the trusted-click callback contract and execution-level guard are repaired. Then run the exact current-artifact hosted public case and inspect the original receipt for real initial response, exact settled saved result or honest guidance, and cleanup. This bounded public case alone will not close the remaining T57 stale/manual/sequence branches."
+}
