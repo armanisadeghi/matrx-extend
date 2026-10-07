@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "reviewed_at": "2026-10-07",
+  "reviewer": "root/webmcp_contract_fresh_peer",
+  "reviewed_commits": [
+    "db2ecc8d",
+    "6fbf8a0b"
+  ],
+  "scope": "Independent source and evidence review of the WebMCP native contract repair, including assigned-tab routing, authorization, registration lifecycle, truthful failures, and sibling procedures. No tests, build, browser, release, database, or deployment actions were run.",
+  "official_reference": {
+    "overview": "https://developer.chrome.com/docs/ai/webmcp",
+    "imperative_api": "https://developer.chrome.com/docs/ai/webmcp/imperative-api",
+    "verified_contract": [
+      "Chrome documents document.modelContext, asynchronous registerTool and getTools, executeTool with a discovered RegisteredTool and object input, execute callback registration, and AbortSignal registration removal.",
+      "Chrome documents toolchange, same-origin discovery by default, and cross-origin access requiring both fromOrigins and explicit exposedTo configuration.",
+      "The overview identifies Chrome 149 as the origin-trial starting point and the local testing flag; it does not establish native behavior for the installed browser in this task."
+    ]
+  },
+  "verdict_a_intended_behavior_and_runtime_evidence": {
+    "verdict": "SOURCE CONTRACT ACCEPTED WITH ONE ROUTING CONCERN; NATIVE RUNTIME UNVERIFIED",
+    "evidence": [
+      {
+        "finding": "The revised availability, listing, and invocation handlers use document.modelContext, await getTools, find by tool name, and call executeTool with the discovered object and an object input.",
+        "source": "src/lib/tools/handlers/webmcp.ts:24-149",
+        "assessment": "Matches the current documented imperative API. All three handlers call getAssignedTabId(ctx), so normal agent calls preserve the assigned tab and refuse when the assigned tab has closed."
+      },
+      {
+        "finding": "Registration uses the execute callback, awaits registerTool, gives each registration an AbortSignal, aborts a prior same-name registration on re-registration, and removes registrations added by a failed pass.",
+        "source": "src/lib/webmcp/register.ts:88-203",
+        "assessment": "Matches documented registration and lifecycle behavior. Discovery, registration, and execution rejections surface as failures instead of successful counts/results."
+      },
+      {
+        "finding": "Strict source-boundary fixtures are clearly described as mocked API evidence; the builder report expressly says no native Chrome 149+ object or execution was observed.",
+        "source": ".research/webmcp-native-contract-repair-20261007.json",
+        "assessment": "The source GREEN is not misrepresented as native acceptance. D150 should stay open until a receipt-bound supported-browser run."
+      },
+      {
+        "finding": "The extension-side registered tool callback loses the originating page's tab identity before dispatch.",
+        "source": "src/lib/background/bootstrap.ts:570-582; src/lib/tools/dispatch.ts:1448-1451,1523-1530; src/lib/tools/handlers/_active-tab.ts",
+        "assessment": "The WebMCP message receiver has sender.tab.id available but passes neither it nor a tab-bound context to handleWebmcpCall. That function sets assignedTabId to null. Handlers using getAssignedTabId then fall back to whichever tab is active when they run, so a tool registered in tab A may target tab B after a switch. This is a source-supported routing risk, not a browser-reproduced result."
+      }
+    ],
+    "runtime_limit": "No native browser version, enabled API object, discovery result, or execution result was observed. Chromium 141 installation provenance does not establish the running browser version or native support."
+  },
+  "verdict_b_quality_and_doctrine": {
+    "verdict": "REPAIR QUALITY IS SOUND AT THE NATIVE BOUNDARY; FOLLOW-UP REQUIRED FOR ROUTING AND PROCEDURE ACCURACY",
+    "evidence": [
+      {
+        "finding": "External dispatch retains execution-time admin and schema gates, optional Chrome permission checks, action confirmation, and refuses ask-user/privileged tiers.",
+        "source": "src/lib/tools/dispatch.ts:1463-1539",
+        "assessment": "The WebMCP registration surface does not bypass these dispatcher protections. Action-tier external calls still require confirmation even when the user's own agent default is Act."
+      },
+      {
+        "finding": "The newly added native procedure covers discovery, invocation, page reload/re-registration, invalid and unknown input, missing API, rejected registration, and a second-tab routing check.",
+        "source": "docs/feature-tests.md:2063-2078",
+        "assessment": "Useful acceptance plan, but the second-tab case is material because the extension-side bridge currently drops sender.tab.id as noted above."
+      },
+      {
+        "finding": "Earlier feature-test procedures still describe obsolete callTool and claim that WebMCP action calls run without approval in Act mode.",
+        "source": "docs/feature-tests.md:1742-1746,2049-2061",
+        "assessment": "These instructions contradict the current native API and the external-caller confirmation policy, which can mislead manual verification. The newly added procedure does not remove the conflicting older steps."
+      }
+    ],
+    "source_fixture_boundary": "The test fixture invokes the production injected function with a controlled document.modelContext shape. It is a source contract check, not native-browser proof, and the report accurately labels it."
+  },
+  "required_follow_up": [
+    "Carry the originating sender.tab.id into the extension-side WebMCP dispatch context, or explicitly bind the handler operation to the registered page tab, so tab switches cannot retarget it.",
+    "Update or retire the conflicting feature-test instructions that still call navigator.modelContext.callTool and promise no confirmation for external actions in Act mode.",
+    "Keep D150 open until discovery, invocation, and extension-side registration are exercised on an observed supported browser build with the API enabled and exact extension artifact recorded."
+  ],
+  "limitations": [
+    "Source-only review; no test, build, browser, release, database, or deploy commands were run.",
+    "The origin-tab targeting concern is a direct source-path inference; no live tab-switch scenario was executed.",
+    "Native browser acceptance remains unverified."
+  ]
+}
