@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "reviewed_commit": "3faf5ac94a1fd18e6d6aa0135866f8811ad2a2ec",
+  "reviewed_current_head": "9e92561e6461cfae9835bcce995df9ea81caefda",
+  "verdict_a": {
+    "source_readiness": "PASS",
+    "native_acceptance": "UNVERIFIED",
+    "basis": "Current source selects the full sanitized preview URL for the exact public application HTTPS host and /1/indexes/*/queries path, confirms selected row and URL input agreement, rejects zero or multiple matches, and records safe counts and booleans before the match assertion. No fresh installed-extension public native run was performed after the fix.",
+    "original_failure_limit": "The prior native receipt failed in initial_capture at the old candidate assertion but recorded neither candidate count nor response previews. Its exact zero-versus-multiple cause remains unknown."
+  },
+  "verdict_b": {
+    "quality": "PASS",
+    "findings": [],
+    "basis": "NetworkTab shortens the displayed label while retaining the full sanitized selected URL. The source guard executes the exported selector and trusted click driver against controlled DOM selection updates; its planted legacy label gate rejects the shortened intended row, while the corrected path accepts the exact endpoint. Ambiguous exact endpoints and an unrelated page host reject with safe match counts. No arbitrary first-row or any-match fallback is present. Failure diagnostics contain counts and booleans rather than row text or query values."
+  },
+  "evidence": {
+    "source": [
+      "src/features/showcase/tabs/NetworkTab.tsx:229-235,250-268,404-413",
+      "tests/browser/showcase-d47-public-initial-load.mjs:36-141,427-451",
+      "tests/browser/showcase-d47-public-initial-load.test.mjs:60-200"
+    ],
+    "public_bundle": {
+      "retrieved_utc_date": "2026-10-07",
+      "path": "/public/main-6e634771f729331a3c3c.js",
+      "sha256": "f48dff8be99597e2f1e8f245c36aa4e989b8b1cdb2f272d1064097d8039fa35c",
+      "observed": "Application ID UJ5WYC0L7X, Algolia DSN and fallback host templates, and 1/indexes/*/queries are present."
+    },
+    "resource_journals": [
+      {
+        "path": "docs/stabilization/resource-journals/d47-capture-final-20261007-a.jsonl",
+        "sha256": "744f37cdd86acac7610a68fc6195cd6b7fdae74b459f2bf834b09e1c8fb0b2ab",
+        "decision": "valid",
+        "child_exit_code": 0
+      },
+      {
+        "path": "docs/stabilization/resource-journals/d47-capture-final-20261007-b.jsonl",
+        "sha256": "205f4d1cddf41065907e5ad92909a2394c3794d287ce73cb3fa352e330266696",
+        "decision": "valid",
+        "child_exit_code": 0
+      }
+    ],
+    "current_source_sha256": {
+      "tests/browser/showcase-d47-public-initial-load.mjs": "ca124735a0a1f2ff9e8128162ddd724d0361fc238be34863f441001cd70cf2be",
+      "tests/browser/showcase-d47-public-initial-load.test.mjs": "39cc4673a52a32940889e7fdc8b7514c72f69aaa8be9f45a5c58564a1ea060c4"
+    },
+    "current_lock_sha256": "0dc4d749041157290538a2472162ea8ee4c78a7d622d58e4fd36b1e45522c8ef"
+  },
+  "limits": [
+    "No tests, browser, build, secrets, database, or installed-extension native acceptance were run by this reviewer.",
+    "The valid resource journals and test pass count are corroborated records, not a fresh test execution by this reviewer.",
+    "The prior guard ran before a newer package/lock merge; those journals do not certify the current dependency tree or native runtime."
+  ]
+}
