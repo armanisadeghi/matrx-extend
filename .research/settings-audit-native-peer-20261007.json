@@ -30,8 +30,61 @@
     }
   },
   "audit_admin": {
-    "status": "pending_exact_run_evidence",
     "run_id": 37699585477,
-    "note": "Admin audit-key verdict will be added after the selected native receipt is available; no claim is made from prior audit runs."
+    "job_id": 113059580715,
+    "verdict_A_scope_acceptance": {
+      "status": "partial_for_inventory; native_driver_pass",
+      "source": "Frozen CI development artifact from run 37698216289, artifact 11516342905, source 52487361b1b6a8663b958dbb2196cbcc9b1af31c, tree SHA256 04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793; workflow checkout 94d1eeae44c6830acf7ae9f1911e572dd58ee413 is the harness revision.",
+      "setup_identity": "The curated run states real web and extension admin sign-in, matched rendered email/profile/admin role/organization identity, and runtime extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml. The selected artifact receipt/provenance and native result match source SHA, version 0.2.391, tree hash, and artifact ID. The staged approved organization secret is setup only; the audit-key runner did not assert approved-organization selection.",
+      "crypto": "Native result reports seven passing cases. Actual product verifier outcomes accept genuine signed receipts and reject tampered copies for T87 and T89, and for all three T90 key generations in both reloaded extension contexts. Browser-native WebCrypto and Web Locks are used for signing and concurrent rotation; storage/clipboard boundaries are controlled for failure cases.",
+      "ui": "Structured Audit key card assertions support visible read/export/rotation errors, retry, disabled controls, and recovery. The screenshots are harness setup images and do not independently show the Audit key card, receipt rows, or filter states.",
+      "inventory_cases": {
+        "T27": "partial: normal public ID creation time, receipt count, recent rows, filter-supported comparisons, and warm/reload display comparison were not asserted.",
+        "T60": "pass: clipboard refusal, visible failure, retry, public-JWK-only copy and unchanged storage.",
+        "T61": "partial: confirmed rotation is exercised, but cancel confirmation and unchanged key before confirmation were not.",
+        "T62": "not_run: origin filters, matching row/count changes, all restoration, and empty-origin state are absent.",
+        "T86": "pass_with_limit: read failure and details-only retry recover the public ID with zero active writes; separate rotate-invocation count is absent.",
+        "T87": "pass: rejected history write preserves key, then separate confirmed rotation retains prior receipt verification and rejects tampering.",
+        "T88": "pass: one active write, failed refresh, details recovery and reloaded new identity without another rotation.",
+        "T89": "pass: uncertain persisted write blocks re-key, read-only recovery and reload retain the new key, and prior receipt still verifies while altered copy fails.",
+        "T90": "pass: overlapping same-origin rotations queue under native Web Locks; three distinct signed generations verify and tampered copies fail in both reloaded contexts.",
+        "T91": "partial: unavailable-lock load/export/rotation state and unchanged history are exercised after authenticated-shell mount; cold auth-shell startup and ordinary retryable-failure branch are not shown."
+      },
+      "limit": "No inventory promotion, full Settings, Store package, or overall extension-health claim follows from this selected run."
+    },
+    "verdict_B_evidence_quality": {
+      "status": "pass_with_explicit_evidence_limits",
+      "evidence": [
+        ".research/audit-selected-native-20261007.json",
+        ".research/audit-selected-native-evidence/receipts/audit-key-native-result.json (SHA256 7b673657ec853e66343a12de1cfa0890c48ef38cf409b70f119887ca99277179)",
+        ".research/audit-selected-native-evidence/receipts/ci-build-receipt.json (SHA256 d8b29a5eb04a778400ffd595a0d71eae43873b28bcfcd1639b64572f0c8da490)",
+        ".research/audit-selected-native-evidence/receipts/ci-build-provenance.json (SHA256 950b326ca3800c8b350471c72a79a6adee25962fe71c66e1a8508ec521187a79)",
+        ".research/audit-selected-native-evidence/resource-journals/hosted-package-37699585477-1.jsonl (SHA256 7cf0acb117252e546b7b957227025a157784ead1dea1805df566cf48cb209c44)",
+        ".research/audit-selected-native-evidence/resource-journals/hosted-browser-37699585477-1.jsonl (SHA256 1dfe2566ab33457e9deea47c043459b2ae04eb4e5f03119bd68e203a601af02b)",
+        ".research/audit-selected-native-evidence/resource-journals/hosted-guest-37699585477-1.jsonl (SHA256 0c25af219dfbc47ebdcd97e0859e188bf902a6b7030edc5cb1fe502d98e911f6)",
+        "docs/stabilization/inventory.json EXT-F-1003-T27/T60/T61/T62/T86-T91"
+      ],
+      "quality": "Native result status is pass, the selected workflow completed successfully, and exact-run package/browser/guest journals each end with admitted=true, resourceInvalid=false, exitCode=0, decision=valid. Reported hashes match both curated journal copies and the original nested files in the downloaded artifact. The report correctly distinguishes selected product source from workflow checkout and native driver success from inventory completion.",
+      "original_uploaded_journals": {
+        "source_directory": "/private/tmp/audit-selected-native-20261007-37699585477/matrx-extend/matrx-extend/docs/stabilization/resource-journals",
+        "preserved_copy_directory": ".research/settings-audit-native-peer-20261007/original-resource-journals",
+        "package_sha256": "7cf0acb117252e546b7b957227025a157784ead1dea1805df566cf48cb209c44",
+        "browser_sha256": "1dfe2566ab33457e9deea47c043459b2ae04eb4e5f03119bd68e203a601af02b",
+        "guest_sha256": "0c25af219dfbc47ebdcd97e0859e188bf902a6b7030edc5cb1fe502d98e911f6",
+        "conclusion": "All three original nested upload files are byte-identical to the curated copies and independently support exact-run valid resource decisions."
+      },
+      "limitations": [
+        "Transient local-dev-receipt.json and import-status.json from the hosted importer were not archived. Original CI receipt/provenance, source/tree identity in the native result, and the artifact selection remain available.",
+        "No direct Audit card screenshot or receipt-dialog UI verification is present. Product verifier execution inside reloaded extension contexts supports the cryptographic claim, not receipt-dialog presentation.",
+        "Secret-name cleanup was verified independently by the parent task; this peer did not inspect or print credential values."
+      ],
+      "findings": [
+        {
+          "severity": "Important",
+          "location": ".research/audit-selected-native-20261007.json resource_admission.journal_recovery",
+          "finding": "The report says the uploaded artifact lacked journals and that its JSONL files were reconstructed from action logs. The full downloaded artifact contains the three exact-run original nested journals. Their bytes match the curated copies, so resource validity is supported, but the stated provenance is false and should be corrected before using this report as an audit record."
+        }
+      ]
+    }
   }
 }
