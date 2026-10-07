@@ -24,7 +24,9 @@
     ".research/showcase-picker-current-retest.json",
     ".research/showcase-reveal-native.json",
     ".research/d42-native-retest-20261007.json",
-    ".research/native-batch-evidence-peer-20261007.json"
+    ".research/native-batch-evidence-peer-20261007.json",
+    ".research/picker-channels-native-20261007.json",
+    ".research/picker-channels-native-peer-20261007.json"
   ],
   "severity": "S2: a superseded picker may overwrite the current extraction definition or terminate the current pick",
   "priority": "P1: Showcase reliable detection and extraction lifecycle",
@@ -51,6 +53,13 @@
     }
   ],
   "closure_requirement": "Prove the delayed old-session boundary red before repair, then prove current-session detection and extraction plus old-session rejection green. Check identity through every SW relay, delayed cancellation, pending injection, and cross-context listener teardown. Run changed types and obtain independent installed-extension verification against real page data before closure.",
-  "verification_status": "Native37692910351 frozen development0.2.388/source91e15220/artifact11512366176 independently confirms stale A EXIT rejection through stamped relay while current B stays picking, B detection/field selection/Done and three expected fixture rows, repick Cancel and normal click. All three current journals valid. Refreshes earlier0.2.307 bounded evidence; not new coverage of missing races. ITEM_DETECTED/RESULT stale delivery, delayed cancellation, deferred installation, reinjection listener count, and signed-in nonadmin remain unverified. D42 remains in-fix.",
-  "next_action": "Implement and independently validate missing original stale ITEM_DETECTED/RESULT and cancellation/reinjection test channels before another D42 native batch; do not repeat only EXIT as if it closes original scope."
+  "verification_status": "Native37697860472 frozen development0.2.388/source91e15220/artifact11512366176 independently passes genuine stale A ITEM_DETECTED and RESULT through stamped same-tab/document relays, separately, while current B survives and extracts3expected rows in each cycle. Existing EXIT/current extraction/repick Cancel/normal click also pass; all3 current resource journals valid. Delayed cancellation, deferred installation, reinjection listener count and signed-in nonadmin remain unverified. D42 stays in-fix.",
+  "next_action": "Extend native coverage for delayed cancellation, deferred installation, reinjection/listener teardown and nonadmin; do not repeat only already-proven stale event channels.",
+  "latest_retest": {
+    "run_id": "37697860472",
+    "status": "bounded-pass",
+    "reviewer": "root/picker_channels_native_peer",
+    "root_temporary_secret_name_count_after_terminal": 0,
+    "observed_at": "2026-10-07T22:54:04.758540+00:00"
+  }
 }

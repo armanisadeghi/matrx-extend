@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-07T22:43:08.259405+00:00",
+  "updated_at": "2026-10-07T22:54:04.758540+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -19494,6 +19494,19 @@
               ],
               "detail": "Refresh of bounded stale EXIT rejection/current B extraction and repick cancellation; not full case acceptance. Other stale channels, delayed cancel/deferred install/reinjection/nonadmin remain unverified.",
               "acceptance_credit": "bounded substeps only"
+            },
+            {
+              "mode": "admin",
+              "status": "partial",
+              "run_id": "37697860472",
+              "build_version": "0.2.388",
+              "source_sha": "91e152208490a05c3dc1f15bdadbdaafc80dad64",
+              "evidence": [
+                ".research/picker-channels-native-20261007.json",
+                ".research/picker-channels-native-peer-20261007.json"
+              ],
+              "detail": "New stale ITEM_DETECTED/RESULT rejection with positive B selection/extraction3rows each; all3 resources valid, independently reviewed. Remaining lifecycle races/nonadmin and broader case dimensions unverified.",
+              "acceptance_credit": "bounded new substeps only"
             }
           ]
         },
@@ -20107,6 +20120,19 @@
               ],
               "detail": "Refresh of bounded stale EXIT rejection/current B extraction and repick cancellation; not full case acceptance. Other stale channels, delayed cancel/deferred install/reinjection/nonadmin remain unverified.",
               "acceptance_credit": "bounded substeps only"
+            },
+            {
+              "mode": "admin",
+              "status": "partial",
+              "run_id": "37697860472",
+              "build_version": "0.2.388",
+              "source_sha": "91e152208490a05c3dc1f15bdadbdaafc80dad64",
+              "evidence": [
+                ".research/picker-channels-native-20261007.json",
+                ".research/picker-channels-native-peer-20261007.json"
+              ],
+              "detail": "New stale ITEM_DETECTED/RESULT rejection with positive B selection/extraction3rows each; all3 resources valid, independently reviewed. Remaining lifecycle races/nonadmin and broader case dimensions unverified.",
+              "acceptance_credit": "bounded new substeps only"
             }
           ]
         },
