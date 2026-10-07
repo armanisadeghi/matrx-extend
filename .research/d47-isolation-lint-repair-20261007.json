@@ -1,0 +1,12 @@
+{
+  "scope": "Final lint repair only",
+  "failed_ci": 37575225008,
+  "cause": "Biome organizeImports in new manual isolation test",
+  "fix_commit": "68be29c8",
+  "change": "Moved useNetworkCapture import before bootstrapBackground; module set and test body unchanged.",
+  "verification": {
+    "before": "d47-final-lint-errors-20261007 admitted resource-valid child failure reporting exactly import ordering error",
+    "after": "d47-final-lint-green-20261007 admitted valid exit0 for pnpm exec biome check --diagnostic-level=error ."
+  },
+  "limits": "No new native verification. Exact test-file hash changed for import ordering; earlier guard evidence remains bound to recorded test bytes. Automatic CI tracked separately."
+}
