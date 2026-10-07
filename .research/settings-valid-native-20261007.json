@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1003-T46",
+  "status": "bounded_pass",
+  "claim_scope": "One signed-out guest native Chrome side-panel run against one frozen successful development artifact. This is not a global Settings pass, current-main health claim, or healthy-engine connectivity claim.",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37699338786",
+    "run_id": 37699338786,
+    "job_id": 113058758927,
+    "job": "guest",
+    "status": "completed",
+    "conclusion": "success",
+    "started_at": "2026-10-07T22:57:01Z",
+    "completed_at": "2026-10-07T23:03:25Z",
+    "acceptance_lane": "B",
+    "acceptance_case": "settings-controls",
+    "role": "signed-out guest",
+    "runner_label": "macos-15",
+    "workflow_checkout_sha": "a03c0c5f522b7f542936c06a47c40a163ebd3d4e"
+  },
+  "selected_development_artifact": {
+    "run_id": 37695280574,
+    "artifact_id": 11514778541,
+    "artifact_name": "matrx-extend-development-test-d10719c667c87b578689f1cdecf23e2a637d3207-37695280574-1",
+    "artifact_digest": "sha256:d2024da1ed21473068b2f7a65dee0e495b5efb88245e35f715e0860512536990",
+    "expired": false,
+    "ci_conclusion": "success",
+    "source_sha": "d10719c667c87b578689f1cdecf23e2a637d3207",
+    "version": "0.2.391",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "39c001784e5566e54c5862f3db31f5688aafead51c418b7c52ccc3ec1c924410",
+    "identity_distinction": "The workflow checkout SHA identifies the acceptance harness revision; source_sha/tree_sha256 identify the separately frozen product artifact."
+  },
+  "native_outcome": {
+    "case_status": "pass",
+    "criteria_passed": 8,
+    "criteria_total": 8,
+    "observations": [
+      "Initial override was null; saving 65001 persisted and read back after Settings Page.reload.",
+      "Ports 1 and 65535 each saved and read back after Settings Page.reload.",
+      "Submitting 65536 displayed “Port must be 1–65535.” and retained saved port 65535.",
+      "Blank input cleared the override and stale error; null remained after Settings Page.reload.",
+      "Save triggered observed desktop worker rediscovery entry and post-probe broadcast, followed by GET /health."
+    ],
+    "evidence_report": {
+      "path": "settings-valid-native-20261007/evidence/raw/settings-local-controls-acceptance.json",
+      "sha256": "7be8a18491dd65c1a265e8ecd77191982277fcdf52f16ace3c6541565e6169e6",
+      "whole_report_status": "unverified",
+      "scope_note": "The broad driver report includes T22 and T37 passes, T46 pass, and T70 unverified branches. Only T46 is claimed here."
+    },
+    "limitations": [
+      "Settings Page.reload is not a full extension Reload.",
+      "The fixture intentionally returns HTTP 503, so this run does not establish healthy desktop-engine connectivity.",
+      "The two uploaded screenshots show setup surfaces, not final T46 state."
+    ]
+  },
+  "resource_verdict": {
+    "status": "valid",
+    "invalidation": false,
+    "journals": [
+      {
+        "path": "settings-valid-native-20261007/evidence/raw/resource-journals/hosted-package-37699338786-1.jsonl",
+        "sha256": "fe0e9670b781a85d7c003c862a4588b7f68d31bfade57384ae6ea059e0e702ca",
+        "final_decision": "valid",
+        "exit_code": 0
+      },
+      {
+        "path": "settings-valid-native-20261007/evidence/raw/resource-journals/hosted-browser-37699338786-1.jsonl",
+        "sha256": "d136bec4f5514aee9aba0363d5706405170fb52ad3219e0e55cb1d58c379bf56",
+        "final_decision": "valid",
+        "exit_code": 0
+      },
+      {
+        "path": "settings-valid-native-20261007/evidence/raw/resource-journals/hosted-guest-37699338786-1.jsonl",
+        "sha256": "261eac21d7c1a6600558c5ae9ffbc6b63cf9cee2bac6b38a106409eb8469613b",
+        "final_decision": "valid",
+        "exit_code": 0
+      }
+    ],
+    "note": "All three exact-run nested journals end with RESOURCE_FINAL_DECISION valid, resourceInvalid=false, exitCode=0. Stale 371053 journals present in the downloaded artifact are retained only in the untouched download tree and excluded from this verdict."
+  },
+  "native_artifact": {
+    "artifact_id": 11517520277,
+    "artifact_name": "hosted-guest-37699338786-1",
+    "digest": "sha256:dafb50b38ebe55a84b5572924eee7dc7b2a62d9800225fdf1b63224526c6f8e9",
+    "expired": false,
+    "screenshots": [
+      {
+        "path": "settings-valid-native-20261007/evidence/screenshots/native-side-panel.png",
+        "sha256": "e057f1b26a910b74f7f87b4255fd33454ef2462051d610d33f014c419f78ea13",
+        "observation": "Signed-out guest side panel setup view."
+      },
+      {
+        "path": "settings-valid-native-20261007/evidence/screenshots/normal-target-after-open.png",
+        "sha256": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89",
+        "observation": "Normal browser target after opening the side panel; setup view."
+      }
+    ]
+  }
+}
