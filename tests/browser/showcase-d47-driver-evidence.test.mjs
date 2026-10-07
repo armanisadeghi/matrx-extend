@@ -1,11 +1,13 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
+  assessD47StaleTrace,
   assessD47Trace,
   cleanupD47Probe,
   discoveryTerminal,
   sanitizeD47Failure,
 } from './showcase-d47-driver-evidence.mjs';
+import { isD47StaleRefusal } from './showcase-d47-saved-result.mjs';
 
 const origin = 'http://127.0.0.1:4179';
 const oldPageContext = { unique_id: 'old-unique', frame_id: 'main' };
@@ -80,6 +82,69 @@ test('current request provenance accepts both Chrome event orderings and context
     assessD47Trace(trace('context_destroyed', 7), options).current_packet_before_commit,
     true,
   );
+});
+
+test('stale-only provenance requires a current nonmatching packet and refuses any matching target', () => {
+  const probe = trace().map((event) => ({ ...event }));
+  probe[5] = {
+    ...probe[5],
+    target_packet: false,
+    probe_packet: true,
+    url: `${origin}/api/race-warmup`,
+    current_payload: false,
+    body_sha256: 'b'.repeat(64),
+  };
+  const staleOptions = { ...options, expectedBodySha256: 'b'.repeat(64) };
+  assert.equal(assessD47StaleTrace(probe, staleOptions).ok, true);
+  for (const change of [
+    (events) => {
+      events[5].target_packet = true;
+    },
+    (events) => {
+      events[5].probe_packet = false;
+    },
+    (events) => {
+      events[5].body_sha256 = 'c'.repeat(64);
+    },
+    (events) => {
+      events[5].request_sequence = 3;
+    },
+    (events) => {
+      events[3].handshake = false;
+    },
+    (events) => {
+      events[5].context_id = 9;
+    },
+  ]) {
+    const changed = probe.map((event) => ({ ...event }));
+    change(changed);
+    assert.equal(assessD47StaleTrace(changed, staleOptions).ok, false);
+  }
+});
+
+test('stale-only terminal cannot be certified by silence, a wrong error, or a stale preview', () => {
+  const exact = {
+    refusal: true,
+    error_count: 1,
+    running: false,
+    observation_unavailable: false,
+    current_row: false,
+    old_row: false,
+    header_status: 'absent',
+    preview_status: 'absent',
+  };
+  assert.equal(isD47StaleRefusal(exact), true);
+  for (const change of [
+    { refusal: false },
+    { error_count: 0 },
+    { running: true },
+    { observation_unavailable: true },
+    { current_row: true },
+    { old_row: true },
+    { header_status: 'exact' },
+    { preview_status: 'old_only' },
+  ])
+    assert.equal(isD47StaleRefusal({ ...exact, ...change }), false);
 });
 
 test('trace refuses swapped request identity, old payload and absent positive control', () => {

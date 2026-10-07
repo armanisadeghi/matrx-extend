@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-07T05:13:44.245852+00:00",
+  "updated_at": "2026-10-07T05:31:12.930287+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -24,7 +24,10 @@
     ".research/inventory-current-catalog-delta-20261007.json",
     ".research/inventory-catalog-delta-peer-20261007.json",
     ".research/cookie-procedures-20261007.json",
-    ".research/cookie-procedures-peer-20261007.json"
+    ".research/cookie-procedures-peer-20261007.json",
+    ".research/clipboard-procedures-20261007.json",
+    ".research/clipboard-procedures-peer-20261007.json",
+    ".research/clipboard-final-peer-20261007.json"
   ],
   "features": [
     {
@@ -52853,16 +52856,39 @@
           ],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Use a dedicated test OS account or test machine whose system clipboard is disposable. A disposable Chrome profile does not isolate the OS clipboard, which is shared across profiles and applications.",
+            "Do not inspect, copy, screenshot, or record the clipboard before starting. The positive setup overwrites it with the exact owned synthetic string below. Do not run these procedures in a user's ordinary OS session.",
+            "Use the already installed/available development extension artifact. Reload that existing artifact and confirm its extension identity matches the known development build before use; do not build, package, install, or change identity for this procedure. If there is no known existing development artifact, leave runtime unverified.",
+            "If no dedicated disposable OS clipboard is available, do not execute the positive case: there is no safe way to test these system clipboard handlers without changing shared OS state. Report this fixture constraint; do not treat a Chrome profile as isolation.",
+            "For each of the three cases, reload the already identified development extension, reopen Tools > Catalog, choose All handlers, locate the exact handler, and record its visible availability and displayed schema before execution. Record the declared and granted permission state relevant to that handler from the existing build/Settings > Advanced agent capabilities; do not infer runtime denial from a direct-runner failure. If reload or permission state cannot be checked safely, mark that dimension unverified with the reason.",
+            "After each reload/navigation to Settings or the runner, reselect the owned HTTPS test tab and verify it is still the focused tab immediately before Run. Never proceed on uncertain target or focus.",
+            "On the dedicated disposable OS clipboard only, use the unique exact synthetic value MATRIX_CLIPBOARD_TEST_20261007_A. This value is owned by this procedure; do not capture any prior value.",
+            "The runner parses JSON, safe-parses the local schema, then calls handler.run directly with permissionMode=act and assignedTabId=null. It bypasses dispatcher approval and role enforcement. Handler execution here does not prove dispatcher behavior, approval/denial behavior, role denial, or live tool binding. Source note: src/lib/tools/dispatch.ts:792-803 contains the optional-permission dispatcher check, while ToolsView.tsx:453-462 directly calls handler.run; therefore a manual-run failure is recorded exactly as observed and is not labeled dispatcher denial.",
+            "Immediately before EVERY Run (positive, invalid, fixture setup, and cleanup), confirm the intended ordinary public HTTPS test tab is selected in the test Chrome window. Record only its owned test URL, never page content. If target or focus is uncertain, stop before Run. The manual context resolves the focused current-window tab at execution time."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Satisfy shared_safety_precondition; focus the ordinary public HTTPS test page and open Tools > Catalog > All handlers > set_clipboard.",
+            "Enter exactly {\"text\":\"MATRIX_CLIPBOARD_TEST_20261007_A\"} and click Run.",
+            "Expect output {\"ok\":true}. The clipboard now contains the synthetic test value; do not inspect or report any other value.",
+            "Run invalid input {\"text\":42}. Expected: Schema mismatch before handler.run; clipboard is not changed by this invalid input.",
+            "For this case, reload the existing identified development extension; reopen Tools > Catalog > All handlers > set_clipboard. Before execution, record visible availability and displayed schema. Record relevant declared/granted permission state; if not inspectable safely, mark that dimension unverified with the reason.",
+            "After each case, clear only the owned synthetic clipboard fixture using set_clipboard {\"text\":\"\"} in the disposable OS session with the owned HTTPS tab focused. Record the exact result; do not claim restoration of prior contents. If clearing fails, record cleanup as unverified and retry through an owned local action; harmless synthetic text does not require quarantining the OS account."
+          ],
+          "expected": [
+            "Expect output {\"ok\":true}. The clipboard now contains the synthetic test value; do not inspect or report any other value.",
+            "Schema mismatch before handler.run; clipboard is not changed by this invalid input.",
+            "Record direct-handler results only; runtime, dispatcher/role denial, permission enforcement and reload dimensions remain unverified until exercised."
+          ],
           "dimensions": [
             "valid-input",
             "invalid-input",
             "permissions",
             "reload"
+          ],
+          "procedure_evidence": [
+            ".research/clipboard-procedures-20261007.json",
+            ".research/clipboard-procedures-peer-20261007.json",
+            ".research/clipboard-final-peer-20261007.json"
           ]
         }
       ],
@@ -68642,16 +68668,43 @@
           ],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Use a dedicated test OS account or test machine whose system clipboard is disposable. A disposable Chrome profile does not isolate the OS clipboard, which is shared across profiles and applications.",
+            "Do not inspect, copy, screenshot, or record the clipboard before starting. The positive setup overwrites it with the exact owned synthetic string below. Do not run these procedures in a user's ordinary OS session.",
+            "Use the already installed/available development extension artifact. Reload that existing artifact and confirm its extension identity matches the known development build before use; do not build, package, install, or change identity for this procedure. If there is no known existing development artifact, leave runtime unverified.",
+            "If no dedicated disposable OS clipboard is available, do not execute the positive case: there is no safe way to test these system clipboard handlers without changing shared OS state. Report this fixture constraint; do not treat a Chrome profile as isolation.",
+            "For each of the three cases, reload the already identified development extension, reopen Tools > Catalog, choose All handlers, locate the exact handler, and record its visible availability and displayed schema before execution. Record the declared and granted permission state relevant to that handler from the existing build/Settings > Advanced agent capabilities; do not infer runtime denial from a direct-runner failure. If reload or permission state cannot be checked safely, mark that dimension unverified with the reason.",
+            "After each reload/navigation to Settings or the runner, reselect the owned HTTPS test tab and verify it is still the focused tab immediately before Run. Never proceed on uncertain target or focus.",
+            "Requires the shared disposable OS clipboard fixture. First run set_clipboard with {\"text\":\"MATRIX_CLIPBOARD_TEST_20261007_A\"} and require {\"ok\":true}; do not use or record whatever was present before setup.",
+            "The runner parses JSON, safe-parses the local schema, then calls handler.run directly with permissionMode=act and assignedTabId=null. It bypasses dispatcher approval and role enforcement. Handler execution here does not prove dispatcher behavior, approval/denial behavior, role denial, or live tool binding. Source note: src/lib/tools/dispatch.ts:792-803 contains the optional-permission dispatcher check, while ToolsView.tsx:453-462 directly calls handler.run; therefore a manual-run failure is recorded exactly as observed and is not labeled dispatcher denial.",
+            "Immediately before EVERY Run (positive, invalid, fixture setup, and cleanup), confirm the intended ordinary public HTTPS test tab is selected in the test Chrome window. Record only its owned test URL, never page content. If target or focus is uncertain, stop before Run. The manual context resolves the focused current-window tab at execution time."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Satisfy shared_safety_precondition, complete set_clipboard fixture setup, focus the ordinary public HTTPS page, and open Tools > Catalog > All handlers > get_clipboard.",
+            "In Settings > Advanced agent capabilities, verify clipboardRead state and record whether it was already granted. If absent, grant it there in the disposable test profile before running; the manual runner bypasses the dispatcher optional-permission gate, so do not expect it to report clipboardRead unavailable. Record any Run failure exactly as observed and do not label it dispatcher denial.",
+            "Immediately before Run, confirm the intended owned public HTTPS test tab is selected in the test Chrome window; record only its owned test URL, no page content. If target or focus is uncertain, stop. Enter exactly {\"trim\":false,\"max_chars\":100000} and click Run.",
+            "Expect ok=true, text exactly MATRIX_CLIPBOARD_TEST_20261007_A, byte_length exactly 32 (UTF-8 bytes for this ASCII fixture), and truncated=false. This asserts only the owned fixture value.",
+            "Run invalid input {\"trim\":\"false\"}. Expected: Schema mismatch before handler.run.",
+            "Run invalid input {\"max_chars\":0}. Expected: Schema mismatch before handler.run.",
+            "For this case, reload the existing identified development extension; reopen Tools > Catalog > All handlers > get_clipboard. Before execution, record visible availability and displayed schema. In Settings > Advanced agent capabilities, check clipboardRead state and record whether it is declared by the current extension build and already granted. If absent, grant clipboardRead there in the disposable test profile before the positive run; do not wait for the manual runner to report unavailable, because this runner bypasses dispatch.ts optional-permission gate. Record any run failure exactly as observed; do not call it dispatcher denial. If state cannot be safely inspected or granted, leave that permission dimension unverified with the reason. See src/lib/tools/dispatch.ts:792-803 and src/features/tools/ToolsView.tsx:453-462.",
+            "After each case, clear only the owned synthetic clipboard fixture using set_clipboard {\"text\":\"\"} in the disposable OS session with the owned HTTPS tab focused. Record the exact result; do not claim restoration of prior contents. If clearing fails, record cleanup as unverified and retry through an owned local action; harmless synthetic text does not require quarantining the OS account."
+          ],
+          "expected": [
+            "In Settings > Advanced agent capabilities, verify clipboardRead state and record whether it was already granted. If absent, grant it there in the disposable test profile before running; the manual runner bypasses the dispatcher optional-permission gate, so do not expect it to report clipboardRead unavailable. Record any Run failure exactly as observed and do not label it dispatcher denial.",
+            "Expect ok=true, text exactly MATRIX_CLIPBOARD_TEST_20261007_A, byte_length exactly 32 (UTF-8 bytes for this ASCII fixture), and truncated=false. This asserts only the owned fixture value.",
+            "Schema mismatch before handler.run.",
+            "Schema mismatch before handler.run.",
+            "Record direct-handler results only; runtime, dispatcher/role denial, permission enforcement and reload dimensions remain unverified until exercised."
+          ],
           "dimensions": [
             "valid-input",
             "invalid-input",
             "permissions",
             "reload"
+          ],
+          "procedure_evidence": [
+            ".research/clipboard-procedures-20261007.json",
+            ".research/clipboard-procedures-peer-20261007.json",
+            ".research/clipboard-final-peer-20261007.json"
           ]
         }
       ],
@@ -70820,16 +70873,44 @@
           ],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Use a dedicated test OS account or test machine whose system clipboard is disposable. A disposable Chrome profile does not isolate the OS clipboard, which is shared across profiles and applications.",
+            "Do not inspect, copy, screenshot, or record the clipboard before starting. The positive setup overwrites it with the exact owned synthetic string below. Do not run these procedures in a user's ordinary OS session.",
+            "Use the already installed/available development extension artifact. Reload that existing artifact and confirm its extension identity matches the known development build before use; do not build, package, install, or change identity for this procedure. If there is no known existing development artifact, leave runtime unverified.",
+            "If no dedicated disposable OS clipboard is available, do not execute the positive case: there is no safe way to test these system clipboard handlers without changing shared OS state. Report this fixture constraint; do not treat a Chrome profile as isolation.",
+            "For each of the three cases, reload the already identified development extension, reopen Tools > Catalog, choose All handlers, locate the exact handler, and record its visible availability and displayed schema before execution. Record the declared and granted permission state relevant to that handler from the existing build/Settings > Advanced agent capabilities; do not infer runtime denial from a direct-runner failure. If reload or permission state cannot be checked safely, mark that dimension unverified with the reason.",
+            "After each reload/navigation to Settings or the runner, reselect the owned HTTPS test tab and verify it is still the focused tab immediately before Run. Never proceed on uncertain target or focus.",
+            "Requires the shared disposable OS clipboard fixture. Use only the synthetic string MATRIX_CLIPBOARD_TEST_20261007_A and never inspect or record pre-test clipboard content.",
+            "The runner parses JSON, safe-parses the local schema, then calls handler.run directly with permissionMode=act and assignedTabId=null. It bypasses dispatcher approval and role enforcement. Handler execution here does not prove dispatcher behavior, approval/denial behavior, role denial, or live tool binding. Source note: src/lib/tools/dispatch.ts:792-803 contains the optional-permission dispatcher check, while ToolsView.tsx:453-462 directly calls handler.run; therefore a manual-run failure is recorded exactly as observed and is not labeled dispatcher denial.",
+            "Immediately before EVERY Run (positive, invalid, fixture setup, and cleanup), confirm the intended ordinary public HTTPS test tab is selected in the test Chrome window. Record only its owned test URL, never page content. If target or focus is uncertain, stop before Run. The manual context resolves the focused current-window tab at execution time."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Satisfy shared_safety_precondition, focus the ordinary public HTTPS test page, and open Tools > Catalog > All handlers > clipboard.",
+            "Write case: enter exactly {\"action\":\"write\",\"text\":\"MATRIX_CLIPBOARD_TEST_20261007_A\"}; click Run and expect {\"ok\":true}.",
+            "Read case: enter exactly {\"action\":\"read\"}; click Run and expect {\"ok\":true,\"text\":\"MATRIX_CLIPBOARD_TEST_20261007_A\"}.",
+            "Clear the synthetic fixture after this case using set_clipboard {\"text\":\"\"} and expect {\"ok\":true}; this clears the test value but does not restore a prior value.",
+            "Run invalid input {\"action\":\"erase\"}. Expected: Schema mismatch before handler.run because action is outside read/write.",
+            "Run invalid input {\"action\":\"write\"}. Expected: Schema-valid; handler returns {\"ok\":false,\"reason\":\"text required for action='write'\"} without writing.",
+            "For this case, reload the existing identified development extension; reopen Tools > Catalog > All handlers > clipboard. Before execution, record visible availability and displayed schema. Record the handler relevant declared/granted permission state (including whether clipboardRead is declared/granted, if shown); this handler has no required_optional_permissions declaration. Record exact run failures and do not infer that granting clipboardRead proves this route. If permission state cannot be inspected safely, mark that dimension unverified with the reason.",
+            "After each case, clear only the owned synthetic clipboard fixture using set_clipboard {\"text\":\"\"} in the disposable OS session with the owned HTTPS tab focused. Record the exact result; do not claim restoration of prior contents. If clearing fails, record cleanup as unverified and retry through an owned local action; harmless synthetic text does not require quarantining the OS account."
+          ],
+          "expected": [
+            "Write case: enter exactly {\"action\":\"write\",\"text\":\"MATRIX_CLIPBOARD_TEST_20261007_A\"}; click Run and expect {\"ok\":true}.",
+            "Read case: enter exactly {\"action\":\"read\"}; click Run and expect {\"ok\":true,\"text\":\"MATRIX_CLIPBOARD_TEST_20261007_A\"}.",
+            "Clear the synthetic fixture after this case using set_clipboard {\"text\":\"\"} and expect {\"ok\":true}; this clears the test value but does not restore a prior value.",
+            "Schema mismatch before handler.run because action is outside read/write.",
+            "Schema-valid; handler returns {\"ok\":false,\"reason\":\"text required for action='write'\"} without writing.",
+            "Record direct-handler results only; runtime, dispatcher/role denial, permission enforcement and reload dimensions remain unverified until exercised."
+          ],
           "dimensions": [
             "valid-input",
             "invalid-input",
             "permissions",
             "reload"
+          ],
+          "procedure_evidence": [
+            ".research/clipboard-procedures-20261007.json",
+            ".research/clipboard-procedures-peer-20261007.json",
+            ".research/clipboard-final-peer-20261007.json"
           ]
         }
       ],

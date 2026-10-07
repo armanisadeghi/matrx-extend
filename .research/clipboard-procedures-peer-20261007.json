@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "artifact_type": "clipboard-manual-procedures-peer-review",
+  "reviewed_artifact": ".research/clipboard-procedures-20261007.json",
+  "reviewed_commit": "118ba23f",
+  "runtime_status": "unverified",
+  "a_procedure_review": {
+    "verdict": "Source-grounded and usable for controlled direct handler checks after the corrections below; no runtime result is claimed.",
+    "confirmed": [
+      "The three existing T01 IDs, their controls, and member/admin modes match docs/stabilization/inventory.json. The proposals preserve access metadata and do not claim a new role result.",
+      "set_clipboard accepts {text:string}; get_clipboard accepts optional boolean trim and positive integer max_chars <= 1000000; clipboard accepts action=read|write and optional text. The proposed valid and invalid JSON inputs follow those schemas and the write-without-text runtime branch.",
+      "Tools > Catalog defaults to canonical surface; All handlers exposes internal set_clipboard and get_clipboard. The runner JSON-parses and Zod-validates, then invokes handler.run with permissionMode=act and assignedTabId=null. The assigned-tab helper then uses the focused tab.",
+      "The fixture uses one owned synthetic value on a disposable OS clipboard and never samples the previous clipboard. Chrome profile separation alone is insufficient. Clearing with set_clipboard {text:\"\"} is a destructive cleanup of the disposable clipboard, not restoration.",
+      "The positive expected objects match the successful handler return paths. Actual Chrome clipboard success still depends on browser focus, permission, document context and the selected build; it is unverified."
+    ],
+    "required_corrections": [
+      {
+        "id": "P1",
+        "issue": "The get_clipboard optional-permission step says to wait until the extension reports clipboardRead unavailable. The Tools manual runner bypasses dispatch.ts optional-permission gate and calls handler.run directly, so that specific diagnostic is not assured. Its failure could instead be an in-page clipboard error or a thrown scripting error.",
+        "action": "Before the get_clipboard positive run, verify clipboardRead state in Settings > Advanced agent capabilities and grant it there if absent, on the disposable test profile. Record whether it was already granted. Treat a manual-run failure as its exact observed error, without calling it dispatcher denial. Cite dispatch.ts:792-803 and ToolsView.tsx:453-462."
+      },
+      {
+        "id": "P2",
+        "issue": "Inventory T01 dimensions include permissions and reload for all three cases, but the proposed steps exercise only valid and invalid input, and conditional permission setup for get_clipboard. The precondition says reload an existing artifact, but there is no explicit post-reload result to record.",
+        "action": "Add a non-invasive reload observation for each case: reload the existing identified development extension, reopen Tools > Catalog, locate the exact handler under All handlers, and record visible availability and schema before execution. For permission dimensions, record declared/granted state and any exact run error; do not claim denial behavior from the direct runner. If permission or reload cannot be tested safely, mark that dimension unverified with the reason."
+      },
+      {
+        "id": "P3",
+        "issue": "The procedures say focus a public HTTPS page but do not explicitly verify it remains the focused target immediately before each Run. Manual context resolves active current-window tab at execution time, and a sidepanel/Settings interaction may change focus.",
+        "action": "Immediately before every positive read or write, confirm the intended ordinary HTTPS tab is selected in the test Chrome window; record only its owned test URL and no page content. If target or focus is uncertain, stop before Run."
+      },
+      {
+        "id": "P4",
+        "issue": "The cleanup directions are spread across individual cases and do not say what to do if set_clipboard cleanup itself fails after a read/write branch. The shared safety rule correctly avoids inspecting the unknown prior value.",
+        "action": "Use one final cleanup instruction for the disposable OS context: attempt set_clipboard {text:\"\"}, capture its exact result, and if it fails leave that OS context out of use until its clipboard can be cleared through an owned local action. Do not claim a prior value was restored."
+      }
+    ],
+    "case_specific_notes": {
+      "EXT-F-4059-T01": "The positive {text:synthetic} and invalid {text:42} inputs are correct. Its success only proves the direct handler wrote in the selected test context.",
+      "EXT-F-4144-T01": "The expected byte_length is 32 for MATRIX_CLIPBOARD_TEST_20261007_A (ASCII); make the number explicit. trim=false and max_chars=100000 are valid; invalid trim string and max_chars=0 fail Zod before the handler. This handler uses MAIN-world read and declares clipboardRead optional permission.",
+      "EXT-F-4155-T01": "The write delegates to set_clipboard; read uses its own injected navigator.clipboard.readText. It does not declare required_optional_permissions. Record exact read failure if any; do not infer that granting clipboardRead proves this route. tierFor reports read for action=read and action for action=write, but the manual runner bypasses tier-based approval."
+    }
+  },
+  "b_quality_verdict": {
+    "verdict": "Revise, then suitable as proposed manual procedure text; not a completed test or role/permission verdict.",
+    "strengths": [
+      "Narrow scope is exactly the three existing T01 cases and existing controls.",
+      "Exact valid and invalid JSON plus expected handler result shapes make the procedures repeatable.",
+      "Disposable OS clipboard fixture and synthetic-only read expectation avoid capturing unrelated clipboard data.",
+      "The runner limitation correctly excludes dispatcher approval, Ask/Act denial, role authorization, and live binding claims."
+    ],
+    "remaining_evidence": "No browser execution, build receipt, OS fixture, Chrome permission state, reload observation, or member/admin run was observed in this peer review. Keep both roles and runtime marked unverified until recorded evidence exists."
+  },
+  "source_refs": [
+    "docs/stabilization/inventory.json EXT-F-4059/4144/4155",
+    "src/features/tools/ToolsView.tsx:121-154,198-210,390-462",
+    "src/lib/tools/handlers/_active-tab.ts:20-42",
+    "src/lib/tools/handlers/action.ts:262-283",
+    "src/lib/tools/handlers/extras.ts:18-78",
+    "src/lib/tools/handlers/canonical.ts:613-651",
+    "src/lib/tools/dispatch.ts:784-803",
+    "src/lib/permissions/optional.ts:59-92",
+    "wxt.config.ts:69-79,129-136"
+  ]
+}

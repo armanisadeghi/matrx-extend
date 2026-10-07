@@ -92,3 +92,44 @@ export function readD47SavedRunState(doc, recipe) {
     observation_unavailable: !button || (button.disabled && !spinner),
   };
 }
+
+/** The saved replay's own terminal error and exact row, without panel-wide text. */
+export function readD47StaleRefusal(doc, recipe) {
+  const saved = readD47SavedResult(doc, recipe);
+  const run = readD47SavedRunState(doc, recipe);
+  const tab = [...doc.querySelectorAll('[role="tablist"] [role="tab"]')].find(
+    (element) => element.textContent.trim() === 'Patterns',
+  );
+  const pane = tab ? doc.getElementById(tab.getAttribute('aria-controls') ?? '') : null;
+  const visible = (element) =>
+    Boolean(element?.getClientRects().length) &&
+    doc.defaultView.getComputedStyle(element).visibility === 'visible';
+  const errors =
+    pane && tab.getAttribute('data-state') === 'active'
+      ? [...pane.querySelectorAll('.text-destructive')]
+          .filter(visible)
+          .map((element) => element.textContent.trim())
+      : [];
+  return {
+    ...saved,
+    ...run,
+    refusal:
+      errors.length === 1 &&
+      /No successful request matching/.test(errors[0]) &&
+      /Run again and interact with the page/.test(errors[0]),
+    error_count: errors.length,
+  };
+}
+
+export function isD47StaleRefusal(value) {
+  return (
+    value?.refusal === true &&
+    value.error_count === 1 &&
+    value.running === false &&
+    value.observation_unavailable === false &&
+    value.current_row === false &&
+    value.old_row === false &&
+    value.header_status === 'absent' &&
+    value.preview_status === 'absent'
+  );
+}

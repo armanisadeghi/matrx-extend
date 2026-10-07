@@ -111,6 +111,83 @@ export function assessD47Trace(observed, { origin, oldPageContext, expectedBodyS
   };
 }
 
+// Stale-only still needs a positive packet from the current document. The
+// nonmatching warmup proves the tap is active without manufacturing a target.
+export function assessD47StaleTrace(observed, { origin, oldPageContext, expectedBodySha256 }) {
+  assert.ok(Array.isArray(observed), 'trace_missing');
+  const fail = (reason) => ({ ok: false, reason });
+  const contexts = observed.filter((event) => event.kind === 'context_created');
+  const old = contexts.find(
+    (event) =>
+      event.unique_id === oldPageContext.unique_id && event.frame_id === oldPageContext.frame_id,
+  );
+  if (!old) return fail('old_context_identity_missing');
+  const targetPackets = observed.filter((event) => event.kind === 'binding' && event.target_packet);
+  if (targetPackets.length) return fail('stale_only_target_packet_observed');
+  const probes = observed.filter((event) => event.kind === 'binding' && event.probe_packet);
+  if (probes.length !== 1) return fail('current_probe_packet_missing');
+  const packet = probes[0];
+  const current = contexts.find(
+    (event) => event.id === packet.context_id && event.tab_id === packet.tab_id,
+  );
+  if (
+    !current?.unique_id ||
+    current.unique_id === old.unique_id ||
+    current.frame_id !== old.frame_id ||
+    current.order >= packet.order
+  )
+    return fail('current_context_identity_missing');
+  if (
+    packet.url !== `${origin}/api/race-warmup` ||
+    packet.method !== 'GET' ||
+    packet.source !== 'fetch' ||
+    packet.request_body_key !== 'none' ||
+    packet.status !== 200 ||
+    packet.request_sequence !== 1 ||
+    packet.body_sha256 !== expectedBodySha256
+  )
+    return fail('current_probe_identity_mismatch');
+  const handshake = observed.find(
+    (event) =>
+      event.kind === 'binding' &&
+      event.handshake &&
+      event.context_id === packet.context_id &&
+      event.binding_name === packet.binding_name &&
+      event.tab_id === packet.tab_id &&
+      event.order > current.order &&
+      event.order < packet.order,
+  );
+  if (!handshake) return fail('current_binding_handshake_missing');
+  const commit = observed.find(
+    (event) =>
+      event.kind === 'frame_navigated' &&
+      event.frame_id === current.frame_id &&
+      event.tab_id === current.tab_id &&
+      event.current_fixture &&
+      event.order > old.order,
+  );
+  if (!commit) return fail('current_frame_commit_missing');
+  const oldTerminal = observed.find(
+    (event) =>
+      event.tab_id === old.tab_id &&
+      event.order > old.order &&
+      event.order < packet.order &&
+      ((event.kind === 'context_destroyed' && event.id === old.id) ||
+        event.kind === 'contexts_cleared'),
+  );
+  if (!oldTerminal) return fail('old_context_terminal_missing');
+  return {
+    ok: true,
+    reason: null,
+    current_packet_before_commit: packet.order < commit.order,
+    context_order: current.order,
+    handshake_order: handshake.order,
+    packet_order: packet.order,
+    commit_order: commit.order,
+    old_terminal_kind: oldTerminal.kind,
+  };
+}
+
 // Executes in the owned panel. Return counts/booleans only: no DOM text, recipe,
 // URLs, credentials, or exception strings enter the diagnostic receipt.
 export function observeD47PanelTarget({

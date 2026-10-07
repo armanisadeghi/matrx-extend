@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "0358dc484c65eabe840790aac5ba9d68f41e3a39",
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "review_scope": "Independent read-only source review of the commit diff, fixture, driver, DOM reader, and hosted route. No test, browser, build, release, database, secret, or child-agent work was performed.",
+  "verdict_a_acceptance": "native_unverified_source_oracle_structurally_ready",
+  "verdict_b_implementation": "qualified_source_ready_evidence_gap",
+  "findings": [
+    {
+      "severity": "Important",
+      "location": ".research/d47-stale-only-driver-20261007.json:19",
+      "finding": "The claimed fixture, guard, import and format checks are listed as direct commands without resource journals or guarded run IDs. Their green counts are unadmitted evidence; a guarded verifier must produce completed journals before source checks are credited."
+    },
+    {
+      "severity": "Important",
+      "location": "tests/browser/showcase-d47-saved-result.test.mjs:266",
+      "finding": "The one browser DOM-reader test for the new visible refusal was not collected because this checkout lacked a Playwright runtime. The predicate and actual PatternsTab markup align by inspection, but the refusal DOM check is unverified until a guarded run collects it."
+    }
+  ],
+  "oracle_assessment": {
+    "stale_only": "Fixture keeps one old target request pending, serves a current document with only a real warmup fetch, requires the old server response to finish after the warmup, and keeps target_requests at one. The worker assessor requires the old context terminal, a distinct current context, a binding handshake, one exact warmup packet and zero target packets before recovery.",
+    "refusal": "The driver waits for one visible no-match guidance error, an idle enabled exact Run control, and absent saved-result header and preview before enabling recovery. The current app renders that error in the Patterns pane and clears running state in finally.",
+    "recovery": "Only after refusal, a second saved Run triggers the fixture's fresh target request. The driver requires target_requests two, a fresh current binding packet, exact saved Canyon Frequency/current table, current page result, and no visible old result.",
+    "route_cleanup_receipt": "Hosted route passes stale-only into the same CI-development artifact path. Existing cleanup verifies passive probe removal and exact owned-recipe deletion; the native harness result gates report success. The report uses booleans, counts, hashes and bounded trace fields rather than response bodies or credentials. A native receipt and resource decisions have not been produced for this mode."
+  },
+  "unverified_scope": "No native Chrome run or installed-artifact observation exists in this review. The fixture requires old HTTP finish at its server; whether the extension refuses the stale callback and recovers remains for the guarded native run."
+}

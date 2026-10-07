@@ -28,9 +28,9 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Remaining native stale-only refusal/recovery and manual/prior-run isolation acceptance. Source guards now cover saved replay stale-only/fresh recovery, prior binding, higher-old-sequence, and manual relay isolation; peers accept bounded source structure, but original per-run stdout/mutant hashes are not attached to journal evidence. Preserve this qualification; future causal runs must capture sanitized output and per-run source hashes. No owned test or native run active.",
+    "next_action": "Complete guarded source/DOM checks then dispatch one stale-only native case using successful unchanged application artifact and reviewed QA changes. No native job active.",
     "status": "Independent peer1abea43b accepts bounded old-first saved replay at frozen0.2.338/source651f25d0: observed old/current HTTP finish order, current context/packet, exact settled current-only saved row, valid resources and cleanup. Current-first earlier0.2.337 remains separately bounded. D47in-fix/T57unverified unchanged.",
-    "implementation_agent": "completed: d47_remaining_isolation_guards, d47_manual_isolation_guard, d47_manual_mutation_repair; peers complete",
+    "implementation_agent": "completed: d47_stale_only_native_driver0358dc48; source peer7253c184; active guarded verification d47_stale_guarded_checks",
     "execution_agent": "completed: d47_actual_endpoint_native; reviewed by d47_public_terminal_peer",
     "native_run_id": 37537634304,
     "workflow_source": "fbcc4311ae6885b67133e55336f692be38881249",
@@ -123,7 +123,15 @@
     "isolation_source_peer": ".research/d47-isolation-guards-peer-20261007.json",
     "manual_guard_candidate_report": ".research/d47-manual-isolation-guard-20261007.json",
     "manual_guard_report": ".research/d47-manual-mutation-repair-20261007.json",
-    "manual_guard_peer": ".research/d47-manual-final-peer-20261007.json"
+    "manual_guard_peer": ".research/d47-manual-final-peer-20261007.json",
+    "stale_only_source_report": ".research/d47-stale-only-driver-20261007.json",
+    "stale_only_peer_report": ".research/d47-stale-only-driver-peer-20261007.json",
+    "stale_only_artifact_ruling": {
+      "decision": "A successful CI development artifact may be used with this separately reviewed QA-only driver/fixture/helper revision. Require unchanged src, package/lock, config, importer and shared browser harness, and exact reviewed test hashes; enumerate both source identities.",
+      "basis": "CI37575843403 succeeded at8a93fbc0 with artifact11463001800. Diff through current candidate contains only reviewed QA changes and docs. Hosted workflow adds only stale-only enum option; hosted route adds same allowed value. Neither modifies admission/auth/artifact import or installed extension.",
+      "condition": "Admit only after resource-valid source checks including rendered refusal DOM reader pass. Recheck exact diff before staging secrets; any app/shared-harness change requires appropriate successful artifact.",
+      "cost_if_wrong": "Unreviewed QA or mismatched app could falsely certify behavior; bind dispatch source and app tree separately, verify terminal receipt, require independent native review."
+    }
   },
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
   "verification_status": "Independent reviews accept bounded current-first0.2.337 and old-first0.2.338 fixture replay. Fresh peer8dfbdee1 supports public initial capture, saved exact-recipe completed replay with hits and UI cleanup on frozen0.2.344/source2274d236/native37571487114, with valid resources. Whole-panel quiescence, selected organization context and post-checkbox receipt-level mask evidence are not established. Stale-only recovery, manual/prior-run isolation and causal higher-old-sequence coverage remain outstanding. D47 in-fix/T57 unverified.",

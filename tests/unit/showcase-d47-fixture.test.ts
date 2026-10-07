@@ -2,6 +2,7 @@ import { spawn } from 'node:child_process';
 import { once } from 'node:events';
 import { get as httpGet } from 'node:http';
 import { resolve } from 'node:path';
+import { runInNewContext } from 'node:vm';
 import { afterEach, expect, it } from 'vitest';
 
 const children: ReturnType<typeof spawn>[] = [];
@@ -69,6 +70,20 @@ function get(url: string): Promise<{ status: number; text: string; json: () => u
       response.on('error', fail);
     }).on('error', fail);
   });
+}
+
+async function executeFixturePage(html: string, origin: string) {
+  const script = /<script>([\s\S]*?)<\/script>/.exec(html)?.[1];
+  expect(script).toBeTruthy();
+  const result = { textContent: 'Waiting for the event schedule' };
+  await runInNewContext(script ?? '', {
+    fetch: async (path: string) => {
+      const response = await get(`${origin}${path}`);
+      return { json: response.json };
+    },
+    document: { querySelector: () => result },
+  });
+  return result.textContent;
 }
 
 it('holds the older identical request until after the current document has its result', async () => {
@@ -201,5 +216,46 @@ it('refuses release when the old client aborts before the server finishes its re
     old_response_released: false,
     old_release_prestate: 'aborted',
     old_release_outcome: 'refused_aborted',
+  });
+});
+
+it('keeps the saved target stale-only until refusal prerequisites allow a fresh recovery response', async () => {
+  const origin = await fixtureOrigin();
+  const armed = await get(`${origin}/control/document-race/arm?response_order=stale-only`);
+  expect(armed.status).toBe(200);
+  await get(`${origin}/document-race/`);
+  const oldResult = get(`${origin}/api/document-race`);
+  void oldResult.catch(() => undefined);
+  await expect
+    .poll(async () => (await get(`${origin}/control/document-race/status`)).json())
+    .toMatchObject({ old_pending: true, target_requests: 1 });
+  expect((await get(`${origin}/control/document-race/recover`)).status).toBe(409);
+  const currentPage = (await get(`${origin}/document-race/`)).text;
+  expect(currentPage).toContain('id="phase">stale-only');
+  expect(await executeFixturePage(currentPage, origin)).toBe('Waiting for the event schedule');
+  await expect
+    .poll(async () => (await get(`${origin}/control/document-race/status`)).json())
+    .toMatchObject({ current_probe_finished: true, target_requests: 1, old_pending: true });
+  expect((await get(`${origin}/control/document-race/recover`)).status).toBe(409);
+  expect((await get(`${origin}/control/document-race/release-old`)).status).toBe(200);
+  expect((await oldResult).json()).toEqual({
+    events: [{ eventName: 'Moonlit Transit' }],
+    document: 'prior',
+  });
+  const stale = (await get(`${origin}/control/document-race/status`)).json();
+  expect(stale).toMatchObject({
+    target_requests: 1,
+    response_finish_order: ['old'],
+    recovery_enabled: false,
+    recovery_target_finished: false,
+  });
+  expect((await get(`${origin}/control/document-race/recover`)).status).toBe(200);
+  const recoveryPage = (await get(`${origin}/document-race/`)).text;
+  expect(recoveryPage).toContain('id="phase">current');
+  expect(await executeFixturePage(recoveryPage, origin)).toBe('Canyon Frequency');
+  expect((await get(`${origin}/control/document-race/status`)).json()).toMatchObject({
+    target_requests: 2,
+    response_finish_order: ['old'],
+    recovery_target_finished: true,
   });
 });

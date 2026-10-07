@@ -12,13 +12,19 @@ import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { approvedAdminOrganizationName, signInSettings } from './settings-native-auth-driver.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 import {
+  assessD47StaleTrace,
   assessD47Trace,
   cleanupD47Probe,
   discoveryTerminal,
   sanitizeD47Failure,
   trustedD47PanelClick,
 } from './showcase-d47-driver-evidence.mjs';
-import { readD47SavedResult, readD47SavedRunState } from './showcase-d47-saved-result.mjs';
+import {
+  isD47StaleRefusal,
+  readD47SavedResult,
+  readD47SavedRunState,
+  readD47StaleRefusal,
+} from './showcase-d47-saved-result.mjs';
 import {
   deriveD47TerminalBudget,
   terminalBudgetPaths,
@@ -33,7 +39,10 @@ import { runShowcaseOrganizationCheckpoint } from './showcase-organization-check
 
 const repo = resolve(import.meta.dirname, '../..');
 const responseOrder = process.env.MATRX_D47_RESPONSE_ORDER ?? 'current-first';
-assert.ok(['current-first', 'old-first'].includes(responseOrder), 'd47_response_order_invalid');
+assert.ok(
+  ['current-first', 'old-first', 'stale-only'].includes(responseOrder),
+  'd47_response_order_invalid',
+);
 const output =
   process.env.MATRX_SHOWCASE_OUTPUT ?? join(tmpdir(), `showcase-d47-${randomUUID()}.json`);
 const report = {
@@ -577,6 +586,161 @@ try {
           );
           stage('saved_approval');
           await allow(panel);
+          if (responseOrder === 'stale-only') {
+            stage('current_probe_http');
+            report.fixture = {
+              before_release: await waitFor(
+                'current_probe_finished',
+                () => status(origin),
+                (value) =>
+                  value?.current_probe_finished === true &&
+                  value.target_requests === 1 &&
+                  value.old_pending === true &&
+                  value.response_finish_order.length === 0,
+              ),
+            };
+            stage('release_old_http');
+            const release = await control(origin, 'release-old');
+            report.fixture.release_http_status = release.status;
+            report.fixture.after_release = await status(origin);
+            assert.equal(release.status, 200, 'old_pending_release_failed');
+            assert.equal(report.fixture.after_release.old_release_prestate, 'pending');
+            assert.equal(report.fixture.after_release.old_release_outcome, 'server_finished');
+            assert.equal(report.fixture.after_release.old_response_finished, true);
+            assert.deepEqual(report.fixture.after_release.response_finish_order, ['old']);
+            assert.equal(
+              report.fixture.after_release.target_requests,
+              1,
+              'current_target_unexpected',
+            );
+            stage('stale_only_terminal_refusal');
+            report.refusal_observation = { sample_count: 0, first: null, last: null };
+            const refusal = await waitFor(
+              'stale_only_refusal',
+              async () => {
+                const value = await evaluate(
+                  panel,
+                  `(() => { const readD47SavedResult = ${readD47SavedResult.toString()};
+                    const readD47SavedRunState = ${readD47SavedRunState.toString()};
+                    return (${readD47StaleRefusal.toString()})(document, ${JSON.stringify(recipe)});
+                  })()`,
+                );
+                const safe = {
+                  refusal: value?.refusal === true,
+                  error_count: value?.error_count ?? null,
+                  running: value?.running === true,
+                  observation_unavailable: value?.observation_unavailable !== false,
+                  current_row: value?.current_row === true,
+                  old_row: value?.old_row === true,
+                  header_status: value?.header_status ?? 'unavailable',
+                  preview_status: value?.preview_status ?? 'unavailable',
+                };
+                report.refusal_observation.sample_count++;
+                report.refusal_observation.first ??= safe;
+                report.refusal_observation.last = safe;
+                return safe;
+              },
+              isD47StaleRefusal,
+              terminalBudget.timeout_ms,
+            );
+            report.refusal_observation.terminal = refusal;
+            const staleTrace = await readPassiveWorkerProbe(worker);
+            assert.ok(Array.isArray(staleTrace), 'worker_probe_lost');
+            report.stale_trace_assessment = assessD47StaleTrace(staleTrace, {
+              origin,
+              oldPageContext,
+              expectedBodySha256: createHash('sha256').update('{"warmup":true}').digest('hex'),
+            });
+            assert.equal(
+              report.stale_trace_assessment.ok,
+              true,
+              report.stale_trace_assessment.reason,
+            );
+            stage('enable_fresh_recovery');
+            const enabled = await control(origin, 'recover');
+            assert.equal(enabled.status, 200, 'recovery_enable_failed');
+            assert.equal(enabled.body?.recovery_enabled, true);
+            assert.equal(enabled.body?.target_requests, 1);
+            stage('fresh_saved_replay');
+            await trustedPanelClick(
+              panel,
+              'button[title], button[data-matrx-title]',
+              null,
+              recipe,
+              fixtureHost,
+              'Run pattern',
+            );
+            stage('fresh_saved_approval');
+            await allow(panel);
+            stage('fresh_current_http');
+            report.fixture.after_recovery = await waitFor(
+              'fresh_current_response',
+              () => status(origin),
+              (value) =>
+                value?.recovery_target_finished === true &&
+                value.target_requests === 2 &&
+                value.response_finish_order.length === 1 &&
+                value.response_finish_order[0] === 'old',
+            );
+            stage('fresh_saved_terminal');
+            report.terminal_observation = { sample_count: 0, first: null, last: null };
+            await waitD47SavedTerminal({
+              budget: terminalBudget,
+              read: () =>
+                evaluate(
+                  panel,
+                  `(() => ({
+                ...(${readD47SavedResult.toString()})(document, ${JSON.stringify(recipe)}),
+                ...(${readD47SavedRunState.toString()})(document, ${JSON.stringify(recipe)})
+              }))()`,
+                ),
+              record: (value) => {
+                report.terminal_observation.sample_count++;
+                report.terminal_observation.first ??= value;
+                report.terminal_observation.last = value;
+              },
+            });
+            report.saved_result = {
+              page_phase_current: (await page.locator('#phase').textContent()) === 'current',
+              page_result_current:
+                (await page.locator('#result').textContent()) === 'Canyon Frequency',
+              panel_current: (await panelText(panel))?.includes('Canyon Frequency') ?? false,
+              panel_old: (await panelText(panel))?.includes('Moonlit Transit') ?? false,
+            };
+            assert.equal(
+              report.saved_result.page_phase_current,
+              true,
+              'current_page_phase_missing',
+            );
+            assert.equal(
+              report.saved_result.page_result_current,
+              true,
+              'current_page_result_missing',
+            );
+            assert.equal(report.saved_result.panel_old, false, 'old_row_visible');
+            const observed = await readPassiveWorkerProbe(worker);
+            assert.ok(Array.isArray(observed), 'worker_probe_lost');
+            report.contexts = observed.filter((event) => event.kind !== 'binding');
+            report.binding_events = observed.filter((event) => event.kind === 'binding');
+            report.trace_assessment = assessD47Trace(observed, {
+              origin,
+              oldPageContext,
+              expectedBodySha256: createHash('sha256')
+                .update(
+                  JSON.stringify({
+                    events: [{ eventName: 'Canyon Frequency' }],
+                    document: 'current',
+                  }),
+                )
+                .digest('hex'),
+            });
+            assert.equal(report.trace_assessment.ok, true, report.trace_assessment.reason);
+            report.verdicts.current_saved_replay = 'pass';
+            report.verdicts.stale_only_refusal = 'pass';
+            report.verdicts.fresh_recovery = 'pass';
+            report.verdicts.delayed_old_binding = 'architecturally_excluded_observed';
+            return;
+          }
           stage('current_http');
           await waitFor(
             responseOrder === 'old-first' ? 'current_request_pending' : 'current_response',
