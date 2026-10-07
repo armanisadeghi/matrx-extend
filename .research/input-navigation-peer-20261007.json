@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "reviewed_proposal": ".research/input-navigation-procedures-20261007.json",
+  "review_type": "independent_source_and_procedure_only",
+  "runtime_executed": false,
+  "verdict_A_executable_fidelity": {
+    "status": "PARTIAL",
+    "per_case": {
+      "EXT-F-4105-T01": "CONDITIONAL: numeric tab_id, click payload, bounds, checked=true after click, and schema rejection match source; live coordinate hit and debugger attach remain unverified.",
+      "EXT-F-4106-T01": "PARTIAL: schema and Input.insertText payload match source, but page-input focus is not assured after clicking the sidepanel Run button; require a runtime smoke check that records actual focused element and value immediately before accepting this as executable.",
+      "EXT-F-4151-T01": "CONDITIONAL: string tab_id/ref/value, positive result, stale-ref refusal after page refresh, and invalid-tab refusal match source; the old ref must be saved before the verifying read_page, which clears/reassigns live refs.",
+      "EXT-F-4152-T01": "PARTIAL: route and invalid-tab refusal match source; status=complete is a required observation, not guaranteed by waitForLoad, which also resolves after 30 seconds with whatever tab status remains."
+    },
+    "findings": [
+      {
+        "severity": "important",
+        "id": "A1",
+        "case": "EXT-F-4106-T01",
+        "finding": "The setup says to focus the web form input immediately before calling cdp_input_type, but calling Run moves interaction to the sidepanel. The CDP handler only sends Input.insertText and never focuses the field. This is a plausible native execution failure and cannot be certified from source alone.",
+        "correction": "Before treating the procedure as ready, perform one native smoke attempt and record the web input's before/after value. If focus is lost, add a reproducible input-focus step that survives Run or use a paired CDP click on the input immediately before CDP type, and keep the type assertion on the real field.",
+        "evidence": ["src/features/tools/ToolsView.tsx:390-491", "src/lib/tools/handlers/cdp.ts:371-396"]
+      },
+      {
+        "severity": "moderate",
+        "id": "A2",
+        "case": "EXT-F-4152-T01",
+        "finding": "navigate_active_tab returns tab.status after waitForLoad; the wait settles on a 30-second timer even if load never completed. Requiring complete is a valid success criterion, but the proposal describes it as assured by the handler's wait.",
+        "correction": "State that loading or a timeout is a failed/inconclusive navigation result requiring investigation; inspect the actual tab and do not claim that waitForLoad guarantees complete.",
+        "evidence": ["src/lib/tools/handlers/action.ts:18-30", "src/lib/tools/handlers/action.ts:237-258"]
+      },
+      {
+        "severity": "moderate",
+        "id": "A3",
+        "case": "EXT-F-4151-T01",
+        "finding": "read_page removes old data-matrx-ref attributes and assigns new refs on every call. The procedure calls read_page to verify the positive field before its stale-ref negative, so the old ref may already be stale before page refresh.",
+        "correction": "Save the ref used for the positive call, explicitly reacquire a fresh ref after the verification read_page if testing refresh invalidation, and distinguish read_page invalidation from page-refresh invalidation. Run the stale-ref negative before any new read_page after refresh.",
+        "evidence": ["src/lib/tools/handlers/page-refs.ts:278-281", "src/lib/tools/handlers/page-refs.ts:348-354"]
+      }
+    ],
+    "supported_details": "The live Selenium page currently exposes Text input, Checked checkbox, Default checkbox and Submit. Exact page controls must still be checked at execution time. read_page emits checked only when true, so unchecked is inferred from visible state plus absence of checked=true, not an explicit false field."
+  },
+  "verdict_B_quality_and_coverage": {
+    "status": "FAIL_FOR_INVENTORY_COMPLETION",
+    "findings": [
+      {
+        "severity": "important",
+        "id": "B1",
+        "scope": "all four cases",
+        "finding": "The inventory requires a permissions dimension for each case. Tools Run directly invokes the handler in act mode with assignedTabId=null and bypasses dispatcher confirmation; malformed arguments and invalid tab IDs are schema/handler negatives, not permission negatives. The proposal makes dispatcher refusal conditional on advertisement and leaves no executable alternative or separately mapped permission case. Thus these four proposals cannot close the original permission dimension or authorize passing member/admin inventory cells by themselves.",
+        "correction": "Keep direct manual control results separate and unverified for permissions. Add explicit, separately tracked dispatcher procedures for action Ask-mode and privileged confirmation denial with a known advertised route, role, prompt, refusal, and unchanged-page oracle; or change inventory mapping only after independently proving the permission dimension is out of scope for these manual cases.",
+        "evidence": ["docs/stabilization/inventory.json:51015-51030", "docs/stabilization/inventory.json:59077-59092", "src/features/tools/ToolsView.tsx:420-479", "src/lib/tools/dispatch.ts:823-837"]
+      },
+      {
+        "severity": "moderate",
+        "id": "B2",
+        "scope": "CDP cleanup",
+        "finding": "A debugger attachment is retained but can idle-detach after ten minutes or be swept on extension service-worker restart. Therefore a missing attachment at cleanup does not establish that no attachment was made, and cdp_attached_tabs reflects its current context's in-memory set. The owned-tab close remains the safer member cleanup.",
+        "correction": "Record the debugger banner or attachment delta immediately after each positive run and distinguish already-detached from explicit cleanup. Confirm cleanup by disappearance of the owned tab/banner, preserving unrelated tabs.",
+        "evidence": ["src/lib/cdp/client.ts:74-115", "src/lib/cdp/client.ts:271-305"]
+      }
+    ],
+    "accepted_scope": "The proposed tab identity, typed payloads, real-page oracles, warm/reload split, member/admin separation, and no-submission constraint are suitable source-grounded starting points for direct manual handler testing. The proposal correctly avoids claiming that direct Tools runs prove dispatcher enforcement, assigned-tab isolation, role advertisement, or runtime success.",
+    "tracking_requirement": "Do not set any of the four inventory cases or role cells to pass from this review. Source proposal and peer review are not native execution receipts."
+  },
+  "sources": [
+    "https://www.selenium.dev/selenium/web/web-form.html (opened 2026-10-07)",
+    "src/lib/tools/handlers/cdp.ts",
+    "src/lib/tools/handlers/canonical.ts",
+    "src/lib/tools/handlers/page-refs.ts",
+    "src/lib/tools/handlers/action.ts",
+    "src/features/tools/ToolsView.tsx",
+    "src/lib/tools/dispatch.ts",
+    "docs/stabilization/inventory.json"
+  ],
+  "limits": ["No browser run, build, database query, credentials, source edit, or inventory mutation was performed."]
+}
