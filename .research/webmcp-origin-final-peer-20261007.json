@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "reviewed_at": "2026-10-07",
+  "reviewer": "root/webmcp_origin_final_peer",
+  "reviewed_commit": "87bb6a5c9e452b9836134c175c92821f805556f1",
+  "scope": "Fresh source and evidence review of EXT-D-0150 origin-tab repair, dispatcher invariants, docs, and guard design. No tests, build, browser, release, database, or deployment actions were performed by this reviewer.",
+  "prior_finding_disposition": {
+    "finding": "Page-registered WebMCP calls lose sender.tab.id and can retarget the focused tab; missing or closed origins need honest refusal; procedure text must match current document.modelContext and external confirmation behavior.",
+    "status": "ADDRESSED IN SOURCE AND PROCEDURES; NATIVE ACCEPTANCE STILL PENDING",
+    "evidence": [
+      "src/lib/background/bootstrap.ts now rejects missing sender.tab.id and a tab that chrome.tabs.get cannot resolve, then passes assignedTabId to dispatch.",
+      "src/lib/tools/dispatch.ts preserves assignedTabId in ToolContext and rechecks page-origin availability before dispatch.",
+      "docs/feature-tests.md uses document.modelContext.getTools and executeTool with a discovered RegisteredTool, and states external action confirmation is required in Ask and Act modes."
+    ]
+  },
+  "verdict_a_intended_behavior_and_runtime_limits": {
+    "verdict": "SOURCE ROUTING CONTRACT ACCEPTED; NATIVE RUNTIME UNVERIFIED",
+    "evidence": [
+      {
+        "finding": "Origin identity survives receiver-to-dispatch handoff.",
+        "source": "src/lib/background/bootstrap.ts:575-594; src/lib/tools/dispatch.ts:1448-1536",
+        "assessment": "The receiver rejects absent or already-closed origin tabs and passes the sender tab id. Dispatch keeps it on the ToolContext, where assigned-tab helpers resolve that tab rather than the current focus; a closed assigned tab resolves to null rather than falling back."
+      },
+      {
+        "finding": "Closed-origin failure is explicit at dispatch entry.",
+        "source": "src/lib/tools/dispatch.ts:1457-1464; tests/unit/external-dispatch-tier.test.ts",
+        "assessment": "The dispatcher returns 'webmcp: origin tab unavailable' when the page tab closes before dispatch. The test evidence described in the builder report exercises a focus change and closure, but was not rerun in this review."
+      },
+      {
+        "finding": "Report records causal routing failures and successful final checks.",
+        "source": ".research/webmcp-origin-tab-repair-20261007.json",
+        "assessment": "The report names separate bootstrap and dispatch causal REDs and records final test/typecheck commands as successful. I inspected the report and referenced source, without independently executing those commands."
+      }
+    ],
+    "runtime_limit": "No supported Chrome build, enabled document.modelContext object, native discovery, or execution was observed. Chrome 149+ acceptance and exact extension-artifact provenance remain pending."
+  },
+  "verdict_b_quality_and_doctrine": {
+    "verdict": "QUALITY ACCEPTED FOR THIS SOURCE REPAIR; NATIVE ACCEPTANCE REMAINS OPEN",
+    "evidence": [
+      {
+        "finding": "The fix is applied at the actual page-message ingress and retains the existing shared dispatcher gates.",
+        "source": "src/lib/background/bootstrap.ts:575-594; src/lib/tools/dispatch.ts:1450-1536",
+        "assessment": "Origin validation precedes dispatch. Existing external-call tier restrictions, admin-only checks, and mandatory action confirmation remain in handleWebmcpCall; assigned-tab transport does not grant new permissions."
+      },
+      {
+        "finding": "The repair report identifies the sibling callers of handleWebmcpCall.",
+        "source": ".research/webmcp-origin-tab-repair-20261007.json; src/lib/frontend-bridge/handler.ts; src/lib/desktop/ws-invoke.ts",
+        "assessment": "Frontend and desktop callers do not carry a page sender tab, and the new optional field leaves their existing behavior intact."
+      },
+      {
+        "finding": "Feature procedures no longer describe callTool or promise external action execution without confirmation in Act mode.",
+        "source": "docs/feature-tests.md:1740-1750,2047-2085,2434-2446",
+        "assessment": "The relevant procedures now use getTools/executeTool and describe confirmation in both modes, plus a real tab-switch and closed-tab acceptance scenario."
+      }
+    ],
+    "limitations": [
+      "The test and typecheck evidence was read from committed output/report files, not rerun by this reviewer.",
+      "No live tab-switch or native WebMCP run was performed; the source-only review cannot close that acceptance requirement."
+    ]
+  }
+}
