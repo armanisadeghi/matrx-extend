@@ -24,8 +24,15 @@
   "source_checks": [
     "node --check tests/browser/audit-key-native-acceptance.mjs: pass",
     "pnpm exec biome check on the three touched runner/observation files: pass",
-    "git diff --check: pass"
+    "git diff --check: pass",
+    "node --test tests/browser/audit-key-native-case-diagnostics.test.mjs: four pass; representative forced failures and secret exclusion"
   ],
   "current_verdict": "Source-ready for focused native execution, product behavior unverified on the changed runner. T86 direct invocation observation remains open. Prior bounded native evidence and inventory statuses remain unchanged.",
-  "next_gate": "Root-owned fresh native run against an exact current development artifact, followed by independent peer inspection of receipt and resource provenance before any inventory promotion."
+  "next_gate": "Root-owned fresh native run against an exact current development artifact, followed by independent peer inspection of receipt and resource provenance before any inventory promotion.",
+  "diagnostic_followup": {
+    "peer_trigger": "Fresh peer b4625718 found new T27/T62/T61 failures collapsed to audit_native_unverified, hiding their action or assertion boundary before native execution.",
+    "repair": "Fixed allowlisted case and step codes cover each new reload, storage read, wait, trusted click and assertion. The outer catch records the exact target and last safe observation through tests/browser/audit-key-native-case-diagnostics.mjs. Observation fields are limited to known origin, bounded count, visible row count, dialog visibility and key-unchanged boolean; no raw error, page text, key ID or receipt row is copied.",
+    "proof": "tests/browser/audit-key-native-case-diagnostics.test.mjs forces representative T27 reloaded comparison, T62 pilot filter and T61 cancel comparison failures and checks distinct fixed codes. Secret-like error and key fields are absent from serialized diagnostics; unknown steps and unbounded counts are refused.",
+    "native_limit": "No native execution occurred in this lane. The safe failure targets are source-tested and require fresh peer review before root-owned native run."
+  }
 }

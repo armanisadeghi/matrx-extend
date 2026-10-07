@@ -5,6 +5,7 @@ import { randomUUID } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
+import { auditMissingCaseFailure } from './audit-key-native-case-diagnostics.mjs';
 import { assertAuditDisplay } from './audit-key-native-display.mjs';
 import {
   auditFaultSource,
@@ -43,6 +44,8 @@ const report = {
 };
 let stage = 'input';
 let detailStep = null;
+let missingCase = null;
+let lastSafeObservation = {};
 
 function auditSnapshotSource() {
   return `chrome.storage.local.get(['matrx.audit.deviceKey', 'matrx.audit.publicKeyHistory'])
@@ -376,34 +379,55 @@ try {
       stage = 'T87_prior_signed_receipt';
       const priorRotationReceipt = await signedRead(page, panel, beforeFailure.activeId);
       stage = 'T27_card_and_T62_filters';
+      missingCase = 'T27';
+      detailStep = 'reload_for_warm';
       await reloadCard(panel, identity);
+      detailStep = 'read_storage';
       const expectedDisplay = await display(panel);
+      lastSafeObservation = {
+        receipt_count: expectedDisplay?.receiptCount,
+        visible_rows: expectedDisplay?.recent?.length,
+      };
+      detailStep = 'check_precondition';
       assert.ok(
         expectedDisplay.keyId && expectedDisplay.generated && expectedDisplay.recent.length >= 2,
         'audit_T27_display_precondition_missing',
       );
+      detailStep = 'compare_warm';
       const warmDisplay = await assertDisplay(panel, 'audit_T27_warm_display', expectedDisplay);
+      missingCase = 'T62';
       const filters = {};
       for (const origin of ['agent', 'pilot', 'parallel', 'webmcp', 'all']) {
+        detailStep = `select_${origin}`;
+        lastSafeObservation = { ...lastSafeObservation, selected_origin: origin };
         await click(
           panel,
           'button-text',
           `${origin}${expectedDisplay.recent.filter((row) => origin === 'all' || row.origin === origin).length}`,
         );
+        detailStep = `compare_${origin}`;
         filters[origin] = await assertDisplay(
           panel,
           `audit_T62_${origin}`,
           expectedDisplay,
           origin,
         );
+        lastSafeObservation = {
+          ...lastSafeObservation,
+          visible_rows: filters[origin].recent.rows.length,
+        };
       }
+      detailStep = 'check_empty_origin';
       assert.ok(
         ['agent', 'pilot', 'parallel'].some((origin) =>
           expectedDisplay.recent.every((row) => row.origin !== origin),
         ),
         'audit_T62_empty_origin_missing',
       );
+      missingCase = 'T27';
+      detailStep = 'reload_for_comparison';
       await reloadCard(panel, identity);
+      detailStep = 'compare_reloaded';
       const reloadedDisplay = await assertDisplay(
         panel,
         'audit_T27_reloaded_display',
@@ -434,8 +458,12 @@ try {
       );
 
       stage = 'T61_cancel_confirmation';
+      missingCase = 'T61';
+      detailStep = 'read_before_cancel';
       const beforeCancel = await snapshot(panel);
+      detailStep = 'open_confirmation';
       await click(panel, 'button-text', 'Re-key');
+      detailStep = 'wait_confirmation';
       await waitFor(
         'audit_T61_confirm_visible',
         () =>
@@ -446,7 +474,10 @@ try {
           ),
         Boolean,
       );
+      lastSafeObservation = { ...lastSafeObservation, dialog_visible: true };
+      detailStep = 'cancel_confirmation';
       await click(panel, 'button-text', 'Cancel');
+      detailStep = 'wait_closed';
       await waitFor(
         'audit_T61_confirm_closed',
         () =>
@@ -457,7 +488,15 @@ try {
           ),
         Boolean,
       );
-      assert.deepEqual(await snapshot(panel), beforeCancel, 'audit_T61_cancel_changed_key');
+      lastSafeObservation = { ...lastSafeObservation, dialog_visible: false };
+      detailStep = 'compare_after_cancel';
+      const afterCancel = await snapshot(panel);
+      lastSafeObservation = {
+        ...lastSafeObservation,
+        key_unchanged: JSON.stringify(afterCancel) === JSON.stringify(beforeCancel),
+      };
+      assert.deepEqual(afterCancel, beforeCancel, 'audit_T61_cancel_changed_key');
+      detailStep = 'compare_cancelled_card';
       const cancelledCard = await expectCard(
         panel,
         'audit_T61_cancelled_card',
@@ -465,29 +504,40 @@ try {
       );
 
       stage = 'rotation_failure';
+      detailStep = 'inject_history_failure';
       await inject(panel, 'reject-history');
+      detailStep = 'confirm_failed_rotation';
       await rotate(panel);
+      detailStep = 'observe_failed_rotation';
       const failedRotation = await expectCard(
         panel,
         'audit_rotation_failure',
         (value) => value?.rotationFailed && !value.rotated,
       );
+      detailStep = 'read_failure_fault';
       const failureFault = await fault(panel);
       assert.equal(failureFault.activeWrites, 0);
+      detailStep = 'compare_after_failure';
       assert.deepEqual(await snapshot(panel), beforeFailure);
+      detailStep = 'restore_history';
       await restore(panel);
+      detailStep = 'confirm_successful_rotation';
       await rotate(panel);
+      detailStep = 'observe_successful_rotation';
       const success = await expectCard(
         panel,
         'audit_rotation_recovered',
         (value) => value?.rotated && value.keyId !== beforeFailure.activeId,
       );
+      detailStep = 'read_after_rotation';
       const afterSuccess = await snapshot(panel);
+      detailStep = 'check_history';
       assert.ok(afterSuccess.historyIds.includes(beforeFailure.activeId));
       pass('T61 cancel preserves key then confirmation rotates', cancelledCard, success, {
         cancelled_key_unchanged: true,
         confirmed_key_changed: true,
       });
+      missingCase = null;
       await reloadCard(panel, identity);
       stage = 'T87_verify_prior_receipt';
       const rotationVerification = await verifySignedReceipt(panel, priorRotationReceipt);
@@ -859,6 +909,11 @@ try {
   report.status = 'pass';
 } catch (error) {
   report.status = 'fail';
+  const missingFailure = auditMissingCaseFailure(missingCase, detailStep, lastSafeObservation);
+  if (missingFailure) {
+    report.failure_code = missingFailure.failure_code;
+    report.missing_case_diagnostic = missingFailure.diagnostic;
+  }
   if (stage === 'export_failure') {
     report.export_diagnostic = {
       step: detailStep,
