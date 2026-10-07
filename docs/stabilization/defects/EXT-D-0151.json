@@ -6,8 +6,8 @@
   "title": "Visibility census mistakes non-navigation controls for inaccessible regions and lacks safe mapping provenance",
   "surface": "Testing infrastructure / role-visibility census",
   "auth_mode": "guest",
-  "state": "in-fix",
-  "owner": "root/guest_census_provenance_peer",
+  "state": "fixed",
+  "owner": "root",
   "priority": "P1",
   "severity": "S3",
   "user_impact": "Incomplete control accounting prevents trustworthy coverage signoff. This is a census harness defect; no product behavior failure is established.",
@@ -21,7 +21,7 @@
     "Run the controlled structural/navigation/action fixture via node scripts/stabilization-resource.mjs run --run-id UNIQUE -- node --test tests/browser/takeover-visible-census.test.mjs scripts/hosted-profile-route.test.mjs. Require structural/action accounting separate from true regions, unique direct Settings trigger remains safe, unknown private text remains fingerprinted, and safe DOM provenance persists."
   ],
   "expected": "Only genuine semantic tab/section triggers govern region traversal. Structural and action nodes remain honestly accounted without becoming phantom inaccessible regions. Stable safe DOM/source provenance supports later control mapping; unknown remains incomplete.",
-  "actual": "Original native receipt cannot identify28 fingerprints or distinguish four reported inaccessible entries from non-region controls. Source inspection confirms overly broad candidate classification and duplicate-label checking across structural nodes. Initial repair is unverified after three failed source checks; fresh decomposed implementation owns correction.",
+  "actual": "Original native census misclassified non-region controls and lacked mapping provenance. Source classification/provenance repair f2a53199 independently passed 25/25; repaired native behavior remains unverified.",
   "evidence": [
     ".research/guest-census-original-retest-20261007.json",
     ".research/guest-census-mapping-reconcile-20261007.json",
@@ -29,12 +29,13 @@
     "docs/stabilization/resource-journals/census-provenance-red-20261007-02.jsonl",
     ".research/guest-census-provenance-decomposed-20261007.json",
     ".research/guest-census-provenance-decomposed-red-20261007-01.stdout",
-    ".research/guest-census-provenance-decomposed-green-20261007-01.stdout"
+    ".research/guest-census-provenance-decomposed-green-20261007-01.stdout",
+    ".research/guest-census-provenance-peer-20261007.json"
   ],
   "verification": {
     "native": "Original incomplete census observed; repaired native census unverified.",
-    "source": "Fresh causal RED24pass/1fail specifically proves structural parent makes Settings trigger unsafe; corrected suite25/25GREEN under valid resource admission, exact stdout+journals committed in f2a53199. Fresh independent review pending. Missing historical predecessor stdout carries no proof credit.",
-    "independent_review": "pending",
+    "source": "Causal RED24/25 then GREEN25/25 in f2a53199; fresh independent guarded25/25 with actual stdout and valid completed journal. No native or product coverage promoted.",
+    "independent_review": "3b48f50d: source PASS_WITH_NATIVE_PENDING; quality PASS_WITH_LIMITATIONS. Semantic-selector coverage and syntax-only source_anchor limits remain explicit.",
     "product_behavior": "No product failure or pass established."
   },
   "transition_history": [
@@ -55,9 +56,15 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Initial lower-tier repair exceeded failed-round threshold; fresh Sol owns decomposed same-label/provenance correction."
+    },
+    {
+      "at": "2026-10-07T14:43:34.296865+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Independent source review and guarded25/25 accepted f2a53199; original native retest remains required."
     }
   ],
   "closure_requirement": "Fresh independent source review and guarded exact-artifact native census with trustworthy classification/provenance and original ambiguity no longer reproducing. Unknown controls remain incomplete until mapped from evidence; no member/admin or broader product health inferred.",
-  "next_action": "Fresh source/adversarial peer owns only heavy/source test slot; accept or repair its findings before guarded original-artifact native census. Preserve all unmapped/unknown controls as incomplete.",
+  "next_action": "Correct receipt permissions, fixed failure diagnostics and Account viewport framing from 94336142; fresh review, then one guarded original-artifact native census. Retain unknown controls as incomplete.",
   "fix_shas": ["f2a53199"]
 }
