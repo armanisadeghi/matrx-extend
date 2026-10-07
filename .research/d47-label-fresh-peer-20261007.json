@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "reviewed_commit": "bbd406416a1b353cbc6017906140a42fc6d3b2fe",
+  "scope": "Fresh read-only review of the driver's own repair commit and existing evidence; no native run, browser run, test, or product edit.",
+  "verdict_A_functional_scope": {
+    "status": "PARTIAL",
+    "exact_saved_recipe_identity": "PASS at the source and controlled DOM fixture seam: the reader compares the full Last run source text using textContent, which avoids the product header's uppercase CSS transformation; different, prefix and hidden headers fail in the fixture.",
+    "visible_preview_provenance": "PASS for the table view represented by the fixture: the product places ResultPreview immediately after the header, and its TableView renders data in tbody td; the reader searches only cells under that adjacent preview. A current marker elsewhere in the panel cannot satisfy it.",
+    "stale_mixed_wrong_result_refusal": "PARTIAL: the named Moonlit Transit old marker and its mixture with Canyon Frequency are rejected, but arbitrary unexpected rows or cells alongside Canyon Frequency are accepted. This does not prove that the visible preview contains only the current saved replay result.",
+    "native_extension_acceptance": "UNVERIFIED: the Chromium DOM microfixture checks the observation seam but does not exercise PatternsTab, the extension, saved replay, delayed old callback, or cancellation. The prior hosted native attempt was resource-invalid and had no retained header text; it cannot establish product outcome."
+  },
+  "verdict_B_doctrine_quality": {
+    "status": "IMPORTANT_GAP",
+    "reuse_and_scope": "Driver-only helper is called by the actual acceptance driver; no competing product implementation or compatibility shim was added.",
+    "nothing_silent": "The terminal samples retain bounded header and preview classification plus booleans, improving diagnosis without recording panel text or credentials.",
+    "forcing_function": "A resource-valid real-Chromium DOM fixture passed 5/5 and explicitly showed the old case-sensitive innerText predicate false on the valid CSS-uppercase header. The executed in-memory constant-success reader mutant failed four negative tests; the valid case passed as expected. The resource-valid existing driver checks passed 14/14. These journals establish admitted child exit and test outcome, not native acceptance. The guard lacks a case where a current cell coexists with an unrelated wrong cell, so it does not kill that realistic false-positive behavior.",
+    "quality_limit": "No fresh tests were executed in this peer lane; existing test counts are taken from the repair report and corresponding resource journals."
+  },
+  "findings": [
+    {
+      "severity": "Important",
+      "title": "A current marker with an unexpected result still passes the terminal predicate",
+      "evidence": "tests/browser/showcase-d47-saved-result.mjs uses cells.includes('Canyon Frequency') and only separately recognizes 'Moonlit Transit'. tests/browser/showcase-d47-terminal-budget.mjs returns when exact_recipe && current_row && !old_row. The product ResultPreview TableView renders all row values as tbody td. A preview with Canyon Frequency plus any other wrong cell, such as Wrong Frequency, makes exact_recipe=true, current_row=true, old_row=false and passes. The fixture covers only the specifically named old marker as a mixed result.",
+      "impact": "The acceptance driver can certify a mixed or wrong saved preview even though the visible result is not solely the expected current result.",
+      "required_followup": "Make the terminal predicate validate the expected preview row and reject unexpected cells or rows, then add a real-DOM negative case with Canyon Frequency plus a different wrong value and show it fails before passing under the repair. Preserve the separate native acceptance requirement."
+    }
+  ],
+  "evidence": [
+    "git show bbd40641 (own commit only)",
+    "src/features/showcase/tabs/PatternsTab.tsx:320-329",
+    "src/features/showcase/components/ResultPreview.tsx:119-126,180-203",
+    "tests/browser/showcase-d47-saved-result.mjs:1-39",
+    "tests/browser/showcase-d47-saved-result.test.mjs:23-111",
+    "tests/browser/showcase-d47-terminal-budget.mjs:180-210",
+    "docs/stabilization/resource-journals/d47-label-final-20261007.jsonl",
+    "docs/stabilization/resource-journals/d47-label-mutant-20261007.jsonl",
+    "docs/stabilization/resource-journals/d47-driver-evidence-retry-20261007.jsonl",
+    ".research/d47-label-fix-20261006.json",
+    ".research/d47-label-check-20261006.json",
+    ".research/d47-import-native-20261006.json"
+  ]
+}
