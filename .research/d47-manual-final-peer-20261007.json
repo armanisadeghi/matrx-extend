@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "reviewer": "fresh independent source peer",
+  "reviewed_commits": {
+    "candidate_test": "9c1a6eb7d44a36eb3a993ed39a776463a920f73d",
+    "mutation_completion": "f752d7f6667589266f5417e2623ce1deab45bb5f"
+  },
+  "method": "Read candidate test, actual bootstrap/relay/hook/document-capture/replay source, mutation report and resource journals. No tests, native run, build, release, database access or secret access performed.",
+  "verdict_a_coverage_scope": {
+    "result": "PASS_BOUNDED_SOURCE_GUARD",
+    "finding": "The test mounts the actual useNetworkCapture hook, registers real bootstrapBackground handlers, executes networkRelayIsolated, and feeds the actual startDocumentNetworkCapture CDP listener through controlled Chrome doubles. A manual response is relayed and appears in the hook before Page.reload is released; the saved replay yields the current CDP row, then a second distinct current row. This covers manual-channel contamination of saved replay without duplicating production routing in the test.",
+    "evidence": [
+      "tests/unit/d47-manual-replay-isolation.test.tsx:240-298",
+      "src/lib/data-pattern/network-tap.ts:392-420",
+      "src/lib/background/bootstrap.ts:555-563",
+      "src/hooks/use-network-capture.ts:60-76",
+      "src/lib/data-pattern/document-network-capture.ts:247-451",
+      "src/lib/data-pattern/run-interactive.ts:415-499"
+    ],
+    "limits": [
+      "The manual page event and CDP callbacks are synthetic browser-boundary inputs; this is source coverage, not native or public-site acceptance.",
+      "It does not independently test a prior-document CDP binding callback, stale-only recovery, or the full EXT-D-0047/T57 case."
+    ]
+  },
+  "verdict_b_quality_evidence": {
+    "result": "PARTIAL_RECORDED_CAUSAL_EVIDENCE",
+    "finding": "The proposed constant-output mutant necessarily fails the test's Page.reload orchestration check; this is a meaningful gut check against bypassing the SUT, although it does not reach the distinct second-row assertion. The production-owned channel-mix mutant subscribes the replay collector to the actual manual NET_CAPTURE_EVENT and stamps replay identity; manual request_sequence 999 then outranks current CDP sequence 1. The recorded RED at the saved-row assertion is causally plausible and targets the intended invariant. Resource journals corroborate admitted child exits 1/1/0 for constant, channel-mix and untouched source, with resourceInvalid false. Current shared test and run-interactive SHA-256 match the report's untouched hashes. The refused first channel launch has no test verdict.",
+    "evidence": [
+      ".research/d47-manual-mutation-repair-20261007.json:8-88",
+      "docs/stabilization/resource-journals/d47-manual-repair-constant-red-20261007.jsonl",
+      "docs/stabilization/resource-journals/d47-manual-repair-channel-red2-20261007.jsonl",
+      "docs/stabilization/resource-journals/d47-manual-repair-untouched-green-20261007.jsonl",
+      "tests/unit/d47-manual-replay-isolation.test.tsx:253-298"
+    ],
+    "important_limit": "The committed journals record admission and child exit codes but not Vitest stdout/stderr or source hashes per run. The exact failure assertions and mutant contents are recorded in the implementer's JSON; the scratch directory is absent, so this peer cannot independently tie the asserted mutation bytes and failure lines to each child run. Preserve a bounded test transcript and per-run mutant source hash if independent proof of those exact outcomes is required. No fresh test was allowed in this review."
+  },
+  "closure": "Accept as a bounded source guard with qualified mutation evidence. Do not promote this review to native/full D47 or T57 verification."
+}

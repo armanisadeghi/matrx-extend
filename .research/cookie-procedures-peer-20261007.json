@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "task": "independent source review of proposed cookie procedures",
+  "reviewed_file": ".research/cookie-procedures-20261007.json",
+  "reviewed_commit": "d71db7b4",
+  "status": "DONE_WITH_CONCERNS",
+  "verdict_A": {
+    "scope": "spec and procedure usability",
+    "result": "PARTIAL",
+    "per_case": [
+      {
+        "case_id": "EXT-F-4097-T01",
+        "result": "PASS_FOR_MANUAL_HAPPY_PATH"
+      },
+      {
+        "case_id": "EXT-F-4098-T01",
+        "result": "PASS_FOR_MANUAL_HAPPY_PATH"
+      },
+      {
+        "case_id": "EXT-F-4099-T01",
+        "result": "PASS_FOR_MANUAL_HAPPY_PATH"
+      },
+      {
+        "case_id": "EXT-F-4161-T01",
+        "result": "PASS_FOR_MANUAL_HAPPY_PATH"
+      }
+    ],
+    "reason": "All seven listed controls, four admin cases, exact synthetic set/read/delete values, invalid-input checks, collision stop, cleanup and safe evidence boundaries are represented. The inventory permission-denied and reload dimensions remain explicitly unverified; these proposals are executable manual handler procedures but do not alone close every inventory dimension."
+  },
+  "verdict_B": {
+    "scope": "quality and source truth",
+    "result": "PASS_WITH_MINOR_CITATION_CORRECTION",
+    "reason": "The schemas, UI direct-run path, optional permission, manifest, wrapper delegation and expected result shapes match source. No live-site cookie or account secret is used. The proposal correctly avoids claiming admin, permission or confirmation enforcement from Tools Run. One source-anchor range for confirmation is inaccurate; no behavioral expectation depends on it."
+  },
+  "findings": [
+    {
+      "id": "A1",
+      "severity": "important",
+      "target": "procedure_prerequisites.permission_boundary and each case dimensions",
+      "finding": "The inventory case dimension includes permissions, and the stabilization plan calls for relevant permission-denied recovery. The proposed steps only require permission present and correctly refuse to treat direct Tools Run as a dispatcher denial. Keep permission denial unverified until a separate dispatcher-path procedure and receipt are authored and run; do not close this dimension from these cases.",
+      "evidence": [
+        "docs/stabilization/reports/inventory-tools.json: EXT-F-4097/4098/4099/4161 cases have permissions dimension",
+        "docs/stabilization/PLAN.md:32",
+        "src/features/tools/ToolsView.tsx:414-462",
+        "src/lib/tools/dispatch.ts:792-802"
+      ]
+    },
+    {
+      "id": "A2",
+      "severity": "minor",
+      "target": "procedure_prerequisites.reload_cycle",
+      "finding": "The reload instruction is conditional on an allowed verified artifact and explicitly leaves reload unverified when none exists. This is safe and honest, but it cannot itself produce a completed reload cell; a later runtime lane must supply the artifact, exact receipt and observed reload evidence.",
+      "evidence": [
+        ".research/cookie-procedures-20261007.json:67",
+        "docs/stabilization/PLAN.md:24-34"
+      ]
+    },
+    {
+      "id": "B1",
+      "severity": "minor",
+      "target": "source_anchors dispatch.ts",
+      "finding": "The anchor cites dispatch.ts 850-920 for privileged confirmation, but that span covers execution and result delivery. Cite the gate and confirmation code around the earlier effective-tier and confirmation path for this claim.",
+      "evidence": [
+        ".research/cookie-procedures-20261007.json:25-27",
+        "src/lib/tools/dispatch.ts:804-809",
+        "src/lib/tools/dispatch.ts:1148-1182"
+      ]
+    },
+    {
+      "id": "B2",
+      "severity": "minor",
+      "target": "fixture collision wording",
+      "finding": "The preflight necessarily reads the returned cookie object in the inline Tools result if a same-name collision exists, despite the fixture instruction saying not to read a pre-existing cookie. Clarify that the operator must stop without inspecting or copying its value; the exact-name filter still prevents a broad cookie read.",
+      "evidence": [
+        ".research/cookie-procedures-20261007.json:53,85",
+        "src/lib/tools/handlers/optional-perms.ts:37-45",
+        "src/features/tools/ToolsView.tsx:463"
+      ]
+    }
+  ],
+  "source_checks": [
+    "get_cookies URL+name calls chrome.cookies.get and returns count 0/1; malformed URL rejected by Zod before Run",
+    "set_cookie forwards path, secure, http_only and same_site and returns {ok:true,cookie}; delete_cookie returns {ok:!!r,removed:r}",
+    "chrome_cookies get/set/delete delegates through leaf schemas; missing set name returns explicit {ok:false,reason} at wrapper",
+    "Catalog defaults to canonical surface; leaf handlers require All handlers/Internal delegates filter, which the proposal covers",
+    "Tools Run calls handler.run directly after schema validation, outside dispatch admin/permission/confirm gates",
+    "inventory controls and admin-only applicability align with case IDs and modes"
+  ],
+  "unverified": [
+    "No browser or extension execution",
+    "No Chrome runtime acceptance of .invalid fixture",
+    "No build, reload, permission grant/denial, delegated dispatch or confirmation behavior",
+    "No inventory status changes"
+  ]
+}

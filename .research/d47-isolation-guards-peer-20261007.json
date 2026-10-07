@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "3a5c9222abf1127675e59b85459907a6943ba501",
+  "scope": "Independent source and recorded-evidence review only; no execution, browser, or native acceptance",
+  "A_invariant_coverage": {
+    "verdict": "pass_with_scope_limit",
+    "stale_only_and_fresh_recovery": "The first new test injects only a prior-document packet through the mocked CDP event boundary, requires a terminal no-match error, then runs a second capture and requires current-document rows. It exercises startDocumentNetworkCapture through openDocumentNetworkCapture and runNetworkCapturePattern, including capture cleanup between runs.",
+    "prior_run_output": "The second new test completes one replay, then injects the previous run's binding name with a higher request_sequence during the next replay and requires the current run's rows. The binding-name guard in document-network-capture.ts excludes the old event before the matcher.",
+    "higher_old_sequence": "The third new test sends a current-document packet followed by an old-document packet with request_sequence 999; the final rows must remain from the current document. The source checks unique main-frame context before emission, and the matcher orders only emitted events.",
+    "chain_limit": "The tests call runNetworkCapturePattern directly and mock Chrome CDP, scripting identity, and session acquisition. They cover the owned capture/transport/matcher logic, not saved-pattern database loading, approval/port handoff, a browser reload, or native panel behavior."
+  },
+  "B_test_and_evidence_quality": {
+    "verdict": "qualified_pass",
+    "forcing_function": "The returned rows depend on CDP binding events, captured body parsing, request matching, and replay completion. A constant rows return cannot satisfy the waitForReload assertion; removing context or binding isolation permits the injected stale rows to replace the intended output. These are meaningful source-level guards, although the scratch mutation details are attested in the author report rather than preserved as patches or test transcripts.",
+    "recorded_runs": "All seven resource journals record admission and resourceInvalid=false. The two initial green attempts exited 1; the later green and final green exited 0; constant, context, and binding red attempts exited 1. Journals establish process exits only. The 17/17 count and specific assertion failures appear only in the author report, so they are not independently auditable from the committed journals.",
+    "final_green": "The final green journal has childExitCode 0 and decision valid after the final test edit. This supports a successful controlled run, subject to the missing test transcript and this review's no-execution scope."
+  },
+  "manual_relay_seam": {
+    "verdict": "open",
+    "finding": "Manual capture enters through networkRelayIsolated window messages, background NET_CAPTURE_EVENT broadcast, and the sidepanel hook; saved replay consumes CDP binding events. The new tests do not drive the manual relay or mount its hook, so cross-channel isolation remains unproven.",
+    "test_design_caution": "A manual tap installed in the old document is lost on replay reload; a same-tab concurrent test must deliberately arrange manual event timing or re-arm the manual tap in the new document before asserting manual-list receipt. Merely starting manual capture before replay and expecting post-reload manual events would not prove the seam."
+  },
+  "overall": "Accept the three source-level isolation guards as scoped regression coverage; do not claim native acceptance or D47 closure from this commit."
+}

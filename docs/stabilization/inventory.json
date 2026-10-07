@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-07T04:46:42.370314+00:00",
+  "updated_at": "2026-10-07T05:13:44.245852+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -22,7 +22,9 @@
     ".research/inventory-procedure-gap-20261006.json",
     ".research/inventory-procedure-peer-20261006.json",
     ".research/inventory-current-catalog-delta-20261007.json",
-    ".research/inventory-catalog-delta-peer-20261007.json"
+    ".research/inventory-catalog-delta-peer-20261007.json",
+    ".research/cookie-procedures-20261007.json",
+    ".research/cookie-procedures-peer-20261007.json"
   ],
   "features": [
     {
@@ -24969,9 +24971,13 @@
                 ".research/d47-oldfirst-native-20261007.json",
                 ".research/d47-oldfirst-native-peer-20261007.json",
                 ".research/d47-public-endpoint-native-20261007.json",
-                ".research/d47-public-terminal-peer-20261007.json"
+                ".research/d47-public-terminal-peer-20261007.json",
+                ".research/d47-isolation-guards-20261007.json",
+                ".research/d47-isolation-guards-peer-20261007.json",
+                ".research/d47-manual-mutation-repair-20261007.json",
+                ".research/d47-manual-final-peer-20261007.json"
               ],
-              "detail": "Independent peer1abea43b accepts resource-valid old-first native37562111314 at frozen0.2.338/source651f25d0: distinct pending requests finished old then current, fresh current-document handshake/exact packet, exact settled current-only saved result with no loading/error, observer and exact owned-recipe cleanup. Earlier current-first proof remains frozen0.2.337/run37558902653/peer9f70b303. Neither delivered an old binding callback; architectural exclusion is not callback-rejection proof. Fresh independent peer8dfbdee1 supports public initial capture, saved exact-recipe completed replay with hits and UI cleanup on frozen0.2.344/source2274d236/native37571487114; all resource phases valid. Whole-panel quiescence, selected organization context and separate post-checkbox mask receipt remain unverified. FullT57 remains unverified: stale-only refusal/recovery, manual/prior-run isolation and separate causal higher-old-sequence guard coverage remain required."
+              "detail": "Independent peer1abea43b accepts resource-valid old-first native37562111314 at frozen0.2.338/source651f25d0: distinct pending requests finished old then current, fresh current-document handshake/exact packet, exact settled current-only saved result with no loading/error, observer and exact owned-recipe cleanup. Earlier current-first proof remains frozen0.2.337/run37558902653/peer9f70b303. Neither delivered an old binding callback; architectural exclusion is not callback-rejection proof. Fresh independent peer8dfbdee1 supports public initial capture, saved exact-recipe completed replay with hits and UI cleanup on frozen0.2.344/source2274d236/native37571487114; all resource phases valid. Whole-panel quiescence, selected organization context and separate post-checkbox mask receipt remain unverified. FullT57 remains unverified: stale-only refusal/recovery, manual/prior-run isolation and separate causal higher-old-sequence guard coverage remain required. Source guards now exercise stale-only/fresh recovery, prior binding, high old sequence and manual/saved relay isolation. Independent peers accept source structure; causal run assertions/mutant bytes remain only author-reported beyond guard exit evidence. No native status promotion."
             }
           },
           "proof_ruling": "2026-10-06 root technical ruling: see .research/d47-acceptance-architecture-ruling-20261006.json. A native architectural-exclusion trace with positively observed current binding/packet, exact contexts, old request lifecycle and terminal saved result may supplement delivered-stale-event causal guards. Neither cancellation alone nor current-only rows nor empty event arrays prove exclusion. Retain public-site same-artifact replay, both response orders, higher old sequence, stale-only refusal and cleanup; no existing result is promoted."
@@ -59449,16 +59455,37 @@
           ],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "No execution occurred in this lane. Before any future run, obtain the current stabilization resource permit and create the full receipt required by docs/stabilization/PLAN.md \u00a7 Build and reload contract. Bind it to an allowed, already verified development artifact and its exact source/build/runtime identity under the machine constraints; do not create a local build for this procedure. If no allowed artifact can be verified against the current source and runtime, stop and leave the case unverified. Rebuild/reload only when that contract requires it, and record the separate extension Reload and page reload actions. Never put secrets or cookie outputs in the receipt.",
+            "Run each case only in the signed-in admin mode listed by inventory. Do not run these case IDs as member or guest: source and inventory mark the handlers admin_only and member/guest not applicable. A direct manual Tools run in another role would bypass that check and cannot establish access behavior.",
+            "Use only the synthetic cookie fixture below, on the reserved non-resolving host cookie-procedure.invalid. Do not navigate to an authenticated site, use a real account cookie, omit the name filter, or use getAll. The cookie is created solely by this run through the extension API. If the exact fixture name already exists before the run, the exact-name preflight may render that one cookie object inline; stop immediately without inspecting or copying its value, and do not overwrite or delete the existing cookie. The exact URL/name filter still bounds the read. The expected value is synthetic and harmless; do not copy raw output into evidence.",
+            "{\"url\": \"https://cookie-procedure.invalid/\", \"name\": \"matrx_cookie_fixture_20261007_01\", \"value\": \"safe-fixture-value\", \"path\": \"/\", \"secure\": true, \"http_only\": false, \"same_site\": \"lax\"}",
+            "In the signed-in admin profile, open the side panel \u2192 Tools \u2192 Catalog. Select All handlers if needed, search the exact handler name, expand it, replace the JSON textarea with the case's exact JSON object, and click Run. Observe result/error inline. Run only one call at a time. The `cookies` optional permission must already be granted; if absent, record the case unavailable and stop without changing Settings or using the manual runner as a permission test.",
+            "Positive API calls require the optional cookies permission in the active build. Inventory's permissions dimension cannot be closed here: Tools manual Run skips the dispatcher permission check, and source does not establish a safe permission-denial procedure through this direct path. Do not revoke/request permissions merely to manufacture a manual-runner denial. Permission grant/denial enforcement and admin/confirmation gates remain unverified for the delegated dispatcher path.",
+            "The inventory lists advertised agent calls as deferred to Chat/Pilot. These cases use only Tools manual Run. Do not claim agent routing, dispatcher enforcement, admin denial, Ask/Act behavior, or privileged confirmation from their results.",
+            "After every case that creates the fixture, delete only the exact URL/name pair created by that case, then issue a name-filtered get and require count 0. If setup finds the name already present, stop without cleanup because ownership is not established. If a call errors or verification is ambiguous, retain the exact fixture details in the local receipt so its owner can clean it up; do not remove any other cookie. Do not capture or attach raw cookie output.",
+            "For the inventory reload dimension, after the first full positive cycle and exact cleanup, perform the extension Reload only when the receipt-bound, allowed existing development artifact's machine workflow permits it; do not build locally or change artifact/output directories. Re-verify runtime ID, source/build identity, manifest, and that cookies permission is still granted, then start from the absent-fixture precondition and repeat the case's full positive cycle and exact cleanup. If that artifact cannot be safely reloaded or verified, leave reload unverified and do not substitute a different build."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Satisfy the shared receipt, role, build and permission prerequisites. Confirm the exact fixture URL/name is absent using get_cookies with {\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\"}; require {ok:true,count:0,cookies:[]}. If present or the result is ambiguous, stop immediately without inspecting or copying its value and without overwriting or deleting it.",
+            "Create the harmless fixture through set_cookie with {\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\",\"value\":\"safe-fixture-value\",\"path\":\"/\",\"secure\":true,\"http_only\":false,\"same_site\":\"lax\"}. Require successful result before continuing; if creation fails, stop.",
+            "In Tools, run get_cookies with exactly {\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\"}. Inspect the inline result locally. Do not copy its cookie object or value into notes/evidence.",
+            "Delete this run's exact fixture with delete_cookie using {\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\"}. Then run the same name-filtered get again and verify absence. Record only pass/fail counts and cleanup outcome, never raw cookie output.",
+            "For the input-validation control, run get_cookies with {\"url\":\"not-a-url\",\"name\":\"matrx_cookie_fixture_20261007_01\"}. Record the schema/validation failure and confirm it did not create, change or remove the fixture. Do not submit an empty object or a name-less filter."
+          ],
+          "expected": [
+            "The positive read returns ok:true, count 1, and a one-element cookies array for the uniquely named synthetic fixture. Locally confirm the returned name and harmless value match; do not record or copy the object/value.",
+            "After exact-name deletion, the filtered read returns ok:true, count 0, cookies [].",
+            "Malformed URL is rejected before cookie access; no fixture state changes. A returned result alone is direct handler evidence, not dispatcher permission/admin enforcement."
+          ],
           "dimensions": [
             "valid-input",
             "invalid-input",
             "permissions",
             "reload"
+          ],
+          "procedure_evidence": [
+            ".research/cookie-procedures-20261007.json",
+            ".research/cookie-procedures-peer-20261007.json"
           ]
         }
       ],
@@ -59618,16 +59645,37 @@
           ],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "No execution occurred in this lane. Before any future run, obtain the current stabilization resource permit and create the full receipt required by docs/stabilization/PLAN.md \u00a7 Build and reload contract. Bind it to an allowed, already verified development artifact and its exact source/build/runtime identity under the machine constraints; do not create a local build for this procedure. If no allowed artifact can be verified against the current source and runtime, stop and leave the case unverified. Rebuild/reload only when that contract requires it, and record the separate extension Reload and page reload actions. Never put secrets or cookie outputs in the receipt.",
+            "Run each case only in the signed-in admin mode listed by inventory. Do not run these case IDs as member or guest: source and inventory mark the handlers admin_only and member/guest not applicable. A direct manual Tools run in another role would bypass that check and cannot establish access behavior.",
+            "Use only the synthetic cookie fixture below, on the reserved non-resolving host cookie-procedure.invalid. Do not navigate to an authenticated site, use a real account cookie, omit the name filter, or use getAll. The cookie is created solely by this run through the extension API. If the exact fixture name already exists before the run, the exact-name preflight may render that one cookie object inline; stop immediately without inspecting or copying its value, and do not overwrite or delete the existing cookie. The exact URL/name filter still bounds the read. The expected value is synthetic and harmless; do not copy raw output into evidence.",
+            "{\"url\": \"https://cookie-procedure.invalid/\", \"name\": \"matrx_cookie_fixture_20261007_01\", \"value\": \"safe-fixture-value\", \"path\": \"/\", \"secure\": true, \"http_only\": false, \"same_site\": \"lax\"}",
+            "In the signed-in admin profile, open the side panel \u2192 Tools \u2192 Catalog. Select All handlers if needed, search the exact handler name, expand it, replace the JSON textarea with the case's exact JSON object, and click Run. Observe result/error inline. Run only one call at a time. The `cookies` optional permission must already be granted; if absent, record the case unavailable and stop without changing Settings or using the manual runner as a permission test.",
+            "Positive API calls require the optional cookies permission in the active build. Inventory's permissions dimension cannot be closed here: Tools manual Run skips the dispatcher permission check, and source does not establish a safe permission-denial procedure through this direct path. Do not revoke/request permissions merely to manufacture a manual-runner denial. Permission grant/denial enforcement and admin/confirmation gates remain unverified for the delegated dispatcher path.",
+            "The inventory lists advertised agent calls as deferred to Chat/Pilot. These cases use only Tools manual Run. Do not claim agent routing, dispatcher enforcement, admin denial, Ask/Act behavior, or privileged confirmation from their results.",
+            "After every case that creates the fixture, delete only the exact URL/name pair created by that case, then issue a name-filtered get and require count 0. If setup finds the name already present, stop without cleanup because ownership is not established. If a call errors or verification is ambiguous, retain the exact fixture details in the local receipt so its owner can clean it up; do not remove any other cookie. Do not capture or attach raw cookie output.",
+            "For the inventory reload dimension, after the first full positive cycle and exact cleanup, perform the extension Reload only when the receipt-bound, allowed existing development artifact's machine workflow permits it; do not build locally or change artifact/output directories. Re-verify runtime ID, source/build identity, manifest, and that cookies permission is still granted, then start from the absent-fixture precondition and repeat the case's full positive cycle and exact cleanup. If that artifact cannot be safely reloaded or verified, leave reload unverified and do not substitute a different build."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Satisfy the shared receipt, role, build and permission prerequisites. Verify the exact fixture URL/name is absent with get_cookies and the exact URL/name input; if it exists or the result is ambiguous, stop immediately without inspecting or copying its value and without overwriting or deleting it.",
+            "In Tools, run set_cookie with exactly {\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\",\"value\":\"safe-fixture-value\",\"path\":\"/\",\"secure\":true,\"http_only\":false,\"same_site\":\"lax\"}. Require {ok:true,cookie:<cookie>} and locally confirm the synthetic name/value and selected attributes; never copy the cookie object/value into evidence.",
+            "Verify creation through get_cookies with exactly {\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\"}. Require one match and locally compare its synthetic value; do not save raw output.",
+            "Clean up with delete_cookie using the exact fixture URL/name and confirm a subsequent exact-name get returns count 0. Record cleanup outcome.",
+            "For invalid-input coverage, run set_cookie with {\"url\":\"not-a-url\",\"name\":\"matrx_cookie_fixture_20261007_01\",\"value\":\"safe-fixture-value\"}. Require schema rejection and confirm the exact fixture remains absent. Do not test arbitrary domains or real account sites."
+          ],
+          "expected": [
+            "The valid call returns ok:true with a Chrome cookie result corresponding to the uniquely named, synthetic fixture; the follow-up exact-name read returns count 1.",
+            "After cleanup, the same filtered read returns count 0. The malformed URL fails before mutation and leaves fixture absent.",
+            "Manual success does not prove dispatcher admin, optional-permission or privileged-confirmation gates."
+          ],
           "dimensions": [
             "valid-input",
             "invalid-input",
             "permissions",
             "reload"
+          ],
+          "procedure_evidence": [
+            ".research/cookie-procedures-20261007.json",
+            ".research/cookie-procedures-peer-20261007.json"
           ]
         }
       ],
@@ -59758,16 +59806,37 @@
           ],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "No execution occurred in this lane. Before any future run, obtain the current stabilization resource permit and create the full receipt required by docs/stabilization/PLAN.md \u00a7 Build and reload contract. Bind it to an allowed, already verified development artifact and its exact source/build/runtime identity under the machine constraints; do not create a local build for this procedure. If no allowed artifact can be verified against the current source and runtime, stop and leave the case unverified. Rebuild/reload only when that contract requires it, and record the separate extension Reload and page reload actions. Never put secrets or cookie outputs in the receipt.",
+            "Run each case only in the signed-in admin mode listed by inventory. Do not run these case IDs as member or guest: source and inventory mark the handlers admin_only and member/guest not applicable. A direct manual Tools run in another role would bypass that check and cannot establish access behavior.",
+            "Use only the synthetic cookie fixture below, on the reserved non-resolving host cookie-procedure.invalid. Do not navigate to an authenticated site, use a real account cookie, omit the name filter, or use getAll. The cookie is created solely by this run through the extension API. If the exact fixture name already exists before the run, the exact-name preflight may render that one cookie object inline; stop immediately without inspecting or copying its value, and do not overwrite or delete the existing cookie. The exact URL/name filter still bounds the read. The expected value is synthetic and harmless; do not copy raw output into evidence.",
+            "{\"url\": \"https://cookie-procedure.invalid/\", \"name\": \"matrx_cookie_fixture_20261007_01\", \"value\": \"safe-fixture-value\", \"path\": \"/\", \"secure\": true, \"http_only\": false, \"same_site\": \"lax\"}",
+            "In the signed-in admin profile, open the side panel \u2192 Tools \u2192 Catalog. Select All handlers if needed, search the exact handler name, expand it, replace the JSON textarea with the case's exact JSON object, and click Run. Observe result/error inline. Run only one call at a time. The `cookies` optional permission must already be granted; if absent, record the case unavailable and stop without changing Settings or using the manual runner as a permission test.",
+            "Positive API calls require the optional cookies permission in the active build. Inventory's permissions dimension cannot be closed here: Tools manual Run skips the dispatcher permission check, and source does not establish a safe permission-denial procedure through this direct path. Do not revoke/request permissions merely to manufacture a manual-runner denial. Permission grant/denial enforcement and admin/confirmation gates remain unverified for the delegated dispatcher path.",
+            "The inventory lists advertised agent calls as deferred to Chat/Pilot. These cases use only Tools manual Run. Do not claim agent routing, dispatcher enforcement, admin denial, Ask/Act behavior, or privileged confirmation from their results.",
+            "After every case that creates the fixture, delete only the exact URL/name pair created by that case, then issue a name-filtered get and require count 0. If setup finds the name already present, stop without cleanup because ownership is not established. If a call errors or verification is ambiguous, retain the exact fixture details in the local receipt so its owner can clean it up; do not remove any other cookie. Do not capture or attach raw cookie output.",
+            "For the inventory reload dimension, after the first full positive cycle and exact cleanup, perform the extension Reload only when the receipt-bound, allowed existing development artifact's machine workflow permits it; do not build locally or change artifact/output directories. Re-verify runtime ID, source/build identity, manifest, and that cookies permission is still granted, then start from the absent-fixture precondition and repeat the case's full positive cycle and exact cleanup. If that artifact cannot be safely reloaded or verified, leave reload unverified and do not substitute a different build."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Satisfy the shared receipt, role, build and permission prerequisites. Confirm the exact fixture URL/name is absent with the bounded get_cookies URL+name query; if it exists or the result is ambiguous, stop immediately without inspecting or copying its value and without overwriting or deleting it.",
+            "Create this run's synthetic fixture with set_cookie using {\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\",\"value\":\"safe-fixture-value\",\"path\":\"/\",\"secure\":true,\"http_only\":false,\"same_site\":\"lax\"}; require success, then verify one exact-name match before deletion.",
+            "Run delete_cookie with exactly {\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\"}. Require {ok:true,removed:<cookie>} for the cookie just created in this run. Do not copy raw output.",
+            "Run get_cookies with the exact fixture URL/name and require {ok:true,count:0,cookies:[]}. This proves the owned fixture is absent after deletion.",
+            "For input validation, run delete_cookie with {\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"\"}. Require schema rejection and confirm the fixture remains absent. Never try deletion against any other cookie name or domain."
+          ],
+          "expected": [
+            "The positive call returns ok:true and a removed-cookie object for the exact owned fixture; the follow-up exact-name read returns count 0.",
+            "Empty name is rejected before API access and leaves the fixture absent.",
+            "The direct manual call does not prove dispatcher permission, admin or privileged-confirmation enforcement."
+          ],
           "dimensions": [
             "valid-input",
             "invalid-input",
             "permissions",
             "reload"
+          ],
+          "procedure_evidence": [
+            ".research/cookie-procedures-20261007.json",
+            ".research/cookie-procedures-peer-20261007.json"
           ]
         }
       ],
@@ -71913,16 +71982,37 @@
           ],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "No execution occurred in this lane. Before any future run, obtain the current stabilization resource permit and create the full receipt required by docs/stabilization/PLAN.md \u00a7 Build and reload contract. Bind it to an allowed, already verified development artifact and its exact source/build/runtime identity under the machine constraints; do not create a local build for this procedure. If no allowed artifact can be verified against the current source and runtime, stop and leave the case unverified. Rebuild/reload only when that contract requires it, and record the separate extension Reload and page reload actions. Never put secrets or cookie outputs in the receipt.",
+            "Run each case only in the signed-in admin mode listed by inventory. Do not run these case IDs as member or guest: source and inventory mark the handlers admin_only and member/guest not applicable. A direct manual Tools run in another role would bypass that check and cannot establish access behavior.",
+            "Use only the synthetic cookie fixture below, on the reserved non-resolving host cookie-procedure.invalid. Do not navigate to an authenticated site, use a real account cookie, omit the name filter, or use getAll. The cookie is created solely by this run through the extension API. If the exact fixture name already exists before the run, the exact-name preflight may render that one cookie object inline; stop immediately without inspecting or copying its value, and do not overwrite or delete the existing cookie. The exact URL/name filter still bounds the read. The expected value is synthetic and harmless; do not copy raw output into evidence.",
+            "{\"url\": \"https://cookie-procedure.invalid/\", \"name\": \"matrx_cookie_fixture_20261007_01\", \"value\": \"safe-fixture-value\", \"path\": \"/\", \"secure\": true, \"http_only\": false, \"same_site\": \"lax\"}",
+            "In the signed-in admin profile, open the side panel \u2192 Tools \u2192 Catalog. Select All handlers if needed, search the exact handler name, expand it, replace the JSON textarea with the case's exact JSON object, and click Run. Observe result/error inline. Run only one call at a time. The `cookies` optional permission must already be granted; if absent, record the case unavailable and stop without changing Settings or using the manual runner as a permission test.",
+            "Positive API calls require the optional cookies permission in the active build. Inventory's permissions dimension cannot be closed here: Tools manual Run skips the dispatcher permission check, and source does not establish a safe permission-denial procedure through this direct path. Do not revoke/request permissions merely to manufacture a manual-runner denial. Permission grant/denial enforcement and admin/confirmation gates remain unverified for the delegated dispatcher path.",
+            "The inventory lists advertised agent calls as deferred to Chat/Pilot. These cases use only Tools manual Run. Do not claim agent routing, dispatcher enforcement, admin denial, Ask/Act behavior, or privileged confirmation from their results.",
+            "After every case that creates the fixture, delete only the exact URL/name pair created by that case, then issue a name-filtered get and require count 0. If setup finds the name already present, stop without cleanup because ownership is not established. If a call errors or verification is ambiguous, retain the exact fixture details in the local receipt so its owner can clean it up; do not remove any other cookie. Do not capture or attach raw cookie output.",
+            "For the inventory reload dimension, after the first full positive cycle and exact cleanup, perform the extension Reload only when the receipt-bound, allowed existing development artifact's machine workflow permits it; do not build locally or change artifact/output directories. Re-verify runtime ID, source/build identity, manifest, and that cookies permission is still granted, then start from the absent-fixture precondition and repeat the case's full positive cycle and exact cleanup. If that artifact cannot be safely reloaded or verified, leave reload unverified and do not substitute a different build."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Satisfy the shared receipt, role, build and permission prerequisites. The control list includes whole-tool invocation plus get, set and delete. Confirm the exact fixture URL/name is absent using action=get with {\"action\":\"get\",\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\"}; if present or ambiguous, stop immediately without inspecting or copying its value and without overwriting or deleting it.",
+            "Exercise the set branch using exactly {\"action\":\"set\",\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\",\"value\":\"safe-fixture-value\",\"path\":\"/\",\"secure\":true,\"http_only\":false,\"same_site\":\"lax\"}. Require a successful delegated set result and then verify one exact-name match with action=get.",
+            "Exercise the get branch with exactly {\"action\":\"get\",\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\"}. Confirm locally the one result is the synthetic fixture; never copy raw output.",
+            "Exercise the delete branch with exactly {\"action\":\"delete\",\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\"}. Then get again with the same URL/name and require count 0. This cleanup is required even if earlier action controls succeeded.",
+            "For invalid input, run action=set with {\"action\":\"set\",\"url\":\"https://cookie-procedure.invalid/\",\"value\":\"safe-fixture-value\"}. Require the wrapper's explicit missing-name failure and confirm the fixture remains absent. Separately, if desired, malformed URL can be used to demonstrate leaf-schema rejection; it must not be treated as a permission test."
+          ],
+          "expected": [
+            "The set action succeeds and creates one fixture; get returns ok:true/count 1 for that exact fixture; delete reports success and the subsequent get reports count 0.",
+            "Set without name returns {ok:false,reason:\"'name' and 'value' required for set\"} before delegating and leaves fixture absent.",
+            "These results measure only the direct merged handler and do not prove delegated dispatcher gates or confirmation behavior."
+          ],
           "dimensions": [
             "valid-input",
             "invalid-input",
             "permissions",
             "reload"
+          ],
+          "procedure_evidence": [
+            ".research/cookie-procedures-20261007.json",
+            ".research/cookie-procedures-peer-20261007.json"
           ]
         }
       ],

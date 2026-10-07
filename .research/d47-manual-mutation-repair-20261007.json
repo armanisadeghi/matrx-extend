@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0047",
+  "scope": "Source-only causal mutation evidence for manual NET_CAPTURE_EVENT versus saved CDP replay; no native, build, release, database, or product edit",
+  "status": "CAUSAL_GUARD_PROVED_SOURCE_ONLY",
+  "source_commit_at_start": "9c1a6eb7",
+  "scratch_environment": {
+    "path": "/tmp/d47-manual-mutation-repair-20261007",
+    "repair": "Copied existing generated .wxt/tsconfig.json from shared checkout; copied src, scripts, types, test, setup, configs, policy; symlinked node_modules. Resource guard script in scratch ran child from scratch cwd.",
+    "mutation_safety": "Only scratch run-interactive.ts was changed; shared source and test stayed unchanged. Scratch source restored to shared hash before green."
+  },
+  "sha256": {
+    "shared_run_interactive_before_after": "ec8af7d4e75da1997c2dcb3064b8484fe26bae4d1d3413b56bebd3e88fd93046",
+    "test_before_after": "a64d73056e2f29869cb83ac2082d053430b40cd60733d210d76da35a1440b3f8",
+    "constant_mutant": "81a1995eaafe41c83adcdf0022cc3ce8e0702741f091f0ca0a3ceb4a2b93b3b2",
+    "channel_mutant": "a01f7622ea44440c04d76e9ac5931bf15d8d83259a7044f6dafdb63b9ff65b38"
+  },
+  "mutations": [
+    {
+      "id": "constant_output_gut_check",
+      "target": "src/lib/data-pattern/run-interactive.ts",
+      "change": "Insert return [{ title: 'Brooklyn Bowl' }]; as first statement in runNetworkCapturePattern",
+      "patch": "--- untouched/run-interactive.ts\n+++ scratch-constant/run-interactive.ts\n@@ -343,6 +343,7 @@\n   tabId: number,\n   opts: InteractiveRunOptions,\n ): Promise<ExtractedRow[]> {\n+  return [{ title: 'Brooklyn Bowl' }];\n   const {\n     url_filter,\n     url_match,\n",
+      "finding": "Test fails when replay orchestration is skipped; the first observed failure is its Page.reload requirement, before saved-row assertions."
+    },
+    {
+      "id": "production_owned_channel_mix",
+      "target": "src/lib/data-pattern/run-interactive.ts",
+      "change": "Subscribe saved replay collector to the actual manual NET_CAPTURE_EVENT and falsely stamp its message with this replay capture_id and document_key before calling consumeEvent. This weakens production-owned routing; the existing manual bootstrap/relay/hook path supplies the event. It is not a claim that manual data was trusted CDP output.",
+      "patch": "--- untouched/run-interactive.ts\n+++ scratch-channel-mix/run-interactive.ts\n@@ -496,6 +496,13 @@\n       );\n       return { ack: true };\n     };\n+    // MUTATION ONLY: merge manual channel into the saved replay collector and\n+    // falsely attribute its event to this replay's capture identity.\n+    cleanup.push(\n+      on<CapturedNetEvent, { ack: true }>(CHANNELS.NET_CAPTURE_EVENT, (event) =>\n+        consumeEvent({ ...event, capture_id: captureId, document_key: 'manual-channel' }),\n+      ),\n+    );\n     let windowTimer: ReturnType<typeof setTimeout> | undefined;\n     const startWindow = () => {\n       if (finished) return;\n",
+      "finding": "Manual prior response replaced the current CDP result at the final saved-row assertion, establishing the candidate test detects this route-merge regression."
+    }
+  ],
+  "runs": [
+    {
+      "run_id": "d47-manual-repair-constant-red-20261007",
+      "command": "node scripts/stabilization-resource.mjs run --run-id d47-manual-repair-constant-red-20261007 --profile-dir /tmp/d47-manual-mutation-repair-20261007 -- pnpm exec vitest run --maxWorkers=1 tests/unit/d47-manual-replay-isolation.test.tsx",
+      "working_directory": "/tmp/d47-manual-mutation-repair-20261007",
+      "journal": "docs/stabilization/resource-journals/d47-manual-repair-constant-red-20261007.jsonl",
+      "decision": "child_failed",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 1,
+      "expected_outcome": "RED",
+      "assertion_output": "Page.reload was not called: early SUT orchestration failure at test line 255; 0/1 passed"
+    },
+    {
+      "run_id": "d47-manual-repair-channel-red-20261007",
+      "command": "node scripts/stabilization-resource.mjs run --run-id d47-manual-repair-channel-red-20261007 --profile-dir /tmp/d47-manual-mutation-repair-20261007 -- pnpm exec vitest run --maxWorkers=1 tests/unit/d47-manual-replay-isolation.test.tsx",
+      "working_directory": "/tmp/d47-manual-mutation-repair-20261007",
+      "journal": "docs/stabilization/resource-journals/d47-manual-repair-channel-red-20261007.jsonl",
+      "decision": "refused",
+      "admitted": false,
+      "resource_invalid": false,
+      "child_exit_code": 2,
+      "expected_outcome": "REFUSED",
+      "assertion_output": "Guard refused before launch because prior guard process had not fully exited; no test verdict"
+    },
+    {
+      "run_id": "d47-manual-repair-channel-red2-20261007",
+      "command": "node scripts/stabilization-resource.mjs run --run-id d47-manual-repair-channel-red2-20261007 --profile-dir /tmp/d47-manual-mutation-repair-20261007 -- pnpm exec vitest run --maxWorkers=1 tests/unit/d47-manual-replay-isolation.test.tsx",
+      "working_directory": "/tmp/d47-manual-mutation-repair-20261007",
+      "journal": "docs/stabilization/resource-journals/d47-manual-repair-channel-red2-20261007.jsonl",
+      "decision": "child_failed",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 1,
+      "expected_outcome": "RED",
+      "assertion_output": "Saved replay assertion at test line 287: received Manual prior response, expected Brooklyn Bowl; 0/1 passed"
+    },
+    {
+      "run_id": "d47-manual-repair-untouched-green-20261007",
+      "command": "node scripts/stabilization-resource.mjs run --run-id d47-manual-repair-untouched-green-20261007 --profile-dir /tmp/d47-manual-mutation-repair-20261007 -- pnpm exec vitest run --maxWorkers=1 tests/unit/d47-manual-replay-isolation.test.tsx",
+      "working_directory": "/tmp/d47-manual-mutation-repair-20261007",
+      "journal": "docs/stabilization/resource-journals/d47-manual-repair-untouched-green-20261007.jsonl",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 0,
+      "expected_outcome": "GREEN",
+      "assertion_output": "Untouched source passed 1/1 test"
+    }
+  ],
+  "interpretation": "Constant-output RED, channel-mix RED at intended assertion, and untouched GREEN were each admitted with resourceInvalid false. The one refused launch has no test verdict. This proves a focused source guard only; it does not establish native product behavior or close D47/T57.",
+  "limits": [
+    "No native browser acceptance, build, release, database, or product source change was performed.",
+    "The constant-output mutant failed at the orchestration assertion rather than the second differing output; the channel-mix mutant failed at the intended output assertion."
+  ]
+}

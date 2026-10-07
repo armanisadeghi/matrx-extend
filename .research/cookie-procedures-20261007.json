@@ -1,0 +1,211 @@
+{
+  "schema_version": 1,
+  "task": "structured source-grounded manual procedures for cookie tools",
+  "created_at": "2026-10-07",
+  "status": "proposals-authored-runtime-unverified",
+  "scope": ["EXT-F-4097-T01", "EXT-F-4098-T01", "EXT-F-4099-T01", "EXT-F-4161-T01"],
+  "method": "Inspected current handlers, schemas, Tools manual runner, permission declarations and inventory. No browser, extension, build, permission, database, or runtime execution was performed in this lane.",
+  "source_anchors": [
+    {
+      "path": "src/lib/tools/handlers/optional-perms.ts",
+      "lines": "22-52,55-94,96-113",
+      "evidence": "Live leaf schemas and handlers: get_cookies accepts optional url, domain, name; if name and url/domain are supplied it calls chrome.cookies.get and returns count/cookies. Without name it calls getAll. set_cookie requires URL-formatted url, nonempty name and string value, accepts optional cookie attributes and maps http_only/same_site/expiration to Chrome API fields. delete_cookie requires URL-formatted url and nonempty name and calls remove. All three are admin_only, tier read/privileged/privileged respectively, require optional cookies permission, and return API results or structured failure."
+    },
+    {
+      "path": "src/lib/tools/handlers/canonical-mergers.ts",
+      "lines": "192-250",
+      "evidence": "chrome_cookies schema accepts action get|set|delete, string url, optional name/domain/value/path/expires_in_seconds/same_site/http_only/secure. Router declares admin_only, privileged, required_optional_permissions cookies; tierFor makes get read. Set requires name and value, converts relative expires_in_seconds to epoch seconds, then delegates; delete requires name. Wrapper same_site omits leaf-supported unspecified and url is only string at wrapper level, with leaf URL validation occurring on delegate."
+    },
+    {
+      "path": "src/features/tools/ToolsView.tsx",
+      "lines": "74-95,346-462,514-560",
+      "evidence": "Tools → Catalog displays local Zod JSON schema, parses entered JSON, validates it, then calls handler.run directly with permissionMode act. This direct manual runner bypasses the dispatcher permission and confirmation gates; it labels non-read execution 'Test mode bypasses approval' and displays raw handler output inline. It does not prove delegated-agent routing, admin enforcement, optional-permission enforcement, or privileged confirmation."
+    },
+    {
+      "path": "src/lib/tools/dispatch.ts",
+      "lines": "763-837,1146-1172,1210-1229",
+      "evidence": "Normal delegated dispatch enforces admin_only, required optional permissions and confirmation for privileged calls. These gates are outside the direct Tools manual runner path and are not tested by these procedures."
+    },
+    {
+      "path": "src/lib/permissions/optional.ts",
+      "lines": "4-13,21-27,45-59",
+      "evidence": "cookies is a runtime optional permission, offered through Settings; the permission label describes site-wide cookie read/set/delete access. Optional host permissions are not supported by this app."
+    },
+    {
+      "path": "wxt.config.ts",
+      "lines": "129-153",
+      "evidence": "Chrome manifest declares cookies under optional_permissions and broad <all_urls> under base host_permissions. Browser-specific manifest output still must be confirmed in the exact receipt-bound build."
+    },
+    {
+      "path": "docs/stabilization/reports/inventory-tools.json",
+      "lines": "10270-10335,10390-10480,10488-10580,18720-18835",
+      "evidence": "Preserves case/control IDs, admin-only applicability, required optional cookies permission, canonical chrome_cookies four controls, and unverified inventory state. Guest and member are not applicable for these cases; admin is applicable."
+    },
+    {
+      "path": "docs/stabilization/PLAN.md",
+      "lines": "24-34",
+      "evidence": "Every run needs a current resource permit and receipt including source SHA/dirty-source hash, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, auth/role/org, permissions, backend identity, fixture IDs, timestamp, login/provenance/data origin, flags, interception, mocks and seeded browser state. Runtime build identity must be verified; HMR alone is not acceptance proof."
+    }
+  ],
+  "procedure_prerequisites": {
+    "execution": "No execution occurred in this lane. Before any future run, obtain the current stabilization resource permit and create the full receipt required by docs/stabilization/PLAN.md § Build and reload contract. Bind it to an allowed, already verified development artifact and its exact source/build/runtime identity under the machine constraints; do not create a local build for this procedure. If no allowed artifact can be verified against the current source and runtime, stop and leave the case unverified. Rebuild/reload only when that contract requires it, and record the separate extension Reload and page reload actions. Never put secrets or cookie outputs in the receipt.",
+    "roles": "Run each case only in the signed-in admin mode listed by inventory. Do not run these case IDs as member or guest: source and inventory mark the handlers admin_only and member/guest not applicable. A direct manual Tools run in another role would bypass that check and cannot establish access behavior.",
+    "fixture": "Use only the synthetic cookie fixture below, on the reserved non-resolving host cookie-procedure.invalid. Do not navigate to an authenticated site, use a real account cookie, omit the name filter, or use getAll. The cookie is created solely by this run through the extension API. If the exact fixture name already exists before the run, the exact-name preflight may render that one cookie object inline; stop immediately without inspecting or copying its value, and do not overwrite or delete the existing cookie. The exact URL/name filter still bounds the read. The expected value is synthetic and harmless; do not copy raw output into evidence.",
+    "fixture_input": {
+      "url": "https://cookie-procedure.invalid/",
+      "name": "matrx_cookie_fixture_20261007_01",
+      "value": "safe-fixture-value",
+      "path": "/",
+      "secure": true,
+      "http_only": false,
+      "same_site": "lax"
+    },
+    "manual_runner": "In the signed-in admin profile, open the side panel → Tools → Catalog. Select All handlers if needed, search the exact handler name, expand it, replace the JSON textarea with the case's exact JSON object, and click Run. Observe result/error inline. Run only one call at a time. The `cookies` optional permission must already be granted; if absent, record the case unavailable and stop without changing Settings or using the manual runner as a permission test.",
+    "permission_boundary": "Positive API calls require the optional cookies permission in the active build. Inventory's permissions dimension cannot be closed here: Tools manual Run skips the dispatcher permission check, and source does not establish a safe permission-denial procedure through this direct path. Do not revoke/request permissions merely to manufacture a manual-runner denial. Permission grant/denial enforcement and admin/confirmation gates remain unverified for the delegated dispatcher path.",
+    "dispatcher_boundary": "The inventory lists advertised agent calls as deferred to Chat/Pilot. These cases use only Tools manual Run. Do not claim agent routing, dispatcher enforcement, admin denial, Ask/Act behavior, or privileged confirmation from their results.",
+    "cleanup": "After every case that creates the fixture, delete only the exact URL/name pair created by that case, then issue a name-filtered get and require count 0. If setup finds the name already present, stop without cleanup because ownership is not established. If a call errors or verification is ambiguous, retain the exact fixture details in the local receipt so its owner can clean it up; do not remove any other cookie. Do not capture or attach raw cookie output.",
+    "reload_cycle": "For the inventory reload dimension, after the first full positive cycle and exact cleanup, perform the extension Reload only when the receipt-bound, allowed existing development artifact's machine workflow permits it; do not build locally or change artifact/output directories. Re-verify runtime ID, source/build identity, manifest, and that cookies permission is still granted, then start from the absent-fixture precondition and repeat the case's full positive cycle and exact cleanup. If that artifact cannot be safely reloaded or verified, leave reload unverified and do not substitute a different build."
+  },
+  "source_findings": [
+    "Inventory and live source agree that all four cases are admin-only; applicability is admin only. The separate member-applicable inventory entries for other tools do not extend to these cookies.",
+    "The direct leaf get_cookies schema permits an empty object, which calls getAll with no filters and can disclose all accessible cookies. Do not use that input. The procedure always supplies both fixture URL and exact fixture name, taking the bounded chrome.cookies.get branch.",
+    "Canonical chrome_cookies wrapper schema is looser than its leaves for URL validation and same_site values. Its `url` is plain z.string(), then delegated leaf schemas validate URL for each branch; its same_site enum excludes `unspecified`, although set_cookie leaf accepts it. Procedures use a URL valid for both layers and same_site=lax. These are source/schema inconsistencies, not inferred behavior failures.",
+    "Inventory control labels include legacy tool-catalog data. This proposal uses the current TypeScript handlers and schema as execution source and leaves inventory status unchanged."
+  ],
+  "cases": [
+    {
+      "feature_id": "EXT-F-4097",
+      "name": "get_cookies",
+      "case_id": "EXT-F-4097-T01",
+      "title": "Controlled manual execution: get_cookies",
+      "control_ids": ["EXT-F-4097-C01"],
+      "modes": ["admin"],
+      "status": "unverified",
+      "steps": [
+        "Satisfy the shared receipt, role, build and permission prerequisites. Confirm the exact fixture URL/name is absent using get_cookies with {\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\"}; require {ok:true,count:0,cookies:[]}. If present or the result is ambiguous, stop immediately without inspecting or copying its value and without overwriting or deleting it.",
+        "Create the harmless fixture through set_cookie with {\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\",\"value\":\"safe-fixture-value\",\"path\":\"/\",\"secure\":true,\"http_only\":false,\"same_site\":\"lax\"}. Require successful result before continuing; if creation fails, stop.",
+        "In Tools, run get_cookies with exactly {\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\"}. Inspect the inline result locally. Do not copy its cookie object or value into notes/evidence.",
+        "Delete this run's exact fixture with delete_cookie using {\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\"}. Then run the same name-filtered get again and verify absence. Record only pass/fail counts and cleanup outcome, never raw cookie output.",
+        "For the input-validation control, run get_cookies with {\"url\":\"not-a-url\",\"name\":\"matrx_cookie_fixture_20261007_01\"}. Record the schema/validation failure and confirm it did not create, change or remove the fixture. Do not submit an empty object or a name-less filter."
+      ],
+      "expected": [
+        "The positive read returns ok:true, count 1, and a one-element cookies array for the uniquely named synthetic fixture. Locally confirm the returned name and harmless value match; do not record or copy the object/value.",
+        "After exact-name deletion, the filtered read returns ok:true, count 0, cookies [].",
+        "Malformed URL is rejected before cookie access; no fixture state changes. A returned result alone is direct handler evidence, not dispatcher permission/admin enforcement."
+      ],
+      "dimensions": [
+        "valid-input",
+        "invalid-input",
+        "cookies-permission-present",
+        "reload",
+        "admin",
+        "owned-fixture-cleanup"
+      ],
+      "unverified": [
+        "Runtime values, role gate, permission gate, dispatcher routing, privileged confirmation and permission-denial behavior were not exercised."
+      ]
+    },
+    {
+      "feature_id": "EXT-F-4098",
+      "name": "set_cookie",
+      "case_id": "EXT-F-4098-T01",
+      "title": "Controlled manual execution: set_cookie",
+      "control_ids": ["EXT-F-4098-C01"],
+      "modes": ["admin"],
+      "status": "unverified",
+      "steps": [
+        "Satisfy the shared receipt, role, build and permission prerequisites. Verify the exact fixture URL/name is absent with get_cookies and the exact URL/name input; if it exists or the result is ambiguous, stop immediately without inspecting or copying its value and without overwriting or deleting it.",
+        "In Tools, run set_cookie with exactly {\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\",\"value\":\"safe-fixture-value\",\"path\":\"/\",\"secure\":true,\"http_only\":false,\"same_site\":\"lax\"}. Require {ok:true,cookie:<cookie>} and locally confirm the synthetic name/value and selected attributes; never copy the cookie object/value into evidence.",
+        "Verify creation through get_cookies with exactly {\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\"}. Require one match and locally compare its synthetic value; do not save raw output.",
+        "Clean up with delete_cookie using the exact fixture URL/name and confirm a subsequent exact-name get returns count 0. Record cleanup outcome.",
+        "For invalid-input coverage, run set_cookie with {\"url\":\"not-a-url\",\"name\":\"matrx_cookie_fixture_20261007_01\",\"value\":\"safe-fixture-value\"}. Require schema rejection and confirm the exact fixture remains absent. Do not test arbitrary domains or real account sites."
+      ],
+      "expected": [
+        "The valid call returns ok:true with a Chrome cookie result corresponding to the uniquely named, synthetic fixture; the follow-up exact-name read returns count 1.",
+        "After cleanup, the same filtered read returns count 0. The malformed URL fails before mutation and leaves fixture absent.",
+        "Manual success does not prove dispatcher admin, optional-permission or privileged-confirmation gates."
+      ],
+      "dimensions": [
+        "valid-input",
+        "invalid-input",
+        "cookies-permission-present",
+        "reload",
+        "admin",
+        "owned-fixture-cleanup"
+      ],
+      "unverified": [
+        "Runtime values, role gate, permission gate, dispatcher routing, privileged confirmation and permission-denial behavior were not exercised."
+      ]
+    },
+    {
+      "feature_id": "EXT-F-4099",
+      "name": "delete_cookie",
+      "case_id": "EXT-F-4099-T01",
+      "title": "Controlled manual execution: delete_cookie",
+      "control_ids": ["EXT-F-4099-C01"],
+      "modes": ["admin"],
+      "status": "unverified",
+      "steps": [
+        "Satisfy the shared receipt, role, build and permission prerequisites. Confirm the exact fixture URL/name is absent with the bounded get_cookies URL+name query; if it exists or the result is ambiguous, stop immediately without inspecting or copying its value and without overwriting or deleting it.",
+        "Create this run's synthetic fixture with set_cookie using {\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\",\"value\":\"safe-fixture-value\",\"path\":\"/\",\"secure\":true,\"http_only\":false,\"same_site\":\"lax\"}; require success, then verify one exact-name match before deletion.",
+        "Run delete_cookie with exactly {\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\"}. Require {ok:true,removed:<cookie>} for the cookie just created in this run. Do not copy raw output.",
+        "Run get_cookies with the exact fixture URL/name and require {ok:true,count:0,cookies:[]}. This proves the owned fixture is absent after deletion.",
+        "For input validation, run delete_cookie with {\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"\"}. Require schema rejection and confirm the fixture remains absent. Never try deletion against any other cookie name or domain."
+      ],
+      "expected": [
+        "The positive call returns ok:true and a removed-cookie object for the exact owned fixture; the follow-up exact-name read returns count 0.",
+        "Empty name is rejected before API access and leaves the fixture absent.",
+        "The direct manual call does not prove dispatcher permission, admin or privileged-confirmation enforcement."
+      ],
+      "dimensions": [
+        "valid-input",
+        "invalid-input",
+        "cookies-permission-present",
+        "reload",
+        "admin",
+        "owned-fixture-cleanup"
+      ],
+      "unverified": [
+        "Runtime values, role gate, permission gate, dispatcher routing, privileged confirmation and permission-denial behavior were not exercised."
+      ]
+    },
+    {
+      "feature_id": "EXT-F-4161",
+      "name": "chrome_cookies",
+      "case_id": "EXT-F-4161-T01",
+      "title": "Controlled manual execution: chrome_cookies get/set/delete",
+      "control_ids": ["EXT-F-4161-C01", "EXT-F-4161-C02", "EXT-F-4161-C03", "EXT-F-4161-C04"],
+      "modes": ["admin"],
+      "status": "unverified",
+      "steps": [
+        "Satisfy the shared receipt, role, build and permission prerequisites. The control list includes whole-tool invocation plus get, set and delete. Confirm the exact fixture URL/name is absent using action=get with {\"action\":\"get\",\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\"}; if present or ambiguous, stop immediately without inspecting or copying its value and without overwriting or deleting it.",
+        "Exercise the set branch using exactly {\"action\":\"set\",\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\",\"value\":\"safe-fixture-value\",\"path\":\"/\",\"secure\":true,\"http_only\":false,\"same_site\":\"lax\"}. Require a successful delegated set result and then verify one exact-name match with action=get.",
+        "Exercise the get branch with exactly {\"action\":\"get\",\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\"}. Confirm locally the one result is the synthetic fixture; never copy raw output.",
+        "Exercise the delete branch with exactly {\"action\":\"delete\",\"url\":\"https://cookie-procedure.invalid/\",\"name\":\"matrx_cookie_fixture_20261007_01\"}. Then get again with the same URL/name and require count 0. This cleanup is required even if earlier action controls succeeded.",
+        "For invalid input, run action=set with {\"action\":\"set\",\"url\":\"https://cookie-procedure.invalid/\",\"value\":\"safe-fixture-value\"}. Require the wrapper's explicit missing-name failure and confirm the fixture remains absent. Separately, if desired, malformed URL can be used to demonstrate leaf-schema rejection; it must not be treated as a permission test."
+      ],
+      "expected": [
+        "The set action succeeds and creates one fixture; get returns ok:true/count 1 for that exact fixture; delete reports success and the subsequent get reports count 0.",
+        "Set without name returns {ok:false,reason:\"'name' and 'value' required for set\"} before delegating and leaves fixture absent.",
+        "These results measure only the direct merged handler and do not prove delegated dispatcher gates or confirmation behavior."
+      ],
+      "dimensions": [
+        "tool-invocation",
+        "action-get",
+        "action-set",
+        "action-delete",
+        "invalid-input",
+        "cookies-permission-present",
+        "reload",
+        "admin",
+        "owned-fixture-cleanup"
+      ],
+      "unverified": [
+        "Runtime values, role gate, permission gate, dispatcher routing, privileged confirmation and permission-denial behavior were not exercised."
+      ]
+    }
+  ],
+  "runtime_status": "UNVERIFIED",
+  "inventory_status_changed": false,
+  "next_action": "Independent source review the four proposals. Only an authorized later runtime lane with a current permit and allowed verified artifact can execute them; keep inventory cases unverified until real evidence exists."
+}

@@ -3,6 +3,7 @@ const harness = vi.hoisted(() => ({ send: vi.fn(), release: vi.fn(), acquire: vi
 vi.mock('@/lib/cdp/client', () => ({ acquireSession: harness.acquire }));
 import { startDocumentNetworkCapture } from '@/lib/data-pattern/document-network-capture';
 import { cleanupNetworkTapMain, networkTapCleanupPresent } from '@/lib/data-pattern/network-tap';
+import { runNetworkCapturePattern } from '@/lib/data-pattern/run-interactive';
 const events = new Set<(source: { tabId: number }, method: string, params: object) => void>();
 const detaches = new Set<(source: { tabId: number }) => void>();
 const emit = (method: string, params: object) => {
@@ -13,6 +14,7 @@ const context = (id: number, uniqueId: string) =>
     context: { id, uniqueId, auxData: { frameId: 'main-frame', isDefault: true } },
   });
 let binding = '';
+let baseCaptureSend: (method: string, params: Record<string, unknown>) => Promise<unknown>;
 const nonce = 'a'.repeat(32);
 const handshake = (contextId: number, hookNonce = nonce) =>
   emit('Runtime.bindingCalled', {
@@ -92,6 +94,7 @@ beforeEach(() => {
       return { identifier: 'new-document-script' };
     return {};
   });
+  baseCaptureSend = harness.send.getMockImplementation()!;
 });
 afterEach(() => {
   events.clear();
@@ -109,6 +112,44 @@ const options = () => ({
   onEvent: vi.fn(),
   onFailure: vi.fn(),
 });
+const savedReplay = (timeoutMs = 100) =>
+  runNetworkCapturePattern(
+    {
+      url_filter: 'https://electronic.vegas/api/events',
+      method: 'GET',
+      key_path: 'events',
+      body_match: 'ignore',
+    },
+    37,
+    { initiation: 'user', timeoutMs },
+  );
+const replayPacket = (contextId: number, title: string, sequence: number) =>
+  packet(contextId, JSON.stringify({ events: [{ title }] }), sequence);
+const emitReload = (duringReload: () => void) => {
+  harness.send.mockImplementation(async (method, params) => {
+    if (method === 'Page.reload') {
+      started();
+      context(2, 'reloaded-document');
+      duringReload();
+      committed();
+      handshake(2);
+    }
+    return baseCaptureSend(method, params);
+  });
+};
+const waitForReload = async (count: number) => {
+  for (
+    let i = 0;
+    i < 100 &&
+    harness.send.mock.calls.filter(([method]) => method === 'Page.reload').length < count;
+    i++
+  ) {
+    await Promise.resolve();
+  }
+  expect(harness.send.mock.calls.filter(([method]) => method === 'Page.reload')).toHaveLength(
+    count,
+  );
+};
 
 it('ends and releases its lease when Page.reload never settles', async () => {
   vi.useFakeTimers();
@@ -267,6 +308,88 @@ it('refuses a stale-only response rather than delivering it as the replay docume
   expect(opts.onEvent).not.toHaveBeenCalled();
   await capture.close();
   expect(opts.onEvent).not.toHaveBeenCalled();
+});
+
+it('saved replay refuses stale-only rows and recovers on a fresh run', async () => {
+  vi.useFakeTimers();
+  emitReload(() => replayPacket(1, 'Prior venue', 999));
+  const stale = savedReplay();
+  const staleOutcome = stale.then(
+    (rows) => ({ rows }),
+    (error: Error) => ({ error: error.message }),
+  );
+  await waitForReload(1);
+  await vi.advanceTimersByTimeAsync(100);
+  expect(await staleOutcome).toEqual({
+    error: expect.stringMatching(/No successful request matching/),
+  });
+
+  emitReload(() => replayPacket(2, 'Brooklyn Bowl', 1));
+  const recovered = savedReplay();
+  const recoveredOutcome = recovered.then(
+    (rows) => ({ rows }),
+    (error: Error) => ({ error: error.message }),
+  );
+  await waitForReload(2);
+  await vi.advanceTimersByTimeAsync(100);
+  expect(await recoveredOutcome).toEqual({ rows: [{ title: 'Brooklyn Bowl' }] });
+});
+
+it('saved replay ignores a prior-run binding while accepting its own document', async () => {
+  vi.useFakeTimers();
+  emitReload(() => replayPacket(2, 'Earlier run', 1));
+  const first = savedReplay();
+  const firstOutcome = first.then(
+    (rows) => ({ rows }),
+    (error: Error) => ({ error: error.message }),
+  );
+  await waitForReload(1);
+  await vi.advanceTimersByTimeAsync(100);
+  expect(await firstOutcome).toEqual({ rows: [{ title: 'Earlier run' }] });
+  const oldBinding = binding;
+  emitReload(() => {
+    // A delayed event from the previous capture still bears its old binding.
+    emit('Runtime.bindingCalled', {
+      name: oldBinding,
+      executionContextId: 2,
+      payload: JSON.stringify({
+        source: 'fetch',
+        method: 'GET',
+        url: 'https://electronic.vegas/api/events',
+        body: '{"events":[{"title":"Earlier run late"}]}',
+        request_sequence: 999,
+        status: 200,
+        ts_ms: 1,
+        body_size: 41,
+        body_truncated: false,
+      }),
+    });
+    replayPacket(2, 'Current run', 1);
+  });
+  const second = savedReplay();
+  const secondOutcome = second.then(
+    (rows) => ({ rows }),
+    (error: Error) => ({ error: error.message }),
+  );
+  await waitForReload(2);
+  await vi.advanceTimersByTimeAsync(100);
+  expect(await secondOutcome).toEqual({ rows: [{ title: 'Current run' }] });
+});
+
+it('saved replay rejects a higher old-document sequence on the real capture path', async () => {
+  vi.useFakeTimers();
+  emitReload(() => {
+    replayPacket(2, 'Brooklyn Bowl', 1);
+    replayPacket(1, 'Prior venue', 999);
+  });
+  const result = savedReplay();
+  const outcome = result.then(
+    (rows) => ({ rows }),
+    (error: Error) => ({ error: error.message }),
+  );
+  await waitForReload(1);
+  await vi.advanceTimersByTimeAsync(100);
+  expect(await outcome).toEqual({ rows: [{ title: 'Brooklyn Bowl' }] });
 });
 
 it('cleans a nonce-pinned hook when stopped after context creation but before frame commit', async () => {
