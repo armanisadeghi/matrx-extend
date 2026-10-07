@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-07T22:00:57.574346+00:00",
+  "updated_at": "2026-10-07T22:10:45.972128+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -19319,7 +19319,22 @@
               "detail": "The .109 live run exercised Restart and Done. Same-scope Done appended event_datetime while preserving the two existing fields and yielded 249 rows. A changed nested scope with zero fields committed its root/item selectors, left Extract disabled, and cleared the old preview; Cancel retained the original scope and preview. Partial D45 substeps only; the broader picker flow and reload/error dimensions remain unverified. Native37395727468 on frozen0.2.307 now passes genuine old EXIT rejection after A-to-B replacement, B card/field selection, Done,3expected rows/titles, repick overlay Cancel and ordinary page click. D143 closed. Broader scope choices, reload/error dimensions, remaining D42 cases and newer0.2.309 remain unverified; no whole-case promotion.",
               "prior_run_ids": ["showcase-installed-d43-001", "showcase-installed-d45-001"]
             }
-          }
+          },
+          "result_history": [
+            {
+              "mode": "admin",
+              "status": "partial",
+              "run_id": "37692910351",
+              "build_version": "0.2.388",
+              "source_sha": "91e15220",
+              "evidence": [
+                ".research/d42-native-retest-20261007.json",
+                ".research/native-batch-evidence-peer-20261007.json"
+              ],
+              "detail": "Refresh of bounded stale EXIT rejection/current B extraction and repick cancellation; not full case acceptance. Other stale channels, delayed cancel/deferred install/reinjection/nonadmin remain unverified.",
+              "acceptance_credit": "bounded substeps only"
+            }
+          ]
         },
         {
           "id": "EXT-F-1012-T25",
@@ -19917,7 +19932,22 @@
               "detail": "The .109 live run kept the outer #wideeventsList / div.wideeventwrapper scope and existing fields when Canceling a nested-scope pick; same-scope Done appended event_datetime and extracted 249 rows. Explicitly Done-ing a selected nested scope with zero fields adopted that scope and cleared the prior preview. Partial evidence for scope retention, field addition, and scope choice; Doctor-seeded flow, actual extraction from the alternate nested scope, and full rows remain unverified. Native37395727468 on frozen0.2.307 now passes genuine old EXIT rejection after A-to-B replacement, B card/field selection, Done,3expected rows/titles, repick overlay Cancel and ordinary page click. D143 closed. Broader scope choices, reload/error dimensions, remaining D42 cases and newer0.2.309 remain unverified; no whole-case promotion.",
               "prior_run_ids": ["showcase-installed-d43-001", "showcase-installed-d45-001"]
             }
-          }
+          },
+          "result_history": [
+            {
+              "mode": "admin",
+              "status": "partial",
+              "run_id": "37692910351",
+              "build_version": "0.2.388",
+              "source_sha": "91e15220",
+              "evidence": [
+                ".research/d42-native-retest-20261007.json",
+                ".research/native-batch-evidence-peer-20261007.json"
+              ],
+              "detail": "Refresh of bounded stale EXIT rejection/current B extraction and repick cancellation; not full case acceptance. Other stale channels, delayed cancel/deferred install/reinjection/nonadmin remain unverified.",
+              "acceptance_credit": "bounded substeps only"
+            }
+          ]
         },
         {
           "id": "EXT-F-1012-T52",

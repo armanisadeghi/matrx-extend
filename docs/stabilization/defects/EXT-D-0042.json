@@ -22,7 +22,9 @@
     "src/lib/background/bootstrap.ts",
     "src/entrypoints/list-picker.content.ts",
     ".research/showcase-picker-current-retest.json",
-    ".research/showcase-reveal-native.json"
+    ".research/showcase-reveal-native.json",
+    ".research/d42-native-retest-20261007.json",
+    ".research/native-batch-evidence-peer-20261007.json"
   ],
   "severity": "S2: a superseded picker may overwrite the current extraction definition or terminate the current pick",
   "priority": "P1: Showcase reliable detection and extraction lifecycle",
@@ -49,5 +51,6 @@
     }
   ],
   "closure_requirement": "Prove the delayed old-session boundary red before repair, then prove current-session detection and extraction plus old-session rejection green. Check identity through every SW relay, delayed cancellation, pending injection, and cross-context listener teardown. Run changed types and obtain independent installed-extension verification against real page data before closure.",
-  "verification_status": "Native37284490515 on exact development266 source6e8b8b96 proves genuine A EXIT held/released through stamped Chrome relay while B remains picking with one overlay. Admin identity and same-page cancellation/restart pass. B-card selection then fails (D143), so required current-B positive detection/extraction and full original race acceptance remain incomplete. ITEM_DETECTED/RESULT, delayed cancellation, deferred installation and reinjection still native-unverified. Original23 controlled source checks remain bounded evidence only."
+  "verification_status": "Native37692910351 frozen development0.2.388/source91e15220/artifact11512366176 independently confirms stale A EXIT rejection through stamped relay while current B stays picking, B detection/field selection/Done and three expected fixture rows, repick Cancel and normal click. All three current journals valid. Refreshes earlier0.2.307 bounded evidence; not new coverage of missing races. ITEM_DETECTED/RESULT stale delivery, delayed cancellation, deferred installation, reinjection listener count, and signed-in nonadmin remain unverified. D42 remains in-fix.",
+  "next_action": "Implement and independently validate missing original stale ITEM_DETECTED/RESULT and cancellation/reinjection test channels before another D42 native batch; do not repeat only EXIT as if it closes original scope."
 }
