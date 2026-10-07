@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent-source-peer-review",
+  "task_id": "t57-public-cleanup-race-fix-20261007",
+  "reviewed_commit": "b12f99c823a44e15653f14f8d8cba4faa8364da6",
+  "reviewed_head": "b12f99c823a44e15653f14f8d8cba4faa8364da6",
+  "review_lane": "independent source-only QA review; zero authorship of reviewed changes; no test, browser, native, or product execution",
+  "prior_review": ".research/t57-release-diagnostics-peer-20261007.json",
+  "verdict_a_cleanup_obligations": {
+    "status": "PARTIAL",
+    "addressed": [
+      {
+        "obligation": "An asynchronous response-body resolution after cleanup must not mutate facts.",
+        "status": "ADDRESSED",
+        "evidence": "onPaused checks closed after Fetch.getResponseBody resolves; cleanup closes first and removes listeners. The retained test snapshots facts at cleanup, resolves the body afterward, emits a terminal event, and asserts facts are unchanged."
+      },
+      {
+        "obligation": "Held requests, interception disable, and CDP detach must all be attempted even when an earlier continuation fails.",
+        "status": "ADDRESSED",
+        "evidence": "cleanup independently catches each held continuation, then attempts Fetch.disable and detach. The retained cancellation test proves the current continuation and cleanup retry occur after old release rejection; the late-resolution test proves an in-flight held response is continued before disable and detach."
+      },
+      {
+        "obligation": "Disable and detach failures must remain unverified, use safe fixed error categories, and not prevent the later teardown attempt.",
+        "status": "ADDRESSED",
+        "evidence": "Separate retained fault controls inject each failure, assert the later cleanup call, assert cleanup and assessment remain unverified, and ensure secret-bearing error text is absent from facts."
+      },
+      {
+        "obligation": "A rejected in-flight body read after cleanup must not mutate facts.",
+        "status": "SOURCE_ADDRESSED_TEST_GAP",
+        "evidence": "The catch branch returns when closed, so source guards rejection as well as resolution. The retained late-settlement test covers only resolution; it does not reject Fetch.getResponseBody after cleanup and assert facts remain unchanged."
+      }
+    ],
+    "not_addressed": [
+      {
+        "obligation": "Correct the native scenario so the prior-document request is already pending before the new saved replay begins, without the extra post-pause navigation.",
+        "status": "NOT_ADDRESSED",
+        "evidence": "The commit changes only the preflight helper, its unit test, evidence, and repair report. tests/browser/showcase-d47-public-initial-load.mjs still runs the saved pattern, awaits oldPaused(), then calls page.goto(pageUrl) before currentPaused() (around lines 582-606). This is the previously identified double-navigation sequence and remains unsuitable for a native retry."
+      }
+    ],
+    "scope_boundary": "D47 remains closed at its original bounded scope. The broader T57 remains unverified. This review does not establish native readiness or authorize a native run."
+  },
+  "verdict_b_evidence_and_source_quality": {
+    "status": "PARTIAL",
+    "positive": [
+      "The late-resolution regression is meaningful: it holds Fetch.getResponseBody pending through cleanup, verifies the held request is continued and teardown completes, then proves no fact changes after late resolution and a terminal event.",
+      "Separate disable and detach fault controls check later cleanup attempts, fixed categories, secret redaction, and an unverified final result.",
+      "The earlier cancellation control covers old release failure, current release attempt, cleanup retry of the old hold, disable, and detach.",
+      "The supplied guarded evidence has matching source/test and final stdout/journal SHA-256 values. The earlier retained run exposed the incorrect held-response label; the final retained run records 9 passed and 0 failed. These logs were inspected, not rerun."
+    ],
+    "gaps": [
+      {
+        "severity": "medium",
+        "finding": "The final suite has a late resolution control but no corresponding late rejection control. The implementation catch guard appears correct, but the regression does not prove rejection leaves facts unchanged after cleanup.",
+        "needed": "Add a retained negative control that rejects Fetch.getResponseBody only after cleanup has completed, then asserts the serialized facts remain unchanged and cleanup stays unverified."
+      },
+      {
+        "severity": "high_before_native",
+        "finding": "The accepted repair report says no acceptance-scenario change was attempted, and the old post-pause page.goto remains. The broader T57 sequence still performs the incorrect double navigation called out by the prior peer.",
+        "needed": "Correct and independently review the scenario before any native retry; keep native readiness unclaimed until a separate authorized exact-artifact run establishes the required evidence."
+      }
+    ],
+    "verified_hashes": {
+      "tests/browser/showcase-d47-public-race-preflight.mjs": "1aa521557bfe7eb2a6444baecb8e01427e9f83493830fad4658c5d05c4ca931d",
+      "tests/browser/showcase-d47-public-race-preflight.test.mjs": "4cfa358cb7424ebcb88f587fcf6b887aa1a4f947725ddb006c0dba5755fe3ce7",
+      ".research/t57-public-cleanup-race-final-20261007.stdout": "952f4496909ac77e27caf5e0c80c6526e01e76c27698590c73739b3705fdd74b",
+      "docs/stabilization/resource-journals/t57-public-cleanup-race-final-20261007.jsonl": "68e739af14331abaa194d52c2299f65ce9da6ba2efd0e3810ddde2748d76e44b"
+    },
+    "runtime_limit": "No test, browser, native app, or product runtime was launched in this review."
+  },
+  "overall": "The cleanup source and most retained failure controls address the prior cleanup race. The late rejection branch lacks a matching regression, and the incorrect double-navigation scenario remains. Do not claim native readiness; T57 stays unverified.",
+  "report_status": "independent_review_complete_with_gaps"
+}
