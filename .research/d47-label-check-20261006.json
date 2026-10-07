@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "scope": "Independent source-only diagnosis; no browser run, source change, or product verdict.",
+  "finding": "The saved-result acceptance predicate cannot reliably recognize the rendered recipe header. PatternsTab renders the source text 'Last run: <activeName>' inside an uppercase-styled element, while the driver performs a case-sensitive substring search for mixed-case 'Last run: <recipe>' on document.body.innerText. For a rendered uppercase header, innerText reports transformed text, so this predicate is false even with the correct recipe visible.",
+  "source_evidence": [
+    "src/features/showcase/tabs/PatternsTab.tsx:320-328: visibleRows gates the result preview; header uses class uppercase and source text Last run: {activeName}.",
+    "src/features/showcase/tabs/PatternsTab.tsx:70,203-204: visibleRows is tied to resultPageKey; successful run assigns activeName and rows.",
+    "tests/browser/showcase-d47-document-lifecycle.mjs:588-595: document.body.innerText and case-sensitive text.includes(`Last run: ${recipe}`); current_row independently searches Canyon Frequency.",
+    "tests/browser/showcase-d47-terminal-budget.mjs:188-205: success requires both exact_recipe and current_row; samples retain booleans, not the header text.",
+    "git show fa2720fc:src/features/showcase/tabs/PatternsTab.tsx: the same uppercase header and source text existed in the frozen product source; git diff fa2720fc on that product file is empty at inspection.",
+    "git show fa2720fc:tests/browser/showcase-d47-document-lifecycle.mjs: the earlier driver also searched mixed-case Last run: <recipe> via panelText, which uses body.innerText; the later sampled predicate preserved that mismatch.",
+    "https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/innerText: innerText reflects rendered appearance; its example explicitly contrasts text-transform: uppercase with textContent.",
+    ".research/d47-import-native-20261006/37548083191/native-receipt.json: final sample exact_recipe=false, current_row=true; label text was not retained; resource acceptance invalid."
+  ],
+  "meaning_of_observation": "current_row=true establishes that the current marker was found somewhere in body.innerText at the final sample. It does not prove recipe identity, that the marker belonged to the result preview, or that the header was present. exact_recipe=false is compatible with a correct uppercase header and with a missing or wrong header; it cannot distinguish them.",
+  "repair_boundary": "Change the driver observation at its DOM seam. Scope to the visible saved-result header and associated result preview, check the header's textContent (or normalize innerText case) against the full expected recipe identity, and independently require the current marker in that same preview. Reject a different recipe, old marker, hidden/stale result, or current marker elsewhere in the panel. Retain a bounded sanitized header/preview diagnostic on failure so the predicate can be audited without dumping the entire panel.",
+  "minimal_falsifiable_regression": "In a rendered panel containing a visible header whose source text is 'Last run: Canyon Recipe' and whose style is text-transform: uppercase, plus a result preview containing 'Canyon Frequency', the old body.innerText.includes('Last run: Canyon Recipe') must be false while the repaired scoped predicate is true. Replacing the header recipe with 'Other Recipe', hiding the result, or moving 'Canyon Frequency' outside its preview must make the repaired predicate false. Exercise this in a real DOM/browser seam because synthetic string-only checks cannot prove CSS/innerText behavior.",
+  "unknowns": [
+    "The native run did not retain header text, so whether it rendered the correct recipe remains unobserved.",
+    "The source comparison does not establish what styles were actually loaded in native run 37548083191.",
+    "The resource guard ended invalid after high CPU; its historical cause and any contribution to the timeout are unproven.",
+    "No new browser or product run was performed; current saved replay, old callback delivery, and cancellation remain unverified."
+  ]
+}
