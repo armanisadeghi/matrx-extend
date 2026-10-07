@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-07",
+  "role": "fresh independent operational and source reviewer",
+  "reviewed_commits": {
+    "extension_docs": "85b6cc5d1e53bdd3b4a67c2fc93f2563ea1c1884",
+    "hosted_lane_admission": "1a91e500058ebb45ec24c53323446af7b05ad96a",
+    "common_docs": "b632b1f69"
+  },
+  "A_operational_verdict": {
+    "result": "source-ready with native execution pending",
+    "evidence": [
+      "The hosted workflow exposes only A and B. Its closed concurrency expression maps malformed lane inputs to A, then first-step admission refuses them before checkout, package preparation or browser setup.",
+      "B refuses member/admin/showcase/prepare-stale cases and non-guest Scrape modes. Shared-credential cases stay in A through the whole job; the standalone resource diagnostic also occupies A.",
+      "The existing four resource-guarded preparation and acceptance calls remain in place. Hosted jobs use disposable GitHub macOS runners, while the guard remains host-local; unrelated CI on another host is not a global admission veto.",
+      "Canonical plan, takeover plan, coordinator and extension state permit registered executable cases during incomplete inventory, retain unknowns, limit heavy work per host, prioritize two non-Chat lanes and daily guest Chat, and require frozen artifacts and independent fix retest. The active daily automation retained its ACTIVE 09:00 schedule and now includes the October 7 mandate.",
+      "The app's existing goal could not be edited through the available goal API; these documents record the approved current mandate and do not claim the app goal was changed."
+    ],
+    "limits": [
+      "No simultaneous A/B native run or GitHub scheduling observation was made in this review; host/profile/fixture isolation at dispatch and resource journals are still required.",
+      "The workflow accepts one case per dispatch, so two lanes do not themselves execute a full-surface or all-mode batch. Separate admitted dispatches and linked frozen-artifact receipts remain necessary.",
+      "No behavior, defect, fix, regression, release or Store acceptance count was advanced by this source review."
+    ]
+  },
+  "B_quality_verdict": {
+    "result": "workflow pass; documentation correction requested",
+    "evidence": [
+      "The focused test parses both workflows, executes the actual Bash admission step for every selectable case and auth variant, and verifies closed A/B grouping, diagnostic ownership and guard-call preservation. Its recorded RED against the old global group and unsafe B admission failed both tests; current GREEN passed 2/2.",
+      "Independent rerun of the focused test passed 2/2 and neighboring hosted route tests passed 26/26. The reviewed extension commits passed git diff --check.",
+      "The workflow change does not alter product handlers, resource guard implementation, credentials or release actions."
+    ],
+    "findings": [
+      {
+        "severity": "Important",
+        "location": "docs/stabilization/PLAN.md:137",
+        "problem": "The operative blockers table says the current release script pushes before checks and instructs its repair, conflicting with PLAN.md:117 and release.sh:757-786, which check the candidate before atomic publication.",
+        "impact": "A resumed worker could repeat a historical repair or misstate release safety instead of testing current product cases."
+      },
+      {
+        "severity": "Minor",
+        "location": "docs/stabilization/PLAN.md:138-140",
+        "problem": "The continuity and baseline text still says no persistent wakeup exists and refers to a capped baseline, while the active daily and hourly automations and the October 7 operating policy already supersede that planning state.",
+        "impact": "The resume instructions can mislead an operator about the current cadence."
+      }
+    ]
+  },
+  "checks_run": [
+    "node --test scripts/test-hosted-acceptance-lanes.mjs: 2 pass, 0 fail",
+    "node --test scripts/hosted-profile-route.test.mjs scripts/hosted-scrape-route.test.mjs scripts/hosted-showcase-route.test.mjs: 26 pass, 0 fail",
+    "git diff --check HEAD~2..HEAD: pass",
+    "Read active automation TOML: ACTIVE, FREQ=DAILY at 09:00, target thread unchanged"
+  ],
+  "next_action": "Correct the two stale operative plan rows, then dispatch bounded native A/B cases with separate host/profile/fixture evidence and complete journals; preserve unverified status until those runs finish."
+}
