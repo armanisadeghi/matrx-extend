@@ -1065,13 +1065,13 @@
             "region-completeness",
             "readiness"
           ],
-          "defect_ids": ["EXT-D-0149", "EXT-D-0151", "EXT-D-0152"],
+          "defect_ids": ["EXT-D-0149", "EXT-D-0151", "EXT-D-0152", "EXT-D-0153"],
           "results": {
             "guest": {
               "status": "partial",
               "run_id": "37643142383",
               "evidence": ".research/guest-screenshot-upload-retest-20261007.json",
-              "defect_ids": ["EXT-D-0149", "EXT-D-0151", "EXT-D-0152"],
+              "defect_ids": ["EXT-D-0149", "EXT-D-0151", "EXT-D-0152", "EXT-D-0153"],
               "detail": "Frozen0.2.366 guest readiness before/after and actual Account screenshot upload/pixels pass (D152 closed); observedChrome141.0.7390.37. Census54observed,26mapped,27unknown,1structural,0unsupported/inaccessible/blocked remains incomplete. No current-main, member/admin, or product behavior acceptance.",
               "historical_result": {
                 "status": "partial",
@@ -1116,7 +1116,8 @@
             "EXT-D-0119",
             "EXT-D-0149",
             "EXT-D-0151",
-            "EXT-D-0152"
+            "EXT-D-0152",
+            "EXT-D-0153"
           ],
           "run_ids": [],
           "retest_status": "partial: EXT-D-0025 and EXT-D-0051 passed; remaining infrastructure cases unverified"

@@ -1,0 +1,54 @@
+{
+  "id": "EXT-D-0153",
+  "feature_id": "EXT-F-0002",
+  "case_ids": ["EXT-F-0002-T11"],
+  "surface": "Testing infrastructure / visible tab census",
+  "auth_mode": "guest",
+  "title": "Empty visible tab buckets satisfy region presence without rendered-control readiness",
+  "severity": "S3",
+  "priority": "P1",
+  "state": "in-fix",
+  "owner": "root/empty_surface_census_fix",
+  "user_impact": "Coverage could falsely appear complete after unrelated unknowns are resolved. Existing native runs remain incomplete; no product rendering failure is established.",
+  "preconditions": [
+    "Frozen0.2.366 guest native37643142383; source d68a1db3; collector before D153 repair."
+  ],
+  "reproduction": [
+    "Observe signed-out navigation and direct Scrape/Data/SEO tab actions in the exact native receipt. Each surface has total0 while missing_required_regions and inaccessible_regions are empty.",
+    "Inspect collector: it waits only for active tab trigger then samples pane once; App mounts lazy views under Suspense.",
+    "Exercise censusCompleteness with those present-empty surface buckets and all independent unmapped/unsupported/blocked/inaccessible counts zero; require false and explicit missing tab regions. At collection seam delay actual controls until after trigger activation; require later controls to be observed."
+  ],
+  "expected": "Each applicable visible tab must have source-grounded rendered-control readiness. Empty or unready tabs remain missing/incomplete with safe diagnostics.",
+  "actual": "Bucket existence suffices; active trigger can be sampled before controls mount. Whether native zero counts reflect lazy timing or a persistent product blank remains unproven.",
+  "evidence": [
+    ".research/empty-surface-census-diagnosis-20261007.json",
+    ".research/guest-screenshot-upload-retest-20261007.json"
+  ],
+  "verification": {
+    "source": "Confirmed completeness hole by independent source diagnosis74286169; forcing tests and repair pending.",
+    "native": "Zero Scrape/Data/SEO buckets observed on original artifact; runtime cause unproven.",
+    "product": "No behavior failure or health conclusion."
+  },
+  "transition_history": [
+    {
+      "at": "2026-10-07T15:52:19.343306+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Registered from exact native zero buckets and source readiness inspection."
+    },
+    {
+      "at": "2026-10-07T15:52:19.343306+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Source condition confirmed; distinguish missing collector readiness from unproven product blank state."
+    },
+    {
+      "at": "2026-10-07T15:52:19.343306+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol owns bounded collector readiness and completeness repair with guarded forcing tests."
+    }
+  ],
+  "closure_requirement": "Independent source review and original-artifact native retest either observe rendered controls or explicitly report unready/empty regions; never accept empty presence as complete.",
+  "next_action": "Finish forcing RED/GREEN with saved stdout and guarded journals; fresh peer then one native retest."
+}
