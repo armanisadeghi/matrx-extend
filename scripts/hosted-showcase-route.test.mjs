@@ -92,6 +92,19 @@ test('D47 route propagates only an explicit supported inverse order', () => {
   );
 });
 
+test('D47 stale-only route keeps the exact artifact and isolated native output', () => {
+  const route = hostedShowcaseRoute('showcase-d47-admin', prepared, runner, 'stale-only');
+  assert.equal(route.driver, 'tests/browser/showcase-d47-document-lifecycle.mjs');
+  assert.equal(route.env.MATRX_D47_RESPONSE_ORDER, 'stale-only');
+  assert.equal(route.env.MATRX_SHOWCASE_OUTPUT, '/private/results/showcase-d47-native-42-1.json');
+  assert.equal(route.env.MATRX_SHOWCASE_CI_ARTIFACT_ID, String(prepared.artifactId));
+  assert.equal(route.env.MATRX_SHOWCASE_CI_SOURCE_SHA, prepared.sourceSha);
+  assert.throws(
+    () => hostedShowcaseRoute('showcase-d47-admin', prepared, runner, 'stale-only-extra'),
+    /d47_response_order_invalid/,
+  );
+});
+
 test('public D47 route uses its own exact-artifact native receipt and never inherits fixture ordering', () => {
   const route = hostedShowcaseRoute('showcase-d47-public-admin', prepared, runner, 'old-first');
   assert.equal(route.driver, 'tests/browser/showcase-d47-public-initial-load.mjs');

@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "scope": "Source and fixture support for a narrowly routed hosted native stale-only refusal followed by fresh saved-recipe recovery. No native run or product-source change was authorized in this lane.",
+  "status": "source_ready_native_unverified",
+  "route": {
+    "acceptance_case": "showcase-d47-admin",
+    "d47_response_order": "stale-only",
+    "driver": "tests/browser/showcase-d47-document-lifecycle.mjs",
+    "artifact_identity": "The existing hosted CI-development import requires source SHA, run ID, artifact ID, relocated receipt, matching unpacked tree hash and manifest version before driver work. The new mode uses the same route and isolated native receipt. No artifact was imported or dispatched here."
+  },
+  "source_expected_native_sequence": {
+    "before_refusal": "One real old /api/document-race HTTP request is pending; the current document finishes only /api/race-warmup; fixture target_requests remains 1; the passive Chrome observer must see the old context terminal plus a distinct current context, binding handshake and exact warmup packet, with zero target packets.",
+    "refusal": "After the old server response finishes with release HTTP 200 and finish order [old], the exact saved recipe must display one visible no-match guidance error, an idle Run control and no current or old preview. Silence or absence of old callbacks alone cannot pass.",
+    "after_recovery": "Only after the visible refusal does the driver enable fixture recovery. The second real saved replay reloads a fresh current page that naturally requests /api/document-race; the driver requires target_requests 2, a fresh current binding packet, exact settled Canyon Frequency/current saved row, no Moonlit Transit row and the current page result.",
+    "cleanup": "The existing driver finally removes the passive worker observer and the exact run-owned recipe; the native harness owns browser and resource teardown. A future native receipt must confirm all cleanup and resource decisions before acceptance."
+  },
+  "source_checks": {
+    "fixture": "pnpm exec vitest run tests/unit/showcase-d47-fixture.test.ts: 5/5 pass; the added case executes the fixture's page scripts against real loopback HTTP and checks stale-only then fresh recovery responses.",
+    "route_and_guards": "node --test tests/browser/showcase-d47-worker-probe.test.mjs tests/browser/showcase-d47-driver-evidence.test.mjs scripts/hosted-showcase-route.test.mjs: 30/30 pass; wrong target packet, missing probe, changed body hash or sequence, missing handshake, old context, silence, wrong error and stale preview fail the relevant verdicts.",
+    "import": "MATRX_D47_IMPORT_PREFLIGHT=1 MATRX_D47_RESPONSE_ORDER=stale-only node tests/browser/showcase-d47-document-lifecycle.mjs: HOSTED_D47_DRIVER_IMPORT_READY.",
+    "format": "Scoped pnpm exec biome check: exit 0 with three existing warnings; git diff --check: exit 0.",
+    "unrun": "The DOM reader's local node --test could not start because this checkout lacks a Playwright runtime. No browser/native dispatch was permitted, so terminal UI behavior remains unverified on an installed extension."
+  },
+  "source_sha256": {
+    "fixture": "765753345981e7fee1cfa284eb548599e1f2da3c255544394c6d4a4c3babd10c",
+    "driver": "80613383a7554a654a94c170675574059a222ec56718e8b52c69d1770159af70",
+    "worker_probe": "3e31dee50defe7f7ee383620536c0491a5917162fc898ab68d69734dc5d3f144",
+    "hosted_route": "9f85a652878b243b4b3be848e3d3b5ad5bdb8c945b2c7dcbb2179ab269183c37"
+  },
+  "peer_check": "Review the frozen mode's fixture gating, current nonmatching packet and zero target proof, exact visible refusal, second-run current packet and settled result, safe receipt fields and owned cleanup. Run the hosted case only with the separate native permit; this source package does not advance D47/T57 status."
+}

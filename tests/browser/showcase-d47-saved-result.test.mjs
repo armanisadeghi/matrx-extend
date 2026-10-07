@@ -2,7 +2,12 @@ import assert from 'node:assert/strict';
 import { after, before, test } from 'node:test';
 import { runInNewContext } from 'node:vm';
 import { resolveBrowserRuntime } from './browser-runtime.mjs';
-import { readD47SavedResult, readD47SavedRunState } from './showcase-d47-saved-result.mjs';
+import {
+  isD47StaleRefusal,
+  readD47SavedResult,
+  readD47SavedRunState,
+  readD47StaleRefusal,
+} from './showcase-d47-saved-result.mjs';
 import { waitD47SavedTerminal } from './showcase-d47-terminal-budget.mjs';
 
 if (
@@ -258,4 +263,37 @@ test('exact saved row remains nonterminal until its live Run control clears', as
     }),
     /saved_current_result_not_observed/,
   );
+});
+
+test('stale-only refusal requires the visible specific error, idle exact Run control, and no preview', async () => {
+  const frame = (error, preview = '') => `
+    <div role="tablist"><button role="tab" data-state="active" aria-controls="patterns-pane">Patterns</button></div>
+    <div id="patterns-pane" data-state="active">
+      ${error ? `<div class="text-destructive">${error}</div>` : ''}
+      <div class="group"><span class="truncate text-sm font-medium">${recipe}</span>
+        <button title="Run pattern"></button></div>
+      ${preview}
+    </div>`;
+  const refusal =
+    'No successful request matching the saved request. Run again and interact with the page.';
+  for (const [html, accepted] of [
+    [frame(refusal), true],
+    [frame('Network replay was cancelled.'), false],
+    [frame(''), false],
+    [frame(refusal, markup()), false],
+    [
+      frame(refusal).replace(
+        '<button title="Run pattern"></button>',
+        '<button title="Run pattern" disabled><svg class="animate-spin"></svg></button>',
+      ),
+      false,
+    ],
+  ]) {
+    await page.setContent(html);
+    const value =
+      await page.evaluate(`(() => { const readD47SavedResult = ${readD47SavedResult.toString()};
+      const readD47SavedRunState = ${readD47SavedRunState.toString()};
+      return (${readD47StaleRefusal.toString()})(document, ${JSON.stringify(recipe)}); })()`);
+    assert.equal(isD47StaleRefusal(value), accepted);
+  }
 });

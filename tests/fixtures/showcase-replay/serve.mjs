@@ -31,6 +31,9 @@ let oldReleaseOutcome = null;
 let currentResponseSent = false;
 let currentResponseFinished = false;
 let currentResponseAborted = false;
+let currentProbeFinished = false;
+let recoveryEnabled = false;
+let recoveryTargetFinished = false;
 const responseFinishOrder = [];
 const racePayload = (document) => ({
   events: [{ eventName: document === 'current' ? 'Canyon Frequency' : 'Moonlit Transit' }],
@@ -41,7 +44,7 @@ const racePage = (generation) => `<!doctype html><html lang="en"><meta charset="
 <p id="phase">${generation}</p><output id="result">Waiting for the event schedule</output>
 <script>
 (async () => {
-  ${generation === 'old' ? "await fetch('/api/race-warmup'); await fetch('/api/race-warmup');" : ''}
+  ${generation === 'old' ? "await fetch('/api/race-warmup'); await fetch('/api/race-warmup');" : generation === 'stale-only' ? "await fetch('/api/race-warmup'); return;" : ''}
   try {
     const response = await fetch('/api/document-race', { keepalive: true, cache: 'no-store' });
     const data = await response.json();
@@ -67,6 +70,9 @@ const raceStatus = () => ({
   current_pending: Boolean(currentResponse && !currentResponseFinished && !currentResponseAborted),
   current_response_finished: currentResponseFinished,
   current_response_aborted: currentResponseAborted,
+  current_probe_finished: currentProbeFinished,
+  recovery_enabled: recoveryEnabled,
+  recovery_target_finished: recoveryTargetFinished,
 });
 const eventResponses = new Map([
   [
@@ -120,7 +126,7 @@ const server = createServer(async (request, response) => {
 
   if (url.pathname === '/control/document-race/arm') {
     const requestedOrder = url.searchParams.get('response_order') ?? 'current-first';
-    if (!['current-first', 'old-first'].includes(requestedOrder))
+    if (!['current-first', 'old-first', 'stale-only'].includes(requestedOrder))
       return response.writeHead(400).end('Unsupported response order.');
     racePhase = 'armed';
     responseOrder = requestedOrder;
@@ -136,6 +142,9 @@ const server = createServer(async (request, response) => {
     currentResponseSent = false;
     currentResponseFinished = false;
     currentResponseAborted = false;
+    currentProbeFinished = false;
+    recoveryEnabled = false;
+    recoveryTargetFinished = false;
     responseFinishOrder.length = 0;
     response
       .writeHead(200, { 'Content-Type': 'application/json' })
@@ -143,6 +152,22 @@ const server = createServer(async (request, response) => {
     return;
   }
   if (url.pathname === '/control/document-race/status') {
+    response
+      .writeHead(200, { 'Content-Type': 'application/json' })
+      .end(JSON.stringify(raceStatus()));
+    return;
+  }
+  if (url.pathname === '/control/document-race/recover') {
+    if (
+      responseOrder !== 'stale-only' ||
+      !currentProbeFinished ||
+      !oldResponseFinished ||
+      raceTargetRequests !== 1 ||
+      recoveryEnabled
+    )
+      return response.writeHead(409).end('Stale-only refusal prerequisites missing.');
+    recoveryEnabled = true;
+    racePhase = 'recovery';
     response
       .writeHead(200, { 'Content-Type': 'application/json' })
       .end(JSON.stringify(raceStatus()));
@@ -159,7 +184,9 @@ const server = createServer(async (request, response) => {
     const newRequestReady =
       responseOrder === 'old-first'
         ? Boolean(currentResponse && !currentResponseAborted && racePageLoads >= 2)
-        : currentResponseSent;
+        : responseOrder === 'stale-only'
+          ? currentProbeFinished && racePageLoads >= 2 && raceTargetRequests === 1
+          : currentResponseSent;
     if (!newRequestReady || !oldResponse) {
       oldReleaseOutcome = 'refused_not_ready';
       return response.writeHead(409).end('Release requires old and current requests.');
@@ -212,18 +239,38 @@ const server = createServer(async (request, response) => {
   }
   if (url.pathname === '/document-race/') {
     racePageLoads += 1;
-    const generation = racePhase === 'seed' ? 'seed' : racePageLoads === 1 ? 'old' : 'current';
+    const generation =
+      racePhase === 'seed'
+        ? 'seed'
+        : racePageLoads === 1
+          ? 'old'
+          : responseOrder === 'stale-only' && !recoveryEnabled
+            ? 'stale-only'
+            : 'current';
     response
       .writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' })
       .end(racePage(generation));
     return;
   }
   if (url.pathname === '/api/race-warmup') {
+    if (responseOrder === 'stale-only' && racePhase === 'armed' && racePageLoads >= 2)
+      response.on('finish', () => {
+        currentProbeFinished = true;
+      });
     response.writeHead(200, { 'Content-Type': 'application/json' }).end('{"warmup":true}');
     return;
   }
   if (url.pathname === '/api/document-race') {
     raceTargetRequests += 1;
+    if (racePhase === 'recovery' && responseOrder === 'stale-only') {
+      response.on('finish', () => {
+        recoveryTargetFinished = true;
+      });
+      response
+        .writeHead(200, { 'Content-Type': 'application/json' })
+        .end(JSON.stringify(racePayload('current')));
+      return;
+    }
     if (racePhase === 'armed' && raceTargetRequests === 1) {
       oldResponse = response;
       response.on('finish', () => {

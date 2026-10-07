@@ -18,7 +18,7 @@ export function hostedShowcaseRoute(
     return null;
   if (acceptanceCase === 'showcase-d47-admin')
     assert.ok(
-      ['current-first', 'old-first'].includes(d47ResponseOrder),
+      ['current-first', 'old-first', 'stale-only'].includes(d47ResponseOrder),
       'd47_response_order_invalid',
     );
   assert.equal(prepared.kind, 'ci_development_test', 'showcase_ci_artifact_required');
