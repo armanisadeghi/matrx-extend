@@ -155,6 +155,15 @@ esac
 exit 0
 STUB
 chmod +x "$SANDBOX/bin/node" "$SANDBOX/bin/pnpm"
+# Every kill_tree call starts with `pgrep -P <pid>`: log it, so a run whose
+# background jobs had all FINISHED can be seen signalling recycled PIDs.
+REAL_PGREP="$(command -v pgrep)"
+cat > "$SANDBOX/bin/pgrep" <<STUB
+#!/usr/bin/env bash
+echo "\$*" >> "$SANDBOX/pgrep-calls"
+exec "$REAL_PGREP" "\$@"
+STUB
+chmod +x "$SANDBOX/bin/pgrep"
 printf '#!/usr/bin/env bash\nexit 0\n' > "$SANDBOX/bin/supabase"
 chmod +x "$SANDBOX/bin/supabase"
 
@@ -208,15 +217,21 @@ else
   exit 1
 fi
 touch "$SANDBOX/fail-tests"
+rm -f "$SANDBOX/pgrep-calls"
 set +e
 PATH="$SANDBOX/bin:$PATH" bash release.sh --message "guard run" > "$SANDBOX/failed-out" 2>&1
 FAILED_STATUS=$?
 set -e
+# Every parallel job had finished (its verdict was read) before the stop, so
+# its PID may already belong to another process: the exit must signal none.
+FINISHED_JOBS_SIGNALLED=0
+[[ -f "$SANDBOX/pgrep-calls" ]] && FINISHED_JOBS_SIGNALLED="$(wc -l < "$SANDBOX/pgrep-calls")"
 # The nested release log names the step that stopped it (export, gate, build);
 # the sandbox is deleted on exit, so keep a copy for the failure dump below.
 cp tmp/release-logs/latest.log "$SANDBOX/failed-release.log" 2>/dev/null || true
 FAILED=0
 check() { if eval "$2"; then echo "  ok    $1"; else echo "  FAIL  $1"; FAILED=1; fi; }
+check "a stop after finished checks signals no recycled PID" '[[ "${FINISHED_JOBS_SIGNALLED// /}" == 0 ]]'
 # Contention uses a real live owner; fake only sleeping so the old 60s steal
 # fails this guard quickly. Neither missing PID nor stale metadata grants ownership.
 REAL_SLEEP="$(command -v sleep)"
@@ -521,7 +536,7 @@ if [[ $FAILED -ne 0 ]]; then
   echo "--- failed release log ---"; tail -60 "$SANDBOX/failed-release.log" 2>/dev/null
   echo "--- passed release output ---"; tail -30 "$SANDBOX/passed-out"
   echo "--- failed second candidate output ---"; grep -E "^(RELEASE STOPPED|gate=|ERROR )" "$SANDBOX/race-failed-out" 2>/dev/null; tail -20 "$SANDBOX/race-failed-out" 2>/dev/null
-  echo "--- tag race output ---"; tail -20 "$SANDBOX/tag-race-out" 2>/dev/null
+  echo "--- tag race output ---"; grep -E "^(RELEASE STOPPED|gate=|ERROR )" "$SANDBOX/tag-race-out" 2>/dev/null; tail -20 "$SANDBOX/tag-race-out" 2>/dev/null
   echo "--- merge conflict output ---"; tail -20 "$SANDBOX/conflict-out" 2>/dev/null
   # Every nested release's own log: the steps (snapshot export, gates) write
   # their errors only there, and the sandbox is deleted on exit.

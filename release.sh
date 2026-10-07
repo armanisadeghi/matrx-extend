@@ -443,10 +443,18 @@ kill_tree() {
     kill -TERM "$1" 2>/dev/null
     for kid in $kids; do kill_tree "$kid"; done
 }
+# BG_PIDS entries are "pid|rc-file". A job writes its rc file as its LAST act,
+# so while the rc file is absent the subshell is alive and the PID is still
+# ours. Once it exists the job is done and its PID may already be recycled by
+# an unrelated process (PIDs wrap under load): signalling it killed other
+# releases' git/tar steps mid-export, a silent "could not export" stop
+# (ship-all 2026-10-06_23-13-37). A finished job is never signalled.
 stop_background() {
-    local p
-    for p in ${BG_PIDS[@]+"${BG_PIDS[@]}"}; do kill_tree "$p"; done
-    for p in ${BG_PIDS[@]+"${BG_PIDS[@]}"}; do wait "$p" 2>/dev/null; done
+    local entry
+    for entry in ${BG_PIDS[@]+"${BG_PIDS[@]}"}; do
+        [[ -f "${entry#*|}" ]] || kill_tree "${entry%%|*}"
+    done
+    for entry in ${BG_PIDS[@]+"${BG_PIDS[@]}"}; do wait "${entry%%|*}" 2>/dev/null; done
     BG_PIDS=()
 }
 origin_moved() {  # 0 when origin main left BASE or NEW_TAG was claimed; unreachable = not moved (the push decides)
@@ -479,7 +487,7 @@ start_build() {  # packages the candidate beside the checks; publication still w
     LOCAL_CANDIDATE="$BUILD_SNAP/.output/${PROJECT_NAME}-${NEW_VERSION}-local.zip"
     ( build_zips < /dev/null > "$JOBS/build.out" 2>&1
       echo $? > "$JOBS/build.rc.tmp" && mv -f "$JOBS/build.rc.tmp" "$JOBS/build.rc" ) &
-    BG_PIDS+=("$!")
+    BG_PIDS+=("$!|$JOBS/build.rc")
     BUILD_STARTED=true
 }
 
@@ -503,7 +511,7 @@ run_checks() {
         fi
         if $parallel; then
             run_check_job "$name" "$secs" "$cmd" &
-            BG_PIDS+=("$!")
+            BG_PIDS+=("$!|$JOBS/check-$name.rc")
             waiting+=("$JOBS/check-$name.rc")
             rows+=("$name|$cmd")
         else
