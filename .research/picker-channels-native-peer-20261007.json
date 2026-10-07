@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "task_id": "picker-channels-native-peer-20261007",
+  "defect_id": "EXT-D-0042",
+  "reviewed_run_id": 37697860472,
+  "verdict_A": {
+    "status": "PASS_BOUNDED",
+    "scope": "Actual installed-extension native acceptance for stale A ITEM_DETECTED and RESULT delivered after B starts, separately; existing EXIT and current B positive controls also passed.",
+    "evidence": "The retained native receipt records two distinct A/B session pairs, stamped stale relays in the same tab and document, B still picking with no A root and one overlay before B selection, then current B detection/result relays and three extracted event rows for each new channel. The reviewed driver holds and releases original runtime.sendMessage envelopes rather than synthesizing them. Receipt status is passed_bounded at complete/exercise_panel with no failure code.",
+    "open_scope": [
+      "Delayed A cancellation injection after B starts",
+      "Deferred picker installation across replacement",
+      "Fresh content-script reinjection and exact listener count",
+      "Signed-in nonadmin role gating"
+    ],
+    "disposition": "EXT-D-0042 remains in-fix; credit only the two newly covered stale channels and the bounded surrounding controls."
+  },
+  "verdict_B": {
+    "status": "PASS_WITH_EVIDENCE_LIMIT",
+    "artifact_identity": "Frozen development artifact source 91e152208490a05c3dc1f15bdadbdaafc80dad64, CI run 37686627159, artifact 11512366176, version 0.2.388 and tree 885c5699340ee04aa02bb836f68ef5448b17f3f91850d294abcc37b73bf4a5a0 match the native receipt and retained CI build receipt. Workflow checkout 0369b9b6d631bd262ca3c00d4fa371b03cadb8f2 contains the reviewed driver/diagnostic changes; git diff of the four named D42 product files between those SHAs is empty. This is source identity evidence, not a claim that the workflow built a new product bundle.",
+    "resources": "The exact-run package, browser and guest journals each end with RESOURCE_FINAL_DECISION valid, admitted=true, resourceInvalid=false and exitCode=0. Their local SHA-256 hashes match the worker report. Historical journals from another run were excluded by run ID.",
+    "cleanup": "The worker report attests that temporary hosted credentials were deleted immediately after terminal status and absence was verified. The curated native receipt and resource journals do not independently prove remote secret deletion; root is separately checking secret names and cleanup.",
+    "quality_limit": "This review examined the retained receipt, exact-run resource journals, frozen build receipt, worker report and native channel assertions. It did not rerun the hosted case or inspect the remote secret store."
+  },
+  "sources": [
+    ".research/picker-channels-native-20261007.json",
+    "docs/stabilization/evidence/showcase-d42-native/run37697860472/sanitized-receipt.json",
+    "docs/stabilization/evidence/showcase-d42-native/run37697860472/resource-journals/hosted-package-37697860472-1.jsonl",
+    "docs/stabilization/evidence/showcase-d42-native/run37697860472/resource-journals/hosted-browser-37697860472-1.jsonl",
+    "docs/stabilization/evidence/showcase-d42-native/run37697860472/resource-journals/hosted-guest-37697860472-1.jsonl"
+  ]
+}
