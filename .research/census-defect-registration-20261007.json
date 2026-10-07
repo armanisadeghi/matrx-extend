@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-10-07T12:42:43Z",
+  "registration": "EXT-D-0149",
+  "source_receipt": ".research/guest-visibility-native-20261007.json",
+  "counts": {
+    "features": 205,
+    "controls_before": 1349,
+    "controls_after": 1350,
+    "cases_before": 767,
+    "cases_after": 768,
+    "procedure_gaps_before": 33,
+    "procedure_gaps_after": 33
+  },
+  "allocated_ids": {
+    "control": "EXT-F-0002-C11",
+    "case": "EXT-F-0002-T11",
+    "defect": "EXT-D-0149"
+  },
+  "scope": {
+    "feature": "EXT-F-0002 testing infrastructure",
+    "guest_case_status": "fail; native census readiness only, no product behavior failure inferred",
+    "member": "unverified",
+    "admin": "unverified",
+    "overall_guest_cell": "unverified preserved; only EXT-D-0149 was linked",
+    "overall_member_admin_cells": "preserved",
+    "root_cause": "unconfirmed pending actual UI review of the exact hosted artifact screenshots; no explanation for Account unsafe-to-open state is asserted",
+    "no_source_tests_browser_database_or_build_actions_performed": true
+  },
+  "verification": "Structured artifact edits and generated tracker count reconciliation only; no tests were run per lane scope."
+}
