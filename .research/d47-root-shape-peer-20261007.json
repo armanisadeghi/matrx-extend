@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "reviewed_source_commit": "cfa475f2f05ad122280cd689d1adbc76338e955b",
+  "integrated_source_commit": "b268006e738fde274947d752e100ab9c225e1a89",
+  "scope": "Fresh read-only source and retained-evidence review of the saved-result observer repair; no browser, native extension, build, or test run in this lane.",
+  "prior_finding": {
+    "status": "ADDRESSED_AT_OBSERVER_SEAM",
+    "reason": "The native driver selects the response then saves without choosing a JsonTree path. NetworkTab resets and persists key_path=[]; the saved runner passes it to rowsFromBody, which returns the root object. The fixture's current root has events=[{eventName:Canyon Frequency}] and document=current. ResultPreview's default table therefore renders events/document headings and compact JSON/current cells. The repaired reader checks exactly that shape and rejects the former eventName-only shape."
+  },
+  "verdict_A_functional_scope": {
+    "status": "PASS_SCOPED_OBSERVER; NATIVE_ACCEPTANCE_UNVERIFIED",
+    "saved_result_shape": "PASS by source trace and controlled real-Chromium DOM fixture: one visible adjacent table, events/document headings, one row, and the exact current root values are required.",
+    "negative_cases": "PASS at the DOM seam: wrong/prefix or hidden header, old or mixed event, wrong document, duplicate or unexpected nested event, extra row or column, and renamed heading cannot set current_row=true.",
+    "new_regressions": "None found in the two-file observer/test diff.",
+    "native_extension": "UNVERIFIED. The DOM fixture does not run the installed extension, save a recipe, deliver an old callback, or establish D47/T57 acceptance."
+  },
+  "verdict_B_doctrine_quality": {
+    "status": "PASS_SCOPED_WITH_EVIDENCE_LIMIT",
+    "reuse_and_scope": "The changed reader is the function embedded by the native driver at the saved-terminal stage. No product implementation, fallback, or compatibility path was added.",
+    "forcing_function": "The retained resource journals admit the original RED, corrected GREEN, and old-column, constant-success, and permissive-reader mutants. Builder report records original 3 pass/4 fail, corrected 7/7, old-column 5 pass/2 fail, and constant-success 1 pass/6 fail; permissive mutant exited red. The journals independently show child exit codes, while assertion counts come from the builder report. Mutants were injected in memory.",
+    "limit": "The positive table is a controlled DOM microfixture shaped by source trace, not a captured native extension render. Keep the native acceptance gate open."
+  },
+  "evidence": [
+    "git show -U8 cfa475f2 (exact authored diff)",
+    "tests/browser/showcase-d47-document-lifecycle.mjs:398-409,586-607",
+    "src/features/showcase/tabs/NetworkTab.tsx:73-79,383-390",
+    "src/lib/data-pattern/run-interactive.ts:302-324,395-410",
+    "tests/fixtures/showcase-replay/serve.mjs:30-34",
+    "src/features/showcase/tabs/PatternsTab.tsx:172-205,319-329",
+    "src/features/showcase/components/ResultPreview.tsx:119-140,195-240",
+    ".research/d47-actual-shape-repair-20261007.json",
+    "docs/stabilization/resource-journals/d47-root-{shape-red,shape-green,event_name_only,constant_success,permissive_preview}-20261007.jsonl"
+  ]
+}
