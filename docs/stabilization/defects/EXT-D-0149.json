@@ -1,12 +1,8 @@
 {
   "id": "EXT-D-0149",
   "feature_id": "EXT-F-0002",
-  "feature_ids": [
-    "EXT-F-0002"
-  ],
-  "case_ids": [
-    "EXT-F-0002-T11"
-  ],
+  "feature_ids": ["EXT-F-0002"],
+  "case_ids": ["EXT-F-0002-T11"],
   "title": "Guest visibility census cannot establish Account readiness",
   "surface": "Testing infrastructure / role-visibility census",
   "auth_mode": "guest",
@@ -49,9 +45,7 @@
   "expected": "The exact guest artifact and run establish positive guest-role proof, safely identify readiness, and account for every inventoried control and region. Unknown, unsupported, gated, or unaccounted regions leave the census incomplete.",
   "actual": "Run 37621192492 failed at census_guest_account_ready_not_observed. The census did not complete, did not visit all controls, and did not observe positive signed-out guest state. Two Account candidates were unsafe to open; the diagnostic included 15 candidates, 12 mapped and 3 fingerprint-only. No action controls were clicked. This is a native census/readiness failure only; no public product behavior failure or member/admin result is established.",
   "cause": "Unconfirmed pending actual UI review of the captured screenshots in hosted result artifact 11481804368. Do not infer why the Account candidates were unsafe to open.",
-  "evidence": [
-    ".research/guest-visibility-native-20261007.json"
-  ],
+  "evidence": [".research/guest-visibility-native-20261007.json"],
   "native_screenshot_paths_in_receipt": [
     "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-zLO2Hj/native-side-panel.png",
     "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-zLO2Hj/normal-target-after-open.png"
