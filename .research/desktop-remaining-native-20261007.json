@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "scope": "One hosted lane-B macOS 15 guest native run of the existing Desktop Settings remaining branch; map only the T43, T46, and T49 observations exercised by that branch.",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "run_id": 37701201664,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37701201664",
+    "checkout_sha": "6483de02724209e0ae9b8148d38388d0f32309ae",
+    "acceptance_lane": "B",
+    "runner_label": "macos-15",
+    "runner_architecture": "ARM64 / arm64",
+    "acceptance_case": "desktop-settings-guest",
+    "desktop_settings_case": "remaining",
+    "conclusion": "success",
+    "attempts": 1,
+    "completed_at": "2026-10-07T23:21:59Z",
+    "selection_evidence": "Workflow log reported HOSTED_DESKTOP_SETTINGS_CASE remaining; guest preflight passed without requiring a member or admin credential. No shared credential was staged or changed."
+  },
+  "artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "publish_state": "not_published",
+    "ci_run_id": 37700221775,
+    "artifact_id": 11517690844,
+    "artifact_name": "matrx-extend-development-test-eb4182d3032ccef6a9317fcc34d5274a01deac39-37700221775-1",
+    "source_sha": "eb4182d3032ccef6a9317fcc34d5274a01deac39",
+    "version": "0.2.392",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "9a4712e75055559b3e868b90c37e4e8a2573237e67df3156f8d1978caa75c866",
+    "eligibility": "The selected artifact was the sole unexpired artifact of a successful CI push run on main. Its CI provenance receipt and the hosted importer both bind the run, artifact, source SHA, extension identity, version, and tree hash. No manual build or release was made."
+  },
+  "uploaded_artifact": {
+    "id": 11518130824,
+    "name": "hosted-guest-37701201664-1",
+    "size_bytes": 63160,
+    "zip_sha256": "04b26ba0e4dbc86199d5986871fc0f4693f42bf429f11ec6fd79b07764e8769c",
+    "original_root": "matrx-extend/matrx-extend",
+    "note": "The uploaded archive also carried three older hosted journals. Only the three journals whose run IDs are 37701201664-1 were curated for this run; their source paths below are the original nested archive paths, and the copies are byte-identical."
+  },
+  "resource_journals": [
+    {
+      "source_archive_path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37701201664-1.jsonl",
+      "curated_path": "docs/stabilization/evidence/desktop-settings-remaining-native/run37701201664/resource-journals/hosted-package-37701201664-1.jsonl",
+      "sha256": "df7d38549f8103309fe4ddc98ebfda875f830b6d6f266b502edd5dd912af4d15",
+      "final_decision": "valid",
+      "exit_code": 0,
+      "resource_invalid": false
+    },
+    {
+      "source_archive_path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37701201664-1.jsonl",
+      "curated_path": "docs/stabilization/evidence/desktop-settings-remaining-native/run37701201664/resource-journals/hosted-browser-37701201664-1.jsonl",
+      "sha256": "8e5e4f4ce126c1a200907a08104859d4b97ce386072dcf6ae5694feab133542d",
+      "final_decision": "valid",
+      "exit_code": 0,
+      "resource_invalid": false
+    },
+    {
+      "source_archive_path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37701201664-1.jsonl",
+      "curated_path": "docs/stabilization/evidence/desktop-settings-remaining-native/run37701201664/resource-journals/hosted-guest-37701201664-1.jsonl",
+      "sha256": "339d0dfdd8f04be73ed4bc578984fb48c703ebd0a7198d072b77e091b4710b1a",
+      "final_decision": "valid",
+      "exit_code": 0,
+      "resource_invalid": false
+    }
+  ],
+  "receipt": {
+    "curated_path": "docs/stabilization/evidence/desktop-settings-remaining-native/run37701201664/receipt.json",
+    "sha256": "9ec3797b238d6dc59a32b15066ca446acd000b07ae9514019ae6b098d1b74482",
+    "status": "pass",
+    "role": "guest",
+    "authentication": {
+      "access_token_absent": true,
+      "profile_absent": true,
+      "admin_flag_absent": true
+    }
+  },
+  "setup_screenshots": [
+    {
+      "curated_path": "docs/stabilization/evidence/desktop-settings-remaining-native/run37701201664/screenshots/native-side-panel.png",
+      "sha256": "35104afebb448dde7b3b315613486606a924f2fa636fa316acc30f63f681df10",
+      "scope": "Initial signed-out guest panel; setup evidence, not an assertion screenshot."
+    },
+    {
+      "curated_path": "docs/stabilization/evidence/desktop-settings-remaining-native/run37701201664/screenshots/normal-target-after-open.png",
+      "sha256": "c939d4f6417b874eefffbe4a8c9bd1cf05088fe2b42ab7a7e13c65d79a024fd2",
+      "scope": "Normal target page after opening the panel; setup evidence, not a Settings-result screenshot."
+    }
+  ],
+  "inventory_mapping": {
+    "EXT-F-1003-T43": {
+      "scoped_result": "partial",
+      "observed": [
+        "Owned HTTP fixture Forget Cancel preserved the controlled pair code.",
+        "Injected storage.remove refusal kept the controlled pairing and exposed an error.",
+        "Retry removed the browser pairing."
+      ],
+      "limit": "This HTTP fixture does not prove current live transport, real engine pairing acceptance, or a healthy desktop-engine connection."
+    },
+    "EXT-F-1003-T46": {
+      "scoped_result": "partial",
+      "observed": [
+        "Ports 1 and 65535 saved.",
+        "Ports 0 and 65536 were rejected while 65535 remained saved.",
+        "Nondigits were filtered; blank cleared the override and validation error; the cleared value persisted across Settings Page.reload."
+      ],
+      "limit": "This receipt does not observe worker rediscovery or a healthy engine connection; it earns no rediscovery claim."
+    },
+    "EXT-F-1003-T49": {
+      "scoped_result": "pass for the exercised guest reset sequence",
+      "observed": [
+        "Cancel preserved the complete observed census (six local and one session value).",
+        "Injected reset refusal retained the confirmation path and prior values; retry cleared the prior local/session values with zero unexplained keys and signed out after Settings Page.reload."
+      ],
+      "limit": "The reload observed was CDP Page.reload of the Settings page, not a full Chrome extension Reload. No Store or current-main product-build claim follows from this frozen development artifact."
+    }
+  },
+  "overall_limit": "A successful hosted run and valid resource journals establish this exact guest remaining branch on the identified frozen CI development artifact. They do not establish Store installation, current-main build behavior, or healthy desktop-engine connectivity."
+}

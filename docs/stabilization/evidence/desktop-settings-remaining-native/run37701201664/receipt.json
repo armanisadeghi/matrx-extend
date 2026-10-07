@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "defects": [
+    "EXT-D-0084",
+    "EXT-D-0086"
+  ],
+  "scope": "native side-panel storage behavior in an owned disposable profile",
+  "case": "remaining",
+  "role": "guest",
+  "status": "pass",
+  "build": {
+    "source_sha": "eb4182d3032ccef6a9317fcc34d5274a01deac39",
+    "run_id": 37700221775,
+    "artifact_id": 11517690844,
+    "tree_sha256": "9a4712e75055559b3e868b90c37e4e8a2573237e67df3156f8d1978caa75c866",
+    "version": "0.2.392"
+  },
+  "authentication": {
+    "mode": "guest",
+    "access_token_absent": true,
+    "profile_absent": true,
+    "admin_flag_absent": true
+  },
+  "cases": [
+    {
+      "name": "port bounds, filtered input, and blank clear persist across reload",
+      "status": "pass",
+      "observation": {
+        "lower_bound": 1,
+        "upper_bound": 65535,
+        "invalid_values_rejected": true,
+        "nondigit_filtered": true,
+        "blank_cleared": true
+      }
+    },
+    {
+      "name": "HTTP fixture Forget cancel retains owned pair code",
+      "status": "pass",
+      "observation": {
+        "pairing_preserved": true
+      }
+    },
+    {
+      "name": "HTTP fixture Forget refusal preserves owned pair code",
+      "status": "pass",
+      "observation": {
+        "pairing_preserved": true,
+        "error_visible": true
+      }
+    },
+    {
+      "name": "HTTP fixture Forget retry removes owned browser pairing",
+      "status": "pass",
+      "observation": {
+        "pairing_removed": true,
+        "engine_connection_unverified": true
+      }
+    },
+    {
+      "name": "reset Cancel preserves complete local and session census",
+      "status": "pass",
+      "observation": {
+        "local_count": 6,
+        "session_count": 1
+      }
+    },
+    {
+      "name": "reset refusal keeps confirmation and saved value",
+      "status": "pass",
+      "observation": {
+        "error_visible": true,
+        "retry_available": true,
+        "prior_local_count": 6,
+        "prior_session_count": 1,
+        "prior_values_preserved": true
+      }
+    },
+    {
+      "name": "reset retry clears prior local/session values and signs out after reload",
+      "status": "pass",
+      "observation": {
+        "signed_out": true,
+        "local": {
+          "before": 6,
+          "missing": 1,
+          "identical": 1,
+          "allowedFresh": 4,
+          "unexplained": 0,
+          "unexplainedKeys": []
+        },
+        "session": {
+          "before": 1,
+          "missing": 1,
+          "identical": 0,
+          "allowedFresh": 0,
+          "unexplained": 0,
+          "unexplainedKeys": []
+        },
+        "session_fixture_removed": true
+      }
+    }
+  ],
+  "limits": [
+    "Storage fault injection does not establish a healthy desktop-engine connection.",
+    "Pair-code clear requires an HTTP transport and is not inferred from a stored synthetic code."
+  ],
+  "reset_census": {
+    "local": {
+      "before": 6,
+      "missing": 1,
+      "identical": 1,
+      "allowedFresh": 4,
+      "unexplained": 0,
+      "unexplainedKeys": []
+    },
+    "session": {
+      "before": 1,
+      "missing": 1,
+      "identical": 0,
+      "allowedFresh": 0,
+      "unexplained": 0,
+      "unexplainedKeys": []
+    },
+    "session_fixture_present": false
+  },
+  "artifacts": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-kH0wn2"
+}
