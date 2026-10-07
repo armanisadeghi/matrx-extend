@@ -140,6 +140,7 @@ async function visible(panel, selector, knownLabels = [], captureTab = false) {
 
 export async function mutationGuard(panel) {
   let attempts = 0;
+  const blocked = {};
   const off = panel.on('Fetch.requestPaused', (event) => {
     try {
       const url = new URL(event.request.url);
@@ -148,6 +149,17 @@ export async function mutationGuard(panel) {
         !['GET', 'HEAD', 'OPTIONS'].includes(event.request.method?.toUpperCase())
       ) {
         attempts++;
+        const boundary =
+          url.hostname === 'db.matrxserver.com'
+            ? 'database'
+            : url.hostname === 'server.app.matrxserver.com'
+              ? 'aidream'
+              : 'other_http';
+        const kind = url.pathname.startsWith('/rest/v1/rpc/')
+          ? 'rpc_post_unclassified'
+          : 'nonread_method';
+        const key = `${boundary}:${kind}`;
+        blocked[key] = (blocked[key] ?? 0) + 1;
         void panel.send('Fetch.failRequest', {
           requestId: event.requestId,
           errorReason: 'Aborted',
@@ -162,6 +174,7 @@ export async function mutationGuard(panel) {
   await panel.send('Fetch.enable', { patterns: [{ urlPattern: '*', requestStage: 'Request' }] });
   return {
     count: () => attempts,
+    blocked: () => ({ ...blocked }),
     close: async () => {
       off();
       await panel.send('Fetch.disable');
@@ -195,27 +208,37 @@ async function settingsControls(panel, section) {
 async function census(panel) {
   const navigationRaw = await visible(panel, 'button[role="tab"][title]', [...knownTabs], true);
   const navigation = mapObservation('navigation', navigationRaw);
-  assert.ok(
-    navigationRaw.some((item) => item.label === 'Settings'),
-    'census_settings_missing',
-  );
   const surfaces = {};
+  const navigation_actions = [];
+  const inaccessible_regions = [];
+  if (!navigationRaw.some((item) => item.label === 'Settings'))
+    inaccessible_regions.push({ region: 'settings_tab', reason: 'absent' });
   // Trusted clicks only on direct tab triggers. Profile and action controls stay untouched.
   for (const tab of navigationRaw) {
-    if (!isKnownTab(tab.label) || tab.label === 'Settings') continue;
-    await click(panel, 'title', tab.label);
-    await waitFor(
-      'census_tab_active',
-      () =>
-        evaluate(
-          panel,
-          `Boolean(document.querySelector('button[role="tab"][title=${JSON.stringify(tab.label)}][data-state="active"]'))`,
-        ),
-      Boolean,
-    );
-    const surfaceRaw = await evaluate(
-      panel,
-      `(async () => {
+    if (!isKnownTab(tab.label)) {
+      inaccessible_regions.push({
+        region: 'unmapped_tab',
+        label_sha256: tab.label_sha256,
+        reason: 'not_opened_without_source_mapping',
+      });
+      continue;
+    }
+    if (tab.label === 'Settings') continue;
+    navigation_actions.push({ kind: 'direct_tab', label: tab.label });
+    try {
+      await click(panel, 'title', tab.label);
+      await waitFor(
+        'census_tab_active',
+        () =>
+          evaluate(
+            panel,
+            `Boolean(document.querySelector('button[role="tab"][title=${JSON.stringify(tab.label)}][data-state="active"]'))`,
+          ),
+        Boolean,
+      );
+      const surfaceRaw = await evaluate(
+        panel,
+        `(async () => {
       const known = new Set(${JSON.stringify([...uniqueControlIds.keys()])});
       const digest = ${digestInPage};
       const tab = document.querySelector('button[role="tab"][title=${JSON.stringify(tab.label)}]');
@@ -231,35 +254,102 @@ async function census(panel) {
             ...(known.has(label) ? { label } : { label_sha256: await digest(label), label_length: label.length }) };
         }));
     })()`,
-    );
-    assert.ok(surfaceRaw, 'census_tab_panel_missing');
-    surfaces[tab.label] = mapObservation('surface_control', surfaceRaw);
+      );
+      if (!surfaceRaw)
+        inaccessible_regions.push({
+          region: 'tab_content',
+          label: tab.label,
+          reason: 'panel_missing',
+        });
+      else surfaces[tab.label] = mapObservation('surface_control', surfaceRaw);
+    } catch {
+      inaccessible_regions.push({
+        region: 'tab_content',
+        label: tab.label,
+        reason: 'inspection_failed',
+      });
+    }
   }
-  await click(panel, 'title', 'Settings');
-  await waitFor(
-    'census_settings_active',
-    () =>
-      evaluate(
-        panel,
-        'Boolean(document.querySelector(\'button[role="tab"][title="Settings"][data-state="active"]\'))',
-      ),
-    Boolean,
-  );
-  const sectionRaw = await visible(panel, 'button[aria-expanded]', [...settingsSections]);
+  let settingsAvailable = navigationRaw.some((item) => item.label === 'Settings');
+  if (settingsAvailable)
+    try {
+      navigation_actions.push({ kind: 'direct_tab', label: 'Settings' });
+      await click(panel, 'title', 'Settings');
+      await waitFor(
+        'census_settings_active',
+        () =>
+          evaluate(
+            panel,
+            'Boolean(document.querySelector(\'button[role="tab"][title="Settings"][data-state="active"]\'))',
+          ),
+        Boolean,
+      );
+    } catch {
+      settingsAvailable = false;
+      inaccessible_regions.push({ region: 'settings_tab', reason: 'inspection_failed' });
+    }
+  const sectionRaw = settingsAvailable
+    ? await visible(panel, 'button[aria-expanded]', [...settingsSections])
+    : [];
   const sections = mapObservation('section', sectionRaw);
   const controls = {};
   for (const section of sectionRaw) {
-    if (!settingsSections.has(section.label)) continue;
-    await openSection(panel, section.label);
-    const sectionRawControls = await settingsControls(panel, section.label);
-    assert.ok(sectionRawControls, 'census_settings_section_content_missing');
-    controls[section.label] = mapObservation('settings_control', sectionRawControls);
+    if (!settingsSections.has(section.label)) {
+      inaccessible_regions.push({
+        region: 'unmapped_expander',
+        label_sha256: section.label_sha256,
+        reason: 'not_opened_without_source_mapping',
+      });
+      continue;
+    }
+    navigation_actions.push({ kind: 'settings_section', label: section.label });
+    try {
+      await openSection(panel, section.label);
+      const sectionRawControls = await settingsControls(panel, section.label);
+      if (!sectionRawControls)
+        inaccessible_regions.push({
+          region: 'settings_section',
+          label: section.label,
+          reason: 'content_missing',
+        });
+      else controls[section.label] = mapObservation('settings_control', sectionRawControls);
+    } catch {
+      inaccessible_regions.push({
+        region: 'settings_section',
+        label: section.label,
+        reason: 'inspection_failed',
+      });
+    }
   }
   const identity = await evaluate(
     panel,
     '({ extensionId: chrome.runtime.id, version: chrome.runtime.getManifest().version })',
   );
-  return { navigation, surfaces, sections, controls, identity };
+  return {
+    navigation,
+    surfaces,
+    sections,
+    controls,
+    navigation_actions,
+    inaccessible_regions,
+    identity,
+  };
+}
+
+export function censusCompleteness(observation, blockedTotal) {
+  const buckets = [
+    observation.navigation,
+    observation.sections,
+    ...Object.values(observation.surfaces),
+    ...Object.values(observation.controls),
+  ];
+  const unmapped = buckets.reduce((sum, bucket) => sum + bucket.unmapped_count, 0);
+  return {
+    complete: blockedTotal === 0 && unmapped === 0 && observation.inaccessible_regions.length === 0,
+    unmapped_total: unmapped,
+    inaccessible_count: observation.inaccessible_regions.length,
+    blocked_request_count: blockedTotal,
+  };
 }
 
 async function main() {
@@ -282,6 +372,7 @@ async function main() {
     'census_artifact_mismatch',
   );
   let observation;
+  let interception;
   const native = await runNativeSidepanelQa({
     headed: true,
     extensionDir: EXTENSION_DIR,
@@ -316,11 +407,13 @@ async function main() {
         panelGuard = await mutationGuard(panel);
         workerGuard = await mutationGuard(worker);
         observation = { authentication, ...(await census(panel)) };
-        assert.equal(
-          panelGuard.count() + workerGuard.count(),
-          0,
-          'census_backend_mutation_attempted',
-        );
+        interception = {
+          scope: ['sidepanel', 'extension_worker'],
+          effect: 'HTTP(S) methods other than GET/HEAD/OPTIONS aborted during observation',
+          blocked_request_count: panelGuard.count() + workerGuard.count(),
+          sidepanel: panelGuard.blocked(),
+          extension_worker: workerGuard.blocked(),
+        };
       } finally {
         if (panelGuard) await panelGuard.close();
         if (workerGuard) await workerGuard.close();
@@ -331,15 +424,10 @@ async function main() {
   assert.equal(native.verified, true, 'census_native_unverified');
   assert.equal(observation.identity.extensionId, EXPECTED_ID, 'census_extension_id_mismatch');
   assert.equal(observation.identity.version, receipt.version, 'census_version_mismatch');
-  const buckets = [
-    observation.navigation,
-    observation.sections,
-    ...Object.values(observation.surfaces),
-    ...Object.values(observation.controls),
-  ];
+  const completeness = censusCompleteness(observation, interception.blocked_request_count);
   const report = {
     schema_version: 2,
-    status: 'observed',
+    status: completeness.complete ? 'observed' : 'incomplete',
     role: ROLE,
     observation_only: true,
     build_channel: 'ci_development_test',
@@ -351,7 +439,9 @@ async function main() {
       tree_sha256: evidence.treeSha256,
     },
     ...observation,
-    unmapped_total: buckets.reduce((sum, bucket) => sum + bucket.unmapped_count, 0),
+    completeness,
+    interception,
+    unmapped_total: completeness.unmapped_total,
     native_panel_verified: native.verified,
   };
   await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
@@ -363,6 +453,7 @@ async function main() {
       output: OUTPUT,
     })}\n`,
   );
+  if (!completeness.complete) process.exitCode = 2;
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url))

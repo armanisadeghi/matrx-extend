@@ -3,7 +3,7 @@ import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import test from 'node:test';
 import { requireHostedAcceptanceCredential } from '../../scripts/hosted-profile-route.mjs';
-import { mapObservation, mutationGuard } from './takeover-visible-census.mjs';
+import { censusCompleteness, mapObservation, mutationGuard } from './takeover-visible-census.mjs';
 
 const hash = (label) => createHash('sha256').update(label).digest('hex');
 
@@ -58,6 +58,7 @@ test('backend mutation attempt is aborted without retaining URL or request body'
     },
   });
   assert.equal(guard.count(), 1);
+  assert.deepEqual(guard.blocked(), { 'database:nonread_method': 1 });
   await guard.close();
   assert.deepEqual(
     sent.map((call) => call.method),
@@ -65,6 +66,28 @@ test('backend mutation attempt is aborted without retaining URL or request body'
   );
   assert.equal(JSON.stringify(sent).includes('secret'), false);
   assert.equal(listener, undefined);
+});
+
+test('unknown labels, inaccessible regions, and intercepted RPCs each prevent completeness', () => {
+  const empty = { total: 0, mapped: [], unmapped_count: 0, unmapped: [] };
+  const observed = {
+    navigation: empty,
+    sections: empty,
+    surfaces: {},
+    controls: {},
+    inaccessible_regions: [],
+  };
+  assert.equal(censusCompleteness(observed, 0).complete, true);
+  assert.deepEqual(
+    censusCompleteness({ ...observed, navigation: { ...empty, unmapped_count: 1 } }, 0),
+    { complete: false, unmapped_total: 1, inaccessible_count: 0, blocked_request_count: 0 },
+  );
+  assert.equal(
+    censusCompleteness({ ...observed, inaccessible_regions: [{ region: 'tab_content' }] }, 0)
+      .complete,
+    false,
+  );
+  assert.equal(censusCompleteness(observed, 1).complete, false);
 });
 
 test('direct census invocation refuses before browser or credentials without resource guard', () => {

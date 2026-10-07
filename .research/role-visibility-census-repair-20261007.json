@@ -14,7 +14,8 @@
     "scripts/hosted-guest-acceptance.mjs routes visibility-census-guest/member/admin through the existing hosted CI importer and one resource guard per selected case",
     "scripts/hosted-profile-route.mjs requires hosted member/admin auth fixtures at preflight; the native driver uses signInSettings for first-party web and extension identity checks",
     "the driver enumerates visible navigation, active tab controls, Settings sections and expanded section controls; unknown labels are SHA-256 digested inside the extension document and returned as counts/fingerprints, never raw private row text",
-    "Fetch interception on sidepanel and extension worker aborts non-read HTTP(S) requests during census, then fails the observation if any mutation was attempted"
+    "Fetch interception on sidepanel and extension worker aborts non-GET/HEAD/OPTIONS HTTP(S) requests during census, records each blocked boundary by safe category, and marks the visibility observation incomplete",
+    "the driver records every trusted direct-tab and Settings-section navigation action; inaccessible regions and unmapped controls each make completeness false"
   ],
   "source_ids": {
     "navigation": "EXT-F-1001-C01",
@@ -26,6 +27,7 @@
     "No native browser or hosted workflow was dispatched by this source lane; guest/member/admin observations remain pending.",
     "This is observation/discovery. A mapped control means a label was visible, not that its action, permission, persistence, or backend access worked.",
     "An unknown label is reported by count and fingerprint. Its text needs a separate privacy-safe source reconciliation before an ID can be assigned.",
+    "A blocked POST may be a read-only RPC. The census records rpc_post_unclassified and refuses to infer missing controls or complete visibility from the altered UI.",
     "Fetch interception covers sidepanel and extension worker targets. Other browser targets are outside this source guard; no action controls are clicked."
   ]
 }

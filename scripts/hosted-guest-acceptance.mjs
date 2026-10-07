@@ -435,11 +435,7 @@ async function run(prepared, artifactMode) {
           MATRX_CENSUS_ROLE: acceptanceCase.slice('visibility-census-'.length),
           MATRX_CENSUS_EXTENSION_DIR: extensionDir,
           MATRX_CENSUS_RECEIPT: relocatedReceipt,
-          MATRX_CENSUS_OUTPUT: join(
-            repo,
-            'test-results',
-            `${acceptanceCase}.json`,
-          ),
+          MATRX_CENSUS_OUTPUT: join(repo, 'test-results', `${acceptanceCase}.json`),
           MATRX_CENSUS_SOURCE_SHA: prepared.sourceSha,
           MATRX_CENSUS_CI_RUN_ID: String(prepared.runId),
           MATRX_CENSUS_ARTIFACT_ID: String(prepared.artifactId),
