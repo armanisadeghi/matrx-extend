@@ -85,6 +85,10 @@ export async function guestSettingsState(panel) {
     const email = row(account.content, 'Email');
     const org = row(organization.content, 'Organization');
     const allOrgText = organization.content?.textContent ?? '';
+    const compactText = (value) => value.replace(/\\s+/g, ' ').trim();
+    const organizationOnlyGuestRow = org.length === 1 && org[0].children.length === 2 &&
+      rows(organization.content).length === 1 &&
+      compactText(allOrgText) === compactText(org[0].textContent ?? '');
     return {
       active,
       accessTokenPresent: typeof stored['matrx.auth.accessToken'] === 'string',
@@ -102,6 +106,7 @@ export async function guestSettingsState(panel) {
       organizationSectionCount: organization.count, organizationOpen: organization.open,
       signInToChooseCount: org.filter((item) =>
         item.lastElementChild?.textContent?.trim() === 'Sign in to choose').length,
+      organizationOnlyGuestRow,
       archiveFilterCount: organization.content?.querySelectorAll('[aria-label="Filter organizations by archive status"]').length ?? 0,
       actingAsRowCount: row(organization.content, 'Acting as').length,
       archivedMarkerCount: [...(organization.content?.querySelectorAll('span') ?? [])]
@@ -137,6 +142,7 @@ export function guestSettingsChecks(state, organizationRequests) {
       state.organizationSectionCount === 1 &&
       state.organizationOpen === true &&
       state.signInToChooseCount === 1 &&
+      state.organizationOnlyGuestRow === true &&
       state.archiveFilterCount === 0 &&
       state.actingAsRowCount === 0 &&
       organizationRequests === 0,
@@ -145,6 +151,7 @@ export function guestSettingsChecks(state, organizationRequests) {
       state.organizationSectionCount === 1 &&
       state.organizationOpen === true &&
       state.signInToChooseCount === 1 &&
+      state.organizationOnlyGuestRow === true &&
       state.archivedMarkerCount === 0 &&
       state.restorationActionCount === 0 &&
       state.archivedCopyPresent === false,

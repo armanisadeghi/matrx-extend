@@ -21,6 +21,7 @@ const guest = {
   organizationSectionCount: 1,
   organizationOpen: true,
   signInToChooseCount: 1,
+  organizationOnlyGuestRow: true,
   archiveFilterCount: 0,
   actingAsRowCount: 0,
   archivedMarkerCount: 0,
@@ -57,6 +58,15 @@ test('native Settings observation reads the active panel and drops account conte
       '<div class="flex items-center justify-between"><span>Name</span><div>Existing member</div></div>',
     );
   assert.equal(guestSettingsChecks(await guestSettingsState(panel), 0).account, false);
+  window.document
+    .querySelector('#organization')
+    .insertAdjacentHTML('beforeend', "<div><span>Matrx's Org</span></div>");
+  const bareNameLeak = await guestSettingsState(panel);
+  assert.equal(bareNameLeak.archivedMarkerCount, 0);
+  assert.equal(bareNameLeak.restorationActionCount, 0);
+  assert.equal(bareNameLeak.organizationOnlyGuestRow, false);
+  assert.equal(guestSettingsChecks(bareNameLeak, 0).organization, false);
+  assert.equal(guestSettingsChecks(bareNameLeak, 0).archivedManagement, false);
   window.document
     .querySelector('#organization')
     .insertAdjacentHTML(
@@ -101,6 +111,7 @@ test('each guest control rejects its own visible or network regression', () => {
     { archiveFilterCount: 1 },
     { actingAsRowCount: 1 },
     { signInToChooseCount: 0 },
+    { organizationOnlyGuestRow: false },
     { organizationOpen: false },
   ]) {
     assert.equal(guestSettingsChecks({ ...guest, ...changed }, 0).organization, false);

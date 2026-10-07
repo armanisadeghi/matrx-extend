@@ -20,8 +20,9 @@
   "criteria": {
     "T73": "Account email unavailable, Name and role absent, Sign in footer, signed-out storage proof, warm and full extension reload",
     "T76": "Archive filter and active organization choice absent; no organization membership/read request during observed section interaction; warm and full extension reload",
-    "T92": "Archived membership marker and restoration action absent while signed out; warm and full extension reload; member/admin portions remain unverified"
+    "T92": "Organization section contains only the signed-out prompt row, with no extra membership text, archived marker or restoration action; warm and full extension reload; member/admin portions remain unverified"
   },
+  "peer_repair": "A source peer found that a bare archived organization name without an archive marker could pass. The observation now rejects all extra Organization-section text and a causal DOM test inserts an unlabelled membership name. Fresh independent re-review remains pending.",
   "diagnostics": "Only fixed stage names, bounded booleans/counts and request category counts leave the panel; no account, organization, URL or token values are recorded.",
   "open_items": [
     "Guard-admitted source test after disk recovery",
