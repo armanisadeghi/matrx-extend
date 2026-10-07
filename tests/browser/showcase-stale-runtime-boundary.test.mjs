@@ -4,11 +4,22 @@ import { test } from 'node:test';
 import vm from 'node:vm';
 import {
   STALE_PICKER_KINDS,
+  armShowcaseInstallBoundary,
   armShowcaseStaleBoundary,
 } from './showcase-stale-runtime-boundary.mjs';
 
 test('each held A channel stays outside Chrome until its exact envelope is released', async () => {
   const delivered = [];
+  const cancelled = [];
+  const pageListeners = new Map();
+  const document = {
+    addEventListener(type, listener) {
+      pageListeners.set(`${type}:${listener.name}`, listener);
+    },
+    removeEventListener(type, listener) {
+      pageListeners.delete(`${type}:${listener.name}`);
+    },
+  };
   const runtime = {
     id: 'cihdmkcdjjckfhjpgoedmgfpoljebaml',
     sendMessage(message) {
@@ -18,8 +29,12 @@ test('each held A channel stays outside Chrome until its exact envelope is relea
   };
   const world = vm.createContext({
     chrome: { runtime },
+    document,
     window: {
       __matrxListPickerStart() {},
+      __matrxListPickerCancel(id) {
+        cancelled.push(id);
+      },
     },
     location: { href: 'http://localhost/events' },
   });
@@ -94,6 +109,80 @@ test('each held A channel stays outside Chrome until its exact envelope is relea
     assert.deepEqual(await held, { ack: true });
     assert.equal(delivered.at(-1), oldMessage);
   }
+  await boundary.holdCancel();
+  const priorCancel = world.window.__matrxListPickerCancel;
+  priorCancel(a);
+  assert.deepEqual(cancelled, []);
+  assert.deepEqual(await boundary.cancelSnapshot(), { count: 1, session_id: a });
+  world.window.__matrxListPickerCancel = (id) => cancelled.push(`replacement:${id}`);
+  assert.deepEqual(await boundary.releaseCancel(b), { released: false });
+  assert.deepEqual(await boundary.releaseCancel(a), { released: true });
+  assert.deepEqual(cancelled, [a]);
+  await boundary.armListenerCount();
+  function oldClick() {}
+  function newClick() {}
+  function newHover() {}
+  document.addEventListener('click', oldClick, true);
+  assert.deepEqual(await boundary.listenerSnapshot(), { click_count: 1, hover_count: 0 });
+  document.removeEventListener('click', oldClick, true);
+  document.addEventListener('click', newClick, true);
+  document.addEventListener('mouseover', newHover, true);
+  assert.deepEqual(await boundary.listenerSnapshot(), { click_count: 1, hover_count: 1 });
+  document.removeEventListener('click', newClick, true);
+  document.removeEventListener('mouseover', newHover, true);
+  assert.deepEqual(await boundary.listenerSnapshot(), { click_count: 0, hover_count: 0 });
+  await boundary.closeListenerCount();
+  await boundary.close();
+});
+
+test('deferred installation replays the exact Chrome operation before replacement', async () => {
+  const installed = [];
+  const world = vm.createContext({
+    chrome: {
+      scripting: {
+        executeScript(details) {
+          installed.push(details);
+          return Promise.resolve([{ result: true }]);
+        },
+      },
+    },
+  });
+  const panel = {
+    async send(method, params) {
+      assert.equal(method, 'Runtime.evaluate');
+      return {
+        result: {
+          value: JSON.parse(JSON.stringify(await vm.runInContext(params.expression, world))),
+        },
+      };
+    },
+  };
+  const boundary = await armShowcaseInstallBoundary(panel);
+  const target = { tabId: 7, documentIds: ['current-document'] };
+  const oldInstall = world.chrome.scripting.executeScript({
+    target,
+    files: ['content-scripts/list-picker.js'],
+  });
+  assert.equal(installed.length, 0);
+  assert.equal((await boundary.snapshot()).held, true);
+  assert.deepEqual(await boundary.release(), { released: true });
+  await oldInstall;
+  assert.equal(installed.length, 1);
+  await world.chrome.scripting.executeScript({ target, files: ['content-scripts/list-picker.js'] });
+  assert.equal(installed.length, 2);
+  const session = '11111111-1111-4111-8111-111111111111';
+  await world.chrome.scripting.executeScript({
+    target,
+    func() {
+      return window.__matrxListPickerStart;
+    },
+    args: [session, null],
+  });
+  const snapshot = await boundary.snapshot();
+  assert.equal(snapshot.observed.length, 2);
+  assert.deepEqual(snapshot.starts, [
+    { session_id: session, tab_id: 7, document_id: 'current-document' },
+  ]);
   await boundary.close();
 });
 

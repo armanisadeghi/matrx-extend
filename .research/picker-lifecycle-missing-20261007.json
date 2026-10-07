@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "task_id": "picker-lifecycle-missing-20261007",
+  "defect_id": "EXT-D-0042",
+  "status": "source_ready_native_unverified",
+  "scope": "Extend the existing opt-in showcase-stale-admin native runner with the three remaining picker lifecycle paths. Preserve previously passed stale EXIT, ITEM_DETECTED and RESULT cycles. No product code, build, native run, release or D42 closure in this lane.",
+  "native_cases_added": [
+    {
+      "case": "delayed A cancellation after B starts",
+      "operation": "Hold the actual content-world __matrxListPickerCancel call made by the sidepanel cancellation injection, then start B on the same page and release the captured A target through the original hook.",
+      "forcing_outcome": "B retains one overlay and an empty preselection root, produces a distinct stamped detection/result, selects a field and extracts all three event rows. The released A target cannot close B."
+    },
+    {
+      "case": "deferred A installation across replacement",
+      "operation": "Hold the exact Chrome scripting file-install promise for A in the sidepanel, cancel A and start B while that promise is pending, then execute the held Chrome operation. The production per-tab queue determines cancellation/start order.",
+      "forcing_outcome": "A's obsolete start never invokes its hook; two real file installations target the same tab and document, one current B start executes, and B detects, completes and extracts three rows."
+    },
+    {
+      "case": "fresh content-context reinjection and listener teardown",
+      "operation": "Trace the current UI-started session, execute the real Chrome file installation and start hook again for that same session, and count capture-phase document click/mouseover listeners across the reinjection.",
+      "forcing_outcome": "One active click and one hover listener remain, one card click yields exactly one stamped detection, current result extracts three rows, both listeners leave after Done, and an ordinary page click increments once."
+    }
+  ],
+  "diagnostics": "All new browser actions, waits and assertions have fixed lifecycle target labels with bounded allowlisted state/count samples. The receipt retains lifecycle_diagnostic.failed_target on an action/wait failure, never raw errors, selectors or page text; focused probes cover cancel, install and reinject receipt serialization.",
+  "focused_checks": {
+    "command": "node --test tests/browser/showcase-stale-runtime-boundary.test.mjs tests/browser/showcase-stale-diagnostic.test.mjs; node --check tests/browser/showcase-picker-native-acceptance.mjs; pnpm exec biome check five touched browser files; git diff --check",
+    "result": "8 focused tests passed; runner syntax, formatter/lint and whitespace checks passed.",
+    "limit": "The tests verify hold/release hooks and safe receipts in a simulated Chrome boundary. Only a guarded hosted native run against a frozen installed artifact can credit actual lifecycle acceptance."
+  },
+  "remaining_defect_scope": [
+    "Native execution and independent peer review of these three lifecycle cases",
+    "Signed-in nonadmin role gating",
+    "EXT-D-0042 remains in-fix"
+  ],
+  "next_action": "Fresh independent source review, then one resource-admitted hosted showcase-stale-admin run against an exact CI development artifact built from the pushed source. Keep D42 open after any bounded run until nonadmin and all native criteria are independently verified."
+}

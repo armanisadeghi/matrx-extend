@@ -16,6 +16,20 @@ const TARGETS = new Set([
   'B_builder',
   'B_result',
   'B_extract',
+  'lifecycle_prepare',
+  'lifecycle_A_start',
+  'lifecycle_A_hold',
+  'lifecycle_A_cancel',
+  'lifecycle_B_start',
+  'lifecycle_A_release',
+  'lifecycle_reinject',
+  'lifecycle_B_scope',
+  'lifecycle_B_detection',
+  'lifecycle_B_field',
+  'lifecycle_B_done',
+  'lifecycle_B_result',
+  'lifecycle_B_extract',
+  'lifecycle_page_click',
 ]);
 const FLAGS = new Set([
   'panel_start',
@@ -30,6 +44,8 @@ const FLAGS = new Set([
   'B_detected',
   'B_stamped',
   'B_result_stamped',
+  'cancel_held',
+  'install_held',
 ]);
 const COUNTS = new Set([
   'overlay_count',
@@ -37,10 +53,16 @@ const COUNTS = new Set([
   'producer_count',
   'relay_count',
   'picked_field_count',
+  'cancel_count',
+  'install_count',
+  'detected_count',
+  'listener_click_count',
+  'listener_hover_count',
 ]);
 
 export function createShowcaseStaleDiagnostic(channel) {
-  if (!['detected', 'result'].includes(channel)) throw new Error('invalid_stale_channel');
+  if (!['detected', 'result', 'cancel', 'install', 'reinject'].includes(channel))
+    throw new Error('invalid_stale_channel');
   return { channel, target: null, failed_target: null, last_safe: {} };
 }
 

@@ -71,6 +71,85 @@ export async function armShowcaseStaleBoundary(page, extensionId) {
   })()`);
   assert.equal(armed, true, 'showcase_picker_runtime_boundary_not_writable');
   return {
+    async armListenerCount() {
+      assert.equal(
+        await run(`(() => {
+        const s = globalThis.__showcaseD42Boundary;
+        if (s.listeners) return false;
+        const originalAdd = document.addEventListener.bind(document);
+        const originalRemove = document.removeEventListener.bind(document);
+        const click = new Set();
+        const hover = new Set();
+        const tracked = (type, options) => options === true &&
+          (type === 'click' ? click : type === 'mouseover' ? hover : null);
+        const add = (type, listener, options) => {
+          tracked(type, options)?.add(listener);
+          return originalAdd(type, listener, options);
+        };
+        const remove = (type, listener, options) => {
+          tracked(type, options)?.delete(listener);
+          return originalRemove(type, listener, options);
+        };
+        document.addEventListener = add;
+        document.removeEventListener = remove;
+        if (document.addEventListener !== add || document.removeEventListener !== remove)
+          return false;
+        s.listeners = { click, hover, originalAdd, originalRemove };
+        return true;
+      })()`),
+        true,
+        'showcase_listener_tracker_not_armed',
+      );
+    },
+    async listenerSnapshot() {
+      return run(`(() => {
+        const s = globalThis.__showcaseD42Boundary.listeners;
+        return { click_count: s?.click.size ?? null, hover_count: s?.hover.size ?? null };
+      })()`);
+    },
+    async closeListenerCount() {
+      assert.equal(
+        await run(`(() => {
+        const s = globalThis.__showcaseD42Boundary.listeners;
+        if (!s || s.click.size || s.hover.size) return false;
+        document.addEventListener = s.originalAdd;
+        document.removeEventListener = s.originalRemove;
+        delete globalThis.__showcaseD42Boundary.listeners;
+        return true;
+      })()`),
+        true,
+        'showcase_listener_tracker_not_clear',
+      );
+    },
+    async holdCancel() {
+      const armedCancel = await run(`(() => {
+        const s = globalThis.__showcaseD42Boundary;
+        if (s.cancelHold) return false;
+        const originalCancel = window.__matrxListPickerCancel;
+        if (typeof originalCancel !== 'function') return false;
+        s.cancelHold = { originalCancel, calls: [] };
+        window.__matrxListPickerCancel = (id) => s.cancelHold.calls.push(id);
+        return true;
+      })()`);
+      assert.equal(armedCancel, true, 'showcase_cancel_boundary_not_armed');
+    },
+    async cancelSnapshot() {
+      return run(`(() => {
+        const held = globalThis.__showcaseD42Boundary.cancelHold;
+        return { count: held?.calls.length ?? 0, session_id: held?.calls[0] ?? null };
+      })()`);
+    },
+    async releaseCancel(sessionId) {
+      assert.match(sessionId, /^[0-9a-f-]{36}$/i, 'showcase_cancel_session_id_invalid');
+      return run(`(() => {
+        const held = globalThis.__showcaseD42Boundary.cancelHold;
+        if (!held || held.calls.length !== 1 || held.calls[0] !== ${JSON.stringify(sessionId)})
+          return { released: false };
+        held.calls.shift();
+        held.originalCancel(${JSON.stringify(sessionId)});
+        return { released: true };
+      })()`);
+    },
     async holdNext(kind) {
       assert.ok(Object.values(STALE_PICKER_KINDS).includes(kind), 'showcase_invalid_hold_kind');
       const result = await run(`(() => {
@@ -114,6 +193,114 @@ export async function armShowcaseStaleBoundary(page, extensionId) {
       await cdp.detach();
     },
   };
+}
+
+// Hold Chrome's real installation call from the sidepanel. The returned
+// promise remains pending until release, so the production per-tab queue must
+// serialize the obsolete A install and the replacement B start itself.
+export async function armShowcaseInstallBoundary(panel, { holdFirst = true } = {}) {
+  const run = async (expression) => {
+    const response = await panel.send('Runtime.evaluate', {
+      expression,
+      awaitPromise: true,
+      returnByValue: true,
+    });
+    assert.ok(!response.exceptionDetails, 'showcase_install_boundary_evaluation_failed');
+    return response.result?.value;
+  };
+  assert.equal(
+    await run(`(() => {
+      if (globalThis.__showcaseD42Install) return false;
+      const scripting = chrome.scripting;
+      const original = scripting.executeScript.bind(scripting);
+      const state = { held: null, observed: [], starts: [], original,
+        armed: ${holdFirst ? 'true' : 'false'} };
+      const intercepted = function(details) {
+        const isInstall = details?.files?.length === 1 &&
+          details.files[0] === 'content-scripts/list-picker.js';
+        if (!isInstall) {
+          if (details?.func?.toString()?.includes('__matrxListPickerStart') &&
+              typeof details?.args?.[0] === 'string' &&
+              /^[0-9a-f-]{36}$/i.test(details.args[0]))
+            state.starts.push({ session_id: details.args[0], tab_id: details.target?.tabId,
+              document_id: details.target?.documentIds?.[0] ?? null });
+          return original(details);
+        }
+        state.observed.push({ tab_id: details.target?.tabId,
+          document_id: details.target?.documentIds?.[0] ?? null });
+        if (!state.armed) return original(details);
+        state.armed = false;
+        return new Promise((resolve, reject) => {
+          state.held = { details, resolve, reject };
+        });
+      };
+      scripting.executeScript = intercepted;
+      if (scripting.executeScript !== intercepted) return false;
+      globalThis.__showcaseD42Install = state;
+      return true;
+    })()`),
+    true,
+    'showcase_install_boundary_not_writable',
+  );
+  return {
+    async snapshot() {
+      return run(`(() => {
+        const s = globalThis.__showcaseD42Install;
+        return { held: !!s.held, observed: s.observed, starts: s.starts };
+      })()`);
+    },
+    async release() {
+      return run(`(async () => {
+        const s = globalThis.__showcaseD42Install;
+        const held = s.held;
+        if (!held) return { released: false };
+        s.held = null;
+        try {
+          const value = await s.original(held.details);
+          held.resolve(value);
+          return { released: true };
+        } catch (error) {
+          held.reject(error);
+          return { released: false };
+        }
+      })()`);
+    },
+    async close() {
+      assert.equal(
+        await run(`(() => {
+          const s = globalThis.__showcaseD42Install;
+          if (s.held) return false;
+          chrome.scripting.executeScript = s.original;
+          delete globalThis.__showcaseD42Install;
+          return true;
+        })()`),
+        true,
+        'showcase_install_boundary_still_held',
+      );
+    },
+  };
+}
+
+export async function reinjectShowcasePicker(panel, tabId, documentId, sessionId) {
+  assert.ok(Number.isInteger(tabId), 'showcase_reinject_tab_missing');
+  assert.equal(typeof documentId, 'string', 'showcase_reinject_document_missing');
+  assert.match(sessionId, /^[0-9a-f-]{36}$/i, 'showcase_reinject_session_missing');
+  const response = await panel.send('Runtime.evaluate', {
+    expression: `(async () => {
+      const target = { tabId: ${tabId}, documentIds: [${JSON.stringify(documentId)}] };
+      await chrome.scripting.executeScript({ target, files: ['content-scripts/list-picker.js'] });
+      await chrome.scripting.executeScript({ target, func: (id) => {
+        const start = window.__matrxListPickerStart;
+        if (typeof start !== 'function') throw new Error('picker start hook missing');
+        start(id, null);
+      }, args: [${JSON.stringify(sessionId)}] });
+      return true;
+    })()`,
+    awaitPromise: true,
+    returnByValue: true,
+  });
+  assert.ok(!response.exceptionDetails, 'showcase_reinject_operation_failed');
+  assert.equal(response.result?.value, true, 'showcase_reinject_unverified');
 }
 
 export async function observeShowcaseRelay(panel) {

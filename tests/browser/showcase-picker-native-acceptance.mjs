@@ -38,9 +38,11 @@ import {
 } from './showcase-stale-diagnostic.mjs';
 import {
   STALE_PICKER_KINDS,
+  armShowcaseInstallBoundary,
   armShowcaseStaleBoundary,
   observeShowcaseRelay,
   readShowcaseRelays,
+  reinjectShowcasePicker,
 } from './showcase-stale-runtime-boundary.mjs';
 
 const REPO = resolve(import.meta.dirname, '../..');
@@ -84,6 +86,7 @@ const report = {
   organization_diagnostic: null,
   selection_diagnostic: null,
   stale_diagnostic: null,
+  lifecycle_diagnostic: null,
   completion_diagnostic: { boundaries: [] },
 };
 let selectionPage = null;
@@ -122,6 +125,382 @@ async function configRoot(panel) {
     return label?.nextElementSibling?.textContent?.trim() ?? null;
   })()`,
   );
+}
+
+async function runLifecyclePositive({
+  page,
+  panel,
+  step,
+  expectedSession = null,
+  exactDetection = false,
+}) {
+  const before = await step(
+    'lifecycle_B_detection',
+    async () => (await readShowcaseRelays(panel)).length,
+  );
+  await step('lifecycle_B_start', async () => {
+    assert.ok((await panelState(panel)).picking, 'showcase_lifecycle_B_not_picking');
+    assert.equal(await configRoot(panel), null, 'showcase_lifecycle_A_root_staged');
+    assert.equal(await page.locator('#matrx-list-picker-host').count(), 1);
+  });
+  await step('lifecycle_B_scope', () =>
+    clickReachableShowcaseCard(page.locator('#events article.event-card').first()),
+  );
+  await step('lifecycle_B_scope', () => chooseScopeIfNeeded(page));
+  await step('lifecycle_B_scope', () =>
+    waitFor(
+      'showcase_lifecycle_three_items',
+      async () => (await pickedOverlay(page)).locator('.badge').allTextContents(),
+      (labels) => labels.some((value) => value.includes('3 items')),
+    ),
+  );
+  const relays = await step('lifecycle_B_detection', () =>
+    waitFor(
+      'showcase_lifecycle_detection_stamped',
+      () => readShowcaseRelays(panel),
+      (events) =>
+        events
+          ?.slice(before)
+          .some(
+            (event) =>
+              event.kind === STALE_PICKER_KINDS.detected &&
+              Number.isInteger(event.tab_id) &&
+              typeof event.document_id === 'string' &&
+              (!expectedSession || event.session_id === expectedSession),
+          ),
+    ),
+  );
+  const detected = relays.slice(before).find((event) => event.kind === STALE_PICKER_KINDS.detected);
+  await step('lifecycle_B_detection', () => {
+    assert.match(detected.session_id, /^[0-9a-f-]{36}$/i);
+    if (expectedSession) assert.equal(detected.session_id, expectedSession);
+  });
+  await step('lifecycle_B_field', () =>
+    clickReachableShowcaseTarget(page.locator('#events article.event-card h2').first(), 'field'),
+  );
+  await step('lifecycle_B_field', () =>
+    waitFor(
+      'showcase_lifecycle_field_picked',
+      async () => (await pickedOverlay(page)).locator('.picked-item').count(),
+      (count) => count === 1,
+    ),
+  );
+  await step('lifecycle_B_done', () => page.locator('#matrx-list-picker-host button#done').click());
+  await step('lifecycle_B_done', async () =>
+    (await pickedOverlay(page)).waitFor({ state: 'detached' }),
+  );
+  await step('lifecycle_B_result', () =>
+    waitFor(
+      'showcase_lifecycle_result_stamped',
+      () => readShowcaseRelays(panel),
+      (events) =>
+        events
+          ?.slice(before)
+          .some(
+            (event) =>
+              event.kind === STALE_PICKER_KINDS.result &&
+              event.session_id === detected.session_id &&
+              event.tab_id === detected.tab_id &&
+              event.document_id === detected.document_id,
+          ),
+    ),
+  );
+  await step('lifecycle_B_extract', () => click(panel, 'button-text', 'Extract'));
+  await step('lifecycle_B_extract', () =>
+    waitFor(
+      'showcase_lifecycle_three_rows',
+      () => panelState(panel),
+      (state) => state?.rowCount && state.hasFirst && state.hasSecond && state.hasThird,
+    ),
+  );
+  const detectionCount = await step(
+    'lifecycle_B_detection',
+    async () =>
+      (await readShowcaseRelays(panel))
+        .slice(before)
+        .filter((event) => event.kind === STALE_PICKER_KINDS.detected).length,
+  );
+  if (exactDetection)
+    await step('lifecycle_B_detection', () =>
+      assert.equal(detectionCount, 1, 'showcase_reinjection_duplicate_detection'),
+    );
+  return {
+    session_id: detected.session_id,
+    tab_id: detected.tab_id,
+    document_id: detected.document_id,
+    detection_count: detectionCount,
+    rows: 3,
+  };
+}
+
+async function runLifecycleCase({ kind, page, panel, boundary, resourceAction, report }) {
+  const diagnostic = createShowcaseStaleDiagnostic(kind);
+  report.lifecycle_diagnostic = diagnostic;
+  const originalUrl = page.url();
+  let installBoundary = null;
+  const sample = async () => {
+    const [state, overlay, relays, cancel, install] = await Promise.allSettled([
+      panelState(panel),
+      page.locator('#matrx-list-picker-host').count(),
+      readShowcaseRelays(panel),
+      boundary.cancelSnapshot(),
+      installBoundary?.snapshot(),
+    ]);
+    return {
+      ...(state.status === 'fulfilled' && {
+        panel_start: state.value?.start === true,
+        panel_picking: state.value?.picking === true,
+        panel_extract: state.value?.extract === true,
+        panel_three_rows: state.value?.rowCount === true,
+      }),
+      ...(overlay.status === 'fulfilled' && { overlay_count: overlay.value }),
+      ...(relays.status === 'fulfilled' && { relay_count: relays.value.length }),
+      ...(cancel.status === 'fulfilled' && {
+        cancel_held: cancel.value.count === 1,
+        cancel_count: cancel.value.count,
+      }),
+      ...(install.status === 'fulfilled' &&
+        install.value && {
+          install_held: install.value.held,
+          install_count: install.value.observed.length,
+        }),
+    };
+  };
+  const step = (target, action) =>
+    runShowcaseStaleDiagnosticStep(diagnostic, target, sample, () => resourceAction(action));
+  await step('lifecycle_prepare', () => click(panel, 'button-text', 'Restart'));
+  await step('lifecycle_prepare', () =>
+    waitFor(
+      'showcase_lifecycle_ready',
+      () => panelState(panel),
+      (state) => state?.start,
+    ),
+  );
+  if (kind === 'install')
+    installBoundary = await step('lifecycle_A_hold', () => armShowcaseInstallBoundary(panel));
+  await step('lifecycle_A_start', () => click(panel, 'button-text', 'Pick an example item'));
+  if (kind === 'cancel') {
+    await step('lifecycle_A_start', async () =>
+      (await pickedOverlay(page)).waitFor({ state: 'attached' }),
+    );
+    await step('lifecycle_A_hold', () => boundary.holdCancel());
+  } else
+    await step('lifecycle_A_hold', () =>
+      waitFor(
+        'showcase_A_install_held',
+        () => installBoundary.snapshot(),
+        (value) => value.held,
+      ),
+    );
+  await step('lifecycle_A_cancel', () => click(panel, 'button-text', 'Cancel'));
+  await step('lifecycle_A_cancel', () =>
+    waitFor(
+      'showcase_A_cancelled_in_panel',
+      () => panelState(panel),
+      (state) => state?.start,
+    ),
+  );
+  const oldCancel =
+    kind === 'cancel'
+      ? await step('lifecycle_A_hold', () =>
+          waitFor(
+            'showcase_A_cancel_held',
+            () => boundary.cancelSnapshot(),
+            (value) => value.count === 1,
+          ),
+        )
+      : null;
+  await step('lifecycle_B_start', () => click(panel, 'button-text', 'Pick an example item'));
+  if (kind === 'install') {
+    await step('lifecycle_B_start', async () =>
+      assert.equal(
+        await page.locator('#matrx-list-picker-host').count(),
+        0,
+        'showcase_old_install_completed_early',
+      ),
+    );
+    await step('lifecycle_A_release', async () =>
+      assert.deepEqual(await installBoundary.release(), { released: true }),
+    );
+  }
+  await step('lifecycle_B_start', async () =>
+    (await pickedOverlay(page)).waitFor({ state: 'attached' }),
+  );
+  await step('lifecycle_B_start', () =>
+    assert.equal(page.url(), originalUrl, 'showcase_lifecycle_page_changed'),
+  );
+  if (kind === 'cancel') {
+    await step('lifecycle_A_release', async () =>
+      assert.deepEqual(await boundary.releaseCancel(oldCancel.session_id), { released: true }),
+    );
+    await step('lifecycle_A_release', async () =>
+      assert.equal(
+        await page.locator('#matrx-list-picker-host').count(),
+        1,
+        'showcase_old_cancel_removed_B',
+      ),
+    );
+  } else {
+    await step('lifecycle_B_start', async () => {
+      const installs = await installBoundary.snapshot();
+      assert.equal(installs.observed.length, 2, 'showcase_replacement_install_missing');
+      assert.equal(installs.starts.length, 1, 'showcase_obsolete_A_started');
+      assert.deepEqual(
+        installs.observed[1],
+        installs.observed[0],
+        'showcase_replacement_install_moved_document',
+      );
+      assert.equal(
+        installs.starts[0].tab_id,
+        installs.observed[0].tab_id,
+        'showcase_replacement_start_moved_tab',
+      );
+      assert.equal(
+        installs.starts[0].document_id,
+        installs.observed[0].document_id,
+        'showcase_replacement_start_moved_document',
+      );
+      await installBoundary.close();
+    });
+  }
+  const current = await runLifecyclePositive({ page, panel, step });
+  if (oldCancel)
+    await step('lifecycle_B_detection', () =>
+      assert.notEqual(current.session_id, oldCancel.session_id),
+    );
+  passed(`genuine_delayed_A_${kind}_B_extracted`, {
+    ...(oldCancel && { A_session_id: oldCancel.session_id }),
+    B_session_id: current.session_id,
+    B_rows: 3,
+    page_unchanged: true,
+    ...(kind === 'install' && { obsolete_A_start_count: 0, install_count: 2 }),
+  });
+  report.lifecycle_diagnostic = null;
+  return current;
+}
+
+async function runLifecycleReinjection({ page, panel, boundary, resourceAction, report }) {
+  const diagnostic = createShowcaseStaleDiagnostic('reinject');
+  report.lifecycle_diagnostic = diagnostic;
+  let installBoundary = null;
+  const sample = async () => {
+    const [state, overlay, relays, install, listeners] = await Promise.allSettled([
+      panelState(panel),
+      page.locator('#matrx-list-picker-host').count(),
+      readShowcaseRelays(panel),
+      installBoundary?.snapshot(),
+      boundary.listenerSnapshot(),
+    ]);
+    return {
+      ...(state.status === 'fulfilled' && {
+        panel_start: state.value?.start === true,
+        panel_picking: state.value?.picking === true,
+        panel_three_rows: state.value?.rowCount === true,
+      }),
+      ...(overlay.status === 'fulfilled' && { overlay_count: overlay.value }),
+      ...(relays.status === 'fulfilled' && { relay_count: relays.value.length }),
+      ...(install.status === 'fulfilled' &&
+        install.value && {
+          install_count: install.value.observed.length,
+        }),
+      ...(listeners.status === 'fulfilled' &&
+        listeners.value && {
+          listener_click_count: listeners.value.click_count,
+          listener_hover_count: listeners.value.hover_count,
+        }),
+    };
+  };
+  const step = (target, action) =>
+    runShowcaseStaleDiagnosticStep(diagnostic, target, sample, () => resourceAction(action));
+  await step('lifecycle_prepare', () => click(panel, 'button-text', 'Restart'));
+  await step('lifecycle_prepare', () =>
+    waitFor(
+      'showcase_reinject_ready',
+      () => panelState(panel),
+      (state) => state?.start,
+    ),
+  );
+  installBoundary = await step('lifecycle_prepare', () =>
+    armShowcaseInstallBoundary(panel, { holdFirst: false }),
+  );
+  await step('lifecycle_prepare', () => boundary.armListenerCount());
+  await step('lifecycle_B_start', () => click(panel, 'button-text', 'Pick an example item'));
+  await step('lifecycle_B_start', async () =>
+    (await pickedOverlay(page)).waitFor({ state: 'attached' }),
+  );
+  const before = await step('lifecycle_B_start', () => installBoundary.snapshot());
+  await step('lifecycle_B_start', () =>
+    assert.equal(before.starts.length, 1, 'showcase_reinject_initial_start_missing'),
+  );
+  await step('lifecycle_B_start', async () =>
+    assert.deepEqual(
+      await boundary.listenerSnapshot(),
+      { click_count: 1, hover_count: 1 },
+      'showcase_initial_listener_count_wrong',
+    ),
+  );
+  const session = before.starts[0];
+  await step('lifecycle_B_start', () => assert.match(session.session_id, /^[0-9a-f-]{36}$/i));
+  await step('lifecycle_reinject', () =>
+    reinjectShowcasePicker(panel, session.tab_id, session.document_id, session.session_id),
+  );
+  await step('lifecycle_reinject', async () => {
+    const after = await installBoundary.snapshot();
+    assert.equal(after.observed.length, 2, 'showcase_reinject_second_context_missing');
+    assert.equal(after.starts.length, 2, 'showcase_reinject_second_start_missing');
+    assert.equal(
+      after.starts[1].session_id,
+      session.session_id,
+      'showcase_reinject_changed_session',
+    );
+    assert.equal(
+      await page.locator('#matrx-list-picker-host').count(),
+      1,
+      'showcase_reinject_multiple_overlays',
+    );
+    assert.deepEqual(
+      await boundary.listenerSnapshot(),
+      { click_count: 1, hover_count: 1 },
+      'showcase_reinject_duplicate_listeners',
+    );
+  });
+  const current = await runLifecyclePositive({
+    page,
+    panel,
+    step,
+    expectedSession: session.session_id,
+    exactDetection: true,
+  });
+  await step('lifecycle_B_extract', async () =>
+    assert.deepEqual(
+      await boundary.listenerSnapshot(),
+      { click_count: 0, hover_count: 0 },
+      'showcase_reinject_listeners_remain_after_done',
+    ),
+  );
+  const clickBefore = await step('lifecycle_page_click', async () =>
+    Number((await page.locator('body').getAttribute('data-ordinary-clicks')) ?? 0),
+  );
+  await step('lifecycle_page_click', () => page.locator('#ordinary').click());
+  const clickAfter = await step('lifecycle_page_click', async () =>
+    Number((await page.locator('body').getAttribute('data-ordinary-clicks')) ?? 0),
+  );
+  await step('lifecycle_page_click', () =>
+    assert.equal(clickAfter, clickBefore + 1, 'showcase_reinject_page_click_intercepted'),
+  );
+  await step('lifecycle_page_click', () => installBoundary.close());
+  await step('lifecycle_page_click', () => boundary.closeListenerCount());
+  passed('genuine_reinjection_single_detection_and_page_click', {
+    session_id: session.session_id,
+    installation_count: 2,
+    detection_count: current.detection_count,
+    B_rows: 3,
+    ordinary_click_delta: 1,
+    active_click_listeners_during_pick: 1,
+    active_hover_listeners_during_pick: 1,
+    active_listeners_after_done: 0,
+  });
+  report.lifecycle_diagnostic = null;
 }
 
 async function runMissingChannelCycle({ kind, page, panel, boundary, resourceAction, diagnostic }) {
@@ -458,6 +837,32 @@ async function runMissingChannelCycle({ kind, page, panel, boundary, resourceAct
 }
 
 try {
+  if (
+    ['lifecycle_cancel_wait', 'lifecycle_install_wait', 'lifecycle_reinject_wait'].includes(
+      process.env.MATRX_SHOWCASE_DIAGNOSTIC_PROBE,
+    )
+  ) {
+    const channel = process.env.MATRX_SHOWCASE_DIAGNOSTIC_PROBE.split('_')[1];
+    stage(`lifecycle_${channel}`);
+    report.lifecycle_diagnostic = createShowcaseStaleDiagnostic(channel);
+    await runShowcaseStaleDiagnosticStep(
+      report.lifecycle_diagnostic,
+      channel === 'reinject' ? 'lifecycle_reinject' : 'lifecycle_A_release',
+      async () => ({
+        panel_picking: true,
+        overlay_count: 1,
+        listener_click_count: 1,
+        raw_page_text: 'private@example.invalid',
+      }),
+      () =>
+        waitFor(
+          `showcase_${channel}_held`,
+          () => 'token=secret',
+          () => false,
+          1,
+        ),
+    );
+  }
   if (
     ['stale_detected_wait', 'stale_result_wait'].includes(
       process.env.MATRX_SHOWCASE_DIAGNOSTIC_PROBE,
@@ -868,6 +1273,9 @@ try {
           diagnostic: report.stale_diagnostic,
         });
         report.stale_diagnostic = null;
+        await runLifecycleCase({ kind: 'cancel', page, panel, boundary, resourceAction, report });
+        await runLifecycleCase({ kind: 'install', page, panel, boundary, resourceAction, report });
+        await runLifecycleReinjection({ page, panel, boundary, resourceAction, report });
       }
       await boundary?.close();
       await requireResourceHealth();
@@ -886,7 +1294,11 @@ try {
   stage('complete');
   if (staleBoundary)
     report.unverified_criteria = report.unverified_criteria.filter(
-      (criterion) => !criterion.includes('stale A ITEM_DETECTED, RESULT, and EXIT'),
+      (criterion) =>
+        !criterion.includes('stale A ITEM_DETECTED, RESULT, and EXIT') &&
+        !criterion.includes('delayed A cancellation') &&
+        !criterion.includes('deferred installation') &&
+        !criterion.includes('new content-script context reinjection'),
     );
   report.status = 'passed_bounded';
   process.stdout.write('PASS showcase_picker_native_bounded\n');
