@@ -1,0 +1,10 @@
+{
+  "status": "source-reviewed network procedures integrated; runtime unverified",
+  "case_ids": ["EXT-F-4107-T01", "EXT-F-4108-T01", "EXT-F-4109-T01", "EXT-F-4110-T01"],
+  "proposal_commits": ["07a48b95", "948938b0"],
+  "fresh_peer_commit": "575d2448",
+  "missing_steps_expected_before": 75,
+  "missing_steps_expected_after": 71,
+  "invariants": "All feature cells, case results, applicability, controls and IDs unchanged. Permission-denial and dispatcher enforcement remain explicitly unresolved.",
+  "runtime": "No execution of these four cases."
+}
