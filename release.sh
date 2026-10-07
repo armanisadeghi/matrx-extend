@@ -175,7 +175,17 @@ export_snapshot() {  # treeish head-commit [prepare] → sets SNAP_DIR (never ca
     SNAP_ROOTS+=("$root")
     dir="$root/$PROJECT_NAME"
     mkdir -p "$dir"
-    git archive "$1" | tar -x -C "$dir" || return 1
+    # Never `git archive | tar -x`: bsdtar stops reading at the end-of-archive
+    # marker, and when it exits before git has written the trailing record
+    # padding, git dies of SIGPIPE (exit 141) with a complete extraction and no
+    # message — a silent "could not export" that only appears under load
+    # (ship-all 2026-10-07_00-13-36). Write the archive whole, then extract it.
+    # Every failing step is named in the log; a signalled step prints nothing.
+    git archive -o "$root/snapshot.tar" "$1" \
+        || { log "export of ${1:0:12}: git archive failed (exit $?)"; return 1; }
+    tar -x -C "$dir" -f "$root/snapshot.tar" \
+        || { log "export of ${1:0:12}: tar extraction failed (exit $?)"; return 1; }
+    rm -f "$root/snapshot.tar"
     # Its own tiny git repo at the released commit (objects borrowed through
     # alternates, nothing written back here), so checks that run `git ls-files`
     # or read HEAD see exactly the release.
@@ -183,7 +193,7 @@ export_snapshot() {  # treeish head-commit [prepare] → sets SNAP_DIR (never ca
         && echo "$GIT_ABS_DIR/objects" > .git/objects/info/alternates \
         && printf 'node_modules\n' >> .git/info/exclude \
         && git update-ref HEAD "$2" && git read-tree "$1" && git update-index -q --refresh ) >> "$RELEASE_LOG_FILE" 2>&1 \
-        || return 1
+        || { log "export of ${1:0:12}: snapshot git init failed (exit $?)"; return 1; }
     [[ -d "$REPO_ROOT/node_modules" ]] && ln -s "$REPO_ROOT/node_modules" "$dir/node_modules"
     [[ -d "$REPO_ROOT/../aidream" ]] && ln -s "$(cd "$REPO_ROOT/../aidream" && pwd)" "$root/aidream"
     for f in "$REPO_ROOT"/.env*; do
@@ -191,7 +201,8 @@ export_snapshot() {  # treeish head-commit [prepare] → sets SNAP_DIR (never ca
     done
     # tsconfig extends .wxt/tsconfig.json (the @/ path alias): generate it.
     if [[ "${3:-}" == prepare ]]; then
-        ( cd "$dir" && bounded 120 pnpm -s exec wxt prepare ) >> "$RELEASE_LOG_FILE" 2>&1 || return 1
+        ( cd "$dir" && bounded 120 pnpm -s exec wxt prepare ) >> "$RELEASE_LOG_FILE" 2>&1 \
+            || { log "export of ${1:0:12}: wxt prepare failed (exit $?)"; return 1; }
     fi
     SNAP_DIR="$dir"
 }
