@@ -1,0 +1,22 @@
+{
+  "reviewed_commit": "fb9b03987d7d8c3b60252554f18373d038d2bfb0",
+  "lane": "Independent source review of hosted public D47 receipt upload repair",
+  "A_spec": {
+    "decision": "accept_source_repair",
+    "evidence": [
+      "The workflow dispatches showcase-d47-public-admin through hosted-guest-acceptance.mjs under a stabilization resource permit and uploads artifacts with if: always().",
+      "hostedShowcaseRoute emits /private/results/showcase-d47-public-native-42-1.json for the public case; the public driver writes its JSON report to MATRX_SHOWCASE_OUTPUT in finally, including failure status.",
+      "The upload path now includes ${{ runner.temp }}/showcase-d47-public-native-*.json and retains ${{ runner.temp }}/showcase-d47-native-*.json and the picker receipt pattern.",
+      "The new route test maps every routed showcase output to a workflow upload pattern. Its public-case assertion would fail against the parent workflow, where that pattern was absent."
+    ],
+    "limit": "The source review does not establish a real public initial-load Network capture or inspectable hosted original receipt. Native acceptance remains unverified."
+  },
+  "B_quality": {
+    "decision": "accept_with_limit",
+    "evidence": [
+      "The guard covers public D47, fixture D47, picker, and stale picker outputs, so removing an existing receipt pattern is caught.",
+      "The committed red and green resource journals each record RESOURCE_ADMITTED and resourceInvalid=false; red exits 1 and green exits 0. These journals corroborate resource validity and process outcome, while the recorded test counts and precise red assertion come from the builder report."
+    ],
+    "limit": "No native browser, hosted artifact retrieval, or independent test execution was performed in this review."
+  }
+}
