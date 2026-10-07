@@ -8,9 +8,12 @@ export function hostedShowcaseRoute(
   d47ResponseOrder = 'current-first',
 ) {
   if (
-    !['showcase-picker-admin', 'showcase-stale-admin', 'showcase-d47-admin'].includes(
-      acceptanceCase,
-    )
+    ![
+      'showcase-picker-admin',
+      'showcase-stale-admin',
+      'showcase-d47-admin',
+      'showcase-d47-public-admin',
+    ].includes(acceptanceCase)
   )
     return null;
   if (acceptanceCase === 'showcase-d47-admin')
@@ -28,7 +31,9 @@ export function hostedShowcaseRoute(
     driver:
       acceptanceCase === 'showcase-d47-admin'
         ? 'tests/browser/showcase-d47-document-lifecycle.mjs'
-        : 'tests/browser/showcase-picker-native-acceptance.mjs',
+        : acceptanceCase === 'showcase-d47-public-admin'
+          ? 'tests/browser/showcase-d47-public-initial-load.mjs'
+          : 'tests/browser/showcase-picker-native-acceptance.mjs',
     env: {
       MATRX_SHOWCASE_EXTENSION_DIR: prepared.extensionDir,
       MATRX_SHOWCASE_RECEIPT: prepared.relocatedReceipt,
@@ -37,7 +42,7 @@ export function hostedShowcaseRoute(
       MATRX_SHOWCASE_CI_ARTIFACT_ID: String(prepared.artifactId),
       MATRX_SHOWCASE_OUTPUT: join(
         runner.temp,
-        `${acceptanceCase === 'showcase-d47-admin' ? 'showcase-d47-native' : 'showcase-picker-native'}-${runner.runId}-${runner.attempt}.json`,
+        `${acceptanceCase === 'showcase-d47-admin' ? 'showcase-d47-native' : acceptanceCase === 'showcase-d47-public-admin' ? 'showcase-d47-public-native' : 'showcase-picker-native'}-${runner.runId}-${runner.attempt}.json`,
       ),
       MATRX_SHOWCASE_STALE_BOUNDARY: acceptanceCase === 'showcase-stale-admin' ? '1' : undefined,
       MATRX_D47_RESPONSE_ORDER:

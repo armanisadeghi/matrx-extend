@@ -285,6 +285,7 @@ async function run(prepared, artifactMode) {
       'showcase-picker-admin',
       'showcase-stale-admin',
       'showcase-d47-admin',
+      'showcase-d47-public-admin',
       'profile-admin',
       'profile-member',
     ].includes(acceptanceCase),
@@ -380,7 +381,7 @@ async function run(prepared, artifactMode) {
     ...process.env,
     // Acceptance must consume the same runtime this wrapper just verified.
     MATRX_PLAYWRIGHT_MODULE: join(packageDir, 'index.mjs'),
-    ...(acceptanceCase === 'showcase-d47-admin'
+    ...(['showcase-d47-admin', 'showcase-d47-public-admin'].includes(acceptanceCase)
       ? { MATRX_TYPESCRIPT_MODULE: hostedTypeScriptPath }
       : {}),
     MATRX_GUEST_CHAT_EXTENSION_DIR: extensionDir,
@@ -545,7 +546,11 @@ assert.ok(process.env.MATRX_HOSTED_BROWSER_RUNTIME_DIR && process.env.PLAYWRIGHT
 const packageDir = join(runtimeDir, 'node_modules/playwright-core');
 if (phase === 'package') {
   const packages = ['playwright-core@1.56.1'];
-  if (process.env.MATRX_HOSTED_ACCEPTANCE_CASE === 'showcase-d47-admin')
+  if (
+    ['showcase-d47-admin', 'showcase-d47-public-admin'].includes(
+      process.env.MATRX_HOSTED_ACCEPTANCE_CASE,
+    )
+  )
     packages.push(await lockedHostedTypeScript(repo));
   const installed = await ownedProcess('npm', [
     'install',
@@ -562,7 +567,11 @@ if (phase === 'package') {
 const runtimePackage = JSON.parse(await readFile(join(packageDir, 'package.json'), 'utf8'));
 assert.equal(runtimePackage.version, '1.56.1', 'runtime version mismatch');
 const hostedTypeScriptPath = join(runtimeDir, 'node_modules/typescript/lib/typescript.js');
-if (process.env.MATRX_HOSTED_ACCEPTANCE_CASE === 'showcase-d47-admin') {
+if (
+  ['showcase-d47-admin', 'showcase-d47-public-admin'].includes(
+    process.env.MATRX_HOSTED_ACCEPTANCE_CASE,
+  )
+) {
   const expected = await lockedHostedTypeScript(repo);
   const installed = JSON.parse(
     await readFile(join(runtimeDir, 'node_modules/typescript/package.json'), 'utf8'),
@@ -575,10 +584,21 @@ if (process.env.MATRX_HOSTED_ACCEPTANCE_CASE === 'showcase-d47-admin') {
   await access(hostedTypeScriptPath);
 }
 if (phase === 'package') {
-  if (process.env.MATRX_HOSTED_ACCEPTANCE_CASE === 'showcase-d47-admin') {
+  if (
+    ['showcase-d47-admin', 'showcase-d47-public-admin'].includes(
+      process.env.MATRX_HOSTED_ACCEPTANCE_CASE,
+    )
+  ) {
     const checked = await ownedProcess(
       process.execPath,
-      [join(repo, 'tests/browser/showcase-d47-document-lifecycle.mjs')],
+      [
+        join(
+          repo,
+          process.env.MATRX_HOSTED_ACCEPTANCE_CASE === 'showcase-d47-admin'
+            ? 'tests/browser/showcase-d47-document-lifecycle.mjs'
+            : 'tests/browser/showcase-d47-public-initial-load.mjs',
+        ),
+      ],
       {
         cwd: repo,
         env: {

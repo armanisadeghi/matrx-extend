@@ -63,6 +63,18 @@ test('D47 route propagates only an explicit supported inverse order', () => {
   );
 });
 
+test('public D47 route uses its own exact-artifact native receipt and never inherits fixture ordering', () => {
+  const route = hostedShowcaseRoute('showcase-d47-public-admin', prepared, runner, 'old-first');
+  assert.equal(route.driver, 'tests/browser/showcase-d47-public-initial-load.mjs');
+  assert.equal(
+    route.env.MATRX_SHOWCASE_OUTPUT,
+    '/private/results/showcase-d47-public-native-42-1.json',
+  );
+  assert.equal(route.env.MATRX_SHOWCASE_CI_SOURCE_SHA, prepared.sourceSha);
+  assert.equal(route.env.MATRX_SHOWCASE_RECEIPT, prepared.relocatedReceipt);
+  assert.equal(route.env.MATRX_D47_RESPONSE_ORDER, undefined);
+});
+
 test('stale route refuses wrong artifact identity before child dispatch', () => {
   for (const change of [
     { kind: 'published_store_crx_unpacked' },

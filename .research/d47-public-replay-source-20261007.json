@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "lane": "public-site initial-load saved Network recipe source driver; no browser, build, hosted dispatch, release, inventory status, or product source change",
+  "status": "SOURCE_READY_NATIVE_UNVERIFIED",
+  "public_route": {
+    "target": "https://hn.algolia.com/?q=OpenAI",
+    "public_and_no_account_needed_for_site": true,
+    "source_evidence": [
+      "Prior installed native HN Search reports showcase-discovery-native-acceptance.json and showcase-network-current-001.json recorded a real initial-load 200 POST and visible public result rows; these are frozen historical evidence, not a current-artifact pass.",
+      "On 2026-10-07 UTC, a read-only HTTP request to the public query page returned 200 text/html and the referenced public main JS asset returned 200 application/javascript. The served bundle contains the Algolia /1/indexes/*/queries route. This corroborates a live route and code path, but static fetch does not prove the current browser sent it.",
+      "The new driver requires the installed extension's own Capture page load result to show a POST 200 Algolia queries response and extracted preview before it saves a recipe. It injects no fetch and records no query credential values or response body."
+    ],
+    "live_response_at_current_artifact": "unverified_pending_native_run"
+  },
+  "source_change": {
+    "driver": "tests/browser/showcase-d47-public-initial-load.mjs",
+    "route": "showcase-d47-public-admin, separate from controlled localhost D47 response-order modes",
+    "artifact_binding": "exact development receipt, source SHA, artifact ID, manifest version, tree SHA and source-derived terminal budget",
+    "acceptance_boundary": "exact run-owned saved row, terminal no-spinner state and visible hits/results table; alternatively exact no-match guidance is recorded distinctly without fabricating a success row",
+    "cleanup": "exact run-owned recipe deletion is attempted in finally and verified absent before the driver returns verified",
+    "auth": "existing admin credential and approved device organization preflight, with no credentials in receipt",
+    "ci": "new oracle test in existing CI source-test block"
+  },
+  "source_checks": {
+    "resource_preflight": "d47-public-source-20261007 valid admission and final decision",
+    "guarded_test": "d47-public-source-test-20261007 valid admission, node --test tests/browser/showcase-d47-public-initial-load.test.mjs, 2 passed, child exit 0, resourceInvalid=false",
+    "mutants": "constant-success and permissive-guidance alternatives rejected by distinct captured/guidance/failure inputs",
+    "static": "node --check public driver and hosted wrapper; git diff --check clean; Biome format applied",
+    "limit": "Source oracle tests only classify the driver's observations. They do not certify HN's current request, browser capture, saved persistence, or product acceptance. Existing route test was edited but not separately executed in this one-permit lane."
+  },
+  "dependency_limit": {
+    "working_head_before_commit": "5229c6e0260f42af299a121acd70b21e7bbc5b21",
+    "pnpm_lock_sha256": "9850804bc1e1a8b11b1072ee3ad1fcd8f3696edb15383f2be7b2a45599b9ccf1",
+    "meaning": "Current lock changed after frozen old-first/current-first native runs; neither earlier installed artifact certifies current dependency state."
+  },
+  "remaining": "Fresh independent source review, exact current-artifact hosted native public run, original public initial-response and exact saved-result or guidance receipt, and separate remaining T57/D47 acceptance branches. Keep inventory T57 unverified and D47 open."
+}
