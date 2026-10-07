@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "lane": "fresh independent original hosted artifact review; no native rerun or product authorship",
+  "reviewed_run": {
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37562111314",
+    "id": 37562111314,
+    "head_sha": "f3163aa8398b65d0efccbcde6b1a257dc60b6e54",
+    "conclusion": "success",
+    "original_artifact_id": 11457487361,
+    "original_artifact_name": "hosted-guest-37562111314-1",
+    "artifact_zip_sha256_from_api_and_upload_log": "cfdb473368ce6b3c0ea98d353f3132647a29f702763df8ed279655184705fbfe",
+    "original_receipt_member": "_temp/showcase-d47-native-37562111314-1.json",
+    "original_receipt_sha256_independently_computed": "40473d708d927bd5d3654a6a847ef965e8c3eb315eaa11d96c28d16265509bb2"
+  },
+  "source_artifact": {
+    "ci_run_id": 37561174202,
+    "ci_conclusion": "success",
+    "ci_jobs": ["checks: success", "resource-guard-integration: success"],
+    "source_sha": "651f25d05e8538ed880c07a3294b81672eec0694",
+    "development_artifact_id": 11457371389,
+    "development_artifact_digest_from_api": "sha256:ba9503bd03acf1c381630fbabdcafb2aec6bd843e35b498d24f99779ee7feb80",
+    "original_receipt_tree_sha256": "6b7b241d95110aac82f6636beab40ee0c64da56e43eea4b1b2ca6f5eb22a5fcf",
+    "version": "0.2.338",
+    "import_log": "DEVELOPMENT_TEST_IMPORTED for exact CI source and run; exact_pushed_commit_only",
+    "source_hosted_equivalence": "git diff --name-only 651f25d0 f3163aa for hosted workflows, D47 driver/helpers/fixture, artifact import helpers, and pnpm-lock.yaml was empty. Both committed lockfiles hash to f1e33e7795b9c287401ab6e93f26cbc20f11048038fe148a200495053184de5e.",
+    "later_state_limit": "This hosted run verifies the frozen CI artifact and equivalent hosted harness; it does not establish behavior of later source or dependency changes."
+  },
+  "resource_decisions_from_original_artifact_journals": {
+    "package": "valid/admitted/exit0/resourceInvalid=false",
+    "browser": "valid/admitted/exit0/resourceInvalid=false",
+    "guest": "valid/admitted/exit0/resourceInvalid=false"
+  },
+  "observed_native_boundary": {
+    "surface": "The hosted case used headed Chromium with the imported unpacked extension and real saved Patterns Run/approval. Receipt reports completed admin extension authentication and approved organization checkpoint.",
+    "request_identity": "Frozen fixture source issues both document requests as GET fetch to the same /api/document-race endpoint with no request body. Original fixture receipt records two page loads and two target requests; before release both old and current were pending and neither response had finished.",
+    "response_order": "Old release returned HTTP 200 while current remained pending; fixture finish order was [old, current]. Old prestate=pending, outcome=server_finished, old_response_aborted=false; current response then finished. These are server HTTP lifecycle observations, not proof that the old browser callback ran.",
+    "document_and_packet": "Old default main-frame context id7 was recorded before replay. Contexts cleared and the same frame navigated; current default context id10 had a distinct unique ID. Passive extension-worker debugger observation recorded a same-binding handshake at order5 and one GET/fetch/200 target packet at order6 from context10 with sequence1 and exact current-body SHA256 f98b5b68b8f45441831808df62c253a986cda3c55df85a76015ffeaa4d14c3e8. Trace assessor ok=true. It recorded no old binding packet.",
+    "terminal_saved_result": "Exact run-owned recipe reached terminal after 162 samples and 20.214 seconds: exact_recipe=true, current_row=true, old_row=false, running=false, error_present=false, observation_unavailable=false, header=exact, preview=current_only. The visible table has exactly one current-document row; page phase and page result also identify the current document.",
+    "cleanup": "Original receipt records owned recipe cleanup=removed and probe_cleanup=null. Frozen helper asserts passive listener removal, detaches the worker session, and verifies the recipe row disappeared. No cleanup failure was reported; no separate post-detach listener query is in the receipt."
+  },
+  "verdict_A_actual_outcome": {
+    "bounded_old_first_saved_replay": "PASS",
+    "full_T57_and_D47_closure": "PARTIAL_UNVERIFIED",
+    "basis": "Distinct pending old/current requests with identical matcher identity finished old-first, followed by a fresh current-context packet and exact terminal current-only saved row. In the accepted architecture the pending old fetch cannot acquire the new binding retroactively; this native run positively demonstrates current producer operation and old-context replacement, while delivered-stale-event guards remain separate evidence.",
+    "limits": [
+      "Fixture is loopback, while canonical T57 still requires native initial-load replay on a public website.",
+      "No delivered old binding callback and no native higher-old-request-sequence comparison were observed. Old HTTP finish must not be labeled delivered-event rejection.",
+      "This run does not establish stale-only refusal/retrigger, manual/prior-capture isolation, cancellation, or the surrounding navigation, denial, disconnect and service-error regressions."
+    ]
+  },
+  "verdict_B_evidence_quality": {
+    "bounded_receipt": "PASS_WITH_LIMITS",
+    "basis": "Original GitHub run/artifact, independently hashed receipt, source-equivalent hosted workflow and lock, exact-artifact import, positive worker binding controls, exact terminal saved UI, source-enforced cleanup, and valid resource journals agree. The observer is not inferred from an empty event list: it saw the current handshake and packet.",
+    "limits": [
+      "Old response finished at the fixture server; browser delivery or cancellation of its callback remains unproved.",
+      "The old request has no observed producer sequence, so the numerically higher-old-sequence native predicate remains unverified.",
+      "Loopback synthetic race supplements rather than satisfies the canonical public-site case."
+    ],
+    "concrete_failure_found_in_this_bounded_run": false
+  },
+  "recommendation": "Accept this as bounded old-first native saved replay and architectural-exclusion evidence on v0.2.338/651f25d0 only. Keep EXT-D-0047 in fix and T57 unverified pending the public-site initial-load case and separate delivered higher-old-sequence, stale-only and surrounding guards."
+}
