@@ -194,7 +194,7 @@ export function bootstrapBackground(): void {
 
   // ── 4. WebMCP page-side bridge: when an allowlisted page finishes
   //       loading, register matrx-extend's tools on its
-  //       `navigator.modelContext` so external agents on the page can
+  //       `document.modelContext` so external agents on the page can
   //       discover and call them.
   registerWebmcpTabUpdateGate();
 
@@ -564,7 +564,7 @@ function registerHandlers(): void {
   });
 
   // WebMCP: pages on the allowlist (see src/lib/origin-allowlist.ts) can
-  // call our registered tools through `navigator.modelContext.callTool`.
+  // execute our registered tools through `document.modelContext.executeTool`.
   // The webmcp-bridge content script forwards each call here; we resolve
   // the handler, run it, and reply with `{ ok, result?, error? }`.
   on<

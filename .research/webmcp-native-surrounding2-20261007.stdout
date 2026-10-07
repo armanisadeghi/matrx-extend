@@ -1,0 +1,16 @@
+{"schema":1,"at":"2026-10-07T13:26:27.368Z","runId":"webmcp-native-surrounding2-20261007","path":"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/webmcp-native-surrounding2-20261007.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-07T13:27:34.586Z","runId":"webmcp-native-surrounding2-20261007","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":12,"requiredMemoryGiB":4,"oneMinuteLoad":2.63,"logicalCpus":10,"cpuBusyFraction":0.16142857142857145,"swapUsedMiB":2626.19,"repoFreeGiB":1680.6181449890137,"profileFreeGiB":1680.6181449890137,"safetyFreeGiB":23.034934997558594,"systemFreeGiB":23.034934997558594},"cpuBusySamples":[0.39,0.22,0.22,0.07,0.06,0.06,0.11],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - `__dirname` (vitest.config.ts:7:25). Use `import.meta.dirname` instead
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Volumes/Samsung2TB/code/matrx-extend
+
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  06:27:35
+   Duration  349ms (transform 27ms, setup 75ms, import 12ms, tests 19ms, environment 148ms)
+
+{"schema":1,"at":"2026-10-07T13:27:35.565Z","runId":"webmcp-native-surrounding2-20261007","childExitCode":0,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-07T13:27:35.608Z","runId":"webmcp-native-surrounding2-20261007","admitted":true,"resourceInvalid":false,"exitCode":0,"decision":"valid","code":"RESOURCE_FINAL_DECISION"}

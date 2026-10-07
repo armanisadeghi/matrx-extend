@@ -4,7 +4,7 @@
  * This content script attaches to allowlisted origins (see
  * `src/lib/origin-allowlist.ts`) and ferries WebMCP tool calls between
  * the page's main world (where `register.ts` injects tool stubs into
- * `navigator.modelContext`) and the extension's service worker.
+ * `document.modelContext`) and the extension's service worker.
  *
  * Wire format (page → content script):
  *   window.postMessage(

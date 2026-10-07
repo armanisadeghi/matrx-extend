@@ -48,7 +48,7 @@ import type { AnyToolHandler, ToolTier } from '@/lib/tools/types';
  *   - demos        : record + replay user workflows
  *   - guidance     : user-saved hints for the agent
  *   - devtools     : CDP-backed diagnostics + host (admin)
- *   - webmcp       : tools registered by the page via navigator.modelContext
+ *   - webmcp       : tools registered by the page via document.modelContext
  *   - desktop      : bridge to matrx-local
  *   - credentials  : sign in to a site using a saved Matrx vault login
  *   - crm          : put what you are looking at into the user's AI Matrx CRM
@@ -179,8 +179,7 @@ export const CATEGORIES: Record<ToolCategory, CategoryMeta> = {
   webmcp: {
     category: 'webmcp',
     label: 'Page-registered tools',
-    description:
-      "Discover and call tools that pages have registered via `navigator.modelContext.registerTool` (Chrome 146+). The `chrome_webmcp` mega-tool lets the agent enumerate the page's tool catalog and invoke specific tools. Admin-only experimental capability.",
+    description: 'Discover and call tools registered by the current page through WebMCP.',
     list_tool_name: 'list_webmcp_tools',
     admin_only: true,
   },

@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0150",
+  "status": "source-repaired; native browser acceptance and independent review pending",
+  "at_utc": "2026-10-07T13:32:41.616208+00:00",
+  "source_head_before_commit": "b838fce0853454fe3942a15434f2c49480b77902",
+  "edited_source_bundle_sha256": "7b37970f6aca5e7773d914b509a7eee29922c56b50b7cd65c5f35e37886c5847",
+  "root_cause": "Current Chrome imperative WebMCP contract uses document.modelContext, asynchronous getTools/registerTool, executeTool(RegisteredTool,object), execute callback and AbortSignal lifecycle. Existing handlers and registration instead read navigator.modelContext, used tools/callTool/run fallback, and did not await registration.",
+  "confirmed_red": "Strict document.modelContext-only source fixture drove current handler and registration functions through chrome.scripting.executeScript and failed all three assertions on the original source under webmcp-native-red-20261007. The fixture is a mocked API boundary, not native browser acceptance.",
+  "repair": "Handlers use documented API only and keep assigned-tab targeting, admin/tier/schema metadata and canonical router unchanged. Calls discover by name then pass the discovered object and JSON object input to executeTool. Registration awaits each tool with execute callback and AbortSignal; re-registration aborts previous registration for the same name. On any registration failure, newly added registrations in this pass are aborted and count is reported as 0. Existing page-to-service-worker bridge and dispatch permission/consent path are unchanged; comments and category text now match the documented API.",
+  "sibling_census": "EXT-F-4118 availability, EXT-F-4119 listing, EXT-F-4120 call, EXT-F-4162 canonical router (delegates unchanged), and EXT-F-4014 list_webmcp_tools category discovery metadata. Bridge/bootstrap comments were stale; source references corrected. No other navigator.modelContext code path found outside revised proposal/report history.",
+  "checks": [
+    {
+      "run_id": "webmcp-native-red-20261007",
+      "stdout": ".research/webmcp-native-red-20261007.stdout",
+      "completed_journal": "docs/stabilization/resource-journals/webmcp-native-red-20261007.jsonl",
+      "resource_decision": "child_failed",
+      "child_exit_code": 1
+    },
+    {
+      "run_id": "webmcp-native-green-20261007",
+      "stdout": ".research/webmcp-native-green-20261007.stdout",
+      "completed_journal": "docs/stabilization/resource-journals/webmcp-native-green-20261007.jsonl",
+      "resource_decision": "valid",
+      "child_exit_code": 0
+    },
+    {
+      "run_id": "webmcp-native-compile-20261007",
+      "stdout": ".research/webmcp-native-compile-20261007.stdout",
+      "completed_journal": "docs/stabilization/resource-journals/webmcp-native-compile-20261007.jsonl",
+      "resource_decision": "valid",
+      "child_exit_code": 0
+    },
+    {
+      "run_id": "webmcp-native-surrounding-20261007",
+      "stdout": ".research/webmcp-native-surrounding-20261007.stdout",
+      "completed_journal": "docs/stabilization/resource-journals/webmcp-native-surrounding-20261007.jsonl",
+      "resource_decision": "child_failed",
+      "child_exit_code": 1
+    },
+    {
+      "run_id": "webmcp-native-surrounding2-20261007",
+      "stdout": ".research/webmcp-native-surrounding2-20261007.stdout",
+      "completed_journal": "docs/stabilization/resource-journals/webmcp-native-surrounding2-20261007.jsonl",
+      "resource_decision": "valid",
+      "child_exit_code": 0
+    },
+    {
+      "run_id": "webmcp-native-catalog-20261007",
+      "stdout": ".research/webmcp-native-catalog-20261007.stdout",
+      "completed_journal": "docs/stabilization/resource-journals/webmcp-native-catalog-20261007.jsonl",
+      "resource_decision": "valid",
+      "child_exit_code": 0
+    },
+    {
+      "run_id": "webmcp-native-docs-20261007",
+      "stdout": ".research/webmcp-native-docs-20261007.stdout",
+      "completed_journal": "docs/stabilization/resource-journals/webmcp-native-docs-20261007.jsonl",
+      "resource_decision": "valid",
+      "child_exit_code": 0
+    },
+    {
+      "run_id": "webmcp-native-final-compile-20261007",
+      "stdout": ".research/webmcp-native-final-compile-20261007.stdout",
+      "completed_journal": "docs/stabilization/resource-journals/webmcp-native-final-compile-20261007.jsonl",
+      "resource_decision": "valid",
+      "child_exit_code": 0
+    }
+  ],
+  "files_changed": [
+    "src/lib/tools/handlers/webmcp.ts",
+    "src/lib/webmcp/register.ts",
+    "src/lib/tools/categories.ts",
+    "src/lib/background/bootstrap.ts",
+    "src/entrypoints/webmcp-bridge.content.ts",
+    "tests/unit/webmcp-native-contract.test.ts",
+    "docs/feature-tests.md",
+    "types/tool-catalog.json",
+    "types/tool-catalog.md",
+    "docs/TOOLS.generated.md"
+  ],
+  "limitations": [
+    "No Chrome 149+ native API observed or executed; Chromium 141 installation provenance is insufficient for native acceptance.",
+    "Strict fixture verifies source contract boundary only. It does not prove browser feature enablement, same-origin exposure, agent advertisement, dispatcher Ask/Act behavior or installed extension behavior.",
+    "Initial expanded test run failed because test fixture omitted executeTool, so it hit the correct unavailable branch; corrected and rerun green.",
+    "Generated catalog and DB-sourced tool docs changed timestamps only after required regeneration.",
+    "Independent review and release are owned outside this repair lane."
+  ]
+}

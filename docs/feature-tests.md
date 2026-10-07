@@ -2060,6 +2060,27 @@ Every entry follows this shape:
 - **Edge cases worth poking:** Privileged-tier tools still confirm even in act
   mode (unchanged). First-run with no setting persisted → defaults to ask.
 
+### Native WebMCP imperative API
+- **What it does:** The WebMCP tools inspect `document.modelContext`, await its
+  tool catalog, and execute a discovered tool object. On allowlisted pages,
+  extension tools register with an `execute` callback and abortable lifecycle.
+- **Where to test:** An owned page in a browser with the native WebMCP
+  imperative API enabled, plus the side panel's Tools tab. Record the browser
+  build, API shape, extension build receipt, and selected tab before testing.
+- **Steps:** Register a harmless page tool whose callback returns a nonce and
+  increments a visible page counter. Run `webmcp_check_availability`,
+  `webmcp_list_page_tools`, and `webmcp_call_page_tool` (or the `chrome_webmcp`
+  check/list/call branches). Compare the list with `await
+  document.modelContext.getTools()` and the call response with an independent
+  counter read. Reload the page and extension, let the page register again,
+  and repeat. Test an unknown name, invalid arguments, a page without the API,
+  and rejected registration. Keep a second tab open to check assigned-tab
+  behavior through a real agent call.
+- **Expected:** The native tool appears once; each successful call returns the
+  nonce and advances only the owned page's counter once. Unavailable or
+  rejected operations return an explicit failure. A Tools manual run proves
+  handler behavior only; use the dispatcher to verify admin and Ask/Act gates.
+
 ### "Act without asking" holds for the whole chat turn
 - **What it does:** With the chat header set to "Act without asking", no approval card appears for action tools — including every tool call after the first tool round, after reopening a paused chat, and when the mode comes from Settings → Default mode.
 - **Where to test:** Side panel chat, header lightning chip.

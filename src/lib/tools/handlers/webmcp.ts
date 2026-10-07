@@ -1,15 +1,15 @@
 /**
- * WebMCP — `navigator.modelContext.registerTool` integration.
+ * WebMCP — `document.modelContext` imperative API integration.
  *
  * Two-way:
- *   1. The PAGE side can register tools via `navigator.modelContext.registerTool`.
+ *   1. The PAGE side can register tools via `document.modelContext.registerTool`.
  *      We expose tools to enumerate them and invoke them on the agent's behalf.
  *   2. The EXTENSION side can register matrx-extend's tools via the same API
  *      so OTHER agents (in the page or other extensions) can call them.
  *      That's a separate file (`src/lib/webmcp/register.ts`).
  *
- * WebMCP shipped in Chrome 146 (Feb 2026). Feature-detected — these tools
- * report `unavailable` on older Chromes.
+ * Feature-detected — these tools report `unavailable` when the browser or
+ * document does not expose the imperative API.
  *
  * Admin-only initially while the API stabilizes.
  */
@@ -33,13 +33,15 @@ export const webmcp_check_availability: ToolHandler<NoArgs, unknown> = {
       const [first] = await chrome.scripting.executeScript({
         target: { tabId },
         world: 'MAIN',
-        func: () => {
-          const mc = (navigator as unknown as { modelContext?: { tools?: unknown[] } })
-            .modelContext;
-          return {
-            available: !!mc,
-            tool_count: Array.isArray(mc?.tools) ? mc.tools.length : 0,
-          };
+        func: async () => {
+          const mc = (
+            document as Document & {
+              modelContext?: { getTools?: () => Promise<unknown[]> };
+            }
+          ).modelContext;
+          if (typeof mc?.getTools !== 'function') return { available: false, tool_count: 0 };
+          const tools = await mc.getTools();
+          return { available: true, tool_count: tools.length };
         },
       });
       return first?.result ?? { available: false, tool_count: 0 };
@@ -61,25 +63,23 @@ export const webmcp_list_page_tools: ToolHandler<NoArgs, unknown> = {
       const [first] = await chrome.scripting.executeScript({
         target: { tabId },
         world: 'MAIN',
-        func: () => {
+        func: async () => {
           const mc = (
-            navigator as unknown as {
+            document as Document & {
               modelContext?: {
-                tools?: Array<{
-                  name: string;
-                  description?: string;
-                  inputSchema?: unknown;
-                }>;
-                getTools?: () => Array<{
-                  name: string;
-                  description?: string;
-                  inputSchema?: unknown;
-                }>;
+                getTools?: () => Promise<
+                  Array<{
+                    name: string;
+                    description?: string;
+                    inputSchema?: unknown;
+                  }>
+                >;
               };
             }
           ).modelContext;
-          if (!mc) return { ok: false, reason: 'WebMCP unavailable' };
-          const list = typeof mc.getTools === 'function' ? mc.getTools() : (mc.tools ?? []);
+          if (typeof mc?.getTools !== 'function')
+            return { ok: false, reason: 'WebMCP unavailable' };
+          const list = await mc.getTools();
           return {
             ok: true,
             count: list.length,
@@ -118,32 +118,24 @@ export const webmcp_call_page_tool: ToolHandler<CallPageToolArgs, unknown> = {
         world: 'MAIN',
         func: async (toolName: string, toolArgs: unknown) => {
           const mc = (
-            navigator as unknown as {
+            document as Document & {
               modelContext?: {
-                callTool?: (name: string, args?: unknown) => Promise<unknown>;
-                tools?: Array<{
-                  name: string;
-                  run?: (args?: unknown) => Promise<unknown>;
-                }>;
+                getTools?: () => Promise<Array<{ name: string }>>;
+                executeTool?: (tool: { name: string }, input: object) => Promise<unknown>;
               };
             }
           ).modelContext;
-          if (!mc) return { ok: false, reason: 'WebMCP unavailable' };
-          // Spec landed under callTool; older builds expose .tools[i].run.
-          if (typeof mc.callTool === 'function') {
-            try {
-              const out = await mc.callTool(toolName, toolArgs);
-              return { ok: true, result: out };
-            } catch (err) {
-              return { ok: false, reason: (err as Error).message };
-            }
-          }
-          const t = (mc.tools ?? []).find((x) => x.name === toolName);
-          if (!t || typeof t.run !== 'function') {
+          if (typeof mc?.getTools !== 'function' || typeof mc.executeTool !== 'function')
+            return { ok: false, reason: 'WebMCP unavailable' };
+          if (toolArgs !== null && (typeof toolArgs !== 'object' || Array.isArray(toolArgs)))
+            return { ok: false, reason: 'WebMCP arguments must be an object' };
+          const tools = await mc.getTools();
+          const tool = tools.find((candidate) => candidate.name === toolName);
+          if (!tool) {
             return { ok: false, reason: `tool "${toolName}" not found on page` };
           }
           try {
-            const out = await t.run(toolArgs);
+            const out = await mc.executeTool(tool, toolArgs ?? {});
             return { ok: true, result: out };
           } catch (err) {
             return { ok: false, reason: (err as Error).message };
