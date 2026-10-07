@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent-source-review",
+  "reviewed_patch": ".research/cdp-network-procedures-20261007.json",
+  "reviewed_commit": "07a48b95",
+  "scope": ["EXT-F-4107-T01", "EXT-F-4108-T01", "EXT-F-4109-T01", "EXT-F-4110-T01"],
+  "verdict_A_spec_completeness": "CORRECTIONS_REQUIRED: all four have a usable warm/reload skeleton, but the negative-state proofs, permission-negative coverage, and body evidence rules are incomplete. The proposal is not yet an exhaustive executable acceptance procedure for these inventory cells.",
+  "verdict_B_source_quality": "CORRECTIONS_REQUIRED: most semantics match source, including destructive drain/filter behavior and explicit owned-tab cleanup, but two claims about evidence and fixtures are inaccurate.",
+  "case_verdicts": {
+    "EXT-F-4107-T01": "CORRECT: positive and schema-negative are source-aligned. Add a failure path if debugger attach succeeds but Network.enable rejects: start returns ok:false while attachment may remain; inspect only the verified owned tab and clean it up if it is the unique owned delta. Do not leave a known owned debugger attachment behind under the generic ambiguity rule.",
+    "EXT-F-4108-T01": "CORRECT: put max=0 and max=2001 schema negatives after records are queued but before the valid drain; compare pre/post queue by the subsequent valid drain. The current after-drain negatives cannot prove records survived rejection. Keep the no-filter rule: filtering happens after splice and discards filtered-out records.",
+    "EXT-F-4109-T01": "CORRECT: place invalid string tab_id while capture is active and before first stop; establish a completed queued request before it, then drain and confirm it survived rejection before stopping. The current negative after detach cannot prove capture stayed active. The later repeated stop and post-stop empty drain are valid.",
+    "EXT-F-4110-T01": "CORRECT: response-body API and request-ID provenance are right. Revise the privacy/evidence instruction: the manual runner renders JSON output containing body and broadcasts the full output on TOOL_TIMELINE_EVENT. Confine execution to the public owned target; record only safe metadata in durable evidence. A public POST/request-body fixture is not required for this case. Retain observed failure as failure/fixture gap rather than claiming success."
+  },
+  "findings": [
+    {
+      "severity": "Important",
+      "location": ".research/cdp-network-procedures-20261007.json:28",
+      "source": "docs/stabilization/inventory.json:61110-61124,61275-61289,61425-61439,61580-61594; src/features/tools/ToolsView.tsx:414-419,447-462",
+      "finding": "The inventory readiness gap explicitly calls for gated/negative permission cases, but the shared setup treats absent debugger permission as unavailable/not run. Since the manual runner directly invokes handler.run, schema negatives cannot prove dispatcher permission enforcement. Add a separately scoped authorized permission-negative procedure, or keep these inventory cells incomplete and explicitly identify that pending case; do not present the four proposals as exhaustive permission coverage."
+    },
+    {
+      "severity": "Important",
+      "location": ".research/cdp-network-procedures-20261007.json:109",
+      "source": "src/features/tools/ToolsView.tsx:414-419; src/lib/tools/handlers/cdp.ts:417-444; src/lib/cdp/client.ts:430-435",
+      "finding": "The max-boundary negatives are run after the valid drain has already consumed queued records. An unchanged empty queue does not prove rejected input preserved records. Run the negatives while records are queued."
+    },
+    {
+      "severity": "Important",
+      "location": ".research/cdp-network-procedures-20261007.json:160",
+      "source": "src/features/tools/ToolsView.tsx:414-419; src/lib/cdp/client.ts:421-435",
+      "finding": "The invalid stop argument is tested after the procedure has already stopped and detached. It cannot establish the stated assertion that capture remains active. Move it before stop and check queued records survive."
+    },
+    {
+      "severity": "Important",
+      "location": ".research/cdp-network-procedures-20261007.json:204",
+      "source": "src/features/tools/ToolsView.tsx:463-477,494-499,570-577",
+      "finding": "The procedure says not to display body content, but the manual runner sets the full result, broadcasts it on TOOL_TIMELINE_EVENT, and renders it in Output. The operator can refrain from copying it into evidence, but the proposed UI path cannot avoid displaying it."
+    },
+    {
+      "severity": "Minor",
+      "location": ".research/cdp-network-procedures-20261007.json:29",
+      "source": "src/lib/cdp/client.ts:437-445; src/lib/tools/handlers/cdp.ts:728-743",
+      "finding": "A POST/request-body fixture is described as a gap for this four-case scope. cdp_network_get_body uses Network.getResponseBody; even the canonical get_request_body alias delegates to it. A public completed GET is sufficient for response-body coverage. Request-body capture is a separate capability and should not gate these cases."
+    },
+    {
+      "severity": "Minor",
+      "location": ".research/cdp-network-procedures-20261007.json:42",
+      "source": "src/lib/cdp/client.ts:407-419; src/lib/tools/handlers/cdp.ts:405-413",
+      "finding": "If attachment succeeds and Network.enable fails, start returns ok:false but an owned attachment can remain. The procedure's generic stop-on-mismatch path does not clearly clean up this proven owned delta. Specify conditional owned-ID cleanup without touching baseline IDs."
+    }
+  ],
+  "source_confirmations": [
+    "drainNetworkCapture splices up to max before cdp_network_capture_drain applies url_contains; filtered-out entries are irretrievable from that buffer.",
+    "stopNetworkCapture deletes both completed and in-flight capture maps, attempts Network.disable, and does not detach; a second stop returns without effect.",
+    "startNetworkCapture retains the tab and only enables Network when no buffer exists; repeated start is idempotent at the buffer/attachment level.",
+    "Network records are moved to the completed buffer on loadingFinished/loadingFailed; request_id originates from CDP requestId, with requestWillBeSent providing URL and method on the normal path.",
+    "No explicit byte/record retention cap exists in networkBuffers or networkRequests; max=2000 limits one drain response, not total retained events. The idle timer is ten minutes, but active capture alone does not refresh it."
+  ],
+  "limits": "Source-only independent review. No browser, build, tests, database, permission changes, runtime receipt, or live outcome was executed or verified. Manual runner calls handlers directly, so its results do not certify dispatcher permission gates."
+}
