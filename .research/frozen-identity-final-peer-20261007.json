@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "reviewed_commits": ["bddbee75cccbdcf23c663fc60d9ff4ea4e24211e", "f6954e093379ac1cc47e8f58f4b4a305e32ec031"],
+  "scope": "Bounded source and focused-test review only; no native UI or product-health claim.",
+  "verdict_a_source_readiness": {
+    "status": "PASS",
+    "native_status": "PENDING",
+    "finding": "Three native drivers use verifyFrozenArtifactIdentity to validate manifest version and tree against the artifact receipt. Imported frozen artifacts no longer have to equal the later checkout package version.",
+    "evidence": ["node --test tests/browser/frozen-artifact-identity.test.mjs: 2 passed", "No native Settings, SEO, or contained-navigation behavior was exercised."]
+  },
+  "verdict_b_quality": {
+    "status": "PASS",
+    "finding": "The prior fixed-version-return gap is closed: the same real helper returns 0.2.387 and 0.2.388 with each fixture's tree hash. Corrupt manifest version, corrupt receipt tree hash, and changed artifact tree remain rejected. Local checkout/package checks remain in their release/local branches.",
+    "evidence": ["Focused test builds two distinct receipt-backed fixtures and asserts returned values", "Settings release path still checks receipt.version against packageJson.version and source SHA ancestry", "SEO and contained-navigation package comparisons remain conditional on no imported development receipt", "Prior original comparisons reclassified as invalid only for immutable imported development artifacts"]
+  }
+}
