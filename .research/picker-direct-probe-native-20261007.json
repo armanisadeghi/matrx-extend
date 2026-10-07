@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "task_id": "picker-direct-probe-native-20261007",
+  "defect_id": "EXT-D-0042",
+  "scope": "One guarded hosted showcase-stale-admin native diagnostic attempt using the reviewed direct executeScript callback probe. No product edit, manual build/release, retry, nonadmin test, or D42 closure.",
+  "budget": {
+    "call_cap": 50,
+    "attempt_cap": 1,
+    "attempt_count": 1
+  },
+  "execution": {
+    "workflow_run_id": 37702650394,
+    "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37702650394",
+    "workflow": "hosted-guest-acceptance.yml",
+    "acceptance_case": "showcase-stale-admin",
+    "lane": "A",
+    "runner": "macos-15",
+    "runner_architecture": "ARM64",
+    "started_at": "2026-10-07T23:30:19Z",
+    "terminal_at": "2026-10-07T23:38:06Z",
+    "conclusion": "failure",
+    "run_attempt": 1,
+    "workflow_checkout_sha": "72a827404fe14709bdfead834a82c2f353a9fcf8",
+    "workflow_driver_blob_sha": "2ddf32e092fecd13f40e0addeeefcd4b77c8b60b",
+    "native_step_conclusion": "failure"
+  },
+  "frozen_product": {
+    "ci_run_id": 37698216289,
+    "artifact_id": 11516342905,
+    "artifact_name": "matrx-extend-development-test-52487361b1b6a8663b958dbb2196cbcc9b1af31c-37698216289-1",
+    "artifact_digest": "sha256:927854cfdda6e57d272277653e0b4c507720c29d74978da235d80c064c1017ee",
+    "ci_run_conclusion": "success",
+    "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "version": "0.2.391",
+    "tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+    "source_unchanged_at_dispatch": true,
+    "diagnostic_runner_matches_reviewed_890da805": true,
+    "artifact_mode": "CI development test; not a Store artifact"
+  },
+  "resource_verdict": {
+    "package": {
+      "journal": "picker-direct-probe-native-evidence/run37702650394/hosted-package-37702650394-1.jsonl",
+      "sha256": "9161e7f492fcea7cf3aa166375ddeee66504545edd3863d425caa66c22325f38",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "journal": "picker-direct-probe-native-evidence/run37702650394/hosted-browser-37702650394-1.jsonl",
+      "sha256": "dd93f546f0a7d4ce0d505133deff7ea49723d03e7df6945ed5f7d104a7feebc9",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "native": {
+      "journal": "picker-direct-probe-native-evidence/run37702650394/hosted-guest-37702650394-1.jsonl",
+      "sha256": "2a2f78c72d803887632a29af06cc2c904e9149ca9e088e8f407e4dfcc6ef20c9",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    },
+    "interpretation": "All three current-run journals are terminal and resource-valid. Native runner failed an explicit product assertion; this is not resource invalidation."
+  },
+  "native_result": {
+    "receipt": "picker-direct-probe-native-evidence/run37702650394/showcase-picker-native-37702650394-1.json",
+    "receipt_sha256": "7ed8fc23dcf359d0da6be9ee206da8fbb907fb665ee009e4719a21b15ba093fe",
+    "receipt_status": "unverified",
+    "stage": "select_B_result",
+    "failure_code": "select_B_result_failed",
+    "failed_target": "lifecycle_reinject",
+    "channel": "reinject",
+    "last_safe": {
+      "same_world_as_pinned_observer": true,
+      "callback_start_identity_distinct": false,
+      "callback_teardown_identity_distinct": false,
+      "context_start_distinct": false,
+      "context_teardown_distinct": false,
+      "install_count": 2,
+      "overlay_count": 1,
+      "tracked_click_listeners": 1,
+      "tracked_hover_listeners": 1,
+      "panel_picking": true,
+      "panel_three_rows": false
+    },
+    "passed_boundaries": [
+      "signed-in admin identity and device organization",
+      "stale A EXIT/ITEM_DETECTED/RESULT rejection while B is active",
+      "delayed A cancellation with B three-row extraction and unchanged page",
+      "deferred A installation with two installs, zero obsolete A starts, and B three-row extraction",
+      "ordinary page click after earlier cancellation"
+    ],
+    "unverified": [
+      "post-reinjection B detection and extraction",
+      "post-reinjection listener teardown and ordinary click",
+      "signed-in nonadmin role gating"
+    ],
+    "disposition": "D42 remains in-fix; no closure or pass promotion."
+  },
+  "credential_handling": {
+    "canonical_preflight": "passed",
+    "secret_names_absent_before_staging": true,
+    "temporary_secrets_staged": true,
+    "deleted_immediately_at_terminal": true,
+    "both_secret_names_absent_after_terminal": true,
+    "secret_values_recorded": false
+  },
+  "evidence_curation": {
+    "preserved_exact_uploaded_files": [
+      "one native result receipt",
+      "the three current run resource journals"
+    ],
+    "preserved_byte_for_byte": true,
+    "excluded": [
+      "three stale uploaded journals for run 37105304739",
+      "generic harness screenshots"
+    ],
+    "no_product_edit": true,
+    "no_retry": true
+  },
+  "next_action": "Fresh peer review of the terminal receipt and exact current-run journals; then keep D42 open and proceed only with an independently approved next action."
+}
