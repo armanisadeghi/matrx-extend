@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "run_id": 37554362947,
+  "status": "exact_owned_recipe_removed",
+  "source_artifact": {
+    "artifact_id": 11453289288,
+    "file": "showcase-d47-native-37554362947-1.json",
+    "fixture_url": "http://127.0.0.1:49190/api/document-race"
+  },
+  "ownership_evidence": {
+    "run_window_utc": ["2026-10-07T00:54:16Z", "2026-10-07T01:02:13Z"],
+    "recipe_created_at_utc": "2026-10-07T01:01:43.863606Z",
+    "recipe_id": "6557e3b3-41b8-43b6-af64-05d6721357a9",
+    "recipe_name": "Codex D47 document race d0f84a19-b2c3-48bf-bdb3-dda131d5bfe0",
+    "domain": "127.0.0.1:49190",
+    "route_pattern": "/document-race/",
+    "kind": "network_capture",
+    "request_method": "GET",
+    "request_url": "http://127.0.0.1:49190/api/document-race",
+    "matching_rows_in_run_window": 1
+  },
+  "cleanup": {
+    "table": "extend.wbx_pattern",
+    "operation": "hard_delete",
+    "scope": "one exact id with name, domain, route, kind, organization, creator, creation time, URL, and method guards",
+    "returned_ids": ["6557e3b3-41b8-43b6-af64-05d6721357a9"],
+    "verification": {
+      "exact_id_remaining": 0,
+      "exact_name_host_remaining": 0
+    }
+  },
+  "other_records_touched": false,
+  "credential_values_recorded": false
+}
