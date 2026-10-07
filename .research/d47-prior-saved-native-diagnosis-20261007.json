@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "scope": "Independent read-only diagnosis of one retained prior-saved native failure; no native rerun, product edit, database action, or release",
+  "source": {
+    "workflow_run": 37597422020,
+    "frozen_source_sha": "c53c6e0aa592a805f64855f235ca4a39ac493837",
+    "installed_artifact": "v0.2.354 from CI 37596432707 artifact 11470764778",
+    "private_receipt": ".research/d47-prior-saved-native-20261007/private/artifact/_temp/showcase-d47-native-37597422020-1.json",
+    "private_receipt_sha256": "1ab146fabec8e7a74c2b492ae524044574144d2f35b8c4b752e8ec34900c4399",
+    "matching_driver_sha256": "06ccdfe875a1b752c524c834d5947c283112ef776271b6623d50b8b5903c36fb"
+  },
+  "A_actual_acceptance": {
+    "verdict": "unverified",
+    "first_run": "Saved first result reached exact idle current-only preview; first trace assessment passed. The held first-run request arrived at fixture order 1 before first response finished at order 2.",
+    "second_run": "Second HTTP response finished with target_requests=3 while held first-run HTTP was still pending. Distinct second target packet, binding name, context ID, and body hash were observed. No second saved preview/result observation was retained because the driver asserted first.",
+    "failure": "At second_saved_trace, second_run_navigation_commit_missing. Prior-saved isolation and delayed old callback remain unverified; release-prior-saved was not reached. The owned recipe was removed during cleanup.",
+    "product_defect_ruling": "This receipt does not show a product isolation defect. It also does not prove isolation succeeds after second completion or delayed old delivery."
+  },
+  "B_cause_and_repair": {
+    "observed_order": [
+      "first document context order 4, target packet order 6",
+      "second transition contexts_cleared order 8, same-tab same-frame current-fixture frame_navigated order 9",
+      "new document context order 10 with a distinct unique ID, handshake order 11, second target packet order 12"
+    ],
+    "cause": "The driver at tests/browser/showcase-d47-document-lifecycle.mjs:821-828 searches for a same-frame second navigation commit with event.order > secondContext.order. The actual second commit is order 9 and second context is order 10, so the assertion rejects the observed commit. The first passing trace has the same commit-before-context order (3 before 4). The passive probe records debugger event order; the shared assessD47Trace helper requires commit after the old context, not after the new context.",
+    "minimal_testable_repair": "In the second-saved branch, bind the commit to the transition by requiring same tab/frame, current_fixture, firstPacket.order < commit.order < secondPacket.order, and a distinct new context with secondContext.order < secondPacket.order. Keep the contexts_cleared transition and existing second trace assessment. Add a focused driver-evidence test using the retained structural sequence 6,8,9,10,11,12: it must accept commit 9 and reject a commit before first packet or after second packet. Then run the native prior-saved route to observe exact second saved terminal before/after held release and classify callback delivery.",
+    "evidence_limit": "The receipt stops at the assertion. It cannot establish a second saved result, a late old binding callback, or whether the later route assertions pass."
+  }
+}
