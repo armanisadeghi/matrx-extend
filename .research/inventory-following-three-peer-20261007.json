@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "artifact_type": "inventory-procedure-peer-review",
+  "task_id": "inventory-following-three-procedures-20261007",
+  "reviewed_artifact": ".research/inventory-following-three-procedures-20261007.json",
+  "reviewed_commit": "55512ff5",
+  "source_sha_reviewed": "0ed1388f",
+  "review_scope": "Source-only review of procedure accuracy and quality/coverage limits against current Tools UI, handlers, schemas, fixture, and stabilization plan. No browser, runtime, build, product, or canonical inventory work was performed.",
+  "verdict_a_procedure_accuracy": {
+    "status": "PARTIAL",
+    "cases": {
+      "EXT-F-4142-T01": {
+        "status": "PASS_SOURCE_SUPPORTED",
+        "evidence": [
+          "ToolsView exposes Catalog search, expands a handler, validates local Zod args, invokes handler.run directly, and renders the result inline.",
+          "With assignedTabId null, getAssignedTab resolves the focused current-window tab. The fixture's #event-schedule has three columns and three body rows; #events is a DIV and #no-such-table matches nothing.",
+          "The handler returns the stated missing-selector and non-table error shapes. The explicit table has Event, Start, and Venue headers and the listed three rows."
+        ]
+      },
+      "EXT-F-4147-T01": {
+        "status": "PARTIAL",
+        "findings": [
+          {
+            "severity": "material",
+            "finding": "The proposed invalid-schema control {\"kinds\":[\"microdata\"],\"unexpected\":true} is not rejected by the current Zod schema. ExtractMicrodataArgs is a plain z.object and the Tools runner passes validated.data to handler.run; Zod 3 object parsing strips unknown keys by default. This input therefore runs as the valid {\"kinds\":[\"microdata\"]} call.",
+            "evidence": [
+              "src/lib/tools/handlers/microdata.ts:29-46 defines the non-strict object schema.",
+              "src/features/tools/ToolsView.tsx:386-391 uses safeParse and the parsed data for invocation."
+            ],
+            "repair": "Use an invalid declared value, such as {\"kinds\":[\"not-a-kind\"]}, to verify pre-handler schema rejection."
+          },
+          {
+            "severity": "none",
+            "finding": "The positive and no-match expectations are source-supported. The three top-level Event items and nested Place values are in the fixture; filtered JSON-LD returns the three Event objects, and recursive type collection sees nested Place. A microdata-only NoSuchType call yields an empty array and count 0.",
+            "evidence": [
+              "tests/fixtures/showcase-replay/calendar/index.html:11-61",
+              "src/lib/data-pattern/modes/json-ld.ts:65-102",
+              "src/lib/data-pattern/modes/microdata.ts:69-152",
+              "src/lib/tools/handlers/microdata.ts:96-140"
+            ]
+          }
+        ]
+      },
+      "EXT-F-4146-T01": {
+        "status": "PASS_SOURCE_SUPPORTED",
+        "evidence": [
+          "The fixture's visible 16 October button fetches a fixed same-host payload and updates #api-result text. The watcher observes child-list and text changes; the resulting text includes the event payload.",
+          "Missing target returns {ok:false, reason:'element not found'}; the missing selector fails the handler's Zod refinement before invocation. The watcher disconnects its MutationObserver and optional IntersectionObserver before resolving at the duration timeout.",
+          "The specified 5000 ms duration and 20-event cap are within schema bounds."
+        ]
+      }
+    },
+    "shared_preamble_finding": {
+      "severity": "material",
+      "finding": "The shared preamble says to identify service-worker and offscreen builds separately and stop if identity is unavailable. This blocks these procedures on unrelated runtime identity: the Tools UI directly invokes these three handlers in the side panel; each page operation uses chrome.scripting.executeScript or runMode, and none uses the offscreen document. The procedure also does not test service-worker lifecycle. Keep extension artifact/build identity in the receipt, but do not make an inactive offscreen or service-worker build a prerequisite for these direct-handler cases.",
+      "evidence": [
+        "src/features/tools/ToolsView.tsx:430-447 directly calls handler.run for local handlers.",
+        "src/lib/tools/handlers/extract.ts:88-108 and src/lib/tools/handlers/extras.ts:204-219 use chrome.scripting.executeScript.",
+        "src/lib/tools/handlers/microdata.ts:76-94 obtains a tab and invokes runMode.",
+        "src/lib/messaging/schemas.ts separates the offscreen stream/fetch protocols from these tool handlers."
+      ],
+      "repair": "Limit the stop condition to the loaded extension artifact/build identity and relevant page/script permissions. Treat SW/offscreen lifecycle as unverified and out of scope for these procedures."
+    }
+  },
+  "verdict_b_quality_and_coverage_limits": {
+    "status": "PASS_WITH_SOURCE_ONLY_LIMITS",
+    "strengths": [
+      "The procedures identify the real Tools catalog route and accurately disclose that manual runs call handlers directly, bypass dispatcher approval and permission enforcement, and cannot prove binding advertisement or agent-dispatched behavior.",
+      "The fixture is explicitly synthetic and loopback-only; cleanup is bounded to the owned tab and server process.",
+      "Reload observations are kept separate from cold idle restart, navigation, permission-denied recovery, offline recovery, and guest-mode claims."
+    ],
+    "limits": [
+      "No proposed procedure was executed. Runtime outcomes, profile and organization state, Chrome grants, extension installation identity, and fixture startup remain unverified.",
+      "The fixture supports deterministic synthetic extraction checks, not public-page acceptance or real-user data behavior.",
+      "These direct-handler cases do not assess dispatcher enforcement, live binding, idle service-worker restart, offscreen recreation, navigation, permission denial, offline recovery, or guest behavior."
+    ],
+    "additional_precision": "In ToolsView the surface selector initially shows Agent surface; the stated All handlers route is available after selecting All handlers. The procedure names that selection, so no correction is required."
+  },
+  "overall": "The source-backed positive behavior and most controls are accurate. Amend the microdata invalid-schema input and remove the unrelated SW/offscreen identity stop condition before treating the procedures as execution-ready. Runtime remains unverified.",
+  "reviewer": "independent source-only peer"
+}
