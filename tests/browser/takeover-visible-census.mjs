@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /** Receipt-bound, read-only native visibility discovery for a fresh role profile. */
 import assert from 'node:assert/strict';
-import { createHash } from 'node:crypto';
+import { randomBytes } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -80,6 +80,25 @@ const settingsSections = new Set([
   'About',
   'Advanced agent capabilities',
 ]);
+const requiredSettingsSections = new Set(
+  [...settingsSections].filter((label) => label !== 'Advanced agent capabilities'),
+);
+export const CONTROL_SELECTOR = [
+  'button',
+  'a[href]',
+  'input',
+  'select',
+  'textarea',
+  '[contenteditable="true"]',
+  '[role="button"]',
+  '[role="link"]',
+  '[role="switch"]',
+  '[role="combobox"]',
+  '[role="checkbox"]',
+  '[role="radio"]',
+  '[role="menuitem"]',
+  '[role="option"]',
+].join(', ');
 
 export function mapObservation(scope, observations) {
   assert.ok(['navigation', 'section', 'settings_control', 'surface_control'].includes(scope));
@@ -100,30 +119,37 @@ export function mapObservation(scope, observations) {
     if (id) {
       const feature = featureById.get(id.split('-C')[0]);
       mapped.push({ id, label, applicability: feature?.applicability?.[ROLE] ?? null });
-    } else
+    } else {
+      assert.match(
+        item.label_fingerprint ?? '',
+        /^[a-f0-9]{64}$/,
+        'census_unkeyed_unknown_refused',
+      );
       unmapped.push({
         kind: item.kind,
-        label_sha256:
-          item.label_sha256 ??
-          createHash('sha256')
-            .update(String(label ?? ''))
-            .digest('hex'),
-        label_length: item.label_length ?? String(label ?? '').length,
+        label_fingerprint: item.label_fingerprint,
       });
+    }
   }
   return { total: observations.length, mapped, unmapped_count: unmapped.length, unmapped };
 }
 
-const digestInPage = `async (label) => [...new Uint8Array(await crypto.subtle.digest('SHA-256',
-  new TextEncoder().encode(label)))].map((byte) => byte.toString(16).padStart(2, '0')).join('')`;
+function fingerprintScript(key) {
+  assert.match(key ?? '', /^[A-Za-z0-9+/]{43}=$/, 'census_fingerprint_key_required');
+  return `const keyPromise = crypto.subtle.importKey('raw',
+    Uint8Array.from(atob(${JSON.stringify(key)}), (char) => char.charCodeAt(0)),
+    { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const fingerprint = async (label) => [...new Uint8Array(await crypto.subtle.sign('HMAC',
+    await keyPromise, new TextEncoder().encode(label)))].map((byte) => byte.toString(16).padStart(2, '0')).join('');`;
+}
 
-async function visible(panel, selector, knownLabels = [], captureTab = false) {
+async function visible(panel, selector, knownLabels, captureTab, fingerprintKey) {
   return evaluate(
     panel,
     `(async () => {
     const known = new Set(${JSON.stringify(knownLabels)});
     const captureTab = ${captureTab};
-    const digest = ${digestInPage};
+    ${fingerprintScript(fingerprintKey)}
     const visible = (el) => { const r = el.getBoundingClientRect(), s = getComputedStyle(el);
       return r.width > 0 && r.height > 0 && s.display !== 'none' &&
         s.visibility !== 'hidden' && !el.closest('[inert]'); };
@@ -132,7 +158,7 @@ async function visible(panel, selector, knownLabels = [], captureTab = false) {
           el.getAttribute('data-matrx-title') || el.textContent || '').trim().slice(0, 256);
         return { kind: el.getAttribute('role') || el.tagName.toLowerCase(),
           ...(known.has(label) || (captureTab && /^[1-9][0-9]* pages? need your browser$/.test(label))
-            ? { label } : { label_sha256: await digest(label), label_length: label.length }) };
+            ? { label } : { label_fingerprint: await fingerprint(label) }) };
       }));
   })()`,
   );
@@ -182,12 +208,10 @@ export async function mutationGuard(panel) {
   };
 }
 
-async function settingsControls(panel, section) {
-  return evaluate(
-    panel,
-    `(async () => {
+export function settingsControlsExpression(section, fingerprintKey) {
+  return `(async () => {
     const known = new Set(${JSON.stringify([...controlsByLabel.keys(), ...controlAliases.keys()])});
-    const digest = ${digestInPage};
+    ${fingerprintScript(fingerprintKey)}
     const header = [...document.querySelectorAll('button[aria-expanded]')]
       .find((el) => el.textContent.trim() === ${JSON.stringify(section)});
     const id = header?.getAttribute('aria-controls');
@@ -195,18 +219,28 @@ async function settingsControls(panel, section) {
     if (!content) return null;
     const visible = (el) => { const r = el.getBoundingClientRect(), s = getComputedStyle(el);
       return r.width > 0 && r.height > 0 && s.display !== 'none' && s.visibility !== 'hidden'; };
-    return Promise.all([...content.querySelectorAll('button, [role="switch"], [role="combobox"], input')]
+    return Promise.all([...content.querySelectorAll(${JSON.stringify(CONTROL_SELECTOR)})]
       .filter(visible).map(async (el) => { const label = (el.getAttribute('aria-label') ||
-        el.getAttribute('title') || el.closest('label')?.textContent || el.textContent || '').trim().slice(0, 256);
+        (el.tagName === 'A' ? el.textContent : null) || el.getAttribute('title') ||
+        el.closest('label')?.textContent || el.textContent || '').trim().slice(0, 256);
         return { kind: el.getAttribute('role') || el.tagName.toLowerCase(),
-          ...(known.has(label) ? { label } : { label_sha256: await digest(label), label_length: label.length }) };
+          ...(known.has(label) ? { label } : { label_fingerprint: await fingerprint(label) }) };
       }));
-  })()`,
-  );
+  })()`;
 }
 
-async function census(panel) {
-  const navigationRaw = await visible(panel, 'button[role="tab"][title]', [...knownTabs], true);
+async function settingsControls(panel, section, fingerprintKey) {
+  return evaluate(panel, settingsControlsExpression(section, fingerprintKey));
+}
+
+async function census(panel, fingerprintKey) {
+  const navigationRaw = await visible(
+    panel,
+    'button[role="tab"][title]',
+    [...knownTabs],
+    true,
+    fingerprintKey,
+  );
   const navigation = mapObservation('navigation', navigationRaw);
   const surfaces = {};
   const navigation_actions = [];
@@ -218,7 +252,7 @@ async function census(panel) {
     if (!isKnownTab(tab.label)) {
       inaccessible_regions.push({
         region: 'unmapped_tab',
-        label_sha256: tab.label_sha256,
+        label_fingerprint: tab.label_fingerprint,
         reason: 'not_opened_without_source_mapping',
       });
       continue;
@@ -240,18 +274,19 @@ async function census(panel) {
         panel,
         `(async () => {
       const known = new Set(${JSON.stringify([...uniqueControlIds.keys()])});
-      const digest = ${digestInPage};
+      ${fingerprintScript(fingerprintKey)}
       const tab = document.querySelector('button[role="tab"][title=${JSON.stringify(tab.label)}]');
       const pane = tab?.getAttribute('aria-controls')
         ? document.getElementById(tab.getAttribute('aria-controls')) : null;
       if (!pane) return null;
       const visible = (el) => { const r = el.getBoundingClientRect(), s = getComputedStyle(el);
         return r.width > 0 && r.height > 0 && s.display !== 'none' && s.visibility !== 'hidden'; };
-      return Promise.all([...pane.querySelectorAll('button, [role="switch"], [role="combobox"], input')]
+      return Promise.all([...pane.querySelectorAll(${JSON.stringify(CONTROL_SELECTOR)})]
         .filter(visible).map(async (el) => { const label = (el.getAttribute('aria-label') ||
-          el.getAttribute('title') || el.getAttribute('data-matrx-title') || el.textContent || '').trim().slice(0, 256);
+          (el.tagName === 'A' ? el.textContent : null) || el.getAttribute('title') ||
+          el.getAttribute('data-matrx-title') || el.textContent || '').trim().slice(0, 256);
           return { kind: el.getAttribute('role') || el.tagName.toLowerCase(),
-            ...(known.has(label) ? { label } : { label_sha256: await digest(label), label_length: label.length }) };
+            ...(known.has(label) ? { label } : { label_fingerprint: await fingerprint(label) }) };
         }));
     })()`,
       );
@@ -289,7 +324,7 @@ async function census(panel) {
       inaccessible_regions.push({ region: 'settings_tab', reason: 'inspection_failed' });
     }
   const sectionRaw = settingsAvailable
-    ? await visible(panel, 'button[aria-expanded]', [...settingsSections])
+    ? await visible(panel, 'button[aria-expanded]', [...settingsSections], false, fingerprintKey)
     : [];
   const sections = mapObservation('section', sectionRaw);
   const controls = {};
@@ -297,7 +332,7 @@ async function census(panel) {
     if (!settingsSections.has(section.label)) {
       inaccessible_regions.push({
         region: 'unmapped_expander',
-        label_sha256: section.label_sha256,
+        label_fingerprint: section.label_fingerprint,
         reason: 'not_opened_without_source_mapping',
       });
       continue;
@@ -305,7 +340,7 @@ async function census(panel) {
     navigation_actions.push({ kind: 'settings_section', label: section.label });
     try {
       await openSection(panel, section.label);
-      const sectionRawControls = await settingsControls(panel, section.label);
+      const sectionRawControls = await settingsControls(panel, section.label, fingerprintKey);
       if (!sectionRawControls)
         inaccessible_regions.push({
           region: 'settings_section',
@@ -344,11 +379,30 @@ export function censusCompleteness(observation, blockedTotal) {
     ...Object.values(observation.controls),
   ];
   const unmapped = buckets.reduce((sum, bucket) => sum + bucket.unmapped_count, 0);
+  const missingRequiredRegions = [];
+  if (!observation.navigation?.total) missingRequiredRegions.push('navigation');
+  const visibleTabs = new Set(observation.navigation?.mapped.map((item) => item.label) ?? []);
+  if (!visibleTabs.has('Settings')) missingRequiredRegions.push('settings_tab');
+  for (const tab of visibleTabs)
+    if (tab !== 'Settings' && !Object.hasOwn(observation.surfaces, tab))
+      missingRequiredRegions.push(`tab:${tab}`);
+  if (!observation.sections?.total) missingRequiredRegions.push('settings_sections');
+  const visibleSections = new Set(observation.sections?.mapped.map((item) => item.label) ?? []);
+  for (const section of requiredSettingsSections)
+    if (!visibleSections.has(section)) missingRequiredRegions.push(`settings_section:${section}`);
+  for (const section of visibleSections)
+    if (!Object.hasOwn(observation.controls, section))
+      missingRequiredRegions.push(`settings_content:${section}`);
   return {
-    complete: blockedTotal === 0 && unmapped === 0 && observation.inaccessible_regions.length === 0,
+    complete:
+      blockedTotal === 0 &&
+      unmapped === 0 &&
+      observation.inaccessible_regions.length === 0 &&
+      missingRequiredRegions.length === 0,
     unmapped_total: unmapped,
     inaccessible_count: observation.inaccessible_regions.length,
     blocked_request_count: blockedTotal,
+    missing_required_regions: missingRequiredRegions,
   };
 }
 
@@ -373,6 +427,7 @@ async function main() {
   );
   let observation;
   let interception;
+  const fingerprintKey = randomBytes(32).toString('base64');
   const native = await runNativeSidepanelQa({
     headed: true,
     extensionDir: EXTENSION_DIR,
@@ -406,7 +461,7 @@ async function main() {
       try {
         panelGuard = await mutationGuard(panel);
         workerGuard = await mutationGuard(worker);
-        observation = { authentication, ...(await census(panel)) };
+        observation = { authentication, ...(await census(panel, fingerprintKey)) };
         interception = {
           scope: ['sidepanel', 'extension_worker'],
           effect: 'HTTP(S) methods other than GET/HEAD/OPTIONS aborted during observation',
