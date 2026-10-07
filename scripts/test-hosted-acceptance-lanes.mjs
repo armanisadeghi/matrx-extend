@@ -66,6 +66,7 @@ test('lane admission refuses unknown lanes and isolates shared credentials', () 
         ACCEPTANCE_LANE: lane,
         ACCEPTANCE_CASE: acceptanceCase,
         SCRAPE_AUTH_MODE: scrapeAuth,
+        DESKTOP_SETTINGS_CASE: 'full',
       },
     });
   for (const lane of ['A', 'B']) assert.equal(check(lane, 'guest-chat').status, 0, lane);
@@ -89,4 +90,5 @@ test('lane admission refuses unknown lanes and isolates shared credentials', () 
     assert.equal(check('A', 'guest-scrape', scrapeAuth).status, 0, scrapeAuth);
   }
   assert.equal(check('B', 'guest-scrape', 'guest').status, 0);
+  assert.equal(check('B', 'guest-seo').status, 0);
 });

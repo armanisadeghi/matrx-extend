@@ -5,6 +5,7 @@ import { randomUUID } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
+import { assertAuditDisplay } from './audit-key-native-display.mjs';
 import {
   auditFaultSource,
   awaitAuditNewDocument,
@@ -53,6 +54,25 @@ function auditSnapshotSource() {
     }))`;
 }
 
+function auditDisplaySource() {
+  return `chrome.storage.local.get(['matrx.audit.deviceKey', 'matrx.audit.log'])
+    .then((value) => {
+      const key = value['matrx.audit.deviceKey'];
+      const log = value['matrx.audit.log'] ?? [];
+      return {
+        keyId: key?.publicKeyId ?? null,
+        generated: key?.createdAt ? new Date(key.createdAt).toLocaleString() : null,
+        receiptCount: log.length,
+        recent: log.slice(-20).reverse().map((row) => ({
+          origin: row.origin ?? 'agent',
+          toolName: row.toolName,
+          status: row.outputHash === 'pending' ? 'pending' : row.ok ? 'ok' : 'error',
+          time: new Date(row.startedAt).toLocaleTimeString(),
+        })),
+      };
+    })`;
+}
+
 function cardSource() {
   return `(() => {
     const heading = [...document.querySelectorAll('div')]
@@ -66,6 +86,39 @@ function cardSource() {
       .find((element) => element.textContent.trim() === name)?.parentElement?.textContent.trim() ?? null;
     return {
       keyId: row('Public key ID')?.slice('Public key ID'.length) ?? null,
+      generated: row('Generated')?.slice('Generated'.length) ?? null,
+      receiptCount: row('Receipts on file')?.slice('Receipts on file'.length) ?? null,
+      recent: (() => {
+        const title = [...card.querySelectorAll('div')]
+          .find((element) => element.textContent.trim() === 'Recent receipts');
+        const panel = title?.parentElement?.parentElement;
+        if (!panel) return null;
+        const origins = ['all', 'agent', 'pilot', 'parallel', 'webmcp'];
+        const filters = Object.fromEntries(origins.map((origin) => {
+          const button = [...panel.querySelectorAll('button')]
+            .find((element) => element.textContent.trim().startsWith(origin) &&
+              element.textContent.trim().slice(origin.length).match(/^[0-9]+$/));
+          return [origin, button ? {
+            count: Number(button.textContent.trim().slice(origin.length)),
+            selected: button.classList.contains('bg-foreground'),
+          } : null];
+        }));
+        const rows = [...panel.querySelectorAll('span[title]')]
+          .filter((element) => element.parentElement?.querySelectorAll('span[title]').length === 2 &&
+            element === element.parentElement.querySelector('span[title]'))
+          .map((element) => {
+            const spans = [...element.parentElement.querySelectorAll('span')];
+            return {
+              origin: spans[0]?.textContent.trim().toLowerCase(),
+              toolName: element.textContent.trim(),
+              status: spans.find((span) => /^(ok|error|pending)$/i.test(span.textContent.trim()))
+                ?.textContent.trim().toLowerCase() ?? null,
+              time: element.parentElement.querySelector('span[title]:last-child')?.textContent.trim(),
+            };
+          });
+        return { filters, rows, empty: panel.textContent.match(/No receipts (?:yet|with origin=[a-z]+)[.]/)?.[0] ?? null,
+          last: panel.textContent.match(/last [0-9]+/)?.[0] ?? null };
+      })(),
       detailsUnavailable: body.includes('Audit details unavailable'),
       exportFailed: body.includes('Public key copy failed'),
       rotationFailed: body.includes('Key rotation failed'),
@@ -83,6 +136,7 @@ function cardSource() {
 
 const card = (panel) => evaluate(panel, cardSource());
 const snapshot = (panel) => evaluate(panel, auditSnapshotSource());
+const display = (panel) => evaluate(panel, auditDisplaySource());
 const fault = (panel) => evaluate(panel, 'window.__auditNativeFault?.state() ?? null');
 async function signedRead(page, panel, expectedPublicKeyId) {
   const call = startSignedRead(page);
@@ -118,6 +172,20 @@ async function restore(panel) {
 async function expectCard(panel, label, predicate) {
   return waitFor(label, () => card(panel), predicate, 15000);
 }
+async function assertDisplay(panel, label, expected, origin = 'all') {
+  const actual = await expectCard(
+    panel,
+    label,
+    (value) =>
+      value?.keyId === expected.keyId &&
+      value.generated === expected.generated &&
+      value.receiptCount === String(expected.receiptCount) &&
+      value.recent?.filters?.[origin]?.selected,
+  );
+  assertAuditDisplay(actual, expected, origin, label);
+  return actual;
+}
+
 async function rotate(panel) {
   await click(panel, 'button-text', 'Re-key');
   await waitFor(
@@ -248,6 +316,7 @@ try {
         );
         detailStep = 'compare_storage_after_retry';
         assert.deepEqual(await snapshot(panel), beforeLoadRetry);
+        assert.equal((await fault(panel)).activeWrites, 0, 'audit_T86_active_write_on_retry');
         pass('T86 details read failure and read-only retry', failedLoad, recovered, {
           activeWrites: 0,
         });
@@ -306,6 +375,95 @@ try {
       const beforeFailure = await snapshot(panel);
       stage = 'T87_prior_signed_receipt';
       const priorRotationReceipt = await signedRead(page, panel, beforeFailure.activeId);
+      stage = 'T27_card_and_T62_filters';
+      await reloadCard(panel, identity);
+      const expectedDisplay = await display(panel);
+      assert.ok(
+        expectedDisplay.keyId && expectedDisplay.generated && expectedDisplay.recent.length >= 2,
+        'audit_T27_display_precondition_missing',
+      );
+      const warmDisplay = await assertDisplay(panel, 'audit_T27_warm_display', expectedDisplay);
+      const filters = {};
+      for (const origin of ['agent', 'pilot', 'parallel', 'webmcp', 'all']) {
+        await click(
+          panel,
+          'button-text',
+          `${origin}${expectedDisplay.recent.filter((row) => origin === 'all' || row.origin === origin).length}`,
+        );
+        filters[origin] = await assertDisplay(
+          panel,
+          `audit_T62_${origin}`,
+          expectedDisplay,
+          origin,
+        );
+      }
+      assert.ok(
+        ['agent', 'pilot', 'parallel'].some((origin) =>
+          expectedDisplay.recent.every((row) => row.origin !== origin),
+        ),
+        'audit_T62_empty_origin_missing',
+      );
+      await reloadCard(panel, identity);
+      const reloadedDisplay = await assertDisplay(
+        panel,
+        'audit_T27_reloaded_display',
+        expectedDisplay,
+      );
+      pass(
+        'T27 admin audit key fields and recent rows survive Settings reload',
+        warmDisplay,
+        reloadedDisplay,
+        { receipt_count: expectedDisplay.receiptCount },
+      );
+      pass(
+        'T62 origin filters match visible rows counts and empty state',
+        filters.all,
+        filters.webmcp,
+        {
+          origins: Object.fromEntries(
+            Object.entries(filters).map(([name, value]) => [
+              name,
+              {
+                count: value.recent.filters[name].count,
+                rows: value.recent.rows.length,
+                empty: value.recent.empty,
+              },
+            ]),
+          ),
+        },
+      );
+
+      stage = 'T61_cancel_confirmation';
+      const beforeCancel = await snapshot(panel);
+      await click(panel, 'button-text', 'Re-key');
+      await waitFor(
+        'audit_T61_confirm_visible',
+        () =>
+          evaluate(
+            panel,
+            `(() => [...document.querySelectorAll('[role="alertdialog"]')]
+          .some((dialog) => dialog.textContent.includes('Rotate the device audit key?')))()`,
+          ),
+        Boolean,
+      );
+      await click(panel, 'button-text', 'Cancel');
+      await waitFor(
+        'audit_T61_confirm_closed',
+        () =>
+          evaluate(
+            panel,
+            `(() => ![...document.querySelectorAll('[role="alertdialog"]')]
+          .some((dialog) => dialog.textContent.includes('Rotate the device audit key?')))()`,
+          ),
+        Boolean,
+      );
+      assert.deepEqual(await snapshot(panel), beforeCancel, 'audit_T61_cancel_changed_key');
+      const cancelledCard = await expectCard(
+        panel,
+        'audit_T61_cancelled_card',
+        (value) => value?.keyId === beforeCancel.activeId && !value.rotated,
+      );
+
       stage = 'rotation_failure';
       await inject(panel, 'reject-history');
       await rotate(panel);
@@ -326,6 +484,10 @@ try {
       );
       const afterSuccess = await snapshot(panel);
       assert.ok(afterSuccess.historyIds.includes(beforeFailure.activeId));
+      pass('T61 cancel preserves key then confirmation rotates', cancelledCard, success, {
+        cancelled_key_unchanged: true,
+        confirmed_key_changed: true,
+      });
       await reloadCard(panel, identity);
       stage = 'T87_verify_prior_receipt';
       const rotationVerification = await verifySignedReceipt(panel, priorRotationReceipt);

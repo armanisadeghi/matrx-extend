@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "3ccf9dda",
+  "scope": "Independent source-only review of the audit-key native runner additions. No native/browser execution, build, release, or inventory promotion was performed.",
+  "verdict_A_native_readiness_and_requirements": {
+    "status": "source_ready_with_limits_native_unverified",
+    "T27": "The runner reads native chrome.storage.local audit key/log metadata and compares rendered public ID, locale creation time, retained count, up to 20 newest tool/origin/status/time rows, and filter counts before and after a Settings document reload. A fresh native run is still required.",
+    "T61": "Trusted clicks open and cancel the confirmation; the runner observes dialog closure and unchanged active ID/filtered history IDs, then follows the existing failure-and-confirmed-rotation path and verifies old history membership. A fresh native run is still required.",
+    "T62": "Trusted clicks exercise agent, pilot, parallel, webmcp, and all; rendered selected state, counts, visible rows, last-N label, and a genuine empty-origin message are compared with browser storage. The only guaranteed positive origin is webmcp from an owned signed product call; the other origins may remain empty. A fresh native run is still required.",
+    "T86": "The post-retry zero active-key-write assertion strengthens the prior read-only evidence. It does not observe whether rotateDeviceKey was invoked; the explicit T86 criterion remains open.",
+    "inventory_status": "Do not promote T27/T61/T62 or T86 from this source review. Earlier bounded native evidence remains the only product result until the changed runner is executed on an exact current artifact."
+  },
+  "verdict_B_doctrine_and_quality": {
+    "status": "important_diagnostic_gap",
+    "findings": [
+      {
+        "severity": "Important",
+        "file": "tests/browser/audit-key-native-acceptance.mjs",
+        "lines": "378-465, 860-874",
+        "issue": "The added T27/T62 and T61 checks set only a combined stage, with no per-boundary detailStep or bounded diagnostic. Their assertion labels contain uppercase T and wait failures include a snapshot suffix, so the final lowercase-only failure-code rule maps most failures to audit_native_unverified. A failed native run would not identify which field, origin, click, or cancel boundary failed, making the new acceptance result hard to diagnose safely.",
+        "required_fix": "Assign an allowlisted detail step around each new read, click, and assertion, classify those steps into safe failure codes, and preserve the exact failed boundary without copying raw browser observations into the receipt."
+      }
+    ],
+    "red_capability": "node --test tests/browser/audit-key-native-display.test.mjs tests/browser/audit-key-native-faults.test.mjs passed 14/14. The display helper test deliberately drops a row, removes an empty message, and changes the webmcp count; each triggers its named assertion. These synthetic controls establish comparator red capability only, not native product behavior or genuine signed-row provenance.",
+    "source_ground_truth": "The native runner obtains expected display fields from chrome.storage.local and observed fields from rendered DOM, so the main comparison does not use UI state as its own oracle. The preceding signedRead path issues an owned product call and waits for its persisted completed webmcp receipt."
+  },
+  "checks": [
+    "Reviewed git show --stat -U7 for builder commit 3ccf9dda and the relevant AuditKeyCard, audit log, inventory and driver source.",
+    "Ran node --test tests/browser/audit-key-native-display.test.mjs tests/browser/audit-key-native-faults.test.mjs: 14 passed, 0 failed.",
+    "No native/browser/build/release run in this review lane."
+  ],
+  "overall": "REOPEN the source diagnostic gap before relying on a fresh native failure receipt; proceed to native execution only with T86 direct invocation still explicitly open."
+}

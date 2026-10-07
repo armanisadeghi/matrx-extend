@@ -1,0 +1,18 @@
+{
+  "reviewed_commit": "82b16ada9d68b149e89569199689611164ab2df1",
+  "verdict_a": {
+    "status": "PARTIAL",
+    "route_readiness": "PASS: guest-seo is admitted on hosted lane B with one selected CI development artifact; the wrapper imports and verifies that artifact, passes its unpacked directory and relocated receipt to the existing guest SEO native driver, and runs under the existing resource permit. The workflow uploads the driver result and resource journals even on failure.",
+    "native_execution": "UNVERIFIED: this review did not dispatch the hosted workflow or use the native browser, so guest SEO behavior and selected-artifact runtime success remain open. The driver itself reports partial on its bounded success path and retains deferred inventory."
+  },
+  "verdict_b": {
+    "status": "PASS",
+    "findings": [],
+    "evidence": "The change adds only case admission and a route to tests/browser/seo-guest-acceptance.mjs; it does not duplicate SEO product logic. Route negatives reject release mode, Store eligibility, wrong receipt kind, and mismatched artifact paths. The driver rechecks frozen identity before and after native execution and writes unverified plus failure_stage on failure. Guest-only lane B credential isolation, exact artifact provenance, resource admission, and always-run evidence upload remain in the existing workflow."
+  },
+  "checks": [
+    "node --test scripts/hosted-seo-route.test.mjs scripts/hosted-scrape-route.test.mjs scripts/hosted-profile-route.test.mjs scripts/test-hosted-acceptance-lanes.mjs: 18/18 passed",
+    "node --check scripts/hosted-guest-acceptance.mjs: passed",
+    "git diff --check 82b16ada^ 82b16ada: passed"
+  ]
+}

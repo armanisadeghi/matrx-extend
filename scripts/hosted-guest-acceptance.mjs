@@ -26,6 +26,7 @@ import {
 } from './hosted-profile-route.mjs';
 import { prepareHostedReleaseArtifact } from './hosted-release-artifact.mjs';
 import { requireHostedScrapeRoute } from './hosted-scrape-route.mjs';
+import { hostedGuestSeoRoute } from './hosted-seo-route.mjs';
 import { hostedShowcaseRoute } from './hosted-showcase-route.mjs';
 import { runHostedStartupIntervalDiagnostic } from './hosted-startup-interval-diagnostic.mjs';
 import {
@@ -281,6 +282,7 @@ async function run(prepared, artifactMode) {
   assert.ok(
     [
       'guest-chat',
+      'guest-seo',
       'guest-scrape',
       'guest-scrape-development',
       'settings-controls',
@@ -335,6 +337,7 @@ async function run(prepared, artifactMode) {
       'Guest Chat release requires exact Store ZIP payload',
     );
   const scrapeRoute = requireHostedScrapeRoute(acceptanceCase, artifactMode, prepared);
+  const seoRoute = hostedGuestSeoRoute(acceptanceCase, artifactMode, prepared);
   const scrapeSelection = scrapeRoute ? scrapeNativeSelection(process.env) : null;
   if (acceptanceCase === 'prepare-stale-results' || acceptanceCase.startsWith('showcase-'))
     assert.equal(kind, 'ci_development_test', 'Native case requires exact CI development receipt');
@@ -409,6 +412,7 @@ async function run(prepared, artifactMode) {
     MATRX_SCRAPE_ARTIFACT_CHANNEL: scrapeRoute?.channel,
     MATRX_SCRAPE_AUTH_MODE: scrapeSelection?.mode,
     MATRX_SCRAPE_WIDTH_MODE: scrapeSelection?.widthMode,
+    ...(seoRoute?.env ?? {}),
     ...(needsApprovedAdminOrganization
       ? { MATRX_APPROVED_ADMIN_ORGANIZATION_FILE: approvedAdminOrganizationPath }
       : {}),
@@ -503,23 +507,25 @@ async function run(prepared, artifactMode) {
           repo,
           acceptanceCase === 'settings-controls'
             ? 'tests/browser/settings-local-controls-acceptance.mjs'
-            : scrapeRoute
-              ? scrapeRoute.driver
-              : acceptanceCase.startsWith('visibility-census-')
-                ? 'tests/browser/takeover-visible-census.mjs'
-                : acceptanceCase.startsWith('desktop-settings-')
-                  ? 'tests/browser/settings-desktop-native-acceptance.mjs'
-                  : acceptanceCase === 'audit-key-admin'
-                    ? 'tests/browser/audit-key-native-acceptance.mjs'
-                    : acceptanceCase.startsWith('settings-persistence')
-                      ? 'tests/browser/settings-d87-native-acceptance.mjs'
-                      : showcaseRoute
-                        ? showcaseRoute.driver
-                        : acceptanceCase === 'prepare-stale-results'
-                          ? 'tests/browser/prepare-stale-result-native-acceptance.mjs'
-                          : acceptanceCase === 'member-chat'
-                            ? 'tests/browser/reviewer-chat-store-acceptance.mjs'
-                            : 'tests/browser/guest-chat-store-acceptance.mjs',
+            : seoRoute
+              ? seoRoute.driver
+              : scrapeRoute
+                ? scrapeRoute.driver
+                : acceptanceCase.startsWith('visibility-census-')
+                  ? 'tests/browser/takeover-visible-census.mjs'
+                  : acceptanceCase.startsWith('desktop-settings-')
+                    ? 'tests/browser/settings-desktop-native-acceptance.mjs'
+                    : acceptanceCase === 'audit-key-admin'
+                      ? 'tests/browser/audit-key-native-acceptance.mjs'
+                      : acceptanceCase.startsWith('settings-persistence')
+                        ? 'tests/browser/settings-d87-native-acceptance.mjs'
+                        : showcaseRoute
+                          ? showcaseRoute.driver
+                          : acceptanceCase === 'prepare-stale-results'
+                            ? 'tests/browser/prepare-stale-result-native-acceptance.mjs'
+                            : acceptanceCase === 'member-chat'
+                              ? 'tests/browser/reviewer-chat-store-acceptance.mjs'
+                              : 'tests/browser/guest-chat-store-acceptance.mjs',
         ),
       ],
       {

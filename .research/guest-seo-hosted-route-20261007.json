@@ -1,0 +1,49 @@
+{
+  "scope": "Guest SEO native acceptance routing through the hosted development-artifact lane B",
+  "case": "guest-seo",
+  "artifact_mode": "CI development artifact selected by development_run_id and development_artifact_id",
+  "driver": "tests/browser/seo-guest-acceptance.mjs",
+  "receipt": "The existing authenticated importer verifies the selected artifact and supplies its unpacked chrome-mv3 directory and relocated local-dev-receipt.json. The route requires those paths to share one artifact directory and passes them to the existing driver.",
+  "result": "test-results/seo-guest-acceptance.json",
+  "failure_evidence": "The existing SEO driver writes status unverified with current_operation or last_safe_stage on native failure. The workflow uploads that result and current hosted resource journals even when acceptance fails.",
+  "inventory_mapping": {
+    "EXT-F-1008-T01": [
+      "new_url_replaces_visible_title",
+      "reload_audits_current_url"
+    ],
+    "EXT-F-1008-T02": [
+      "manual_button_returns_to_current_page"
+    ],
+    "EXT-F-1008-T03": [
+      "about_blank_clear_error_without_stale_audit",
+      "public_page_recovers_after_restricted_url"
+    ],
+    "EXT-F-1008-T07": [
+      "guest_menu_offers_text_and_ai_but_hides_json",
+      "guest_role_gate_after_reload"
+    ],
+    "EXT-F-1008-T09": [
+      "page title and headings",
+      "public detail groups",
+      "canonical door",
+      "manual link and image counts",
+      "readability display",
+      "navigation performance",
+      "conditional hreflang and schema doors"
+    ]
+  },
+  "unverified_inventory": [
+    "Full T01-T03 and T07 dimensions",
+    "T04-T06 and T08 save/history/diff",
+    "T09 controls outside the bounded driver and absent public metadata doors",
+    "T10-T14 recommendations, Chat staging, and social snippet actions",
+    "member and admin SEO modes"
+  ],
+  "verification": [
+    "node --test scripts/hosted-seo-route.test.mjs scripts/hosted-scrape-route.test.mjs scripts/hosted-profile-route.test.mjs scripts/test-hosted-acceptance-lanes.mjs: 18 passed",
+    "guest SEO hosted preflight: HOSTED_CREDENTIAL_PREFLIGHT_READY",
+    "node --check on edited scripts: passed",
+    "Biome and git diff --check: passed"
+  ],
+  "native_run": "Not run in this routing lane; selected hosted CI artifact and native browser execution remain for the root owner."
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "scope": "Source-only extension of the owned audit-key native acceptance runner; no native/browser/build/release or inventory promotion in this lane.",
+  "baseline_evidence": [
+    ".research/audit-selected-native-20261007.json",
+    ".research/settings-audit-native-peer-20261007.json"
+  ],
+  "source_findings": {
+    "T27": "The card renders the active public ID, generated locale timestamp, total receipt count and at most 20 newest receipt rows. The native runner previously observed only key ID and error states.",
+    "T61": "The prior runner confirmed several rotations but never opened and cancelled the confirmation dialog before checking storage.",
+    "T62": "The card derives origin counts from recent rows and filters the visible rows in place. The existing signed WebMCP call supplies genuine rows while unused origins provide genuine empty states in the disposable profile.",
+    "T86": "The browser storage fault counts active writes, but this does not directly count invocations of the internal rotateDeviceKey function. The added post-retry write assertion narrows mutation evidence but does not satisfy the direct-invocation criterion."
+  },
+  "new_runner_observations": {
+    "T27": "Native DOM is compared with sanitized native storage metadata for public key ID, generated locale text, retained count, exact recent tool/origin/status/time rows, and all-filter counts before and after a Settings document reload.",
+    "T61": "Trusted pointer opens confirmation, cancels it, verifies dialog closure and unchanged active key/history, then the existing confirmed rotation path verifies a changed ID and retained history.",
+    "T62": "Trusted pointer selects agent, pilot, parallel, webmcp and all. Each selected state, count, exact visible rows and genuine empty-origin message are checked against native storage metadata.",
+    "T86": "Existing read rejection and details retry retain unchanged key/history; active-key writes are now asserted zero again after retry. Direct rotateDeviceKey invocation absence remains unobserved."
+  },
+  "forced_bad_behavior_controls": {
+    "command": "node --test tests/browser/audit-key-native-display.test.mjs tests/browser/audit-key-native-faults.test.mjs",
+    "result": "14 passed; deliberate dropped visible row, false empty-state and wrong webmcp count each caused the comparison to throw at the named behavior assertion. This proves the new comparison is red-capable; it is not a native product verdict."
+  },
+  "source_checks": [
+    "node --check tests/browser/audit-key-native-acceptance.mjs: pass",
+    "pnpm exec biome check on the three touched runner/observation files: pass",
+    "git diff --check: pass"
+  ],
+  "current_verdict": "Source-ready for focused native execution, product behavior unverified on the changed runner. T86 direct invocation observation remains open. Prior bounded native evidence and inventory statuses remain unchanged.",
+  "next_gate": "Root-owned fresh native run against an exact current development artifact, followed by independent peer inspection of receipt and resource provenance before any inventory promotion."
+}
