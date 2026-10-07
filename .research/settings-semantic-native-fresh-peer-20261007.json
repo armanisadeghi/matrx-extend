@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "task_id": "settings-semantic-native-fresh-peer-20261007",
+  "lane": "independent_source_and_evidence_review",
+  "status": "DONE_WITH_CONCERNS",
+  "verdict_a_native_bounded": {
+    "verdict": "PASS_BOUNDED",
+    "claim": "On the exact frozen 0.2.366 development artifact, the source-reviewed Settings mapping identifies the eight previously unknown observed nodes as six inventory controls; unknown observations remain visible and the full census is incomplete.",
+    "evidence": {
+      "hosted_run_id": 37655683227,
+      "receipt": ".research/settings-semantic-native-20261007/evidence/native-receipt-original.json",
+      "source_sha": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+      "artifact_id": 11482071536,
+      "tree_sha256": "9e7c2db499a2c1fed0a8b3ea6facfa88a13f3c2c26ba7f9b9d2d1f216310236c",
+      "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "role_proof": "Receipt records guest, signed-out observed, no access or refresh token, no profile or admin role, Sign in visible and Sign out absent; saved side-panel and Settings screenshots agree.",
+      "settings_control_ids": [
+        "EXT-F-1003-C02",
+        "EXT-F-1003-C04",
+        "EXT-F-1003-C05",
+        "EXT-F-1003-C29",
+        "EXT-F-1003-C15",
+        "EXT-F-1003-C16"
+      ],
+      "node_count": 8,
+      "settings_unmapped_after": 0,
+      "prior_settings_unmapped": 8,
+      "total_unmapped_after": 35,
+      "prior_total_unmapped": 33,
+      "count_reconciliation": "Settings -8; SEO +11 (1 to 12); Data -1 (2 to 1); all other category counts unchanged. Net +2 reflects differing observed surface states, not suppression of unknowns.",
+      "completeness": "incomplete; 35 unknown observations, no unsupported triggers, inaccessible regions, blocked requests, or missing required regions",
+      "resource": "Package and browser journals end valid with exit 0; hosted guest journal is admitted and resource-valid but child exit 1 as census is incomplete. All three owned journals are terminal."
+    },
+    "limits": [
+      "Saved receipt and pixels support a bounded native mapping claim; they do not establish full census completeness or current-main product health.",
+      "The guest journal is a failed acceptance command, although the native observation artifact is usable."
+    ]
+  },
+  "verdict_b_quality": {
+    "verdict": "PASS_WITH_LIMITS",
+    "mapping_review": "Commit b2a1efad joins exact section, row label and node kind only when the fingerprint exists and the row-kind count is one; observed Settings source rows and receipt provenance match the six inventory IDs. Paired Pair code and Local engine port input/button nodes each represent one inventory control. Unmatched observations still flow to unmapped. The mapped receipt does not expose the internal fingerprint, so the exact pre-map fingerprint condition is established from source logic and prior unmapped receipt rather than from the final mapped JSON alone.",
+    "sanitization": {
+      "original_sha256": "ecb08333283aa5a0e6f8e13c0f2d7fcc8ea000f850eff5aa9e5b6a32dfec55b2",
+      "sanitized_sha256": "19c0cd388e905712af2e01f14185b811673d9253771600c6d2a1161788240c53",
+      "difference": "Only guest_account_readiness_screenshot changes from hosted runner absolute path to evidence/guest-account-readiness.png; hashes must be labeled by their respective files."
+    },
+    "proposal_review": {
+      "report": ".research/missing-control-proposals-20261007.json",
+      "verdict": "PASS_AS_SOURCE_ONLY_PROPOSAL",
+      "findings": [
+        "Frozen and current inventory both contain Scrape C19/T19 for Add current page to project and C34/T32 for Retry page check.",
+        "The four cited source files are unchanged from frozen SHA to current source and support their stated render conditions and handlers.",
+        "Data mounts PageIdentityNotice with a separate Retry placement when pageKey is absent; reusing refreshActiveTabIdentity does not establish the same UI identity as Scrape C34.",
+        "Data C32/T05 are collision-free candidate IDs because current Data inventory ends at C31/T04. A feature-local Data case is a justified coverage gap; no runtime pass or inventory edit is established."
+      ]
+    },
+    "limits": [
+      "Screenshots show the panel and a subset of Settings; the receipt and source supply the complete Settings node join.",
+      "No tests, browser launch, code edits, or full census/product-health review were performed by this peer."
+    ]
+  }
+}
