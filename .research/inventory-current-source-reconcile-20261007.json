@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "task_id": "inventory-current-source-reconcile-20261007",
+  "reviewed_from": "9db45d3",
+  "pinned_head": "2787ed85855444d0f3498d74e02e502cccc164cc",
+  "scope": "Source-only changed-path reconciliation against docs/stabilization/inventory.json; no runtime, browser, DB, canonical inventory, or product edits.",
+  "diff_paths": [
+    "package.json",
+    "pnpm-lock.yaml",
+    "src/features/data/DataView.tsx",
+    "src/features/debug/DebugView.tsx",
+    "src/features/showcase/tabs/PatternsTab.tsx",
+    "src/lib/agenda/scanner.ts",
+    "src/lib/background/bootstrap.ts",
+    "src/lib/data-pattern/document-network-capture.ts",
+    "src/lib/data-pattern/document-network-transport.ts",
+    "src/lib/data-pattern/run-interactive.ts",
+    "src/lib/onbox-ai/client.test.ts",
+    "src/lib/onbox-ai/client.ts",
+    "src/lib/scrape/fetch-and-parse.ts",
+    "src/lib/scrape/pipeline.ts",
+    "src/lib/tools/catalog.ts",
+    "src/lib/tools/categories.ts",
+    "src/lib/tools/handlers/canonical-delegate-contract.test.ts",
+    "src/lib/tools/handlers/canonical-mergers.ts",
+    "src/lib/tools/handlers/data-patterns.ts",
+    "src/lib/tools/handlers/fetch.ts",
+    "src/lib/tools/handlers/onbox-ai.ts",
+    "src/lib/tools/registry.ts"
+  ],
+  "current_source_mappings": [
+    {
+      "paths": [
+        "src/features/data/DataView.tsx",
+        "src/features/showcase/tabs/PatternsTab.tsx",
+        "src/lib/data-pattern/run-interactive.ts",
+        "src/lib/data-pattern/document-network-capture.ts",
+        "src/lib/data-pattern/document-network-transport.ts",
+        "src/lib/tools/handlers/data-patterns.ts"
+      ],
+      "existing_ids": [
+        "EXT-F-1012-C36",
+        "EXT-F-1012-C47",
+        "EXT-F-1012-C49",
+        "EXT-F-1012-C50",
+        "EXT-F-1012-T57",
+        "EXT-F-2005-C07",
+        "EXT-F-4148-C01"
+      ],
+      "finding": "Saved Network replay is now tied to the approved reload loader and resulting document; UI and local tool results hold or reject by that identity. This changes correctness and error behavior of existing run actions, not the number of visible controls. T57 remains runtime-unverified."
+    },
+    {
+      "paths": ["src/features/debug/DebugView.tsx", "package.json", "pnpm-lock.yaml"],
+      "existing_ids": ["EXT-F-1005-C16"],
+      "finding": "Debug download uses shared kit helper; same visible download control."
+    },
+    {
+      "paths": ["src/lib/agenda/scanner.ts", "src/lib/background/bootstrap.ts"],
+      "existing_ids": ["EXT-F-2004"],
+      "finding": "Agenda scanner alarm is disarmed without session and rearmed on sign-in; existing scheduled notification behavior and auth boundary, no new visible control or entrypoint."
+    },
+    {
+      "paths": [
+        "src/lib/onbox-ai/client.ts",
+        "src/lib/onbox-ai/client.test.ts",
+        "src/lib/tools/handlers/onbox-ai.ts"
+      ],
+      "existing_ids": [
+        "EXT-F-2015-C05",
+        "EXT-F-2015-C14",
+        "EXT-F-2015-C16",
+        "EXT-F-2015-C18",
+        "EXT-F-4045-C01",
+        "EXT-F-4049-C01",
+        "EXT-F-4050-C01",
+        "EXT-F-4051-C01"
+      ],
+      "finding": "Native AI capability discovery and dedicated methods change outcomes of existing Smart tests and registered tools; translator availability is pair dependent. No new UI control/schema/permission gate identified."
+    },
+    {
+      "paths": ["src/lib/tools/handlers/canonical-mergers.ts"],
+      "existing_ids": ["EXT-F-4163"],
+      "finding": "tab_groups create forwards existing collapsed argument; parameter behavior change, no new route or UI control."
+    },
+    {
+      "paths": ["src/lib/scrape/fetch-and-parse.ts", "src/lib/scrape/pipeline.ts"],
+      "existing_ids": [],
+      "finding": "Comment-only changes preserve shared fetch/parse implementation used by existing Scrape path; no additional feature/control. Exact Scrape feature ID was not asserted in this bounded scan."
+    },
+    {
+      "paths": [
+        "src/lib/tools/handlers/fetch.ts",
+        "src/lib/tools/registry.ts",
+        "src/lib/tools/catalog.ts",
+        "src/lib/tools/categories.ts"
+      ],
+      "existing_ids": ["EXT-F-4149-C01"],
+      "finding": "fetch_url_as_markdown executable handler, registry import, category, permission metadata, and canonical advertisement were removed. Current inventory still claims an invocable registered tool. This is an actionable scope mismatch, not an unverified runtime pass/fail."
+    }
+  ],
+  "entrypoint_auth_permission_census": {
+    "new_entrypoints": [],
+    "new_auth_or_permission_controls": [],
+    "existing_gate_changes": [
+      "Agenda background scanner requires stored session before polling and on alarm; no new user-facing gate.",
+      "fetch_url_as_markdown removed from registered executable/advertised surface."
+    ],
+    "source_paths_checked": [
+      "src/entrypoints",
+      "src/config",
+      "src/hooks",
+      "src/components",
+      "src/features",
+      "src/lib/tools"
+    ]
+  },
+  "exact_inventory_patch_proposals": [
+    {
+      "target": "EXT-F-4149",
+      "proposal": "Preserve feature and C01/T01 IDs as historical; change source status to source-absent/retired-executor, mark C01 source-absent and T01 not runnable against this build, update anchors to removal commit/diff and preserve all runtime cells as unverified. Remove any present-tense claim that this route is registered, advertised or executable. Do not conflate retained offscreen fetch/parse code with a registered tool.",
+      "basis": [
+        "src/lib/tools/handlers/fetch.ts deleted",
+        "src/lib/tools/registry.ts",
+        "src/lib/tools/categories.ts",
+        "src/lib/tools/catalog.ts",
+        "types/tool-catalog.json lacks fetch_url_as_markdown"
+      ]
+    },
+    {
+      "target": "EXT-F-1012 / EXT-F-2005 / EXT-F-4148",
+      "proposal": "Append current source anchors for reload-document ownership and local data_patterns result attestation if maintaining anchor freshness; preserve IDs, control scope, case verdicts and runtime cells."
+    }
+  ],
+  "ext_f_2002": {
+    "C08": {
+      "finding": "Per-source capture-intensity picker absent; queue grouping/filtering have C20-C28. Initial inventory label is not proof of promised feature.",
+      "action": "Retain C08 ID and existing source-absent/owner-intent-unresolved note; unlinked and uncovered. No product omission claim without owner evidence."
+    },
+    "C10": {
+      "finding": "PasteRow exposes text entry and Submit paste but no cancel editor lifecycle/control; no source/history evidence of removed cancel.",
+      "action": "Retain C10 ID and existing source-absent/owner-intent-unresolved note; no-submit observation is not C10 coverage."
+    },
+    "six_verdicts": {
+      "catalog": "src/features/tasks/verdicts.tsx VERDICT_OPTIONS",
+      "mapping": {
+        "accept_as_is": "C14",
+        "gated": "C15",
+        "dead_link": "C16",
+        "retry (prior attempt only)": "C17",
+        "content_mismatch": "C18",
+        "ignored": "C19"
+      },
+      "C06": "Parent aggregate Resolve menu/action label names only four historic verdicts; its exact text should be expanded to all six without changing ID or treating it as six distinct controls.",
+      "source_presence": "C18/C19 are already canonical; no new IDs needed."
+    },
+    "applicability": "T01 member/admin only; guest feature-level not applicable is not a guest runtime denial case. C20-C28 remain source-present."
+  },
+  "limits": [
+    "This is a bounded diff from reviewed 9db45d3 through pinned HEAD, not a full repository census from inventory source_sha.",
+    "No source read here proves live role visibility, request advertisement/binding, or runtime behavior.",
+    "No canonical inventory edit; proposals are for owner/integrator review."
+  ]
+}
