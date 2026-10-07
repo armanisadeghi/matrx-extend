@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0047",
+  "scope": "Retained causal source-test execution for the existing saved replay higher-old-sequence guard; no native/browser/product verification.",
+  "production_path": "runNetworkCapturePattern -> openDocumentNetworkCapture -> startDocumentNetworkCapture -> CDP Runtime.bindingCalled; admitted events reach the replay matcher, where request_sequence chooses latest.",
+  "prelaunch_sha256": {
+    "tests/unit/.d47-constant-mutant.test.ts": "71e644a034402f5d8f0edbcaa61f1ef22802076aeb4be8c50209983c88fd2e1d",
+    "tests/unit/.d47-higher-old-mutant.ts": "f1c4fedb43f63473c93e5bb39350359366106e46bf78103b94188b2b9676294e",
+    "tests/unit/.d47-higher-old-mutant.test.ts": "a25c1bd41c4fc7fb55828e5e71f7f1ca30262b4cd6fc7f2e3ea32afa1934e5c9",
+    "tests/unit/document-network-capture.test.ts": "b7776531cba8145fb1bca0e3b0424e0ce924a29146decbe93fc6d062f7ee2d91",
+    "src/lib/data-pattern/document-network-capture.ts": "c65b4678be7e49829f4f346926d9ff9dbdce8b7b8506be23565abf644dba3596"
+  },
+  "retained_mutants": [
+    {
+      "name": "constant_output",
+      "file": ".research/d47-remaining-isolation-20261007/.d47-constant-mutant.test.ts.txt",
+      "sha256": "71e644a034402f5d8f0edbcaa61f1ef22802076aeb4be8c50209983c88fd2e1d",
+      "patch": ".research/d47-remaining-isolation-20261007/constant-test.patch",
+      "meaning": "Replaces replay orchestration with a constant Brooklyn Bowl row. All three saved replay checks reject it because Page.reload was not called."
+    },
+    {
+      "name": "old_document_context_guard_removed",
+      "source_file": ".research/d47-remaining-isolation-20261007/.d47-higher-old-mutant.ts.txt",
+      "source_sha256": "f1c4fedb43f63473c93e5bb39350359366106e46bf78103b94188b2b9676294e",
+      "test_file": ".research/d47-remaining-isolation-20261007/.d47-higher-old-mutant.test.ts.txt",
+      "test_sha256": "a25c1bd41c4fc7fb55828e5e71f7f1ca30262b4cd6fc7f2e3ea32afa1934e5c9",
+      "patch": ".research/d47-remaining-isolation-20261007/higher-old-source.patch",
+      "meaning": "Removes the current unique-context and old-context exclusion in scratch capture source. Current title Brooklyn Bowl sequence 1 is replaced by old title Prior venue sequence 999; saved replay assertion fails at test line 393."
+    }
+  ],
+  "runs": [
+    {
+      "run_id": "d47-remaining-constant-red-20261007",
+      "kind": "constant_output",
+      "stdout": ".research/d47-remaining-isolation-20261007/constant-red.out",
+      "stdout_sha256": "454924dbf7db17939985a974a844dd1cf182e7989d52e90d2b40b50e45cc25cf",
+      "journal": "docs/stabilization/resource-journals/d47-remaining-constant-red-20261007.jsonl",
+      "journal_sha256": "4ac9f8908e6dea9163bcf33261edd13273f39496b07b0ab42fcda9237aeee719",
+      "decision": "child_failed",
+      "child_exit_code": 1,
+      "resource_invalid": false
+    },
+    {
+      "run_id": "d47-remaining-higher-old-red-20261007",
+      "kind": "old_document_context_guard_removed",
+      "stdout": ".research/d47-remaining-isolation-20261007/higher-old-red.out",
+      "stdout_sha256": "4c765fab93feb72832f94a6c298104d0d2d834052c6fec29c53acf9b7f0f41b6",
+      "journal": "docs/stabilization/resource-journals/d47-remaining-higher-old-red-20261007.jsonl",
+      "journal_sha256": "9d7ca2126aa4e346aa8947042c22f10d528efd1bbe048b8fd05f7a8d11179253",
+      "decision": "child_failed",
+      "child_exit_code": 1,
+      "resource_invalid": false
+    },
+    {
+      "run_id": "d47-remaining-higher-old-green-20261007",
+      "kind": "untouched",
+      "stdout": ".research/d47-remaining-isolation-20261007/higher-old-green.out",
+      "stdout_sha256": "fa0f5e36d2d729e6151fb422e6fb4cbdcf79f1513cbbb6eaa919667cb2c628c0",
+      "journal": "docs/stabilization/resource-journals/d47-remaining-higher-old-green-20261007.jsonl",
+      "journal_sha256": "22442008491829b960e1d6a42c1f4861ed1b0e907b43b5f78244d1d98aea4f23",
+      "decision": "valid",
+      "child_exit_code": 0,
+      "resource_invalid": false
+    }
+  ],
+  "observed_red_green": {
+    "constant_red": "3 replay tests failed at Page.reload count; 14 other tests passed.",
+    "higher_old_red": "5 tests failed, including saved replay received Prior venue instead of Brooklyn Bowl at line 393; 12 other tests passed.",
+    "untouched_green": "17/17 passed on original production source and original test."
+  },
+  "cleanup": "Scratch test/module files deleted from tests/unit after byte-identical copies and hashes retained; shared production and original test SHA-256 match prelaunch values.",
+  "limits": [
+    "This verifies a source-level CDP/replay chain against controlled browser-boundary inputs. It is not a native extension or public-site pass.",
+    "Native manual/prior-run isolation remains unverified. Existing connected manual and prior-run guards have qualified mutation evidence because their original stdout and mutant bytes were not retained; this report does not repair those older records.",
+    "No D47/T57 full-case promotion."
+  ]
+}

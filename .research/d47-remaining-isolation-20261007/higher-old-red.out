@@ -1,0 +1,128 @@
+{"schema":1,"at":"2026-10-07T07:01:56.584Z","runId":"d47-remaining-higher-old-red-20261007","path":"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/d47-remaining-higher-old-red-20261007.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-07T07:03:03.808Z","runId":"d47-remaining-higher-old-red-20261007","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":12.64,"requiredMemoryGiB":4,"oneMinuteLoad":2.39,"logicalCpus":10,"cpuBusyFraction":0.19714285714285715,"swapUsedMiB":2913.56,"repoFreeGiB":1681.1650505065918,"profileFreeGiB":1681.1650505065918,"safetyFreeGiB":23.320934295654297,"systemFreeGiB":23.320934295654297},"cpuBusySamples":[0.18,0.46,0.18,0.1,0.11,0.29,0.06],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - `__dirname` (vitest.config.ts:7:25). Use `import.meta.dirname` instead
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Volumes/Samsung2TB/code/matrx-extend
+
+(node:48518) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ tests/unit/.d47-higher-old-mutant.test.ts (17 tests | 5 failed) 278ms
+   × arms before reload and retains the earliest new-document response with old first delivery 2ms
+   × arms before reload and retains the earliest new-document response with current first delivery 0ms
+   × refuses a stale-only response rather than delivering it as the replay document 1ms
+   × saved replay refuses stale-only rows and recovers on a fresh run 3ms
+   × saved replay rejects a higher old-document sequence on the real capture path 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/.d47-higher-old-mutant.test.ts > arms before reload and retains the earliest new-document response with old first delivery
+ FAIL  tests/unit/.d47-higher-old-mutant.test.ts > arms before reload and retains the earliest new-document response with current first delivery
+AssertionError: expected "vi.fn()" to be called 1 times, but got 2 times
+ ❯ tests/unit/.d47-higher-old-mutant.test.ts:267:26
+    265|     });
+    266|     const capture = await startDocumentNetworkCapture(opts);
+    267|     expect(opts.onEvent).toHaveBeenCalledTimes(1);
+       |                          ^
+    268|     expect(opts.onEvent.mock.calls[0]![0]).toMatchObject({
+    269|       body: '[{"venue":"Brooklyn Bowl"}]',
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  tests/unit/.d47-higher-old-mutant.test.ts > refuses a stale-only response rather than delivering it as the replay document
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array [
+      Object {
+        "body": "[{"venue":"Prior venue"}]",
+        "body_size": 25,
+        "body_truncated": false,
+        "capture_id": "11111111-1111-4111-8111-111111111111",
+        "document_key": "reloaded-document",
+        "method": "GET",
+        "request_body_key": "none",
+        "request_sequence": 999,
+        "source": "fetch",
+        "status": 200,
+        "tab_id": 37,
+        "ts_ms": 1,
+        "url": "https://electronic.vegas/api/events",
+      },
+    ]
+
+
+Number of calls: 1
+
+ ❯ tests/unit/.d47-higher-old-mutant.test.ts:309:28
+    307|   committed();
+    308|   handshake(2);
+    309|   expect(opts.onEvent).not.toHaveBeenCalled();
+       |                            ^
+    310|   await capture.close();
+    311|   expect(opts.onEvent).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  tests/unit/.d47-higher-old-mutant.test.ts > saved replay refuses stale-only rows and recovers on a fresh run
+AssertionError: expected { rows: [ { title: 'Prior venue' } ] } to deeply equal { error: StringMatching{…} }
+
+- Expected
++ Received
+
+  {
+-   "error": StringMatching /No successful request matching/,
++   "rows": [
++     {
++       "title": "Prior venue",
++     },
++   ],
+  }
+
+ ❯ tests/unit/.d47-higher-old-mutant.test.ts:324:30
+    322|   await waitForReload(1);
+    323|   await vi.advanceTimersByTimeAsync(100);
+    324|   expect(await staleOutcome).toEqual({
+       |                              ^
+    325|     error: expect.stringMatching(/No successful request matching/),
+    326|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  tests/unit/.d47-higher-old-mutant.test.ts > saved replay rejects a higher old-document sequence on the real capture path
+AssertionError: expected { rows: [ { title: 'Prior venue' } ] } to deeply equal { Object (rows) }
+
+- Expected
++ Received
+
+  {
+    "rows": [
+      {
+-       "title": "Brooklyn Bowl",
++       "title": "Prior venue",
+      },
+    ],
+  }
+
+ ❯ tests/unit/.d47-higher-old-mutant.test.ts:393:25
+    391|   await waitForReload(1);
+    392|   await vi.advanceTimersByTimeAsync(100);
+    393|   expect(await outcome).toEqual({ rows: [{ title: 'Brooklyn Bowl' }] }…
+       |                         ^
+    394| });
+    395|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 12 passed (17)
+   Start at  00:03:04
+   Duration  894ms (transform 211ms, setup 75ms, import 294ms, tests 278ms, environment 148ms)
+
+{"schema":1,"at":"2026-10-07T07:03:05.342Z","runId":"d47-remaining-higher-old-red-20261007","childExitCode":1,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-07T07:03:05.388Z","runId":"d47-remaining-higher-old-red-20261007","admitted":true,"resourceInvalid":false,"exitCode":1,"decision":"child_failed","code":"RESOURCE_FINAL_DECISION"}

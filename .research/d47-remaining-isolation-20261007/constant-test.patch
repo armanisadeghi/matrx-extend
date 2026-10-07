@@ -1,0 +1,11 @@
+--- production/document-network-capture.test.ts
++++ scratch/constant-mutant.test.ts
+@@ -3,7 +3,7 @@
+ vi.mock('@/lib/cdp/client', () => ({ acquireSession: harness.acquire }));
+ import { startDocumentNetworkCapture } from '@/lib/data-pattern/document-network-capture';
+ import { cleanupNetworkTapMain, networkTapCleanupPresent } from '@/lib/data-pattern/network-tap';
+-import { runNetworkCapturePattern } from '@/lib/data-pattern/run-interactive';
++const runNetworkCapturePattern = async () => [{ title: 'Brooklyn Bowl' }];
+ const events = new Set<(source: { tabId: number }, method: string, params: object) => void>();
+ const detaches = new Set<(source: { tabId: number }) => void>();
+ const emit = (method: string, params: object) => {

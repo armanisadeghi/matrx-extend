@@ -1,0 +1,7 @@
+{
+  "tests/unit/.d47-constant-mutant.test.ts": "71e644a034402f5d8f0edbcaa61f1ef22802076aeb4be8c50209983c88fd2e1d",
+  "tests/unit/.d47-higher-old-mutant.ts": "f1c4fedb43f63473c93e5bb39350359366106e46bf78103b94188b2b9676294e",
+  "tests/unit/.d47-higher-old-mutant.test.ts": "a25c1bd41c4fc7fb55828e5e71f7f1ca30262b4cd6fc7f2e3ea32afa1934e5c9",
+  "tests/unit/document-network-capture.test.ts": "b7776531cba8145fb1bca0e3b0424e0ce924a29146decbe93fc6d062f7ee2d91",
+  "src/lib/data-pattern/document-network-capture.ts": "c65b4678be7e49829f4f346926d9ff9dbdce8b7b8506be23565abf644dba3596"
+}

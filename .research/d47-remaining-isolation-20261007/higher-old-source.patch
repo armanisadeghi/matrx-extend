@@ -1,0 +1,12 @@
+--- production/document-network-capture.ts
++++ scratch/old-context-mutant.ts
+@@ -358,8 +358,7 @@
+         !documentContext ||
+         !context?.isDefault ||
+         context.frameId !== mainFrame ||
+-        context.uniqueId !== documentContext.uniqueId ||
+-        oldContexts.has(context.uniqueId)
++        false
+       )
+         return;
+       if (typeof params.payload !== 'string') return;
