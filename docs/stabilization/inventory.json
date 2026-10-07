@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-07T22:27:17.123128+00:00",
+  "updated_at": "2026-10-07T22:43:08.259405+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -6004,26 +6004,49 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "desktop-settings-guest-20261003-independent01",
-              "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
-              "build_version": "0.2.176",
-              "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+              "run_id": "37696764772",
+              "source_sha": "4801dbd72c99d0ff157c16cb51926587bdf95618",
+              "build_version": "0.2.391",
               "evidence": [
-                ".research/desktop-settings-independent-native.json",
-                ".research/desktop-settings-guard-proof.json",
-                ".research/settings-forget-reset-final.json"
+                ".research/desktop-guest-native-20261007.json",
+                ".research/parallel-native-evidence-peer-20261007.json"
               ],
               "verified_substeps": [
-                "Actual pair-code storage rejection preserved input and prior value; explicit retry persisted; overlapping submissions preserved the newer input and final value after reload.",
-                "Owned HTTP availability fixture exposed actual Forget UI: Cancel preserved pair code; storage.remove refusal showed error and preserved pairing; retry removed browser code. Fixture does not prove real engine connectivity."
+                "Pair save refusal retained input and showed retry; retry persisted synthetic value; overlapping pair saves retained the latest submission."
               ],
               "remaining_criteria": [
-                "Actual desktop pairing acceptance/rejection and resulting real engine connection state remain unverified."
+                "The case requires transport-sensitive visibility and HTTP Forget confirmation. Pair removal was unverified because HTTP transport and product confirmation were unavailable; no engine health is inferred."
               ],
-              "release_scope": "Exact CI development artifact; not frozen public176 or full Store installation/update acceptance.",
-              "supplemental_run_id": "desktop-settings-forget-reset-guest-20261003-01"
+              "observed_at": "2026-10-07T22:43:08.259405+00:00",
+              "release_scope": "Frozen CI development artifact only; no Store/current-main/healthy-engine claim."
             }
-          }
+          },
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "desktop-settings-guest-20261003-independent01",
+                "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+                "build_version": "0.2.176",
+                "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+                "evidence": [
+                  ".research/desktop-settings-independent-native.json",
+                  ".research/desktop-settings-guard-proof.json",
+                  ".research/settings-forget-reset-final.json"
+                ],
+                "verified_substeps": [
+                  "Actual pair-code storage rejection preserved input and prior value; explicit retry persisted; overlapping submissions preserved the newer input and final value after reload.",
+                  "Owned HTTP availability fixture exposed actual Forget UI: Cancel preserved pair code; storage.remove refusal showed error and preserved pairing; retry removed browser code. Fixture does not prove real engine connectivity."
+                ],
+                "remaining_criteria": [
+                  "Actual desktop pairing acceptance/rejection and resulting real engine connection state remain unverified."
+                ],
+                "release_scope": "Exact CI development artifact; not frozen public176 or full Store installation/update acceptance.",
+                "supplemental_run_id": "desktop-settings-forget-reset-guest-20261003-01"
+              }
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T44",
@@ -6139,14 +6162,21 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37693743871",
+              "run_id": "37696764772",
+              "source_sha": "4801dbd72c99d0ff157c16cb51926587bdf95618",
+              "build_version": "0.2.391",
               "evidence": [
-                ".research/frozen-settings-native-retest-20261007.json",
-                ".research/native-batch-evidence-peer-20261007.json"
+                ".research/desktop-guest-native-20261007.json",
+                ".research/parallel-native-evidence-peer-20261007.json"
               ],
-              "detail": "Valid port49206/save/rediscovery/reload, reject65536, clear/reload observed. Endpoint ports1/65535 and healthy desktop connection unverified. Guest only; other modes retain their own evidence.",
-              "build_variant": "development0.2.387/source14305391",
-              "observed_at": "2026-10-07T22:18:59.711910+00:00"
+              "verified_substeps": [
+                "Baseline save persisted; failed save preserved the prior value and offered retry; retry persisted across reload; overlapping saves settled in order; delayed initial read preserved the edit before write."
+              ],
+              "remaining_criteria": [
+                "Boundary values 1/65535, blank clear, invalid-range UI, and actual rediscovery were not exercised. Storage fault injection does not establish a healthy engine connection."
+              ],
+              "observed_at": "2026-10-07T22:43:08.259405+00:00",
+              "release_scope": "Frozen CI development artifact only; no Store/current-main/healthy-engine claim."
             }
           },
           "linked_defects": ["EXT-D-0086", "EXT-D-0084"],
@@ -6240,6 +6270,33 @@
                 }
               ],
               "supplemental_run_id": "desktop-settings-forget-reset-guest-20261003-01"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37693743871",
+                "evidence": [
+                  ".research/frozen-settings-native-retest-20261007.json",
+                  ".research/native-batch-evidence-peer-20261007.json"
+                ],
+                "detail": "Valid port49206/save/rediscovery/reload, reject65536, clear/reload observed. Endpoint ports1/65535 and healthy desktop connection unverified. Guest only; other modes retain their own evidence.",
+                "build_variant": "development0.2.387/source14305391",
+                "observed_at": "2026-10-07T22:18:59.711910+00:00"
+              }
+            }
+          ],
+          "attempt_history": [
+            {
+              "mode": "guest",
+              "run_id": "37696455741",
+              "status": "unverified",
+              "reason": "All8 driver assertions passed but exact guest resource journal final invalid; no acceptance credit.",
+              "evidence": [
+                ".research/settings-boundary-native-20261007.json",
+                ".research/parallel-native-evidence-peer-20261007.json"
+              ],
+              "observed_at": "2026-10-07T22:43:08.259405+00:00"
             }
           ]
         },
@@ -6372,42 +6429,22 @@
           "dimensions": ["warm", "reload"],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": "desktop-settings-guest-20261003-independent01",
-              "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
-              "build_version": "0.2.176",
-              "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+              "status": "partial",
+              "run_id": "37696764772",
+              "source_sha": "4801dbd72c99d0ff157c16cb51926587bdf95618",
+              "build_version": "0.2.391",
               "evidence": [
-                ".research/desktop-settings-independent-native.json",
-                ".research/desktop-settings-guard-proof.json",
-                ".research/settings-forget-reset-final.json"
+                ".research/desktop-guest-native-20261007.json",
+                ".research/parallel-native-evidence-peer-20261007.json"
               ],
               "verified_substeps": [
-                "Rejected clear preserved complete prior local/session value census and confirmation. Retry cleared a trusted-UI nondefault draft and session fixture; reload showed signed-out identity and only explicitly checked fresh guest defaults.",
-                "Independent current-artifact Cancel preserved every prior local/session value; confirmed retry/reset and signed-out reload passed with zero unexplained storage overlaps."
+                "Failed clear preserved confirmation and saved values; retry cleared local/session state, left zero unexplained keys, and signed the guest out after reload."
               ],
-              "remaining_criteria": [],
-              "release_scope": "Exact CI development artifact; not frozen public176 or full Store installation/update acceptance.",
-              "prior_evidence": [
-                {
-                  "status": "pass",
-                  "run_id": "guest-reset-009",
-                  "evidence": [
-                    "docs/stabilization/runs/guest-reset-009.json",
-                    "docs/stabilization/reports/native-driver-final-peer.json"
-                  ],
-                  "detail": "Real native0.2.57 isolated guest Cancel/Confirm/reload acceptance after shared driver repair.",
-                  "prior_evidence": [
-                    {
-                      "status": "pass",
-                      "run_id": "guest-reset-007",
-                      "evidence": "docs/stabilization/runs/guest-reset-007.json",
-                      "detail": "Frozen0.2.56 actual native guest sidepanel: Cancel preserves exact theme/port/session fixtures; Confirm clears all prior local/session keys; Reload shows guest/System and no prior overrides. Primary profile untouched."
-                    }
-                  ]
-                }
+              "remaining_criteria": [
+                "The inventory case requires Cancel preservation; CASE=full did not exercise Cancel."
               ],
-              "supplemental_run_id": "desktop-settings-forget-reset-guest-20261003-01"
+              "observed_at": "2026-10-07T22:43:08.259405+00:00",
+              "release_scope": "Frozen CI development artifact only; no Store/current-main/healthy-engine claim."
             }
           },
           "previous_results": [
@@ -6442,7 +6479,50 @@
               "remaining_criteria": ["Post-reload Settings content and System defaults"]
             }
           ],
-          "linked_defects": ["EXT-D-0084"]
+          "linked_defects": ["EXT-D-0084"],
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "desktop-settings-guest-20261003-independent01",
+                "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+                "build_version": "0.2.176",
+                "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+                "evidence": [
+                  ".research/desktop-settings-independent-native.json",
+                  ".research/desktop-settings-guard-proof.json",
+                  ".research/settings-forget-reset-final.json"
+                ],
+                "verified_substeps": [
+                  "Rejected clear preserved complete prior local/session value census and confirmation. Retry cleared a trusted-UI nondefault draft and session fixture; reload showed signed-out identity and only explicitly checked fresh guest defaults.",
+                  "Independent current-artifact Cancel preserved every prior local/session value; confirmed retry/reset and signed-out reload passed with zero unexplained storage overlaps."
+                ],
+                "remaining_criteria": [],
+                "release_scope": "Exact CI development artifact; not frozen public176 or full Store installation/update acceptance.",
+                "prior_evidence": [
+                  {
+                    "status": "pass",
+                    "run_id": "guest-reset-009",
+                    "evidence": [
+                      "docs/stabilization/runs/guest-reset-009.json",
+                      "docs/stabilization/reports/native-driver-final-peer.json"
+                    ],
+                    "detail": "Real native0.2.57 isolated guest Cancel/Confirm/reload acceptance after shared driver repair.",
+                    "prior_evidence": [
+                      {
+                        "status": "pass",
+                        "run_id": "guest-reset-007",
+                        "evidence": "docs/stabilization/runs/guest-reset-007.json",
+                        "detail": "Frozen0.2.56 actual native guest sidepanel: Cancel preserves exact theme/port/session fixtures; Confirm clears all prior local/session keys; Reload shows guest/System and no prior overrides. Primary profile untouched."
+                      }
+                    ]
+                  }
+                ],
+                "supplemental_run_id": "desktop-settings-forget-reset-guest-20261003-01"
+              }
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T50",

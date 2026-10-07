@@ -2,10 +2,7 @@
   "schema_version": 1,
   "reviewed_at": "2026-10-07",
   "role": "independent evidence peer",
-  "scope": [
-    "EXT-F-1003-T46 run 37696455741",
-    "EXT-D-0157 and guest T43/T46/T49 run 37696764772"
-  ],
+  "scope": ["EXT-F-1003-T46 run 37696455741", "EXT-D-0157 and guest T43/T46/T49 run 37696764772"],
   "settings_boundary": {
     "artifact_id": 11516145523,
     "artifact_download": "Original ZIP re-downloaded through GitHub API; the exact guest journal, native driver JSON, and two screenshots are preserved byte-for-byte under .research/parallel-native-evidence-peer-20261007/evidence/matrx-extend/matrx-extend/.",
