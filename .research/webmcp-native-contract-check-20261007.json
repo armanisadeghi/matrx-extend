@@ -1,0 +1,116 @@
+{
+  "title": "WebMCP native API contract check",
+  "checked_on": "2026-10-07",
+  "scope": "Compare current extension handler and registration assumptions with official WebMCP documentation and the current draft spec. This is documentary research only; no browser runtime was inspected.",
+  "conclusion": "The intended native operations have supported WebMCP API equivalents, but the current extension assumptions do not match the documented native contract. Official current docs show document.modelContext.registerTool, asynchronous getTools, and executeTool(registeredTool, input). They do not document a tools array, callTool(name,args), or a tool.run callback. Availability/runtime in any particular installed Chrome build remains unverified.",
+  "local_source_review": [
+    {
+      "path": "src/lib/tools/handlers/webmcp.ts",
+      "lines": "24-48",
+      "assumption": "Reads navigator.modelContext and derives tool_count from modelContext.tools array."
+    },
+    {
+      "path": "src/lib/tools/handlers/webmcp.ts",
+      "lines": "52-104",
+      "assumption": "Calls getTools as a synchronous array-returning method, otherwise reads tools array."
+    },
+    {
+      "path": "src/lib/tools/handlers/webmcp.ts",
+      "lines": "107-151",
+      "assumption": "Calls callTool(name,args), with fallback to tools[name].run(args)."
+    },
+    {
+      "path": "src/lib/webmcp/register.ts",
+      "lines": "62-160",
+      "assumption": "Registers on navigator.modelContext with a run callback and does not await registerTool."
+    },
+    {
+      "path": "src/lib/tools/handlers/webmcp.ts",
+      "lines": "11-12",
+      "assumption": "Comments say WebMCP shipped in Chrome 146."
+    }
+  ],
+  "documented_facts": [
+    {
+      "fact": "The current WebMCP draft extends Document with a secure-context document.modelContext attribute. ModelContext defines Promise-returning registerTool(tool, options), getTools(options), and executeTool(RegisteredTool, inputObject, options); it does not define tools, callTool, or run as the execution method.",
+      "source": "https://github.com/webmachinelearning/webmcp/blob/main/index.bs",
+      "spec_status": "Draft Community Group work; mutable, not a final web standard",
+      "anchors": "Document extension and ModelContext IDL; draft lines 2982-3037"
+    },
+    {
+      "fact": "Chrome's current imperative API guide (last updated 2026-09-21) demonstrates document.modelContext.registerTool with an execute callback, documents getTools as asynchronous, and uses executeTool with a RegisteredTool plus input. It notes JSON-stringified input arguments are deprecated from Chrome 155.",
+      "source": "https://developer.chrome.com/docs/ai/webmcp/imperative-api",
+      "anchors": "lines 56-70, 73-88, 147-169, 198-203, 230-248"
+    },
+    {
+      "fact": "Chrome's overview (last updated 2026-10-01) says the origin trial starts in Chrome 149 and local development can enable WebMCP through chrome://flags/#enable-webmcp-testing followed by relaunch. It also says the tools Permissions Policy defaults to self and cross-origin iframes are disabled unless delegated.",
+      "source": "https://developer.chrome.com/docs/ai/webmcp",
+      "anchors": "lines 87-115"
+    },
+    {
+      "fact": "Chrome's security guide says extensions can query and execute WebMCP tools using content scripts, and that host permissions allow custom JavaScript page manipulation even without WebMCP.",
+      "source": "https://developer.chrome.com/docs/ai/webmcp/secure-tools",
+      "anchors": "lines 71-89"
+    },
+    {
+      "fact": "Chrome documents cross-origin tool discovery as requiring both an origin listed in getTools({fromOrigins}) and explicit exposure by the registering page; default discovery is same-origin.",
+      "source": "https://developer.chrome.com/docs/ai/webmcp/imperative-api",
+      "anchors": "lines 198-228, 258-280"
+    }
+  ],
+  "concrete_mismatch_leads": [
+    {
+      "area": "API namespace",
+      "local": "Both handler and registration scripts access navigator.modelContext.",
+      "documented": "Current Chrome guide and draft expose document.modelContext. The inspected current official docs do not establish navigator.modelContext as the supported current surface.",
+      "qualification": "An old compatibility alias may exist in some builds; this check did not inspect a runtime."
+    },
+    {
+      "area": "Availability count",
+      "local": "Counts an undocumented mc.tools array.",
+      "documented": "Tool enumeration is through awaited getTools().",
+      "qualification": "The extension's check can report available while returning count 0 even if native tools are registered; this is a source/API inference, not a reproduced result."
+    },
+    {
+      "area": "List operation",
+      "local": "Types getTools as a synchronous array and immediately reads length/map without await.",
+      "documented": "getTools() returns a Promise for a sequence of RegisteredTool objects.",
+      "qualification": "On a conforming implementation, a Promise is not the expected array; likely an undefined count or a thrown map error. Not runtime reproduced."
+    },
+    {
+      "area": "Call operation",
+      "local": "Looks for callTool(name,args), then tools[].run(args).",
+      "documented": "The native operation is executeTool(RegisteredTool,inputObject,options); discovery returns RegisteredTool values from getTools().",
+      "qualification": "Neither local branch corresponds to the documented API. Native invocation is therefore unverified and likely incompatible by source comparison."
+    },
+    {
+      "area": "Extension registration",
+      "local": "Supplies a run callback to registerTool and does not await the returned promise.",
+      "documented": "Chrome's guide supplies execute and awaits registerTool; registration returns a Promise.",
+      "qualification": "Registration may reject or fail to create callable tools under native API; no runtime reproduction performed."
+    },
+    {
+      "area": "Version / enablement claim",
+      "local": "Source comments claim WebMCP shipped in Chrome 146.",
+      "documented": "Current Chrome overview identifies Chrome 149 Origin Trial and a local testing flag, not general stable availability from Chrome 146.",
+      "qualification": "No exact Chrome channel/build availability was tested. Treat the 146 comment as unsupported by the current official docs reviewed."
+    }
+  ],
+  "source_inference": [
+    "By direct shape comparison, current native availability detection may find an object but its tools count is not based on the documented enumeration API.",
+    "By direct shape comparison, current list and call handlers do not implement the documented native enumeration/execution sequence.",
+    "The extension's own registration path uses a callback property and promise handling that differ from Chrome's documented native form, so external agents' ability to discover and invoke those registrations is not established."
+  ],
+  "native_unverified": [
+    "No installed browser/version/channel/flag state was inspected.",
+    "No live native document.modelContext object, method descriptors, tool registrations, discovery result, or execution result was observed.",
+    "Whether a particular build retains navigator.modelContext as a deprecated alias is not established by the official sources captured here.",
+    "No product defect is claimed as reproduced; these are concrete source/API mismatch leads for a controlled native check."
+  ],
+  "source_urls": [
+    "https://github.com/webmachinelearning/webmcp/blob/main/index.bs",
+    "https://developer.chrome.com/docs/ai/webmcp/imperative-api",
+    "https://developer.chrome.com/docs/ai/webmcp",
+    "https://developer.chrome.com/docs/ai/webmcp/secure-tools"
+  ]
+}
