@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-D-0157",
+  "reviewed_commits": ["bd7f2088", "a899206b"],
+  "scope": "Independent source review of hosted desktop Settings artifact selection and native driver preflight; no native browser run",
+  "verdict_a": {
+    "status": "ready_for_native_verification",
+    "finding": "The hosted importer verifies the selected development artifact and passes its source SHA, run ID, and artifact ID into guest, member, and admin desktop Settings routes. The native driver refuses missing or mismatched selection before opening the browser and reports the verified build identity.",
+    "evidence": [
+      "scripts/hosted-guest-acceptance.mjs:46-80,427-433",
+      "tests/browser/settings-desktop-native-acceptance.mjs:429-452",
+      "tests/browser/desktop-artifact-identity.mjs:34-80"
+    ],
+    "native_result": "unverified"
+  },
+  "verdict_b": {
+    "status": "pass_with_bounded_test_gap",
+    "finding": "No frozen desktop source/run/artifact values or fallback remain. Preflight compares selection with the imported path, import status, receipt, tree digest, manifest version, and required ancestry. The focused test accepts two different valid identities and refuses source, run, artifact, attempt, tree, and version mismatches.",
+    "test": "node --test tests/browser/desktop-artifact-identity.test.mjs: 2 passed",
+    "minor_gap": "The focused test calls the selection helper and verifier directly; it does not execute the hosted route and spawned driver together. The route wiring was checked in source and still needs the native run."
+  },
+  "remaining_open_sibling": "tests/browser/audit-key-native-acceptance.mjs:28-30,173-183 still pins the older source prefix, run ID, and artifact ID. This pre-existing audit-key sibling remains open and is not resolved by EXT-D-0157.",
+  "next_action": "Run the admitted hosted desktop Settings native case with the newest eligible verified development artifact, retaining exact identity and terminal receipt."
+}
