@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent_source_review",
+  "reviewed_commits": [
+    {
+      "sha": "059aed3a3a5a4bd3ea8d05ce3cc2399e80de31a8",
+      "subject": "test: count anchor controls and require nonempty role census"
+    },
+    {
+      "sha": "9b9dd3148ae91c9d99a744bc84f2049387eda6d6",
+      "subject": "research: record census peer repair evidence and limits"
+    }
+  ],
+  "verdict_A_requirement_coverage": {
+    "verdict": "PARTIAL — SOURCE-READY WITH OPEN COVERAGE AND NATIVE EVIDENCE GAPS",
+    "basis": [
+      "The three inherited findings are addressed in source: Settings and tab-pane controls share a selector that includes anchors; censusCompleteness rejects empty required regions and requires the source-present Settings sections; unknown labels are HMAC-SHA-256 fingerprinted with a fresh 256-bit per-run key, with no raw unknown label or length in the report.",
+      "The repair's source tests now assert the missing OpenUrl anchor maps to EXT-F-1003-C39 without serializing its href, exercise nonempty-region requirements, and compare fingerprints made with independent keys. The repair report records seven targeted tests passing, but this review did not run tests and the report does not include a saved test log or resource journal. Treat that as unverified execution evidence, not a test failure.",
+      "Control discovery remains selector-bounded. Navigation only queries button[role=tab][title] and Settings sections only query button[aria-expanded]. A visible tab or expander outside those element/attribute shapes is omitted before unknown-label accounting and does not necessarily make the census incomplete. This leaves a path to a falsely complete control inventory.",
+      "Member/admin auth is delegated to signInSettings and its returned role/session fields are included. Guest auth is recorded as the requested role only; the census does not explicitly capture a signed-out account/token state in the guest report. The fresh owned profile supports the guest setup, but the emitted per-role actual-auth evidence is weaker than for member/admin.",
+      "Receipt checks bind imported development artifact source SHA, CI run ID, artifact ID, tree digest, extension ID, and version before reporting. The read-only source delta from CI source 00a19a14553252c7a25c6f4fc440197ae49dbaeb to reviewed HEAD is empty for src, package/config, scripts, and the native harness; this supports using that frozen artifact with the current census harness after source review. It is not a native execution result."
+    ],
+    "disposition": "The original selector, vacuous-completeness, and deterministic-hash findings are fixed. Do not treat a complete status as a full control-class census until tab/section discovery accounts for alternate interactive shapes and guest signed-out state is recorded. Native guest/member/admin reports remain required before claiming role visibility."
+  },
+  "verdict_B_quality_and_safety": {
+    "verdict": "PARTIAL — PRIVACY AND RECEIPT BOUNDARIES IMPROVED; DISCOVERY AND EVIDENCE NEED FOLLOW-THROUGH",
+    "basis": [
+      "The repair removes guessable cross-run hashes: the HMAC key is generated once per driver run, embedded only into page evaluation, and omitted from serialized output. mapObservation rejects raw unknown labels without a valid fingerprint.",
+      "Receipt/source identity checks happen before native startup. Reports use mode 0600 and the network guard aborts non-GET/HEAD/OPTIONS HTTP(S) methods on the sidepanel and extension-worker targets, recording only boundary/category counts. Direct tab navigation and Settings expansion are the only census actions; product action controls are not activated.",
+      "The request guard is intentionally limited to sidepanel and extension-worker targets, and POST/RPC aborts can include reads; both limits are disclosed in the repair report. No general browser-wide no-write guarantee is established.",
+      "The remaining selector gap also affects quality: unrecognized interactive shapes can evade both the unknown-label count and required-region checks. Source tests cover the cited anchor, empty census, and keyed fingerprint cases, but do not provide a saved execution log/resource journal in the repair report."
+    ]
+  },
+  "findings": [
+    {
+      "severity": "Important",
+      "location": "tests/browser/takeover-visible-census.mjs:237-243, 326-329",
+      "finding": "Discovery is restricted to titled button tabs and aria-expanded buttons. An interactive tab/section trigger using another semantic element or without those attributes is silently outside the census, so completeness may still be true despite an omitted region.",
+      "why_it_matters": "The requested census must make missing or unknown regions explicit; completeness cannot depend solely on the discovery selector already knowing the control's markup shape."
+    },
+    {
+      "severity": "Minor",
+      "location": "tests/browser/takeover-visible-census.mjs:438-455",
+      "finding": "Guest authentication evidence is initialized as {role: 'guest'} without an explicit signed-out identity/storage observation. Member/admin paths include fields returned by signInSettings.",
+      "why_it_matters": "A role-labeled guest report should carry observed auth state so the three role reports have comparable actual-auth evidence."
+    }
+  ],
+  "source_evidence": [
+    "tests/browser/takeover-visible-census.mjs:86-101: shared control selector includes actual anchors and common native/ARIA controls.",
+    "tests/browser/takeover-visible-census.mjs:137-144, 430: per-run random HMAC key; key is not included in report construction at lines 483-501.",
+    "tests/browser/takeover-visible-census.mjs:374-405: completeness requires navigation, Settings, each discovered tab pane, required Settings sections/content, no unmapped labels, no inaccessible regions, and no blocked requests.",
+    "tests/browser/takeover-visible-census.mjs:237-243, 326-329: tab and section discovery selectors remain constrained to button markup/attributes.",
+    "tests/browser/takeover-visible-census.mjs:418-427, 479-502: imported artifact and output identity checks bind source/run/artifact/tree/extension/version; report output is mode 0600.",
+    "tests/browser/takeover-visible-census.mjs:167-209, 458-470: write-method interception is installed on sidepanel and worker; action controls are not invoked.",
+    "tests/browser/takeover-visible-census.test.mjs:75-183: source assertions cover incomplete empty census, anchor mapping, and uncorrelatable HMACs.",
+    "scripts/hosted-guest-acceptance.mjs:433-443: hosted route passes role and imported receipt/source/run/artifact identity to the driver.",
+    "scripts/hosted-profile-route.mjs:38-75: hosted preflight requires member/admin credential fixtures for those roles."
+  ],
+  "verification": {
+    "performed": "Read-only review of the named repair diff, current census source/tests, hosted role routing/auth path, and source/config/lock/native-harness path delta from the successful CI artifact source SHA.",
+    "not_performed": [
+      "No tests, browser, build, credentials, hosted workflow, database writes, or native role observations were run.",
+      "No test output log or resource journal was independently verified; the passing counts are reported by the repair author only."
+    ]
+  },
+  "native_gaps": [
+    "Fresh receipt-bound guest, member, and admin native reports have not been run or reviewed; source readiness is not native proof.",
+    "Record explicit guest signed-out state in its report before treating guest auth evidence as equivalent to member/admin.",
+    "A mapped control proves visible label presence only; behavior, permissions, persistence, and backend access remain outside this census."
+  ]
+}
