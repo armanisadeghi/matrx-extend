@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "reviewed_at": "2026-10-07",
+  "role": "fresh independent narrow checkpoint peer",
+  "scope": [
+    "62ab2f5f exact T46 Settings evidence correction",
+    "0adb8b9a D157 closure and T43/T46/T49 inventory integration",
+    "docs/stabilization/COORDINATOR.md current worker guidance"
+  ],
+  "verdict_A_bounded_native_claim_accuracy": "pass: Settings run 37696455741 remains unverified despite 8/8 driver assertions because its exact guest RESOURCE_FINAL_DECISION is invalid, resourceInvalid=true, exitCode=3. Desktop run 37696764772 has valid guest/browser/package final resource decisions and supports only partial current frozen-artifact T43/T46/T49 product results. D157 closure is justified solely for its original Desktop selected-artifact startup seam; audit-key native selection remains unverified.",
+  "verdict_B_evidence_and_doctrine_accuracy": "pass: The corrected Settings report preserves the previously overlooked nested exact-run guest journal and two setup screenshots, explicitly excludes stale 371053 journals, and gives the invalid run no acceptance credit. Inventory keeps historical accepted results in result_history and the invalid Settings attempt in T46 attempt_history. COORDINATOR names picker_channels_native as active lane A owner and B as free; its 'all known prior lane attempts terminal' statement is limited to the Settings dispatch check, not all current workers.",
+  "checks": {
+    "settings_exact_files": "Raw driver JSON, exact guest resource journal, and both screenshot SHA-256 values match the corrected report; all four files exist on disk. Screenshots show setup surfaces, not final T46 control state.",
+    "settings_resource": "run 37696455741 guest journal ends RESOURCE_FINAL_DECISION invalid/resourceInvalid=true/exitCode=3 after CPU pending; childExitCode=0 does not override the final decision.",
+    "desktop_resource": "run 37696764772 guest, browser, and package journals each end RESOURCE_FINAL_DECISION valid/resourceInvalid=false/exitCode=0.",
+    "d157": "Defect state and transition history expressly limit closed to original Desktop selection; original_repro_retest cites 37696764772 and next_action preserves audit-key native unknown.",
+    "inventory": "Current guest results for T43, T46, and T49 are partial on frozen source 4801dbd72c99d0ff157c16cb51926587bdf95618, run 37696764772. T43 lacks current transport-sensitive visibility/HTTP Forget confirmation; T46 lacks current boundary/blank/invalid-range/rediscovery coverage; T49 lacks current Cancel preservation. Earlier build-specific passes and partials remain in history without transfer to the current result. Invalid Settings 37696455741 appears only as an unverified T46 attempt."
+  },
+  "limits": "Read-only file and journal review. No native launch, build, current-main product test, audit-key native test, or Store check was performed."
+}
