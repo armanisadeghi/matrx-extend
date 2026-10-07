@@ -7,7 +7,7 @@
   "surface": "Testing infrastructure / role-visibility census",
   "auth_mode": "guest",
   "state": "in-fix",
-  "owner": "root/guest_census_provenance_decomposed",
+  "owner": "root/guest_census_provenance_peer",
   "priority": "P1",
   "severity": "S3",
   "user_impact": "Incomplete control accounting prevents trustworthy coverage signoff. This is a census harness defect; no product behavior failure is established.",
@@ -26,11 +26,14 @@
     ".research/guest-census-original-retest-20261007.json",
     ".research/guest-census-mapping-reconcile-20261007.json",
     ".research/guest-census-provenance-repair-20261007.json",
-    "docs/stabilization/resource-journals/census-provenance-red-20261007-02.jsonl"
+    "docs/stabilization/resource-journals/census-provenance-red-20261007-02.jsonl",
+    ".research/guest-census-provenance-decomposed-20261007.json",
+    ".research/guest-census-provenance-decomposed-red-20261007-01.stdout",
+    ".research/guest-census-provenance-decomposed-green-20261007-01.stdout"
   ],
   "verification": {
     "native": "Original incomplete census observed; repaired native census unverified.",
-    "source": "Prior worker reports24pass/1causal fail in admitted red02; original stdout was not saved. Do not grant raw-output verification credit. Fresh seat must save reproducible causal RED/GREEN stdout and journals.",
+    "source": "Fresh causal RED24pass/1fail specifically proves structural parent makes Settings trigger unsafe; corrected suite25/25GREEN under valid resource admission, exact stdout+journals committed in f2a53199. Fresh independent review pending. Missing historical predecessor stdout carries no proof credit.",
     "independent_review": "pending",
     "product_behavior": "No product failure or pass established."
   },
@@ -55,5 +58,6 @@
     }
   ],
   "closure_requirement": "Fresh independent source review and guarded exact-artifact native census with trustworthy classification/provenance and original ambiguity no longer reproducing. Unknown controls remain incomplete until mapped from evidence; no member/admin or broader product health inferred.",
-  "next_action": "Finish bounded fresh source repair and independent review; then rerun original exact-artifact census when required CI/artifact access and resource admission are available."
+  "next_action": "Fresh source/adversarial peer owns only heavy/source test slot; accept or repair its findings before guarded original-artifact native census. Preserve all unmapped/unknown controls as incomplete.",
+  "fix_shas": ["f2a53199"]
 }
