@@ -1,0 +1,20 @@
+{
+  "scope": "Route the existing guest Desktop Settings remaining UI case through hosted acceptance without changing the native driver or inventory.",
+  "prior_behavior": "The native driver reads MATRX_DESKTOP_SETTINGS_CASE with a full default; hosted acceptance passed artifact identity and guest mode but omitted that case variable.",
+  "selected_invocation": {
+    "workflow": "Hosted guest side-panel acceptance",
+    "acceptance_case": "desktop-settings-guest",
+    "desktop_settings_case": "remaining",
+    "artifact_inputs": "development_run_id and development_artifact_id from one successful CI main-push run",
+    "credential": "guest; no member or admin credential"
+  },
+  "routing": "Workflow admission accepts only full or remaining; remaining requires desktop-settings-guest. The hosted wrapper repeats this check in preflight and passes MATRX_DESKTOP_SETTINGS_CASE to the existing native driver alongside the importer-selected directory, receipt, source SHA, run ID, artifact ID, and guest role. Hosted output logs the selected case; the driver report also records case and role.",
+  "verification": [
+    "node --test scripts/hosted-desktop-settings-route.test.mjs",
+    "node --check scripts/hosted-guest-acceptance.mjs",
+    "node --check scripts/hosted-desktop-settings-route.mjs",
+    "pnpm exec biome check scripts/hosted-desktop-settings-route.mjs scripts/hosted-desktop-settings-route.test.mjs scripts/hosted-guest-acceptance.mjs",
+    "Ruby YAML parse of .github/workflows/hosted-guest-acceptance.yml"
+  ],
+  "remaining": "No hosted native run, build, release, or inventory mutation in this routing lane. EXT-F-1003 T43 pairingForget and T49 ResetCancel remain unverified until the selected hosted run's real UI receipt is reviewed."
+}

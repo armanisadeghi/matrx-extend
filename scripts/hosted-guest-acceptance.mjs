@@ -17,6 +17,7 @@ import {
   selectOrImportNativeTarget,
   verifyImportedNativeEvidence,
 } from './current-test-artifact.mjs';
+import { hostedDesktopSettingsCase } from './hosted-desktop-settings-route.mjs';
 import { lockedHostedTypeScript } from './hosted-driver-dependencies.mjs';
 import {
   hostedProfileRoute,
@@ -271,6 +272,12 @@ async function preparePublishedStoreCrx(outputDir) {
 async function run(prepared, artifactMode) {
   const { extensionDir, relocatedReceipt, kind } = prepared;
   const acceptanceCase = process.env.MATRX_HOSTED_ACCEPTANCE_CASE ?? 'guest-chat';
+  const desktopCase = hostedDesktopSettingsCase(
+    acceptanceCase,
+    process.env.MATRX_HOSTED_DESKTOP_SETTINGS_CASE,
+  );
+  if (acceptanceCase.startsWith('desktop-settings-'))
+    console.log(`HOSTED_DESKTOP_SETTINGS_CASE ${desktopCase}`);
   assert.ok(
     [
       'guest-chat',
@@ -433,6 +440,7 @@ async function run(prepared, artifactMode) {
           MATRX_DESKTOP_SETTINGS_RECEIPT: relocatedReceipt,
           ...desktopArtifactSelectionEnv(prepared),
           MATRX_DESKTOP_SETTINGS_AUTH_MODE: acceptanceCase.slice('desktop-settings-'.length),
+          MATRX_DESKTOP_SETTINGS_CASE: desktopCase,
         }
       : {}),
     ...(acceptanceCase.startsWith('visibility-census-')
@@ -561,6 +569,10 @@ if (process.env.MATRX_HOSTED_ACCEPTANCE_CASE?.startsWith('profile-'))
   throw new Error('hosted_profile_durable_recovery_unavailable');
 if (phase === 'preflight') {
   assert.equal(process.env.GITHUB_ACTIONS, 'true', 'hosted_preflight_runner_required');
+  hostedDesktopSettingsCase(
+    process.env.MATRX_HOSTED_ACCEPTANCE_CASE,
+    process.env.MATRX_HOSTED_DESKTOP_SETTINGS_CASE,
+  );
   if (process.env.MATRX_HOSTED_ACCEPTANCE_CASE?.startsWith('guest-scrape'))
     scrapeNativeSelection(process.env);
   requireHostedAcceptanceCredential(process.env.MATRX_HOSTED_ACCEPTANCE_CASE, process.env);

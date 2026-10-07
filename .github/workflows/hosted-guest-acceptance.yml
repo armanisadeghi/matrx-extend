@@ -65,6 +65,14 @@ on:
           - profile-admin
           - profile-member
           - startup-resource-diagnostic
+      desktop_settings_case:
+        description: Desktop Settings guest path; remaining covers pair-code forget and reset cancel
+        required: false
+        default: full
+        type: choice
+        options:
+          - full
+          - remaining
       d47_response_order:
         description: D47 held HTTP response order for showcase-d47-admin
         required: false
@@ -128,6 +136,7 @@ jobs:
           ACCEPTANCE_LANE: ${{ inputs.acceptance_lane }}
           ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
           SCRAPE_AUTH_MODE: ${{ inputs.scrape_auth_mode }}
+          DESKTOP_SETTINGS_CASE: ${{ inputs.desktop_settings_case }}
         run: |
           # BEGIN hosted lane admission
           [[ "$ACCEPTANCE_LANE" == A || "$ACCEPTANCE_LANE" == B ]] || { echo 'Unknown hosted acceptance lane.' >&2; exit 1; }
@@ -135,6 +144,10 @@ jobs:
             guest-chat|guest-scrape|guest-scrape-development|settings-controls|settings-persistence|settings-persistence-admin|settings-persistence-member|desktop-settings-guest|desktop-settings-member|desktop-settings-admin|visibility-census-guest|visibility-census-member|visibility-census-admin|audit-key-admin|member-chat|prepare-stale-results|showcase-picker-admin|showcase-stale-admin|showcase-d47-admin|showcase-d47-public-admin|profile-admin|profile-member|startup-resource-diagnostic) ;;
             *) echo 'Unknown hosted acceptance case.' >&2; exit 1 ;;
           esac
+          [[ "$DESKTOP_SETTINGS_CASE" == full || "$DESKTOP_SETTINGS_CASE" == remaining ]] || { echo 'Unknown Desktop Settings case.' >&2; exit 1; }
+          if [[ "$DESKTOP_SETTINGS_CASE" == remaining ]]; then
+            [[ "$ACCEPTANCE_CASE" == desktop-settings-guest ]] || { echo 'Remaining Desktop Settings case requires guest.' >&2; exit 1; }
+          fi
           if [[ "$ACCEPTANCE_LANE" == B ]]; then
             case "$ACCEPTANCE_CASE" in
               *-admin|*-member|member-chat|prepare-stale-results|showcase-*)
@@ -242,6 +255,7 @@ jobs:
         env:
           MATRX_HOSTED_PHASE: preflight
           MATRX_HOSTED_ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
+          MATRX_HOSTED_DESKTOP_SETTINGS_CASE: ${{ inputs.desktop_settings_case }}
           MATRX_HOSTED_PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx == true && '0.2.205' || '' }}
           MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE: ${{ inputs.scrape_diagnostic_cpu_rate }}
           MATRX_SCRAPE_AUTH_MODE: ${{ inputs.scrape_auth_mode }}
@@ -270,6 +284,7 @@ jobs:
         env:
           MATRX_HOSTED_PHASE: package
           MATRX_HOSTED_ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
+          MATRX_HOSTED_DESKTOP_SETTINGS_CASE: ${{ inputs.desktop_settings_case }}
           MATRX_HOSTED_BROWSER_RUNTIME_DIR: ${{ runner.temp }}/browser-runtime
           PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/playwright-browsers
         run: |
@@ -305,6 +320,7 @@ jobs:
           MATRX_HOSTED_DEV_ARTIFACT_ID: ${{ inputs.development_artifact_id }}
           MATRX_HOSTED_PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx == true && '0.2.205' || '' }}
           MATRX_HOSTED_ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
+          MATRX_HOSTED_DESKTOP_SETTINGS_CASE: ${{ inputs.desktop_settings_case }}
           MATRX_D47_RESPONSE_ORDER: ${{ inputs.d47_response_order }}
           MATRX_D47_PUBLIC_RACE_PREFLIGHT: ${{ inputs.d47_public_race_preflight == true && '1' || '0' }}
           MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE: ${{ inputs.scrape_diagnostic_cpu_rate }}
