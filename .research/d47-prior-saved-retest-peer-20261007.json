@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "scope": "Fresh independent native receipt and retained-evidence review of one prior-saved D47 retry; no native/browser/build/test/database/secret work, source edit, or child agent",
+  "reviewed_run": 37600370555,
+  "reviewed_executor_ledger": ".research/d47-prior-saved-native-retest-20261007.json",
+  "private_receipt_sha256": "8c58916e30f7a5b4885eb91091fc6e6c6bf7a2170b7ea10ebb35a3f96ec760ad",
+  "artifact": {
+    "source": "c53c6e0aa592a805f64855f235ca4a39ac493837",
+    "version": "0.2.354",
+    "ci_run": 37596432707,
+    "artifact_id": 11470764778,
+    "tree_sha256": "98e9a17853419f826f920e89ee8ec1b7985ce5f1d8f36a730fe19d6e5411617a",
+    "workflow_source": "f52c1f74149746104990468a47b0863118da7ce1",
+    "boundary": "The native receipt names the frozen imported app tree. The reviewed QA source hashes match the f52c1f74 navigation-order peer and the current driver/helper/test bytes; this review does not infer acceptance on a newer app build."
+  },
+  "verdict_A_product_and_spec": {
+    "verdict": "PASS_BOUNDED_PRIOR_SAVED_CURRENT_RESULT; FULL_D47_T57_UNVERIFIED",
+    "observed": [
+      "The held first saved-run request arrived at fixture order 1 before the first response finished at order 2; the first saved run reached an exact idle current-only terminal result with positive trace.",
+      "Second response finished at target_requests=3 while the first saved-run request was pending. The second packet had a distinct binding and document context, exact second body identity, and positive navigation trace: first packet 6, transition commit 9, new context 10, handshake 11, second packet 12.",
+      "Before release, the second saved result and page showed the exact second synthetic value, current-only preview, idle Run state, no error, and no old row. The same exact terminal state and page result remained after release.",
+      "Held first saved-run release returned HTTP 200 and prior_saved_finished=true with prior_saved_aborted=false. The initial OLD document request separately had old_response_aborted=true; these are different request lifecycles.",
+      "No delayed old binding packet or callback was observed. The supported isolation label is bounded_server_finish_callback_not_observed, not delivered-old-callback rejection. The owned recipe was removed."
+    ],
+    "outstanding_full_case": [
+      "Observe actual delayed old binding delivery and rejection, or retain the architectural-exclusion ruling with its explicit callback limitation; this run does not prove callback delivery or cancellation behavior.",
+      "Complete T57 on a real public site with both response orders, overlapping request identity and higher old local sequence, stale-only refusal, initial-load capture or honest retrigger guidance, and current-build provenance and cleanup. The retained fixture run cannot alone promote the whole case."
+    ]
+  },
+  "verdict_B_quality_and_evidence": {
+    "verdict": "PASS_FOR_BOUNDED_NATIVE_RECEIPT_AND_CLAIM_DISCIPLINE",
+    "source_comparison": "The driver calls assessD47PriorSavedTransition, whose commit constraint is first packet < same-tab/frame current-fixture commit < second packet, with distinct context/binding, matching handshake and exact second request/body. This matches the f52c1f74 peer-reviewed repair and accepts the observed commit-before-new-context order.",
+    "resource_evidence": "Current-run package, browser and guest journals each record RESOURCE_ADMITTED, RESOURCE_JOB_EXIT childExitCode 0 and RESOURCE_FINAL_DECISION valid with resourceInvalid false. Their committed hashes match the executor ledger; older 37105304739 journals in the downloaded artifact were excluded.",
+    "provenance_and_cleanup": "Receipt hash, frozen app identity, current QA hashes, exact terminal observations, owned recipe removal and terminal resource journals agree with the executor ledger. The root separately verified both temporary secret names absent; this review did not read secret values.",
+    "method_limit": "Read-only inspection of the retained native receipt, exact source, public ledger and resource journals. I did not rerun native behavior or tests, and workflow success alone is not treated as T57 acceptance."
+  },
+  "findings": []
+}
