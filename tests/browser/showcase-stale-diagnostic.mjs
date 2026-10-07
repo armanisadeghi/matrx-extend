@@ -48,6 +48,9 @@ const FLAGS = new Set([
   'install_held',
   'context_start_distinct',
   'context_teardown_distinct',
+  'context_start_world_matched',
+  'context_start_world_start_distinct',
+  'context_start_world_teardown_distinct',
 ]);
 const COUNTS = new Set([
   'overlay_count',

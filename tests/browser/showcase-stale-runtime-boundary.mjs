@@ -328,18 +328,33 @@ export async function reinjectShowcasePicker(panel, tabId, documentId, sessionId
     expression: `(async () => {
       const target = { tabId: ${tabId}, documentIds: [${JSON.stringify(documentId)}] };
       await chrome.scripting.executeScript({ target, files: ['content-scripts/list-picker.js'] });
-      await chrome.scripting.executeScript({ target, func: (id) => {
+      const started = await chrome.scripting.executeScript({ target, func: (id) => {
+        const prior = globalThis.__showcaseD42Boundary?.pickerContext;
         const start = window.__matrxListPickerStart;
         if (typeof start !== 'function') throw new Error('picker start hook missing');
+        const same_world_as_observer = !!prior;
+        const start_distinct_in_start_world = !!prior && start !== prior.start;
         start(id, null);
+        return {
+          same_world_as_observer,
+          start_distinct_in_start_world,
+          teardown_distinct_in_start_world: !!prior &&
+            window.__matrxListPickerTeardown !== prior.teardown,
+        };
       }, args: [${JSON.stringify(sessionId)}] });
-      return true;
+      return started?.[0]?.result ?? null;
     })()`,
     awaitPromise: true,
     returnByValue: true,
   });
   assert.ok(!response.exceptionDetails, 'showcase_reinject_operation_failed');
-  assert.equal(response.result?.value, true, 'showcase_reinject_unverified');
+  const observation = response.result?.value;
+  assert.equal(
+    typeof observation?.same_world_as_observer,
+    'boolean',
+    'showcase_reinject_unverified',
+  );
+  return observation;
 }
 
 export async function observeShowcaseRelay(panel) {

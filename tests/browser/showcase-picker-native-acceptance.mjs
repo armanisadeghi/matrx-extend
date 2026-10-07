@@ -384,6 +384,7 @@ async function runLifecycleReinjection({ page, panel, boundary, resourceAction, 
   const diagnostic = createShowcaseStaleDiagnostic('reinject');
   report.lifecycle_diagnostic = diagnostic;
   let installBoundary = null;
+  let startWorld = null;
   const sample = async () => {
     const [state, overlay, relays, install, listeners, context] = await Promise.allSettled([
       panelState(panel),
@@ -415,6 +416,11 @@ async function runLifecycleReinjection({ page, panel, boundary, resourceAction, 
           context_start_distinct: context.value.start_distinct,
           context_teardown_distinct: context.value.teardown_distinct,
         }),
+      ...(startWorld && {
+        context_start_world_matched: startWorld.same_world_as_observer,
+        context_start_world_start_distinct: startWorld.start_distinct_in_start_world,
+        context_start_world_teardown_distinct: startWorld.teardown_distinct_in_start_world,
+      }),
     };
   };
   const step = (target, action) =>
@@ -449,10 +455,21 @@ async function runLifecycleReinjection({ page, panel, boundary, resourceAction, 
   await step('lifecycle_B_start', () => boundary.capturePickerContext());
   const session = before.starts[0];
   await step('lifecycle_B_start', () => assert.match(session.session_id, /^[0-9a-f-]{36}$/i));
-  await step('lifecycle_reinject', () =>
+  startWorld = await step('lifecycle_reinject', () =>
     reinjectShowcasePicker(panel, session.tab_id, session.document_id, session.session_id),
   );
   await step('lifecycle_reinject', async () => {
+    assert.equal(startWorld.same_world_as_observer, true, 'showcase_reinject_changed_world');
+    assert.equal(
+      startWorld.start_distinct_in_start_world,
+      true,
+      'showcase_reinject_start_not_replaced',
+    );
+    assert.equal(
+      startWorld.teardown_distinct_in_start_world,
+      true,
+      'showcase_reinject_teardown_not_replaced',
+    );
     const after = await installBoundary.snapshot();
     assert.equal(after.observed.length, 2, 'showcase_reinject_second_context_missing');
     assert.equal(after.starts.length, 2, 'showcase_reinject_second_start_missing');

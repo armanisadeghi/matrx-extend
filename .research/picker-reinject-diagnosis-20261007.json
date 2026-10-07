@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "task_id": "picker-reinject-diagnosis-20261007",
+  "defect_id": "EXT-D-0042",
+  "scope": "Diagnose the single native reinjection failure from run 37700751092; instrument the next acceptance attempt without changing picker production behavior, running native work, or claiming D42 closure.",
+  "verdict": "native_failure_real_cause_not_yet_discriminated",
+  "frozen_product": {
+    "ci_run_id": 37698216289,
+    "artifact_id": 11516342905,
+    "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "version": "0.2.391",
+    "tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+    "inspected_file": "/tmp/audit-selected-native-ci-37698216289/.output/chrome-mv3/content-scripts/list-picker.js",
+    "picker_file_sha256": "f1c01974128704dd6355ef7843187502e03df845e3b28e0d342b9809b7da6b3e"
+  },
+  "native_observation": {
+    "receipt": ".research/picker-lifecycle-native-evidence/run37700751092-curated/showcase-picker-native-result.json",
+    "failed_target": "lifecycle_reinject",
+    "start_distinct": false,
+    "teardown_distinct": false,
+    "install_calls": 2,
+    "overlay_count": 1,
+    "tracked_click_listeners": 1,
+    "tracked_hover_listeners": 1,
+    "resource_decision": "valid admission; child_failed",
+    "interpretation": "The install counter counts intercepted chrome.scripting.executeScript calls, not evaluations in the content world. The pinned CDP observer saw unchanged hooks. The run stopped before post-reinjection detection, extraction, listener cleanup, or ordinary page clicking."
+  },
+  "causal_checks": [
+    {
+      "hypothesis": "WXT intentionally keeps the same exported function objects on re-execution in one isolated world",
+      "prediction": "Evaluating the frozen list-picker.js twice in the same world leaves __matrxListPickerStart unchanged",
+      "check": "Node vm evaluated the exact frozen file twice in one context with the required Chrome and document APIs",
+      "result": "rejected: the second start function was distinct; the WXT wrapper runs main unconditionally and only invalidates its previous wrapper listener"
+    },
+    {
+      "hypothesis": "The second Chrome file call did not evaluate in the pinned content world",
+      "prediction": "The executeScript start callback sees the pinned world's marker but the old start function",
+      "check": "The prior native runner counted the call but did not inspect the start callback's world; the revised runner records this observation directly",
+      "result": "open pending native run"
+    },
+    {
+      "hypothesis": "The second install/start executes in a different isolated world than the pinned CDP observer",
+      "prediction": "The executeScript start callback cannot see the pinned observer marker, even though the pinned CDP context continues to report old hooks",
+      "check": "The revised runner records same_world_as_observer from the actual start callback and preserves the pinned CDP comparison",
+      "result": "open pending native run"
+    }
+  ],
+  "repair": {
+    "files": [
+      "tests/browser/showcase-stale-runtime-boundary.mjs",
+      "tests/browser/showcase-picker-native-acceptance.mjs",
+      "tests/browser/showcase-stale-diagnostic.mjs"
+    ],
+    "effect": "The real executeScript start callback returns bounded same-world and function-identity observations. Acceptance still requires one world, distinct start and teardown functions, one active click/hover listener, a real detection/extraction, and ordinary clicks after cleanup. The receipt now distinguishes a world mismatch from a missing second evaluation without inventing events or weakening the pass condition."
+  },
+  "verification": {
+    "focused_node_tests": "node --test tests/browser/showcase-stale-runtime-boundary.test.mjs tests/browser/showcase-stale-diagnostic.test.mjs: 8 passed",
+    "native_rerun": "not run in this diagnosis lane",
+    "product_fix": "none; native evidence does not yet distinguish a Chrome evaluation failure from a test observer/world mismatch"
+  },
+  "remaining": "D42 remains in-fix. A fresh native run of this diagnostic guard must identify the execution world and then exercise the full reinjection detection, extraction, listener cleanup, and ordinary click sequence. Signed-in nonadmin gating remains a separate open criterion."
+}
