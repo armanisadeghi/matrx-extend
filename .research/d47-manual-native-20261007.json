@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "task": "D47 single native manual-prior acceptance run",
+  "run": {
+    "id": 37588499593,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37588499593",
+    "workflow": "Hosted guest side-panel acceptance",
+    "runner": "macos-15 ARM64",
+    "workflow_ref": "main",
+    "workflow_source_sha": "736d09f037be69fa7b8482faaf066908c4b467dc",
+    "conclusion": "success",
+    "case": "showcase-d47-admin",
+    "response_order": "manual-prior"
+  },
+  "tested_app_artifact": {
+    "ci_run_id": 37587070036,
+    "artifact_id": 11466709788,
+    "app_source_sha": "82f3c4404f9250676d896035a0bb875e80d2c15b",
+    "app_tree_sha256": "8a01a24694dd8ffcfaacc0ad7b53cf2e52a136a78181d3f77a40f228792152ed",
+    "version": "0.2.350"
+  },
+  "outcome": {
+    "receipt_status": "observed_bounded",
+    "case_id": "EXT-F-1012-T57",
+    "native_stage": "exercise_panel",
+    "auth_stage": "admin_extension_auth_completion",
+    "verdicts": {
+      "current_saved_replay": "pass",
+      "delayed_old_binding": "architecturally_excluded_observed",
+      "cancellation": "unverified",
+      "manual_prior_isolation": "observed_bounded_server_finish"
+    },
+    "current_document_trace": {
+      "positive": true,
+      "packet_order": 6,
+      "context_order": 4,
+      "handshake_order": 5
+    },
+    "manual_prior": {
+      "pending_before_replay": true,
+      "request_row_count": 1,
+      "response_release_http_status": 200,
+      "response_lifecycle_verdict": "finished_after_current",
+      "server_finished": true,
+      "aborted": false
+    },
+    "saved_result": {
+      "page_phase_current": true,
+      "page_result_current": true,
+      "panel_current": true,
+      "panel_old": false
+    },
+    "exact_recipe_terminal": {
+      "exact_recipe": true,
+      "current_row": true,
+      "old_row": false,
+      "running": false,
+      "error_present": false,
+      "preview_status": "current_only"
+    },
+    "owned_recipe_cleanup": "removed"
+  },
+  "limits": [
+    "The 200 response finished at the server after the current-document positive trace; this does not establish browser callback delivery or rejection.",
+    "The run labels the delayed old binding as architecturally excluded; no old callback was observed.",
+    "Cancellation is unverified. Full D47/T57 and prior saved-run binding isolation remain unverified."
+  ],
+  "resource_journals": {
+    "docs/stabilization/resource-journals/d47-manual-native-37588499593-package.jsonl": "64edf7465152a8221614b007007b75477829a362611e15831786bb698f27e723",
+    "docs/stabilization/resource-journals/d47-manual-native-37588499593-browser.jsonl": "fce87a33e20e2e2d2d1da2a5b83bcb2bdd171ba16c0aefc62ba7a3281c4c723e",
+    "docs/stabilization/resource-journals/d47-manual-native-37588499593-guest.jsonl": "d17b26477b7b440826aa06243d03a2a237bc741031e8913fb9c4ac6b76ea165d"
+  },
+  "evidence_sha256": {
+    "raw_receipt": "9e871b4242ad56ce22bfcf464a32eb325c9a2e63e1d67d62fa463764dba65778",
+    "workflow_stdout_log": "4ff395457bc2e807ebecede4939b82fd2e6f8dd73e29dc36d3fe1f798a435673"
+  },
+  "reviewed_source_sha256_at_dispatch": {
+    "tests/browser/showcase-d47-document-lifecycle.mjs": "c0f47bb9f1df407a0b1131f243f1e9c886404521795befa6c3eec841cc0fc24f",
+    "tests/browser/showcase-d47-driver-evidence.mjs": "593601023c0556f51084387698f91765d1733fd76763c2e2067acb4588be9406",
+    "tests/browser/showcase-d47-driver-evidence.test.mjs": "25bdeb5f644280baa6b04f19e00e6ecdafa6172bf5639cceb7c9a4aded63e310",
+    "tests/fixtures/showcase-replay/README.md": "9acd7ec65ffb60ad098bdedca3aef51525a853bba8ff4f6230625ec223bb0eca",
+    "tests/fixtures/showcase-replay/serve.mjs": "0218784141fdb5889b24dc6d2e63d3bd3e960f5d1a095d563b5dbccc94c5844d",
+    "tests/unit/showcase-d47-fixture.test.ts": "84cc9d2e88027dded9fb919995e9887d3a3fb7b305fc42c010fc71d72e6d697b",
+    "scripts/hosted-showcase-route.mjs": "3a7de42fc3eb087f33aa847ca797292daf30c400db2b5358bf627d9798721e77",
+    "scripts/hosted-showcase-route.test.mjs": "fb15dda9bfcf87f6d0dea17da92a32dc8464a0363782331cddd078bc159116fd",
+    ".github/workflows/hosted-guest-acceptance.yml": "7d33ed445c2e3cbceeabb623c2e86cfc10c501a0f16b972ec401a09b416584df"
+  },
+  "private_raw_evidence": {
+    "directory": ".research/d47-manual-native-20261007/private (mode 0700)",
+    "receipt": ".research/d47-manual-native-20261007/private/_temp/showcase-d47-native-37588499593-1.json",
+    "stdout": ".research/d47-manual-native-20261007/private/native-stdout-37588499593.log",
+    "retained_artifact_screenshots": true
+  },
+  "secrets": {
+    "temporary_actions_secrets_removed": true,
+    "absence_verified_by_name_only": true,
+    "local_staging_files_removed": true
+  }
+}
