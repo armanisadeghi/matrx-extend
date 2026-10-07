@@ -26,7 +26,7 @@
     "artifact_expired": false
   },
   "dispatch": {
-    "status": "not_created",
+    "status": "completed",
     "workflow": ".github/workflows/hosted-guest-acceptance.yml",
     "requested_inputs": {
       "acceptance_lane": "A",
@@ -35,7 +35,7 @@
       "development_run_id": 37666263406,
       "development_artifact_id": 11503412219
     },
-    "attempts": [
+    "historical_ref_errors": [
       {
         "ref": "7de49783f53c92ef6ff6883f77fbb18ee793741a",
         "result": "GitHub HTTP 422: No ref found"
@@ -45,7 +45,20 @@
         "result": "GitHub HTTP 422: No ref found"
       }
     ],
-    "stop_reason": "Two dispatch environment/ref failures reached the lane handoff limit. No third attempt was made.",
+    "successful_branch_dispatch": {
+      "ref": "main",
+      "run_id": 37671048453,
+      "workflow_source_sha": "0f4d96e203a6ceb48774fa999c6984df50ff5b44",
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37671048453",
+      "terminal_status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-10-07T18:59:36Z",
+      "completed_at": "2026-10-07T19:06:00Z",
+      "failure_step": "Exercise the selected Chrome side-panel case",
+      "workflow_output_artifact_id": 11505327812,
+      "workflow_output_artifact_sha256": "407d0ef415ba9bad07dbfe89e0a73d366e15a14a46b077d5991e1088e70151b7"
+    },
+    "ref_resolution": "The reviewed commit hashes were rejected because workflow_dispatch requires a branch ref here. Root authorized one bounded dispatch using --ref main; no additional dispatch was made.",
     "pre_dispatch_active_runs": [
       {
         "id": 37670082995,
@@ -54,46 +67,119 @@
         "status": "in_progress",
         "note": "Unrelated CI push run; it was not waited on. No in-progress hosted workflow-dispatch run appeared in the repository-wide snapshot."
       }
-    ]
+    ],
+    "same_lane_recheck_before_successful_dispatch": {
+      "active_run": 37670744036,
+      "lane": "B",
+      "status": "in_progress",
+      "note": "The only hosted acceptance run observed was lane B; lane A had no active run before the successful dispatch."
+    }
   },
   "product_result": {
-    "status": "unverified_no_run",
-    "actual_behavior_assertions": [],
+    "status": "unverified_invalid_resource",
+    "actual_behavior_assertions": [
+      "T22: Guest Settings omitted Advanced agent capabilities and admin controls in the warm panel and after reload.",
+      "T37: Deep clean showed its coming-soon hint, toggled, persisted after reload, and was restored to the original off state.",
+      "T46: Valid port 49196 saved and persisted; real worker rediscovery entered and reached the post-probe availability broadcast after Save; invalid 65536 showed the range error while retaining 49196; blank cleared both saved override and stale error and remained clear after reload.",
+      "T70: Chrome identity/version/extension ID matched runtime and manifest; password APIs and update API were present; the UI displayed Available; a real check returned the no-update result; identity/readiness remained current after reload."
+    ],
     "case_results": [
       {
         "id": "EXT-F-1003-T22",
-        "status": "unverified",
-        "reason": "No hosted browser run was created."
+        "status": "unverified_invalid_resource",
+        "observed_runner_assertions": "pass",
+        "reason": "Warm and reload guest visibility assertions passed, but the guest resource journal ended invalid, so native acceptance remains unverified."
       },
       {
         "id": "EXT-F-1003-T37",
-        "status": "unverified",
-        "reason": "No hosted browser run was created."
+        "status": "unverified_invalid_resource",
+        "observed_runner_assertions": "pass",
+        "reason": "Coming-soon hint, state change, reload persistence, and restoration assertions passed, but the guest resource journal ended invalid, so native acceptance remains unverified."
       },
       {
         "id": "EXT-F-1003-T46",
-        "status": "unverified",
-        "reason": "No hosted browser run was created."
+        "status": "unverified_invalid_resource",
+        "observed_runner_assertions": "pass_for_exercised_assertions",
+        "reason": "Assertions passed for valid port 49196 and save-bounded real rediscovery, invalid 65536, blank clear, and reload persistence. Full inventory acceptance remains unverified because the resource journal ended invalid, boundary ports 1 and 65535 were not exercised, and no healthy desktop engine was present."
       },
       {
         "id": "EXT-F-1003-T70",
-        "status": "unverified",
-        "reason": "No hosted browser run was created."
+        "status": "unverified_invalid_resource",
+        "runner_status": "unverified",
+        "reason": "Identity, available API label, real no-update result, and reload state assertions passed. API-unavailable, update-available, throttled, error, and update-API-unavailable branches remain unverified. The inventory wording says Ready while source and observed UI say Available; this is recorded as wording drift with no demonstrated user impact."
       }
     ],
     "product_defects": [],
-    "run_id": null,
-    "terminal_state": null,
-    "extension_version": null,
-    "chrome_version": null,
-    "receipt": null,
-    "resource_journals": [],
-    "screenshots": [],
-    "journal_note": "No hosted job was created, so no run receipt, journals, screenshots, or three current journals exist for inspection."
+    "expectation_source_wording_mismatch": {
+      "case_id": "EXT-F-1003-T70",
+      "inventory_wording": "Supported password-flow APIs show Ready.",
+      "source_and_observation": "SettingsView renders Available when the password APIs exist; the native report observed Available in warm and reload states.",
+      "interpretation": "Semantically equivalent wording; no user-impact evidence or product defect found."
+    },
+    "run_id": 37671048453,
+    "terminal_state": "completed/failure",
+    "overall_failure_cause": "The native report was unverified because T70 has unobserved branches, and the guest resource journal ended resourceInvalid=true/exitCode=3 after RESOURCE_CPU_PENDING with MTLCompilerServi observed at 90.4% CPU. The invalid guest journal makes all new native acceptance results unverified, even where individual runner assertions were true. No product failure is attributed to this resource event.",
+    "runner_label": "macos-15",
+    "runner_architecture": "ARM64",
+    "extension_version": "0.2.385",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "chrome_version": "141.0.7390.37 (Playwright Chromium build v1194)",
+    "source_sha": "87f6649b4874492a1f8af59cd8703eff0e06424c",
+    "receipt": {
+      "ci_run_id": 37666263406,
+      "ci_artifact_id": 11503412219,
+      "kind": "local_dev_unpacked",
+      "tree_sha256": "0073d51422e2a5dcb66c31682cc91c13f105d46c8a242f0a50eb5d0303cdadac",
+      "verified": true,
+      "publish_state": "not_published",
+      "original_receipt_file": ".research/parallel-settings-product-20261007-ci-build-receipt.json",
+      "original_receipt_sha256": "0b54d1fd7c9717fed92ae7c5f23ebb36264cd7ec238a018067e27760b34b9ae0"
+    },
+    "resource_journals": [
+      {
+        "file": ".research/parallel-settings-product-20261007-hosted-package-37671048453-1.jsonl",
+        "resource_invalid": false,
+        "exit_code": 0,
+        "sha256": "836e260bce0a7a784a71e0ea2a75c6de061fd9353036a7a6ddd764d16235f1b0"
+      },
+      {
+        "file": ".research/parallel-settings-product-20261007-hosted-browser-37671048453-1.jsonl",
+        "resource_invalid": false,
+        "exit_code": 0,
+        "sha256": "044157d809b30083cdd74ee4d4a9229c82a732f2221246cb073f5b87f4a7c259"
+      },
+      {
+        "file": ".research/parallel-settings-product-20261007-hosted-guest-37671048453-1.jsonl",
+        "resource_invalid": true,
+        "exit_code": 3,
+        "sha256": "b4876bcece6b73a4cb9e9c4bd0f670427e3f4bc2e0bb346d2a69b7df14ede05c"
+      }
+    ],
+    "acceptance_json": {
+      "file": ".research/parallel-settings-product-20261007-acceptance.json",
+      "sha256": "7942d1bf9a742d3b54725221722d3429104ff32732b8b62fce4061b8bdb124ce"
+    },
+    "screenshots": [
+      {
+        "file": ".research/parallel-settings-product-20261007-native-side-panel.png",
+        "sha256": "0b60c089d47898244960ae8b8fa2e6e40def67703cb7b8e6a0d32a8b4aea9f65",
+        "inspection": "Shows signed-out guest side panel; does not show Settings state."
+      },
+      {
+        "file": ".research/parallel-settings-product-20261007-normal-target.png",
+        "sha256": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89",
+        "inspection": "Shows the native demo page used to open the panel; not evidence for Settings control outcomes."
+      }
+    ],
+    "excluded_stale_journals": [
+      "37105304739-1 package/browser/guest journals were present in the workflow artifact and intentionally excluded."
+    ],
+    "artifact_output_sha256": "407d0ef415ba9bad07dbfe89e0a73d366e15a14a46b077d5991e1088e70151b7"
   },
   "evidence_file": ".research/parallel-settings-product-20261007-evidence.json",
   "limitations": [
-    "This report records dispatch/preflight evidence only. It is not native product evidence.",
-    "No product defect was inferred from the inability to dispatch."
+    "This one bounded native run does not claim complete Settings coverage.",
+    "The guarded run did not pass; T46 lacks the inventory’s two boundary port inputs, and T70 alternate API/update outcomes remain unverified.",
+    "T70 inventory/source wording drift is recorded without a defect claim; no product code was changed."
   ]
 }
