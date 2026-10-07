@@ -65,12 +65,13 @@
     "docs/stabilization/resource-journals/native-ai-pair-docs-20261007.jsonl",
     "docs/stabilization/resource-journals/native-ai-pair-green-20261007.jsonl",
     "docs/stabilization/resource-journals/native-ai-pair-compile-20261007.jsonl",
-    ".research/native-ai-pair-fresh-review-20261007.json"
+    ".research/native-ai-pair-fresh-review-20261007.json",
+    ".research/native-ai-guard-strength-20261007.json"
   ],
   "build_receipt": null,
   "reproducibility": "Deterministic exported-function RED on the prior source; native unverified",
   "verification": {
-    "source": "Fresh review ef05349b marks Translator pair finding ADDRESSED and source contract PASS with no new breakage. A and B overall PARTIAL: native execution and executed return-expected mutant remain unverified. Guard-strength worker assigned; native remains open.",
+    "source": "Fresh peer ef05349b: Translator pair finding ADDRESSED, source contract PASS, no new breakage; overall native scope remains partial. Follow-up077b7f86 executed two safe scratch mutants (constant summary skipping native method; wrong Translator pair): each failed one expected assertion; untouched suite4/4 green. Root independently checked source/test hashes and all three terminal resource-valid journals. These two mutations do not prove every possible constant-return mutation is rejected.",
     "native": "unverified",
     "release": "pending permitted release host"
   },
@@ -99,5 +100,5 @@
     }
   ],
   "closure_requirement": "Guarded RED/GREEN and typecheck, independent source review, native warm and post-reload execution on an exact loaded artifact, then release verification.",
-  "next_action": "Finish admitted safe mutation proof, then verify side-panel manual Run and background agent dispatch separately on an exact loaded artifact; resolve service-worker capability exposure before closure."
+  "next_action": "Verify side-panel manual Run and background agent dispatch separately on an exact loaded artifact. Resolve service-worker capability exposure and retain all real-browser/role/reload gaps before closure."
 }

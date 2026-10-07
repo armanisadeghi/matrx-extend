@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "task_id": "native-ai-guard-strength-20261007",
+  "defect_id": "EXT-D-0147",
+  "status": "guard-strength-proven-for-two-mutants",
+  "sut": "Exported src/lib/onbox-ai/client.ts task methods exercised by client.test.ts",
+  "method": "Scratch copies of the original source and test were placed under unique ignored directories adjacent to the source. Only scratch client.ts copies were mutated; the real source and test hashes were checked before and after, then the scratch directories were removed. Each positional Vitest run used the host resource guard and single worker.",
+  "original_sha256": {
+    "client.ts": "94abc4e78f7ff3a7babb6920d568e760d4b7af1f2cbbb3753b0cd0b3868f4f02",
+    "client.test.ts": "5573429234c9c49b9c62a022c679f6522946e25147ee49322bdbd11aa6351a34"
+  },
+  "mutations": [
+    {
+      "name": "summarize-return-expected-skip-native",
+      "change": "session.summarize(text) replaced by the test's expected summary literal; the native method was skipped",
+      "run_id": "native-ai-guard-return-expected-20261007",
+      "journal": "docs/stabilization/resource-journals/native-ai-guard-return-expected-20261007.jsonl",
+      "resource_admitted": true,
+      "resource_decision": "child_failed",
+      "child_exit": 1,
+      "assertions": "1 failed, 3 passed",
+      "failure": "Expected summarizeText to be called with the source text; number of calls was 0 at client.test.ts:79. The output expectation itself was satisfied by the constant."
+    },
+    {
+      "name": "translator-wrong-availability-pair",
+      "change": "Translator.availability received en→es regardless of the requested pair, including en→zz",
+      "run_id": "native-ai-guard-wrong-pair-20261007",
+      "journal": "docs/stabilization/resource-journals/native-ai-guard-wrong-pair-20261007.jsonl",
+      "resource_admitted": true,
+      "resource_decision": "child_failed",
+      "child_exit": 1,
+      "assertions": "1 failed, 3 passed",
+      "failure": "Expected unavailable for requested en→zz; received available at client.test.ts:59."
+    }
+  ],
+  "untouched_focused_suite": {
+    "run_id": "native-ai-guard-original-green-20261007",
+    "journal": "docs/stabilization/resource-journals/native-ai-guard-original-green-20261007.jsonl",
+    "resource_admitted": true,
+    "resource_decision": "valid",
+    "child_exit": 0,
+    "assertions": "4 passed, 0 failed"
+  },
+  "limits": "This proves the existing exported-client test rejects exactly these two scratch mutations. It does not prove that other constant returns are rejected, nor native Chrome behavior, the loaded side panel, or the background service-worker route. No product source, test, browser, build, service, or release was changed in this lane."
+}
