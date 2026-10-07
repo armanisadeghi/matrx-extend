@@ -2,8 +2,9 @@
   "schema_version": 1,
   "case_id": "EXT-F-1003-T46",
   "scope": "Source-ready extension of the signed-out guest native Settings controls driver; no native browser run or release in this lane.",
-  "change": "The existing trusted UI sequence now saves inclusive ports 1 and 65535, reads the Chrome local-storage override and displayed input after each Save and Settings reload, then checks that rejected 65536 leaves saved 65535 intact. The existing observed-worker rediscovery, blank-clear, reload, and disposable-profile cleanup checks remain in place.",
+  "change": "The trusted UI sequence saves the specified 65001 first against an HTTP observation fixture bound to that exact port, then saves inclusive ports 1 and 65535. It reads the Chrome local-storage override and displayed input after each Save and Settings panel reload, then checks that rejected 65536 leaves saved 65535 intact. The observed-worker rediscovery, blank-clear, panel reload, and disposable-profile cleanup checks remain in place.",
   "forcing_breaks": [
+    "A fixture that cannot bind 65001 fails before the case; an ephemeral substitute cannot silently satisfy the first specified step.",
     "A client that rejects either inclusive endpoint cannot reach its post-Save storage and reload assertions.",
     "A client that updates only the visible input without persisting the override fails the storage read.",
     "A client that applies 65536 or silently alters the last accepted value fails preservation of 65535.",
@@ -16,7 +17,7 @@
     "native_execution": "not run in this lane"
   },
   "remaining_gaps": [
-    "The extended driver still needs a fresh, receipt-verified native Chrome execution before the new boundary checks receive acceptance credit.",
+    "The extended driver still needs a fresh, receipt-verified native Chrome execution before the 65001 and boundary checks receive acceptance credit.",
     "A healthy desktop-engine connection remains unverified because the existing observed port returns an intentional 503 rather than a fabricated health response.",
     "This guest-only case does not establish member, admin, or full Settings health."
   ]
