@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "subject": "EXT-D-0151 / f2a53199",
+  "reviewer_role": "fresh independent source and evidence review",
+  "verdict_a_coverage_behavior": "PASS_WITH_NATIVE_PENDING",
+  "verdict_b_quality_privacy_evidence": "PASS_WITH_LIMITATIONS",
+  "reviewed_commit": "f2a531993b314d674749e4e09c67a55eee60bcdd",
+  "findings": [
+    {
+      "severity": "Minor",
+      "location": "tests/browser/takeover-visible-census.mjs:92",
+      "finding": "The census enumerates standard semantic controls (buttons, links, ARIA roles, tabindex, form controls, and summaries). A custom clickable element with no semantic attributes is outside this selector and could be absent from the census without raising incompleteness.",
+      "impact": "The result supports accounting for discoverable semantic controls, not every possible pointer handler in arbitrary page code. The shipped app's current markup was not independently observed at the changed source revision.",
+      "classification": "scope limitation, not demonstrated defect"
+    },
+    {
+      "severity": "Minor",
+      "location": "tests/browser/takeover-visible-census.mjs:217",
+      "finding": "A data-census-id that matches the inventory-ID syntax is copied as source_anchor without checking that it is source-owned or corresponds to the observed control.",
+      "impact": "This does not affect mapping or trigger safety, but a page-provided attribute could make provenance look stronger than its evidence. No current census receipt in scope contains this anchor.",
+      "classification": "provenance limitation, non-blocking"
+    }
+  ],
+  "positive_evidence": [
+    "Direct tab/section identity comparison ignores structural and action candidates; only mapped navigation or section classifications with supported native shapes can be opened.",
+    "Structural containers are kept in their own count/list; actions remain accounted as mapped or fingerprinted unmapped observations and are excluded from inaccessible-region opening logic.",
+    "The serialized observation uses a closed role allowlist, safe tag/region/order/path facts, and optional syntax-shaped source anchor; private text, form values, hrefs, generated DOM IDs, and the HMAC key are not included in provenance.",
+    "Guest readiness requires one visible expanded Account section, enabled visible Sign in in the active Settings panel, no Sign out, and absent access/refresh-token, profile, and admin signals. Inspection performs no product action click; only the explicitly mapped navigation and section expanders are opened.",
+    "Unknown labels remain keyed fingerprints and unresolved observations keep completeness false. The repair does not promote the prior incomplete native census."
+  ],
+  "independent_guarded_run": {
+    "command": "node scripts/stabilization-resource.mjs run --run-id guest-census-provenance-peer-20261007-01 -- node --test tests/browser/takeover-visible-census.test.mjs scripts/hosted-profile-route.test.mjs",
+    "stdout": ".research/guest-census-provenance-peer-20261007.stdout",
+    "journal": "docs/stabilization/resource-journals/guest-census-provenance-peer-20261007-01.jsonl",
+    "result": "resource admitted; 25 passed, 0 failed; completed journal decision valid",
+    "scope": "guarded source/DOM-fixture and hosted-route tests; no live browser or native acceptance"
+  },
+  "native_evidence": {
+    "source": ".research/guest-census-original-retest-20261007.json and its referenced native receipt",
+    "what_it_supports": "The frozen 0.2.366 guest run observed signed-out Account readiness before and after observation, no stored auth/profile/admin values, and no product action control click; the census itself was incomplete (28 unmapped observations), so no completeness verdict.",
+    "boundary": "The native receipt predates f2a53199 and does not verify the repaired census on the changed source. Current changed-source native acceptance remains pending; member/admin census evidence is also absent."
+  },
+  "review_scope": "Read-only source/evidence inspection plus the single required guarded test run. No source/test edits, browser/native run, build, database, release, or deployment."
+}
