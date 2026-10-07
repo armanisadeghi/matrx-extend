@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-07T22:54:04.758540+00:00",
+  "updated_at": "2026-10-07T23:07:05.883731+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -6161,22 +6161,16 @@
           "dimensions": ["warm", "reload"],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": "37696764772",
-              "source_sha": "4801dbd72c99d0ff157c16cb51926587bdf95618",
+              "status": "pass",
+              "run_id": "37699338786",
+              "source_sha": "d10719c667c87b578689f1cdecf23e2a637d3207",
               "build_version": "0.2.391",
               "evidence": [
-                ".research/desktop-guest-native-20261007.json",
-                ".research/parallel-native-evidence-peer-20261007.json"
+                ".research/settings-valid-native-20261007.json",
+                ".research/settings-audit-native-peer-20261007.json"
               ],
-              "verified_substeps": [
-                "Baseline save persisted; failed save preserved the prior value and offered retry; retry persisted across reload; overlapping saves settled in order; delayed initial read preserved the edit before write."
-              ],
-              "remaining_criteria": [
-                "Boundary values 1/65535, blank clear, invalid-range UI, and actual rediscovery were not exercised. Storage fault injection does not establish a healthy engine connection."
-              ],
-              "observed_at": "2026-10-07T22:43:08.259405+00:00",
-              "release_scope": "Frozen CI development artifact only; no Store/current-main/healthy-engine claim."
+              "detail": "Independently verified65001,1,65535 Save/readback after Settings Page.reload;65536 visible error preserves65535;blank clears and remainsnull;actual worker rediscovery entry and health request observed. All3 exact resource journals valid. HTTP503 fixture gives no healthy-engine claim; Page.reload is not full extension Reload. Exact guest case only.",
+              "release_scope": "Frozen development artifact only, not Store or current-main/full Settings health."
             }
           },
           "linked_defects": ["EXT-D-0086", "EXT-D-0084"],
@@ -6283,6 +6277,27 @@
                 "detail": "Valid port49206/save/rediscovery/reload, reject65536, clear/reload observed. Endpoint ports1/65535 and healthy desktop connection unverified. Guest only; other modes retain their own evidence.",
                 "build_variant": "development0.2.387/source14305391",
                 "observed_at": "2026-10-07T22:18:59.711910+00:00"
+              }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37696764772",
+                "source_sha": "4801dbd72c99d0ff157c16cb51926587bdf95618",
+                "build_version": "0.2.391",
+                "evidence": [
+                  ".research/desktop-guest-native-20261007.json",
+                  ".research/parallel-native-evidence-peer-20261007.json"
+                ],
+                "verified_substeps": [
+                  "Baseline save persisted; failed save preserved the prior value and offered retry; retry persisted across reload; overlapping saves settled in order; delayed initial read preserved the edit before write."
+                ],
+                "remaining_criteria": [
+                  "Boundary values 1/65535, blank clear, invalid-range UI, and actual rediscovery were not exercised. Storage fault injection does not establish a healthy engine connection."
+                ],
+                "observed_at": "2026-10-07T22:43:08.259405+00:00",
+                "release_scope": "Frozen CI development artifact only; no Store/current-main/healthy-engine claim."
               }
             }
           ],

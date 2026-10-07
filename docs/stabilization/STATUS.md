@@ -1,12 +1,12 @@
 # Extension stabilization status
 
-Generated 2026-10-07 22:54 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-07T22:54:04.758540+00:00. 205 features · 769 cases · 1351 controls · 157 linked defect records.
+Generated 2026-10-07 23:07 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-07T23:07:05.883731+00:00. 205 features · 769 cases · 1351 controls · 157 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1230** — Pass: 84 · Partial: 80 · Fail: 2 · Unverified: 1063 · N/A: 1.
+Applicable case-by-role slots: **1230** — Pass: 85 · Partial: 79 · Fail: 2 · Unverified: 1063 · N/A: 1.
 Unverified splits into **136 explicitly marked unverified** and **927 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 29 cases without steps, 29 without expected outcomes, 27 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
@@ -20,7 +20,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Navigation / shell](#navigation--shell) | 1 | 1 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 6, fail 0, unverified 17, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
-| [Settings](#settings) | 1 | 9 pass · 5 partial · 0 fail · 12 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | 14 pass · 3 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | pass 25, partial 11, fail 0, unverified 58, n/a 1 | 0 |
+| [Settings](#settings) | 1 | 10 pass · 4 partial · 0 fail · 12 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | 14 pass · 3 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | pass 26, partial 10, fail 0, unverified 58, n/a 1 | 0 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
@@ -418,7 +418,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1003-T43 guest: Desktop bridge pairing | Partial | N/A | N/A | EXT-F-1003-C15 |
 | EXT-F-1003-T44 member: Desktop bridge pairing | N/A | Partial | N/A | EXT-F-1003-C15 |
 | EXT-F-1003-T45 admin: Desktop bridge pairing | N/A | N/A | Partial | EXT-F-1003-C15 |
-| EXT-F-1003-T46 guest: Desktop engine port | Partial | N/A | N/A | EXT-F-1003-C16 |
+| EXT-F-1003-T46 guest: Desktop engine port | Pass | N/A | N/A | EXT-F-1003-C16 |
 | EXT-F-1003-T47 member: Desktop engine port | N/A | Partial | N/A | EXT-F-1003-C16 |
 | EXT-F-1003-T48 admin: Desktop engine port | N/A | N/A | Partial | EXT-F-1003-C16 |
 | EXT-F-1003-T49 guest: Clear local data | Partial | N/A | N/A | EXT-F-1003-C17 |
@@ -512,8 +512,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: desktop-settings-member-20261003-independent01, ['.research/desktop-settings-independent-native.json', '.research/desktop-settings-guard-proof.json', '.research/settings-forget-reset-final.json']
 - EXT-F-1003-T45 · admin: Partial.
   Evidence / build / date recorded: desktop-settings-admin-final-20261003-01, ['.research/desktop-settings-admin-final.json', '.research/desktop-settings-guard-proof.json', '.research/settings-forget-reset-final.json']
-- EXT-F-1003-T46 · guest: Partial.
-  Evidence / build / date recorded: 37696764772, ['.research/desktop-guest-native-20261007.json', '.research/parallel-native-evidence-peer-20261007.json']
+- EXT-F-1003-T46 · guest: Pass. Independently verified65001,1,65535 Save/readback after Settings Page.reload;65536 visible error preserves65535;blank clears and remainsnull;actual worker rediscovery entry and health request observed. All3 exact resource journals valid. HTTP503 fixture gives no healthy-engine claim; Page.reload is not full extension Reload. Exact guest case only.
+  Evidence / build / date recorded: 37699338786, ['.research/settings-valid-native-20261007.json', '.research/settings-audit-native-peer-20261007.json']
 - EXT-F-1003-T47 · member: Partial.
   Evidence / build / date recorded: desktop-settings-member-20261003-independent01, ['.research/desktop-settings-independent-native.json', '.research/desktop-settings-guard-proof.json', '.research/settings-forget-reset-final.json']
 - EXT-F-1003-T48 · admin: Partial.
