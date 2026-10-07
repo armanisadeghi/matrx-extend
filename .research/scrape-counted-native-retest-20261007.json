@@ -1,0 +1,88 @@
+{
+  "task_id": "scrape-counted-native-retest-20261007",
+  "defect_id": "EXT-D-0154",
+  "status": "done_with_partial_acceptance",
+  "workflow": {
+    "run_id": 37693691959,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37693691959",
+    "conclusion": "success",
+    "head_sha": "34544753cd553ff34677dbba8be99ec1175defc5",
+    "acceptance_lane": "B",
+    "runner_label": "macos-15",
+    "acceptance_case": "guest-scrape-development",
+    "scrape_auth_mode": "guest",
+    "scrape_width_mode": "narrow",
+    "attempts": 1
+  },
+  "frozen_artifact": {
+    "kind": "ci_development_test",
+    "version": "0.2.385",
+    "source_sha": "87f6649b4874492a1f8af59cd8703eff0e06424c",
+    "ci_run_id": 37666263406,
+    "artifact_id": 11503412219,
+    "tree_sha256": "0073d51422e2a5dcb66c31682cc91c13f105d46c8a242f0a50eb5d0303cdadac"
+  },
+  "driver_source": {
+    "repair_commit": "92ddec30e972ea1508764af9e1cdbc87d403910d",
+    "independent_source_review": ".research/scrape-counted-tab-peer-20261007.json"
+  },
+  "native_result": {
+    "receipt_status": "partial",
+    "terminal_stage": "post_reload_link_controls",
+    "failure": null,
+    "guest_account_observed": true,
+    "guest_auth_storage": {
+      "hasAccessToken": false,
+      "hasUserProfile": false
+    },
+    "first_decisive_pass": "Video Copy on the selected counted Video tab: trusted pointerdown, pointerup, and click; feedback copied; clipboard URL equal after scoped read permission, restored afterward.",
+    "video_t12": {
+      "status": "passed",
+      "phases": ["warm", "reload"],
+      "opened_path": "/intake-walkthrough.mp4",
+      "copy_feedback": "copied",
+      "clipboard_equal": true,
+      "remove_add_and_empty_state": "observed in both phases"
+    },
+    "links_t13": {
+      "status": "partial",
+      "guest_phases": ["warm", "reload"],
+      "opened_path": "/forms",
+      "copy_feedback": "copied",
+      "clipboard_equal": true,
+      "remove_blank_add_cancel": "observed in both phases",
+      "remaining": "Member and admin modes were not exercised by this guest receipt."
+    },
+    "other_case_statuses": {
+      "EXT-F-1007-T20": "passed",
+      "EXT-F-1007-T01": "partial",
+      "EXT-F-1007-T08": "partial",
+      "EXT-F-1007-T10": "passed",
+      "EXT-F-1007-T11": "passed",
+      "EXT-F-1007-T02": "partial",
+      "EXT-F-1007-T14": "partial"
+    }
+  },
+  "resource_admission": {
+    "package": "valid",
+    "browser": "valid",
+    "acceptance": "valid",
+    "acceptance_watch": "healthy after a recovered CPU-pending interval",
+    "resource_invalid": false
+  },
+  "evidence": {
+    "curated_receipt": ".research/scrape-counted-native-retest-20261007/evidence/run37693691959/native-scrape-receipt-curated.json",
+    "curated_resource_journal": ".research/scrape-counted-native-retest-20261007/evidence/run37693691959/resource-journal-curated.json",
+    "screenshots": [
+      ".research/scrape-counted-native-retest-20261007/evidence/run37693691959/scrape-fast-article.png",
+      ".research/scrape-counted-native-retest-20261007/evidence/run37693691959/scrape-deep-article.png"
+    ],
+    "uploaded_result_artifact_id": 11514219055,
+    "note": "Screenshots document synthetic Harbor Dental fixture context; trusted Copy events and exact results are in the curated receipt. Stale journals and the full original archive are excluded."
+  },
+  "limits": [
+    "This is one guest narrow development-artifact run. It does not verify member/admin or normal width.",
+    "T13 remains partial as recorded by the receipt despite passing guest warm and reload controls.",
+    "Deep failure retry and a natural browser failure recovery remain unverified."
+  ]
+}

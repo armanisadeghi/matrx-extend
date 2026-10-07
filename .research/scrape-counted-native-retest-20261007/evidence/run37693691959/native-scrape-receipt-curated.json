@@ -1,0 +1,390 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007",
+  "mode": "guest",
+  "status": "partial",
+  "stage": "post_reload_link_controls",
+  "native_stage": "exercise_panel",
+  "failure": null,
+  "driver_failure": null,
+  "artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.385",
+    "source_sha": "87f6649b4874492a1f8af59cd8703eff0e06424c",
+    "tree_sha256": "0073d51422e2a5dcb66c31682cc91c13f105d46c8a242f0a50eb5d0303cdadac",
+    "run_id": 37666263406,
+    "artifact_id": 11503412219
+  },
+  "guest_account_observed": true,
+  "guest_auth_storage": {
+    "hasAccessToken": false,
+    "hasUserProfile": false
+  },
+  "browser_launch": {
+    "requested_mode": "headed",
+    "observed_mode": "headed",
+    "verified_by": "Browser.getBrowserCommandLine"
+  },
+  "panel_viewports": [
+    {
+      "phase": "warm",
+      "mode": "narrow",
+      "mechanism": "native_default",
+      "observed_px": 360,
+      "minimum_px": null
+    },
+    {
+      "phase": "reload",
+      "mode": "narrow",
+      "mechanism": "native_default",
+      "observed_px": 360,
+      "minimum_px": null
+    }
+  ],
+  "cases": [
+    {
+      "id": "EXT-F-1007-T20",
+      "status": "passed",
+      "remaining": []
+    },
+    {
+      "id": "EXT-F-1007-T01",
+      "status": "partial",
+      "remaining": [
+        "member/admin modes remain unverified by this receipt.",
+        "Normal-width verification remains unverified."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T08",
+      "status": "partial",
+      "remaining": [
+        "member/admin modes remain unverified by this receipt.",
+        "Normal-width verification remains unverified."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T10",
+      "status": "passed",
+      "remaining": []
+    },
+    {
+      "id": "EXT-F-1007-T11",
+      "status": "passed",
+      "remaining": []
+    },
+    {
+      "id": "EXT-F-1007-T12",
+      "status": "passed",
+      "evidence": {
+        "warm": {
+          "before": {
+            "pane": "Video",
+            "state": "matching_content",
+            "count": 2,
+            "paths": ["/intake-walkthrough.mp4", "/referral-walkthrough.mp4"]
+          },
+          "removed": {
+            "pane": "Video",
+            "state": "matching_content",
+            "count": 1,
+            "paths": ["/referral-walkthrough.mp4"]
+          },
+          "added": {
+            "pane": "Video",
+            "state": "matching_content",
+            "count": 2,
+            "paths": ["/referral-walkthrough.mp4", "/consultation.mp4"]
+          },
+          "links": {
+            "opened_url": "http://localhost:<fixture-port>/intake-walkthrough.mp4",
+            "copy_feedback": "copied",
+            "clipboard_equal": true,
+            "clipboard_read": {
+              "ok": false,
+              "code": "NotAllowedError",
+              "focused": true,
+              "visible": true
+            },
+            "clipboard_observation": {
+              "clipboardObservationStage": "read",
+              "clipboardObservationPermissionRestored": true,
+              "clipboardReadPermissionForObservation": true
+            },
+            "limitations": [],
+            "failures": [],
+            "clipboard_read_after_grant": {
+              "ok": true,
+              "same": true,
+              "focused": true,
+              "visible": true
+            }
+          }
+        },
+        "reload": {
+          "before": {
+            "pane": "Video",
+            "state": "matching_content",
+            "count": 2,
+            "paths": ["/intake-walkthrough.mp4", "/referral-walkthrough.mp4"]
+          },
+          "removed": {
+            "pane": "Video",
+            "state": "matching_content",
+            "count": 1,
+            "paths": ["/referral-walkthrough.mp4"]
+          },
+          "added": {
+            "pane": "Video",
+            "state": "matching_content",
+            "count": 2,
+            "paths": ["/referral-walkthrough.mp4", "/consultation.mp4"]
+          },
+          "links": {
+            "opened_url": "http://localhost:<fixture-port>/intake-walkthrough.mp4",
+            "copy_feedback": "copied",
+            "clipboard_equal": true,
+            "clipboard_read": {
+              "ok": false,
+              "code": "NotAllowedError",
+              "focused": true,
+              "visible": true
+            },
+            "clipboard_observation": {
+              "clipboardObservationStage": "read",
+              "clipboardObservationPermissionRestored": true,
+              "clipboardReadPermissionForObservation": true
+            },
+            "limitations": [],
+            "failures": [],
+            "clipboard_read_after_grant": {
+              "ok": true,
+              "same": true,
+              "focused": true,
+              "visible": true
+            }
+          }
+        }
+      },
+      "remaining": []
+    },
+    {
+      "id": "EXT-F-1007-T13",
+      "status": "partial",
+      "evidence": {
+        "warm": {
+          "phase": "warm",
+          "before": {
+            "count": 2,
+            "paths": ["/forms", "/appointments"],
+            "texts": ["Patient forms", "Appointments"]
+          },
+          "actions": {
+            "opened_url": "http://localhost:<fixture-port>/forms",
+            "copy_feedback": "copied",
+            "clipboard_equal": true,
+            "clipboard_read": {
+              "ok": false,
+              "code": "NotAllowedError",
+              "focused": true,
+              "visible": true
+            },
+            "clipboard_observation": {
+              "clipboardObservationStage": "read",
+              "clipboardObservationPermissionRestored": true,
+              "clipboardReadPermissionForObservation": true
+            },
+            "limitations": [],
+            "failures": [],
+            "clipboard_read_after_grant": {
+              "ok": true,
+              "same": true,
+              "focused": true,
+              "visible": true
+            }
+          },
+          "removed": {
+            "count": 1,
+            "paths": ["/appointments"],
+            "texts": ["Appointments"]
+          },
+          "blankRejected": {
+            "count": 1,
+            "paths": ["/appointments"],
+            "texts": ["Appointments"]
+          },
+          "added": {
+            "count": 2,
+            "paths": ["/appointments", "/referrals"],
+            "texts": ["Appointments", "Referral hours"]
+          },
+          "cancelled": {
+            "count": 2,
+            "paths": ["/appointments", "/referrals"],
+            "texts": ["Appointments", "Referral hours"]
+          }
+        },
+        "reload": {
+          "phase": "reload",
+          "before": {
+            "count": 2,
+            "paths": ["/forms", "/appointments"],
+            "texts": ["Patient forms", "Appointments"]
+          },
+          "actions": {
+            "opened_url": "http://localhost:<fixture-port>/forms",
+            "copy_feedback": "copied",
+            "clipboard_equal": true,
+            "clipboard_read": {
+              "ok": false,
+              "code": "NotAllowedError",
+              "focused": true,
+              "visible": true
+            },
+            "clipboard_observation": {
+              "clipboardObservationStage": "read",
+              "clipboardObservationPermissionRestored": true,
+              "clipboardReadPermissionForObservation": true
+            },
+            "limitations": [],
+            "failures": [],
+            "clipboard_read_after_grant": {
+              "ok": true,
+              "same": true,
+              "focused": true,
+              "visible": true
+            }
+          },
+          "removed": {
+            "count": 1,
+            "paths": ["/appointments"],
+            "texts": ["Appointments"]
+          },
+          "blankRejected": {
+            "count": 1,
+            "paths": ["/appointments"],
+            "texts": ["Appointments"]
+          },
+          "added": {
+            "count": 2,
+            "paths": ["/appointments", "/referrals"],
+            "texts": ["Appointments", "Referral hours"]
+          },
+          "cancelled": {
+            "count": 2,
+            "paths": ["/appointments", "/referrals"],
+            "texts": ["Appointments", "Referral hours"]
+          }
+        }
+      },
+      "remaining": ["member/admin modes remain unverified by this receipt."]
+    },
+    {
+      "id": "EXT-F-1007-T02",
+      "status": "partial",
+      "remaining": ["Deep failure retry mode and post-reload deep capture remain unverified."]
+    },
+    {
+      "id": "EXT-F-1007-T14",
+      "status": "partial",
+      "remaining": [
+        "Recoverable Reload page and Try again, including deep retry mode, need a natural browser failure."
+      ]
+    }
+  ],
+  "trusted_copy_events": [
+    {
+      "phase": "warm-media",
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "target": "Copy video URL",
+          "selected": "Video"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "target": "Copy video URL",
+          "selected": "Video"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "target": "Copy video URL",
+          "selected": "Video"
+        }
+      ]
+    },
+    {
+      "phase": "warm-links",
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "target": "Copy URL",
+          "selected": "Links"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "target": "Copy URL",
+          "selected": "Links"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "target": "Copy URL",
+          "selected": "Links"
+        }
+      ]
+    },
+    {
+      "phase": "reload-media",
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "target": "Copy video URL",
+          "selected": "Video"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "target": "Copy video URL",
+          "selected": "Video"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "target": "Copy video URL",
+          "selected": "Video"
+        }
+      ]
+    },
+    {
+      "phase": "reload-links",
+      "events": [
+        {
+          "type": "pointerdown",
+          "trusted": true,
+          "target": "Copy URL",
+          "selected": "Links"
+        },
+        {
+          "type": "pointerup",
+          "trusted": true,
+          "target": "Copy URL",
+          "selected": "Links"
+        },
+        {
+          "type": "click",
+          "trusted": true,
+          "target": "Copy URL",
+          "selected": "Links"
+        }
+      ]
+    }
+  ]
+}
