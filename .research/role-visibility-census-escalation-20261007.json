@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "status": "source_repair_verified_independent_review_required",
+  "scope": "Source repair and guarded DOM/source regression checks only; no native acceptance.",
+  "review_basis": ".research/role-visibility-census-final-peer-20261007.json",
+  "findings": [
+    {
+      "finding": "Important: navigation/section discovery silently omitted alternate interactive markup.",
+      "disposition": "Repaired in source. Discovery inventories the common native/ARIA/focusable/aria-controls/summary control selector independently of click support. Unknown labels remain keyed fingerprints. Known labels on unsupported shapes, duplicate labels, and disabled triggers cannot authorize a click. Unsupported counts and inaccessible regions prevent completeness."
+    },
+    {
+      "finding": "Minor: guest was only a requested role label, without positive signed-out observation.",
+      "disposition": "Repaired in source. After safe Settings/Account navigation, guest requires visible enabled Sign in, no visible Sign out, no profile/access token/encrypted refresh ciphertext or IV, and no admin flag. Only booleans leave the document. Observation repeats after census and both observations are required for guest completeness."
+    }
+  ],
+  "execution_guard_correction": "Prior source runs recorded in the repair report and corrected by 9b17c3b5 were unguarded. Their passing counts are not guarded acceptance. This report supersedes execution evidence only with the new admitted runs below; it does not retroactively validate old runs.",
+  "resource_policy": "Reviewed and included the root-owned exact allowedCommands entry for node --test tests/browser/takeover-visible-census.test.mjs scripts/hosted-profile-route.test.mjs. No admission threshold or resource limit changed.",
+  "files": [
+    "tests/browser/takeover-visible-census.mjs",
+    "tests/browser/takeover-visible-census.test.mjs",
+    "docs/stabilization/resource-policy.json"
+  ],
+  "guarded_runs": [
+    {
+      "run_id": "census-escalation-red-20261007-01",
+      "result": "admitted=true; resourceInvalid=false; child_failed; exit 1; 16 passed / 4 failed",
+      "causal_failures": [
+        "untitled/nonbutton tabs omitted",
+        "summary/nonbutton/attribute-free section triggers omitted",
+        "guest positive signed-out evidence absent",
+        "contradictory guest auth did not reject"
+      ],
+      "stdout_stderr": ".research/census-escalation-red-20261007-01.log",
+      "completed_journal": "docs/stabilization/resource-journals/census-escalation-red-20261007-01.jsonl"
+    },
+    {
+      "run_id": "census-escalation-green-20261007-01",
+      "result": "admitted=true; resourceInvalid=false; valid; exit 0; 20 passed / 0 failed",
+      "stdout_stderr": ".research/census-escalation-green-20261007-01.log",
+      "completed_journal": "docs/stabilization/resource-journals/census-escalation-green-20261007-01.jsonl"
+    },
+    {
+      "run_id": "census-escalation-final-20261007-01",
+      "result": "admitted=true; resourceInvalid=false; valid; exit 0; 22 passed / 0 failed",
+      "stdout_stderr": ".research/census-escalation-final-20261007-01.log",
+      "completed_journal": "docs/stabilization/resource-journals/census-escalation-final-20261007-01.jsonl"
+    }
+  ],
+  "causal_negative_evidence": "The guarded RED executed the new tests against the original narrowed discovery expressions (extracted without behavior changes) and the original guest role-only return at an exported test seam. Four assertion failures reproduce the two reviewed classes. Final tests additionally execute narrowed-selector and constant-output replacements in memory; no weakened shared source is planted.",
+  "surrounding_checks": [
+    "Existing private HMAC/anchor/vacuous-completeness/mutation-interception tests retained.",
+    "Hosted guest/member/admin route and credential-preflight checks share the exact admitted command.",
+    "Final additions check unsupported known triggers, missing guest start/end evidence, encrypted refresh ciphertext and IV, and constant-result replacements."
+  ],
+  "not_performed": [
+    "native browser or hosted workflow",
+    "credentials or database operations",
+    "build or release",
+    "behavior, persistence or backend acceptance"
+  ],
+  "remaining": [
+    "Fresh independent review required.",
+    "Receipt-bound native guest/member/admin observations remain required before behavior testing.",
+    "Discovery is conservative over semantic DOM controls; unclassified focusable/global controls may intentionally make the census incomplete. Controls without semantic/native/focusable/ARIA markers and shadow DOM are not certified by these source checks.",
+    "An observed label does not prove behavior. HTTP interception still covers only sidepanel and extension-worker targets, and may abort read-only POST/RPCs; those cases remain incomplete."
+  ],
+  "format_and_diff": "Biome formatted both source files and the resource policy. Research JSON is excluded by repository Biome config; formatted via stdin with the repository JSON style. git diff --check passed. No additional build/type/release runs in this source-only lane."
+}

@@ -6,7 +6,10 @@ import vm from 'node:vm';
 import { Window } from 'happy-dom';
 import { requireHostedAcceptanceCredential } from '../../scripts/hosted-profile-route.mjs';
 import {
+  CONTROL_SELECTOR,
   censusCompleteness,
+  discoveryExpression,
+  observeGuestAuthentication,
   mapObservation,
   mutationGuard,
   settingsControlsExpression,
@@ -117,6 +120,35 @@ test('unknown labels, inaccessible regions, and intercepted RPCs each prevent co
     controls: Object.fromEntries(required.map((label) => [label, empty])),
   };
   assert.equal(censusCompleteness(complete, 0).complete, true);
+  assert.equal(
+    censusCompleteness(
+      { ...complete, navigation: { ...complete.navigation, unsupported_trigger_count: 1 } },
+      0,
+    ).complete,
+    false,
+  );
+  assert.equal(
+    censusCompleteness({ ...complete, authentication: { role: 'guest' } }, 0).complete,
+    false,
+  );
+  assert.equal(
+    censusCompleteness(
+      {
+        ...complete,
+        authentication: { role: 'guest', signed_out_observed: true },
+        authentication_after: { signed_out_observed: true },
+      },
+      0,
+    ).complete,
+    true,
+  );
+  assert.equal(
+    censusCompleteness(
+      { ...complete, authentication: { role: 'guest', signed_out_observed: true } },
+      0,
+    ).complete,
+    false,
+  );
   assert.equal(censusCompleteness({ ...complete, surfaces: {} }, 0).complete, false);
   assert.equal(censusCompleteness({ ...complete, sections: empty }, 0).complete, false);
   assert.equal(censusCompleteness({ ...complete, controls: {} }, 0).complete, false);
@@ -207,4 +239,135 @@ test('hosted census role preflight requires real auth only for member and admin'
       MATRX_HOSTED_ADMIN_CREDENTIALS_JSON: '{"email":"admin@admin.com","password":"opaque"}',
     }),
   );
+});
+
+// The owner inventories the extension before testing behavior. Alternate markup must
+// remain visible in the inventory without granting permission to activate it.
+function domContext(html, stored = {}) {
+  const window = new Window({
+    url: 'chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html',
+  });
+  window.document.body.innerHTML = html;
+  window.HTMLElement.prototype.getBoundingClientRect = () => ({ width: 100, height: 20 });
+  return {
+    document: window.document,
+    getComputedStyle: window.getComputedStyle.bind(window),
+    crypto: webcrypto,
+    TextEncoder,
+    atob,
+    chrome: { storage: { local: { get: async () => stored } } },
+  };
+}
+
+test('discovery retains untitled and alternate tab shapes but only permits mapped native triggers', async () => {
+  const context = domContext(`<div role="tablist">
+    <button role="tab" title="Settings" aria-controls="settings">Settings</button>
+    <button role="tab">Private workspace tab</button>
+    <a role="tab" href="/private" aria-label="Chat">Chat</a>
+    <div tabindex="0">Private unclassified navigation</div>
+    </div>`);
+  const observed = await vm.runInNewContext(
+    discoveryExpression('navigation', randomBytes(32).toString('base64')),
+    context,
+  );
+  assert.equal(observed.length, 4, 'alternate navigation must not disappear');
+  assert.equal(observed.filter((item) => item.safe_to_open).length, 1);
+  assert.equal(observed.find((item) => item.label === 'Chat').safe_to_open, false);
+  assert.equal(mapObservation('navigation', observed).unmapped_count, 2);
+  assert.doesNotMatch(JSON.stringify(observed), /Private|href|workspace/);
+});
+
+test('discovery retains summary, non-button expanders and unclassified section controls', async () => {
+  const context = domContext(`<button aria-expanded="false" aria-controls="account">Account</button>
+    <div role="button" aria-expanded="false">Appearance</div>
+    <details><summary>Private section</summary></details>
+    <button>Private unclassified section</button>`);
+  const observed = await vm.runInNewContext(
+    discoveryExpression('section', randomBytes(32).toString('base64')),
+    context,
+  );
+  assert.equal(observed.length, 4, 'alternate section triggers must not disappear');
+  assert.equal(observed.filter((item) => item.safe_to_open).length, 1);
+  assert.equal(observed.find((item) => item.label === 'Appearance').safe_to_open, false);
+  assert.equal(mapObservation('section', observed).unmapped_count, 2);
+  assert.doesNotMatch(JSON.stringify(observed), /Private/);
+});
+
+const guestHtml =
+  '<button aria-expanded="true" aria-controls="account">Account</button><div id="account"><button>Sign in</button></div>';
+function guestPanel(context) {
+  return {
+    send: async (method, params) => {
+      assert.equal(method, 'Runtime.evaluate');
+      return { result: { value: await vm.runInNewContext(params.expression, context) } };
+    },
+  };
+}
+
+test('guest evidence requires observed signed-out account and absent credentials', async () => {
+  const evidence = await observeGuestAuthentication(guestPanel(domContext(guestHtml)));
+  assert.equal(evidence.signed_out_observed, true, 'guest cannot be a requested role label alone');
+  assert.equal(evidence.access_token_present, false);
+  assert.equal(evidence.refresh_token_present, false);
+  assert.equal(evidence.profile_present, false);
+  assert.equal(evidence.sign_in_visible, true);
+});
+
+test('guest observation refuses every contradictory or missing auth signal without leaking identity', async () => {
+  for (const [html, stored] of [
+    [guestHtml, { 'matrx.auth.accessToken': 'private-token' }],
+    [guestHtml, { 'matrx.auth.refreshTokenEnc': 'private-refresh' }],
+    [guestHtml, { 'matrx.auth.refreshTokenIv': 'private-iv' }],
+    [guestHtml, { 'matrx.user.profile': { id: 'private-profile' } }],
+    [guestHtml, { 'matrx.user.isAdmin': true }],
+    [guestHtml.replace('Sign in', 'Sign out'), {}],
+    ['', {}],
+  ]) {
+    await assert.rejects(
+      () => observeGuestAuthentication(guestPanel(domContext(html, stored))),
+      (error) => error.message === 'census_guest_signed_out_unverified',
+    );
+  }
+});
+
+test('discovery contract detects an in-memory narrowed selector and constant-result replacement', async () => {
+  const html =
+    '<div role="tablist"><button role="tab" title="Settings" aria-controls="settings">Settings</button><a role="tab">Private navigation</a></div>';
+  const expression = discoveryExpression('navigation', randomBytes(32).toString('base64'));
+  const verify = async (observe) => {
+    const rows = await observe(html);
+    assert.equal(rows.length, 2, 'alternate trigger omitted');
+    assert.equal(rows.filter((row) => row.safe_to_open).length, 1);
+    assert.equal((await observe('')).length, 0, 'constant result invents absent triggers');
+  };
+  const observe = (markup) => vm.runInNewContext(expression, domContext(markup));
+  await verify(observe);
+  const narrowed = expression.replace(
+    JSON.stringify(CONTROL_SELECTOR),
+    JSON.stringify('button[role="tab"][title]'),
+  );
+  await assert.rejects(
+    () => verify((markup) => vm.runInNewContext(narrowed, domContext(markup))),
+    /alternate trigger omitted/,
+  );
+  const constant = await observe(html);
+  await assert.rejects(
+    () => verify(async () => constant),
+    /constant result invents absent triggers/,
+  );
+});
+
+test('guest contract detects a constant signed-out replacement', async () => {
+  const verify = async (observe) => {
+    const signedOut = await observe(guestPanel(domContext(guestHtml)));
+    assert.equal(signedOut.signed_out_observed, true);
+    await assert.rejects(
+      () =>
+        observe(guestPanel(domContext(guestHtml, { 'matrx.auth.accessToken': 'private-token' }))),
+      /census_guest_signed_out_unverified/,
+    );
+  };
+  await verify(observeGuestAuthentication);
+  const constant = await observeGuestAuthentication(guestPanel(domContext(guestHtml)));
+  await assert.rejects(() => verify(async () => constant), /Missing expected rejection/);
 });

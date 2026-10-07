@@ -121,6 +121,12 @@
     ["node", "--test", "tests/browser/notes-member-credential.test.mjs"],
     ["node", "--test", "tests/browser/audit-key-native-faults.test.mjs"],
     ["node", "--test", "scripts/hosted-showcase-route.test.mjs"],
+    [
+      "node",
+      "--test",
+      "tests/browser/takeover-visible-census.test.mjs",
+      "scripts/hosted-profile-route.test.mjs"
+    ],
     ["node", "--test", "tests/browser/showcase-d47-driver-evidence.test.mjs"],
     ["node", "--test", "tests/browser/showcase-d47-saved-result.test.mjs"],
     ["node", "--test", "tests/browser/showcase-d47-worker-probe.test.mjs"],

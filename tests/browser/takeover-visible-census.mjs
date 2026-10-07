@@ -85,6 +85,11 @@ const requiredSettingsSections = new Set(
 );
 export const CONTROL_SELECTOR = [
   'button',
+  'summary',
+  '[tabindex]',
+  '[aria-expanded]',
+  '[aria-controls]',
+  '[role="tab"]',
   'a[href]',
   'input',
   'select',
@@ -131,7 +136,15 @@ export function mapObservation(scope, observations) {
       });
     }
   }
-  return { total: observations.length, mapped, unmapped_count: unmapped.length, unmapped };
+  return {
+    total: observations.length,
+    mapped,
+    unmapped_count: unmapped.length,
+    unmapped,
+    unsupported_trigger_count: ['navigation', 'section'].includes(scope)
+      ? observations.filter((item) => item.safe_to_open === false).length
+      : 0,
+  };
 }
 
 function fingerprintScript(key) {
@@ -143,24 +156,105 @@ function fingerprintScript(key) {
     await keyPromise, new TextEncoder().encode(label)))].map((byte) => byte.toString(16).padStart(2, '0')).join('');`;
 }
 
-async function visible(panel, selector, knownLabels, captureTab, fingerprintKey) {
-  return evaluate(
-    panel,
-    `(async () => {
+export function discoveryExpression(scope, fingerprintKey) {
+  const captureTab = scope === 'navigation';
+  const selector = CONTROL_SELECTOR;
+  const knownLabels = captureTab ? [...knownTabs] : [...settingsSections];
+  return `(async () => {
     const known = new Set(${JSON.stringify(knownLabels)});
     const captureTab = ${captureTab};
     ${fingerprintScript(fingerprintKey)}
     const visible = (el) => { const r = el.getBoundingClientRect(), s = getComputedStyle(el);
       return r.width > 0 && r.height > 0 && s.display !== 'none' &&
         s.visibility !== 'hidden' && !el.closest('[inert]'); };
-    return Promise.all([...document.querySelectorAll(${JSON.stringify(selector)})].filter(visible)
-      .map(async (el) => { const label = (el.getAttribute('aria-label') || el.getAttribute('title') ||
+    // Inventory every semantic interactive trigger outside content regions, not only
+    // the markup our trusted click driver happens to support. Unknowns never click.
+    const candidates = [...document.querySelectorAll(${JSON.stringify(selector)})].filter(visible);
+    const sectionContents = [...document.querySelectorAll('[aria-expanded][aria-controls]')]
+      .map(el => document.getElementById(el.getAttribute('aria-controls'))).filter(Boolean);
+    const triggers = candidates.filter(el => captureTab
+      ? !el.closest('[role="tabpanel"]')
+      : !el.closest('[role="tablist"]') &&
+        !sectionContents.some(content => content.contains(el)) &&
+        (!el.closest('details') || el.tagName === 'SUMMARY'));
+    return Promise.all(triggers.map(async (el) => { const label = (el.getAttribute('aria-label') || el.getAttribute('title') ||
           el.getAttribute('data-matrx-title') || el.textContent || '').trim().slice(0, 256);
+        const nativeShape = captureTab
+          ? el.matches('button[role="tab"][title][aria-controls]') && el.title === label
+          : el.matches('button[aria-expanded][aria-controls]') && el.textContent.trim() === label;
+        const sameLabel = triggers.filter(other => (other.getAttribute('aria-label') ||
+          other.getAttribute('title') || other.getAttribute('data-matrx-title') || other.textContent || '').trim().slice(0, 256) === label);
         return { kind: el.getAttribute('role') || el.tagName.toLowerCase(),
+          safe_to_open: nativeShape && !el.disabled && sameLabel.length === 1 &&
+            (known.has(label) || (captureTab && /^[1-9][0-9]* pages? need your browser$/.test(label))),
           ...(known.has(label) || (captureTab && /^[1-9][0-9]* pages? need your browser$/.test(label))
             ? { label } : { label_fingerprint: await fingerprint(label) }) };
       }));
+  })()`;
+}
+
+export async function observeGuestAuthentication(panel) {
+  const state = await evaluate(
+    panel,
+    `(async () => {
+    const stored = await chrome.storage.local.get([
+      'matrx.auth.accessToken', 'matrx.auth.refreshTokenEnc', 'matrx.auth.refreshTokenIv',
+      'matrx.user.profile', 'matrx.user.isAdmin',
+    ]);
+    const visible = el => { const r = el.getBoundingClientRect(), s = getComputedStyle(el);
+      return r.width > 0 && r.height > 0 && s.display !== 'none' && s.visibility !== 'hidden' && !el.closest('[inert]'); };
+    const headers = [...document.querySelectorAll('button[aria-expanded="true"][aria-controls]')]
+      .filter(el => visible(el) && el.textContent.trim() === 'Account');
+    const content = headers.length === 1 ? document.getElementById(headers[0].getAttribute('aria-controls')) : null;
+    const buttons = [...(content?.querySelectorAll('button') ?? [])].filter(visible);
+    return {
+      access_token_present: stored['matrx.auth.accessToken'] != null,
+      refresh_token_present: stored['matrx.auth.refreshTokenEnc'] != null || stored['matrx.auth.refreshTokenIv'] != null,
+      profile_present: stored['matrx.user.profile'] != null,
+      admin_role: stored['matrx.user.isAdmin'] === true,
+      account_visible: Boolean(content && visible(content)),
+      sign_in_visible: buttons.some(el => el.textContent.trim() === 'Sign in' && !el.disabled),
+      sign_out_visible: [...document.querySelectorAll('button')].filter(visible).some(el => el.textContent.trim() === 'Sign out'),
+    };
   })()`,
+  );
+  assert.ok(
+    state &&
+      state.account_visible === true &&
+      state.sign_in_visible === true &&
+      state.sign_out_visible === false &&
+      state.access_token_present === false &&
+      state.refresh_token_present === false &&
+      state.profile_present === false &&
+      state.admin_role === false,
+    'census_guest_signed_out_unverified',
+  );
+  return { role: 'guest', signed_out_observed: true, ...state };
+}
+
+async function prepareGuestObservation(panel, fingerprintKey) {
+  const tabs = await evaluate(panel, discoveryExpression('navigation', fingerprintKey));
+  assert.ok(
+    tabs.some((tab) => tab.label === 'Settings' && tab.safe_to_open),
+    'census_guest_settings_unavailable',
+  );
+  await click(panel, 'title', 'Settings');
+  const sections = await waitFor(
+    'census_guest_account_ready',
+    () => evaluate(panel, discoveryExpression('section', fingerprintKey)),
+    (items) =>
+      Array.isArray(items) &&
+      items.some((section) => section.label === 'Account' && section.safe_to_open),
+  );
+  assert.ok(
+    sections.some((section) => section.label === 'Account' && section.safe_to_open),
+    'census_guest_account_unavailable',
+  );
+  await openSection(panel, 'Account');
+  return waitFor(
+    'census_guest_signed_out',
+    () => observeGuestAuthentication(panel),
+    (state) => state?.signed_out_observed === true,
   );
 }
 
@@ -234,13 +328,7 @@ async function settingsControls(panel, section, fingerprintKey) {
 }
 
 async function census(panel, fingerprintKey) {
-  const navigationRaw = await visible(
-    panel,
-    'button[role="tab"][title]',
-    [...knownTabs],
-    true,
-    fingerprintKey,
-  );
+  const navigationRaw = await evaluate(panel, discoveryExpression('navigation', fingerprintKey));
   const navigation = mapObservation('navigation', navigationRaw);
   const surfaces = {};
   const navigation_actions = [];
@@ -249,10 +337,10 @@ async function census(panel, fingerprintKey) {
     inaccessible_regions.push({ region: 'settings_tab', reason: 'absent' });
   // Trusted clicks only on direct tab triggers. Profile and action controls stay untouched.
   for (const tab of navigationRaw) {
-    if (!isKnownTab(tab.label)) {
+    if (!isKnownTab(tab.label) || !tab.safe_to_open) {
       inaccessible_regions.push({
         region: 'unmapped_tab',
-        label_fingerprint: tab.label_fingerprint,
+        ...(tab.label ? { label: tab.label } : { label_fingerprint: tab.label_fingerprint }),
         reason: 'not_opened_without_source_mapping',
       });
       continue;
@@ -305,7 +393,9 @@ async function census(panel, fingerprintKey) {
       });
     }
   }
-  let settingsAvailable = navigationRaw.some((item) => item.label === 'Settings');
+  let settingsAvailable = navigationRaw.some(
+    (item) => item.label === 'Settings' && item.safe_to_open,
+  );
   if (settingsAvailable)
     try {
       navigation_actions.push({ kind: 'direct_tab', label: 'Settings' });
@@ -324,15 +414,17 @@ async function census(panel, fingerprintKey) {
       inaccessible_regions.push({ region: 'settings_tab', reason: 'inspection_failed' });
     }
   const sectionRaw = settingsAvailable
-    ? await visible(panel, 'button[aria-expanded]', [...settingsSections], false, fingerprintKey)
+    ? await evaluate(panel, discoveryExpression('section', fingerprintKey))
     : [];
   const sections = mapObservation('section', sectionRaw);
   const controls = {};
   for (const section of sectionRaw) {
-    if (!settingsSections.has(section.label)) {
+    if (!settingsSections.has(section.label) || !section.safe_to_open) {
       inaccessible_regions.push({
         region: 'unmapped_expander',
-        label_fingerprint: section.label_fingerprint,
+        ...(section.label
+          ? { label: section.label }
+          : { label_fingerprint: section.label_fingerprint }),
         reason: 'not_opened_without_source_mapping',
       });
       continue;
@@ -378,8 +470,18 @@ export function censusCompleteness(observation, blockedTotal) {
     ...Object.values(observation.surfaces),
     ...Object.values(observation.controls),
   ];
+  const unsupported = buckets.reduce(
+    (sum, bucket) => sum + (bucket.unsupported_trigger_count ?? 0),
+    0,
+  );
   const unmapped = buckets.reduce((sum, bucket) => sum + bucket.unmapped_count, 0);
   const missingRequiredRegions = [];
+  if (
+    observation.authentication?.role === 'guest' &&
+    (observation.authentication.signed_out_observed !== true ||
+      observation.authentication_after?.signed_out_observed !== true)
+  )
+    missingRequiredRegions.push('guest_signed_out_evidence');
   if (!observation.navigation?.total) missingRequiredRegions.push('navigation');
   const visibleTabs = new Set(observation.navigation?.mapped.map((item) => item.label) ?? []);
   if (!visibleTabs.has('Settings')) missingRequiredRegions.push('settings_tab');
@@ -397,9 +499,11 @@ export function censusCompleteness(observation, blockedTotal) {
     complete:
       blockedTotal === 0 &&
       unmapped === 0 &&
+      unsupported === 0 &&
       observation.inaccessible_regions.length === 0 &&
       missingRequiredRegions.length === 0,
     unmapped_total: unmapped,
+    unsupported_trigger_count: unsupported,
     inaccessible_count: observation.inaccessible_regions.length,
     blocked_request_count: blockedTotal,
     missing_required_regions: missingRequiredRegions,
@@ -435,7 +539,7 @@ async function main() {
     expectedRelease: { version: receipt.version, treeSha256: evidence.treeSha256 },
     expectedExtensionId: EXPECTED_ID,
     exercisePanel: async ({ page, panel, activatePanel, attachWorker }) => {
-      let authentication = { role: 'guest' };
+      let authentication;
       if (ROLE !== 'guest') {
         const signedIn = await signInSettings({
           mode: ROLE,
@@ -461,7 +565,12 @@ async function main() {
       try {
         panelGuard = await mutationGuard(panel);
         workerGuard = await mutationGuard(worker);
+        if (ROLE === 'guest') authentication = await prepareGuestObservation(panel, fingerprintKey);
         observation = { authentication, ...(await census(panel, fingerprintKey)) };
+        if (ROLE === 'guest') {
+          await openSection(panel, 'Account');
+          observation.authentication_after = await observeGuestAuthentication(panel);
+        }
         interception = {
           scope: ['sidepanel', 'extension_worker'],
           effect: 'HTTP(S) methods other than GET/HEAD/OPTIONS aborted during observation',
