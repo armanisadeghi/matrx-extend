@@ -1,0 +1,154 @@
+{"schema":1,"at":"2026-10-07T08:13:39.452Z","runId":"d47-prior-saved-reader-20261007","path":"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/d47-prior-saved-reader-20261007.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-07T08:14:46.671Z","runId":"d47-prior-saved-reader-20261007","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":12.48,"requiredMemoryGiB":4,"oneMinuteLoad":2.74,"logicalCpus":10,"cpuBusyFraction":0.08714285714285716,"swapUsedMiB":2753.56,"repoFreeGiB":1681.1760063171387,"profileFreeGiB":1681.1760063171387,"safetyFreeGiB":23.29983901977539,"systemFreeGiB":23.29983901977539},"cpuBusySamples":[0.09,0.07,0.06,0.07,0.07,0.07,0.18],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+✖ second saved run requires its distinct exact result, never the first preview (0.348833ms)
+✖ actual root preview is accepted while CSS uppercase defeats the old body innerText predicate but preserves exact source identity (0.020792ms)
+✖ a different or prefix-matching recipe does not certify the saved result (0.0175ms)
+✖ a hidden header does not certify a stale preview (0.014959ms)
+✖ the current row must be in the preview associated with the exact header (0.022ms)
+✖ a preview containing both current and old rows cannot certify the terminal result (0.016333ms)
+✖ a current cell alongside any unexpected saved result cannot certify the terminal result (0.018ms)
+✖ a renamed result column cannot certify the saved recipe (0.018791ms)
+✖ exact saved row remains nonterminal until its live Run control clears (0.026292ms)
+✖ stale-only refusal requires the visible specific error, idle exact Run control, and no preview (0.032625ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 0
+ℹ fail 10
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 223.153959
+
+✖ failing tests:
+
+test at tests/browser/showcase-d47-saved-result.test.mjs:78:1
+✖ second saved run requires its distinct exact result, never the first preview (0.348833ms)
+  Error: browser_runtime_playwright_missing: install Playwright in this repo or set MATRX_PLAYWRIGHT_MODULE to an installed playwright/index.mjs
+      at resolveBrowserRuntime (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/browser-runtime.mjs:28:13)
+      at TestContext.<anonymous> (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/showcase-d47-saved-result.test.mjs:25:25)
+      at TestHook.runInAsyncScope (node:async_hooks:226:14)
+      at TestHook.run (node:internal/test_runner/test:1118:25)
+      at TestHook.run (node:internal/test_runner/test:1442:18)
+      at TestHook.run (node:internal/util:602:20)
+      at Test.createHook (node:internal/test_runner/test:929:33)
+      at node:internal/test_runner/harness:397:12
+      at file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/showcase-d47-saved-result.test.mjs:24:1
+
+test at tests/browser/showcase-d47-saved-result.test.mjs:94:1
+✖ actual root preview is accepted while CSS uppercase defeats the old body innerText predicate but preserves exact source identity (0.020792ms)
+  Error: browser_runtime_playwright_missing: install Playwright in this repo or set MATRX_PLAYWRIGHT_MODULE to an installed playwright/index.mjs
+      at resolveBrowserRuntime (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/browser-runtime.mjs:28:13)
+      at TestContext.<anonymous> (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/showcase-d47-saved-result.test.mjs:25:25)
+      at TestHook.runInAsyncScope (node:async_hooks:226:14)
+      at TestHook.run (node:internal/test_runner/test:1118:25)
+      at TestHook.run (node:internal/test_runner/test:1442:18)
+      at TestHook.run (node:internal/util:602:20)
+      at Test.createHook (node:internal/test_runner/test:929:33)
+      at node:internal/test_runner/harness:397:12
+      at file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/showcase-d47-saved-result.test.mjs:24:1
+
+test at tests/browser/showcase-d47-saved-result.test.mjs:104:1
+✖ a different or prefix-matching recipe does not certify the saved result (0.0175ms)
+  Error: browser_runtime_playwright_missing: install Playwright in this repo or set MATRX_PLAYWRIGHT_MODULE to an installed playwright/index.mjs
+      at resolveBrowserRuntime (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/browser-runtime.mjs:28:13)
+      at TestContext.<anonymous> (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/showcase-d47-saved-result.test.mjs:25:25)
+      at TestHook.runInAsyncScope (node:async_hooks:226:14)
+      at TestHook.run (node:internal/test_runner/test:1118:25)
+      at TestHook.run (node:internal/test_runner/test:1442:18)
+      at TestHook.run (node:internal/util:602:20)
+      at Test.createHook (node:internal/test_runner/test:929:33)
+      at node:internal/test_runner/harness:397:12
+      at file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/showcase-d47-saved-result.test.mjs:24:1
+
+test at tests/browser/showcase-d47-saved-result.test.mjs:112:1
+✖ a hidden header does not certify a stale preview (0.014959ms)
+  Error: browser_runtime_playwright_missing: install Playwright in this repo or set MATRX_PLAYWRIGHT_MODULE to an installed playwright/index.mjs
+      at resolveBrowserRuntime (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/browser-runtime.mjs:28:13)
+      at TestContext.<anonymous> (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/showcase-d47-saved-result.test.mjs:25:25)
+      at TestHook.runInAsyncScope (node:async_hooks:226:14)
+      at TestHook.run (node:internal/test_runner/test:1118:25)
+      at TestHook.run (node:internal/test_runner/test:1442:18)
+      at TestHook.run (node:internal/util:602:20)
+      at Test.createHook (node:internal/test_runner/test:929:33)
+      at node:internal/test_runner/harness:397:12
+      at file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/showcase-d47-saved-result.test.mjs:24:1
+
+test at tests/browser/showcase-d47-saved-result.test.mjs:118:1
+✖ the current row must be in the preview associated with the exact header (0.022ms)
+  Error: browser_runtime_playwright_missing: install Playwright in this repo or set MATRX_PLAYWRIGHT_MODULE to an installed playwright/index.mjs
+      at resolveBrowserRuntime (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/browser-runtime.mjs:28:13)
+      at TestContext.<anonymous> (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/showcase-d47-saved-result.test.mjs:25:25)
+      at TestHook.runInAsyncScope (node:async_hooks:226:14)
+      at TestHook.run (node:internal/test_runner/test:1118:25)
+      at TestHook.run (node:internal/test_runner/test:1442:18)
+      at TestHook.run (node:internal/util:602:20)
+      at Test.createHook (node:internal/test_runner/test:929:33)
+      at node:internal/test_runner/harness:397:12
+      at file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/showcase-d47-saved-result.test.mjs:24:1
+
+test at tests/browser/showcase-d47-saved-result.test.mjs:128:1
+✖ a preview containing both current and old rows cannot certify the terminal result (0.016333ms)
+  Error: browser_runtime_playwright_missing: install Playwright in this repo or set MATRX_PLAYWRIGHT_MODULE to an installed playwright/index.mjs
+      at resolveBrowserRuntime (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/browser-runtime.mjs:28:13)
+      at TestContext.<anonymous> (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/showcase-d47-saved-result.test.mjs:25:25)
+      at TestHook.runInAsyncScope (node:async_hooks:226:14)
+      at TestHook.run (node:internal/test_runner/test:1118:25)
+      at TestHook.run (node:internal/test_runner/test:1442:18)
+      at TestHook.run (node:internal/util:602:20)
+      at Test.createHook (node:internal/test_runner/test:929:33)
+      at node:internal/test_runner/harness:397:12
+      at file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/showcase-d47-saved-result.test.mjs:24:1
+
+test at tests/browser/showcase-d47-saved-result.test.mjs:153:1
+✖ a current cell alongside any unexpected saved result cannot certify the terminal result (0.018ms)
+  Error: browser_runtime_playwright_missing: install Playwright in this repo or set MATRX_PLAYWRIGHT_MODULE to an installed playwright/index.mjs
+      at resolveBrowserRuntime (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/browser-runtime.mjs:28:13)
+      at TestContext.<anonymous> (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/showcase-d47-saved-result.test.mjs:25:25)
+      at TestHook.runInAsyncScope (node:async_hooks:226:14)
+      at TestHook.run (node:internal/test_runner/test:1118:25)
+      at TestHook.run (node:internal/test_runner/test:1442:18)
+      at TestHook.run (node:internal/util:602:20)
+      at Test.createHook (node:internal/test_runner/test:929:33)
+      at node:internal/test_runner/harness:397:12
+      at file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/showcase-d47-saved-result.test.mjs:24:1
+
+test at tests/browser/showcase-d47-saved-result.test.mjs:195:1
+✖ a renamed result column cannot certify the saved recipe (0.018791ms)
+  Error: browser_runtime_playwright_missing: install Playwright in this repo or set MATRX_PLAYWRIGHT_MODULE to an installed playwright/index.mjs
+      at resolveBrowserRuntime (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/browser-runtime.mjs:28:13)
+      at TestContext.<anonymous> (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/showcase-d47-saved-result.test.mjs:25:25)
+      at TestHook.runInAsyncScope (node:async_hooks:226:14)
+      at TestHook.run (node:internal/test_runner/test:1118:25)
+      at TestHook.run (node:internal/test_runner/test:1442:18)
+      at TestHook.run (node:internal/util:602:20)
+      at Test.createHook (node:internal/test_runner/test:929:33)
+      at node:internal/test_runner/harness:397:12
+      at file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/showcase-d47-saved-result.test.mjs:24:1
+
+test at tests/browser/showcase-d47-saved-result.test.mjs:201:1
+✖ exact saved row remains nonterminal until its live Run control clears (0.026292ms)
+  Error: browser_runtime_playwright_missing: install Playwright in this repo or set MATRX_PLAYWRIGHT_MODULE to an installed playwright/index.mjs
+      at resolveBrowserRuntime (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/browser-runtime.mjs:28:13)
+      at TestContext.<anonymous> (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/showcase-d47-saved-result.test.mjs:25:25)
+      at TestHook.runInAsyncScope (node:async_hooks:226:14)
+      at TestHook.run (node:internal/test_runner/test:1118:25)
+      at TestHook.run (node:internal/test_runner/test:1442:18)
+      at TestHook.run (node:internal/util:602:20)
+      at Test.createHook (node:internal/test_runner/test:929:33)
+      at node:internal/test_runner/harness:397:12
+      at file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/showcase-d47-saved-result.test.mjs:24:1
+
+test at tests/browser/showcase-d47-saved-result.test.mjs:282:1
+✖ stale-only refusal requires the visible specific error, idle exact Run control, and no preview (0.032625ms)
+  Error: browser_runtime_playwright_missing: install Playwright in this repo or set MATRX_PLAYWRIGHT_MODULE to an installed playwright/index.mjs
+      at resolveBrowserRuntime (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/browser-runtime.mjs:28:13)
+      at TestContext.<anonymous> (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/showcase-d47-saved-result.test.mjs:25:25)
+      at TestHook.runInAsyncScope (node:async_hooks:226:14)
+      at TestHook.run (node:internal/test_runner/test:1118:25)
+      at TestHook.run (node:internal/test_runner/test:1442:18)
+      at TestHook.run (node:internal/util:602:20)
+      at Test.createHook (node:internal/test_runner/test:929:33)
+      at node:internal/test_runner/harness:397:12
+      at file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/showcase-d47-saved-result.test.mjs:24:1
+{"schema":1,"at":"2026-10-07T08:14:46.984Z","runId":"d47-prior-saved-reader-20261007","childExitCode":1,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-07T08:14:47.021Z","runId":"d47-prior-saved-reader-20261007","admitted":true,"resourceInvalid":false,"exitCode":1,"decision":"child_failed","code":"RESOURCE_FINAL_DECISION"}

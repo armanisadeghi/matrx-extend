@@ -111,6 +111,15 @@ test('D47 manual-prior route selects the existing saved replay driver', () => {
   assert.equal(route.env.MATRX_D47_RESPONSE_ORDER, 'manual-prior');
 });
 
+test('D47 prior-saved route dispatches two-run native driver on the same exact artifact', () => {
+  const route = hostedShowcaseRoute('showcase-d47-admin', prepared, runner, 'prior-saved');
+  assert.equal(route.driver, 'tests/browser/showcase-d47-document-lifecycle.mjs');
+  assert.equal(route.env.MATRX_D47_RESPONSE_ORDER, 'prior-saved');
+  assert.equal(route.env.MATRX_SHOWCASE_CI_SOURCE_SHA, prepared.sourceSha);
+  assert.equal(route.env.MATRX_SHOWCASE_CI_ARTIFACT_ID, String(prepared.artifactId));
+  assert.equal(route.env.MATRX_SHOWCASE_OUTPUT, '/private/results/showcase-d47-native-42-1.json');
+});
+
 test('public D47 route uses its own exact-artifact native receipt and never inherits fixture ordering', () => {
   const route = hostedShowcaseRoute('showcase-d47-public-admin', prepared, runner, 'old-first');
   assert.equal(route.driver, 'tests/browser/showcase-d47-public-initial-load.mjs');

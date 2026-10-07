@@ -48,7 +48,7 @@ const markup = ({
     </div>
   </div>`;
 
-async function observe(html) {
+async function observe(html, expectedRun = 'first') {
   await page.setContent(html);
   const readerSource =
     process.env.D47_READER_MUTANT === 'constant_success'
@@ -71,9 +71,23 @@ async function observe(html) {
   const oldNeedle = JSON.stringify(`Last run: ${recipe}`);
   return page.evaluate(`({
     old_predicate: document.body.innerText.includes(${oldNeedle}),
-    saved: (${readerSource})(document, ${expected}),
+    saved: (${readerSource})(document, ${expected}, ${JSON.stringify(expectedRun)}),
   })`);
 }
+
+test('second saved run requires its distinct exact result, never the first preview', async () => {
+  const first = await observe(markup(), 'second');
+  assert.equal(first.saved.current_row, false);
+  assert.equal(first.saved.old_row, true);
+  assert.equal(first.saved.preview_status, 'old_only');
+  const second = await observe(
+    markup({ row: '[{"eventName":"Silver Meridian"}]</td><td>second' }),
+    'second',
+  );
+  assert.equal(second.saved.current_row, true);
+  assert.equal(second.saved.old_row, false);
+  assert.equal(second.saved.preview_status, 'current_only');
+});
 
 // Native driver selects the response then saves without clicking JsonTree: key_path=[].
 // rowsFromBody returns the root; ResultPreview renders events as compact JSON plus document.

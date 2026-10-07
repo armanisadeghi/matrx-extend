@@ -1,5 +1,5 @@
 /** Read the saved Patterns result from its visible DOM group, not panel-wide rendered text. */
-export function readD47SavedResult(doc, recipe) {
+export function readD47SavedResult(doc, recipe, expectedRun = 'first') {
   const visible = (element) => {
     if (!element || element.getClientRects().length === 0) return false;
     const style = doc.defaultView.getComputedStyle(element);
@@ -21,6 +21,8 @@ export function readD47SavedResult(doc, recipe) {
   const cells = rows.flatMap((row) => [...row.querySelectorAll('td')].filter(visible));
   // The driver saves the selected response at key_path=[] (no JsonTree selection).
   // rowsFromBody yields the root object; ResultPreview stringifies its events array.
+  const expectedEvent = expectedRun === 'second' ? 'Silver Meridian' : 'Canyon Frequency';
+  const expectedDocument = expectedRun === 'second' ? 'second' : 'current';
   const exactResult =
     tables.length === 1 &&
     headings.length === 2 &&
@@ -28,11 +30,15 @@ export function readD47SavedResult(doc, recipe) {
     headings[1].textContent.trim() === 'document' &&
     rows.length === 1 &&
     cells.length === 2 &&
-    cells[0].textContent.trim() === '[{"eventName":"Canyon Frequency"}]' &&
-    cells[1].textContent.trim() === 'current';
-  const oldCell = cells.some((cell) => cell.textContent.includes('"eventName":"Moonlit Transit"'));
+    cells[0].textContent.trim() === `[{"eventName":"${expectedEvent}"}]` &&
+    cells[1].textContent.trim() === expectedDocument;
+  const oldCell = cells.some((cell) =>
+    ['Moonlit Transit', ...(expectedRun === 'second' ? ['Canyon Frequency'] : [])].some((name) =>
+      cell.textContent.includes(`"eventName":"${name}"`),
+    ),
+  );
   const currentCell = cells.some((cell) =>
-    cell.textContent.includes('"eventName":"Canyon Frequency"'),
+    cell.textContent.includes(`"eventName":"${expectedEvent}"`),
   );
   return {
     exact_recipe: exactRecipe,

@@ -396,7 +396,7 @@ const server = createServer(async (request, response) => {
         });
         response
           .writeHead(200, { 'Content-Type': 'application/json' })
-          .end(JSON.stringify({ events: [{ eventName: 'Silver Meridian' }], document: 'second' }));
+          .end(JSON.stringify({ events: [{ eventName: 'Canyon Frequency' }], document: 'second' }));
         return;
       }
       return response.writeHead(409).end('Unexpected saved replay request.');

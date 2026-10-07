@@ -1,0 +1,65 @@
+PLANTED in /Volumes/Samsung2TB/code/matrx-extend/.research/d47-prior-saved-native-route-20261007/serve-second-response-mutant.mjs
+RESTORED /Volumes/Samsung2TB/code/matrx-extend/.research/d47-prior-saved-native-route-20261007/serve-second-response-mutant.mjs sha=6e70907187aa original_sha=6e70907187aa IDENTICAL
+----- command output (tail) -----
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 passed (7)
+     Errors  1 error
+   Start at  01:26:25
+   Duration  783ms (transform 17ms, setup 46ms, import 10ms, tests 548ms, environment 93ms)
+
+{"schema":1,"at":"2026-10-07T08:26:25.880Z","runId":"d47-prior-saved-fixture-final-red-20261007","childExitCode":1,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-07T08:26:25.919Z","runId":"d47-prior-saved-fixture-final-red-20261007","admitted":true,"resourceInvalid":false,"exitCode":1,"decision":"child_failed","code":"RESOURCE_FINAL_DECISION"}
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - `__dirname` (vitest.config.ts:7:25). Use `import.meta.dirname` instead
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/showcase-d47-fixture.test.ts > holds a real first saved-run request through a distinct second saved-run response
+AssertionError: expected { …(2) } to deeply equal { …(2) }
+
+- Expected
++ Received
+
+  {
+    "document": "second",
+    "events": [
+      {
+-       "eventName": "Silver Meridian",
++       "eventName": "Canyon Frequency",
+      },
+    ],
+  }
+
+ ❯ tests/unit/showcase-d47-fixture.test.ts:153:25
+    151|   expect((await get(`${origin}/document-race/`)).text).toContain('id="…
+    152|   const second = await get(`${origin}/api/document-race`);
+    153|   expect(second.json()).toEqual({
+       |                         ^
+    154|     events: [{ eventName: 'Silver Meridian' }],
+    155|     document: 'second',
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: socket hang up
+ ❯ Socket.socketOnEnd node:_http_client:599:25
+ ❯ Socket.emit node:events:520:22
+ ❯ endReadableNT node:internal/streams/readable:1729:12
+ ❯ processTicksAndRejections node:internal/process/task_queues:90:21
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { code: 'ECONNRESET' }
+This error originated in "tests/unit/showcase-d47-fixture.test.ts" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The latest test that might've caused the error is "holds a real first saved-run request through a distinct second saved-run response". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+---------------------------------
+VERDICT: RED (rc=1, expected RED)

@@ -1,0 +1,143 @@
+{"schema":1,"at":"2026-10-07T08:21:04.216Z","runId":"d47-prior-saved-reader-constant-red-20261007","path":"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/d47-prior-saved-reader-constant-red-20261007.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-07T08:22:11.456Z","runId":"d47-prior-saved-reader-constant-red-20261007","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":12.16,"requiredMemoryGiB":4,"oneMinuteLoad":2.07,"logicalCpus":10,"cpuBusyFraction":0.09,"swapUsedMiB":2745.56,"repoFreeGiB":1681.1764297485352,"profileFreeGiB":1681.1764297485352,"safetyFreeGiB":23.284011840820312,"systemFreeGiB":23.284011840820312},"cpuBusySamples":[0.12,0.13,0.07,0.06,0.06,0.08,0.11],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+✖ second saved run requires its distinct exact result, never the first preview (896.197542ms)
+✔ actual root preview is accepted while CSS uppercase defeats the old body innerText predicate but preserves exact source identity (2.112042ms)
+✖ a different or prefix-matching recipe does not certify the saved result (1.331375ms)
+✖ a hidden header does not certify a stale preview (1.392083ms)
+✖ the current row must be in the preview associated with the exact header (1.725459ms)
+✖ a preview containing both current and old rows cannot certify the terminal result (1.372875ms)
+✖ a current cell alongside any unexpected saved result cannot certify the terminal result (1.314416ms)
+✖ a renamed result column cannot certify the saved recipe (1.310084ms)
+✔ exact saved row remains nonterminal until its live Run control clears (10.863792ms)
+✔ stale-only refusal requires the visible specific error, idle exact Run control, and no preview (6.858ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 3
+ℹ fail 7
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1234.610125
+
+✖ failing tests:
+
+test at tests/browser/showcase-d47-saved-result.test.mjs:78:1
+✖ second saved run requires its distinct exact result, never the first preview (896.197542ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/showcase-d47-saved-result.test.mjs:80:10)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/browser/showcase-d47-saved-result.test.mjs:104:1
+✖ a different or prefix-matching recipe does not certify the saved result (1.331375ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/showcase-d47-saved-result.test.mjs:107:12)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/browser/showcase-d47-saved-result.test.mjs:112:1
+✖ a hidden header does not certify a stale preview (1.392083ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/showcase-d47-saved-result.test.mjs:114:10)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/browser/showcase-d47-saved-result.test.mjs:118:1
+✖ the current row must be in the preview associated with the exact header (1.725459ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/showcase-d47-saved-result.test.mjs:123:10)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/browser/showcase-d47-saved-result.test.mjs:128:1
+✖ a preview containing both current and old rows cannot certify the terminal result (1.372875ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/showcase-d47-saved-result.test.mjs:135:10)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/browser/showcase-d47-saved-result.test.mjs:153:1
+✖ a current cell alongside any unexpected saved result cannot certify the terminal result (1.314416ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/showcase-d47-saved-result.test.mjs:178:12)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/browser/showcase-d47-saved-result.test.mjs:195:1
+✖ a renamed result column cannot certify the saved recipe (1.310084ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///Volumes/Samsung2TB/code/matrx-extend/tests/browser/showcase-d47-saved-result.test.mjs:198:10)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+{"schema":1,"at":"2026-10-07T08:22:12.773Z","runId":"d47-prior-saved-reader-constant-red-20261007","childExitCode":1,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-07T08:22:12.813Z","runId":"d47-prior-saved-reader-constant-red-20261007","admitted":true,"resourceInvalid":false,"exitCode":1,"decision":"child_failed","code":"RESOURCE_FINAL_DECISION"}

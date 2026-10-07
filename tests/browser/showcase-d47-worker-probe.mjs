@@ -35,7 +35,7 @@ export async function installPassiveWorkerProbe(worker, origin, onAttempt) {
             request_body_key: packet?.request_body_key === 'none' ? 'none' : 'other',
             status: packet?.status ?? null,
             request_sequence: Number.isSafeInteger(packet?.request_sequence) ? packet.request_sequence : null,
-            current_payload: packet?.body === ${JSON.stringify(JSON.stringify({ events: [{ eventName: 'Canyon Frequency' }], document: 'current' }))},
+            current_payload: [${JSON.stringify(JSON.stringify({ events: [{ eventName: 'Canyon Frequency' }], document: 'current' }))}, ${JSON.stringify(JSON.stringify({ events: [{ eventName: 'Silver Meridian' }], document: 'second' }))}].includes(packet?.body),
             old_payload: typeof packet?.body === 'string' && packet.body.includes('Moonlit Transit'), body_sha256: null };
           observed.push(event);
           if (typeof packet?.body === 'string') pending.push(crypto.subtle.digest('SHA-256', new TextEncoder().encode(packet.body))

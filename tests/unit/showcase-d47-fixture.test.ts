@@ -122,14 +122,67 @@ it('manual old-page fetch completes without consuming the held replay request', 
   });
 });
 
-async function executeFixturePage(html: string, origin: string) {
+it('holds a real first saved-run request through a distinct second saved-run response', async () => {
+  const origin = await fixtureOrigin();
+  await get(`${origin}/document-race/`);
+  expect((await get(`${origin}/control/document-race/arm?response_order=prior-saved`)).status).toBe(
+    200,
+  );
+  expect((await get(`${origin}/document-race/`)).text).toContain('id="phase">old');
+  const old = get(`${origin}/api/document-race`);
+  void old.catch(() => undefined);
+  await expect
+    .poll(async () => (await get(`${origin}/control/document-race/status`)).json())
+    .toMatchObject({ old_pending: true, target_requests: 1 });
+  const firstPage = (await get(`${origin}/document-race/`)).text;
+  expect(firstPage).toContain('id="phase">first-saved');
+  expect(firstPage).toContain("'X-D47-Prior-Saved': 'held'");
+  const held: ReturnType<typeof get>[] = [];
+  expect(await executeFixturePage(firstPage, origin, held)).toBe('Canyon Frequency');
+  expect(held).toHaveLength(1);
+  await expect
+    .poll(async () => (await get(`${origin}/control/document-race/status`)).json())
+    .toMatchObject({
+      prior_saved_first_finished: true,
+      prior_saved_pending: true,
+      target_requests: 2,
+    });
+  expect((await get(`${origin}/control/document-race/release-prior-saved`)).status).toBe(409);
+  expect((await get(`${origin}/document-race/`)).text).toContain('id="phase">current');
+  const second = await get(`${origin}/api/document-race`);
+  expect(second.json()).toEqual({
+    events: [{ eventName: 'Silver Meridian' }],
+    document: 'second',
+  });
+  expect((await get(`${origin}/control/document-race/release-prior-saved`)).status).toBe(200);
+  expect((await held[0]).json()).toEqual({
+    events: [{ eventName: 'Moonlit Transit' }],
+    document: 'prior',
+  });
+  expect((await get(`${origin}/control/document-race/status`)).json()).toMatchObject({
+    prior_saved_first_finished: true,
+    prior_saved_second_finished: true,
+    prior_saved_finished: true,
+    target_requests: 3,
+  });
+});
+
+async function executeFixturePage(
+  html: string,
+  origin: string,
+  heldRequests: ReturnType<typeof get>[] = [],
+) {
   const script = /<script>([\s\S]*?)<\/script>/.exec(html)?.[1];
   expect(script).toBeTruthy();
   const result = { textContent: 'Waiting for the event schedule' };
   await runInNewContext(script ?? '', {
-    fetch: async (path: string) => {
-      const response = await get(`${origin}${path}`);
-      return { json: response.json };
+    fetch: async (path: string, options: { headers?: Record<string, string> } = {}) => {
+      const response = get(`${origin}${path}`, options.headers);
+      if (options.headers?.['X-D47-Prior-Saved'] === 'held') {
+        void response.catch(() => undefined);
+        heldRequests.push(response);
+      }
+      return { json: async () => (await response).json() };
     },
     document: { querySelector: () => result },
   });

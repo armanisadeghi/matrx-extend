@@ -1,0 +1,52 @@
+PLANTED in /Volumes/Samsung2TB/code/matrx-extend/.research/d47-prior-saved-native-route-20261007/serve-second-response-mutant.mjs
+RESTORED /Volumes/Samsung2TB/code/matrx-extend/.research/d47-prior-saved-native-route-20261007/serve-second-response-mutant.mjs sha=6e70907187aa original_sha=6e70907187aa IDENTICAL
+----- command output (tail) -----
+{"schema":1,"at":"2026-10-07T08:28:23.090Z","runId":"d47-prior-saved-fixture-clean-red-20261007","path":"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/d47-prior-saved-fixture-clean-red-20261007.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-07T08:29:30.304Z","runId":"d47-prior-saved-fixture-clean-red-20261007","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":12.32,"requiredMemoryGiB":4,"oneMinuteLoad":0.8699999999999999,"logicalCpus":10,"cpuBusyFraction":0.07714285714285715,"swapUsedMiB":2737.56,"repoFreeGiB":1681.1801948547363,"profileFreeGiB":1681.1801948547363,"safetyFreeGiB":23.2845458984375,"systemFreeGiB":23.2845458984375},"cpuBusySamples":[0.07,0.07,0.06,0.06,0.14,0.06,0.08],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+
+ RUN  v4.1.11 /Volumes/Samsung2TB/code/matrx-extend
+
+ ❯ tests/unit/showcase-d47-fixture.test.ts (7 tests | 1 failed) 561ms
+   × holds a real first saved-run request through a distinct second saved-run response 84ms
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 passed (7)
+   Start at  01:29:30
+   Duration  891ms (transform 19ms, setup 74ms, import 10ms, tests 561ms, environment 152ms)
+
+{"schema":1,"at":"2026-10-07T08:29:31.819Z","runId":"d47-prior-saved-fixture-clean-red-20261007","childExitCode":1,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-07T08:29:31.859Z","runId":"d47-prior-saved-fixture-clean-red-20261007","admitted":true,"resourceInvalid":false,"exitCode":1,"decision":"child_failed","code":"RESOURCE_FINAL_DECISION"}
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - `__dirname` (vitest.config.ts:7:25). Use `import.meta.dirname` instead
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/showcase-d47-fixture.test.ts > holds a real first saved-run request through a distinct second saved-run response
+AssertionError: expected { …(2) } to deeply equal { …(2) }
+
+- Expected
++ Received
+
+  {
+    "document": "second",
+    "events": [
+      {
+-       "eventName": "Silver Meridian",
++       "eventName": "Canyon Frequency",
+      },
+    ],
+  }
+
+ ❯ tests/unit/showcase-d47-fixture.test.ts:153:25
+    151|   expect((await get(`${origin}/document-race/`)).text).toContain('id="…
+    152|   const second = await get(`${origin}/api/document-race`);
+    153|   expect(second.json()).toEqual({
+       |                         ^
+    154|     events: [{ eventName: 'Silver Meridian' }],
+    155|     document: 'second',
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+---------------------------------
+VERDICT: RED (rc=1, expected RED)

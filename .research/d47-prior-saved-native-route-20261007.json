@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "status": "review_ready_qa_route_native_unverified",
+  "scope": "QA-only native prior-saved-run branch; no app runtime, auth, DB, build, release or native dispatch change",
+  "route": "showcase-d47-admin with d47_response_order=prior-saved",
+  "positive_controls": [
+    "first actual saved Pattern run settles on exact Canyon Frequency/current preview and first binding/context packet",
+    "first page starts an additional held same-URL fetch while its saved run is active",
+    "second actual saved Pattern run must yield a distinct Silver Meridian/second packet, binding, context, navigation commit, exact settled preview and live page result before held response release"
+  ],
+  "late_response_verdict": "After positive second packet, release first-run held HTTP response. Report server finish, browser abort and observed old binding packet separately; server finish alone never claims browser callback delivery or rejection.",
+  "source_hashes_sha256": {
+    ".github/workflows/hosted-guest-acceptance.yml": "d2d514ae3e04aa3faafdc331464942a83d51069df366004ab32868b1e31a07c4",
+    "scripts/hosted-showcase-route.mjs": "c1b963101be5bdbc52be154d6be2f5dd6f5d284de4aa8f84706d206670b7d6ed",
+    "scripts/hosted-showcase-route.test.mjs": "e205df13a3b225631251fa4fd1762ff7fa5de40ff8b31f6a636fa48f6c5cf0ac",
+    "tests/browser/showcase-d47-document-lifecycle.mjs": "12b35a92a4855809c95c709a093720e0d8b8d7327c700c303c97af9ae5c1c085",
+    "tests/browser/showcase-d47-saved-result.mjs": "764e98def892f66f467eb229a15a2a7c7e3df6d3bb0982cbc52662635116580b",
+    "tests/browser/showcase-d47-saved-result.test.mjs": "e55b16a9ee319e7d4805b60dff7efd67f6f69e629b25aa4bd190ba091aaa4cdc",
+    "tests/browser/showcase-d47-worker-probe.mjs": "d3b382c247faa3bd252b89465c11448dcb5517a6351245fd5feaea07db4e6df1",
+    "tests/fixtures/showcase-replay/serve.mjs": "6e70907187aae295285bb684adc0c02cca10b2e167a08b0a7ebe246090e6068e",
+    "tests/unit/showcase-d47-fixture.test.ts": "004cfe896794aa2e357c444a610a2d233dcebdca60cf8d21b60931388f228f10"
+  },
+  "retained_mutant": {
+    "path": ".research/d47-prior-saved-native-route-20261007/serve-second-response-retained-mutant.mjs",
+    "sha256": "515b1e4d6de2524378ec978e71570eb022fdd4c6ed87a112e09fdab6cee76a97",
+    "change": "Only second saved response eventName Silver Meridian to Canyon Frequency; tested with plant.py on a scratch copy, then restored."
+  },
+  "runs": [
+    {
+      "run_id": "d47-prior-saved-route-node2-20261007",
+      "outcome": "valid_green_13_of_13",
+      "stdout": ".research/d47-prior-saved-native-route-20261007/route.out",
+      "stdout_sha256": "7e8cddde09824affb07783b543f6206a08e4f6082098a2bd22b99ec179d0c19c",
+      "journal": "docs/stabilization/resource-journals/d47-prior-saved-route-node2-20261007.jsonl",
+      "journal_sha256": "45ef15198a3d10df50f9cc0ef533ee6f94d8448c1004814ed5661204eda9d16a"
+    },
+    {
+      "run_id": "d47-prior-saved-reader-retry-20261007",
+      "outcome": "valid_green_10_of_10",
+      "stdout": ".research/d47-prior-saved-native-route-20261007/reader-retry.out",
+      "stdout_sha256": "8c0cafbd98e60fa4a5f9efb6912db9dccbeaad42a4ae8249426bdd547d7d796b",
+      "journal": "docs/stabilization/resource-journals/d47-prior-saved-reader-retry-20261007.jsonl",
+      "journal_sha256": "3817bc9b086466518506982809041788060abf5af7228d02db385a8530a3d2c6"
+    },
+    {
+      "run_id": "d47-prior-saved-reader-constant-red-20261007",
+      "outcome": "valid_behavioral_red_second_run_constant_output",
+      "stdout": ".research/d47-prior-saved-native-route-20261007/reader-constant-red.out",
+      "stdout_sha256": "fdb0bda5de3f6b09cf6c027a07ca727308caae5c9fb5b3d90dfd3daa7cb62d80",
+      "journal": "docs/stabilization/resource-journals/d47-prior-saved-reader-constant-red-20261007.jsonl",
+      "journal_sha256": "d514f95040271a7e406a004c04a166b4a23480a6d70dd2c90ce2cf56644b5a17"
+    },
+    {
+      "run_id": "d47-prior-saved-fixture-clean-green-20261007",
+      "outcome": "valid_green_7_of_7",
+      "stdout": ".research/d47-prior-saved-native-route-20261007/fixture-clean-green.out",
+      "stdout_sha256": "61a202e92090989f89dda8bd1be2defb447c5125e06c2ab95b1da063c9292a22",
+      "journal": "docs/stabilization/resource-journals/d47-prior-saved-fixture-clean-green-20261007.jsonl",
+      "journal_sha256": "c13df0d5538a6759155c2ce4949633b222fa02ca1c0a9b45b21b7db4822dba42"
+    },
+    {
+      "run_id": "d47-prior-saved-fixture-clean-red-20261007",
+      "outcome": "valid_behavioral_red_1_failed_6_passed_exact_second_response",
+      "stdout": ".research/d47-prior-saved-native-route-20261007/fixture-clean-red.out",
+      "stdout_sha256": "a1062b3e7af37155f68afe5f8ecc2ba54e355120aa3b6225d19c1d1ff8262660",
+      "journal": "docs/stabilization/resource-journals/d47-prior-saved-fixture-clean-red-20261007.jsonl",
+      "journal_sha256": "c612473b66c8cf3027a6d55f0e7819e8957e557d151331031232f2d5921c3f3b"
+    }
+  ],
+  "superseded_attempts": [
+    {
+      "run_id": "d47-prior-saved-route-node-20261007",
+      "outcome": "refused_before_child_command_not_allowed_for_batched_node_test"
+    },
+    {
+      "run_id": "d47-prior-saved-reader-20261007",
+      "outcome": "resource_valid_setup_failure_missing_explicit_playwright_module"
+    },
+    {
+      "run_id": "d47-prior-saved-fixture-final-red-20261007",
+      "outcome": "intended_assertion_red_but_unhandled_socket_reset_from_test_teardown; superseded_by_clean_red"
+    }
+  ],
+  "verification": "Final focused fixture test executes the fixture page script, confirms one held request and distinct first/second HTTP bodies, refuses release before second response, and checks finished delayed response. Final scratch mutant hits only the second-result assertion with six siblings green and no unhandled error. Reader second-run test rejects stale first preview; constant-output mutant fails that test. Route test passes exact artifact/env selection. Driver and fixture node --check plus git diff --check pass after final edits.",
+  "limits": [
+    "No native browser execution or installed-artifact result in this lane; full D47/T57 remains unverified.",
+    "No natural old binding callback observed. Native run must classify browser cancellation or HTTP server finish as bounded exclusion unless a genuine callback packet is observed.",
+    "First and second binding/context/navigation provenance and exact saved UI completion are executable native assertions, not yet native observations."
+  ]
+}

@@ -42,7 +42,9 @@ import { runShowcaseOrganizationCheckpoint } from './showcase-organization-check
 const repo = resolve(import.meta.dirname, '../..');
 const responseOrder = process.env.MATRX_D47_RESPONSE_ORDER ?? 'current-first';
 assert.ok(
-  ['current-first', 'old-first', 'stale-only', 'manual-prior'].includes(responseOrder),
+  ['current-first', 'old-first', 'stale-only', 'manual-prior', 'prior-saved'].includes(
+    responseOrder,
+  ),
   'd47_response_order_invalid',
 );
 const output =
@@ -64,6 +66,7 @@ const report = {
     delayed_old_binding: 'unverified',
     cancellation: 'unverified',
     manual_prior_isolation: 'unverified',
+    prior_saved_run_isolation: 'unverified',
   },
   failure_code: null,
   failure: null,
@@ -681,6 +684,229 @@ try {
           );
           stage('saved_approval');
           await allow(panel);
+          if (responseOrder === 'prior-saved') {
+            stage('first_saved_http');
+            report.prior_saved = { first: {}, second: {}, delayed: {} };
+            report.prior_saved.first.http = await waitFor(
+              'first_saved_response_and_held_request',
+              () => status(origin),
+              (value) =>
+                value?.prior_saved_first_finished === true &&
+                value.prior_saved_pending === true &&
+                value.target_requests === 2,
+            );
+            stage('first_saved_terminal');
+            report.prior_saved.first.terminal = { sample_count: 0, last: null };
+            await waitD47SavedTerminal({
+              budget: terminalBudget,
+              read: () =>
+                evaluate(
+                  panel,
+                  `(() => ({
+                ...(${readD47SavedResult.toString()})(document, ${JSON.stringify(recipe)}),
+                ...(${readD47SavedRunState.toString()})(document, ${JSON.stringify(recipe)})
+              }))()`,
+                ),
+              record: (value) => {
+                report.prior_saved.first.terminal.sample_count++;
+                report.prior_saved.first.terminal.last = value;
+              },
+            });
+            assert.equal(await page.locator('#phase').textContent(), 'first-saved');
+            assert.equal(await page.locator('#result').textContent(), 'Canyon Frequency');
+            const firstObserved = await readPassiveWorkerProbe(worker);
+            const firstHash = createHash('sha256')
+              .update(
+                JSON.stringify({
+                  events: [{ eventName: 'Canyon Frequency' }],
+                  document: 'current',
+                }),
+              )
+              .digest('hex');
+            report.prior_saved.first.trace = assessD47Trace(firstObserved, {
+              origin,
+              oldPageContext,
+              expectedBodySha256: firstHash,
+            });
+            assert.equal(
+              report.prior_saved.first.trace.ok,
+              true,
+              report.prior_saved.first.trace.reason,
+            );
+            const firstPacket = firstObserved.find(
+              (event) =>
+                event.kind === 'binding' && event.target_packet && event.body_sha256 === firstHash,
+            );
+            const firstContext = firstObserved.find(
+              (event) =>
+                event.kind === 'context_created' &&
+                event.id === firstPacket?.context_id &&
+                event.tab_id === firstPacket.tab_id,
+            );
+            assert.ok(
+              firstPacket?.binding_name && firstContext?.unique_id,
+              'first_run_identity_missing',
+            );
+            report.prior_saved.first.identity = {
+              context_order: firstContext.order,
+              binding_sha256: createHash('sha256').update(firstPacket.binding_name).digest('hex'),
+              packet_order: firstPacket.order,
+            };
+            stage('second_saved_replay');
+            await trustedPanelClick(
+              panel,
+              'button[title], button[data-matrx-title]',
+              null,
+              recipe,
+              fixtureHost,
+              'Run pattern',
+            );
+            stage('second_saved_approval');
+            await allow(panel);
+            stage('second_saved_http');
+            report.prior_saved.second.http = await waitFor(
+              'second_saved_response',
+              () => status(origin),
+              (value) =>
+                value?.prior_saved_second_finished === true &&
+                value.target_requests === 3 &&
+                (value.prior_saved_pending === true || value.prior_saved_aborted === true),
+            );
+            const secondHash = createHash('sha256')
+              .update(
+                JSON.stringify({
+                  events: [{ eventName: 'Silver Meridian' }],
+                  document: 'second',
+                }),
+              )
+              .digest('hex');
+            stage('second_saved_trace');
+            const secondBeforeRelease = await waitFor(
+              'second_binding_positive_control',
+              async () => {
+                const observed = await readPassiveWorkerProbe(worker);
+                const second = observed?.find(
+                  (event) =>
+                    event.kind === 'binding' &&
+                    event.target_packet &&
+                    event.body_sha256 === secondHash,
+                );
+                const distinct = Boolean(
+                  second &&
+                    second.binding_name !== firstPacket.binding_name &&
+                    second.context_id !== firstPacket.context_id &&
+                    second.order > firstPacket.order,
+                );
+                return { observed, second, distinct };
+              },
+              (value) => value?.distinct === true,
+            );
+            const secondPacket = secondBeforeRelease.second;
+            const secondContext = secondBeforeRelease.observed.find(
+              (event) =>
+                event.kind === 'context_created' &&
+                event.id === secondPacket.context_id &&
+                event.tab_id === secondPacket.tab_id,
+            );
+            assert.ok(
+              secondContext?.unique_id &&
+                secondContext.unique_id !== firstContext.unique_id &&
+                secondContext.frame_id === firstContext.frame_id,
+              'second_run_document_identity_missing',
+            );
+            const secondCommit = secondBeforeRelease.observed.find(
+              (event) =>
+                event.kind === 'frame_navigated' &&
+                event.current_fixture &&
+                event.tab_id === secondPacket.tab_id &&
+                event.frame_id === secondContext.frame_id &&
+                event.order > secondContext.order,
+            );
+            assert.ok(secondCommit, 'second_run_navigation_commit_missing');
+            const secondTrace = [
+              firstContext,
+              ...secondBeforeRelease.observed.filter((event) => event.order > firstPacket.order),
+            ];
+            report.prior_saved.second.trace = assessD47Trace(secondTrace, {
+              origin,
+              oldPageContext: firstContext,
+              expectedBodySha256: secondHash,
+            });
+            assert.equal(
+              report.prior_saved.second.trace.ok,
+              true,
+              report.prior_saved.second.trace.reason,
+            );
+            report.prior_saved.second.identity = {
+              context_changed: secondPacket.context_id !== firstPacket.context_id,
+              binding_changed: secondPacket.binding_name !== firstPacket.binding_name,
+              binding_sha256: createHash('sha256').update(secondPacket.binding_name).digest('hex'),
+              packet_order: secondPacket.order,
+              commit_order: secondCommit.order,
+            };
+            stage('release_prior_saved_http');
+            const delayedRelease = await control(origin, 'release-prior-saved');
+            report.prior_saved.delayed = {
+              release_http_status: delayedRelease.status,
+              lifecycle: await status(origin),
+            };
+            assert.equal(
+              report.prior_saved.delayed.lifecycle.prior_saved_finished ||
+                report.prior_saved.delayed.lifecycle.prior_saved_aborted,
+              true,
+              'prior_saved_lifecycle_missing',
+            );
+            assert.equal(
+              delayedRelease.status,
+              report.prior_saved.delayed.lifecycle.prior_saved_finished ? 200 : 409,
+              'prior_saved_release_status_mismatch',
+            );
+            stage('second_saved_terminal');
+            report.prior_saved.second.terminal = { sample_count: 0, last: null };
+            await waitD47SavedTerminal({
+              budget: terminalBudget,
+              read: () =>
+                evaluate(
+                  panel,
+                  `(() => ({
+                ...(${readD47SavedResult.toString()})(document, ${JSON.stringify(recipe)}, 'second'),
+                ...(${readD47SavedRunState.toString()})(document, ${JSON.stringify(recipe)})
+              }))()`,
+                ),
+              record: (value) => {
+                report.prior_saved.second.terminal.sample_count++;
+                report.prior_saved.second.terminal.last = value;
+              },
+            });
+            assert.equal(await page.locator('#phase').textContent(), 'current');
+            assert.equal(await page.locator('#result').textContent(), 'Silver Meridian');
+            const afterRelease = await readPassiveWorkerProbe(worker);
+            const latePackets = afterRelease.filter(
+              (event) =>
+                event.kind === 'binding' &&
+                event.target_packet &&
+                event.old_payload &&
+                event.order > secondPacket.order,
+            );
+            report.prior_saved.delayed.callback_delivery =
+              latePackets.length > 0 ? 'observed_old_binding_packet' : 'not_observed';
+            report.prior_saved.delayed.old_binding_packet_count = latePackets.length;
+            if (latePackets.length > 0)
+              assert.ok(
+                latePackets.every((event) => event.binding_name === firstPacket.binding_name),
+                'late_packet_wrong_binding',
+              );
+            report.verdicts.current_saved_replay = 'pass';
+            report.verdicts.prior_saved_run_isolation =
+              latePackets.length > 0
+                ? 'delivered_old_binding_rejected_in_saved_result'
+                : report.prior_saved.delayed.lifecycle.prior_saved_finished
+                  ? 'bounded_server_finish_callback_not_observed'
+                  : 'bounded_browser_cancellation';
+            report.contexts = afterRelease.filter((event) => event.kind !== 'binding');
+            report.binding_events = afterRelease.filter((event) => event.kind === 'binding');
+            return;
+          }
           if (responseOrder === 'stale-only') {
             stage('current_probe_http');
             report.fixture = {
