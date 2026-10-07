@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0047",
   "feature_id": "EXT-F-1012",
-  "case_ids": [
-    "EXT-F-1012-T57"
-  ],
+  "case_ids": ["EXT-F-1012-T57"],
   "surface": "Showcase Network replay capture timing and document provenance",
   "auth_mode": "admin",
   "reproduction": [
@@ -60,10 +58,7 @@
     "terminal_diagnosis": ".research/d47-terminal-diagnosis-20261006.json",
     "owned_reload_fix_commit": "86046a88",
     "owned_reload_peer_report": ".research/d47-owned-reload-peer-20261006.json",
-    "owned_reload_revision_commits": [
-      "f0d90401",
-      "c12a0e9f"
-    ],
+    "owned_reload_revision_commits": ["f0d90401", "c12a0e9f"],
     "final_source_peer_commit": "7bc2a56e",
     "final_source_peer_report": ".research/d47-revision-final-peer-20261006.json",
     "source_fix_ci_run_id": 37542852254,
@@ -95,10 +90,7 @@
     "actual_shape_peer_report": ".research/d47-root-shape-peer-20261007.json",
     "latest_native_peer": ".research/d47-stale-arm-native-peer-20261007.json",
     "latest_recipe_cleanup": ".research/d47-stale-arm-native-20261007.json",
-    "completion_cleanup_commits": [
-      "a9ed51dd",
-      "823724eb"
-    ],
+    "completion_cleanup_commits": ["a9ed51dd", "823724eb"],
     "completion_cleanup_report": ".research/d47-completion-cleanup-fix-20261007.json",
     "completion_cleanup_review": ".research/d47-ack-cleanup-fresh-peer-20261007.json",
     "completion_cleanup_status": "Source correction independently accepted; native37558902653 now verifies settled exact-recipe completion and in-lifetime observer/owned-recipe cleanup at frozen-artifact scope. Fullcase remains unverified.",
