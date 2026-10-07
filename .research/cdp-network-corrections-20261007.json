@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent-procedure-correction-receipt",
+  "task_id": "cdp-network-procedures-20261007",
+  "proposal": ".research/cdp-network-procedures-20261007.json",
+  "independent_review": ".research/cdp-network-fresh-review-20261007.json",
+  "reviewed_commit": "3bc8b5e7",
+  "scope": ["EXT-F-4107-T01", "EXT-F-4108-T01", "EXT-F-4109-T01", "EXT-F-4110-T01"],
+  "method": "Applied each fresh-review finding after checking the cited inventory, ToolsView, CDP handler and CDP client sources. Source-only proposal correction; no tests, browser, database, permission changes, build or runtime execution.",
+  "findings": [
+    {
+      "case_id": "EXT-F-4107-T01",
+      "independent_finding_verbatim": "CORRECT: positive and schema-negative are source-aligned. Add a failure path if debugger attach succeeds but Network.enable rejects: start returns ok:false while attachment may remain; inspect only the verified owned tab and clean it up if it is the unique owned delta. Do not leave a known owned debugger attachment behind under the generic ambiguity rule.",
+      "disposition": "corrected",
+      "proposal_change": "Added a shared conditional failure cleanup: if start returns an error, compare the attachment list to baseline and detach only a unique new delta equal to this run's exact owned target ID; do nothing when there is no delta and never detach an ambiguous ID.",
+      "evidence": [
+        ".research/cdp-network-procedures-20261007.json",
+        "src/lib/cdp/client.ts:407-419",
+        "src/lib/tools/handlers/cdp.ts:405-413"
+      ]
+    },
+    {
+      "case_id": "EXT-F-4108-T01",
+      "independent_finding_verbatim": "CORRECT: put max=0 and max=2001 schema negatives after records are queued but before the valid drain; compare pre/post queue by the subsequent valid drain. The current after-drain negatives cannot prove records survived rejection. Keep the no-filter rule: filtering happens after splice and discards filtered-out records.",
+      "disposition": "corrected",
+      "proposal_change": "Moved each invalid max call ahead of a valid drain. Each negative is preceded by a completed load of the owned public target and followed by a valid drain that requires records from that load; the second max boundary gets a separate reload and preservation check. The procedure still avoids url_contains because filtering follows destructive splice.",
+      "evidence": [
+        ".research/cdp-network-procedures-20261007.json",
+        "src/features/tools/ToolsView.tsx:414-419",
+        "src/lib/tools/handlers/cdp.ts:417-444",
+        "src/lib/cdp/client.ts:430-435"
+      ]
+    },
+    {
+      "case_id": "EXT-F-4109-T01",
+      "independent_finding_verbatim": "CORRECT: place invalid string tab_id while capture is active and before first stop; establish a completed queued request before it, then drain and confirm it survived rejection before stopping. The current negative after detach cannot prove capture stayed active. The later repeated stop and post-stop empty drain are valid.",
+      "disposition": "corrected",
+      "proposal_change": "Moved invalid stop schema input before valid stop/detach. The following valid drain must return queued records, then a second page reload and drain must show capture continued after rejection. No records means the negative-state proof is unresolved. Preserved valid stop, post-stop empty drain, repeated stop and explicit attachment cleanup.",
+      "evidence": [
+        ".research/cdp-network-procedures-20261007.json",
+        "src/features/tools/ToolsView.tsx:414-419",
+        "src/lib/cdp/client.ts:421-435"
+      ]
+    },
+    {
+      "case_id": "EXT-F-4110-T01",
+      "independent_finding_verbatim": "CORRECT: response-body API and request-ID provenance are right. Revise the privacy/evidence instruction: the manual runner renders JSON output containing body and broadcasts the full output on TOOL_TIMELINE_EVENT. Confine execution to the public owned target; record only safe metadata in durable evidence. A public POST/request-body fixture is not required for this case. Retain observed failure as failure/fixture gap rather than claiming success.",
+      "disposition": "corrected",
+      "proposal_change": "Acknowledged that the runner renders and broadcasts the full response body. The procedure uses only the owned public example.org target, permits transient visible body output, and prohibits copying body text/screenshots into evidence. Removed the irrelevant POST/request-body fixture blocker and retained exact drained request_id provenance plus observed failure/setup-gap handling.",
+      "evidence": [
+        ".research/cdp-network-procedures-20261007.json",
+        "src/features/tools/ToolsView.tsx:453-462,463-499,570-577",
+        "src/lib/tools/handlers/cdp.ts:463-485",
+        "src/lib/cdp/client.ts:230-264,437-444"
+      ]
+    },
+    {
+      "case_id": "cross-case-permission-negative",
+      "independent_finding_verbatim": "The inventory readiness gap explicitly calls for gated/negative permission cases, but the shared setup treats absent debugger permission as unavailable/not run. Since the manual runner directly invokes handler.run, schema negatives cannot prove dispatcher permission enforcement. Add a separately scoped authorized permission-negative procedure, or keep these inventory cells incomplete and explicitly identify that pending case; do not present the four proposals as exhaustive permission coverage.",
+      "disposition": "unresolved by design",
+      "proposal_change": "Kept the four-case scope and status runtime-unverified. Explicitly states permission-denial enforcement remains pending for all four cases and requires a separate dispatcher-path procedure; no permission is changed and no coverage/pass claim is made.",
+      "evidence": [
+        ".research/cdp-network-procedures-20261007.json",
+        "docs/stabilization/inventory.json:61112-61114,61275-61289,61425-61439,61580-61594",
+        "src/features/tools/ToolsView.tsx:414-419,447-462"
+      ]
+    }
+  ],
+  "preserved_invariants": {
+    "selected_cases": ["EXT-F-4107-T01", "EXT-F-4108-T01", "EXT-F-4109-T01", "EXT-F-4110-T01"],
+    "modes": {
+      "EXT-F-4107-T01": ["member", "admin"],
+      "EXT-F-4108-T01": ["member", "admin"],
+      "EXT-F-4109-T01": ["member", "admin"],
+      "EXT-F-4110-T01": ["member", "admin"]
+    },
+    "design_status": "procedure-proposal-runtime-unverified for all four cases",
+    "inventory_status_changed": false,
+    "runtime_status": "UNVERIFIED"
+  },
+  "unresolved_boundaries": [
+    "Debugger permission-denial and dispatcher enforcement remain unverified for these inventory cases; the manual runner bypasses this gate. A separate dispatcher-path procedure is pending.",
+    "No browser, build, tests, database, runtime receipt or live outcome was performed or verified.",
+    "If the public page does not produce queued completed records after a reload, the drain/stop preservation assertion remains unverified rather than passing on an empty queue."
+  ]
+}
