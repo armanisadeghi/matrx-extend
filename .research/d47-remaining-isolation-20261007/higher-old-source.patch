@@ -1,12 +1,9 @@
 --- production/document-network-capture.ts
-+++ scratch/old-context-mutant.ts
-@@ -358,8 +358,7 @@
-         !documentContext ||
-         !context?.isDefault ||
-         context.frameId !== mainFrame ||
++++ scratch/.d47-higher-old-mutant.ts
+@@ -7 +7 @@
+-} from './network-tap';
++} from '@/lib/data-pattern/network-tap';
+@@ -361,2 +361 @@
 -        context.uniqueId !== documentContext.uniqueId ||
 -        oldContexts.has(context.uniqueId)
 +        false
-       )
-         return;
-       if (typeof params.payload !== 'string') return;

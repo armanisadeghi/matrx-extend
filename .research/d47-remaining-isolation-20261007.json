@@ -73,5 +73,6 @@
     "This verifies a source-level CDP/replay chain against controlled browser-boundary inputs. It is not a native extension or public-site pass.",
     "Native manual/prior-run isolation remains unverified. Existing connected manual and prior-run guards have qualified mutation evidence because their original stdout and mutant bytes were not retained; this report does not repair those older records.",
     "No D47/T57 full-case promotion."
-  ]
+  ],
+  "patch_completeness": "higher-old-source.patch is the complete unified diff of unchanged production document-network-capture.ts against the exact retained scratch mutant bytes, including the scratch-only network-tap import alias; mutant, test, stdout and journals are unchanged."
 }
