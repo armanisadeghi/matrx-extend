@@ -1,0 +1,171 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-D-0157",
+  "scope": "One hosted audit-key-admin attempt against a previously successful, frozen CI development artifact; no inventory promotion.",
+  "verdict": "native_driver_pass_with_inventory_gaps",
+  "execution": {
+    "workflow_run_id": 37699585477,
+    "workflow_run_attempt": 1,
+    "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37699585477",
+    "runner_label": "macos-15",
+    "runner_arch": "ARM64",
+    "workflow_checkout_sha": "94d1eeae44c6830acf7ae9f1911e572dd58ee413",
+    "started_at": "2026-10-07T22:59:26Z",
+    "terminal_at": "2026-10-07T23:06:07Z",
+    "run_conclusion": "success",
+    "native_driver_status": "pass",
+    "native_result_receipt": ".research/audit-selected-native-evidence/receipts/audit-key-native-result.json",
+    "bounded_watch": "one 60-second watch of this exact handle; no redispatch or retry"
+  },
+  "selected_artifact": {
+    "ci_run_id": 37698216289,
+    "ci_run_attempt": 1,
+    "artifact_id": 11516342905,
+    "artifact_digest": "sha256:927854cfdda6e57d272277653e0b4c507720c29d74978da235d80c064c1017ee",
+    "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "source_version": "0.2.391",
+    "tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+    "source_fix_4b61cbc3_is_ancestor": true,
+    "runtime_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "eligible_store": false,
+    "exact_import_observed": "DEVELOPMENT_TEST_IMPORTED for 52487361.../37698216289-1; exact_pushed_commit_only"
+  },
+  "setup_identity": {
+    "real_web_and_extension_admin_sign_in": "passed",
+    "admin_role_assertion": "true",
+    "rendered_identity_checks": "email, profile ID, admin role, and stored/rendered organization identity matched in the native Settings session",
+    "approved_organization_secret": "preflighted and staged for lane A; the audit-key runner does not require or record an approved organization selection, so no organization-selection claim is made",
+    "credential_handling": "authorized local env source; values used only through private GitHub secrets and hosted mode-0600 file; none in evidence"
+  },
+  "product_evidence": {
+    "crypto_claim": "The product verifier validated genuine signed receipts and rejected tampered bodies for T87, T89, and three T90 key generations in both reloaded extension contexts.",
+    "browser_primitives": "WebCrypto and Web Locks were browser-native for signing/concurrent rotation; controlled failure cases wrapped only storage/clipboard APIs. T91 removed navigator.locks at the document boundary.",
+    "ui_claim": "Structured assertions show the Audit key card error, retry, disabled, rotation, and export states listed below. Captured screenshots are generic harness/setup screenshots, not direct evidence of Audit card rows or receipt filters.",
+    "scope_limit": "This is a bounded development-artifact result. It does not establish Store-package behavior, complete Settings coverage, or overall extension health."
+  },
+  "inventory_case_mapping": [
+    {
+      "case_id": "EXT-F-1003-T27",
+      "status": "partial",
+      "evidence": "Admin identity and key-read/error recovery exercised; no assertions for creation time, receipt count, recent rows, filters, or a normal warm/reload display comparison."
+    },
+    {
+      "case_id": "EXT-F-1003-T60",
+      "status": "pass",
+      "evidence": "Injected one clipboard refusal; visible failure and retry, no copied state; retry copied only the public JWK and storage stayed unchanged."
+    },
+    {
+      "case_id": "EXT-F-1003-T61",
+      "status": "partial",
+      "evidence": "Confirmed rotation paths exercised; cancel confirmation and unchanged-key assertion before confirmation were not exercised."
+    },
+    {
+      "case_id": "EXT-F-1003-T62",
+      "status": "not_run",
+      "evidence": "No receipt-origin filter selection, per-filter row/count assertion, or empty-origin assertion."
+    },
+    {
+      "case_id": "EXT-F-1003-T86",
+      "status": "pass_with_limit",
+      "evidence": "Read rejection showed actionable failure; retry recovered details with unchanged key/history and zero active-key writes. No separate rotate-invocation counter was recorded."
+    },
+    {
+      "case_id": "EXT-F-1003-T87",
+      "status": "pass",
+      "evidence": "History-write rejection preserved active key/history; a fresh confirmation rotated; prior genuine receipt verified and tampered copy rejected after reload."
+    },
+    {
+      "case_id": "EXT-F-1003-T88",
+      "status": "pass",
+      "evidence": "Successful rotation with refresh-read failure recovered details without repeating rotation; key persisted across reload."
+    },
+    {
+      "case_id": "EXT-F-1003-T89",
+      "status": "pass",
+      "evidence": "Persisted active-key write with rejected acknowledgement/readback entered unknown state, blocked re-key, recovered by read, survived reload, and retained valid old receipt/tamper rejection."
+    },
+    {
+      "case_id": "EXT-F-1003-T90",
+      "status": "pass",
+      "evidence": "Two same-origin contexts queued overlapping rotations under native Web Locks; three signed generations verified after both contexts reloaded; tampered receipts rejected in both."
+    },
+    {
+      "case_id": "EXT-F-1003-T91",
+      "status": "partial",
+      "evidence": "Unavailable-lock details/export/rotation states disabled actions and preserved history; restoration/read-only retry recovered. Cold auth-shell boot and ordinary retryable failures were not tested in this case."
+    }
+  ],
+  "resource_admission": {
+    "hosted_package": "valid; admitted=true; resourceInvalid=false; child exit 0",
+    "hosted_browser": "valid; admitted=true; resourceInvalid=false; child exit 0",
+    "hosted_native": "valid; admitted=true; resourceInvalid=false; child exit 0; watchdog remained healthy",
+    "journal_recovery": "Journals were not in the uploaded artifact. Exact JSONL journal bytes were reconstructed from the authenticated action-log event objects using the resource-journal writer whitelist and JSON serializer; each includes its final valid decision.",
+    "journals": [
+      {
+        "run_id": "hosted-package-37699585477-1",
+        "path": ".research/audit-selected-native-evidence/resource-journals/hosted-package-37699585477-1.jsonl",
+        "sha256": "7cf0acb117252e546b7b957227025a157784ead1dea1805df566cf48cb209c44",
+        "event_count": 4
+      },
+      {
+        "run_id": "hosted-browser-37699585477-1",
+        "path": ".research/audit-selected-native-evidence/resource-journals/hosted-browser-37699585477-1.jsonl",
+        "sha256": "1dfe2566ab33457e9deea47c043459b2ae04eb4e5f03119bd68e203a601af02b",
+        "event_count": 4
+      },
+      {
+        "run_id": "hosted-guest-37699585477-1",
+        "path": ".research/audit-selected-native-evidence/resource-journals/hosted-guest-37699585477-1.jsonl",
+        "sha256": "0c25af219dfbc47ebdcd97e0859e188bf902a6b7030edc5cb1fe502d98e911f6",
+        "event_count": 6
+      }
+    ]
+  },
+  "evidence_artifact": {
+    "id": 11516748243,
+    "name": "hosted-guest-37699585477-1",
+    "sha256": "2e20bc4f5f4c6a25076a60784a68b051935ace2a19155247b4083815d42b9e58",
+    "files": [
+      {
+        "path": ".research/audit-selected-native-evidence/receipts/ci-build-receipt.json",
+        "sha256": "d8b29a5eb04a778400ffd595a0d71eae43873b28bcfcd1639b64572f0c8da490"
+      },
+      {
+        "path": ".research/audit-selected-native-evidence/receipts/ci-build-provenance.json",
+        "sha256": "950b326ca3800c8b350471c72a79a6adee25962fe71c66e1a8508ec521187a79"
+      },
+      {
+        "path": ".research/audit-selected-native-evidence/receipts/audit-key-native-result.json",
+        "sha256": "7b673657ec853e66343a12de1cfa0890c48ef38cf409b70f119887ca99277179"
+      },
+      {
+        "path": ".research/audit-selected-native-evidence/screenshots/native-side-panel.png",
+        "sha256": "35104afebb448dde7b3b315613486606a924f2fa636fa316acc30f63f681df10",
+        "role": "pre-auth harness screenshot"
+      },
+      {
+        "path": ".research/audit-selected-native-evidence/screenshots/normal-target-after-open.png",
+        "sha256": "c939d4f6417b874eefffbe4a8c9bd1cf05088fe2b42ab7a7e13c65d79a024fd2",
+        "role": "controlled target-page screenshot"
+      }
+    ],
+    "hosted_import_receipts": "The hosted importer local-dev-receipt.json and import-status.json were temporary and not included in the workflow upload. The original exact CI receipt/provenance and native result identity are preserved; the missing transient importer receipts remain an evidence limitation."
+  },
+  "secret_cleanup": {
+    "names": [
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "removed_after_terminal": true,
+    "both_names_absent_verified": true,
+    "verified_at": "2026-10-07T23:06:10Z",
+    "values_recorded": false
+  },
+  "open_criteria": [
+    "T27 full normal/reload identity and receipt summary fields; T61 confirmation cancel path; T62 origin filters and empty-state behavior.",
+    "T91 cold auth-shell and ordinary retryable-failure checks; T86 does not separately count rotate invocations.",
+    "Hosted ephemeral local-dev-receipt.json and import-status.json were not archived; keep their absence explicit.",
+    "Do not change canonical inventory cells or claim full Settings, Store, or product health from this bounded run."
+  ],
+  "next_action": "Fresh peer should review this exact run/result mapping and any open criteria; no second native attempt is authorized in this lane."
+}
