@@ -105,10 +105,7 @@
     "both_names_absent_verified_after_terminal": true
   },
   "evidence_curation": {
-    "preserved": [
-      "one sanitized native result receipt",
-      "the three current run resource journals"
-    ],
+    "preserved": ["one sanitized native result receipt", "the three current run resource journals"],
     "excluded": [
       "three stale uploaded journals for run 37105304739",
       "two generic harness screenshots"
@@ -120,5 +117,11 @@
     "closed": false,
     "reason": "Reinjection context identity assertion failed; listener cleanup after reinjection and signed-in nonadmin gating remain unverified.",
     "next_action": "Coordinator to diagnose the lifecycle_reinject identity mismatch from the fixed target and last-safe observations. This lane made no retry; D42 remains open."
+  },
+  "credential_handling_incident": {
+    "description": "Worker reported a source-discovery search inadvertently printed authorized test credentials into its tool output. Values are not repeated here.",
+    "containment": "Temporary GitHub acceptance secrets deleted; root independently verified both names absent. Root private scan found zero tracked files containing the current authorized test password.",
+    "rotation": "No isolated credential rotation performed; synchronized credential-change policy remains in force.",
+    "next_run_rule": "Do not search credential-file contents through output-producing commands; read only named values privately inside the child process at point of use."
   }
 }
