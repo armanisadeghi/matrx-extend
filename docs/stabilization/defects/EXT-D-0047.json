@@ -28,10 +28,10 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Verify successful integrated CI and current artifact/source/dependency lock, then admit exactly one native D47 run with reviewed cfa475f2 root-result observer. Preserve binding/context/lifecycle and old-callback proof limits. No native/source jobs active; all worker browsers and wrappers exited.",
+    "next_action": "One hosted native test authorized only after current successful CI artifact/source/lock verification. Executor d47_root_observer_native owns sole heavy test permit and ephemeral credential cleanup; no run launched yet. CI37553646030 was live in-progress and37553723552 pending at admission.",
     "status": "Driver observation seam source-traced to real saved root config and reviewed48de45db; guarded Chromium7/7 and all three mutations rejected. Product D47/T57 acceptance remains unverified; latest native37548083191 was resource-invalid.",
     "implementation_agent": "completed: d47_owned_reload_fix; d47_navigation_replacement_fix; d47_ci_contract_repair",
-    "execution_agent": "completed: d47_import_native",
+    "execution_agent": "d47_root_observer_native",
     "native_run_id": 37537634304,
     "workflow_source": "fbcc4311ae6885b67133e55336f692be38881249",
     "development_artifact_id": 11440764124,
