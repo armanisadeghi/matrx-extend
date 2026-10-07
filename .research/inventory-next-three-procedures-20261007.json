@@ -1,16 +1,17 @@
 {
   "schema_version": 1,
   "artifact_type": "inventory-case-procedure-patch",
-  "task_id": "inventory-next-three-procedures-20261007",
+  "task_id": "inventory-next-three-procedures-20261007-revision-1",
   "status": "source-procedure-proposed-unverified",
   "source_sha": "f271586c026ac2835ef6ee689db37de23b355599",
   "scope": "Proposed preconditions, steps, expected outcomes and dimensions for three existing non-Chat/non-Pilot cases. No new feature IDs, inventory status changes, product edits, runtime tests or behavior verdicts.",
   "shared_receipt_and_reload_preamble": [
-    "Before each case, obtain the resource permit required by docs/stabilization/PLAN.md and write a fresh receipt: source SHA and dirty-source hash if applicable, lockfile hash, output hash, WXT mode, runtime extension ID, Chrome version, profile label, auth/role/org state, granted permissions, backend identity, owned fixture IDs and timestamp. Do not include credentials, tokens, session data or page contents.",
-    "Use an already built, receipt-bound unpacked development artifact. Confirm loaded extension ID, source/output identity and build fingerprint. Wait for any build to finish before reload; reload the extension, reopen the actual side panel and Tools tab, and reload the controlled target tab. Record the worker/offscreen build identity if available; HMR alone is not acceptance evidence.",
+    "Before each case, obtain the resource permit required by docs/stabilization/PLAN.md and write a fresh receipt: source SHA and dirty-source hash if applicable, lockfile hash, output hash, WXT mode, extension runtime ID, Chrome version, profile label, auth/role/org state, permissions, backend identity, fixture IDs and timestamp. Also record login method, principal provenance, real data origin, build/env flags, response interception, mocks and seeded browser state. No credentials, tokens, session data or page contents.",
+    "Use an already built, receipt-bound unpacked development artifact. Confirm loaded extension ID, source/output identity and build fingerprint. Wait for build completion before reload; reload the extension when required, reopen extension pages and the actual side panel/Tools tab, and reload controlled target tabs after extension reload. Treat service worker and offscreen contexts separately and verify each running build identity before acting. If either required context cannot be independently identified, leave that context/lifecycle dimension unverified and do not proceed as though its build identity is established. HMR alone is not acceptance evidence.",
     "Run separately in genuine signed-in member and admin profiles. Tools is signed-in-only; guest applicability is not added by these proposals. Keep device organization and role visible in the receipt; do not infer one role's behavior from the other. Use only the owned public HTTPS fixtures described below.",
     "Actual UI route: open the extension side panel, select Tools > Catalog, select All handlers, search and expand the exact handler, inspect its displayed local JSON schema, enter the specified JSON in Test runner and press Run. This route is source-confirmed in src/features/tools/ToolsView.tsx. It parses JSON and safe-parses local schemas, then calls handler.run directly with permissionMode=act and assignedTabId=null. It bypasses dispatcher permission/approval and role gates; these procedures do not establish dispatcher behavior, denied-permission behavior or live DB binding/advertisement.",
-    "Immediately before each Run, verify the selected active tab in the disposable test Chrome window is the owned public HTTPS fixture. Do not run in an everyday browsing profile. If the actual UI route, receipt or target focus cannot be established, leave the case unverified. Preserve original browser state and close only fixture tabs created by that case."
+    "Immediately before each Run, verify the selected active tab in the disposable test Chrome window is the owned public HTTPS fixture. Do not run in an everyday browsing profile. If the actual UI route, receipt or target focus cannot be established, leave the case unverified. Preserve original browser state and close only fixture tabs created by that case.",
+    "This source-only proposal covers warm direct-handler runs and the stated extension-reload observations only. Cold/idle service-worker restart with DevTools closed, controlled-page navigation, permission-denied recovery, and offline recovery are explicitly outside this proposal and remain unverified; do not count them as coverage or acceptance. No lifecycle fault may be inferred from these procedures."
   ],
   "patches": [
     {
@@ -55,9 +56,13 @@
         "extension-reload",
         "dispatcher-unverified",
         "permission-denial-unverified",
-        "live-binding-unverified"
+        "live-binding-unverified",
+        "cold-idle-restart-unverified",
+        "page-navigation-unverified",
+        "permission-denied-unverified",
+        "offline-recovery-unverified"
       ],
-      "permission_and_evidence_limits": "chrome_batch declares no required permissions in types/tool-catalog.md; nested tool permission gates are not run because the handler executes nested read handlers directly. No permission-denied or dispatcher result is inferred. This proposal is not a runtime pass."
+      "permission_and_evidence_limits": "chrome_batch declares no required permissions in types/tool-catalog.md; nested tool permission gates are not run because the handler executes nested read handlers directly. No permission-denied or dispatcher result is inferred. This proposal is not a runtime pass. Cold idle restart, controlled-page navigation, permission-denied recovery and offline recovery are outside this proposal and remain unverified; do not count the extension reload as those dimensions. Verify service-worker and offscreen build identity before an actual run; otherwise stop and leave execution unverified."
     },
     {
       "feature_id": "EXT-F-4028",
@@ -101,9 +106,13 @@
         "extension-reload",
         "direct-handler",
         "dispatcher-unverified",
-        "permission-denial-unverified"
+        "permission-denial-unverified",
+        "cold-idle-restart-unverified",
+        "page-navigation-unverified",
+        "permission-denied-unverified",
+        "offline-recovery-unverified"
       ],
-      "permission_and_evidence_limits": "The catalog declares activeTab for take_screenshot. The manual Tools runner invokes handler.run directly and does not establish dispatch.ts approval/permission behavior. Do not retain image payloads or claim a screenshot-gallery persistence result."
+      "permission_and_evidence_limits": "The catalog declares activeTab for take_screenshot. The manual Tools runner invokes handler.run directly and does not establish dispatch.ts approval/permission behavior. Do not retain image payloads or claim a screenshot-gallery persistence result. Cold idle restart, controlled-page navigation, permission-denied recovery and offline recovery are outside this proposal and remain unverified; do not count the extension reload as those dimensions. Verify service-worker and offscreen build identity before an actual run; otherwise stop and leave execution unverified."
     },
     {
       "feature_id": "EXT-F-4153",
@@ -122,7 +131,7 @@
         "Record the tabs permission state from the current build and extension UI. Direct manual calls bypass dispatcher approval/permission checks; any denied-permission behavior remains unverified unless tested through the actual dispatcher."
       ],
       "steps": [
-        "Run {\"action\":\"list\"} and {\"action\":\"active\"}; confirm list includes fixture A/B and active identifies the current fixture. Run {\"action\":\"info\",\"tab_id\":\"<fixture-A-id>\"} and confirm it describes A.",
+        "Run {\"action\":\"list\"} and confirm it includes fixture A/B; run {\"action\":\"info\",\"tab_id\":\"<fixture-A-id>\"} and confirm it describes A. In Chrome's tab strip, explicitly click owned fixture A to make it the active browser tab, then run {\"action\":\"active\"} and compare the returned ID to fixture-A-id. If they differ or cannot be observed, mark active-target resolution unverified and stop before any subsequent mutation; do not treat the mismatch as a confirmed tool defect.",
         "Run {\"action\":\"create\",\"url\":\"https://example.com/\"}; record the returned owned tab ID as fixture C. Use only returned fixture IDs below.",
         "On fixture C, run switch, reload, pin with on=true then on=false, mute with on=true then on=false, zoom with zoom_factor=1.1 then restore to 1.0, and move with a valid fixture-only index. After each action, run info/list and confirm the requested state or visible error.",
         "Run duplicate for fixture C; record the returned duplicate ID and verify it resolves to the same public URL. Close only fixture C and the owned duplicate by their IDs, then verify both are absent from list.",
@@ -130,7 +139,7 @@
         "Reload the extension and reopen the Tools route. Run list and info on fixture A to confirm the handler remains usable after reload; then restore the original fixture state and close only any remaining case-owned tabs."
       ],
       "expected": [
-        "list, active and info return structured tab metadata for the owned fixture(s); the read actions have source tier read even though the top-level handler is action-tier for mutating actions.",
+        "list and info return structured metadata for explicitly identified owned fixtures. For action=active, the expected ID is fixture-A-id only after the operator explicitly activates fixture A in the browser tab strip immediately before Run; if the returned ID differs or context cannot be established, leave this control unverified and do not claim a pass. The read actions have source tier read even though the top-level handler is action-tier for mutating actions.",
         "create opens the specified public URL and returns an ID for the new active fixture tab.",
         "switch/reload/pin/mute/zoom/move affect only the supplied owned fixture ID. Readback shows the requested state where Chrome exposes it; invalid/unavailable actions return an explicit failure. Restore baseline state after observing the result.",
         "duplicate produces a separate owned tab with the fixture URL; close removes only the explicit owned IDs. Original user tabs remain untouched.",
@@ -151,14 +160,41 @@
         "extension-reload",
         "direct-handler",
         "dispatcher-unverified",
-        "permission-denial-unverified"
+        "permission-denial-unverified",
+        "cold-idle-restart-unverified",
+        "page-navigation-unverified",
+        "permission-denied-unverified",
+        "offline-recovery-unverified"
       ],
-      "permission_and_evidence_limits": "The source catalog declares tabs for list_open_tabs. Manual execution calls the tabs handler directly; it does not test dispatcher permission or approval checks. Fixture tabs must be disposable and every mutation must be restored."
+      "permission_and_evidence_limits": "The source catalog declares tabs for list_open_tabs. Manual execution calls the tabs handler directly; it does not test dispatcher permission or approval checks. Fixture tabs must be disposable and every mutation must be restored. Cold idle restart, controlled-page navigation, permission-denied recovery and offline recovery are outside this proposal and remain unverified; do not count the extension reload as those dimensions. Verify service-worker and offscreen build identity before an actual run; otherwise stop and leave execution unverified."
     }
   ],
   "limitations": [
     "Source review only: none of these procedures has been run in Chrome, and no pass/fail/runtime verdict is asserted.",
-    "The required execution receipt, resource journal, real member/admin profile observations, runtime permissions, dispatcher gates and post-reload behavior remain future evidence.",
-    "Only these existing case procedures are proposed. The canonical inventory remains unchanged pending independent peer review and coordinator integration."
+    "The resource journal and complete PLAN receipt (including provenance fields), actual member/admin profile observations, service-worker/offscreen running build identities and runtime permissions remain execution-time evidence.",
+    "Warm execution and extension reload do not establish cold idle restart, navigation, permission-denied or offline recovery; these dimensions are explicitly unverified and excluded from claimed coverage.",
+    "Only these existing case procedures are proposed. The canonical inventory remains unchanged pending fresh peer review and coordinator integration."
+  ],
+  "explicitly_unverified_coverage": [
+    {
+      "dimension": "cold-idle-restart",
+      "status": "unverified; outside this proposed procedure",
+      "reason": "No cold/idle worker restart is run. PLAN requires DevTools closed, normal idle restart distinguished from crash, plus separate service-worker/offscreen identity and message-routing evidence."
+    },
+    {
+      "dimension": "controlled-page-navigation",
+      "status": "unverified; outside this proposed procedure",
+      "reason": "The procedures use fixed owned public pages and reload them where stated; they do not test behavior across a navigation transition."
+    },
+    {
+      "dimension": "permission-denied-recovery",
+      "status": "unverified; outside this proposed procedure",
+      "reason": "The Tools manual runner bypasses dispatcher approval/optional-permission checks. No permission is revoked or denied as part of this source-only procedure."
+    },
+    {
+      "dimension": "offline-recovery",
+      "status": "unverified; outside this proposed procedure",
+      "reason": "No network interception/offline state is introduced; direct handler runs do not establish recovery behavior."
+    }
   ]
 }
