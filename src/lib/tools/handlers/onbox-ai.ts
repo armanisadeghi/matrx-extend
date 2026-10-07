@@ -42,12 +42,15 @@ export const ai_check_availability: ToolHandler<NoArgs, unknown> = {
   run: async () => {
     const report = await fullCapabilityReport();
     const anyAvailable = Object.values(report).some((v) => v === 'available');
+    const translatorNeedsPair = report.translator === 'requires-language-pair';
     return {
       any_available: anyAvailable,
       report,
       hint: anyAvailable
         ? 'Use ai_* tools freely — they are free and run on-device.'
-        : 'On-device AI unavailable in this Chrome. Use cloud tools instead.',
+        : translatorNeedsPair
+          ? 'Translator is present; availability depends on the source and target languages. Run ai_translate with a language pair to check it.'
+          : 'On-device AI unavailable in this Chrome. Use cloud tools instead.',
     };
   },
 };

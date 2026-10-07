@@ -3,7 +3,7 @@
   "task_id": "native-ai-capability-fix-20261006",
   "defect_id": "EXT-D-0147",
   "scope": "Shared onbox-ai task-capability discovery and dedicated API operation methods",
-  "status": "source-repaired; independent and native review pending",
+  "status": "source-repaired after peer finding; fresh independent and native review pending",
   "source_evidence": [
     "src/lib/onbox-ai/client.ts: getAi gates all top-level task APIs on LanguageModel presence; exported task operations call PromptSession.prompt",
     "src/lib/tools/handlers/onbox-ai.ts: ai_check_availability, ai_summarize, ai_translate, ai_detect_language, ai_proofread consume those exports",
@@ -12,7 +12,7 @@
   ],
   "primary_api_contracts": {
     "summarizer": "https://developer.chrome.com/docs/ai/summarizer-api — session.summarize(text)",
-    "translator": "https://developer.chrome.com/docs/ai/translator-api — session.translate(text)",
+    "translator": "https://developer.chrome.com/docs/ai/translator-api — Translator.availability({sourceLanguage,targetLanguage}) checks a requested pair; session.translate(text) executes it",
     "languageDetector": "https://developer.chrome.com/docs/ai/language-detection — session.detect(text), returning ranked objects",
     "proofreader": "https://developer.chrome.com/docs/ai/proofreader-api — session.proofread(text), returning correctedInput and corrections"
   },
@@ -20,20 +20,33 @@
     "path": "src/lib/onbox-ai/client.test.ts",
     "forces": "Independent top-level task APIs with LanguageModel absent must report availability and execute their documented operation, while all-absent capabilities remain unavailable",
     "red": "2 expected failures: independent top-level APIs incorrectly reported unavailable and obsolete origin-trial namespace incorrectly reported available; one all-absent negative passed",
-    "green": "4 focused exported-function tests pass; final compile passes",
+    "green": "4 focused exported-function tests pass; final compile passes. Peer found omitted Translator availability pair; strict pair stub then failed on the reviewed source and passed after repair, with no-pair state requires-language-pair.",
     "resource_journals": [
       "docs/stabilization/resource-journals/native-ai-capability-red-20261006.jsonl",
       "docs/stabilization/resource-journals/native-ai-capability-green-20261006.jsonl",
       "docs/stabilization/resource-journals/native-ai-capability-compile-20261006.jsonl",
       "docs/stabilization/resource-journals/native-ai-capability-final-test-20261006.jsonl",
-      "docs/stabilization/resource-journals/native-ai-capability-final-compile-20261006.jsonl"
+      "docs/stabilization/resource-journals/native-ai-capability-final-compile-20261006.jsonl",
+      "docs/stabilization/resource-journals/native-ai-pair-red-20261007.jsonl",
+      "docs/stabilization/resource-journals/native-ai-pair-catalog-20261007.jsonl",
+      "docs/stabilization/resource-journals/native-ai-pair-docs-20261007.jsonl",
+      "docs/stabilization/resource-journals/native-ai-pair-green-20261007.jsonl",
+      "docs/stabilization/resource-journals/native-ai-pair-compile-20261007.jsonl"
     ]
   },
+  "pair_followup": {
+    "peer_evidence": ".research/native-ai-capability-peer-20261006.json at reviewed commit eb8eca49",
+    "red": "Translator present, availability stub requires sourceLanguage and targetLanguage; report falsely returned unavailable when none were supplied",
+    "green": "Unspecified pair is explicitly requires-language-pair; en→es reports available; en→zz reports unavailable; final 4/4 tests and compile passed",
+    "generated_docs": "Guarded catalog:tools:md and docs:tools completed; generated files changed only timestamps",
+    "unguarded_diagnostic": "A preliminary local catalog:tools:md ran before guard admission and changed only generated_at timestamps. It is not counted as admitted evidence; guarded rerun succeeded."
+  },
+  "guard_limit": "No executed return-expected mutant was run; the focused guard has observed RED on both the original discovery defect and the strict Translator pair defect.",
   "native": {
     "verdict": "unverified",
     "gap": "No exact-build side-panel or agent-dispatch execution run. Chrome docs say Summarizer and LanguageDetector are unavailable in Web Workers, so the background agent route may need a separate document-context execution path."
   },
   "release": "unverified; no browser, service, build, or release launched in this lane",
-  "independent_review": "pending",
+  "independent_review": "Peer at eb8eca49 found pair omission; fresh review pending after repair",
   "next_action": "Obtain independent source review; native owner separately tests panel and agent routes on exact loaded artifact. Do not close from source-only evidence."
 }
