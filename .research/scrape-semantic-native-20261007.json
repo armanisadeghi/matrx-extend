@@ -1,0 +1,195 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-D-0151-T11-scrape-semantic-native-20261007",
+  "status": "NATIVE_OBSERVED_INCOMPLETE",
+  "scope": "One guarded hosted guest visibility census of frozen CI development artifact 0.2.366 after source-reviewed Scrape title mapping; no current-main or behavior acceptance claim.",
+  "source_review": {
+    "mapping_commit": "574b43dd41679449d8a26e2eda44484c3dea52ec",
+    "independent_review_commit": "bb312a4e8956dbb3deeedbb80e01e03fa5649f39",
+    "source_report": ".research/nonchat-census-mapping-20261007.json",
+    "peer": ".research/scrape-mapping-source-peer-20261007.json",
+    "native_limit": "Historical fingerprint-only Scrape nodes were not retroactively identified; this fresh receipt supplies the observed source-title relationships."
+  },
+  "admission": {
+    "all_hosted_jobs_queued_or_in_progress_at_dispatch": 0,
+    "prior_ci_run_ids_waited_to_terminal": [
+      37659423988,
+      37659856268
+    ],
+    "prior_ci_conclusions": [
+      "success",
+      "success"
+    ],
+    "source_and_review_on_origin_main": true,
+    "one_dispatch_only": true
+  },
+  "native_run": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37661031247",
+    "run_id": 37661031247,
+    "job_id": 112928304815,
+    "workflow_artifact_id": 11501366405,
+    "workflow_artifact_name": "hosted-guest-37661031247-1",
+    "head_sha": "b8358ee0a3b3dc4a17b012c20cbdc1b138fe0db9",
+    "acceptance_case": "visibility-census-guest",
+    "runner_label": "macos-15",
+    "created_at_utc": "2026-10-07T17:41:33Z",
+    "completed_at_utc": "2026-10-07T17:48:18Z",
+    "status": "completed",
+    "conclusion": "failure",
+    "failure_stage": "Exercise the selected Chrome side-panel case",
+    "failure_observation": {
+      "census_driver_status": "incomplete",
+      "census_driver_exit_code": 2,
+      "unmapped_total": 33,
+      "assertion": "native side-panel acceptance exited 2",
+      "acceptance_child_exit_code": 1,
+      "resource_wrapper_decision": "child_failed",
+      "resource_invalid": false,
+      "interpretation": "Census completeness gate rejected remaining unknown observations; the guarded resources were valid. No product behavior failure is established."
+    }
+  },
+  "artifact_identity": {
+    "development_run_id": 37619740064,
+    "development_artifact_id": 11482071536,
+    "runtime_version": "0.2.366",
+    "runtime_source_sha": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+    "runtime_tree_sha256": "9e7c2db499a2c1fed0a8b3ea6facfa88a13f3c2c26ba7f9b9d2d1f216310236c",
+    "runtime_archive_sha256": "eebbeb6d4c63cffab1c4462acf5b69e081336c3795782c54d3a5e8ba554e9ebb",
+    "runtime_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "observed_browser": {
+      "product": "Chrome/141.0.7390.37",
+      "protocol_version": "1.3"
+    },
+    "build_channel": "ci_development_test"
+  },
+  "native_receipt": {
+    "original_path": ".research/scrape-semantic-native-20261007/evidence/native-receipt-original.json",
+    "original_sha256": "d21b3c3c8f13ca4e236af31916476c06571fc9ca24580afde5ac70ec713b2901",
+    "sanitized_path": ".research/scrape-semantic-native-20261007/evidence/native-receipt-sanitized.json",
+    "sanitized_sha256": "e2db3dbb65778ecd46412fd46bd8c939f4e3edc26fcad1b91a737393a10adea3",
+    "sanitization": "Only the absolute hosted-runner screenshot path was rewritten to the saved relative evidence path; observation fields and fingerprints retained."
+  },
+  "mapping_observation": {
+    "scrape_rendered_controls": 3,
+    "scrape_mapped_ids": [
+      "EXT-F-1007-C19",
+      "EXT-F-1007-C01",
+      "EXT-F-1007-C02"
+    ],
+    "scrape_unmapped": 0,
+    "scrape_source_titles_observed": [
+      "Add this page to a project",
+      "Capture the page exactly as it is right now",
+      "Scroll the page top→bottom to load lazy content (images, infinite-scroll items), then capture. Better for dynamic pages."
+    ],
+    "settings_controls_unmapped": 0,
+    "settings_section_action_unmapped": 1,
+    "overall_status": "incomplete",
+    "overall_complete": false,
+    "overall_unmapped_total": 33,
+    "other_unknowns_by_region": {
+      "navigation": 2,
+      "Chat": 16,
+      "Data": 2,
+      "SEO": 12,
+      "Settings_section_action": 1
+    },
+    "inaccessible_count": 0,
+    "unsupported_trigger_count": 0,
+    "blocked_request_count": 0,
+    "missing_required_regions": []
+  },
+  "same_artifact_comparison": {
+    "prior_native_run_id": 37655683227,
+    "prior_original_receipt_path": ".research/settings-semantic-native-20261007/evidence/native-receipt-original.json",
+    "prior_original_receipt_sha256": "ecb08333283aa5a0e6f8e13c0f2d7fcc8ea000f850eff5aa9e5b6a32dfec55b2",
+    "same_artifact_key": true,
+    "prior_scrape_mapped": 0,
+    "new_scrape_mapped": 3,
+    "prior_scrape_unmapped": 3,
+    "new_scrape_unmapped": 0,
+    "prior_total_unknown": 35,
+    "new_total_unknown": 33,
+    "prior_data_unknown": 1,
+    "new_data_unknown": 2,
+    "interpretation": "Three Scrape source-title relationships were freshly observed and mapped. Total unknown fell by two rather than three because Data yielded one more fingerprint-only control than the previous run. HMAC fingerprints are run-specific and were not carried across."
+  },
+  "authentication_and_interception": {
+    "guest_signed_out_before": true,
+    "guest_signed_out_after": true,
+    "access_token_present_before": false,
+    "access_token_present_after": false,
+    "native_panel_verified": true,
+    "blocked_request_count": 0
+  },
+  "resource_journals": [
+    {
+      "path": ".research/scrape-semantic-native-20261007/evidence/hosted-package-37661031247-1.jsonl",
+      "sha256": "3f4f4a9be5ef0b6740a6e764a09ff4ae9e247ba97566db288c96b030f013e223",
+      "final_decision": {
+        "schema": 1,
+        "at": "2026-10-07T17:43:51.541Z",
+        "runId": "hosted-package-37661031247-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": ".research/scrape-semantic-native-20261007/evidence/hosted-browser-37661031247-1.jsonl",
+      "sha256": "1f03282e30ec5614aabc1a329042c83c52d6c7ec4b224c75af4573fddf174575",
+      "final_decision": {
+        "schema": 1,
+        "at": "2026-10-07T17:45:54.316Z",
+        "runId": "hosted-browser-37661031247-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": ".research/scrape-semantic-native-20261007/evidence/hosted-guest-37661031247-1.jsonl",
+      "sha256": "c27fea122d0f564914e9df1181088c489af827c78033ba9997ba572c1b830164",
+      "final_decision": {
+        "schema": 1,
+        "at": "2026-10-07T17:48:08.284Z",
+        "runId": "hosted-guest-37661031247-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    }
+  ],
+  "screenshots": [
+    {
+      "path": ".research/scrape-semantic-native-20261007/evidence/guest-account-readiness.png",
+      "sha256": "4883f4fc2cd744c01a634a00817a16d924ada0fdff98ed8ed04f505435409391",
+      "pixels_inspected": true,
+      "finding": "360x454 image shows Settings Account, Appearance and Chat top rows and Sign in; it does not show Scrape or the complete Settings stage."
+    },
+    {
+      "path": ".research/scrape-semantic-native-20261007/evidence/native-side-panel.png",
+      "sha256": "35104afebb448dde7b3b315613486606a924f2fa636fa316acc30f63f681df10",
+      "pixels_inspected": true,
+      "finding": "Native Chrome side panel shows the guest Chat pane and visible actions; Scrape mapping rests on the native receipt rather than this screenshot."
+    }
+  ],
+  "boundary": {
+    "scrape_mapping": "PASS_OBSERVED_THREE_SOURCE_TITLE_IDS",
+    "overall_census": "INCOMPLETE_33_UNMAPPED",
+    "product_behavior": "UNVERIFIED",
+    "member_admin": "UNVERIFIED",
+    "current_main_health": "UNVERIFIED",
+    "owned_job_terminal": true,
+    "temporary_credentials_staged": false,
+    "owned_resource_journals_only": true
+  },
+  "next_action": "Source-review the 33 current unknown observations and only dispatch another guarded native census after a reviewed change in mapping or test condition. Do not repeat solely because this census is incomplete."
+}
