@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "scope": "QA-only repair of public race preflight diagnostics and interception cleanup; no native retry or product change",
+  "first_native_run": {
+    "id": 37608190442,
+    "source_report": ".research/t57-public-race-native-20261007.json",
+    "independent_review": ".research/t57-public-race-native-peer-20261007.json",
+    "reviewed_driver_source_sha256": "8dd2722906c31ad675b9da6889bd421e9c8fbdbcf45f24af06dad82a823eb7b1",
+    "reviewed_preflight_source_sha256": "6942d3334b22cdc37acce994e75bcda4f3175f63f582cc4f29c0240f4552b571",
+    "private_receipt_sha256": "b2990a4cf2664a00cc8c1dd8cb6f9556d56ae0ee7ce2d836e5d7e92ed533977e",
+    "private_failed_step_log_sha256": "31d31980de1a63c3644691d3a6505e7b7656395966a9d505ee1ffad5e2ec553d",
+    "resource_journals": {
+      "package_sha256": "e564f0036a03cacae69815281c2859ae59609cc1a64e0dab5ad4e12bc672568a",
+      "browser_sha256": "9b0ab9331f9789b66abf2acfb1e8b6ba94c45c09529f9a9c73d86809bf1f93cd",
+      "guest_sha256": "ef5f350007113f0b0a418db409081a3ac1a63557e63341a7a29e3c2e763e695b"
+    },
+    "bounded_facts": "Two genuine HTTP 200 matched responses had identical request and response SHA-256 digests and distinct main-frame contexts. The extension capture hook was positively observed. The old network lifecycle failed after navigation, no release completed, and exact replay activity was not established. Original request and response digests remain in the private receipt, unchanged."
+  },
+  "repair": {
+    "release_diagnostics": "Ordered attempts now record old and current separately with fixed categorical CDP failure only. A failed old continuation still attempts current, and success remains unavailable unless both continuations and both finished lifecycles are observed.",
+    "activity_observations": "Exact saved row, its own Run spinner, and availability of that observation are recorded separately at the old pause. The combined active predicate still requires all three.",
+    "cleanup": "Every held continuation is attempted, then Fetch.disable and CDP detach are each attempted independently. Failures remain categorized, and any failure leaves cleanup unverified.",
+    "privacy": "No raw CDP error, request URL, query credential, POST body, response bytes, or stack is written to the receipt. Existing extension capture-hook attestation and response digests are preserved.",
+    "sequence_limit": "This preflight starts saved replay, pauses that replay's first response, and then explicitly navigates the tab again. That extra navigation can cancel the first held response. It is not the original prior-document-pending-before-new-replay scenario, so cancellation alone cannot establish or refute product provenance."
+  },
+  "source_sha256": {
+    "tests/browser/showcase-d47-public-race-preflight.mjs": "52d9010d1708afc7d9990a00de850076b4742131e3bd6a80f496d2d60604bf41",
+    "tests/browser/showcase-d47-public-race-preflight.test.mjs": "6eb6095bfdb690b4a795af74fad0f410a36f2a94a07474bbab899777a4558f6a",
+    "tests/browser/showcase-d47-public-initial-load.mjs": "75351f9dc4ddfe3ab382f25e21331e7033aca769fba79151a20d7f2155daafc3"
+  },
+  "verification": [
+    {
+      "command": "node --test tests/browser/showcase-d47-public-race-preflight.test.mjs",
+      "run_id": "t57-public-release-diagnostics-final-20261007",
+      "resource_journal": "docs/stabilization/resource-journals/t57-public-release-diagnostics-final-20261007.jsonl",
+      "resource_journal_sha256": "e23bfdd0a3bb1596b6a7f4cfa20ba27f101207a94b0c3c8955f4b467d83210b2",
+      "resource_decision": "valid",
+      "full_sanitized_stdout": ".research/t57-public-release-diagnostics-final-20261007.stdout",
+      "full_sanitized_stdout_sha256": "6cf1151244d90949f01a4f002f613f3680381900b96399925bb8dd3ee299b9d2",
+      "mutants": "The existing in-memory constant-success, missing-hook, and missing-response-digest mutants were rejected. The new causal negative control rejects canceled old continuation and verifies current continuation plus cleanup."
+    },
+    {
+      "command": "node --test tests/browser/showcase-d47-public-initial-load.test.mjs",
+      "run_id": "t57-public-release-driver-test-20261007",
+      "resource_journal": "docs/stabilization/resource-journals/t57-public-release-driver-test-20261007.jsonl",
+      "resource_journal_sha256": "b91edebffa8c3d1d7f6725a971e48c99dff19275ddab2a09ecb8db2e5433457d",
+      "resource_decision": "valid",
+      "sanitized_test_result": "4 passed, 0 failed; exact terminal or guidance and constant-success negative controls passed"
+    }
+  ],
+  "status": "source_repair_review_ready_native_T57_unverified",
+  "next": "Fresh independent peer review before any separately authorized exact-artifact native retry. Acceptance still requires current binding, context, request/body identity, and recipe-specific terminal result or honest refusal, with delivered stale-event guards. A canceled old request is architectural/lifecycle exclusion only and must never be labeled a delivered callback."
+}

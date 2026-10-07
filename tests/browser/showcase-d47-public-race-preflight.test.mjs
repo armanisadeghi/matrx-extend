@@ -7,6 +7,7 @@ import {
   assessPublicRacePreflight,
   createPublicRacePreflight,
   installPublicCaptureProbe,
+  publicCdpFailureCategory,
   publicRaceRequestIdentity,
 } from './showcase-d47-public-race-preflight.mjs';
 
@@ -35,6 +36,27 @@ test('public response identity is exact across URL and body without exposing eit
     null,
   );
   assert.equal(publicRaceRequestIdentity({ ...request, postData: undefined }), null);
+});
+
+test('CDP failure categories never retain URLs, credentials, or raw messages', () => {
+  const secret = 'https://private.example/?token=secret';
+  assert.equal(
+    publicCdpFailureCategory(
+      new Error(`Protocol error (Fetch.continueRequest): Invalid Interception id ${secret}`),
+    ),
+    'request_no_longer_intercepted',
+  );
+  assert.equal(publicCdpFailureCategory(new Error(`unexpected ${secret}`)), 'other_cdp_failure');
+  assert.equal(
+    publicCdpFailureCategory(new Error(`Target closed ${secret}`)),
+    'cdp_session_closed',
+  );
+  assert.equal(
+    publicCdpFailureCategory(new Error(`net::ERR_ABORTED ${secret}`)),
+    'request_cancelled',
+  );
+  assert.equal(publicCdpFailureCategory(new Error(`Timed out ${secret}`)), 'cdp_timeout');
+  assert.equal(JSON.stringify(publicCdpFailureCategory(new Error(secret))).includes(secret), false);
 });
 
 test('extension capture proof requires its own hook and an attached owned tab', async () => {
@@ -183,6 +205,71 @@ test('controller continues original paused responses in order and disables inter
     ['hold-old', 'hold-new'],
   );
   assert.equal(assessPublicRacePreflight(controller.facts), 'timing_interception_feasible');
+});
+
+test('canceled old release still attempts current release and every owned cleanup step', async () => {
+  const cdp = new EventEmitter();
+  const calls = [];
+  cdp.send = async (method, args = {}) => {
+    calls.push({ method, requestId: args.requestId });
+    if (method === 'Page.getFrameTree')
+      return { frameTree: { frame: { id: 'main', loaderId: 'initial' } } };
+    if (method === 'Runtime.enable')
+      queueMicrotask(() =>
+        cdp.emit('Runtime.executionContextCreated', {
+          context: { uniqueId: 'initial-context', auxData: { isDefault: true, frameId: 'main' } },
+        }),
+      );
+    if (method === 'Fetch.getResponseBody') return { body: '{"hits":[]}', base64Encoded: false };
+    if (method === 'Fetch.continueRequest' && args.requestId === 'hold-old')
+      throw new Error(`Invalid Interception id https://private.example/?token=secret`);
+    if (method === 'Fetch.continueRequest' && args.requestId === 'hold-new')
+      cdp.emit('Network.loadingFinished', { requestId: 'new' });
+    return {};
+  };
+  cdp.detach = async () => {
+    calls.push({ method: 'detach' });
+  };
+  const report = {};
+  const controller = await createPublicRacePreflight(
+    { context: () => ({ newCDPSession: async () => cdp }) },
+    report,
+    '/1/indexes/Item_dev/query',
+    500,
+  );
+  const pause = (name) => {
+    cdp.emit('Page.frameNavigated', { frame: { id: 'main', loaderId: name } });
+    cdp.emit('Runtime.executionContextCreated', {
+      context: { uniqueId: `${name}-context`, auxData: { isDefault: true, frameId: 'main' } },
+    });
+    cdp.emit('Network.requestWillBeSent', { requestId: name, frameId: 'main', loaderId: name });
+    cdp.emit('Fetch.requestPaused', {
+      requestId: `hold-${name}`,
+      networkId: name,
+      responseStatusCode: 200,
+      request,
+    });
+  };
+  pause('old');
+  await controller.oldPaused();
+  pause('new');
+  await controller.currentPaused();
+  await assert.rejects(controller.releaseInOrder(), /public_race_release_failed/);
+  await controller.cleanup();
+  assert.deepEqual(controller.facts.release_attempts, [
+    { step: 'old', outcome: 'cdp_rejected', error_category: 'request_no_longer_intercepted' },
+    { step: 'current', outcome: 'continued' },
+  ]);
+  assert.deepEqual(controller.facts.release_order, ['current']);
+  assert.deepEqual(
+    calls.filter((call) => call.method === 'Fetch.continueRequest').map((call) => call.requestId),
+    ['hold-old', 'hold-new', 'hold-old'],
+  );
+  assert.equal(calls.at(-2).method, 'Fetch.disable');
+  assert.equal(calls.at(-1).method, 'detach');
+  assert.equal(controller.facts.cleanup, 'unverified');
+  assert.equal(assessPublicRacePreflight(controller.facts), 'unverified');
+  assert.equal(JSON.stringify(report).includes('private.example'), false);
 });
 
 const valid = {

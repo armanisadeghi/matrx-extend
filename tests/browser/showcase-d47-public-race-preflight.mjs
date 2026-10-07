@@ -10,6 +10,19 @@ const searchHosts = new Set([
 const searchPaths = new Set(['/1/indexes/Item_dev/query', '/1/indexes/Item_dev_sort_date/query']);
 const digest = (value) => createHash('sha256').update(value).digest('hex');
 
+// CDP messages can contain request URLs and headers. Only these fixed categories
+// are allowed into a receipt; never retain the message, stack, or raw error code.
+export function publicCdpFailureCategory(error) {
+  const message = String(error?.message ?? '');
+  if (/invalid interception id|invalid request id|no resource with given identifier/i.test(message))
+    return 'request_no_longer_intercepted';
+  if (/target closed|session closed|session.*detached|connection closed/i.test(message))
+    return 'cdp_session_closed';
+  if (/cancell?ed|aborted|net::ERR_ABORTED/i.test(message)) return 'request_cancelled';
+  if (/timed? ?out/i.test(message)) return 'cdp_timeout';
+  return 'other_cdp_failure';
+}
+
 // Keep URL, query credentials, POST data and response bytes in memory. Receipts
 // contain only hashes and lifecycle identities; no response is replaced.
 export function publicRaceRequestIdentity(request, expectedPath) {
@@ -152,9 +165,14 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
     paused: [],
     contexts: [],
     release_order: [],
+    release_attempts: [],
+    cleanup_attempts: [],
     unmatched_target_count: 0,
     cleanup: 'pending',
     active_replay_at_old_pause: false,
+    exact_row_at_old_pause: false,
+    running_at_old_pause: false,
+    activity_observation_available_at_old_pause: false,
     extension_capture_at_old_pause: false,
     capture_probe_cleanup: 'pending',
   };
@@ -260,10 +278,24 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
   };
   const release = async (index, name) => {
     const entry = [...held.entries()].find(([, item]) => item === facts.paused[index]);
-    assert.ok(entry, `public_race_${name}_not_held`);
-    await cdp.send('Fetch.continueRequest', { requestId: entry[0] });
-    held.delete(entry[0]);
-    facts.release_order.push(name);
+    if (!entry) {
+      facts.release_attempts.push({ step: name, outcome: 'not_held' });
+      return false;
+    }
+    try {
+      await cdp.send('Fetch.continueRequest', { requestId: entry[0] });
+      held.delete(entry[0]);
+      facts.release_order.push(name);
+      facts.release_attempts.push({ step: name, outcome: 'continued' });
+      return true;
+    } catch (error) {
+      facts.release_attempts.push({
+        step: name,
+        outcome: 'cdp_rejected',
+        error_category: publicCdpFailureCategory(error),
+      });
+      return false;
+    }
   };
   try {
     await cdp.send('Network.enable');
@@ -294,10 +326,17 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
     closed = true;
     let ok = true;
     for (const requestId of held.keys()) {
+      const step = held.get(requestId) === facts.paused[0] ? 'old' : 'current';
       try {
         await cdp.send('Fetch.continueRequest', { requestId });
-      } catch {
+        facts.cleanup_attempts.push({ step, outcome: 'continued' });
+      } catch (error) {
         ok = false;
+        facts.cleanup_attempts.push({
+          step,
+          outcome: 'cdp_rejected',
+          error_category: publicCdpFailureCategory(error),
+        });
       }
     }
     held.clear();
@@ -305,14 +344,26 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
     if (enabled) {
       try {
         await cdp.send('Fetch.disable');
-      } catch {
+        facts.cleanup_attempts.push({ step: 'disable', outcome: 'completed' });
+      } catch (error) {
         ok = false;
+        facts.cleanup_attempts.push({
+          step: 'disable',
+          outcome: 'cdp_rejected',
+          error_category: publicCdpFailureCategory(error),
+        });
       }
     }
     try {
       await cdp.detach();
-    } catch {
+      facts.cleanup_attempts.push({ step: 'detach', outcome: 'completed' });
+    } catch (error) {
       ok = false;
+      facts.cleanup_attempts.push({
+        step: 'detach',
+        outcome: 'cdp_rejected',
+        error_category: publicCdpFailureCategory(error),
+      });
     }
     facts.cleanup = ok ? 'disabled_detached' : 'unverified';
   }
@@ -335,8 +386,9 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
       );
     },
     async releaseInOrder() {
-      await release(0, 'old');
-      await release(1, 'current');
+      const old = await release(0, 'old');
+      const current = await release(1, 'current');
+      if (!old || !current) throw new Error('public_race_release_failed');
       await wait(
         () => facts.paused.every((item) => item.lifecycle !== 'pending'),
         'public_race_lifecycle_missing',

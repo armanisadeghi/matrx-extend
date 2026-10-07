@@ -582,8 +582,18 @@ async function run() {
             report.stage = 'public_race_old_paused';
             await interception.oldPaused();
             const replayAtPause = await exactRecipeVisible(panel, ownedRecipe);
+            const runAtPause = await evaluate(
+              panel,
+              `(() => (${readD47SavedRunState.toString()})(document, ${JSON.stringify(ownedRecipe)}))()`,
+            );
+            interception.facts.exact_row_at_old_pause = replayAtPause.exact_row === true;
+            interception.facts.running_at_old_pause = runAtPause.running === true;
+            interception.facts.activity_observation_available_at_old_pause =
+              runAtPause.observation_unavailable === false;
             interception.facts.active_replay_at_old_pause =
-              replayAtPause.exact_row === true && replayAtPause.running === true;
+              interception.facts.exact_row_at_old_pause &&
+              interception.facts.running_at_old_pause &&
+              interception.facts.activity_observation_available_at_old_pause;
             interception.facts.extension_capture_at_old_pause = await captureProbe.attest();
             report.stage = 'public_race_navigation';
             await resourceAction(() => page.goto(pageUrl, { waitUntil: 'commit' }));
