@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "case": "showcase-d47-admin",
+  "response_order": "prior-saved",
+  "run": {
+    "run_id": 37600370555,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37600370555",
+    "conclusion": "success",
+    "workflow_source": "f52c1f74149746104990468a47b0863118da7ce1",
+    "ci_run_id": 37596432707,
+    "artifact_id": 11470764778,
+    "artifact_source": "c53c6e0aa592a805f64855f235ca4a39ac493837",
+    "artifact_version": "0.2.354",
+    "artifact_tree_sha256": "98e9a17853419f826f920e89ee8ec1b7985ce5f1d8f36a730fe19d6e5411617a",
+    "artifact_digest": "sha256:af9149612d7c9a56c44f21ac098875e4806b5b750cd6f3e8b707ff6e82bec93b"
+  },
+  "binding": {
+    "reviewed_qa_source": "f52c1f74149746104990468a47b0863118da7ce1",
+    "reviewed_qa_peer": "f52c1f74",
+    "qa_files": {
+      "tests/browser/showcase-d47-driver-evidence.mjs": "c1df5455bc132cb12f55e9ef2787624a0c5b5c9bbb37903c9bcd82ff3853c41b",
+      "tests/browser/showcase-d47-document-lifecycle.mjs": "be0562096ddda4b50342ca9b2e097816cd2c732de2d978e5022e246dd95e8e72",
+      "tests/browser/showcase-d47-driver-evidence.test.mjs": "aac5c2e0f98c4fcfd97982856475cc3beacbe67899c4f180c5581a0017b2ec39"
+    },
+    "workflow_sha256": "d2d514ae3e04aa3faafdc331464942a83d51069df366004ab32868b1e31a07c4",
+    "frozen_artifact_ruling": "The imported app tree was verified exact at source c53c6e0a, version 0.2.354. Current reviewed QA source is f52c1f74 and includes the independently accepted navigation-order repair. The source lockfile differs only for runtime package catch-up (design-system .70.9 to .70.10, kit .29.0 to .30.0, records .76.12 to .76.13); QA/browser dependencies and pins are unchanged and the QA driver does not import those runtime packages. The frozen app was not modified or supplemented. This run makes no claim that version 0.2.356 or newer runtime packages were tested."
+  },
+  "receipt": {
+    "status": "observed_bounded",
+    "native_stage": "second_saved_terminal_after_release",
+    "failure_code": null,
+    "current_saved_replay": "pass",
+    "prior_saved_run_isolation": "bounded_server_finish_callback_not_observed",
+    "delayed_old_binding": "unverified",
+    "cancellation": "unverified",
+    "manual_prior_isolation": "unverified",
+    "first_saved": {
+      "held_arrival_order": 1,
+      "first_finish_order": 2,
+      "trace_ok": true,
+      "terminal_samples": 159
+    },
+    "second_saved": {
+      "trace_ok": true,
+      "context_changed": true,
+      "binding_changed": true,
+      "before_release_samples": 160,
+      "before_release_page_phase_current": true,
+      "before_release_page_result_second": true,
+      "after_release_samples": 1,
+      "after_release_page_phase_current": true,
+      "after_release_page_result_second": true
+    },
+    "delayed_first_saved_lifecycle": {
+      "release_http_status": 200,
+      "prior_saved_finished": true,
+      "prior_saved_aborted": false,
+      "old_response_aborted": true,
+      "old_response_finished": false,
+      "old_response_released": false,
+      "callback_delivery": "not_observed",
+      "old_binding_packet_count": 0
+    },
+    "cleanup": "owned_recipe_removed"
+  },
+  "resources": {
+    "package": {
+      "path": "docs/stabilization/resource-journals/d47-prior-saved-native-retest-37600370555-package.jsonl",
+      "sha256": "a83ecbd7bb27b20cc9819b3ef25b8af0b328faf16baa9a3119f990494f51241a",
+      "decision": "valid"
+    },
+    "browser": {
+      "path": "docs/stabilization/resource-journals/d47-prior-saved-native-retest-37600370555-browser.jsonl",
+      "sha256": "e8b6a6df7375f933e235cb8db189acf6e033444244656102a6641f7cb5856cff",
+      "decision": "valid"
+    },
+    "guest": {
+      "path": "docs/stabilization/resource-journals/d47-prior-saved-native-retest-37600370555-guest.jsonl",
+      "sha256": "69e33e637bc14c4305b267baf7d2a2512f29e4227e3c7a23e363d48546654560",
+      "decision": "valid"
+    }
+  },
+  "secrets": {
+    "staged_only_for_dispatch": true,
+    "removed_after_terminal": true,
+    "both_names_verified_absent": true
+  },
+  "private_evidence": {
+    "directory": ".research/d47-prior-saved-native-retest-20261007/private",
+    "receipt": ".research/d47-prior-saved-native-retest-20261007/private/artifact/_temp/showcase-d47-native-37600370555-1.json",
+    "receipt_sha256": "8c58916e30f7a5b4885eb91091fc6e6c6bf7a2170b7ea10ebb35a3f96ec760ad",
+    "workflow_stdout": ".research/d47-prior-saved-native-retest-20261007/private/native-stdout-37600370555.log",
+    "workflow_stdout_sha256": "ff9dabaead37dc86c673964865790409931caf9f4224628d486d2e852b27f678",
+    "screenshots": [
+      {
+        "path": ".research/d47-prior-saved-native-retest-20261007/private/artifact/_temp/guest-acceptance/native-sidepanel-qa-Ef0Wis/native-side-panel.png",
+        "sha256": "35104afebb448dde7b3b315613486606a924f2fa636fa316acc30f63f681df10"
+      },
+      {
+        "path": ".research/d47-prior-saved-native-retest-20261007/private/artifact/_temp/guest-acceptance/native-sidepanel-qa-Ef0Wis/normal-target-after-open.png",
+        "sha256": "c939d4f6417b874eefffbe4a8c9bd1cf05088fe2b42ab7a7e13c65d79a024fd2"
+      }
+    ],
+    "permissions": "private directory mode 0700; evidence files mode 0600"
+  },
+  "claim_limit": "One bounded native prior-saved run only. The second exact saved result remained current before and after release; the delayed old binding callback was not observed. This does not establish delayed callback delivery, cancellation behavior, manual prior isolation, or a complete D47/T57 acceptance."
+}
