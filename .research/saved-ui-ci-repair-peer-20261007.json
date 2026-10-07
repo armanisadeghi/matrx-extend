@@ -14,7 +14,7 @@
   "independent_verification": {
     "focused": "pnpm exec vitest run tests/unit/document-network-saved-ui.test.tsx --maxWorkers=1 --reporter=verbose — 1 file, 5 tests passed; unrelated same-route navigation passed in 260 ms.",
     "surrounding": "pnpm exec vitest run tests/unit/document-network-saved-ui.test.tsx tests/unit/document-network-capture.test.ts tests/unit/document-network-dispatch.test.ts tests/unit/document-network-approval-remount.test.tsx --maxWorkers=2 --reporter=dot — 4 files, 37 tests passed.",
-    "format_and_json": "Research JSON parses and Biome checks it successfully. Biome reports four existing noExplicitAny warnings in the test file. The working test SHA-256 is 2c473bd895f1606dc3bb36ad2483bf0998a7dc7a8fefad86457e7a531fa859a3.",
+    "format_and_json": "Research JSON parses successfully; the repository Biome configuration excludes .research/**, so no formatter result is claimed for this file. Biome checks the test file with four existing noExplicitAny warnings. The working test SHA-256 is 2c473bd895f1606dc3bb36ad2483bf0998a7dc7a8fefad86457e7a531fa859a3.",
     "incident_resource": "gh run view 37615673755 confirmed the run URL, CI workflow, failed conclusion, and head SHA 2787ed85855444d0f3498d74e02e502cccc164cc, matching the recorded source SHA prefix and incident. This confirms the referenced incident resource; it does not establish a fresh CI pass or native health."
   },
   "limitations": [
