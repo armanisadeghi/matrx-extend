@@ -93,5 +93,11 @@
     "positive": "With a document exposing a dedicated task API while LanguageModel is absent, both manual and delegated routes report that task's real availability and return its real dedicated-method output. Prompt-dependent classify/extract/image/injection controls must likewise execute through the document route when LanguageModel is available. Confirm the result reaches the server tool_results endpoint and agent timeline; verify warm and post-reload behavior on one receipt-bound build."
   },
   "limits": "Source diagnosis is decisive about unsupported Web Worker placement per current Chrome documentation. It does not prove installed-build offscreen exposure, model readiness, permission policy, user activation transfer, or successful native execution. No red/green loop was run in this lane because native execution was explicitly reserved to the root native lane.",
-  "defect_id": "EXT-D-0147"
+  "defect_id": "EXT-D-0147",
+  "native_probe_setup_source_check": {
+    "status": "source-only; no runtime admission or API exposure claim",
+    "existing_harness": "tests/browser/native-sidepanel-qa-harness.mjs:1430-1436 exposes attachWorker and attachOffscreen on the exercisePanel context; the offscreen accessor requires its existing target.",
+    "existing_document_creation": "src/lib/tools/handlers/fetch.ts:59-72 uses ensureOffscreen then OFFSCREEN_FETCH_PAGE; src/entrypoints/offscreen/main.ts:122 receives it. A controlled manual fetch of an owned public target can exercise this existing document path before probing; success still requires runtime observation.",
+    "next_measurement": "Under one guarded exact-artifact native run, compare per-API typeof/availability and userActivation in worker, side panel, and the existing offscreen document. Do not create models or infer activation transfer from messaging. No new document service is required solely for measurement."
+  }
 }
