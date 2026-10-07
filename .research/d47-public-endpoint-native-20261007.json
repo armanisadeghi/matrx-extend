@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "lane": "one guarded hosted public Network initial-load capture and saved replay",
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "status": "bounded_native_success_pending_peer",
+  "conclusion": "The installed development extension captured the public HN Algolia initial-load response, saved an owned Network recipe, replayed it to a matching Last run result with hits rows, and removed the recipe. This is bounded public-site evidence only. T57 and D47 remain unverified overall because the saved-panel Refresh indicator was still spinning at observation and the receipt does not prove all document-race cases.",
+  "run": {
+    "id": 37571487114,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37571487114",
+    "number": 121,
+    "workflow": "Hosted guest side-panel acceptance",
+    "event": "workflow_dispatch",
+    "case": "showcase-d47-public-admin",
+    "runner": "macos-15",
+    "runner_arch": "ARM64",
+    "status": "completed",
+    "conclusion": "success",
+    "workflow_head_sha": "2274d23617a07bc9a501d551f8f1f57e22f90d14",
+    "workflow_ref": "v0.2.344",
+    "workflow_tag_commit": "2274d23617a07bc9a501d551f8f1f57e22f90d14"
+  },
+  "source_artifact": {
+    "ci_run_id": 37570793297,
+    "ci_conclusion": "success",
+    "source_sha": "2274d23617a07bc9a501d551f8f1f57e22f90d14",
+    "development_artifact_id": 11460697871,
+    "development_artifact_name": "matrx-extend-development-test-2274d23617a07bc9a501d551f8f1f57e22f90d14-37570793297-1",
+    "development_artifact_digest": "sha256:2df3aae51aeb8ea86c2e6028e2b6e33ec886e7c223efbb8009c0874671e5c229",
+    "development_artifact_tree_sha256": "a27d96c72ac2d4ef9c74951d3e9b9e8939d0fb89e3b47c689ab2360875911aba",
+    "version": "0.2.344",
+    "native_result_artifact_id": 11461720502,
+    "native_result_artifact_digest": "sha256:fda1d73dd90dbc74ce8f3528a2a1e9072fc785e22c9969a2e309d1c79ddddec1",
+    "native_result_artifact_path": "hosted-guest-37571487114-1/_temp/showcase-d47-public-native-37571487114-1.json",
+    "source_to_dispatch_basis": "The existing v0.2.344 tag resolves to the exact successful CI source commit used to build the installed artifact. The pnpm lock SHA-256 at that commit is 4d58b059720b64ba3e4b285fdfdde55ab43f57d550024d444b442a19ddd4e41e. Runtime, package, lock, hosted workflow, wrapper, showcase route, and artifact importer are all from that same immutable source commit. The QA driver and test are recorded separately because they execute from the workflow checkout and are not bundled into the installed extension. No claim of whole-source equivalence is made.",
+    "driver_workflow_sha256": {
+      "tests/browser/showcase-d47-public-initial-load.mjs": "21c43a6a6ebf217ee022e8beb2a25e58bf8a6c6049d21fd1842b6b7f63509e1d",
+      "tests/browser/showcase-d47-public-initial-load.test.mjs": "f1cc1923c17a0483a84b48614ca90f1daff6ea160d822455e0d504d9049d8f5c",
+      ".github/workflows/hosted-guest-acceptance.yml": "3ef47a3bb7347fadbf3442454369c30c67984625302fdefbcd929c85e2bff3ce",
+      "scripts/hosted-guest-acceptance.mjs": "40014f8daf5fb1b72371661fc44776aeed86f54c140ee05e017c34ecffe50e1e",
+      "scripts/hosted-showcase-route.mjs": "4652d6c7528535aff9ba37e748b7e09e15f55bf2966ba3d6433ed787f08d8a0f",
+      "scripts/current-test-artifact.mjs": "4148676bef8fd80576c46d32b5687fdd24ba6e6d700dd11b38d1c85aacc9a46d"
+    }
+  },
+  "reviewed_driver": {
+    "commit": "ee54cfc5388aac1def93c805a3ac92f384544f5e",
+    "fresh_peer": ".research/d47-public-endpoint-peer-20261007.json",
+    "verdict": "source_readiness_pass; native_acceptance_unverified before this run",
+    "driver_sha256": "21c43a6a6ebf217ee022e8beb2a25e58bf8a6c6049d21fd1842b6b7f63509e1d",
+    "test_sha256": "f1cc1923c17a0483a84b48614ca90f1daff6ea160d822455e0d504d9049d8f5c"
+  },
+  "receipt": {
+    "original_private_path": "${RUNNER_TEMP}/showcase-d47-public-native-37571487114-1.json",
+    "uploaded_path": "hosted-guest-37571487114-1/_temp/showcase-d47-public-native-37571487114-1.json",
+    "downloaded_private_path": "/tmp/d47-native-result-37571487114/_temp/showcase-d47-public-native-37571487114-1.json",
+    "sha256": "131bdcdef77dad2f70cbdd7a4b9bb5fa21f21e74038fcdb204bc1dea3b23f308",
+    "status": "observed_bounded",
+    "stage": "saved_terminal",
+    "failure": null
+  },
+  "target": {
+    "host": "hn.algolia.com",
+    "public": true,
+    "injected_fetch": false
+  },
+  "capture": {
+    "terminal": {
+      "discovering": false,
+      "responses": true,
+      "error": false
+    },
+    "request_list_counts": {
+      "visible_rows": 10,
+      "post_200_rows": 2,
+      "algolia_rows": 8,
+      "algolia_post_200_rows": 1,
+      "legacy_query_label_rows": 0,
+      "legacy_exact_candidates": 0
+    },
+    "matched_previews": 1,
+    "selected_rows": 1,
+    "selected_row_matches": true,
+    "preview_url_matches": true,
+    "post_200": true,
+    "endpoint_shape": "/1/indexes/Item_dev/query",
+    "endpoint_path_segments": 4,
+    "endpoint_has_query": true,
+    "query_endpoint": true,
+    "response_tables": 1,
+    "response_rows": 1,
+    "intended_query": true,
+    "hits_preview": true,
+    "credential_key_present": true,
+    "credential_masked_at_initial_preview": false,
+    "credential_masking_limit": "The receipt's mask boolean was sampled before the explicit credential-checkbox action. The driver then required the control, clicked it if unchecked, and asserted the sanitized URL marker before saving; the successful run reached the saved replay. The receipt does not persist a separate post-checkbox boolean, so the pre-checkbox false value is not evidence of post-checkbox exposure."
+  },
+  "saved_replay": {
+    "patterns_active": true,
+    "host_matches": true,
+    "exact_row": true,
+    "running": false,
+    "unavailable": false,
+    "last_run_exact": true,
+    "hits_rows": true,
+    "no_match_guidance": false,
+    "error": false,
+    "outcome": "captured_initial_request",
+    "sample_count": 161,
+    "refresh_loading_indicator": true,
+    "terminal_limit": "The saved Last run and hits rows were exact and the run button was idle, but the Patterns Refresh control still displayed its loading indicator. The driver classifier does not require that refresh indicator to be false, so this receipt does not establish a fully settled panel state."
+  },
+  "owned_recipe": {
+    "name": "Codex D47 public HN 43a5b062-f187-474c-8c2c-7948880c717a",
+    "host": "hn.algolia.com",
+    "creation": "observed_in_patterns",
+    "saved_replay": "captured_initial_request",
+    "cleanup": "removed"
+  },
+  "organization_observations": {
+    "admin_role_verified": true,
+    "rendered_email_matches": true,
+    "rendered_role_matches": true,
+    "rendered_profile_matches": true,
+    "rendered_organization_matches": true,
+    "picker_available": true,
+    "picker_selection_required": true,
+    "picker_has_selection": false,
+    "limit": "The runner verified the admin identity and rendered organization comparison, while its diagnostic also recorded a required picker with no selection. This receipt alone does not establish the selected organization context."
+  },
+  "resource": {
+    "package": {
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "journal": "docs/stabilization/resource-journals/d47-public-endpoint-native-37571487114-package.jsonl",
+      "journal_sha256": "e856a0d7af7c527c74c8059c64f4d43ae68cf4b91a6645d7571b7e0343b33ef0"
+    },
+    "browser": {
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "journal": "docs/stabilization/resource-journals/d47-public-endpoint-native-37571487114-browser.jsonl",
+      "journal_sha256": "fb635bf0453536bebd828b01995b3de7b8a16ecb01273fbd7453e9605fd34a31"
+    },
+    "guest": {
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "journal": "docs/stabilization/resource-journals/d47-public-endpoint-native-37571487114-guest.jsonl",
+      "journal_sha256": "ff9d9aa2154cea88f12545c9dcde7f0982abbe5ca27a9928e135c050a6f564ee"
+    }
+  },
+  "cleanup": {
+    "owned_recipe": "removed",
+    "temporary_secrets": {
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON": {
+        "staged": true,
+        "deleted": true,
+        "absence_verified": true
+      },
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON": {
+        "staged": true,
+        "deleted": true,
+        "absence_verified": true
+      }
+    },
+    "credential_values_recorded": false,
+    "local_private_credential_copies": "removed"
+  },
+  "limits": [
+    "One public initial-load Network case only; stale-only refusal/retrigger, manual/prior-run isolation, and higher-old-sequence causal coverage remain outstanding.",
+    "The saved output matched the owned recipe and contained hits rows, but the Refresh indicator remained active at observation.",
+    "The organization diagnostic did not record a selected picker choice.",
+    "The endpoint driver peer reviewed source readiness, not native acceptance; a fresh independent review of this receipt is required.",
+    "D47 remains in-fix and full T57 remains unverified."
+  ]
+}
