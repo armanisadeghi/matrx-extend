@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-07",
+  "scope": "Documentation alignment to the approved parallel stabilization campaign; no product-test or release verdict is claimed.",
+  "changed_paths": [
+    "docs/stabilization/PLAN.md",
+    "docs/stabilization/TAKEOVER-PLAN.md",
+    "docs/stabilization/COORDINATOR.md",
+    ".claude/skills/matrx-extend-bugfix/SKILL.md",
+    "/Users/armanisadeghi/code/common-docs/systems/apps/extension/STATE.md",
+    "/Users/armanisadeghi/code/common-docs/systems/apps/extension/CHROME-WEB-STORE.md",
+    ".research/parallel-campaign-docs-20261007.json"
+  ],
+  "contradiction_audit": [
+    {
+      "old": "Global inventory completion before behavior testing",
+      "resolution": "Registered executable cases may run now; unknowns remain visible and full health remains unavailable."
+    },
+    {
+      "old": "One heavy job and browser profile across the campaign",
+      "resolution": "One heavy job/profile per host; two hosted lanes only on isolated hosts and after independent guard review."
+    },
+    {
+      "old": "Chat/Pilot only after all non-Chat work",
+      "resolution": "Daily guest Chat checks and urgent regressions run now; deeper Chat/Pilot breadth remains deferred."
+    },
+    {
+      "old": "Coordinator next action was mapping first, then retest",
+      "resolution": "Runnable product batches and inventory reconciliation proceed in parallel; T57 can run when admitted."
+    },
+    {
+      "old": "Historical release-order finding read as an operative repair task",
+      "resolution": "Plan now requires inspection of current release path; historical evidence preserved."
+    }
+  ],
+  "remaining_gaps": [
+    "Hosted guard and workflow changes are owned separately and await independent review; two concurrent browser lanes are not yet asserted running.",
+    "Actual hosted machines, isolated profiles, fixtures, account and secret schedules require admission at dispatch.",
+    "Inventory unknowns, missing procedures, native case results and Store installation remain open in authoritative records.",
+    "The app goal text and automation are owned by the root task; this documentation change does not claim they were updated.",
+    "No HANDOFF.md exists at the supplied common-docs extension path; no replacement or historical status was invented."
+  ],
+  "verification": [
+    "Targeted contradiction grep found no remaining operative global inventory gate in touched guidance.",
+    "git diff --check passed for both repositories.",
+    "No inventory.json, resource guard, workflow or release command was changed by this documentation lane.",
+    "Common-docs skill description lint passed with pre-existing warnings.",
+    "Common-docs whole-repository OKF lint failed on 22 unrelated pre-existing files; none were in the changed extension paths.",
+    "Biome ignores the .research path, so its format command processed no files; JSON parsed successfully."
+  ]
+}
