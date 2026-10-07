@@ -28,10 +28,10 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Observe the existing hosted run37558902653 to terminal; d47_settled_native owns sole manual heavy/native permit. Never relaunch due to observation timeout. Verify resource validity, settled exact-recipe output and observer/owned-recipe cleanup, remove temporary secrets, then independently review original evidence. No other native run admitted.",
-    "status": "Run37554362947 resource-valid success on frozen0.2.334/a6e: exact saved current root result plus current-context handshake/packet observed. Last sample running=true; oldHTTP finished but oldcallback absent. Independentpeer477695bc preserves D47in-fix/T57unverified. Exact owned DBrecipe removed and absence verified; passive probe removal unconfirmed.",
+    "next_action": "Do not repeat the settled fixture case without a relevant change. Complete remaining public-site initial-load replay, inverse response order, stale-only refusal/recovery and manual/prior-run isolation; retain source causal higher-old-sequence guard under the architectural-exclusion ruling. Verify current artifact/source/lock before the next single guarded native launch; no test owner or run is active.",
+    "status": "Run37558902653 on frozen0.2.337/source823724eb passed all resource phases and reached exact settled current-only saved result. Independentpeer9f70b303 accepts bounded result, current handshake/packet/context clearing, observer cleanup and exact owned-recipe removal. OldHTTP finished after current; no old binding callback observed. D47in-fix/T57unverified remain unchanged.",
     "implementation_agent": "completed: d47_completion_cleanup_fix",
-    "execution_agent": "d47_settled_native",
+    "execution_agent": "completed: d47_settled_native",
     "native_run_id": 37537634304,
     "workflow_source": "fbcc4311ae6885b67133e55336f692be38881249",
     "development_artifact_id": 11440764124,
@@ -41,7 +41,7 @@
     "first_native_outcome": "resource-valid child failure at save_recipe/recipe_saved_not_observed; no replay verdict; product versus driver cause unknown",
     "second_native_evidence": ".research/d47-save-native-20261006.json",
     "second_native_outcome": "resource-valid child failure; name_matches=false with enabled Save and no visible error; Save not clicked and no replay verdict",
-    "temporary_secret_cleanup": "Both names deleted after terminal37554362947; executor and root independently verified absence.",
+    "temporary_secret_cleanup": "Both names deleted after terminal37558902653; executor and root independently verified absence.",
     "input_repair_commit": "83a6148f",
     "input_repair_review_commit": "d1c00968",
     "third_native_evidence": ".research/d47-input-native-20261006.json",
@@ -54,7 +54,7 @@
     "run_boundary_review_commit": "5425d283",
     "run_boundary_review": ".research/d47-run-readiness-peer-20261006.json",
     "pending_ci_run_id": null,
-    "latest_native_evidence": ".research/d47-root-observer-native-20261007.json",
+    "latest_native_evidence": ".research/d47-settled-native-20261007.json",
     "terminal_diagnosis": ".research/d47-terminal-diagnosis-20261006.json",
     "owned_reload_fix_commit": "86046a88",
     "owned_reload_peer_report": ".research/d47-owned-reload-peer-20261006.json",
@@ -63,8 +63,8 @@
     "final_source_peer_report": ".research/d47-revision-final-peer-20261006.json",
     "source_fix_ci_run_id": 37542852254,
     "canceled_ci_run_id": 37542663531,
-    "integration_limit": "Frozenartifact11454177514/sourcea6e/0.2.334 used alchemy0.13. Workflowhead0827 changed lock to0.14 with same D47product/harness paths. This proves bounded frozen behavior, not later dependency state.",
-    "active_native_run_id": 37558902653,
+    "integration_limit": "Artifact11456086365/source823724eb/0.2.337 and workflowheadfdae9c4b had equivalent runtime/harness/lock paths. Later remote902bf8ac changed pnpm-lock.yaml and was merged6f30b681. The bounded pass proves the frozen artifact, not the later dependency state.",
+    "active_native_run_id": null,
     "candidate_artifact_id": 11456086365,
     "candidate_source": "823724eb97ab6887f4c41a6096054a831da849dc",
     "candidate_version": "0.2.337",
@@ -88,15 +88,16 @@
     "actual_shape_fix_report": ".research/d47-actual-shape-repair-20261007.json",
     "actual_shape_peer_commit": "48de45db",
     "actual_shape_peer_report": ".research/d47-root-shape-peer-20261007.json",
-    "latest_native_peer": ".research/d47-native-result-peer-20261007.json",
-    "latest_recipe_cleanup": ".research/d47-owned-recipe-cleanup-20261007.json",
+    "latest_native_peer": ".research/d47-settled-native-peer-20261007.json",
+    "latest_recipe_cleanup": ".research/d47-settled-native-20261007.json",
     "completion_cleanup_commits": ["a9ed51dd", "823724eb"],
     "completion_cleanup_report": ".research/d47-completion-cleanup-fix-20261007.json",
     "completion_cleanup_review": ".research/d47-ack-cleanup-fresh-peer-20261007.json",
-    "completion_cleanup_status": "Independent source review553aacb1 accepts lost-ack correction and finds no new breakage; native remains unverified. Focused probe3/3, constant-success and ack-only mutations rejected, resource-valid zero-error lint. Initial CI37557265676 failed lint; correction requires fresh integrated CI."
+    "completion_cleanup_status": "Source correction independently accepted; native37558902653 now verifies settled exact-recipe completion and in-lifetime observer/owned-recipe cleanup at frozen-artifact scope. Fullcase remains unverified.",
+    "latest_native_run_id": 37558902653
   },
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
-  "verification_status": "Current independentevidencepeer e7a67bcd confirms initialrequest timing and documentidentity controlled regressions (including meaningful identitymutation), plus bounded installed initialHN capture and saved10row replay on8b0f8adc/9ea6687b. Delayed matching prior-document response with higher old sequence is still nativeUNVERIFIED; T57 and original D47 closure remain incomplete. No current runtime was run by evidencepeer.",
+  "verification_status": "Independent native peer9f70b303 verifies settled exact-recipe current-only output, current-document handshake/packet, old-context clearing, real old HTTP completion, and observer/owned-recipe cleanup on frozen0.2.337/source823724eb. This controlled fixture does not satisfy public-site initial-load acceptance; inverse response order, stale-only recovery, manual/prior-run isolation and causal higher-old-sequence coverage remain required. D47in-fix/T57unverified; no later dependency-state acceptance.",
   "source_report": "docs/stabilization/reports/showcase-network-final-peer.json",
   "transition_history": [
     {
@@ -122,11 +123,11 @@
   "current_evidence_review": "docs/stabilization/reports/showcase-d47-current-evidence-peer.json",
   "native_boundary_route": {
     "path": "tests/fixtures/showcase-replay/README.md#d47-document-replay-boundary",
-    "state": "source_route_ready_native_unrun",
+    "state": "native_bounded_verified_fullcase_unverified",
     "source_guard": "tests/unit/showcase-d47-fixture.test.ts; d47-fixture-lifecycle-20261006 resource-valid three-case green (normal finish, aborted old client, exited-child teardown) and scratch response-swap d47-fixture-mutant-20261006 valid red",
     "limitation": "Real HTTP route proves old/current response scheduling and matching URL/method/body, but neither server status nor a current-only UI row proves an old Chrome binding callback reached the extension after navigation.",
     "independent_review": ".research/d47-lifecycle-fresh-review-20261006.json",
-    "review_verdict": "HTTP scheduling/lifecycle accepted after independent3testguard; actual old-context delivery and saved UI output unverified"
+    "review_verdict": "Independent native peer9f70b303 accepts current-only settled saved output and architectural exclusion plus cleanup on frozen0.2.337; full T57 remains unverified."
   },
   "acceptance_ruling": {
     "date": "2026-10-06",
