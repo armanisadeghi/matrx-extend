@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "reviewed_run": 37581293963,
+  "scope": "Independent read-only review of the executor report, three retained resource journals, hosted workflow/readiness, guard policy, and guard CPU decision code. No native test, build, database access, source edit, or cleanup was performed.",
+  "verdict_A_runtime_evidence": {
+    "status": "UNVERIFIED_RESOURCE_INVALID",
+    "finding": "The frozen 5fc0ae39 development artifact identity and import checks are reported, but the native guest guard invalidated the run before any D47 terminal receipt. The retained evidence establishes neither a Save click nor recipe persistence, stale-only refusal, fresh recovery, or owned-row/observer cleanup. It supports no product failure or acceptance claim; newer workflow-head app code was outside the frozen artifact scope.",
+    "guard_sequence": "Package and browser guards admitted and finished valid with child exit 0. GitHub job 112661333112 used macos-15-intel. Native guard admitted at 2026-10-07T06:30:04.581Z with CPU busy 0.0214 and load 0.6 on four logical CPUs. At 06:30:20.827Z CPU busy was 0.98, producing RESOURCE_CPU_PENDING. At 06:30:37.120Z CPU busy remained 0.98 and load rose to 5.27; RESOURCE_WATCH_UNSAFE named RESOURCE_CPU_BUSY and RESOURCE_CPU_HIGH_LOAD_BUSY. The guard emitted a safe-boundary stop, requested SIGTERM of its owned process group, and recorded resourceInvalid=true, exitCode=3 at 06:30:38.735Z.",
+    "attribution_limit": "The first unsafe sample's process census lists owned Chromium 57.2% and helpers 74.4%, 24.5%, and 17.2%, plus owned node 27.7%; provjobd 25% and mds 17.3% also appear. Process percentages are snapshot values and cannot be added to the guard's interval CPU fraction. They show substantial owned browser work during saturation but do not establish a unique root cause, product behavior, or repeatability.",
+    "evidence": [
+      ".research/d47-stale-diagnostic-native-20261007.json",
+      "docs/stabilization/resource-journals/d47-stale-diagnostic-native-37581293963-package.jsonl",
+      "docs/stabilization/resource-journals/d47-stale-diagnostic-native-37581293963-browser.jsonl",
+      "docs/stabilization/resource-journals/d47-stale-diagnostic-native-37581293963-guest.jsonl"
+    ]
+  },
+  "verdict_B_test_and_resource_quality": {
+    "status": "RESOURCE_GUARD_CORRECT; REPORT_HASH_REPAIRED",
+    "finding": "The guard followed its policy: CPU busy >=0.75 is unsafe, and high normalized load with busy >=0.6 is also unsafe; two consecutive unsafe samples stop. The separate readiness checks and 60-second admission window proved capacity before launch, not capacity during Chromium startup. The failed run remained contained and was correctly excluded from acceptance.",
+    "report_integrity": "The initial executor report had one package-journal SHA-256 typo. The executor corrected that field while this review was in progress; a fresh comparison confirms all three reported journal hashes now match the retained files. No journal bytes changed. The mismatch never changed the native invalid verdict.",
+    "limits": "No successful same-artifact stale-only runtime result exists in this run. The earlier macos-15-intel run 37578280425 had a valid resource decision but failed inside Save before replay, so it cannot fill this gap. Older macos-15 ARM runs 37558902653 and 37562111314 completed valid bounded D47 replay on different frozen artifacts, demonstrating that the existing ARM workflow alternative can carry this class of native workload, not that the current artifact will pass. No source defect was reproduced from safe contents in this review."
+  },
+  "smallest_environment_recovery": "For one future attempt, choose the workflow's existing runner_label=macos-15 ARM alternative instead of macos-15-intel, using its sole serialized native slot and normal measured readiness. Keep the frozen development artifact, same stale-only inputs, existing thresholds, guard, and retained journals. Prior ARM D47 runs completed with valid guard decisions, though on different artifacts; this is a capacity-informed one-variable environment choice, not a guarantee. Idle readiness did not predict the owned Chromium startup spike on Intel. If ARM also records a sustained CPU episode, stop at the guard decision and use the existing startup-resource-diagnostic path to measure startup before another acceptance dispatch. Do not lower thresholds, bypass the guard, call exit 3 a product failure, or dispatch parallel retries.",
+  "review_constraints": "No cleanup target or product fix can be justified from this resource-invalid attempt. The executor reports temporary Actions secrets removed; secret absence was independently confirmed by the root owner, not rechecked in this review."
+}
