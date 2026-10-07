@@ -1,0 +1,16 @@
+{
+  "status": "source-reviewed procedures integrated; runtime unverified",
+  "case_ids": [
+    "EXT-F-4100-T01",
+    "EXT-F-4101-T01",
+    "EXT-F-4102-T01",
+    "EXT-F-4104-T01",
+    "EXT-F-4112-T01"
+  ],
+  "proposal_commits": ["651f25d0", "37e2a522"],
+  "fresh_peer_commit": "c258736a",
+  "missing_steps_expected_before": 80,
+  "missing_steps_expected_after": 75,
+  "invariants": "All feature cells, case results, role applicability, control IDs and case IDs unchanged. Permission enforcement, agent dispatch and guest access are not certified.",
+  "runtime": "No tests executed for these five procedures."
+}
