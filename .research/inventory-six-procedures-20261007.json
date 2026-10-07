@@ -101,18 +101,16 @@
         "Run {\"action\":\"update\",\"group_id\":GROUP_ID,\"title\":\"Codex group updated\",\"color\":\"blue\",\"collapsed\":true}; then run list and verify both tabs and updated properties belong to that group.",
         "Create a third disposable fixture tab, run {\"action\":\"add\",\"group_id\":GROUP_ID,\"tab_ids\":[TAB_C]}, then run {\"action\":\"remove\",\"tab_ids\":[TAB_C]} and verify the third tab is ungrouped while the original two remain grouped.",
         "Reload the extension, run list again, and confirm the group identified by the two owned tab IDs remains visible with the updated properties.",
-        "For the declared-schema negative input, run {\"action\":\"create\",\"tab_ids\":[1.25]} and confirm Schema mismatch before Chrome is called.",
-        "As a permission-denial observation, remove the tabGroups permission if Chrome permits that grant change, run list, capture the observed API outcome, and restore the original permission state."
+        "For the declared-schema negative input, run {\"action\":\"create\",\"tab_ids\":[1.25]} and confirm Schema mismatch before Chrome is called."
       ],
       "expected": [
         "Create returns ok:true and a group ID; update/add/remove return successful results. The global list identifies the group by its owned tab IDs and reports the updated title, color, and collapsed:true state after the explicit update.",
         "Fractional tab ID is rejected by the array item integer schema.",
         "Reload does not erase Chrome-owned tab-group state.",
-        "Permission behavior observed through this manual runner is not evidence of dispatcher gate enforcement."
+        "Permission-denial behavior is unverified: tabGroups is declared as a required permission in this build, and this procedure does not test dispatcher enforcement."
       ],
       "cleanup": [
-        "Run remove for the two original test tab IDs to ungroup them, close all three owned fixture tabs, and verify the test group disappears from list.",
-        "Restore any permission changed for the observation. Do not alter unrelated groups or tabs."
+        "Run remove for the two original test tab IDs to ungroup them, close all three owned fixture tabs, and verify the test group disappears from list."
       ]
     },
     {
@@ -137,17 +135,18 @@
         "Reload the extension, focus the same fixture tab, run the positive input again, and verify a new capture result with positive dimensions.",
         "For the declared-schema negative input, run {\"rect\":{\"x\":0,\"y\":0,\"w\":0,\"h\":20}} and confirm Schema mismatch before capture.",
         "After reload, inspect the Screenshots gallery for the owned capture if screenshot_id was returned. If only file_id was returned, track the uploaded file separately and record the missing index row; if both IDs are null, record the inline-only response and leave persistence unverified.",
-        "With scripting revoked, repeat the positive input once only as an API-level denial observation; restore the grant afterward."
+        "Permission-denial behavior is unverified: scripting is a required permission in this build; do not attempt to revoke it."
       ],
       "expected": [
         "The positive result is ok:true with PNG format and positive width/height. Successful file upload returns a cloud image_ref with file_id and possibly screenshot_id, and may omit image_base64; an unavailable/failed upload returns inline image_base64 with null identifiers. A file upload and screenshot index row can succeed independently.",
         "A zero-width rectangle fails the positive-number schema and causes no capture.",
         "A returned screenshot_id appears in the gallery after extension reload. Track file_id and screenshot_id separately; inline-only fallback is not durable persistence success.",
-        "Direct invocation does not establish dispatcher enforcement of activeTab or scripting permissions."
+        "Direct invocation does not establish dispatcher enforcement of activeTab or scripting permissions.",
+        "Permission denial remains unverified; the manual runner does not establish dispatcher permission enforcement."
       ],
       "cleanup": [
-        "Delete the screenshot row created by this run through the Screenshots gallery, then reread to verify row removal. Separately delete the uploaded file identified by file_id through its owning Files surface and reread to verify file removal. Keep either cleanup outstanding until that artifact is independently verified gone.",
-        "Close the fixture tab and restore the scripting grant to its original state."
+        "Delete the screenshot row through the Screenshots gallery and reread to verify row removal. Cloud image-file cleanup remains outstanding because no supported file-delete path was established in the inspected Files surface; a disposable profile does not remove the remote file.",
+        "Close the fixture tab and leave the required scripting permission unchanged."
       ]
     },
     {
@@ -193,8 +192,8 @@
       ],
       "preconditions": [
         "Use an owned local fixture tab with a visible nonsensitive marker and a dedicated disposable signed-in profile/org whose existing file upload path is available for the export action.",
-        "Grant the debugger optional permission before starting; use a profile where the Chrome debugger attachment prompt is expected and can be accepted by the operator. The direct runner itself does not implement the normal tier/permission prompt.",
-        "Set a unique filename such as codex-procedure-20261007.gif and note the returned file ID privately so the uploaded artifact can be removed through the Files surface."
+        "Confirm the loaded extension manifest declares the required debugger permission. Do not expect an optional-permission grant flow.",
+        "Set a unique filename such as codex-procedure-20261007.gif and record the returned file ID privately for cleanup tracking; uploaded cloud-file deletion remains unsupported in the inspected Files surface."
       ],
       "steps": [
         "With the fixture tab ID as a digit string, run {\"action\":\"start_recording\",\"tab_id\":\"FIXTURE_TAB_ID\"}; confirm the result is {ok:true,recording:true}, keep the fixture tab focused and visible, make two harmless page interactions, and wait at least one second for frames.",
@@ -204,18 +203,19 @@
         "Run {\"action\":\"export\",\"tab_id\":\"FIXTURE_TAB_ID\",\"download\":true,\"filename\":\"codex-procedure-20261007.gif\"}; record success and the file/download IDs only in the private cleanup receipt. The result contains a URL; do not copy it or include GIF bytes in evidence.",
         "Run {\"action\":\"clear\",\"tab_id\":\"FIXTURE_TAB_ID\"} after successful export and expect cleared_frames:0 because export already consumed and cleared the buffer.",
         "For the declared-schema negative input, run {\"action\":\"pause\",\"tab_id\":\"FIXTURE_TAB_ID\"} and confirm Schema mismatch before recording code runs.",
-        "If permission denial is observed, revoke debugger only after clearing state, attempt start once, record the Chrome API response, and restore the grant."
+        "Permission-denial behavior is unverified: debugger is a required permission in this build; do not attempt to revoke it."
       ],
       "expected": [
         "Each positive start returns recording:true; each stop must report positive frame_count and nonnegative duration. Successful download:true export returns an uploaded file identity and download ID; clear after export returns zero frames.",
         "The export uses the backend upload path even when download:true. Keep file_id and download_id in the private cleanup receipt; omit file_url and GIF contents from general evidence.",
         "Only the pre-positive-export reload probe demonstrates service-worker buffer loss, and only when the extension/service worker restart is confirmed.",
         "Unknown action pause fails enum validation before handler invocation.",
-        "This direct path does not verify the normal dispatcher permission prompt, role policy, or live binding."
+        "This direct path does not verify the normal dispatcher permission prompt, role policy, or live binding.",
+        "Permission denial remains unverified; this manual procedure does not test dispatcher permission enforcement."
       ],
       "cleanup": [
-        "Delete the uploaded GIF through the Files UI using its private file ID, then reread to verify the uploaded object is gone. Separately remove the uniquely named local download and verify its removal.",
-        "Run clear for the fixture tab, close that owned tab, and restore debugger permission to its original state. Discard the dedicated disposable Chrome profile after all owned artifacts are removed.",
+        "Delete the local download if created and verify its removal. Cloud GIF-file cleanup remains outstanding because no supported file-delete path was established in the inspected Files surface; discarding a Chrome profile does not remove the remote file.",
+        "Run clear for the fixture tab, close that owned tab, and leave the required debugger permission unchanged. The disposable profile bounds local state only; it does not remove an uploaded cloud file.",
         "If export or cleanup fails, retain a private receipt containing only enough fixture identity to finish cleanup; keep uploaded-file and local-download cleanup statuses independent and do not call the case clean until both are verified removed."
       ]
     }
@@ -223,8 +223,8 @@
   "limits": [
     "The inventory source SHA is the inspected checkout HEAD, b68129726c37041eecf27ed1ff9303b62d733fd5. Recheck it before applying these patches; source and inventory can change in the shared checkout.",
     "All six are direct Tools manual-runner procedures. ToolsView safe-parses each local handler schema, then calls handler.run directly with permissionMode act and assignedTabId null. It bypasses dispatcher permission authorization and does not prove role availability, DB tool.definition/tool.binding activation, agent advertisement, or normal agent tab assignment.",
-    "Optional permission revocation steps are observations of browser API behavior only. They are not substitutes for a real dispatcher-denial case. Do not infer product success, source completeness, or runtime status from this source-only report.",
-    "EXT-F-4093 cleanup uses a newly created disposable Chrome profile that is discarded after the case because no domain-memo deletion UI is present in the inspected feature sources. Screenshot cleanup tracks the screenshot row and uploaded file independently; GIF cleanup tracks the uploaded file and local download independently. Keep any unverified cleanup outstanding.",
+    "Permission-revocation observations apply only to optional permissions that Chrome lets the operator revoke (for example pageCapture and sessions). tabGroups, scripting, and debugger are required in this build; their denial behavior is unverified and these procedures do not exercise dispatcher authorization.",
+    "EXT-F-4093 cleanup uses a newly created disposable Chrome profile that is discarded after the case because no domain-memo deletion UI is present in the inspected feature sources. Screenshot cleanup verifies the gallery row separately; the uploaded screenshot image and GIF cloud file remain outstanding because no supported file deletion path was established. Discarding a profile removes local state only, never the remote upload.",
     "No browser, build, test, database, credential, or product action was run. No existing dimensions, case IDs, or runtime status cells were changed."
   ],
   "source_files_reviewed": [
