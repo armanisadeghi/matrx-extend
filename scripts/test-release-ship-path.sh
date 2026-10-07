@@ -11,6 +11,12 @@
 #
 # Modeled on matrx-frontend's scripts/test-release-ship-path.sh. Never touches GitHub.
 set -euo pipefail
+# The sandbox releases must behave the same however this guard is launched. A
+# real release runs it inside its own unit tests with the gate session it minted
+# exported (AIDREAM_*) — inherited, it silently switches every nested release
+# onto the caller-supplied-token path. Never inherit the caller's release state.
+unset AIDREAM_API_TOKEN AIDREAM_ORGANIZATION_ID AIDREAM_API_URL \
+    RELEASE_LOG_CAPTURED RELEASE_LOG_DIR RELEASE_LOG_FILE RELEASE_TEST_BEFORE_PUSH RELEASE_RACE_POLL_SECS
 
 SCRIPT_UNDER_TEST="${1:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/release.sh}"
 SCRIPT_UNDER_TEST="$(cd "$(dirname "$SCRIPT_UNDER_TEST")" && pwd)/$(basename "$SCRIPT_UNDER_TEST")"
@@ -360,6 +366,10 @@ check "claimed tag kept its original target"            '[[ "$(git --git-dir="$S
 check "next free tag and main share commit"             '[[ "$(git --git-dir="$SANDBOX/origin.git" rev-parse v0.1.4)" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]]'
 check "tag collision caused a second Store build"       '[[ $(grep -c "scripts/check-store-package.mjs" "$SANDBOX/node-gates") -ge 5 ]]'
 
+# `git archive | tar -x` loses a race under load: tar exits at the end-of-archive
+# marker, git dies of SIGPIPE (141) and the export fails silently.
+check "snapshot export never pipes git archive into tar" '! grep -qE "^[^#]*git archive[^#]*\| *tar" "$SCRIPT_UNDER_TEST"'
+
 # ZIP installation and restoration faults are filesystem dependency failures;
 # the real release owns backup, rollback and EXIT cleanup decisions.
 REAL_MV="$(command -v mv)"
@@ -446,7 +456,9 @@ git_q clone "$SANDBOX/origin.git" "$SANDBOX/shipper"
 cd "$SANDBOX/shipper"
 git config user.name test; git config user.email test@test; git config core.hooksPath /dev/null
 cp "$HARNESS_ROOT/ship.sh" ship.sh; cp "$SCRIPT_UNDER_TEST" release.sh
-mkdir -p scripts; cp "$HARNESS_ROOT/scripts/sync-main.py" "$HARNESS_ROOT/scripts/check-conflict-markers.py" scripts/
+mkdir -p scripts
+cp "$HARNESS_ROOT/scripts/sync-main.py" "$HARNESS_ROOT/scripts/check-conflict-markers.py" \
+  "$HARNESS_ROOT/scripts/release-matrx-catchup.mjs" "$HARNESS_ROOT/scripts/await-matrx-latest.mjs" scripts/
 git_q reset -q --hard origin/main~1 2>/dev/null || true
 echo "agent work nobody committed" > uncommitted-agent-work.txt
 # The release only needs to be refused; fail its first check so this scenario stays cheap.
@@ -538,6 +550,8 @@ if [[ $FAILED -ne 0 ]]; then
   echo "--- failed second candidate output ---"; grep -E "^(RELEASE STOPPED|gate=|ERROR )" "$SANDBOX/race-failed-out" 2>/dev/null; tail -20 "$SANDBOX/race-failed-out" 2>/dev/null
   echo "--- tag race output ---"; grep -E "^(RELEASE STOPPED|gate=|ERROR )" "$SANDBOX/tag-race-out" 2>/dev/null; tail -20 "$SANDBOX/tag-race-out" 2>/dev/null
   echo "--- merge conflict output ---"; tail -20 "$SANDBOX/conflict-out" 2>/dev/null
+  echo "--- version-only retry output ---"; tail -30 "$SANDBOX/version-retry-out" 2>/dev/null
+  for f in install restore; do echo "--- zip $f output ---"; tail -15 "$SANDBOX/zip-$f-out" 2>/dev/null; done
   # Every nested release's own log: the steps (snapshot export, gates) write
   # their errors only there, and the sandbox is deleted on exit.
   for log in "$SANDBOX"/*/tmp/release-logs/release-*.log; do
