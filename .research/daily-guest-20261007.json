@@ -102,7 +102,6 @@
   "evidence": {
     "directory": ".research/daily-guest-20261007-run37649504416/raw",
     "receipt": "guest-chat.receipt.json",
-    "receipt_sha256": "18bc5f4cd4ac780de059d8c67f2990dec64c72b1d42cad89cca109a4c8e6d0a3",
     "screenshots": {
       "guest-chat-real-answer.png": {
         "path": "raw/guest-chat-real-answer.png",
@@ -125,7 +124,17 @@
         "sha256": "970ae5ac62c9cdf9c951d332bf061b1c38b5d01aa19792217c04b12bc618a189"
       }
     },
-    "sanitization": "Replaced runner-local screenshot paths with artifact-relative names, removed an intermediate nonfinal failure checkpoint, retained the exact three current-run journals, and excluded three stale journals from run 37105304739. Reviewed the receipt, journals, and five screenshot images for credentials or personal content; screenshots show the guest panel and synthetic public fixture only."
+    "sanitization": "Replaced runner-local screenshot paths with artifact-relative names, retained the diagnostic failure_observation snapshot and documented that it is the final same-conversation follow-up snapshot (its stage flags are not expected on that turn), retained the exact three current-run journals, and excluded three stale journals from run 37105304739. Reviewed the receipt, journals, and five screenshot images for credentials or personal content; screenshots show the guest panel and synthetic public fixture only.",
+    "original_uploaded_receipt_sha256": "a667bb08813ad4ed35a212a39bb272981253f54fdc5d7b829f58b6357b106b36",
+    "sanitized_receipt_sha256": "34c7aa2158e26d9238caf2e470304fe0a9fd3c478c59435e2e690e3e5f9eeb73",
+    "diagnostic_checkpoint": {
+      "source_field": "failure_observation",
+      "snapshot_turn": "same_conversation_followup",
+      "failed_run_checkpoint": false,
+      "answer_matches_public_stages": false,
+      "answer_stages_in_order": false,
+      "explanation": "The field is overwritten after each completed turn. Its final snapshot is the successful same-conversation follow-up, whose checks require the follow-up code and fixture heading. The opening turn independently passed the stage-name and ordering assertions."
+    }
   },
   "limits": [
     "The hosted method unpacks the public Store CRX into a fresh Chrome profile; it does not prove installation through Chrome Web Store UI.",

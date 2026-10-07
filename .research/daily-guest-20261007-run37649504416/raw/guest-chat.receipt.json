@@ -337,5 +337,99 @@
       "streaming": false
     }
   ],
-  "server_version_stable": true
+  "server_version_stable": true,
+  "failure_observation": {
+    "guestAccount": true,
+    "accessTokenAbsent": true,
+    "profileAbsent": true,
+    "organizationAbsent": true,
+    "chatVisible": true,
+    "chatSelected": true,
+    "paneVisible": true,
+    "composerVisible": true,
+    "composerLength": 0,
+    "sendEnabled": false,
+    "streaming": false,
+    "replyCount": 1,
+    "answerContainsNonce": true,
+    "answerContainsFixtureHeading": true,
+    "answerMatchesPublicStages": false,
+    "answerStagesInOrder": false,
+    "answerIsRefusal": false,
+    "terminalAnswerError": false,
+    "interruptionNotice": false,
+    "errorNotice": false,
+    "latestAssistantReply": "Reasoning\nThe follow-up check code is directly beneath the heading \"[fixture-heading]\".\n\nFollow-up check code: [follow-up-code]",
+    "visibleAlerts": [],
+    "streamTrace": {
+      "runs": [
+        {
+          "ordinal": 1,
+          "done": true,
+          "delegated": false,
+          "error": false,
+          "errorCode": null,
+          "errorStatus": null,
+          "endReason": "complete",
+          "userRequestOutcome": "success",
+          "textChunks": 16,
+          "startReplyCount": 0,
+          "doneAt": 1791389609249
+        }
+      ],
+      "continuations": 0,
+      "events": [
+        {
+          "kind": "opened",
+          "run": 1
+        },
+        {
+          "kind": "tool_started",
+          "run": 1
+        },
+        {
+          "kind": "tool_completed",
+          "run": 1
+        },
+        {
+          "kind": "user_request_success",
+          "run": 1
+        },
+        {
+          "kind": "user_request_success",
+          "run": 1
+        },
+        {
+          "kind": "end",
+          "run": 1,
+          "reason": "complete"
+        },
+        {
+          "kind": "done",
+          "run": 1
+        }
+      ],
+      "toolEvents": [
+        {
+          "name": "context",
+          "phase": "tool_started",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "context",
+          "phase": "tool_completed",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": true,
+          "resultContainsFollowupCode": true,
+          "resultContainsFixtureHeading": true
+        }
+      ]
+    }
+  },
+  "failure_observation_note": "This final snapshot was written after the successful same-conversation follow-up. The stage booleans are false because that turn is checked for the follow-up code and fixture heading; the opening turn separately passed its required stage assertions."
 }
