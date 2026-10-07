@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "picker-lifecycle-final-peer-20261007",
+  "defect_id": "EXT-D-0042",
+  "reviewed_commits": ["1b4be844", "64461290"],
+  "prior_finding": {
+    "source": ".research/picker-lifecycle-source-peer-20261007.json",
+    "severity": "Important",
+    "status": "ADDRESSED_IN_SOURCE",
+    "reason": "The native reinjection path now captures the content-world __matrxListPickerStart and __matrxListPickerTeardown functions after the first mount, then requires both to differ after the second real Chrome file installation and start. This check precedes listener and extraction credit. A reused-module negative control fails the assertion; a fresh-pair control passes."
+  },
+  "verdict_A": {
+    "status": "SOURCE_READY_NATIVE_UNVERIFIED",
+    "cancel": "The delayed cancel path still holds and releases the real content-world cancel hook after B starts, checks the old A session differs from B, and extracts B's three rows. Native behavior remains unverified here.",
+    "install": "The delayed install path still holds and releases the real Chrome file-install promise, checks two installs on the same tab/document and only B starting, then extracts B's three rows. Native behavior remains unverified here.",
+    "reinjection": "The runner performs a second Chrome file installation and same-session start, requires distinct installed start and teardown functions before one-overlay and one-listener checks, then requires one stamped detection, three extracted rows, listener cleanup and ordinary page-click delivery. Native behavior remains unverified here.",
+    "stale_channels": "The opt-in driver retains EXIT, ITEM_DETECTED and RESULT channel cases. They were not run natively here."
+  },
+  "verdict_B": {
+    "status": "NO_NEW_SOURCE_FINDING",
+    "findings": [],
+    "quality": "The fresh-context assertion is tied to actual content-world function identities, and the unit negative control catches the specific reused-module shortcut. Fixed diagnostic targets and bounded boolean/count samples remain allowlisted; raw browser errors are excluded from the receipt."
+  },
+  "focused_checks": {
+    "node_tests": "8 passed, 0 failed: showcase-stale-runtime-boundary.test.mjs and showcase-stale-diagnostic.test.mjs",
+    "runner_syntax": "node --check passed"
+  },
+  "limits": "Source and focused simulated checks only. No native browser run, installed artifact acceptance, build, release or nonadmin role verification was performed. This report is neither product acceptance nor D42 closure.",
+  "recommended_next_action": "Run resource-admitted hosted native acceptance against the exact installed artifact, then complete nonadmin role verification before D42 closure."
+}
