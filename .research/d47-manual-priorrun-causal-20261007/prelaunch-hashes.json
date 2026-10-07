@@ -1,0 +1,42 @@
+{
+  "manual_source_original": {
+    "path": "src/lib/data-pattern/run-interactive.ts",
+    "sha256": "ec8af7d4e75da1997c2dcb3064b8484fe26bae4d1d3413b56bebd3e88fd93046",
+    "bytes": 21857
+  },
+  "manual_test_original": {
+    "path": "tests/unit/d47-manual-replay-isolation.test.tsx",
+    "sha256": "64a55d89bb6135fdf0bb475befa7e71eca09aa1feab29da492c10b921f6414ea",
+    "bytes": 11580
+  },
+  "prior_source_original": {
+    "path": "src/lib/data-pattern/document-network-capture.ts",
+    "sha256": "c65b4678be7e49829f4f346926d9ff9dbdce8b7b8506be23565abf644dba3596",
+    "bytes": 20668
+  },
+  "prior_test_original": {
+    "path": "tests/unit/document-network-capture.test.ts",
+    "sha256": "b7776531cba8145fb1bca0e3b0424e0ce924a29146decbe93fc6d062f7ee2d91",
+    "bytes": 19688
+  },
+  "manual_source_mutant": {
+    "path": "src/lib/data-pattern/.d47-manual-priorrun-mutant.ts",
+    "sha256": "e9620df7917b1fe0fbf7345c1133f541193a155514f16fec98757ec24dc4d268",
+    "bytes": 22144
+  },
+  "manual_test_mutant": {
+    "path": "tests/unit/.d47-manual-priorrun-mutant.test.tsx",
+    "sha256": "e4ab747264d36a9da2a1033417208d365a07400f57039c57a9a09d4d3ac43b2c",
+    "bytes": 11707
+  },
+  "prior_source_mutant": {
+    "path": "src/lib/data-pattern/.d47-priorrun-binding-mutant.ts",
+    "sha256": "c888c53cdcbf4343143120835d2ec076473bb9cbef169c5221b166bba8c54f25",
+    "bytes": 20645
+  },
+  "prior_test_mutant": {
+    "path": "tests/unit/.d47-priorrun-binding-mutant.test.ts",
+    "sha256": "c0021e3b240eadc0ee5761223b2bf5ce7a1f10e8926fd3a42084cb47b5b39f5c",
+    "bytes": 19825
+  }
+}

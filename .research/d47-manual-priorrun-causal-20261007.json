@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0047",
+  "scope": "Retained source causal evidence for existing manual-channel and earlier saved-run binding isolation guards; no native acceptance, build, release, database, browser or production/test edit",
+  "status": "SOURCE_CAUSAL_GUARDS_RETAINED",
+  "source_identity": {
+    "prelaunch_hashes": ".research/d47-manual-priorrun-causal-20261007/prelaunch-hashes.json",
+    "source_and_test_hashes_unchanged_after_all_runs": true,
+    "mutant_source_and_test_bytes_retained_before_first_launch": true,
+    "scratch_executable_copies_removed_after_runs": true
+  },
+  "method": "Exact production source copies were mutated in unique scratch modules; existing tests imported them through scratch vi.mock adapters while actual replay, CDP capture, manual relay, background and hook paths remained production-connected. Each single-worker Vitest child ran through the unchanged stabilization resource guard and reached terminal verdict before the next launch.",
+  "mutations": [
+    {
+      "kind": "manual-channel merge",
+      "source_copy": ".research/d47-manual-priorrun-causal-20261007/.d47-manual-priorrun-mutant.ts.txt",
+      "test_copy": ".research/d47-manual-priorrun-causal-20261007/.d47-manual-priorrun-mutant.test.tsx.txt",
+      "behavioral_failure": "Saved replay received Manual prior response instead of Brooklyn Bowl at saved-row assertion"
+    },
+    {
+      "kind": "prior-run binding filter removal",
+      "source_copy": ".research/d47-manual-priorrun-causal-20261007/.d47-priorrun-binding-mutant.ts.txt",
+      "test_copy": ".research/d47-manual-priorrun-causal-20261007/.d47-priorrun-binding-mutant.test.ts.txt",
+      "behavioral_failure": "Second replay received Earlier run late instead of Current run at saved-row assertion"
+    }
+  ],
+  "runs": [
+    {
+      "kind": "manual-channel mutant",
+      "run_id": "d47-manual-priorrun-causal-manual-red-20261007",
+      "expected": "behavioral_red",
+      "journal": "docs/stabilization/resource-journals/d47-manual-priorrun-causal-manual-red-20261007.jsonl",
+      "stdout": ".research/d47-manual-priorrun-causal-20261007/manual-red.stdout",
+      "stdout_sha256": "eae364dc6f4ed613d752910b030979569c0f9107db8131479475eb5282f8429e",
+      "decision": "child_failed",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 1
+    },
+    {
+      "kind": "prior-run binding mutant",
+      "run_id": "d47-manual-priorrun-causal-binding-red-20261007",
+      "expected": "behavioral_red",
+      "journal": "docs/stabilization/resource-journals/d47-manual-priorrun-causal-binding-red-20261007.jsonl",
+      "stdout": ".research/d47-manual-priorrun-causal-20261007/binding-red.stdout",
+      "stdout_sha256": "c701eaf834349040fe22b574d42054e572dd013c659c6134a93a38a2fa6b863b",
+      "decision": "child_failed",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 1
+    },
+    {
+      "kind": "untouched sources",
+      "run_id": "d47-manual-priorrun-causal-untouched-green-20261007",
+      "expected": "green",
+      "journal": "docs/stabilization/resource-journals/d47-manual-priorrun-causal-untouched-green-20261007.jsonl",
+      "stdout": ".research/d47-manual-priorrun-causal-20261007/untouched-green.stdout",
+      "stdout_sha256": "6680a22e71f41cb9f47241f2978b2632525f56726de4adb159d038614e9693ff",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 0
+    }
+  ],
+  "untouched_result": "Both original tests passed, 18/18 total",
+  "limits": [
+    "This proves bounded source guard causality only. Synthetic Chrome boundary inputs are not native UI or public-site acceptance.",
+    "Earlier constant-output red runs were reported previously; this lane retained only the two remaining behavioral mutants and untouched green.",
+    "Full EXT-D-0047/T57, including native prior-run isolation and cancellation, remains unverified."
+  ]
+}
