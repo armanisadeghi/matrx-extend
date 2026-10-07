@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "reviewed_commit": "ee54cfc5388aac1def93c805a3ac92f384544f5e",
+  "reviewed_source_sha256": {
+    "tests/browser/showcase-d47-public-initial-load.mjs": "21c43a6a6ebf217ee022e8beb2a25e58bf8a6c6049d21fd1842b6b7f63509e1d",
+    "tests/browser/showcase-d47-public-initial-load.test.mjs": "f1cc1923c17a0483a84b48614ca90f1daff6ea160d822455e0d504d9049d8f5c"
+  },
+  "verdict_a": {
+    "source_readiness": "pass",
+    "native_acceptance": "unverified",
+    "evidence": [
+      "Independently fetched https://hn.algolia.com/public/main-6e634771f729331a3c3c.js; SHA-256 f48dff8be99597e2f1e8f245c36aa4e989b8b1cdb2f272d1064097d8039fa35c. SearchProvider initializes Item_dev and Item_dev_sort_date via initIndex, selects byDate only when requested, calls index.search with perfParams, and checks results.query and results.hits. The bound SDK index search sends 1/indexes/%s/query.",
+      "The driver accepts only HTTPS on the exact public application hosts and the two source-backed index paths; it requires one selected row, full URL/input agreement, POST 200, one endpoint candidate, OpenAI response query, and a nonempty hits array of objects. Other index, multi-index, host, ambiguous, wrong-query and empty-result cases fail in the guard.",
+      "NetworkTab renders the selected response box immediately before ResultPreview; root object extraction produces one row, and ResultPreview table cells stringify the nested hits array. The previous rows-extracted text existed only as copy metadata.",
+      "The 37568984323 native failure predates this fix, stopped at initial_capture, and did not establish saved replay or cleanup. No installed-extension rerun followed this reviewed source."
+    ]
+  },
+  "verdict_b": {
+    "quality": "pass",
+    "evidence": [
+      "The guard drives the exported selection and preview functions through a controlled panel transport; planted old route and invisible-preview predicates fail on a source-shaped response, and the corrected path passes.",
+      "Receipt diagnostics retain allowlisted endpoint shape, counts and booleans; candidate labels and full URLs remain transient. Checked click diagnostics and failure sanitization for raw URL, credential, body or query-value emission."
+    ]
+  },
+  "findings": [],
+  "verification": {
+    "source": "Independent read of reviewed diff, current product components, test driver and public bundle; current source hashes equal the fix report.",
+    "guard": "Existing resource-valid guard journals d47-endpoint-source-20261007-a/b report four passing tests each; not rerun in this review.",
+    "native": "Not run; source readiness does not certify product acceptance.",
+    "other": "No build, database, secret access or child agent."
+  },
+  "scope_lock": "This verdict applies only to the two recorded source hashes; a later change to either file needs fresh review."
+}
