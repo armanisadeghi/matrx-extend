@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-D-0157",
+  "reviewed_commits": ["4b61cbc3", "bd7f2088"],
+  "scope": "Independent source review of the selected CI artifact identity through hosted desktop Settings and audit-key native routes; no browser or native audit run",
+  "verdict_a": {
+    "status": "source_ready_native_unverified",
+    "finding": "The hosted importer verifies the selected development artifact, then passes its source SHA, run ID, and artifact ID to the audit-key driver. The driver now uses the same identity verifier as desktop Settings and records the verified identity. Guest, member, and admin desktop Settings routes retain their shared selection and authentication routing.",
+    "evidence": [
+      "scripts/hosted-guest-acceptance.mjs:46-80,427-435,460-476,499-506",
+      "tests/browser/audit-key-native-acceptance.mjs:169-183",
+      "tests/browser/settings-desktop-native-acceptance.mjs:436-442",
+      "tests/browser/desktop-artifact-identity.mjs:8-99"
+    ],
+    "native_result": "unverified; the separate desktop native run 37696764772 used an older workflow head and is not audit-key native evidence"
+  },
+  "verdict_b": {
+    "status": "pass_with_bounded_test_gap",
+    "finding": "The audit driver has no frozen source, run, or artifact identity. Its preflight requires selected values and compares them with the imported path, import status, receipt, tree hash, manifest version, and repair ancestry. The hosted importer performs the fuller GitHub provenance and artifact digest check before passing that identity. The reviewed changes do not alter key cryptography or authentication logic.",
+    "test": "node --test tests/browser/desktop-artifact-identity.test.mjs: 2 passed",
+    "minor_gap": "The focused test covers the shared verifier and both environment mappings directly; it does not execute the hosted wrapper and spawned audit driver together. Source routing was inspected, and admitted native audit-key acceptance remains the final behavioral check."
+  },
+  "findings": [],
+  "next_action": "Run admitted hosted audit-key-admin against an eligible successful development artifact and retain its exact selected identity and native terminal receipt."
+}
