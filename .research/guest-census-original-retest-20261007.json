@@ -1,0 +1,303 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0149",
+  "purpose": "Original native guest census retest of the reviewed readiness repair; visibility only.",
+  "verdict": "original_guest_readiness_pass_census_incomplete",
+  "run": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "run_id": 37624678750,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37624678750",
+    "acceptance_case": "visibility-census-guest",
+    "runner_label": "macos-15",
+    "runner_architecture": "ARM64",
+    "terminal_status": "failure",
+    "started_at": "2026-10-07T12:56:36Z",
+    "completed_at": "2026-10-07T13:03:18Z",
+    "checkout_sha": "4ba1a20e9b0ca5bb8eaac412c4661c990cdf3f86",
+    "failure_step": "Exercise the selected Chrome side-panel case",
+    "exact_failure": "The visibility census returned status=incomplete (unmapped_total=28); hosted acceptance asserted native side-panel acceptance exited 2. This is census incompleteness, not a product behavior failure."
+  },
+  "artifact": {
+    "kind": "ci_development_test",
+    "development_run_id": 37619740064,
+    "development_artifact_id": 11482071536,
+    "runtime_source_sha": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+    "runtime_version": "0.2.366",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "9e7c2db499a2c1fed0a8b3ea6facfa88a13f3c2c26ba7f9b9d2d1f216310236c",
+    "archive_sha256": "eebbeb6d4c63cffab1c4462acf5b69e081336c3795782c54d3a5e8ba554e9ebb",
+    "source_lock_sha256": "504a88510ce23a9607e7558cf07bdec592e251205d541a09fab4a352050aec86"
+  },
+  "source_and_harness": {
+    "repair_source_commit": "ac47cc66db078f788553cf8b369f44dc90f9a507",
+    "independent_peer_commit": "f4998a01de58d145f5da5456b3ddf3989da75d3c",
+    "peer_report": ".research/guest-census-account-peer-20261007.json",
+    "run_harness_checkout_sha": "4ba1a20e9b0ca5bb8eaac412c4661c990cdf3f86",
+    "driver_path": "tests/browser/takeover-visible-census.mjs",
+    "driver_sha256": "6804e48f5605de68b701d31862ed5ecbe7641a91296269e6ffb4fa083f8c9703",
+    "driver_test_sha256": "2f5d3f4742e9fd6368794de4d1adc2158aad04c1c1ef5db20be76628e488705e",
+    "driver_fix_diff_matches_reviewed_repair": "The post-peer driver delta on main is the reviewed ac47cc66 fix: constrain discovery/readiness to active Settings and observe Sign in anywhere inside that panel."
+  },
+  "version_boundary": {
+    "current_origin_main_sha_at_dispatch": "4ba1a20e9b0ca5bb8eaac412c4661c990cdf3f86",
+    "current_main_package_version": "0.2.368",
+    "frozen_runtime_configuration_code": "unchanged in the inspected runtime/config paths",
+    "package_json_delta": "0.2.366 to 0.2.368",
+    "pnpm_lock_delta": "@supabase/postgrest-js 2.117.2 to 2.117.3 added since the frozen artifact",
+    "evidence_scope": "This run supports the original 0.2.366 runtime plus reviewed harness readiness retest only. Do not transfer census or acceptance evidence to current 0.2.368; current-main inventory visibility remains unverified pending a matching artifact.",
+    "current_main_lock_sha256": "1493532dca63951cae18782022c7e7bc130ce5a03d79ba74ab5e7c86f9025dcd",
+    "current_main_package_json_sha256": "b5db8b8302e7cf4898d8a1b27ecff5116306ed055cb2603ea3d4c961501ebfcc"
+  },
+  "guest_readiness": {
+    "original_readiness_predicate": "PASS",
+    "basis": "The native driver proceeded beyond census_guest_account_ready and census_guest_signed_out; result reports Account visible in active Settings, enabled Sign in visible, Sign out absent, and guest auth/profile/admin values absent before and after observation.",
+    "authentication": {
+      "role": "guest",
+      "signed_out_observed": true,
+      "access_token_present": false,
+      "refresh_token_present": false,
+      "profile_present": false,
+      "admin_role": false,
+      "account_visible": true,
+      "sign_in_visible": true,
+      "sign_out_visible": false
+    },
+    "authentication_after": {
+      "role": "guest",
+      "signed_out_observed": true,
+      "access_token_present": false,
+      "refresh_token_present": false,
+      "profile_present": false,
+      "admin_role": false,
+      "account_visible": true,
+      "sign_in_visible": true,
+      "sign_out_visible": false
+    },
+    "account_expander_observed": true,
+    "no_action_controls_clicked": true
+  },
+  "census": {
+    "status": "incomplete",
+    "complete": false,
+    "positive_guest_visibility_verdict": "Observed only within frozen 0.2.366 visibility census; not a product-behavior verdict.",
+    "counts": {
+      "total_observed": 54,
+      "mapped": 26,
+      "unmapped": 28,
+      "unsupported_triggers": 4,
+      "inaccessible_regions": 4,
+      "blocked_requests": 0,
+      "by_region": {
+        "navigation": {
+          "total": 8,
+          "mapped": 5,
+          "unmapped": 3,
+          "unsupported_triggers": 3
+        },
+        "surface:Chat": {
+          "total": 18,
+          "mapped": 2,
+          "unmapped": 16,
+          "unsupported_triggers": 0
+        },
+        "surface:Scrape": {
+          "total": 0,
+          "mapped": 0,
+          "unmapped": 0,
+          "unsupported_triggers": 0
+        },
+        "surface:Data": {
+          "total": 0,
+          "mapped": 0,
+          "unmapped": 0,
+          "unsupported_triggers": 0
+        },
+        "surface:SEO": {
+          "total": 0,
+          "mapped": 0,
+          "unmapped": 0,
+          "unsupported_triggers": 0
+        },
+        "sections": {
+          "total": 12,
+          "mapped": 11,
+          "unmapped": 1,
+          "unsupported_triggers": 1
+        },
+        "controls:Account": {
+          "total": 0,
+          "mapped": 0,
+          "unmapped": 0,
+          "unsupported_triggers": 0
+        },
+        "controls:Organization": {
+          "total": 0,
+          "mapped": 0,
+          "unmapped": 0,
+          "unsupported_triggers": 0
+        },
+        "controls:Appearance": {
+          "total": 1,
+          "mapped": 0,
+          "unmapped": 1,
+          "unsupported_triggers": 0
+        },
+        "controls:Chat": {
+          "total": 2,
+          "mapped": 0,
+          "unmapped": 2,
+          "unsupported_triggers": 0
+        },
+        "controls:Privacy": {
+          "total": 4,
+          "mapped": 4,
+          "unmapped": 0,
+          "unsupported_triggers": 0
+        },
+        "controls:Scrape": {
+          "total": 3,
+          "mapped": 2,
+          "unmapped": 1,
+          "unsupported_triggers": 0
+        },
+        "controls:Data": {
+          "total": 0,
+          "mapped": 0,
+          "unmapped": 0,
+          "unsupported_triggers": 0
+        },
+        "controls:SEO": {
+          "total": 0,
+          "mapped": 0,
+          "unmapped": 0,
+          "unsupported_triggers": 0
+        },
+        "controls:Desktop bridge": {
+          "total": 4,
+          "mapped": 0,
+          "unmapped": 4,
+          "unsupported_triggers": 0
+        },
+        "controls:Data & reset": {
+          "total": 1,
+          "mapped": 1,
+          "unmapped": 0,
+          "unsupported_triggers": 0
+        },
+        "controls:About": {
+          "total": 1,
+          "mapped": 1,
+          "unmapped": 0,
+          "unsupported_triggers": 0
+        }
+      },
+      "inaccessible_region_details": [
+        {
+          "region": "unmapped_tab",
+          "label_fingerprint": "31e96f9028ebc574aa4f743c4d1beb70c250233ff4d32edb4bcbe863e098fbdd",
+          "reason": "not_opened_without_source_mapping"
+        },
+        {
+          "region": "unmapped_tab",
+          "label_fingerprint": "8ce4a8e9a839bd6b0ed9f967ab6cd5c092d9c6a3a27e7a506860de19b8cf594a",
+          "reason": "not_opened_without_source_mapping"
+        },
+        {
+          "region": "unmapped_tab",
+          "label_fingerprint": "8c2adb1754d1f827cdb63d5e89978b1fe17fdd09b42e6d869e52b5f2d7e78e7d",
+          "reason": "not_opened_without_source_mapping"
+        },
+        {
+          "region": "unmapped_expander",
+          "label_fingerprint": "e8c002c40541a4a56f8035d6f44402196aaa945706181f917a651ad059f4454c",
+          "reason": "not_opened_without_source_mapping"
+        }
+      ],
+      "missing_required_regions": []
+    },
+    "result_json": ".research/guest-census-original-retest-20261007/evidence/visibility-census-guest.json",
+    "result_sha256": "14c71f0532b4a33b834a412c4e282ac653b379abc7aa951bd19e0efb04999cf4"
+  },
+  "resource_verdicts": [
+    {
+      "run_id": "hosted-package-37624678750-1",
+      "journal": ".research/guest-census-original-retest-20261007/evidence/resource-journals/hosted-package-37624678750-1.jsonl",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 0,
+      "decision": "valid",
+      "admission_sample": {
+        "available_memory_gib": 5.81,
+        "required_memory_gib": 4,
+        "one_minute_load": 7.38,
+        "logical_cpus": 3,
+        "cpu_busy_fraction": 0.18285714285714286,
+        "swap_used_mib": 0,
+        "repo_free_gib": 43.886871337890625
+      }
+    },
+    {
+      "run_id": "hosted-browser-37624678750-1",
+      "journal": ".research/guest-census-original-retest-20261007/evidence/resource-journals/hosted-browser-37624678750-1.jsonl",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 0,
+      "decision": "valid",
+      "admission_sample": {
+        "available_memory_gib": 5.81,
+        "required_memory_gib": 4,
+        "one_minute_load": 2.62,
+        "logical_cpus": 3,
+        "cpu_busy_fraction": 0.047142857142857146,
+        "swap_used_mib": 0,
+        "repo_free_gib": 43.90659713745117
+      }
+    },
+    {
+      "run_id": "hosted-guest-37624678750-1",
+      "journal": ".research/guest-census-original-retest-20261007/evidence/resource-journals/hosted-guest-37624678750-1.jsonl",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 1,
+      "decision": "child_failed",
+      "admission_sample": {
+        "available_memory_gib": 5.81,
+        "required_memory_gib": 4,
+        "one_minute_load": 1.2,
+        "logical_cpus": 3,
+        "cpu_busy_fraction": 0.12142857142857144,
+        "swap_used_mib": 0,
+        "repo_free_gib": 43.649105072021484
+      },
+      "watch_sample": {
+        "available_memory_gib": 5.74,
+        "required_memory_gib": 4,
+        "one_minute_load": 3.18,
+        "logical_cpus": 3,
+        "cpu_busy_fraction": 0.57,
+        "swap_used_mib": 0,
+        "reasons": []
+      }
+    }
+  ],
+  "screenshots": [
+    {
+      "path": ".research/guest-census-original-retest-20261007/evidence/screenshots/native-side-panel.png",
+      "artifact_path": "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-lZMV9A/native-side-panel.png",
+      "sha256": "35104afebb448dde7b3b315613486606a924f2fa636fa316acc30f63f681df10",
+      "observation": "Shows the guest Chat panel with guest status and a visible Sign in action; it is not a capture of the later Settings readiness stage."
+    },
+    {
+      "path": ".research/guest-census-original-retest-20261007/evidence/screenshots/normal-target-after-open.png",
+      "artifact_path": "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-lZMV9A/normal-target-after-open.png",
+      "sha256": "c939d4f6417b874eefffbe4a8c9bd1cf05088fe2b42ab7a7e13c65d79a024fd2",
+      "observation": "Shows the controlled public research-brief target page; no account or credential content is present."
+    }
+  ],
+  "scope_limits": [
+    "No intentional behavior, persistence, permission-denial, or backend tests were run.",
+    "Member and admin census results remain unverified.",
+    "No inventory promotion or defect-state transition is made by this report.",
+    "The hosted workflow output did not record Chrome version; observed_chrome_version is unavailable."
+  ]
+}

@@ -1,0 +1,602 @@
+{
+  "schema_version": 2,
+  "status": "incomplete",
+  "role": "guest",
+  "observation_only": true,
+  "build_channel": "ci_development_test",
+  "artifact": {
+    "version": "0.2.366",
+    "source_sha": "d68a1db3bc31ba77b9b782e47b6ea1ed4c3510ef",
+    "ci_run_id": 37619740064,
+    "artifact_id": 11482071536,
+    "tree_sha256": "9e7c2db499a2c1fed0a8b3ea6facfa88a13f3c2c26ba7f9b9d2d1f216310236c"
+  },
+  "authentication": {
+    "role": "guest",
+    "signed_out_observed": true,
+    "access_token_present": false,
+    "refresh_token_present": false,
+    "profile_present": false,
+    "admin_role": false,
+    "account_visible": true,
+    "sign_in_visible": true,
+    "sign_out_visible": false
+  },
+  "navigation": {
+    "total": 8,
+    "mapped": [
+      {
+        "id": "EXT-F-1001-C01",
+        "label": "Chat",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        }
+      },
+      {
+        "id": "EXT-F-1001-C01",
+        "label": "Scrape",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        }
+      },
+      {
+        "id": "EXT-F-1001-C01",
+        "label": "Data",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        }
+      },
+      {
+        "id": "EXT-F-1001-C01",
+        "label": "SEO",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        }
+      },
+      {
+        "id": "EXT-F-1001-C01",
+        "label": "Settings",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        }
+      }
+    ],
+    "unmapped_count": 3,
+    "unmapped": [
+      {
+        "kind": "tablist",
+        "label_fingerprint": "31e96f9028ebc574aa4f743c4d1beb70c250233ff4d32edb4bcbe863e098fbdd"
+      },
+      {
+        "kind": "button",
+        "label_fingerprint": "8ce4a8e9a839bd6b0ed9f967ab6cd5c092d9c6a3a27e7a506860de19b8cf594a"
+      },
+      {
+        "kind": "button",
+        "label_fingerprint": "8c2adb1754d1f827cdb63d5e89978b1fe17fdd09b42e6d869e52b5f2d7e78e7d"
+      }
+    ],
+    "unsupported_trigger_count": 3
+  },
+  "surfaces": {
+    "Chat": {
+      "total": 18,
+      "mapped": [
+        {
+          "id": "EXT-F-2013-C55",
+          "label": "Copy entire conversation",
+          "applicability": {
+            "applicable": true,
+            "reason": "Chat tab is everyone in side-panel visibility registry; individual account/voice/file actions have their own gates."
+          }
+        },
+        {
+          "id": "EXT-F-2013-C03",
+          "label": "New chat",
+          "applicability": {
+            "applicable": true,
+            "reason": "Chat tab is everyone in side-panel visibility registry; individual account/voice/file actions have their own gates."
+          }
+        }
+      ],
+      "unmapped_count": 16,
+      "unmapped": [
+        {
+          "kind": "button",
+          "label_fingerprint": "e8c002c40541a4a56f8035d6f44402196aaa945706181f917a651ad059f4454c"
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "3d85c3e3ac52252e1a12682bf1ab138c95fe04912c18e312d1b0bb0652151dd7"
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "48c385effbff894d44d5fe5d33b67706d5c6b5e261fcab0ff0ac0c69adab0e23"
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "2d7723d02b7271980f8a0199b603b2b8de8f14c010ed9e0c23e454434dc1193b"
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "c11677ece27d92e6b1dfa63ec9208edb83981569cc064908a35b682b94f749fd"
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "8242b66816066ab35550edc924c6329f7b2ea3e99b121d95dcab9388578fdda8"
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "f1b048705d2ce5cac046d77cbef75fa40cc5ee671fa17b1dece6218d2d5043bf"
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "7549cf47eff47f88aec3c5afbdbd72b3ba2d2017e925f624482dbdec710e793b"
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "3ce48ba701aef6251999eae10f6e5d5b0295049ccc370b1f811f1c2c84ca4a57"
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "7c50ac418da5aef69e323a04437ef8b9102b4990bfd03548be0570ad93835114"
+        },
+        {
+          "kind": "textarea",
+          "label_fingerprint": "31e96f9028ebc574aa4f743c4d1beb70c250233ff4d32edb4bcbe863e098fbdd"
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "87a623311268845c1755cae5b90fafc99fecd8e6e8a6059efd6b80ba82c02f33"
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "06d91a1d5650b1bc45cf0ab8876120fda2a8d160a0f880cd3e8ee239862990cd"
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "ebe64439ba705f069ab38c8221eb5d0b68e091ae4a98d8b2309169964eaa4f3e"
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "bfd1255387f1ef75d14897bcbaa75278e6c02469e0caf4ca4c5c1510cf08af53"
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "057641cb719cc516f384e6ea57c6f01b0ed756e5697d5e4a1a06532728915c88"
+        }
+      ],
+      "unsupported_trigger_count": 0
+    },
+    "Scrape": {
+      "total": 0,
+      "mapped": [],
+      "unmapped_count": 0,
+      "unmapped": [],
+      "unsupported_trigger_count": 0
+    },
+    "Data": {
+      "total": 0,
+      "mapped": [],
+      "unmapped_count": 0,
+      "unmapped": [],
+      "unsupported_trigger_count": 0
+    },
+    "SEO": {
+      "total": 0,
+      "mapped": [],
+      "unmapped_count": 0,
+      "unmapped": [],
+      "unsupported_trigger_count": 0
+    }
+  },
+  "sections": {
+    "total": 12,
+    "mapped": [
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "Account",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        }
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "Organization",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        }
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "Appearance",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        }
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "Chat",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        }
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "Privacy",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        }
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "Scrape",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        }
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "Data",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        }
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "SEO",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        }
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "Desktop bridge",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        }
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "Data & reset",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        }
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "About",
+        "applicability": {
+          "applicable": true,
+          "reason": "Available to this mode per source visibility gate."
+        }
+      }
+    ],
+    "unmapped_count": 1,
+    "unmapped": [
+      {
+        "kind": "button",
+        "label_fingerprint": "e8c002c40541a4a56f8035d6f44402196aaa945706181f917a651ad059f4454c"
+      }
+    ],
+    "unsupported_trigger_count": 1
+  },
+  "controls": {
+    "Account": {
+      "total": 0,
+      "mapped": [],
+      "unmapped_count": 0,
+      "unmapped": [],
+      "unsupported_trigger_count": 0
+    },
+    "Organization": {
+      "total": 0,
+      "mapped": [],
+      "unmapped_count": 0,
+      "unmapped": [],
+      "unsupported_trigger_count": 0
+    },
+    "Appearance": {
+      "total": 1,
+      "mapped": [],
+      "unmapped_count": 1,
+      "unmapped": [
+        {
+          "kind": "combobox",
+          "label_fingerprint": "8d41ac89a13e15f488c06fbcf60d28dea449638e86b8388c949617527bc54761"
+        }
+      ],
+      "unsupported_trigger_count": 0
+    },
+    "Chat": {
+      "total": 2,
+      "mapped": [],
+      "unmapped_count": 2,
+      "unmapped": [
+        {
+          "kind": "combobox",
+          "label_fingerprint": "ccf8596c1ad8c2f39814c4baa4745c8757e02e26cdd3b49432c00771f1862a4f"
+        },
+        {
+          "kind": "combobox",
+          "label_fingerprint": "53f7375dcb796323c56f3e82fcbd10647c5f20a719412100929eb85ee4fcb6e6"
+        }
+      ],
+      "unsupported_trigger_count": 0
+    },
+    "Privacy": {
+      "total": 4,
+      "mapped": [
+        {
+          "id": "EXT-F-1003-C06",
+          "label": "Share page identity & email content",
+          "applicability": {
+            "applicable": true,
+            "reason": "Available to this mode per source visibility gate."
+          }
+        },
+        {
+          "id": "EXT-F-1003-C07",
+          "label": "Offer to save logins to the Vault",
+          "applicability": {
+            "applicable": true,
+            "reason": "Available to this mode per source visibility gate."
+          }
+        },
+        {
+          "id": "EXT-F-1003-C11",
+          "label": "Offer saved logins on sign-in forms",
+          "applicability": {
+            "applicable": true,
+            "reason": "Available to this mode per source visibility gate."
+          }
+        },
+        {
+          "id": "EXT-F-1003-C12",
+          "label": "Show password suggestions on websites",
+          "applicability": {
+            "applicable": true,
+            "reason": "Available to this mode per source visibility gate."
+          }
+        }
+      ],
+      "unmapped_count": 0,
+      "unmapped": [],
+      "unsupported_trigger_count": 0
+    },
+    "Scrape": {
+      "total": 3,
+      "mapped": [
+        {
+          "id": "EXT-F-1003-C13",
+          "label": "Deep clean",
+          "applicability": {
+            "applicable": true,
+            "reason": "Available to this mode per source visibility gate."
+          }
+        },
+        {
+          "id": "EXT-F-1003-C14",
+          "label": "Auto-scrape on load",
+          "applicability": {
+            "applicable": true,
+            "reason": "Available to this mode per source visibility gate."
+          }
+        }
+      ],
+      "unmapped_count": 1,
+      "unmapped": [
+        {
+          "kind": "combobox",
+          "label_fingerprint": "86471576d943ec2260bda66f978a60c1ac924d990f5b9fd12f2b9e4d3b659bb8"
+        }
+      ],
+      "unsupported_trigger_count": 0
+    },
+    "Data": {
+      "total": 0,
+      "mapped": [],
+      "unmapped_count": 0,
+      "unmapped": [],
+      "unsupported_trigger_count": 0
+    },
+    "SEO": {
+      "total": 0,
+      "mapped": [],
+      "unmapped_count": 0,
+      "unmapped": [],
+      "unsupported_trigger_count": 0
+    },
+    "Desktop bridge": {
+      "total": 4,
+      "mapped": [],
+      "unmapped_count": 4,
+      "unmapped": [
+        {
+          "kind": "input",
+          "label_fingerprint": "31e96f9028ebc574aa4f743c4d1beb70c250233ff4d32edb4bcbe863e098fbdd"
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "020ade5245d359e623a4ebda831cd8345b9267886a82148e514d1f0a8a233eec"
+        },
+        {
+          "kind": "input",
+          "label_fingerprint": "31e96f9028ebc574aa4f743c4d1beb70c250233ff4d32edb4bcbe863e098fbdd"
+        },
+        {
+          "kind": "button",
+          "label_fingerprint": "105a2f6719c513beca37cd67f82b460b531ab506fef4db37667915bdf7f8fcb1"
+        }
+      ],
+      "unsupported_trigger_count": 0
+    },
+    "Data & reset": {
+      "total": 1,
+      "mapped": [
+        {
+          "id": "EXT-F-1003-C17",
+          "label": "Clear local data on this device",
+          "applicability": {
+            "applicable": true,
+            "reason": "Available to this mode per source visibility gate."
+          }
+        }
+      ],
+      "unmapped_count": 0,
+      "unmapped": [],
+      "unsupported_trigger_count": 0
+    },
+    "About": {
+      "total": 1,
+      "mapped": [
+        {
+          "id": "EXT-F-1003-C31",
+          "label": "Check for extension update",
+          "applicability": {
+            "applicable": true,
+            "reason": "Available to this mode per source visibility gate."
+          }
+        }
+      ],
+      "unmapped_count": 0,
+      "unmapped": [],
+      "unsupported_trigger_count": 0
+    }
+  },
+  "navigation_actions": [
+    {
+      "kind": "direct_tab",
+      "label": "Chat"
+    },
+    {
+      "kind": "direct_tab",
+      "label": "Scrape"
+    },
+    {
+      "kind": "direct_tab",
+      "label": "Data"
+    },
+    {
+      "kind": "direct_tab",
+      "label": "SEO"
+    },
+    {
+      "kind": "direct_tab",
+      "label": "Settings"
+    },
+    {
+      "kind": "settings_section",
+      "label": "Account"
+    },
+    {
+      "kind": "settings_section",
+      "label": "Organization"
+    },
+    {
+      "kind": "settings_section",
+      "label": "Appearance"
+    },
+    {
+      "kind": "settings_section",
+      "label": "Chat"
+    },
+    {
+      "kind": "settings_section",
+      "label": "Privacy"
+    },
+    {
+      "kind": "settings_section",
+      "label": "Scrape"
+    },
+    {
+      "kind": "settings_section",
+      "label": "Data"
+    },
+    {
+      "kind": "settings_section",
+      "label": "SEO"
+    },
+    {
+      "kind": "settings_section",
+      "label": "Desktop bridge"
+    },
+    {
+      "kind": "settings_section",
+      "label": "Data & reset"
+    },
+    {
+      "kind": "settings_section",
+      "label": "About"
+    }
+  ],
+  "inaccessible_regions": [
+    {
+      "region": "unmapped_tab",
+      "label_fingerprint": "31e96f9028ebc574aa4f743c4d1beb70c250233ff4d32edb4bcbe863e098fbdd",
+      "reason": "not_opened_without_source_mapping"
+    },
+    {
+      "region": "unmapped_tab",
+      "label_fingerprint": "8ce4a8e9a839bd6b0ed9f967ab6cd5c092d9c6a3a27e7a506860de19b8cf594a",
+      "reason": "not_opened_without_source_mapping"
+    },
+    {
+      "region": "unmapped_tab",
+      "label_fingerprint": "8c2adb1754d1f827cdb63d5e89978b1fe17fdd09b42e6d869e52b5f2d7e78e7d",
+      "reason": "not_opened_without_source_mapping"
+    },
+    {
+      "region": "unmapped_expander",
+      "label_fingerprint": "e8c002c40541a4a56f8035d6f44402196aaa945706181f917a651ad059f4454c",
+      "reason": "not_opened_without_source_mapping"
+    }
+  ],
+  "identity": {
+    "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.366"
+  },
+  "authentication_after": {
+    "role": "guest",
+    "signed_out_observed": true,
+    "access_token_present": false,
+    "refresh_token_present": false,
+    "profile_present": false,
+    "admin_role": false,
+    "account_visible": true,
+    "sign_in_visible": true,
+    "sign_out_visible": false
+  },
+  "completeness": {
+    "complete": false,
+    "unmapped_total": 28,
+    "unsupported_trigger_count": 4,
+    "inaccessible_count": 4,
+    "blocked_request_count": 0,
+    "missing_required_regions": []
+  },
+  "interception": {
+    "scope": ["sidepanel", "extension_worker"],
+    "effect": "HTTP(S) methods other than GET/HEAD/OPTIONS aborted during observation",
+    "blocked_request_count": 0,
+    "sidepanel": {},
+    "extension_worker": {}
+  },
+  "unmapped_total": 28,
+  "native_panel_verified": true
+}
