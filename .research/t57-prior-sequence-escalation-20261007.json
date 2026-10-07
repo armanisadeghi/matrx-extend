@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "date": "2026-10-07",
+  "status": "QA_SOURCE_GREEN_NATIVE_UNVERIFIED",
+  "base_head": "44bd3e27119b742fff94ed360317c4986c3489bf",
+  "scope": "QA-only repair; no product, native, build, release or canonical changes",
+  "diagnosis": [
+    {
+      "failure": "ReferenceError in canceled old response release catch",
+      "cause": "item exists only inside the find predicate; catch must read held entry[1]",
+      "fix": "Use held entry lifecycle; preserve current release and cleanup attempts"
+    },
+    {
+      "failure": "Probe packet array empty after setImmediate",
+      "cause": "WebCrypto digest completion is asynchronous and not guaranteed by one event-loop turn",
+      "fix": "Track pending digest promises and await them in packets; capture context identity before hashing; close observer before removing listeners, await pending work and suppress late publication"
+    }
+  ],
+  "prior_sequence": "Ordinary HN page reload and genuine matched pending response precede exact saved Run; replay owns subsequent navigation; no injected fetch or changed third-party bytes",
+  "positive_requirements": [
+    "current hook and attached owned tab",
+    "different current document context",
+    "matching URL, request-body identity and response digest",
+    "exact saved recipe terminal rows or honest retrigger guidance",
+    "current lifecycle and complete cleanup; cancellation alone cannot pass"
+  ],
+  "verification": {
+    "command": "node scripts/stabilization-resource.mjs run --run-id t57-escalation-controller-20261007 -- node --test tests/browser/showcase-d47-public-race-preflight.test.mjs",
+    "tests_passed": 10,
+    "tests_failed": 0,
+    "resource_final_decision": "valid",
+    "child_exit_code": 0,
+    "coverage": [
+      "actual probe VM execution and asynchronous digest completion",
+      "controlled pending digest completes during cleanup without late publication",
+      "canceled old release continues current and cleanup",
+      "response-body resolve/reject after closed cleanup",
+      "disable/detach failures preserve remaining cleanup",
+      "verdict missing-evidence and constant mutations",
+      "driver prior-load ordering source check (structural only)"
+    ],
+    "red_evidence": ".research/t57-prior-sequence-controller-green2-20261007.stdout"
+  },
+  "limits": [
+    "No native execution or T57/D47 closure claim. Architecture ruling still requires positive native evidence.",
+    "Broader public driver suite not rerun; bounded guarded controller suite covers changed helper and driver sequence assertion.",
+    "Independent reviewer follows this handoff."
+  ],
+  "sha256": {
+    "tests/browser/showcase-d47-public-initial-load.mjs": "eba5944bd9cc281c6d6b0c638b9829f569a6fd89b75704aadf52bd707617accc",
+    "tests/browser/showcase-d47-public-race-preflight.mjs": "57495b8a9fad009cc7fecccb9be325a32410e430fb063100f378adddadb9df73",
+    "tests/browser/showcase-d47-public-race-preflight.test.mjs": "713ab4144c46183be6abd0d46e0a4bbb0a2f6d01467eef1eaa0c2b05fdf209d2",
+    ".research/t57-escalation-controller-20261007.stdout": "b3a8811856c45d6668aea68dfacb4bfa3333c45adb8955b99de04bdc0d846198",
+    "docs/stabilization/resource-journals/t57-escalation-controller-20261007.jsonl": "9b7be180c51adae3fd6f9ff93ec015f3f9673c907b296a0918534f3250f80c90"
+  }
+}

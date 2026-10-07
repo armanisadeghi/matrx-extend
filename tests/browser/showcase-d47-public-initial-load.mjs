@@ -565,8 +565,24 @@ async function run() {
             report.stage = 'public_race_interception_setup';
             interception = await createPublicRacePreflight(page, report, response.endpoint_shape);
             captureProbe = await installPublicCaptureProbe(await attachWorker(), page.url());
-            report.stage = 'saved_replay';
+            // This ordinary public page load starts the prior document's real
+            // Algolia request before the saved replay owns a new navigation.
+            report.stage = 'public_race_prior_document_load';
+            await resourceAction(() => page.reload({ waitUntil: 'commit' }));
+            await interception.oldPaused();
+            assert.equal(new URL(page.url()).host, siteHost, 'public_race_old_host_mismatch');
+            const beforeRun = await exactRecipeVisible(panel, ownedRecipe);
+            interception.facts.old_paused_before_replay =
+              beforeRun.exact_row === true &&
+              beforeRun.running === false &&
+              interception.facts.paused[0]?.lifecycle === 'pending';
+            assert.equal(
+              interception.facts.old_paused_before_replay,
+              true,
+              'public_race_old_not_prior_to_replay',
+            );
           }
+          report.stage = 'saved_replay';
           await publicTrustedClick(
             panel,
             {
@@ -579,35 +595,63 @@ async function run() {
           );
           await allow(panel);
           if (racePreflight) {
-            report.stage = 'public_race_old_paused';
-            await interception.oldPaused();
-            const replayAtPause = await exactRecipeVisible(panel, ownedRecipe);
-            const runAtPause = await evaluate(
-              panel,
-              `(() => (${readD47SavedRunState.toString()})(document, ${JSON.stringify(ownedRecipe)}))()`,
-            );
-            interception.facts.exact_row_at_old_pause = replayAtPause.exact_row === true;
-            interception.facts.running_at_old_pause = runAtPause.running === true;
-            interception.facts.activity_observation_available_at_old_pause =
-              runAtPause.observation_unavailable === false;
-            interception.facts.active_replay_at_old_pause =
-              interception.facts.exact_row_at_old_pause &&
-              interception.facts.running_at_old_pause &&
-              interception.facts.activity_observation_available_at_old_pause;
-            interception.facts.extension_capture_at_old_pause = await captureProbe.attest();
-            report.stage = 'public_race_navigation';
-            await resourceAction(() => page.goto(pageUrl, { waitUntil: 'commit' }));
-            assert.equal(
-              new URL(page.url()).host,
-              siteHost,
-              'public_race_navigation_host_mismatch',
-            );
             report.stage = 'public_race_current_paused';
             await interception.currentPaused();
+            interception.facts.extension_capture_at_current_pause = await captureProbe.attest();
             report.stage = 'public_race_release';
             await interception.releaseInOrder();
             await requireResourceHealth();
-            report.status = 'preflight_runtime_observed';
+            const current = interception.facts.paused[1];
+            const currentContext = interception.facts.contexts.find(
+              (context) => context.loader_id === current.loader_id,
+            );
+            const binding = await waitFor(
+              'public_current_binding_packet',
+              () => captureProbe.packets(),
+              (packets) =>
+                packets.some(
+                  (packet) =>
+                    packet.context_unique_id === currentContext?.unique_id &&
+                    packet.url_sha256 === current.url_sha256 &&
+                    packet.request_body_key === `sha256:${current.body_sha256}` &&
+                    packet.response_sha256 === current.response_sha256 &&
+                    packet.request_sequence >= 1,
+                ),
+              budget.timeout_ms,
+            );
+            interception.facts.current_binding_matches_response = binding.some(
+              (packet) =>
+                packet.context_unique_id === currentContext?.unique_id &&
+                packet.url_sha256 === current.url_sha256 &&
+                packet.request_body_key === `sha256:${current.body_sha256}` &&
+                packet.response_sha256 === current.response_sha256 &&
+                packet.request_sequence >= 1,
+            );
+            report.stage = 'saved_terminal';
+            const terminal = await waitFor(
+              'public_saved_terminal',
+              async () => {
+                const state = await exactRecipeVisible(panel, ownedRecipe);
+                const run = await evaluate(
+                  panel,
+                  `(() => (${readD47SavedRunState.toString()})(document, ${JSON.stringify(ownedRecipe)}))()`,
+                );
+                const combined = {
+                  ...state,
+                  running: run.running,
+                  unavailable: run.observation_unavailable,
+                };
+                return { ...combined, outcome: classifyPublicReplay(combined) };
+              },
+              (state) => state?.outcome !== 'unverified',
+              budget.timeout_ms,
+            );
+            report.saved_result = terminal;
+            interception.facts.terminal_outcome = terminal.outcome;
+            report.status =
+              terminal.outcome === 'captured_initial_request'
+                ? 'observed_bounded'
+                : 'honest_guidance_observed';
           } else {
             report.stage = 'saved_terminal';
             const started = performance.now();
@@ -660,7 +704,10 @@ async function run() {
               report.public_race_preflight.verdict = assessPublicRacePreflight(interception.facts);
               if (
                 racePreflight &&
-                report.public_race_preflight.verdict !== 'timing_interception_feasible'
+                ![
+                  'prior_document_released_current_verified',
+                  'prior_document_cancelled_current_verified',
+                ].includes(report.public_race_preflight.verdict)
               )
                 primary ??= new Error('public_race_preflight_unverified');
             } catch {

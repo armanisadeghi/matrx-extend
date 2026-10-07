@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash, webcrypto } from 'node:crypto';
 import { EventEmitter } from 'node:events';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
@@ -16,6 +17,43 @@ const request = {
   method: 'POST',
   postData: '{"query":"OpenAI"}',
 };
+
+test('routed public scenario starts the old page request before Run and never navigates again', async () => {
+  const source = await readFile(
+    new URL('./showcase-d47-public-initial-load.mjs', import.meta.url),
+    'utf8',
+  );
+  const check = (text) => {
+    const prior = text.indexOf("await resourceAction(() => page.reload({ waitUntil: 'commit' }))");
+    const old = text.indexOf('await interception.oldPaused()', prior);
+    const run = text.indexOf("semanticTitle: 'Run pattern'", old);
+    const current = text.indexOf('await interception.currentPaused()', run);
+    assert.ok(
+      prior >= 0 && prior < old && old < run && run < current,
+      'prior_document_must_precede_new_saved_replay',
+    );
+    assert.doesNotMatch(
+      text.slice(run, current),
+      /page\.(?:goto|reload)\(/,
+      'new_replay_must_own_its_single_navigation',
+    );
+  };
+  check(source);
+  assert.throws(
+    () => check(source.replace('await interception.oldPaused();', '')),
+    /prior_document_must_precede_new_saved_replay/,
+  );
+  assert.throws(
+    () =>
+      check(
+        source.replace(
+          'await interception.currentPaused();',
+          'await page.goto(pageUrl); await interception.currentPaused();',
+        ),
+      ),
+    /new_replay_must_own_its_single_navigation/,
+  );
+});
 
 test('public response identity is exact across URL and body without exposing either', () => {
   const identity = publicRaceRequestIdentity(request);
@@ -74,7 +112,18 @@ test('extension capture proof requires its own hook and an attached owned tab', 
     removeListener: (listener) => detachers.delete(listener),
     hasListener: (listener) => detachers.has(listener),
   };
+  let holdDigests = false;
+  const digestReleases = [];
   const sandbox = {
+    crypto: {
+      subtle: {
+        digest: async (...args) => {
+          if (holdDigests) await new Promise((resolve) => digestReleases.push(resolve));
+          return webcrypto.subtle.digest(...args);
+        },
+      },
+    },
+    TextEncoder,
     chrome: {
       tabs: { query: async () => [{ id: 47, url: 'https://hn.algolia.com/?q=OpenAI' }] },
       debugger: {
@@ -98,17 +147,73 @@ test('extension capture proof requires its own hook and an attached owned tab', 
   try {
     assert.equal(await probe.attest(), false);
     for (const listener of listeners)
+      listener({ tabId: 47 }, 'Runtime.executionContextCreated', {
+        context: { id: 9, uniqueId: 'current-context', auxData: { isDefault: true } },
+      });
+    for (const listener of listeners)
       listener({ tabId: 47 }, 'Runtime.bindingCalled', {
         name: '__matrx_capture_current',
+        executionContextId: 9,
         payload: '{"__matrx_capture_hook":"network-tap"}',
       });
     assert.equal(await probe.attest(), true);
+    for (const listener of listeners)
+      listener({ tabId: 47 }, 'Runtime.bindingCalled', {
+        name: '__matrx_capture_current',
+        executionContextId: 9,
+        payload: JSON.stringify({
+          method: 'POST',
+          status: 200,
+          url: request.url,
+          body: '{"hits":[]}',
+          request_body_key: 'sha256:body',
+          request_sequence: 1,
+          body_truncated: false,
+        }),
+      });
+    assert.deepEqual(JSON.parse(JSON.stringify(await probe.packets())), [
+      {
+        binding_name: '__matrx_capture_current',
+        context_unique_id: 'current-context',
+        url_sha256: createHash('sha256').update(request.url).digest('hex'),
+        response_sha256: createHash('sha256').update('{"hits":[]}').digest('hex'),
+        request_body_key: 'sha256:body',
+        request_sequence: 1,
+      },
+    ]);
     attached = false;
     assert.equal(await probe.attest(), false);
     attached = true;
     for (const listener of detachers) listener({ tabId: 47 });
     assert.equal(await probe.attest(), false);
+    holdDigests = true;
+    const state = sandbox.__d47PublicCaptureProbe.state;
+    for (const listener of listeners)
+      listener({ tabId: 47 }, 'Runtime.bindingCalled', {
+        name: '__matrx_capture_current',
+        executionContextId: 9,
+        payload: JSON.stringify({
+          method: 'POST',
+          status: 200,
+          url: request.url,
+          body: '{"hits":[]}',
+          request_body_key: 'sha256:body',
+          request_sequence: 2,
+        }),
+      });
+    assert.equal(digestReleases.length, 2);
+    let cleaned = false;
+    const cleanup = probe.cleanup().then(() => {
+      cleaned = true;
+    });
+    assert.equal(state.closed, true);
+    assert.equal(cleaned, false);
+    for (const release of digestReleases) release();
+    await cleanup;
+    assert.equal(state.packets.length, 1, 'closed probe cannot publish a late digest');
+    assert.equal(state.pending.size, 0);
   } finally {
+    for (const release of digestReleases) release();
     await probe.cleanup();
   }
   assert.equal(detached, true);
@@ -175,8 +280,10 @@ test('controller continues original paused responses in order and disables inter
     await controller.oldPaused();
     pause('new');
     await controller.currentPaused();
-    controller.facts.active_replay_at_old_pause = true;
-    controller.facts.extension_capture_at_old_pause = true;
+    controller.facts.old_paused_before_replay = true;
+    controller.facts.extension_capture_at_current_pause = true;
+    controller.facts.current_binding_matches_response = true;
+    controller.facts.terminal_outcome = 'captured_initial_request';
     await controller.releaseInOrder();
   } finally {
     await controller.cleanup();
@@ -204,7 +311,10 @@ test('controller continues original paused responses in order and disables inter
       .map((call) => call.args.requestId),
     ['hold-old', 'hold-new'],
   );
-  assert.equal(assessPublicRacePreflight(controller.facts), 'timing_interception_feasible');
+  assert.equal(
+    assessPublicRacePreflight(controller.facts),
+    'prior_document_released_current_verified',
+  );
 });
 
 test('canceled old release still attempts current release and every owned cleanup step', async () => {
@@ -254,7 +364,8 @@ test('canceled old release still attempts current release and every owned cleanu
   await controller.oldPaused();
   pause('new');
   await controller.currentPaused();
-  await assert.rejects(controller.releaseInOrder(), /public_race_release_failed/);
+  cdp.emit('Network.loadingFailed', { requestId: 'old' });
+  await controller.releaseInOrder();
   await controller.cleanup();
   assert.deepEqual(controller.facts.release_attempts, [
     { step: 'old', outcome: 'cdp_rejected', error_category: 'request_no_longer_intercepted' },
@@ -263,11 +374,11 @@ test('canceled old release still attempts current release and every owned cleanu
   assert.deepEqual(controller.facts.release_order, ['current']);
   assert.deepEqual(
     calls.filter((call) => call.method === 'Fetch.continueRequest').map((call) => call.requestId),
-    ['hold-old', 'hold-new', 'hold-old'],
+    ['hold-old', 'hold-new'],
   );
   assert.equal(calls.at(-2).method, 'Fetch.disable');
   assert.equal(calls.at(-1).method, 'detach');
-  assert.equal(controller.facts.cleanup, 'unverified');
+  assert.equal(controller.facts.cleanup, 'disabled_detached');
   assert.equal(assessPublicRacePreflight(controller.facts), 'unverified');
   assert.equal(JSON.stringify(report).includes('private.example'), false);
 });
@@ -325,7 +436,6 @@ test('a response body resolving or rejecting after cleanup cannot append a late 
     const factsAtCleanup = JSON.stringify(controller.facts);
     if (settlement === 'resolve') settleBody.resolve({ body: '{"hits":[]}', base64Encoded: false });
     else settleBody.reject(new Error('Body unavailable https://private.example/?token=secret'));
-    await new Promise((resolve) => setImmediate(resolve));
     cdp.emit('Network.loadingFinished', { requestId: 'old' });
     assert.equal(JSON.stringify(controller.facts), factsAtCleanup);
     assert.equal(controller.facts.paused.length, 0);
@@ -415,30 +525,49 @@ const valid = {
     { unique_id: 'new-context', frame_id: 'main', loader_id: 'new' },
   ],
   release_order: ['old', 'current'],
+  release_attempts: [
+    { step: 'old', outcome: 'continued' },
+    { step: 'current', outcome: 'continued' },
+  ],
   unmatched_target_count: 0,
   cleanup: 'disabled_detached',
-  active_replay_at_old_pause: true,
-  extension_capture_at_old_pause: true,
+  old_paused_before_replay: true,
+  extension_capture_at_current_pause: true,
   capture_probe_cleanup: 'removed_detached',
+  current_binding_matches_response: true,
+  terminal_outcome: 'captured_initial_request',
 };
 
 test('preflight requires two matching real request identities, new document and delivery lifecycle', () => {
   const mutants = [
     { paused: valid.paused.slice(0, 1) },
-    { paused: [{ ...valid.paused[0], lifecycle: 'failed' }, valid.paused[1]] },
+    {
+      paused: [{ ...valid.paused[0], lifecycle: 'failed' }, valid.paused[1]],
+      release_attempts: [
+        { step: 'old', outcome: 'cdp_rejected' },
+        { step: 'current', outcome: 'continued' },
+      ],
+    },
     { paused: [valid.paused[0], { ...valid.paused[1], identity_sha256: 'different' }] },
     { paused: [valid.paused[0], { ...valid.paused[1], loader_id: 'old' }] },
     { contexts: [valid.contexts[0], { ...valid.contexts[1], unique_id: 'old-context' }] },
-    { release_order: ['current', 'old'] },
+    { release_attempts: [...valid.release_attempts].reverse() },
     { unmatched_target_count: 1 },
     { cleanup: 'unverified' },
-    { active_replay_at_old_pause: false },
-    { extension_capture_at_old_pause: false },
+    { old_paused_before_replay: false },
+    { extension_capture_at_current_pause: false },
+    { current_binding_matches_response: false },
+    { terminal_outcome: 'unverified' },
     { capture_probe_cleanup: 'unverified' },
     { paused: [{ ...valid.paused[0], response_sha256: undefined }, valid.paused[1]] },
   ];
   const cases = [valid, ...mutants.map((mutant) => ({ ...valid, ...mutant }))];
-  const expected = ['timing_interception_feasible', ...mutants.map(() => 'unverified')];
+  const expected = [
+    'prior_document_released_current_verified',
+    ...mutants.map((_, index) =>
+      index === 1 ? 'prior_document_cancelled_current_verified' : 'unverified',
+    ),
+  ];
   assert.deepEqual(cases.map(assessPublicRacePreflight), expected);
 });
 
@@ -456,16 +585,16 @@ test('actual verdict rejects constant and missing-evidence mutations in memory',
   };
   const constant = await load(
     'export function assessPublicRacePreflight(facts) {',
-    "export function assessPublicRacePreflight(facts) { return 'timing_interception_feasible';",
+    "export function assessPublicRacePreflight(facts) { return 'prior_document_released_current_verified';",
   );
-  const noLease = await load('facts.extension_capture_at_old_pause !== true ||', 'false ||');
+  const noLease = await load('facts.extension_capture_at_current_pause !== true ||', 'false ||');
   const noDigest = await load(
     "facts.paused.some((item) => !/^[a-f0-9]{64}$/.test(item.response_sha256 ?? '')) ||",
     'false ||',
   );
   const checks = [
-    [constant, { ...valid, extension_capture_at_old_pause: false }],
-    [noLease, { ...valid, extension_capture_at_old_pause: false }],
+    [constant, { ...valid, extension_capture_at_current_pause: false }],
+    [noLease, { ...valid, extension_capture_at_current_pause: false }],
     [
       noDigest,
       { ...valid, paused: [{ ...valid.paused[0], response_sha256: undefined }, valid.paused[1]] },

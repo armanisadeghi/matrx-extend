@@ -63,29 +63,41 @@ export function assessPublicRacePreflight(facts) {
     facts.contexts.find((context) => context.loader_id === facts.paused[0].loader_id)?.unique_id ===
       facts.contexts.find((context) => context.loader_id === facts.paused[1].loader_id)
         ?.unique_id ||
-    facts.release_order.join(',') !== 'old,current' ||
-    facts.paused.some((item) => item.lifecycle !== 'finished') ||
+    facts.release_attempts.map((attempt) => attempt.step).join(',') !== 'old,current' ||
+    facts.release_attempts[1].outcome !== 'continued' ||
+    (facts.paused[0].lifecycle === 'finished' &&
+      facts.release_attempts[0].outcome !== 'continued') ||
+    (facts.paused[0].lifecycle === 'failed' &&
+      facts.release_attempts[0].outcome !== 'cdp_rejected') ||
+    facts.paused[1].lifecycle !== 'finished' ||
+    !['finished', 'failed'].includes(facts.paused[0].lifecycle) ||
     facts.paused.some((item) => !/^[a-f0-9]{64}$/.test(item.response_sha256 ?? '')) ||
-    facts.active_replay_at_old_pause !== true ||
-    facts.extension_capture_at_old_pause !== true ||
+    facts.old_paused_before_replay !== true ||
+    facts.extension_capture_at_current_pause !== true ||
+    facts.current_binding_matches_response !== true ||
+    !['captured_initial_request', 'honest_retrigger_guidance'].includes(facts.terminal_outcome) ||
     facts.capture_probe_cleanup !== 'removed_detached' ||
     facts.unmatched_target_count !== 0 ||
     facts.cleanup !== 'disabled_detached'
   )
     return 'unverified';
-  return 'timing_interception_feasible';
+  return facts.paused[0].lifecycle === 'finished'
+    ? 'prior_document_released_current_verified'
+    : 'prior_document_cancelled_current_verified';
 }
 
 // The worker's chrome.debugger event is the extension-side positive signal.
 // Keep the hook nonce and payload inside the worker; only booleans leave it.
 export async function installPublicCaptureProbe(worker, pageUrl) {
-  const removeExpression = `(() => {
+  const removeExpression = `(async () => {
     const p = globalThis.__d47PublicCaptureProbe;
     if (!p) return true;
+    p.state.closed = true;
     chrome.debugger.onEvent.removeListener(p.listener);
     chrome.debugger.onDetach.removeListener(p.detach);
     const removed = !chrome.debugger.onEvent.hasListener(p.listener) &&
       !chrome.debugger.onDetach.hasListener(p.detach);
+    await Promise.allSettled([...p.state.pending]);
     if (removed) delete globalThis.__d47PublicCaptureProbe;
     return removed;
   })()`;
@@ -98,13 +110,44 @@ export async function installPublicCaptureProbe(worker, pageUrl) {
       const tabs = await chrome.tabs.query({ url: 'https://hn.algolia.com/*' });
       const exact = tabs.filter(tab => tab.url === expected && Number.isInteger(tab.id));
       if (exact.length !== 1) return false;
-      const state = { tabId: exact[0].id, handshake: false, detached: false };
+      const state = { tabId: exact[0].id, handshake: false, detached: false,
+        contexts: {}, hooks: {}, packets: [], pending: new Set(), closed: false };
       const listener = (source, method, params = {}) => {
-        if (source.tabId !== state.tabId || source.sessionId || method !== 'Runtime.bindingCalled' ||
+        if (state.closed || source.tabId !== state.tabId || source.sessionId) return;
+        if (method === 'Runtime.executionContextCreated') {
+          const context = params.context;
+          if (context?.auxData?.isDefault && context.uniqueId)
+            state.contexts[context.id] = context.uniqueId;
+          return;
+        }
+        if (method !== 'Runtime.bindingCalled' ||
             !String(params.name).startsWith('__matrx_capture_')) return;
         try {
           const packet = JSON.parse(params.payload);
-          if (packet?.__matrx_capture_hook === 'network-tap') state.handshake = true;
+          if (packet?.__matrx_capture_hook === 'network-tap') {
+            state.handshake = true;
+            state.hooks[params.executionContextId] = params.name;
+          } else if (state.hooks[params.executionContextId] === params.name &&
+              packet?.method === 'POST' && packet?.status === 200 &&
+              typeof packet.url === 'string' && typeof packet.body === 'string' &&
+              typeof packet.request_body_key === 'string' &&
+              Number.isSafeInteger(packet.request_sequence) && !packet.body_truncated) {
+            const contextUniqueId = state.contexts[params.executionContextId] ?? null;
+            const pending = (async () => {
+              const hash = async value => [...new Uint8Array(await crypto.subtle.digest(
+                'SHA-256', new TextEncoder().encode(value)))]
+                .map(byte => byte.toString(16).padStart(2, '0')).join('');
+              const [urlSha, bodySha] = await Promise.all([hash(packet.url), hash(packet.body)]);
+              if (state.closed) return;
+              state.packets.push({ binding_name: params.name,
+                context_unique_id: contextUniqueId,
+                url_sha256: urlSha, response_sha256: bodySha,
+                request_body_key: packet.request_body_key,
+                request_sequence: packet.request_sequence });
+            })().catch(() => { /* incomplete probe remains unverified */ });
+            state.pending.add(pending);
+            void pending.finally(() => state.pending.delete(pending));
+          }
         } catch { /* no raw payload leaves the worker */ }
       };
       const detach = (source) => { if (source.tabId === state.tabId) state.detached = true; };
@@ -119,7 +162,11 @@ export async function installPublicCaptureProbe(worker, pageUrl) {
     assert.equal(installed.result?.value, true, 'public_capture_probe_install_failed');
   } catch (error) {
     try {
-      await worker.send('Runtime.evaluate', { expression: removeExpression, returnByValue: true });
+      await worker.send('Runtime.evaluate', {
+        expression: removeExpression,
+        awaitPromise: true,
+        returnByValue: true,
+      });
     } finally {
       await worker.detach();
     }
@@ -143,11 +190,25 @@ export async function installPublicCaptureProbe(worker, pageUrl) {
       });
       return result.result?.value === true;
     },
+    async packets() {
+      const result = await worker.send('Runtime.evaluate', {
+        expression: `(async () => {
+          const state = globalThis.__d47PublicCaptureProbe?.state;
+          if (!state || state.closed) return [];
+          await Promise.allSettled([...state.pending]);
+          return state.closed ? [] : state.packets;
+        })()`,
+        awaitPromise: true,
+        returnByValue: true,
+      });
+      return result.result?.value ?? [];
+    },
     async cleanup() {
       let result;
       try {
         result = await worker.send('Runtime.evaluate', {
           expression: removeExpression,
+          awaitPromise: true,
           returnByValue: true,
         });
       } finally {
@@ -169,11 +230,10 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
     cleanup_attempts: [],
     unmatched_target_count: 0,
     cleanup: 'pending',
-    active_replay_at_old_pause: false,
-    exact_row_at_old_pause: false,
-    running_at_old_pause: false,
-    activity_observation_available_at_old_pause: false,
-    extension_capture_at_old_pause: false,
+    old_paused_before_replay: false,
+    extension_capture_at_current_pause: false,
+    current_binding_matches_response: false,
+    terminal_outcome: 'unverified',
     capture_probe_cleanup: 'pending',
   };
   report.public_race_preflight = facts;
@@ -296,6 +356,9 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
       facts.release_attempts.push({ step: name, outcome: 'continued' });
       return true;
     } catch (error) {
+      // Chrome may already have canceled this old-document request during the
+      // replay's navigation. A recorded loadingFailed is its terminal state.
+      if (entry[1].lifecycle === 'failed') held.delete(entry[0]);
       facts.release_attempts.push({
         step: name,
         outcome: 'cdp_rejected',
@@ -409,11 +472,13 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
     async releaseInOrder() {
       const old = await release(0, 'old');
       const current = await release(1, 'current');
-      if (!old || !current) throw new Error('public_race_release_failed');
+      if (!current) throw new Error('public_race_current_release_failed');
       await wait(
         () => facts.paused.every((item) => item.lifecycle !== 'pending'),
         'public_race_lifecycle_missing',
       );
+      if (!old && facts.paused[0].lifecycle !== 'failed')
+        throw new Error('public_race_old_release_unclassified');
     },
     cleanup,
   };
