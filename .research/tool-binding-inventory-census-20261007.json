@@ -35,14 +35,15 @@
           "name": "fetch_url_as_markdown"
         }
       ],
+      "inventory_basis": "Canonical docs/stabilization/inventory.json tool-name set; checked equal to the prior names-only SQL comparison input.",
       "inventory_binding_comparison": {
         "active_binding_names_absent_from_both_inventory_and_catalog": 0,
+        "canonical_catalog_unique_names": 166,
+        "canonical_inventory_unique_names": 168,
         "catalog_unique_names_without_active_definition_binding": 85,
         "inventory_unique_names_without_active_definition_binding": 87,
-        "known_active_inventory_names_missing_from_catalog": ["records"],
-        "known_inventory_name_without_active_binding": ["fetch_url_as_markdown"],
-        "query_file": "/tmp/tool-binding-canonical-compare.sql",
-        "query_sha256": "495f4bc6237d4c4ef7cb850a657f31da9c4d4de57e228bf88ff92f8774fdc981"
+        "server_route_absent_from_client_catalog": ["records"],
+        "source_absent_unmatched_inventory_names": ["fetch_url_as_markdown"]
       },
       "minimum_fields_selected": [
         "tool.definition.id",
@@ -113,15 +114,15 @@
     "snapshot_is_canonical_source": true
   },
   "observed_at": "2026-10-07T11:48:17Z",
-  "pinned_head": "2da7b00da9067d2a03740fa9e5c923a6fd74e587",
+  "pinned_head": "0280779141044116be9a94c235d0f468ae9f7903",
   "reconciliation": {
     "binding_and_surface_deltas": [
       "Canonical DB has 84 chrome-extension binding rows / unique names; 81 definition+binding pairs active, 3 disabled/inactive.",
-      "Each surface default lists 83 tools; 80 have an active chrome-extension definition+binding. The three names without an active binding are fetch_url_as_markdown, memory, and tasks.",
-      "85 current client catalog names lack active DB definition+binding; 87 inventory names lack active DB definition+binding. These source/catalog rows still exist; this difference alone does not indicate missing features.",
-      "No active DB-bound name is absent from both inventory and current catalog."
+      "Each surface default lists 83 tools; 80 have an active chrome-extension definition+binding. The three names without active binding are fetch_url_as_markdown, memory, and tasks.",
+      "85 current catalog names lack active DB definition+binding; 87 inventory names lack active DB definition+binding. These counts do not indicate missing features by themselves.",
+      "No active DB-bound name is absent from both canonical inventory and current catalog."
     ],
-    "metadata_status": "Current source/catalog metadata is largely reconciled; inventory readiness remains metadata and does not represent runtime acceptance.",
+    "metadata_status": "Canonical inventory metadata compared against the current generated catalog. No input-schema mismatches were found for same-name catalog rows; schema-matched tier, admin-only, required permission, optional permission, and surface-bundle comparisons each have zero mismatches. Inventory readiness statuses remain metadata and are not runtime acceptance.",
     "not_proven": [
       "request-time advertisement",
       "role access or permission outcomes",
@@ -130,30 +131,33 @@
       "fetch_url_as_markdown retirement, replacement, applicability, or owner intent"
     ],
     "source_deltas": [
-      "EXT-F-4125 inventory schema includes persist; current source/catalog schema contains css and tab_id, so reconcile that stale parameter while retaining feature identity.",
-      "EXT-F-4167 inventory schema includes persistent; current source/catalog schema contains action, css, tab_id, so reconcile that stale parameter while retaining feature identity.",
-      "EXT-F-4149 fetch_url_as_markdown remains in the inventory, but no matching current generated client catalog record is present; canonical DB definition and binding are both inactive. Source absence and metadata are proven; retirement, replacement, applicability, and owner intent remain unverified.",
-      "EXT-F-4130 records is an active server/manual execution capability and is absent from generated client schema catalog; both surface defaults include its name.",
-      "EXT-F-4058 and EXT-F-4156 are distinct wait_for IDs: preserve the first as the legacy catalog row shadowed by canonical registry handler, and preserve the second as canonical route."
+      "EXT-F-4125 canonical inventory input schema matches current catalog/source (css, tab_id); no schema mismatch.",
+      "EXT-F-4167 canonical inventory input schema matches current catalog/source (action, css, tab_id); no schema mismatch.",
+      "EXT-F-4149 fetch_url_as_markdown remains in canonical inventory but has no current generated catalog record; canonical DB definition and binding are inactive. Source absence and metadata are proven; retirement, replacement, applicability, and owner intent remain unverified.",
+      "EXT-F-4130 records is an active server/manual execution capability and absent from generated client schema catalog; both surface defaults include its name.",
+      "EXT-F-4058 and EXT-F-4156 are distinct wait_for IDs: preserve the first as legacy catalog row shadowed by canonical handler (index 57); preserve the second as canonical row (inventory index 154, current index 153)."
     ]
   },
   "schema_version": 1,
   "source_catalog": {
-    "catalog_names_absent_from_inventory": [],
-    "current_catalog_generated_at": "2026-10-07T11:35:23.721Z",
-    "current_catalog_rows": 167,
-    "current_catalog_unique_names": 166,
-    "inventory_feature_rows": 169,
-    "inventory_file_sha256": "a6f6b5f170c584b0348b8425583c7df4abbb459345fba44967b3ebab209f4bd2",
-    "inventory_generated_at": "2026-09-25T21:56:50.109Z",
-    "inventory_names_absent_from_client_catalog": ["fetch_url_as_markdown", "records"],
-    "inventory_source_sha_declared": "dc64e8a1c6c0ac28ac8102dd31857bf645d72df2",
-    "inventory_status_counts": {
-      "catalog-record-shadowed-by-canonical": 1,
+    "canonical_inventory_path": "docs/stabilization/inventory.json",
+    "canonical_inventory_sha256": "34fc9929a87e066541e8bb090aa10cd9688759c77e5d73c9400cbffa7a2972e8",
+    "canonical_inventory_status_counts": {
       "source-listed-pending-reconciliation": 167,
+      "source-listed-procedure-needed": 1,
       "source-reconciled-procedure-needed": 1
     },
-    "inventory_unique_names": 168,
+    "canonical_inventory_updated_at": "2026-10-07T10:50:02.552798+00:00",
+    "canonical_source_sha_declared": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
+    "canonical_tool_feature_rows": 169,
+    "canonical_tool_unique_names": 168,
+    "catalog_names_absent_from_inventory": [],
+    "current_catalog_generated_at": "2026-10-07T11:50:11.432Z",
+    "current_catalog_path": "types/tool-catalog.json",
+    "current_catalog_rows": 167,
+    "current_catalog_sha256": "2ea7bd2cbe04af9e3a64120e2be412d15faea8f8fca8513ca36727288f65f8d1",
+    "current_catalog_unique_names": 166,
+    "inventory_names_absent_from_client_catalog": ["fetch_url_as_markdown", "records"],
     "key_rows": [
       {
         "admin_only": false,
@@ -161,9 +165,9 @@
         "dependency_class": "local",
         "id": "EXT-F-4058",
         "inventory_catalog_index": 57,
-        "inventory_status": "catalog-record-shadowed-by-canonical",
+        "inventory_status": "source-listed-procedure-needed",
         "name": "wait_for",
-        "optional_permissions": [],
+        "required_optional_permissions": [],
         "required_permissions": ["activeTab", "scripting"],
         "schema_exact_catalog_indices": [57],
         "source_anchors": [
@@ -183,9 +187,9 @@
         "inventory_catalog_index": 124,
         "inventory_status": "source-listed-pending-reconciliation",
         "name": "inject_stylesheet",
-        "optional_permissions": [],
+        "required_optional_permissions": [],
         "required_permissions": ["activeTab", "scripting"],
-        "schema_exact_catalog_indices": [],
+        "schema_exact_catalog_indices": [124],
         "source_anchors": [
           "types/tool-catalog.json",
           "src/lib/tools/registry.ts",
@@ -197,53 +201,13 @@
       },
       {
         "admin_only": false,
-        "current_catalog_indices": [],
-        "dependency_class": "cross-system",
-        "id": "EXT-F-4130",
-        "inventory_catalog_index": 129,
-        "inventory_status": "source-listed-pending-reconciliation",
-        "name": "records",
-        "optional_permissions": [],
-        "required_permissions": [],
-        "schema_exact_catalog_indices": [],
-        "source_anchors": [
-          "types/tool-catalog.json",
-          "src/lib/tools/registry.ts",
-          "src/features/tools/ToolsView.tsx",
-          "src/config/sidepanel-visibility.ts:31"
-        ],
-        "surface_bundles": ["pilot", "pilot+privileged"],
-        "tier": "action"
-      },
-      {
-        "admin_only": false,
-        "current_catalog_indices": [],
-        "dependency_class": "local",
-        "id": "EXT-F-4149",
-        "inventory_catalog_index": 148,
-        "inventory_status": "source-listed-pending-reconciliation",
-        "name": "fetch_url_as_markdown",
-        "optional_permissions": [],
-        "required_permissions": [],
-        "schema_exact_catalog_indices": [],
-        "source_anchors": [
-          "types/tool-catalog.json",
-          "src/lib/tools/registry.ts",
-          "src/features/tools/ToolsView.tsx",
-          "src/config/sidepanel-visibility.ts:31"
-        ],
-        "surface_bundles": ["assistant", "pilot", "pilot+privileged"],
-        "tier": "read"
-      },
-      {
-        "admin_only": false,
         "current_catalog_indices": [57, 153],
         "dependency_class": "local",
         "id": "EXT-F-4156",
-        "inventory_catalog_index": 155,
+        "inventory_catalog_index": 154,
         "inventory_status": "source-reconciled-procedure-needed",
         "name": "wait_for",
-        "optional_permissions": [],
+        "required_optional_permissions": [],
         "required_permissions": ["activeTab", "scripting"],
         "schema_exact_catalog_indices": [153],
         "source_anchors": [
@@ -260,12 +224,12 @@
         "current_catalog_indices": [164],
         "dependency_class": "local",
         "id": "EXT-F-4167",
-        "inventory_catalog_index": 166,
+        "inventory_catalog_index": 165,
         "inventory_status": "source-listed-pending-reconciliation",
         "name": "stylesheet",
-        "optional_permissions": [],
+        "required_optional_permissions": [],
         "required_permissions": ["activeTab", "scripting"],
-        "schema_exact_catalog_indices": [],
+        "schema_exact_catalog_indices": [164],
         "source_anchors": [
           "types/tool-catalog.json",
           "src/lib/tools/registry.ts",
@@ -276,34 +240,157 @@
         "tier": "privileged"
       }
     ],
-    "metadata_comparison": {
-      "catalog_index_rule": "Positional indices are not stable IDs; compare exact name and schema. wait_for remains two inventory rows.",
-      "schema_mismatch_rows": [
-        "EXT-F-4125 inject_stylesheet (inventory still has persist)",
-        "EXT-F-4167 stylesheet (inventory still has persistent)"
-      ],
-      "stale_catalog_record_indices": 39,
-      "tier_admin_permissions_surface_bundle_mismatches_on_schema-matched_catalog_routes": 0
+    "metadata_mismatches_for_schema_matched_rows": {
+      "admin_only": [],
+      "required_optional_permissions": [],
+      "required_permissions": [],
+      "surface_bundles": [],
+      "tier": []
     },
+    "positional_catalog_index_mismatches": [
+      {
+        "current_index": 147,
+        "id": "EXT-F-4150",
+        "inventory_index": 148,
+        "name": "computer"
+      },
+      {
+        "current_index": 148,
+        "id": "EXT-F-4151",
+        "inventory_index": 149,
+        "name": "form_input"
+      },
+      {
+        "current_index": 149,
+        "id": "EXT-F-4152",
+        "inventory_index": 150,
+        "name": "navigate"
+      },
+      {
+        "current_index": 150,
+        "id": "EXT-F-4153",
+        "inventory_index": 151,
+        "name": "tabs"
+      },
+      {
+        "current_index": 151,
+        "id": "EXT-F-4154",
+        "inventory_index": 152,
+        "name": "downloads"
+      },
+      {
+        "current_index": 152,
+        "id": "EXT-F-4155",
+        "inventory_index": 153,
+        "name": "clipboard"
+      },
+      {
+        "current_index": 153,
+        "id": "EXT-F-4156",
+        "inventory_index": 154,
+        "name": "wait_for"
+      },
+      {
+        "current_index": 154,
+        "id": "EXT-F-4157",
+        "inventory_index": 155,
+        "name": "upload_file"
+      },
+      {
+        "current_index": 155,
+        "id": "EXT-F-4158",
+        "inventory_index": 156,
+        "name": "drop_file"
+      },
+      {
+        "current_index": 156,
+        "id": "EXT-F-4159",
+        "inventory_index": 157,
+        "name": "read_pdf"
+      },
+      {
+        "current_index": 157,
+        "id": "EXT-F-4160",
+        "inventory_index": 158,
+        "name": "ai"
+      },
+      {
+        "current_index": 158,
+        "id": "EXT-F-4161",
+        "inventory_index": 159,
+        "name": "chrome_cookies"
+      },
+      {
+        "current_index": 159,
+        "id": "EXT-F-4162",
+        "inventory_index": 160,
+        "name": "chrome_webmcp"
+      },
+      {
+        "current_index": 160,
+        "id": "EXT-F-4163",
+        "inventory_index": 161,
+        "name": "tab_groups"
+      },
+      {
+        "current_index": 161,
+        "id": "EXT-F-4164",
+        "inventory_index": 162,
+        "name": "chrome_bookmarks"
+      },
+      {
+        "current_index": 162,
+        "id": "EXT-F-4165",
+        "inventory_index": 163,
+        "name": "chrome_history"
+      },
+      {
+        "current_index": 163,
+        "id": "EXT-F-4166",
+        "inventory_index": 164,
+        "name": "chrome_recently_closed"
+      },
+      {
+        "current_index": 164,
+        "id": "EXT-F-4167",
+        "inventory_index": 165,
+        "name": "stylesheet"
+      },
+      {
+        "current_index": 165,
+        "id": "EXT-F-4168",
+        "inventory_index": 166,
+        "name": "cdp_session"
+      },
+      {
+        "current_index": 166,
+        "id": "EXT-F-4169",
+        "inventory_index": 167,
+        "name": "cdp_emulate"
+      }
+    ],
+    "schema_mismatches_for_matched_names": [],
     "special_route_classification": {
       "EXT-F-4058": {
-        "canonical_index": 153,
-        "legacy_index": 57,
+        "inventory_and_current_index": 57,
+        "inventory_status": "source-listed-procedure-needed",
         "name": "wait_for",
         "preserve_id": true,
-        "route": "legacy catalog record shadowed by canonical registry handler"
+        "route": "legacy catalog row shadowed by canonical registry handler"
       },
       "EXT-F-4130": {
-        "evidence": "src/lib/tools/server-catalog.ts declares execution=server; intentionally not in generated client schema catalog",
+        "evidence": "src/lib/tools/server-catalog.ts declares execution=server; absent from generated client catalog",
         "name": "records",
-        "route": "server-side/manual server execution"
+        "route": "server/manual server execution"
       },
       "EXT-F-4156": {
-        "canonical_index": 153,
+        "current_index": 153,
+        "inventory_index": 154,
+        "inventory_status": "source-reconciled-procedure-needed",
         "name": "wait_for",
         "preserve_id": true,
         "registry_evidence": "src/lib/tools/registry.ts registers canonical handlers last and marks wait_for as intentional shadow",
-        "route": "canonical handler and current canonical catalog entry"
+        "route": "canonical handler/catalog row"
       }
     }
   },
@@ -316,9 +403,9 @@
       "modified_at": "2026-10-04T11:27:16-0700",
       "sha256": "ab9316697e39820a3003202a4253815ef6c38cd51071c2cae4a654ef10078cf4"
     },
-    "docs/stabilization/reports/inventory-tools.json": {
-      "modified_at": "2026-09-26T04:41:40-0700",
-      "sha256": "a6f6b5f170c584b0348b8425583c7df4abbb459345fba44967b3ebab209f4bd2"
+    "docs/stabilization/inventory.json": {
+      "modified_at": "2026-10-07T04:38:32-0700",
+      "sha256": "34fc9929a87e066541e8bb090aa10cd9688759c77e5d73c9400cbffa7a2972e8"
     },
     "src/lib/tools/catalog.ts": {
       "modified_at": "2026-10-06T22:17:10-0700",
@@ -333,8 +420,8 @@
       "sha256": "4c3c7b178abf35e21d47cc1d95ea7a999292672f036241accb767d0041f7ff9d"
     },
     "types/tool-catalog.json": {
-      "modified_at": "2026-10-07T04:39:10-0700",
-      "sha256": "1f70e29ce0fb2f528c21080c5f70c0c5cf134d2482c0e13bc34179ba893a6081"
+      "modified_at": "2026-10-07T04:52:45-0700",
+      "sha256": "2ea7bd2cbe04af9e3a64120e2be412d15faea8f8fca8513ca36727288f65f8d1"
     }
   },
   "task_id": "tool-binding-inventory-census-20261007"
