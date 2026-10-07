@@ -1,6 +1,6 @@
 # Plan preparation and review — 2026-09-25
 
-This is the preparation dispatch ledger, not feature coverage. No product tests, builds, installation changes or fixes were performed. The complete machine-readable feature inventory remains execution work.
+This is the dated September 25 preparation dispatch ledger, not a current operating rule or feature coverage. No product tests, builds, installation changes or fixes were performed during this review. The October 7 [operating plan](PLAN.md) and [coordinator checkpoint](COORDINATOR.md) supersede its sequencing and current-state assumptions.
 
 | Task / agent | Lane and model | Outcome | Repository edits |
 |---|---|---|---|
@@ -16,13 +16,13 @@ The owner wrote PLAN.md. Reviewers judged a pinned snapshot before the changes b
 1. **ACCEPTED:** Require authentication/data provenance and active mock/intercept/flag declarations in every receipt. Seeded sessions and mocked backend responses cannot close a real-user end-to-end case.
 2. **ACCEPTED:** Add real second-org/non-member denial checks paired with allowed positive controls. Same all-access admin switching organizations is insufficient.
 3. **ACCEPTED:** Reconcile source census with live advertised tool bindings and runtime-gated controls before declaring inventory complete.
-4. **ACCEPTED:** Current release pushes before checks. Require final generated/versioned candidate validation before branch/tag publication, including remote-race retries. This follows the user's current explicit never-red-trunk mandate; older push-first script comments do not override it.
-5. **ACCEPTED:** Serialize release checks/packaging and exclude dev-server writes during output promotion; every launch consumes the shared resource permit.
+4. **ACCEPTED in this September review:** The then-current release path pushed before checks. Require exact generated/versioned candidate validation before branch/tag publication, including remote-race retries. This was a dated source finding; inspect the current release path rather than treating it as an unrepaired present defect.
+5. **ACCEPTED in this September review:** Serialize release checks/packaging on each host and exclude dev-server writes during output promotion; every launch consumes its host-local resource permit. The October 7 plan permits two isolated hosted browser lanes after guard review.
 6. **ACCEPTED advisory:** Name build channel as a case dimension and include feature-test/canonical-state documentation in per-fix completion.
-7. **ACCEPTED advisory:** Baseline timebox is not permission to omit controls or invent a passing inventory. Stop optional process work at the cap; complete the missing prerequisite with a recorded bounded assignment.
+7. **ACCEPTED advisory at the time:** The baseline timebox did not permit omitted controls or invented passes. October 7 approval replaced inventory-first sequencing: executable registered cases run while missing procedures and unknown controls are tracked and resolved.
 
 No owner-only decision was established. Identity, organization, vault path, installed extension and external account availability remain preflight facts to verify, not proven blockers.
 
 ## Final revision verdict
 
-Independent Luna/medium review found all five blocking findings addressed in revision v2 and no execution contradiction. The final file additionally incorporates the documentation/build-channel advisories above. Product health remains unverified regardless of plan-review verdict. Only the two planning Markdown files were authored in the repository; they are local and have not been committed or pushed. Source integration begins with the execution baseline.
+Independent Luna/medium review found all five blocking findings addressed in revision v2 and no execution contradiction. The final file additionally incorporates the documentation/build-channel advisories above. Product health remains unverified regardless of plan-review verdict. That revision verdict applies only to the pinned September plan. The October 7 plan is committed and pushed; current product evidence lives in inventory, defect records and bounded run receipts.

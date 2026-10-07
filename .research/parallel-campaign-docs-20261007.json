@@ -8,7 +8,9 @@
     ".claude/skills/matrx-extend-bugfix/SKILL.md",
     "/Users/armanisadeghi/code/common-docs/systems/apps/extension/STATE.md",
     "/Users/armanisadeghi/code/common-docs/systems/apps/extension/CHROME-WEB-STORE.md",
-    ".research/parallel-campaign-docs-20261007.json"
+    ".research/parallel-campaign-docs-20261007.json",
+    "docs/stabilization/HANDOFF.md",
+    "docs/stabilization/PLAN-REVIEW.md"
   ],
   "contradiction_audit": [
     {
@@ -42,6 +44,14 @@
     {
       "old": "Blocker table retained a capped baseline before product tests",
       "resolution": "Runnable batches and discoverable prerequisite work now proceed concurrently."
+    },
+    {
+      "old": "September handoff presented 1,287 controls, 693 cases and 167 missing tool procedures as current",
+      "resolution": "Current pointer records latest integrated 205 features, 1,351 controls, 769 cases and 29 missing procedures; old snapshot detail remains in Git history."
+    },
+    {
+      "old": "September plan review presented inventory-first baseline and push-before-checks finding as current",
+      "resolution": "Review now labels its findings historical and points to October 7 PLAN and COORDINATOR."
     }
   ],
   "remaining_gaps": [
@@ -49,7 +59,8 @@
     "Actual hosted machines, isolated profiles, fixtures, account and secret schedules require admission at dispatch.",
     "Inventory unknowns, missing procedures, native case results and Store installation remain open in authoritative records.",
     "The app goal text could not be updated through the current goal API; the approved replacement objective is now explicit in PLAN.md. The root task verified the updated automation.",
-    "No HANDOFF.md exists at the supplied common-docs extension path; no replacement or historical status was invented."
+    "No HANDOFF.md exists at the supplied common-docs extension path; no replacement or historical status was invented.",
+    "The handoff does not assert active hosted job handles; inspect current workflow and receipt records before reporting a running lane or product verdict."
   ],
   "verification": [
     "Targeted contradiction grep found no remaining operative global inventory gate in touched guidance.",
@@ -57,6 +68,7 @@
     "No inventory.json, resource guard, workflow or release command was changed by this documentation lane.",
     "Common-docs skill description lint passed with pre-existing warnings.",
     "Common-docs whole-repository OKF lint failed on 22 unrelated pre-existing files; none were in the changed extension paths.",
-    "Biome stdin format using package.json parser was byte-for-byte equal to the report JSON."
+    "Biome stdin format using package.json parser was byte-for-byte equal to the report JSON.",
+    "HANDOFF receipt links exist; targeted stale-gate search returned no matches in HANDOFF or PLAN-REVIEW."
   ]
 }
