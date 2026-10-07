@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "scope": "Driver-only saved-result observation repair; no product source or native acceptance change.",
+  "status": "driver_repair_verified_bounded_native_unverified",
+  "confirmed_source_issue": "The old case-sensitive body.innerText search for a mixed-case recipe label can fail when CSS text-transform renders the label uppercase. Its body-wide current marker can also come from outside the saved result preview.",
+  "repair": "Read the exact visible Last run header from DOM source text and require the current table cell within its adjacent result preview. Reject old cells in that preview and retain only fixture classification codes for header and preview in terminal observations.",
+  "regression": "tests/browser/showcase-d47-saved-result.test.mjs uses a Chromium DOM microfixture shaped like the actual ResultPreview table, with CSS uppercase, exact and wrong recipes, prefix mismatch, hidden header, current marker outside a stale preview, and mixed current and old rows. It explicitly asserts the old predicate is false while the repaired reader is true on the valid fixture.",
+  "execution": {
+    "resource_guard": "All executed test jobs passed resource admission; no threshold bypass, product native acceptance, build, or credentials were used.",
+    "css_dom_fixture": "d47-label-final-20261007: valid, 5/5 passed in real Chromium DOM. The old mixed-case body.innerText predicate was false while the repaired reader recognized the exact CSS-uppercase header and current preview row.",
+    "existing_driver_evidence": "d47-driver-evidence-retry-20261007: valid, 14/14 passed.",
+    "constant_success_mutant": "d47-label-mutant-20261007: valid resource admission, child_failed as expected; 4/5 tests rejected an in-memory constant-success reader. The valid-case test passed under the mutant as expected.",
+    "environment_attempt": "d47-label-dom-20261007: resource admitted, child failed before browser launch because the default Chrome executable was absent. Repaired by setting the existing Chrome-for-Testing path; no install.",
+    "intermediate_refusal": "d47-driver-evidence-20261007: RESOURCE_LEGACY_RUNNER_BUSY while the prior wrapper process was still exiting; no child launched. Reran after process exit."
+  },
+  "limits": [
+    "No D47 product outcome or closure is claimed.",
+    "The native run remains resource-invalid; the historical cause is unknown.",
+    "The saved-result header text was absent from that native receipt, so the historical rendered label is unknown."
+  ]
+}
