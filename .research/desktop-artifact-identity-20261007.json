@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "task_id": "EXT-D-0156",
+  "task_id": "EXT-D-0157",
   "lane": "desktop native artifact identity",
   "status": "source_fix_ready_for_independent_review_native_unverified",
   "cause": "The desktop Settings native driver compared the selected development artifact against frozen source, run, and artifact IDs from an older CI build. The hosted importer had selected and verified a newer artifact, so the driver's preflight rejected it before native browser work.",
