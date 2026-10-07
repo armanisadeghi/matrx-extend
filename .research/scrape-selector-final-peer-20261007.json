@@ -1,0 +1,31 @@
+{
+  "task_id": "scrape-selector-final-peer-20261007",
+  "status": "done",
+  "reviewed_commits": ["f8c0ad58", "42a51b13"],
+  "prior_important_finding": {
+    "status": "addressed",
+    "evidence": "Readiness, native pointer selection, and Copy feedback now use the same title or tooltip-migrated data-matrx-title selector. The native pointer test calls the real settings-panel-driver click for both forms and observes mousePressed and mouseReleased."
+  },
+  "verdict_a_source_and_native": {
+    "source": "pass",
+    "native_acceptance": "pending",
+    "ready_for_guarded_native_retest": true,
+    "evidence": [
+      "The Scrape Video and Links rows render their destination anchor and Copy button as siblings; the pointer resolver scopes candidates to the exact href in the selected result tab.",
+      "The open-to-copy driver waits for the selected Video or Links tab, the exact destination row, and one Copy target after closing the opened tab.",
+      "A wrong selected tab, absent destination row, or duplicate Copy target times out with a named readiness error; the native pointer path still requires a fresh resource gate and trusted mouse input.",
+      "No native browser run was performed in this review; the original hosted artifact predates the repairs."
+    ]
+  },
+  "verdict_b_quality": {
+    "status": "pass",
+    "important_findings": [],
+    "evidence": [
+      "The focused suite passed 31/31 with zero skips across Scrape native media actions and Settings native auth driver.",
+      "The test executes both readiness and the actual native pointer resolver for ordinary title and data-matrx-title-only Copy controls, addressing the previous false-ready path.",
+      "The restoration test runs through both observeScrapeLinks and observeVideoLinks; URL and clipboard mismatches remain failures, and refused resource gates and pointer errors still abort."
+    ],
+    "limitation": "The restoration test uses a scripted DOM transition and a fake click; the separate pointer test exercises the real resolver. Neither substitutes for native acceptance."
+  },
+  "next_action": "Run the resource-admitted guest Scrape native cases on a fresh artifact from these repairs or newer and record exact open URL, Copy feedback, clipboard result, and case receipt before promoting acceptance."
+}
