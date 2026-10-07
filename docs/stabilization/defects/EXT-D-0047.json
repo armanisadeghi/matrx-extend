@@ -28,10 +28,10 @@
       "tests/browser/showcase-d47-*",
       ".research/d47-native-boundary-20261006.json"
     ],
-    "next_action": "Complete remaining manual/prior-run isolation native proof and retained manual/prior-run causal evidence. Higher-old-sequence source proof now independently accepted with exact mutant bytes/stdout/hashes and 17/17 untouched green. Reconcile relevant source changes before whole-case closure; do not repeat accepted branches absent relevant changes.",
-    "status": "Fresh peerb583ec01 accepts bounded stale-only refusal/fresh recovery on frozen0.2.347/source5fc0ae39/native37582763499; valid resources, exact saved UI and owned-recipe cleanup. Earlier response-order/public proofs retain separate frozen scopes. FullT57 unverified.",
+    "next_action": "Complete remaining prior-saved-run native isolation and retained manual/prior-run causal evidence; preserve bounded frozen-artifact scopes and cancellation limits.",
+    "status": "Fresh peer8ad248c2 accepts bounded manual-prior native37588499593 on frozen0.2.350/source82f3c440: real manual UI response positive control and second manual request pending before replay, current-document positive trace before held manual HTTP200/server finish, exact settled current-only saved row, owned-recipe cleanup and three valid resource journals. Server finish does not prove old callback delivery/rejection. Prior saved-run isolation, cancellation and fullT57 remain unverified.",
     "implementation_agent": "completed: d47_save_click_evidence_fix; 19/19 resource-valid source checks, fresh independent bounded source review accepted",
-    "execution_agent": "running: /root/d47_manual_native_execution; sole manual-prior native run 37588499593 on ARM",
+    "execution_agent": "completed: /root/d47_manual_native_execution; independently reviewed by /root/d47_manual_native_receipt_peer",
     "native_run_id": 37537634304,
     "workflow_source": "fbcc4311ae6885b67133e55336f692be38881249",
     "development_artifact_id": 11440764124,
@@ -41,7 +41,7 @@
     "first_native_outcome": "resource-valid child failure at save_recipe/recipe_saved_not_observed; no replay verdict; product versus driver cause unknown",
     "second_native_evidence": ".research/d47-save-native-20261006.json",
     "second_native_outcome": "resource-valid child failure; name_matches=false with enabled Save and no visible error; Save not clicked and no replay verdict",
-    "temporary_secret_cleanup": "Executor deleted both after terminal37578280425; root independently confirmed names absent.",
+    "temporary_secret_cleanup": "Both temporary Actions secrets removed after terminal37588499593; root independently confirmed names absent.",
     "input_repair_commit": "83a6148f",
     "input_repair_review_commit": "d1c00968",
     "third_native_evidence": ".research/d47-input-native-20261006.json",
@@ -158,7 +158,9 @@
     "manual_prior_workflow_source": "736d09f0",
     "manual_prior_source_report": ".research/d47-manual-prior-native-route-20261007.json",
     "manual_prior_oracle_report": ".research/d47-manual-prior-oracle-20261007.json",
-    "manual_prior_oracle_peer": ".research/d47-manual-oracle-final-peer-20261007.json"
+    "manual_prior_oracle_peer": ".research/d47-manual-oracle-final-peer-20261007.json",
+    "manual_prior_native_report": ".research/d47-manual-native-20261007.json",
+    "manual_prior_native_peer": ".research/d47-manual-native-receipt-peer-20261007.json"
   },
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
   "verification_status": "Independent reviews accept bounded current-first0.2.337 and old-first0.2.338 fixture replay. Fresh peer8dfbdee1 supports public initial capture, saved exact-recipe completed replay with hits and UI cleanup on frozen0.2.344/source2274d236/native37571487114, with valid resources. Whole-panel quiescence, selected organization context and post-checkbox receipt-level mask evidence are not established. Manual/prior-run isolation remains outstanding. D47 in-fix/T57 unverified. Fresh peerb583ec01 accepts native37582763499 stale-only refusal and fresh current saved replay recovery on frozen0.2.347/source5fc0ae39 with valid resources and owned-recipe cleanup. Fresh peer964c19d0 also accepts retained higher-old-sequence causal source proof: removing current-document guard admits old seq999 over current seq1; constant shortcut fails and untouched suite passes17/17, all resource-valid. This completes the bounded stale-only branch; manual/prior-run isolation and full-case acceptance remain unverified.",
