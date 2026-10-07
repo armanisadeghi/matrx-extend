@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "lane": "fresh independent source and evidence review; no implementation authorship or native execution",
+  "reviewed_commit": "b0324a8a1479ce88634f9e5e73c166086206a6ea",
+  "reviewed_report": ".research/d47-reverse-order-source-20261007.json",
+  "verdict_A_spec": {
+    "status": "PARTIAL_SOURCE_READY_NATIVE_UNVERIFIED",
+    "server_order": "Source causally holds the second target response, requires two page loads and a live current response before old release, refuses an aborted old response, awaits its actual ServerResponse finish, and only then allows current release. The driver requires finish order ['old'] while current remains pending, then ['old', 'current']; it rejects a swapped order or aborted old response.",
+    "current_document": "The fixture serves the second page as current and holds its request. The native path requires a new document context and exact current binding packet in the trace, plus page #phase=current and #result=Canyon Frequency after the saved run settles. That identity is assessed after release; the pre-release server gate establishes page load and request existence, while the browser context proof still needs a native run.",
+    "normal_mode": "current-first remains the workflow, route, driver, and arm default. Its driver now waits for actual current response finish rather than merely marking it sent, then accepts old finish or reported abort as before.",
+    "existing_gates": "The inverse branch still requires the exact installed artifact, signed-in approved organization, run-owned saved recipe, terminal exact result, current binding handshake/body/context/commit, no old binding packet, probe removal, and exact recipe deletion. It does not replace a failed release with cancellation success.",
+    "limits": "No old-first native receipt exists for this commit. Server finish does not establish delivery to old-page JavaScript or a Runtime.bindingCalled event; no delivered old-event rejection is demonstrated. The controlled localhost case also does not satisfy T57 public-site initial-load and surrounding acceptance branches. D47/T57 remain unverified at full scope."
+  },
+  "verdict_B_source_quality": {
+    "status": "PASS_WITH_VERIFICATION_GAPS",
+    "positive": "The mode uses the existing fixture, native driver, hosted route and workflow. Finish events, abort flags, and release outcomes are separate. The new HTTP fixture test consumes both response bodies and checks actual finish ordering; the original-server scratch run went red for the inverse case while prior cases remained green. Route validation rejects unsupported values.",
+    "finding_1": {
+      "severity": "verification_gap",
+      "location": "tests/unit/showcase-d47-fixture.test.ts:124-173; .research/d47-reverse-order-source-20261007.json:37-49",
+      "detail": "The prepared constant-success telemetry mutant was refused before child execution by two resource checks. It is not a test RED. The executed original-server RED shows the new path is needed, but the required constant-success gut check remains outstanding."
+    },
+    "finding_2": {
+      "severity": "acceptance_limit",
+      "location": "tests/browser/showcase-d47-document-lifecycle.mjs:580-715; tests/browser/showcase-d47-driver-evidence.mjs:38-111",
+      "detail": "The driver enforces server finish order and a positive current binding, but marks delayed_old_binding architecturally_excluded_observed when no old binding packet appears. This label is consistent with the existing architectural-exclusion ruling only if a native run supplies all positive controls; it must not be reported as proof that an old callback was delivered and rejected."
+    },
+    "runtime_evidence": "Existing settled native receipt 37558902653 covered current-first on an earlier frozen source/artifact and cannot validate this changed old-first driver or current dependency state. The new fixture and route journals show admitted successful source tests; no browser, build, credential, or native launch was performed in this review."
+  },
+  "recommendation": "Accept the mode for source review with the two verification gaps explicit. Before counting old-first acceptance, execute the constant-success gut check under a valid resource permit and a bounded installed-extension old-first run on an exact artifact; inspect its actual old/current finish order, current binding and settled saved result, and cleanup. Keep HTTP finish distinct from callback delivery and preserve separate public-site T57 work.",
+  "evidence": [
+    "git show b0324a8a -- tests/fixtures/showcase-replay/serve.mjs tests/browser/showcase-d47-document-lifecycle.mjs scripts/hosted-showcase-route.mjs",
+    "tests/fixtures/showcase-replay/serve.mjs:151-211,225-262",
+    "tests/browser/showcase-d47-document-lifecycle.mjs:530-715",
+    "tests/browser/showcase-d47-driver-evidence.mjs:38-111",
+    "docs/stabilization/resource-journals/d47-reverse-fixture-green-20261007.jsonl",
+    "docs/stabilization/resource-journals/d47-reverse-original-red-20261007.jsonl",
+    "docs/stabilization/resource-journals/d47-reverse-route-20261007.jsonl",
+    "docs/stabilization/resource-journals/d47-reverse-constant-red-20261007.jsonl",
+    ".research/d47-settled-native-peer-20261007.json",
+    ".research/d47-acceptance-architecture-ruling-20261006.json"
+  ]
+}
