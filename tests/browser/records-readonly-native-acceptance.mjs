@@ -123,7 +123,7 @@ try {
     onStage: (value) => {
       report.native_stage = value;
     },
-    exercisePanel: async ({ page, panel, resourceAction }) => {
+    exercisePanel: async ({ page, panel, resourceAction, transportFailureClass }) => {
       stage('admin_signin');
       const auth = await resourceAction(() =>
         signInRecordsAdmin({
@@ -612,6 +612,7 @@ try {
         journalPath: `${output}.fixture-journal.json`,
         onStage: stage,
         onFailure: (diagnostic) => report.fixture_diagnostics.push(diagnostic),
+        transportFailureClass,
         exercise: async ({ tableId, rowId, rowName }) => {
           for (const [caseId, action, args] of [
             ['EXT-F-4130-C04', 'record_read', { record_id: rowId }],
