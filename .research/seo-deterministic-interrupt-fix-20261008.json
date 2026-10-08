@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0183",
+  "status": "SOURCE_READY_NATIVE_INTERRUPTION_PENDING",
+  "acceptance_credit": "none",
+  "cause": "GitHub workflow cancellation did not deterministically stop the SEO child; both observed native children exited zero before a completed-target interruption was captured.",
+  "implementation": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "driver": "tests/browser/seo-guest-acceptance.mjs",
+    "selector": "manual_button_returns_to_current_page",
+    "constraints": "Explicit selector only; lane B, guest-seo, controlled scope, no metadata fixture, no resource diagnostic, and imported CI development-test artifact. Other values fail preflight.",
+    "stop_boundary": "The existing native driver records the browser-asserted T02 target through the atomic progress writer, then SIGTERMs its own process before the next target. The resource owner observes childSignal and cleans its owned process group.",
+    "receipt": "The selected target remains in a durable in_progress, unverified checkpoint with DIAGNOSTIC_ONLY_NO_ACCEPTANCE_CREDIT. Any unexpected final writer also clears acceptance targets and remains unverified."
+  },
+  "local_evidence": {
+    "red_before_fix": "Focused selector assertion failed because the opt-in route did not exist; the child SIGTERM/checkpoint assertion also failed.",
+    "green_after_fix": "node --test scripts/test-hosted-acceptance-lanes.mjs scripts/hosted-seo-route.test.mjs: 16 passed, 0 failed",
+    "child_process": "Focused child test extracted the native driver's target boundary, used the real atomic progress writer, observed SIGTERM and the selected T02 target in the persisted checkpoint. With the selector off, the child exited zero and persisted the next target.",
+    "format_and_syntax": "Biome check passed for the five changed JavaScript files; git diff --check passed. The lane test parsed the workflow YAML and executed its admission shell."
+  },
+  "native_pending": "A fresh hosted lane B dispatch from this workflow source must use guest-seo, controlled, fixture none, seo_interrupt_after_target manual_button_returns_to_current_page, and an exact successful CI development artifact. Inspect the current-run journal for childSignal SIGTERM, the always-uploaded checkpoint for in_progress/unverified plus the selected target and no acceptance credit, and an independent neighboring normal success receipt. No hosted dispatch or product acceptance is claimed here."
+}

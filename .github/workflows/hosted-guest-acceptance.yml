@@ -97,6 +97,14 @@ on:
         required: false
         default: false
         type: boolean
+      seo_interrupt_after_target:
+        description: Diagnostic-only SIGTERM after the controlled guest SEO manual re-audit target checkpoint
+        required: false
+        default: none
+        type: choice
+        options:
+          - none
+          - manual_button_returns_to_current_page
       desktop_settings_case:
         description: Desktop Settings guest path; remaining covers pair-code forget and reset cancel
         required: false
@@ -174,6 +182,7 @@ jobs:
           ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
           SEO_CASE_SCOPE: ${{ inputs.seo_case_scope }}
           SEO_METADATA_FIXTURE: ${{ inputs.seo_metadata_fixture || 'none' }}
+          SEO_INTERRUPT_AFTER_TARGET: ${{ inputs.seo_interrupt_after_target || 'none' }}
           SCRAPE_AUTH_MODE: ${{ inputs.scrape_auth_mode }}
           DESKTOP_SETTINGS_CASE: ${{ inputs.desktop_settings_case }}
         run: |
@@ -189,6 +198,9 @@ jobs:
           [[ "$SEO_METADATA_FIXTURE" == none || "$SEO_METADATA_FIXTURE" == airbnb ]] || { echo 'Unknown SEO metadata fixture.' >&2; exit 1; }
           if [[ "$SEO_METADATA_FIXTURE" == airbnb ]]; then
             [[ "$ACCEPTANCE_CASE" == guest-seo && "$SEO_CASE_SCOPE" == full ]] || { echo 'SEO metadata fixture requires full guest-seo.' >&2; exit 1; }
+          fi
+          if [[ "${SEO_INTERRUPT_AFTER_TARGET:-none}" != none ]]; then
+            [[ "$SEO_INTERRUPT_AFTER_TARGET" == manual_button_returns_to_current_page && "$ACCEPTANCE_CASE" == guest-seo && "$SEO_CASE_SCOPE" == controlled && "$SEO_METADATA_FIXTURE" == none && "$ACCEPTANCE_LANE" == B ]] || { echo 'SEO interruption requires lane B controlled guest-seo without fixture.' >&2; exit 1; }
           fi
           if [[ "$DESKTOP_SETTINGS_CASE" == remaining ]]; then
             [[ "$ACCEPTANCE_CASE" == desktop-settings-guest ]] || { echo 'Remaining Desktop Settings case requires guest.' >&2; exit 1; }
@@ -300,6 +312,7 @@ jobs:
           MATRX_HOSTED_SEO_CASE_SCOPE: ${{ inputs.seo_case_scope }}
           MATRX_HOSTED_SEO_METADATA_FIXTURE: ${{ inputs.seo_metadata_fixture || 'none' }}
           MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC: ${{ inputs.seo_resource_diagnostic == true && '1' || '0' }}
+          MATRX_HOSTED_SEO_INTERRUPT_AFTER_TARGET: ${{ inputs.seo_interrupt_after_target || 'none' }}
           MATRX_HOSTED_DESKTOP_SETTINGS_CASE: ${{ inputs.desktop_settings_case }}
           MATRX_HOSTED_PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx == true && '0.2.205' || '' }}
           MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE: ${{ inputs.scrape_diagnostic_cpu_rate }}
@@ -373,6 +386,7 @@ jobs:
           MATRX_HOSTED_SEO_CASE_SCOPE: ${{ inputs.seo_case_scope }}
           MATRX_HOSTED_SEO_METADATA_FIXTURE: ${{ inputs.seo_metadata_fixture || 'none' }}
           MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC: ${{ inputs.seo_resource_diagnostic == true && '1' || '0' }}
+          MATRX_HOSTED_SEO_INTERRUPT_AFTER_TARGET: ${{ inputs.seo_interrupt_after_target || 'none' }}
           MATRX_STARTUP_INTERVAL_DIAGNOSTIC: ${{ inputs.seo_resource_diagnostic == true && '1' || '0' }}
           MATRX_D47_PUBLIC_RACE_PREFLIGHT: ${{ inputs.d47_public_race_preflight == true && '1' || '0' }}
           MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE: ${{ inputs.scrape_diagnostic_cpu_rate }}

@@ -11,6 +11,8 @@ import { join, resolve } from 'node:path';
 import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifact.mjs';
 import { verifyFrozenArtifactIdentity } from '../../scripts/frozen-artifact-identity.mjs';
 import {
+  hostedSeoInterruptTarget,
+  interruptSeoAfterCheckpoint,
   seoStartupObservationOptions,
   writeSeoGuestProgress,
   writeSeoGuestReport,
@@ -49,6 +51,22 @@ const METADATA_FIXTURE_PAGE = 'https://www.airbnb.com/';
 const RUN_METADATA_FIXTURE = process.env.SEO_GUEST_METADATA_FIXTURE === 'airbnb';
 const SEO_CASE_SCOPE = process.env.SEO_GUEST_CASE_SCOPE ?? 'full';
 const SEO_RESOURCE_DIAGNOSTIC = process.env.MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC === '1';
+const SEO_INTERRUPT_AFTER_TARGET = hostedSeoInterruptTarget(
+  'guest-seo',
+  SEO_CASE_SCOPE,
+  process.env.SEO_GUEST_METADATA_FIXTURE ?? 'none',
+  process.env.MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC ?? '0',
+  process.env.SEO_GUEST_INTERRUPT_AFTER_TARGET ?? 'none',
+);
+if (SEO_INTERRUPT_AFTER_TARGET) {
+  assert.equal(process.env.GITHUB_ACTIONS, 'true', 'seo_interrupt_requires_hosted_runner');
+  assert.equal(process.env.MATRX_HOSTED_ACCEPTANCE_CASE, 'guest-seo');
+  assert.ok(
+    DEV_BUILD_RECEIPT &&
+      resolve(DEV_BUILD_RECEIPT).startsWith(`${join(REPO, 'test-results', 'ci-artifacts')}/`),
+    'seo_interrupt_requires_imported_development_artifact',
+  );
+}
 const report = {
   schema_version: 1,
   feature_id: 'EXT-F-1008',
@@ -80,6 +98,7 @@ const report = {
   imported_artifact: null,
   case_selection: null,
   resource_diagnostic_enabled: SEO_RESOURCE_DIAGNOSTIC,
+  ...(SEO_INTERRUPT_AFTER_TARGET && { interruption_test_target: SEO_INTERRUPT_AFTER_TARGET }),
 };
 const checkpoint = () => writeSeoGuestProgress(OUTPUT, report, SEO_RESOURCE_DIAGNOSTIC);
 const advance = (stage, observable = null) => {
@@ -120,6 +139,7 @@ async function waitObserved(operation, read, accept, timeoutMs) {
 const target = (caseId, subtarget, evidence) => {
   report.targets.push({ case_id: `EXT-F-1008-${caseId}`, subtarget, status: 'pass', evidence });
   checkpoint();
+  interruptSeoAfterCheckpoint(SEO_INTERRUPT_AFTER_TARGET, subtarget);
 };
 const unverifiedTarget = (caseId, subtarget, reason) => {
   report.targets.push({ case_id: `EXT-F-1008-${caseId}`, subtarget, status: 'unverified', reason });
