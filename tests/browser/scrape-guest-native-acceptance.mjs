@@ -35,6 +35,12 @@ import { recordReloadMilestone } from './scrape-reload-milestones.mjs';
 import { waitForReplacementScrapeTab } from './scrape-replacement-tab.mjs';
 import { observeScrapeRows } from './scrape-row-observer.mjs';
 import {
+  assertCompleteTabCoverage,
+  capturePaneSnapshot,
+  observeEmptyMediaPanes,
+  verifyCaptureUnchanged,
+} from './scrape-tab-coverage.mjs';
+import {
   approvedAdminOrganizationName,
   panelIdentity,
   selectRequiredSettingsOrganization,
@@ -1269,6 +1275,7 @@ try {
       );
       const viewed = {};
       const mediaEvidence = {};
+      const warmPaneSnapshots = {};
       for (const label of expectedTabs) {
         await requireResourceHealth();
         await resourceAction(() => click(panel, 'scrape-result-tab', label));
@@ -1279,6 +1286,7 @@ try {
         );
         await requireResourceHealth();
         viewed[label] = state.resultText.slice(0, 300);
+        warmPaneSnapshots[label] = capturePaneSnapshot(state);
         if (label === 'Images' || label === 'Video') {
           mediaEvidence[label.toLowerCase()] = await selectedMedia(
             panel,
@@ -1320,6 +1328,17 @@ try {
       assert.match(viewed.Links, /Patient forms/);
       assert.match(viewed.SEO, /SEO|Title|Description/i);
       assert.match(viewed.Schema, /Dentist/);
+      const warmCaptureInvariance = await verifyCaptureUnchanged({
+        panel,
+        baseline: warmPaneSnapshots,
+        labels: expectedTabs,
+        click,
+        resourceAction,
+        requireResourceHealth,
+        scrapeState,
+        waitFor,
+        phase: 'warm',
+      });
       mark(
         'EXT-F-1007-T08',
         'partial',
@@ -1528,22 +1547,22 @@ try {
             resourceAction,
           });
       }
-      for (const label of ['Images', 'Video']) {
-        await requireResourceHealth();
-        await resourceAction(() => click(panel, 'scrape-result-tab', label));
-        await requireResourceHealth();
-        mediaEvidence[`${label.toLowerCase()}_empty`] = await observeSelectedMedia({
-          panel,
-          label,
-          items: [],
-          name: `scrape_empty_${label}_tab`,
-          evaluate,
-          scrapeState,
-        });
-      }
+      const warmEmptyPanes = await observeEmptyMediaPanes({
+        panel,
+        phase: 'warm',
+        click,
+        resourceAction,
+        requireResourceHealth,
+        observeSelectedMedia,
+        evaluate,
+        scrapeState,
+      });
+      mediaEvidence.images_empty = warmEmptyPanes.images;
+      mediaEvidence.video_empty = warmEmptyPanes.video;
       const t08 = report.cases.find((c) => c.id === 'EXT-F-1007-T08');
       t08.evidence.matching_content.images_empty = mediaEvidence.images_empty;
       t08.evidence.matching_content.video_empty = mediaEvidence.video_empty;
+      t08.evidence.capture_invariance = { warm: warmCaptureInvariance };
       t08.remaining = [otherRoleNote(), 'Full extension reload lifecycle remains unverified.'];
       const t20 = report.cases.find((c) => c.id === 'EXT-F-1007-T20');
       t20.evidence.navigation_url = page.url();
@@ -1786,6 +1805,7 @@ try {
             : ['Normal-width verification remains unverified.']),
         ];
         const postReloadPanes = { article: recaptured.resultText.includes(article) };
+        const reloadPaneSnapshots = { Article: capturePaneSnapshot(recaptured) };
         for (const [label, pattern] of [
           ['Links', /Patient forms/],
           ['SEO', /SEO|Title|Description/i],
@@ -1798,7 +1818,30 @@ try {
             (s) => s?.selected === label && s.visible && pattern.test(s.resultText ?? ''),
           );
           postReloadPanes[label.toLowerCase()] = pattern.test(state.resultText);
+          reloadPaneSnapshots[label] = capturePaneSnapshot(state);
         }
+        for (const label of ['Images', 'Video']) {
+          await requireResourceHealth();
+          await resourceAction(() => click(replacement.panel, 'scrape-result-tab', label));
+          const state = await waitFor(
+            `scrape_post_reload_${label}_snapshot`,
+            () => scrapeState(replacement.panel),
+            (value) =>
+              value?.selected === label && value.visible && typeof value.resultText === 'string',
+          );
+          reloadPaneSnapshots[label] = capturePaneSnapshot(state);
+        }
+        const reloadCaptureInvariance = await verifyCaptureUnchanged({
+          panel: replacement.panel,
+          baseline: reloadPaneSnapshots,
+          labels: expectedTabs,
+          click,
+          resourceAction,
+          requireResourceHealth,
+          scrapeState,
+          waitFor,
+          phase: 'reload',
+        });
         report.stage = 'post_reload_media_controls';
         const reloadControls = await captureMediaFailure(
           replacement.panel,
@@ -1839,6 +1882,7 @@ try {
         report.post_reload_populated_panes = postReloadPanes;
         const t08 = report.cases.find((c) => c.id === 'EXT-F-1007-T08');
         t08.evidence.post_reload_populated_panes = postReloadPanes;
+        t08.evidence.capture_invariance.reload = reloadCaptureInvariance;
         t08.remaining = [
           otherRoleNote(),
           ...(selection.widthMode === 'normal'
@@ -1873,6 +1917,42 @@ try {
         t13.status = linkVerdict.status === 'passed' ? 'partial' : linkVerdict.status;
         t13.remaining = [otherRoleNote(), ...linkVerdict.remaining];
         if (linkVerdict.failures.length) t13.failure = linkVerdict.failures;
+        report.stage = 'post_reload_empty_media_capture';
+        await requireResourceHealth();
+        await resourceAction(() => page.goto(`${origin}/referrals`));
+        await waitFor(
+          'scrape_post_reload_referrals_empty',
+          () => scrapeState(replacement.panel),
+          (state) => state?.ready && state.empty && state.title === 'Harbor Dental referral hours',
+        );
+        await resourceAction(() =>
+          click(replacement.panel, 'title', 'Capture the page exactly as it is right now'),
+        );
+        await waitFor(
+          'scrape_post_reload_referrals_captured',
+          () => scrapeState(replacement.panel),
+          (state) =>
+            state?.selected === 'Article' &&
+            state.visible &&
+            state.title === 'Harbor Dental referral hours' &&
+            state.resultText?.includes('Referral coordinators answer weekday calls.'),
+          30000,
+        );
+        const reloadEmptyPanes = await observeEmptyMediaPanes({
+          panel: replacement.panel,
+          phase: 'reload',
+          click,
+          resourceAction,
+          requireResourceHealth,
+          observeSelectedMedia,
+          evaluate,
+          scrapeState,
+        });
+        t08.evidence.post_reload_empty_panes = reloadEmptyPanes;
+        assertCompleteTabCoverage({
+          warm: { invariance: warmCaptureInvariance, empty: warmEmptyPanes },
+          reload: { invariance: reloadCaptureInvariance, empty: reloadEmptyPanes },
+        });
       } finally {
         await replacement.panel.detach();
       }

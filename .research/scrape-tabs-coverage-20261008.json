@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007-T08",
+  "status": "source_checked_native_unverified",
+  "basis": ".research/scrape-reload-observer-native-peer-20261008.json",
+  "change": "The controlled intake capture now records and revisits all six rendered result panes, comparing full visible text, title, tab selection, counts, and rendered row identities before any edit controls run, both warm and after full extension reload. The media-free referrals fixture is captured again after reload and both active empty media panes are asserted through the existing real-pane observer. The T08 receipt records warm and reload invariance and empty-pane evidence.",
+  "forcing_guard": "assertCompleteTabCoverage rejects a missing warm or reload capture comparison, any missing compared pane, and missing or populated Images or Video empty-pane evidence. Focused tests also reject changed text or media count on any pane revisit and populated or hidden empty panes in both phases.",
+  "source_verification": [
+    "node --test tests/browser/scrape-tab-coverage.test.mjs tests/browser/scrape-media-assertions.test.mjs tests/browser/scrape-empty-media-branch.test.mjs: 12 passed, 0 failed",
+    "pnpm exec biome check on four owned browser files: passed",
+    "node --check on driver and helper: passed",
+    "git diff --check: passed"
+  ],
+  "native_run": null,
+  "remaining": "Fresh exact-artifact native execution and independent receipt review are required. T08 remains partial; this source check does not claim guest, member, or admin acceptance."
+}
