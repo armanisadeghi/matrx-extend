@@ -1,0 +1,13 @@
+{
+  "defect": "EXT-D-0175",
+  "candidate": "8c4db8238f819e256f0c2af676bacedc627aa418",
+  "scope": "Fresh independent source and focused-guard review; no native run, build, release, or deployment.",
+  "verdict_A": "NATIVE_OUTCOME_UNVERIFIED: the frozen 0.2.407 native gap remains open. Source is ready for an opt-in diagnostic hosted attempt; an instrumented run must remain diagnostic_only, unverified, and exit nonzero even if its cases pass.",
+  "verdict_B": "PASS_WITH_TEST_LIMITATION: the prior IMPORTANT receipt-loss defect is addressed in source. The new guard exercises the serializer and JSON persistence with representative receipt shapes, but does not execute the actual native caller or browser writer.",
+  "addressed": "tests/browser/native-sidepanel-qa-harness.mjs attaches fixture, open_panel_diagnostic, and replacement_panel_created_event to retirementEvidence on completion or catch. tests/browser/scrape-guest-native-acceptance.mjs:1676 and :2049 route success and failure through captureLifecycleEvidence; :2052 writes the report. The serializer now allowlists and preserves all three fields and omits them when absent.",
+  "default_and_classification": "The flag defaults off; hosted preflight restricts opt-in to guest-scrape-development. The default fixture sends without worker attachment. The enabled report labels evidence_class diagnostic_only, and success-path refusal changes status to unverified with exit code 1; failure path is already unverified/nonzero.",
+  "privacy_shape": "Fresh adversarial serializer call supplied private strings and malformed enum/boolean values in all new fields: serialized output contained no private markers, invalid states fell back to unavailable/unobserved/null or false, and ordinary evidence omitted the new keys.",
+  "tests": "node --test tests/browser/scrape-reload-receipt-serialization.test.mjs tests/browser/profile-reload-capture.test.mjs tests/browser/scrape-reload-open-diagnostic.test.mjs scripts/hosted-scrape-reload-diagnostic.test.mjs: 14 passed, 0 failed. Independent malformed/absence serializer assertion: passed.",
+  "limitations": "No actual hosted receipt or native Chrome behavior was observed. CDP attachment and sidePanel.open wrapping perturb the path; sendResponse remains explicitly unobservable. The new receipt test assembles success/failure objects itself, so it cannot catch a future native caller bypassing captureLifecycleEvidence. No finding against this candidate from that limitation.",
+  "finding": null
+}
