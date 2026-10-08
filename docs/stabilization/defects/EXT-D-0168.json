@@ -7,7 +7,7 @@
   "title": "Successful acceptance child exits before pending resource recovery can complete",
   "severity": "S3: repeated invalid test attempts, no established product failure",
   "priority": "P1",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root",
   "preconditions": [
     "Exact Settings ARM run37732615934: package/browser valid; guest admitted; resource policy requires three healthy recovery samples."
@@ -27,7 +27,9 @@
     ".research/resource-completion-peer-20261008.json",
     ".research/resource-completion-final-peer-20261008.json",
     ".research/settings-completion-native-20261008.json",
-    ".research/settings-completion-native-peer-20261008.json"
+    ".research/settings-completion-native-peer-20261008.json",
+    ".research/settings-local397-native-20261008.json",
+    ".research/settings-local397-peer-20261008.json"
   ],
   "transition_history": [
     {
@@ -53,10 +55,22 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Admitted causalRED/final3of3GREEN; fresh sourcepeer4144d854 acceptsfailurecontrols and code. Native Settings remains pending."
+    },
+    {
+      "at": "2026-10-08T06:29:07.869241+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Fresh nativepeerd7a6dfd8 accepts documented causalcontrolledRED/GREEN + independent sourcepeer + exactresource-validSettings originalworkload integration gate."
+    },
+    {
+      "at": "2026-10-08T06:29:07.869241+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Infrastructurecompletion repair closed at documentedgate scope; no actualhostCPUrecovery claim and oldinvalidruns remaininvalid."
     }
   ],
   "closure_requirement": "Causal original-behavior failure; corrected recovery success plus second-bad/timeout/child-error/lease semantics; fresh independent source review and exact resource-valid original Settings native retest.",
-  "next_action": "Use existing guarded local ARM Settings driver with exact CI397 artifact11527132614 after capacity and import verification; no rebuild, guard relaxation or deadline increase. Changedhost strategy peer4950cf00. Native path still untested here.",
+  "next_action": "Retain normal guard telemetry; no new pending-only nativeexperiment necessary for thisclosedinfrastructure scope. OtherSettings gaps remain D167/cases.",
   "fix_commit": "7e72f04a0cce79cd3bd0f2cf0c5c8a5879020f03",
   "latest_native_attempt": {
     "run_id": "37735318823",
@@ -65,5 +79,14 @@
     "acceptance_credit": false,
     "detail": "Owned Chromium CDP timeout during CPUbusy startup; child1 wrapper3. All16cases zero steps. Successful-child recovery not exercised.",
     "peer": "4950cf00"
+  },
+  "valid_local_retest": {
+    "run_id": "settings-local397-native-20261008",
+    "source": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+    "build": "0.2.397",
+    "curator": "a248737f",
+    "peer": "d7a6dfd8",
+    "resource_valid": true,
+    "limits": "No CPU pending or recovery episode; raw consolelog absent. T34 restoration via successfulhelperassertions, not directbaseline/finalsamples. Downstreamconsumer unknown."
   }
 }
