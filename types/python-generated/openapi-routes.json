@@ -1032,11 +1032,6 @@
  "/auth/organizations": {
   "get": []
  },
- "/auth/organizations/default": {
-  "put": [
-   "application/json"
-  ]
- },
  "/auth/session/exchange": {
   "post": [
    "application/json"
@@ -2387,10 +2382,28 @@
  "/eptura-visitor/public/status": {
   "get": []
  },
+ "/esign/detect-fields": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/esign/drafts/{envelope_id}/send": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/esign/envelopes": {
   "post": [
    "application/json"
   ]
+ },
+ "/esign/envelopes/{envelope_id}/download": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/esign/envelopes/{envelope_id}/finalize": {
+  "post": []
  },
  "/esign/envelopes/{envelope_id}/remind": {
   "post": []
@@ -2412,6 +2425,16 @@
   ]
  },
  "/esign/signing/envelope/{envelope_id}/act": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/esign/signing/handoff/open": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/esign/signing/handoff/submit": {
   "post": [
    "application/json"
   ]
