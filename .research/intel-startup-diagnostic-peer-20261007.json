@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "lane": "independent source review of Intel headed startup diagnostic",
+  "reviewed_worker_commit": "59ae5feccef4e90838bb8179b6a02434bdd8dd3a",
+  "review_scope": "Exact worker commit only, five changed paths; no native launch, build, release, deployment, or secret access.",
+  "verdict_a_diagnostic_targets_and_causality": {
+    "status": "PASS",
+    "target": "One guarded Intel headed diagnostic that distinguishes an endpoint appearing after the unchanged five-second deadline from an endpoint remaining absent or the owned child exiting.",
+    "evidence": [
+      "The hosted workflow now admits startup-resource-diagnostic on X64 as well as ARM64, keeps the development artifact provenance requirements, and runs the diagnostic under stabilization-resource.mjs.",
+      "runHostedStartupIntervalDiagnostic passes headed:true to the same runNativeSidepanelQa launcher used by the failed audit path; the existing owned profile, Chromium flags, and connectOwnedCdp five-second deadline remain unchanged.",
+      "On owned_cdp_endpoint_timeout, the harness writes the original BROWSER_STARTUP_FAILURE, then observes DevToolsActivePort presence and direct-child exit state for at most the policy's 15-second watch interval before rethrowing the timeout. The diagnostic report records both timeout and post-timeout observations with timestamps; a successful run never becomes product acceptance.",
+      "The diagnostic keeps the resource guard and its thresholds. Child cleanup remains in the harness finally block and targets the direct spawned child."
+    ],
+    "limits": [
+      "Endpoint presence is a file-existence observation, not proof that the late record is valid or CDP can attach. A late file discriminates the timing question only.",
+      "One run cannot establish whether headed mode or host load caused a slow startup. The original Intel audit and public guest product cases remain unverified."
+    ]
+  },
+  "verdict_b_quality_privacy_resource_fidelity": {
+    "status": "PASS_WITH_LIMITATIONS",
+    "evidence": [
+      "The added report observation is allowlisted to phase, booleans, and nonnegative integer timings/counts; arbitrary paths and raw Chromium stderr are excluded. The preexisting browserDiagnosticFlags still classifies stderr at the five-second timeout.",
+      "The post-timeout observer uses only lstat on the owned profile and the direct ChildProcess exitCode/signalCode, stops on endpoint, exit, inspection failure, or elapsed bound, and performs no second CDP attach or acceptance retry.",
+      "The new test file is included in package.json test:focused-acceptance, which both focused-acceptance.yml and ci.yml execute on pushes to main. Root independently verified by GitHub API that exact-head focused CI run 37710773847 completed successfully at 59ae5fec. The 28/28 local test result is supporting evidence, not guarded acceptance."
+    ],
+    "limitations": [
+      "New tests cover the observer helper, report writer, and workflow text, but do not drive the actual harness timeout branch through a spawned child; the successful focused CI therefore validates wiring and pure decisions, not the live Intel failure. The preexisting native-sidepanel-qa-harness.test.mjs hang was stopped and its unchanged file is outside the worker diff.",
+      "Post-timeout stderr is not reclassified in the final observation, and child state is reported only as exitObserved rather than exit code or signal. This limits crash diagnosis but does not defeat the requested late-endpoint versus absent-or-exited distinction.",
+      "A timeout diagnostic may take up to 15 seconds longer than the normal five-second failure path, exclusively in startup-resource-diagnostic mode."
+    ]
+  },
+  "readiness": "READY_TO_DISPATCH_EXACTLY_ONE_DIAGNOSTIC: use macos-15-intel, the frozen development artifact, startup-resource-diagnostic, and the existing guarded lane. Interpret the result as diagnostic evidence only; do not credit product acceptance or alter the normal CDP deadline on this source review.",
+  "verification": "Independent static review of git show 59ae5fec, the owning caller chain, resource policy and guard, workflow, tests, and prior failure evidence. Root independently confirmed exact-head CI by GitHub API; this lane did not redundantly poll CI or run local tests.",
+  "changed_files": [".research/intel-startup-diagnostic-peer-20261007.json"]
+}

@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "lane": "public_guest_current_server_independent_peer",
+  "reviewed_run_id": 37709629346,
+  "reviewed_worker_report": ".research/public-guest-current-server-20261007.json",
+  "verdict_a_behavior_scope": {
+    "status": "UNVERIFIED",
+    "reason": "The original hosted receipt stopped at owned_profile with owned_cdp_endpoint_timeout before the guest panel, requests, or assistant turns. It records guest=null, chat=null, zero guest_ai_requests, and no terminal completion. Opening, same-conversation follow-up, and post-reload new-conversation replies therefore cannot pass or fail from this run.",
+    "public_crx": "The original receipt identifies published_store_crx_unpacked version 0.2.205 and tree SHA-256 08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8. It does not record a runtime extension ID or unchanged artifact after launch, because Chrome did not connect. This is not Chrome Web Store UI installation evidence.",
+    "server": "The original receipt records HTTP 200 and git SHA 1d535d990e3d85eaa24e526a531e49951cfacd07 both before and after the attempted case. The worker also records a different pre-dispatch SHA, so stability begins at the run's own before observation, not earlier.",
+    "resources": "The exact current-run package and browser journals end valid with child exit 0. The guest journal ends child_failed with child exit 1; all three have resourceInvalid=false and no invalid reasons. The child failure is at the browser CDP endpoint, not evidence of a guest-chat product defect."
+  },
+  "verdict_b_evidence_quality_privacy": {
+    "status": "PASS_WITH_LIMIT",
+    "reason": "The worker retained only the current-run receipt and three current-run journals, excluded stale 37105304739 journals, and did not claim assistant replies, API-only proof, Store UI installation, or overall product health. All four retained files are byte-identical to the independently downloaded original artifact. They contain run diagnostics and no guest transcript, screenshot, credential value, or personal content.",
+    "limit": "The worker report's extension_id is a known identity assertion but is not observed in this failed run's native receipt; treat it as package metadata, not runtime identity proof. Browser startup root cause remains unknown."
+  },
+  "original_artifact": {
+    "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37709629346",
+    "artifact_id": 11520979119,
+    "name": "hosted-guest-37709629346-1",
+    "receipt_sha256": "d7898b3875ab3dd5d31b4688f4cb10cc60fab0a4652406d39722920cb3b661b5",
+    "package_journal_sha256": "634aa54cfefc955ea22d63b5120ede172617e942c1b7707863d602275e3e0d96",
+    "browser_journal_sha256": "d3fcd5738a538e38d5ee586f34d0ec51bf3bf598ba124fbcd514e0cc37cbfb98",
+    "guest_journal_sha256": "7ddf70e7dc9ce6a3c0a4b6b95f08ded95d8f94e9abbb3440ad0cfeda95d86fcd"
+  },
+  "review_method": "Independently downloaded the terminal run artifact once, read its original native receipt and exact current-run journal final events, checked GitHub's terminal job and checkout SHA, compared retained files byte-for-byte, and compared the worker report against the originals. No native run or server mutation was performed."
+}

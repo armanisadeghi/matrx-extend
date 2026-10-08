@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T00:39:36.381982+00:00",
+  "updated_at": "2026-10-08T00:48:26.547746+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -16515,21 +16515,23 @@
               "status": "partial",
               "passed_subtargets": [
                 "guest_menu_offers_text_and_ai_but_hides_json",
-                "guest_role_gate_after_reload"
+                "guest_role_gate_after_reload",
+                "actual_text_clipboard_readback_two_pages_and_reload",
+                "actual_ai_clipboard_readback_two_pages_and_reload",
+                "key_public_facts_present_and_exact_ai_wrapping",
+                "clipboard_permission_restored"
               ],
               "unverified_dimensions": [
-                "actual clipboard output",
-                "JSON contents",
-                "member/admin gates"
+                "complete displayed audit field parity with clipboard payload"
               ],
-              "run_id": "37702963336",
+              "run_id": "37708611887",
               "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
               "build_version": "0.2.391",
               "evidence": [
-                ".research/guest-seo-native-20261007.json",
-                ".research/seo-picker-independent-peer-20261007.json"
+                ".research/seo-intel-native-20261007.json",
+                ".research/auth-repair-intel-native-peer-20261007.json"
               ],
-              "release_scope": "Exact frozen guest development artifact; broaderdimensions/member/admin/Store unverified."
+              "release_scope": "Resource-valid bounded guest evidence on exact frozen development artifact. Full field parity remains unverified; member/admin gates and JSON content belong to their separate mode slots. No current-main or Store claim."
             }
           },
           "result_history": [
@@ -16600,6 +16602,29 @@
                   "docs/stabilization/runs/seo-current-ci-20261002-02.json",
                   "docs/stabilization/reports/seo-native-final-peer-20261002.json"
                 ]
+              }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "passed_subtargets": [
+                  "guest_menu_offers_text_and_ai_but_hides_json",
+                  "guest_role_gate_after_reload"
+                ],
+                "unverified_dimensions": [
+                  "actual clipboard output",
+                  "JSON contents",
+                  "member/admin gates"
+                ],
+                "run_id": "37702963336",
+                "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+                "build_version": "0.2.391",
+                "evidence": [
+                  ".research/guest-seo-native-20261007.json",
+                  ".research/seo-picker-independent-peer-20261007.json"
+                ],
+                "release_scope": "Exact frozen guest development artifact; broaderdimensions/member/admin/Store unverified."
               }
             }
           ]
