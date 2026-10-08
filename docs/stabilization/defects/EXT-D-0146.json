@@ -30,7 +30,8 @@
     "docs/stabilization/resource-journals/screenshots-compile-retest-20261005.jsonl",
     ".research/screenshots-final-source-review.json",
     ".research/screenshots-source-handoff.json",
-    "docs/stabilization/resource-journals/screenshots-lint-20261005.jsonl"
+    "docs/stabilization/resource-journals/screenshots-lint-20261005.jsonl",
+    ".research/resumed-completion-20261007.json"
   ],
   "transition_history": [
     {
@@ -59,12 +60,12 @@
     }
   ],
   "closure_requirement": "Independent source review, meaningful regression checks and real native capture/view/share acceptance on exact artifact. Store/native release acceptance remains separate.",
-  "next_action": "Permitted release owner: verify exact pushed screenshot source and package catch-up, required release gates; build/release through canonical workflow. On exact artifact reproduce long document and full-height scrolling pane, local thumbnail byte reuse, clipboard failure and real anonymous link create/expiry/max-views/revoke. Do not close until native criteria pass.",
+  "next_action": "Requested screenshot targets passed independently on exact development artifact. Permitted release owner must claim and perform canonical package catch-up/release gates and Store acceptance; broader expiry/max-views and unsupported/failure cases remain unverified. Do not represent development acceptance as shipped.",
   "fix_shas": ["1dfb119a", "59617c92", "854323c7", "89c8875d"],
   "review_queue_id": "e7a27ff2-b763-4a5c-a19f-1b808bb94c37",
   "verification": {
     "source": "15 focused tests pass; typecheck passes; valid resource journals. Initial typecheck caught scroll mock overload mismatch; final typecheck passed after correction.",
-    "native": "unverified",
+    "native": "Independent native requested targets PASS on CI source61a9b1ca / artifact11515715192 / version0.2.391: root+nested full-page pixels/restoration, same loaded local blob without second image GET, warm reload, canonical owner grant, anonymous identical image bytes, revocation and exact owned row cleanup. Broader failure cases and Store installation remain unverified.",
     "release": "pending permitted machine; no local build/version/release attempted",
     "original_reported_page": "not supplied or observed in native browser",
     "owned_jobs": "All terminal; no owned browser tabs/processes remain.",
@@ -75,7 +76,28 @@
     "organization": "Explicit device selection required for writes and authenticated backend calls; reads are not active-org filters.",
     "permissions": "Existing activeTab/host scripting and capture permissions; no added permissions.",
     "source_sha": "89c8875d",
-    "native_build_receipt": null
+    "native_build_receipt": {
+      "version": "0.2.391",
+      "treeSha256": "872178b117305b9d60ac9f27f871a5f401e0a57f70c525c16cf359e046a6d110",
+      "schema_version": 1,
+      "kind": "ci_development_test",
+      "eligibleStore": false,
+      "publish_state": "not_published",
+      "repository": "armanisadeghi/matrx-extend",
+      "workflow": ".github/workflows/ci.yml",
+      "sourceSha": "61a9b1cae81c1a748233600156162f5ec3774caf",
+      "runId": 37694579646,
+      "runAttempt": 1,
+      "artifactId": 11515715192,
+      "githubArtifactDigest": "sha256:ba96a71c8fac14312717cef6a02dda3d65b3dd7e4703a285602d36d99caa8297",
+      "source": {
+        "originMain": "5fdd8ada23dff5f84f50266ea2e26ff7f0bff141",
+        "localHead": "a53fa894ac116136115627cf10c5a3f4ac0fd464",
+        "trackedDirty": true,
+        "untrackedRunnerInputs": [],
+        "claim": "exact_pushed_commit_only"
+      }
+    }
   },
   "preconditions": [
     "Signed in, selected organization on device, active regular web page.",

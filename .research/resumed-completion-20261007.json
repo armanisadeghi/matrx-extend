@@ -1,0 +1,190 @@
+{
+  "observed_at": "2026-10-08T04:32:03.065806+00:00",
+  "all_tasks_complete": false,
+  "screenshots": {
+    "schema_version": 1,
+    "feature": "EXT-F-1009-T03",
+    "status": "partial",
+    "scope": "root and nested scrolling capture, persisted image, local viewer, reload, and canonical public sharing",
+    "cases": {
+      "rootPersistence": "pass",
+      "nestedPersistence": "pass",
+      "localViewer": "pass",
+      "reloadPersistence": "pass",
+      "canonicalShare": "pass",
+      "unsupportedPage": "unverified",
+      "persistenceFailure": "unverified",
+      "tileCap": "unverified"
+    },
+    "build": {
+      "version": "0.2.391",
+      "treeSha256": "872178b117305b9d60ac9f27f871a5f401e0a57f70c525c16cf359e046a6d110",
+      "schema_version": 1,
+      "kind": "ci_development_test",
+      "eligibleStore": false,
+      "publish_state": "not_published",
+      "repository": "armanisadeghi/matrx-extend",
+      "workflow": ".github/workflows/ci.yml",
+      "sourceSha": "61a9b1cae81c1a748233600156162f5ec3774caf",
+      "runId": 37694579646,
+      "runAttempt": 1,
+      "artifactId": 11515715192,
+      "githubArtifactDigest": "sha256:ba96a71c8fac14312717cef6a02dda3d65b3dd7e4703a285602d36d99caa8297",
+      "source": {
+        "originMain": "5fdd8ada23dff5f84f50266ea2e26ff7f0bff141",
+        "localHead": "a53fa894ac116136115627cf10c5a3f4ac0fd464",
+        "trackedDirty": true,
+        "untrackedRunnerInputs": [],
+        "claim": "exact_pushed_commit_only"
+      }
+    },
+    "evidence": {
+      "nested": {
+        "realZeroRowBaseline": true,
+        "persistedOwnedRow": true,
+        "imageLoadedFromGallery": true,
+        "topMiddleBottomPixelsMatched": true,
+        "tallImage": true,
+        "originalScrollRestored": true
+      },
+      "root": {
+        "realZeroRowBaseline": true,
+        "persistedOwnedRow": true,
+        "imageLoadedFromGallery": true,
+        "topMiddleBottomPixelsMatched": true,
+        "tallImage": true,
+        "originalScrollRestored": true
+      },
+      "publicShare": {
+        "canonicalBody": true,
+        "realOwnerGrant": true,
+        "anonymousImageLoaded": true,
+        "anonymousBytesMatchOwnedImage": true
+      }
+    },
+    "cleanup": {
+      "nested": {
+        "exactOwnedRowAbsentAfterRealRead": true
+      },
+      "root": {
+        "exactOwnedRowAbsentAfterRealRead": true
+      }
+    },
+    "shareCleanup": "pass",
+    "profileOwned": true,
+    "targetedVerdict": "pass"
+  },
+  "uninterrupted": {
+    "schema_version": 1,
+    "scope": "imported CI artifact; real admin sign-in; native Chat approval acceptance",
+    "status": "unverified",
+    "build": {
+      "version": "0.2.391",
+      "tree_sha256": "872178b117305b9d60ac9f27f871a5f401e0a57f70c525c16cf359e046a6d110",
+      "receipt_kind": "local_dev_unpacked"
+    },
+    "account": {
+      "reviewer_fingerprint": "5edfa2692bdacc5e",
+      "web_signed_in": true,
+      "extension_signed_in": true,
+      "observed_role_category": "admin",
+      "canonical_extension_admin_check": {
+        "matched_current_extension_user": true,
+        "http_status": 200,
+        "current_user_assigned": true
+      },
+      "sign_out_visible": true,
+      "default_organization_selected": true,
+      "organization_picker_available": true,
+      "storage_shape": {
+        "accessTokenPresent": true,
+        "profilePresent": true,
+        "activeOrganizationPresent": true
+      },
+      "approved_organization_selection": {
+        "option_count": 58,
+        "eligible_count": 58,
+        "matched_count": 1,
+        "pointer_target_verified": true,
+        "approved_name_fingerprint": "61e154af11cd32c0",
+        "pickerMatchesApproved": true,
+        "persistedIdMatchesApproved": true,
+        "name_fingerprint": "61e154af11cd32c0",
+        "id_fingerprint": "8c4b25f5099470bf"
+      }
+    },
+    "authentication_method": "password_login",
+    "chat": null,
+    "screenshots": null,
+    "approval": {
+      "cases": [],
+      "limitations": [],
+      "fixture": {
+        "scope": "owned localhost workspace; ephemeral port; unique per-action markers"
+      },
+      "settings_default_act_selected": true,
+      "last_transport_observation": {
+        "case_id": "act_first",
+        "start_count": 1,
+        "organization_header_fingerprint": "8c4b25f5099470bf",
+        "organization_header_matches_approved": true,
+        "actual_permission_mode": "act",
+        "mode_matches": true,
+        "conversation_fingerprint": "a08ed21439c275f6",
+        "response_matches_request_conversation": true,
+        "backend_request_fingerprint": "cbd11d359fa24913",
+        "start_http_status": 200,
+        "successful_open_new_tab_result_posted": false,
+        "result_http_status": null,
+        "call_fingerprint": null
+      }
+    },
+    "failure_stage": "act_first",
+    "failure_code": "unclassified_failure",
+    "imported_artifact": {
+      "schema_version": 1,
+      "kind": "ci_development_test",
+      "eligibleStore": false,
+      "publish_state": "not_published",
+      "repository": "armanisadeghi/matrx-extend",
+      "workflow": ".github/workflows/ci.yml",
+      "sourceSha": "61a9b1cae81c1a748233600156162f5ec3774caf",
+      "runId": 37694579646,
+      "runAttempt": 1,
+      "artifactId": 11515715192,
+      "githubArtifactDigest": "sha256:ba96a71c8fac14312717cef6a02dda3d65b3dd7e4703a285602d36d99caa8297",
+      "treeSha256": "872178b117305b9d60ac9f27f871a5f401e0a57f70c525c16cf359e046a6d110",
+      "source": {
+        "originMain": "71108a920e2727ff358d47e00b9ef412536b9848",
+        "localHead": "9f5b8fa150998efc3c571be1d08abce2d0e21068",
+        "trackedDirty": false,
+        "untrackedRunnerInputs": [],
+        "claim": "exact_pushed_commit_only"
+      }
+    },
+    "timeout_diagnosis": {
+      "cause": "Native test required obsolete internal leaf open_new_tab; actual server roster uses canonical tabs. Real failed-test conversation completed tabs.create successfully and final reply.",
+      "harness_fix_sha": "4a5c78a5",
+      "fresh_independent_rerun": "running completion-uninterrupted-canonical-20261007"
+    }
+  },
+  "disk_cleanup": {
+    "status": "complete",
+    "recovered_gib_approximately": 14,
+    "latest_guard_system_free_gib": 31.6631,
+    "evidence": "/Volumes/Samsung2TB/code/.stabilization-scratch/disk-cleanup-20261007.json"
+  },
+  "source_checks": {
+    "focused_tests": "30 passed across 8 files",
+    "run_metadata_race": "meaningful old-behavior RED then repaired GREEN",
+    "conversation_trust_race": "clean meaningful old-behavior RED then repaired GREEN",
+    "catalog_and_tool_docs": "regenerated and pushed",
+    "current_typecheck": "PASS guarded completion-current-types-20261007",
+    "current_lint": "PASS guarded completion-current-lint-retry-20261007, existing advisory warnings"
+  },
+  "release": {
+    "status": "pending",
+    "reason": "Workspace forbids manual build/release initiation from this machine; CI development artifact is not Store publication."
+  },
+  "next_action": "Diagnose missing real action completion before claiming uninterrupted native acceptance."
+}
