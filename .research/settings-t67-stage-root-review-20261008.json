@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "reviewer": "root; zero authorship of reviewed implementation; fresh seat creation failed ENOSPC",
+  "source_commit": "53685685b5101628ad9f24d30c16804a73a2b407",
+  "verdict_a": {
+    "source": "pass",
+    "native": "unverified",
+    "scope": "T67 actual runner preserves original case failure and attempts baseline cleanup; wrapper records only fixed stages/kinds. Earlier native cleanup operation remains unknown until rerun."
+  },
+  "verdict_b": {
+    "status": "pass",
+    "checks": [
+      "Inspected full runner and wrapper changes against original receipt four successful criteria",
+      "Baseline cleanup still executes after case failure; either failure remains fail",
+      "Allowlisted stage/category/kind replaces raw exception text",
+      "Executed13 relevant tests independently, all pass in185ms; injected restoration reload failure retains4pass criteria and safe stage"
+    ]
+  },
+  "native_gate": "Require hosted focused gate success and unchanged relevant blobs before one isolated guestB attempt. No product closure."
+}
