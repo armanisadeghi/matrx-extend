@@ -1,0 +1,127 @@
+{
+  "schema": 2,
+  "verdict": "DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE",
+  "sourceSha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+  "runId": 37698216289,
+  "artifactId": 11516342905,
+  "startedAt": "2026-10-08T01:09:27.923Z",
+  "lastNativeStage": "exercise_panel",
+  "nativeStages": [
+    {
+      "stage": "receipt",
+      "at": "2026-10-08T01:09:27.926Z"
+    },
+    {
+      "stage": "artifact_verify",
+      "at": "2026-10-08T01:09:27.927Z"
+    },
+    {
+      "stage": "browser_runtime",
+      "at": "2026-10-08T01:09:28.106Z"
+    },
+    {
+      "stage": "profile_prepare",
+      "at": "2026-10-08T01:09:28.119Z"
+    },
+    {
+      "stage": "browser_spawn",
+      "at": "2026-10-08T01:09:28.120Z"
+    },
+    {
+      "stage": "cdp_connect",
+      "at": "2026-10-08T01:09:28.124Z"
+    },
+    {
+      "stage": "endpoint_read",
+      "at": "2026-10-08T01:09:33.048Z"
+    },
+    {
+      "stage": "command_line_query",
+      "at": "2026-10-08T01:09:33.062Z"
+    },
+    {
+      "stage": "command_line_verify",
+      "at": "2026-10-08T01:09:33.108Z"
+    },
+    {
+      "stage": "extension_worker",
+      "at": "2026-10-08T01:09:33.108Z"
+    },
+    {
+      "stage": "spawn_owner",
+      "at": "2026-10-08T01:09:33.230Z"
+    },
+    {
+      "stage": "local_server",
+      "at": "2026-10-08T01:09:33.231Z"
+    },
+    {
+      "stage": "playwright_connect",
+      "at": "2026-10-08T01:09:33.239Z"
+    },
+    {
+      "stage": "page_create",
+      "at": "2026-10-08T01:09:33.359Z"
+    },
+    {
+      "stage": "local_page_navigation",
+      "at": "2026-10-08T01:09:33.616Z"
+    },
+    {
+      "stage": "panel_open",
+      "at": "2026-10-08T01:09:33.883Z"
+    },
+    {
+      "stage": "panel_reply",
+      "at": "2026-10-08T01:09:34.943Z"
+    },
+    {
+      "stage": "panel_target",
+      "at": "2026-10-08T01:09:34.952Z"
+    },
+    {
+      "stage": "panel_context",
+      "at": "2026-10-08T01:09:34.952Z"
+    },
+    {
+      "stage": "panel_settle",
+      "at": "2026-10-08T01:09:34.976Z"
+    },
+    {
+      "stage": "screenshot",
+      "at": "2026-10-08T01:09:35.894Z"
+    },
+    {
+      "stage": "exercise_panel",
+      "at": "2026-10-08T01:09:36.038Z"
+    }
+  ],
+  "runnerArch": "X64",
+  "startupEndpointObservations": [
+    {
+      "phase": "cdp_connected",
+      "endpointPresent": true,
+      "inspectionFailed": false,
+      "exitObserved": false,
+      "elapsedMs": 4894,
+      "polls": 0,
+      "at": "2026-10-08T01:09:33.014Z"
+    }
+  ],
+  "gpuObservation": {
+    "status": "RESOLVED",
+    "requestedAt": "2026-10-08T01:09:33.231Z",
+    "resolvedAt": "2026-10-08T01:09:33.335Z",
+    "skiaBackendType": "GaneshGL",
+    "glRenderer": "ANGLE (Apple Inc., Apple Software Renderer, OpenGL 4.1 APPLE-21.1.1)",
+    "featureStatus": {
+      "gpu_compositing": "disabled_software",
+      "rasterization": "unavailable_off",
+      "webgl": "unavailable_off",
+      "webgl2": "unavailable_off"
+    }
+  },
+  "panelReadyAt": "2026-10-08T01:09:36.040Z",
+  "completedAt": "2026-10-08T01:11:06.236Z",
+  "guardJournal": "docs/stabilization/resource-journals/hosted-startup-37710954422-1.jsonl"
+}
