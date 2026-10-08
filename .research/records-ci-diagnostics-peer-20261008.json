@@ -1,0 +1,23 @@
+{
+  "scope": "Independent narrow review of Records driver guard d65ac528 and resource CPU scenario diagnostics e87d1d29",
+  "verdicts": {
+    "A_records_driver_guard": "PASS at the controlled actual-callback seam; native acceptance remains unverified",
+    "B_ci_scenario_timing": "FAIL privacy requirement; diagnostic behavior otherwise passes the focused self-test, with timeout-time cleanup unverified"
+  },
+  "A_records_findings": [
+    "The test parses exercisePanel from the actual acceptance driver and executes it with controlled CDP, auth, and panel dependencies. The sign-in callback, bearer assertion, and final visible/completion assertion are each mutated independently in memory; each named negative behavior changes as claimed.",
+    "The wrong-bearer and stale-visible scenarios reject with their specific driver errors and remove all registered CDP listeners. The success receipt contains bounded flags and count, without the bearer or table name.",
+    "The constant-receipt mutant demonstrates the wrong-principal negative assertion would fail if the driver simply returned expected output. No native Chrome or live Records action was exercised."
+  ],
+  "B_ci_findings": [
+    "scenarioDiagnostic uses process.hrtime.bigint for scenario and group elapsed time and emits start, guard_event, progress, cleanup, and end lines. The one-second unref'ed ticker can identify the active stage while the 30000 ms Node test timeout is pending. Child close and cleanup status are tracked. Existing scenario order, assertions, guard thresholds, and group timeouts are unchanged in this commit.",
+    "BLOCKING: onEvent copies event.reasons verbatim into CI stderr (scripts/test-stabilization-resource-cpu-integration.mjs:258). The real guard constructs a reason as RESOURCE_MEASUREMENT_FAILED:${error.message} (scripts/stabilization-resource.mjs:762) and emits it on watch events (line 791). A filesystem or command error can therefore disclose a scratch path or command argument through the new diagnostic line. The self-test covers only fixed code reasons and does not catch this case. Emit bounded reason codes or counts, and add a focused privacy assertion.",
+    "The self-test invokes scenarioDiagnostic directly without a real timeout or failing child. Progress during a timeout follows from the ticker and source review; completed cleanup after a timeout is not proven by this focused run. A fixture failure before fixture returns also leaves its scratch directory unavailable to this caller, as the author report states."
+  ],
+  "evidence": [
+    "node --test tests/browser/records-readonly-native-driver.test.mjs tests/browser/records-readonly-native-proof.test.mjs: 7 passed",
+    "MATRX_RESOURCE_CPU_DIAGNOSTIC_SELF_TEST=1 node --test --test-name-pattern='scenario diagnostic reports' scripts/test-stabilization-resource-cpu-integration.mjs: 1 focused test passed; heavy scenarios did not run",
+    "node --check scripts/test-stabilization-resource-cpu-integration.mjs: passed",
+    "No full integration, browser, build, native, or credential flow run"
+  ]
+}
