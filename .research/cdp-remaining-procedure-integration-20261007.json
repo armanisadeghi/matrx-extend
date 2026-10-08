@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-08T05:05:00.613049+00:00",
+  "cases": ["EXT-F-4106-T01", "EXT-F-4156-T01", "EXT-F-4168-T01", "EXT-F-4169-T01"],
+  "missing_steps_expected_before": 29,
+  "missing_steps_expected_after": 25,
+  "runtime_promotions": 0,
+  "all_design_status": "needed",
+  "preserved": ["case IDs", "modes", "applicability", "controls", "dimensions", "runtime results"],
+  "readiness": "All four remain not executable pending owned manual fixture host; input focus/selection proof and emulation cleanup readback additionally required.",
+  "review": ".research/cdp-procedure-final-peer-20261007.json",
+  "owner_correction": "833300a9 changes two selection shortcuts to platform-specific Command+A/macOS and Ctrl+A/Windows/Linux. Owner checked exact strings and kept independent selection proof; no behavior claim."
+}
