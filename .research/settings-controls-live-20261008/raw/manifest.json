@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "hash_algorithm": "sha256",
+  "files": [
+    {
+      "path": "raw/artifacts.json",
+      "bytes": 913,
+      "sha256": "e4bff5cdb21f649f365df15d17b5dfae123f3355bf69a120cf2f37798fdb966c"
+    },
+    {
+      "path": "raw/hosted-browser-37820053159-1.jsonl",
+      "bytes": 1001,
+      "sha256": "f9621a12a61434415208760853134d6afada450c0bc4f79a7793c14dcd5dd25b"
+    },
+    {
+      "path": "raw/hosted-guest-37820053159-1.jsonl",
+      "bytes": 11762,
+      "sha256": "50acba92f8e144a28563e33a1c7902ffca9301c39f7913cce4a880515418a651"
+    },
+    {
+      "path": "raw/hosted-package-37820053159-1.jsonl",
+      "bytes": 989,
+      "sha256": "46d1110a74e799568e27ae7bee32791fb1a6f889d278402f85275c31b828a639"
+    },
+    {
+      "path": "raw/run.json",
+      "bytes": 5760,
+      "sha256": "0c96c8a06fa415d283b59223be7a7e778281659fe285a851f561f3cd4572879c"
+    },
+    {
+      "path": "raw/settings-local-controls-acceptance.json",
+      "bytes": 68318,
+      "sha256": "949562bc7f2d9ba01b6c5d44d76b2958c8df36820d0357233b6afdde756c9893"
+    },
+    {
+      "path": "raw/source-artifacts.json",
+      "bytes": 974,
+      "sha256": "ddfd8258054667c86e9ae39b5c94497b4cc6fd3bfe1505f4651ee275fbd08ad4"
+    },
+    {
+      "path": "raw/source-ci.json",
+      "bytes": 292,
+      "sha256": "8233236cf8e3edfdc4460b82b553ce2d4dabd540df224f638d1e2dd613f65b19"
+    }
+  ]
+}

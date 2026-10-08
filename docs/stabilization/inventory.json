@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T17:21:52.246867+00:00",
+  "updated_at": "2026-10-08T18:07:11Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -5045,6 +5045,20 @@
               "scope": "One valid local ARM native run on frozen unpublished development artifact, guest only. Panel-document reload for T04/T10/T13/T16/T19/T22/T31/T34/T37/T46/T64/T70; full extension reload for T63/T73/T76/T92. Receipt result is bounded to observed criteria; member/admin, Store/current-main and whole-feature state are not inferred.",
               "detail": "PASS: Dark, Light, and System each changed UI, stored value, applied appearance, and survived panel reload; no full-extension reload for this preference."
             }
+          ],
+          "revalidation_history": [
+            {
+              "mode": "guest",
+              "run_id": "37820053159",
+              "status": "partial",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-controls-live-20261008.json"],
+              "independent_review": "373b28df",
+              "detail": "Dark/Light/System UI, storage, and document appearance marker survive panel reload; the original applied-appearance/reopen criterion is not fully established.",
+              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            }
           ]
         },
         {
@@ -5305,6 +5319,20 @@
               "scope": "One valid local ARM native run on frozen unpublished development artifact, guest only. Panel-document reload for T04/T10/T13/T16/T19/T22/T31/T34/T37/T46/T64/T70; full extension reload for T63/T73/T76/T92. Receipt result is bounded to observed criteria; member/admin, Store/current-main and whole-feature state are not inferred.",
               "detail": "PARTIAL: Ask/Act UI and storage survived panel reload; new-chat inheritance unexercised."
             }
+          ],
+          "revalidation_history": [
+            {
+              "mode": "guest",
+              "run_id": "37820053159",
+              "status": "partial",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-controls-live-20261008.json"],
+              "independent_review": "373b28df",
+              "detail": "Ask/Act UI and storage survive panel reload; new-chat default behavior is explicitly unverified.",
+              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            }
           ]
         },
         {
@@ -5355,16 +5383,16 @@
           "dimensions": ["warm", "reload"],
           "results": {
             "guest": {
+              "mode": "guest",
+              "run_id": "37820053159",
               "status": "pass",
-              "run_id": "37712686956",
-              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
-              "build_version": "0.2.391",
-              "evidence": [
-                ".research/settings-batch-native-20261007.json",
-                ".research/settings-native-newcases-peer-20261007.json"
-              ],
-              "detail": "Fast/Thinking trusted selection and UI/storage persistence pass warm and after each panel reload. No deeper Chat behavior claimed.",
-              "release_scope": "Frozen development artifact only. Three current journals valid; later shared full-extension Settings reload failed and does not certify baseline reload cases."
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-controls-live-20261008.json"],
+              "independent_review": "373b28df",
+              "detail": "Fast/Thinking selection and displayed/persisted values pass the guest inventory expectation.",
+              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
             }
           },
           "linked_defects": ["EXT-D-0087"],
@@ -5379,6 +5407,19 @@
               },
               "superseded_at": "2026-10-08T01:37:08.426904+00:00",
               "reason": "Fresh independently reviewed scoped guest Settings native evidence; retain historical scope without transferring it to current artifact."
+            },
+            {
+              "mode": "guest",
+              "status": "pass",
+              "run_id": "37712686956",
+              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+              "build_version": "0.2.391",
+              "evidence": [
+                ".research/settings-batch-native-20261007.json",
+                ".research/settings-native-newcases-peer-20261007.json"
+              ],
+              "detail": "Fast/Thinking trusted selection and UI/storage persistence pass warm and after each panel reload. No deeper Chat behavior claimed.",
+              "release_scope": "Frozen development artifact only. Three current journals valid; later shared full-extension Settings reload failed and does not certify baseline reload cases."
             }
           ],
           "attempt_history": [
@@ -5422,6 +5463,20 @@
               "independent_review": ".research/settings-local397-peer-20261008.json",
               "scope": "One valid local ARM native run on frozen unpublished development artifact, guest only. Panel-document reload for T04/T10/T13/T16/T19/T22/T31/T34/T37/T46/T64/T70; full extension reload for T63/T73/T76/T92. Receipt result is bounded to observed criteria; member/admin, Store/current-main and whole-feature state are not inferred.",
               "detail": "PASS: Thinking/Fast UI and stored choice survived panel reload."
+            }
+          ],
+          "revalidation_history": [
+            {
+              "mode": "guest",
+              "run_id": "37820053159",
+              "status": "pass",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-controls-live-20261008.json"],
+              "independent_review": "373b28df",
+              "detail": "Fast/Thinking selection and displayed/persisted values pass the guest inventory expectation.",
+              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
             }
           ]
         },
@@ -5569,6 +5624,20 @@
               "scope": "One valid local ARM native run on frozen unpublished development artifact, guest only. Panel-document reload for T04/T10/T13/T16/T19/T22/T31/T34/T37/T46/T64/T70; full extension reload for T63/T73/T76/T92. Receipt result is bounded to observed criteria; member/admin, Store/current-main and whole-feature state are not inferred.",
               "detail": "PARTIAL: share-page-identity off/on UI and storage survived panel reload; downstream browser/agent behavior unexercised."
             }
+          ],
+          "revalidation_history": [
+            {
+              "mode": "guest",
+              "run_id": "37820053159",
+              "status": "partial",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-controls-live-20261008.json"],
+              "independent_review": "373b28df",
+              "detail": "Toggle and persistence pass; identity/email context consumer behavior is unverified.",
+              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            }
           ]
         },
         {
@@ -5693,6 +5762,20 @@
               },
               "superseded_at": "2026-10-08T05:10:28.331547+00:00"
             }
+          ],
+          "revalidation_history": [
+            {
+              "mode": "guest",
+              "run_id": "37820053159",
+              "status": "partial",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-controls-live-20261008.json"],
+              "independent_review": "373b28df",
+              "detail": "Toggle and persistence pass; post-login offer behavior is unverified.",
+              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            }
           ]
         },
         {
@@ -5748,15 +5831,16 @@
           "dimensions": ["warm", "reload"],
           "results": {
             "guest": {
+              "mode": "guest",
+              "run_id": "37820053159",
               "status": "pass",
-              "run_id": "37693743871",
-              "evidence": [
-                ".research/frozen-settings-native-retest-20261007.json",
-                ".research/native-batch-evidence-peer-20261007.json"
-              ],
-              "detail": "Guest admin controls absent warm and after reload; 2/2 criteria. Guest only; other modes retain their own evidence.",
-              "build_variant": "development0.2.387/source14305391",
-              "observed_at": "2026-10-07T22:18:59.711910+00:00"
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-controls-live-20261008.json"],
+              "independent_review": "373b28df",
+              "detail": "Guest Settings has no advanced section, admin controls, or permission controls in both warm and reload observations.",
+              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
             }
           },
           "result_history": [
@@ -5830,6 +5914,18 @@
                 ".research/settings-hosted-retest.json"
               ],
               "detail": "Bounded actual guest controls before/after reload; see exact per-criterion observations. Does not exercise D84 rejected storage/retry or D86 overlapping writes. T70 retains unverified branches."
+            },
+            {
+              "mode": "guest",
+              "status": "pass",
+              "run_id": "37693743871",
+              "evidence": [
+                ".research/frozen-settings-native-retest-20261007.json",
+                ".research/native-batch-evidence-peer-20261007.json"
+              ],
+              "detail": "Guest admin controls absent warm and after reload; 2/2 criteria. Guest only; other modes retain their own evidence.",
+              "build_variant": "development0.2.387/source14305391",
+              "observed_at": "2026-10-07T22:18:59.711910+00:00"
             }
           ],
           "attempt_history": [
@@ -5873,6 +5969,20 @@
               "independent_review": ".research/settings-local397-peer-20261008.json",
               "scope": "One valid local ARM native run on frozen unpublished development artifact, guest only. Panel-document reload for T04/T10/T13/T16/T19/T22/T31/T34/T37/T46/T64/T70; full extension reload for T63/T73/T76/T92. Receipt result is bounded to observed criteria; member/admin, Store/current-main and whole-feature state are not inferred.",
               "detail": "PASS: guest admin section and controls absent warm and after panel reload."
+            }
+          ],
+          "revalidation_history": [
+            {
+              "mode": "guest",
+              "run_id": "37820053159",
+              "status": "pass",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-controls-live-20261008.json"],
+              "independent_review": "373b28df",
+              "detail": "Guest Settings has no advanced section, admin controls, or permission controls in both warm and reload observations.",
+              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
             }
           ]
         },
@@ -6187,6 +6297,20 @@
               "scope": "One valid local ARM native run on frozen unpublished development artifact, guest only. Panel-document reload for T04/T10/T13/T16/T19/T22/T31/T34/T37/T46/T64/T70; full extension reload for T63/T73/T76/T92. Receipt result is bounded to observed criteria; member/admin, Store/current-main and whole-feature state are not inferred.",
               "detail": "PARTIAL: saved-login offer off/on UI and storage survived panel reload; supported-form consumer unexercised."
             }
+          ],
+          "revalidation_history": [
+            {
+              "mode": "guest",
+              "run_id": "37820053159",
+              "status": "partial",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-controls-live-20261008.json"],
+              "independent_review": "373b28df",
+              "detail": "Toggle and persistence pass; supported sign-in form consumer behavior is unverified.",
+              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            }
           ]
         },
         {
@@ -6343,7 +6467,21 @@
               "restoration_limit": "Driver finally assertions passed, but raw receipt does not separately serialize baseline/final sample; downstream consumer unverified."
             }
           ],
-          "defect_ids": ["EXT-D-0167"]
+          "defect_ids": ["EXT-D-0167"],
+          "revalidation_history": [
+            {
+              "mode": "guest",
+              "run_id": "37820053159",
+              "status": "partial",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-controls-live-20261008.json"],
+              "independent_review": "373b28df",
+              "detail": "Toggle and persistence pass; downstream website suggestion presentation is unverified.",
+              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T35",
@@ -6397,15 +6535,16 @@
           "dimensions": ["warm", "reload"],
           "results": {
             "guest": {
+              "mode": "guest",
+              "run_id": "37820053159",
               "status": "pass",
-              "run_id": "37693743871",
-              "evidence": [
-                ".research/frozen-settings-native-retest-20261007.json",
-                ".research/native-batch-evidence-peer-20261007.json"
-              ],
-              "detail": "Deep clean toggle, reload persistence and original state restoration;3/3 criteria. Guest only; other modes retain their own evidence.",
-              "build_variant": "development0.2.387/source14305391",
-              "observed_at": "2026-10-07T22:18:59.711910+00:00"
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-controls-live-20261008.json"],
+              "independent_review": "373b28df",
+              "detail": "Toggle state and visible coming-soon hint persist; original guest expectation met.",
+              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
             }
           },
           "linked_defects": ["EXT-D-0087"],
@@ -6480,6 +6619,18 @@
                 ".research/settings-hosted-retest.json"
               ],
               "detail": "Bounded actual guest controls before/after reload; see exact per-criterion observations. Does not exercise D84 rejected storage/retry or D86 overlapping writes. T70 retains unverified branches."
+            },
+            {
+              "mode": "guest",
+              "status": "pass",
+              "run_id": "37693743871",
+              "evidence": [
+                ".research/frozen-settings-native-retest-20261007.json",
+                ".research/native-batch-evidence-peer-20261007.json"
+              ],
+              "detail": "Deep clean toggle, reload persistence and original state restoration;3/3 criteria. Guest only; other modes retain their own evidence.",
+              "build_variant": "development0.2.387/source14305391",
+              "observed_at": "2026-10-07T22:18:59.711910+00:00"
             }
           ],
           "attempt_history": [
@@ -6523,6 +6674,20 @@
               "independent_review": ".research/settings-local397-peer-20261008.json",
               "scope": "One valid local ARM native run on frozen unpublished development artifact, guest only. Panel-document reload for T04/T10/T13/T16/T19/T22/T31/T34/T37/T46/T64/T70; full extension reload for T63/T73/T76/T92. Receipt result is bounded to observed criteria; member/admin, Store/current-main and whole-feature state are not inferred.",
               "detail": "PASS: coming-soon hint, switch state, and panel-reload persistence observed within this guest scope."
+            }
+          ],
+          "revalidation_history": [
+            {
+              "mode": "guest",
+              "run_id": "37820053159",
+              "status": "pass",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-controls-live-20261008.json"],
+              "independent_review": "373b28df",
+              "detail": "Toggle state and visible coming-soon hint persist; original guest expectation met.",
+              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
             }
           ]
         },
@@ -6832,16 +6997,16 @@
           "dimensions": ["warm", "reload"],
           "results": {
             "guest": {
+              "mode": "guest",
+              "run_id": "37820053159",
               "status": "pass",
-              "run_id": "37699338786",
-              "source_sha": "d10719c667c87b578689f1cdecf23e2a637d3207",
-              "build_version": "0.2.391",
-              "evidence": [
-                ".research/settings-valid-native-20261007.json",
-                ".research/settings-audit-native-peer-20261007.json"
-              ],
-              "detail": "Independently verified65001,1,65535 Save/readback after Settings Page.reload;65536 visible error preserves65535;blank clears and remainsnull;actual worker rediscovery entry and health request observed. All3 exact resource journals valid. HTTP503 fixture gives no healthy-engine claim; Page.reload is not full extension Reload. Exact guest case only.",
-              "release_scope": "Frozen development artifact only, not Store or current-main/full Settings health."
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-controls-live-20261008.json"],
+              "independent_review": "373b28df",
+              "detail": "Valid save/rediscovery, bounds, invalid range, clearing, and panel reload persistence all pass.",
+              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
             }
           },
           "linked_defects": ["EXT-D-0086", "EXT-D-0084"],
@@ -6993,6 +7158,19 @@
                 "release_scope": "Frozen development artifact; Settings Page.reload, not full extension Reload or Store."
               },
               "note": "Prior separate complete T46 pass37699338786 retained; never combine different builds into a new pass."
+            },
+            {
+              "mode": "guest",
+              "status": "pass",
+              "run_id": "37699338786",
+              "source_sha": "d10719c667c87b578689f1cdecf23e2a637d3207",
+              "build_version": "0.2.391",
+              "evidence": [
+                ".research/settings-valid-native-20261007.json",
+                ".research/settings-audit-native-peer-20261007.json"
+              ],
+              "detail": "Independently verified65001,1,65535 Save/readback after Settings Page.reload;65536 visible error preserves65535;blank clears and remainsnull;actual worker rediscovery entry and health request observed. All3 exact resource journals valid. HTTP503 fixture gives no healthy-engine claim; Page.reload is not full extension Reload. Exact guest case only.",
+              "release_scope": "Frozen development artifact only, not Store or current-main/full Settings health."
             }
           ],
           "attempt_history": [
@@ -7047,6 +7225,20 @@
               "independent_review": ".research/settings-local397-peer-20261008.json",
               "scope": "One valid local ARM native run on frozen unpublished development artifact, guest only. Panel-document reload for T04/T10/T13/T16/T19/T22/T31/T34/T37/T46/T64/T70; full extension reload for T63/T73/T76/T92. Receipt result is bounded to observed criteria; member/admin, Store/current-main and whole-feature state are not inferred.",
               "detail": "PASS: port 65001 save and worker rediscovery, boundary ports 1/65535, invalid-range feedback, clear, and panel-reload persistence. Initial and final override null recorded."
+            }
+          ],
+          "revalidation_history": [
+            {
+              "mode": "guest",
+              "run_id": "37820053159",
+              "status": "pass",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-controls-live-20261008.json"],
+              "independent_review": "373b28df",
+              "detail": "Valid save/rediscovery, bounds, invalid range, clearing, and panel reload persistence all pass.",
+              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
             }
           ]
         },
@@ -7994,6 +8186,20 @@
               "detail": "PARTIAL: guest admin actions absent warm and after full extension reload; ordinary-member denial unexercised.",
               "role_limit": "Guest denial passes; ordinary-member denial remains unverified."
             }
+          ],
+          "revalidation_history": [
+            {
+              "mode": "guest",
+              "run_id": "37820053159",
+              "status": "partial",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-controls-live-20261008.json"],
+              "independent_review": "373b28df",
+              "detail": "Guest admin-only boundary is observed in warm state; the shared extension reload did not reach completion. Ordinary-member criteria are a separate mode and are not judged here.",
+              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            }
           ]
         },
         {
@@ -8012,14 +8218,16 @@
           "dimensions": ["warm", "reload"],
           "results": {
             "guest": {
+              "mode": "guest",
+              "run_id": "37820053159",
               "status": "pass",
-              "run_id": "settings-local397-native-20261008",
-              "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
-              "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
-              "evidence": ".research/settings-local397-native-20261008.json",
-              "independent_review": ".research/settings-local397-peer-20261008.json",
-              "verified_at": "2026-10-08T06:30:08.992059+00:00",
-              "detail": "Two disposable loopback origins visible/stored; selected Ask again removed only one while the other survived panel reload; final removal emptied and hid list, still empty after panel reload. Guest frozen unpublished 0.2.397 artifact; preceding capture-choice flow and Store/current-main behavior unverified."
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-controls-live-20261008.json"],
+              "independent_review": "373b28df",
+              "detail": "The inventory steps and expected outcome are met: remove one selected origin, preserve the other, hide empty list, and verify state after Settings panel reload.",
+              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
             }
           },
           "result_history": [
@@ -8055,6 +8263,17 @@
                 "release_scope": "Frozen development artifact, actual Intel native observation. Three current journals valid; no current-main/Store/whole-feature health. Browser package revision1194 logged; exact runtime browser version absent from retained receipt."
               },
               "retained_reason": "Historical bounded proof preserved when the valid local ARM 0.2.397 guest attempt refreshed this exact case result."
+            },
+            {
+              "mode": "guest",
+              "status": "pass",
+              "run_id": "settings-local397-native-20261008",
+              "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
+              "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+              "evidence": ".research/settings-local397-native-20261008.json",
+              "independent_review": ".research/settings-local397-peer-20261008.json",
+              "verified_at": "2026-10-08T06:30:08.992059+00:00",
+              "detail": "Two disposable loopback origins visible/stored; selected Ask again removed only one while the other survived panel reload; final removal emptied and hid list, still empty after panel reload. Guest frozen unpublished 0.2.397 artifact; preceding capture-choice flow and Store/current-main behavior unverified."
             }
           ],
           "attempt_history": [
@@ -8100,7 +8319,21 @@
               "detail": "PASS: two disposable loopback origins shown and stored, selected removal spared the other across panel reload, last removal emptied and hid list across panel reload. No live external account state exercised."
             }
           ],
-          "defect_ids": ["EXT-D-0167"]
+          "defect_ids": ["EXT-D-0167"],
+          "revalidation_history": [
+            {
+              "mode": "guest",
+              "run_id": "37820053159",
+              "status": "pass",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-controls-live-20261008.json"],
+              "independent_review": "373b28df",
+              "detail": "The inventory steps and expected outcome are met: remove one selected origin, preserve the other, hide empty list, and verify state after Settings panel reload.",
+              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T65",
@@ -8352,6 +8585,20 @@
               "scope": "One valid local ARM native run on frozen unpublished development artifact, guest only. Panel-document reload for T04/T10/T13/T16/T19/T22/T31/T34/T37/T46/T64/T70; full extension reload for T63/T73/T76/T92. Receipt result is bounded to observed criteria; member/admin, Store/current-main and whole-feature state are not inferred.",
               "detail": "PARTIAL: runtime/manifest/receipt identity and password API readiness observed; real browser update returned no update; unavailable, update-available, throttled, and error branches unexercised."
             }
+          ],
+          "revalidation_history": [
+            {
+              "mode": "guest",
+              "run_id": "37820053159",
+              "status": "partial",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-controls-live-20261008.json"],
+              "independent_review": "373b28df",
+              "detail": "Identity/readiness and no-update result pass; unavailable, update-available, throttled, and error branches are explicitly unverified.",
+              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            }
           ]
         },
         {
@@ -8549,6 +8796,20 @@
               "scope": "One valid local ARM native run on frozen unpublished development artifact, guest only. Panel-document reload for T04/T10/T13/T16/T19/T22/T31/T34/T37/T46/T64/T70; full extension reload for T63/T73/T76/T92. Receipt result is bounded to observed criteria; member/admin, Store/current-main and whole-feature state are not inferred.",
               "detail": "PASS: guest Account unavailable, no name/role, and Sign in footer warm and after full extension reload."
             }
+          ],
+          "revalidation_history": [
+            {
+              "mode": "guest",
+              "run_id": "37820053159",
+              "status": "partial",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-controls-live-20261008.json"],
+              "independent_review": "373b28df",
+              "detail": "Warm guest identity and sign-in state pass; extension_reload observation is unverified.",
+              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            }
           ]
         },
         {
@@ -8696,6 +8957,20 @@
               "independent_review": ".research/settings-local397-peer-20261008.json",
               "scope": "One valid local ARM native run on frozen unpublished development artifact, guest only. Panel-document reload for T04/T10/T13/T16/T19/T22/T31/T34/T37/T46/T64/T70; full extension reload for T63/T73/T76/T92. Receipt result is bounded to observed criteria; member/admin, Store/current-main and whole-feature state are not inferred.",
               "detail": "PASS: guest organization guidance, no archive filter/choice/read warm and after full extension reload."
+            }
+          ],
+          "revalidation_history": [
+            {
+              "mode": "guest",
+              "run_id": "37820053159",
+              "status": "partial",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-controls-live-20261008.json"],
+              "independent_review": "373b28df",
+              "detail": "Warm guest archive-filter absence/no org request passes; extension_reload observation is unverified.",
+              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
             }
           ]
         },
@@ -9395,6 +9670,20 @@
               "independent_review": ".research/settings-local397-peer-20261008.json",
               "scope": "One valid local ARM native run on frozen unpublished development artifact, guest only. Panel-document reload for T04/T10/T13/T16/T19/T22/T31/T34/T37/T46/T64/T70; full extension reload for T63/T73/T76/T92. Receipt result is bounded to observed criteria; member/admin, Store/current-main and whole-feature state are not inferred.",
               "detail": "PASS: guest archived membership and restoration controls absent warm and after full extension reload; member/admin paths outside this guest scope."
+            }
+          ],
+          "revalidation_history": [
+            {
+              "mode": "guest",
+              "run_id": "37820053159",
+              "status": "partial",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-controls-live-20261008.json"],
+              "independent_review": "373b28df",
+              "detail": "Warm guest no-membership/no-restoration-action passes; extension_reload observation is unverified.",
+              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
             }
           ]
         }
@@ -15855,16 +16144,16 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37801787667",
+              "run_id": "37816940141",
               "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
-              "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
+              "driver_source_sha": "59f0345b674c34c3d38bb65531133984484dae0f",
               "build_version": "0.2.414",
               "evidence": [
-                ".research/scrape-arm-414-native-20261008-1532.json",
-                ".research/scrape-live-peer-20261008-1544.json"
+                ".research/scrape-reload-deep-native-20261008/report.json",
+                ".research/scrape-reload-deep-peer-20261008.json"
               ],
-              "detail": "Post-reload deep capture and a natural deep failure/retry with mode preservation remain unverified.",
-              "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
+              "detail": "Warm and post-full-extension-reload deep capture verified: lazy text absent in new document before scroll, actual Scrolling progress, exact text in page DOM and displayed Article. Deep natural failure/retry with mode preservation remains unverified.",
+              "release_scope": "Guest normal600px frozen development414 only; three current journals valid. Same driver blob as focused30f5c006. No member/admin, Store or later-main product inference."
             },
             "member": {
               "status": "partial",
@@ -16006,6 +16295,20 @@
                 }
               },
               "superseded_at": "2026-10-08T15:48:53.830295+00:00"
+            },
+            {
+              "mode": "guest",
+              "status": "partial",
+              "run_id": "37801787667",
+              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+              "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/scrape-arm-414-native-20261008-1532.json",
+                ".research/scrape-live-peer-20261008-1544.json"
+              ],
+              "detail": "Post-reload deep capture and a natural deep failure/retry with mode preservation remain unverified.",
+              "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
             }
           ],
           "native_preparation": {
@@ -16013,11 +16316,12 @@
             "independent_review": "e43d1746",
             "evidence": [
               ".research/scrape-reload-deep-source-20261008.json",
-              ".research/scrape-reload-deep-peer-20261008.json"
+              ".research/scrape-reload-deep-peer-20261008.json",
+              ".research/scrape-reload-deep-native-20261008/report.json"
             ],
-            "status": "source-ready-native-pending",
+            "status": "bounded-native-post-reload-deep-pass; full case partial",
             "scope": "After full extension reload: fresh intake empty result, zero lazy nodes, deep capture, observed Scrolling, exact lazy text in actual page and displayed Article. Existing guest result stays partial; deep failure/retry remains unverified.",
-            "next_action": "After exact focused gate and API recovery, run existing guest-scrape-development on lane B with verified exact artifact; inspect actual new post_reload_deep evidence and neighboring cases before coverage update."
+            "next_action": "Exercise genuine deep failure/retry with mode preservation; do not repeat already passed post-reload deep check alone."
           }
         },
         {
@@ -19024,6 +19328,21 @@
               ],
               "detail": "Full scope + Airbnb;18 controlled checks revalidate and5 addedT09 display/DOM/navigation checks pass. One Wikipedia metadata candidate check unverified; no fullcasepromotion."
             }
+          ],
+          "revalidation_history": [
+            {
+              "at": "2026-10-08T17:43:59.594877+00:00",
+              "mode": "guest",
+              "run_id": "37816927539",
+              "build_version": "0.2.414",
+              "status": "bounded-pass",
+              "subtargets": [
+                "EXT-F-1008-T01:new_url_replaces_visible_title=pass",
+                "EXT-F-1008-T01:reload_audits_current_url=pass"
+              ],
+              "evidence": [".research/seo-normal-after-stop-20261008/report.json"],
+              "scope": "Controlled subtargets only; preserves earlier full-scope observations and all unverified dimensions. No parent-case promotion."
+            }
           ]
         },
         {
@@ -19324,6 +19643,21 @@
               ],
               "detail": "Full scope + Airbnb;18 controlled checks revalidate and5 addedT09 display/DOM/navigation checks pass. One Wikipedia metadata candidate check unverified; no fullcasepromotion."
             }
+          ],
+          "revalidation_history": [
+            {
+              "at": "2026-10-08T17:43:59.594877+00:00",
+              "mode": "guest",
+              "run_id": "37816927539",
+              "build_version": "0.2.414",
+              "status": "bounded-pass",
+              "subtargets": [
+                "EXT-F-1008-T02:manual_button_returns_to_current_page=pass",
+                "EXT-F-1008-T02:guest_reaudit_captures_changed_page_metadata=pass"
+              ],
+              "evidence": [".research/seo-normal-after-stop-20261008/report.json"],
+              "scope": "Controlled subtargets only; preserves earlier full-scope observations and all unverified dimensions. No parent-case promotion."
+            }
           ]
         },
         {
@@ -19556,6 +19890,21 @@
                 ".research/seo-full-live-peer-20261008-1610.json"
               ],
               "detail": "Full scope + Airbnb;18 controlled checks revalidate and5 addedT09 display/DOM/navigation checks pass. One Wikipedia metadata candidate check unverified; no fullcasepromotion."
+            }
+          ],
+          "revalidation_history": [
+            {
+              "at": "2026-10-08T17:43:59.594877+00:00",
+              "mode": "guest",
+              "run_id": "37816927539",
+              "build_version": "0.2.414",
+              "status": "bounded-pass",
+              "subtargets": [
+                "EXT-F-1008-T03:about_blank_clear_error_without_stale_audit=pass",
+                "EXT-F-1008-T03:public_page_recovers_after_restricted_url=pass"
+              ],
+              "evidence": [".research/seo-normal-after-stop-20261008/report.json"],
+              "scope": "Controlled subtargets only; preserves earlier full-scope observations and all unverified dimensions. No parent-case promotion."
             }
           ]
         },
@@ -19863,6 +20212,24 @@
                 ".research/seo-full-live-peer-20261008-1610.json"
               ],
               "detail": "Full scope + Airbnb;18 controlled checks revalidate and5 addedT09 display/DOM/navigation checks pass. One Wikipedia metadata candidate check unverified; no fullcasepromotion."
+            }
+          ],
+          "revalidation_history": [
+            {
+              "at": "2026-10-08T17:43:59.594877+00:00",
+              "mode": "guest",
+              "run_id": "37816927539",
+              "build_version": "0.2.414",
+              "status": "bounded-pass",
+              "subtargets": [
+                "EXT-F-1008-T07:guest_actual_clipboard_text_and_ai_page_0=pass",
+                "EXT-F-1008-T07:guest_actual_clipboard_text_and_ai_page_1=pass",
+                "EXT-F-1008-T07:guest_menu_offers_text_and_ai_but_hides_json=pass",
+                "EXT-F-1008-T07:guest_role_gate_after_reload=pass",
+                "EXT-F-1008-T07:guest_actual_clipboard_text_and_ai_reload=pass"
+              ],
+              "evidence": [".research/seo-normal-after-stop-20261008/report.json"],
+              "scope": "Controlled subtargets only; preserves earlier full-scope observations and all unverified dimensions. No parent-case promotion."
             }
           ]
         },
@@ -20404,6 +20771,24 @@
               ],
               "detail": "Full scope + Airbnb;18 controlled checks revalidate and5 addedT09 display/DOM/navigation checks pass. One Wikipedia metadata candidate check unverified; no fullcasepromotion."
             }
+          ],
+          "revalidation_history": [
+            {
+              "at": "2026-10-08T17:43:59.594877+00:00",
+              "mode": "guest",
+              "run_id": "37816927539",
+              "build_version": "0.2.414",
+              "status": "bounded-pass",
+              "subtargets": [
+                "EXT-F-1008-T09:page_0_title_and_headings=pass",
+                "EXT-F-1008-T09:page_1_title_and_headings=pass",
+                "EXT-F-1008-T09:sparse_public_detail_groups=pass",
+                "EXT-F-1008-T09:rich_public_detail_groups_and_canonical_door=pass",
+                "EXT-F-1008-T09:canonical_outbound_opens_expected_public_tab=pass"
+              ],
+              "evidence": [".research/seo-normal-after-stop-20261008/report.json"],
+              "scope": "Controlled subtargets only; preserves earlier full-scope observations and all unverified dimensions. No parent-case promotion."
+            }
           ]
         },
         {
@@ -20665,6 +21050,21 @@
                 "release_scope": "Bounded real guest acceptance on frozen unpublished development414; controlled scope; all three resource journals valid. No full-case, member/admin, latest-main or Store acceptance."
               },
               "superseded_at": "2026-10-08T16:13:38.966554+00:00"
+            }
+          ],
+          "revalidation_history": [
+            {
+              "at": "2026-10-08T17:43:59.594877+00:00",
+              "mode": "guest",
+              "run_id": "37816927539",
+              "build_version": "0.2.414",
+              "status": "bounded-pass",
+              "subtargets": [
+                "EXT-F-1008-T14:guest_social_missing_tags_clipboard_before_reaudit=pass",
+                "EXT-F-1008-T14:guest_social_missing_tags_clipboard_after_reaudit=pass"
+              ],
+              "evidence": [".research/seo-normal-after-stop-20261008/report.json"],
+              "scope": "Controlled subtargets only; preserves earlier full-scope observations and all unverified dimensions. No parent-case promotion."
             }
           ]
         }
@@ -64048,6 +64448,18 @@
                 ".research/records-live-peer-20261008-1529.json"
               ],
               "detail": "Independent peer verifies bounded C02 read; three valid resource journals; original test-driver input failure no longer reproduces. Full T01 and D91 remain incomplete."
+            },
+            {
+              "at": "2026-10-08T17:56:07Z",
+              "run_id": "37819517326",
+              "mode": "admin",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "resource_valid": true,
+              "build_version": "0.2.414",
+              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+              "evidence": [".research/records-metadata-live-20261008.json"],
+              "detail": "Current schema and first authenticated exact-body HTTP200 request passed; completion extraction/visible-output correlation failed with insufficient diagnostic detail. C03 not reached. Backend samples changed across run; no request-time SHA attribution. Earlier bounded C02 history retained, no new product verdict."
             }
           ],
           "results": {
@@ -64106,7 +64518,7 @@
               ".research/records-contract-fresh-peer-20261008.json"
             ],
             "scope": "C03 metadata_search via actual Tools UI, query from prior post-reload table_list result, require same table ID/name/approved organization in correlated finished visible response. Existing C02 malformed-input/reload guards retained. Current optional flag schema checked before running.",
-            "remaining": "Native C03 run; controlled owned-created-table/search criteria and negative input; all other actions and non-admin modes unchanged."
+            "remaining": "Diagnose completion/visible-output correlation boundary from37819517326 before another attempt. C03 remains unverified; controlled owned-created-table/search criteria, negative input, all other actions and non-admin modes unchanged."
           }
         },
         {
