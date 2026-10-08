@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "date": "2026-10-07",
-  "status": "precise_discriminant_ready_native_result_pending",
+  "status": "settings_activation_reverted_pending_guard_preserving_sampler",
   "scope": "Hosted resource admission/watchdog interference in two original frozen-artifact Settings native attempts. No product acceptance credit is inferred.",
   "evidence": {
     "first_original": {
@@ -38,12 +38,17 @@
       "prediction": "Replaying the recorded busy/load/CPU counts through the unchanged policy would not produce the journal's CPU reasons; source inspection instead predicts those reasons exactly."
     }
   ],
-  "change": "Only the hosted Settings acceptance phase now enables the existing process-time bracket around each guard iostat watch sample. The bracket is diagnostic data in the current-run resource journal. It does not change CPU measurement, thresholds, sampling cadence, lease ownership, native action boundaries, or resource verdicts.",
-  "next_discriminant": "On one separately authorized settings-controls run, inspect RESOURCE_STARTUP_INTERVAL_BRACKET immediately after any RESOURCE_CPU_PENDING in the exact current-run hosted-guest journal. Compare named MTLCompilerServi, ownedChromium, hostProvisioner, and otherHost CPU-seconds deltas; retain unmatched/new/exited PID limitations. If no unsafe episode occurs, the run may be judged normally using its complete native receipt and all three current-run final resource decisions. An invalid run stays diagnostic only even if its native child exits 0.",
+  "correction": {
+    "peer_report": ".research/resource-interval-activation-peer-20261007.json",
+    "finding": "The earlier claim that the bracket left sampling cadence unchanged was false. In diagnostic mode sample() awaits a process snapshot before and after iostat. Each snapshot uses the guard command runner's five-second timeout, and the watch loop sleeps for another 15 seconds only after sample() and journal emission finish. The optional bracket could therefore delay unsafe confirmation by as much as two snapshot timeouts per watch, plus other sampling and writing time.",
+    "resolution": "Removed the settings-controls activation from the hosted acceptance workflow. Ordinary Settings acceptance uses the existing guard sampling path and cadence; no native rerun should use the previous activation commit as a readiness claim."
+  },
+  "next_discriminant": "A future exact-run Settings CPU-time bracket is useful only after a source change proves diagnostic snapshots cannot delay the guard's safety sample, unsafe decision, stop action, or next watch. Preserve named MTLCompilerServi, ownedChromium, hostProvisioner, and otherHost CPU-seconds deltas and unmatched/new/exited PID limitations. Verify the unchanged watchdog cadence with a fault that makes each diagnostic process snapshot consume its full timeout, then obtain independent source review before one authorized native run. An invalid run stays diagnostic only even if its native child exits 0.",
   "limitations": [
     "No causal source remedy or reliable host capacity change is established yet; prior Intel diagnostic also had a pending CPU sample before recovery, so merely selecting Intel is not a proven fix.",
+    "The current optional bracket blocks the watchdog while gathering process snapshots; it is not permitted in Settings acceptance until its sampling lifecycle is repaired and tested.",
     "A bracket encloses rather than exactly equals the one-second iostat interval. Reparented, newly created, exited, or PID-reused processes limit attribution.",
     "Waiting after already performed native actions would launder contaminated work and is not proposed."
   ],
-  "verification": "Source-checked hosted acceptance env scope, policy, cpuEpisode, sample()/bracket emission, strict journal serialization, and both original current-run journals. Focused lightweight tests are recorded in the task return; no hosted/native/manual build/release was run."
+  "verification": "Rechecked hosted acceptance env scope, the guard's sequential watch loop, sample()/bracket awaits, five-second command timeout, unchanged policy, and both original current-run journals. The activation was removed before any further hosted/native run; no manual build or release was run."
 }

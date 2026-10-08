@@ -325,7 +325,6 @@ jobs:
           MATRX_SCRAPE_AUTH_MODE: ${{ inputs.scrape_auth_mode }}
           MATRX_SCRAPE_WIDTH_MODE: ${{ inputs.scrape_width_mode }}
           MATRX_SCRAPE_MIN_PANEL_WIDTH_PX: ${{ inputs.scrape_normal_width_px }}
-          MATRX_STARTUP_INTERVAL_DIAGNOSTIC: ${{ inputs.acceptance_case == 'settings-controls' && '1' || '0' }}
           MATRX_HOSTED_MEMBER_LINK_JSON: ${{ secrets.MATRX_REVIEWER_MAGIC_LINK_JSON }}
           MATRX_HOSTED_ADMIN_CREDENTIALS_JSON: ${{ secrets.MATRX_PREPARE_ADMIN_CREDENTIALS_JSON }}
           MATRX_HOSTED_PROFILE_ORGANIZATION_JSON: ${{ secrets.MATRX_PROFILE_APPROVED_ORGANIZATION_JSON }}
