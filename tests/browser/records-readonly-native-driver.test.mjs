@@ -10,6 +10,7 @@ import {
   observeRecordsExecution,
   recordsCompletionShape,
   recordsVisibleShape,
+  retainRecordsFailure,
   signInRecordsAdmin,
 } from './records-readonly-native-proof.mjs';
 
@@ -107,10 +108,14 @@ function runDriver({
   driverSource = callback,
   inputHelper = enterRecordsInput,
   serverSchema = tableListSchema(),
+  cardReady = true,
+  schemaReady = true,
+  contractObservationFails = false,
 } = {}) {
   const events = new EventEmitter();
   const active = new Set();
   const report = {
+    stage: 'inputs',
     native_stage: null,
     request: null,
     result: null,
@@ -118,6 +123,7 @@ function runDriver({
     invalid_input: null,
     reload: null,
     completion_diagnostics: [],
+    card_diagnostic: null,
   };
   const stages = [];
   const editor = { value: '{"action":"old"}', focused: false, start: 0, end: 0 };
@@ -185,6 +191,7 @@ function runDriver({
         : { visible: true, raw: JSON.stringify(completions[runs - 1]) };
   const evaluate = async (_panel, script) => {
     if (script.includes('server action contract')) {
+      if (contractObservationFails) throw new Error('private contract error');
       const pre = {
         textContent: JSON.stringify(serverSchema),
         getClientRects: () => [1],
@@ -201,6 +208,9 @@ function runDriver({
       const document = { querySelectorAll: () => [row] };
       return new Function('document', `return ${script};`)(document);
     }
+    if (script.includes(".some(el => el.querySelector('span.font-mono')")) return cardReady;
+    if (script.includes("return Boolean(b?.parentElement?.querySelector('textarea')"))
+      return schemaReady;
     if (script.includes('t.focus()')) {
       editor.focused = true;
       return true;
@@ -233,7 +243,10 @@ function runDriver({
       assert.equal(reloads, 1, 'Settings must follow full panel reload');
   };
   const bindings = {
-    stage: (value) => stages.push(value),
+    stage: (value) => {
+      stages.push(value);
+      report.stage = value;
+    },
     report,
     approved,
     REPO: '/repo',
@@ -366,6 +379,122 @@ test('server schema drift refuses before the first Records execute', async () =>
   }
 });
 
+test('actual callback persists safe card, schema and contract failure classes before execution', async () => {
+  const cases = [
+    [{ cardReady: false }, 'card_ready', 'card_not_ready', false, null, null],
+    [{ schemaReady: false }, 'schema_ready', 'schema_not_ready', true, false, null],
+    [
+      { contractObservationFails: true },
+      'contract_observation',
+      'contract_observation_failed',
+      true,
+      true,
+      null,
+    ],
+    [{ serverSchema: null }, 'contract_observation', 'contract_unavailable', true, true, false],
+    [
+      { serverSchema: tableListSchema('include_app_tables') },
+      'contract_observation',
+      'contract_drift',
+      true,
+      true,
+      true,
+      {
+        canonical_boolean: false,
+        retired_field_present: true,
+        action_available: true,
+        limit_integer: true,
+      },
+    ],
+    [
+      {
+        serverSchema: {
+          ...tableListSchema(),
+          $variants: {
+            table_list: {
+              ...tableListSchema().$variants.table_list,
+              include_platform_tables: { type: 'string' },
+            },
+          },
+        },
+      },
+      'contract_observation',
+      'contract_drift',
+      true,
+      true,
+      true,
+      {
+        canonical_boolean: false,
+        retired_field_present: false,
+        action_available: true,
+        limit_integer: true,
+      },
+    ],
+    [
+      { serverSchema: { ...tableListSchema(), action: { enum: ['metadata_search'] } } },
+      'contract_observation',
+      'contract_drift',
+      true,
+      true,
+      true,
+      {
+        canonical_boolean: true,
+        retired_field_present: false,
+        action_available: false,
+        limit_integer: true,
+      },
+    ],
+    [
+      {
+        serverSchema: {
+          ...tableListSchema(),
+          $variants: {
+            table_list: {
+              ...tableListSchema().$variants.table_list,
+              limit: { type: 'string' },
+            },
+          },
+        },
+      },
+      'contract_observation',
+      'contract_drift',
+      true,
+      true,
+      true,
+      {
+        canonical_boolean: true,
+        retired_field_present: false,
+        action_available: true,
+        limit_integer: false,
+      },
+    ],
+  ];
+  for (const [options, phase, failure, ready, schema, contractPresent, contractShape] of cases) {
+    const scenario = runDriver(options);
+    await assert.rejects(scenario.run());
+    const saved = JSON.parse(JSON.stringify(scenario.report));
+    retainRecordsFailure(saved);
+    assert.equal(saved.card_diagnostic.phase, phase);
+    assert.equal(saved.card_diagnostic.failure, failure);
+    assert.equal(saved.card_diagnostic.card_ready, ready);
+    assert.equal(saved.card_diagnostic.schema_ready, schema);
+    assert.equal(saved.card_diagnostic.contract?.present ?? null, contractPresent);
+    if (contractShape) {
+      const { present, ...shape } = saved.card_diagnostic.contract;
+      assert.equal(present, true);
+      assert.deepEqual(shape, contractShape);
+    }
+    assert.equal(saved.failure_phase, phase);
+    assert.equal(saved.failure_classification, failure);
+    assert.equal(saved.completion_diagnostics.length, 0);
+    assert.equal(scenario.runs, 0);
+    assert.doesNotMatch(
+      JSON.stringify(saved),
+      /private contract error|admin-session|Bearer|appointments/,
+    );
+  }
+});
+
 test('wrong principal, stale completion and wrong post-reload identity each fail', async () => {
   for (const [options, message] of [
     [{ token: 'other-session' }, /records_principal_mismatch/],
@@ -490,6 +619,19 @@ test('successful callback retains four exact completion guards and safe shapes',
   const scenario = runDriver();
   await scenario.run();
   const saved = JSON.parse(JSON.stringify(scenario.report));
+  assert.deepEqual(saved.card_diagnostic, {
+    phase: 'complete',
+    failure: null,
+    card_ready: true,
+    schema_ready: true,
+    contract: {
+      present: true,
+      canonical_boolean: true,
+      retired_field_present: false,
+      action_available: true,
+      limit_integer: true,
+    },
+  });
   assert.equal(saved.completion_diagnostics.length, 4);
   assert.deepEqual(
     saved.completion_diagnostics.map(({ failure }) => failure),
