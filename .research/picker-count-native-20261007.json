@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "task_id": "picker-count-native-20261007",
+  "defects": [
+    "EXT-D-0158",
+    "EXT-D-0042"
+  ],
+  "status": "terminal_before_picker_diagnostic",
+  "native_run": {
+    "run_id": 37707441895,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37707441895",
+    "lane": "A",
+    "runner_image": "macos-15",
+    "job_id": 113085074055,
+    "acceptance_case": "showcase-stale-admin",
+    "workflow_head_sha": "c85d9a5779ab4aae346740b1d41cc7f0955cbd64",
+    "status": "completed",
+    "conclusion": "failure",
+    "failure_boundary": {
+      "stage": "admin_signin",
+      "native_stage": "exercise_panel",
+      "failure_code": "admin_signin_failed",
+      "preceding_case": "guest_nonchat_control_and_showcase_gate",
+      "preceding_case_status": "pass",
+      "picker_injection_or_reinjection_reached": false,
+      "count_diagnostic_reached": false,
+      "producer_current_detected_count": null,
+      "current_session_detected_count": null,
+      "other_session_detected_count": null,
+      "counts_status": "unmeasured",
+      "interpretation": "The run stopped during admin sign-in, before the picker case. It provides no evidence for or against producer duplication, relay duplication, stale-session delivery, or a failed count read."
+    },
+    "auth_diagnostic": {
+      "last_reported_stage": "admin_extension_auth_completion",
+      "last_safe_ui": "Captured side panel still displayed the guest banner and Sign in control after the click; authenticated identity/admin role was not observed.",
+      "auth_wait_contract": "The driver waits for the extension to report the expected admin identity and role (90-second wait), then normalizes any caught failure to admin_extension_auth_completion_failed.",
+      "distinction": "The sanitized receipt and retained workflow log do not preserve the underlying wait exception, rejection response, or HTTP status. The observation does not distinguish a wait timeout from rejected login or another completion failure. The organization selector checkpoint was not reached.",
+      "http_status": null,
+      "credential_or_network_payload_recorded": false,
+      "screenshot": "picker-count-native-evidence/run37707441895/hosted-guest-37707441895-1/_temp/guest-acceptance/native-sidepanel-qa-ofKXEq/native-side-panel.png"
+    }
+  },
+  "artifact_provenance": {
+    "selected_ci_run_id": 37705690477,
+    "selected_artifact_id": 11519921113,
+    "artifact_source_sha": "67e7986ae8161dda6c72ba3c0faee1dbb20a930c",
+    "artifact_tree_sha256": "43be4a8da24e2045486caca7360361736bd526514f0f190160eda51dd04856f9",
+    "artifact_version": "0.2.393",
+    "required_original_comparator": {
+      "ci_run_id": 37698216289,
+      "artifact_id": 11516342905,
+      "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+      "version": "0.2.391"
+    },
+    "selection_deviation": "This attempt selected the reviewed diagnostic source's own CI artifact to align the imported build with source 67e7986a. The task required the frozen v0.2.391 artifact as the browser build. No second attempt was made. This run is newer-artifact diagnostic evidence only and cannot be described as an original-artifact reproduction or transferred to the frozen comparison.",
+    "relevant_product_drift_check": {
+      "method": "Git diff between frozen source 52487361 and artifact source 67e7986a for picker implementation and picker content entrypoint.",
+      "picker_product_files_changed": [],
+      "runner_and_diagnostic_files_changed": [
+        "tests/browser/showcase-picker-native-acceptance.mjs",
+        "tests/browser/showcase-stale-runtime-boundary.mjs",
+        "tests/browser/showcase-stale-diagnostic.mjs"
+      ],
+      "version_changed": "0.2.391 to 0.2.393",
+      "other_source_drift": "The source range also includes unrelated organization, Settings, workflow, dependency-lock, documentation, and evidence changes. Runtime product equivalence beyond the specifically compared picker files is not claimed."
+    }
+  },
+  "resource_outcome": {
+    "admitted": true,
+    "resource_invalid": false,
+    "package_journal": "picker-count-native-evidence/run37707441895/hosted-guest-37707441895-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37707441895-1.jsonl",
+    "browser_journal": "picker-count-native-evidence/run37707441895/hosted-guest-37707441895-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37707441895-1.jsonl",
+    "acceptance_journal": "picker-count-native-evidence/run37707441895/hosted-guest-37707441895-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37707441895-1.jsonl",
+    "terminal_decisions": [
+      "valid",
+      "valid",
+      "child_failed"
+    ],
+    "owned_browser_cleanup": "Hosted job completed; job-local resources were on the disposable runner."
+  },
+  "evidence": {
+    "native_receipt": "picker-count-native-evidence/run37707441895/hosted-guest-37707441895-1/_temp/showcase-picker-native-37707441895-1.json",
+    "screenshots": [
+      "picker-count-native-evidence/run37707441895/hosted-guest-37707441895-1/_temp/guest-acceptance/native-sidepanel-qa-ofKXEq/normal-target-after-open.png",
+      "picker-count-native-evidence/run37707441895/hosted-guest-37707441895-1/_temp/guest-acceptance/native-sidepanel-qa-ofKXEq/native-side-panel.png"
+    ],
+    "workflow_log": "github run 37707441895, failed step Exercise the selected Chrome side-panel case"
+  },
+  "credentials": {
+    "preflight": "canonical requireHostedAcceptanceCredential('showcase-stale-admin', privateEnv) passed before staging",
+    "temporary_secrets_removed": true,
+    "absence_verified_after_terminal": true,
+    "secret_names": [
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "secret_values_recorded": false
+  },
+  "interpretation": {
+    "detection_cause": "unknown",
+    "EXT-D-0158": "No native retest evidence: the case did not reach reinjection.",
+    "EXT-D-0042": "No native retest evidence: the case did not reach picker lifecycle checks.",
+    "post_done_overlay_or_listener_state": "not observed; no inference drawn",
+    "retry": "none; the single authorized attempt ended at the admin sign-in boundary"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0042",
+  "status": "unverified",
+  "stage": "admin_signin",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "source_sha": "67e7986ae8161dda6c72ba3c0faee1dbb20a930c",
+    "run_id": 37705690477,
+    "artifact_id": 11519921113,
+    "tree_sha256": "43be4a8da24e2045486caca7360361736bd526514f0f190160eda51dd04856f9",
+    "version": "0.2.393"
+  },
+  "cases": [
+    {
+      "id": "guest_nonchat_control_and_showcase_gate",
+      "status": "pass",
+      "evidence": {
+        "scrape_visible": true,
+        "showcase_absent": true
+      }
+    }
+  ],
+  "unverified_criteria": [
+    "stale A ITEM_DETECTED, RESULT, and EXIT held and released after B starts",
+    "delayed A cancellation injection after B starts",
+    "deferred installation across replacement",
+    "new content-script context reinjection and exact listener count",
+    "nonadmin role gating"
+  ],
+  "failure_code": "admin_signin_failed",
+  "organization_diagnostic": null,
+  "selection_diagnostic": null,
+  "stale_diagnostic": null,
+  "lifecycle_diagnostic": null,
+  "completion_diagnostic": {
+    "boundaries": []
+  },
+  "auth_stage": "admin_extension_auth_completion"
+}
