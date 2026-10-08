@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "case_id": "EXT-D-0180",
+  "failed_run_id": 37783167613,
+  "failed_step": "Disable indexing on the disposable hosted VM",
+  "observed_failure": "sudo mdutil -a -i off reported root and Data disabled, then returned 1 after Preboot reported invalid operation and kMDConfigSearchLevelTransitioning; set -e stopped setup before the status checks.",
+  "cause": "The all-volume disable command made the workflow depend on an irrelevant Preboot volume even though only root and Data are work volumes.",
+  "repair": "Run separate sudo mdutil -i off commands for root and Data, then keep separate successful status commands and disabled-state checks under set -euo pipefail.",
+  "red_green": {
+    "command": "node --test scripts/test-hosted-indexing-step.mjs",
+    "before": "FAIL: irrelevant Preboot transition must not block disabled work volumes (status 1)",
+    "after": "PASS: 1 test",
+    "seam": "The test extracts the actual workflow shell block and substitutes only sudo and mdutil with local shell shims. Its all-volume command emits the captured Preboot failure and exits 1.",
+    "refusals": [
+      "root disable command fails",
+      "Data disable command fails",
+      "root status command fails",
+      "Data status command fails",
+      "root remains enabled",
+      "Data remains enabled",
+      "runner is not GitHub hosted macOS"
+    ]
+  },
+  "scope": "Hosted setup workflow and its actual-shell test only; no native execution, build, secret use, or local mdutil call.",
+  "native_retest": "Pending fresh peer and hosted run; this local test verifies workflow shell behavior only."
+}

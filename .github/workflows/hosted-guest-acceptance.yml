@@ -308,7 +308,8 @@ jobs:
         run: |
           set -euo pipefail
           [[ "$RUNNER_ENVIRONMENT" == github-hosted && "$RUNNER_OS" == macOS ]] || exit 1
-          sudo /usr/bin/mdutil -a -i off
+          sudo /usr/bin/mdutil -i off /
+          sudo /usr/bin/mdutil -i off /System/Volumes/Data
           root_status="$(/usr/bin/mdutil -s /)"
           data_status="$(/usr/bin/mdutil -s /System/Volumes/Data)"
           printf '%s\n%s\n' "$root_status" "$data_status"
