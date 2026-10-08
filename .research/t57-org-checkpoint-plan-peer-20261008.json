@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-08T09:44:06Z",
+  "scope": "Source-only preimplementation review of proposed T57 organization checkpoint; no product, test, fixture, native, or runtime changes",
+  "source_contract": {
+    "extension_instruction": "CLAUDE.md:99-104 states the visible active organization may come from device choice, account last-active, startup, or first current membership; a ladder result is not written as device choice.",
+    "canonical_organizations_state": "../common-docs/systems/account/organizations/STATE.md rules 11-14: shell chooses the visible active organization at load, validates current membership, and carries it on every request; server-side substitution is forbidden.",
+    "attribution_limit": "The load-ladder statements above are from current on-disk CLAUDE.md and canonical Organizations STATE. They are not attributed to the conversation-supplied AGENTS snapshot, which was device-choice-only.",
+    "source_revision_context": ".research/t57-organization-contract-20261008.json records the frozen active-org implementation and prior receipt boundary; this review checked current on-disk source paths independently."
+  },
+  "feasibility": {
+    "approved_fixture": "The current hosted profile organization fixture is name-only: scripts/hosted-profile-route.mjs:89-101 validates and returns approved_organization_name only. A name cannot bind the request to an organization UUID.",
+    "uuid_source_candidate": "tests/browser/files-saved-native-acceptance.mjs:privateConfig requires approved_organization_id plus approved_organization_name, but that is a separate Files fixture; reuse is conditional on exact name match and a private current-membership check for that UUID, not fixture presence alone.",
+    "membership_contract": "src/lib/org/active-org.ts:listMemberOrganizations reads canonical mbr_for_user and active organization rows; the shell load ladder uses that membership set. This is a source-supported validation route for the exact fixture UUID and name.",
+    "product_request": "src/lib/tools/manual-server.ts:getManualServerToolDefinition calls apiGet('/tools/test/list'); src/features/tools/ToolsView.tsx expands server-owned Records detail by calling that function. The ordinary client request path adds the resolved active organization header and refuses authenticated non-exempt requests without one (src/lib/api/client.ts:755-758). CDP observation of this actual product GET is therefore feasible without injecting storage or headers."
+  },
+  "review": {
+    "verdict": "CONDITIONALLY_FEASIBLE_WITH_REQUIRED_FIXTURE_AND_OBSERVATION_GUARDS",
+    "required_acceptance": [
+      "Require a private fixture containing both approved name and UUID; independently establish that the signed-in admin currently belongs to that active, non-archived organization using the canonical membership contract. Do not trust the Files fixture ID until its exact name and current membership both match.",
+      "After rendered admin identity and approved organization name checks, open Tools > Records detail and observe the real /tools/test/list request in CDP. Require successful product response and the observed X-Organization-Id to equal the independently verified fixture UUID.",
+      "Keep admin role/profile checks. Missing UUID, stale/nonmember UUID, wrong rendered name, absent or mismatched request header, and failed request must remain failures. Do not synthesize a header, write extension storage, or turn the organization checkpoint into a pass based on the label alone.",
+      "For the regression guard, demonstrate the current storage-only check fails on the documented ladder state while the replacement passes only with matching independent fixture membership and observed product request lineage; wrong UUID/header and absent header mutations must fail."
+    ],
+    "precision_gap": "The proposal is not yet executable with the existing hosted T57 organization secret because its schema contains only approved_organization_name. The separate Files fixture is a candidate source, not proof it is the same approved T57 organization. No source evidence here establishes that fixture alignment or a new fixture's current membership.",
+    "scope_limit": "This is source feasibility only. No native execution, current fixture inspection, authenticated membership read, product behavior, or T57 acceptance is claimed."
+  }
+}
