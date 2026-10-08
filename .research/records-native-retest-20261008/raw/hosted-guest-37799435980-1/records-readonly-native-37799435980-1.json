@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "inventory_case": "D91 / EXT-F-4130-C02",
+  "status": "passed",
+  "stage": "records_visible_result",
+  "native_stage": "admin_rendered_identity",
+  "artifact": {
+    "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+    "run_id": 37790643945,
+    "artifact_id": 11556064167,
+    "tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046",
+    "version": "0.2.414"
+  },
+  "action": "table_list",
+  "organization_diagnostic": {
+    "substage": "organization_identity_compare",
+    "observations": {
+      "admin_role_verified": true,
+      "picker_available": true,
+      "picker_has_selection": true,
+      "selection_required": true,
+      "menu_open": true,
+      "visible_option_count": 59,
+      "exact_match_count": 1,
+      "exact_visible_match_count": 1,
+      "target_in_viewport": false,
+      "target_center_hit": false,
+      "archive_filter": "unknown",
+      "storage_has_uuid": true,
+      "storage_name_matches": true,
+      "rendered_email_matches": true,
+      "rendered_role_matches": true,
+      "rendered_profile_matches": true,
+      "rendered_organization_matches": true,
+      "tools_view_state": "catalog",
+      "product_request_observed": true,
+      "product_request_duplicate": false,
+      "product_response_observed": true,
+      "product_response_finished": true,
+      "product_loading_failed": false,
+      "product_response_success": true,
+      "product_header_matches": true,
+      "product_principal_matches": true,
+      "observer_cleanup_success": true
+    }
+  },
+  "request": {
+    "path": "/tools/test/execute",
+    "method": "POST",
+    "organization_matches": true,
+    "authenticated_principal_matches": true,
+    "completion_observed": true,
+    "include_app_tables": true,
+    "status": 200,
+    "finished": true
+  },
+  "result": {
+    "visible": true,
+    "success": true,
+    "action": "table_list",
+    "count": 50,
+    "approved_organization_covered": true
+  },
+  "failure_code": null
+}
