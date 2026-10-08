@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "task_id": "EXT-D-0162",
+  "lane": "settings-intel-controlled-retest-B",
+  "status": "native_resource_valid_partial_t63_member_unverified",
+  "scope": "One guarded hosted TEST run of settings-controls on the original frozen development artifact. This is a host-family comparison, not evidence that Intel fixes the earlier resource or startup failures.",
+  "prior_intel_context": {
+    "seo_run_id": 37708611887,
+    "seo_resource_verdict": "All three current journals were valid on macos-15-intel; bounded SEO guest clipboard behavior was observed on the same frozen artifact.",
+    "startup_run_id": 37708712354,
+    "startup_limitation": "The Intel audit attempt failed before any case at owned_cdp_endpoint_timeout and its native resource journal later became invalid. A separate startup diagnostic reached CDP, so Intel startup outcomes have varied. Neither result predicts this Settings attempt."
+  },
+  "preflight": {
+    "lane": "B",
+    "runner_label": "macos-15-intel",
+    "lane_idle": true,
+    "current_settings_workflow": "hosted-guest-acceptance.yml",
+    "current_driver": "tests/browser/settings-local-controls-acceptance.mjs",
+    "sourceguard": "The interval diagnostic activation remains scoped to acceptance_case=startup-resource-diagnostic. This settings-controls run did not receive MATRX_STARTUP_INTERVAL_DIAGNOSTIC; watchdog cadence and policy were unchanged.",
+    "frozen_artifact_available": true
+  },
+  "execution": {
+    "workflow_run_id": 37719749636,
+    "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37719749636",
+    "job_id": 113124447019,
+    "workflow_head_sha": "52f706cb3c45649b7ca171716bc15e6af70a607f",
+    "runner_name": "GitHub Actions hosted macOS 15 Intel",
+    "runner_label": "macos-15-intel",
+    "runner_architecture": "X64",
+    "machine": "x86_64",
+    "started_at": "2026-10-08T02:49:25Z",
+    "terminal_at": "2026-10-08T02:56:35Z",
+    "conclusion": "success",
+    "attempt_count": 1
+  },
+  "selected_artifact": {
+    "ci_run_id": 37698216289,
+    "artifact_id": 11516342905,
+    "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "version": "0.2.391",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+    "verified": true
+  },
+  "resource_admission": {
+    "decision": "valid",
+    "resource_invalid": false,
+    "available_memory_gib": 12.46,
+    "logical_cpus": 4,
+    "swap_used_mib": 0,
+    "journals": {
+      "package": {
+        "path": ".research/settings-intel-controlled-retest-20261007/originals/hosted-guest-37719749636-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37719749636-1.jsonl",
+        "sha256": "161602dae05ed4f59cea050bb63ba9a37aabfc3aacbd58455453127f30bc0029",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "admission_cpu_busy_fraction": 0.011428571428571429,
+        "admission_one_minute_load": 3.15
+      },
+      "browser": {
+        "path": ".research/settings-intel-controlled-retest-20261007/originals/hosted-guest-37719749636-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37719749636-1.jsonl",
+        "sha256": "ef8494e6ca3f7bf2d1351d8def20c99fe81f00359c53892328f99cd4e870a672",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "admission_cpu_busy_fraction": 0.06142857142857144,
+        "admission_one_minute_load": 1.11
+      },
+      "settings_guest": {
+        "path": ".research/settings-intel-controlled-retest-20261007/originals/hosted-guest-37719749636-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37719749636-1.jsonl",
+        "sha256": "448718573a106f66fbdd49142c2f554ecf0c8732bb94eade4c9ba2d180e70175",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "admission_cpu_busy_fraction": 0.012857142857142857,
+        "admission_one_minute_load": 1.25,
+        "watch_cpu_busy_fractions": [0.34, 0.18],
+        "watch_reasons": []
+      }
+    },
+    "interpretation": "This X64 host admitted and completed this run under the unchanged watchdog. The comparison does not establish why the earlier ARM runs were CPU-invalid or why prior Intel startup sometimes failed CDP."
+  },
+  "native_receipt": {
+    "path": ".research/settings-intel-controlled-retest-20261007/originals/hosted-guest-37719749636-1/matrx-extend/matrx-extend/test-results/settings-local-controls-acceptance.json",
+    "sha256": "97f4f6f69be17d4eb71365df15d4c77f68ebda87ec98bfbdaf9d087e1e2345f2",
+    "status": "unverified_overall_due_incomplete_cases",
+    "native_browser_family": "Chromium supplied through the hosted Playwright runtime; readiness revision 1194. Exact browser version was not recorded in the native receipt.",
+    "scope": "Real isolated Chrome native side panel; signed-out guest",
+    "guest_extension_reload": {
+      "management_reload_clicked": true,
+      "old_targets_retired": true,
+      "worker_replaced": true,
+      "panel_replaced": true
+    },
+    "replacement_settings_boundary": {
+      "status": "settings_opened",
+      "runtime_id_matches": true,
+      "document_ready": true,
+      "visible": true,
+      "settings_tab_count": 1,
+      "settings_active_count": 1
+    },
+    "target_cases": {
+      "EXT-F-1003-T63": "Guest warm and post-reload admin/optional controls absent; ordinary-member denial unverified because this guest run has no member principal. Partial only.",
+      "EXT-F-1003-T64": "PASS: five criteria for two disposable origins, selected-only removal, reload persistence, and hidden empty list.",
+      "EXT-F-1003-T73": "PASS: guest Account and Organization checks in warm and reload phases.",
+      "EXT-F-1003-T76": "PASS: guest archive filter and organization read/choice absence in warm and reload phases.",
+      "EXT-F-1003-T92": "PASS: guest archived-membership/restoration absence in warm and reload phases."
+    },
+    "surrounding_case_statuses": {
+      "EXT-F-1003-T04": "pass",
+      "EXT-F-1003-T10": "unverified: new-chat inheritance is outside this non-Chat batch",
+      "EXT-F-1003-T13": "pass",
+      "EXT-F-1003-T22": "pass",
+      "EXT-F-1003-T37": "pass",
+      "EXT-F-1003-T46": "pass",
+      "EXT-F-1003-T70": "unverified: unavailable/error/update branches were not fabricated",
+      "EXT-F-1003-T63": "partial: guest observations pass; member denial unverified",
+      "EXT-F-1003-T64": "pass",
+      "EXT-F-1003-T73": "pass",
+      "EXT-F-1003-T76": "pass",
+      "EXT-F-1003-T92": "pass"
+    },
+    "inventory_changed": false
+  },
+  "evidence_artifact": {
+    "id": 11525491283,
+    "name": "hosted-guest-37719749636-1",
+    "digest": "sha256:318e4ae7ab8e6c7343a76c484daf4213f241178e527e16fa0d6451155255f37c",
+    "originals_directory": ".research/settings-intel-controlled-retest-20261007/originals/hosted-guest-37719749636-1",
+    "included_current_receipt_and_journals": true,
+    "note": "The downloaded workflow artifact also contains pre-existing journal files for run 37105304739. They are retained as downloaded artifact contents and are not used as evidence for this run. Only the three 37719749636 current-run journals above establish its resource verdict."
+  },
+  "limitations": [
+    "T63 remains partial because ordinary-member denial was not exercised.",
+    "The run is a controlled host-family comparison and does not prove Intel causation or solve prior Intel CDP startup failures.",
+    "No inventory promotion or D162 state transition is made; independent owner review remains pending."
+  ],
+  "next_action": "Return the native receipt and three current journals for independent root review. No second run is authorized by this result."
+}
