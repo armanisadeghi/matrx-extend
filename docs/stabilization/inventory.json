@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T12:20:29.457642+00:00",
+  "updated_at": "2026-10-08T12:30:43.349164+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -19182,7 +19182,7 @@
               }
             }
           ],
-          "defect_ids": ["EXT-D-0170", "EXT-D-0174"],
+          "defect_ids": ["EXT-D-0170", "EXT-D-0174", "EXT-D-0176"],
           "attempt_history": [
             {
               "at": "2026-10-08T06:31:41.651988+00:00",
@@ -19418,7 +19418,7 @@
       "cells": {
         "guest": {
           "test_status": "partial",
-          "defect_ids": ["EXT-D-0076", "EXT-D-0174"],
+          "defect_ids": ["EXT-D-0076", "EXT-D-0174", "EXT-D-0176"],
           "run_ids": [
             "seo-guest-001",
             "seo-guest-002",

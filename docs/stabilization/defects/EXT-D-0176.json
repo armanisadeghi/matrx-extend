@@ -1,0 +1,44 @@
+{
+  "id": "EXT-D-0176",
+  "feature_id": "EXT-F-1008",
+  "case_ids": ["EXT-F-1008-T09"],
+  "surface": "Hosted SEO resource diagnostic evidence",
+  "auth_mode": "guest",
+  "title": "Opt-in diagnostic can retain passing acceptance status",
+  "severity": "S2: test infrastructure could misclassify instrumented evidence; no product defect",
+  "priority": "P1",
+  "state": "in-fix",
+  "owner": "root/seo_diagnostic_classification_fix",
+  "preconditions": [
+    "Source5c0c03d1 opt-in SEO CPU diagnostic classifier before independent finding af91b965."
+  ],
+  "reproduction": [
+    "Invoke actual hosted SEO diagnostic classifier with opt-in true and successful status pass.",
+    "Inspect classified receipt status and acceptance evidence interpretation."
+  ],
+  "expected": "Every opt-in instrumented outcome is excluded from native acceptance, including pass; default non-diagnostic outcomes retain their own semantics.",
+  "actual": "Only partial status is changed to diagnostic_only. A pass remains pass and can be accepted by the evidence summarizer even with empty targets.",
+  "evidence": [".research/seo-resource-diagnostic-peer-20261008.json"],
+  "root_cause": "Classifier switches only one successful status rather than enforcing the diagnostic evidence class independently of outcome.",
+  "transition_history": [
+    {
+      "at": "2026-10-08T12:30:05.063902+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Fresh independent actual-classifier probe reproduced pass retaining pass."
+    },
+    {
+      "at": "2026-10-08T12:30:05.063902+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Evidence summarizer recognizes pass, violating explicit no-credit invariant."
+    },
+    {
+      "at": "2026-10-08T12:30:05.063902+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Fresh implementation lane owns classification and causal guard repair."
+    }
+  ],
+  "closure_requirement": "Actual classifier/writer and consumer exclude all diagnostic outcomes, with causal old-red/new-green guard and fresh independent review. Native SEO health stays unverified."
+}
