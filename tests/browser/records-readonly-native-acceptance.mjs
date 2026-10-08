@@ -7,6 +7,8 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { runOwnedApprovalCreate } from './records-approval-lifecycle.mjs';
+import { openRecordsC06Approvals } from './records-c06-browser-approvals.mjs';
 import { withRecordsPositiveFixture } from './records-positive-fixture.mjs';
 import {
   assertRecordsVisibleCompletion,
@@ -55,6 +57,7 @@ const report = {
   negative_reads: [],
   negative_mutations: [],
   positive_reads: [],
+  positive_mutations: [],
   fixture_cleanup: null,
   fixture_diagnostics: [],
   invalid_input: null,
@@ -253,6 +256,7 @@ try {
       stage('records_bearer_read');
       const bearerHash = await panelBearerHash(panel);
       assert.match(bearerHash ?? '', /^[0-9a-f]{64}$/, 'records_authenticated_token_unavailable');
+      let toolTestConversationId = null;
       const execute = async (argumentsInput, expectedBearerHash, label) => {
         const observer = observeRecordsExecution(panel, approved.id, expectedBearerHash);
         const diagnostic = {
@@ -293,6 +297,21 @@ try {
           } catch {
             diagnostic.failure = 'completion_parse_failed';
             throw new Error(`${label}_completion_parse_failed`);
+          }
+          const observedConversationId = observer.conversationId();
+          if (observedConversationId !== null) {
+            assert.match(
+              observedConversationId,
+              /^[0-9a-f-]{36}$/i,
+              'records_tool_conversation_invalid',
+            );
+            if (toolTestConversationId !== null)
+              assert.equal(
+                observedConversationId,
+                toolTestConversationId,
+                'records_tool_conversation_changed',
+              );
+            toolTestConversationId = observedConversationId;
           }
           diagnostic.completion = recordsCompletionShape(completion);
           diagnostic.phase = 'visible_output_wait';
@@ -639,7 +658,7 @@ try {
         onStage: stage,
         onFailure: (diagnostic) => report.fixture_diagnostics.push(diagnostic),
         transportFailureClass,
-        exercise: async ({ tableId, rowId, rowName, rowVersion }) => {
+        exercise: async ({ tableId, rowId, rowName, rowVersion, cleanupOwnedTable }) => {
           assert.ok(rowName.endsWith('-row'), 'records_fixture_row_name_invalid');
           const tableName = rowName.slice(0, -'-row'.length);
           const ownedListInput = {
@@ -893,6 +912,100 @@ try {
             original_version_observed: true,
             author_and_time_observed: true,
           });
+          stage('records_c06_approval_setup');
+          assert.match(
+            toolTestConversationId ?? '',
+            /^[0-9a-f-]{36}$/i,
+            'records_c06_conversation_unobserved',
+          );
+          const approvals = await openRecordsC06Approvals({
+            context: page.context(),
+            principalId: auth.profileId,
+            expectedEmail: auth.email,
+          });
+          const approvalRowName = `${tableName}-approval-row`;
+          try {
+            const completed = await runOwnedApprovalCreate({
+              journalPath: `${output}.c06-approval-journal.json`,
+              conversationId: toolTestConversationId,
+              owner: {
+                tableId,
+                organizationId: approved.id,
+                principalId: auth.profileId,
+                rowName: approvalRowName,
+              },
+              dispatchCreate: async ({
+                tableId: ownedTableId,
+                rowName: ownedRowName,
+                conversationId,
+              }) => {
+                assert.equal(
+                  conversationId,
+                  toolTestConversationId,
+                  'records_c06_conversation_changed',
+                );
+                const write = {
+                  action: 'record_write',
+                  args: {
+                    table_id: ownedTableId,
+                    records: [{ name: ownedRowName }],
+                  },
+                };
+                await enterRecordsInput(panel, evaluate, stage, write, process.platform);
+                const result = await execute(write, reloadBearerHash, 'records_c06_write');
+                assert.equal(result.success, true, 'records_c06_write_refused');
+                assert.equal(result.output?.action, 'record_write', 'records_c06_wrong_action');
+                return result.output;
+              },
+              readApproval: (approvalId, organizationId) =>
+                approvals.readApproval(approvalId, organizationId),
+              approveInUi: ({ approvalId, organizationId, tableId: ownedTableId }) =>
+                approvals.decideInUi({
+                  approvalId,
+                  organizationId,
+                  tableId: ownedTableId,
+                  decision: 'Approve',
+                  tableName,
+                }),
+              declineInUi: ({ approvalId, organizationId, tableId: ownedTableId }) =>
+                approvals.decideInUi({
+                  approvalId,
+                  organizationId,
+                  tableId: ownedTableId,
+                  decision: 'Decline',
+                  tableName,
+                }),
+              readRecord: async (newRowId, organizationId) => {
+                assert.equal(organizationId, approved.id, 'records_c06_read_wrong_org');
+                const read = { action: 'record_read', args: { record_id: newRowId } };
+                await enterRecordsInput(panel, evaluate, stage, read, process.platform);
+                const result = await execute(read, reloadBearerHash, 'records_c06_readback');
+                assert.equal(result.success, true, 'records_c06_readback_refused');
+                assert.equal(
+                  result.output?.action,
+                  'record_read',
+                  'records_c06_readback_wrong_action',
+                );
+                return result.output.record;
+              },
+              cleanupTable: ({ tableId: ownedTableId, organizationId, principalId }) => {
+                assert.equal(organizationId, approved.id, 'records_c06_cleanup_wrong_org');
+                assert.equal(principalId, auth.profileId, 'records_c06_cleanup_wrong_principal');
+                return cleanupOwnedTable(ownedTableId);
+              },
+            });
+            assert.equal(completed.approved_and_read_back, true, 'records_c06_completion_missing');
+            report.positive_mutations.push({
+              inventory_case: 'EXT-F-4130-C06',
+              action: 'record_write',
+              held: true,
+              ui_approved: true,
+              readback_verified: true,
+              archived_verified: true,
+            });
+          } finally {
+            await approvals.close();
+          }
         },
       });
       assert.equal(fixture.archived_verified, true, 'records_fixture_cleanup_unverified');

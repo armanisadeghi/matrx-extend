@@ -136,8 +136,9 @@ test('owned fixture journals before writes, exercises actual returned IDs, then 
   const s = await scenario();
   try {
     let exercised = false;
-    const receipt = await s.run(async (fixture) => {
+    const receipt = await s.run(async ({ cleanupOwnedTable, ...fixture }) => {
       exercised = true;
+      assert.equal(typeof cleanupOwnedTable, 'function');
       assert.deepEqual(fixture, {
         tableId,
         rowId,
@@ -158,6 +159,24 @@ test('owned fixture journals before writes, exercises actual returned IDs, then 
       ['GET', 'GET', 'POST', 'POST', 'GET', 'DELETE', 'GET'],
     );
     assert.equal(JSON.parse(await readFile(s.journalPath, 'utf8')).phase, 'archived_verified');
+  } finally {
+    await s.cleanup();
+  }
+});
+
+test('owned fixture permits in-session approval cleanup and outer finally verifies absence without archiving twice', async () => {
+  const s = await scenario();
+  try {
+    const receipt = await s.run(async ({ tableId: ownedTableId, cleanupOwnedTable }) => {
+      const cleaned = await cleanupOwnedTable(ownedTableId);
+      assert.deepEqual(cleaned, {
+        archived_verified: true,
+        same_principal: true,
+        table_invisible: true,
+      });
+    });
+    assert.equal(receipt.archived_verified, true);
+    assert.equal(s.archiveAttempts, 1);
   } finally {
     await s.cleanup();
   }
