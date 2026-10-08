@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T20:29:18.629833+00:00",
+  "updated_at": "2026-10-08T20:53:55.163104+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -6287,11 +6287,14 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "37837587382",
-              "evidence": [".research/settings-sections-scrape-native-20261008.json"],
+              "run_id": "37840985992",
+              "evidence": [
+                ".research/settings-census-native-20261008.json",
+                ".research/parallel-replay-peer-20261008.json"
+              ],
               "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
               "build_version": "0.2.414",
-              "detail": "Initial active/headings-length census failed before section actions; receipt omitted observed headings/active state. This is an undiagnosed acceptance boundary, not proven product failure. No section or post-extension-reload acceptance.",
+              "detail": "Resource-valid census fails before actions: active true,11 expected headings plus4 nested expanded controls. Source selector overbreadth repaired0c8ae904; hosted37842734890 passed. Native section behavior and full-extension repeat remain unverified.",
               "resource_valid": true,
               "scope": "Frozen artifact11568846736; overall run failed T28; other per-case observations retained. No current-main/Store/member/admin claim."
             }
@@ -6339,6 +6342,16 @@
                 "evidence": "docs/stabilization/runs/guest-settings-002.json"
               },
               "reason": "Preserve earlier-artifact evidence separately from current414 run; not current-main or full reload proof."
+            },
+            {
+              "status": "unverified",
+              "run_id": "37837587382",
+              "evidence": [".research/settings-sections-scrape-native-20261008.json"],
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "build_version": "0.2.414",
+              "detail": "Initial active/headings-length census failed before section actions; receipt omitted observed headings/active state. This is an undiagnosed acceptance boundary, not proven product failure. No section or post-extension-reload acceptance.",
+              "resource_valid": true,
+              "scope": "Frozen artifact11568846736; overall run failed T28; other per-case observations retained. No current-main/Store/member/admin claim."
             }
           ]
         },
@@ -65075,6 +65088,15 @@
               "resource_valid": true,
               "evidence": [".research/records-positive-corrected-native-20261008.json"],
               "detail": "Corrected credential preflight passed; native C02/C03 and malformed inputs passed. Fixture recovery list failed with unexpected_error, no retained method/status; C04/C05 positive reads unverified. Planned journal before create and separate complete authenticated list with zero owned live fixtures; temporary secrets deleted and root independently verified names absent. Diagnose callback-to-receipt exception before retry."
+            },
+            {
+              "run_id": "37840973320",
+              "mode": "admin",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "resource_valid": true,
+              "evidence": [".research/records-recovery-native-20261008.json"],
+              "detail": "C02/C03 and malformed refusals repeated; positive fixture recovery GET throws before HTTP/preflight result. Actual CDP failure class not retained. No create reached; planned journal plus separate complete live list zero owned fixtures. Secrets removed/root names-only absence. Independent Settings peer confirms bounded failure; no C04/C05 credit. Escalation fresh seat failed ENOSPC; preserve evidence, no blind replay."
             }
           ],
           "results": {

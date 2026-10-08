@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-08 20:29 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T20:29:18.629833+00:00. 205 features · 769 cases · 1358 controls · 184 linked defect records.
+Generated 2026-10-08 20:53 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T20:53:55.163104+00:00. 205 features · 769 cases · 1358 controls · 184 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -498,8 +498,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: ['docs/stabilization/reports/guest-settings-applicability.json', 'docs/stabilization/runs/guest-settings-local-003.json']
 - EXT-F-1003-T27 · admin: Partial. Admin identity and key-read/error recovery exercised; no assertions for creation time, receipt count, recent rows, filters, or a normal warm/reload display comparison.
   Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
-- EXT-F-1003-T28 · guest: Unverified. Initial active/headings-length census failed before section actions; receipt omitted observed headings/active state. This is an undiagnosed acceptance boundary, not proven product failure. No section or post-extension-reload acceptance.
-  Evidence / build / date recorded: 37837587382, ['.research/settings-sections-scrape-native-20261008.json']
+- EXT-F-1003-T28 · guest: Unverified. Resource-valid census fails before actions: active true,11 expected headings plus4 nested expanded controls. Source selector overbreadth repaired0c8ae904; hosted37842734890 passed. Native section behavior and full-extension repeat remain unverified.
+  Evidence / build / date recorded: 37840985992, ['.research/settings-census-native-20261008.json', '.research/parallel-replay-peer-20261008.json']
 - EXT-F-1003-T30 · admin: Pass. Actual adminUI on0.2.51; full control criteria includingreload verified, System/Fast/groups restored; resourcehealthy.
   Evidence / build / date recorded: admin-settings-local-001, docs/stabilization/runs/admin-settings-local-001.json
 - EXT-F-1003-T31 · guest: Partial. Four on/off visible/stored checks pass across warm and panel-document reload. Downstream consumer behavior and full-extension-reload preference behavior unverified. T34 cleanup Settings reacquisition failed and restoration is not proven; this run does not independently expose final restored baseline values for the privacy batch. No Store/current-main/whole-feature health claim.

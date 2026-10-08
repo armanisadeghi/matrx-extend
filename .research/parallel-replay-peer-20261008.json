@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-08",
+  "recorded_by": "root from independent worker returns",
+  "reviews": [
+    {
+      "run_id": "37840973320",
+      "reviewer": "settings_behavior_review",
+      "zero_native_harness_authorship": true,
+      "A": "C02/C03 and malformed refusals repeated; C04/C05 unverified. No product fix inferred.",
+      "B": "Package/browser valid; guest resource-valid child failure. Recovery GET request exception without HTTP/browser stage; CDP cause unknown. Planned journal no IDs and no create; separate authenticated complete list zero owned live fixtures. Temporary secrets absent independently checked by root."
+    },
+    {
+      "run_id": "37840985992",
+      "reviewer": "records_native_recover_2010",
+      "zero_native_harness_authorship": true,
+      "A": "T28 fails before section actions: active true,15 aria-expanded controls,11 expected labels in order,4 unknown. No product failure or section pass inferred.",
+      "B": "All four raw hashes match report; GitHub artifact11577787460 digest/size/head verified. Package/browser valid; guest child_failed resource-valid. Raw steps empty; failure criterion precedes loop. Report11pass/7unverified agrees with raw."
+    }
+  ],
+  "limitation": "Reused disjoint zero-authorship seats; fresh reviewer creation unavailable due ENOSPC. Recorded passes are bounded subtargets, not full-case acceptance.",
+  "settings_selector_source_review": {
+    "commit": "0c8ae904c926a360fe1c05d63dc19628e42183fb",
+    "reviewer": "records_native_recover_2010",
+    "A": "Source approve: actual SettingsView/Collapsible direct wrapper shape matches selector, nested controls excluded, new top-level section detected; ordered roster and per-section assertions intact.",
+    "B": "Source approve: real generated expression tested against source-shaped Happy DOM markup; four nested controls and added section covered. Privacy receipt guard retained. Synthetic DOM, not mounted React; native retest required.",
+    "hosted_gate": "37842734890 success, independently polled by root"
+  }
+}
