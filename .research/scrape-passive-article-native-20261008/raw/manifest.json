@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "hosted_run": {
+    "id": 37827832123,
+    "attempt": 1,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37827832123",
+    "workflow": "Hosted guest side-panel acceptance",
+    "case": "guest-scrape-development",
+    "lane": "B",
+    "runner_label": "macos-15",
+    "head_sha": "cf1f190ca7e44d1e77ba9ec1d11faaa1d155639f",
+    "started_at": "2026-10-08T18:54:00Z",
+    "completed_at": "2026-10-08T19:01:35Z",
+    "conclusion": "failure",
+    "dispatch": {
+      "development_run_id": 37790643945,
+      "development_artifact_id": 11556064167,
+      "scrape_auth_mode": "guest",
+      "scrape_width_mode": "normal",
+      "scrape_normal_width_px": 600,
+      "scrape_reload_open_diagnostic": false,
+      "retry_count": 0
+    }
+  },
+  "reviewed_source": {
+    "focused_ci_run": 37827160057,
+    "focused_ci_head": "aaa0cac3b8705174864d26dc4827f9c1e0eb4f00",
+    "article_preparation_commit": "1e2b9b24",
+    "passive_trace_commit": "aaa0cac3",
+    "driver_sha256_git_blob": "611099c1c145e4a23a62d0f84092240c3a11b635",
+    "pane_coverage_sha256_git_blob": "2e73c7e08cc5a57726729f04c02410b4a7e79040",
+    "pane_tests_sha256_git_blob": "e6e596cc7934dadfbb065348ee37084590211818",
+    "reload_harness_sha256_git_blob": "2e9d566bc7ad8fb118b2ee997b45b3de1f06b452",
+    "reload_capture_sha256_git_blob": "1145f262649bebfacf07f0288d557f7b3f637507"
+  },
+  "product_artifact": {
+    "channel": "development",
+    "version": "0.2.414",
+    "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+    "tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046",
+    "ci_run_id": 37790643945,
+    "artifact_id": 11556064167,
+    "artifact_sha256_digest": "sha256:7a93776a9322c27973756ddb542fd2e8580d900c356d28a0ad1504928edf3964",
+    "runtime_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "browser": "Chrome/141.0.7390.37",
+    "guest_account_observed": true,
+    "access_token_present": false,
+    "user_profile_present": false
+  },
+  "native_run_artifact": {
+    "id": 11572193711,
+    "name": "hosted-guest-37827832123-1",
+    "expired": false,
+    "sha256_digest": "sha256:b22a9a40c5c6384197ba88ee8082aa2f20e6a072218d9bfae2345593bc397f3e"
+  },
+  "native_failure": {
+    "status": "unverified",
+    "stage": "extension_reload",
+    "native_stage": "exercise_panel",
+    "code": "native_extension_worker_retirement_unverified",
+    "old_worker_destroyed_event": false,
+    "old_worker_execution_retired": false,
+    "old_worker_absent": true,
+    "old_panel_absent": true,
+    "replacement_worker_present": true,
+    "replacement_worker_created_event": true,
+    "replacement_panel_created_event": false,
+    "fresh_replacement_state": "new",
+    "fresh_replacement_running_status": "starting",
+    "fresh_replacement_cleanup": "confirmed",
+    "open_panel_request_observed": false,
+    "management_state": "ENABLED",
+    "runtime_error_count": 0,
+    "manifest_error_count": 0
+  },
+  "evidence_sha256": {
+    "scrape-guest-native-report.json": "2d474fc2794230b2d365b152738718f1bbb71a80fcca12852b57a31fba71207d",
+    "hosted-package-37827832123-1.jsonl": "14951c42f6ebf96669dc12e58a2230ae1352dca27249dae999c5ac7211865bd7",
+    "hosted-browser-37827832123-1.jsonl": "3140229ea5338bede637d97365bbfa01fd4f0f67a776a6f2423e240cece2b7b4",
+    "hosted-guest-37827832123-1.jsonl": "e97dcaaf119334a38afece1def9d5a376dc6dda00ba44d9901c70fa2cff5799d"
+  },
+  "resource_journal_final_decisions": {
+    "package": { "admitted": true, "resourceInvalid": false, "exitCode": 0, "decision": "valid" },
+    "browser": { "admitted": true, "resourceInvalid": false, "exitCode": 0, "decision": "valid" },
+    "guest": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 1,
+      "decision": "child_failed"
+    }
+  },
+  "retention": "Exact native receipt plus exactly the three current-run package/browser/guest journals. Artifact screenshots and historical journals were not retained."
+}

@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "inventory_case": "EXT-F-1007-T08",
+  "run_id": 37827832123,
+  "evidence": ".research/scrape-passive-article-native-20261008/raw/manifest.json",
+  "seat": "Reused reviewer seat from adjacent Scrape work; I reviewed the passive trace source before this independent native attempt and did not author the Article assertions.",
+  "verdicts": {
+    "A_behavior": {
+      "verdict": "PARTIAL_WARM_ONLY",
+      "observed": [
+        "On the frozen development 0.2.414 guest artifact, the native receipt reports all six tabs selected with warm capture invariance across Article, Images, Video, Links, SEO and Schema.",
+        "Warm empty Article showed the visible No clean article extracted fallback, left the pane unchanged, and preserved full-capture export identity and payload. Warm empty Links had zero rows, Add link visible, and unchanged export identity and payload. Empty Images and Video were also observed in the warm T08 block."
+      ],
+      "unverified": "The full extension reload failed before replacement-panel creation and before the passive page-local open trace could be sampled. No post-reload Article, Links, or full-pane T08 checks are credited. T08 remains partial; member/admin modes remain separate.",
+      "safe_failure_boundary": {
+        "stage": "extension_reload",
+        "native_stage": "exercise_panel",
+        "code": "native_extension_worker_retirement_unverified",
+        "old_worker_destroyed_event": false,
+        "old_worker_execution_retired": false,
+        "old_worker_absent": true,
+        "old_panel_absent": true,
+        "replacement_worker_present": true,
+        "replacement_worker_created_event": true,
+        "replacement_panel_created_event": false,
+        "fresh_replacement": "new / starting; cleanup confirmed",
+        "open_panel_request": "not observed; the reload boundary failed before the Open panel click"
+      },
+      "limits": [
+        "This is one guest run on frozen development artifact 0.2.414 at 600px normal width, not current-main product artifact acceptance.",
+        "The passive trace itself was not sampled because the worker-retirement gate failed before the replacement-panel click.",
+        "No cause for the intermittent reload failure is inferred, and no overall Scrape health claim is made."
+      ]
+    },
+    "B_evidence_validity": {
+      "verdict": "PASS_PROVENANCE_AND_RESOURCE_ADMISSION_WITH_NATIVE_CASE_FAILURE",
+      "details": "The run used the requested successful frozen CI artifact 11556064167 from run 37790643945; the native receipt agrees on source SHA, version, tree hash, extension ID, Chrome version, guest identity and empty guest auth storage. Focused CI 37827160057 is successful at the passive-trace source; relevant Article/coverage/harness blobs match at the hosted head and focused-CI head. Package and browser journals ended valid/admitted/resourceInvalid=false/exit 0. Guest journal ended child_failed/admitted/resourceInvalid=false/exit 1, consistent with the native failure rather than resource invalidation.",
+      "limits": "This is independently retained native evidence, not a passed native case. The source review and focused CI do not replace the failed post-reload observation."
+    }
+  }
+}
