@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "artifact_type": "inventory-procedure-integration-report",
+  "task_id": "read-tool-procedures-20261008",
+  "sources": [
+    ".research/read-tool-procedures-20261008.json",
+    ".research/read-tool-procedures-final-peer-20261008.json"
+  ],
+  "scope": "Integrated accepted conditional source procedures into EXT-F-4145-T01, EXT-F-4148-T01, and EXT-F-4149-T01 only; regenerated stabilization status views.",
+  "case_ids": ["EXT-F-4145-T01", "EXT-F-4148-T01", "EXT-F-4149-T01"],
+  "preserved": [
+    "runtime cells and results",
+    "roles and applicability",
+    "control IDs and feature/case IDs",
+    "design status",
+    "all existing dimensions"
+  ],
+  "additive_dimensions": [],
+  "execution_status": "All three remain NOT_EXECUTABLE; no runtime result is claimed.",
+  "special_handling": {
+    "EXT-F-4149-T01": "Current-build absence remains source-confirmed and unresolved; the procedure records that absence and offers only a future conditional route after a current handler/catalog and owned fixture exist. Retirement, replacement, applicability, and owner intent remain unresolved.",
+    "manual_routes": "Direct Tools handler execution is kept distinct from dispatcher permission enforcement. The data_patterns saved-run route is described separately from normal dispatcher behavior; rows_limit and permission conclusions are not inferred from it."
+  },
+  "procedure_gap_counts": {
+    "before": { "missing_steps": 12, "missing_expected": 12, "missing_control_links": 27 },
+    "after": { "missing_steps": 9, "missing_expected": 9, "missing_control_links": 27 }
+  },
+  "validation": {
+    "semantic_assertions": "PASS: only the three target case objects changed; preserved fields and target runtime cells/results match the pre-integration inventory.",
+    "generated_files": [
+      "docs/stabilization/STATUS.md",
+      "docs/stabilization/STATUS.html",
+      "docs/stabilization/CHECKLIST.md"
+    ],
+    "runtime_or_browser_execution": false,
+    "heavy_tests": false
+  }
+}
