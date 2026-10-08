@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "artifact_type": "source-procedure-final-peer-review",
+  "reviewed_commit": "041b6cb0",
+  "reviewed_artifact": ".research/demo-recording-procedures-20261008.json",
+  "prior_review": ".research/demo-recording-procedures-peer-20261008.json",
+  "scope": "Source review of exactly EXT-F-4131-T01 through EXT-F-4136-T01. No browser, build, fixture, upload, deletion, or runtime execution.",
+  "verdicts": {
+    "A_procedure_completeness": "CONDITIONAL_PASS",
+    "B_source_quality": "PASS_WITH_MINOR_DUPLICATION"
+  },
+  "finding_resolution": {
+    "post_delete_read": "ADDRESSED: immediate describe_demo is explicitly a resurrection regression probe expecting no restoration; its absent result is not a cleanup oracle. A restored body is a failure and the owned ID remains retained.",
+    "local_vs_cloud_cleanup": "ADDRESSED: exact-ID list absence and exact local body-key absence are separate from authorized cloud tombstone evidence. The ID is retained until both are proven; a second delete is diagnostic only.",
+    "dry_run_navigation_and_scroll": "ADDRESSED: all start and recorded navigation URLs plus every scroll are bounded to the owned fixture. The procedure states dry_run still navigates/reloads and scrolls and is not side-effect-free.",
+    "missing_id_and_read_failure": "ADDRESSED: a fresh never-saved ID needs independent local, guidance, and exact-ID cloud absence checks before demo_not_found is accepted. Cloud read failure and demo_body_unavailable stay distinct.",
+    "recorder_realm_gap": "ADDRESSED: the side-panel/service-worker recorder-state boundary is classified NOT_EXECUTABLE on source evidence only, with no reproduced defect or runtime pass claim. All six proposed cases remain NOT_EXECUTABLE without owned fixtures and a matching build/resource receipt."
+  },
+  "new_findings": [
+    {
+      "severity": "MINOR",
+      "location": ".research/demo-recording-procedures-20261008.json:43-44",
+      "finding": "The source limits state the same delete/read resurrection race twice. This is editorial duplication only; both entries correctly call it runtime-unverified and it does not change an oracle."
+    }
+  ],
+  "source_checks": [
+    "src/lib/demos/storage.ts:26-29,70-82 defines the exact local body key and schedules the cloud tombstone without awaiting it.",
+    "src/lib/demos/cloud-sync.ts:162-183 can hydrate a still-live cloud row after a local miss and propagates cloud read errors.",
+    "src/lib/demos/replayer.ts:56-146 navigates/reloads and executes navigation and scroll steps before the dry-run guard at line 285.",
+    "src/lib/tools/handlers/demos.ts:54-80 distinguishes known-reference body unavailable from not found.",
+    "src/features/tools/ToolsView.tsx:453-462 invokes the handler directly while src/lib/background/bootstrap.ts:550-553 consumes capture events in the service worker."
+  ],
+  "validation": "JSON parsed; six selected cases and six NOT_EXECUTABLE statuses confirmed. No runtime tests were run under this source-only brief.",
+  "runtime_status": "UNVERIFIED"
+}
