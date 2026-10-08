@@ -32,7 +32,16 @@
     ".research/records-native-review-repair-20261008.json",
     ".research/records-repair-final-peer-20261008.json",
     ".research/records-driver-guard-20261008.json",
-    ".research/records-ci-diagnostics-peer-20261008.json"
+    ".research/records-ci-diagnostics-peer-20261008.json",
+    ".research/records-first-native-acceptance-20261008.json",
+    ".research/parallel-product-attempt-peer-20261008.json",
+    ".research/records-input-failure-repair-20261008.json",
+    ".research/records-input-final-peer-20261008.json",
+    ".research/records-native-retest-20261008.json",
+    ".research/records-live-peer-20261008-1529.json",
+    ".research/records-dimensions-repair-20261008-1553.json",
+    ".research/records-dimensions-peer-20261008-1559.json",
+    ".research/records-negative-contract-audit-20261008-1602.json"
   ],
   "transition_history": [
     {
@@ -71,6 +80,7 @@
     "entity_read",
     "entity_write"
   ],
-  "current_work": "Release 0.2.176 (source 3fe608d949a06aa10bfea57b43c9b05638386bc1) includes extension commit 41670d8d; aidream source c971bc6314 supplies the canonical server contract. The release artifact records strict release gates exiting 0, and source review confirms the executor retirement, retained discovery/manual UI, and complete contract gate. This supersedes the stale claim that source review and the strict gate are still pending. D91 remains in-fix: the retained independent live check predates server deployment, no post-deployment Records user result is recorded, and the focused native Manual Tools Records read-only case is still not executed. Do not infer all-action acceptance from the strict gate or unrelated guest/member Chat runs.",
-  "native_acceptance_preparation": "records-readonly-admin routed to authenticatedlaneA. Sourcee4ed23d3 fixes four independent findings; guardd65ac528 passes fresh667c2574 at actualcallback seam, including missingstage/wrongprincipal/stalevisiblebody and cleanup. No native Records action run yet. Next exactcandidate browser test must prove actual signed-in table_list include_app_tables, matching org/principal and finishedrequest correlated visible result; allother Records actions remain unverified."
+  "current_work": "One post-deployment native admin table_list read now has independent bounded acceptance on development414: run37799435980 and peer7a38cfc2. Exact input reached finished request and correlated visible output; all three resource journals valid. This repairs the prior test-driver input obstacle, not product source. Other Records actions, negative cases, reload and non-admin modes remain unverified; D91 stays in-fix. Backend sampled only after run; do not infer request-time source or all-action health.",
+  "native_acceptance_preparation": "Sourceac4d5b23 extends existing real driver with exact correlated invalid_arguments refusal and Page.reload plus renewed admin/org positive read.9 focused tests and exact focused CI37804765159 pass; fresha92483f4 source review passes, native pending. Source audit4c68c482 corrects23 registered executor-prevalidation procedure expectations; C01/C06 exclusions preserved. Next one native A attempt after T57 terminal and secret cleanup.",
+  "native_acceptance_attempt": "37799435980 succeeds after test-driver repair04ba1909; fresh7a38cfc2 verifies actual receipt/producer assertions, all journals and present secret-name absence. C02 positive read only; original37795653439 failure remains in history."
 }

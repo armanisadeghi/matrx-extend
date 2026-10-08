@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-08T15:25:30Z",
+  "scope": "One hosted native authenticated read-only Records acceptance on the repaired input driver.",
+  "case": {
+    "defect": "D91",
+    "feature_case": "EXT-F-4130-T01",
+    "control_case": "EXT-F-4130-C02",
+    "action": "table_list",
+    "status": "bounded_pass",
+    "claim_limit": "This proves the C02 table_list control only; it does not close T01 or the other Records controls."
+  },
+  "source_gate": {
+    "input_repair_commit": "04ba190910b8824e97fb82c4d43d3cbfe9ae7477",
+    "focused_ci_run_id": 37797807542,
+    "focused_ci_source": "04ba190910b8824e97fb82c4d43d3cbfe9ae7477",
+    "focused_ci_conclusion": "success",
+    "workflow_head_sha": "c00a53429dbe1fea23805ad8d605cd84ab76c29a",
+    "development_ci_run_id": 37790643945,
+    "development_ci_source": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+    "development_ci_conclusion": "success",
+    "development_artifact_id": 11556064167,
+    "development_artifact_version": "0.2.414",
+    "development_artifact_expired": false,
+    "development_tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046"
+  },
+  "hosted_run": {
+    "id": 37799435980,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37799435980",
+    "lane": "A",
+    "runner_label": "macos-15",
+    "case": "records-readonly-admin",
+    "workflow_head_sha": "c00a53429dbe1fea23805ad8d605cd84ab76c29a",
+    "status": "completed",
+    "conclusion": "success",
+    "started_at_utc": "2026-10-08T15:17:07Z",
+    "completed_at_utc": "2026-10-08T15:24:07Z",
+    "native_step": {
+      "name": "Exercise the selected Chrome side-panel case",
+      "started_at_utc": "2026-10-08T15:21:47Z",
+      "completed_at_utc": "2026-10-08T15:23:58Z",
+      "conclusion": "success"
+    },
+    "run_artifact_id": 11560830342,
+    "run_artifact_name": "hosted-guest-37799435980-1",
+    "run_artifact_expired": false,
+    "downloaded_zip_sha256": "d6d6d1ceb1a6b1a7de9b967e95e5d209fbe4c5f43daefced4fe772a4ee33fa9e"
+  },
+  "native_receipt": {
+    "status": "passed",
+    "stage": "records_visible_result",
+    "native_stage": "admin_rendered_identity",
+    "action": "table_list",
+    "admin_role_verified": true,
+    "rendered_email_matches": true,
+    "rendered_role_matches": true,
+    "rendered_profile_matches": true,
+    "rendered_organization_matches": true,
+    "request": {
+      "path": "/tools/test/execute",
+      "method": "POST",
+      "finished": true,
+      "status": 200,
+      "authenticated_principal_matches": true,
+      "organization_matches": true,
+      "include_app_tables": true,
+      "completion_observed": true
+    },
+    "result": {
+      "visible": true,
+      "success": true,
+      "action": "table_list",
+      "count": 50,
+      "approved_organization_covered": true
+    },
+    "failure_code": null,
+    "observer_cleanup_success": true
+  },
+  "input_assertions": {
+    "native_driver": "tests/browser/records-readonly-native-acceptance.mjs",
+    "textarea_focused": true,
+    "select_all_confirmed": true,
+    "visible_textarea_equal_to_expected_json": true,
+    "finished_request_body_deep_equal_to_expected": true,
+    "expected_request": {
+      "tool_name": "records",
+      "arguments": {
+        "action": "table_list",
+        "args": {
+          "organization_id": "matches approved private fixture",
+          "include_app_tables": true,
+          "limit": 50
+        }
+      }
+    },
+    "visible_result_equal_to_correlated_completion": true
+  },
+  "backend_health_version": {
+    "endpoint": "https://server.app.matrxserver.com/health/version",
+    "observation": {
+      "label": "after_terminal",
+      "observed_at_utc": "2026-10-08T15:25:30Z",
+      "http_status": 200,
+      "git_sha": "88fbdae6fb22e43d7bef8c4641d54372ca7af4a3"
+    },
+    "limitation": "The workflow did not bracket the native request with backend version observations, so this SHA is the immediate post-run observation; backend movement during the request is unverified."
+  },
+  "resource_phases": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "valid",
+      "exit_code": 0
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "valid",
+      "exit_code": 0
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "valid",
+      "exit_code": 0
+    }
+  },
+  "secret_lifecycle": {
+    "lane_a_available_before_staging": true,
+    "temporary_secret_names_absent_before": true,
+    "canonical_admin_source_used": true,
+    "approved_organization_fixture_used": true,
+    "local_staging_directory_mode": "0700",
+    "local_secret_files_mode": "0600",
+    "staged_for_single_attempt": true,
+    "both_names_deleted_after_terminal": true,
+    "independent_absence_check_after_cleanup": true,
+    "local_owned_directory_and_files_removed_after_terminal": true,
+    "sensitive_values_printed_or_committed": false
+  },
+  "raw_evidence": [
+    ".research/records-native-retest-20261008/raw/hosted-guest-37799435980-1/records-readonly-native-37799435980-1.json",
+    ".research/records-native-retest-20261008/raw/hosted-guest-37799435980-1/hosted-package-37799435980-1.jsonl",
+    ".research/records-native-retest-20261008/raw/hosted-guest-37799435980-1/hosted-browser-37799435980-1.jsonl",
+    ".research/records-native-retest-20261008/raw/hosted-guest-37799435980-1/hosted-guest-37799435980-1.jsonl"
+  ],
+  "privacy": "Only bounded receipt fields and resource journals are retained. No organization ID/name, credentials, bearer, response body, table names, screenshots, or row content are retained."
+}

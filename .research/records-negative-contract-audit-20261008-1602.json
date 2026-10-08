@@ -1,0 +1,32 @@
+{
+  "audit": "records-negative-contract-audit-20261008-1602",
+  "scope": "Source-only classification of negative inputs in .research/records-control-procedures-20261008.json. No product/runtime changes and no live requests, synthetic writes, tests, builds, or browser use.",
+  "inventory_case": "EXT-F-4130-T01",
+  "source_revision": {
+    "repo": "/Volumes/Samsung2TB/code/aidream",
+    "commit": "203e7f048a86d978dcf4caa127b939e61382904d",
+    "records_args": "packages/matrx-records/matrx_records/agent/args.py:138-1718",
+    "registered_binding": "aidream/tools/_generated_declarations.py:652-665",
+    "executor_validation": "packages/matrx-ai/matrx_ai/tools/executor.py:1319-1489",
+    "test_door": "aidream/services/ai_execution/tool_testing.py:~170-240"
+  },
+  "prevalidation_invalid_arguments_ids": [
+    "EXT-F-4130-C02", "EXT-F-4130-C03", "EXT-F-4130-C04", "EXT-F-4130-C05",
+    "EXT-F-4130-C07", "EXT-F-4130-C08", "EXT-F-4130-C09", "EXT-F-4130-C10",
+    "EXT-F-4130-C11", "EXT-F-4130-C12", "EXT-F-4130-C13", "EXT-F-4130-C14",
+    "EXT-F-4130-C15", "EXT-F-4130-C16", "EXT-F-4130-C17", "EXT-F-4130-C18",
+    "EXT-F-4130-C19", "EXT-F-4130-C20", "EXT-F-4130-C21", "EXT-F-4130-C22",
+    "EXT-F-4130-C23", "EXT-F-4130-C24", "EXT-F-4130-C25"
+  ],
+  "prevalidation_reason_groups": {
+    "integer/type conversion failures": ["C02: table_list.limit='not-an-integer'", "C09: record_restore_version.version='not-an-integer'", "C11: table_propose.fields is a string, expected list", "C15: dashboard_propose.blocks is a string, expected list", "C16: pipeline_propose.stage_field is a string, expected object", "C18: checklist_propose.steps is a string, expected list", "C20: enrich_propose.columns is a string, expected list", "C21: portal_propose.tables is a string, expected list"],
+    "required string rejects null": ["C03: metadata_search.query=null", "C17: document_propose.body=null"],
+    "RecordsWire UUID validator rejects malformed *_id": ["C04: record_read.record_id", "C05: record_aggregate.table_id", "C07: record_delete.record_id", "C08: record_history.record_id", "C10: field_propose.table_id", "C12: form_propose.table_id", "C13: booking_propose.table_id", "C14: import_propose.table_id", "C19: capture_propose.table_id", "C22: signature_request.record_id", "C23: subscription_propose.table_id", "C24: entity_read.record_id", "C25: entity_write.record_id"]
+  },
+  "other_treatment": {
+    "EXT-F-4130-C01": "No prevalidation rejection: guide.topic is optional arbitrary str; the guide path is intentionally successful for unknown topics. Keep the source-deterministic successful guide oracle, not invalid_arguments/validation.",
+    "EXT-F-4130-C06": "No prevalidation rejection: record_write.values accepts dict[str, Any], including the supplied unknown field key. Downstream refusal is not established as a deterministic wire oracle; retain NOT_EXECUTABLE_UNVERIFIED_ORACLE."
+  },
+  "expected_registered_door_envelope": "For the 23 listed IDs, RecordsArgs validation fails before dispatch and ToolExecutor._reject_invalid_arguments returns success=false/error_type='invalid_arguments'. The direct tool body catches its own RecordsArgs failure as error_type='validation' at matrx_records/agent/tool.py:1949-1968, but this is not the registered /tools/test/execute path. The registered declaration binds RecordsArgs; tool_testing calls ToolExecutor.execute and streams full_result.",
+  "limits": "Classified from source only. This confirms expected executor prevalidation behavior, not runtime acceptance, UI display, or any mutation behavior."
+}

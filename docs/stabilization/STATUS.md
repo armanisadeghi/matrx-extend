@@ -1,14 +1,14 @@
 # Extension stabilization status
 
-Generated 2026-10-08 14:45 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T14:31:54.044492+00:00. 205 features · 769 cases · 1356 controls · 183 linked defect records.
+Generated 2026-10-08 16:13 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T16:13:38.966554+00:00. 205 features · 769 cases · 1358 controls · 184 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1230** — Pass: 90 · Partial: 89 · Fail: 2 · Unverified: 1048 · N/A: 1.
-Unverified splits into **132 explicitly marked unverified** and **916 with no result record**.
-Full feature-role pairs: **0/396**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 4 without control links.
+Applicable case-by-role slots: **1230** — Pass: 91 · Partial: 89 · Fail: 2 · Unverified: 1047 · N/A: 1.
+Unverified splits into **132 explicitly marked unverified** and **915 with no result record**.
+Full feature-role pairs: **0/396**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
 ## Tab and surface overview
@@ -24,12 +24,12 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
-| [Scrape](#scrape) | 1 | 8 pass · 5 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 8 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 32 unverified · 0 deferred; 0/1 full | pass 8, partial 13, fail 0, unverified 70, n/a 0 | 10 |
+| [Scrape](#scrape) | 1 | 9 pass · 4 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 8 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 32 unverified · 0 deferred; 0/1 full | pass 9, partial 12, fail 0, unverified 70, n/a 0 | 9 |
 | [SEO](#seo) | 1 | 0 pass · 6 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | pass 0, partial 6, fail 0, unverified 36, n/a 0 | 1 |
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 4 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
 | [Guidance](#guidance) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 46, n/a 0 | 1 |
-| [Showcase](#showcase) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 1 pass · 28 partial · 0 fail · 30 unverified · 0 deferred; 0/1 full | pass 1, partial 28, fail 0, unverified 30, n/a 0 | 10 |
+| [Showcase](#showcase) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 1 pass · 28 partial · 0 fail · 30 unverified · 0 deferred; 0/1 full | pass 1, partial 28, fail 0, unverified 30, n/a 0 | 11 |
 | [Token broker](#token-broker) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 9, n/a 0 | 0 |
 | [Content-page overlays / context menus / commands](#content-page-overlays--context-menus--commands) | 1 | 0 pass · 1 partial · 0 fail · 18 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | pass 0, partial 1, fail 0, unverified 56, n/a 0 | 0 |
 | [Profile/auth/org picker](#profileauthorg-picker) | 1 | 0 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 18 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 18 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 46, n/a 0 | 1 |
@@ -51,7 +51,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Tools Smart tests](#tools-smart-tests) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
 | [Tools Recorder](#tools-recorder) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
 | [Vault password generator](#vault-password-generator) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 6, n/a 0 | 0 |
-| [Tools / registered executor](#tools--registered-executor) | 169 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 154 unverified · 0 deferred; 0/150 full | 0 pass · 0 partial · 0 fail · 173 unverified · 0 deferred; 0/169 full | pass 0, partial 0, fail 0, unverified 327, n/a 0 | 7 |
+| [Tools / registered executor](#tools--registered-executor) | 169 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 154 unverified · 0 deferred; 0/150 full | 0 pass · 1 partial · 0 fail · 172 unverified · 0 deferred; 0/169 full | pass 0, partial 1, fail 0, unverified 326, n/a 0 | 7 |
 
 Role counts include only case-role combinations listed in each case. The all-role column includes every applicable recorded or unrecorded slot. Open each feature for case evidence, defects, and next action.
 
@@ -192,7 +192,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Validate and publish exact release candidate (EXT-F-0003)
 
-**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 11. **Controls:** 7.
+**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 11. **Controls:** 8.
 
 **Next:** Run the remaining role cases in the extension and attach a result.
 
@@ -206,7 +206,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-0003-T04 Revalidate after remote race | Pass | Pass | Pass | EXT-F-0003-C04 |
 | EXT-F-0003-T05 Serialize checks/build and promote unpacked output | Pass | Pass | Pass | EXT-F-0003-C05 |
 | EXT-F-0003-T06 Match commit, tag, zips and bundle receipt | Pass | Pass | Pass | EXT-F-0003-C06 |
-| EXT-F-0003-T07 Refuse stale dependency graph before expensive validation | Pass | Pass | Pass | No control mapped |
+| EXT-F-0003-T07 Refuse stale dependency graph before expensive validation | Pass | Pass | Pass | EXT-F-0003-C12, EXT-F-0003-C03 |
 | EXT-F-0003-T08 Refuse a CI lint-red release candidate | Pass | Pass | Pass | EXT-F-0003-C03 |
 | EXT-F-0003-T09 Await asynchronous UI readiness in integration assertions | Unverified | Unverified | Unverified | EXT-F-0003-C03 |
 | EXT-F-0003-T10 Settle sidepanel lazy imports before test teardown | Unverified | Unverified | Unverified | No control mapped |
@@ -831,15 +831,15 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Role status:** guest: Partial · member: Partial · admin: Unverified. **Cases:** 32. **Controls:** 34.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0022, EXT-D-0059, EXT-D-0118, EXT-D-0127, EXT-D-0128, EXT-D-0133, EXT-D-0138, EXT-D-0139, EXT-D-0166, EXT-D-0178
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0022, EXT-D-0059, EXT-D-0118, EXT-D-0127, EXT-D-0128, EXT-D-0133, EXT-D-0138, EXT-D-0139, EXT-D-0166
 
-**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0018](defects/EXT-D-0018.json) (closed), [EXT-D-0022](defects/EXT-D-0022.json) (fixed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0115](defects/EXT-D-0115.json) (retest-pass), [EXT-D-0118](defects/EXT-D-0118.json) (fixed), [EXT-D-0122](defects/EXT-D-0122.json) (closed), [EXT-D-0123](defects/EXT-D-0123.json) (retest-pass), [EXT-D-0124](defects/EXT-D-0124.json) (closed), [EXT-D-0125](defects/EXT-D-0125.json) (closed), [EXT-D-0126](defects/EXT-D-0126.json) (closed), [EXT-D-0127](defects/EXT-D-0127.json) (fixed), [EXT-D-0128](defects/EXT-D-0128.json) (fixed), [EXT-D-0129](defects/EXT-D-0129.json) (closed), [EXT-D-0130](defects/EXT-D-0130.json) (closed), [EXT-D-0131](defects/EXT-D-0131.json) (closed), [EXT-D-0132](defects/EXT-D-0132.json) (closed), [EXT-D-0133](defects/EXT-D-0133.json) (fixed), [EXT-D-0135](defects/EXT-D-0135.json) (closed), [EXT-D-0137](defects/EXT-D-0137.json) (closed), [EXT-D-0138](defects/EXT-D-0138.json) (fixed), [EXT-D-0139](defects/EXT-D-0139.json) (fixed), [EXT-D-0154](defects/EXT-D-0154.json) (closed), [EXT-D-0163](defects/EXT-D-0163.json) (closed), [EXT-D-0164](defects/EXT-D-0164.json) (closed), [EXT-D-0166](defects/EXT-D-0166.json) (in-fix), [EXT-D-0175](defects/EXT-D-0175.json) (closed), [EXT-D-0178](defects/EXT-D-0178.json) (fixed), [EXT-D-0180](defects/EXT-D-0180.json) (closed)
+**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0018](defects/EXT-D-0018.json) (closed), [EXT-D-0022](defects/EXT-D-0022.json) (fixed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0115](defects/EXT-D-0115.json) (retest-pass), [EXT-D-0118](defects/EXT-D-0118.json) (fixed), [EXT-D-0122](defects/EXT-D-0122.json) (closed), [EXT-D-0123](defects/EXT-D-0123.json) (retest-pass), [EXT-D-0124](defects/EXT-D-0124.json) (closed), [EXT-D-0125](defects/EXT-D-0125.json) (closed), [EXT-D-0126](defects/EXT-D-0126.json) (closed), [EXT-D-0127](defects/EXT-D-0127.json) (fixed), [EXT-D-0128](defects/EXT-D-0128.json) (fixed), [EXT-D-0129](defects/EXT-D-0129.json) (closed), [EXT-D-0130](defects/EXT-D-0130.json) (closed), [EXT-D-0131](defects/EXT-D-0131.json) (closed), [EXT-D-0132](defects/EXT-D-0132.json) (closed), [EXT-D-0133](defects/EXT-D-0133.json) (fixed), [EXT-D-0135](defects/EXT-D-0135.json) (closed), [EXT-D-0137](defects/EXT-D-0137.json) (closed), [EXT-D-0138](defects/EXT-D-0138.json) (fixed), [EXT-D-0139](defects/EXT-D-0139.json) (fixed), [EXT-D-0154](defects/EXT-D-0154.json) (closed), [EXT-D-0163](defects/EXT-D-0163.json) (closed), [EXT-D-0164](defects/EXT-D-0164.json) (closed), [EXT-D-0166](defects/EXT-D-0166.json) (in-fix), [EXT-D-0175](defects/EXT-D-0175.json) (closed), [EXT-D-0178](defects/EXT-D-0178.json) (closed), [EXT-D-0180](defects/EXT-D-0180.json) (closed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
 | EXT-F-1007-T01 Fast capture | Partial | Partial | Unverified | EXT-F-1007-C01 |
 | EXT-F-1007-T02 Deep capture | Partial | Partial | Unverified | EXT-F-1007-C02 |
-| EXT-F-1007-T03 Recapture unsaved edits guard | Partial | Unverified | Unverified | EXT-F-1007-C03 |
+| EXT-F-1007-T03 Recapture unsaved edits guard | Pass | Unverified | Unverified | EXT-F-1007-C03 |
 | EXT-F-1007-T04 Save capture as a Source | Unverified | Unverified | Unverified | EXT-F-1007-C04, EXT-F-1007-C21 |
 | EXT-F-1007-T05 Article markdown edit/apply | Unverified | Unverified | Unverified | EXT-F-1007-C05 |
 | EXT-F-1007-T06 Article markdown cancel | Pass | Unverified | Unverified | EXT-F-1007-C06 |
@@ -872,48 +872,48 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Recorded case details and evidence:**
 
-- EXT-F-1007-T01 · guest: Partial. Warm and post-reload fast capture, disabled busy control, article, and result tabs are observed. C01 and the case expected text also require error recovery actions. This receipt does not exercise a natural capture error or its recovery controls; T14 remains partial for that same guest gap. Missing member/admin evidence is irrelevant to this guest verdict.
-  Evidence / build / date recorded: 37778965029, development0.2.407/source5d845f42/CI37754055905/artifact11539827040, 2026-10-08T12:53:01Z, ['.research/scrape-confirmation-native-retest-20261008.json', '.research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json', '.research/scrape-case-scope-adjudication-20261008.json', '.research/scrape-uninstrumented-final-peer-20261008.json', '.research/scrape-reload-observer-native-peer-20261008.json', 'https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029']
+- EXT-F-1007-T01 · guest: Partial. Fast capture and busy/result behavior are observed, but no natural capture error and corresponding recovery actions are exercised.
+  Evidence / build / date recorded: 37801787667, ['.research/scrape-arm-414-native-20261008-1532.json', '.research/scrape-live-peer-20261008-1544.json']
 - EXT-F-1007-T01 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Full extension reload and post-reload capture not yet exercised. Empty-media harness failure stops later acceptance.
   Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
-- EXT-F-1007-T02 · guest: Partial. Warm deep progress and lazy content are observed. The documented warm/reload dimensions and expected failure preserving deep retry mode are not exhausted: post-reload deep capture and natural deep failure/retry are absent.
-  Evidence / build / date recorded: 37778965029, development0.2.407/source5d845f42/CI37754055905/artifact11539827040, 2026-10-08T12:53:01Z, ['.research/scrape-confirmation-native-retest-20261008.json', '.research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json', '.research/scrape-case-scope-adjudication-20261008.json', '.research/scrape-uninstrumented-final-peer-20261008.json', '.research/scrape-reload-observer-native-peer-20261008.json', 'https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029']
+- EXT-F-1007-T02 · guest: Partial. Post-reload deep capture and a natural deep failure/retry with mode preservation remain unverified.
+  Evidence / build / date recorded: 37801787667, ['.research/scrape-arm-414-native-20261008-1532.json', '.research/scrape-live-peer-20261008-1544.json']
 - EXT-F-1007-T02 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Deep failure retry mode and post-reload deep capture remain unverified. Empty-media harness failure stops later acceptance.
   Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
-- EXT-F-1007-T03 · guest: Partial. Trusted exact dialog Cancel retained edited state/idle deep button; second request confirmed Re-capture and deep mode completed. Evidence is native script assertion contract plus subsequent deep result; no separate dialog screenshot. Other auth/mode variants unverified.
-  Evidence / build / date recorded: 37222954472, .research/scrape231-recapture-native.json
+- EXT-F-1007-T03 · guest: Pass. Warm deep capture tests visible dialog Cancel preserving edits, then confirmation and actual deep result; post-reload fast capture explicitly records dialog/trusted confirmation and expected Article. This meets the stated guest recapture case across warm/reload and fast/deep. Cancel is not separately repeated after reload; no member/admin inference.
+  Evidence / build / date recorded: 37801787667, ['.research/scrape-arm-414-native-20261008-1532.json', '.research/scrape-live-peer-20261008-1544.json']
 - EXT-F-1007-T05 · guest: Unverified.
   Evidence / build / date recorded: render-retest-001, docs/stabilization/runs/render-retest-001.json
 - EXT-F-1007-T06 · guest: Pass. pass_cancel_discarded_draft_and_recapture_cleanup
   Evidence / build / date recorded: render-retest-001, docs/stabilization/runs/render-retest-001.json
-- EXT-F-1007-T07 · guest: Pass. Warm and reload observations cover Sync scroll on following page scroll and off stopping synchronization; raw case has no remaining criteria.
-  Evidence / build / date recorded: 37778965029, development0.2.407/source5d845f42/CI37754055905/artifact11539827040, 2026-10-08T12:53:01Z, ['.research/scrape-confirmation-native-retest-20261008.json', '.research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json', '.research/scrape-case-scope-adjudication-20261008.json', '.research/scrape-uninstrumented-final-peer-20261008.json', '.research/scrape-reload-observer-native-peer-20261008.json', 'https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029']
-- EXT-F-1007-T08 · guest: Partial. Six populated panes and capture invariance are recorded warm and after reload; the new post-reload referrals capture shows empty Images and Video panes. Canonical expected behavior says each selected tab renders matching data and empty states, and the existing guest detail explicitly leaves exhaustive per-pane empty-state coverage unverified. No Article, Links, SEO, or Schema empty-state observations are retained. Member/admin absence alone would not keep this guest cell partial.
-  Evidence / build / date recorded: 37778965029, development0.2.407/source5d845f42/CI37754055905/artifact11539827040, 2026-10-08T12:53:01Z, ['.research/scrape-confirmation-native-retest-20261008.json', '.research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json', '.research/scrape-case-scope-adjudication-20261008.json', '.research/scrape-uninstrumented-final-peer-20261008.json', '.research/scrape-reload-observer-native-peer-20261008.json', 'https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029']
+- EXT-F-1007-T07 · guest: Pass. Guest warm/reload scroll synchronization and off-stops-sync observations match the historical pass.
+  Evidence / build / date recorded: 37801787667, ['.research/scrape-arm-414-native-20261008-1532.json', '.research/scrape-live-peer-20261008-1544.json']
+- EXT-F-1007-T08 · guest: Partial. All six tabs, populated content, capture invariance, and empty Images/Video panes are evidenced. The earlier peer identified empty Article, Links, SEO, and Schema pane states as outstanding where supported; this receipt records those panes as populated, not empty. Member/admin omissions do not determine this guest verdict.
+  Evidence / build / date recorded: 37801787667, ['.research/scrape-arm-414-native-20261008-1532.json', '.research/scrape-live-peer-20261008-1544.json']
 - EXT-F-1007-T08 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Image and video empty states and reload lifecycle need full observation. Empty-media harness failure stops later acceptance.
   Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
-- EXT-F-1007-T09 · guest: Pass. Warm/reload Copy capture and section representations and current-content equality are recorded; raw case has no remaining criteria.
-  Evidence / build / date recorded: 37778965029, development0.2.407/source5d845f42/CI37754055905/artifact11539827040, 2026-10-08T12:53:01Z, ['.research/scrape-confirmation-native-retest-20261008.json', '.research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json', '.research/scrape-case-scope-adjudication-20261008.json', '.research/scrape-uninstrumented-final-peer-20261008.json', '.research/scrape-reload-observer-native-peer-20261008.json', 'https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029']
-- EXT-F-1007-T10 · guest: Pass. Warm/reload removal of large, medium, and icon images updates rows/count; raw case has no remaining criteria.
-  Evidence / build / date recorded: 37778965029, development0.2.407/source5d845f42/CI37754055905/artifact11539827040, 2026-10-08T12:53:01Z, ['.research/scrape-confirmation-native-retest-20261008.json', '.research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json', '.research/scrape-case-scope-adjudication-20261008.json', '.research/scrape-uninstrumented-final-peer-20261008.json', '.research/scrape-reload-observer-native-peer-20261008.json', 'https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029']
+- EXT-F-1007-T09 · guest: Pass. Guest copy formats and current-content equality remain covered warm and after reload.
+  Evidence / build / date recorded: 37801787667, ['.research/scrape-arm-414-native-20261008-1532.json', '.research/scrape-live-peer-20261008-1544.json']
+- EXT-F-1007-T10 · guest: Pass. Guest image removal through empty state and valid add remain covered warm and after reload.
+  Evidence / build / date recorded: 37801787667, ['.research/scrape-arm-414-native-20261008-1532.json', '.research/scrape-live-peer-20261008-1544.json']
 - EXT-F-1007-T10 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Repeat controls after full extension reload. Empty-media harness failure stops later acceptance.
   Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
-- EXT-F-1007-T11 · guest: Pass. Warm/reload blank URL rejection, valid URL with alt, and Cancel clearing draft are recorded; raw case has no remaining criteria.
-  Evidence / build / date recorded: 37778965029, development0.2.407/source5d845f42/CI37754055905/artifact11539827040, 2026-10-08T12:53:01Z, ['.research/scrape-confirmation-native-retest-20261008.json', '.research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json', '.research/scrape-case-scope-adjudication-20261008.json', '.research/scrape-uninstrumented-final-peer-20261008.json', '.research/scrape-reload-observer-native-peer-20261008.json', 'https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029']
+- EXT-F-1007-T11 · guest: Pass. Guest blank rejection, valid add, and Cancel draft clearing remain covered warm and after reload.
+  Evidence / build / date recorded: 37801787667, ['.research/scrape-arm-414-native-20261008-1532.json', '.research/scrape-live-peer-20261008-1544.json']
 - EXT-F-1007-T11 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Repeat controls after full extension reload. Empty-media harness failure stops later acceptance.
   Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
-- EXT-F-1007-T12 · guest: Pass. Warm/reload video open, clipboard equality, removal, blank rejection, and valid add are recorded; raw case has no remaining criteria.
-  Evidence / build / date recorded: 37778965029, development0.2.407/source5d845f42/CI37754055905/artifact11539827040, 2026-10-08T12:53:01Z, ['.research/scrape-confirmation-native-retest-20261008.json', '.research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json', '.research/scrape-case-scope-adjudication-20261008.json', '.research/scrape-uninstrumented-final-peer-20261008.json', '.research/scrape-reload-observer-native-peer-20261008.json', 'https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029']
+- EXT-F-1007-T12 · guest: Pass. Guest video open/copy/remove, blank rejection, and valid add remain covered warm and after reload.
+  Evidence / build / date recorded: 37801787667, ['.research/scrape-arm-414-native-20261008-1532.json', '.research/scrape-live-peer-20261008-1544.json']
 - EXT-F-1007-T12 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Repeat controls after full extension reload; verify native link and clipboard outcomes. Empty-media harness failure stops later acceptance.
   Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
-- EXT-F-1007-T13 · guest: Pass. The raw warm/reload link evidence covers open, copy with clipboard equality, remove, blank href rejection, valid href/text add, and cancel. These exhaust guest C13, steps, expected behavior, and warm/reload dimensions. Canonical guest cell already says pass; raw aggregate partial and peer partial stem solely from member/admin absence and do not demote guest.
-  Evidence / build / date recorded: 37778965029, development0.2.407/source5d845f42/CI37754055905/artifact11539827040, 2026-10-08T12:53:01Z, ['.research/scrape-confirmation-native-retest-20261008.json', '.research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json', '.research/scrape-case-scope-adjudication-20261008.json', '.research/scrape-uninstrumented-final-peer-20261008.json', '.research/scrape-reload-observer-native-peer-20261008.json', 'https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029']
+- EXT-F-1007-T13 · guest: Pass. Guest link open/copy/remove, blank rejection, valid add, and cancel remain covered warm and after reload.
+  Evidence / build / date recorded: 37801787667, ['.research/scrape-arm-414-native-20261008-1532.json', '.research/scrape-live-peer-20261008-1544.json']
 - EXT-F-1007-T13 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Repeat controls after full extension reload; guest/admin modes remain unverified by this receipt. Empty-media harness failure stops later acceptance.
   Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
-- EXT-F-1007-T14 · guest: Partial. Historical restricted-URL error and Dismiss evidence remains. The receipt does not show natural recoverable Reload page or Try again, including preservation of deep mode on retry, so guest recovery criteria remain open.
-  Evidence / build / date recorded: 37778965029, development0.2.407/source5d845f42/CI37754055905/artifact11539827040, 2026-10-08T12:53:01Z, ['.research/scrape-confirmation-native-retest-20261008.json', '.research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json', '.research/scrape-case-scope-adjudication-20261008.json', '.research/scrape-uninstrumented-final-peer-20261008.json', '.research/scrape-reload-observer-native-peer-20261008.json', 'https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029']
-- EXT-F-1007-T20 · guest: Pass. Initial/reload empty state and navigation clear prior content and saved badge; raw case has no remaining criteria.
-  Evidence / build / date recorded: 37778965029, development0.2.407/source5d845f42/CI37754055905/artifact11539827040, 2026-10-08T12:53:01Z, ['.research/scrape-confirmation-native-retest-20261008.json', '.research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json', '.research/scrape-case-scope-adjudication-20261008.json', '.research/scrape-uninstrumented-final-peer-20261008.json', '.research/scrape-reload-observer-native-peer-20261008.json', 'https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029']
+- EXT-F-1007-T14 · guest: Partial. A restricted-URL dismiss is present, but natural recoverable Reload page/Try again and deep-mode retry behavior remain open.
+  Evidence / build / date recorded: 37801787667, ['.research/scrape-arm-414-native-20261008-1532.json', '.research/scrape-live-peer-20261008-1544.json']
+- EXT-F-1007-T20 · guest: Pass. Initial/reload empty state and navigation clearing prior content and saved state remain covered.
+  Evidence / build / date recorded: 37801787667, ['.research/scrape-arm-414-native-20261008-1532.json', '.research/scrape-live-peer-20261008-1544.json']
 - EXT-F-1007-T20 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Navigation and reload lifecycle remain to be exercised. Empty-media harness failure stops later acceptance.
   Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
 
@@ -950,17 +950,17 @@ These current-build checks supplement the inventory matrix; they do not promote 
 **Recorded case details and evidence:**
 
 - EXT-F-1008-T01 · guest: Partial.
-  Evidence / build / date recorded: 37731560399, ['.research/seo397-guest-native-20261007.json', '.research/seo397-native-peer-20261007.json']
-- EXT-F-1008-T02 · guest: Partial. Changed page title/description with old audit still visible before click; native audit title refreshed after trusted Re-audit. Description refresh has indirect subsequent clipboard evidence, not direct description-display proof.
-  Evidence / build / date recorded: 37746166364, ['.research/seo-controlled-native-20261008.json', '.research/seo-controlled-native-peer-20261008.json']
+  Evidence / build / date recorded: 37804374798, ['.research/seo-full-arm-414-native-20261008-1552.json', '.research/seo-full-live-peer-20261008-1610.json']
+- EXT-F-1008-T02 · guest: Partial.
+  Evidence / build / date recorded: 37804374798, ['.research/seo-full-arm-414-native-20261008-1552.json', '.research/seo-full-live-peer-20261008-1610.json']
 - EXT-F-1008-T03 · guest: Partial.
-  Evidence / build / date recorded: 37731560399, ['.research/seo397-guest-native-20261007.json', '.research/seo397-native-peer-20261007.json']
+  Evidence / build / date recorded: 37804374798, ['.research/seo-full-arm-414-native-20261008-1552.json', '.research/seo-full-live-peer-20261008-1610.json']
 - EXT-F-1008-T07 · guest: Partial.
-  Evidence / build / date recorded: 37708611887, ['.research/seo-intel-native-20261007.json', '.research/auth-repair-intel-native-peer-20261007.json']
+  Evidence / build / date recorded: 37804374798, ['.research/seo-full-arm-414-native-20261008-1552.json', '.research/seo-full-live-peer-20261008-1610.json']
 - EXT-F-1008-T09 · guest: Partial.
-  Evidence / build / date recorded: 37731560399, ['.research/seo397-guest-native-20261007.json', '.research/seo397-native-peer-20261007.json']
-- EXT-F-1008-T14 · guest: Partial. Actual clipboard matched five then six independently expected tags; feedback observed before and after changed-page Re-audit.
-  Evidence / build / date recorded: 37746166364, ['.research/seo-controlled-native-20261008.json', '.research/seo-controlled-native-peer-20261008.json']
+  Evidence / build / date recorded: 37804374798, ['.research/seo-full-arm-414-native-20261008-1552.json', '.research/seo-full-live-peer-20261008-1610.json']
+- EXT-F-1008-T14 · guest: Partial.
+  Evidence / build / date recorded: 37804374798, ['.research/seo-full-arm-414-native-20261008-1552.json', '.research/seo-full-live-peer-20261008-1610.json']
 
 
 ## Screenshots
@@ -1086,9 +1086,9 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Role status:** guest: N/A · member: N/A · admin: Partial. **Cases:** 60. **Controls:** 50.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0040, EXT-D-0041, EXT-D-0043, EXT-D-0044, EXT-D-0046, EXT-D-0048, EXT-D-0054, EXT-D-0057, EXT-D-0059, EXT-D-0160
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0040, EXT-D-0041, EXT-D-0043, EXT-D-0044, EXT-D-0046, EXT-D-0048, EXT-D-0054, EXT-D-0057, EXT-D-0059, EXT-D-0160, EXT-D-0184
 
-**Linked defects:** [EXT-D-0039](defects/EXT-D-0039.json) (closed), [EXT-D-0040](defects/EXT-D-0040.json) (fixed), [EXT-D-0041](defects/EXT-D-0041.json) (fixed), [EXT-D-0042](defects/EXT-D-0042.json) (closed), [EXT-D-0043](defects/EXT-D-0043.json) (fixed), [EXT-D-0044](defects/EXT-D-0044.json) (fixed), [EXT-D-0045](defects/EXT-D-0045.json) (closed), [EXT-D-0046](defects/EXT-D-0046.json) (fixed), [EXT-D-0047](defects/EXT-D-0047.json) (closed), [EXT-D-0048](defects/EXT-D-0048.json) (fixed), [EXT-D-0049](defects/EXT-D-0049.json) (closed), [EXT-D-0050](defects/EXT-D-0050.json) (closed), [EXT-D-0052](defects/EXT-D-0052.json) (closed), [EXT-D-0053](defects/EXT-D-0053.json) (closed), [EXT-D-0054](defects/EXT-D-0054.json) (fixed), [EXT-D-0055](defects/EXT-D-0055.json) (closed), [EXT-D-0057](defects/EXT-D-0057.json) (fixed), [EXT-D-0058](defects/EXT-D-0058.json) (closed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0078](defects/EXT-D-0078.json) (closed), [EXT-D-0141](defects/EXT-D-0141.json) (closed), [EXT-D-0142](defects/EXT-D-0142.json) (closed), [EXT-D-0143](defects/EXT-D-0143.json) (closed), [EXT-D-0158](defects/EXT-D-0158.json) (closed), [EXT-D-0160](defects/EXT-D-0160.json) (fixed), [EXT-D-0173](defects/EXT-D-0173.json) (closed), [EXT-D-0177](defects/EXT-D-0177.json) (closed), [EXT-D-0179](defects/EXT-D-0179.json) (closed)
+**Linked defects:** [EXT-D-0039](defects/EXT-D-0039.json) (closed), [EXT-D-0040](defects/EXT-D-0040.json) (fixed), [EXT-D-0041](defects/EXT-D-0041.json) (fixed), [EXT-D-0042](defects/EXT-D-0042.json) (closed), [EXT-D-0043](defects/EXT-D-0043.json) (fixed), [EXT-D-0044](defects/EXT-D-0044.json) (fixed), [EXT-D-0045](defects/EXT-D-0045.json) (closed), [EXT-D-0046](defects/EXT-D-0046.json) (fixed), [EXT-D-0047](defects/EXT-D-0047.json) (closed), [EXT-D-0048](defects/EXT-D-0048.json) (fixed), [EXT-D-0049](defects/EXT-D-0049.json) (closed), [EXT-D-0050](defects/EXT-D-0050.json) (closed), [EXT-D-0052](defects/EXT-D-0052.json) (closed), [EXT-D-0053](defects/EXT-D-0053.json) (closed), [EXT-D-0054](defects/EXT-D-0054.json) (fixed), [EXT-D-0055](defects/EXT-D-0055.json) (closed), [EXT-D-0057](defects/EXT-D-0057.json) (fixed), [EXT-D-0058](defects/EXT-D-0058.json) (closed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0078](defects/EXT-D-0078.json) (closed), [EXT-D-0141](defects/EXT-D-0141.json) (closed), [EXT-D-0142](defects/EXT-D-0142.json) (closed), [EXT-D-0143](defects/EXT-D-0143.json) (closed), [EXT-D-0158](defects/EXT-D-0158.json) (closed), [EXT-D-0160](defects/EXT-D-0160.json) (fixed), [EXT-D-0173](defects/EXT-D-0173.json) (closed), [EXT-D-0177](defects/EXT-D-0177.json) (closed), [EXT-D-0179](defects/EXT-D-0179.json) (closed), [EXT-D-0184](defects/EXT-D-0184.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -1284,7 +1284,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Authentication and active organization selection (EXT-F-1015)
 
-**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 41. **Controls:** 20.
+**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 41. **Controls:** 21.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0069
 
@@ -1330,7 +1330,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1015-T36 Safari sign-in completes through its owned authorization tab | Unverified | N/A | N/A | EXT-F-1015-C15 |
 | EXT-F-1015-T37 Safari sign-in cancellation and callback failures remain recoverable | Unverified | N/A | N/A | EXT-F-1015-C14, EXT-F-1015-C16, EXT-F-1015-C17 |
 | EXT-F-1015-T38 Organization-required notice retires after selection | N/A | Unverified | Unverified | EXT-F-1015-C18 |
-| EXT-F-1015-T39 Persisted admin gate across contexts and storage outages | Unverified | Unverified | Unverified | No control mapped |
+| EXT-F-1015-T39 Persisted admin gate across contexts and storage outages | Unverified | Unverified | Unverified | EXT-F-1015-C21 |
 | EXT-F-1015-T40 Archived organization cannot be a work target and stale choice requires explicit recovery | N/A | Unverified | Unverified | EXT-F-1015-C03, EXT-F-1015-C09, EXT-F-1015-C19 |
 | EXT-F-1015-T41 Archive discovery stays separate from active organization selection | N/A | Unverified | Unverified | EXT-F-1015-C01, EXT-F-1015-C09, EXT-F-1015-C20 |
 
@@ -1622,15 +1622,15 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 3. **Controls:** 36.
 
-**Next:** Add cases for 9 uncovered control(s), then verify them in the extension.
+**Next:** Add cases for 8 uncovered control(s), then verify them in the extension.
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
 | EXT-F-2012-T01 Catalog filters and manual runner | N/A | Unverified | Unverified | EXT-F-2012-C01, EXT-F-2012-C02, EXT-F-2012-C03, EXT-F-2012-C04, EXT-F-2012-C05, EXT-F-2012-C07, EXT-F-2012-C08, EXT-F-2012-C09, EXT-F-2012-C12, EXT-F-2012-C13, EXT-F-2012-C14, EXT-F-2012-C15, EXT-F-2012-C16, EXT-F-2012-C17, EXT-F-2012-C18, EXT-F-2012-C19, EXT-F-2012-C20, EXT-F-2012-C21, EXT-F-2012-C22, EXT-F-2012-C23, EXT-F-2012-C26, EXT-F-2012-C27, EXT-F-2012-C28, EXT-F-2012-C29, EXT-F-2012-C30, EXT-F-2012-C35 |
-| EXT-F-2012-T02 Smart tests and Recorder | N/A | Unverified | Unverified | No control mapped |
+| EXT-F-2012-T02 Smart tests and Recorder | N/A | Unverified | Unverified | EXT-F-2012-C11, EXT-F-2012-C13, EXT-F-2012-C14 |
 | EXT-F-2012-T03 Guest cannot open Tools | N/A | N/A | N/A | EXT-F-2012-C37 |
 
-**Controls without a mapped case:** EXT-F-2012-C06 Copy tool name/schema/args/error/result; EXT-F-2012-C11 Tab capture dialog controls; EXT-F-2012-C24 Inspect optional permission badge; EXT-F-2012-C25 Inspect admin badge; EXT-F-2012-C31 Copy tool schema JSON; EXT-F-2012-C32 Copy tool arguments JSON; EXT-F-2012-C33 Copy tool name; EXT-F-2012-C34 Copy tool error; EXT-F-2012-C36 Use sample tool arguments
+**Controls without a mapped case:** EXT-F-2012-C06 Copy tool name/schema/args/error/result; EXT-F-2012-C24 Inspect optional permission badge; EXT-F-2012-C25 Inspect admin badge; EXT-F-2012-C31 Copy tool schema JSON; EXT-F-2012-C32 Copy tool arguments JSON; EXT-F-2012-C33 Copy tool name; EXT-F-2012-C34 Copy tool error; EXT-F-2012-C36 Use sample tool arguments
 
 **Other remaining work:** No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel.
 
@@ -3463,7 +3463,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 ### records (EXT-F-4130)
 
-**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 2. **Controls:** 25.
+**Role status:** guest: N/A · member: Unverified · admin: Partial. **Cases:** 2. **Controls:** 25.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0071, EXT-D-0089, EXT-D-0091
 
@@ -3471,8 +3471,13 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4130-T01 Controlled manual execution: records | N/A | Unverified | Unverified | EXT-F-4130-C01, EXT-F-4130-C02, EXT-F-4130-C03, EXT-F-4130-C04, EXT-F-4130-C05, EXT-F-4130-C06, EXT-F-4130-C07, EXT-F-4130-C08, EXT-F-4130-C09, EXT-F-4130-C10, EXT-F-4130-C11, EXT-F-4130-C12, EXT-F-4130-C13, EXT-F-4130-C14, EXT-F-4130-C15, EXT-F-4130-C16, EXT-F-4130-C17, EXT-F-4130-C18, EXT-F-4130-C19, EXT-F-4130-C20, EXT-F-4130-C21, EXT-F-4130-C22, EXT-F-4130-C23, EXT-F-4130-C24, EXT-F-4130-C25 |
+| EXT-F-4130-T01 Controlled manual execution: records | N/A | Unverified | Partial | EXT-F-4130-C01, EXT-F-4130-C02, EXT-F-4130-C03, EXT-F-4130-C04, EXT-F-4130-C05, EXT-F-4130-C06, EXT-F-4130-C07, EXT-F-4130-C08, EXT-F-4130-C09, EXT-F-4130-C10, EXT-F-4130-C11, EXT-F-4130-C12, EXT-F-4130-C13, EXT-F-4130-C14, EXT-F-4130-C15, EXT-F-4130-C16, EXT-F-4130-C17, EXT-F-4130-C18, EXT-F-4130-C19, EXT-F-4130-C20, EXT-F-4130-C21, EXT-F-4130-C22, EXT-F-4130-C23, EXT-F-4130-C24, EXT-F-4130-C25 |
 | EXT-F-4130-T02 Records organization filter matches canonical catalog and preserves omitted/null semantics | N/A | Unverified | Unverified | EXT-F-4130-C01 |
+
+**Recorded case details and evidence:**
+
+- EXT-F-4130-T01 · admin: Partial.
+  Evidence / build / date recorded: 37799435980, ['.research/records-native-retest-20261008.json', '.research/records-live-peer-20261008-1529.json']
 
 **Other remaining work:** Author concrete fixture-specific server procedures before this tool is executed; gated/negative permission cases required; Current source identifies a server capability, absent from the local generated executor catalog. Imported input schema and live DB binding need fresh reconciliation.
 

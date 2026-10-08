@@ -7,6 +7,60 @@ export async function signInRecordsAdmin({ onStage, ...options }, signIn = signI
   return signIn({ ...options, mode: 'admin', onStage });
 }
 
+export async function enterRecordsInput(
+  panel,
+  evaluate,
+  stage,
+  input,
+  platform = process.platform,
+) {
+  stage('records_input_focus');
+  assert.equal(
+    await evaluate(
+      panel,
+      `(() => { const b=[...document.querySelectorAll('button')].find(el=>el.querySelector('span.font-mono')?.textContent.trim()==='records'); const t=b?.parentElement?.querySelector('textarea'); if (!t || !t.getClientRects().length) return false; t.focus(); return document.activeElement===t; })()`,
+    ),
+    true,
+    'records_input_not_focused',
+  );
+  const modifiers = platform === 'darwin' ? 4 : 2;
+  await panel.send('Input.dispatchKeyEvent', {
+    type: 'keyDown',
+    key: 'a',
+    code: 'KeyA',
+    modifiers,
+    windowsVirtualKeyCode: 65,
+    commands: ['selectAll'],
+  });
+  await panel.send('Input.dispatchKeyEvent', {
+    type: 'keyUp',
+    key: 'a',
+    code: 'KeyA',
+    modifiers,
+    windowsVirtualKeyCode: 65,
+  });
+  stage('records_input_selection');
+  assert.equal(
+    await evaluate(
+      panel,
+      `(() => { const b=[...document.querySelectorAll('button')].find(el=>el.querySelector('span.font-mono')?.textContent.trim()==='records'); const t=b?.parentElement?.querySelector('textarea'); return Boolean(t && document.activeElement===t && t.selectionStart===0 && t.selectionEnd===t.value.length); })()`,
+    ),
+    true,
+    'records_input_selection_missing',
+  );
+  stage('records_input_insert');
+  await panel.send('Input.insertText', { text: JSON.stringify(input) });
+  stage('records_input_visible');
+  assert.equal(
+    await evaluate(
+      panel,
+      `(() => { const b=[...document.querySelectorAll('button')].find(el=>el.querySelector('span.font-mono')?.textContent.trim()==='records'); return b?.parentElement?.querySelector('textarea')?.value === ${JSON.stringify(JSON.stringify(input))}; })()`,
+    ),
+    true,
+    'records_input_not_visible',
+  );
+}
+
 export function observeRecordsExecution(panel, organizationId, expectedBearerHash) {
   const requests = new Map();
   const removers = [];

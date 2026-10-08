@@ -9,11 +9,22 @@ import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import {
   assertRecordsVisibleCompletion,
+  enterRecordsInput,
   observeRecordsExecution,
   signInRecordsAdmin,
 } from './records-readonly-native-proof.mjs';
-import { approvedShowcaseOrganization } from './settings-native-auth-driver.mjs';
-import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
+import {
+  accountIdentity,
+  approvedShowcaseOrganization,
+  panelIdentity,
+} from './settings-native-auth-driver.mjs';
+import {
+  click,
+  evaluate,
+  openSection,
+  toolsCatalogState,
+  waitFor,
+} from './settings-panel-driver.mjs';
 import {
   panelBearerHash,
   runShowcaseOrganizationCheckpoint,
@@ -36,6 +47,8 @@ const report = {
   organization_diagnostic: null,
   request: null,
   result: null,
+  invalid_input: null,
+  reload: null,
   failure_code: null,
 };
 const stage = (value) => {
@@ -145,130 +158,186 @@ try {
         action: 'table_list',
         args: { organization_id: approved.id, include_app_tables: true, limit: 50 },
       };
-      stage('records_input_focus');
-      assert.equal(
-        await evaluate(
-          panel,
-          `(() => { const b=[...document.querySelectorAll('button')].find(el=>el.querySelector('span.font-mono')?.textContent.trim()==='records'); const t=b?.parentElement?.querySelector('textarea'); if (!t || !t.getClientRects().length) return false; t.focus(); return document.activeElement===t; })()`,
-        ),
-        true,
-        'records_input_not_focused',
-      );
-      await panel.send('Input.dispatchKeyEvent', {
-        type: 'keyDown',
-        key: 'a',
-        code: 'KeyA',
-        modifiers: process.platform === 'darwin' ? 4 : 2,
-        windowsVirtualKeyCode: 65,
-        commands: ['selectAll'],
-      });
-      await panel.send('Input.dispatchKeyEvent', {
-        type: 'keyUp',
-        key: 'a',
-        code: 'KeyA',
-        modifiers: process.platform === 'darwin' ? 4 : 2,
-        windowsVirtualKeyCode: 65,
-      });
-      stage('records_input_selection');
-      assert.equal(
-        await evaluate(
-          panel,
-          `(() => { const b=[...document.querySelectorAll('button')].find(el=>el.querySelector('span.font-mono')?.textContent.trim()==='records'); const t=b?.parentElement?.querySelector('textarea'); return Boolean(t && document.activeElement===t && t.selectionStart===0 && t.selectionEnd===t.value.length); })()`,
-        ),
-        true,
-        'records_input_selection_missing',
-      );
-      stage('records_input_insert');
-      await panel.send('Input.insertText', { text: JSON.stringify(input) });
-      stage('records_input_visible');
-      assert.equal(
-        await evaluate(
-          panel,
-          `(() => { const b=[...document.querySelectorAll('button')].find(el=>el.querySelector('span.font-mono')?.textContent.trim()==='records'); return b?.parentElement?.querySelector('textarea')?.value === ${JSON.stringify(JSON.stringify(input))}; })()`,
-        ),
-        true,
-        'records_input_not_visible',
-      );
+      await enterRecordsInput(panel, evaluate, stage, input, process.platform);
       stage('records_bearer_read');
       const bearerHash = await panelBearerHash(panel);
       assert.match(bearerHash ?? '', /^[0-9a-f]{64}$/, 'records_authenticated_token_unavailable');
-      const observer = observeRecordsExecution(panel, approved.id, bearerHash);
-      try {
-        await observer.start();
-        stage('records_run');
-        await resourceAction(() => click(panel, 'button-text', 'Run'));
-        await waitFor(
-          'records_execution_finished',
-          () => observer.entries(),
-          (entries) => entries.length === 1 && entries[0].finished,
-          45_000,
+      const execute = async (argumentsInput, expectedBearerHash, label) => {
+        const observer = observeRecordsExecution(panel, approved.id, expectedBearerHash);
+        try {
+          await observer.start();
+          stage(`${label}_run`);
+          await resourceAction(() => click(panel, 'button-text', 'Run'));
+          const [request] = await waitFor(
+            `${label}_execution_finished`,
+            () => observer.entries(),
+            (entries) => entries.length === 1 && entries[0].finished,
+            45_000,
+          );
+          assert.equal(request.method, 'POST');
+          assert.equal(request.organizationMatches, true, `${label}_org_header_mismatch`);
+          assert.equal(request.bearerMatches, true, `${label}_principal_mismatch`);
+          assert.deepEqual(
+            request.body,
+            { tool_name: 'records', arguments: argumentsInput },
+            `${label}_input_mismatch`,
+          );
+          assert.equal(request.status, 200, `${label}_http_failed`);
+          stage(`${label}_completion`);
+          const completion = await observer.completion(request);
+          const visible = await waitFor(
+            `${label}_output_visible`,
+            () => outputState(panel),
+            (value) => {
+              if (!value?.visible || !value.raw) return false;
+              try {
+                return JSON.stringify(JSON.parse(value.raw)) === JSON.stringify(completion);
+              } catch {
+                return false;
+              }
+            },
+            30_000,
+          );
+          return assertRecordsVisibleCompletion(visible, completion);
+        } finally {
+          observer.stop();
+        }
+      };
+      const assertPositive = (result, label) => {
+        assert.equal(result.success, true, `${label}_tool_refused`);
+        assert.equal(result.output?.action, 'table_list', `${label}_wrong_action`);
+        assert.ok(
+          Array.isArray(result.output?.tables) && result.output.tables.length > 0,
+          `${label}_tables_missing`,
         );
-        const [request] = observer.entries();
-        assert.equal(request.method, 'POST');
-        assert.equal(request.organizationMatches, true, 'records_execute_org_header_mismatch');
-        assert.equal(request.bearerMatches, true, 'records_execute_principal_mismatch');
-        assert.deepEqual(
-          request.body,
-          { tool_name: 'records', arguments: input },
-          'records_include_app_tables_not_preserved',
-        );
-        assert.equal(request.status, 200, 'records_execute_http_failed');
-        stage('records_completion');
-        const completion = await observer.completion(request);
-        report.request = {
-          path: '/tools/test/execute',
-          method: 'POST',
-          organization_matches: true,
-          authenticated_principal_matches: true,
-          completion_observed: true,
-          include_app_tables: true,
-          status: request.status,
-          finished: true,
-        };
-        stage('records_visible_result');
-        const visible = await waitFor(
-          'records_output_visible',
-          () => outputState(panel),
-          (value) => {
-            if (!value?.visible || !value.raw) return false;
-            try {
-              return JSON.stringify(JSON.parse(value.raw)) === JSON.stringify(completion);
-            } catch {
-              return false;
-            }
-          },
-          30_000,
-        );
-        const result = assertRecordsVisibleCompletion(visible, completion);
-        assert.equal(result.success, true, 'records_tool_refused');
-        assert.equal(result.output?.action, 'table_list', 'records_wrong_action_result');
-        assert.ok(Array.isArray(result.output?.tables), 'records_tables_missing');
-        assert.ok(result.output.tables.length > 0, 'records_live_table_fixture_missing');
-        assert.ok(Array.isArray(result.output?.organizations_covered), 'records_coverage_missing');
+        assert.ok(Array.isArray(result.output?.organizations_covered), `${label}_coverage_missing`);
         assert.ok(
           result.output.organizations_covered.includes(approved.id),
-          'records_approved_org_not_covered',
+          `${label}_org_not_covered`,
         );
         assert.ok(
           result.output.tables.every(
             (table) => table.organization_id && typeof table.name === 'string',
           ),
-          'records_table_identity_missing',
+          `${label}_table_identity_missing`,
         );
         assert.ok(
           result.output.tables.some((table) => table.organization_id === approved.id),
-          'records_approved_org_table_missing',
+          `${label}_org_table_missing`,
         );
-        report.result = {
-          visible: true,
-          success: true,
-          action: 'table_list',
-          count: result.output.tables.length,
-          approved_organization_covered: true,
-        };
-      } finally {
-        observer.stop();
-      }
+      };
+      const result = await execute(input, bearerHash, 'records');
+      assertPositive(result, 'records');
+      report.request = {
+        path: '/tools/test/execute',
+        method: 'POST',
+        organization_matches: true,
+        authenticated_principal_matches: true,
+        completion_observed: true,
+        include_app_tables: true,
+        status: 200,
+        finished: true,
+      };
+      report.result = {
+        visible: true,
+        success: true,
+        action: 'table_list',
+        count: result.output.tables.length,
+        approved_organization_covered: true,
+      };
+
+      const invalidInput = {
+        action: 'table_list',
+        args: { organization_id: approved.id, include_app_tables: true, limit: 'not-a-number' },
+      };
+      await enterRecordsInput(panel, evaluate, stage, invalidInput, process.platform);
+      const invalidResult = await execute(invalidInput, bearerHash, 'records_invalid_limit');
+      assert.equal(invalidResult.success, false, 'records_invalid_limit_false_success');
+      assert.equal(
+        invalidResult.error?.error_type,
+        'invalid_arguments',
+        'records_invalid_limit_wrong_error',
+      );
+      assert.match(
+        invalidResult.error?.message ?? '',
+        /limit/i,
+        'records_invalid_limit_field_missing',
+      );
+      report.invalid_input = {
+        finished: true,
+        status: 200,
+        completion_observed: true,
+        visible: true,
+        success: false,
+        error_type: 'invalid_arguments',
+        limit_named: true,
+      };
+
+      stage('records_panel_reload');
+      await panel.send('Page.reload', { ignoreCache: true });
+      await waitFor(
+        'records_settings_after_reload',
+        () =>
+          evaluate(
+            panel,
+            `Boolean(document.querySelector('button[role="tab"][title="Settings"]'))`,
+          ),
+        Boolean,
+      );
+      await resourceAction(() => click(panel, 'title', 'Settings'));
+      await resourceAction(() => openSection(panel, 'Account'));
+      await resourceAction(() => openSection(panel, 'Organization'));
+      const reloadedIdentity = await waitFor(
+        'records_identity_after_reload',
+        async () => ({
+          ...(await accountIdentity(panel, auth.email)),
+          ...(await panelIdentity(panel)),
+        }),
+        (value) =>
+          value?.emailMatches &&
+          value.adminRole &&
+          value.signOutVisible &&
+          value.accessTokenPresent &&
+          value.isAdmin === true &&
+          value.profileId === auth.profileId &&
+          value.organizationSelected &&
+          value.organizationLabel === approved.name &&
+          (value.organizationId === null || value.organizationId === approved.id),
+        30_000,
+      );
+      assert.ok(reloadedIdentity, 'records_reloaded_identity_missing');
+      const reloadBearerHash = await panelBearerHash(panel);
+      assert.equal(reloadBearerHash, bearerHash, 'records_reload_principal_changed');
+      await resourceAction(() => click(panel, 'title', 'Tools'));
+      await waitFor(
+        'records_catalog_after_reload',
+        () => toolsCatalogState(panel),
+        (value) => value === 'catalog',
+      );
+      await resourceAction(() => click(panel, 'tool-row', 'records'));
+      await waitFor(
+        'records_schema_after_reload',
+        () =>
+          evaluate(
+            panel,
+            `(() => { const b=[...document.querySelectorAll('button')].find(el=>el.querySelector('span.font-mono')?.textContent.trim()==='records'); return Boolean(b?.parentElement?.querySelector('textarea') && [...b.parentElement.querySelectorAll('button')].some(x=>x.textContent.trim()==='Run' && !x.disabled)); })()`,
+          ),
+        Boolean,
+      );
+      await enterRecordsInput(panel, evaluate, stage, input, process.platform);
+      const reloadResult = await execute(input, reloadBearerHash, 'records_reloaded');
+      assertPositive(reloadResult, 'records_reloaded');
+      report.reload = {
+        full_panel_reload: true,
+        admin_identity_matches: true,
+        organization_matches: true,
+        authenticated_principal_matches: true,
+        finished: true,
+        completion_observed: true,
+        visible: true,
+        success: true,
+        count: reloadResult.output.tables.length,
+      };
     },
   });
   report.status = 'passed';

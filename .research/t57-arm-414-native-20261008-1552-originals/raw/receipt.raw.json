@@ -1,0 +1,803 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "status": "unverified",
+  "stage": "public_race_release",
+  "target": {
+    "host": "hn.algolia.com",
+    "public": true,
+    "injected_fetch": false
+  },
+  "artifact": {
+    "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+    "run_id": 37790643945,
+    "artifact_id": 11556064167,
+    "tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046",
+    "version": "0.2.414"
+  },
+  "capture": {
+    "selected_rows": 1,
+    "selected_row_matches": true,
+    "preview_url_matches": true,
+    "post_200": true,
+    "target_host": true,
+    "endpoint_shape": "/1/indexes/Item_dev/query",
+    "endpoint_path_segments": 4,
+    "endpoint_has_query": true,
+    "query_endpoint": true,
+    "response_tables": 1,
+    "response_rows": 1,
+    "intended_query": true,
+    "hits_preview": true,
+    "credential_key_present": true,
+    "credential_masked": false
+  },
+  "capture_observations": {
+    "terminal": {
+      "discovering": false,
+      "responses": true,
+      "error": false
+    },
+    "list": {
+      "visible_rows": 10,
+      "post_200_rows": 2,
+      "algolia_rows": 8,
+      "algolia_post_200_rows": 1,
+      "query_label_rows": 0,
+      "exact_candidates": 0
+    },
+    "previews": [
+      {
+        "selected_rows": 1,
+        "selected_row_matches": true,
+        "preview_url_matches": true,
+        "post_200": true,
+        "target_host": true,
+        "endpoint_shape": "/1/indexes/Item_dev/query",
+        "endpoint_path_segments": 4,
+        "endpoint_has_query": true,
+        "query_endpoint": true,
+        "response_tables": 1,
+        "response_rows": 1,
+        "intended_query": true,
+        "hits_preview": true,
+        "credential_key_present": true,
+        "credential_masked": false
+      }
+    ],
+    "last_preview": {
+      "selected_rows": 1,
+      "selected_row_matches": true,
+      "preview_url_matches": true,
+      "post_200": true,
+      "target_host": true,
+      "endpoint_shape": "/1/indexes/Item_dev/query",
+      "endpoint_path_segments": 4,
+      "endpoint_has_query": true,
+      "query_endpoint": true,
+      "response_tables": 1,
+      "response_rows": 1,
+      "intended_query": true,
+      "hits_preview": true,
+      "credential_key_present": true,
+      "credential_masked": false
+    },
+    "matched_previews": 1,
+    "preview": {
+      "selected_rows": 1,
+      "selected_row_matches": true,
+      "preview_url_matches": true,
+      "post_200": true,
+      "target_host": true,
+      "endpoint_shape": "/1/indexes/Item_dev/query",
+      "endpoint_path_segments": 4,
+      "endpoint_has_query": true,
+      "query_endpoint": true,
+      "response_tables": 1,
+      "response_rows": 1,
+      "intended_query": true,
+      "hits_preview": true,
+      "credential_key_present": true,
+      "credential_masked": false
+    }
+  },
+  "saved_result": null,
+  "owned_recipe": {
+    "name": "Codex D47 public HN 342d586c-c6fd-4c56-b54c-5428c2f6bb31",
+    "host": "hn.algolia.com",
+    "creation": "observed_in_patterns",
+    "cleanup": "unverified"
+  },
+  "auth_diagnostic": null,
+  "click_observations": [
+    {
+      "stage": "initial_capture",
+      "phase": "target_evaluation",
+      "state": null
+    },
+    {
+      "stage": "initial_capture",
+      "phase": "target_resolution",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 33,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "initial_capture",
+      "phase": "mouse_press",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 33,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "initial_capture",
+      "phase": "mouse_release",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 33,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "initial_capture",
+      "phase": "mouse_released",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 33,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "initial_capture",
+      "phase": "target_evaluation",
+      "state": null
+    },
+    {
+      "stage": "initial_capture",
+      "phase": "target_resolution",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 10,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "initial_capture",
+      "phase": "mouse_press",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 10,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "initial_capture",
+      "phase": "mouse_release",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 10,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "initial_capture",
+      "phase": "mouse_released",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 10,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "initial_capture",
+      "phase": "target_evaluation",
+      "state": null
+    },
+    {
+      "stage": "initial_capture",
+      "phase": "target_resolution",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 1,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "initial_capture",
+      "phase": "mouse_press",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 1,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "initial_capture",
+      "phase": "mouse_release",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 1,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "initial_capture",
+      "phase": "mouse_released",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 1,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "save_recipe",
+      "phase": "target_evaluation",
+      "state": null
+    },
+    {
+      "stage": "save_recipe",
+      "phase": "target_resolution",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 33,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "save_recipe",
+      "phase": "mouse_press",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 33,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "save_recipe",
+      "phase": "mouse_release",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 33,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "save_recipe",
+      "phase": "mouse_released",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 33,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "saved_replay",
+      "phase": "target_evaluation",
+      "state": null
+    },
+    {
+      "stage": "saved_replay",
+      "phase": "target_resolution",
+      "state": {
+        "patterns_active": true,
+        "host_matches": true,
+        "selector_count": 7042,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 1,
+        "row_title_count": 1,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "saved_replay",
+      "phase": "mouse_press",
+      "state": {
+        "patterns_active": true,
+        "host_matches": true,
+        "selector_count": 7042,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 1,
+        "row_title_count": 1,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "saved_replay",
+      "phase": "mouse_release",
+      "state": {
+        "patterns_active": true,
+        "host_matches": true,
+        "selector_count": 7042,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 1,
+        "row_title_count": 1,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "saved_replay",
+      "phase": "mouse_released",
+      "state": {
+        "patterns_active": true,
+        "host_matches": true,
+        "selector_count": 7042,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 1,
+        "row_title_count": 1,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "public_race_release",
+      "phase": "target_evaluation",
+      "state": null
+    },
+    {
+      "stage": "public_race_release",
+      "phase": "target_resolution",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 33,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "public_race_release",
+      "phase": "mouse_press",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 33,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "public_race_release",
+      "phase": "mouse_release",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 33,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "public_race_release",
+      "phase": "mouse_released",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 33,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "public_race_release",
+      "phase": "target_evaluation",
+      "state": null
+    },
+    {
+      "stage": "public_race_release",
+      "phase": "target_resolution",
+      "state": {
+        "patterns_active": true,
+        "host_matches": true,
+        "selector_count": 7042,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 1,
+        "row_title_count": 1,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "public_race_release",
+      "phase": "mouse_press",
+      "state": {
+        "patterns_active": true,
+        "host_matches": true,
+        "selector_count": 7042,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 1,
+        "row_title_count": 1,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "public_race_release",
+      "phase": "mouse_release",
+      "state": {
+        "patterns_active": true,
+        "host_matches": true,
+        "selector_count": 7042,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 1,
+        "row_title_count": 1,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "public_race_release",
+      "phase": "mouse_released",
+      "state": {
+        "patterns_active": true,
+        "host_matches": true,
+        "selector_count": 7042,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 1,
+        "row_title_count": 1,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "public_race_release",
+      "phase": "target_evaluation",
+      "state": null
+    },
+    {
+      "stage": "public_race_release",
+      "phase": "target_resolution",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 2,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "public_race_release",
+      "phase": "mouse_press",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 2,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "public_race_release",
+      "phase": "mouse_release",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 2,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "public_race_release",
+      "phase": "mouse_released",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 2,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    }
+  ],
+  "failure": {
+    "name": "Error",
+    "stage": "public_race_release",
+    "message_code": "public_current_binding_packet_not_observed"
+  },
+  "terminal_budget": {
+    "capture_window_ms": 20000,
+    "cleanup_ms": 20000,
+    "delivery_ms": 10000,
+    "poll_ms": 100,
+    "timeout_ms": 50000,
+    "source_sha256": {
+      "runner": "ec8af7d4e75da1997c2dcb3064b8484fe26bae4d1d3413b56bebd3e88fd93046",
+      "core": "c65b4678be7e49829f4f346926d9ff9dbdce8b7b8506be23565abf644dba3596",
+      "handler": "fa1eb3990d5611c597004b23999829d42d3833a6765f79d3865bedc8267d62cb",
+      "panelDriver": "a6043ed8a088b5c36a2887186d0c9369d0b6492b3802ea07d9a82b1bb4b44444"
+    }
+  },
+  "native_stage": "exercise_panel",
+  "auth_stage": "admin_rendered_identity",
+  "organization_diagnostic": {
+    "substage": "organization_identity_compare",
+    "observations": {
+      "admin_role_verified": true,
+      "picker_available": true,
+      "picker_has_selection": true,
+      "selection_required": false,
+      "storage_has_uuid": false,
+      "storage_name_matches": false,
+      "rendered_email_matches": true,
+      "rendered_role_matches": true,
+      "rendered_profile_matches": true,
+      "rendered_organization_matches": true,
+      "tools_view_state": "catalog",
+      "product_request_observed": true,
+      "product_request_duplicate": false,
+      "product_response_observed": true,
+      "product_response_finished": true,
+      "product_loading_failed": false,
+      "product_response_success": true,
+      "product_header_matches": true,
+      "product_principal_matches": true,
+      "observer_cleanup_success": true
+    }
+  },
+  "public_race_preflight": {
+    "paused": [
+      {
+        "endpoint_shape": "/1/indexes/Item_dev/query",
+        "url_sha256": "4fa396fb17a2a1d7ac3c235a946e552f003bcb386676ab61a2948337aa5d809a",
+        "body_sha256": "3566ec8fa27c0ee4135c4da1a8289d3374455493c20f0ab0a1c8683234fb8dcb",
+        "identity_sha256": "9ba31e4753e1e6699bdf255ffe0f34f623eafe478e8b5582df3bdf2bd22374be",
+        "network_id": "6759.54",
+        "frame_id": "5CFA6FF909EA25A8BF1F6C4DF1B785EE",
+        "loader_id": "D6A962355576453464EFF09FBBB3BB61",
+        "status": 200,
+        "lifecycle": "failed",
+        "response_sha256": "9a340d1985b99cf57bf2d3247bb11d719df67c3bd16eac34bbf6e1857c3de5c7"
+      },
+      {
+        "endpoint_shape": "/1/indexes/Item_dev/query",
+        "url_sha256": "ee09d5362457c8461f332499736ff9dfd3dc97a6fadb71ad5f42f877eea319a5",
+        "body_sha256": "3566ec8fa27c0ee4135c4da1a8289d3374455493c20f0ab0a1c8683234fb8dcb",
+        "identity_sha256": "61ebfdff9bd4bb23f786584ce8cbc7e5c6a1e45764d82fda58adda2ab1ee2503",
+        "network_id": "6759.58",
+        "frame_id": "5CFA6FF909EA25A8BF1F6C4DF1B785EE",
+        "loader_id": "D6A962355576453464EFF09FBBB3BB61",
+        "status": 200,
+        "lifecycle": "finished",
+        "response_sha256": "fe74c5ca7e7840c06bfc6edef7ff6cf3cb6b26f8fdcb0bdc2b8d64cef2b40ca1"
+      }
+    ],
+    "contexts": [
+      {
+        "unique_id": "-1954375821211486008.-4550764524125468431",
+        "frame_id": "5CFA6FF909EA25A8BF1F6C4DF1B785EE",
+        "loader_id": "736ADC174A1A74756A164AA3B364B456"
+      },
+      {
+        "unique_id": "6280593917943736231.3328435770438214068",
+        "frame_id": "5CFA6FF909EA25A8BF1F6C4DF1B785EE",
+        "loader_id": "D6A962355576453464EFF09FBBB3BB61"
+      },
+      {
+        "unique_id": "-983612175401944061.-5598014529486735288",
+        "frame_id": "5CFA6FF909EA25A8BF1F6C4DF1B785EE",
+        "loader_id": "43BCA86BE9D692A1E7DEE0A7C4A1F32D"
+      }
+    ],
+    "release_order": [
+      "current"
+    ],
+    "release_attempts": [
+      {
+        "step": "old",
+        "outcome": "cdp_rejected",
+        "error_category": "other_cdp_failure"
+      },
+      {
+        "step": "current",
+        "outcome": "continued"
+      }
+    ],
+    "cleanup_attempts": [
+      {
+        "step": "disable",
+        "outcome": "completed"
+      },
+      {
+        "step": "detach",
+        "outcome": "completed"
+      }
+    ],
+    "unmatched_target_count": 1,
+    "network_event_count": 38,
+    "fetch_event_count": 3,
+    "pause_rejections": {
+      "non_target": 0,
+      "target_without_response": 0,
+      "target_without_network": 0,
+      "target_outside_main_frame": 0,
+      "target_unexpected_status_or_extra": 1,
+      "target_body_unavailable": 0
+    },
+    "continuation_rejections": {
+      "non_target": 0,
+      "target": 0
+    },
+    "cleanup": "disabled_detached",
+    "old_paused_before_replay": true,
+    "extension_capture_at_current_pause": false,
+    "current_binding_matches_response": false,
+    "terminal_outcome": "unverified",
+    "capture_probe_cleanup": "removed_detached",
+    "verdict": "unverified"
+  }
+}

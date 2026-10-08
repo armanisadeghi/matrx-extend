@@ -36,7 +36,13 @@
     ".research/native-host-pressure-escalation-20261008.json",
     ".research/startup-interval-independent-peer-20261008.json",
     ".research/startup-interval-final-peer-20261008.json",
-    ".research/startup-bracket-native-20261008.json"
+    ".research/startup-bracket-native-20261008.json",
+    ".research/parallel-product-attempt-peer-20261008.json",
+    ".research/idle-headless-native-control-20261008.json",
+    ".research/idle-native-evidence-peer-20261008.json",
+    ".research/seo-arm-414-native-20261008-1527.json",
+    ".research/seo-arm-live-peer-20261008-1536.json",
+    ".research/host-admission-diagnosis-20261008-1524.json"
   ],
   "transition_history": [
     {
@@ -59,7 +65,7 @@
     }
   ],
   "closure_requirement": "Prove and repair demonstrated startup class with actual helper red/green and independent review; native admin original scenario and surrounding ownership rejection must pass.",
-  "next_action": "Source-reviewed explicit headless idle-panel control, then one guarded hosted attempt on same Intel/frozen407 artifact: isolate public-page workload while preserving Chrome/display/extension. Current diagnostic37791330758 connects~5.95s; startup host CPU dominant but later ownedChrome CPU dominates, and missing SEO phase makes causal attribution unresolved. No warm-up, threshold reduction, or blind retry. D183 preserves future SEOprogress.",
+  "next_action": "Development414 ARM Records37799435980 and controlled SEO37800877872 reach real product behavior with valid resource journals. Separate Intel jobs37799458419/37799999548 fail pre-product admission; no host process attribution or architecture root cause is proved. Prefer supported ARM route for continued product tests with all guards unchanged. Original331ms admin endpoint-refusal reproduction and broader startup durability remain unverified; do not close D107 on unrelated successes.",
   "confirmed_late_start_variant": {
     "run_id": "37785284577",
     "resource_valid": true,

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "scope": "Independent source review of Records C02 invalid-input and full-panel-reload extension at ac4d5b237a9fc01ae55e83a6f1c3ccf72d2052a6",
+  "verdict_a_requirements_and_native": "SOURCE REQUIREMENTS PASS; NATIVE PENDING. The callback sends a nonnumeric table_list limit, requires the exact POST body and authenticated organization/principal, a finished HTTP 200 response, the same request's streamed full_result rendered visibly, success=false, invalid_arguments, and a limit-specific message. Page.reload is explicit; the restored admin profile/email, selected organization, and bearer hash are checked before a further positive read. Native browser execution was not performed and remains an external runtime acceptance requirement, not a source defect.",
+  "verdict_b_source_and_forcing_function": "PASS for source readiness. The focused tests execute the actual exercisePanel callback extracted from the acceptance source with controlled dependencies; negative cases reject false success, wrong error type/message, a failed reloaded read, omitted reload, wrong reloaded profile, wrong bearer, stale visible output, and missing input selection. Network observers are stopped in finally, and bounded receipts omit token and table content.",
+  "contract_review": {
+    "records_schema": "/Volumes/Samsung2TB/code/aidream/packages/matrx-records/matrx_records/agent/args.py:TableListWire defines limit as int",
+    "server_validation": "The registered test-door declaration in aidream/tools/_generated_declarations.py supplies RecordsArgs to ToolExecutor.execute. Its pre-dispatch validation path calls _reject_invalid_arguments in aidream/packages/matrx-ai/matrx_ai/tools/executor.py, which emits success=false and error_type=invalid_arguments. aidream/services/ai_execution/tool_testing.py streams that error in full_result. The direct-call fallback inside matrx_records/agent/tool.py can emit validation, but it is not the registered /tools/test/execute path.",
+    "extension_wire": "src/lib/tools/manual-server.ts posts {tool_name, arguments} to /tools/test/execute and returns the streamed completion full_result; the callback verifies its exact request body and visible output",
+    "inventory_discrepancy": "The existing EXT-F-4130-T01 C02 negative_expected in .research/records-control-procedures-20261008.json says error_type=validation. That expectation is stale for the registered test door; the new invalid_arguments expectation is supported. Other sibling procedures sharing the generic RecordsArgs prevalidation rationale should be audited individually because action-level failures can retain tool-specific types.",
+    "limitations": "Controlled source harness fixtures do not prove native Chrome behavior or deployed backend behavior; the acceptance driver itself retains those checks for the hosted native run. No concrete source falsepass found."
+  },
+  "verified": {
+    "command": "node --test tests/browser/records-readonly-native-proof.test.mjs tests/browser/records-readonly-native-driver.test.mjs",
+    "result": "9 tests passed",
+    "native": "NOT RUN by this reviewer, as assigned"
+  }
+}

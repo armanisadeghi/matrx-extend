@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "task": "Independent peer adjudication of guest Scrape native run 37801787667",
+  "scope": "Read-only adjudication of the actual native receipt, resource journals, source provenance, driver predicates, case criteria, and EXT-D-0178 closure gate. No browser, job, build, source, or inventory changes.",
+  "verdict_a_native_outcome": {
+    "run": "Hosted guest Scrape development acceptance, run 37801787667, guest, normal 600px, ARM64 macOS 15, headed Chrome 141.0.7390.37. Workflow checkout SHA d992eadd3153dc3769306b42b8cd1f596deef32d. The receipt is status partial and has no failure; workflow success is not the case verdict.",
+    "product_artifact": {
+      "version": "0.2.414",
+      "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+      "tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046",
+      "ci_run_id": 37790643945,
+      "ci_artifact_id": 11556064167,
+      "acceptance_receipt_artifact_id": 11561896074,
+      "identity_note": "The requested artifact 11556064167 is the development product artifact imported by run 37801787667. The native run's uploaded receipt is a distinct artifact, 11561896074."
+    },
+    "EXT-D-0178_branch": {
+      "verdict": "PASS for the stated native recapture closure gate",
+      "receipt_fields": {
+        "pointer_phase": "release_returned",
+        "click_events": 1,
+        "busy_observed": true,
+        "owned_edited_badge_visible": true,
+        "branch": "discard_confirmation",
+        "discard_dialog_visible": true,
+        "trusted_confirmation_returned": true,
+        "ready": true,
+        "article_selected": true,
+        "visible": true,
+        "fixture_title_matches": true,
+        "fixture_text_present": true
+      },
+      "reason": "The saved native receipt identifies the owned edited pre-state, exact visible discard confirmation, returned trusted confirmation action, and visible expected referrals Article title and sentinel. This is the actual confirmation branch, not the already-captured alternate branch. The downloaded artifact receipt and decompressed retained raw receipt both hash to f799be3adeb1a90206c2bff4dd0f391fa454f6feca0539b2d1cef290d5196f84; the separate readable receipt is sanitized and has a different hash.",
+      "cancel_semantics": "The post-reload fast boundary itself did not exercise Cancel. The same native run's earlier warm deep path did: the exact helper requires both dialog buttons, clicks Cancel, waits for the dialog to close while edited state remains and the deep control is restored, then opens the dialog again, confirms, and proceeds to the lazy-content deep result. This is runtime coverage for warm deep Cancel; the receipt has no dedicated persisted Cancel sub-boundary, so that substep is supported by the exact driver control flow and the run's later stage/deep result.",
+      "recommendation": "Close EXT-D-0178 for its stated confirmation-recapture defect. T03 is a newly supported guest pass across warm deep Cancel/confirm and reload fast confirm; do not claim reload-time Cancel."
+    },
+    "guest_case_verdicts": [
+      {
+        "case_id": "EXT-F-1007-T01",
+        "verdict": "partial; no promotion",
+        "reason": "Fast capture and busy/result behavior are observed, but no natural capture error and corresponding recovery actions are exercised."
+      },
+      {
+        "case_id": "EXT-F-1007-T02",
+        "verdict": "partial; no promotion",
+        "reason": "Post-reload deep capture and a natural deep failure/retry with mode preservation remain unverified."
+      },
+      {
+        "case_id": "EXT-F-1007-T03",
+        "verdict": "pass; newly supported guest promotion",
+        "reason": "The same run exercises warm deep Cancel and confirmation: exact dialog actions are required, Cancel is clicked, and edited state plus the restored deep control are awaited before the dialog is reopened and confirmed; the subsequent deep result contains lazy content. After reload, the receipt separately proves the fast confirmation branch through visible expected Article. Cancel was not repeated after reload."
+      },
+      {
+        "case_id": "EXT-F-1007-T07",
+        "verdict": "pass-revalidated",
+        "reason": "Guest warm/reload scroll synchronization and off-stops-sync observations match the historical pass."
+      },
+      {
+        "case_id": "EXT-F-1007-T08",
+        "verdict": "partial; no promotion",
+        "reason": "All six tabs, populated content, capture invariance, and empty Images/Video panes are evidenced. The earlier peer identified empty Article, Links, SEO, and Schema pane states as outstanding where supported; this receipt records those panes as populated, not empty. Member/admin omissions do not determine this guest verdict."
+      },
+      {
+        "case_id": "EXT-F-1007-T09",
+        "verdict": "pass-revalidated",
+        "reason": "Guest copy formats and current-content equality remain covered warm and after reload."
+      },
+      {
+        "case_id": "EXT-F-1007-T10",
+        "verdict": "pass-revalidated",
+        "reason": "Guest image removal through empty state and valid add remain covered warm and after reload."
+      },
+      {
+        "case_id": "EXT-F-1007-T11",
+        "verdict": "pass-revalidated",
+        "reason": "Guest blank rejection, valid add, and Cancel draft clearing remain covered warm and after reload."
+      },
+      {
+        "case_id": "EXT-F-1007-T12",
+        "verdict": "pass-revalidated",
+        "reason": "Guest video open/copy/remove, blank rejection, and valid add remain covered warm and after reload."
+      },
+      {
+        "case_id": "EXT-F-1007-T13",
+        "verdict": "pass-revalidated",
+        "reason": "Guest link open/copy/remove, blank rejection, valid add, and cancel remain covered warm and after reload."
+      },
+      {
+        "case_id": "EXT-F-1007-T14",
+        "verdict": "partial; no promotion",
+        "reason": "A restricted-URL dismiss is present, but natural recoverable Reload page/Try again and deep-mode retry behavior remain open."
+      },
+      {
+        "case_id": "EXT-F-1007-T20",
+        "verdict": "pass-revalidated",
+        "reason": "Initial/reload empty state and navigation clearing prior content and saved state remain covered."
+      }
+    ],
+    "guest_passes_revalidated": [
+      "EXT-F-1007-T07",
+      "EXT-F-1007-T09",
+      "EXT-F-1007-T10",
+      "EXT-F-1007-T11",
+      "EXT-F-1007-T12",
+      "EXT-F-1007-T13",
+      "EXT-F-1007-T20"
+    ],
+    "new_guest_promotions": ["EXT-F-1007-T03"],
+    "dimension_limits": "Only guest/normal-width development 0.2.414 is evidenced. Member/admin modes, alternate widths, Store artifact, later-main adoption, natural error recovery, deep failure/retry, and reload-time Cancel are not inferred. Other guest cells retain canonical status absent run-specific evidence."
+  },
+  "verdict_b_evidence_and_source_quality": {
+    "receipt_provenance": "Downloaded acceptance artifact 11561896074's original receipt and the decompressed retained driver-receipt.raw.json.gz both hash to f799be3adeb1a90206c2bff4dd0f391fa454f6feca0539b2d1cef290d5196f84. The separate readable driver-receipt.json is sanitized and has SHA-256 8ded57452eddcc193381fb9de574669b2622e427da8bba1ef2001d8581385b60; it is not byte-identical to the artifact. The original receipt identifies product artifact 11556064167, source e7b7dc1e, exact tree hash, guest/normal mode, and 0.2.414. GitHub workflow metadata independently identifies checkout SHA d992eadd and inputs for that same product artifact.",
+    "driver_source_match": {
+      "comparison": "The exact acceptance driver files at product source e7b7dc1ecae946369cebb482915faf7ef792c692 and workflow checkout d992eadd3153dc3769306b42b8cd1f596deef32d have identical SHA-256 hashes; workflow SHA and product artifact SHA are kept distinct.",
+      "files": {
+        "tests/browser/scrape-post-reload-capture-boundary.mjs": "094e75ee1e20339361749d74f1a599f714da28fa1333b873d2195426fe576fb7",
+        "tests/browser/scrape-guest-native-acceptance.mjs": "6bebacc32b9d780918ea05baed5457e79d0245b489e574c42ca30a688f4e54f7",
+        "tests/browser/scrape-native-recapture.mjs": "cbd8f99843f70d5672a2cdcbd721c74470fa2ab1e880678ec1bcecfb46fb1888",
+        "tests/browser/settings-panel-driver.mjs": "a6043ed8a088b5c36a2887186d0c9369d0b6492b3802ea07d9a82b1bb4b44444"
+      },
+      "predicate_review": "The helper accepts captured Article or the exact owned discard dialog; when the dialog branch is observed it records branch/dialog, awaits the trusted resourceAction click return, then waits for the expected title and sentinel Article. The receipt's branch and result predicates agree with that workflow code."
+    },
+    "source_fixes": "Both required fixes are ancestors of product source e7b7dc1e: 175718392f597d214caaf9310afc5122a2f4ae62 (trusted owned recapture confirmation) and c429178346eb029d63138ba549aadf0b644736ad (preserve observed capture predicates on timeout). Independent source review 9fc0a22159d7285679d5280bc18a55abf4b77dac is recorded in scrape-uninstrumented-final-peer-20261008.json.",
+    "resource_gate": {
+      "verdict": "PASS",
+      "journal_sha256": {
+        "hosted-package-37801787667-1.jsonl": "eac99fdf85a0cad8f2b122530b3063c4e26e1c02cbbe4100e6d00407dc679d59",
+        "hosted-browser-37801787667-1.jsonl": "0a993151e1f15cc3a0e9330a89049205b6a5c839145d326e759c178d136b0415",
+        "hosted-guest-37801787667-1.jsonl": "fc67023b4368d4ba767e8a8cc169fde3b3a10692dc964ddef4dfb758c3aeab7c"
+      },
+      "terminal_decisions": "All three run-specific journals have matching run IDs and end admitted=true, resourceInvalid=false, exitCode=0, decision=valid. The guest journal also retains healthy watcher samples throughout the acceptance action."
+    },
+    "historical_scope_comparison": "Compared with scrape-case-scope-adjudication-20261008.json: its seven complete guest cells remain revalidated passes; T03 is a newly supported guest pass because this run supplies the formerly missing post-reload confirmation branch and its warm deep Cancel/confirm path. T01, T02, T08, and T14 remain partial for their independent case criteria. The run satisfies EXT-D-0178's branch-specific native closure gate without promoting the whole feature."
+  },
+  "evidence_paths": [
+    ".research/scrape-arm-414-native-20261008-1532-evidence/run-37801787667/driver-receipt.json",
+    ".research/scrape-arm-414-native-20261008-1532-evidence/run-37801787667/driver-receipt.raw.json.gz",
+    ".research/scrape-arm-414-native-20261008-1532-evidence/run-37801787667/terminal-boundary.json",
+    ".research/scrape-arm-414-native-20261008-1532-evidence/run-37801787667/resource-journals/hosted-package-37801787667-1.jsonl",
+    ".research/scrape-arm-414-native-20261008-1532-evidence/run-37801787667/resource-journals/hosted-browser-37801787667-1.jsonl",
+    ".research/scrape-arm-414-native-20261008-1532-evidence/run-37801787667/resource-journals/hosted-guest-37801787667-1.jsonl",
+    ".research/scrape-case-scope-adjudication-20261008.json",
+    ".research/scrape-uninstrumented-final-peer-20261008.json",
+    "docs/stabilization/defects/EXT-D-0178.json",
+    "tests/browser/scrape-post-reload-capture-boundary.mjs",
+    "tests/browser/scrape-guest-native-acceptance.mjs"
+  ]
+}

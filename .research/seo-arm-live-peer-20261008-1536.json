@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "review_role": "fresh independent native evidence adjudication; no runner, build, browser, or product authorship",
+  "run_id": 37800877872,
+  "verdict_a_live_outcome": {
+    "result": "bounded controlled guest native pass; no full-case pass",
+    "promotions": {
+      "T01": {
+        "status": "partial",
+        "passed_subtargets": ["new_url_replaces_visible_title", "reload_audits_current_url"],
+        "unverified": ["one audit per URL", "slow old result cannot overwrite new page"]
+      },
+      "T02": {
+        "status": "partial",
+        "passed_subtargets": [
+          "manual_button_returns_to_current_page",
+          "native_title_recaptured_after_trusted_reaudit"
+        ],
+        "qualification": "The receipt target is named guest_reaudit_captures_changed_page_metadata, but its direct native-view assertion is title-only. It proves the public title and description changed, old title remained before click, then native title matched the new public title. T14 later clipboard evidence indirectly includes updated social tags; do not credit direct SEO description-display refresh.",
+        "unverified": [
+          "running button state",
+          "stale advice replacement",
+          "failure report",
+          "displayed description directly matches changed public page",
+          "reload"
+        ]
+      },
+      "T03": {
+        "status": "partial",
+        "passed_subtargets": [
+          "about_blank_clear_error_without_stale_audit",
+          "public_page_recovers_after_restricted_url"
+        ],
+        "unverified": ["unreachable HTTP(S)", "other restricted schemes", "reload behavior"]
+      },
+      "T07": {
+        "status": "partial",
+        "passed_subtargets": [
+          "guest_menu_offers_text_and_ai_but_hides_json",
+          "guest_actual_clipboard_text_and_ai_page_0",
+          "guest_actual_clipboard_text_and_ai_page_1",
+          "guest_role_gate_after_reload",
+          "guest_actual_clipboard_text_and_ai_reload"
+        ],
+        "qualification": "Real trusted copy actions and clipboard readback were asserted. Text checks URL, title, a description line, page stats and an available heading; AI output must wrap the exact summary. This is not complete parity between every displayed audit field and clipboard content.",
+        "unverified": [
+          "member/admin role gates",
+          "admin JSON contents",
+          "complete displayed audit field parity"
+        ]
+      },
+      "T09": {
+        "status": "partial",
+        "passed_subtargets": [
+          "page_0_title_and_headings",
+          "page_1_title_and_headings",
+          "sparse_public_detail_groups",
+          "rich_public_detail_groups_and_canonical_door",
+          "canonical_outbound_opens_expected_public_tab"
+        ],
+        "unverified": [
+          "volatile public-detail batch and optional metadata fixture excluded by controlled scope",
+          "broken social preview image",
+          "other detail controls",
+          "optional hreflang/schema doors when their live source data is absent",
+          "readability value correctness"
+        ]
+      },
+      "T14": {
+        "status": "partial",
+        "passed_subtargets": [
+          "guest_social_missing_tags_clipboard_before_reaudit",
+          "guest_social_missing_tags_clipboard_after_reaudit"
+        ],
+        "observed": "Owned-public-DOM oracle matched actual clipboard exactly for five tags before Re-audit and six tags after the controlled metadata change; trusted clicks, clipboard readback, restored observation permission, feedback, and absence of failure feedback were asserted.",
+        "unverified": [
+          "button absent when no snippet applies",
+          "other social page states",
+          "reload",
+          "member/admin"
+        ]
+      }
+    },
+    "case_scope": "Only the six selected cases T01/T02/T03/T07/T09/T14 receive the listed subtarget credit. The receipt status remains partial. No selected case is promoted to full pass; other SEO cases and member/admin modes remain unverified.",
+    "defect_183": "No D183 durability credit. This successful receipt shows observations persisted for a normally completed run; it is not an interrupted-run test and does not prove the last safe phase and completed observations survive interruption."
+  },
+  "verdict_b_evidence_and_driver_quality": {
+    "result": "supports this bounded native outcome with stated limits",
+    "basis": [
+      "Run 37800877872 completed successfully on macos-15 ARM64 using controlled guest scope, no metadata fixture, and resource diagnostics disabled.",
+      "The hosted workflow checkout was f653eb56e4d1a1d10c1d68fc53d4f15c6cc87df3; the frozen product artifact was built from e7b7dc1ecae946369cebb482915faf7ef792c692. These are distinct source boundaries.",
+      "The actual workflow driver tests/browser/seo-guest-acceptance.mjs at f653 has SHA-256 ecc7b9dc502e86e2faee6918756a54a8559b13bf15fe6e257af8f53a2c8439f2. Its diff from product source adds progress checkpoints; the target predicate logic is unchanged. Its oracle helpers seo-new-coverage-oracle.mjs and seo-guest-clipboard.mjs match the product-source versions byte-for-byte.",
+      "The workflow source scripts/hosted-seo-route.mjs at f653 adds fsync plus atomic rename progress persistence, and tests include a child SIGTERM seam. This native run completed normally; it does not independently prove interruption durability.",
+      "The acceptance receipt binds CI development run 37790643945/artifact 11556064167, source e7b7dc1ecae946369cebb482915faf7ef792c692, unpublished version 0.2.414, and identical before/after tree SHA-256 550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046.",
+      "All 18 selected target entries pass, with zero target failures. The exact run package, browser, and guest resource journals each end admitted=true, resourceInvalid=false, exitCode=0, decision=valid, and carry run ID 37800877872-1.",
+      "The receipt and all three journals in the flat raw bundle match the original downloaded artifact-checkout copies byte-for-byte. The two retained screenshots establish guest-panel/page context, not SEO result pixels.",
+      "The actual workflow driver uses an owned native side panel, trusted UI clicks, live public-tab DOM oracles, clipboard readback, and exact social-tag comparison; the receipt records restoration of the controlled page source."
+    ],
+    "limits": [
+      "The receipt retains booleans, counts, and selected public titles, not raw DOM values or clipboard bytes; screenshots do not show the SEO pane. Review can confirm bound driver predicates and outcome, not reconstruct every underlying byte.",
+      "A normal successful receipt does not exercise interruption durability, and this review does not close D183.",
+      "The run proves this controlled ARM lane executed successfully; it does not establish an architecture cause for separate Intel admission failures."
+    ]
+  },
+  "evidence": {
+    "worker_run_report": ".research/seo-arm-414-native-20261008-1527.json",
+    "receipt": {
+      "path": ".research/seo-arm-414-native-20261008-1527/raw/seo-guest-acceptance.json",
+      "sha256": "ccc92824221ee925f2826cc74982d2653af0888ad38a82d44cf59d890befe05e"
+    },
+    "run_journals": {
+      "hosted-package-37800877872-1.jsonl": "ee16e184bd0c5d18380c6a025b0320e5bba83614cbcab75e203fd1f9793fdb67",
+      "hosted-browser-37800877872-1.jsonl": "494632cb2bcb958be2932f708bd23c83c983b943dbf9267043f789e3134f61f8",
+      "hosted-guest-37800877872-1.jsonl": "dbd56b92a97dd8cfabd4e51bd72fd6da0eaf68be152c04d1615a28857adb52c6"
+    },
+    "artifact": "Hosted run artifact 11561111598, hosted-guest-37800877872-1; frozen product artifact 11556064167 is a separate CI development artifact.",
+    "driver_source": {
+      "workflow_checkout": "f653eb56e4d1a1d10c1d68fc53d4f15c6cc87df3",
+      "actual_acceptance_driver": {
+        "path": "tests/browser/seo-guest-acceptance.mjs",
+        "sha256": "ecc7b9dc502e86e2faee6918756a54a8559b13bf15fe6e257af8f53a2c8439f2"
+      },
+      "workflow_route": {
+        "path": "scripts/hosted-seo-route.mjs",
+        "sha256": "925f8bc622cb2fc8187b2cbb2adc2f85115e782827c8756d292d24d3cef7bbbc"
+      },
+      "workflow_wrapper": {
+        "path": "scripts/hosted-guest-acceptance.mjs",
+        "sha256": "676982bd46dc2eb204726ab39f5ffdfe5f3c447b0f98f614d71766352179cec6"
+      },
+      "oracle_helpers_unchanged_from_product_commit": {
+        "tests/browser/seo-new-coverage-oracle.mjs": "186eeaeb5cf61857fdf0bc22f20362b8a521405747fd3214f938df1cf48b3a10",
+        "tests/browser/seo-guest-clipboard.mjs": "fe153d52fafbb32ace88ab737a576289ce51e70c147138a676ac994539d1cd36"
+      },
+      "review": "The exact workflow driver at f653 adds bounded progress writes compared with product commit e7; its SEO target predicate logic is otherwise unchanged. The actual run used f653 driver code against the separately imported e7 frozen product artifact. Native panel, click/evaluate, clipboard permission, artifact verification, frozen identity, and local dev receipt helpers also have matching SHA-256 values at workflow checkout f653 and product source e7.",
+      "native_helpers_equal_product_and_workflow_commits": {
+        "tests/browser/native-sidepanel-qa-harness.mjs": "313ea6a2e9fbe6cc98eb2669d3a70a9bca34603a67c0f99653259edaa800633d",
+        "tests/browser/settings-panel-driver.mjs": "a6043ed8a088b5c36a2887186d0c9369d0b6492b3802ea07d9a82b1bb4b44444",
+        "tests/browser/clipboard-observation.mjs": "8c14075193235d60eb32d539a61ef435ee02b4823f18b007f05fb18ea79920bb",
+        "scripts/current-test-artifact.mjs": "4148676bef8fd80576c46d32b5687fdd24ba6e6d700dd11b38d1c85aacc9a46d",
+        "scripts/frozen-artifact-identity.mjs": "78fc071362c04f3ec480c12bdbf33d106986cfd12731d36d27ff7ede48cdc82f",
+        "scripts/record-local-dev-build.mjs": "48d8fb91986ad3bd44e66476f56f804c54c69e168417c6091c1edc91c54ad263"
+      }
+    },
+    "inventory_reference": "docs/stabilization/inventory.json EXT-F-1008 T01/T02/T03/T07/T09/T14; docs/stabilization/defects/EXT-D-0183.json"
+  },
+  "discrepancy_for_handoff": "The worker summary describes T02 as capturing changed public title and description. The receipt's native displayed-value assertion checks only the new title; the changed description is a public-source precondition and has indirect updated clipboard evidence through T14, not direct display evidence. Keep T02 partial and qualify the description claim. Source binding correction: target assertions executed from workflow checkout f653eb56, not product build source e7b7dc1e. The workflow driver adds checkpoint writes; target predicate logic matches the product-source version."
+}

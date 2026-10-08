@@ -1,0 +1,234 @@
+{
+  "schema_version": 1,
+  "task_id": "scrape_arm_acceptance",
+  "lane": "A",
+  "task": "One existing hosted guest Scrape acceptance on the frozen development 0.2.414 artifact, supported macos-15 ARM64.",
+  "status": "completed_valid_bounded_partial",
+  "current_run": {
+    "run_id": 37801787667,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37801787667",
+    "conclusion": "success",
+    "exercise_step": "success",
+    "workflow_checkout_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
+    "workflow_source_sha256": "1f3453f577d68c97f8109649b0a79162abd5bc950839fb52810a4e48f2aba327",
+    "driver_source_sha256": "6bebacc32b9d780918ea05baed5457e79d0245b489e574c42ca30a688f4e54f7",
+    "post_reload_boundary_source_sha256": "094e75ee1e20339361749d74f1a599f714da28fa1333b873d2195426fe576fb7",
+    "recapture_helper_source_sha256": "cbd8f99843f70d5672a2cdcbd721c74470fa2ab1e880678ec1bcecfb46fb1888",
+    "target": {
+      "label": "macos-15",
+      "runner_arch": "ARM64",
+      "machine": "arm64",
+      "browser": "Chrome/141.0.7390.37",
+      "runtime_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "mode": "headed",
+      "mode_verified_by": "Browser.getBrowserCommandLine",
+      "auth_mode": "guest",
+      "auth_storage_empty": true,
+      "width_mode": "normal",
+      "width_px": 600
+    },
+    "artifact": {
+      "kind": "ci_development_test",
+      "channel": "development",
+      "version": "0.2.414",
+      "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+      "tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046",
+      "run_id": 37790643945,
+      "artifact_id": 11556064167
+    },
+    "workflow_timing": {
+      "created_at": "2026-10-08T15:33:47Z",
+      "started_at": "2026-10-08T15:33:47Z",
+      "completed_at": "2026-10-08T15:42:24Z"
+    },
+    "source_hashes": {
+      ".github/workflows/hosted-guest-acceptance.yml": "1f3453f577d68c97f8109649b0a79162abd5bc950839fb52810a4e48f2aba327",
+      "tests/browser/scrape-guest-native-acceptance.mjs": "6bebacc32b9d780918ea05baed5457e79d0245b489e574c42ca30a688f4e54f7",
+      "tests/browser/scrape-post-reload-capture-boundary.mjs": "094e75ee1e20339361749d74f1a599f714da28fa1333b873d2195426fe576fb7",
+      "tests/browser/scrape-native-recapture.mjs": "cbd8f99843f70d5672a2cdcbd721c74470fa2ab1e880678ec1bcecfb46fb1888"
+    }
+  },
+  "native_verdict": {
+    "receipt_status": "partial",
+    "failure": null,
+    "driver_failure": null,
+    "stage": "post_reload_empty_media_capture",
+    "native_stage": "exercise_panel",
+    "guest_account_observed": true,
+    "driver_case_rows": [
+      {
+        "case_id": "EXT-F-1007-T20",
+        "driver_status": "passed",
+        "remaining": []
+      },
+      {
+        "case_id": "EXT-F-1007-T01",
+        "driver_status": "partial",
+        "remaining": ["member/admin modes remain unverified by this receipt."]
+      },
+      {
+        "case_id": "EXT-F-1007-T08",
+        "driver_status": "partial",
+        "remaining": ["member/admin modes remain unverified by this receipt."]
+      },
+      {
+        "case_id": "EXT-F-1007-T10",
+        "driver_status": "passed",
+        "remaining": []
+      },
+      {
+        "case_id": "EXT-F-1007-T11",
+        "driver_status": "passed",
+        "remaining": []
+      },
+      {
+        "case_id": "EXT-F-1007-T12",
+        "driver_status": "passed",
+        "remaining": []
+      },
+      {
+        "case_id": "EXT-F-1007-T13",
+        "driver_status": "partial",
+        "remaining": ["member/admin modes remain unverified by this receipt."]
+      },
+      {
+        "case_id": "EXT-F-1007-T02",
+        "driver_status": "partial",
+        "remaining": ["Deep failure retry mode and post-reload deep capture remain unverified."]
+      },
+      {
+        "case_id": "EXT-F-1007-T07",
+        "driver_status": "passed",
+        "remaining": []
+      },
+      {
+        "case_id": "EXT-F-1007-T09",
+        "driver_status": "passed",
+        "remaining": []
+      },
+      {
+        "case_id": "EXT-F-1007-T14",
+        "driver_status": "partial",
+        "remaining": [
+          "Recoverable Reload page and Try again, including deep retry mode, need a natural browser failure."
+        ]
+      }
+    ],
+    "d178_conditional_branch": {
+      "occurred": true,
+      "receipt_branch": "discard_confirmation",
+      "pointer_phase": "release_returned",
+      "click_events": 1,
+      "owned_edited_badge_visible": true,
+      "discard_dialog_visible": true,
+      "trusted_confirmation_returned": true,
+      "ready": true,
+      "article_selected": true,
+      "fixture_title_matches": true,
+      "fixture_text_present": true,
+      "source": "current 414 receipt post_reload_capture_boundary; this evidence was not present in prior pass receipt."
+    },
+    "scope_read": "The receipt is a successful bounded native run with overall partial scope. The case-level partial labels that cite only missing member/admin modes do not lower guest verdicts. The independent guest scope adjudication remains the reference for guest-only missing criteria."
+  },
+  "guest_results_current_414": {
+    "directly_reported_passes": [
+      "EXT-F-1007-T07",
+      "EXT-F-1007-T09",
+      "EXT-F-1007-T10",
+      "EXT-F-1007-T11",
+      "EXT-F-1007-T12",
+      "EXT-F-1007-T20"
+    ],
+    "partial_guest_criteria_per_prior_scope_adjudication": {
+      "EXT-F-1007-T01": "Natural fast capture failure and recovery action remain unobserved.",
+      "EXT-F-1007-T02": "Post-reload deep capture and natural deep failure/retry remain unobserved.",
+      "EXT-F-1007-T08": "Empty-state coverage for Article, Links, SEO and Schema remains unobserved; current run observes empty Images and Video after reload.",
+      "EXT-F-1007-T14": "Natural recoverable Reload page and Try again, including deep-mode retry preservation, remain unobserved."
+    },
+    "EXT-F-1007-T03": "The native receipt separately proves the post-reload discard-confirmation branch and trusted confirmation, although the driver did not emit a T03 case row. Root/independent peer owns formal canonical status adjudication.",
+    "EXT-F-1007-T13": "The current driver row says partial only because member/admin modes are absent. This report does not treat that as a guest failure or claim a new canonical promotion; prior guest pass evidence remains separately linked below.",
+    "unattempted_or_unreported": "No whole-feature or member/admin acceptance is claimed."
+  },
+  "prior_guest_evidence_not_credited_to_current_run": {
+    "run_id": 37778965029,
+    "source": ".research/scrape-case-scope-adjudication-20261008.json",
+    "scope": "Frozen development 0.2.407, source 5d845f42cb22c10e2486af8048d1ac9f3ac8e114, guest, warm plus exact extension reload.",
+    "guest_passes_recorded_there": [
+      "EXT-F-1007-T07",
+      "EXT-F-1007-T09",
+      "EXT-F-1007-T10",
+      "EXT-F-1007-T11",
+      "EXT-F-1007-T12",
+      "EXT-F-1007-T13",
+      "EXT-F-1007-T20"
+    ],
+    "distinction": "These are prior 0.2.407 observations only. The new current 0.2.414 observations above are separately tied to run 37801787667 and artifact 11556064167."
+  },
+  "resource_journals": [
+    {
+      "path": "run-37801787667/resource-journals/hosted-browser-37801787667-1.jsonl",
+      "sha256": "0a993151e1f15cc3a0e9330a89049205b6a5c839145d326e759c178d136b0415",
+      "run_id": "hosted-browser-37801787667-1",
+      "events": 4,
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "child_exit_code": 0,
+      "decision": "valid"
+    },
+    {
+      "path": "run-37801787667/resource-journals/hosted-guest-37801787667-1.jsonl",
+      "sha256": "fc67023b4368d4ba767e8a8cc169fde3b3a10692dc964ddef4dfb758c3aeab7c",
+      "run_id": "hosted-guest-37801787667-1",
+      "events": 11,
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "child_exit_code": 0,
+      "decision": "valid"
+    },
+    {
+      "path": "run-37801787667/resource-journals/hosted-package-37801787667-1.jsonl",
+      "sha256": "eac99fdf85a0cad8f2b122530b3063c4e26e1c02cbbe4100e6d00407dc679d59",
+      "run_id": "hosted-package-37801787667-1",
+      "events": 4,
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "child_exit_code": 0,
+      "decision": "valid"
+    }
+  ],
+  "credential_boundary": {
+    "optional_secret_names_checked_only": [
+      "MATRX_REVIEWER_MAGIC_LINK_JSON",
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON"
+    ],
+    "present": [],
+    "values_read": false,
+    "used": false,
+    "post_run_cleanup": "No secret was staged or owned by this lane."
+  },
+  "evidence": {
+    "directory": ".research/scrape-arm-414-native-20261008-1532-evidence",
+    "raw_driver_receipt": "run-37801787667/driver-receipt.raw.json.gz",
+    "readable_driver_receipt": "run-37801787667/driver-receipt.json",
+    "terminal_boundary": "run-37801787667/terminal-boundary.json",
+    "screenshots": "The hosted artifact contained screenshots; none were copied, inspected, or committed.",
+    "checksums": "checksums.sha256 lists programmatically calculated hashes for committed evidence.",
+    "driver_receipt_hashes": {
+      "raw_compressed_path": "driver-receipt.raw.json.gz",
+      "raw_compressed_sha256": "b3e6fbf8873a0654558799905637760fc05ed5bf93d591b112213caf6d8be03d",
+      "raw_uncompressed_sha256": "f799be3adeb1a90206c2bff4dd0f391fa454f6feca0539b2d1cef290d5196f84",
+      "readable_path": "driver-receipt.json",
+      "readable_sha256": "8ded57452eddcc193381fb9de574669b2622e427da8bba1ef2001d8581385b60"
+    }
+  },
+  "limitations": [
+    "Guest-only and bounded to the selected existing case.",
+    "The running extension artifact source e7b7dc1 differs from the workflow/driver checkout d992eadd; both identities and executed workflow source hashes are recorded.",
+    "No member/admin, Store, local-run, release, or whole-feature verdict.",
+    "D178 branch is directly observed in the current receipt; formal canonical T03 status is left to the independent peer and root integration."
+  ],
+  "next_action": "Independent peer verifies the receipt branch, exact artifact/runner identity and all three valid journals; root integrates the bounded D178/T03 finding and preserves the listed guest gaps."
+}

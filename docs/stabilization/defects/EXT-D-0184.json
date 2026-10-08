@@ -1,0 +1,55 @@
+{
+  "id": "EXT-D-0184",
+  "feature_id": "EXT-F-1012",
+  "case_ids": ["EXT-F-1012-T57"],
+  "surface": "Native Network replay race test driver",
+  "auth_mode": "admin",
+  "title": "Race driver labels a second old-document response as current",
+  "severity": "S2: verification blocked; product failure not established",
+  "priority": "P1",
+  "state": "in-fix",
+  "owner": "root/t57_binding_diagnosis",
+  "preconditions": [
+    "Frozen development414 and real signed-in admin/approved organization, existing public Algolia Network recipe, guarded hosted macOS test.",
+    "Use pre-f7971902 public-race helper as executed by native37804469749."
+  ],
+  "reproduction": [
+    "Run existing prepare-stale-results public race scenario with response pauses enabled and exact artifact receipt.",
+    "Observe two matching prior-document requests arrive before the new-document response.",
+    "Inspect retained pauses and contexts: both selected pauses share old loader while contexts identify a different current loader; one later target was rejected as extra."
+  ],
+  "expected": "Response slots identify old and current documents by proven loader identity, not arrival order, while retaining exact request and body provenance gates.",
+  "actual": "Second old-loader response is labeled current; current binding assertion cannot match and fails public_current_binding_packet_not_observed. Third rejected target identity was not retained, so its document identity is unknown.",
+  "evidence": [
+    ".research/t57-arm-414-native-20261008-1552.json",
+    ".research/t57-binding-diagnosis-20261008-1608.json"
+  ],
+  "cause": "Arrival-order assignment before loader classification, with asynchronous response-body reads requiring synchronous slot reservation.",
+  "fix_commits": ["f7971902"],
+  "verification": [
+    "Actual helper regression failed before repair (public_race_current_ambiguous,3 vs2);14 helper tests pass after repair.",
+    "Focused hosted CI37806423980 on69bfe8a7 includes repair and succeeds; fresh peer/native remain pending."
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-08T16:11:50.063236+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Retrospective registration of exact native driver failure and retained reproduction."
+    },
+    {
+      "at": "2026-10-08T16:11:50.063236+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Receipt proves two selected responses share the old document loader; no product capture failure established."
+    },
+    {
+      "at": "2026-10-08T16:11:50.063236+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Source repairf7971902 pushed; independent peer owns classification and concurrency review."
+    }
+  ],
+  "closure_requirement": "Fresh source review plus resource-valid native original scenario showing distinct old/current loader selection, exact response identity/binding, correct final saved output and owned cleanup. Do not reopen original productD47 based on this driver failure.",
+  "next_action": "Independent review then one corrected native T57 attempt after authenticated lane and fixtures are free."
+}

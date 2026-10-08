@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-F-1008-T09 controlled guest SEO on development414",
+  "status": "bounded_controlled_native_pass",
+  "owned_attempt": {
+    "run_id": 37800877872,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37800877872",
+    "job_id": 113392446676,
+    "conclusion": "success",
+    "started_at": "2026-10-08T15:27:21Z",
+    "completed_at": "2026-10-08T15:34:16Z",
+    "workflow_checkout_sha": "f653eb56e4d1a1d10c1d68fc53d4f15c6cc87df3",
+    "inputs": {
+      "acceptance_lane": "B",
+      "runner_label": "macos-15",
+      "acceptance_case": "guest-seo",
+      "seo_case_scope": "controlled",
+      "seo_metadata_fixture": "none",
+      "seo_resource_diagnostic": false,
+      "development_run_id": 37790643945,
+      "development_artifact_id": 11556064167
+    },
+    "runner": {
+      "image": "macos-15-arm64",
+      "runner_arch": "ARM64",
+      "machine": "arm64",
+      "logical_cpus": 3
+    },
+    "active_owned_job_at_handoff": false,
+    "cleanup": "completed; GitHub Complete job reported orphan-process cleanup"
+  },
+  "frozen_product": {
+    "ci_run_id": 37790643945,
+    "ci_conclusion": "success",
+    "artifact_id": 11556064167,
+    "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+    "version": "0.2.414",
+    "tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046",
+    "kind": "local_dev_unpacked",
+    "publish_state": "not_published",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "before_after_tree_match": true,
+    "imported_artifact_claim": "exact_pushed_commit_only"
+  },
+  "native_observation": {
+    "receipt_path": ".research/seo-arm-414-native-20261008-1527/raw/seo-guest-acceptance.json",
+    "receipt_sha256": "ccc92824221ee925f2826cc74982d2653af0888ad38a82d44cf59d890befe05e",
+    "receipt_status": "partial",
+    "acceptance_target_count": 18,
+    "target_failures": 0,
+    "target_statuses": {
+      "pass": 18
+    },
+    "selected_cases": [
+      "T01",
+      "T02",
+      "T03",
+      "T07",
+      "T09",
+      "T14"
+    ],
+    "case_proof": {
+      "T01": "2/2 selected subtargets pass: new URL replaces title; reload audits current URL",
+      "T02": "2/2 selected subtargets pass: manual action keeps current page; changed public title/description were preconditions; trusted re-audit was clicked while old audit was visible, and native title matched changed public DOM. Native description display match is not asserted.",
+      "T03": "2/2 selected subtargets pass: about:blank clears stale audit with retry; public page recovers",
+      "T07": "5/5 selected subtargets pass: guest menu exposes text and AI while hiding JSON; exact page text/AI clipboard readback works on two pages and after reload",
+      "T09": "5/5 selected subtargets pass: titles/headings match on two pages; sparse/rich public detail matches DOM; canonical destination opens expected public tab",
+      "T14": "2/2 selected subtargets pass: exact guest social-tag clipboard output and feedback work before re-audit (5 tags) and after changed metadata (6 tags)"
+    },
+    "last_safe_stage": "controlled_public_source_restored",
+    "current_operation_at_receipt": "build_recheck",
+    "deferred": "The receipt lists the remaining T01-T14 behavior, role modes, and optional metadata sources that this controlled scope did not exercise.",
+    "case_statuses": {
+      "T01": "partial",
+      "T02": "partial",
+      "T03": "partial",
+      "T07": "partial",
+      "T09": "partial",
+      "T14": "partial"
+    },
+    "case_limits": {
+      "T01": [
+        "one audit per URL",
+        "slow old result cannot overwrite new page"
+      ],
+      "T02": [
+        "running button state",
+        "stale advice replacement",
+        "failure report",
+        "displayed description directly matches changed public page",
+        "reload"
+      ],
+      "T03": [
+        "unreachable HTTP(S)",
+        "other restricted schemes",
+        "reload behavior"
+      ],
+      "T07": [
+        "member/admin role gates",
+        "admin JSON contents",
+        "complete displayed audit field parity"
+      ],
+      "T09": [
+        "volatile public-detail batch and optional metadata fixture excluded",
+        "broken social preview image and other detail controls",
+        "optional metadata doors when live source data is absent",
+        "readability value correctness"
+      ],
+      "T14": [
+        "button absent when no snippet applies",
+        "other social page states",
+        "reload",
+        "member/admin"
+      ]
+    },
+    "no_defect_credit": "No D183 interrupted-run durability credit: this receipt records normal completion only."
+  },
+  "resource_decisions": {
+    "hosted_package": {
+      "decision": "valid",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "journal_sha256": "ee16e184bd0c5d18380c6a025b0320e5bba83614cbcab75e203fd1f9793fdb67"
+    },
+    "hosted_browser": {
+      "decision": "valid",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "journal_sha256": "494632cb2bcb958be2932f708bd23c83c983b943dbf9267043f789e3134f61f8"
+    },
+    "hosted_guest": {
+      "decision": "valid",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "journal_sha256": "dbd56b92a97dd8cfabd4e51bd72fd6da0eaf68be152c04d1615a28857adb52c6"
+    }
+  },
+  "retained_evidence": {
+    "raw_directory": ".research/seo-arm-414-native-20261008-1527/raw/",
+    "hosted_log_excerpt": "hosted-log-evidence.txt",
+    "hosted_log_excerpt_sha256": "b0e50085d3057eb9896a975a2a33fc3b7319cb65bb6106c67ab0042274a71ee1",
+    "artifact_id": 11561111598,
+    "artifact_name": "hosted-guest-37800877872-1",
+    "artifact_size_bytes": 60741,
+    "artifact_zip_sha256": "260cb45202486cd48ac8b99cd0e111b5fca1371da2665fa7cf6e00b8f8d0977f",
+    "selection": "Downloaded artifact 11561111598; retained the byte-exact run receipt, all three journals for run 37800877872, and two current-run screenshots. The artifact payload also carried historical journals from runs 37724762467 and 37105304739; those unrelated files were excluded.",
+    "raw_artifact_checksums": {
+      "native-side-panel.png": "e057f1b26a910b74f7f87b4255fd33454ef2462051d610d33f014c419f78ea13",
+      "normal-target-after-open.png": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89"
+    }
+  },
+  "interpretation": "This one supported ARM64 run reached and passed all 18 selected controlled native targets with valid readiness/permit journals. It demonstrates that this exact controlled development414 lane executed successfully on macos-15 ARM64. Because it used a separate disposable VM and timestamp from the two Intel admission failures, it does not prove architecture caused those failures.",
+  "limits": [
+    "The receipt is partial and the selected scope is controlled; whole SEO acceptance is not established.",
+    "The artifact is development 0.2.414 and not a published Store build.",
+    "This does not establish member/admin modes, excluded volatile T09 metadata/detail phases, current-main product health, or a hardware root cause.",
+    "No source, guard, readiness, permit, threshold, or duration change was made; no account fixture or secret was used."
+  ]
+}

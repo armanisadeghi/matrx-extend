@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-D-0091 / EXT-F-4130-T01 / C02",
+  "scope": "Extend the existing Records read-only native acceptance driver with invalid-input and full-panel-reload dimensions. No browser, backend, product, build or release change in this lane.",
+  "source_contract": {
+    "router": "../aidream/aidream/api/routers/tool_testing.py:121",
+    "stream_completion": "../aidream/aidream/services/ai_execution/tool_testing.py:225",
+    "executor_prevalidation": "../aidream/packages/matrx-ai/matrx_ai/tools/executor.py:1319",
+    "validation_error_type": "invalid_arguments",
+    "status_expectation": "HTTP 200 with a finished tool_execution completion whose full_result.success is false",
+    "client_rendering": "src/lib/tools/manual-server.ts and src/features/tools/ToolsView.tsx render full_result"
+  },
+  "driver_contract": [
+    "Trusted textarea input enters table_list with limit set to a nonnumeric string; the exact POST body, current bearer hash, organization header, completed Network request, full_result and matching visible JSON are checked.",
+    "The refusal must have success=false, error_type=invalid_arguments, and a message naming limit; a success response cannot pass.",
+    "Page.reload is issued; the panel must restore the same admin profile, visible organization and bearer identity before Tools is reopened and a second positive table_list read is run and visibly matched to its own completion.",
+    "Every execution observer is stopped after its corresponding request, including assertion failures."
+  ],
+  "local_verification": {
+    "command": "node --test tests/browser/records-readonly-native-driver.test.mjs tests/browser/records-readonly-native-proof.test.mjs && node --check tests/browser/records-readonly-native-acceptance.mjs && git diff --check",
+    "result": "9 tests passed; syntax and diff checks passed",
+    "negative_checks": [
+      "false success on invalid limit",
+      "wrong error type or message lacking limit",
+      "failed post-reload read",
+      "omitted Page.reload",
+      "wrong reloaded profile",
+      "wrong execute bearer",
+      "stale visible result",
+      "missing trusted text selection"
+    ]
+  },
+  "native_verdict": "UNVERIFIED: no native launch in this implementation lane; fresh independent review required before the next admitted native run.",
+  "remaining": "Root owns inventory, workflow, coordinator, independent review and any next native execution. C02 remains bounded; other Records actions and member mode are not covered here."
+}

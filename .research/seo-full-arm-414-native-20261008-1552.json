@@ -1,0 +1,790 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-F-1008-T09 full guest SEO native attempt",
+  "attempt_id": "native-b-full-airbnb-run-37804374798",
+  "status": "TERMINAL_RESOURCE_VALID_PRODUCT_RECEIPT_PARTIAL",
+  "acceptance_credit": "bounded per-target evidence only; parent case remains partial",
+  "workflow": {
+    "run_id": 37804374798,
+    "job_id": 113404684333,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37804374798",
+    "head_sha": "6c1d38be6a1f14fc3ecfd60304751209e28a9f9f",
+    "conclusion": "success",
+    "started_at": "2026-10-08T15:53:12Z",
+    "completed_at": "2026-10-08T16:01:13Z",
+    "runner": {
+      "label": "macos-15",
+      "image": "macos-15-arm64",
+      "architecture": "ARM64",
+      "logical_cpus": 3
+    },
+    "dispatch_inputs": {
+      "acceptance_lane": "B",
+      "acceptance_case": "guest-seo",
+      "seo_case_scope": "full",
+      "seo_metadata_fixture": "airbnb",
+      "seo_resource_diagnostic": false,
+      "development_run_id": 37790643945,
+      "development_artifact_id": 11556064167
+    },
+    "checkout_source_sha": "6c1d38be6a1f14fc3ecfd60304751209e28a9f9f",
+    "source_gate": {
+      "run_id": 37793634857,
+      "head_sha": "e6d83e7d0476ab91347a660bdea844d751d1aa72",
+      "conclusion": "success",
+      "gate_commit_is_ancestor_of_current_main": true,
+      "observed_current_main_after_run": "9281b6394bc1df65402c8baa4818b49a7ca5a23f",
+      "gate_commit_is_ancestor_of_workflow_checkout": true,
+      "prelaunch_current_main_sha": "2e7e4c00633250a19705765e6badea1088560737",
+      "gate_commit_is_ancestor_of_prelaunch_main": true
+    },
+    "cleanup": "job completed; Complete job reported orphan-process cleanup",
+    "active_owned_job_at_handoff": false
+  },
+  "frozen_product": {
+    "ci_run_id": 37790643945,
+    "ci_conclusion": "success",
+    "artifact_id": 11556064167,
+    "artifact_digest": "sha256:7a93776a9322c27973756ddb542fd2e8580d900c356d28a0ad1504928edf3964",
+    "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+    "version": "0.2.414",
+    "tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "kind": "local_dev_unpacked",
+    "publish_state": "not_published",
+    "before_after_tree_match": true
+  },
+  "receipt": {
+    "path": "raw/current-run/seo-guest-acceptance.json",
+    "sha256": "e0d19ffc48f8ce15fe214c9d6f23ec169ede4a158f7fe63c6c6089d4b174a21a",
+    "status": "partial",
+    "last_safe_stage": "metadata_fixture_bounded_observation_complete",
+    "current_operation": "build_recheck",
+    "case_selection": {
+      "scope": "full",
+      "selected_cases": ["T01", "T02", "T03", "T07", "T09", "T14"],
+      "excluded_cases": []
+    },
+    "resource_diagnostic_enabled": false,
+    "target_count": 24,
+    "target_statuses": {
+      "pass": 23,
+      "unverified": 1
+    },
+    "revalidated_from_controlled_run_37800877872": {
+      "count": 18,
+      "status_counts": {
+        "pass": 18
+      },
+      "targets": [
+        {
+          "case_id": "EXT-F-1008-T09",
+          "subtarget": "page_0_title_and_headings",
+          "status": "pass",
+          "evidence": {
+            "publicTitle": "Example Domain",
+            "titleMatches": true,
+            "headingsPresenceMatches": true
+          }
+        },
+        {
+          "case_id": "EXT-F-1008-T07",
+          "subtarget": "guest_actual_clipboard_text_and_ai_page_0",
+          "status": "pass",
+          "evidence": {
+            "textMatchesPublicPage": true,
+            "aiWrapsExactSummary": true,
+            "trustedCopyClicks": 2,
+            "clipboardReadback": true,
+            "observationPermissionRestored": true
+          }
+        },
+        {
+          "case_id": "EXT-F-1008-T09",
+          "subtarget": "page_1_title_and_headings",
+          "status": "pass",
+          "evidence": {
+            "publicTitle": "IANA-managed Reserved Domains",
+            "titleMatches": true,
+            "headingsPresenceMatches": true
+          }
+        },
+        {
+          "case_id": "EXT-F-1008-T07",
+          "subtarget": "guest_actual_clipboard_text_and_ai_page_1",
+          "status": "pass",
+          "evidence": {
+            "textMatchesPublicPage": true,
+            "aiWrapsExactSummary": true,
+            "trustedCopyClicks": 2,
+            "clipboardReadback": true,
+            "observationPermissionRestored": true
+          }
+        },
+        {
+          "case_id": "EXT-F-1008-T01",
+          "subtarget": "new_url_replaces_visible_title",
+          "status": "pass",
+          "evidence": {
+            "twoDistinctPublicTitles": true
+          }
+        },
+        {
+          "case_id": "EXT-F-1008-T02",
+          "subtarget": "manual_button_returns_to_current_page",
+          "status": "pass",
+          "evidence": {
+            "currentTitlePreserved": true
+          }
+        },
+        {
+          "case_id": "EXT-F-1008-T07",
+          "subtarget": "guest_menu_offers_text_and_ai_but_hides_json",
+          "status": "pass",
+          "evidence": {
+            "textChoice": true,
+            "agentChoice": true,
+            "jsonAbsent": true
+          }
+        },
+        {
+          "case_id": "EXT-F-1008-T01",
+          "subtarget": "reload_audits_current_url",
+          "status": "pass",
+          "evidence": {
+            "currentUrl": "https://www.iana.org/domains/reserved",
+            "currentTitleMatched": true,
+            "headingsPresenceMatched": true,
+            "reselectedAfterReload": true
+          }
+        },
+        {
+          "case_id": "EXT-F-1008-T07",
+          "subtarget": "guest_role_gate_after_reload",
+          "status": "pass",
+          "evidence": {
+            "textChoice": true,
+            "agentChoice": true,
+            "jsonAbsent": true
+          }
+        },
+        {
+          "case_id": "EXT-F-1008-T07",
+          "subtarget": "guest_actual_clipboard_text_and_ai_reload",
+          "status": "pass",
+          "evidence": {
+            "textMatchesPublicPage": true,
+            "aiWrapsExactSummary": true,
+            "trustedCopyClicks": 2,
+            "clipboardReadback": true,
+            "observationPermissionRestored": true
+          }
+        },
+        {
+          "case_id": "EXT-F-1008-T03",
+          "subtarget": "about_blank_clear_error_without_stale_audit",
+          "status": "pass",
+          "evidence": {
+            "scopeValid": true,
+            "expectedErrorVisible": true,
+            "staleAuditAbsent": true,
+            "copyAuditAbsent": true,
+            "retryOffered": true
+          }
+        },
+        {
+          "case_id": "EXT-F-1008-T03",
+          "subtarget": "public_page_recovers_after_restricted_url",
+          "status": "pass",
+          "evidence": {
+            "publicTitleMatched": true,
+            "headingsPresenceMatched": true,
+            "auditErrorAbsent": true
+          }
+        },
+        {
+          "case_id": "EXT-F-1008-T09",
+          "subtarget": "sparse_public_detail_groups",
+          "status": "pass",
+          "evidence": {
+            "descriptionAbsent": true,
+            "canonicalAbsent": true,
+            "groupsMatchPublicDom": true
+          }
+        },
+        {
+          "case_id": "EXT-F-1008-T09",
+          "subtarget": "rich_public_detail_groups_and_canonical_door",
+          "status": "pass",
+          "evidence": {
+            "descriptionMatchesPublicDom": true,
+            "canonicalMatchesPublicDom": true,
+            "groupsMatchPublicDom": true,
+            "outboundAnchorSafe": true
+          }
+        },
+        {
+          "case_id": "EXT-F-1008-T09",
+          "subtarget": "canonical_outbound_opens_expected_public_tab",
+          "status": "pass",
+          "evidence": {
+            "trustedInput": true,
+            "destinationMatchesPublicDom": true
+          }
+        },
+        {
+          "case_id": "EXT-F-1008-T14",
+          "subtarget": "guest_social_missing_tags_clipboard_before_reaudit",
+          "status": "pass",
+          "evidence": {
+            "copiedTags": 5,
+            "exactClipboardMatch": true,
+            "trustedCopyClick": true,
+            "sourceTitleMatches": true,
+            "clipboardReadback": true,
+            "observationPermissionRestored": true,
+            "feedbackObserved": true,
+            "feedbackFailureAbsent": true,
+            "clipboardChanged": true
+          }
+        },
+        {
+          "case_id": "EXT-F-1008-T02",
+          "subtarget": "guest_reaudit_captures_changed_page_metadata",
+          "status": "pass",
+          "evidence": {
+            "publicTitleChanged": true,
+            "publicDescriptionChanged": true,
+            "oldAuditVisibleBeforeClick": true,
+            "nativeTitleMatchesChangedPublicDom": true,
+            "trustedReauditClick": true
+          }
+        },
+        {
+          "case_id": "EXT-F-1008-T14",
+          "subtarget": "guest_social_missing_tags_clipboard_after_reaudit",
+          "status": "pass",
+          "evidence": {
+            "copiedTags": 6,
+            "exactClipboardMatch": true,
+            "trustedCopyClick": true,
+            "sourceTitleMatches": true,
+            "clipboardReadback": true,
+            "observationPermissionRestored": true,
+            "feedbackObserved": true,
+            "feedbackFailureAbsent": true,
+            "clipboardChanged": true
+          }
+        }
+      ]
+    },
+    "newly_observed": {
+      "count": 6,
+      "status_counts": {
+        "pass": 5,
+        "unverified": 1
+      },
+      "targets": [
+        {
+          "case_id": "EXT-F-1008-T09",
+          "subtarget": "guest_manual_link_counts_match_live_dom",
+          "status": "pass",
+          "evidence": {
+            "url": "https://en.wikipedia.org/wiki/HTML",
+            "internal": 1785,
+            "external": 410
+          }
+        },
+        {
+          "case_id": "EXT-F-1008-T09",
+          "subtarget": "guest_manual_image_alt_counts_match_live_dom",
+          "status": "pass",
+          "evidence": {
+            "url": "https://en.wikipedia.org/wiki/HTML",
+            "total": 29,
+            "missingAlt": 10
+          }
+        },
+        {
+          "case_id": "EXT-F-1008-T09",
+          "subtarget": "guest_manual_readability_display_is_populated_and_explained",
+          "status": "pass",
+          "evidence": {
+            "publicBodyHasText": true,
+            "displayed": {
+              "words": "10,467",
+              "sentences": "784",
+              "score": "44.51",
+              "summary": "Difficult — college"
+            },
+            "metricValueCorrectness": "unverified"
+          }
+        },
+        {
+          "case_id": "EXT-F-1008-T09",
+          "subtarget": "guest_manual_performance_reflects_current_navigation",
+          "status": "pass",
+          "evidence": {
+            "pageResponseStatus": 200,
+            "exposedNavigation": {
+              "type": "navigate",
+              "durationMs": 1444,
+              "transferSizeBytes": 123928,
+              "responseStatus": 200
+            },
+            "displayed": {
+              "status": "200",
+              "navigation": "navigate",
+              "duration": "1,444 ms",
+              "transfer": "121 KB"
+            }
+          }
+        },
+        {
+          "case_id": "EXT-F-1008-T09",
+          "subtarget": "guest_manual_hreflang_and_schema_doors_match_page",
+          "status": "unverified",
+          "reason": "The public DOM did not expose unique hreflang and openable schema door candidates."
+        },
+        {
+          "case_id": "EXT-F-1008-T09",
+          "subtarget": "guest_airbnb_hreflang_and_schema_doors_match_public_dom",
+          "status": "pass",
+          "evidence": {
+            "sourceUrl": "https://www.airbnb.com/",
+            "alternate": {
+              "lang": "es-US",
+              "href": "https://es.airbnb.com/"
+            },
+            "schemaType": "WebSite",
+            "schemaUrl": "https://schema.org/WebSite",
+            "trustedInput": true
+          }
+        }
+      ]
+    },
+    "all_target_observations": [
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "page_0_title_and_headings",
+        "status": "pass",
+        "evidence": {
+          "publicTitle": "Example Domain",
+          "titleMatches": true,
+          "headingsPresenceMatches": true
+        }
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_actual_clipboard_text_and_ai_page_0",
+        "status": "pass",
+        "evidence": {
+          "textMatchesPublicPage": true,
+          "aiWrapsExactSummary": true,
+          "trustedCopyClicks": 2,
+          "clipboardReadback": true,
+          "observationPermissionRestored": true
+        }
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "page_1_title_and_headings",
+        "status": "pass",
+        "evidence": {
+          "publicTitle": "IANA-managed Reserved Domains",
+          "titleMatches": true,
+          "headingsPresenceMatches": true
+        }
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_actual_clipboard_text_and_ai_page_1",
+        "status": "pass",
+        "evidence": {
+          "textMatchesPublicPage": true,
+          "aiWrapsExactSummary": true,
+          "trustedCopyClicks": 2,
+          "clipboardReadback": true,
+          "observationPermissionRestored": true
+        }
+      },
+      {
+        "case_id": "EXT-F-1008-T01",
+        "subtarget": "new_url_replaces_visible_title",
+        "status": "pass",
+        "evidence": {
+          "twoDistinctPublicTitles": true
+        }
+      },
+      {
+        "case_id": "EXT-F-1008-T02",
+        "subtarget": "manual_button_returns_to_current_page",
+        "status": "pass",
+        "evidence": {
+          "currentTitlePreserved": true
+        }
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_menu_offers_text_and_ai_but_hides_json",
+        "status": "pass",
+        "evidence": {
+          "textChoice": true,
+          "agentChoice": true,
+          "jsonAbsent": true
+        }
+      },
+      {
+        "case_id": "EXT-F-1008-T01",
+        "subtarget": "reload_audits_current_url",
+        "status": "pass",
+        "evidence": {
+          "currentUrl": "https://www.iana.org/domains/reserved",
+          "currentTitleMatched": true,
+          "headingsPresenceMatched": true,
+          "reselectedAfterReload": true
+        }
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_role_gate_after_reload",
+        "status": "pass",
+        "evidence": {
+          "textChoice": true,
+          "agentChoice": true,
+          "jsonAbsent": true
+        }
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_actual_clipboard_text_and_ai_reload",
+        "status": "pass",
+        "evidence": {
+          "textMatchesPublicPage": true,
+          "aiWrapsExactSummary": true,
+          "trustedCopyClicks": 2,
+          "clipboardReadback": true,
+          "observationPermissionRestored": true
+        }
+      },
+      {
+        "case_id": "EXT-F-1008-T03",
+        "subtarget": "about_blank_clear_error_without_stale_audit",
+        "status": "pass",
+        "evidence": {
+          "scopeValid": true,
+          "expectedErrorVisible": true,
+          "staleAuditAbsent": true,
+          "copyAuditAbsent": true,
+          "retryOffered": true
+        }
+      },
+      {
+        "case_id": "EXT-F-1008-T03",
+        "subtarget": "public_page_recovers_after_restricted_url",
+        "status": "pass",
+        "evidence": {
+          "publicTitleMatched": true,
+          "headingsPresenceMatched": true,
+          "auditErrorAbsent": true
+        }
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "sparse_public_detail_groups",
+        "status": "pass",
+        "evidence": {
+          "descriptionAbsent": true,
+          "canonicalAbsent": true,
+          "groupsMatchPublicDom": true
+        }
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "rich_public_detail_groups_and_canonical_door",
+        "status": "pass",
+        "evidence": {
+          "descriptionMatchesPublicDom": true,
+          "canonicalMatchesPublicDom": true,
+          "groupsMatchPublicDom": true,
+          "outboundAnchorSafe": true
+        }
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "canonical_outbound_opens_expected_public_tab",
+        "status": "pass",
+        "evidence": {
+          "trustedInput": true,
+          "destinationMatchesPublicDom": true
+        }
+      },
+      {
+        "case_id": "EXT-F-1008-T14",
+        "subtarget": "guest_social_missing_tags_clipboard_before_reaudit",
+        "status": "pass",
+        "evidence": {
+          "copiedTags": 5,
+          "exactClipboardMatch": true,
+          "trustedCopyClick": true,
+          "sourceTitleMatches": true,
+          "clipboardReadback": true,
+          "observationPermissionRestored": true,
+          "feedbackObserved": true,
+          "feedbackFailureAbsent": true,
+          "clipboardChanged": true
+        }
+      },
+      {
+        "case_id": "EXT-F-1008-T02",
+        "subtarget": "guest_reaudit_captures_changed_page_metadata",
+        "status": "pass",
+        "evidence": {
+          "publicTitleChanged": true,
+          "publicDescriptionChanged": true,
+          "oldAuditVisibleBeforeClick": true,
+          "nativeTitleMatchesChangedPublicDom": true,
+          "trustedReauditClick": true
+        }
+      },
+      {
+        "case_id": "EXT-F-1008-T14",
+        "subtarget": "guest_social_missing_tags_clipboard_after_reaudit",
+        "status": "pass",
+        "evidence": {
+          "copiedTags": 6,
+          "exactClipboardMatch": true,
+          "trustedCopyClick": true,
+          "sourceTitleMatches": true,
+          "clipboardReadback": true,
+          "observationPermissionRestored": true,
+          "feedbackObserved": true,
+          "feedbackFailureAbsent": true,
+          "clipboardChanged": true
+        }
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "guest_manual_link_counts_match_live_dom",
+        "status": "pass",
+        "evidence": {
+          "url": "https://en.wikipedia.org/wiki/HTML",
+          "internal": 1785,
+          "external": 410
+        }
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "guest_manual_image_alt_counts_match_live_dom",
+        "status": "pass",
+        "evidence": {
+          "url": "https://en.wikipedia.org/wiki/HTML",
+          "total": 29,
+          "missingAlt": 10
+        }
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "guest_manual_readability_display_is_populated_and_explained",
+        "status": "pass",
+        "evidence": {
+          "publicBodyHasText": true,
+          "displayed": {
+            "words": "10,467",
+            "sentences": "784",
+            "score": "44.51",
+            "summary": "Difficult — college"
+          },
+          "metricValueCorrectness": "unverified"
+        }
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "guest_manual_performance_reflects_current_navigation",
+        "status": "pass",
+        "evidence": {
+          "pageResponseStatus": 200,
+          "exposedNavigation": {
+            "type": "navigate",
+            "durationMs": 1444,
+            "transferSizeBytes": 123928,
+            "responseStatus": 200
+          },
+          "displayed": {
+            "status": "200",
+            "navigation": "navigate",
+            "duration": "1,444 ms",
+            "transfer": "121 KB"
+          }
+        }
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "guest_manual_hreflang_and_schema_doors_match_page",
+        "status": "unverified",
+        "reason": "The public DOM did not expose unique hreflang and openable schema door candidates."
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "guest_airbnb_hreflang_and_schema_doors_match_public_dom",
+        "status": "pass",
+        "evidence": {
+          "sourceUrl": "https://www.airbnb.com/",
+          "alternate": {
+            "lang": "es-US",
+            "href": "https://es.airbnb.com/"
+          },
+          "schemaType": "WebSite",
+          "schemaUrl": "https://schema.org/WebSite",
+          "trustedInput": true
+        }
+      }
+    ],
+    "metadata_fixture_auto_observed": {
+      "title": "Airbnb | Vacation rentals, cabins, beach houses, & more",
+      "publicTitleAtNavigation": "Airbnb | Vacation rentals, cabins, beach houses, & more",
+      "publicTitleAtWait": "Airbnb | Vacation rentals, cabins, beach houses, & more",
+      "exactDataStatus": "unverified_point_in_time"
+    },
+    "metadata_fixture_manual_observation": {
+      "source_url_before": "https://www.airbnb.com/",
+      "source_url_after": "https://www.airbnb.com/",
+      "public_title": "Airbnb | Vacation rentals, cabins, beach houses, & more",
+      "response_status": 200,
+      "alternate_count_before": 96,
+      "schema_type_count_before": 2,
+      "changed_fields_between_live_observations": ["links", "images"],
+      "metadata_fields_used_for_target_stable": ["title", "alternates", "schemaTypes"]
+    },
+    "interpretation": "23 selected subtargets passed; one selected T09 live-source criterion is unverified. No product target failed, but this is not full feature or case acceptance.",
+    "precise_unverified_observation": {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_manual_hreflang_and_schema_doors_match_page",
+      "reason": "The live Wikipedia public DOM did not expose unique hreflang and openable schema candidates; this is unverified, not a product failure.",
+      "evidence_source_url": "https://en.wikipedia.org/wiki/HTML"
+    },
+    "original_payload_path": "raw/current-run/seo-guest-acceptance.original.json.gz",
+    "original_payload_sha256": "ed4c9f93e3b1ed039ec3d309aac495d305b85eb4cf3885d6f0d6757fddb8acff",
+    "original_payload_gzip_sha256": "5a6ddbfeda3b9781beb2a2bfda488bebf03a0cac6f59abb12649dbb8a4c31e26",
+    "raw_representation": "The JSON receipt is formatted for repository lint; its byte-exact uploaded payload is gzip-retained beside it and its original SHA256 is recorded."
+  },
+  "resources": {
+    "decisions": {
+      "package": {
+        "path": "raw/current-run/hosted-package-37804374798-1.jsonl",
+        "sha256": "cb3ca689912388c7ab3fdc279a9f16d1d313c5df485ebb16f9c725b0803c5751",
+        "final_event": {
+          "schema": 1,
+          "at": "2026-10-08T15:55:24.842Z",
+          "runId": "hosted-package-37804374798-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "event_codes": [
+          "RESOURCE_JOURNAL_OPENED",
+          "RESOURCE_ADMITTED",
+          "RESOURCE_JOB_EXIT",
+          "RESOURCE_FINAL_DECISION"
+        ]
+      },
+      "browser": {
+        "path": "raw/current-run/hosted-browser-37804374798-1.jsonl",
+        "sha256": "812f7c6066a607dc84732c6cabc87f6ee046327f8152f65617146853a6277e98",
+        "final_event": {
+          "schema": 1,
+          "at": "2026-10-08T15:57:25.767Z",
+          "runId": "hosted-browser-37804374798-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "event_codes": [
+          "RESOURCE_JOURNAL_OPENED",
+          "RESOURCE_ADMITTED",
+          "RESOURCE_JOB_EXIT",
+          "RESOURCE_FINAL_DECISION"
+        ]
+      },
+      "guest": {
+        "path": "raw/current-run/hosted-guest-37804374798-1.jsonl",
+        "sha256": "ce613f345e19545304b056d52ab1f3229f1962bffa3467f39033a938abba33eb",
+        "final_event": {
+          "schema": 1,
+          "at": "2026-10-08T16:01:04.798Z",
+          "runId": "hosted-guest-37804374798-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "event_codes": [
+          "RESOURCE_JOURNAL_OPENED",
+          "RESOURCE_ADMITTED",
+          "RESOURCE_WATCH_HEALTHY",
+          "RESOURCE_WATCH_HEALTHY",
+          "RESOURCE_CPU_PENDING",
+          "RESOURCE_PROCESS_ATTRIBUTION",
+          "RESOURCE_JOB_EXIT",
+          "RESOURCE_COMPLETION_RECOVERY_PENDING",
+          "RESOURCE_CPU_PENDING",
+          "RESOURCE_CPU_PENDING",
+          "RESOURCE_CPU_RECOVERED",
+          "RESOURCE_FINAL_DECISION"
+        ]
+      }
+    },
+    "transient_cpu_event": "The guest journal recorded RESOURCE_CPU_PENDING during a high-load observation; the guard recovered, accumulated healthy samples, and finalized valid with resourceInvalid=false and exitCode=0.",
+    "all_three_current_journals_valid": true
+  },
+  "retained_evidence": {
+    "artifact_id": 11562053672,
+    "artifact_name": "hosted-guest-37804374798-1",
+    "artifact_digest": "sha256:e1bedbf91fe255ccb18a741e005c4b244fd4958ad28a5726caa6237809f7cf05",
+    "artifact_size_bytes": 63074,
+    "current_run_raw_directory": "raw/current-run/",
+    "sha256_manifest": "raw/current-run/sha256-manifest.json",
+    "artifact_download_extraction": "/tmp/seo-full-arm-414-native-20261008-1552-unfiltered/",
+    "historical_journals_in_extraction": ["37105304739", "37724762467"],
+    "historical_journals_are_not_used_for_this_attempt": true,
+    "remote_run_metadata": "raw/remote-run-metadata.json",
+    "remote_artifact_listing": "raw/remote-artifact-listing.json",
+    "artifact_download_extraction_note": "Temporary unfiltered extraction is outside the repository; committed raw/current-run contains only this attempt’s receipt, journals, and screenshots. The unfiltered artifact had unrelated historical journals for runs 37105304739 and 37724762467.",
+    "remote_run_metadata_original_api_response_sha256": "4485805269adbd0ea1dd5ebe02ea4009d2a5d28527ce30b4fe9116b36eb485a2",
+    "remote_artifact_listing_original_api_response_sha256": "db24d7aa5413e77cb1cc1676d3bc6024ce60b55f086f979ae5a447c091c6a72f",
+    "metadata_representation": "GitHub API JSON responses were pretty-printed for repository lint; original compact-response hashes are retained in this report."
+  },
+  "source_backed_prior_leads": [
+    {
+      "path": ".research/seo-arm-414-native-20261008-1527.json",
+      "relevance": "same frozen 0.2.414 artifact; previously 18 controlled subtargets passed, all revalidated in this run"
+    },
+    {
+      "path": ".research/seo-metadata-native-20261008.json",
+      "relevance": "earlier full Airbnb run on 0.2.407 ended resource-invalid before product receipt; no acceptance evidence"
+    },
+    {
+      "path": ".research/seo-cpu-optin-native-20261008.json",
+      "relevance": "full Airbnb diagnostic receipt observed 24 targets but earned zero acceptance credit because diagnostics were enabled"
+    }
+  ],
+  "scope_limits": {
+    "attempts": 1,
+    "retry_dispatched": false,
+    "product_targets_failed": 0,
+    "product_targets_passed": 23,
+    "product_targets_unverified": 1,
+    "whole_seo_claim": false,
+    "inventory_promotion": false,
+    "member_admin_store_modes": "not exercised",
+    "source_changes": "none",
+    "guard_or_threshold_changes": "none",
+    "credentials_or_other_account": "none used; lane was signed-out guest; member/admin credential inputs were blank",
+    "response_mocking": "none; the existing driver navigated to live public Wikipedia and Airbnb pages and compared live DOM data"
+  }
+}

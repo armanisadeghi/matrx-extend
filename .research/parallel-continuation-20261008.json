@@ -44,7 +44,7 @@
   "ci_diagnostics": {
     "source": "e87d1d29",
     "peer": "667c2574",
-    "verdict": "safe source pass; per-scenario budget repair8f908184/e6d83e7d fresh721cfa3a; actual repaired hostedCI pending",
+    "verdict": "D182 closed: hosted37793728272/d714f254 passes all seven serial scenarios and two neighboring groups, no skips; independently verified62070acf.",
     "defect": "EXT-D-0182",
     "repair": "54607f44",
     "review": "3cd07423"
@@ -53,5 +53,23 @@
     "source": "035caed8",
     "peer": "721cfa3a",
     "state": "fixed; native interruption still pending"
-  }
+  },
+  "product_attempts": [
+    {
+      "run_id": "37795653439",
+      "version": "0.2.414",
+      "architecture": "ARM",
+      "result": "records_input_failed before action; zero acceptance",
+      "repair": "04ba1909",
+      "focused_ci": "37797807542 success",
+      "peer": "02ec651e PARTIAL; real native proof pending"
+    },
+    {
+      "run_id": "37795616638",
+      "version": "0.2.407",
+      "architecture": "Intel",
+      "result": "CDP timeout before product exercise; zero acceptance; no confirmed guard kill"
+    }
+  ],
+  "ownership": "All manual jobs and workers terminal; both temporary secrets independently absent."
 }

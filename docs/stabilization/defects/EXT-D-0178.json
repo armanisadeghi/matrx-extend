@@ -7,7 +7,7 @@
   "title": "Native recapture procedure omits visible discard-edits confirmation",
   "severity": "S2: test harness stops before recapture; product confirmation is expected",
   "priority": "P1",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root/scrape_postreload_visibility_fix",
   "preconditions": [
     "Frozen407 Scrape view, existing owned test capture with media edits and edited=true.",
@@ -26,7 +26,9 @@
     ".research/scrape-postreload-visibility-fix-20261008.json",
     ".research/scrape-confirmation-peer-20261008.json",
     ".research/scrape-failure-receipt-repair-20261008.json",
-    ".research/scrape-timeout-final-peer-20261008.json"
+    ".research/scrape-timeout-final-peer-20261008.json",
+    ".research/scrape-arm-414-native-20261008-1532.json",
+    ".research/scrape-live-peer-20261008-1544.json"
   ],
   "transition_history": [
     {
@@ -52,9 +54,21 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Causal source guard and fresh independent source review passed; actual native original-reproduction retest remains pending."
+    },
+    {
+      "at": "2026-10-08T15:48:53.830295+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Actual native37801787667 records owned edited badge, visible discard dialog, trusted confirmation and expected Article; three current resource journals valid; independent source/provenance/receipt peer accepts exact closure gate."
+    },
+    {
+      "at": "2026-10-08T15:48:53.830295+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original test-driver recapture confirmation obstacle independently verified resolved on development414. Warm deep Cancel/confirm plus post-reload fast confirmation also support guest T03; member/admin and whole-feature health remain unverified."
     }
   ],
   "closure_requirement": "Fresh independent source review and actual uninstrumented native recapture confirms only owned edits then shows newly captured fixture article; surrounding cancel/confirmation semantics retained.",
   "fix_commits": ["17571839"],
-  "next_action": "One uninstrumented resource-valid native run retaining actual owned edited state, discard confirmation branch and subsequent visible Article oracle; source peer570dbb4a passes both timeout paths and14 focused checks. No closure from source alone."
+  "next_action": "Exact confirmation defect closed and guest T03 verified on414. Continue other Scrape cases and member/admin coverage; do not infer Store or latest-main acceptance."
 }

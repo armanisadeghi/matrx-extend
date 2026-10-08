@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "source_run_id": 37804469749,
+  "source_receipt": ".research/t57-arm-414-native-20261008-1552-originals/raw/receipt.raw.json",
+  "scope": "Source diagnosis and bounded public-race driver repair only; no native rerun, product change, build, or release.",
+  "observed": {
+    "failure_stage": "public_race_release",
+    "failure_code": "public_current_binding_packet_not_observed",
+    "old_and_labeled_current_share_loader": "D6A962355576453464EFF09FBBB3BB61",
+    "separate_loader_in_contexts": "43BCA86BE9D692A1E7DEE0A7C4A1F32D",
+    "third_target_rejected_as_extra": 1,
+    "old_lifecycle": "failed",
+    "labeled_current_lifecycle": "finished",
+    "labeled_current_release": "continued",
+    "current_binding_matches_labeled_response": false,
+    "saved_result": null
+  },
+  "cause": "The driver assigned the second matching response to the current slot by arrival order before checking its Network loader. The native receipt proves that response shared the old request's loader. A third target was rejected as extra, but its loader, request identity, and response hash were not retained; the receipt cannot identify it as current or old. The binding assertion compared against a response from the wrong document. This is a driver classification defect; the receipt does not establish a product capture defect.",
+  "repair": "EXT-D-0184: reserve response slots synchronously by Network loader before asynchronous body reads; continue duplicate prior-document target responses unchanged and count them separately. Require each candidate's Network loader to be the active main-frame loader and recheck the current loader before release. Preserve exact URL/body identity, response hash, lifecycle, binding, and cleanup predicates.",
+  "verification": {
+    "red": "node --test --test-name-pattern='a second prior-document response' tests/browser/showcase-d47-public-race-preflight.test.mjs: public_race_current_ambiguous (3 !== 2) before repair",
+    "green": "node --test tests/browser/showcase-d47-public-race-preflight.test.mjs: 15 pass, 0 fail after active-loader repair",
+    "stale_loader_red": "node --test --test-name-pattern='a distinct stale loader' tests/browser/showcase-d47-public-race-preflight.test.mjs: stale was accepted as current before active-loader repair",
+    "format": "pnpm exec biome check on both changed helper files: pass",
+    "compile": "Local pnpm compile failed on missing @ai-matrx/media/react useReadAloud, @ai-matrx/chat/host createMemoryNavigation, @ai-matrx/media/speech and dependent implicit-any errors outside changed files. Full CI run 37804587685 succeeded on 67ce7c85 with current product source and dependency lock before this helper change, so the local failure is consistent with local installed dependency mismatch; the helper commit itself has no hosted compile verdict."
+  },
+  "limits": "The rejected third target's loader, request identity, and response hash were not retained in the original receipt, so its document origin and binding remain unknown. No native rerun was authorized for this lane. T57 stays unverified; original product D47 remains closed.",
+  "next_action": "Obtain fresh independent source review, then on the next authorized exact-artifact native run confirm paused[0] and paused[1] have distinct loaders, current equals the active main-frame loader, exact identity hashes match, current binding matches the released response hash, and the exact saved result settles. If current identity mismatches, inspect that sanitized counter before changing the strict predicate."
+}
