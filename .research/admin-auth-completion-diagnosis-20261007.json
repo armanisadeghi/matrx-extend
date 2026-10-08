@@ -27,7 +27,7 @@
     "peer_report": ".research/intel-batch-auth-peer-20261007.json",
     "finding": "Important: original negative guard did not inject disallowed values into allowed categorical fields",
     "repair": "Every forwarded phase and click code is enum checked; panel, selector and storage flags accept only booleans; sign-in count accepts only nonnegative integers; profile presence accepts only null or string. Raw error, URL, body and data poison is injected into both unused fields and allowed slots in the focused guard, and callback plus serialized receipt are checked for all markers.",
-    "verification": "automatic focused CI pending on repair commit; local resource gate remains DISK_LOW"
+    "verification": "Automatic focused CI 37709098725 passed on exact repair commit ce0d39c5. Local resource gate remained DISK_LOW; fresh independent review pending."
   },
   "limits": {
     "native_rerun": "not performed",
