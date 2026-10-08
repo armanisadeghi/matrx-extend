@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "task_id": "guest-settings-breadth-native-20261007",
+  "lane": "B",
+  "status": "native_bounded_passes",
+  "scope": "One hosted signed-out guest Settings run for EXT-F-1003-T73/T76/T92. T92 covers guest negative access only; member/admin destination, no-write, and restoration behavior remain unverified.",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37705986945",
+    "run_id": 37705986945,
+    "job_id": 113080346637,
+    "job": "guest",
+    "status": "completed",
+    "conclusion": "success",
+    "started_at": "2026-10-08T00:06:54Z",
+    "completed_at": "2026-10-08T00:13:34Z",
+    "acceptance_lane": "B",
+    "acceptance_case": "settings-controls",
+    "runner_label": "macos-15",
+    "workflow_checkout_sha": "c0254fbdfa5a6fe965e5a4550b87a471ba4c2d42"
+  },
+  "selected_development_artifact": {
+    "run_id": 37698216289,
+    "artifact_id": 11516342905,
+    "artifact_name": "matrx-extend-development-test-52487361b1b6a8663b958dbb2196cbcc9b1af31c-37698216289-1",
+    "artifact_digest": "sha256:927854cfdda6e57d272277653e0b4c507720c29d74978da235d80c064c1017ee",
+    "ci_conclusion": "success",
+    "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "version": "0.2.391",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+    "ci_build_receipt": {
+      "path": "guest-settings-breadth-native-20261007/evidence/source-ci-original/test-results/ci-build-receipt.json",
+      "sha256": "d8b29a5eb04a778400ffd595a0d71eae43873b28bcfcd1639b64572f0c8da490"
+    },
+    "ci_build_provenance": {
+      "path": "guest-settings-breadth-native-20261007/evidence/source-ci-original/test-results/ci-build-provenance.json",
+      "sha256": "950b326ca3800c8b350471c72a79a6adee25962fe71c66e1a8508ec521187a79"
+    },
+    "source_comparison": "Compared source 52487361 with current main c0254fbd. SettingsView.tsx is the only changed product file in the Settings feature directory; its delta removes the signed-in Acting as hint. Guest T73/T76/T92 branch assertions are present in the tested source. This frozen artifact predates the current-main organization-resolver changes and does not establish current-main health."
+  },
+  "native_outcome": {
+    "role": "signed-out guest",
+    "build_kind": "local_dev_unpacked",
+    "build_verified": true,
+    "case_results": [
+      {
+        "id": "EXT-F-1003-T73",
+        "status": "pass",
+        "scope": "Guest Account section: email unavailable, Name and role absent, Sign in footer; verified warm and after full extension reload."
+      },
+      {
+        "id": "EXT-F-1003-T76",
+        "status": "pass",
+        "scope": "Guest Organization section: archive filter and Acting as row absent; zero organization requests observed; verified warm and after full extension reload."
+      },
+      {
+        "id": "EXT-F-1003-T92",
+        "status": "pass",
+        "scope": "Guest negative access only: sole signed-out prompt row; no extra membership text, archived marker, restoration action, or organization request; verified warm and after full extension reload."
+      }
+    ],
+    "signed_out_evidence": "The native report records active=true, accessTokenPresent=false, profilePresent=false, organizationChoicePresent=false, Sign in footer count 1, Sign out footer count 0, and signedOut=true/checkPassed=true for all three target cases in both warm and reload observations.",
+    "full_extension_reload_evidence": "guestExtensionReload records managementReloadClicked=true, oldTargetsRetired=true, workerReplaced=true, panelReplaced=true; target case observations are repeated in phase=reload.",
+    "organization_requests_observed": 0,
+    "driver_report": {
+      "path": "guest-settings-breadth-native-20261007/evidence/native-original/matrx-extend/matrx-extend/test-results/settings-local-controls-acceptance.json",
+      "sha256": "2034af3aba2528e50b35ac4957689253afc46b647d0a4dd0b74851176b12b513",
+      "whole_report_status": "unverified",
+      "whole_report_note": "This broad existing report includes other Settings cases outside this task. Only the three individually passing target case records above are claimed."
+    }
+  },
+  "resource_verdict": {
+    "status": "valid",
+    "invalidation": false,
+    "journals": [
+      {
+        "path": "guest-settings-breadth-native-20261007/evidence/native-original/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37705986945-1.jsonl",
+        "sha256": "a68a2a11411316bbe24fde6adfa2146c96e423cf5ed1edf648621c233869b186",
+        "decision": "valid",
+        "exit_code": 0
+      },
+      {
+        "path": "guest-settings-breadth-native-20261007/evidence/native-original/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37705986945-1.jsonl",
+        "sha256": "a512fa4c5e4b8d84600d146bcf5d0f79171a64762e847dbe35e45d53adac0641",
+        "decision": "valid",
+        "exit_code": 0
+      },
+      {
+        "path": "guest-settings-breadth-native-20261007/evidence/native-original/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37705986945-1.jsonl",
+        "sha256": "6e0829ea58b3d9ac66f12e8f321bd64f9ae297f9280aba34b02168b0897709c7",
+        "decision": "valid",
+        "exit_code": 0
+      }
+    ],
+    "note": "The original workflow artifact also contains stale 371053 journals from an earlier run; they remain untouched in the download tree and are excluded from this verdict."
+  },
+  "screenshots": [
+    {
+      "path": "guest-settings-breadth-native-20261007/evidence/native-original/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-wgMVRP/native-side-panel.png",
+      "sha256": "bcee4631bbd726146862abe271a6dfe476837fbc2eb132f6a21374f00010c22f",
+      "observation": "Contextual setup screenshot showing the guest side panel; not a Settings-section screenshot."
+    },
+    {
+      "path": "guest-settings-breadth-native-20261007/evidence/native-original/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-wgMVRP/normal-target-after-open.png",
+      "sha256": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89",
+      "observation": "Contextual normal target page after opening the panel; not a Settings-section screenshot."
+    }
+  ],
+  "open_items": [
+    "T92 member/admin destination, no-write, and restoration behavior remains unverified.",
+    "These results apply to the exact frozen source artifact identified above, not current-main or Store health.",
+    "Settings-stage screenshots were not captured; native case observations are preserved in the structured driver report."
+  ],
+  "source_checks": [
+    {
+      "run_id": 37705690477,
+      "source_sha": "67e7986a",
+      "result": "Focused Settings acceptance guards passed; broader CI also completed successfully per coordinator observation.",
+      "scope_note": "Source checks support runner readiness only and do not replace native acceptance."
+    }
+  ]
+}

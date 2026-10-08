@@ -1,0 +1,1156 @@
+{
+  "schema_version": 1,
+  "scope": "real isolated Chrome-for-Testing native side panel; signed-out guest",
+  "build": {
+    "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "kind": "local_dev_unpacked",
+    "publishState": "not_published",
+    "version": "0.2.391",
+    "treeSha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+    "verified": true
+  },
+  "preconditions": [
+    "Owned disposable profile",
+    "Extension receipt and tree hash verified",
+    "Guest panel settled before interaction"
+  ],
+  "cases": [
+    {
+      "id": "EXT-F-1003-T22",
+      "role": "guest",
+      "status": "pass",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Inspect guest Settings section list and admin controls",
+          "observation": {
+            "sections": [
+              "",
+              "G",
+              "",
+              "Compute",
+              "Ask before acting",
+              "",
+              "",
+              "Customize",
+              "Files",
+              "0",
+              "Account",
+              "Organization",
+              "Appearance",
+              "System",
+              "Chat",
+              "Ask before acting",
+              "Fast",
+              "Privacy",
+              "Scrape",
+              "Capture",
+              "Data",
+              "SEO",
+              "Desktop bridge",
+              "Data & reset",
+              "About"
+            ],
+            "advancedText": false,
+            "adminControls": []
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Inspect guest Settings section list and admin controls",
+          "observation": {
+            "sections": [
+              "",
+              "G",
+              "",
+              "Compute",
+              "Ask before acting",
+              "",
+              "",
+              "Customize",
+              "Files",
+              "0",
+              "Account",
+              "Organization",
+              "Appearance",
+              "System",
+              "Chat",
+              "Ask before acting",
+              "Fast",
+              "Privacy",
+              "Scrape",
+              "Capture",
+              "Data",
+              "SEO",
+              "Desktop bridge",
+              "Data & reset",
+              "About"
+            ],
+            "advancedText": false,
+            "adminControls": []
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "warm admin section and controls absent",
+          "status": "pass",
+          "evidence": {
+            "sections": [
+              "",
+              "G",
+              "",
+              "Compute",
+              "Ask before acting",
+              "",
+              "",
+              "Customize",
+              "Files",
+              "0",
+              "Account",
+              "Organization",
+              "Appearance",
+              "System",
+              "Chat",
+              "Ask before acting",
+              "Fast",
+              "Privacy",
+              "Scrape",
+              "Capture",
+              "Data",
+              "SEO",
+              "Desktop bridge",
+              "Data & reset",
+              "About"
+            ],
+            "advancedText": false,
+            "adminControls": []
+          }
+        },
+        {
+          "name": "reload admin section and controls absent",
+          "status": "pass",
+          "evidence": {
+            "sections": [
+              "",
+              "G",
+              "",
+              "Compute",
+              "Ask before acting",
+              "",
+              "",
+              "Customize",
+              "Files",
+              "0",
+              "Account",
+              "Organization",
+              "Appearance",
+              "System",
+              "Chat",
+              "Ask before acting",
+              "Fast",
+              "Privacy",
+              "Scrape",
+              "Capture",
+              "Data",
+              "SEO",
+              "Desktop bridge",
+              "Data & reset",
+              "About"
+            ],
+            "advancedText": false,
+            "adminControls": []
+          }
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.391",
+        "treeSha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-wgMVRP"
+    },
+    {
+      "id": "EXT-F-1003-T37",
+      "role": "guest",
+      "status": "pass",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Observe initial Deep clean preference",
+          "observation": {
+            "count": 1,
+            "checked": "false",
+            "hint": "Deep cleancoming soon"
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Toggle Deep clean",
+          "observation": {
+            "count": 1,
+            "checked": "true",
+            "hint": "Deep cleancoming soon"
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Inspect persisted state",
+          "observation": {
+            "count": 1,
+            "checked": "true",
+            "hint": "Deep cleancoming soon"
+          }
+        },
+        {
+          "phase": "cleanup",
+          "action": "Restore original preference",
+          "observation": {
+            "count": 1,
+            "checked": "false",
+            "hint": "Deep cleancoming soon"
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "visible coming-soon hint",
+          "status": "pass",
+          "evidence": {
+            "count": 1,
+            "checked": "false",
+            "hint": "Deep cleancoming soon"
+          }
+        },
+        {
+          "name": "toggle changes state",
+          "status": "pass",
+          "evidence": {
+            "count": 1,
+            "checked": "true",
+            "hint": "Deep cleancoming soon"
+          }
+        },
+        {
+          "name": "state and coming-soon hint persist after reload",
+          "status": "pass",
+          "evidence": {
+            "count": 1,
+            "checked": "true",
+            "hint": "Deep cleancoming soon"
+          }
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.391",
+        "treeSha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-wgMVRP"
+    },
+    {
+      "id": "EXT-F-1003-T46",
+      "role": "guest",
+      "status": "pass",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Record original engine port state",
+          "observation": {
+            "value": "",
+            "saved": null,
+            "button": [
+              "Set"
+            ],
+            "override": false,
+            "error": null
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Save valid port",
+          "observation": {
+            "value": "65001",
+            "saved": 65001,
+            "button": [
+              "Save"
+            ],
+            "override": true,
+            "error": null
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Observe worker rediscovery enter and reach post-probe broadcast after Save",
+          "observation": {
+            "saveStartedAt": 1791418385697,
+            "pauses": [
+              {
+                "reason": "other",
+                "hitBreakpoints": [
+                  "4:29:140257:5"
+                ],
+                "callFrames": [
+                  {
+                    "functionName": "",
+                    "url": "",
+                    "location": {
+                      "scriptId": "5",
+                      "lineNumber": 29,
+                      "columnNumber": 140257
+                    }
+                  },
+                  {
+                    "functionName": "i",
+                    "url": "",
+                    "location": {
+                      "scriptId": "5",
+                      "lineNumber": 1,
+                      "columnNumber": 25746
+                    }
+                  }
+                ],
+                "observedAt": 1791418385886
+              },
+              {
+                "reason": "other",
+                "hitBreakpoints": [
+                  "4:29:140333:5"
+                ],
+                "callFrames": [
+                  {
+                    "functionName": "",
+                    "url": "",
+                    "location": {
+                      "scriptId": "5",
+                      "lineNumber": 29,
+                      "columnNumber": 140333
+                    }
+                  }
+                ],
+                "observedAt": 1791418385895
+              }
+            ],
+            "entryBreakpoint": "4:29:140257:5",
+            "completionBreakpoint": "4:29:140333:5",
+            "resumeError": null,
+            "port": 65001,
+            "healthRequests": [
+              {
+                "method": "GET",
+                "path": "/health",
+                "observedAt": 1791418385892
+              }
+            ]
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Inspect valid override after reload",
+          "observation": {
+            "value": "65001",
+            "saved": 65001,
+            "button": [
+              "Save"
+            ],
+            "override": true,
+            "error": null
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Save inclusive boundary port 1",
+          "observation": {
+            "value": "1",
+            "saved": 1,
+            "button": [
+              "Save"
+            ],
+            "override": true,
+            "error": null
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Read inclusive boundary port 1 after reload",
+          "observation": {
+            "value": "1",
+            "saved": 1,
+            "button": [
+              "Save"
+            ],
+            "override": true,
+            "error": null
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Save inclusive boundary port 65535",
+          "observation": {
+            "value": "65535",
+            "saved": 65535,
+            "button": [
+              "Save"
+            ],
+            "override": true,
+            "error": null
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Read inclusive boundary port 65535 after reload",
+          "observation": {
+            "value": "65535",
+            "saved": 65535,
+            "button": [
+              "Save"
+            ],
+            "override": true,
+            "error": null
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Submit invalid range",
+          "observation": {
+            "value": "65536",
+            "saved": 65535,
+            "button": [
+              "Save"
+            ],
+            "override": true,
+            "error": "Port must be 1–65535."
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Clear override without leaving the invalid-error view",
+          "observation": {
+            "value": "",
+            "saved": null,
+            "button": [
+              "Set"
+            ],
+            "override": false,
+            "error": null
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Inspect cleared override after reload",
+          "observation": {
+            "value": "",
+            "saved": null,
+            "button": [
+              "Set"
+            ],
+            "override": false,
+            "error": null
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "valid port saved",
+          "status": "pass",
+          "evidence": {
+            "value": "65001",
+            "saved": 65001,
+            "button": [
+              "Save"
+            ],
+            "override": true,
+            "error": null
+          }
+        },
+        {
+          "name": "saved port triggers desktop worker rediscovery",
+          "status": "pass",
+          "evidence": {
+            "saveStartedAt": 1791418385697,
+            "pauses": [
+              {
+                "reason": "other",
+                "hitBreakpoints": [
+                  "4:29:140257:5"
+                ],
+                "callFrames": [
+                  {
+                    "functionName": "",
+                    "url": "",
+                    "location": {
+                      "scriptId": "5",
+                      "lineNumber": 29,
+                      "columnNumber": 140257
+                    }
+                  },
+                  {
+                    "functionName": "i",
+                    "url": "",
+                    "location": {
+                      "scriptId": "5",
+                      "lineNumber": 1,
+                      "columnNumber": 25746
+                    }
+                  }
+                ],
+                "observedAt": 1791418385886
+              },
+              {
+                "reason": "other",
+                "hitBreakpoints": [
+                  "4:29:140333:5"
+                ],
+                "callFrames": [
+                  {
+                    "functionName": "",
+                    "url": "",
+                    "location": {
+                      "scriptId": "5",
+                      "lineNumber": 29,
+                      "columnNumber": 140333
+                    }
+                  }
+                ],
+                "observedAt": 1791418385895
+              }
+            ],
+            "entryBreakpoint": "4:29:140257:5",
+            "completionBreakpoint": "4:29:140333:5",
+            "resumeError": null
+          }
+        },
+        {
+          "name": "valid override persists after reload",
+          "status": "pass",
+          "evidence": {
+            "value": "65001",
+            "saved": 65001,
+            "button": [
+              "Save"
+            ],
+            "override": true,
+            "error": null
+          }
+        },
+        {
+          "name": "boundary port 1 saves and persists after reload",
+          "status": "pass",
+          "evidence": {
+            "accepted": {
+              "value": "1",
+              "saved": 1,
+              "button": [
+                "Save"
+              ],
+              "override": true,
+              "error": null
+            },
+            "persisted": {
+              "value": "1",
+              "saved": 1,
+              "button": [
+                "Save"
+              ],
+              "override": true,
+              "error": null
+            }
+          }
+        },
+        {
+          "name": "boundary port 65535 saves and persists after reload",
+          "status": "pass",
+          "evidence": {
+            "accepted": {
+              "value": "65535",
+              "saved": 65535,
+              "button": [
+                "Save"
+              ],
+              "override": true,
+              "error": null
+            },
+            "persisted": {
+              "value": "65535",
+              "saved": 65535,
+              "button": [
+                "Save"
+              ],
+              "override": true,
+              "error": null
+            }
+          }
+        },
+        {
+          "name": "invalid range shows error and retains saved port",
+          "status": "pass",
+          "evidence": {
+            "value": "65536",
+            "saved": 65535,
+            "button": [
+              "Save"
+            ],
+            "override": true,
+            "error": "Port must be 1–65535."
+          }
+        },
+        {
+          "name": "blank clears override and stale error",
+          "status": "pass",
+          "evidence": {
+            "value": "",
+            "saved": null,
+            "button": [
+              "Set"
+            ],
+            "override": false,
+            "error": null
+          }
+        },
+        {
+          "name": "cleared override persists after reload",
+          "status": "pass",
+          "evidence": {
+            "value": "",
+            "saved": null,
+            "button": [
+              "Set"
+            ],
+            "override": false,
+            "error": null
+          }
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.391",
+        "treeSha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-wgMVRP"
+    },
+    {
+      "id": "EXT-F-1003-T70",
+      "role": "guest",
+      "status": "unverified",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Inspect About identity, API readiness, and update affordance",
+          "observation": {
+            "browser": "Chrome",
+            "version": "0.2.391",
+            "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "readiness": "Available",
+            "expectedBrowser": "Chrome",
+            "manifestVersion": "0.2.391",
+            "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "passwordApis": true,
+            "updateApi": true,
+            "hasUpdateButton": true,
+            "updateText": null,
+            "browserManaged": false,
+            "unavailableRemedy": false
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Request real browser update check",
+          "observation": {
+            "browser": "Chrome",
+            "version": "0.2.391",
+            "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "readiness": "Available",
+            "expectedBrowser": "Chrome",
+            "manifestVersion": "0.2.391",
+            "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "passwordApis": true,
+            "updateApi": true,
+            "hasUpdateButton": true,
+            "updateText": "Your browser did not find an update right now.",
+            "browserManaged": false,
+            "unavailableRemedy": false
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Inspect current identity and API readiness",
+          "observation": {
+            "browser": "Chrome",
+            "version": "0.2.391",
+            "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "readiness": "Available",
+            "expectedBrowser": "Chrome",
+            "manifestVersion": "0.2.391",
+            "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "passwordApis": true,
+            "updateApi": true,
+            "hasUpdateButton": true,
+            "updateText": null,
+            "browserManaged": false,
+            "unavailableRemedy": false
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "identity matches running browser, manifest, receipt and runtime ID",
+          "status": "pass",
+          "evidence": {
+            "browser": "Chrome",
+            "version": "0.2.391",
+            "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "readiness": "Available",
+            "expectedBrowser": "Chrome",
+            "manifestVersion": "0.2.391",
+            "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "passwordApis": true,
+            "updateApi": true,
+            "hasUpdateButton": true,
+            "updateText": null,
+            "browserManaged": false,
+            "unavailableRemedy": false
+          }
+        },
+        {
+          "name": "password-flow API readiness label and remedy",
+          "status": "pass",
+          "evidence": {
+            "browser": "Chrome",
+            "version": "0.2.391",
+            "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "readiness": "Available",
+            "expectedBrowser": "Chrome",
+            "manifestVersion": "0.2.391",
+            "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "passwordApis": true,
+            "updateApi": true,
+            "hasUpdateButton": true,
+            "updateText": null,
+            "browserManaged": false,
+            "unavailableRemedy": false
+          }
+        },
+        {
+          "name": "password-flow API unavailable branch",
+          "status": "unverified",
+          "evidence": "No browser API was removed or mocked."
+        },
+        {
+          "name": "observed browser update result shown accurately",
+          "status": "pass",
+          "evidence": {
+            "browser": "Chrome",
+            "version": "0.2.391",
+            "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "readiness": "Available",
+            "expectedBrowser": "Chrome",
+            "manifestVersion": "0.2.391",
+            "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "passwordApis": true,
+            "updateApi": true,
+            "hasUpdateButton": true,
+            "updateText": "Your browser did not find an update right now.",
+            "browserManaged": false,
+            "unavailableRemedy": false
+          }
+        },
+        {
+          "name": "no-update outcome",
+          "status": "pass",
+          "evidence": {
+            "browser": "Chrome",
+            "version": "0.2.391",
+            "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "readiness": "Available",
+            "expectedBrowser": "Chrome",
+            "manifestVersion": "0.2.391",
+            "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "passwordApis": true,
+            "updateApi": true,
+            "hasUpdateButton": true,
+            "updateText": "Your browser did not find an update right now.",
+            "browserManaged": false,
+            "unavailableRemedy": false
+          }
+        },
+        {
+          "name": "update available branch",
+          "status": "unverified",
+          "evidence": "No browser API or update result was fabricated."
+        },
+        {
+          "name": "throttled branch",
+          "status": "unverified",
+          "evidence": "No browser API or update result was fabricated."
+        },
+        {
+          "name": "update error branch",
+          "status": "unverified",
+          "evidence": "No browser API or update result was fabricated."
+        },
+        {
+          "name": "update API unavailable branch",
+          "status": "unverified",
+          "evidence": "No browser API or update result was fabricated."
+        },
+        {
+          "name": "identity and API readiness remain current after reload",
+          "status": "pass",
+          "evidence": {
+            "browser": "Chrome",
+            "version": "0.2.391",
+            "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "readiness": "Available",
+            "expectedBrowser": "Chrome",
+            "manifestVersion": "0.2.391",
+            "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "passwordApis": true,
+            "updateApi": true,
+            "hasUpdateButton": true,
+            "updateText": null,
+            "browserManaged": false,
+            "unavailableRemedy": false
+          }
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.391",
+        "treeSha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-wgMVRP"
+    },
+    {
+      "id": "EXT-F-1003-T73",
+      "role": "guest",
+      "status": "pass",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Inspect native guest Settings Account and Organization",
+          "observation": {
+            "active": true,
+            "accessTokenPresent": false,
+            "profilePresent": false,
+            "organizationChoicePresent": false,
+            "accountSectionCount": 1,
+            "accountOpen": true,
+            "emailRowCount": 1,
+            "emailUnavailable": true,
+            "nameRowCount": 0,
+            "roleRowCount": 0,
+            "footerSignInCount": 1,
+            "footerSignOutCount": 0,
+            "organizationSectionCount": 1,
+            "organizationOpen": true,
+            "signInToChooseCount": 1,
+            "organizationOnlyGuestRow": true,
+            "archiveFilterCount": 0,
+            "actingAsRowCount": 0,
+            "archivedMarkerCount": 0,
+            "restorationActionCount": 0,
+            "archivedCopyPresent": false,
+            "organizationRequests": 0
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Inspect native guest Settings Account and Organization",
+          "observation": {
+            "active": true,
+            "accessTokenPresent": false,
+            "profilePresent": false,
+            "organizationChoicePresent": false,
+            "accountSectionCount": 1,
+            "accountOpen": true,
+            "emailRowCount": 1,
+            "emailUnavailable": true,
+            "nameRowCount": 0,
+            "roleRowCount": 0,
+            "footerSignInCount": 1,
+            "footerSignOutCount": 0,
+            "organizationSectionCount": 1,
+            "organizationOpen": true,
+            "signInToChooseCount": 1,
+            "organizationOnlyGuestRow": true,
+            "archiveFilterCount": 0,
+            "actingAsRowCount": 0,
+            "archivedMarkerCount": 0,
+            "restorationActionCount": 0,
+            "archivedCopyPresent": false,
+            "organizationRequests": 0
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "warm: Account unavailable, no Name/role, Sign in footer",
+          "status": "pass",
+          "evidence": {
+            "signedOut": true,
+            "checkPassed": true,
+            "organizationRequests": 0
+          }
+        },
+        {
+          "name": "reload: Account unavailable, no Name/role, Sign in footer",
+          "status": "pass",
+          "evidence": {
+            "signedOut": true,
+            "checkPassed": true,
+            "organizationRequests": 0
+          }
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.391",
+        "treeSha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-wgMVRP"
+    },
+    {
+      "id": "EXT-F-1003-T76",
+      "role": "guest",
+      "status": "pass",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Inspect native guest Settings Account and Organization",
+          "observation": {
+            "active": true,
+            "accessTokenPresent": false,
+            "profilePresent": false,
+            "organizationChoicePresent": false,
+            "accountSectionCount": 1,
+            "accountOpen": true,
+            "emailRowCount": 1,
+            "emailUnavailable": true,
+            "nameRowCount": 0,
+            "roleRowCount": 0,
+            "footerSignInCount": 1,
+            "footerSignOutCount": 0,
+            "organizationSectionCount": 1,
+            "organizationOpen": true,
+            "signInToChooseCount": 1,
+            "organizationOnlyGuestRow": true,
+            "archiveFilterCount": 0,
+            "actingAsRowCount": 0,
+            "archivedMarkerCount": 0,
+            "restorationActionCount": 0,
+            "archivedCopyPresent": false,
+            "organizationRequests": 0
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Inspect native guest Settings Account and Organization",
+          "observation": {
+            "active": true,
+            "accessTokenPresent": false,
+            "profilePresent": false,
+            "organizationChoicePresent": false,
+            "accountSectionCount": 1,
+            "accountOpen": true,
+            "emailRowCount": 1,
+            "emailUnavailable": true,
+            "nameRowCount": 0,
+            "roleRowCount": 0,
+            "footerSignInCount": 1,
+            "footerSignOutCount": 0,
+            "organizationSectionCount": 1,
+            "organizationOpen": true,
+            "signInToChooseCount": 1,
+            "organizationOnlyGuestRow": true,
+            "archiveFilterCount": 0,
+            "actingAsRowCount": 0,
+            "archivedMarkerCount": 0,
+            "restorationActionCount": 0,
+            "archivedCopyPresent": false,
+            "organizationRequests": 0
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "warm: archive filter absent and no organization read or choice",
+          "status": "pass",
+          "evidence": {
+            "signedOut": true,
+            "checkPassed": true,
+            "organizationRequests": 0
+          }
+        },
+        {
+          "name": "reload: archive filter absent and no organization read or choice",
+          "status": "pass",
+          "evidence": {
+            "signedOut": true,
+            "checkPassed": true,
+            "organizationRequests": 0
+          }
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.391",
+        "treeSha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-wgMVRP"
+    },
+    {
+      "id": "EXT-F-1003-T92",
+      "role": "guest",
+      "scope": "guest-negative-access-only",
+      "status": "pass",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Inspect native guest Settings Account and Organization",
+          "observation": {
+            "active": true,
+            "accessTokenPresent": false,
+            "profilePresent": false,
+            "organizationChoicePresent": false,
+            "accountSectionCount": 1,
+            "accountOpen": true,
+            "emailRowCount": 1,
+            "emailUnavailable": true,
+            "nameRowCount": 0,
+            "roleRowCount": 0,
+            "footerSignInCount": 1,
+            "footerSignOutCount": 0,
+            "organizationSectionCount": 1,
+            "organizationOpen": true,
+            "signInToChooseCount": 1,
+            "organizationOnlyGuestRow": true,
+            "archiveFilterCount": 0,
+            "actingAsRowCount": 0,
+            "archivedMarkerCount": 0,
+            "restorationActionCount": 0,
+            "archivedCopyPresent": false,
+            "organizationRequests": 0
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Inspect native guest Settings Account and Organization",
+          "observation": {
+            "active": true,
+            "accessTokenPresent": false,
+            "profilePresent": false,
+            "organizationChoicePresent": false,
+            "accountSectionCount": 1,
+            "accountOpen": true,
+            "emailRowCount": 1,
+            "emailUnavailable": true,
+            "nameRowCount": 0,
+            "roleRowCount": 0,
+            "footerSignInCount": 1,
+            "footerSignOutCount": 0,
+            "organizationSectionCount": 1,
+            "organizationOpen": true,
+            "signInToChooseCount": 1,
+            "organizationOnlyGuestRow": true,
+            "archiveFilterCount": 0,
+            "actingAsRowCount": 0,
+            "archivedMarkerCount": 0,
+            "restorationActionCount": 0,
+            "archivedCopyPresent": false,
+            "organizationRequests": 0
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "warm: no archived membership or restoration action",
+          "status": "pass",
+          "evidence": {
+            "signedOut": true,
+            "checkPassed": true,
+            "organizationRequests": 0
+          }
+        },
+        {
+          "name": "reload: no archived membership or restoration action",
+          "status": "pass",
+          "evidence": {
+            "signedOut": true,
+            "checkPassed": true,
+            "organizationRequests": 0
+          }
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.391",
+        "treeSha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-wgMVRP"
+    }
+  ],
+  "guestExtensionReload": {
+    "managementReloadClicked": true,
+    "oldTargetsRetired": true,
+    "workerReplaced": true,
+    "panelReplaced": true
+  },
+  "artifacts": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-wgMVRP",
+  "status": "unverified"
+}
