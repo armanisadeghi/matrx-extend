@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0172",
+  "status": "source_candidate_pushed_live_unverified",
+  "repository": "aidream",
+  "commit": "54a1e1b978a8efde6b9232aa56aad9f12a1bf214",
+  "branch": "origin/main",
+  "change": {
+    "pre_dispatch": "When a live client tool set or host authorization hook makes delegation possible, checkpoint the provider assistant tool-call row before concurrent batch dispatch so every sibling tool has the same message ID.",
+    "publication_boundary": "The actual delegated-tool execution invokes a per-turn locked checkpoint callback. It reads back the active matching assistant call and refuses publication if persistence cannot be proved. The callback is an independent backstop when preflight misses a routed client call.",
+    "repair": "The existing same-conversation, same-position pending empty reservation repair remains the only repair path. A foreign or occupied row is refused.",
+    "ephemeral": "store=False client delegation retains its preexisting no-message behavior; no durable assistant row is required for an explicitly unsaved run.",
+    "performance": "Server-only runs with no live client tool set and no authorization hook avoid the added database barrier. In a client-connected batch, even a server-only call incurs one pre-dispatch finalize and readback to preserve mixed-batch assistant lineage. Multiple delegated calls in one batch reuse one checkpoint under a lock."
+  },
+  "attribution_limit": "The hosted public guest failure proved a completed tool row paired with a pending empty assistant reservation and a resume_context_not_ready 409. It did not prove whether the first checkpoint was skipped, dropped, or updated zero rows. Aidream currently does not wire a tool_authorization_hook; late authorization promotion is a supported package routing gap, not an established cause of the hosted incident.",
+  "verification": {
+    "unit_red": "With the orchestrator file temporarily restored to the prior ffba17ba25 version, the new orchestrator-to-delegation test failed with 'client delegation refused: no durable assistant tool_use message' under a forced preclassifier miss; the candidate passed. The source was restored immediately after this check.",
+    "post_rebase": "27 focused tests passed against the pushed commit after rebasing over origin/main; Ruff passed. An earlier broader focused run passed 20 tests; Python compilation passed through uv run python. Existing reservation tests emitted coroutine warnings.",
+    "coverage": "The guard exercises the orchestrator's provider-response path, actual ToolExecutor._execute_delegated publication, persisted assistant readback, and conversation rebuild pairing after a completed tool result. It covers both no-preflight callback and client-connected batch preflight, failed checkpoint refusal, empty reservation repair, and store=False behavior. The model and database operations are local fakes; no native public acceptance claim."
+  },
+  "open_gates": [
+    "Independent review of exact pushed SHA",
+    "Authorized automatic package/server integration and observation of the deployed SHA",
+    "Fresh published public Store 0.2.205 guest first reply, followup, reload/new-conversation tool/resume acceptance"
+  ]
+}
