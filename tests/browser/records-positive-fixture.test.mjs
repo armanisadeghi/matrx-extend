@@ -44,7 +44,7 @@ async function scenario(options = {}) {
       return {
         token_matches: true,
         status: 200,
-        list_complete: true,
+        list_complete: !(options.cleanupListIncomplete && tableExists && !archived),
         tables: owned.filter((table) => table.name === input.name),
         owned_tables: input.path.includes('search=EXT-F-4130-') ? owned : [],
       };
@@ -183,6 +183,20 @@ test('a failed read still archives the owned table; a failed archive never repor
     assert.equal(JSON.parse(await readFile(failed.journalPath, 'utf8')).phase, 'archive_sent');
   } finally {
     await failed.cleanup();
+  }
+});
+
+test('incomplete ownership detail after a write prevents archival and success', async () => {
+  const s = await scenario({ cleanupListIncomplete: true });
+  try {
+    await assert.rejects(s.run(), /records_fixture_cleanup_list_incomplete/);
+    assert.equal(s.archiveAttempts, 0);
+    assert.equal(s.archived, false);
+    const saved = JSON.parse(await readFile(s.journalPath, 'utf8'));
+    assert.equal(saved.phase, 'row_owned');
+    assert.equal(saved.table_id, tableId);
+  } finally {
+    await s.cleanup();
   }
 });
 
@@ -819,39 +833,41 @@ test('timed-out create aborts once and leaves a durable ambiguous-write journal'
   }
 });
 
-test('page-local recovery scan selects only exact marked synthetic tables in the same organization', async () => {
+test('page-local recovery scan verifies omitted list descriptions through canonical detail', async () => {
   const token = 'unit-test-token';
   const name = `EXT-F-4130-${runId}`;
   const foreign = '7b591026-9c8d-4437-9d28-caa508ee5d72';
   const marker = recordsFixtureMarker(principalId, orgId);
+  const requests = [];
   const evaluate = async (_panel, expression) =>
     new Function('chrome', 'crypto', 'fetch', `return ${expression};`)(
       { storage: { local: { get: async () => ({ 'matrx.auth.accessToken': token }) } } },
       webcrypto,
-      async () => ({
-        status: 200,
-        json: async () => ({
-          not_listed: [],
-          tables: [
-            { id: tableId, name, description: marker, organization_id: orgId, kind: 'custom' },
-            {
-              id: foreign,
-              name,
-              description: 'someone else',
-              organization_id: orgId,
-              kind: 'custom',
-            },
-            { id: foreign, name, description: marker, organization_id: foreign, kind: 'custom' },
-            {
-              id: foreign,
-              name: 'Customer records',
-              description: marker,
-              organization_id: orgId,
-              kind: 'custom',
-            },
-          ],
-        }),
-      }),
+      async (url) => {
+        requests.push(url);
+        if (url.endsWith('/columns'))
+          return {
+            status: 200,
+            json: async () => ({ id: tableId, name, description: marker }),
+          };
+        return {
+          status: 200,
+          json: async () => ({
+            not_listed: [],
+            tables: [
+              { id: tableId, name, description: null, organization_id: orgId, kind: 'custom' },
+              { id: foreign, name, description: marker, organization_id: foreign, kind: 'custom' },
+              {
+                id: foreign,
+                name: 'Customer records',
+                description: marker,
+                organization_id: orgId,
+                kind: 'custom',
+              },
+            ],
+          }),
+        };
+      },
     );
   const result = await recordsFixtureRequest({}, evaluate, {
     method: 'GET',
@@ -863,7 +879,216 @@ test('page-local recovery scan selects only exact marked synthetic tables in the
   });
   assert.deepEqual(result.owned_tables, [{ id: tableId, name }]);
   assert.deepEqual(result.tables, [{ id: tableId, org_matches: true }]);
+  assert.equal(requests.filter((url) => url.endsWith('/columns')).length, 1);
   assert.doesNotMatch(JSON.stringify(result), /someone else|Customer records/);
+});
+
+test('the real page request path archives a listed fixture whose description is omitted', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'records-detail-cleanup-'));
+  const journalPath = join(directory, 'journal.json');
+  const token = 'unit-test-token';
+  const marker = recordsFixtureMarker(principalId, orgId);
+  let exists = false;
+  let archiveCalls = 0;
+  const requests = [];
+  const evaluate = async (_panel, expression) =>
+    new Function('chrome', 'crypto', 'fetch', `return ${expression};`)(
+      { storage: { local: { get: async () => ({ 'matrx.auth.accessToken': token }) } } },
+      webcrypto,
+      async (url, options) => {
+        requests.push({ url, method: options.method ?? 'GET' });
+        if (url.endsWith('/columns'))
+          return {
+            status: 200,
+            json: async () => ({ id: tableId, name: `EXT-F-4130-${runId}`, description: marker }),
+          };
+        if (options.method === 'GET')
+          return {
+            status: 200,
+            json: async () => ({
+              tables: exists
+                ? [
+                    {
+                      id: tableId,
+                      name: `EXT-F-4130-${runId}`,
+                      description: null,
+                      organization_id: orgId,
+                      kind: 'custom',
+                    },
+                  ]
+                : [],
+              not_listed: [],
+            }),
+          };
+        if (options.method === 'POST' && url.endsWith('/rows'))
+          return {
+            status: 201,
+            json: async () => ({
+              done: true,
+              row: { id: rowId, version: 1, values: { Name: `EXT-F-4130-${runId}-row` } },
+            }),
+          };
+        if (options.method === 'POST') {
+          assert.equal(JSON.parse(options.body).description, marker);
+          exists = true;
+          return {
+            status: 200,
+            json: async () => ({ done: true, created: true, organization_id: orgId, id: tableId }),
+          };
+        }
+        if (options.method === 'DELETE') {
+          archiveCalls++;
+          assert.equal(url, `https://server.app.matrxserver.com/api/v1/tables/${tableId}`);
+          exists = false;
+          return {
+            status: 200,
+            json: async () => ({ done: true, archived: true, organization_id: orgId, id: tableId }),
+          };
+        }
+        throw new Error('unexpected request');
+      },
+    );
+  try {
+    let exercised = false;
+    const receipt = await withRecordsPositiveFixture({
+      panel: {},
+      evaluate,
+      orgId,
+      principalId,
+      bearerHash: createHash('sha256').update(token).digest('hex'),
+      journalPath,
+      id: () => runId,
+      environment: {
+        GITHUB_ACTIONS: 'true',
+        RUNNER_ENVIRONMENT: 'github-hosted',
+        MATRX_HOSTED_ACCEPTANCE_CASE: 'records-readonly-admin',
+        MATRX_HOSTED_ACCEPTANCE_LANE: 'A',
+      },
+      exercise: async ({ tableId: observedTable, rowId: observedRow }) => {
+        exercised = true;
+        assert.equal(observedTable, tableId);
+        assert.equal(observedRow, rowId);
+      },
+    });
+    assert.equal(exercised, true);
+    assert.equal(receipt.archived_verified, true);
+    assert.equal(archiveCalls, 1);
+    assert.equal(exists, false);
+    assert.equal(requests.filter(({ url }) => url.endsWith('/columns')).length, 1);
+    assert.equal(JSON.parse(await readFile(journalPath, 'utf8')).phase, 'archived_verified');
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('foreign marker on a same-name table refuses creation and archival', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'records-foreign-detail-'));
+  const journalPath = join(directory, 'journal.json');
+  const token = 'unit-test-token';
+  const requests = [];
+  const evaluate = async (_panel, expression) =>
+    new Function('chrome', 'crypto', 'fetch', `return ${expression};`)(
+      { storage: { local: { get: async () => ({ 'matrx.auth.accessToken': token }) } } },
+      webcrypto,
+      async (url, options) => {
+        requests.push(options.method ?? 'GET');
+        if (url.endsWith('/columns'))
+          return {
+            status: 200,
+            json: async () => ({
+              id: tableId,
+              name: `EXT-F-4130-${runId}`,
+              description: 'foreign marker',
+            }),
+          };
+        return {
+          status: 200,
+          json: async () => ({
+            not_listed: [],
+            tables: [
+              {
+                id: tableId,
+                name: `EXT-F-4130-${runId}`,
+                description: null,
+                organization_id: orgId,
+                kind: 'custom',
+              },
+            ],
+          }),
+        };
+      },
+    );
+  try {
+    await assert.rejects(
+      withRecordsPositiveFixture({
+        panel: {},
+        evaluate,
+        orgId,
+        principalId,
+        bearerHash: createHash('sha256').update(token).digest('hex'),
+        journalPath,
+        id: () => runId,
+        environment: {
+          GITHUB_ACTIONS: 'true',
+          RUNNER_ENVIRONMENT: 'github-hosted',
+          MATRX_HOSTED_ACCEPTANCE_CASE: 'records-readonly-admin',
+          MATRX_HOSTED_ACCEPTANCE_LANE: 'A',
+        },
+        exercise: async () => assert.fail('must not read'),
+      }),
+      /records_fixture_name_not_unique/,
+    );
+    assert.deepEqual(requests, ['GET', 'GET', 'GET', 'GET']);
+    assert.equal(JSON.parse(await readFile(journalPath, 'utf8')).phase, 'planned');
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('unavailable or mismatched detail cannot turn a visible candidate into a complete list', async () => {
+  const token = 'unit-test-token';
+  const name = `EXT-F-4130-${runId}`;
+  const marker = recordsFixtureMarker(principalId, orgId);
+  for (const detail of [
+    { status: 503, body: null },
+    { status: 200, body: { id: rowId, name, description: marker } },
+    { status: 200, body: { id: tableId, name: 'different table', description: marker } },
+  ]) {
+    const evaluate = async (_panel, expression) =>
+      new Function('chrome', 'crypto', 'fetch', `return ${expression};`)(
+        { storage: { local: { get: async () => ({ 'matrx.auth.accessToken': token }) } } },
+        webcrypto,
+        async (url) =>
+          url.endsWith('/columns')
+            ? { status: detail.status, json: async () => detail.body }
+            : {
+                status: 200,
+                json: async () => ({
+                  not_listed: [],
+                  tables: [
+                    {
+                      id: tableId,
+                      name,
+                      description: null,
+                      organization_id: orgId,
+                      kind: 'custom',
+                    },
+                  ],
+                }),
+              },
+      );
+    const result = await recordsFixtureRequest({}, evaluate, {
+      method: 'GET',
+      path: `?organization=${orgId}&search=${name}`,
+      orgId,
+      bearerHash: createHash('sha256').update(token).digest('hex'),
+      name,
+      marker,
+    });
+    assert.equal(result.list_complete, false);
+    assert.deepEqual(result.tables, []);
+    assert.equal(result.name_candidates, 1);
+  }
 });
 
 test('hosted Records keeps the canonical A/B groups and passes admitted lane A to the driver', async () => {

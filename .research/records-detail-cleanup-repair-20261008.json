@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "source_incident": {
+    "native_run_id": 37847790922,
+    "native_receipt_status": "unverified",
+    "failure_classification": "records_fixture_cleanup_ownership_ambiguous",
+    "observed_cause": "The live table-list summary returned null description for the created fixture. The helper required the marker in that summary, so it failed to find the fixture for cleanup."
+  },
+  "live_contract_provenance": {
+    "same_principal_list_status": 200,
+    "list_keys": [
+      "description",
+      "home",
+      "id",
+      "kind",
+      "name",
+      "organization",
+      "organization_id",
+      "platform_owned",
+      "your_access"
+    ],
+    "list_description": "null",
+    "canonical_detail_route": "GET /api/v1/tables/{id}/columns",
+    "detail_status": 200,
+    "detail_keys": [
+      "columns",
+      "description",
+      "id",
+      "linked_from",
+      "name",
+      "notices"
+    ],
+    "detail_marker_match": true
+  },
+  "repair": "The page-local request verifies candidate ID/name/org/kind from the complete list, then checks exact ID/name/principal-and-organization marker through the canonical detail route before treating a fixture as owned. An unavailable or inconsistent detail makes the list incomplete. A same-name foreign table blocks creation. The browser retains the bearer token; no response text or raw identifiers cross into the receipt.",
+  "verification": {
+    "red_command": "TMPDIR=/Volumes/Samsung2TB/tmp node --test --test-name-pattern='page-local recovery scan verifies omitted' tests/browser/records-positive-fixture.test.mjs",
+    "red_result": "Before the source repair, omitted list description produced zero owned tables instead of the one exact marked fixture.",
+    "green_command": "TMPDIR=/Volumes/Samsung2TB/tmp node --test tests/browser/records-positive-fixture.test.mjs",
+    "green_result": "26 passed, 0 failed; includes the actual page request and fixture orchestration, same-name foreign refusal, incomplete detail, and prior crash-window recovery tests.",
+    "format": "pnpm exec biome format --write tests/browser/records-positive-fixture.mjs tests/browser/records-positive-fixture.test.mjs"
+  },
+  "scope": "Source and focused local tests only. No credentials, hosted browser, native replay, build, or release in this repair lane.",
+  "independent_review": "Pending root assignment."
+}

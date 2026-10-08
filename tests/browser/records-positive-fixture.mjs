@@ -142,10 +142,30 @@ export async function recordsFixtureRequest(
         ...(${JSON.stringify(body !== undefined)} ? { body: JSON.stringify(${JSON.stringify(body ?? null)}) } : {}),
       });
       const data = await response.json().catch(() => null);
-      const owned = Array.isArray(data?.tables) ? data.tables.filter(t =>
+      const candidates = Array.isArray(data?.tables) ? data.tables.filter(t =>
         /^EXT-F-4130-[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(t.name ?? '') &&
-        t.description === ${JSON.stringify(marker)} &&
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(t.id ?? '') &&
         t.organization_id === ${JSON.stringify(orgId)} && t.kind === 'custom') : [];
+      const owned = [];
+      let detailVerified = true;
+      if (${JSON.stringify(method)} === 'GET' && response.status === 200) {
+        for (const table of candidates) {
+          const detailResponse = await fetch(
+            'https://server.app.matrxserver.com/api/v1/tables/' + encodeURIComponent(table.id) + '/columns',
+            { signal: state.controller.signal, headers: {
+              Authorization: 'Bearer ' + token,
+              'X-Organization-Id': ${JSON.stringify(orgId)},
+            } },
+          );
+          if (detailResponse.status !== 200) { detailVerified = false; break; }
+          const detail = await detailResponse.json().catch(() => null);
+          if (detail?.id !== table.id || detail?.name !== table.name) {
+            detailVerified = false;
+            break;
+          }
+          if (detail.description === ${JSON.stringify(marker)}) owned.push(table);
+        }
+      }
       const tables = owned.filter(t => t.name === ${JSON.stringify(name)});
       return {
         token_matches: true, status: response.status,
@@ -158,7 +178,9 @@ export async function recordsFixtureRequest(
         row_value_matches: data?.row?.values?.Name === ${JSON.stringify(body?.values?.Name ?? null)},
         tables: tables.map(t => ({ id: t.id, org_matches: true })),
         owned_tables: owned.map(t => ({ id: t.id, name: t.name })),
-        list_complete: Array.isArray(data?.not_listed) && data.not_listed.length === 0,
+        name_candidates: Array.isArray(data?.tables) ? data.tables.filter(t =>
+          t.name === ${JSON.stringify(name)} && t.organization_id === ${JSON.stringify(orgId)}).length : 0,
+        list_complete: detailVerified && Array.isArray(data?.not_listed) && data.not_listed.length === 0,
       };
     } catch { return { token_matches: true, transport_failed: true }; }
     })().then(
@@ -405,7 +427,11 @@ export async function withRecordsPositiveFixture({
     assert.equal(before.status, 200, 'records_fixture_preflight_failed');
     assert.equal(before.list_complete, true, 'records_fixture_preflight_incomplete');
     if (state.phase === 'planned')
-      assert.equal(before.tables.length, 0, 'records_fixture_name_not_unique');
+      assert.equal(
+        before.name_candidates ?? before.tables.length,
+        0,
+        'records_fixture_name_not_unique',
+      );
     // Recovery is cleanup-only. Never create another row after an interrupted
     // run, and never count an old run's evidence as this run's native credit.
     if (state.phase !== 'planned') throw new Error('records_fixture_recovery_cleanup_only');
