@@ -1,0 +1,368 @@
+{
+  "schema_version": 1,
+  "task_id": "settings-local397-native-20261008",
+  "lane": "local ARM Settings native, one admitted attempt",
+  "status": "VALID_RESOURCE_BOUNDED_NATIVE_PARTIAL",
+  "source_and_artifact": {
+    "frozen_ci_run_id": 37724859892,
+    "artifact_id": 11527132614,
+    "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+    "version": "0.2.397",
+    "tree_sha256": "1035cd28ce5a63ac6233626f35102f016f7c7e7e0ef0717d259a3ec40fc856ed",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "import_path": "test-results/ci-artifacts/cedcec02a3fb4e52a3f63ebfda8728809eff418a/37724859892-1",
+    "source_claim": "exact_pushed_commit_only",
+    "build_verified_by_native_receipt": true,
+    "publish_state": "not_published"
+  },
+  "host_and_driver": {
+    "host": "local macOS ARM",
+    "runtime": "installed Playwright chromium-1228 Google Chrome for Testing arm64",
+    "driver": "tests/browser/settings-local-controls-acceptance.mjs",
+    "guard": "scripts/stabilization-resource.mjs run",
+    "profile": "driver-created disposable profile; no user Chrome attached",
+    "native_handle": "settings-local397-native-20261008",
+    "native_terminal_session": 42800,
+    "preflight_handle": "settings-local397-preflight-20261008",
+    "one_admitted_native_run": true,
+    "no_retry": true
+  },
+  "resource": {
+    "preflight": {
+      "admission": {
+        "schema": 1,
+        "at": "2026-10-08T06:18:49.388Z",
+        "runId": "settings-local397-preflight-20261008",
+        "mode": "check",
+        "policySchema": 1,
+        "sample": {
+          "pressureLevel": 1,
+          "availableMemoryGiB": 10.24,
+          "requiredMemoryGiB": 4,
+          "oneMinuteLoad": 2.8100000000000005,
+          "logicalCpus": 10,
+          "cpuBusyFraction": 0.22285714285714286,
+          "swapUsedMiB": 3289.56,
+          "repoFreeGiB": 1676.469783782959,
+          "profileFreeGiB": 1676.469783782959,
+          "safetyFreeGiB": 32.64188003540039,
+          "systemFreeGiB": 32.64188003540039
+        },
+        "cpuBusySamples": [
+          0.2,
+          0.18,
+          0.26,
+          0.21,
+          0.27,
+          0.23,
+          0.21
+        ],
+        "reasons": [],
+        "swapWindowSeconds": 60,
+        "code": "RESOURCE_ADMITTED"
+      },
+      "final_decision": {
+        "schema": 1,
+        "at": "2026-10-08T06:18:49.398Z",
+        "runId": "settings-local397-preflight-20261008",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    "admission": {
+      "schema": 1,
+      "at": "2026-10-08T06:20:08.165Z",
+      "runId": "settings-local397-native-20261008",
+      "mode": "run",
+      "policySchema": 1,
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 10.24,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.8,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.20428571428571426,
+        "swapUsedMiB": 3289.56,
+        "repoFreeGiB": 1676.4696464538574,
+        "profileFreeGiB": 1676.4696464538574,
+        "safetyFreeGiB": 32.63727951049805,
+        "systemFreeGiB": 32.63727951049805
+      },
+      "cpuBusySamples": [
+        0.23,
+        0.21,
+        0.23,
+        0.22,
+        0.17,
+        0.21,
+        0.16
+      ],
+      "reasons": [],
+      "swapWindowSeconds": 60,
+      "code": "RESOURCE_ADMITTED"
+    },
+    "watch_codes": [
+      "RESOURCE_WATCH_HEALTHY",
+      "RESOURCE_WATCH_HEALTHY"
+    ],
+    "child_exit": {
+      "schema": 1,
+      "at": "2026-10-08T06:20:44.324Z",
+      "runId": "settings-local397-native-20261008",
+      "childExitCode": 0,
+      "childSignal": null,
+      "code": "RESOURCE_JOB_EXIT"
+    },
+    "final_decision": {
+      "schema": 1,
+      "at": "2026-10-08T06:20:44.369Z",
+      "runId": "settings-local397-native-20261008",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "completion_recovery_pending_observed": false,
+    "cpu_pending_observed": false,
+    "process_attribution": "No unsafe CPU watch or startup timeout; no RESOURCE_PROCESS_ATTRIBUTION event was emitted. Owned Chromium reached one exact side-panel context. Terminal output showed BROWSER_PANEL_CONTEXT_READY, with one SIDE_PANEL context and exact expected extension URL."
+  },
+  "native": {
+    "receipt_overall_status": "unverified",
+    "setup_error": null,
+    "case_counts": {
+      "pass": 9,
+      "unverified": 7,
+      "fail": 0
+    },
+    "all_16_cases": [
+      {
+        "id": "EXT-F-1003-T04",
+        "status": "pass",
+        "steps": 6,
+        "passedCriteria": 6,
+        "unverifiedCriteria": 0,
+        "failedCriteria": 0
+      },
+      {
+        "id": "EXT-F-1003-T10",
+        "status": "unverified",
+        "steps": 4,
+        "passedCriteria": 4,
+        "unverifiedCriteria": 1,
+        "failedCriteria": 0
+      },
+      {
+        "id": "EXT-F-1003-T13",
+        "status": "pass",
+        "steps": 4,
+        "passedCriteria": 4,
+        "unverifiedCriteria": 0,
+        "failedCriteria": 0
+      },
+      {
+        "id": "EXT-F-1003-T16",
+        "status": "unverified",
+        "steps": 4,
+        "passedCriteria": 4,
+        "unverifiedCriteria": 1,
+        "failedCriteria": 0
+      },
+      {
+        "id": "EXT-F-1003-T19",
+        "status": "unverified",
+        "steps": 4,
+        "passedCriteria": 4,
+        "unverifiedCriteria": 1,
+        "failedCriteria": 0
+      },
+      {
+        "id": "EXT-F-1003-T22",
+        "status": "pass",
+        "steps": 2,
+        "passedCriteria": 2,
+        "unverifiedCriteria": 0,
+        "failedCriteria": 0
+      },
+      {
+        "id": "EXT-F-1003-T31",
+        "status": "unverified",
+        "steps": 4,
+        "passedCriteria": 4,
+        "unverifiedCriteria": 1,
+        "failedCriteria": 0
+      },
+      {
+        "id": "EXT-F-1003-T34",
+        "status": "unverified",
+        "steps": 4,
+        "passedCriteria": 4,
+        "unverifiedCriteria": 1,
+        "failedCriteria": 0
+      },
+      {
+        "id": "EXT-F-1003-T37",
+        "status": "pass",
+        "steps": 4,
+        "passedCriteria": 3,
+        "unverifiedCriteria": 0,
+        "failedCriteria": 0
+      },
+      {
+        "id": "EXT-F-1003-T46",
+        "status": "pass",
+        "steps": 11,
+        "passedCriteria": 8,
+        "unverifiedCriteria": 0,
+        "failedCriteria": 0
+      },
+      {
+        "id": "EXT-F-1003-T63",
+        "status": "unverified",
+        "steps": 2,
+        "passedCriteria": 2,
+        "unverifiedCriteria": 1,
+        "failedCriteria": 0
+      },
+      {
+        "id": "EXT-F-1003-T64",
+        "status": "pass",
+        "steps": 5,
+        "passedCriteria": 5,
+        "unverifiedCriteria": 0,
+        "failedCriteria": 0
+      },
+      {
+        "id": "EXT-F-1003-T70",
+        "status": "unverified",
+        "steps": 3,
+        "passedCriteria": 5,
+        "unverifiedCriteria": 5,
+        "failedCriteria": 0
+      },
+      {
+        "id": "EXT-F-1003-T73",
+        "status": "pass",
+        "steps": 2,
+        "passedCriteria": 2,
+        "unverifiedCriteria": 0,
+        "failedCriteria": 0
+      },
+      {
+        "id": "EXT-F-1003-T76",
+        "status": "pass",
+        "steps": 2,
+        "passedCriteria": 2,
+        "unverifiedCriteria": 0,
+        "failedCriteria": 0
+      },
+      {
+        "id": "EXT-F-1003-T92",
+        "status": "pass",
+        "steps": 2,
+        "passedCriteria": 2,
+        "unverifiedCriteria": 0,
+        "failedCriteria": 0
+      }
+    ],
+    "T34": {
+      "status": "unverified",
+      "observed": "On stored on_page and Off stored quiet, each confirmed after panel reload; 4 of 4 bounded switch/persistence criteria passed. Off quiet was the last recorded value. Initial T34 storage value was not recorded, so return to original baseline is not proven. Site or agent consumer was not exercised.",
+      "downstream_consumer": "unverified"
+    },
+    "T64": {
+      "status": "pass",
+      "observed": "Two fixture loopback origins visible/stored; first Ask again removed only the selected origin; other origin survived panel reload; last Ask again emptied and hid list; empty state persisted after panel reload. Five of five criteria passed.",
+      "fixture": "two disposable loopback origins; no live external account state"
+    },
+    "restoration": {
+      "T34": "final quiet value observed after reload; original initial value not captured",
+      "T64": "both fixture origins removed and empty list observed after reload",
+      "T46": "initial null port override and final null override after clearing, observed again after reload",
+      "other_settings": "individual case receipt records writes and reloads; full initial/final storage snapshot was not captured"
+    },
+    "full_extension_reload": {
+      "managementReloadClicked": true,
+      "oldTargetsRetired": true,
+      "workerReplaced": true,
+      "panelReplaced": true
+    },
+    "full_reload_settings_boundary": {
+      "status": "settings_opened",
+      "panel": {
+        "sampled": true,
+        "runtimeIdMatches": true,
+        "documentReady": true,
+        "visible": true,
+        "settingsTabCount": 1,
+        "settingsActiveCount": 1,
+        "guestBannerPresent": false,
+        "guestOrganizationGuidancePresent": true
+      }
+    },
+    "guest_identity_before_after": "T73/T76/T92 warm and reload observations each show no access token/profile/organization choice, Sign in footer, and zero organization requests; T64 guest=true at each phase. No member/admin behavior claimed."
+  },
+  "provenance": {
+    "originals": {
+      "ci-receipt.json": {
+        "path": ".research/settings-local397-native-20261008-originals/ci-receipt.json",
+        "bytes": 330,
+        "sha256": "f6537a25117ab97838d722f0a1fba94a0798b8d8b06345fd72af04b88a29069d"
+      },
+      "import-status.json": {
+        "path": ".research/settings-local397-native-20261008-originals/import-status.json",
+        "bytes": 789,
+        "sha256": "c36020631481aa993b0224e730c1154b2ae90bb9adcd24127b3f4b9c948cd261"
+      },
+      "local-dev-receipt.json": {
+        "path": ".research/settings-local397-native-20261008-originals/local-dev-receipt.json",
+        "bytes": 397,
+        "sha256": "31445c8870b1289e6434e95815acb080fbeeabff561a5545462b3fe472a0d225"
+      },
+      "native-side-panel.png": {
+        "path": ".research/settings-local397-native-20261008-originals/native-side-panel.png",
+        "bytes": 29406,
+        "sha256": "8c33b3f43d0698211a49a938f62b532734a007b982da86f0a9c4a61bca7a7acb"
+      },
+      "normal-target-after-open.png": {
+        "path": ".research/settings-local397-native-20261008-originals/normal-target-after-open.png",
+        "bytes": 24935,
+        "sha256": "cac3f7666b53fb4a12559932f9389b84e3729e3e76b20bdf7bc28a2663a5e1be"
+      },
+      "provenance.json": {
+        "path": ".research/settings-local397-native-20261008-originals/provenance.json",
+        "bytes": 527,
+        "sha256": "b9576e3ddcf74d5ae6031064ab044774572527c094f653593f3118d2fd42ebd1"
+      },
+      "resource-native.jsonl": {
+        "path": ".research/settings-local397-native-20261008-originals/resource-native.jsonl",
+        "bytes": 1879,
+        "sha256": "7608f4aa3bf23be5c17e19f36755268b699743e873fa9652a4345f447e59fa2c"
+      },
+      "resource-preflight.jsonl": {
+        "path": ".research/settings-local397-native-20261008-originals/resource-preflight.jsonl",
+        "bytes": 887,
+        "sha256": "462c045a8bea9d42a7854bc09d263eb9afe0b482bbb7e5d96fb4f5ec4b729033"
+      },
+      "settings-local-controls-acceptance.json": {
+        "path": ".research/settings-local397-native-20261008-originals/settings-local-controls-acceptance.json",
+        "bytes": 70333,
+        "sha256": "cfedf13a649cc38798e83c29c4c5897ef23104fe508719600a384c72fadfe14f"
+      }
+    },
+    "console_log_limit": "No byte-exact standalone console log was captured. Native stdout/stderr terminal session 42800 showed panel-context-ready and UNVERIFIED receipt path; the byte-exact guard journal and browser receipt are retained. Do not treat this field as an original log.",
+    "screenshots": "Two exact PNGs copied from the owned native artifact directory; panel screenshot shows signed-out guest UI and contains no credentials. Screenshots show setup, while case observations in receipt establish control behavior."
+  },
+  "attribution_and_limits": "Valid changed-host native execution establishes bounded guest Settings behavior on frozen 0.2.397 artifact. Overall receipt remains unverified because seven cases have explicit unexercised dimensions. This run did not exercise D168 CPU completion-recovery branch; no CPU pending occurred. No local source, inventory, threshold, deadline, build, release, deploy, or secret change.",
+  "cleanup": {
+    "guard_finalized": true,
+    "lease_heavy_directory_absent": true,
+    "owned_native_chromium_processes_after_exit": 0,
+    "owned_driver_processes_after_exit": 0,
+    "status": "confirmed by post-run ps and lease listing"
+  },
+  "next_action": "Independent peer should review exact originals and bounded product/driver identity. T34 downstream consumer and any unverified case dimensions require a separate authorized test scope; no rerun of this one-attempt lane."
+}
