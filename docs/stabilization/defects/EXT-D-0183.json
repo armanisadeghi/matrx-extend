@@ -28,7 +28,8 @@
     ".research/seo-interruption-native-20261008.json",
     ".research/seo-deterministic-interrupt-fix-20261008.json",
     ".research/seo-deterministic-stop-peer-20261008.json",
-    ".research/seo-stop-live-20261008.json"
+    ".research/seo-stop-live-20261008.json",
+    ".research/seo-interruption-live-adjudication-20261008.json"
   ],
   "closure_requirement": "Durable phase/observation write proven by actual interrupted driver seam and freshreview, then independently inspected native interruption/surrounding successfulreceipt; no invalidrun promotion.",
   "transition_history": [
@@ -65,5 +66,14 @@
     "result": "Both cancelled after native child exit0/null signal; ordinary final receipts with18 controlled passes, no interruption credit. GitHub step status is too coarse for deterministic timing.",
     "next_action": "Source5de616d9 and independent peeraa6004b3 support controlled selector manual_button_returns_to_current_page. Native still pending: verify exact focused CI, dispatch laneB guest-seo controlled/no fixture/no resource diagnostic with exact CI development artifact, require childSignal SIGTERM + in_progress checkpoint + selected real target/no acceptance credit; compare normal18-target receipt. Focused16tests are source seam evidence only."
   },
-  "dispatch_status": "No native run launched: repeated Actions API403. Exact source43006024 focused guard job37813115576 observed success159/159. Use already successful artifact414; do not require unrelated new artifact. Independent source review stands; actual interrupted checkpoint/cleanup unverified."
+  "dispatch_status": "Quota reset recovered; real interrupted run37815373369 completed and independently adjudicated. One normal same-artifact laneB run assigned alongside isolated laneA guest Scrape run.",
+  "native_interruption_proof": {
+    "run_id": "37815373369",
+    "peer_commit": "e67a0ece",
+    "status": "diagnostic-checkpoint-pass",
+    "product_version": "0.2.414",
+    "workflow_source": "468cab2c",
+    "observed": "Real target checkpoint survives native child SIGTERM; in_progress/unverified/no acceptance credit. Outer guard child_failed/resourceInvalid=false, no cleanup failure before finalization.",
+    "remaining": "Normal same-relevant-source/frozen414 surrounding run; historical neighbor used different workflow/product tree."
+  }
 }
