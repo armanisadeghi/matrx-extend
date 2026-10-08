@@ -1,0 +1,12 @@
+{
+  "attempt": 1,
+  "completed_at": "2026-10-08T20:08:03Z",
+  "conclusion": "failure",
+  "failed_step": "Require selected authentication before browser setup",
+  "failure_code": "d87_auth_secret_invalid",
+  "head_sha": "a6366f81056582bca08b4852d0f77076b5408863",
+  "later_product_steps": "skipped",
+  "run_id": 37837090039,
+  "started_at": "2026-10-08T20:07:42Z",
+  "status": "completed"
+}

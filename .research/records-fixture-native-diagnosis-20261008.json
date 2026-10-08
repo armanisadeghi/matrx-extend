@@ -1,0 +1,52 @@
+{
+  "case": "EXT-F-4130-C04-C05",
+  "native_run": 37833716704,
+  "native_head": "18e1b21fcb4de35b987e9d19f0233f28eb4d41f0",
+  "result": "unverified",
+  "observed": {
+    "failure_code": "records_fixture_cleanup_failed",
+    "positive_reads": 0,
+    "fixture_cleanup": null,
+    "private_journal_phase": "planned",
+    "private_journal_has_table_or_row_id": false,
+    "first_fixture_request_status_retained": false,
+    "same_principal_marker_check": {
+      "principal_matches": 1,
+      "organization_matches": 1,
+      "membership_matches": 1,
+      "matching_tables_live": 0,
+      "matching_tables_archived": 0,
+      "matching_child_rows_live": 0,
+      "source": "Independent read-only server query by native owner; counts only."
+    }
+  },
+  "source_contract": {
+    "route": "GET /api/v1/tables accepts search and organization query filters",
+    "response": "TableList has tables and not_listed; TableSummary has description, organization_id and kind",
+    "helper": "The fixture helper's request projection matches these fields. No API contract mismatch was proved."
+  },
+  "boundary": {
+    "proved": "The fixture had not reached a create POST: the helper persists create_sent before sending it, and the journal remained planned. The first failure may be in recovery listing, prior marked-fixture cleanup, preflight listing or the journal write before create. Independent same-principal server queries found zero matching live or archived tables and zero live child rows.",
+    "unknown": "The first request status and original assertion were discarded by the native driver. The current run's exact failure remains unknown.",
+    "diagnostic_loss": "The helper overwrote the visible stage with cleanup in finally, and the acceptance catch discarded the original error."
+  },
+  "later_api_probe": {
+    "scope": "One independent read-only GET to the same table-list path with a newly minted designated-admin Supabase sign-in and the approved organization header.",
+    "login_status": 200,
+    "table_list_status": 403,
+    "error_category": "unknown; response body was discarded",
+    "relationship_to_native_failure": "Discriminator only. It was a separate request, so it does not prove the native helper received 403.",
+    "source_analysis": "The route accepts authenticated Supabase JWTs and personal API keys. A 403 can be returned by more than one boundary, including organization admission, the table API's self-registered-app gate, or a store access refusal. The exact category cannot be selected from status alone."
+  },
+  "category_followup": {
+    "authorized_goal": "Classify the already observed 403 through one bounded read-only same-principal table-list request.",
+    "result": "The table-list request was not sent: two private Supabase sign-in attempts using the designated environment returned 401, including one parsed with dotenv_values. No response category was observed.",
+    "category": "unknown"
+  },
+  "repair": {
+    "scope": "Preserve fixed-shape first failure and cleanup failure observations in the native receipt: phase, fixed classification, request method and numeric HTTP status only.",
+    "status": "source change prepared; hosted native replay pending",
+    "verification": "Hosted focused run 37835814703 executed the fixture suite and exposed two diagnostic-classification test failures. A second run, 37836070600, confirmed exact-message matching was still wrong because Node assertion text includes context. Run 37836302781 at commit 9c4280da passed the focused acceptance command, including fixture lifecycle subtests 57, 59 and 60. No local browser, build or test run was performed under the lane instruction."
+  },
+  "next_native_observation": "Require an actual hosted run of the focused acceptance command with the fixture suite listed in the executed test report, then run the guarded native case on repaired source and inspect fixture_diagnostics before changing API requests."
+}

@@ -55,6 +55,7 @@ const report = {
   negative_reads: [],
   positive_reads: [],
   fixture_cleanup: null,
+  fixture_diagnostics: [],
   invalid_input: null,
   reload: null,
   failure_code: null,
@@ -610,6 +611,7 @@ try {
         bearerHash: reloadBearerHash,
         journalPath: `${output}.fixture-journal.json`,
         onStage: stage,
+        onFailure: (diagnostic) => report.fixture_diagnostics.push(diagnostic),
         exercise: async ({ tableId, rowId, rowName }) => {
           for (const [caseId, action, args] of [
             ['EXT-F-4130-C04', 'record_read', { record_id: rowId }],

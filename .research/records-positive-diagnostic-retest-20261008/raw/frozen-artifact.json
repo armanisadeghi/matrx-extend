@@ -1,0 +1,8 @@
+{
+  "artifact_id": 11556064167,
+  "digest": "sha256:7a93776a9322c27973756ddb542fd2e8580d900c356d28a0ad1504928edf3964",
+  "expired": false,
+  "run_id": 37790643945,
+  "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+  "version": "0.2.414"
+}

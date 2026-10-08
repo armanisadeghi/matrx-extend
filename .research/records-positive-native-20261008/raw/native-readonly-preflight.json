@@ -1,0 +1,11 @@
+{
+  "observed_at_utc": "2026-10-08T19:55:41.021402+00:00",
+  "auth_status": 200,
+  "http_status": 403,
+  "request_finished": false,
+  "tables_array": false,
+  "not_listed_array": false,
+  "not_listed_empty": false,
+  "exact_owned_marker_count": null,
+  "search_results_count": null
+}

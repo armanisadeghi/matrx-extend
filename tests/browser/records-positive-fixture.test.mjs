@@ -29,6 +29,14 @@ async function scenario(options = {}) {
     calls.push({ method: input.method, path: input.path });
     if (options.principalMismatch) return { token_matches: false };
     if (input.method === 'GET') {
+      if (options.recoveryListFailure && input.path.includes('search=EXT-F-4130-'))
+        return {
+          token_matches: true,
+          status: 503,
+          list_complete: false,
+          tables: [],
+          owned_tables: [],
+        };
       const owned =
         tableExists && !archived && (!options.notCreated || options.notCreatedMarked)
           ? [{ id: tableId, name: currentName }]
@@ -101,6 +109,7 @@ async function scenario(options = {}) {
       },
       journalPath,
       exercise,
+      onFailure: options.onFailure,
       request,
       id: () => runId,
     });
@@ -172,6 +181,65 @@ test('a failed read still archives the owned table; a failed archive never repor
     assert.equal(JSON.parse(await readFile(failed.journalPath, 'utf8')).phase, 'archive_sent');
   } finally {
     await failed.cleanup();
+  }
+});
+
+test('fixture receipt retains both the first body failure and cleanup failure without response data', async () => {
+  const diagnostics = [];
+  const s = await scenario({ archiveFailure: true, onFailure: (entry) => diagnostics.push(entry) });
+  try {
+    await assert.rejects(
+      s.run(async () => {
+        throw new Error('records_fixture_private_value');
+      }),
+      /records_fixture_archive_failed/,
+    );
+    assert.deepEqual(diagnostics, [
+      {
+        boundary: 'body',
+        phase: 'records_fixture_positive_reads',
+        classification: 'records_fixture_unexpected_error',
+        request_method: null,
+        http_status: null,
+      },
+      {
+        boundary: 'cleanup',
+        phase: 'records_fixture_cleanup',
+        classification: 'records_fixture_archive_failed',
+        request_method: 'DELETE',
+        http_status: 503,
+      },
+    ]);
+    assert.equal(JSON.stringify(diagnostics).includes('records_fixture_private_value'), false);
+  } finally {
+    await s.cleanup();
+  }
+});
+
+test('planned-journal recovery failure identifies its request and leaves fixture unwritten', async () => {
+  const diagnostics = [];
+  const s = await scenario({
+    recoveryListFailure: true,
+    onFailure: (entry) => diagnostics.push(entry),
+  });
+  try {
+    await assert.rejects(s.run(), /records_fixture_recovery_list_failed/);
+    assert.deepEqual(diagnostics, [
+      {
+        boundary: 'body',
+        phase: 'records_fixture_recovery_list',
+        classification: 'records_fixture_recovery_list_failed',
+        request_method: 'GET',
+        http_status: 503,
+      },
+    ]);
+    assert.deepEqual(
+      s.calls.map(({ method }) => method),
+      ['GET'],
+    );
+    assert.equal(JSON.parse(await readFile(s.journalPath, 'utf8')).phase, 'planned');
+  } finally {
+    await s.cleanup();
   }
 });
 

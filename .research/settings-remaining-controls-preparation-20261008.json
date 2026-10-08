@@ -20,10 +20,11 @@
     }
   },
   "verification": {
-    "source": "Driver now observes rendered section height and executes restoration checks; focused tests call the actual T28/T40/T67 case runners through an injected driver seam, including failure and cleanup paths. Node syntax checks and Biome formatting passed.",
-    "focused_test": "Pending automatic hosted focused-acceptance result for the pushed commit. No local test was run.",
-    "native": "Unverified until a hosted native run executes this driver. Existing product blobs may be reused only when their frozen artifact identity and tree hash match; these harness-only changes do not themselves require rebuilding product binaries.",
-    "resource_limit": "No local tests, browser, or build, as instructed for low system disk."
+    "source": "T28 focused failure test starts with Account closed, opens it through the case runner, injects a rendered-visibility failure, and asserts cleanup clicked it closed and restored the complete section baseline. Driver behavior is unchanged. Node syntax check and Biome formatting are source checks only.",
+    "focused_test": "Exact automatic hosted focused run 37836070600 at 2d8ff3fff859c979fb105166c838e5c71df0bea4: Settings T28 changed-state cleanup and other Settings case-runner subtests 158-161 PASS. Overall suite FAIL 196/198 because concurrent Records fixture subtests 59-60 failed; no full focused-gate pass is claimed for this commit.",
+    "native": "Unverified until a hosted native run executes this driver. The harness-only test change does not require a new product binary when frozen artifact identity and tree hash match. Rendered-height evidence does not establish opacity or absence of occlusion.",
+    "resource_limit": "No local tests, browser, or build, as instructed for low system disk.",
+    "focused_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37836070600"
   },
   "source_files": [
     "package.json",

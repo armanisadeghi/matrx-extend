@@ -1,0 +1,77 @@
+{
+  "authorship": "Reused native review seat; zero source/driver authorship for this retest.",
+  "backend_identity": {
+    "reason": "Preflight stopped before the native driver or any backend product request; no request-time backend identity is attributable to this attempt.",
+    "sampled": false
+  },
+  "credential_and_fixture_cleanup": {
+    "both_deleted_after_terminal": true,
+    "credential_values_or_tokens_retained": false,
+    "external_0600_payload_files_removed": true,
+    "external_artifact_extraction_removed": true,
+    "fixture_state": "Native driver never ran. This attempt created or changed no fixtures; no cleanup action was required. The prior exact-marker absence observation remains the last read-only fixture state.",
+    "names_only_absence_verified": true,
+    "staged_secret_names": [
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "workflow_artifact": "The 5,648-byte artifact contained only older resource journals, no receipt from this attempt; downloaded extraction was removed."
+  },
+  "frozen_artifact": {
+    "artifact_id": 11556064167,
+    "digest": "sha256:7a93776a9322c27973756ddb542fd2e8580d900c356d28a0ad1504928edf3964",
+    "expired": false,
+    "source_ci_run": 37790643945,
+    "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+    "version": "0.2.414"
+  },
+  "native_attempt": {
+    "attempt": 1,
+    "completed_at": "2026-10-08T20:08:03Z",
+    "conclusion": "failure",
+    "failure_boundary": "Require selected authentication before browser setup",
+    "failure_cause": "The two JSON secret payloads were staged with `gh secret set --body - < file`. `gh secret set --help` states that --body takes the value and stdin is read only when --body is omitted. Thus the likely stored value was the literal hyphen, causing JSON.parse to fail. The write-only secret service does not expose stored values, so this attribution follows the exact CLI semantics and observed parser error rather than a readback.",
+    "failure_code": "d87_auth_secret_invalid",
+    "head_sha": "a6366f81056582bca08b4852d0f77076b5408863",
+    "lane": "A records-readonly-admin",
+    "no_retry": true,
+    "run_id": 37837090039,
+    "runner": "macos-15",
+    "started_at": "2026-10-08T20:07:42Z",
+    "status": "completed",
+    "terminal_effect": "Preflight failed before package/browser/native acceptance. All later product steps were skipped; the Records fixture helper and native driver did not execute. No fixture writes were possible in this run."
+  },
+  "schema_version": 1,
+  "scope": "One attempted hosted Records lane-A native run using the frozen 0.2.414 artifact. No retry.",
+  "source": {
+    "fixture_helper_blob": "954241df0919f3f9a750782dd6da9af0b6aa175b",
+    "focused_gate": {
+      "head_sha": "9c4280dad79b388f141340b2458e4af678164742",
+      "relevant_fixture, acceptance, and proof blobs": "identical to retest source blobs above",
+      "result": "success",
+      "run_id": 37836302781
+    },
+    "hosted_wrapper_blob": "061a939ca6dd28d27a575ed419179b9a31156cf2",
+    "native_acceptance_blob": "8f2a5f490ab7b56a96fef3bd60928d14bd980483",
+    "native_proof_blob": "8174446e199124eced36b569bb097aec1cee5c97",
+    "run_head": "a6366f81056582bca08b4852d0f77076b5408863",
+    "workflow_blob": "a8cda2ffa6678fbf7fccc8b6b8c3c3e615928e64"
+  },
+  "tests": {
+    "hosted_focused_gate": "Run 37836302781 passed on 9c4280da with the relevant source blobs unchanged.",
+    "hosted_native": "Run 37837090039 failed during credential preflight; no product tests ran.",
+    "local": "None."
+  },
+  "verdict_A_behavior_and_spec": {
+    "evidence": "The hosted run reached credential preflight only and failed JSON parsing before browser setup.",
+    "result": "No product behavior was exercised; no C04/C05 positive credit and no full-feature claim."
+  },
+  "verdict_B_quality_and_validity": {
+    "limits": [
+      "No retry under this task.",
+      "No local tests/browser/build/release.",
+      "The previous minor integrated receipt-path test gap remains recorded; it does not explain this preflight failure."
+    ],
+    "result": "Invalid native acceptance attempt; exact frozen artifact and focused source gate were identified, but the credential staging failure prevented native evidence."
+  }
+}

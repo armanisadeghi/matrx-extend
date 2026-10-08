@@ -221,6 +221,12 @@ const CARD_FAILURES = new Set([
 ]);
 
 export function retainRecordsFailure(report) {
+  const fixture = report.fixture_diagnostics?.[0];
+  if (fixture) {
+    report.failure_phase = fixture.phase;
+    report.failure_classification = fixture.classification;
+    return;
+  }
   const card = report.stage === 'records_card' ? report.card_diagnostic : null;
   if (CARD_PHASES.has(card?.phase) && CARD_FAILURES.has(card?.failure)) {
     report.failure_phase = card.phase;
