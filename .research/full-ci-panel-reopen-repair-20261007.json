@@ -3,11 +3,13 @@
   "defect": "EXT-D-0165",
   "ci_failure": "Full CI 37722979005 at e5d76c11: six native sidepanel fixture failures",
   "introducing_commit": "fa05a939",
-  "root_cause": "Scrape's extracted exercisePanel setup began reading browserSession.send('Browser.getVersion') and evaluating chrome.runtime.id; three test fixtures did not supply the browser session, and one VM context did not supply chrome.runtime. The first missing dependency raised TypeError before the assertions could exercise panel visibility or reopening.",
+  "root_cause": "Scrape's extracted exercisePanel setup began reading browserSession.send('Browser.getVersion') and evaluating chrome.runtime.id; all four extracting test files lacked the new browser session dependency, and their relevant VM contexts lacked chrome.runtime. The first missing dependency raised TypeError before the assertions could exercise panel visibility or reopening.",
+  "fixture_census": "All four tests/browser files extracting Scrape exercisePanel setup were checked: native-sidepanel-qa-harness.test.mjs, panel-visibility-diagnostic.test.mjs, panel-visible-reopen-repair.test.mjs, panel-transition-recorder.test.mjs. The last file had two affected scenarios.",
   "scope": [
     "tests/browser/native-sidepanel-qa-harness.test.mjs",
     "tests/browser/panel-visibility-diagnostic.test.mjs",
-    "tests/browser/panel-visible-reopen-repair.test.mjs"
+    "tests/browser/panel-visible-reopen-repair.test.mjs",
+    "tests/browser/panel-transition-recorder.test.mjs"
   ],
   "before": {
     "command": "node --test tests/browser/native-sidepanel-qa-harness.test.mjs",
@@ -23,10 +25,18 @@
       "result": "3 passed, 0 failed"
     },
     {
+      "command": "node --test tests/browser/panel-transition-recorder.test.mjs",
+      "result": "7 passed, 0 failed; before: 5 passed, 2 failed on missing extracted-setup dependencies"
+    },
+    {
+      "command": "node --test tests/browser/panel-visible-reopen-repair.test.mjs tests/browser/panel-visibility-diagnostic.test.mjs tests/browser/panel-transition-recorder.test.mjs",
+      "result": "15 passed, 0 failed"
+    },
+    {
       "command": "pnpm exec biome check tests/browser/native-sidepanel-qa-harness.test.mjs tests/browser/panel-visible-reopen-repair.test.mjs tests/browser/panel-visibility-diagnostic.test.mjs",
       "result": "3 files checked, no fixes"
     }
   ],
-  "wider_check": "Parent native-sidepanel-qa-harness.test.mjs passed all 27 reported subtests and the original six were green, then stalled in a later reload lifecycle section with no further output for 113 seconds; cancelled. This wider-suite hang was not investigated in this bounded fixture lane.",
+  "wider_check": "Automatic full CI 37724004067 at ba55cede proved native-sidepanel-qa-harness.test.mjs terminal green after approximately 136 seconds. It then failed two panel-transition-recorder tests at the same fixture boundary; those two were reproduced red and repaired in the follow-up commit. Local parent-harness run was cancelled at owner direction before completion because the automatic run covered it.",
   "safety": "Existing visibility, refusal, and mutation assertions remain unchanged. Browser version fixture permits only Browser.getVersion; the runtime ID is supplied to the existing VM expression."
 }

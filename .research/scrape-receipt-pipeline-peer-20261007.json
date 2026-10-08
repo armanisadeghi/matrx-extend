@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "task_id": "scrape-receipt-pipeline-peer-20261007",
+  "reviewed_commit": "503eec1f3443e897a20ae69c81b6aa0f1e81a308",
+  "reviewed_diagnosis": ".research/scrape-d164-escalated-diagnosis-20261007.json",
+  "verdict_a": {
+    "diagnostic_readiness": "PASS",
+    "product_behavior": "UNVERIFIED",
+    "reason": "The original 0.2.391 native JSON has pointer_target_not_unique with zero matched/visible targets, but no copy target context or after_navigation. The latter is assigned only after all referrals copy options return, so absence of progress does not identify the first failed option or prove none completed. The repaired batch records the active stage, title, tab or option, and prior successful option verdicts on the thrown error; the native outer catch writes them to disk. The next guarded native receipt can distinguish the failed action. No new native browser run was performed."
+  },
+  "verdict_b": {
+    "reuse_and_causal_guard": "PASS_WITH_SCOPE_LIMIT",
+    "reason": "The repair reuses the existing pointer driver, native resource wrapper, clipboard oracle, and receipt writer. The only new receipt fields are controlled fixture/action names, Boolean or numeric DOM observations, and Boolean copy verdicts; raw clipboard, page body, and credentials are not forwarded by this path. The pointer failure object and prior failure status remain intact. The disk receipt guard executes the actual driver-to-batch-to-native-catch path for Copy capture and a later Copy images failure after a successful Page URL check; it fails on capture-only handling, dropped progress, dropped native forwarding, and constant empty batch return."
+  },
+  "independent_checks": {
+    "original_receipt_sha256": "b2426d72d8ba5c5b4f09e017db62bb498affe6569c35b90004e96ebc91bc1156",
+    "targeted_command": "node --test tests/browser/scrape-copy-receipt.test.mjs tests/browser/scrape-guest-behavior-batch.test.mjs",
+    "targeted_result": "8 passed, 0 failed",
+    "automatic_focused_ci": {
+      "run_id": 37724470683,
+      "head_sha": "503eec1f3443e897a20ae69c81b6aa0f1e81a308",
+      "conclusion": "success",
+      "tests": "52 passed, 0 failed",
+      "source": "builder's exact-run report; not independently rerun here"
+    }
+  },
+  "limits": [
+    "The disk guard exercises open_menu failures for two titles. Other annotated stages, including select_tab and select_option, are supported by the common batch catch but were not separately exercised through disk JSON in this review.",
+    "The fixture controls a successful browser copy and permission result; it does not verify live extension copy behavior.",
+    "The empty-image Copy images toolbar condition is a plausible lead, not a confirmed cause of the original failure. Failure-time DOM observation may race a UI transition."
+  ],
+  "next_step": "Run one authorized guarded native acceptance against the original 0.2.391 product after exact automatic CI. Inspect copy_batch_failure.action and completed before classifying the product cause."
+}

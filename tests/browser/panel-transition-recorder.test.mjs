@@ -16,6 +16,14 @@ const authSource = await readFile(
   new URL('./settings-native-auth-driver.mjs', import.meta.url),
   'utf8',
 );
+const browserSession = {
+  send: async (method) => {
+    assert.equal(method, 'Browser.getVersion');
+    return { product: 'Chrome/fixture' };
+  },
+};
+const evaluatePanel = async (panel, expression) =>
+  (await panel.send('Runtime.evaluate', { expression })).result.value;
 
 function fixture() {
   let tick = 0;
@@ -23,6 +31,7 @@ function fixture() {
   const listeners = new Map();
   const context = createContext({
     window: {},
+    chrome: { runtime: { id: 'fixture-extension' } },
     performance: { now: () => ++tick },
     document: {
       get visibilityState() {
@@ -256,6 +265,7 @@ test('actual Scrape setup wires resource and organization pointer intervals to t
     'report',
     'assert',
     'REPO',
+    'evaluate',
     `return (${prefix} } return report; });`,
   );
   for (const scenario of ['resource_wait', 'pointer_dispatch']) {
@@ -284,6 +294,7 @@ test('actual Scrape setup wires resource and organization pointer intervals to t
       report,
       assert,
       '',
+      evaluatePanel,
     );
     const originalSend = env.panel.send;
     env.panel.send = async (method, args) => {
@@ -294,6 +305,7 @@ test('actual Scrape setup wires resource and organization pointer intervals to t
     const result = await run({
       panel: env.panel,
       page: {},
+      browserSession,
       observePanelVisibility: async () => {},
       observeAuthenticatedPanel: async () => {},
       requireResourceHealth: async () => {},
@@ -367,6 +379,7 @@ test('real Scrape auth caller records first member selection, skip, identity, an
       'report',
       'assert',
       'REPO',
+      'evaluate',
       `return (${source} } return report; });`,
     )(
       startPanelTransitionRecorder,
@@ -379,6 +392,7 @@ test('real Scrape auth caller records first member selection, skip, identity, an
       report,
       assert,
       '',
+      evaluatePanel,
     );
 
   async function scenario(selectionRequired, source = prefix, failAdmin = false) {
@@ -503,6 +517,7 @@ test('real Scrape auth caller records first member selection, skip, identity, an
     const args = {
       panel: env.panel,
       page,
+      browserSession,
       observePanelVisibility: async () => {},
       observeAuthenticatedPanel: async () => {},
       requireResourceHealth: async () => {},
