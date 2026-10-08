@@ -331,7 +331,7 @@
               "detail": "D80 actual profile/loaded-path/version check validated with fresh admin repeat; complete CI import collision/error matrix and all artifact coverage remain unverified."
             }
           },
-          "defect_ids": ["EXT-D-0080", "EXT-D-0165"]
+          "defect_ids": ["EXT-D-0080", "EXT-D-0165", "EXT-D-0171"]
         },
         {
           "id": "EXT-F-0001-T07",

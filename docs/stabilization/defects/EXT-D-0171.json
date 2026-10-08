@@ -1,0 +1,45 @@
+{
+  "id": "EXT-D-0171",
+  "feature_id": "EXT-F-0001",
+  "case_ids": ["EXT-F-0001-T06"],
+  "surface": "CI dependency installation",
+  "auth_mode": "all",
+  "title": "Concurrent package adoption leaves two kit versions in dependency graph",
+  "severity": "S2: current-main installation and acceptance pipeline blocked",
+  "priority": "P1",
+  "state": "in-fix",
+  "owner": "root/main_dependency_reconcile",
+  "preconditions": [
+    "Source dddb795c; frozen pnpm dependency installation in focused acceptance CI37740515314."
+  ],
+  "reproduction": [
+    "Install dependencies using existing CI workflow at source dddb795c.",
+    "Observe postinstall check-matrx-packages.mjs --duplicates detects @ai-matrx/kit0.38.0 and0.39.0.",
+    "Observe installation exit1 before focused tests start."
+  ],
+  "expected": "One version of each shared package in installed graph; installation completes before tests.",
+  "actual": "Duplicate kit versions trip required postinstall guard; tests not reached.",
+  "evidence": ["https://github.com/armanisadeghi/matrx-extend/actions/runs/37740515314"],
+  "cause": "Root lock importer still selects kit0.38.0 while newly adopted transitive packages resolve kit0.39.0; no producer pin established.",
+  "transition_history": [
+    {
+      "at": "2026-10-08T07:00:10.195782+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Observed exact CI installation failure."
+    },
+    {
+      "at": "2026-10-08T07:00:10.195782+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Worker confirmed duplicate versions remain in current main lock."
+    },
+    {
+      "at": "2026-10-08T07:00:10.195782+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Forward package refresh under resource admission; no pins or weakened guards."
+    }
+  ],
+  "closure_requirement": "Independent graph review plus successful clean CI dependency installation and relevant checks on repaired source; no product/UI health claim."
+}
