@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-08T10:20:00Z",
+  "scope": "Independent original-artifact verification only; no browser run, build, release, deploy, or product/source edit.",
+  "verdict": "BOUNDED_NATIVE_RELOAD_PASS; SIX_GUEST_CASES_PASS; FIVE_REMAIN_PARTIAL",
+  "run": {"id": 37761144784, "attempt": 1, "job": 113257577179, "artifact_id": 11542781853, "artifact_name": "hosted-guest-37761144784-1", "checkout_sha": "d7923108ee3281b954034a970a13ddd3c92c8de3", "conclusion": "success"},
+  "frozen_build": {"version": "0.2.407", "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114", "ci_run": 37754055905, "artifact_id": 11539827040, "gh_artifact_digest": "sha256:1b883fc212351a6ef30e3b6cc43f9cb1a03c8584affaf3ffecdf679c59087893"},
+  "receipt": {"path": "test-results/scrape-guest-native-ff470f44-ce7d-455f-93ab-c780b0fed14f.json", "bytes": 248947, "sha256": "11b225416a6db95b9fa43036f600653641d0905c3755b0c3565f466e162c0d78", "independent_download_matches_curated_copy": true},
+  "identity_and_scope": {"mode": "guest", "guest_banner_seen_in_original_panel_screenshot": true, "guest_auth_storage_empty": true, "runtime_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml", "warm_reload_viewports_px": [600,600], "width_mode": "normal"},
+  "reload_proof": {"strict_predicate": true, "old": {"version": "0", "registration": "0", "target": "4D47C1F850D000B608D321C594B50BB3", "stopped_redundant": true, "target_destroyed": true, "absent_finally": true}, "replacement": {"version": "1", "registration": "1", "target": "63EBF53D130877D760406B3FF2D7CD04", "running_activated": true, "same_identity_original_watcher": true, "created_event": true}, "sole_final_worker_target": true, "replacement_panel": "F4F6CEB00756A3962BD7DE99356C891C", "dropped_events": 0},
+  "fresh_observer": "NOT_EXERCISED: strict predicate passed, so the diagnostic-only observer that runs after refusal was not invoked; this run does not distinguish missed delivery from a still-new worker in the prior failing trace.",
+  "cases": {"guest": {"passed": ["EXT-F-1007-T20", "EXT-F-1007-T10", "EXT-F-1007-T11", "EXT-F-1007-T12", "EXT-F-1007-T07", "EXT-F-1007-T09"], "partial": ["EXT-F-1007-T01", "EXT-F-1007-T08", "EXT-F-1007-T13", "EXT-F-1007-T02", "EXT-F-1007-T14"], "failed": []}, "partial_reasons": "T01/T08/T13 lack member/admin modes; T02 lacks deep failure retry and post-reload deep capture; T14 lacks a natural recoverable Reload/Try again failure."},
+  "resource_journals": {"package": {"sha256": "c8f4305223c5fef06b62e0b9606660989e3b663692182484e4712c9376956ef2", "bytes": 984, "final_valid_exit0": true}, "browser": {"sha256": "589e08e73d2c1e0be8442122afeec6b4c08b97b02c8458f0ee6c486ec5b207ba", "bytes": 988, "final_valid_exit0": true}, "guest": {"sha256": "5621e5c51f755f71e0a591f435deef1f58310752c10b374dc7eed4831cd43832", "bytes": 8660, "final_valid_exit0": true}, "all_three_independent_download_hashes_match": true},
+  "limits": "Workflow success is not treated as 11 case passes. Guest-only normal-width evidence; no signed-in or Store result, no fresh-observer result, and no broader product-health claim."
+}
