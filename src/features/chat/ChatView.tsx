@@ -9,12 +9,12 @@ import { ContextRulesComposerChip } from '@/features/chat/ContextRulesComposerCh
 import { CopyConversationButton } from '@/features/chat/CopyConversationButton';
 import { GoogleFileAttachmentChip } from '@/features/chat/GoogleFileAttachmentChip';
 import { HighlightAttachmentChip } from '@/features/chat/HighlightAttachmentChip';
-import { VoiceLanguagePicker } from '@/features/chat/VoiceLanguagePicker';
 import { QueuedMessageStack } from '@/features/chat/QueuedMessageCard';
 import { SandboxPickerChip } from '@/features/chat/SandboxPickerChip';
 import { ServerToolRow } from '@/features/chat/ServerToolRow';
 import { SpeakerButton } from '@/features/chat/SpeakerButton';
 import { ToolTimelineRow } from '@/features/chat/ToolTimelineRow';
+import { VoiceLanguagePicker } from '@/features/chat/VoiceLanguagePicker';
 import { formatAssistantBody } from '@/features/chat/copy-conversation';
 import { TaskPanel, TaskPanelChip } from '@/features/lists/TaskPanel';
 import { useAgentExecution } from '@/hooks/use-agent-execution';

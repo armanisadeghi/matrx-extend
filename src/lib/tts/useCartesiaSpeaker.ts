@@ -18,9 +18,9 @@ import { AUDIO_API_ROUTES } from '@/lib/audio/constants';
 import { getAccessToken } from '@/lib/auth/flow';
 import { useVoicePrefsStore } from '@/state/voice-prefs';
 import { reportProviderSessionFailure } from '@ai-matrx/agents/matrx';
+import { parseMarkdownToText } from '@ai-matrx/media/voices';
 import type { CartesiaClient, WebPlayer } from '@cartesia/cartesia-js';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { parseMarkdownToText } from '@ai-matrx/media/voices';
 import { resolveReadAloudVoice } from './read-aloud-voice';
 
 const CARTESIA_MODEL_ID = 'sonic-3';
