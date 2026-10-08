@@ -36,6 +36,40 @@ const BOOL_KEYS = [
   'replacement_worker_created_event',
 ];
 
+function captureOpenPanelFixture(value) {
+  if (!value || typeof value !== 'object') return null;
+  return {
+    availability: ['ready', 'unavailable'].includes(value.availability)
+      ? value.availability
+      : 'unavailable',
+    click_received: value.click_received === true,
+    send_invoked: value.send_invoked === true,
+    send_returned: value.send_returned === true,
+    callback_entered: value.callback_entered === true,
+    callback_has_reply: value.callback_has_reply === true,
+    callback_last_error: value.callback_last_error === true,
+    send_threw: value.send_threw === true,
+  };
+}
+
+function captureOpenPanelDiagnostic(value) {
+  if (!value || typeof value !== 'object') return null;
+  return {
+    availability: ['ready', 'unavailable', 'sample_failed', 'cleanup_unconfirmed'].includes(
+      value.availability,
+    )
+      ? value.availability
+      : 'unavailable',
+    perturbation: 'cdp_worker_attach_and_synchronous_open_wrapper',
+    ingress: value.ingress === true,
+    open_invoked: value.open_invoked === true,
+    open_settlement: ['unobserved', 'resolved', 'rejected', 'threw'].includes(value.open_settlement)
+      ? value.open_settlement
+      : 'unobserved',
+    send_response: 'unobservable_without_instrumented_build',
+  };
+}
+
 function safeCount(value) {
   return Number.isSafeInteger(value) && value >= 0 ? value : null;
 }
@@ -71,6 +105,11 @@ export function captureLifecycleEvidence(value) {
   if (!value || typeof value !== 'object') return null;
   const evidence = {};
   for (const key of BOOL_KEYS) evidence[key] = typeof value[key] === 'boolean' ? value[key] : null;
+  if (value.replacement_panel_created_event !== undefined)
+    evidence.replacement_panel_created_event =
+      typeof value.replacement_panel_created_event === 'boolean'
+        ? value.replacement_panel_created_event
+        : null;
   evidence.observed_worker_count = safeCount(value.observed_worker_count);
   evidence.management = captureManagement(value.management);
   if (value.open_panel_request && typeof value.open_panel_request === 'object') {
@@ -108,8 +147,11 @@ export function captureLifecycleEvidence(value) {
       ].includes(request.category)
         ? request.category
         : 'unexpected_reply',
+      ...(request.fixture !== undefined && { fixture: captureOpenPanelFixture(request.fixture) }),
     };
   }
+  if (value.open_panel_diagnostic !== undefined)
+    evidence.open_panel_diagnostic = captureOpenPanelDiagnostic(value.open_panel_diagnostic);
   if (value.timeline && typeof value.timeline === 'object') {
     const safeId = (id) => (typeof id === 'string' && /^[A-Za-z0-9-]{1,128}$/.test(id) ? id : null);
     const safeTarget = (target) => {
