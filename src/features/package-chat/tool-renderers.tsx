@@ -5,7 +5,7 @@
  * ToolTimelineRow, so its signed-run receipt dialog comes with them.
  */
 
-import { ToolTimelineRow, type ToolTimelineEntry } from '@/features/chat/ToolTimelineRow';
+import { type ToolTimelineEntry, ToolTimelineRow } from '@/features/chat/ToolTimelineRow';
 import type { ToolLifecycleEntry } from '@ai-matrx/chat/agents/types/request.types';
 import { registerToolRenderer } from '@ai-matrx/chat/tool-call-visualization/registry/registry';
 import type { ToolRendererProps } from '@ai-matrx/chat/tool-call-visualization/types';
