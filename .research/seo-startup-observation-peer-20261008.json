@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "seo-startup-observation-peer-20261008",
+  "reviewed_commit": "3a566fa63b4680d4f3badc9d97d8e732c0c44aee",
+  "defect": "EXT-D-0107",
+  "verdict_A_source": "PASS_SOURCE_WIRING_NATIVE_PENDING",
+  "verdict_A_reason": "The existing default-off seo_resource_diagnostic input is constrained to full guest SEO with the Airbnb fixture. Only that flag passes the policy-derived 15000 ms observer into runNativeSidepanelQa. The harness still defaults to headed=false, uses the same owned CDP call with its 5000 ms deadline, and records cdp_timeout and post_timeout before rethrowing. The SEO driver catches that failure and writes the six safe observation fields to its receipt. No guarded native attempt with this change has run, so a real receipt and endpoint timing remain unproven.",
+  "verdict_B_quality": "PASS_WITH_TEST_LIMIT",
+  "verdict_B_reason": "The observer reuses safeStartupEndpointObservation, preserves the resource policy and ownership checks, and diagnostic classification clears acceptance targets even for a late endpoint. The focused test covers the report writer, safe-field stripping, failure status, and default-off options; the existing harness test covers bounded endpoint observation. The new test uses a simulated native runner rather than executing the real harness failure catch, so the end-to-end receipt path awaits native proof. The builder's reported red state was not independently rerun; the green focused suite passed 14/14.",
+  "runner_identity": {
+    "failed_run_id": 37783095637,
+    "failed_job_id": 113330881388,
+    "failed_job_labels": ["macos-15-intel"],
+    "recommended_next_label": "macos-15-intel",
+    "assessment": "MATCH. The retained run metadata identifies the run and the retained report identifies its guest job; GitHub's job metadata for that exact job reports macos-15-intel. The raw run-level metadata alone contains no runner label, so Intel and ARM are not inferred equivalent."
+  },
+  "checks": [
+    "git show 3a566fa6 for all three changed source/test files",
+    "runNativeSidepanelQa startup catch, headed default, endpoint observer, and owned CDP 5000 ms deadline",
+    "resource-policy.json watchIntervalSeconds=15, unchanged by reviewed commit",
+    "node --test scripts/hosted-seo-route.test.mjs scripts/test-hosted-startup-interval-diagnostic.mjs tests/browser/seo-driver-sequence.test.mjs: 14 passed, 0 failed",
+    "gh api repos/armanisadeghi/matrx-extend/actions/jobs/113330881388: labels=[macos-15-intel]"
+  ],
+  "findings": [],
+  "native_acceptance_credit": "NONE"
+}
