@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "task_id": "reload_reply_final_peer_20261007",
+  "scope": "Fresh zero-authorship re-review of 011ce6f24b494badedc853a9180eb0c78e7a1ef3 and correction b42a242553a77e884204e8d2aa265b28b066c6b7. No native Chrome, build, release, manual workflow dispatch, or source edit.",
+  "prior_findings": [
+    {
+      "finding": "A: non-opened, absent, or malformed callback suppresses valid replacement target and context acceptance",
+      "status": "ADDRESSED",
+      "evidence": "reloadOwnedExtension starts callback observation, then unconditionally performs the original 150 Target.getTargets attempts and exact side panel context check. The new focused seam drives the real reload function with refused, RPC-refused, missing, malformed, and delayed callback cases while a valid replacement panel and context appear."
+    },
+    {
+      "finding": "B: serial callback wait consumes target polling deadline",
+      "status": "ADDRESSED",
+      "evidence": "Callback wait is a pending promise; it is not awaited by the target loop. The loop uses 150 attempts with the original 100 ms wait. A delayed callback case accepts the replacement panel before the reply."
+    },
+    {
+      "finding": "B: callback and receipt tests omitted from automatic focused CI",
+      "status": "ADDRESSED",
+      "evidence": "package.json test:focused-acceptance now includes native-panel-open-reply, native-reload-reply-seam, and profile-reload-capture. Automatic push workflow run 37728940529 on b42a2425 completed successfully with 63 tests passed, 0 failed; its log names all three relevant case groups."
+    },
+    {
+      "finding": "B: malformed callback and Open panel click exception lack focused guards",
+      "status": "PARTIALLY_ADDRESSED",
+      "evidence": "Malformed callback is asserted in the helper and real reload seam. No focused test injects an exception from #open-panel.click; the existing clickFailure case injects an exception from the native extension reload button, a different boundary. The implementation records click_failed when that Open panel click throws, but this branch remains untested."
+    },
+    {
+      "finding": "Native callback and click-time worker state in an actual disk Scrape receipt remain unknown",
+      "status": "NOT_ADDRESSED",
+      "evidence": "The acceptance call chain serializes retirement evidence on success and failure and writes the report to OUTPUT, but no admitted native rerun or resulting disk receipt was supplied after these commits. Source run 37726590928 predates the instrumentation."
+    }
+  ],
+  "verdict_a_target_readiness": {
+    "status": "PARTIAL",
+    "finding": "The diagnostic code is ready for an admitted native retest: it captures only fixed callback fields and the replacement worker's observed activation and running states at click, while callback outcome no longer gates target or context acceptance. The actual native failure boundary and disk receipt remain unverified, so EXT-D-0166's cause and native outcome are open."
+  },
+  "verdict_b_quality": {
+    "status": "PARTIAL",
+    "finding": "The new focused CI exercises the real reloadOwnedExtension-to-captureLifecycleEvidence seam, including callback disagreement with a valid target; the full harness retains Developer mode, worker retirement, duplicate worker, context, native reload click failure, and pre-click retirement cases after fixture extraction. It stops short of a disk write. No executed return-expected or mutation pass was supplied for the new helper guard, and the Open panel click exception case remains uncovered."
+  },
+  "checks": [
+    "Read both exact commit diffs and compared original harness cases before and after fixture extraction.",
+    "Traced Scrape acceptance success/failure serialization to its final writeFile(OUTPUT) call.",
+    "Observed automatic focused workflow 37728940529 at b42a2425: success, 63 passed, 0 failed.",
+    "git diff --check 011ce6f2^ b42a2425 passed. Full CI run 37728940557 was pending at review time."
+  ],
+  "limits": "This is static and CI evidence only. No local tests were run because no admitted local guard was used and another writer is active in the shared checkout."
+}
