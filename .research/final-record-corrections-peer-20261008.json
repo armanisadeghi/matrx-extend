@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "review": "Independent bounded verification of correction9b759925 and supplement0ce07c1d",
+  "observed_at": "2026-10-08",
+  "source_head": "0ce07c1d",
+  "A_addressed_verdicts": [
+    {
+      "target": "correction9b759925",
+      "finding": "ADDRESSED",
+      "basis": "docs/stabilization/PLAN.md now states that an authorized member identity is used and memberships are verified per case; cases lacking a suitable principal or membership remain unverified, and admin success does not prove member behavior.",
+      "scope_limit": "This fixes the stale blanket identity-availability claim. It makes no claim that ordinary-member feature coverage is complete.",
+      "checkpoint": ".research/parallel-alignment-checkpoint-peer-20261008.json"
+    },
+    {
+      "target": "supplement0ce07c1d",
+      "finding": "ADDRESSED_WITH_LIMITS",
+      "basis": "SEO record identifies workflow run 37774478094, frozen development run/artifact and source/tree hashes, fixture airbnb, case EXT-F-1008-T09, and raw import observation. Uploaded artifact manifest lists all 11 remote files and no SEO acceptance receipt. Three retained run journals match manifest sizes and SHA-256 values.",
+      "resource_boundary": "Guest journal records RESOURCE_WATCH_UNSAFE, stop at safe boundary, watchdog SIGTERM, and final invalid decision. No navigation or metadata comparison is evidenced; no pass, failure, or acceptance receipt is inferred.",
+      "manifest_sha256": "verified for retained hosted-package, hosted-browser, and hosted-guest journals",
+      "scope_limit": "Eight other manifest-listed artifact files are not retained locally in the committed raw bundle, so their bytes could not be independently rehashed here. Receipt absence is supported by the committed downloaded-artifact manifest and remote artifact listing, not by a fresh artifact download."
+    }
+  ],
+  "B_evidence_quality_and_limits": {
+    "overall": "Adequate for the bounded factual corrections and invalid-run boundary; not evidence of product acceptance.",
+    "independent_observations": [
+      "Compared PLAN.md correction against the prior checkpoint finding and inspected the exact commit diff.",
+      "Read the sanitized import observation, remote run metadata, artifact listing, uploaded-file manifest, and current run journals.",
+      "Recomputed file size and SHA-256 for each of the three retained current-run journals; all match the manifest."
+    ],
+    "not_done": [
+      "No native rerun.",
+      "No full workflow logs fetched or reviewed.",
+      "No omitted artifact files restored or rehashed.",
+      "No product criterion status or inventory coverage promoted."
+    ]
+  }
+}
