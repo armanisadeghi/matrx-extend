@@ -51,3 +51,22 @@ test('failed target discovery keeps the observed callback class in the safe rece
     },
   );
 });
+
+test('Open panel click failure preserves the original error and safe receipt', async () => {
+  await assert.rejects(
+    reloadCase({
+      initiallyEnabled: true,
+      openPanelClickFailure: true,
+      expectFailure: true,
+    }),
+    (error) => {
+      assert.equal(error.message, 'private URL token: panel click interrupted');
+      const captured = captureLifecycleEvidence(error.lifecycleEvidence);
+      assert.equal(captured.open_panel_request.category, 'click_failed');
+      assert.equal(captured.open_panel_request.received, false);
+      assert.equal(captured.timeline.final_predicate, true);
+      assert.doesNotMatch(JSON.stringify(captured), /private|token|interrupted/);
+      return true;
+    },
+  );
+});

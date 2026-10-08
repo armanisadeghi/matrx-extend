@@ -15,6 +15,7 @@ export async function reloadCase({
   multipleWorkers = false,
   executionEvidence = 'valid',
   openReply = { ok: true, result: { opened: true } },
+  openPanelClickFailure = false,
   panelAppears = true,
   expectedCategory = 'opened',
   replyDelayTargetReads = 0,
@@ -214,6 +215,8 @@ export async function reloadCase({
           click: async () => {
             assert.equal(selector, '#open-panel');
             assert.equal(openResult, '', 'reload must clear the initial-open callback');
+            if (openPanelClickFailure)
+              throw new Error('private URL token: panel click interrupted');
             opened = panelAppears;
             if (replyDelayTargetReads === 0) publishOpenReply();
           },

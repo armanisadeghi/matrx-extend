@@ -1,0 +1,10 @@
+{
+  "scope": "Open panel trusted-click failure during real reloadOwnedExtension-to-captureLifecycleEvidence seam",
+  "change": "Fixture throws at #open-panel.click after the stale reply is cleared; test requires the original error, click_failed safe category, no callback receipt, and no sensitive data in captured evidence.",
+  "verification": {
+    "focused_command": "pnpm test:focused-acceptance",
+    "focused_result": "64 passed, 0 failed",
+    "mutation": "plant.py changed click_failed assignment to reply_not_observed in native-sidepanel-qa-harness.mjs; the new test failed on the expected category assertion, and plant.py restored identical source bytes."
+  },
+  "source_edits": "none"
+}
