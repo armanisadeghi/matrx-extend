@@ -23,6 +23,7 @@
  * blocks dispatch.
  */
 
+import type { ClientToolResultBody } from '@/lib/api/routes/tool-results';
 import { getCurrentUser } from '@/lib/auth/flow';
 import { getOrCreateGuestSignature } from '@/lib/auth/guest-signature';
 import { log } from '@/lib/debug/log';
@@ -329,14 +330,8 @@ const RESULT_MAX_ATTEMPTS = 5;
  */
 export interface UndeliveredResult {
   conversationId: string;
-  result: {
-    call_id: string;
-    tool_name: string;
-    output: unknown;
-    is_error?: boolean;
-    error_message?: string | null;
-    duration_ms?: number;
-  };
+  /** The exact body POSTed to tool_results — one type, so a re-delivery can never drift from it. */
+  result: ClientToolResultBody;
   at: number;
   attempts: number;
 }
