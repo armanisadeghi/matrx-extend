@@ -1,0 +1,7 @@
+{
+  "allowlisted_tokens_present": [
+    "ERR_ASSERTION"
+  ],
+  "native_wrapper_only": true,
+  "raw_log_retained": false
+}
