@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "artifact_type": "source-only-peer-review",
+  "proposal_commit": "508a877c",
+  "proposal_path": ".research/sensitive-tool-procedures-20261008.json",
+  "scope": "EXT-F-4089-T01, EXT-F-4090-T01, EXT-F-4092-T01 only; no browser, credential, CRM, Gmail, or network execution",
+  "verdicts": {
+    "A_requested_procedure": "REVISION_NEEDED",
+    "B_source_contract_quality": "REVISION_NEEDED"
+  },
+  "cases": [
+    {
+      "case_id": "EXT-F-4089-T01",
+      "A": "REVISION_NEEDED",
+      "B": "PASS_WITH_LIMITS",
+      "finding": {
+        "severity": "Important",
+        "proposal_anchor": ".research/sensitive-tool-procedures-20261008.json:76",
+        "source_anchor": "src/lib/tools/handlers/credential-login.ts:1885-1924",
+        "issue": "The no-match negative accepts 'a specific safe refusal'. A probe failure or absent login form can therefore satisfy the step without reaching the Vault match lookup. Require a proven top-frame safe login form and status no_matching_login for this negative; record other safe refusals as distinct observations, not a no-match pass."
+      },
+      "supported": "The credential_item_id number is rejected by the strict action:auto schema before the handler; manual execution uses the focused tab and proves no dispatcher approval. The owned fixture, independent authenticated marker, private Vault staging, and exact-item cleanup are appropriate conditions."
+    },
+    {
+      "case_id": "EXT-F-4090-T01",
+      "A": "PASS_WITH_LIMITS",
+      "B": "PASS_WITH_LIMITS",
+      "finding": null,
+      "supported": "site_id:not-a-uuid is rejected by Zod before the handler. Preview and capture use the one API route family; capture is a remote write requiring the stated unique-domain baseline, exact site, independent readback, and exact-ID cleanup. The manual runner does not establish action-tier permission behavior."
+    },
+    {
+      "case_id": "EXT-F-4092-T01",
+      "A": "REVISION_NEEDED",
+      "B": "REVISION_NEEDED",
+      "finding": {
+        "severity": "Important",
+        "proposal_anchor": ".research/sensitive-tool-procedures-20261008.json:171-176",
+        "source_anchor": "src/features/tools/ToolsView.tsx:453-462; src/hooks/use-tool-inbox.ts:206-212; src/features/chat/ChatView.tsx:192-205",
+        "issue": "The null-conversation manual request is displayed in Chat only while selectedConversationId is null. An existing selected conversation cannot show its card, and switching after invocation is not a reliable procedure. Make a fresh null-selected Chat state an explicit precondition before manual Run, then confirm the card appears before any send. If absent, let the request time out and mark this path unverified."
+      },
+      "supported": "Missing body is a real schema negative. The handler creates an email_review request; only the review card calls sendReviewedGmail, whose internal user_confirmed value is not a tool argument. Decline, dismiss, edited send, one-message receipt, owned inbox readback, and immutable-send limitation are correctly separated."
+    }
+  ],
+  "limits": [
+    "Both verdicts assess the proposed procedure against source only. No runtime result, permission proof, card rendering, external effect, or cleanup was observed.",
+    "The proposal correctly keeps all three cases NOT_EXECUTABLE until resource/build receipts and owned fixtures exist; this peer report does not promote inventory status or applicability."
+  ]
+}
