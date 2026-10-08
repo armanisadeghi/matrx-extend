@@ -5,6 +5,7 @@ import {
   assertCompleteTabCoverage,
   captureExportFingerprint,
   capturePaneSnapshot,
+  observeEmptyLinksPane,
   verifyCaptureUnchanged,
 } from './scrape-tab-coverage.mjs';
 
@@ -76,11 +77,23 @@ test('T08 coverage refuses absent reload empty panes or a skipped capture compar
   const empty = {
     images: { pane: 'Images', state: 'empty', count: 0 },
     video: { pane: 'Video', state: 'empty', count: 0 },
+    links: {
+      pane: 'Links',
+      state: 'empty',
+      count: 0,
+      add_control_visible: true,
+      export: { identity_unchanged: true, exported_payload_unchanged: true },
+    },
   };
   const warm = { invariance, empty };
   const reload = { invariance, empty };
   assert.equal(assertCompleteTabCoverage({ warm, reload }), true);
-  for (const missing of [undefined, { images: empty.images }, { video: empty.video }]) {
+  for (const missing of [
+    undefined,
+    { images: empty.images },
+    { video: empty.video },
+    { images: empty.images, video: empty.video },
+  ]) {
     assert.throws(
       () => assertCompleteTabCoverage({ warm, reload: { invariance, empty: missing } }),
       /scrape_reload_.*empty/,
@@ -108,6 +121,61 @@ test('T08 coverage refuses absent reload empty panes or a skipped capture compar
         reload: { invariance: { ...invariance, panes_compared: labels.slice(1) }, empty },
       }),
     /scrape_reload_capture_panes_missing/,
+  );
+});
+
+test('owned empty Links pane requires zero real rows, Add link and unchanged capture export', async () => {
+  const run = async ({ rows = [], text = 'Add link', afterDigest = 'same' } = {}) => {
+    let selected = null;
+    let reads = 0;
+    return observeEmptyLinksPane({
+      panel: {},
+      phase: 'warm',
+      click: async (_panel, kind, label) => {
+        assert.equal(kind, 'scrape-result-tab');
+        selected = label;
+      },
+      resourceAction: (action) => action(),
+      requireResourceHealth: async () => {},
+      scrapeState: async () => ({
+        selected,
+        visible: true,
+        resultText: text,
+        media: { tabCount: rows.length ? String(rows.length) : null, linkItems: rows },
+      }),
+      waitFor: async (_name, read, ready) => {
+        const value = await read();
+        assert.equal(ready(value), true);
+        return value;
+      },
+      readExport: async () => ({
+        identity: 'same',
+        digest: ++reads === 1 ? 'same' : afterDigest,
+        format: 'full_capture_ai_markdown',
+        bytes: 200,
+      }),
+    });
+  };
+  assert.deepEqual(await run(), {
+    pane: 'Links',
+    state: 'empty',
+    count: 0,
+    add_control_visible: true,
+    export: {
+      export_format: 'full_capture_ai_markdown',
+      bytes_compared: 200,
+      identity_unchanged: true,
+      exported_payload_unchanged: true,
+    },
+  });
+  await assert.rejects(
+    run({ rows: [{ href: 'http://localhost/forms', text: 'Forms' }] }),
+    /scrape_warm_links_not_empty/,
+  );
+  await assert.rejects(run({ text: '' }), /scrape_warm_add_link_missing/);
+  await assert.rejects(
+    run({ afterDigest: 'changed' }),
+    /scrape_warm_empty_links_capture_payload_changed/,
   );
 });
 

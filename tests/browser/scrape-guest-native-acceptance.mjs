@@ -47,6 +47,7 @@ import {
   assertCaptureExportUnchanged,
   assertCompleteTabCoverage,
   capturePaneSnapshot,
+  observeEmptyLinksPane,
   observeEmptyMediaPanes,
   readCaptureExport,
   verifyCaptureUnchanged,
@@ -1596,11 +1597,32 @@ try {
         evaluate,
         scrapeState,
       });
+      warmEmptyPanes.links = await observeEmptyLinksPane({
+        panel,
+        phase: 'warm',
+        click,
+        resourceAction,
+        requireResourceHealth,
+        scrapeState,
+        waitFor,
+        readExport: () =>
+          readCaptureExport({
+            panel,
+            browserSession,
+            panelUrl: panelTarget.url,
+            mode: selection.mode,
+            url: `${origin}/referrals`,
+            title: 'Harbor Dental referral hours',
+            resourceAction,
+            requireResourceHealth,
+          }),
+      });
       mediaEvidence.images_empty = warmEmptyPanes.images;
       mediaEvidence.video_empty = warmEmptyPanes.video;
       const t08 = report.cases.find((c) => c.id === 'EXT-F-1007-T08');
       t08.evidence.matching_content.images_empty = mediaEvidence.images_empty;
       t08.evidence.matching_content.video_empty = mediaEvidence.video_empty;
+      t08.evidence.matching_content.links_empty = warmEmptyPanes.links;
       t08.evidence.capture_invariance = { warm: warmCaptureInvariance };
       t08.remaining = [otherRoleNote(), 'Full extension reload lifecycle remains unverified.'];
       const t20 = report.cases.find((c) => c.id === 'EXT-F-1007-T20');
@@ -2013,6 +2035,26 @@ try {
           observeSelectedMedia,
           evaluate,
           scrapeState,
+        });
+        reloadEmptyPanes.links = await observeEmptyLinksPane({
+          panel: replacement.panel,
+          phase: 'reload',
+          click,
+          resourceAction,
+          requireResourceHealth,
+          scrapeState,
+          waitFor,
+          readExport: () =>
+            readCaptureExport({
+              panel: replacement.panel,
+              browserSession,
+              panelUrl: replacement.panelTarget?.url ?? panelTarget.url,
+              mode: selection.mode,
+              url: `${origin}/referrals`,
+              title: 'Harbor Dental referral hours',
+              resourceAction,
+              requireResourceHealth,
+            }),
         });
         t08.evidence.post_reload_empty_panes = reloadEmptyPanes;
         assertCompleteTabCoverage({

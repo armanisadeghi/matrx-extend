@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "scope": "Source-only preparation for guest EXT-F-1007-T08 empty result panes on the existing owned referrals page. No browser, build, hosted run, or release was launched.",
+  "current_credit": "Existing receipts prove all six populated panes, capture invariance, and zero Images/Video panes warm and after full extension reload. T08 remains partial pending independent native execution of this added Links path and any applicable remaining empty states.",
+  "supported_empty_state": {
+    "pane": "Links",
+    "fixture": "Existing /referrals page has no anchor elements. The renderer maps current.links to rows and retains Add link when the array is empty.",
+    "new_native_assertions": "At warm and post-full-extension-reload referrals captures, select Links through trusted UI input; require a visible pane, zero rendered link rows and tab count, Add link, and an identical full capture export before and after selection. The shared T08 coverage gate now requires those receipts in both phases."
+  },
+  "applicability": {
+    "Article": "The renderer shows _No clean article extracted._ if the pipeline returns null content_markdown. The existing referrals fixture has article text; a blank-page extraction has not been observed on the frozen artifact, so no Article-empty native assertion or credit is added.",
+    "SEO": "SeoDetails always renders Title and Description rows, using an em dash for absent values. It has no whole-pane empty branch; optional groups can be absent. Existing populated-pane and invariance assertions remain.",
+    "Schema": "The pane always renders JSON containing metadata and ld_json. An empty ld_json collection is possible, but there is no whole-pane empty branch. Existing populated-pane and invariance assertions remain."
+  },
+  "verification": {
+    "command": "node --test tests/browser/scrape-tab-coverage.test.mjs tests/browser/scrape-empty-media-branch.test.mjs",
+    "result": "8 passed",
+    "mutation": "Replacing the zero-link-row assertion with an array-only assertion made the focused test fail; plant.py restored source identically.",
+    "limits": "This is source preparation only. It does not assign T08 native credit or settle Article fallback applicability on a genuinely empty controlled page."
+  }
+}
