@@ -158,11 +158,17 @@ export async function withRecordsPositiveFixture({
       phase !== 'records_fixture_positive_reads' && error?.code === 'ERR_ASSERTION'
         ? [...FIXTURE_ASSERTIONS].find((code) => error.message?.includes(code))
         : null;
+    const requestException = lastRequest?.threw
+      ? error?.message === 'panel_runtime_exception'
+        ? 'records_fixture_panel_runtime_exception'
+        : 'records_fixture_request_exception'
+      : null;
     onFailure({
       boundary,
       phase,
       classification:
         fixedAssertion ??
+        requestException ??
         (error?.message === 'records_fixture_recovery_cleanup_only'
           ? 'records_fixture_recovery_cleanup_only'
           : 'records_fixture_unexpected_error'),
@@ -196,22 +202,26 @@ export async function withRecordsPositiveFixture({
     await journal(journalPath, state);
   }
   const call = async (method, path, body) => {
-    const answer = await request(panel, evaluate, {
-      method,
-      path,
-      body,
-      orgId,
-      bearerHash,
-      name: state.name,
-      marker,
-    });
-    lastRequest = {
-      method,
-      status:
-        Number.isInteger(answer?.status) && answer.status >= 100 && answer.status <= 599
-          ? answer.status
-          : null,
-    };
+    lastRequest = { method, status: null, threw: false };
+    let answer;
+    try {
+      answer = await request(panel, evaluate, {
+        method,
+        path,
+        body,
+        orgId,
+        bearerHash,
+        name: state.name,
+        marker,
+      });
+    } catch (error) {
+      lastRequest.threw = true;
+      throw error;
+    }
+    lastRequest.status =
+      Number.isInteger(answer?.status) && answer.status >= 100 && answer.status <= 599
+        ? answer.status
+        : null;
     assert.equal(answer?.token_matches, true, 'records_fixture_principal_mismatch');
     assert.equal(answer.transport_failed, undefined, 'records_fixture_transport_failed');
     return answer;

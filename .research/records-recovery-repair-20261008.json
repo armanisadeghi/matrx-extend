@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "scope": "Bounded diagnosis and safe fixture-helper diagnostic repair after hosted Records run 37837671077",
+  "current_truth": "The hosted native run reached C02/C03 but positive C04/C05 remain unverified. Its first fixture diagnostic was records_fixture_recovery_list / unexpected_error with null method and status; the planned journal and separate complete authenticated GET show no fixture write or surviving owned live table.",
+  "boundary_findings": {
+    "first_error": "The real fixture request threw before returning to call(). The helper assigned lastRequest only after await request(), so a rejected browser/CDP evaluation erased the attempted GET method and left a generic classification.",
+    "reproduction": "The new helper-to-receipt callback guard, using the real recordsFixtureRequest with an injected browser-evaluation exception, failed on the old helper: method null and unexpected_error instead of GET and the fixed panel-runtime category.",
+    "generated_expression": "The recovery-list Runtime.evaluate JavaScript expression compiled in a read-only source diagnostic.",
+    "safe_api_discriminator": "Separate designated-admin, approved-organization GET returned HTTP 200 with a complete list and zero live exact-marker fixtures. It cannot establish the status or cause of the browser-side request.",
+    "underlying_browser_exception": "Not retained by the frozen hosted run; root cause of the browser/CDP throw remains unknown. No native retry was launched in this lane."
+  },
+  "ranked_hypotheses": [
+    {
+      "hypothesis": "Runtime.evaluate reported a browser JavaScript exception before the helper returned a bounded response.",
+      "prediction": "The next occurrence is categorized records_fixture_panel_runtime_exception with GET and null HTTP status.",
+      "status": "plausible, not proven by the old receipt"
+    },
+    {
+      "hypothesis": "The CDP target or transport rejected Runtime.evaluate.",
+      "prediction": "The next occurrence is categorized records_fixture_request_exception with GET and null HTTP status.",
+      "status": "plausible, not proven by the old receipt"
+    },
+    {
+      "hypothesis": "The API returned a normal failed HTTP response.",
+      "prediction": "The request would have returned and retained GET plus an HTTP status or the fixed transport assertion.",
+      "status": "inconsistent with the observed null method and uncategorized exception; a separate direct GET succeeded"
+    }
+  ],
+  "repair": {
+    "files": [
+      "tests/browser/records-positive-fixture.mjs",
+      "tests/browser/records-positive-fixture.test.mjs"
+    ],
+    "behavior": "call() now records the attempted method before awaiting the browser request. A thrown Runtime.evaluate error receives one of two fixed, non-secret categories while preserving the first phase and null HTTP status. The callback still rethrows; no retry, fallback, write, or acceptance credit was added.",
+    "privacy": "Only fixed category labels, GET, and null status enter the receipt. Arbitrary exception text, bearer, raw API body, organization ID, and record IDs do not."
+  },
+  "verification": {
+    "red_before_fix": "Focused guard failed for the observed defect: unexpected_error/request_method null versus panel_runtime_exception/GET.",
+    "green_after_fix": "36 targeted fixture/native driver/proof tests passed in 0.35 seconds with external TMPDIR.",
+    "format": "Biome formatted both touched source files; git diff --check passed.",
+    "hosted_focused_gate": "Pending owner dispatch against the pushed source.",
+    "native": "No native rerun, local browser, build, release, or temporary secret staging."
+  },
+  "remaining": [
+    "A future admitted hosted run is needed to classify the actual browser exception and verify positive C04/C05 plus fixture cleanup.",
+    "This patch repairs diagnostic loss, not the unidentified browser/CDP cause."
+  ]
+}

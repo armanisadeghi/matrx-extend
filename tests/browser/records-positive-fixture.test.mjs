@@ -243,6 +243,56 @@ test('planned-journal recovery failure identifies its request and leaves fixture
   }
 });
 
+test('recovery GET browser exception reaches the receipt with a bounded cause and method', async () => {
+  for (const [failure, classification] of [
+    ['panel_runtime_exception', 'records_fixture_panel_runtime_exception'],
+    ['private token=must-not-leak', 'records_fixture_request_exception'],
+  ]) {
+    const directory = await mkdtemp(join(tmpdir(), 'records-fixture-exception-'));
+    const journalPath = join(directory, 'journal.json');
+    const report = { fixture_diagnostics: [] };
+    try {
+      await assert.rejects(
+        withRecordsPositiveFixture({
+          panel: {},
+          evaluate: async () => {
+            throw new Error(failure);
+          },
+          orgId,
+          principalId,
+          bearerHash: 'a'.repeat(64),
+          journalPath,
+          exercise: async () => {
+            throw new Error('unreachable positive read');
+          },
+          onFailure: (diagnostic) => report.fixture_diagnostics.push(diagnostic),
+          id: () => runId,
+          environment: {
+            GITHUB_ACTIONS: 'true',
+            RUNNER_ENVIRONMENT: 'github-hosted',
+            MATRX_HOSTED_ACCEPTANCE_CASE: 'records-readonly-admin',
+            MATRX_HOSTED_ACCEPTANCE_LANE: 'A',
+          },
+        }),
+        (error) => error.message === failure,
+      );
+      assert.deepEqual(report.fixture_diagnostics, [
+        {
+          boundary: 'body',
+          phase: 'records_fixture_recovery_list',
+          classification,
+          request_method: 'GET',
+          http_status: null,
+        },
+      ]);
+      assert.equal(JSON.parse(await readFile(journalPath, 'utf8')).phase, 'planned');
+      assert.equal(JSON.stringify(report).includes('must-not-leak'), false);
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  }
+});
+
 test('lost create response is recovered by owned name and archived without creating a row', async () => {
   const s = await scenario({ createTransportFailure: true });
   try {
