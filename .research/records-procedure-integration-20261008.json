@@ -1,0 +1,21 @@
+{
+  "observed_at": "2026-10-08T09:16:39.879791+00:00",
+  "case_id": "EXT-F-4130-T01",
+  "proposal_commit": "69b0230c",
+  "peer_commit": "a0cc87db",
+  "changed_case_count": 1,
+  "protected_fields": [
+    "id",
+    "modes",
+    "control_ids",
+    "dimensions",
+    "design_status",
+    "results",
+    "defect_ids"
+  ],
+  "protected_before_hash": "7df7a94c400e922e227576bde0a34a7839b8a9a28128cbd194bd39351e276217",
+  "protected_after_hash": "7df7a94c400e922e227576bde0a34a7839b8a9a28128cbd194bd39351e276217",
+  "all_other_inventory_semantics_unchanged": true,
+  "runtime_credit": 0,
+  "limits": "All25 controls remain conditional or blocked; current live schema, fixtures, cleanup and auth-mode results unverified. C06 negative oracle and C22 positive fixture explicitly NOT_EXECUTABLE. This fills written procedure gaps, not executed coverage."
+}

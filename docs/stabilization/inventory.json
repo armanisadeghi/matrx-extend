@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T08:37:30.469956+00:00",
+  "updated_at": "2026-10-08T09:17:03.533058+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -59503,16 +59503,1893 @@
             "EXT-F-4130-C24",
             "EXT-F-4130-C25"
           ],
-          "modes": ["member", "admin"],
+          "modes": [
+            "member",
+            "admin"
+          ],
           "design_status": "needed",
           "preconditions": [
             "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Controlled owned target and no unauthorized external effects",
+            "Verify current build/source/extension identity and reload relevant components; compare current authenticated live Records schema/guide before executing any action. No credentials or live guest values in evidence.",
+            "Source procedure only: all 25 controls remain conditional or blocked. Require owned fixtures and verified cleanup; preserve product approval holds. Do not execute a NOT_EXECUTABLE positive or negative.",
+            "Dependency order and ID substitutions: {\"approval\": \"applied:false/awaiting_approval is pending, not a pass. Routine owned-fixture tests are already authorized; honor any actual product approval decision and require a verified cancellation path before creating a held write. Never treat a pending receipt as applied.\", \"baseline\": \"Capture preexisting table/row/search counts before any write; stop if case tag exists. No existing row is a test target.\", \"case_tag\": \"EXT-F-4130-20261008\", \"identity\": \"designated admin@admin.com or an authenticated nonadmin test member with current membership; never a real user record\", \"ordering\": [\"C01 guide/schema\", \"C02,C03 safe reads\", \"C11 disposable table only with cleanup\", \"C06 case row\", \"C04,C05,C08 safe reads\", \"C09 patch case row to a different synthetic value, verify change, restore C08.original_version while row exists, then verify revert\", \"C07 delete last\", \"proposal branches only after separate cleanup proof\"], \"organization\": \"selected active organization, captured from the signed-in session; reads span memberships unless visibly filtered\", \"substitutions\": \"$C11.table_id and $C06.record_id must be replaced from applied receipts; $C08.original_version from history while C06 exists. Never paste placeholder strings as IDs.\"}"
           ],
-          "steps": [],
-          "expected": [],
-          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
-          "defect_ids": ["EXT-D-0089", "EXT-D-0091"]
+          "steps": [
+            "Open signed-in Settings/Tools manual route using current build receipt: Signed-in side panel > Tools > Catalog > All > records. Schema from GET /tools/test/list; Run POST /tools/test/execute with {tool_name:\"records\",arguments:{action,args}} and X-Organization-Id; inline full_result is observable. This does not prove agent chat/persistence.",
+            "Apply stop conditions before each action: [\"Live schema/guide differs from source SHA contract\", \"No owned organization/table/row fixture\", \"Any proposal has no verified disposal path for all returned IDs\", \"Any action may publish, invite, send, sign, charge, run a model, schedule or affect external parties\", \"Any write returns approval pending without known cancellation\"]",
+            "EXT-F-4130-C01: Follow the source-reviewed control_procedures entry, including run_condition, actual returned ID lineage, any intervening update, positive input, deterministic negative where executable, and verified cleanup. Skip and record NOT_EXECUTABLE when a required fixture/oracle/cleanup path is missing.",
+            "EXT-F-4130-C02: Follow the source-reviewed control_procedures entry, including run_condition, actual returned ID lineage, any intervening update, positive input, deterministic negative where executable, and verified cleanup. Skip and record NOT_EXECUTABLE when a required fixture/oracle/cleanup path is missing.",
+            "EXT-F-4130-C03: Follow the source-reviewed control_procedures entry, including run_condition, actual returned ID lineage, any intervening update, positive input, deterministic negative where executable, and verified cleanup. Skip and record NOT_EXECUTABLE when a required fixture/oracle/cleanup path is missing.",
+            "EXT-F-4130-C04: Follow the source-reviewed control_procedures entry, including run_condition, actual returned ID lineage, any intervening update, positive input, deterministic negative where executable, and verified cleanup. Skip and record NOT_EXECUTABLE when a required fixture/oracle/cleanup path is missing.",
+            "EXT-F-4130-C05: Follow the source-reviewed control_procedures entry, including run_condition, actual returned ID lineage, any intervening update, positive input, deterministic negative where executable, and verified cleanup. Skip and record NOT_EXECUTABLE when a required fixture/oracle/cleanup path is missing.",
+            "EXT-F-4130-C06: Follow the source-reviewed control_procedures entry, including run_condition, actual returned ID lineage, any intervening update, positive input, deterministic negative where executable, and verified cleanup. Skip and record NOT_EXECUTABLE when a required fixture/oracle/cleanup path is missing.",
+            "EXT-F-4130-C07: Follow the source-reviewed control_procedures entry, including run_condition, actual returned ID lineage, any intervening update, positive input, deterministic negative where executable, and verified cleanup. Skip and record NOT_EXECUTABLE when a required fixture/oracle/cleanup path is missing.",
+            "EXT-F-4130-C08: Follow the source-reviewed control_procedures entry, including run_condition, actual returned ID lineage, any intervening update, positive input, deterministic negative where executable, and verified cleanup. Skip and record NOT_EXECUTABLE when a required fixture/oracle/cleanup path is missing.",
+            "EXT-F-4130-C09: Follow the source-reviewed control_procedures entry, including run_condition, actual returned ID lineage, any intervening update, positive input, deterministic negative where executable, and verified cleanup. Skip and record NOT_EXECUTABLE when a required fixture/oracle/cleanup path is missing.",
+            "EXT-F-4130-C10: Follow the source-reviewed control_procedures entry, including run_condition, actual returned ID lineage, any intervening update, positive input, deterministic negative where executable, and verified cleanup. Skip and record NOT_EXECUTABLE when a required fixture/oracle/cleanup path is missing.",
+            "EXT-F-4130-C11: Follow the source-reviewed control_procedures entry, including run_condition, actual returned ID lineage, any intervening update, positive input, deterministic negative where executable, and verified cleanup. Skip and record NOT_EXECUTABLE when a required fixture/oracle/cleanup path is missing.",
+            "EXT-F-4130-C12: Follow the source-reviewed control_procedures entry, including run_condition, actual returned ID lineage, any intervening update, positive input, deterministic negative where executable, and verified cleanup. Skip and record NOT_EXECUTABLE when a required fixture/oracle/cleanup path is missing.",
+            "EXT-F-4130-C13: Follow the source-reviewed control_procedures entry, including run_condition, actual returned ID lineage, any intervening update, positive input, deterministic negative where executable, and verified cleanup. Skip and record NOT_EXECUTABLE when a required fixture/oracle/cleanup path is missing.",
+            "EXT-F-4130-C14: Follow the source-reviewed control_procedures entry, including run_condition, actual returned ID lineage, any intervening update, positive input, deterministic negative where executable, and verified cleanup. Skip and record NOT_EXECUTABLE when a required fixture/oracle/cleanup path is missing.",
+            "EXT-F-4130-C15: Follow the source-reviewed control_procedures entry, including run_condition, actual returned ID lineage, any intervening update, positive input, deterministic negative where executable, and verified cleanup. Skip and record NOT_EXECUTABLE when a required fixture/oracle/cleanup path is missing.",
+            "EXT-F-4130-C16: Follow the source-reviewed control_procedures entry, including run_condition, actual returned ID lineage, any intervening update, positive input, deterministic negative where executable, and verified cleanup. Skip and record NOT_EXECUTABLE when a required fixture/oracle/cleanup path is missing.",
+            "EXT-F-4130-C17: Follow the source-reviewed control_procedures entry, including run_condition, actual returned ID lineage, any intervening update, positive input, deterministic negative where executable, and verified cleanup. Skip and record NOT_EXECUTABLE when a required fixture/oracle/cleanup path is missing.",
+            "EXT-F-4130-C18: Follow the source-reviewed control_procedures entry, including run_condition, actual returned ID lineage, any intervening update, positive input, deterministic negative where executable, and verified cleanup. Skip and record NOT_EXECUTABLE when a required fixture/oracle/cleanup path is missing.",
+            "EXT-F-4130-C19: Follow the source-reviewed control_procedures entry, including run_condition, actual returned ID lineage, any intervening update, positive input, deterministic negative where executable, and verified cleanup. Skip and record NOT_EXECUTABLE when a required fixture/oracle/cleanup path is missing.",
+            "EXT-F-4130-C20: Follow the source-reviewed control_procedures entry, including run_condition, actual returned ID lineage, any intervening update, positive input, deterministic negative where executable, and verified cleanup. Skip and record NOT_EXECUTABLE when a required fixture/oracle/cleanup path is missing.",
+            "EXT-F-4130-C21: Follow the source-reviewed control_procedures entry, including run_condition, actual returned ID lineage, any intervening update, positive input, deterministic negative where executable, and verified cleanup. Skip and record NOT_EXECUTABLE when a required fixture/oracle/cleanup path is missing.",
+            "EXT-F-4130-C22: Follow the source-reviewed control_procedures entry, including run_condition, actual returned ID lineage, any intervening update, positive input, deterministic negative where executable, and verified cleanup. Skip and record NOT_EXECUTABLE when a required fixture/oracle/cleanup path is missing.",
+            "EXT-F-4130-C23: Follow the source-reviewed control_procedures entry, including run_condition, actual returned ID lineage, any intervening update, positive input, deterministic negative where executable, and verified cleanup. Skip and record NOT_EXECUTABLE when a required fixture/oracle/cleanup path is missing.",
+            "EXT-F-4130-C24: Follow the source-reviewed control_procedures entry, including run_condition, actual returned ID lineage, any intervening update, positive input, deterministic negative where executable, and verified cleanup. Skip and record NOT_EXECUTABLE when a required fixture/oracle/cleanup path is missing.",
+            "EXT-F-4130-C25: Follow the source-reviewed control_procedures entry, including run_condition, actual returned ID lineage, any intervening update, positive input, deterministic negative where executable, and verified cleanup. Skip and record NOT_EXECUTABLE when a required fixture/oracle/cleanup path is missing."
+          ],
+          "expected": [
+            "No source procedure earns runtime credit; keep all existing auth-mode and feature results unchanged until actual behavior and cleanup are verified.",
+            "EXT-F-4130-C01: Guide returns the 24 action names and how-to text; save its digest before any action. Negative: Unknown topic is a successful guide response, not a refusal: assert success=true, output.topic=null, output.actions equals the 24 action names excluding guide, output.note identifies the unsupported topic, and no store dispatch or mutation occurs. Cleanup: none",
+            "EXT-F-4130-C02: Visible table list includes C11 only after its applied receipt; each visible table has owning organization metadata. Negative: Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass. Cleanup: none",
+            "EXT-F-4130-C03: Structure search identifies only the case table/fields after C11; does not search row text. Negative: Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass. Cleanup: none",
+            "EXT-F-4130-C04: Result record id equals C06 and name equals synthetic value; capture triples/withheld honestly. Negative: Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass. Cleanup: none",
+            "EXT-F-4130-C05: Count reflects the case-owned row before C07; no client-side summing or page count. Negative: Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass. Cleanup: none",
+            "EXT-F-4130-C06: Applied result supplies a case-owned record id and version; a held result is NOT a write and needs approval resolution. Negative: NOT_EXECUTABLE: source wire accepts values as an object, but this unknown field key is not rejected by the wire model and no deterministic source-level refusal oracle was established for the downstream store. Do not pass on generic refusal, empty result, or unchanged baseline alone. Cleanup: record_delete of this returned id, after history/restore; if approval held, cancel via verified approval route",
+            "EXT-F-4130-C07: Soft delete receipt identifies C06; record_read no longer presents it; undo=true restores same id when tested. Negative: Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass. Cleanup: undo=true is the supported reversal; final delete only after every read/history/restore dependent on the row",
+            "EXT-F-4130-C08: History identifies case-owned row, numbered versions and author/time; capture an actual version for C09. Negative: Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass. Cleanup: none",
+            "EXT-F-4130-C09: Read C06 after the intervening applied record_write and assert name is the changed case value and version advanced. Restore C08.original_version, then read again and assert name reverted to EXT-F-4130-20261008-row while history retains create, update and restore versions. A held or refused update is not enough to run this assertion. Negative: Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass. Cleanup: If the update applied, restore the case-created original version and verify the revert before final C07 delete; stop on held approval without verified cancellation.",
+            "EXT-F-4130-C10: Applied receipt names a new case field key/id on C11; held response is explicitly not applied. Negative: Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass. Cleanup: No field deletion action exists in 25-action Records contract; use disposable table and a verified table-removal door or retain isolated fixture",
+            "EXT-F-4130-C11: Applied receipt returns table id and field keys/ids for C06; held response is not a created table. Negative: Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass. Cleanup: No table deletion action in Records contract; require verified disposable table removal outside this tool before run",
+            "EXT-F-4130-C12: Applied receipt identifies case form and publish state; no public link use or notification. Negative: Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass. Cleanup: No form deletion action in Records contract; require verified form/archive removal by returned id",
+            "EXT-F-4130-C13: Applied receipt identifies case booking and unpublished state; no slot booked. Negative: Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass. Cleanup: No booking deletion action in Records contract; require verified booking removal by returned id",
+            "EXT-F-4130-C14: Receipt reports one accepted case-owned row or exact refused/approval rows; capture each returned row id. Negative: Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass. Cleanup: Delete each actually created case-owned row by returned id; unresolved approval/candidate columns need explicit cancellation/removal",
+            "EXT-F-4130-C15: Receipt identifies saved dashboard and numeric case count; compare to C05 for same table/snapshot. Negative: Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass. Cleanup: No dashboard deletion action in Records contract; require verified dashboard removal by returned id",
+            "EXT-F-4130-C16: Receipt names stage field, ordered options, saved board and rule; no existing unrelated row is changed. Negative: Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass. Cleanup: No board/rule/field deletion action in Records contract; require verified removal of all returned IDs",
+            "EXT-F-4130-C17: Receipt identifies template/render id and the case row; inspect rendered value without external delivery. Negative: Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass. Cleanup: No template/render deletion action in Records contract; require verified removal for each returned id",
+            "EXT-F-4130-C18: Receipt identifies case checklist; no start_for and no assigned external work. Negative: Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass. Cleanup: No checklist deletion action in Records contract; require verified removal by returned id",
+            "EXT-F-4130-C19: Receipt identifies case capture surface; no crew response or public use. Negative: Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass. Cleanup: No capture deletion action in Records contract; require verified removal by returned id",
+            "EXT-F-4130-C20: run=false prevents the enrichment model run and value writes, but field_propose may persist a new column and enrich_declare persists its disabled configuration even with preview_only=true. Capture applied field_id and enrichment identifiers; a held field proposal is pending, not created. Negative: Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass. Cleanup: NOT_EXECUTABLE until a verified removal path exists for the persisted field and enrichment configuration (and any held approval). run=false and preview_only=true do not provide cleanup.",
+            "EXT-F-4130-C21: Receipt identifies portal and relation; no invitation recipient. Negative: Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass. Cleanup: No portal/relation deletion action in Records contract; require verified removal by returned IDs",
+            "EXT-F-4130-C22: Only after an owned signature-format text field and document render/template are verified: an applied result returns a one-time link for C06 and an expiry; no link is sent or opened and no signing is claimed. A product approval refusal means no link was made. Negative: Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass. Cleanup: No owned signature-format field or document render/template fixture is established, and Records exposes no signature-request cancellation action. Require verified fixture creation and revocation/removal before execution; do not substitute case_signature plain text or omit render_id/template_id.",
+            "EXT-F-4130-C23: Receipt identifies view/subscription and delivery policy; no notification may be sent. Negative: Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass. Cleanup: No subscription/view deletion action in Records contract; require verified disable/removal and owned recipient before run",
+            "EXT-F-4130-C24: Response token/id equal preverified owned standard row and separates columns/custom_fields/written_by. Negative: Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass. Cleanup: none",
+            "EXT-F-4130-C25: Applied receipt changes only owned custom field; held approval is explicitly not applied. Negative: Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass. Cleanup: Restore captured original custom value on same row; cannot proceed without owned standard row, writable field and approval cleanup"
+          ],
+          "dimensions": [
+            "valid-input",
+            "invalid-input",
+            "permissions",
+            "reload"
+          ],
+          "defect_ids": [
+            "EXT-D-0089",
+            "EXT-D-0091"
+          ],
+          "control_procedures": {
+            "EXT-F-4130-C01": {
+              "action": "guide",
+              "status": "conditional_live_guide",
+              "source_wire_validated": true,
+              "valid_synthetic_owned_input": {
+                "action": "guide",
+                "args": {}
+              },
+              "required_id_lineage": [],
+              "expected_observable": "Guide returns the 24 action names and how-to text; save its digest before any action.",
+              "negative_input": {
+                "action": "guide",
+                "args": {
+                  "topic": "__not_an_action__"
+                }
+              },
+              "negative_expected": "Unknown topic is a successful guide response, not a refusal: assert success=true, output.topic=null, output.actions equals the 24 action names excluding guide, output.note identifies the unsupported topic, and no store dispatch or mutation occurs.",
+              "supported_cleanup_or_gap": "none",
+              "guide_argument_contract": {
+                "topic": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                }
+              },
+              "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+              "negative_status": "SOURCE_DETERMINISTIC_READ_ONLY",
+              "negative_source": "GuideWire.topic is optional string; guide_for returns topic=null plus the known actions for unknown topics; tool dispatch returns this before principal/store resolution."
+            },
+            "EXT-F-4130-C02": {
+              "action": "table_list",
+              "status": "conditional_live_contract",
+              "source_wire_validated": true,
+              "valid_synthetic_owned_input": {
+                "action": "table_list",
+                "args": {
+                  "limit": 50
+                }
+              },
+              "required_id_lineage": [],
+              "expected_observable": "Visible table list includes C11 only after its applied receipt; each visible table has owning organization metadata.",
+              "negative_input": {
+                "action": "table_list",
+                "args": {
+                  "limit": "not-an-integer"
+                }
+              },
+              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "supported_cleanup_or_gap": "none",
+              "guide_argument_contract": {
+                "limit": {
+                  "type": "integer",
+                  "required": false,
+                  "enum": null
+                },
+                "organization_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "include_app_tables": {
+                  "type": "boolean",
+                  "required": false,
+                  "enum": null
+                }
+              },
+              "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+              "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+            },
+            "EXT-F-4130-C03": {
+              "action": "metadata_search",
+              "status": "conditional_live_contract",
+              "source_wire_validated": true,
+              "valid_synthetic_owned_input": {
+                "action": "metadata_search",
+                "args": {
+                  "query": "EXT-F-4130-20261008",
+                  "limit": 50
+                }
+              },
+              "required_id_lineage": [],
+              "expected_observable": "Structure search identifies only the case table/fields after C11; does not search row text.",
+              "negative_input": {
+                "action": "metadata_search",
+                "args": {
+                  "query": null
+                }
+              },
+              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "supported_cleanup_or_gap": "none",
+              "guide_argument_contract": {
+                "query": {
+                  "type": "string",
+                  "required": true,
+                  "enum": null
+                },
+                "limit": {
+                  "type": "integer",
+                  "required": false,
+                  "enum": null
+                },
+                "organization_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                }
+              },
+              "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+              "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+            },
+            "EXT-F-4130-C04": {
+              "action": "record_read",
+              "status": "conditional_owned_row",
+              "source_wire_validated": true,
+              "valid_synthetic_owned_input": {
+                "action": "record_read",
+                "args": {
+                  "record_id": "$C06.record_id"
+                }
+              },
+              "required_id_lineage": [
+                "C06.record_id"
+              ],
+              "expected_observable": "Result record id equals C06 and name equals synthetic value; capture triples/withheld honestly.",
+              "negative_input": {
+                "action": "record_read",
+                "args": {
+                  "record_id": "not-a-uuid"
+                }
+              },
+              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "supported_cleanup_or_gap": "none",
+              "guide_argument_contract": {
+                "record_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "table_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "table": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "match": {
+                  "type": "object",
+                  "required": false,
+                  "enum": null
+                },
+                "limit": {
+                  "type": "integer",
+                  "required": false,
+                  "enum": null
+                },
+                "id_keyed": {
+                  "type": "boolean",
+                  "required": false,
+                  "enum": null
+                },
+                "organization_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                }
+              },
+              "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+              "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+            },
+            "EXT-F-4130-C05": {
+              "action": "record_aggregate",
+              "status": "conditional_owned_row",
+              "source_wire_validated": true,
+              "valid_synthetic_owned_input": {
+                "action": "record_aggregate",
+                "args": {
+                  "table_id": "$C11.table_id",
+                  "measure": "count",
+                  "match": {
+                    "name": "EXT-F-4130-20261008-row"
+                  }
+                }
+              },
+              "required_id_lineage": [
+                "C11.table_id",
+                "C06.record_id"
+              ],
+              "expected_observable": "Count reflects the case-owned row before C07; no client-side summing or page count.",
+              "negative_input": {
+                "action": "record_aggregate",
+                "args": {
+                  "table_id": "not-a-uuid"
+                }
+              },
+              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "supported_cleanup_or_gap": "none",
+              "guide_argument_contract": {
+                "table_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "table": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "measure": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "group_by": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "field_key": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "match": {
+                  "type": "object",
+                  "required": false,
+                  "enum": null
+                },
+                "as_of": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "bucket": {
+                  "type": "string",
+                  "required": false,
+                  "enum": [
+                    "day",
+                    "week",
+                    "month",
+                    "quarter",
+                    "year"
+                  ]
+                },
+                "related_to": {
+                  "type": "array",
+                  "required": false,
+                  "enum": null
+                },
+                "order": {
+                  "type": "string",
+                  "required": false,
+                  "enum": [
+                    "count_desc",
+                    "measure_desc",
+                    "measure_asc"
+                  ]
+                },
+                "limit": {
+                  "type": "integer",
+                  "required": false,
+                  "enum": null
+                },
+                "organization_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                }
+              },
+              "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+              "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+            },
+            "EXT-F-4130-C06": {
+              "action": "record_write",
+              "status": "blocked_cleanup_or_approval",
+              "source_wire_validated": true,
+              "valid_synthetic_owned_input": {
+                "action": "record_write",
+                "args": {
+                  "table_id": "$C11.table_id",
+                  "values": {
+                    "name": "EXT-F-4130-20261008-row",
+                    "amount": 7
+                  }
+                }
+              },
+              "required_id_lineage": [
+                "C11.table_id"
+              ],
+              "expected_observable": "Applied result supplies a case-owned record id and version; a held result is NOT a write and needs approval resolution.",
+              "negative_input": {
+                "action": "record_write",
+                "args": {
+                  "table_id": "$C11.table_id",
+                  "values": {
+                    "unknown_case_field": "x"
+                  }
+                }
+              },
+              "negative_expected": "NOT_EXECUTABLE: source wire accepts values as an object, but this unknown field key is not rejected by the wire model and no deterministic source-level refusal oracle was established for the downstream store. Do not pass on generic refusal, empty result, or unchanged baseline alone.",
+              "supported_cleanup_or_gap": "record_delete of this returned id, after history/restore; if approval held, cancel via verified approval route",
+              "guide_argument_contract": {
+                "values": {
+                  "type": "object",
+                  "required": false,
+                  "enum": null
+                },
+                "records": {
+                  "type": "array",
+                  "required": false,
+                  "enum": null
+                },
+                "table_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "record_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "expected_version": {
+                  "type": "integer",
+                  "required": false,
+                  "enum": null
+                }
+              },
+              "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+              "negative_status": "NOT_EXECUTABLE_UNVERIFIED_ORACLE",
+              "negative_source": "RecordWriteWire.values is dict; RecordStore.record_write forwards the values to custom.record_write. The reviewed source does not establish this unknown key is rejected before database behavior."
+            },
+            "EXT-F-4130-C07": {
+              "action": "record_delete",
+              "status": "conditional_owned_row",
+              "source_wire_validated": true,
+              "valid_synthetic_owned_input": {
+                "action": "record_delete",
+                "args": {
+                  "record_id": "$C06.record_id"
+                }
+              },
+              "required_id_lineage": [
+                "C06.record_id",
+                "C09 complete"
+              ],
+              "expected_observable": "Soft delete receipt identifies C06; record_read no longer presents it; undo=true restores same id when tested.",
+              "negative_input": {
+                "action": "record_delete",
+                "args": {
+                  "record_id": "not-a-uuid"
+                }
+              },
+              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "supported_cleanup_or_gap": "undo=true is the supported reversal; final delete only after every read/history/restore dependent on the row",
+              "guide_argument_contract": {
+                "record_id": {
+                  "type": "string",
+                  "required": true,
+                  "enum": null
+                },
+                "undo": {
+                  "type": "boolean",
+                  "required": false,
+                  "enum": null
+                }
+              },
+              "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+              "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+            },
+            "EXT-F-4130-C08": {
+              "action": "record_history",
+              "status": "conditional_owned_row",
+              "source_wire_validated": true,
+              "valid_synthetic_owned_input": {
+                "action": "record_history",
+                "args": {
+                  "record_id": "$C06.record_id"
+                }
+              },
+              "required_id_lineage": [
+                "C06.record_id"
+              ],
+              "expected_observable": "History identifies case-owned row, numbered versions and author/time; capture an actual version for C09.",
+              "negative_input": {
+                "action": "record_history",
+                "args": {
+                  "record_id": "not-a-uuid"
+                }
+              },
+              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "supported_cleanup_or_gap": "none",
+              "guide_argument_contract": {
+                "record_id": {
+                  "type": "string",
+                  "required": true,
+                  "enum": null
+                },
+                "field_key": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "limit": {
+                  "type": "integer",
+                  "required": false,
+                  "enum": null
+                },
+                "organization_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                }
+              },
+              "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+              "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+            },
+            "EXT-F-4130-C09": {
+              "action": "record_restore_version",
+              "status": "conditional_owned_row",
+              "source_wire_validated": true,
+              "valid_synthetic_owned_input": {
+                "action": "record_restore_version",
+                "args": {
+                  "record_id": "$C06.record_id",
+                  "version": "$C08.original_version"
+                }
+              },
+              "required_id_lineage": [
+                "C06.record_id",
+                "C06.applied_version",
+                "C08.original_version"
+              ],
+              "expected_observable": "Read C06 after the intervening applied record_write and assert name is the changed case value and version advanced. Restore C08.original_version, then read again and assert name reverted to EXT-F-4130-20261008-row while history retains create, update and restore versions. A held or refused update is not enough to run this assertion.",
+              "negative_input": {
+                "action": "record_restore_version",
+                "args": {
+                  "record_id": "$C06.record_id",
+                  "version": "not-an-integer"
+                }
+              },
+              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "supported_cleanup_or_gap": "If the update applied, restore the case-created original version and verify the revert before final C07 delete; stop on held approval without verified cancellation.",
+              "guide_argument_contract": {
+                "record_id": {
+                  "type": "string",
+                  "required": true,
+                  "enum": null
+                },
+                "version": {
+                  "type": "integer",
+                  "required": true,
+                  "enum": null
+                },
+                "field_key": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                }
+              },
+              "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+              "intervening_update": {
+                "action": "record_write",
+                "args": {
+                  "record_id": "$C06.record_id",
+                  "expected_version": "$C06.applied_version",
+                  "values": {
+                    "name": "EXT-F-4130-20261008-row-changed"
+                  }
+                }
+              },
+              "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+            },
+            "EXT-F-4130-C10": {
+              "action": "field_propose",
+              "status": "blocked_cleanup",
+              "source_wire_validated": true,
+              "valid_synthetic_owned_input": {
+                "action": "field_propose",
+                "args": {
+                  "table_id": "$C11.table_id",
+                  "name": "case note",
+                  "field_type": "text"
+                }
+              },
+              "required_id_lineage": [
+                "C11.table_id"
+              ],
+              "expected_observable": "Applied receipt names a new case field key/id on C11; held response is explicitly not applied.",
+              "negative_input": {
+                "action": "field_propose",
+                "args": {
+                  "table_id": "not-a-uuid",
+                  "name": "bad"
+                }
+              },
+              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "supported_cleanup_or_gap": "No field deletion action exists in 25-action Records contract; use disposable table and a verified table-removal door or retain isolated fixture",
+              "guide_argument_contract": {
+                "table_id": {
+                  "type": "string",
+                  "required": true,
+                  "enum": null
+                },
+                "name": {
+                  "type": "string",
+                  "required": true,
+                  "enum": null
+                },
+                "field_type": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "label": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "description": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "sensitivity": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "context_policy": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "config": {
+                  "type": "object",
+                  "required": false,
+                  "enum": null
+                },
+                "unit": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "options_table_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "options": {
+                  "type": "array",
+                  "required": false,
+                  "enum": null
+                },
+                "relation_target": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                }
+              },
+              "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+              "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+            },
+            "EXT-F-4130-C11": {
+              "action": "table_propose",
+              "status": "blocked_cleanup",
+              "source_wire_validated": true,
+              "valid_synthetic_owned_input": {
+                "action": "table_propose",
+                "args": {
+                  "name": "EXT-F-4130-20261008",
+                  "fields": [
+                    {
+                      "name": "name",
+                      "type": "text"
+                    },
+                    {
+                      "name": "amount",
+                      "type": "number"
+                    }
+                  ]
+                }
+              },
+              "required_id_lineage": [],
+              "expected_observable": "Applied receipt returns table id and field keys/ids for C06; held response is not a created table.",
+              "negative_input": {
+                "action": "table_propose",
+                "args": {
+                  "name": "EXT-F-4130-invalid",
+                  "fields": "not-an-array"
+                }
+              },
+              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "supported_cleanup_or_gap": "No table deletion action in Records contract; require verified disposable table removal outside this tool before run",
+              "guide_argument_contract": {
+                "name": {
+                  "type": "string",
+                  "required": true,
+                  "enum": null
+                },
+                "description": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "fields": {
+                  "type": "array",
+                  "required": false,
+                  "enum": null
+                },
+                "home": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "spec": {
+                  "type": "object",
+                  "required": false,
+                  "enum": null
+                },
+                "organization_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                }
+              },
+              "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+              "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+            },
+            "EXT-F-4130-C12": {
+              "action": "form_propose",
+              "status": "blocked_cleanup",
+              "source_wire_validated": true,
+              "valid_synthetic_owned_input": {
+                "action": "form_propose",
+                "args": {
+                  "title": "EXT-F-4130 private intake",
+                  "table_id": "$C11.table_id",
+                  "fields": [
+                    {
+                      "name": "case answer",
+                      "type": "text",
+                      "required": true
+                    }
+                  ],
+                  "publish": false,
+                  "notify": false
+                }
+              },
+              "required_id_lineage": [
+                "C11.table_id"
+              ],
+              "expected_observable": "Applied receipt identifies case form and publish state; no public link use or notification.",
+              "negative_input": {
+                "action": "form_propose",
+                "args": {
+                  "title": "bad",
+                  "table_id": "not-a-uuid"
+                }
+              },
+              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "supported_cleanup_or_gap": "No form deletion action in Records contract; require verified form/archive removal by returned id",
+              "guide_argument_contract": {
+                "title": {
+                  "type": "string",
+                  "required": true,
+                  "enum": null
+                },
+                "table": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "table_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "description": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "fields": {
+                  "type": "array",
+                  "required": false,
+                  "enum": null
+                },
+                "questions": {
+                  "type": "array",
+                  "required": false,
+                  "enum": null
+                },
+                "intro": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "thank_you": {
+                  "type": "object",
+                  "required": false,
+                  "enum": null
+                },
+                "flow": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "submit_label": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "submission_cap": {
+                  "type": "integer",
+                  "required": false,
+                  "enum": null
+                },
+                "notify": {
+                  "type": "object",
+                  "required": false,
+                  "enum": null
+                },
+                "home": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "publish": {
+                  "type": "boolean",
+                  "required": false,
+                  "enum": null
+                }
+              },
+              "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+              "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+            },
+            "EXT-F-4130-C13": {
+              "action": "booking_propose",
+              "status": "blocked_cleanup",
+              "source_wire_validated": true,
+              "valid_synthetic_owned_input": {
+                "action": "booking_propose",
+                "args": {
+                  "title": "EXT-F-4130 private booking",
+                  "table_id": "$C11.table_id",
+                  "fields": [
+                    {
+                      "name": "case attendee",
+                      "type": "text",
+                      "required": true
+                    }
+                  ],
+                  "availability": {
+                    "timezone": "America/Los_Angeles",
+                    "slot_minutes": 30
+                  },
+                  "publish": false,
+                  "notify": false
+                }
+              },
+              "required_id_lineage": [
+                "C11.table_id"
+              ],
+              "expected_observable": "Applied receipt identifies case booking and unpublished state; no slot booked.",
+              "negative_input": {
+                "action": "booking_propose",
+                "args": {
+                  "title": "bad",
+                  "table_id": "not-a-uuid"
+                }
+              },
+              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "supported_cleanup_or_gap": "No booking deletion action in Records contract; require verified booking removal by returned id",
+              "guide_argument_contract": {
+                "title": {
+                  "type": "string",
+                  "required": true,
+                  "enum": null
+                },
+                "table": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "table_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "description": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "fields": {
+                  "type": "array",
+                  "required": false,
+                  "enum": null
+                },
+                "questions": {
+                  "type": "array",
+                  "required": false,
+                  "enum": null
+                },
+                "availability": {
+                  "type": "object",
+                  "required": false,
+                  "enum": null
+                },
+                "intro": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "thank_you": {
+                  "type": "object",
+                  "required": false,
+                  "enum": null
+                },
+                "submit_label": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "submission_cap": {
+                  "type": "integer",
+                  "required": false,
+                  "enum": null
+                },
+                "notify": {
+                  "type": "object",
+                  "required": false,
+                  "enum": null
+                },
+                "home": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "publish": {
+                  "type": "boolean",
+                  "required": false,
+                  "enum": null
+                }
+              },
+              "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+              "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+            },
+            "EXT-F-4130-C14": {
+              "action": "import_propose",
+              "status": "blocked_cleanup_or_approval",
+              "source_wire_validated": true,
+              "valid_synthetic_owned_input": {
+                "action": "import_propose",
+                "args": {
+                  "table_id": "$C11.table_id",
+                  "source_name": "EXT-F-4130-owned.csv",
+                  "rows": [
+                    {
+                      "name": "EXT-F-4130-20261008-import",
+                      "amount": 9
+                    }
+                  ],
+                  "dedupe_key": "name"
+                }
+              },
+              "required_id_lineage": [
+                "C11.table_id"
+              ],
+              "expected_observable": "Receipt reports one accepted case-owned row or exact refused/approval rows; capture each returned row id.",
+              "negative_input": {
+                "action": "import_propose",
+                "args": {
+                  "table_id": "not-a-uuid"
+                }
+              },
+              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "supported_cleanup_or_gap": "Delete each actually created case-owned row by returned id; unresolved approval/candidate columns need explicit cancellation/removal",
+              "guide_argument_contract": {
+                "table": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "table_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "rows": {
+                  "type": "array",
+                  "required": false,
+                  "enum": null
+                },
+                "csv_text": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "source_name": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "file_hash": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "dedupe_key": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "on_duplicate": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "unmapped": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "date_order": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "home": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "mapping": {
+                  "type": "object",
+                  "required": false,
+                  "enum": null
+                }
+              },
+              "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+              "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+            },
+            "EXT-F-4130-C15": {
+              "action": "dashboard_propose",
+              "status": "blocked_cleanup",
+              "source_wire_validated": true,
+              "valid_synthetic_owned_input": {
+                "action": "dashboard_propose",
+                "args": {
+                  "name": "EXT-F-4130 private dashboard",
+                  "table_id": "$C11.table_id",
+                  "blocks": [
+                    {
+                      "title": "Case count",
+                      "kind": "number",
+                      "measures": [
+                        {
+                          "op": "count"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "required_id_lineage": [
+                "C11.table_id"
+              ],
+              "expected_observable": "Receipt identifies saved dashboard and numeric case count; compare to C05 for same table/snapshot.",
+              "negative_input": {
+                "action": "dashboard_propose",
+                "args": {
+                  "name": "bad",
+                  "blocks": "not-an-array"
+                }
+              },
+              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "supported_cleanup_or_gap": "No dashboard deletion action in Records contract; require verified dashboard removal by returned id",
+              "guide_argument_contract": {
+                "name": {
+                  "type": "string",
+                  "required": true,
+                  "enum": null
+                },
+                "table": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "table_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "description": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "fields": {
+                  "type": "array",
+                  "required": false,
+                  "enum": null
+                },
+                "blocks": {
+                  "type": "array",
+                  "required": true,
+                  "enum": null
+                },
+                "home": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "presentation": {
+                  "type": "object",
+                  "required": false,
+                  "enum": null
+                },
+                "dashboard_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                }
+              },
+              "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+              "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+            },
+            "EXT-F-4130-C16": {
+              "action": "pipeline_propose",
+              "status": "blocked_cleanup",
+              "source_wire_validated": true,
+              "valid_synthetic_owned_input": {
+                "action": "pipeline_propose",
+                "args": {
+                  "table_id": "$C11.table_id",
+                  "stage_field": {
+                    "key": "case_stage",
+                    "label": "Case stage",
+                    "options": [
+                      "New",
+                      "Done"
+                    ]
+                  },
+                  "transitions": [
+                    {
+                      "from": "New",
+                      "to": "Done"
+                    }
+                  ]
+                }
+              },
+              "required_id_lineage": [
+                "C11.table_id"
+              ],
+              "expected_observable": "Receipt names stage field, ordered options, saved board and rule; no existing unrelated row is changed.",
+              "negative_input": {
+                "action": "pipeline_propose",
+                "args": {
+                  "stage_field": "not-an-object"
+                }
+              },
+              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "supported_cleanup_or_gap": "No board/rule/field deletion action in Records contract; require verified removal of all returned IDs",
+              "guide_argument_contract": {
+                "table": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "table_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "description": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "fields": {
+                  "type": "array",
+                  "required": false,
+                  "enum": null
+                },
+                "home": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "stage_field": {
+                  "type": "object",
+                  "required": true,
+                  "enum": null
+                },
+                "transitions": {
+                  "type": "array",
+                  "required": false,
+                  "enum": null
+                },
+                "requires": {
+                  "type": "object",
+                  "required": false,
+                  "enum": null
+                },
+                "who": {
+                  "type": "object",
+                  "required": false,
+                  "enum": null
+                },
+                "limits": {
+                  "type": "object",
+                  "required": false,
+                  "enum": null
+                },
+                "on_entry": {
+                  "type": "object",
+                  "required": false,
+                  "enum": null
+                },
+                "measure": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "view_name": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                }
+              },
+              "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+              "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+            },
+            "EXT-F-4130-C17": {
+              "action": "document_propose",
+              "status": "blocked_cleanup",
+              "source_wire_validated": true,
+              "valid_synthetic_owned_input": {
+                "action": "document_propose",
+                "args": {
+                  "title": "EXT-F-4130 case document",
+                  "table_id": "$C11.table_id",
+                  "record_id": "$C06.record_id",
+                  "body": "Case row: {{field:name}}."
+                }
+              },
+              "required_id_lineage": [
+                "C11.table_id",
+                "C06.record_id"
+              ],
+              "expected_observable": "Receipt identifies template/render id and the case row; inspect rendered value without external delivery.",
+              "negative_input": {
+                "action": "document_propose",
+                "args": {
+                  "title": "bad",
+                  "body": null
+                }
+              },
+              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "supported_cleanup_or_gap": "No template/render deletion action in Records contract; require verified removal for each returned id",
+              "guide_argument_contract": {
+                "title": {
+                  "type": "string",
+                  "required": true,
+                  "enum": null
+                },
+                "body": {
+                  "type": "string",
+                  "required": true,
+                  "enum": null
+                },
+                "table_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "table": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "description": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "fields": {
+                  "type": "array",
+                  "required": false,
+                  "enum": null
+                },
+                "record_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "template_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "letterhead": {
+                  "type": "boolean",
+                  "required": false,
+                  "enum": null
+                },
+                "home": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                }
+              },
+              "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+              "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+            },
+            "EXT-F-4130-C18": {
+              "action": "checklist_propose",
+              "status": "blocked_cleanup",
+              "source_wire_validated": true,
+              "valid_synthetic_owned_input": {
+                "action": "checklist_propose",
+                "args": {
+                  "name": "EXT-F-4130 case checklist",
+                  "table_id": "$C11.table_id",
+                  "steps": [
+                    {
+                      "title": "Review case row",
+                      "due_days": 1
+                    }
+                  ]
+                }
+              },
+              "required_id_lineage": [
+                "C11.table_id"
+              ],
+              "expected_observable": "Receipt identifies case checklist; no start_for and no assigned external work.",
+              "negative_input": {
+                "action": "checklist_propose",
+                "args": {
+                  "name": "bad",
+                  "steps": "not-an-array"
+                }
+              },
+              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "supported_cleanup_or_gap": "No checklist deletion action in Records contract; require verified removal by returned id",
+              "guide_argument_contract": {
+                "name": {
+                  "type": "string",
+                  "required": true,
+                  "enum": null
+                },
+                "steps": {
+                  "type": "array",
+                  "required": true,
+                  "enum": null
+                },
+                "table": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "table_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "description": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "fields": {
+                  "type": "array",
+                  "required": false,
+                  "enum": null
+                },
+                "roles": {
+                  "type": "array",
+                  "required": false,
+                  "enum": null
+                },
+                "trigger": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "start_for": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "checklist_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "home": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                }
+              },
+              "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+              "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+            },
+            "EXT-F-4130-C19": {
+              "action": "capture_propose",
+              "status": "blocked_cleanup",
+              "source_wire_validated": true,
+              "valid_synthetic_owned_input": {
+                "action": "capture_propose",
+                "args": {
+                  "title": "EXT-F-4130 private capture",
+                  "table_id": "$C11.table_id",
+                  "fields": [
+                    {
+                      "name": "case reading",
+                      "type": "number",
+                      "ask": "What is the case reading?"
+                    }
+                  ],
+                  "open_to_crew": false
+                }
+              },
+              "required_id_lineage": [
+                "C11.table_id"
+              ],
+              "expected_observable": "Receipt identifies case capture surface; no crew response or public use.",
+              "negative_input": {
+                "action": "capture_propose",
+                "args": {
+                  "title": "bad",
+                  "table_id": "not-a-uuid"
+                }
+              },
+              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "supported_cleanup_or_gap": "No capture deletion action in Records contract; require verified removal by returned id",
+              "guide_argument_contract": {
+                "title": {
+                  "type": "string",
+                  "required": true,
+                  "enum": null
+                },
+                "table": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "table_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "description": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "fields": {
+                  "type": "array",
+                  "required": false,
+                  "enum": null
+                },
+                "questions": {
+                  "type": "array",
+                  "required": false,
+                  "enum": null
+                },
+                "intro": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "thank_you": {
+                  "type": "object",
+                  "required": false,
+                  "enum": null
+                },
+                "notify": {
+                  "type": "object",
+                  "required": false,
+                  "enum": null
+                },
+                "home": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "open_to_crew": {
+                  "type": "boolean",
+                  "required": false,
+                  "enum": null
+                }
+              },
+              "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+              "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+            },
+            "EXT-F-4130-C20": {
+              "action": "enrich_propose",
+              "status": "blocked_cleanup_or_cost",
+              "source_wire_validated": true,
+              "valid_synthetic_owned_input": {
+                "action": "enrich_propose",
+                "args": {
+                  "table_id": "$C11.table_id",
+                  "columns": [
+                    {
+                      "name": "case summary",
+                      "instruction": "Summarize the synthetic case name in three words",
+                      "type": "text",
+                      "inputs": [
+                        "name"
+                      ]
+                    }
+                  ],
+                  "run": false,
+                  "enable": false,
+                  "preview_only": true
+                }
+              },
+              "required_id_lineage": [
+                "C11.table_id"
+              ],
+              "expected_observable": "run=false prevents the enrichment model run and value writes, but field_propose may persist a new column and enrich_declare persists its disabled configuration even with preview_only=true. Capture applied field_id and enrichment identifiers; a held field proposal is pending, not created.",
+              "negative_input": {
+                "action": "enrich_propose",
+                "args": {
+                  "columns": "not-an-array"
+                }
+              },
+              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "supported_cleanup_or_gap": "NOT_EXECUTABLE until a verified removal path exists for the persisted field and enrichment configuration (and any held approval). run=false and preview_only=true do not provide cleanup.",
+              "guide_argument_contract": {
+                "columns": {
+                  "type": "array",
+                  "required": true,
+                  "enum": null
+                },
+                "table": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "table_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "description": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "home": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "enable": {
+                  "type": "boolean",
+                  "required": false,
+                  "enum": null
+                },
+                "run": {
+                  "type": "boolean",
+                  "required": false,
+                  "enum": null
+                },
+                "preview_only": {
+                  "type": "boolean",
+                  "required": false,
+                  "enum": null
+                },
+                "rows": {
+                  "type": "integer",
+                  "required": false,
+                  "enum": null
+                }
+              },
+              "run_condition": "Do not execute until current live schema/guide and an owned table fixture are verified AND every created field/enrichment configuration and held proposal has a verified cleanup path; no model run does not mean no write.",
+              "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+            },
+            "EXT-F-4130-C21": {
+              "action": "portal_propose",
+              "status": "blocked_cleanup",
+              "source_wire_validated": true,
+              "valid_synthetic_owned_input": {
+                "action": "portal_propose",
+                "args": {
+                  "title": "EXT-F-4130 private portal",
+                  "client_table_id": "$C11.table_id",
+                  "tables": [
+                    {
+                      "table_id": "$C11.table_id",
+                      "names_via": "case_client"
+                    }
+                  ],
+                  "invite": []
+                }
+              },
+              "required_id_lineage": [
+                "C11.table_id"
+              ],
+              "expected_observable": "Receipt identifies portal and relation; no invitation recipient.",
+              "negative_input": {
+                "action": "portal_propose",
+                "args": {
+                  "title": "bad",
+                  "tables": "not-an-array"
+                }
+              },
+              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "supported_cleanup_or_gap": "No portal/relation deletion action in Records contract; require verified removal by returned IDs",
+              "guide_argument_contract": {
+                "title": {
+                  "type": "string",
+                  "required": true,
+                  "enum": null
+                },
+                "client_table": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "client_table_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "client_fields": {
+                  "type": "array",
+                  "required": false,
+                  "enum": null
+                },
+                "tables": {
+                  "type": "array",
+                  "required": true,
+                  "enum": null
+                },
+                "invite": {
+                  "type": "array",
+                  "required": false,
+                  "enum": null
+                },
+                "home": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                }
+              },
+              "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+              "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+            },
+            "EXT-F-4130-C22": {
+              "action": "signature_request",
+              "status": "NOT_EXECUTABLE_missing_owned_signature_document_fixture_and_revocation",
+              "source_wire_validated": true,
+              "valid_synthetic_owned_input": null,
+              "required_id_lineage": [
+                "C06.record_id",
+                "verified text field with format=signature on C11 table",
+                "owned rendered document version id or owned template id",
+                "owned test signer destination"
+              ],
+              "expected_observable": "Only after an owned signature-format text field and document render/template are verified: an applied result returns a one-time link for C06 and an expiry; no link is sent or opened and no signing is claimed. A product approval refusal means no link was made.",
+              "negative_input": {
+                "action": "signature_request",
+                "args": {
+                  "record_id": "not-a-uuid"
+                }
+              },
+              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "supported_cleanup_or_gap": "No owned signature-format field or document render/template fixture is established, and Records exposes no signature-request cancellation action. Require verified fixture creation and revocation/removal before execution; do not substitute case_signature plain text or omit render_id/template_id.",
+              "guide_argument_contract": {
+                "record_id": {
+                  "type": "string",
+                  "required": true,
+                  "enum": null
+                },
+                "field": {
+                  "type": "string",
+                  "required": true,
+                  "enum": null
+                },
+                "signer_email": {
+                  "type": "string",
+                  "required": true,
+                  "enum": null
+                },
+                "signer_name": {
+                  "type": "string",
+                  "required": true,
+                  "enum": null
+                },
+                "template_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "render_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "expires_days": {
+                  "type": "integer",
+                  "required": false,
+                  "enum": null
+                }
+              },
+              "run_condition": "NOT_EXECUTABLE: source requires a signature-format text field on the case table and render_id or template_id; neither owned valid fixture nor revocation path is established. Live schema/guide and product approval behavior remain unverified.",
+              "required_success_input_shape": {
+                "action": "signature_request",
+                "args": {
+                  "record_id": "$C06.record_id",
+                  "field": "$owned_signature_format_text_field.key",
+                  "signer_email": "$owned_test_signer.email",
+                  "signer_name": "$owned_test_signer.name",
+                  "render_id": "$owned_document_render.id"
+                }
+              },
+              "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+            },
+            "EXT-F-4130-C23": {
+              "action": "subscription_propose",
+              "status": "blocked_schedule_cleanup",
+              "source_wire_validated": true,
+              "valid_synthetic_owned_input": {
+                "action": "subscription_propose",
+                "args": {
+                  "table_id": "$C11.table_id",
+                  "watch": {
+                    "name": "EXT-F-4130-20261008-row"
+                  },
+                  "view_name": "EXT-F-4130 case watch",
+                  "tell": [
+                    {
+                      "cadence": "instant",
+                      "channel": "email"
+                    }
+                  ]
+                }
+              },
+              "required_id_lineage": [
+                "C11.table_id",
+                "owned notification destination"
+              ],
+              "expected_observable": "Receipt identifies view/subscription and delivery policy; no notification may be sent.",
+              "negative_input": {
+                "action": "subscription_propose",
+                "args": {
+                  "table_id": "not-a-uuid",
+                  "tell": []
+                }
+              },
+              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "supported_cleanup_or_gap": "No subscription/view deletion action in Records contract; require verified disable/removal and owned recipient before run",
+              "guide_argument_contract": {
+                "table_id": {
+                  "type": "string",
+                  "required": true,
+                  "enum": null
+                },
+                "watch": {
+                  "type": "object",
+                  "required": false,
+                  "enum": null
+                },
+                "view_name": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "view_id": {
+                  "type": "string",
+                  "required": false,
+                  "enum": null
+                },
+                "tell": {
+                  "type": "array",
+                  "required": true,
+                  "enum": null
+                }
+              },
+              "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+              "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+            },
+            "EXT-F-4130-C24": {
+              "action": "entity_read",
+              "status": "blocked_standard_row_fixture",
+              "source_wire_validated": true,
+              "valid_synthetic_owned_input": {
+                "action": "entity_read",
+                "args": {
+                  "entity": "$owned_standard_entity.token",
+                  "record_id": "$owned_standard_entity.record_id"
+                }
+              },
+              "required_id_lineage": [
+                "preverified owned standard entity token/id"
+              ],
+              "expected_observable": "Response token/id equal preverified owned standard row and separates columns/custom_fields/written_by.",
+              "negative_input": {
+                "action": "entity_read",
+                "args": {
+                  "entity": "__invalid_entity__",
+                  "record_id": "not-a-uuid"
+                }
+              },
+              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "supported_cleanup_or_gap": "none",
+              "guide_argument_contract": {
+                "entity": {
+                  "type": "string",
+                  "required": true,
+                  "enum": null
+                },
+                "record_id": {
+                  "type": "string",
+                  "required": true,
+                  "enum": null
+                }
+              },
+              "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+              "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+            },
+            "EXT-F-4130-C25": {
+              "action": "entity_write",
+              "status": "blocked_standard_row_fixture_cleanup",
+              "source_wire_validated": true,
+              "valid_synthetic_owned_input": {
+                "action": "entity_write",
+                "args": {
+                  "entity": "$owned_standard_entity.token",
+                  "record_id": "$owned_standard_entity.record_id",
+                  "values": {
+                    "$owned_custom_field_key": "EXT-F-4130 synthetic"
+                  }
+                }
+              },
+              "required_id_lineage": [
+                "preverified owned standard entity token/id/custom field/original value"
+              ],
+              "expected_observable": "Applied receipt changes only owned custom field; held approval is explicitly not applied.",
+              "negative_input": {
+                "action": "entity_write",
+                "args": {
+                  "entity": "__invalid_entity__",
+                  "record_id": "not-a-uuid",
+                  "values": {}
+                }
+              },
+              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "supported_cleanup_or_gap": "Restore captured original custom value on same row; cannot proceed without owned standard row, writable field and approval cleanup",
+              "guide_argument_contract": {
+                "entity": {
+                  "type": "string",
+                  "required": true,
+                  "enum": null
+                },
+                "record_id": {
+                  "type": "string",
+                  "required": true,
+                  "enum": null
+                },
+                "values": {
+                  "type": "object",
+                  "required": true,
+                  "enum": null
+                }
+              },
+              "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+              "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+            }
+          },
+          "procedure_evidence": [
+            ".research/records-control-procedures-20261008.json",
+            ".research/records-control-procedures-final-peer-20261008.json"
+          ],
+          "procedure_status": "source_reviewed_conditional_not_runtime_verified"
         },
         {
           "id": "EXT-F-4130-T02",
