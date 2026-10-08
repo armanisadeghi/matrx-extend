@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "5c0c03d16a99e4b494ad35a4e03b10948512f96e",
+  "review_scope": "Independent source and recorded-evidence review of default-off hosted guest SEO CPU attribution. No native run, build, release, delegation, or source edit.",
+  "verdict_a": {
+    "diagnostic_readiness": "PARTIAL",
+    "actual_native_gap": "UNVERIFIED",
+    "evidence": [
+      ".github/workflows/hosted-guest-acceptance.yml:85 defaults seo_resource_diagnostic to false; lines 292 and 364 carry the switch through preflight and the selected Chrome step; line 365 enables the existing interval bracket only for the opted-in selected step.",
+      "scripts/hosted-guest-acceptance.mjs:607 and :627 validate the selection before browser setup and again for acceptance; scripts/hosted-seo-route.mjs:14 requires guest-seo, full scope, and Airbnb.",
+      "scripts/hosted-guest-acceptance.mjs:349 and :417-550 route the selected development artifact, full/Airbnb environment, and diagnostic flag into tests/browser/seo-guest-acceptance.mjs; the child exit must be zero.",
+      "scripts/stabilization-resource.mjs:271-317 brackets the existing iostat sample; :755-798 emits the bracket beside the unchanged resource watch; :819-831 still stops the owned group and exits 3 on unsafe CPU.",
+      "tests/browser/seo-guest-acceptance.mjs:1858-1884 writes the diagnostic classification only after the driver finishes or catches an error; a watchdog SIGTERM before that write yields no receipt. The prior 37774478094-1 journal ended RESOURCE_FINAL_DECISION invalid/exitCode 3, and its uploaded artifact manifest lists no SEO acceptance receipt.",
+      "No opted-in hosted run exists in the reviewed evidence. No Airbnb navigation or metadata comparison can be credited from the earlier unsafe run."
+    ],
+    "finding": {
+      "severity": "Important",
+      "location": "scripts/hosted-seo-route.mjs:30",
+      "problem": "The opt-in classifier converts only partial to diagnostic_only. It leaves pass unchanged, even while removing all targets. If the SEO driver later reports full success, the uploaded receipt and scripts/record-stabilization-evidence.mjs status summary can say pass for an instrumented run.",
+      "effect": "The no-native-credit promise is not invariant to an ordinary future success-status change.",
+      "needed_fix": "Classify every successful SEO result status as diagnostic_only while retaining unverified/fail and the original status in a separate diagnostic field if useful; cover partial and pass in a behavior test."
+    }
+  },
+  "verdict_b": {
+    "quality": "PARTIAL",
+    "positive_evidence": [
+      "The change reuses scripts/stabilization-resource.mjs and startup-interval-attribution.mjs rather than adding a second sampler; the commit does not alter resource thresholds, stop logic, or cleanup.",
+      "scripts/stabilization-resource-journal.mjs:69-133 permits only timestamps, PIDs, executable basenames, categories, and CPU deltas for the bracket; raw ps rows, command arguments, paths, and page data are absent from that event. The SEO driver targets public pages only in this guest path.",
+      "Fresh node --test scripts/hosted-seo-route.test.mjs scripts/test-startup-interval-attribution.mjs scripts/test-stabilization-resource-journal.mjs passed 21/21. A separate direct classifier probe confirmed partial becomes diagnostic_only with zero targets and unverified/fail preserve their error statuses with zero targets."
+    ],
+    "causal_limit_finding": {
+      "severity": "Minor",
+      "location": ".research/seo-host-resource-diagnosis-20261008.json:36",
+      "problem": "The decision rule suggests a dominant ps delta could select census overhead, but processTimeBracket intersects PIDs present in both snapshots. Its own short-lived before/after ps calls are outside that intersection and cannot quantify their own CPU use; the recorded 25/30 ms times are wall time only.",
+      "effect": "The proposed run can compare surviving owned and host processes around each iostat sample, but cannot attribute diagnostic self-overhead or infer a single product culprit from an unmatched/unsafe sample.",
+      "needed_fix": "State this limitation in the decision rule and keep measurement overhead inconclusive unless independently measured."
+    },
+    "privacy_limit": "No private/raw browser data was found in the new guard event. Existing native screenshots and the complete SEO driver receipt remain separate uploaded artifacts and were not produced by the earlier stopped run."
+  },
+  "open_items": [
+    "Fix pass-to-diagnostic-only classification before dispatching an opted-in run for a no-credit guarantee.",
+    "Run the exact full/Airbnb hosted diagnostic against the frozen artifact only after the source boundary is fixed; inspect bracket availability and journal final decision. Native acceptance remains a separate uninstrumented run."
+  ]
+}
