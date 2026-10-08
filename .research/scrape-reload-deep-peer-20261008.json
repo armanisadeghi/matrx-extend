@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "task": "Independent source review of 30f5c006: deep Scrape capture after full extension reload",
+  "reviewed_commit": "30f5c00639e68cedc58c6c2f6dc9ee5d8d1ffbad",
+  "method": "Independent source review only; no browser, hosted job, build, release, or source edit.",
+  "verdict_a_spec_and_source": "SOURCE_MATCH_NATIVE_UNVERIFIED",
+  "verdict_b_quality": "PASS_BOUNDED_SOURCE_REVIEW",
+  "a_findings": [
+    {
+      "severity": "Important",
+      "finding": "The source adds a post-reload deep-capture path that starts from a newly navigated /intake fixture, waits for an empty Scrape pane titled Harbor Dental intake guide, and asserts #late p is absent before invoking deep capture. Completion requires the captured Article text to include the lazy paragraph, the page DOM to contain that exact paragraph, the deep control to be re-enabled, and the busy observer to have seen Scrolling.",
+      "evidence": "tests/browser/scrape-guest-native-acceptance.mjs:2022-2067",
+      "impact": "This source path rules out a synthetic-only pass and a stale prior capture as the sole evidence: the fixture begins without the lazy node and the displayed capture must contain its later exact text. The source does not prove this happened in Chrome; native evidence remains required."
+    }
+  ],
+  "b_findings": [],
+  "quality_notes": [
+    "The code runs after the existing full extension reload lifecycle and replacement-panel identity checks, and after the replacement panel has shown a cleared empty capture.",
+    "armBusyObserver resets and reattaches its observer immediately before the deep action, so the Scrolling observation cannot be carried over from the earlier warm deep capture.",
+    "The row stays partial and explicitly retains deep failure/retry as unverified. An exception in this new stage is captured at top-level with stage post_reload_deep_capture and a failure code; no deep-specific recovery behavior is claimed.",
+    "The source report and prior change record correctly label native verification as pending."
+  ],
+  "verification": {
+    "node_check": "node --check tests/browser/scrape-guest-native-acceptance.mjs passed",
+    "browser_or_hosted_run": "Not run, per assignment."
+  },
+  "limits": [
+    "No live or hosted native receipt was inspected, so A is not a live pass.",
+    "Deep failure/retry behavior remains unverified.",
+    "The referenced common-docs system-of-record path was unavailable in this checkout; review is scoped to the requested commit and local driver/helpers."
+  ]
+}
