@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T17:09:38.702058+00:00",
+  "updated_at": "2026-10-08T17:21:52.246867+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -62328,7 +62328,7 @@
                   "required": false,
                   "enum": null
                 },
-                "include_app_tables": {
+                "include_platform_tables": {
                   "type": "boolean",
                   "required": false,
                   "enum": null
@@ -62336,7 +62336,8 @@
               },
               "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
               "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
-              "negative_source": "Registered /tools/test/execute invokes ToolExecutor with RecordsArgs. Executor prevalidation rejects this malformed input as invalid_arguments before dispatch; direct Records function fallback validation is a different call path. Source audit .research/records-negative-contract-audit-20261008-1602.json; no runtime acceptance inferred."
+              "negative_source": "Registered /tools/test/execute invokes ToolExecutor with RecordsArgs. Executor prevalidation rejects this malformed input as invalid_arguments before dispatch; direct Records function fallback validation is a different call path. Source audit .research/records-negative-contract-audit-20261008-1602.json; no runtime acceptance inferred.",
+              "contract_revision_note": "Current aidream source renamed the optional table-list flag; e45baf44 and independent57a85d22 require live Tools-card schema match before execution. Historical include_app_tables receipts retain their original backend/build boundary; no claim they pass current deployment."
             },
             "EXT-F-4130-C03": {
               "action": "metadata_search",
@@ -64095,7 +64096,18 @@
               ],
               "release_scope": "One authenticated native read on frozen development414. Backend SHA88fbdae6fb22e43d7bef8c4641d54372ca7af4a3 sampled after run only; no request-time deployed-source binding. Not full case, latest-main or Store acceptance."
             }
-          ]
+          ],
+          "native_preparation": {
+            "source_commits": ["892253e1", "e45baf44"],
+            "independent_review": "57a85d22",
+            "status": "source-ready-native-unverified",
+            "evidence": [
+              ".research/records-metadata-native-preparation-20261008.json",
+              ".research/records-contract-fresh-peer-20261008.json"
+            ],
+            "scope": "C03 metadata_search via actual Tools UI, query from prior post-reload table_list result, require same table ID/name/approved organization in correlated finished visible response. Existing C02 malformed-input/reload guards retained. Current optional flag schema checked before running.",
+            "remaining": "Native C03 run; controlled owned-created-table/search criteria and negative input; all other actions and non-admin modes unchanged."
+          }
         },
         {
           "id": "EXT-F-4130-T02",

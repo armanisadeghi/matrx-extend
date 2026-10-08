@@ -1,0 +1,1006 @@
+guest	Set up job	﻿2026-10-08T17:17:25.3405270Z Current runner version: '2.337.0'
+guest	Set up job	2026-10-08T17:17:25.3440380Z ##[group]Runner Image Provisioner
+guest	Set up job	2026-10-08T17:17:25.3441010Z Hosted Compute Agent
+guest	Set up job	2026-10-08T17:17:25.3441410Z Version: 20260828.587
+guest	Set up job	2026-10-08T17:17:25.3441830Z Commit: abac92662cab4cc7352de4f9f9d2e2419aad9c29
+guest	Set up job	2026-10-08T17:17:25.3442320Z Build Date: 2026-08-28T16:44:25Z
+guest	Set up job	2026-10-08T17:17:25.3442790Z Worker ID: {ac951085-e4bf-4158-ace4-beba7c585b31}
+guest	Set up job	2026-10-08T17:17:25.3443280Z Azure Region: westus
+guest	Set up job	2026-10-08T17:17:25.3443660Z ##[endgroup]
+guest	Set up job	2026-10-08T17:17:25.3444720Z ##[group]Operating System
+guest	Set up job	2026-10-08T17:17:25.3445170Z macOS
+guest	Set up job	2026-10-08T17:17:25.3445520Z 15.7.9
+guest	Set up job	2026-10-08T17:17:25.3445870Z 24G830
+guest	Set up job	2026-10-08T17:17:25.3446230Z ##[endgroup]
+guest	Set up job	2026-10-08T17:17:25.3446610Z ##[group]Runner Image
+guest	Set up job	2026-10-08T17:17:25.3447010Z Image: macos-15-arm64
+guest	Set up job	2026-10-08T17:17:25.3447410Z Version: 20260907.0337.1
+guest	Set up job	2026-10-08T17:17:25.3448170Z Included Software: https://github.com/actions/runner-images/blob/macos-15-arm64/20260907.0337/images/macos/macos-15-arm64-Readme.md
+guest	Set up job	2026-10-08T17:17:25.3449450Z Image Release: https://github.com/actions/runner-images/releases/tag/macos-15-arm64%2F20260907.0337
+guest	Set up job	2026-10-08T17:17:25.3450120Z ##[endgroup]
+guest	Set up job	2026-10-08T17:17:25.3450970Z ##[group]GITHUB_TOKEN Permissions
+guest	Set up job	2026-10-08T17:17:25.3452200Z Actions: read
+guest	Set up job	2026-10-08T17:17:25.3452600Z Contents: read
+guest	Set up job	2026-10-08T17:17:25.3452980Z Metadata: read
+guest	Set up job	2026-10-08T17:17:25.3453350Z ##[endgroup]
+guest	Set up job	2026-10-08T17:17:25.3455020Z Secret source: Actions
+guest	Set up job	2026-10-08T17:17:25.3455620Z Cache mode: write
+guest	Set up job	2026-10-08T17:17:25.3456090Z Prepare workflow directory
+guest	Set up job	2026-10-08T17:17:25.4096310Z Prepare all required actions
+guest	Set up job	2026-10-08T17:17:25.4139690Z Getting action download info
+guest	Set up job	2026-10-08T17:17:25.8884360Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+guest	Set up job	2026-10-08T17:17:26.2830560Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+guest	Set up job	2026-10-08T17:17:26.4363420Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+guest	Set up job	2026-10-08T17:17:26.6648380Z Complete job name: guest
+guest	Require bounded lane and isolate shared credentials	﻿2026-10-08T17:17:26.7199010Z ##[group]Run # BEGIN hosted lane admission
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7199800Z [36;1m# BEGIN hosted lane admission[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7200540Z [36;1m[[ "$ACCEPTANCE_LANE" == A || "$ACCEPTANCE_LANE" == B ]] || { echo 'Unknown hosted acceptance lane.' >&2; exit 1; }[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7201290Z [36;1mcase "$ACCEPTANCE_CASE" in[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7204680Z [36;1m  guest-chat|guest-seo|guest-scrape|guest-scrape-development|settings-controls|settings-persistence|settings-persistence-admin|settings-persistence-member|desktop-settings-guest|desktop-settings-member|desktop-settings-admin|visibility-census-guest|visibility-census-member|visibility-census-admin|audit-key-admin|member-chat|prepare-stale-results|showcase-picker-admin|showcase-stale-admin|showcase-d47-admin|showcase-d47-public-admin|records-readonly-admin|profile-admin|profile-member|startup-resource-diagnostic) ;;[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7207880Z [36;1m  *) echo 'Unknown hosted acceptance case.' >&2; exit 1 ;;[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7208440Z [36;1mesac[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7209270Z [36;1m[[ "$DESKTOP_SETTINGS_CASE" == full || "$DESKTOP_SETTINGS_CASE" == remaining ]] || { echo 'Unknown Desktop Settings case.' >&2; exit 1; }[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7210450Z [36;1m[[ "$SEO_CASE_SCOPE" == full || "$SEO_CASE_SCOPE" == controlled ]] || { echo 'Unknown SEO case scope.' >&2; exit 1; }[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7212380Z [36;1m[[ "$SEO_CASE_SCOPE" == full || "$ACCEPTANCE_CASE" == guest-seo ]] || { echo 'Controlled SEO scope requires guest-seo.' >&2; exit 1; }[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7213670Z [36;1m[[ "$SEO_METADATA_FIXTURE" == none || "$SEO_METADATA_FIXTURE" == airbnb ]] || { echo 'Unknown SEO metadata fixture.' >&2; exit 1; }[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7214610Z [36;1mif [[ "$SEO_METADATA_FIXTURE" == airbnb ]]; then[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7215490Z [36;1m  [[ "$ACCEPTANCE_CASE" == guest-seo && "$SEO_CASE_SCOPE" == full ]] || { echo 'SEO metadata fixture requires full guest-seo.' >&2; exit 1; }[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7218460Z [36;1mfi[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7219030Z [36;1mif [[ "${SEO_INTERRUPT_AFTER_TARGET:-none}" != none ]]; then[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7220610Z [36;1m  [[ "$SEO_INTERRUPT_AFTER_TARGET" == manual_button_returns_to_current_page && "$ACCEPTANCE_CASE" == guest-seo && "$SEO_CASE_SCOPE" == controlled && "$SEO_METADATA_FIXTURE" == none && "$ACCEPTANCE_LANE" == B ]] || { echo 'SEO interruption requires lane B controlled guest-seo without fixture.' >&2; exit 1; }[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7224100Z [36;1mfi[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7224670Z [36;1mif [[ "$DESKTOP_SETTINGS_CASE" == remaining ]]; then[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7225580Z [36;1m  [[ "$ACCEPTANCE_CASE" == desktop-settings-guest ]] || { echo 'Remaining Desktop Settings case requires guest.' >&2; exit 1; }[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7226490Z [36;1mfi[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7226870Z [36;1mif [[ "$ACCEPTANCE_LANE" == B ]]; then[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7228670Z [36;1m  case "$ACCEPTANCE_CASE" in[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7230700Z [36;1m    *-admin|*-member|member-chat|prepare-stale-results|showcase-*)[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7231500Z [36;1m      echo 'Shared member/admin fixture requires lane A.' >&2; exit 1 ;;[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7232080Z [36;1m  esac[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7232690Z [36;1m  if [[ "$ACCEPTANCE_CASE" == guest-scrape || "$ACCEPTANCE_CASE" == guest-scrape-development ]]; then[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7233680Z [36;1m    [[ "$SCRAPE_AUTH_MODE" == guest ]] || { echo 'Authenticated scrape requires lane A.' >&2; exit 1; }[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7234360Z [36;1m  fi[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7234730Z [36;1mfi[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7235130Z [36;1m# END hosted lane admission[0m
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7286040Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7287430Z env:
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7290860Z   GH_TOKEN: ***
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7291230Z   ACCEPTANCE_LANE: B
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7291620Z   ACCEPTANCE_CASE: guest-seo
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7292060Z   SEO_CASE_SCOPE: controlled
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7292460Z   SEO_METADATA_FIXTURE: none
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7293910Z   SEO_INTERRUPT_AFTER_TARGET: manual_button_returns_to_current_page
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7294800Z   SCRAPE_AUTH_MODE: guest
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7295210Z   DESKTOP_SETTINGS_CASE: full
+guest	Require bounded lane and isolate shared credentials	2026-10-08T17:17:26.7295660Z ##[endgroup]
+guest	Run actions/checkout@v4	﻿2026-10-08T17:17:26.7859770Z ##[group]Run actions/checkout@v4
+guest	Run actions/checkout@v4	2026-10-08T17:17:26.7860610Z with:
+guest	Run actions/checkout@v4	2026-10-08T17:17:26.7860980Z   fetch-depth: 0
+guest	Run actions/checkout@v4	2026-10-08T17:17:26.7861430Z   repository: armanisadeghi/matrx-extend
+guest	Run actions/checkout@v4	2026-10-08T17:17:26.7865410Z   token: ***
+guest	Run actions/checkout@v4	2026-10-08T17:17:26.7865820Z   ssh-strict: true
+guest	Run actions/checkout@v4	2026-10-08T17:17:26.7866210Z   ssh-user: git
+guest	Run actions/checkout@v4	2026-10-08T17:17:26.7866680Z   persist-credentials: true
+guest	Run actions/checkout@v4	2026-10-08T17:17:26.7867140Z   clean: true
+guest	Run actions/checkout@v4	2026-10-08T17:17:26.7867570Z   sparse-checkout-cone-mode: true
+guest	Run actions/checkout@v4	2026-10-08T17:17:26.7868080Z   fetch-tags: false
+guest	Run actions/checkout@v4	2026-10-08T17:17:26.7868530Z   show-progress: true
+guest	Run actions/checkout@v4	2026-10-08T17:17:26.7869190Z   lfs: false
+guest	Run actions/checkout@v4	2026-10-08T17:17:26.7869690Z   submodules: false
+guest	Run actions/checkout@v4	2026-10-08T17:17:26.7870160Z   set-safe-directory: true
+guest	Run actions/checkout@v4	2026-10-08T17:17:26.7870590Z   allow-unsafe-pr-checkout: false
+guest	Run actions/checkout@v4	2026-10-08T17:17:26.7871360Z env:
+guest	Run actions/checkout@v4	2026-10-08T17:17:26.7876150Z   GH_TOKEN: ***
+guest	Run actions/checkout@v4	2026-10-08T17:17:26.7876650Z ##[endgroup]
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.2381680Z Syncing repository: armanisadeghi/matrx-extend
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.2383550Z ##[group]Getting Git version info
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.2384490Z Working directory is '/Users/runner/work/matrx-extend/matrx-extend'
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.2385770Z [command]/opt/homebrew/bin/git version
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.3425470Z git version 2.55.0
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.3444770Z ##[endgroup]
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.3468550Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/6d479e2e-57be-497e-b0cd-dbd08dffc6e5/.gitconfig'
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.3480200Z Temporarily overriding HOME='/Users/runner/work/_temp/6d479e2e-57be-497e-b0cd-dbd08dffc6e5' before making global git config changes
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.3489670Z Adding repository directory to the temporary git global config as a safe directory
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.3502080Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/matrx-extend/matrx-extend
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.3657930Z Deleting the contents of '/Users/runner/work/matrx-extend/matrx-extend'
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.3662500Z ##[group]Initializing the repository
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.3694460Z [command]/opt/homebrew/bin/git init /Users/runner/work/matrx-extend/matrx-extend
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.4046390Z hint: Using 'master' as the name for the initial branch. This default branch name
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.4048640Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.4050540Z hint: to use in all of your new repositories, which will suppress this warning,
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.4052040Z hint: call:
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.4052880Z hint:
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.4053950Z hint: 	git config --global init.defaultBranch <name>
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.4055210Z hint:
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.4056450Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.4058310Z hint: 'development'. The just-created branch can be renamed via this command:
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.4059860Z hint:
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.4060710Z hint: 	git branch -m <name>
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.4061660Z hint:
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.4062870Z hint: Disable this message with "git config set advice.defaultBranchName false"
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.4065070Z Initialized empty Git repository in /Users/runner/work/matrx-extend/matrx-extend/.git/
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.4071970Z [command]/opt/homebrew/bin/git remote add origin https://github.com/armanisadeghi/matrx-extend
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.4210460Z ##[endgroup]
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.4211970Z ##[group]Disabling automatic garbage collection
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.4216920Z [command]/opt/homebrew/bin/git config --local gc.auto 0
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.4326910Z ##[endgroup]
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.4328910Z ##[group]Setting up auth
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.4336300Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.4473600Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.6048540Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.6113150Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.7559550Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.7643050Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.8763840Z [command]/opt/homebrew/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.9069970Z ##[endgroup]
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.9072480Z ##[group]Fetching the repository
+guest	Run actions/checkout@v4	2026-10-08T17:17:27.9084240Z [command]/opt/homebrew/bin/git -c protocol.version=2 fetch --prune --no-recurse-submodules origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.6999060Z From https://github.com/armanisadeghi/matrx-extend
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7037820Z  * [new branch]        main       -> origin/main
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7101700Z  * [new tag]           v0.1.10    -> v0.1.10
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7102850Z  * [new tag]           v0.1.11    -> v0.1.11
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7103400Z  * [new tag]           v0.1.12    -> v0.1.12
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7104070Z  * [new tag]           v0.1.13    -> v0.1.13
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7107630Z  * [new tag]           v0.1.14    -> v0.1.14
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7109360Z  * [new tag]           v0.1.15    -> v0.1.15
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7111140Z  * [new tag]           v0.1.16    -> v0.1.16
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7115880Z  * [new tag]           v0.1.17    -> v0.1.17
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7116610Z  * [new tag]           v0.1.18    -> v0.1.18
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7117250Z  * [new tag]           v0.1.19    -> v0.1.19
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7117870Z  * [new tag]           v0.1.2     -> v0.1.2
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7122660Z  * [new tag]           v0.1.20    -> v0.1.20
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7125450Z  * [new tag]           v0.1.21    -> v0.1.21
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7127090Z  * [new tag]           v0.1.22    -> v0.1.22
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7128420Z  * [new tag]           v0.1.23    -> v0.1.23
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7130010Z  * [new tag]           v0.1.24    -> v0.1.24
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7131300Z  * [new tag]           v0.1.25    -> v0.1.25
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7132650Z  * [new tag]           v0.1.26    -> v0.1.26
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7133840Z  * [new tag]           v0.1.27    -> v0.1.27
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7135070Z  * [new tag]           v0.1.28    -> v0.1.28
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7136720Z  * [new tag]           v0.1.29    -> v0.1.29
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7137940Z  * [new tag]           v0.1.3     -> v0.1.3
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7138940Z  * [new tag]           v0.1.30    -> v0.1.30
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7139800Z  * [new tag]           v0.1.31    -> v0.1.31
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7140770Z  * [new tag]           v0.1.32    -> v0.1.32
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7142360Z  * [new tag]           v0.1.33    -> v0.1.33
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7143020Z  * [new tag]           v0.1.34    -> v0.1.34
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7143550Z  * [new tag]           v0.1.35    -> v0.1.35
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7144380Z  * [new tag]           v0.1.36    -> v0.1.36
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7144740Z  * [new tag]           v0.1.37    -> v0.1.37
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7145190Z  * [new tag]           v0.1.38    -> v0.1.38
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7145580Z  * [new tag]           v0.1.39    -> v0.1.39
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7146020Z  * [new tag]           v0.1.4     -> v0.1.4
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7146650Z  * [new tag]           v0.1.40    -> v0.1.40
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7147010Z  * [new tag]           v0.1.41    -> v0.1.41
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7147400Z  * [new tag]           v0.1.42    -> v0.1.42
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7148820Z  * [new tag]           v0.1.43    -> v0.1.43
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7149270Z  * [new tag]           v0.1.44    -> v0.1.44
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7149760Z  * [new tag]           v0.1.45    -> v0.1.45
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7150270Z  * [new tag]           v0.1.46    -> v0.1.46
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7151550Z  * [new tag]           v0.1.47    -> v0.1.47
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7152110Z  * [new tag]           v0.1.48    -> v0.1.48
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7152460Z  * [new tag]           v0.1.49    -> v0.1.49
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7152910Z  * [new tag]           v0.1.50    -> v0.1.50
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7153570Z  * [new tag]           v0.1.51    -> v0.1.51
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7154100Z  * [new tag]           v0.1.52    -> v0.1.52
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7154520Z  * [new tag]           v0.1.53    -> v0.1.53
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7154980Z  * [new tag]           v0.1.54    -> v0.1.54
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7155410Z  * [new tag]           v0.1.56    -> v0.1.56
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7155830Z  * [new tag]           v0.1.57    -> v0.1.57
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7156230Z  * [new tag]           v0.1.58    -> v0.1.58
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7157110Z  * [new tag]           v0.1.59    -> v0.1.59
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7157550Z  * [new tag]           v0.1.6     -> v0.1.6
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7158110Z  * [new tag]           v0.1.62    -> v0.1.62
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7158540Z  * [new tag]           v0.1.63    -> v0.1.63
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7158860Z  * [new tag]           v0.1.64    -> v0.1.64
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7159270Z  * [new tag]           v0.1.66    -> v0.1.66
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7159740Z  * [new tag]           v0.1.67    -> v0.1.67
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7160460Z  * [new tag]           v0.1.68    -> v0.1.68
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7160880Z  * [new tag]           v0.1.69    -> v0.1.69
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7161250Z  * [new tag]           v0.1.7     -> v0.1.7
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7161680Z  * [new tag]           v0.1.70    -> v0.1.70
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7162930Z  * [new tag]           v0.1.73    -> v0.1.73
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7163620Z  * [new tag]           v0.1.74    -> v0.1.74
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7164640Z  * [new tag]           v0.1.75    -> v0.1.75
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7165840Z  * [new tag]           v0.1.76    -> v0.1.76
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7166620Z  * [new tag]           v0.1.8     -> v0.1.8
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7167560Z  * [new tag]           v0.1.9     -> v0.1.9
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7220630Z  * [new tag]           v0.2.0     -> v0.2.0
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7221230Z  * [new tag]           v0.2.1     -> v0.2.1
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7221500Z  * [new tag]           v0.2.10    -> v0.2.10
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7221860Z  * [new tag]           v0.2.100   -> v0.2.100
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7222370Z  * [new tag]           v0.2.101   -> v0.2.101
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7224110Z  * [new tag]           v0.2.102   -> v0.2.102
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7224480Z  * [new tag]           v0.2.103   -> v0.2.103
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7225110Z  * [new tag]           v0.2.104   -> v0.2.104
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7225860Z  * [new tag]           v0.2.105   -> v0.2.105
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7226590Z  * [new tag]           v0.2.106   -> v0.2.106
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7227320Z  * [new tag]           v0.2.107   -> v0.2.107
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7228080Z  * [new tag]           v0.2.108   -> v0.2.108
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7228790Z  * [new tag]           v0.2.109   -> v0.2.109
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7229190Z  * [new tag]           v0.2.11    -> v0.2.11
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7229660Z  * [new tag]           v0.2.110   -> v0.2.110
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7230060Z  * [new tag]           v0.2.111   -> v0.2.111
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7230510Z  * [new tag]           v0.2.112   -> v0.2.112
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7230920Z  * [new tag]           v0.2.113   -> v0.2.113
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7231300Z  * [new tag]           v0.2.114   -> v0.2.114
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7231900Z  * [new tag]           v0.2.115   -> v0.2.115
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7232270Z  * [new tag]           v0.2.116   -> v0.2.116
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7232790Z  * [new tag]           v0.2.117   -> v0.2.117
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7233140Z  * [new tag]           v0.2.118   -> v0.2.118
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7233660Z  * [new tag]           v0.2.119   -> v0.2.119
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7234070Z  * [new tag]           v0.2.12    -> v0.2.12
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7234390Z  * [new tag]           v0.2.120   -> v0.2.120
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7234830Z  * [new tag]           v0.2.121   -> v0.2.121
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7235620Z  * [new tag]           v0.2.122   -> v0.2.122
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7235950Z  * [new tag]           v0.2.123   -> v0.2.123
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7236390Z  * [new tag]           v0.2.124   -> v0.2.124
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7236660Z  * [new tag]           v0.2.125   -> v0.2.125
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7237190Z  * [new tag]           v0.2.126   -> v0.2.126
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7237550Z  * [new tag]           v0.2.127   -> v0.2.127
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7237870Z  * [new tag]           v0.2.128   -> v0.2.128
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7238180Z  * [new tag]           v0.2.129   -> v0.2.129
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7238590Z  * [new tag]           v0.2.13    -> v0.2.13
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7239020Z  * [new tag]           v0.2.130   -> v0.2.130
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7239330Z  * [new tag]           v0.2.131   -> v0.2.131
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7239680Z  * [new tag]           v0.2.132   -> v0.2.132
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7240090Z  * [new tag]           v0.2.133   -> v0.2.133
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7240550Z  * [new tag]           v0.2.134   -> v0.2.134
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7240890Z  * [new tag]           v0.2.135   -> v0.2.135
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7241250Z  * [new tag]           v0.2.136   -> v0.2.136
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7241640Z  * [new tag]           v0.2.137   -> v0.2.137
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7241960Z  * [new tag]           v0.2.138   -> v0.2.138
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7242300Z  * [new tag]           v0.2.139   -> v0.2.139
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7242630Z  * [new tag]           v0.2.14    -> v0.2.14
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7243010Z  * [new tag]           v0.2.140   -> v0.2.140
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7243290Z  * [new tag]           v0.2.141   -> v0.2.141
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7244170Z  * [new tag]           v0.2.142   -> v0.2.142
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7244650Z  * [new tag]           v0.2.143   -> v0.2.143
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7245050Z  * [new tag]           v0.2.144   -> v0.2.144
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7245490Z  * [new tag]           v0.2.145   -> v0.2.145
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7246700Z  * [new tag]           v0.2.146   -> v0.2.146
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7247100Z  * [new tag]           v0.2.147   -> v0.2.147
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7247410Z  * [new tag]           v0.2.148   -> v0.2.148
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7247800Z  * [new tag]           v0.2.149   -> v0.2.149
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7248210Z  * [new tag]           v0.2.15    -> v0.2.15
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7248620Z  * [new tag]           v0.2.150   -> v0.2.150
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7249050Z  * [new tag]           v0.2.151   -> v0.2.151
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7249380Z  * [new tag]           v0.2.152   -> v0.2.152
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7249770Z  * [new tag]           v0.2.153   -> v0.2.153
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7250100Z  * [new tag]           v0.2.154   -> v0.2.154
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7250510Z  * [new tag]           v0.2.155   -> v0.2.155
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7250940Z  * [new tag]           v0.2.156   -> v0.2.156
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7251260Z  * [new tag]           v0.2.157   -> v0.2.157
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7251650Z  * [new tag]           v0.2.158   -> v0.2.158
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7258890Z  * [new tag]           v0.2.159   -> v0.2.159
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7259480Z  * [new tag]           v0.2.16    -> v0.2.16
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7259870Z  * [new tag]           v0.2.160   -> v0.2.160
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7260270Z  * [new tag]           v0.2.161   -> v0.2.161
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7260650Z  * [new tag]           v0.2.162   -> v0.2.162
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7261050Z  * [new tag]           v0.2.163   -> v0.2.163
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7261370Z  * [new tag]           v0.2.164   -> v0.2.164
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7261750Z  * [new tag]           v0.2.165   -> v0.2.165
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7262070Z  * [new tag]           v0.2.166   -> v0.2.166
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7262490Z  * [new tag]           v0.2.167   -> v0.2.167
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7262940Z  * [new tag]           v0.2.168   -> v0.2.168
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7263270Z  * [new tag]           v0.2.169   -> v0.2.169
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7263660Z  * [new tag]           v0.2.17    -> v0.2.17
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7264080Z  * [new tag]           v0.2.170   -> v0.2.170
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7264410Z  * [new tag]           v0.2.171   -> v0.2.171
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7265250Z  * [new tag]           v0.2.172   -> v0.2.172
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7265620Z  * [new tag]           v0.2.173   -> v0.2.173
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7266030Z  * [new tag]           v0.2.174   -> v0.2.174
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7266500Z  * [new tag]           v0.2.175   -> v0.2.175
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7266840Z  * [new tag]           v0.2.176   -> v0.2.176
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7267200Z  * [new tag]           v0.2.177   -> v0.2.177
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7267480Z  * [new tag]           v0.2.178   -> v0.2.178
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7267790Z  * [new tag]           v0.2.179   -> v0.2.179
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7268080Z  * [new tag]           v0.2.18    -> v0.2.18
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7268350Z  * [new tag]           v0.2.180   -> v0.2.180
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7268820Z  * [new tag]           v0.2.181   -> v0.2.181
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7269110Z  * [new tag]           v0.2.182   -> v0.2.182
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7269560Z  * [new tag]           v0.2.183   -> v0.2.183
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7269920Z  * [new tag]           v0.2.184   -> v0.2.184
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7270270Z  * [new tag]           v0.2.185   -> v0.2.185
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7270550Z  * [new tag]           v0.2.186   -> v0.2.186
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7270860Z  * [new tag]           v0.2.187   -> v0.2.187
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7271240Z  * [new tag]           v0.2.188   -> v0.2.188
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7271630Z  * [new tag]           v0.2.189   -> v0.2.189
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7271950Z  * [new tag]           v0.2.19    -> v0.2.19
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7272350Z  * [new tag]           v0.2.190   -> v0.2.190
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7272680Z  * [new tag]           v0.2.191   -> v0.2.191
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7273280Z  * [new tag]           v0.2.192   -> v0.2.192
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7273620Z  * [new tag]           v0.2.193   -> v0.2.193
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7273940Z  * [new tag]           v0.2.194   -> v0.2.194
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7274260Z  * [new tag]           v0.2.195   -> v0.2.195
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7274590Z  * [new tag]           v0.2.196   -> v0.2.196
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7274890Z  * [new tag]           v0.2.197   -> v0.2.197
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7275200Z  * [new tag]           v0.2.198   -> v0.2.198
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7275490Z  * [new tag]           v0.2.199   -> v0.2.199
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7275790Z  * [new tag]           v0.2.2     -> v0.2.2
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7276140Z  * [new tag]           v0.2.20    -> v0.2.20
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7276470Z  * [new tag]           v0.2.200   -> v0.2.200
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7276870Z  * [new tag]           v0.2.201   -> v0.2.201
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7277150Z  * [new tag]           v0.2.202   -> v0.2.202
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7277490Z  * [new tag]           v0.2.203   -> v0.2.203
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7277900Z  * [new tag]           v0.2.204   -> v0.2.204
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7278230Z  * [new tag]           v0.2.205   -> v0.2.205
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7278510Z  * [new tag]           v0.2.206   -> v0.2.206
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7278840Z  * [new tag]           v0.2.207   -> v0.2.207
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7279120Z  * [new tag]           v0.2.208   -> v0.2.208
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7279440Z  * [new tag]           v0.2.209   -> v0.2.209
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7279720Z  * [new tag]           v0.2.21    -> v0.2.21
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7280040Z  * [new tag]           v0.2.210   -> v0.2.210
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7280440Z  * [new tag]           v0.2.211   -> v0.2.211
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7280870Z  * [new tag]           v0.2.212   -> v0.2.212
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7281210Z  * [new tag]           v0.2.213   -> v0.2.213
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7281520Z  * [new tag]           v0.2.214   -> v0.2.214
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7281890Z  * [new tag]           v0.2.215   -> v0.2.215
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7282180Z  * [new tag]           v0.2.216   -> v0.2.216
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7282450Z  * [new tag]           v0.2.217   -> v0.2.217
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7282720Z  * [new tag]           v0.2.218   -> v0.2.218
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7283110Z  * [new tag]           v0.2.219   -> v0.2.219
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7283400Z  * [new tag]           v0.2.22    -> v0.2.22
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7284210Z  * [new tag]           v0.2.220   -> v0.2.220
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7284510Z  * [new tag]           v0.2.221   -> v0.2.221
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7284790Z  * [new tag]           v0.2.222   -> v0.2.222
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7285070Z  * [new tag]           v0.2.223   -> v0.2.223
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7285340Z  * [new tag]           v0.2.224   -> v0.2.224
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7285630Z  * [new tag]           v0.2.225   -> v0.2.225
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7285920Z  * [new tag]           v0.2.226   -> v0.2.226
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7286200Z  * [new tag]           v0.2.227   -> v0.2.227
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7286470Z  * [new tag]           v0.2.228   -> v0.2.228
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7286760Z  * [new tag]           v0.2.229   -> v0.2.229
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7287030Z  * [new tag]           v0.2.23    -> v0.2.23
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7287310Z  * [new tag]           v0.2.230   -> v0.2.230
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7287580Z  * [new tag]           v0.2.231   -> v0.2.231
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7287860Z  * [new tag]           v0.2.232   -> v0.2.232
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7288130Z  * [new tag]           v0.2.233   -> v0.2.233
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7288400Z  * [new tag]           v0.2.234   -> v0.2.234
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7288680Z  * [new tag]           v0.2.235   -> v0.2.235
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7288950Z  * [new tag]           v0.2.236   -> v0.2.236
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7289220Z  * [new tag]           v0.2.237   -> v0.2.237
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7289510Z  * [new tag]           v0.2.238   -> v0.2.238
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7289780Z  * [new tag]           v0.2.239   -> v0.2.239
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7290060Z  * [new tag]           v0.2.24    -> v0.2.24
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7290550Z  * [new tag]           v0.2.240   -> v0.2.240
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7290830Z  * [new tag]           v0.2.241   -> v0.2.241
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7291100Z  * [new tag]           v0.2.242   -> v0.2.242
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7291380Z  * [new tag]           v0.2.243   -> v0.2.243
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7291660Z  * [new tag]           v0.2.244   -> v0.2.244
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7291920Z  * [new tag]           v0.2.245   -> v0.2.245
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7292210Z  * [new tag]           v0.2.246   -> v0.2.246
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7292480Z  * [new tag]           v0.2.247   -> v0.2.247
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7292750Z  * [new tag]           v0.2.248   -> v0.2.248
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7293020Z  * [new tag]           v0.2.249   -> v0.2.249
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7293290Z  * [new tag]           v0.2.25    -> v0.2.25
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7293570Z  * [new tag]           v0.2.250   -> v0.2.250
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7293840Z  * [new tag]           v0.2.251   -> v0.2.251
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7294120Z  * [new tag]           v0.2.252   -> v0.2.252
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7294400Z  * [new tag]           v0.2.253   -> v0.2.253
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7294680Z  * [new tag]           v0.2.254   -> v0.2.254
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7294950Z  * [new tag]           v0.2.255   -> v0.2.255
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7295210Z  * [new tag]           v0.2.256   -> v0.2.256
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7295490Z  * [new tag]           v0.2.257   -> v0.2.257
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7295760Z  * [new tag]           v0.2.258   -> v0.2.258
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7296040Z  * [new tag]           v0.2.259   -> v0.2.259
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7296310Z  * [new tag]           v0.2.26    -> v0.2.26
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7296580Z  * [new tag]           v0.2.260   -> v0.2.260
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7296850Z  * [new tag]           v0.2.261   -> v0.2.261
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7297120Z  * [new tag]           v0.2.262   -> v0.2.262
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7297390Z  * [new tag]           v0.2.263   -> v0.2.263
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7297660Z  * [new tag]           v0.2.264   -> v0.2.264
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7297940Z  * [new tag]           v0.2.265   -> v0.2.265
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7298220Z  * [new tag]           v0.2.266   -> v0.2.266
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7298490Z  * [new tag]           v0.2.267   -> v0.2.267
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7298850Z  * [new tag]           v0.2.268   -> v0.2.268
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7299130Z  * [new tag]           v0.2.269   -> v0.2.269
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7299400Z  * [new tag]           v0.2.27    -> v0.2.27
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7299870Z  * [new tag]           v0.2.270   -> v0.2.270
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7300150Z  * [new tag]           v0.2.271   -> v0.2.271
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7300410Z  * [new tag]           v0.2.272   -> v0.2.272
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7300690Z  * [new tag]           v0.2.273   -> v0.2.273
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7300950Z  * [new tag]           v0.2.274   -> v0.2.274
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7301230Z  * [new tag]           v0.2.275   -> v0.2.275
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7301500Z  * [new tag]           v0.2.276   -> v0.2.276
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7301770Z  * [new tag]           v0.2.277   -> v0.2.277
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7302040Z  * [new tag]           v0.2.278   -> v0.2.278
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7302320Z  * [new tag]           v0.2.279   -> v0.2.279
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7302600Z  * [new tag]           v0.2.28    -> v0.2.28
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7302870Z  * [new tag]           v0.2.280   -> v0.2.280
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7303140Z  * [new tag]           v0.2.281   -> v0.2.281
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7303410Z  * [new tag]           v0.2.282   -> v0.2.282
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7303690Z  * [new tag]           v0.2.283   -> v0.2.283
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7303950Z  * [new tag]           v0.2.284   -> v0.2.284
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7304220Z  * [new tag]           v0.2.285   -> v0.2.285
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7304490Z  * [new tag]           v0.2.286   -> v0.2.286
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7304770Z  * [new tag]           v0.2.287   -> v0.2.287
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7305040Z  * [new tag]           v0.2.288   -> v0.2.288
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7305310Z  * [new tag]           v0.2.289   -> v0.2.289
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7305580Z  * [new tag]           v0.2.29    -> v0.2.29
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7306160Z  * [new tag]           v0.2.290   -> v0.2.290
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7306640Z  * [new tag]           v0.2.291   -> v0.2.291
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7307010Z  * [new tag]           v0.2.292   -> v0.2.292
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7307460Z  * [new tag]           v0.2.293   -> v0.2.293
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7307940Z  * [new tag]           v0.2.294   -> v0.2.294
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7308300Z  * [new tag]           v0.2.295   -> v0.2.295
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7308720Z  * [new tag]           v0.2.296   -> v0.2.296
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7309130Z  * [new tag]           v0.2.297   -> v0.2.297
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7309550Z  * [new tag]           v0.2.298   -> v0.2.298
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7310100Z  * [new tag]           v0.2.299   -> v0.2.299
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7310530Z  * [new tag]           v0.2.3     -> v0.2.3
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7310840Z  * [new tag]           v0.2.30    -> v0.2.30
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7311190Z  * [new tag]           v0.2.300   -> v0.2.300
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7311500Z  * [new tag]           v0.2.301   -> v0.2.301
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7311820Z  * [new tag]           v0.2.302   -> v0.2.302
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7312250Z  * [new tag]           v0.2.303   -> v0.2.303
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7312530Z  * [new tag]           v0.2.304   -> v0.2.304
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7312880Z  * [new tag]           v0.2.305   -> v0.2.305
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7313210Z  * [new tag]           v0.2.306   -> v0.2.306
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7313500Z  * [new tag]           v0.2.307   -> v0.2.307
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7313810Z  * [new tag]           v0.2.308   -> v0.2.308
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7314090Z  * [new tag]           v0.2.309   -> v0.2.309
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7322130Z  * [new tag]           v0.2.31    -> v0.2.31
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7322440Z  * [new tag]           v0.2.310   -> v0.2.310
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7322720Z  * [new tag]           v0.2.311   -> v0.2.311
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7323030Z  * [new tag]           v0.2.312   -> v0.2.312
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7323330Z  * [new tag]           v0.2.313   -> v0.2.313
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7323630Z  * [new tag]           v0.2.314   -> v0.2.314
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7323920Z  * [new tag]           v0.2.315   -> v0.2.315
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7324200Z  * [new tag]           v0.2.316   -> v0.2.316
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7324470Z  * [new tag]           v0.2.317   -> v0.2.317
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7324740Z  * [new tag]           v0.2.318   -> v0.2.318
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7325020Z  * [new tag]           v0.2.319   -> v0.2.319
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7325700Z  * [new tag]           v0.2.32    -> v0.2.32
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7325970Z  * [new tag]           v0.2.320   -> v0.2.320
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7326250Z  * [new tag]           v0.2.321   -> v0.2.321
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7326520Z  * [new tag]           v0.2.322   -> v0.2.322
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7326790Z  * [new tag]           v0.2.323   -> v0.2.323
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7327060Z  * [new tag]           v0.2.324   -> v0.2.324
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7327330Z  * [new tag]           v0.2.325   -> v0.2.325
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7327600Z  * [new tag]           v0.2.326   -> v0.2.326
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7327880Z  * [new tag]           v0.2.327   -> v0.2.327
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7328150Z  * [new tag]           v0.2.328   -> v0.2.328
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7328420Z  * [new tag]           v0.2.329   -> v0.2.329
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7328690Z  * [new tag]           v0.2.33    -> v0.2.33
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7328960Z  * [new tag]           v0.2.330   -> v0.2.330
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7329230Z  * [new tag]           v0.2.331   -> v0.2.331
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7329510Z  * [new tag]           v0.2.332   -> v0.2.332
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7329820Z  * [new tag]           v0.2.333   -> v0.2.333
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7330100Z  * [new tag]           v0.2.334   -> v0.2.334
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7330370Z  * [new tag]           v0.2.335   -> v0.2.335
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7330660Z  * [new tag]           v0.2.336   -> v0.2.336
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7331440Z  * [new tag]           v0.2.337   -> v0.2.337
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7331750Z  * [new tag]           v0.2.338   -> v0.2.338
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7332020Z  * [new tag]           v0.2.339   -> v0.2.339
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7332570Z  * [new tag]           v0.2.34    -> v0.2.34
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7332840Z  * [new tag]           v0.2.340   -> v0.2.340
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7333120Z  * [new tag]           v0.2.341   -> v0.2.341
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7333380Z  * [new tag]           v0.2.342   -> v0.2.342
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7333660Z  * [new tag]           v0.2.343   -> v0.2.343
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7333940Z  * [new tag]           v0.2.344   -> v0.2.344
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7334210Z  * [new tag]           v0.2.345   -> v0.2.345
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7334470Z  * [new tag]           v0.2.346   -> v0.2.346
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7334750Z  * [new tag]           v0.2.347   -> v0.2.347
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7335010Z  * [new tag]           v0.2.348   -> v0.2.348
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7335280Z  * [new tag]           v0.2.349   -> v0.2.349
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7335550Z  * [new tag]           v0.2.35    -> v0.2.35
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7335830Z  * [new tag]           v0.2.350   -> v0.2.350
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7336100Z  * [new tag]           v0.2.351   -> v0.2.351
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7336380Z  * [new tag]           v0.2.352   -> v0.2.352
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7336640Z  * [new tag]           v0.2.353   -> v0.2.353
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7336960Z  * [new tag]           v0.2.354   -> v0.2.354
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7337250Z  * [new tag]           v0.2.355   -> v0.2.355
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7337510Z  * [new tag]           v0.2.356   -> v0.2.356
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7337790Z  * [new tag]           v0.2.357   -> v0.2.357
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7338060Z  * [new tag]           v0.2.358   -> v0.2.358
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7338380Z  * [new tag]           v0.2.359   -> v0.2.359
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7338680Z  * [new tag]           v0.2.36    -> v0.2.36
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7338970Z  * [new tag]           v0.2.360   -> v0.2.360
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7339280Z  * [new tag]           v0.2.361   -> v0.2.361
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7339560Z  * [new tag]           v0.2.362   -> v0.2.362
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7339830Z  * [new tag]           v0.2.363   -> v0.2.363
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7340120Z  * [new tag]           v0.2.364   -> v0.2.364
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7340400Z  * [new tag]           v0.2.365   -> v0.2.365
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7340670Z  * [new tag]           v0.2.366   -> v0.2.366
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7340970Z  * [new tag]           v0.2.367   -> v0.2.367
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7341240Z  * [new tag]           v0.2.368   -> v0.2.368
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7341780Z  * [new tag]           v0.2.369   -> v0.2.369
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7342060Z  * [new tag]           v0.2.37    -> v0.2.37
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7342330Z  * [new tag]           v0.2.370   -> v0.2.370
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7342600Z  * [new tag]           v0.2.371   -> v0.2.371
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7342870Z  * [new tag]           v0.2.372   -> v0.2.372
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7343140Z  * [new tag]           v0.2.373   -> v0.2.373
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7343410Z  * [new tag]           v0.2.374   -> v0.2.374
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7343680Z  * [new tag]           v0.2.375   -> v0.2.375
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7343950Z  * [new tag]           v0.2.376   -> v0.2.376
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7344230Z  * [new tag]           v0.2.377   -> v0.2.377
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7344900Z  * [new tag]           v0.2.378   -> v0.2.378
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7346210Z  * [new tag]           v0.2.379   -> v0.2.379
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7347020Z  * [new tag]           v0.2.38    -> v0.2.38
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7347770Z  * [new tag]           v0.2.380   -> v0.2.380
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7348560Z  * [new tag]           v0.2.381   -> v0.2.381
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7349300Z  * [new tag]           v0.2.382   -> v0.2.382
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7350020Z  * [new tag]           v0.2.383   -> v0.2.383
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7350750Z  * [new tag]           v0.2.384   -> v0.2.384
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7351470Z  * [new tag]           v0.2.385   -> v0.2.385
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7352260Z  * [new tag]           v0.2.386   -> v0.2.386
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7353010Z  * [new tag]           v0.2.387   -> v0.2.387
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7353780Z  * [new tag]           v0.2.388   -> v0.2.388
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7355430Z  * [new tag]           v0.2.389   -> v0.2.389
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7356170Z  * [new tag]           v0.2.39    -> v0.2.39
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7356890Z  * [new tag]           v0.2.390   -> v0.2.390
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7357610Z  * [new tag]           v0.2.391   -> v0.2.391
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7358330Z  * [new tag]           v0.2.392   -> v0.2.392
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7359110Z  * [new tag]           v0.2.393   -> v0.2.393
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7359850Z  * [new tag]           v0.2.394   -> v0.2.394
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7360590Z  * [new tag]           v0.2.395   -> v0.2.395
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7361350Z  * [new tag]           v0.2.396   -> v0.2.396
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7362080Z  * [new tag]           v0.2.397   -> v0.2.397
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7362850Z  * [new tag]           v0.2.398   -> v0.2.398
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7363580Z  * [new tag]           v0.2.399   -> v0.2.399
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7364290Z  * [new tag]           v0.2.4     -> v0.2.4
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7364990Z  * [new tag]           v0.2.40    -> v0.2.40
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7365810Z  * [new tag]           v0.2.400   -> v0.2.400
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7366560Z  * [new tag]           v0.2.401   -> v0.2.401
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7367270Z  * [new tag]           v0.2.402   -> v0.2.402
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7367990Z  * [new tag]           v0.2.403   -> v0.2.403
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7368770Z  * [new tag]           v0.2.404   -> v0.2.404
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7369510Z  * [new tag]           v0.2.405   -> v0.2.405
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7370230Z  * [new tag]           v0.2.406   -> v0.2.406
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7371010Z  * [new tag]           v0.2.407   -> v0.2.407
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7372000Z  * [new tag]           v0.2.408   -> v0.2.408
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7372740Z  * [new tag]           v0.2.409   -> v0.2.409
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7373460Z  * [new tag]           v0.2.41    -> v0.2.41
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7374170Z  * [new tag]           v0.2.410   -> v0.2.410
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7374890Z  * [new tag]           v0.2.411   -> v0.2.411
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7375610Z  * [new tag]           v0.2.412   -> v0.2.412
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7376350Z  * [new tag]           v0.2.413   -> v0.2.413
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7377070Z  * [new tag]           v0.2.414   -> v0.2.414
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7377790Z  * [new tag]           v0.2.42    -> v0.2.42
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7378520Z  * [new tag]           v0.2.43    -> v0.2.43
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7379240Z  * [new tag]           v0.2.44    -> v0.2.44
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7380800Z  * [new tag]           v0.2.45    -> v0.2.45
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7382500Z  * [new tag]           v0.2.46    -> v0.2.46
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7383260Z  * [new tag]           v0.2.47    -> v0.2.47
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7384740Z  * [new tag]           v0.2.48    -> v0.2.48
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7385490Z  * [new tag]           v0.2.49    -> v0.2.49
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7386230Z  * [new tag]           v0.2.5     -> v0.2.5
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7387020Z  * [new tag]           v0.2.50    -> v0.2.50
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7387760Z  * [new tag]           v0.2.51    -> v0.2.51
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7388470Z  * [new tag]           v0.2.52    -> v0.2.52
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7389220Z  * [new tag]           v0.2.53    -> v0.2.53
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7389940Z  * [new tag]           v0.2.54    -> v0.2.54
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7390670Z  * [new tag]           v0.2.55    -> v0.2.55
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7391440Z  * [new tag]           v0.2.56    -> v0.2.56
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7392220Z  * [new tag]           v0.2.57    -> v0.2.57
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7393000Z  * [new tag]           v0.2.58    -> v0.2.58
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7393800Z  * [new tag]           v0.2.59    -> v0.2.59
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7394550Z  * [new tag]           v0.2.6     -> v0.2.6
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7395340Z  * [new tag]           v0.2.60    -> v0.2.60
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7396140Z  * [new tag]           v0.2.61    -> v0.2.61
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7396970Z  * [new tag]           v0.2.62    -> v0.2.62
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7397810Z  * [new tag]           v0.2.63    -> v0.2.63
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7398570Z  * [new tag]           v0.2.64    -> v0.2.64
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7400460Z  * [new tag]           v0.2.65    -> v0.2.65
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7401180Z  * [new tag]           v0.2.66    -> v0.2.66
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7403470Z  * [new tag]           v0.2.67    -> v0.2.67
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7404470Z  * [new tag]           v0.2.68    -> v0.2.68
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7405380Z  * [new tag]           v0.2.69    -> v0.2.69
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7406210Z  * [new tag]           v0.2.7     -> v0.2.7
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7407030Z  * [new tag]           v0.2.70    -> v0.2.70
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7408000Z  * [new tag]           v0.2.71    -> v0.2.71
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7408960Z  * [new tag]           v0.2.72    -> v0.2.72
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7409850Z  * [new tag]           v0.2.73    -> v0.2.73
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7410820Z  * [new tag]           v0.2.74    -> v0.2.74
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7411710Z  * [new tag]           v0.2.75    -> v0.2.75
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7412640Z  * [new tag]           v0.2.76    -> v0.2.76
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7413490Z  * [new tag]           v0.2.77    -> v0.2.77
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7414380Z  * [new tag]           v0.2.78    -> v0.2.78
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7415310Z  * [new tag]           v0.2.79    -> v0.2.79
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7416200Z  * [new tag]           v0.2.8     -> v0.2.8
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7417100Z  * [new tag]           v0.2.80    -> v0.2.80
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7417950Z  * [new tag]           v0.2.81    -> v0.2.81
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7418800Z  * [new tag]           v0.2.82    -> v0.2.82
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7419670Z  * [new tag]           v0.2.83    -> v0.2.83
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7420480Z  * [new tag]           v0.2.84    -> v0.2.84
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7421230Z  * [new tag]           v0.2.85    -> v0.2.85
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7425270Z  * [new tag]           v0.2.86    -> v0.2.86
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7426350Z  * [new tag]           v0.2.87    -> v0.2.87
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7427100Z  * [new tag]           v0.2.88    -> v0.2.88
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7427820Z  * [new tag]           v0.2.89    -> v0.2.89
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7428520Z  * [new tag]           v0.2.9     -> v0.2.9
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7429260Z  * [new tag]           v0.2.90    -> v0.2.90
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7430050Z  * [new tag]           v0.2.91    -> v0.2.91
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7430770Z  * [new tag]           v0.2.92    -> v0.2.92
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7431480Z  * [new tag]           v0.2.93    -> v0.2.93
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7432210Z  * [new tag]           v0.2.94    -> v0.2.94
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7433860Z  * [new tag]           v0.2.95    -> v0.2.95
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7434640Z  * [new tag]           v0.2.96    -> v0.2.96
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7435420Z  * [new tag]           v0.2.97    -> v0.2.97
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7436210Z  * [new tag]           v0.2.98    -> v0.2.98
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7436940Z  * [new tag]           v0.2.99    -> v0.2.99
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7440980Z [command]/opt/homebrew/bin/git branch --list --remote origin/main
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7441910Z   origin/main
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7443770Z [command]/opt/homebrew/bin/git rev-parse refs/remotes/origin/main
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7445130Z 468cab2c053a5f470670362bda94310b8520353b
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7505910Z ##[endgroup]
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7506700Z ##[group]Determining the checkout info
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7507220Z ##[endgroup]
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7507840Z [command]/opt/homebrew/bin/git sparse-checkout disable
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7508870Z [command]/opt/homebrew/bin/git config --local --unset-all extensions.worktreeConfig
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7583680Z ##[group]Checking out the ref
+guest	Run actions/checkout@v4	2026-10-08T17:17:34.7591920Z [command]/opt/homebrew/bin/git checkout --progress --force -B main refs/remotes/origin/main
+guest	Run actions/checkout@v4	2026-10-08T17:17:35.8539950Z Updating files:  71% (4878/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:35.8639180Z Updating files:  72% (4910/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:35.8738690Z Updating files:  73% (4978/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:35.8840920Z Updating files:  74% (5047/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:35.8926070Z Updating files:  75% (5115/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:35.9006700Z Updating files:  76% (5183/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:35.9094730Z Updating files:  77% (5251/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:35.9162290Z Updating files:  78% (5319/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:35.9276950Z Updating files:  79% (5388/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:36.0269020Z Updating files:  80% (5456/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:36.0386820Z Updating files:  81% (5524/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:36.0498040Z Updating files:  82% (5592/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:36.0684610Z Updating files:  83% (5660/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:36.0823350Z Updating files:  84% (5728/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:36.0913220Z Updating files:  85% (5797/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:36.1028130Z Updating files:  86% (5865/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:36.1124280Z Updating files:  87% (5933/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:36.1220910Z Updating files:  88% (6001/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:36.1340520Z Updating files:  89% (6069/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:36.1490180Z Updating files:  90% (6138/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:36.1580290Z Updating files:  91% (6206/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:36.1709140Z Updating files:  92% (6274/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:36.1910710Z Updating files:  93% (6342/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:36.2017710Z Updating files:  94% (6410/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:36.2154260Z Updating files:  95% (6479/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:36.2298390Z Updating files:  96% (6547/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:36.2428540Z Updating files:  97% (6615/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:36.2547090Z Updating files:  98% (6683/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:36.2671830Z Updating files:  99% (6751/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:36.2672430Z Updating files: 100% (6819/6819)
+guest	Run actions/checkout@v4	2026-10-08T17:17:36.2672640Z Updating files: 100% (6819/6819), done.
+guest	Run actions/checkout@v4	2026-10-08T17:17:36.2804460Z Switched to a new branch 'main'
+guest	Run actions/checkout@v4	2026-10-08T17:17:36.2812030Z branch 'main' set up to track 'origin/main'.
+guest	Run actions/checkout@v4	2026-10-08T17:17:36.2834310Z ##[endgroup]
+guest	Run actions/checkout@v4	2026-10-08T17:17:36.3012960Z [command]/opt/homebrew/bin/git log -1 --format=%H
+guest	Run actions/checkout@v4	2026-10-08T17:17:36.3107960Z 468cab2c053a5f470670362bda94310b8520353b
+guest	Run actions/setup-node@v4	﻿2026-10-08T17:17:36.3509510Z ##[group]Run actions/setup-node@v4
+guest	Run actions/setup-node@v4	2026-10-08T17:17:36.3509760Z with:
+guest	Run actions/setup-node@v4	2026-10-08T17:17:36.3509910Z   node-version: 22
+guest	Run actions/setup-node@v4	2026-10-08T17:17:36.3510060Z   always-auth: false
+guest	Run actions/setup-node@v4	2026-10-08T17:17:36.3510230Z   check-latest: false
+guest	Run actions/setup-node@v4	2026-10-08T17:17:36.3512890Z   token: ***
+guest	Run actions/setup-node@v4	2026-10-08T17:17:36.3513050Z env:
+guest	Run actions/setup-node@v4	2026-10-08T17:17:36.3515190Z   GH_TOKEN: ***
+guest	Run actions/setup-node@v4	2026-10-08T17:17:36.3515370Z ##[endgroup]
+guest	Run actions/setup-node@v4	2026-10-08T17:17:36.6236280Z Found in cache @ /Users/runner/hostedtoolcache/node/22.23.2/arm64
+guest	Run actions/setup-node@v4	2026-10-08T17:17:36.6311120Z (node:1169) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+guest	Run actions/setup-node@v4	2026-10-08T17:17:36.6313180Z ##[group]Environment details
+guest	Run actions/setup-node@v4	2026-10-08T17:17:36.6314750Z (Use `node --trace-deprecation ...` to show where the warning was created)
+guest	Run actions/setup-node@v4	2026-10-08T17:17:37.4477340Z node: v22.23.2
+guest	Run actions/setup-node@v4	2026-10-08T17:17:37.4557100Z npm: 10.9.8
+guest	Run actions/setup-node@v4	2026-10-08T17:17:37.4557690Z yarn: 1.22.22
+guest	Run actions/setup-node@v4	2026-10-08T17:17:37.4559330Z ##[endgroup]
+guest	Require exactly one artifact provenance mode	﻿2026-10-08T17:17:37.4688380Z ##[group]Run set -euo pipefail
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4688730Z [36;1mset -euo pipefail[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4689070Z [36;1m[[ "$RUNNER_LABEL" == macos-15-intel || "$RUNNER_LABEL" == macos-15 ]] || exit 1[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4689440Z [36;1mif [[ "$RUNNER_LABEL" == macos-15 ]]; then[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4689910Z [36;1m  [[ "$RUNNER_ARCH" == ARM64 && "$(uname -m)" == arm64 ]] || exit 1[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4690230Z [36;1melse[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4690470Z [36;1m  [[ "$RUNNER_ARCH" == X64 && "$(uname -m)" == x86_64 ]] || exit 1[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4690810Z [36;1mfi[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4691210Z [36;1mprintf 'HOSTED_RUNNER_PLATFORM label=%s runner_arch=%s machine=%s\n' "$RUNNER_LABEL" "$RUNNER_ARCH" "$(uname -m)"[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4691740Z [36;1mif [[ -n "$SCRAPE_DIAGNOSTIC_CPU_RATE" ]]; then[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4692260Z [36;1m  [[ "$ACCEPTANCE_CASE" == guest-scrape || "$ACCEPTANCE_CASE" == guest-scrape-development ]] || exit 1[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4692930Z [36;1m  node -e 'const n=Number(process.argv[1]); if (!Number.isFinite(n)||n<=1) process.exit(1)' "$SCRAPE_DIAGNOSTIC_CPU_RATE"[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4693600Z [36;1mfi[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4694010Z [36;1mif [[ "$ACCEPTANCE_CASE" != guest-scrape && "$ACCEPTANCE_CASE" != guest-scrape-development ]]; then[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4695130Z [36;1m  [[ "$SCRAPE_AUTH_MODE" == guest && "$SCRAPE_WIDTH_MODE" == narrow && -z "$SCRAPE_NORMAL_WIDTH_PX" ]] || exit 1[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4695550Z [36;1mfi[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4696210Z [36;1mif [[ "$SCRAPE_WIDTH_MODE" == normal ]]; then[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4698160Z [36;1m  node -e 'const n=Number(process.argv[1]); if (!Number.isSafeInteger(n)||n<=360) process.exit(1)' "$SCRAPE_NORMAL_WIDTH_PX"[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4699710Z [36;1melse[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4700310Z [36;1m  [[ -z "$SCRAPE_NORMAL_WIDTH_PX" ]] || exit 1[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4701570Z [36;1mfi[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4702010Z [36;1mif [[ "$ACCEPTANCE_CASE" == member-chat || "$ACCEPTANCE_CASE" == guest-scrape ]]; then[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4702750Z [36;1m  [[ -n "$RELEASE_RUN_ID" && -z "$DEVELOPMENT_RUN_ID" && -z "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4703230Z [36;1mfi[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4703470Z [36;1mif [[ "$ACCEPTANCE_CASE" == guest-scrape-development ]]; then[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4704030Z [36;1m  [[ -z "$RELEASE_RUN_ID" && -n "$DEVELOPMENT_RUN_ID" && -n "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4704480Z [36;1mfi[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4706310Z [36;1mif [[ "$ACCEPTANCE_CASE" == guest-seo || "$ACCEPTANCE_CASE" == settings-persistence || "$ACCEPTANCE_CASE" == settings-persistence-admin || "$ACCEPTANCE_CASE" == settings-persistence-member || "$ACCEPTANCE_CASE" == desktop-settings-guest || "$ACCEPTANCE_CASE" == desktop-settings-member || "$ACCEPTANCE_CASE" == desktop-settings-admin || "$ACCEPTANCE_CASE" == visibility-census-guest || "$ACCEPTANCE_CASE" == visibility-census-member || "$ACCEPTANCE_CASE" == visibility-census-admin || "$ACCEPTANCE_CASE" == audit-key-admin || "$ACCEPTANCE_CASE" == profile-admin || "$ACCEPTANCE_CASE" == profile-member || "$ACCEPTANCE_CASE" == startup-resource-diagnostic ]]; then[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4708470Z [36;1m  [[ -z "$RELEASE_RUN_ID" && -n "$DEVELOPMENT_RUN_ID" && -n "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4708970Z [36;1mfi[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4709940Z [36;1mif [[ "$ACCEPTANCE_CASE" == prepare-stale-results || "$ACCEPTANCE_CASE" == showcase-picker-admin || "$ACCEPTANCE_CASE" == showcase-stale-admin || "$ACCEPTANCE_CASE" == showcase-d47-admin || "$ACCEPTANCE_CASE" == showcase-d47-public-admin || "$ACCEPTANCE_CASE" == records-readonly-admin ]]; then[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4711080Z [36;1m  [[ -z "$RELEASE_RUN_ID" && -n "$DEVELOPMENT_RUN_ID" && -n "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4711660Z [36;1mfi[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4712450Z [36;1mif [[ "$PUBLISHED_STORE_CRX" == true ]]; then[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4713010Z [36;1m  [[ -z "$RELEASE_RUN_ID" && -z "$DEVELOPMENT_RUN_ID" && -z "$DEVELOPMENT_ARTIFACT_ID" ]] || exit 1[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4713520Z [36;1melif [[ -n "$RELEASE_RUN_ID" ]]; then[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4713940Z [36;1m  [[ -z "$DEVELOPMENT_RUN_ID" && -z "$DEVELOPMENT_ARTIFACT_ID" ]] || exit 1[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4714330Z [36;1melse[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4714680Z [36;1m  [[ "$DEVELOPMENT_RUN_ID" =~ ^[1-9][0-9]*$ && "$DEVELOPMENT_ARTIFACT_ID" =~ ^[1-9][0-9]*$ ]] || exit 1[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4715190Z [36;1mfi[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4780730Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4781030Z env:
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4783450Z   GH_TOKEN: ***
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4783610Z   RELEASE_RUN_ID: 
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4783820Z   DEVELOPMENT_RUN_ID: 37790643945
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4784030Z   DEVELOPMENT_ARTIFACT_ID: 11556064167
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4784280Z   PUBLISHED_STORE_CRX: false
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4785450Z   ACCEPTANCE_CASE: guest-seo
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4786100Z   SCRAPE_DIAGNOSTIC_CPU_RATE: 
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4786670Z   SCRAPE_AUTH_MODE: guest
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4787170Z   SCRAPE_WIDTH_MODE: narrow
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4787710Z   SCRAPE_NORMAL_WIDTH_PX: 
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4789080Z   RUNNER_LABEL: macos-15
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.4789580Z ##[endgroup]
+guest	Require exactly one artifact provenance mode	2026-10-08T17:17:37.5421550Z HOSTED_RUNNER_PLATFORM label=macos-15 runner_arch=ARM64 machine=arm64
+guest	Require selected authentication before browser setup	﻿2026-10-08T17:17:37.5529380Z ##[group]Run node scripts/hosted-guest-acceptance.mjs
+guest	Require selected authentication before browser setup	2026-10-08T17:17:37.5530350Z [36;1mnode scripts/hosted-guest-acceptance.mjs[0m
+guest	Require selected authentication before browser setup	2026-10-08T17:17:37.5609880Z shell: /bin/bash -e {0}
+guest	Require selected authentication before browser setup	2026-10-08T17:17:37.5610140Z env:
+guest	Require selected authentication before browser setup	2026-10-08T17:17:37.5612450Z   GH_TOKEN: ***
+guest	Require selected authentication before browser setup	2026-10-08T17:17:37.5612650Z   MATRX_HOSTED_PHASE: preflight
+guest	Require selected authentication before browser setup	2026-10-08T17:17:37.5612890Z   MATRX_HOSTED_ACCEPTANCE_CASE: guest-seo
+guest	Require selected authentication before browser setup	2026-10-08T17:17:37.5613170Z   MATRX_HOSTED_SEO_CASE_SCOPE: controlled
+guest	Require selected authentication before browser setup	2026-10-08T17:17:37.5613420Z   MATRX_HOSTED_SEO_METADATA_FIXTURE: none
+guest	Require selected authentication before browser setup	2026-10-08T17:17:37.5613680Z   MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC: 0
+guest	Require selected authentication before browser setup	2026-10-08T17:17:37.5614040Z   MATRX_HOSTED_SEO_INTERRUPT_AFTER_TARGET: manual_button_returns_to_current_page
+guest	Require selected authentication before browser setup	2026-10-08T17:17:37.5614400Z   MATRX_HOSTED_DESKTOP_SETTINGS_CASE: full
+guest	Require selected authentication before browser setup	2026-10-08T17:17:37.5614700Z   MATRX_HOSTED_PUBLISHED_STORE_CRX: 
+guest	Require selected authentication before browser setup	2026-10-08T17:17:37.5614930Z   MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE: 
+guest	Require selected authentication before browser setup	2026-10-08T17:17:37.5615180Z   MATRX_SCRAPE_RELOAD_OPEN_DIAGNOSTIC: 0
+guest	Require selected authentication before browser setup	2026-10-08T17:17:37.5615500Z   MATRX_SCRAPE_AUTH_MODE: guest
+guest	Require selected authentication before browser setup	2026-10-08T17:17:37.5615740Z   MATRX_SCRAPE_WIDTH_MODE: narrow
+guest	Require selected authentication before browser setup	2026-10-08T17:17:37.5615990Z   MATRX_SCRAPE_MIN_PANEL_WIDTH_PX: 
+guest	Require selected authentication before browser setup	2026-10-08T17:17:37.5616220Z   MATRX_HOSTED_MEMBER_LINK_JSON: 
+guest	Require selected authentication before browser setup	2026-10-08T17:17:37.5616480Z   MATRX_HOSTED_ADMIN_CREDENTIALS_JSON: 
+guest	Require selected authentication before browser setup	2026-10-08T17:17:37.5616740Z   MATRX_HOSTED_PROFILE_ORGANIZATION_JSON: 
+guest	Require selected authentication before browser setup	2026-10-08T17:17:37.5616970Z ##[endgroup]
+guest	Require selected authentication before browser setup	2026-10-08T17:17:37.7099980Z HOSTED_CREDENTIAL_PREFLIGHT_READY
+guest	Disable indexing on the disposable hosted VM	﻿2026-10-08T17:17:37.7183640Z ##[group]Run set -euo pipefail
+guest	Disable indexing on the disposable hosted VM	2026-10-08T17:17:37.7194870Z [36;1mset -euo pipefail[0m
+guest	Disable indexing on the disposable hosted VM	2026-10-08T17:17:37.7219610Z [36;1m[[ "$RUNNER_ENVIRONMENT" == github-hosted && "$RUNNER_OS" == macOS ]] || exit 1[0m
+guest	Disable indexing on the disposable hosted VM	2026-10-08T17:17:37.7220850Z [36;1msudo /usr/bin/mdutil -i off /[0m
+guest	Disable indexing on the disposable hosted VM	2026-10-08T17:17:37.7221920Z [36;1msudo /usr/bin/mdutil -i off /System/Volumes/Data[0m
+guest	Disable indexing on the disposable hosted VM	2026-10-08T17:17:37.7222750Z [36;1mroot_status="$(/usr/bin/mdutil -s /)"[0m
+guest	Disable indexing on the disposable hosted VM	2026-10-08T17:17:37.7223550Z [36;1mdata_status="$(/usr/bin/mdutil -s /System/Volumes/Data)"[0m
+guest	Disable indexing on the disposable hosted VM	2026-10-08T17:17:37.7224500Z [36;1mprintf '%s\n%s\n' "$root_status" "$data_status"[0m
+guest	Disable indexing on the disposable hosted VM	2026-10-08T17:17:37.7225360Z [36;1m[[ "$root_status" == *"Indexing disabled."* ]] || exit 1[0m
+guest	Disable indexing on the disposable hosted VM	2026-10-08T17:17:37.7252370Z [36;1m[[ "$data_status" == *"Indexing disabled."* ]] || exit 1[0m
+guest	Disable indexing on the disposable hosted VM	2026-10-08T17:17:37.7294500Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+guest	Disable indexing on the disposable hosted VM	2026-10-08T17:17:37.7295690Z env:
+guest	Disable indexing on the disposable hosted VM	2026-10-08T17:17:37.7302030Z   GH_TOKEN: ***
+guest	Disable indexing on the disposable hosted VM	2026-10-08T17:17:37.7302640Z ##[endgroup]
+guest	Disable indexing on the disposable hosted VM	2026-10-08T17:17:37.8190500Z 2026-10-08 17:17:37.818 mdutil[1192:6480] mdutil disabling Spotlight: / -> kMDConfigSearchLevelFSSearchOnly
+guest	Disable indexing on the disposable hosted VM	2026-10-08T17:17:37.9262570Z /:
+guest	Disable indexing on the disposable hosted VM	2026-10-08T17:17:37.9266550Z 	Indexing disabled.
+guest	Disable indexing on the disposable hosted VM	2026-10-08T17:17:37.9607870Z 2026-10-08 17:17:37.960 mdutil[1196:6500] mdutil disabling Spotlight: /System/Volumes/Data -> kMDConfigSearchLevelFSSearchOnly
+guest	Disable indexing on the disposable hosted VM	2026-10-08T17:17:38.1914800Z /System/Volumes/Data:
+guest	Disable indexing on the disposable hosted VM	2026-10-08T17:17:38.1915600Z 	Indexing disabled.
+guest	Disable indexing on the disposable hosted VM	2026-10-08T17:17:38.2168790Z /:
+guest	Disable indexing on the disposable hosted VM	2026-10-08T17:17:38.2169470Z 	Indexing disabled.
+guest	Disable indexing on the disposable hosted VM	2026-10-08T17:17:38.2170110Z /System/Volumes/Data:
+guest	Disable indexing on the disposable hosted VM	2026-10-08T17:17:38.2170700Z 	Indexing disabled.
+guest	Wait for measured package readiness	﻿2026-10-08T17:17:38.2216310Z ##[group]Run node scripts/hosted-resource-readiness.mjs
+guest	Wait for measured package readiness	2026-10-08T17:17:38.2216710Z [36;1mnode scripts/hosted-resource-readiness.mjs[0m
+guest	Wait for measured package readiness	2026-10-08T17:17:38.2249420Z shell: /bin/bash -e {0}
+guest	Wait for measured package readiness	2026-10-08T17:17:38.2249650Z env:
+guest	Wait for measured package readiness	2026-10-08T17:17:38.2251920Z   GH_TOKEN: ***
+guest	Wait for measured package readiness	2026-10-08T17:17:38.2252090Z ##[endgroup]
+guest	Wait for measured package readiness	2026-10-08T17:17:39.3688510Z {"code":"RESOURCE_READINESS_SAMPLE","busy":0.3,"loadPerCpu":23.55333333333333,"healthy":1}
+guest	Wait for measured package readiness	2026-10-08T17:17:55.3939330Z {"code":"RESOURCE_READINESS_SAMPLE","busy":0.11,"loadPerCpu":18.403333333333332,"healthy":2}
+guest	Wait for measured package readiness	2026-10-08T17:18:11.4255540Z {"code":"RESOURCE_READINESS_SAMPLE","busy":0.01,"loadPerCpu":14.35,"healthy":3}
+guest	Prepare pinned browser driver under an owned permit	﻿2026-10-08T17:18:11.4516550Z ##[group]Run mkdir -p "$RUNNER_TEMP/guest-resource-profile"
+guest	Prepare pinned browser driver under an owned permit	2026-10-08T17:18:11.4517830Z [36;1mmkdir -p "$RUNNER_TEMP/guest-resource-profile"[0m
+guest	Prepare pinned browser driver under an owned permit	2026-10-08T17:18:11.4518640Z [36;1mnode scripts/stabilization-resource.mjs run --run-id "hosted-package-37815373369-1" --profile-dir "$RUNNER_TEMP/guest-resource-profile" -- node scripts/hosted-guest-acceptance.mjs[0m
+guest	Prepare pinned browser driver under an owned permit	2026-10-08T17:18:11.4588690Z shell: /bin/bash -e {0}
+guest	Prepare pinned browser driver under an owned permit	2026-10-08T17:18:11.4588980Z env:
+guest	Prepare pinned browser driver under an owned permit	2026-10-08T17:18:11.4593060Z   GH_TOKEN: ***
+guest	Prepare pinned browser driver under an owned permit	2026-10-08T17:18:11.4593430Z   MATRX_HOSTED_PHASE: package
+guest	Prepare pinned browser driver under an owned permit	2026-10-08T17:18:11.4593710Z   MATRX_HOSTED_ACCEPTANCE_CASE: guest-seo
+guest	Prepare pinned browser driver under an owned permit	2026-10-08T17:18:11.4594110Z   MATRX_HOSTED_DESKTOP_SETTINGS_CASE: full
+guest	Prepare pinned browser driver under an owned permit	2026-10-08T17:18:11.4595110Z   MATRX_HOSTED_BROWSER_RUNTIME_DIR: /Users/runner/work/_temp/browser-runtime
+guest	Prepare pinned browser driver under an owned permit	2026-10-08T17:18:11.4596890Z   PLAYWRIGHT_BROWSERS_PATH: /Users/runner/work/_temp/playwright-browsers
+guest	Prepare pinned browser driver under an owned permit	2026-10-08T17:18:11.4598080Z ##[endgroup]
+guest	Prepare pinned browser driver under an owned permit	2026-10-08T17:18:11.6297710Z {"schema":1,"at":"2026-10-08T17:18:11.623Z","runId":"hosted-package-37815373369-1","path":"/Users/runner/work/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37815373369-1.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+guest	Prepare pinned browser driver under an owned permit	2026-10-08T17:19:19.1479100Z {"schema":1,"at":"2026-10-08T17:19:19.138Z","runId":"hosted-package-37815373369-1","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":6.02,"requiredMemoryGiB":4,"oneMinuteLoad":43.05,"logicalCpus":3,"cpuBusyFraction":0.07142857142857142,"swapUsedMiB":0,"repoFreeGiB":43.272029876708984,"profileFreeGiB":43.272029876708984,"safetyFreeGiB":43.272029876708984,"systemFreeGiB":43.272029876708984},"cpuBusySamples":[0.02,0.03,0.02,0.01,0.12,0.15,0.15],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+guest	Prepare pinned browser driver under an owned permit	2026-10-08T17:19:20.9543240Z 
+guest	Prepare pinned browser driver under an owned permit	2026-10-08T17:19:20.9544990Z added 1 package in 2s
+guest	Prepare pinned browser driver under an owned permit	2026-10-08T17:19:21.0508020Z HOSTED_PACKAGE_READY 1.56.1
+guest	Prepare pinned browser driver under an owned permit	2026-10-08T17:19:21.0710350Z {"schema":1,"at":"2026-10-08T17:19:21.057Z","runId":"hosted-package-37815373369-1","childExitCode":0,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+guest	Prepare pinned browser driver under an owned permit	2026-10-08T17:19:21.1637580Z {"schema":1,"at":"2026-10-08T17:19:21.160Z","runId":"hosted-package-37815373369-1","admitted":true,"resourceInvalid":false,"exitCode":0,"decision":"valid","code":"RESOURCE_FINAL_DECISION"}
+guest	Wait for measured browser readiness	﻿2026-10-08T17:19:34.2036860Z ##[group]Run node scripts/hosted-resource-readiness.mjs
+guest	Wait for measured browser readiness	2026-10-08T17:19:34.2038270Z [36;1mnode scripts/hosted-resource-readiness.mjs[0m
+guest	Wait for measured browser readiness	2026-10-08T17:19:34.2130710Z shell: /bin/bash -e {0}
+guest	Wait for measured browser readiness	2026-10-08T17:19:34.2131540Z env:
+guest	Wait for measured browser readiness	2026-10-08T17:19:34.2135130Z   GH_TOKEN: ***
+guest	Wait for measured browser readiness	2026-10-08T17:19:34.2135610Z ##[endgroup]
+guest	Wait for measured browser readiness	2026-10-08T17:19:35.3961380Z {"code":"RESOURCE_READINESS_SAMPLE","busy":0.1,"loadPerCpu":3.763333333333333,"healthy":1}
+guest	Wait for measured browser readiness	2026-10-08T17:19:51.4714370Z {"code":"RESOURCE_READINESS_SAMPLE","busy":0.18,"loadPerCpu":2.983333333333333,"healthy":2}
+guest	Wait for measured browser readiness	2026-10-08T17:20:07.5292830Z {"code":"RESOURCE_READINESS_SAMPLE","busy":0.14,"loadPerCpu":2.3433333333333333,"healthy":3}
+guest	Prepare full Chromium under a fresh owned permit	﻿2026-10-08T17:20:07.5560390Z ##[group]Run node scripts/stabilization-resource.mjs run --run-id "hosted-browser-37815373369-1" --profile-dir "$RUNNER_TEMP/guest-resource-profile" -- node scripts/hosted-guest-acceptance.mjs
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:20:07.5562160Z [36;1mnode scripts/stabilization-resource.mjs run --run-id "hosted-browser-37815373369-1" --profile-dir "$RUNNER_TEMP/guest-resource-profile" -- node scripts/hosted-guest-acceptance.mjs[0m
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:20:07.5643470Z shell: /bin/bash -e {0}
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:20:07.5643840Z env:
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:20:07.5646720Z   GH_TOKEN: ***
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:20:07.5647150Z   MATRX_HOSTED_PHASE: browser
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:20:07.5647520Z   MATRX_HOSTED_ACCEPTANCE_CASE: guest-seo
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:20:07.5647970Z   MATRX_HOSTED_BROWSER_RUNTIME_DIR: /Users/runner/work/_temp/browser-runtime
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:20:07.5648460Z   PLAYWRIGHT_BROWSERS_PATH: /Users/runner/work/_temp/playwright-browsers
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:20:07.5648880Z ##[endgroup]
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:20:07.7579280Z {"schema":1,"at":"2026-10-08T17:20:07.716Z","runId":"hosted-browser-37815373369-1","path":"/Users/runner/work/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37815373369-1.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:15.4681880Z {"schema":1,"at":"2026-10-08T17:21:15.462Z","runId":"hosted-browser-37815373369-1","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":6.02,"requiredMemoryGiB":4,"oneMinuteLoad":7.029999999999999,"logicalCpus":3,"cpuBusyFraction":0.09857142857142857,"swapUsedMiB":0,"repoFreeGiB":43.28329849243164,"profileFreeGiB":43.28329849243164,"safetyFreeGiB":43.28329849243164,"systemFreeGiB":43.28329849243164},"cpuBusySamples":[0.05,0.17,0.02,0.35,0.02,0.03,0.05],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:15.9782620Z Downloading Chromium 141.0.7390.37 (playwright build v1194) from https://cdn.playwright.dev/dbazure/download/playwright/builds/chromium/1194/chromium-mac-arm64.zip
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:16.2339890Z |                                                                                |   0% of 129.7 MiB
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:16.3731870Z |■■■■■■■■                                                                        |  10% of 129.7 MiB
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:16.4685230Z |■■■■■■■■■■■■■■■■                                                                |  20% of 129.7 MiB
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:16.5789490Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 129.7 MiB
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:16.6545270Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 129.7 MiB
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:16.7448950Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  50% of 129.7 MiB
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:16.8356470Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 129.7 MiB
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:16.9225430Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 129.7 MiB
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:17.0057430Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 129.7 MiB
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:17.4318340Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  90% of 129.7 MiB
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:17.5907020Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 129.7 MiB
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:21.6160330Z Chromium 141.0.7390.37 (playwright build v1194) downloaded to /Users/runner/work/_temp/playwright-browsers/chromium-1194
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:21.6232960Z Downloading FFMPEG playwright build v1011 from https://cdn.playwright.dev/dbazure/download/playwright/builds/ffmpeg/1011/ffmpeg-mac-arm64.zip
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:21.9584830Z |                                                                                |   1% of 1 MiB
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:21.9748040Z |■■■■■■■■                                                                        |  10% of 1 MiB
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:21.9836450Z |■■■■■■■■■■■■■■■■                                                                |  20% of 1 MiB
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:21.9947210Z |■■■■■■■■■■■■■■■■■■■■■■■■                                                        |  30% of 1 MiB
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:22.0049390Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                                |  40% of 1 MiB
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:22.0157420Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                        |  51% of 1 MiB
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:22.0259410Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                                |  60% of 1 MiB
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:22.0335820Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                        |  70% of 1 MiB
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:22.0379400Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■                |  80% of 1 MiB
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:22.0390980Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■        |  91% of 1 MiB
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:22.0394050Z |■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■| 100% of 1 MiB
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:22.0647270Z FFMPEG playwright build v1011 downloaded to /Users/runner/work/_temp/playwright-browsers/ffmpeg-1011
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:23.1853700Z HOSTED_BROWSER_READY 1194 browser
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:23.2205630Z {"schema":1,"at":"2026-10-08T17:21:23.188Z","runId":"hosted-browser-37815373369-1","childExitCode":0,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T17:21:23.3568490Z {"schema":1,"at":"2026-10-08T17:21:23.347Z","runId":"hosted-browser-37815373369-1","admitted":true,"resourceInvalid":false,"exitCode":0,"decision":"valid","code":"RESOURCE_FINAL_DECISION"}
+guest	Wait for measured acceptance readiness	﻿2026-10-08T17:21:30.5182050Z ##[group]Run node scripts/hosted-resource-readiness.mjs
+guest	Wait for measured acceptance readiness	2026-10-08T17:21:30.5182900Z [36;1mnode scripts/hosted-resource-readiness.mjs[0m
+guest	Wait for measured acceptance readiness	2026-10-08T17:21:30.5318730Z shell: /bin/bash -e {0}
+guest	Wait for measured acceptance readiness	2026-10-08T17:21:30.5319120Z env:
+guest	Wait for measured acceptance readiness	2026-10-08T17:21:30.5322130Z   GH_TOKEN: ***
+guest	Wait for measured acceptance readiness	2026-10-08T17:21:30.5322380Z ##[endgroup]
+guest	Wait for measured acceptance readiness	2026-10-08T17:21:31.8659720Z {"code":"RESOURCE_READINESS_SAMPLE","busy":0.11,"loadPerCpu":1.17,"healthy":1}
+guest	Wait for measured acceptance readiness	2026-10-08T17:21:48.0054460Z {"code":"RESOURCE_READINESS_SAMPLE","busy":0.55,"loadPerCpu":0.96,"healthy":2}
+guest	Wait for measured acceptance readiness	2026-10-08T17:22:04.1886320Z {"code":"RESOURCE_READINESS_SAMPLE","busy":0.01,"loadPerCpu":0.9133333333333334,"healthy":3}
+guest	Exercise the selected Chrome side-panel case	﻿2026-10-08T17:22:04.2260440Z ##[group]Run mkdir -p "$RUNNER_TEMP/guest-resource-profile"
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2261380Z [36;1mmkdir -p "$RUNNER_TEMP/guest-resource-profile"[0m
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2264330Z [36;1mnode scripts/stabilization-resource.mjs run --run-id "hosted-guest-37815373369-1" --profile-dir "$RUNNER_TEMP/guest-resource-profile" -- node scripts/hosted-guest-acceptance.mjs[0m
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2368430Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2369300Z env:
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2376270Z   GH_TOKEN: ***
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2377600Z   MATRX_PLAYWRIGHT_MODULE: /Users/runner/work/_temp/browser-runtime/node_modules/playwright-core/index.mjs
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2379230Z   MATRX_HOSTED_BROWSER_RUNTIME_DIR: /Users/runner/work/_temp/browser-runtime
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2380920Z   PLAYWRIGHT_BROWSERS_PATH: /Users/runner/work/_temp/playwright-browsers
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2384500Z   MATRX_HOSTED_RELEASE_ARTIFACT_DIR: 
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2385640Z   MATRX_HOSTED_GUEST_OUTPUT_DIR: /Users/runner/work/_temp/guest-acceptance
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2386980Z   MATRX_HOSTED_RELEASE_SHA: 
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2387660Z   MATRX_HOSTED_DEV_RUN_ID: 37790643945
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2388250Z   MATRX_HOSTED_DEV_ARTIFACT_ID: 11556064167
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2389180Z   MATRX_HOSTED_PUBLISHED_STORE_CRX: 
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2390020Z   MATRX_HOSTED_ACCEPTANCE_CASE: guest-seo
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2390740Z   MATRX_HOSTED_DESKTOP_SETTINGS_CASE: full
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2391880Z   MATRX_D47_RESPONSE_ORDER: current-first
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2392260Z   MATRX_HOSTED_SEO_CASE_SCOPE: controlled
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2392650Z   MATRX_HOSTED_SEO_METADATA_FIXTURE: none
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2393040Z   MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC: 0
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2394640Z   MATRX_HOSTED_SEO_INTERRUPT_AFTER_TARGET: manual_button_returns_to_current_page
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2395120Z   MATRX_STARTUP_INTERVAL_DIAGNOSTIC: 0
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2395420Z   MATRX_D47_PUBLIC_RACE_PREFLIGHT: 0
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2395710Z   MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE: 
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2396140Z   MATRX_SCRAPE_RELOAD_OPEN_DIAGNOSTIC: 0
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2396490Z   MATRX_SCRAPE_AUTH_MODE: guest
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2396860Z   MATRX_SCRAPE_WIDTH_MODE: narrow
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2397200Z   MATRX_SCRAPE_MIN_PANEL_WIDTH_PX: 
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2397490Z   MATRX_HOSTED_MEMBER_LINK_JSON: 
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2397870Z   MATRX_HOSTED_ADMIN_CREDENTIALS_JSON: 
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2398230Z   MATRX_HOSTED_PROFILE_ORGANIZATION_JSON: 
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2398700Z   WXT_SUPABASE_URL: ***
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2399320Z   WXT_SUPABASE_PUBLISHABLE_KEY: ***
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.2399680Z ##[endgroup]
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:22:04.4857510Z {"schema":1,"at":"2026-10-08T17:22:04.446Z","runId":"hosted-guest-37815373369-1","path":"/Users/runner/work/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37815373369-1.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:12.0968170Z {"schema":1,"at":"2026-10-08T17:23:12.088Z","runId":"hosted-guest-37815373369-1","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":5.88,"requiredMemoryGiB":4,"oneMinuteLoad":2.76,"logicalCpus":3,"cpuBusyFraction":0.14142857142857143,"swapUsedMiB":0,"repoFreeGiB":42.97627258300781,"profileFreeGiB":42.97627258300781,"safetyFreeGiB":42.97627258300781,"systemFreeGiB":42.97627258300781},"cpuBusySamples":[0.15,0.01,0.59,0.04,0.16,0.03,0.01],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:12.4945320Z HOSTED_BROWSER_READY 1194 acceptance
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:28.2796600Z {"schema":1,"at":"2026-10-08T17:23:28.242Z","runId":"hosted-guest-37815373369-1","reasons":[],"sample":{"pressureLevel":1,"availableMemoryGiB":5.81,"requiredMemoryGiB":4,"oneMinuteLoad":1.81,"logicalCpus":3,"cpuBusyFraction":0.46,"swapUsedMiB":0,"repoFreeGiB":42.61042785644531,"profileFreeGiB":42.61042785644531,"safetyFreeGiB":42.61042785644531,"systemFreeGiB":42.61042785644531},"code":"RESOURCE_WATCH_HEALTHY"}
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:28.8200740Z DEVELOPMENT_TEST_IMPORTED /Users/runner/work/matrx-extend/matrx-extend/test-results/ci-artifacts/e7b7dc1ecae946369cebb482915faf7ef792c692/37790643945-1 exact_pushed_commit_only
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:30.7264310Z PREPARED_DEVELOPMENT e7b7dc1ecae946369cebb482915faf7ef792c692 550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:41.3041760Z BROWSER_PANEL_CONTEXT_READY {"first":{"contextCount":1,"sidePanelCount":1,"expectedExtensionCount":1,"exactUrlCount":1,"globalTabCount":1,"exactContextCount":1,"missingDocumentUrlCount":0,"emptyDocumentUrlCount":0,"otherExtensionUrlCount":0,"nonExtensionUrlCount":0},"last":{"contextCount":1,"sidePanelCount":1,"expectedExtensionCount":1,"exactUrlCount":1,"globalTabCount":1,"exactContextCount":1,"missingDocumentUrlCount":0,"emptyDocumentUrlCount":0,"otherExtensionUrlCount":0,"nonExtensionUrlCount":0},"attempts":1,"elapsed_ms":125,"exact_expected_appeared":true}
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:44.4698460Z {"schema":1,"at":"2026-10-08T17:23:44.457Z","runId":"hosted-guest-37815373369-1","reasons":[],"sample":{"pressureLevel":1,"availableMemoryGiB":5.74,"requiredMemoryGiB":4,"oneMinuteLoad":2.21,"logicalCpus":3,"cpuBusyFraction":0.61,"swapUsedMiB":0,"repoFreeGiB":42.76718521118164,"profileFreeGiB":42.76718521118164,"safetyFreeGiB":42.76718521118164,"systemFreeGiB":42.76718521118164},"code":"RESOURCE_WATCH_HEALTHY"}
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:48.1511700Z node:internal/modules/run_main:123
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:48.1525410Z     triggerUncaughtException(
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:48.1526760Z     ^
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:48.1527310Z 
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:48.1528640Z AssertionError [ERR_ASSERTION]: native side-panel acceptance exited SIGTERM
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:48.1529840Z 
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:48.1530360Z null !== 0
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:48.1530960Z 
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:48.1546300Z     at run (file:///Users/runner/work/matrx-extend/matrx-extend/scripts/hosted-guest-acceptance.mjs:565:12)
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:48.1547310Z     at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:48.1548150Z     at async file:///Users/runner/work/matrx-extend/matrx-extend/scripts/hosted-guest-acceptance.mjs:785:1 {
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:48.1548780Z   generatedMessage: false,
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:48.1549130Z   code: 'ERR_ASSERTION',
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:48.1549450Z   actual: null,
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:48.1549830Z   expected: 0,
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:48.1550250Z   operator: 'strictEqual',
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:48.1550690Z   diff: 'simple'
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:48.1551060Z }
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:48.1551210Z 
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:48.1551350Z Node.js v22.23.2
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:48.1779710Z {"schema":1,"at":"2026-10-08T17:23:48.174Z","runId":"hosted-guest-37815373369-1","childExitCode":1,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:48.2232550Z {"schema":1,"at":"2026-10-08T17:23:48.200Z","runId":"hosted-guest-37815373369-1","groupId":5394,"reason":"child-exited-with-owned-descendants","signal":"SIGTERM","code":"RESOURCE_GROUP_STOP_REQUESTED"}
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:48.9234390Z {"schema":1,"at":"2026-10-08T17:23:48.919Z","runId":"hosted-guest-37815373369-1","admitted":true,"resourceInvalid":false,"exitCode":1,"decision":"child_failed","code":"RESOURCE_FINAL_DECISION"}
+guest	Exercise the selected Chrome side-panel case	2026-10-08T17:23:59.4940200Z ##[error]Process completed with exit code 1.
+guest	Upload browser result and native-panel screenshots	﻿2026-10-08T17:23:59.5204930Z ##[group]Run actions/upload-artifact@v4
+guest	Upload browser result and native-panel screenshots	2026-10-08T17:23:59.5205430Z with:
+guest	Upload browser result and native-panel screenshots	2026-10-08T17:23:59.5205600Z   name: hosted-guest-37815373369-1
+guest	Upload browser result and native-panel screenshots	2026-10-08T17:23:59.5205880Z   if-no-files-found: ignore
+guest	Upload browser result and native-panel screenshots	2026-10-08T17:23:59.5209180Z   path: docs/stabilization/resource-journals/hosted-*.jsonl
+guest	Upload browser result and native-panel screenshots	test-results/guest-chat-store-*.json
+guest	Upload browser result and native-panel screenshots	test-results/scrape-guest-native-*.json
+guest	Upload browser result and native-panel screenshots	test-results/seo-guest-acceptance.json
+guest	Upload browser result and native-panel screenshots	test-results/settings-local-controls-acceptance.json
+guest	Upload browser result and native-panel screenshots	test-results/settings-d87-native-*.json
+guest	Upload browser result and native-panel screenshots	test-results/visibility-census-*.json
+guest	Upload browser result and native-panel screenshots	test-results/visibility-census-guest.json.guest-account-readiness.png
+guest	Upload browser result and native-panel screenshots	test-results/settings-desktop-native-*.json
+guest	Upload browser result and native-panel screenshots	test-results/audit-key-native-*.json
+guest	Upload browser result and native-panel screenshots	test-results/reviewer-chat-store-*.json
+guest	Upload browser result and native-panel screenshots	test-results/prepare-stale-result-native-*.json
+guest	Upload browser result and native-panel screenshots	/Users/runner/work/_temp/showcase-picker-native-*.json
+guest	Upload browser result and native-panel screenshots	/Users/runner/work/_temp/showcase-d47-native-*.json
+guest	Upload browser result and native-panel screenshots	/Users/runner/work/_temp/showcase-d47-public-native-*.json
+guest	Upload browser result and native-panel screenshots	/Users/runner/work/_temp/records-readonly-native-*.json
+guest	Upload browser result and native-panel screenshots	test-results/profile-native-hosted-profile-*.json
+guest	Upload browser result and native-panel screenshots	test-results/native-sidepanel-qa-*/*.png
+guest	Upload browser result and native-panel screenshots	/Users/runner/work/_temp/guest-acceptance/startup-interval-diagnostic.json
+guest	Upload browser result and native-panel screenshots	/Users/runner/work/_temp/guest-acceptance/native-sidepanel-qa-*/*.png
+guest	Upload browser result and native-panel screenshots	
+guest	Upload browser result and native-panel screenshots	2026-10-08T17:23:59.5214120Z   compression-level: 6
+guest	Upload browser result and native-panel screenshots	2026-10-08T17:23:59.5214400Z   overwrite: false
+guest	Upload browser result and native-panel screenshots	2026-10-08T17:23:59.5214620Z   include-hidden-files: false
+guest	Upload browser result and native-panel screenshots	2026-10-08T17:23:59.5214880Z env:
+guest	Upload browser result and native-panel screenshots	2026-10-08T17:23:59.5217940Z   GH_TOKEN: ***
+guest	Upload browser result and native-panel screenshots	2026-10-08T17:23:59.5218210Z ##[endgroup]
+guest	Upload browser result and native-panel screenshots	2026-10-08T17:24:00.0573180Z (node:6388) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+guest	Upload browser result and native-panel screenshots	2026-10-08T17:24:00.0604070Z (Use `node --trace-deprecation ...` to show where the warning was created)
+guest	Upload browser result and native-panel screenshots	2026-10-08T17:24:00.2511090Z Multiple search paths detected. Calculating the least common ancestor of all paths
+guest	Upload browser result and native-panel screenshots	2026-10-08T17:24:00.2516560Z The least common ancestor is /Users/runner/work. This will be the root directory of the artifact
+guest	Upload browser result and native-panel screenshots	2026-10-08T17:24:00.2517410Z With the provided path, there will be 12 files uploaded
+guest	Upload browser result and native-panel screenshots	2026-10-08T17:24:00.2518660Z Artifact name is valid!
+guest	Upload browser result and native-panel screenshots	2026-10-08T17:24:00.2519130Z Root directory input is valid!
+guest	Upload browser result and native-panel screenshots	2026-10-08T17:24:00.6687630Z Beginning upload of artifact content to blob storage
+guest	Upload browser result and native-panel screenshots	2026-10-08T17:24:00.7104420Z (node:6388) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+guest	Upload browser result and native-panel screenshots	2026-10-08T17:24:01.0952800Z Uploaded bytes 59181
+guest	Upload browser result and native-panel screenshots	2026-10-08T17:24:01.1718880Z Finished uploading artifact content to blob storage!
+guest	Upload browser result and native-panel screenshots	2026-10-08T17:24:01.1720880Z SHA256 digest of uploaded artifact zip is 95d81260c43d7bb84876794a61e65d5f7d0959eac39e960c0c7d7742a70b36de
+guest	Upload browser result and native-panel screenshots	2026-10-08T17:24:01.1722600Z Finalizing artifact upload
+guest	Upload browser result and native-panel screenshots	2026-10-08T17:24:01.4495150Z Artifact hosted-guest-37815373369-1.zip successfully finalized. Artifact ID 11567206981
+guest	Upload browser result and native-panel screenshots	2026-10-08T17:24:01.4497920Z Artifact hosted-guest-37815373369-1 has been successfully uploaded! Final size is 59181 bytes. Artifact ID is 11567206981
+guest	Upload browser result and native-panel screenshots	2026-10-08T17:24:01.4516630Z Artifact download URL: https://github.com/armanisadeghi/matrx-extend/actions/runs/37815373369/artifacts/11567206981
+guest	Post Run actions/checkout@v4	﻿2026-10-08T17:24:01.4814070Z Post job cleanup.
+guest	Post Run actions/checkout@v4	2026-10-08T17:24:01.6221790Z [command]/opt/homebrew/bin/git version
+guest	Post Run actions/checkout@v4	2026-10-08T17:24:01.6512430Z git version 2.55.0
+guest	Post Run actions/checkout@v4	2026-10-08T17:24:01.6534090Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/e69c30e7-f763-4cce-abf9-78b4d5412a99/.gitconfig'
+guest	Post Run actions/checkout@v4	2026-10-08T17:24:01.6547710Z Temporarily overriding HOME='/Users/runner/work/_temp/e69c30e7-f763-4cce-abf9-78b4d5412a99' before making global git config changes
+guest	Post Run actions/checkout@v4	2026-10-08T17:24:01.6550130Z Adding repository directory to the temporary git global config as a safe directory
+guest	Post Run actions/checkout@v4	2026-10-08T17:24:01.6552330Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/matrx-extend/matrx-extend
+guest	Post Run actions/checkout@v4	2026-10-08T17:24:01.6694020Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+guest	Post Run actions/checkout@v4	2026-10-08T17:24:01.6782780Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+guest	Post Run actions/checkout@v4	2026-10-08T17:24:01.8177790Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+guest	Post Run actions/checkout@v4	2026-10-08T17:24:01.8252570Z http.https://github.com/.extraheader
+guest	Post Run actions/checkout@v4	2026-10-08T17:24:01.8262040Z [command]/opt/homebrew/bin/git config --local --unset-all http.https://github.com/.extraheader
+guest	Post Run actions/checkout@v4	2026-10-08T17:24:01.8366860Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+guest	Post Run actions/checkout@v4	2026-10-08T17:24:01.9585970Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+guest	Post Run actions/checkout@v4	2026-10-08T17:24:01.9662960Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+guest	Complete job	﻿2026-10-08T17:24:02.1258650Z Cleaning up orphan processes
+guest	Complete job	2026-10-08T17:24:03.9358920Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

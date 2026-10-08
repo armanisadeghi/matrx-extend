@@ -43,7 +43,9 @@
     ".research/records-dimensions-peer-20261008-1559.json",
     ".research/records-negative-contract-audit-20261008-1602.json",
     ".research/records-validation-reload-native-20261008-1614.json",
-    ".research/records-validation-live-peer-20261008-1625.json"
+    ".research/records-validation-live-peer-20261008-1625.json",
+    ".research/records-metadata-native-preparation-20261008.json",
+    ".research/records-contract-fresh-peer-20261008.json"
   ],
   "transition_history": [
     {
@@ -82,7 +84,7 @@
     "entity_read",
     "entity_write"
   ],
-  "current_work": "Native37806859039 and independent peer18670de6 verify C02 positive read, malformed limit invalid_arguments, full reload and renewed positive read on frozen development414. Both temporary GitHub secrets absent at independent16:26:53Z names-only check. D91 remains in-fix: owned-created-table visibility, C01/C03-C25 and non-admin modes remain unverified. Backend8924a396 sampled before/after only; no whole Records health claim.",
+  "current_work": "Native37806859039 and independent peer18670de6 verify C02 positive read, malformed limit invalid_arguments, full reload and renewed positive read on frozen development414. Both temporary GitHub secrets absent at independent16:26:53Z names-only check. D91 remains in-fix: owned-created-table visibility, C01/C03-C25 and non-admin modes remain unverified. Backend8924a396 sampled before/after only; no whole Records health claim. C03 native metadata-search preparation892253e1/e45baf44 passed independent57a85d22 and11 focused tests; actual native remains pending. Live card must advertise current include_platform_tables; prior backend include_app_tables success does not prove current contract.",
   "native_acceptance_preparation": "Sourceac4d5b23 extends existing real driver with exact correlated invalid_arguments refusal and Page.reload plus renewed admin/org positive read.9 focused tests and exact focused CI37804765159 pass; fresha92483f4 source review passes, native pending. Source audit4c68c482 corrects23 registered executor-prevalidation procedure expectations; C01/C06 exclusions preserved. Next one native A attempt after T57 terminal and secret cleanup.",
   "native_acceptance_attempt": "37799435980 succeeds after test-driver repair04ba1909; fresh7a38cfc2 verifies actual receipt/producer assertions, all journals and present secret-name absence. C02 positive read only; original37795653439 failure remains in history."
 }
