@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "scope": "EXT-D-0170 actual native SEO driver sequence guard",
+  "cause": "The prior AST guard counted calls even when an unconditional return made them unreachable.",
+  "change": "Inspect the statement path from the actual exercisePanel sequence call and the controlled recapture, social copy, and T02 calls to their callbacks. Reject an unconditional return or throw before those calls, including inside the recapture callback.",
+  "mutations": {
+    "prior_red": "Before the reachability check, inserting return immediately before the actual runSeoCaseSequence call failed the new guard test with Missing expected exception.",
+    "after": "In-memory mutations of the actual driver that swap callbacks, omit the sequence call, return before the sequence, return at the start of the controlled callback, or return at the start of the recapture callback are all rejected. The untouched source passes."
+  },
+  "verification": {
+    "focused": "node --test tests/browser/seo-driver-sequence.test.mjs tests/browser/seo-new-coverage-oracle.test.mjs tests/browser/seo-guest-clipboard.test.mjs: 30 passed, 0 failed",
+    "syntax": "node --check tests/browser/seo-driver-sequence.test.mjs: passed",
+    "format": "pnpm exec biome check tests/browser/seo-driver-sequence.test.mjs: passed"
+  },
+  "limit": "This is a source-wiring guard for unconditional exits along these driver paths. It does not establish browser execution, native T02/T14 results, or arbitrary runtime control flow; those remain for the root's acceptance work."
+}
