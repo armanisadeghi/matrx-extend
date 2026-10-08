@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-08T09:46:46Z",
+  "scope": "Independent evidence review of hosted lane A run 37756410153; no native rerun, product-contract reinterpretation, or live authentication",
+  "evidence_integrity": {
+    "raw_directory": ".research/t57-diagnostic-retry-20261008-originals/raw",
+    "sha256_verified": {
+      "artifacts.raw.json": "013a40e5c0e45de87566bd0c90d3238bca4130a9b965094387bfd662e95938ed",
+      "failed-step.raw.txt": "4e7025fb07f98c7e7db0dedf60f15fcbba9a2ef65fe94f05ba18f773901a31cd",
+      "hosted-browser-37756410153-1.jsonl": "dff79adb262612db2fd1bbd06852bab45605bf4338343c0e061896517a7e75b8",
+      "hosted-guest-37756410153-1.jsonl": "09ab73e7ca9d2b7878825f922cfb1e87391f48ee6c82e6fbed8d213ef6bb6a79",
+      "hosted-package-37756410153-1.jsonl": "2dd1a4e147adea36d091e94fce1d126fb1341b95da9996c5b611d73007498051",
+      "receipt.raw.json.txt": "460e27172e3118b95e1f574ab08803429fc591f8aceb982be8cefb6ac8ec71f5",
+      "run.raw.json": "80a2b2a9c10d9a7845f4f42853938b4fea94ec571da2a1b1edbc81ee918ed391"
+    },
+    "run_identity": "Raw run record identifies GitHub run 37756410153, checkout 21f43ae3849df7d13b582756bae6fe1291d6219f, conclusion failure; hosted artifact listing identifies hosted-guest-37756410153-1, artifact 11540193444, digest sha256:6e899f79dfa6d45f074379b3d58da0741f151e231c213c0c0a9a7eefe99e76a8."
+  },
+  "frozen_artifact_and_workflow": {
+    "installed_artifact": "Receipt records extension 0.2.407, source SHA 5d845f42cb22c10e2486af8048d1ac9f3ac8e114, tree SHA-256 f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0, source artifact run 37754055905/id 11539827040. The run imported the exact frozen pushed artifact; current main application source was not installed.",
+    "workflow_checkout": "The raw run checkout was 21f43ae3849df7d13b582756bae6fe1291d6219f. Both indexing repair a43ed74ceb5eedb50ccb1aebf8d6b23d64d1e063 and auth diagnostic 1f165644fa736a85971aebb06082ea2fbca445f6 are ancestors of that checkout. The checked workflow verifies only / and /System/Volumes/Data indexing status and selects showcase-d47-public-admin; the frozen source includes the auth rendered-identity diagnostic path.",
+    "lineage_verdict": "PASS: this run used the expected frozen artifact and workflow checkout containing both accepted setup changes. This does not imply the newer checkout source was installed."
+  },
+  "resource_verdict": {
+    "package": "PASS: admitted=true, resourceInvalid=false, child exit 0, decision valid.",
+    "browser": "PASS: admitted=true, resourceInvalid=false, child exit 0, decision valid.",
+    "guest": "RESOURCE_VALID_CHILD_FAILED: admitted=true, resourceInvalid=false, child exit 1, decision child_failed.",
+    "interpretation": "The native child ran; its failure was not classified as resource-invalid or resource-rejected."
+  },
+  "native_boundary": {
+    "observed": "Receipt status is unverified. Admin rendered identity stage completed; the run failed at organization_storage with d87_required_organization_storage_not_observed. Admin role and picker presence/selection were true; no stored UUID/name was observed. Capture, saved result, and owned recipe are null.",
+    "acceptance_boundary": "T57's HN capture and Network race were not reached. This run neither passes T57 nor demonstrates a product organization defect; it records a failure at the acceptance driver's organization checkpoint.",
+    "contract_limit": "This review does not adjudicate whether that checkpoint matches the current organization contract."
+  },
+  "credential_name_check": {
+    "method": "Name-only GitHub secret listing for repository armanisadeghi/matrx-extend; secret values were neither requested nor read.",
+    "target_names_present": [],
+    "verdict": "PASS: both temporary workflow secret names were absent at review time."
+  },
+  "overall_verdict": "EVIDENCE_AND_RESOURCE_ACCOUNTING_ACCEPTED_WITH_BOUNDED_NATIVE_FAILURE; T57_UNVERIFIED",
+  "limits": "Retained hashes and source lineage support this bounded reading only. No live auth, browser, native retry, product diagnosis, or T57 pass is claimed."
+}
