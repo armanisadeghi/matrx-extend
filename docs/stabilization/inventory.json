@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T21:06:36.345686+00:00",
+  "updated_at": "2026-10-08T21:19:48.501595+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -65107,6 +65107,15 @@
               "resource_valid": true,
               "evidence": [".research/records-recovery-native-20261008.json"],
               "detail": "C02/C03 and malformed refusals repeated; positive fixture recovery GET throws before HTTP/preflight result. Actual CDP failure class not retained. No create reached; planned journal plus separate complete live list zero owned fixtures. Secrets removed/root names-only absence. Independent Settings peer confirms bounded failure; no C04/C05 credit. Escalation fresh seat failed ENOSPC; preserve evidence, no blind replay."
+            },
+            {
+              "run_id": "37844046722",
+              "mode": "admin",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "resource_valid": true,
+              "evidence": [".research/records-cdp-native-peer-20261008.json"],
+              "detail": "Independent raw review confirms recovery-list GET fails at owned CDP command_timeout; null HTTP status, planned journal with no create. C04/C05 remain unverified. Both temporarysecret names independently absent. Existing driver awaits full network operation inside5s CDP command; next repair must separate request lifetime and transport commands, preserving credentials inbrowser and fixture ownership. No server-cause claim."
             }
           ],
           "results": {
