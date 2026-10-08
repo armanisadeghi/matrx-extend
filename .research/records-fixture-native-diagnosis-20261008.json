@@ -41,7 +41,7 @@
   "repair": {
     "scope": "Preserve fixed-shape first failure and cleanup failure observations in the native receipt: phase, fixed classification, request method and numeric HTTP status only.",
     "status": "source change prepared; hosted native replay pending",
-    "verification": "Hosted focused run 37835814703 executed the fixture suite and exposed two diagnostic-classification test failures: Node assertion errors were classified as unexpected. The classification was tightened to a fixed assertion-code allowlist and awaits a new hosted focused run. No local browser, build or test run was performed under the lane instruction."
+    "verification": "Hosted focused run 37835814703 executed the fixture suite and exposed two diagnostic-classification test failures. A second run, 37836070600, also exposed those two failures after exact-message matching; Node assertion text includes additional context. The classification now selects only a fixed assertion code from the message and awaits a new hosted focused run. No local browser, build or test run was performed under the lane instruction."
   },
   "next_native_observation": "Require an actual hosted run of the focused acceptance command with the fixture suite listed in the executed test report, then run the guarded native case on repaired source and inspect fixture_diagnostics before changing API requests."
 }

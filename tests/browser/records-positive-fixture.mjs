@@ -154,14 +154,18 @@ export async function withRecordsPositiveFixture({
     onStage(value);
   };
   const reportFailure = (boundary, error) => {
-    const fixedAssertion = error?.code === 'ERR_ASSERTION' && FIXTURE_ASSERTIONS.has(error.message);
+    const fixedAssertion =
+      phase !== 'records_fixture_positive_reads' && error?.code === 'ERR_ASSERTION'
+        ? [...FIXTURE_ASSERTIONS].find((code) => error.message?.includes(code))
+        : null;
     onFailure({
       boundary,
       phase,
       classification:
-        fixedAssertion || error?.message === 'records_fixture_recovery_cleanup_only'
-          ? error.message
-          : 'records_fixture_unexpected_error',
+        fixedAssertion ??
+        (error?.message === 'records_fixture_recovery_cleanup_only'
+          ? 'records_fixture_recovery_cleanup_only'
+          : 'records_fixture_unexpected_error'),
       request_method: lastRequest?.method ?? null,
       http_status: lastRequest?.status ?? null,
     });
