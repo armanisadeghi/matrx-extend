@@ -7,7 +7,7 @@
   "title": "Serial resource scenarios exhaust aggregate CI test timeout without identifying active boundary",
   "severity": "S2: required CI gate intermittently fails; production guard regression not established",
   "priority": "P1",
-  "state": "fixed",
+  "state": "closed",
   "owner": "extend-stabilization",
   "reproduction": [
     "Use automatic CI run37789659379/source99cb09b6; inspect resource-guard-integration CPU confirmation and native action boundary log.",
@@ -24,7 +24,8 @@
     ".research/ci-timing-privacy-final-peer-20261008.json",
     ".research/ci-scenario-budget-repair-20261008.json",
     ".research/ci-budget-final-peer-20261008.json",
-    ".research/seo-receipt-oracle-peer-20261008.json"
+    ".research/seo-receipt-oracle-peer-20261008.json",
+    ".research/ci-budget-hosted-acceptance-20261008.json"
   ],
   "root_cause": "Unresolved: narrow aggregate timing margin demonstrated; active scenario absent from original logs.",
   "closure_requirement": "Actual automatic CI scenario timing identifies cause; repair preserving refusal/recovery/cleanup assertions passes independent source and automatic original-group/surrounding checks. No threshold reduction or blind timeout hike.",
@@ -52,8 +53,28 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Source8f908184 + e6d83e7d passes fresh721cfa3a; real hosted/native requirement remains pending."
+    },
+    {
+      "at": "2026-10-08T14:45:23.152549+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Fresh62070acf independently verifies actualhosted allrequiredscenarios and surroundinggroups on repairedsource, no skips and cleanupcomplete."
+    },
+    {
+      "at": "2026-10-08T14:45:23.152549+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Aggregate budget defect repaired with independent per-scenario limits; source and realCI evidence satisfy boundedclosure requirement."
     }
   ],
   "diagnostic_review": "Per-scenario instrumentatione87d1d29 privacy finding repaired54607f44 and independently passes3cd07423, including actualrawreason red/green. Exactlater automaticCI observation pending. CI37790643945/e7b7dc1e passed originalsource test but intermittentfailure notclosed.",
-  "fix_commits": ["8f908184", "e6d83e7d"]
+  "fix_commits": ["8f908184", "e6d83e7d"],
+  "retest": {
+    "run_id": "37793728272",
+    "job_id": "113367775171",
+    "source": "d714f254",
+    "review_commit": "62070acf",
+    "result": "9/9 actual CPU integration tests, no skips, seven originalscenarios plus two surroundinggroups pass; allendrecords finaldecision/childclosed/cleanupdone",
+    "scope": "CI integration scheduling/budget defect only; not product or fulltrunkhealth"
+  }
 }
