@@ -8,6 +8,8 @@ import {
   assertRecordsVisibleCompletion,
   enterRecordsInput,
   observeRecordsExecution,
+  recordsCompletionShape,
+  recordsVisibleShape,
   signInRecordsAdmin,
 } from './records-readonly-native-proof.mjs';
 
@@ -98,6 +100,9 @@ function runDriver({
   token = 'admin-session',
   completions = [positive('appointments'), refusal, positive('invoices'), metadataResult()],
   changedVisible = false,
+  visibleMode = 'normal',
+  responseMode = 'normal',
+  httpStatus = 200,
   reloadedProfile = 'admin-id',
   driverSource = callback,
   inputHelper = enterRecordsInput,
@@ -112,6 +117,7 @@ function runDriver({
     metadata_search: null,
     invalid_input: null,
     reload: null,
+    completion_diagnostics: [],
   };
   const stages = [];
   const editor = { value: '{"action":"old"}', focused: false, start: 0, end: 0 };
@@ -156,6 +162,7 @@ function runDriver({
       if (name === 'Network.getResponseBody') {
         const index = Number(options.requestId?.split('-').at(-1));
         assert.ok(index >= 0 && index < runs, 'response must belong to a sent request');
+        if (responseMode === 'malformed') return { body: 'not-json\n' };
         return {
           body: `${JSON.stringify({ event: 'completion', data: { operation: 'tool_execution', result: { full_result: completions[index] } } })}\n`,
         };
@@ -170,7 +177,12 @@ function runDriver({
       return { visible: true, raw: JSON.stringify(positive('stale')) };
     return value;
   };
-  const outputState = async () => ({ visible: true, raw: JSON.stringify(completions[runs - 1]) });
+  const outputState = async () =>
+    visibleMode === 'missing'
+      ? { visible: false, raw: null }
+      : visibleMode === 'stale'
+        ? { visible: true, raw: JSON.stringify(positive('stale')) }
+        : { visible: true, raw: JSON.stringify(completions[runs - 1]) };
   const evaluate = async (_panel, script) => {
     if (script.includes('server action contract')) {
       const pre = {
@@ -215,7 +227,7 @@ function runDriver({
           postData: JSON.stringify({ tool_name: 'records', arguments: expected }),
         },
       });
-      events.emit('Network.responseReceived', { requestId, response: { status: 200 } });
+      events.emit('Network.responseReceived', { requestId, response: { status: httpStatus } });
       events.emit('Network.loadingFinished', { requestId });
     } else if (kind === 'title' && label === 'Settings')
       assert.equal(reloads, 1, 'Settings must follow full panel reload');
@@ -253,6 +265,8 @@ function runDriver({
     }),
     panelBearerHash: async () => sha('admin-session'),
     observeRecordsExecution,
+    recordsCompletionShape,
+    recordsVisibleShape,
     outputState,
     assertRecordsVisibleCompletion,
     enterRecordsInput: inputHelper,
@@ -430,4 +444,61 @@ test('constant completion cannot pass callback identity and request checks', asy
   assert.equal(scenario.runs, 0);
   assert.equal(scenario.report.invalid_input, null);
   assert.equal(scenario.report.reload, null);
+});
+
+test('actual callback persists distinct safe failure phases after an authenticated HTTP 200', async () => {
+  const cases = [
+    [{ httpStatus: 422 }, 'request', 'http_rejected', null, 422],
+    [{ responseMode: 'malformed' }, 'completion_parse', 'completion_parse_failed', null],
+    [{ visibleMode: 'missing' }, 'visible_output_wait', 'visible_output_missing', false],
+    [{ visibleMode: 'stale' }, 'visible_output_wait', 'visible_output_mismatch', true],
+    [{ changedVisible: true }, 'visible_output_equality', 'visible_output_mismatch', true],
+    [
+      {
+        completions: [
+          { success: false, error: { error_type: 'execution', message: 'secret server detail' } },
+        ],
+      },
+      'complete',
+      'tool_refusal',
+      true,
+    ],
+  ];
+  for (const [options, phase, failure, visible, status = 200] of cases) {
+    const scenario = runDriver(options);
+    await assert.rejects(scenario.run());
+    const saved = JSON.parse(JSON.stringify(scenario.report));
+    assert.equal(saved.completion_diagnostics.length, 1);
+    assert.deepEqual(
+      {
+        phase: saved.completion_diagnostics[0].phase,
+        failure: saved.completion_diagnostics[0].failure,
+        http_status: saved.completion_diagnostics[0].http_status,
+        visible: saved.completion_diagnostics[0].visible?.visible ?? null,
+      },
+      { phase, failure, http_status: status, visible },
+    );
+    assert.doesNotMatch(
+      JSON.stringify(saved),
+      /secret server detail|appointments|stale|admin-session|Bearer/,
+    );
+    assert.equal(scenario.active.size, 0);
+  }
+});
+
+test('successful callback retains four exact completion guards and safe shapes', async () => {
+  const scenario = runDriver();
+  await scenario.run();
+  const saved = JSON.parse(JSON.stringify(scenario.report));
+  assert.equal(saved.completion_diagnostics.length, 4);
+  assert.deepEqual(
+    saved.completion_diagnostics.map(({ failure }) => failure),
+    [null, null, null, null],
+  );
+  assert.deepEqual(
+    saved.completion_diagnostics.map(({ completion }) => completion?.action),
+    ['table_list', null, 'table_list', 'metadata_search'],
+  );
+  assert.equal(saved.completion_diagnostics[0].completion.tables_count, 1);
+  assert.equal(saved.completion_diagnostics[3].completion.matches_count, 1);
 });

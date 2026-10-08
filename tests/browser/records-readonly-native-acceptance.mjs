@@ -11,6 +11,8 @@ import {
   assertRecordsVisibleCompletion,
   enterRecordsInput,
   observeRecordsExecution,
+  recordsCompletionShape,
+  recordsVisibleShape,
   signInRecordsAdmin,
 } from './records-readonly-native-proof.mjs';
 import {
@@ -51,6 +53,9 @@ const report = {
   invalid_input: null,
   reload: null,
   failure_code: null,
+  failure_phase: null,
+  failure_classification: null,
+  completion_diagnostics: [],
 };
 const stage = (value) => {
   report.stage = value;
@@ -190,6 +195,15 @@ try {
       assert.match(bearerHash ?? '', /^[0-9a-f]{64}$/, 'records_authenticated_token_unavailable');
       const execute = async (argumentsInput, expectedBearerHash, label) => {
         const observer = observeRecordsExecution(panel, approved.id, expectedBearerHash);
+        const diagnostic = {
+          action: argumentsInput.action,
+          phase: 'request',
+          failure: null,
+          http_status: null,
+          completion: null,
+          visible: null,
+        };
+        report.completion_diagnostics.push(diagnostic);
         try {
           await observer.start();
           stage(`${label}_run`);
@@ -208,23 +222,58 @@ try {
             { tool_name: 'records', arguments: argumentsInput },
             `${label}_input_mismatch`,
           );
+          diagnostic.http_status = Number.isInteger(request.status) ? request.status : null;
+          if (request.status !== 200) diagnostic.failure = 'http_rejected';
           assert.equal(request.status, 200, `${label}_http_failed`);
           stage(`${label}_completion`);
-          const completion = await observer.completion(request);
+          diagnostic.phase = 'completion_parse';
+          let completion;
+          try {
+            completion = await observer.completion(request);
+          } catch {
+            diagnostic.failure = 'completion_parse_failed';
+            throw new Error(`${label}_completion_parse_failed`);
+          }
+          diagnostic.completion = recordsCompletionShape(completion);
+          diagnostic.phase = 'visible_output_wait';
           const visible = await waitFor(
             `${label}_output_visible`,
-            () => outputState(panel),
+            async () => {
+              const current = await outputState(panel);
+              diagnostic.visible = recordsVisibleShape(current, completion);
+              return current;
+            },
             (value) => {
-              if (!value?.visible || !value.raw) return false;
-              try {
-                return JSON.stringify(JSON.parse(value.raw)) === JSON.stringify(completion);
-              } catch {
-                return false;
-              }
+              return (
+                recordsVisibleShape(value, completion).visible &&
+                recordsVisibleShape(value, completion).equals_completion
+              );
             },
             30_000,
+            () => diagnostic.visible,
           );
-          return assertRecordsVisibleCompletion(visible, completion);
+          diagnostic.phase = 'visible_output_equality';
+          diagnostic.visible = recordsVisibleShape(visible, completion);
+          if (!diagnostic.visible.equals_completion) diagnostic.failure = 'visible_output_mismatch';
+          const result = assertRecordsVisibleCompletion(visible, completion);
+          diagnostic.phase = 'complete';
+          if (label === 'records_invalid_limit') {
+            if (result.success !== false) diagnostic.failure = 'tool_result_invalid';
+          } else if (result.success === false) diagnostic.failure = 'tool_refusal';
+          else if (result.success !== true) diagnostic.failure = 'tool_result_invalid';
+          return result;
+        } catch (error) {
+          if (!diagnostic.failure) {
+            diagnostic.failure =
+              diagnostic.phase === 'visible_output_wait'
+                ? diagnostic.visible?.visible && diagnostic.visible?.json
+                  ? 'visible_output_mismatch'
+                  : 'visible_output_missing'
+                : diagnostic.phase === 'visible_output_equality'
+                  ? 'visible_output_mismatch'
+                  : 'request_failed';
+          }
+          throw error;
         } finally {
           observer.stop();
         }
@@ -425,6 +474,11 @@ try {
   report.status = 'passed';
 } catch {
   report.failure_code = `${report.stage}_failed`;
+  const lastCompletion = report.completion_diagnostics.at(-1);
+  if (lastCompletion?.failure) {
+    report.failure_phase = lastCompletion.phase;
+    report.failure_classification = lastCompletion.failure;
+  }
   process.stderr.write(
     `UNVERIFIED records_readonly_native stage=${report.stage} native_stage=${report.native_stage}\n`,
   );

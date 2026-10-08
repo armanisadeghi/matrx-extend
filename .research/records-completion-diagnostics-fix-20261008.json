@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "scope": "Source-only diagnostics for the native Records acceptance driver. No product source, build, hosted run, release, or deployment changed.",
+  "trigger": {
+    "hosted_run_id": 37819517326,
+    "prior_receipt": ".research/records-metadata-live-20261008/raw/native-receipt.original.json.txt",
+    "observation": "An authenticated exact-body Records POST finished with HTTP 200, then the driver reported records_completion_failed without identifying completion parsing, visible-output wait, or equality failure.",
+    "product_verdict": "UNVERIFIED; no product defect or acceptance pass inferred"
+  },
+  "repair": {
+    "receipt_fields": [
+      "completion_diagnostics",
+      "failure_phase",
+      "failure_classification"
+    ],
+    "phases": [
+      "request",
+      "completion_parse",
+      "visible_output_wait",
+      "visible_output_equality",
+      "complete"
+    ],
+    "failure_classes": [
+      "request_failed",
+      "http_rejected",
+      "completion_parse_failed",
+      "visible_output_missing",
+      "visible_output_mismatch",
+      "tool_refusal",
+      "tool_result_invalid"
+    ],
+    "safe_diagnostics": "Only fixed phase/class/action labels, numeric HTTP status, booleans, allowlisted error type, and collection counts are persisted. No request body, response body, bearer, organization identifier, table name, arbitrary error text, or raw visible output is copied.",
+    "original_acceptance_guards": "Exact request body, organization and principal, HTTP 200, one parsed completion, visible completion equality, positive result, invalid-argument refusal, reload identity, and metadata identity assertions remain required."
+  },
+  "verification": {
+    "command": "node --test tests/browser/records-readonly-native-driver.test.mjs tests/browser/records-readonly-native-proof.test.mjs",
+    "result": "13 passed",
+    "code_path": "Tests execute the actual exercisePanel callback extracted from the native driver and serialize its report. Cases cover HTTP 422, malformed completion, missing output, stale visible output, post-wait mismatch, tool refusal, and four-call success.",
+    "mutation": "A planted replacement of completion_parse_failed with request_failed made the targeted driver test fail; plant.py restored the source identically."
+  },
+  "limitations": [
+    "No hosted native rerun was authorized for this lane. The cause of run 37819517326 remains unknown.",
+    "The next native receipt can identify the failing interval and safe result shape, but it still must be interpreted against retained run provenance before a product verdict."
+  ]
+}

@@ -176,3 +176,37 @@ export function assertRecordsVisibleCompletion(visible, completion) {
   assert.deepEqual(rendered, completion, 'records_output_completion_mismatch');
   return rendered;
 }
+
+// Only fixed fields and counts enter the persisted native receipt. Never copy a
+// response value, an error message, or arbitrary server-supplied field names.
+export function recordsCompletionShape(value) {
+  const output = value?.output;
+  return {
+    object: Boolean(value && typeof value === 'object' && !Array.isArray(value)),
+    success: typeof value?.success === 'boolean' ? value.success : null,
+    action: ['table_list', 'metadata_search'].includes(output?.action) ? output.action : null,
+    tables_count: Array.isArray(output?.tables) ? output.tables.length : null,
+    matches_count: Array.isArray(output?.matches) ? output.matches.length : null,
+    covered_organizations_count: Array.isArray(output?.organizations_covered)
+      ? output.organizations_covered.length
+      : null,
+    error_type: ['invalid_arguments', 'execution'].includes(value?.error?.error_type)
+      ? value.error.error_type
+      : null,
+  };
+}
+
+export function recordsVisibleShape(value, completion) {
+  let parsed;
+  try {
+    parsed = JSON.parse(value?.raw ?? '');
+  } catch {
+    return { visible: value?.visible === true, json: false, equals_completion: false };
+  }
+  return {
+    visible: value?.visible === true,
+    json: true,
+    equals_completion: JSON.stringify(parsed) === JSON.stringify(completion),
+    shape: recordsCompletionShape(parsed),
+  };
+}
