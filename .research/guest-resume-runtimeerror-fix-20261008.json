@@ -1,0 +1,50 @@
+{
+  "defect_id": "EXT-D-0172",
+  "status": "source_candidate_pending_independent_review_and_original_native_retest",
+  "source_commit": "7ec6c76205",
+  "source_repo": "aidream",
+  "native_red": {
+    "run_id": "37764808590",
+    "server_sha": "5be7a37ba1e53ca311f3787bb041a402ec863052",
+    "extension_version": "0.2.205",
+    "tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8"
+  },
+  "live_cause": {
+    "system_error_id": "95dd2f23-6cac-4898-baee-47fb1c889f7b",
+    "occurred_at": "2026-10-08T10:45:22.029630Z",
+    "conversation_id": "d2fd50fb-d30a-4d50-8307-781880456f2f",
+    "message_id": "61952ecf-d379-4323-bfb3-d49481def74e",
+    "error": "assistant tool_use checkpoint conflicts with reservation; refusing client delegation",
+    "durable_row": {
+      "position": 2,
+      "role": "assistant",
+      "status": "active",
+      "blocks": 2,
+      "tool": "find_text_on_page"
+    },
+    "diagnosis": "The prior checkpoint repair introduced equality between database position and model-history index. Resume synthesizes a tool-result message, making the next logical assistant index 3 while the correct durable row is position 2. The guard rejects an already-active matching checkpoint."
+  },
+  "repair": {
+    "files": [
+      "packages/matrx-ai/matrx_ai/orchestrator/executor.py",
+      "packages/matrx-ai/tests/test_guest_delegation_checkpoint.py",
+      "packages/matrx-ai/matrx_ai/orchestrator/FEATURE.md"
+    ],
+    "invariant": "Read exact reserved UUID; require same conversation, active nondeleted assistant and matching call IDs. Only same-conversation nondeleted pending empty reservation can be repaired. Logical indexes are retained solely for in-memory committed-position bookkeeping.",
+    "census": "The checkpoint helper and its only production caller held the invalid comparison. Tool publication independently reads its exact message ID and matching call; it makes no position comparison. Rebuild explicitly synthesizes tool-result messages without database rows."
+  },
+  "verification": {
+    "red": "Two real-orchestrator cases failed with the exact conflict before source repair: real rebuild of two persisted rows into three model messages, then the next tool dispatch, both advertised-client and dispatch-promoted paths. Fresh-conversation controls passed.",
+    "green": "29 focused tests passed in 0.21 seconds across guest checkpoint, rebuild hydration and user-message reservation suites.",
+    "mutation": "Replacing checkpoint with no-op caused 9 tests to fail, covering repair and refusal. Source not mutated on disk.",
+    "types": "pyright executor.py: 0 errors, 0 warnings",
+    "lint": "Ruff touched Python files and git diff --check passed",
+    "known_warnings": "3 pre-existing coroutine-not-awaited warnings from reservation tests",
+    "resource_scope": "Lightweight local focused checks only; no native job, build, manual release, migration or deployment."
+  },
+  "limits": [
+    "Source candidate, not live product closure. Independent review and fresh original public guest reload/new-conversation terminal-answer retest remain required.",
+    "Database evidence read through connected Supabase MCP; no raw guest request or credentials persisted.",
+    "Tool arguments were not copied into evidence; cause follows exact traceback and active matching call at different physical/logical positions."
+  ]
+}
