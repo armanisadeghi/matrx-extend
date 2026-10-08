@@ -1,0 +1,54 @@
+{
+  "incident": "EXT-D-0172",
+  "role": "independent read-only review of second candidate",
+  "candidate_sha": "54a1e1b978a8efde6b9232aa56aad9f12a1bf214",
+  "reviewed_at": "2026-10-08",
+  "verdict_a_contract": {
+    "status": "PASS for the source handoff contract; public outcome unverified",
+    "supported": [
+      "At executor.py:6533-6574, checkpoint_assistant_for_client flushes and finalizes the assistant response, reads it back through _ensure_assistant_tool_use_on_disk, and advances committed_position only after confirmation. The callback is available at actual delegation even when _response_has_live_client_delegated_call is false.",
+      "At tools/executor.py:2938-2973, a stored _execute_delegated invokes that callback and independently checks the active assistant row contains this call ID before delegate_durably and tool_delegated. A callback or readback failure prevents publication at this source boundary. A store=False call skips the message requirement.",
+      "At executor.py:6575-6602, a batch with nonempty client_tools checkpoints before concurrent dispatch, so a mixed server/client response can share the assistant message ID if the callback reaches all ToolContext children."
+    ],
+    "findings": [
+      {
+        "severity": "Minor observation",
+        "location": "packages/matrx-ai/matrx_ai/orchestrator/executor.py:6586",
+        "issue": "The early checkpoint is triggered by any tool_call whenever AppContext.client_tools is nonempty, even when every call in this response routes to the server. It synchronously finalizes and reads an assistant row before server-only work. This is a documented conservative tradeoff to preserve mixed-batch lineage; the cost is unmeasured and should be assessed against the server-only fast-path objective, not treated as a proven contract failure. The host's authorization hook is intentionally unwired.",
+        "scope": "client-connected server-only turns only; no measured latency claim"
+      }
+    ],
+    "not_verified": [
+      "No public205 first/followup/new-conversation-after-reload run, server deployment check, database inspection, or browser run was allowed in this lane. Source success is not proof of the requested public reply outcome.",
+      "The exact production cause remains unproven by this diff: a stale client preclassifier, a queue/flush issue, or another missing assistant update can all produce the supplied pending/empty reservation. The new callback covers the publish gap regardless."
+    ]
+  },
+  "verdict_b_guard_quality": {
+    "status": "FAIL: Important forcing-function gap despite source contract improvement",
+    "findings": [
+      {
+        "severity": "Important",
+        "location": "packages/matrx-ai/tests/test_guest_delegation_checkpoint.py:167",
+        "issue": "The new orchestrator test replaces handle_tool_calls with route_tool, and route_tool manually passes assistant_checkpoint into ToolContext before calling _execute_delegated. Therefore it stays green if any of the changed real links in executor.handle_tool_calls -> handle_tool_calls_v2 -> ToolExecutor.execute_batch drops the callback. The test does not drive the actual callback propagation it claims to guard.",
+        "required_guard": "Exercise the real router and execute_batch with a controlled registry, while stubbing only external provider/DB/stream I/O. Assert publication and reconstructed tool-use/result pairing after a classifier miss; inject one callback drop in the real chain and observe RED."
+      },
+      {
+        "severity": "Important",
+        "location": "packages/matrx-ai/tests/test_guest_delegation_checkpoint.py:171",
+        "issue": "The mixed-batch lineage assertion is conditional on client_tools but the fixture contains only one get_page_text call. It cannot detect a server sibling lacking the assistant message ID or a server-only batch paying the new precommit cost.",
+        "required_guard": "Include a real server sibling beside the client call and a server-only response with client_tools available; assert lineage for both sibling rows and zero delegation precommit for the server-only response."
+      }
+    ],
+    "covered_by_existing_tests": [
+      "The direct _execute_delegated failure test checks that a raised callback prevents the tool ledger park and event.",
+      "The reservation repair test checks an empty pending row can be repaired and reconstructed, and refuses foreign or occupied rows.",
+      "The store=False direct delegation test checks that absence of a stored assistant message does not block the event."
+    ],
+    "red_proof": "No actual RED mutation result was provided or run in this peer lane. The new test file's routing stub makes a dropped-callback mutant in the real intermediate chain invisible to that test; this is a source-derived gap, not a reported executed mutation.",
+    "independent_focused_checks": [
+      "git show --check 54a1e1b978a8efde6b9232aa56aad9f12a1bf214: clean",
+      "python3 ast.parse of the four changed Python files: all parsed",
+      "No pytest, native, browser, build, deployment, or live network check was run in this lane, per brief. Builder-reported 27 green tests were not independently re-run."
+    ]
+  }
+}
