@@ -1,0 +1,49 @@
+{
+  "id": "EXT-D-0168",
+  "feature_id": "EXT-F-0002",
+  "case_ids": ["EXT-F-0002-T03", "EXT-F-0002-T04"],
+  "surface": "Testing infrastructure / guarded completion",
+  "auth_mode": "all (auth-independent infrastructure)",
+  "title": "Successful acceptance child exits before pending resource recovery can complete",
+  "severity": "S3: repeated invalid test attempts, no established product failure",
+  "priority": "P1",
+  "state": "in-fix",
+  "owner": "root/resource_completion_repair",
+  "preconditions": [
+    "Exact Settings ARM run37732615934: package/browser valid; guest admitted; resource policy requires three healthy recovery samples."
+  ],
+  "reproduction": [
+    "Start a guarded child; observe one unsafe CPU sample opening a pending episode.",
+    "Observe two healthy samples, then successful child exit before the third sample.",
+    "Inspect final journal: pending child exit becomes resource-invalid, exit3; recovery cannot continue although confirmation timeout is not yet exhausted."
+  ],
+  "expected": "Native actions remain stopped while pending; a successful completed child retains owned lease for bounded existing recovery, with all unsafe and timeout rules preserved.",
+  "actual": "Guard immediately finalizes invalid on child exit while pending, causing entire completed run to lack acceptance credit. This correctly enforced the prior conservative contract; repair improves completion coordination, not retrospective validity.",
+  "cause": "Source guard child-exit path ends watch loop when CPU recovery remains pending.",
+  "evidence": [
+    ".research/settings397-arm-native-20261007.json",
+    ".research/settings397-arm-resource-peer-20261007.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-08T05:46:38.062590+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Repeated Settings acceptance invalidations culminated in independently explained pending-completion boundary."
+    },
+    {
+      "at": "2026-10-08T05:46:38.062590+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Fresh peer distinguishes one bad/two healthy samples from confirmed sustained unsafe load."
+    },
+    {
+      "at": "2026-10-08T05:46:38.062590+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Implementer owns bounded guard completion with unchanged limits and explicit failure controls."
+    }
+  ],
+  "closure_requirement": "Causal original-behavior failure; corrected recovery success plus second-bad/timeout/child-error/lease semantics; fresh independent source review and exact resource-valid original Settings native retest.",
+  "next_action": "Finish guarded source evidence, independent review, then one exact-artifact native attempt. No retroactive credit for previous resource-invalid runs."
+}
