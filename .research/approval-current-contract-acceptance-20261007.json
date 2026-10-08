@@ -1,0 +1,288 @@
+{
+  "schema_version": 1,
+  "task_id": "approval-current-contract-acceptance",
+  "lane": "fresh independent native verifier",
+  "status": "DONE_WITH_CONCERNS",
+  "observed_at": "2026-10-08T05:07:45.230069+00:00",
+  "defect_id": "EXT-D-0156",
+  "verdict_a": {
+    "overall": "fail",
+    "ordinary_act": "pass",
+    "ask_remember_and_repeat": "pass",
+    "same_conversation_warm_reload": "pass",
+    "same_conversation_full_extension_reload": "fail",
+    "pilot_opposing_modes": "unverified_not_reached",
+    "finding": "The same ordinary tabs create action prompts again after full worker/panel reload despite remembered approval and exact original conversation rehydration."
+  },
+  "verdict_b": {
+    "current_contract_oracle_diff": "pass",
+    "source_fix_quality": "concern",
+    "finding": "No weakened org, mode, conversation, effect or transport assertions; actual full-reload trust loss remains unresolved."
+  },
+  "artifact": {
+    "schema_version": 1,
+    "kind": "ci_development_test",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/ci.yml",
+    "sourceSha": "4a5c78a50f8d41709b6abffb30c351898e5eb0ae",
+    "runId": 37727998755,
+    "runAttempt": 1,
+    "artifactId": 11528732938,
+    "githubArtifactDigest": "sha256:e996032fdecac4e515632f242962856351703cc22bcaad9e945d6a7c9b90ddff",
+    "treeSha256": "9e0c2f1e18317f856c79aaf0a3529b4637cdf5858ddb64a2ebfff7fac37311cd",
+    "source": {
+      "originMain": "95f64ebd360426a06549d63e9748356508398152",
+      "localHead": "95f64ebd360426a06549d63e9748356508398152",
+      "trackedDirty": false,
+      "untrackedRunnerInputs": [],
+      "claim": "exact_pushed_commit_only"
+    }
+  },
+  "build": {
+    "version": "0.2.397",
+    "tree_sha256": "9e0c2f1e18317f856c79aaf0a3529b4637cdf5858ddb64a2ebfff7fac37311cd",
+    "receipt_kind": "local_dev_unpacked"
+  },
+  "account_proof": {
+    "real_admin_sign_in": true,
+    "canonical_admin_check": {
+      "matched_current_extension_user": true,
+      "http_status": 200,
+      "current_user_assigned": true
+    },
+    "approved_org": {
+      "option_count": 57,
+      "eligible_count": 57,
+      "matched_count": 1,
+      "pointer_target_verified": true,
+      "approved_name_fingerprint": "61e154af11cd32c0",
+      "actingAsPickerCount": 1,
+      "pickerMatchesApproved": true,
+      "deviceOverridePresent": false,
+      "deviceOverrideMatchesApproved": false,
+      "name_fingerprint": "61e154af11cd32c0",
+      "id_fingerprint": "8c4b25f5099470bf"
+    },
+    "device_override_present": false
+  },
+  "passing_cases": [
+    {
+      "transport": {
+        "start_count": 1,
+        "organization_header_fingerprint": "8c4b25f5099470bf",
+        "organization_header_matches_approved": true,
+        "actual_permission_mode": "act",
+        "mode_matches": true,
+        "conversation_fingerprint": "372ae69c015296df",
+        "response_matches_request_conversation": true,
+        "backend_request_fingerprint": "24a87c156c5b34a4",
+        "start_http_status": 200,
+        "successful_create_tab_result_posted": true,
+        "result_http_status": 200,
+        "result_post_count": 1,
+        "create_tab_result_count": 1,
+        "create_tab_error_count": 0,
+        "call_fingerprint": "ba513563137cd290"
+      },
+      "case_id": "act_first",
+      "surface": "Chat",
+      "verdict": "pass",
+      "expected_approval": "none",
+      "approval_samples": 0,
+      "pending_before_effect": false,
+      "real_browser_tab_opened": true,
+      "fixture_received_request": true,
+      "completed_reply": true,
+      "screenshot": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-Wvht4r/act_first-result.png"
+    },
+    {
+      "transport": {
+        "start_count": 1,
+        "organization_header_fingerprint": "8c4b25f5099470bf",
+        "organization_header_matches_approved": true,
+        "actual_permission_mode": "act",
+        "mode_matches": true,
+        "conversation_fingerprint": "372ae69c015296df",
+        "response_matches_request_conversation": true,
+        "backend_request_fingerprint": "90c2dccd0ae74911",
+        "start_http_status": 200,
+        "successful_create_tab_result_posted": true,
+        "result_http_status": 200,
+        "result_post_count": 1,
+        "create_tab_result_count": 1,
+        "create_tab_error_count": 0,
+        "call_fingerprint": "30215456b7a8bac8"
+      },
+      "case_id": "act_second",
+      "surface": "Chat",
+      "verdict": "pass",
+      "expected_approval": "none",
+      "approval_samples": 0,
+      "pending_before_effect": false,
+      "real_browser_tab_opened": true,
+      "fixture_received_request": true,
+      "completed_reply": true,
+      "screenshot": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-Wvht4r/act_second-result.png"
+    },
+    {
+      "transport": {
+        "start_count": 1,
+        "organization_header_fingerprint": "8c4b25f5099470bf",
+        "organization_header_matches_approved": true,
+        "actual_permission_mode": "ask",
+        "mode_matches": true,
+        "conversation_fingerprint": "372ae69c015296df",
+        "response_matches_request_conversation": true,
+        "backend_request_fingerprint": "c6165017db87f94c",
+        "start_http_status": 200,
+        "successful_create_tab_result_posted": true,
+        "result_http_status": 200,
+        "result_post_count": 1,
+        "create_tab_result_count": 1,
+        "create_tab_error_count": 0,
+        "call_fingerprint": "fc239d157352cc14"
+      },
+      "case_id": "ask_remember",
+      "surface": "Chat",
+      "verdict": "pass",
+      "expected_approval": "remember",
+      "approval_samples": 1,
+      "pending_before_effect": true,
+      "real_browser_tab_opened": true,
+      "fixture_received_request": true,
+      "completed_reply": true,
+      "screenshot": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-Wvht4r/ask_remember-result.png"
+    },
+    {
+      "transport": {
+        "start_count": 1,
+        "organization_header_fingerprint": "8c4b25f5099470bf",
+        "organization_header_matches_approved": true,
+        "actual_permission_mode": "ask",
+        "mode_matches": true,
+        "conversation_fingerprint": "372ae69c015296df",
+        "response_matches_request_conversation": true,
+        "backend_request_fingerprint": "d9a3c80f1fad502f",
+        "start_http_status": 200,
+        "successful_create_tab_result_posted": true,
+        "result_http_status": 200,
+        "result_post_count": 1,
+        "create_tab_result_count": 1,
+        "create_tab_error_count": 0,
+        "call_fingerprint": "a099d1aa64d8bade"
+      },
+      "case_id": "ask_remember_repeat",
+      "surface": "Chat",
+      "verdict": "pass",
+      "expected_approval": "none",
+      "approval_samples": 0,
+      "pending_before_effect": false,
+      "real_browser_tab_opened": true,
+      "fixture_received_request": true,
+      "completed_reply": true,
+      "screenshot": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-Wvht4r/ask_remember_repeat-result.png"
+    },
+    {
+      "transport": {
+        "start_count": 1,
+        "organization_header_fingerprint": "8c4b25f5099470bf",
+        "organization_header_matches_approved": true,
+        "actual_permission_mode": "ask",
+        "mode_matches": true,
+        "conversation_fingerprint": "372ae69c015296df",
+        "response_matches_request_conversation": true,
+        "backend_request_fingerprint": "c19768ae31bd16dc",
+        "start_http_status": 200,
+        "successful_create_tab_result_posted": true,
+        "result_http_status": 200,
+        "result_post_count": 1,
+        "create_tab_result_count": 1,
+        "create_tab_error_count": 0,
+        "call_fingerprint": "80b03c62e178c973"
+      },
+      "case_id": "ask_remember_warm_reload",
+      "surface": "Chat",
+      "verdict": "pass",
+      "expected_approval": "none",
+      "approval_samples": 0,
+      "pending_before_effect": false,
+      "real_browser_tab_opened": true,
+      "fixture_received_request": true,
+      "completed_reply": true,
+      "screenshot": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-Wvht4r/ask_remember_warm_reload-result.png"
+    }
+  ],
+  "warm_history": {
+    "conversation_fingerprint": "372ae69c015296df",
+    "history_http_status": 200,
+    "actual_response_matched_rendered_rows": true,
+    "native_history_reopened": true,
+    "hydrated_replies_observed": true,
+    "next_request_conversation_identity_required": true,
+    "history_row_title_fingerprint": "b2a846e5537050bf"
+  },
+  "full_history": {
+    "conversation_fingerprint": "372ae69c015296df",
+    "history_http_status": 200,
+    "actual_response_matched_rendered_rows": true,
+    "native_history_reopened": true,
+    "hydrated_replies_observed": true,
+    "next_request_conversation_identity_required": true,
+    "history_row_title_fingerprint": "b2a846e5537050bf"
+  },
+  "full_reload": {
+    "worker_replaced": true,
+    "panel_replaced": true,
+    "old_targets_retired": true,
+    "management_reload_clicked": true
+  },
+  "failure": {
+    "stage": "ask_remember_full_reload",
+    "code": "unclassified_failure",
+    "actual_boundary": "real_ordinary_action_approval_reappeared_before_effect",
+    "transport": {
+      "case_id": "ask_remember_full_reload",
+      "start_count": 1,
+      "organization_header_fingerprint": "8c4b25f5099470bf",
+      "organization_header_matches_approved": true,
+      "actual_permission_mode": "ask",
+      "mode_matches": true,
+      "conversation_fingerprint": "372ae69c015296df",
+      "response_matches_request_conversation": true,
+      "backend_request_fingerprint": "3ed7b905b82333e0",
+      "start_http_status": 200,
+      "successful_create_tab_result_posted": false,
+      "result_http_status": null,
+      "result_post_count": 0,
+      "create_tab_result_count": 0,
+      "create_tab_error_count": 0,
+      "call_fingerprint": null
+    },
+    "screenshot": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-Wvht4r/ask_remember_full_reload-approval.png",
+    "visual_confirmation": "Allow this tool on owned localhost origin for the rest of this chat unchecked; Allow/Deny visible."
+  },
+  "resource": {
+    "run_id": "approval-current-contract-acceptance-20261007",
+    "terminal": {
+      "schema": 1,
+      "at": "2026-10-08T05:07:02.713Z",
+      "runId": "approval-current-contract-acceptance-20261007",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 1,
+      "decision": "child_failed",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "journal": "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/approval-current-contract-acceptance-20261007.jsonl",
+    "owned_processes": "terminal; guard completed; no active owned job",
+    "fixture": "closed by harness finally; owned profile/context cleaned"
+  },
+  "limitations": [
+    "Pilot not reached",
+    "Parallel runs unverified",
+    "Development artifact only; Store installation unverified"
+  ],
+  "next_action": "Fix cold-reload remembered-trust persistence/hydration and reverify core, same-chat reload and Pilot independently on exact new automatic CI artifact."
+}
