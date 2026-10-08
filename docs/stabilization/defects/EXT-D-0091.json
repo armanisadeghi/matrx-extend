@@ -56,7 +56,9 @@
     ".research/records-card-native-retest-20261008.json",
     ".research/records-positive-native-20261008.json",
     ".research/records-fixture-native-diagnosis-20261008.json",
-    ".research/records-fixture-diagnostics-peer-20261008.json"
+    ".research/records-fixture-diagnostics-peer-20261008.json",
+    ".research/records-batched-reads-native-20261008.json",
+    ".research/records-batched-reads-native-peer-20261008.json"
   ],
   "transition_history": [
     {
