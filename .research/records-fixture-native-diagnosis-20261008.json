@@ -30,10 +30,18 @@
     "unknown": "The first request status and original assertion were discarded by the native driver. The current run's exact failure remains unknown.",
     "diagnostic_loss": "The helper overwrote the visible stage with cleanup in finally, and the acceptance catch discarded the original error."
   },
+  "later_api_probe": {
+    "scope": "One independent read-only GET to the same table-list path with a newly minted designated-admin Supabase sign-in and the approved organization header.",
+    "login_status": 200,
+    "table_list_status": 403,
+    "error_category": "unknown; response body was discarded",
+    "relationship_to_native_failure": "Discriminator only. It was a separate request, so it does not prove the native helper received 403.",
+    "source_analysis": "The route accepts authenticated Supabase JWTs and personal API keys. A 403 can be returned by more than one boundary, including organization admission, the table API's self-registered-app gate, or a store access refusal. The exact category cannot be selected from status alone."
+  },
   "repair": {
     "scope": "Preserve fixed-shape first failure and cleanup failure observations in the native receipt: phase, fixed classification, request method and numeric HTTP status only.",
     "status": "source change prepared; hosted native replay pending",
-    "verification": "Source-level fixture lifecycle tests cover simultaneous body and cleanup failures and a planned-journal recovery-list failure. No local browser, build or test run was performed under the lane instruction."
+    "verification": "Source-level fixture lifecycle tests cover simultaneous body and cleanup failures and a planned-journal recovery-list failure. The fixture guard suite was added to the focused hosted acceptance command; its execution is not yet evidenced. No local browser, build or test run was performed under the lane instruction."
   },
-  "next_native_observation": "Run the guarded hosted native case on the repaired source and inspect fixture_diagnostics before changing API requests. Independently verify the same principal's marked fixtures before any cleanup."
+  "next_native_observation": "Require an actual hosted run of the focused acceptance command with the fixture suite listed in the executed test report, then run the guarded native case on repaired source and inspect fixture_diagnostics before changing API requests."
 }
