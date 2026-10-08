@@ -1,0 +1,53 @@
+{
+  "id": "EXT-D-0180",
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T08"],
+  "surface": "Hosted native test setup",
+  "auth_mode": "guest",
+  "title": "Global Spotlight disable aborts on irrelevant Preboot volume",
+  "severity": "S2: no product tests execute on affected hosted VM",
+  "priority": "P1",
+  "state": "fixed",
+  "owner": "root/hosted_indexing_repair",
+  "preconditions": ["GitHub-hosted macOS runner; resource guarded native test workflow"],
+  "reproduction": [
+    "Run hosted native workflow on a VM whose Preboot indexing state is transitioning.",
+    "With set -e, sudo mdutil -a -i off prints root/Data indexing disabled but exits1 for Preboot.",
+    "Workflow stops before resource admission/browser/product tests."
+  ],
+  "expected": "Disable and verify indexing on the required work volumes; irrelevant Preboot state must not prevent testing while required-volume failures still refuse setup.",
+  "actual": "Run37783167613 stopped at Disable indexing on the disposable hosted VM; no current-run resource journals or native receipt.",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37783167613",
+    ".research/scrape-confirmation-native-proof-20261008.json",
+    ".research/hosted-indexing-disable-repair-20261008.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-08T13:21:26.856653+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Actual hosted setup failure observed."
+    },
+    {
+      "at": "2026-10-08T13:21:26.856653+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Raw failed-step log isolates global disable exit from irrelevant Preboot; root/Data were disabled."
+    },
+    {
+      "at": "2026-10-08T13:21:26.856653+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol owns required-volume repair and causal shell guard."
+    },
+    {
+      "at": "2026-10-08T13:22:56.500270+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Separate required-volume disable commands and real shell seam red/green passed; fresh peer and hosted original retest pending."
+    }
+  ],
+  "closure_requirement": "Independent source/shell-seam review plus resource-admitted original hosted workflow passes setup; product acceptance remains separately tracked.",
+  "fix_commits": ["4dc8c888"]
+}

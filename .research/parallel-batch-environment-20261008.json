@@ -1,0 +1,13 @@
+{
+  "observed_at": "2026-10-08T13:21:26.856653+00:00",
+  "store_dashboard": "Not rechecked: local resource preflight refused at16.175GiB system free versus20GiB floor; no browser launched.",
+  "resource_journal": "docs/stabilization/resource-journals/parallel-store-preflight-20261008-02.jsonl",
+  "release_audit": "Latest successful release.yml remains37180303468 fromOctober4; no manually initiated release.",
+  "review_feedback": "Read-only agent.review_queue query for extend-stabilization requested-changes/approved returned no rows.",
+  "ci_repair": {
+    "failed_run": 37782875034,
+    "reason": "SEO diagnostic test import order",
+    "fix_commit": "f1fa51d0",
+    "checks": "Biome targeted check and8 focused node tests pass; full CI status separate."
+  }
+}

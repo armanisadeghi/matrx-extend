@@ -10,7 +10,7 @@ Do a fresh source, CI artifact, host permit, fixture and active-job check before
 
 ## Current ownership
 
-All owned native jobs are terminal. Lane A run37780192222 reached real admin sign-in, approved organization and a finished product response with matching organization header/principal; full T57 stopped at `public_race_old_response_missing`. Both temporary secrets are absent and the disposable recipe was removed and verified. Fresh independent75195918 accepts bounded D173/D177/D179 closure, including read-only confirmation of both secret names absent. All owned workers are terminal. Scrape timeout receipt repair c4291783 passed fresh peer570dbb4a (14 tests); original conditional-confirmation native proof remains pending. Root owns canonical inventory and integration. No owned lane B browser job.
+Active batch: `/root/seo_uninstrumented_acceptance` owns lane A run37783095637 (full guest SEO/Airbnb, diagnostic flags off). Initial lane B37783167613 failed before browser/resource setup on irrelevant Preboot indexing; zero product credit and only stale unrelated journals uploaded. EXT-D-0180 repair4dc8c888 scopes disable to required work volumes without weakening strict status checks. Fresh `/root/indexing_peer_scrape_retest` owns source verification then one lane B guest Scrape retest if accepted. `/root/t57_counter_taxonomy_repair` owns the two important findings from fresh diagnostic peer17a5dff3; no T57 native retry until accepted. Root owns canonical records. No temporary auth secrets needed by this batch.
 
 ## Current decision boundaries
 
