@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "task_id": "settings397-arm-resource-peer",
+  "lane": "independent-resource-and-provenance-review",
+  "status": "DONE_INVALID_NO_NATIVE_ACCEPTANCE",
+  "reviewed_run": 37732615934,
+  "reviewed_report": ".research/settings397-arm-native-20261007.json",
+  "reviewed_commits": [
+    "902f665320f4ae99b76381c7223253d7d96cf390",
+    "bd0053613bdb97d9cc0d1e7c4f9807c76d1c6d25"
+  ],
+  "verdict_A_behavior_and_resource_claim_scope": {
+    "finding": "Package and browser phases are resource-valid. The guest phase was admitted but its final journal says resourceInvalid=true, exitCode=3, decision=invalid. Its child exit 0 and receipt observations provide zero native Settings acceptance credit.",
+    "cause_of_invalidation": "At 05:35:30.275Z the first guest watch recorded RESOURCE_CPU_HIGH_LOAD_BUSY: one-minute load 2.67 / 3 logical CPUs = 0.89, above the 0.75 normalized-load threshold, and CPU busy 0.69, above the 0.60 high-load busy threshold. This opened a CPU-pending episode. The next two watches at 05:35:46.422Z and 05:36:02.515Z were healthy (CPU busy 0.24 and 0.20), but policy requires three healthy watches. The child exited at 05:36:07.025Z while pending; the wrapper explicitly sets resourceInvalid and exit 3 on pending child exit. No second unsafe sample or RESOURCE_WATCH_UNSAFE was recorded in this ARM guest journal.",
+    "bounded_diagnostic_observations": "The original child receipt records full-extension reload and a visible Settings panel, four T34 switch/storage/reload steps, and five T64 signed-out Ask again steps. T34's downstream consumer criterion and independently recorded baseline restoration remain unverified. The receipt's T64 pass is a child observation only, not an accepted native verdict. No product failure, T34 cause, or authentication defect can be concluded from this resource-invalid run.",
+    "prior_comparison": "Intel run 37731576716 ended with confirmed RESOURCE_WATCH_UNSAFE and watchdog stop before a Settings receipt. ARM run 37732615934 reached the case receipt and child exit 0, but final resource validity still failed. The earlier ARM examples in settings-resource-strategy-peer-20261007.json were different acceptance workflows and therefore did not predict this Settings guest result."
+  },
+  "verdict_B_provenance_and_quality": {
+    "finding": "Evidence is sufficient to diagnose the resource boundary and to retain bounded child observations, with no acceptance promotion. The report and all 12 claimed original files are committed in the two reviewed commits; every recorded size and SHA-256 matches local bytes. Nine journals were enumerated, and only the three with run ID 37732615934 were used for this run. The complete receipt itself says overall status=unverified across 16 cases.",
+    "limit": "The GitHub artifact digest, hosted machine identity, and source/build attestation in the curator report were not independently re-fetched; this peer checked retained bytes, run-ID separation, receipt identity fields, source guard logic, and commit provenance. A successful child exit cannot replace the final guard decision.",
+    "source_refs": [
+      "docs/stabilization/resource-policy.json: maximumOneMinuteLoadPerLogicalCpu=0.75, maximumBusyFractionAtHighLoad=0.6, healthySamplesToResume=3, watchIntervalSeconds=15",
+      "scripts/stabilization-resource.mjs: reasons() high-load/busy conjunction and child-exit pending invalidation",
+      "scripts/stabilization-resource-cpu.mjs: a pending episode recovers only after three healthy samples",
+      "scripts/stabilization-resource-verdict.mjs: resourceInvalid or cpuPending precedes exitCode=0"
+    ]
+  },
+  "next_strategy": {
+    "recommendation": "Do not rerun the same host experiment. Root should assess a narrow end-of-case resource-health barrier in the existing native driver/harness: after the final native action and before successful child exit, await the guard's existing confirmed recovery, while the owned lease stays held and no further native action runs. Preserve the current thresholds, three-sample rule, pending timeout, and stop behavior. Prove with a red-then-green integration case that a one-bad/two-good child completion waits for the third healthy sample, while a second bad sample or confirmation expiry still invalidates. Obtain independent source review before one bounded exact-artifact native attempt.",
+    "confidence_and_limit": "This is a source-backed hypothesis about the child-exit boundary, not proof that the next sample would have recovered or that background macOS services caused the load. If the barrier cannot preserve strict native-action gating and lease ownership, retain the current invalid verdict and investigate a different host-capacity strategy before dispatch. Do not retroactively credit run 37732615934."
+  },
+  "verification": "Read the committed report, all three current-run journals, the full 16-case receipt, prior Intel/ARM comparisons, guard policy and control-flow source. Independently recomputed size and SHA-256 for all 12 originals and checked their Git tracking. No workflow, test, browser, source edit, threshold change, or child agent was run."
+}
