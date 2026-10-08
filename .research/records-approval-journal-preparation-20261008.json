@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "scope": "Source-only durable lifecycle for one owned held C06 record create; native UI adapters are not wired",
+  "status": "source_helper_and_forcing_tests_ready_native_pending",
+  "source_contract": {
+    "tool_test": "ToolTestExecuteRequest accepts conversation_id but no client request or idempotency ID (aidream/services/ai_execution/tool_testing.py).",
+    "approval": "custom.work_approval_request persists subject_id, change, origin, requested_by, conversation_id and state; custom.work_approval_read returns those fields plus approval_id and applied_record_ids (ai-matrx/migrations/campaign/workdoors_one_approval_queue.sql and handover_a_refusal_never_prints_an_id_or_a_clock.sql).",
+    "held": "RecordStore.record_propose returns applied=false, table_id, awaiting_approval=true and approval_id for a held record_add (aidream/packages/matrx-records/matrx_records/store/client.py)."
+  },
+  "lifecycle": "Private journal is synced before dispatch; held response, scoped authoritative approval, actual /approvals click receipt, approved row ID, matching readback and existing owned-table cleanup are distinct required stages. Recovery never redispatches; it declines one exactly matched pending approval only when no decision may already have been sent. A lost decision response is resolved from authoritative approved, declined or withdrawn state, including a read after archival; still-pending decisions remain unknown and are never clicked twice. Cleanup failure is recorded and cannot earn credit.",
+  "verification": "12 focused Node orchestration tests passed; Biome check passed. A scratch constant-success replacement of runOwnedApprovalCreate failed all 7 tests present at that checkpoint. No native, API, credentials, build, release or live fixture mutation was performed.",
+  "limits": "discoverOwnedRequest, readApproval, approveInUi, declineInUi, readRecord and cleanupTable are external adapters not yet connected to real browser UI/RPC. Their returned envelopes and completeness must be verified during integration. This source unit does not prove a live held approval or an actual user click."
+}
