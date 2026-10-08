@@ -11,10 +11,6 @@ import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { GUEST_PREFERENCES, runGuestPreferenceCase } from './settings-guest-preference-batch.mjs';
 import { runGuestAskAgainCase } from './settings-guest-unrecorded-cases.mjs';
 import {
-  classifyReloadSettingsFailure,
-  observeReloadSettingsPanel,
-} from './settings-reload-boundary.mjs';
-import {
   activeTabPanelExpression,
   click,
   evaluate,
@@ -23,6 +19,10 @@ import {
   openSection,
   waitFor,
 } from './settings-panel-driver.mjs';
+import {
+  classifyReloadSettingsFailure,
+  observeReloadSettingsPanel,
+} from './settings-reload-boundary.mjs';
 
 // Runs against a receipt-verified, disposable Chrome profile and its real native panel.
 // UI actions use trusted CDP pointer/keyboard input; DOM and Chrome API reads are evidence only.
