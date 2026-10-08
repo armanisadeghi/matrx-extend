@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "scope": "One hosted lane A native execution of malformed Records read controls against the frozen development artifact. This is bounded control evidence, not positive record_read/record_aggregate evidence or a full-feature claim.",
+  "source_review": {
+    "reviewed_candidate": "b6060f6e47b46ded533472d9bdda0cb7bb59e638",
+    "native_checkout_sha": "67f305aceb1daa0591aeec40f51a70eebbf9c701",
+    "acceptance_file_blobs_match_candidate": true,
+    "matching_file_blob_ids": {
+      "tests/browser/records-readonly-native-acceptance.mjs": "e9385b49dc5ec321c200fe3c3b896bb1f29bb9c9",
+      "tests/browser/records-readonly-native-driver.test.mjs": "7288c4829a3ef4360efbc7680561884dc2e70c30",
+      "tests/browser/records-readonly-native-proof.mjs": "ff8c2a22aa1f234d752cd30275542e1603e96a6a"
+    },
+    "method_disclosure": "The source-review seat was reused for this native run, with zero driver authorship. The three acceptance source files at the native checkout have the same Git blob IDs as at b6060f6e."
+  },
+  "artifact": {
+    "workflow_run_id": 37790643945,
+    "workflow_conclusion": "success",
+    "artifact_id": 11556064167,
+    "artifact_name": "matrx-extend-development-test-e7b7dc1ecae946369cebb482915faf7ef792c692-37790643945-1",
+    "digest": "sha256:7a93776a9322c27973756ddb542fd2e8580d900c356d28a0ad1504928edf3964",
+    "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+    "version": "0.2.414",
+    "expired": false
+  },
+  "native_run": {
+    "id": 37828773944,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37828773944",
+    "attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "acceptance_lane": "A",
+    "case": "records-readonly-admin",
+    "runner_label": "macos-15",
+    "head_sha": "67f305aceb1daa0591aeec40f51a70eebbf9c701",
+    "started_at": "2026-10-08T19:01:15Z",
+    "completed_at": "2026-10-08T19:08:42Z",
+    "uploaded_artifact": {
+      "id": 11573195636,
+      "name": "hosted-guest-37828773944-1",
+      "digest": "sha256:4605309bd35fda54a6cd41113684d15114bdb8f51a7bd18c679ac641c9549a54"
+    },
+    "resource_valid": {
+      "package": true,
+      "browser": true,
+      "guest": true,
+      "evidence": "Each of the three resource-journal final decisions reports admitted=true, resourceInvalid=false, exitCode=0, decision=valid. The guest watchdog samples remained healthy."
+    }
+  },
+  "verdict_A_behavior_and_spec": {
+    "result": "PASS_FOR_THE_THREE_NEGATIVE_CONTROLS",
+    "cases": [
+      {
+        "inventory_case": "EXT-F-4130-C03",
+        "action": "metadata_search",
+        "malformed_field": "query",
+        "finished_http_200": true,
+        "correlated_completion": true,
+        "visible_output_matches_completion": true,
+        "refused": true,
+        "error_type": "invalid_arguments",
+        "message_names_field": true,
+        "positive_read_credit": false
+      },
+      {
+        "inventory_case": "EXT-F-4130-C04",
+        "action": "record_read",
+        "malformed_field": "record_id",
+        "finished_http_200": true,
+        "correlated_completion": true,
+        "visible_output_matches_completion": true,
+        "refused": true,
+        "error_type": "invalid_arguments",
+        "message_names_field": true,
+        "positive_read_credit": false
+      },
+      {
+        "inventory_case": "EXT-F-4130-C05",
+        "action": "record_aggregate",
+        "malformed_field": "table_id",
+        "finished_http_200": true,
+        "correlated_completion": true,
+        "visible_output_matches_completion": true,
+        "refused": true,
+        "error_type": "invalid_arguments",
+        "message_names_field": true,
+        "positive_read_credit": false
+      }
+    ],
+    "evidence": "The native receipt records three per-case refusals. The acceptance observer checks the exact authenticated request body and organization/principal, waits for the request to finish with HTTP 200, reads exactly one completion correlated by request ID, and requires the visible Records output to equal that completion. The negative result must name the malformed field. No C04/C05 positive read was attempted or credited.",
+    "limitation": "The backend health SHA changed between samples: before=40750ce285ece13e8c4b0bf1628cc7f6296df6c4 at 19:01:13Z; after=fe43bf66245fe3abb71b8a52ce22bf0bfb1cc45d at 19:17:07Z. The observations do not establish which backend SHA served each request; no claim of backend-version stability is made."
+  },
+  "verdict_B_quality_and_validity": {
+    "result": "PASS_WITH_PRIOR_MINOR_TEST_GAP_RETAINED",
+    "evidence": "The run used the existing hosted authentication and resource guards, the exact frozen artifact, and the reviewed callback source. The persisted receipt contains only bounded action/case labels, booleans, status and error class; it contains no credentials, bearer, organization identity, input values, raw response, or error message.",
+    "minor_test_gap": "The prior source review remains in force: the success-path driver test does not assert every persisted negative_reads receipt flag. This native run does not bypass that gap; its independent receipt shows all flags true for this execution."
+  },
+  "credential_lifecycle": {
+    "payload_validated_privately_before_staging": true,
+    "payload_email_field_used": true,
+    "payload_password_field_used": true,
+    "staged_via_stdin_from_mode_0600_files": true,
+    "temporary_secret_names": [
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "deleted_after_terminal_run": true,
+    "names_only_absence_check_count": 0,
+    "local_staging_directory_removed": true,
+    "values_printed_or_committed": false
+  },
+  "backend_health_samples": {
+    "before": {
+      "observed_at_utc": "2026-10-08T19:01:13.280366+00:00",
+      "git_sha": "40750ce285ece13e8c4b0bf1628cc7f6296df6c4",
+      "built_at": "2026-10-08T17:32:45Z"
+    },
+    "after": {
+      "observed_at_utc": "2026-10-08T19:17:07.560592+00:00",
+      "git_sha": "fe43bf66245fe3abb71b8a52ce22bf0bfb1cc45d",
+      "built_at": "2026-10-08T18:46:58Z"
+    },
+    "sha_stable": false
+  },
+  "focused_ci": {
+    "run_id": 37828136338,
+    "head_sha": "b6060f6e47b46ded533472d9bdda0cb7bb59e638",
+    "conclusion": "success"
+  },
+  "raw_evidence": [
+    ".research/records-negative-native-20261008/raw/native-receipt.json",
+    ".research/records-negative-native-20261008/raw/run.json",
+    ".research/records-negative-native-20261008/raw/jobs.json",
+    ".research/records-negative-native-20261008/raw/artifacts.json",
+    ".research/records-negative-native-20261008/raw/resource-events.jsonl",
+    ".research/records-negative-native-20261008/raw/focused-ci.json",
+    ".research/records-negative-native-20261008/raw/backend-version-before.json",
+    ".research/records-negative-native-20261008/raw/backend-version-after.json",
+    ".research/records-negative-native-20261008/raw/secrets-after-cleanup.json"
+  ]
+}

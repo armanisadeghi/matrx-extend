@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "review": "independent source review of eb60afbf, present unchanged at f7e5ab09",
+  "scope": {
+    "A_behavior": "Replacement worker error evidence is buffered only after markReloadStarted(), kept internally as version and registration IDs, then included only when exactly one observed non-old version maps to the replacement target and both IDs match. The receipt emits only the fixed worker_error_reported category; the capture boundary discards arbitrary fields. The fresh observer retains one later exact-identity update (version, registration, target) within its existing work deadline; absent later evidence remains null. The diagnostic call is on the existing retirement-refusal branch, after the unchanged 150-attempt acceptance loop. Success acceptance and panel-open ordering are unchanged.",
+    "B_quality": "No source-level blocker found for the requested identity matching, redaction, bounded observation, or acceptance isolation. The new helper test cases directly exercise foreign identities, private payload stripping, later activation, and silence. Cleanup remains deadline-bounded and reports unconfirmed when disable/detach cannot both be confirmed. Confidence is limited by hosted test selection and the unverified native scenario; this review does not establish the intermittent product cause."
+  },
+  "hosted_evidence": {
+    "run": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37830788881",
+    "head_sha": "f7e5ab09c6f390a3bbd9326741a56d38724c795b",
+    "result": "Focused acceptance completed successfully; the four reviewed source/test blobs are unchanged from eb60afbf at this SHA.",
+    "coverage_limit": "pnpm test:focused-acceptance does not include tests/browser/reload-lifetime-diagnostic.test.mjs or tests/browser/native-sidepanel-qa-harness.test.mjs. It does include profile-reload-capture.test.mjs, so the green run is not evidence that the new helper cases passed on the hosted runner. The broad CI run for the prior merge was canceled; no native browser reload was run."
+  },
+  "review_limits": [
+    "No local test, build, or browser run was performed because the system disk was critically low, per task instruction.",
+    "The actual worker startup cause and native reload behavior remain unverified; no product-cause attribution is supported."
+  ]
+}
