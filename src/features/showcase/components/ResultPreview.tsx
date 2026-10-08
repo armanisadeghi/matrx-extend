@@ -1,8 +1,8 @@
 import { CopyMenu } from '@/components/CopyMenu';
+import { putTextInChatDraft } from '@/lib/chat-target';
 import { rowsToTsv, stringifyJson, wrapJsonForAgent } from '@/lib/clipboard/copy';
 import { sanitizePageSourceUrl } from '@/lib/credentials/network-urls';
 import { cn } from '@/lib/utils';
-import { putTextInChatDraft } from '@/lib/chat-target';
 import { Button } from '@ai-matrx/design-system';
 import { Bot, Braces, Table2 } from 'lucide-react';
 import { useMemo, useState } from 'react';

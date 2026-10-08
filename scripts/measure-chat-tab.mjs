@@ -95,11 +95,17 @@ if (asJson) {
   console.log(JSON.stringify(report, null, 2));
 } else {
   console.log(`build: ${dir}`);
-  console.log(`shell (static closure of ${shellEntry}): ${report.shellKb} kB gzip, ${report.shellChunks} chunks`);
+  console.log(
+    `shell (static closure of ${shellEntry}): ${report.shellKb} kB gzip, ${report.shellChunks} chunks`,
+  );
   for (const [name, r] of Object.entries(report.entries)) {
     console.log(`\n[${name}] ${r.entry}`);
-    console.log(`  Chat tab (static, beyond shell): ${r.chatTabKb} kB gzip, ${r.chatTabChunks} chunks`);
-    console.log(`  reachable incl. lazy (beyond shell): ${r.reachableKb} kB gzip, ${r.reachableChunks} chunks`);
+    console.log(
+      `  Chat tab (static, beyond shell): ${r.chatTabKb} kB gzip, ${r.chatTabChunks} chunks`,
+    );
+    console.log(
+      `  reachable incl. lazy (beyond shell): ${r.reachableKb} kB gzip, ${r.reachableChunks} chunks`,
+    );
     console.log(`  biggest static chunks:`);
     for (const [f, k] of r.biggest) console.log(`    ${String(k).padStart(7)} kB  ${f}`);
   }

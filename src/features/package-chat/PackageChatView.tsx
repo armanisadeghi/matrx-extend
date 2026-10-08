@@ -21,11 +21,14 @@ import { History, SquarePen } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { createExtensionChatHost } from './host';
 
-function BrowserToolPrompts() {
+/** Approval / ask / capture cards for the OPEN conversation only (each card names its conversation). */
+export function BrowserToolPrompts({ conversationId }: { conversationId: string | null }) {
   useToolInbox$Subscribe();
-  const confirms = useToolInbox((s) => s.pendingConfirms);
-  const asks = useToolInbox((s) => s.pendingAsks);
-  const captures = useToolInbox((s) => s.pendingCaptures);
+  const mine = <T extends { conversationId: string | null }>(items: readonly T[]) =>
+    items.filter((item) => item.conversationId === conversationId);
+  const confirms = mine(useToolInbox((s) => s.pendingConfirms));
+  const asks = mine(useToolInbox((s) => s.pendingAsks));
+  const captures = mine(useToolInbox((s) => s.pendingCaptures));
   if (confirms.length + asks.length + captures.length === 0) return null;
   return (
     <div data-browser-tool-prompts="" className="flex shrink-0 flex-col gap-2 px-3 py-2">
@@ -89,7 +92,7 @@ function Screens() {
         />
       ) : (
         <>
-          <BrowserToolPrompts />
+          <BrowserToolPrompts conversationId={conversationId} />
           <div className="min-h-0 flex-1">
             {conversationId ? (
               <ChatConversationRoom

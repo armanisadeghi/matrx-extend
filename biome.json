@@ -8,6 +8,7 @@
   "files": {
     "ignore": [
       ".output/**",
+      ".output-*/**",
       ".wxt/**",
       ".canonical/aidream/**",
       "node_modules/**",

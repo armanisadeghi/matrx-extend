@@ -57,7 +57,7 @@ mkdirSync(SHOTS, { recursive: true });
 const { chromium, executablePath } = await resolveBrowserRuntime();
 const context = await chromium.launchPersistentContext('', {
   executablePath,
-  headless: process.env.PACKAGE_CHAT_HEADED === '1' ? false : true,
+  headless: process.env.PACKAGE_CHAT_HEADED !== '1',
   viewport: { width: 420, height: 900 },
   args: [
     '--headless=new',
@@ -69,7 +69,11 @@ const context = await chromium.launchPersistentContext('', {
 const blockedPosts = [];
 await context.route('**/*', (route) => {
   const req = route.request();
-  if (req.method() === 'POST' && /\/(ai|agent|agents|chat|execute|conversation)\b/.test(new URL(req.url()).pathname) && !/supabase|\/auth\/|\/rest\//.test(req.url())) {
+  if (
+    req.method() === 'POST' &&
+    /\/(ai|agent|agents|chat|execute|conversation)\b/.test(new URL(req.url()).pathname) &&
+    !/supabase|\/auth\/|\/rest\//.test(req.url())
+  ) {
     blockedPosts.push({ url: req.url(), body: req.postData() });
     return route.abort();
   }
@@ -227,8 +231,8 @@ try {
   }
   // NEW CHAT RESOLVES THE EXTENSION'S MANDATE: send from a fresh chat; the run request is aborted
   // by the route above (zero AI spend) and its target is asserted from the captured request.
-  await page.evaluate(
-    async () => chrome.storage.session.set({ 'matrx-extend:chat-address': '/chat' }),
+  await page.evaluate(async () =>
+    chrome.storage.session.set({ 'matrx-extend:chat-address': '/chat' }),
   );
   await page.reload();
   const newComposer = page.locator('[data-package-chat] textarea').first();

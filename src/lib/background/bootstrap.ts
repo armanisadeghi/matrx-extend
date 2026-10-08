@@ -82,14 +82,6 @@ import {
 } from '@/lib/stream/offscreen-proxy';
 import { setSupabaseSession } from '@/lib/supabase/client';
 import { lookupCapturedByUrl } from '@/lib/supabase/queries';
-import {
-  handleWebmcpCall,
-  recordAssignedTab,
-  runLocalNetworkDiscovery,
-  runLocalSavedPattern,
-  startToolDispatcher,
-} from '@/lib/tools/dispatch';
-import { enqueueUndeliveredResult } from '@/lib/tools/dispatch-persist';
 import { deliverToolResult } from '@/lib/tools/deliver-tool-result';
 import {
   type DeviceHandOffCall,
@@ -99,6 +91,15 @@ import {
   handOffDeviceCalls,
   runDeviceToolOnce,
 } from '@/lib/tools/device-handoff';
+import {
+  handleWebmcpCall,
+  recordAssignedTab,
+  runDeviceToolCall,
+  runLocalNetworkDiscovery,
+  runLocalSavedPattern,
+  startToolDispatcher,
+} from '@/lib/tools/dispatch';
+import { enqueueUndeliveredResult } from '@/lib/tools/dispatch-persist';
 import type {
   VideoErrorEvent,
   VideoRequestPayload,
@@ -587,13 +588,17 @@ function registerHandlers(): void {
   });
 
   // The panel is going away with delegated calls in flight: finish them and deliver the results.
-  on<{ calls?: DeviceHandOffCall[] }, { ack: true }>(CHANNELS.DEVICE_TOOL_HANDOFF, (payload, sender) => {
-    if (sender.tab || sender.id !== chrome.runtime.id) return { ack: true };
-    void handOffDeviceCalls(Array.isArray(payload.calls) ? payload.calls : [], deviceHandOffDeps()).catch((err) =>
-      log.error('sw', 'device tool hand-off crashed', err),
-    );
-    return { ack: true };
-  });
+  on<{ calls?: DeviceHandOffCall[] }, { ack: true }>(
+    CHANNELS.DEVICE_TOOL_HANDOFF,
+    (payload, sender) => {
+      if (sender.tab || sender.id !== chrome.runtime.id) return { ack: true };
+      void handOffDeviceCalls(
+        Array.isArray(payload.calls) ? payload.calls : [],
+        deviceHandOffDeps(),
+      ).catch((err) => log.error('sw', 'device tool hand-off crashed', err));
+      return { ack: true };
+    },
+  );
 
   // WebMCP: pages on the allowlist (see src/lib/origin-allowlist.ts) can
   // execute our registered tools through `document.modelContext.executeTool`.
@@ -625,9 +630,28 @@ function registerHandlers(): void {
   });
 }
 
+/**
+ * A delegated browser tool from the package chat runs through the extension's REAL gate — the
+ * same `handleCall` its own chat uses (`runDeviceToolCall`: approval / ask-user cards, Ask/Act,
+ * pinned to the tab the person sent from) — never the WebMCP page path, which refuses every
+ * ask-user and privileged tool.
+ */
 async function runDeviceToolForAgent(call: DeviceToolCallRef): Promise<DeviceToolRunAnswer> {
-  const mode = await readDefaultPermissionMode();
-  return handleWebmcpCall(call, { permissionMode: mode, initiator: 'agent' });
+  const mode =
+    call.permissionMode === 'act' || call.permissionMode === 'ask'
+      ? call.permissionMode
+      : await readDefaultPermissionMode();
+  if (!call.conversationId) {
+    return { ok: false, error: 'device tool: conversationId is required' };
+  }
+  return runDeviceToolCall({
+    callId: call.callId,
+    toolName: call.toolName,
+    args: call.args,
+    conversationId: call.conversationId,
+    permissionMode: mode,
+    assignedTabId: typeof call.assignedTabId === 'number' ? call.assignedTabId : null,
+  });
 }
 
 function deviceHandOffDeps(): DeviceHandOffDeps {
@@ -636,7 +660,11 @@ function deviceHandOffDeps(): DeviceHandOffDeps {
     deliver: async (conversationId, result) => {
       const { response, delivered } = await deliverToolResult(conversationId, result);
       if (!response.ok) {
-        const retryable = response.status === 0 || response.status === 408 || response.status === 429 || response.status >= 500;
+        const retryable =
+          response.status === 0 ||
+          response.status === 408 ||
+          response.status === 429 ||
+          response.status >= 500;
         // A hard refusal (the server does not know the call) cannot be replayed: report it, do not loop.
         if (!retryable) return { delivered: false, continuation: null };
         throw new Error(`tool_results ${response.status}: ${response.error}`);

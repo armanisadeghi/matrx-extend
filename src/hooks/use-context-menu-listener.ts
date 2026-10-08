@@ -13,10 +13,10 @@
  * have been mid-thought).
  */
 
+import { putTextInChatDraft } from '@/lib/chat-target';
 import { log } from '@/lib/debug/log';
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import { putTextInChatDraft } from '@/lib/chat-target';
 import { useEffect } from 'react';
 
 const PENDING_DRAFT_KEY = 'matrx.chat.pending_draft';

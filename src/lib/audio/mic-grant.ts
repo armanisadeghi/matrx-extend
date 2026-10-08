@@ -38,7 +38,11 @@ export function requestMicrophoneGrant(timeoutMs: number = MIC_GRANT_TIMEOUT_MS)
       resolve(granted);
     };
     const listener = (msg: unknown): boolean => {
-      const m = msg as { __matrx?: unknown; kind?: unknown; payload?: { granted?: unknown } } | null;
+      const m = msg as {
+        __matrx?: unknown;
+        kind?: unknown;
+        payload?: { granted?: unknown };
+      } | null;
       if (m && m.__matrx === true && m.kind === CHANNELS.MIC_GRANT_RESULT) {
         finish(m.payload?.granted === true);
       }

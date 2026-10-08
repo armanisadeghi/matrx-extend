@@ -60,6 +60,9 @@ export function resolveAttachedGoogleFileIds(): string[] | null {
 }
 
 /** The `highlights` context value for a set of attached highlights (one bundled key). */
-export function highlightsContextValue(items: AttachedHighlight[]): { count: number; items: AttachedHighlight[] } {
+export function highlightsContextValue(items: AttachedHighlight[]): {
+  count: number;
+  items: AttachedHighlight[];
+} {
   return { count: items.length, items };
 }

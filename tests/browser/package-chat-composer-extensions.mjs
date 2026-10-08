@@ -56,7 +56,7 @@ mkdirSync(SHOTS, { recursive: true });
 const { chromium, executablePath } = await resolveBrowserRuntime();
 const context = await chromium.launchPersistentContext('', {
   executablePath,
-  headless: process.env.PACKAGE_CHAT_HEADED === '1' ? false : true,
+  headless: process.env.PACKAGE_CHAT_HEADED !== '1',
   viewport: { width: 420, height: 900 },
   args: [
     '--headless=new',
@@ -68,7 +68,11 @@ const context = await chromium.launchPersistentContext('', {
 const blockedPosts = [];
 await context.route('**/*', (route) => {
   const req = route.request();
-  if (req.method() === 'POST' && /\/(ai|agent|agents|chat|execute|conversation)\b/.test(new URL(req.url()).pathname) && !/supabase|\/auth\/|\/rest\//.test(req.url())) {
+  if (
+    req.method() === 'POST' &&
+    /\/(ai|agent|agents|chat|execute|conversation)\b/.test(new URL(req.url()).pathname) &&
+    !/supabase|\/auth\/|\/rest\//.test(req.url())
+  ) {
     blockedPosts.push({ url: req.url(), body: req.postData() });
     return route.abort();
   }
@@ -137,47 +141,80 @@ try {
   // A past conversation with a user todo seeded for it, so the Todos companion pill has content.
   const latest = await fetch(
     `${supabaseUrl}/rest/v1/message?select=conversation_id&role=eq.assistant&order=created_at.desc&limit=1`,
-    { headers: { apikey: publishableKey, Authorization: `Bearer ${session.access_token}`, 'Accept-Profile': 'chat' } },
+    {
+      headers: {
+        apikey: publishableKey,
+        Authorization: `Bearer ${session.access_token}`,
+        'Accept-Profile': 'chat',
+      },
+    },
   )
     .then((r) => (r.ok ? r.json() : []))
     .catch(() => []);
   const pastId = latest?.[0]?.conversation_id;
   check('a past conversation exists to open', Boolean(pastId));
-  await page.evaluate(
-    async (id) => {
-      await chrome.storage.local.set({
-        'matrx.lists.user_todos': {
-          [id]: [
-            { id: 'todo-1', conversation_id: id, title: 'Call the lab about the crown remake', done: false, created_at: new Date().toISOString() },
-          ],
-        },
-      });
-      await chrome.storage.session.set({ 'matrx-extend:chat-address': `/chat/${id}` });
-    },
-    pastId,
-  );
+  await page.evaluate(async (id) => {
+    await chrome.storage.local.set({
+      'matrx.lists.user_todos': {
+        [id]: [
+          {
+            id: 'todo-1',
+            conversation_id: id,
+            title: 'Call the lab about the crown remake',
+            done: false,
+            created_at: new Date().toISOString(),
+          },
+        ],
+      },
+    });
+    await chrome.storage.session.set({ 'matrx-extend:chat-address': `/chat/${id}` });
+  }, pastId);
   await page.reload();
-  await page.locator('[data-package-chat]').waitFor({ timeout: 45_000 }).catch(() => undefined);
-  await page.locator('[data-package-chat] textarea').first().waitFor({ timeout: 45_000 }).catch(() => undefined);
+  await page
+    .locator('[data-package-chat]')
+    .waitFor({ timeout: 45_000 })
+    .catch(() => undefined);
+  await page
+    .locator('[data-package-chat] textarea')
+    .first()
+    .waitFor({ timeout: 45_000 })
+    .catch(() => undefined);
   await page.waitForTimeout(6000);
 
   // 1. The Google-files attachment chip draws inside the composer's rail (no new row).
-  const filesChip = page.locator('[data-package-chat] [data-rail-entry]').filter({ hasText: /Files/ });
+  const filesChip = page
+    .locator('[data-package-chat] [data-rail-entry]')
+    .filter({ hasText: /Files/ });
   check('Google files attachment chip is in the composer rail', (await filesChip.count()) > 0);
-  const inRail = await filesChip.first().evaluate((el) => Boolean(el.parentElement?.className.includes('overflow-x-auto'))).catch(() => false);
-  check('the chip sits in the rail row itself (scrolling chip strip), not a row of its own', inRail);
+  const inRail = await filesChip
+    .first()
+    .evaluate((el) => Boolean(el.parentElement?.className.includes('overflow-x-auto')))
+    .catch(() => false);
+  check(
+    'the chip sits in the rail row itself (scrolling chip strip), not a row of its own',
+    inRail,
+  );
   // 2. The task-panel companion pill is there and opens the extension's TaskPanel for this conversation.
   const pill = page.getByRole('button', { name: 'Plan, tasks and todos' });
   check('Todos companion pill is in the rail', (await pill.count()) > 0);
   await page.screenshot({ path: join(SHOTS, '1-rail.png') });
-  await pill.first().click().catch(() => undefined);
+  await pill
+    .first()
+    .click()
+    .catch(() => undefined);
   const panelText = await page.getByText('Call the lab about the crown remake').count();
-  check('task panel opens with this conversation\'s todo', panelText > 0);
+  check("task panel opens with this conversation's todo", panelText > 0);
   await page.screenshot({ path: join(SHOTS, '2-task-panel.png') });
   // 3. Opening the Files chip shows the extension\'s own picker (the chip is the extension component).
   await page.keyboard.press('Escape');
-  await filesChip.first().click().catch(() => undefined);
-  check('Files chip opens the Google files popover', (await page.getByText('Google files').count()) > 0);
+  await filesChip
+    .first()
+    .click()
+    .catch(() => undefined);
+  check(
+    'Files chip opens the Google files popover',
+    (await page.getByText('Google files').count()) > 0,
+  );
   await page.screenshot({ path: join(SHOTS, '3-files-popover.png') });
   check('no AI request was sent', blockedPosts.length === 0, `${blockedPosts.length} blocked`);
   if (errors.length) console.log(`  page errors: ${errors.slice(0, 5).join(' | ')}`);

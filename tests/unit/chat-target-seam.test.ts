@@ -14,7 +14,11 @@ const door = {
 vi.mock('@ai-matrx/chat/agents/components/chat/chat-door', () => ({ chatDoor: door }));
 
 function setMode(mode: 'default' | 'package') {
-  window.history.replaceState({}, '', mode === 'package' ? '/sidepanel.html?chat=package' : '/sidepanel.html');
+  window.history.replaceState(
+    {},
+    '',
+    mode === 'package' ? '/sidepanel.html?chat=package' : '/sidepanel.html',
+  );
 }
 
 beforeEach(async () => {
@@ -27,7 +31,9 @@ afterEach(() => setMode('default'));
 describe('default mode: the old chat, unchanged', () => {
   it('appends to the old draft and opens the Chat tab; the package is untouched', async () => {
     setMode('default');
-    const { putTextInChatDraft, openConversationInChat, currentChatConversationId } = await import('@/lib/chat-target');
+    const { putTextInChatDraft, openConversationInChat, currentChatConversationId } = await import(
+      '@/lib/chat-target'
+    );
     const { useChatStore } = await import('@/state/chat');
     const { useSidepanelTabStore } = await import('@/state/sidepanel-tab');
     useChatStore.getState().setDraft('typed');
@@ -45,8 +51,12 @@ describe('default mode: the old chat, unchanged', () => {
 describe('package mode: through the package door', () => {
   it('puts text in the package draft and leaves the old store alone', async () => {
     setMode('package');
-    const { putTextInChatDraft, openConversationInChat, currentChatConversationId, sendThroughPackageChat } =
-      await import('@/lib/chat-target');
+    const {
+      putTextInChatDraft,
+      openConversationInChat,
+      currentChatConversationId,
+      sendThroughPackageChat,
+    } = await import('@/lib/chat-target');
     const { useChatStore } = await import('@/state/chat');
     await putTextInChatDraft('selected');
     expect(door.putTextInDraft).toHaveBeenCalledWith('selected');
@@ -56,6 +66,10 @@ describe('package mode: through the package door', () => {
     expect(useChatStore.getState().selectedConversationId).toBeNull();
     expect(await currentChatConversationId()).toBe('conv-from-package');
     await sendThroughPackageChat({ text: 'go', agentId: 'a1', variables: { k: 'v' } });
-    expect(door.sendMessage).toHaveBeenCalledWith({ text: 'go', agentId: 'a1', variables: { k: 'v' } });
+    expect(door.sendMessage).toHaveBeenCalledWith({
+      text: 'go',
+      agentId: 'a1',
+      variables: { k: 'v' },
+    });
   });
 });
