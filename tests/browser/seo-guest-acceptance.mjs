@@ -6,11 +6,14 @@
  */
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { open, readFile, writeFile } from 'node:fs/promises';
+import { open, readFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifact.mjs';
 import { verifyFrozenArtifactIdentity } from '../../scripts/frozen-artifact-identity.mjs';
-import { classifySeoResourceDiagnosticReport } from '../../scripts/hosted-seo-route.mjs';
+import {
+  seoStartupObservationOptions,
+  writeSeoGuestReport,
+} from '../../scripts/hosted-seo-route.mjs';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { withClipboardReadPermission } from './clipboard-observation.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
@@ -44,6 +47,7 @@ const NEXT_DETAIL_PAGE = 'https://en.wikipedia.org/wiki/HTML';
 const METADATA_FIXTURE_PAGE = 'https://www.airbnb.com/';
 const RUN_METADATA_FIXTURE = process.env.SEO_GUEST_METADATA_FIXTURE === 'airbnb';
 const SEO_CASE_SCOPE = process.env.SEO_GUEST_CASE_SCOPE ?? 'full';
+const SEO_RESOURCE_DIAGNOSTIC = process.env.MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC === '1';
 const report = {
   schema_version: 1,
   feature_id: 'EXT-F-1008',
@@ -1067,6 +1071,7 @@ try {
   report.build = { before, after: null };
   advance('build_identity_verified');
   const harness = await runNativeSidepanelQa({
+    ...(await seoStartupObservationOptions(report, SEO_RESOURCE_DIAGNOSTIC)),
     ...(DEV_BUILD_RECEIPT !== undefined && {
       extensionDir: EXTENSION_DIR,
       expectedRelease: before,
@@ -1876,9 +1881,5 @@ if (
     process.exitCode = 1;
   }
 }
-const finalReport = classifySeoResourceDiagnosticReport(
-  report,
-  process.env.MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC === '1',
-);
-await writeFile(OUTPUT, `${JSON.stringify(finalReport, null, 2)}\n`, { mode: 0o600 });
+const finalReport = await writeSeoGuestReport(OUTPUT, report, SEO_RESOURCE_DIAGNOSTIC);
 process.stdout.write(`${finalReport.status.toUpperCase()} seo_guest_native_batch\n`);

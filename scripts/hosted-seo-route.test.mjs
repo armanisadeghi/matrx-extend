@@ -9,6 +9,8 @@ import {
   hostedGuestSeoRoute,
   hostedSeoMetadataFixture,
   hostedSeoResourceDiagnostic,
+  seoStartupObservationOptions,
+  writeSeoGuestReport,
 } from './hosted-seo-route.mjs';
 import { buildEvidenceRecord } from './record-stabilization-evidence.mjs';
 
@@ -74,6 +76,57 @@ test('resource bracket requires explicit full Airbnb SEO diagnostic and cannot p
     evidence_classification: 'DIAGNOSTIC_ONLY_NO_ACCEPTANCE_CREDIT',
   });
   assert.deepEqual(ordinary.targets, [{ case: 'T09', status: 'passed' }]);
+});
+
+test('headless SEO timeout observation survives native failure without acceptance credit', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'seo-startup-observation-'));
+  try {
+    const path = join(directory, 'seo.json');
+    const report = {
+      status: 'unverified',
+      targets: [{ case_id: 'EXT-F-1008-T09', status: 'pass' }],
+    };
+    const options = await seoStartupObservationOptions(report, true);
+    assert.equal(options.startupEndpointObservationMs, 15_000);
+    const nativeRunner = async ({ headed, onStartupEndpointObservation }) => {
+      assert.equal(headed, false);
+      await onStartupEndpointObservation({
+        phase: 'cdp_timeout',
+        endpointPresent: false,
+        inspectionFailed: false,
+        exitObserved: false,
+        elapsedMs: 5022,
+        polls: 116,
+        privatePath: '/owned/profile',
+      });
+      await onStartupEndpointObservation({
+        phase: 'post_timeout',
+        endpointPresent: true,
+        inspectionFailed: false,
+        exitObserved: false,
+        elapsedMs: 300,
+        polls: 4,
+        privatePath: '/owned/profile',
+      });
+      throw new Error('owned_cdp_endpoint_timeout');
+    };
+    await assert.rejects(nativeRunner({ headed: false, ...options }), /owned_cdp_endpoint_timeout/);
+    await writeSeoGuestReport(path, report, true);
+    const written = JSON.parse(await readFile(path, 'utf8'));
+    assert.equal(written.status, 'unverified');
+    assert.deepEqual(written.targets, []);
+    assert.equal(written.evidence_classification, 'DIAGNOSTIC_ONLY_NO_ACCEPTANCE_CREDIT');
+    assert.deepEqual(
+      written.startup_endpoint_observations.map(({ phase }) => phase),
+      ['cdp_timeout', 'post_timeout'],
+    );
+    assert.equal(written.startup_endpoint_observations[1].endpointPresent, true);
+    assert.equal(written.startup_endpoint_observations[1].elapsedMs, 300);
+    assert.equal(Object.hasOwn(written.startup_endpoint_observations[1], 'privatePath'), false);
+    assert.deepEqual(await seoStartupObservationOptions({}, false), {});
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
 });
 
 test('instrumented SEO writer outcomes never become native pass in the evidence summary', async () => {

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "task_id": "seo-startup-observation-wiring-20261008",
+  "defect": "EXT-D-0107",
+  "status": "SOURCE_WIRED_NATIVE_PROOF_PENDING",
+  "source_change": "When the existing seo_resource_diagnostic input is true, the headless guest SEO driver passes the resource-policy-derived 15-second endpoint observer to the native harness. The six fixed safe observation fields are saved in the usual SEO receipt even when startup throws. Diagnostic classification still clears acceptance targets.",
+  "preserved_contract": [
+    "The ordinary SEO run passes no startup observation callback or post-timeout window.",
+    "The owned CDP 5000 ms deadline, resource thresholds, and headless launch mode are unchanged.",
+    "A late endpoint cannot convert a failed native run or invalid resource journal into acceptance credit."
+  ],
+  "verification": {
+    "red": "The focused writer test failed on the unfixed helper because startupEndpointObservationMs was absent; expected 15000, received undefined.",
+    "green": "node --test scripts/hosted-seo-route.test.mjs scripts/test-hosted-startup-interval-diagnostic.mjs tests/browser/seo-driver-sequence.test.mjs: 14 passed.",
+    "native": "Not run in this source task; no guarded macOS runner slot was used."
+  },
+  "next_proof": "Run one guarded macos-15-intel guest-seo diagnostic against development run 37754055905/artifact 11539827040, full scope, Airbnb fixture, seo_resource_diagnostic=true. Keep its headless host mode and artifact identical to the failed run. Retain the SEO receipt, BROWSER_STARTUP_FAILURE if emitted, and package/browser/guest resource journals. Classify a late endpoint as diagnostic timing evidence only."
+}

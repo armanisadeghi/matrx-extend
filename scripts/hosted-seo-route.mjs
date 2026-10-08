@@ -1,5 +1,27 @@
 import assert from 'node:assert/strict';
+import { readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
+import { safeStartupEndpointObservation } from './hosted-startup-interval-diagnostic.mjs';
+
+export async function seoStartupObservationOptions(report, enabled) {
+  if (!enabled) return {};
+  const policy = JSON.parse(
+    await readFile(new URL('../docs/stabilization/resource-policy.json', import.meta.url)),
+  );
+  report.startup_endpoint_observations = [];
+  return {
+    startupEndpointObservationMs: policy.watchIntervalSeconds * 1000,
+    onStartupEndpointObservation: (observation) => {
+      report.startup_endpoint_observations.push(safeStartupEndpointObservation(observation));
+    },
+  };
+}
+
+export async function writeSeoGuestReport(path, report, diagnosticEnabled) {
+  const finalReport = classifySeoResourceDiagnosticReport(report, diagnosticEnabled);
+  await writeFile(path, `${JSON.stringify(finalReport, null, 2)}\n`, { mode: 0o600 });
+  return finalReport;
+}
 
 export function hostedSeoMetadataFixture(acceptanceCase, scope, fixture = 'none') {
   assert.ok(fixture === 'none' || fixture === 'airbnb', 'unknown_seo_metadata_fixture');
