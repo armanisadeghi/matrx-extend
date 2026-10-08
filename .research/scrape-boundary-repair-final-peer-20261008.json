@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "reviewed_source_sha": "617e65a654c75418b213cdf25599888f57043c08",
+  "reviewed_at_utc": "2026-10-08T11:04:08Z",
+  "verdict_a_source_readiness_native": {
+    "status": "SOURCE_READY_NATIVE_PENDING",
+    "evidence": "The acceptance path invokes runPostReloadCaptureBoundary after a ready, titled, empty referrals state. The helper arms click and busy probes before the trusted pointer, waits for the exact Article text, and stores scalar boundary evidence on failure. The latest cited native run 37764002686 used earlier source 5d845f42; no post-repair native receipt proves the final click or captured referrals.",
+    "first_unverified_boundary": "Fresh native post-reload final capture and resulting referrals Article on source containing 617e65a6."
+  },
+  "verdict_b_guard_privacy_quality": {
+    "status": "PASS_FOR_REVIEWED_FINDINGS",
+    "findings": [
+      {
+        "original": "Timeout page-content leak",
+        "status": "ADDRESSED",
+        "evidence": "The final capture wait passes captureTimeoutDiagnostic to waitFor; only five fixed booleans enter the thrown diagnostic. The production catch truncates that error message. Focused tests prove rendered text, URL, account, and authorization strings stay out of the failed assertion error."
+      },
+      {
+        "original": "Listener disposal, including busy-arm failure",
+        "status": "ADDRESSED",
+        "evidence": "The helper enters try/finally before click and busy arming. disposeClickExpression reads and removes the named capture listener; partial busy arming attempts observer cleanup. Focused same-document rerun and forced busy-arm failure tests pass listener-balance and observer-cleanup assertions."
+      },
+      {
+        "original": "Causal pointer/click/busy evidence",
+        "status": "ADDRESSED_AT_SOURCE; NATIVE_PENDING",
+        "evidence": "The real click driver reports target/press/release phases around CDP pointer dispatch. The helper records that phase, capture-button click count, and observed busy state in one final-action scope. Focused tests distinguish no click, click without busy, and click with busy. These distinguish boundaries but do not establish the application root cause or replace a native observation."
+      }
+    ]
+  },
+  "checks": [
+    "node --test tests/browser/scrape-post-reload-capture-boundary.test.mjs: 6 passed, 0 failed",
+    "node --check tests/browser/scrape-guest-native-acceptance.mjs: passed",
+    "pnpm exec biome check four touched browser files: passed"
+  ],
+  "scope_limit": "Independent source and focused-test review only. No native job, build, install, deploy, application edit, or new live-sidepanel observation. Shared worktree had unrelated dirty docs/stabilization files; they were excluded."
+}
