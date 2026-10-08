@@ -81,5 +81,10 @@
   "limits": [
     "All five are source-grounded procedures conditional on their recorded fixtures and limits. No browser, dispatch, backend, DB, or product runtime was executed.",
     "EXT-F-4130-T01 remains unresolved pending live guide/schema and owned fixture per control; its complete feature and existing result history are unchanged."
-  ]
+  ],
+  "coordinator_timestamp_correction": {
+    "previous_value": "2026-10-08T08:45:00+00:00",
+    "corrected_at": "2026-10-08T08:37:30.469956+00:00",
+    "reason": "Integration used a future timestamp; replaced with observed system UTC during coordinator check. No case or runtime semantics changed."
+  }
 }
