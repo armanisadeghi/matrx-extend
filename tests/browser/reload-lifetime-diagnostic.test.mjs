@@ -277,3 +277,118 @@ test('late session creation attempts bounded cleanup without claiming it succeed
   assert.equal(late.listenerCount('ServiceWorker.workerVersionUpdated'), 0);
   await diagnostic.close();
 });
+
+test('replacement error receipt matches version and registration and strips private worker text', async () => {
+  const f = fixture();
+  const diagnostic = await startReloadLifetimeDiagnostic({ ...f, extensionId });
+  diagnostic.correlateOld('old-worker');
+  const reported = (versionId, registrationId) =>
+    f.pageSession.emit('ServiceWorker.workerErrorReported', {
+      errorMessage: {
+        versionId,
+        registrationId,
+        errorMessage: 'private worker exception with secret URL',
+        sourceURL: `${prefix}background.js?secret=private`,
+      },
+    });
+  reported('version-new', 'registration-2'); // pre-click errors cannot belong to this reload
+  diagnostic.markReloadStarted();
+  reported('version-new', 'registration-other');
+  reported('version-other', 'registration-2');
+  reported('version-new', 'registration-2');
+  f.pageSession.emit('ServiceWorker.workerVersionUpdated', {
+    versions: [
+      {
+        versionId: 'version-new',
+        registrationId: 'registration-2',
+        scriptURL: `${prefix}background.js`,
+        targetId: 'new-worker',
+        runningStatus: 'starting',
+        status: 'new',
+      },
+    ],
+  });
+  diagnostic.captureReplacementErrors('new-worker');
+  const captured = captureReloadLifetime(diagnostic.evidence);
+  assert.deepEqual(captured.replacement_worker_errors, [{ category: 'worker_error_reported' }]);
+  assert.doesNotMatch(JSON.stringify(captured), /private|secret|background\.js|registration-other/);
+  diagnostic.evidence.replacement_worker_errors = [
+    {
+      category: 'worker_error_reported',
+      raw: 'private worker exception with secret URL',
+    },
+  ];
+  assert.deepEqual(captureReloadLifetime(diagnostic.evidence).replacement_worker_errors, [
+    { category: 'worker_error_reported' },
+  ]);
+  diagnostic.captureReplacementErrors('foreign-worker');
+  assert.deepEqual(captureReloadLifetime(diagnostic.evidence).replacement_worker_errors, []);
+  await diagnostic.close();
+  assert.equal(f.pageSession.listenerCount('ServiceWorker.workerErrorReported'), 0);
+});
+
+test('fresh observer retains a later matching activation but rejects foreign updates and missing transitions', async () => {
+  const replacement = {
+    versionId: 'version-new',
+    registrationId: 'registration-2',
+    scriptURL: `${prefix}background.js`,
+    targetId: 'new-worker',
+    runningStatus: 'starting',
+    status: 'new',
+  };
+  for (const later of [
+    'activated',
+    'foreign-version',
+    'foreign-registration',
+    'foreign-target',
+    'missing',
+  ]) {
+    const f = fixture();
+    const diagnostic = await startReloadLifetimeDiagnostic({ ...f, extensionId });
+    diagnostic.correlateOld('old-worker');
+    f.pageSession.emit('ServiceWorker.workerVersionUpdated', { versions: [replacement] });
+    const fresh = new Session((method, _, session) => {
+      if (method === 'ServiceWorker.enable') {
+        session.emit('ServiceWorker.workerVersionUpdated', { versions: [replacement] });
+        if (later !== 'missing')
+          setTimeout(
+            () =>
+              session.emit('ServiceWorker.workerVersionUpdated', {
+                versions: [
+                  {
+                    ...replacement,
+                    versionId: later === 'foreign-version' ? 'foreign-version' : 'version-new',
+                    registrationId:
+                      later === 'foreign-registration' ? 'foreign-registration' : 'registration-2',
+                    targetId: later === 'foreign-target' ? 'foreign-worker' : 'new-worker',
+                    runningStatus: 'running',
+                    status: 'activated',
+                  },
+                ],
+              }),
+            5,
+          );
+      }
+      return {};
+    });
+    f.context.newCDPSession = async () => fresh;
+    const observed = await diagnostic.observeFreshReplacement('new-worker', 80);
+    const captured = captureReloadLifetime(diagnostic.evidence);
+    assert.deepEqual(
+      captured.fresh_replacement.later_observation,
+      later === 'activated'
+        ? { outcome: 'activated', running_status: 'running', status: 'activated' }
+        : null,
+      later,
+    );
+    assert.equal(
+      captured.fresh_replacement.outcome,
+      later === 'activated' ? 'activated' : 'not_activated',
+      later,
+    );
+    assert.equal(observed.cleanup, 'confirmed');
+    assert.equal(diagnostic.executionRetired('old-worker', 'new-worker'), false);
+    assert.equal(fresh.listenerCount('ServiceWorker.workerVersionUpdated'), 0);
+    await diagnostic.close();
+  }
+});

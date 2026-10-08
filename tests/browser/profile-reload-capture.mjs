@@ -319,6 +319,12 @@ export function captureReloadLifetime(value) {
     version_observation: value.version_observation === 'visible' ? 'visible' : 'unavailable',
     old_host_probe: probe(value.old_host_probe),
     replacement_host_probe: probe(value.replacement_host_probe),
+    replacement_worker_errors: Array.isArray(value.replacement_worker_errors)
+      ? value.replacement_worker_errors
+          .slice(0, 80)
+          .filter((item) => item?.category === 'worker_error_reported')
+          .map(() => ({ category: 'worker_error_reported' }))
+      : [],
     fresh_replacement:
       value.fresh_replacement &&
       ['activated', 'not_activated', 'identity_mismatch', 'unavailable', 'unmeasured'].includes(
@@ -345,6 +351,30 @@ export function captureReloadLifetime(value) {
               ? value.fresh_replacement.status
               : null,
             observations: safeCount(value.fresh_replacement.observations),
+            later_observation:
+              value.fresh_replacement.later_observation &&
+              ['activated', 'not_activated'].includes(
+                value.fresh_replacement.later_observation.outcome,
+              )
+                ? {
+                    outcome: value.fresh_replacement.later_observation.outcome,
+                    running_status: ['stopped', 'starting', 'running', 'stopping'].includes(
+                      value.fresh_replacement.later_observation.running_status,
+                    )
+                      ? value.fresh_replacement.later_observation.running_status
+                      : null,
+                    status: [
+                      'new',
+                      'installing',
+                      'installed',
+                      'activating',
+                      'activated',
+                      'redundant',
+                    ].includes(value.fresh_replacement.later_observation.status)
+                      ? value.fresh_replacement.later_observation.status
+                      : null,
+                  }
+                : null,
             cleanup: ['confirmed', 'unconfirmed', 'not_acquired'].includes(
               value.fresh_replacement.cleanup,
             )

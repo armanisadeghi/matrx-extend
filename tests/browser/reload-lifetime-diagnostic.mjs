@@ -46,7 +46,10 @@ export async function startReloadLifetimeDiagnostic({ browser, context, page, ex
     old_host_probe: null,
     replacement_host_probe: null,
     fresh_replacement: null,
+    replacement_worker_errors: [],
   };
+  const workerErrors = [];
+  let reloadStarted = false;
   let browserSession;
   let pageSession;
   const listeners = [];
@@ -138,6 +141,13 @@ export async function startReloadLifetimeDiagnostic({ browser, context, page, ex
         });
       }
     });
+    on(pageSession, 'ServiceWorker.workerErrorReported', ({ errorMessage }) => {
+      if (!reloadStarted) return;
+      const versionId = safeId(errorMessage?.versionId);
+      const registrationId = safeId(errorMessage?.registrationId);
+      if (versionId && registrationId && workerErrors.length < MAX_EVENTS)
+        workerErrors.push({ version_id: versionId, registration_id: registrationId });
+    });
     await pageSession.send('ServiceWorker.enable');
     evidence.availability = 'ready';
   } catch {
@@ -170,6 +180,25 @@ export async function startReloadLifetimeDiagnostic({ browser, context, page, ex
   return {
     evidence,
     correlateOld,
+    markReloadStarted: () => {
+      reloadStarted = true;
+    },
+    captureReplacementErrors(replacementTargetId) {
+      const matching = [...versions.values()].filter(
+        (item) =>
+          item.target_id === replacementTargetId && item.version_id !== evidence.old_version_id,
+      );
+      evidence.replacement_worker_errors =
+        matching.length === 1
+          ? workerErrors
+              .filter(
+                (item) =>
+                  item.version_id === matching[0].version_id &&
+                  item.registration_id === matching[0].registration_id,
+              )
+              .map(() => ({ category: 'worker_error_reported' }))
+          : [];
+    },
     executionRetired: (oldTargetId, replacementTargetId) =>
       reloadExecutionRetired(evidence, oldTargetId, replacementTargetId),
     async probe(oldTargetId, replacementTargetId) {
@@ -189,12 +218,14 @@ export async function startReloadLifetimeDiagnostic({ browser, context, page, ex
         running_status: null,
         status: null,
         observations: 0,
+        later_observation: null,
         cleanup: 'not_acquired',
       };
       evidence.fresh_replacement = result;
       if (!safeId(replacementTargetId) || expected.length !== 1) return result;
       let freshSession;
       let finish;
+      let finishLater;
       let abandoned = false;
       let creation;
       const finalDeadline = performance.now() + budgetMs;
@@ -216,6 +247,10 @@ export async function startReloadLifetimeDiagnostic({ browser, context, page, ex
       const completion = new Promise((resolve) => {
         finish = resolve;
       });
+      const laterCompletion = new Promise((resolve) => {
+        finishLater = resolve;
+      });
+      let firstObserved = false;
       const onVersion = ({ versions: updates }) => {
         let matchingSnapshot = false;
         for (const version of updates ?? []) {
@@ -225,22 +260,37 @@ export async function startReloadLifetimeDiagnostic({ browser, context, page, ex
           const targetId = safeId(version.targetId);
           if (versionId !== expected[0].version_id && targetId !== replacementTargetId) continue;
           matchingSnapshot = true;
+          const runningStatus = RUNNING.has(version.runningStatus) ? version.runningStatus : null;
+          const status = STATUS.has(version.status) ? version.status : null;
+          const outcome =
+            versionId === expected[0].version_id &&
+            registrationId === expected[0].registration_id &&
+            targetId === replacementTargetId
+              ? runningStatus === 'running' && status === 'activated'
+                ? 'activated'
+                : 'not_activated'
+              : 'identity_mismatch';
+          if (firstObserved && outcome === 'identity_mismatch') continue;
           result.observations += 1;
           result.version_id = versionId;
           result.registration_id = registrationId;
           result.target_id = targetId;
-          result.running_status = RUNNING.has(version.runningStatus) ? version.runningStatus : null;
-          result.status = STATUS.has(version.status) ? version.status : null;
-          result.outcome =
-            versionId === expected[0].version_id &&
-            registrationId === expected[0].registration_id &&
-            targetId === replacementTargetId
-              ? result.running_status === 'running' && result.status === 'activated'
-                ? 'activated'
-                : 'not_activated'
-              : 'identity_mismatch';
+          result.running_status = runningStatus;
+          result.status = status;
+          result.outcome = outcome;
+          if (firstObserved) {
+            result.later_observation = {
+              outcome,
+              running_status: runningStatus,
+              status,
+            };
+            finishLater();
+          }
         }
-        if (matchingSnapshot) finish();
+        if (matchingSnapshot && !firstObserved) {
+          firstObserved = true;
+          finish();
+        }
       };
       try {
         creation = Promise.resolve().then(() => context.newCDPSession(page));
@@ -251,6 +301,9 @@ export async function startReloadLifetimeDiagnostic({ browser, context, page, ex
           workDeadline,
         );
         await within(completion, workDeadline);
+        // Keep listening inside the existing diagnostic budget; a second matching
+        // transition is evidence, while silence remains explicitly unobserved.
+        await within(laterCompletion, workDeadline).catch(() => {});
       } catch {
         abandoned = true;
         result.outcome = 'unavailable';
