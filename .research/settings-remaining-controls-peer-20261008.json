@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "reviewer_lane": "fresh independent source and assertion-quality review",
+  "reviewed_commits": ["dbfbb0dc48427f4415e7c20cce152dce0efae9e2", "422361e42ae0dfa5af547566d3783c0c8ee5a3f9"],
+  "scope": "New guest Settings T28, T40, and T67 acceptance paths and focused comparator assertions. No downstream capture or full extension reload credit is inferred.",
+  "verdict_a": {
+    "status": "PARTIAL_SOURCE_ACCEPTANCE",
+    "targets": [
+      {
+        "target": "T28 matches the source case for visible guest section roster and opening/closing without preference writes.",
+        "status": "PASS_SOURCE",
+        "evidence": "The source Collapsible exposes aria-expanded, aria-controls, aria-hidden, and inert; SettingsView has the exact 11 guest groups and Data/SEO each render 'No options yet'. The driver enumerates the exact roster, observes open/closed semantics and checks a before/after digest of persisted Settings. It repeats after the panel reload boundary."
+      },
+      {
+        "target": "T28 proves actual content visibility follows the trigger state.",
+        "status": "PARTIAL",
+        "evidence": "contentNonempty only proves the mounted content has text. The remaining assertions inspect aria-hidden and inert, but never computed visibility, layout/clip geometry, or an equivalent visible-content observation. Since Collapsible keeps children mounted while closed, these assertions can pass while the CSS visibility behavior is broken."
+      },
+      {
+        "target": "T40 verifies the guest preference control and persisted value through both switch states and panel reload.",
+        "status": "PASS_SOURCE_ONLY",
+        "evidence": "Each trusted click is followed by an aria-checked and chrome.storage.local value comparison, and the same state is checked after reloadSettings. The case explicitly records downstream page-load capture as unverified. This does not establish that background capture consumes the setting."
+      },
+      {
+        "target": "T67 verifies both mode selections through reload.",
+        "status": "PASS_SOURCE_ONLY",
+        "evidence": "The real picker is clicked for each mode, then its displayed label and stored scrapeAutoMode are compared before and after reloadSettings. No capture-quality claim is made."
+      }
+    ],
+    "findings": [
+      {
+        "severity": "P1",
+        "location": "tests/browser/settings-guest-scrape-controls.mjs: sectionMatches and observeSection",
+        "finding": "The T28 visibility contract is weaker than its name and case brief. The test never observes that the content is actually visible while open or visually hidden while closed; aria-hidden/inert are accessibility semantics, not a rendered-visibility assertion, and contentNonempty remains true for the mounted closed content."
+      },
+      {
+        "severity": "P2",
+        "location": "tests/browser/settings-guest-scrape-controls.mjs: runGuestSectionsCase cleanup blocks",
+        "finding": "Both per-section finally blocks click back when necessary but do not wait for or assert restoration of the recorded initial expanded state. A failed run can therefore leave the section in an unverified state while reporting only the original failure."
+      },
+      {
+        "severity": "P2",
+        "location": "tests/browser/settings-guest-scrape-controls.mjs: runGuestAutoScrapeCase cleanup",
+        "finding": "If UI already equals the baseline while storage differs, cleanup skips the click and then times out; it does not repair the persisted value. This is precisely a plausible failure state when persistence is the broken behavior under test. T67 has the analogous same-selection issue if the UI shows the baseline while storage differs: selecting the already-selected option may not trigger a write."
+      },
+      {
+        "severity": "P2",
+        "location": "tests/browser/settings-guest-scrape-controls.test.mjs",
+        "finding": "The new focused tests exercise only pure matcher functions with hand-constructed state objects. They do not invoke the native driver, real click/reload sequence, or persistence observer, so they are comparator self-checks rather than forcing guards on the browser path. No executed mutation or local test run is claimed in this review."
+      }
+    ],
+    "limitations": [
+      "The current source-only review does not establish that a native acceptance run passed on an artifact containing these changes.",
+      "T40 background capture behavior remains unverified by design; no downstream capture or full extension reload credit is granted."
+    ]
+  },
+  "verdict_b": {
+    "status": "NOT_READY_FOR_UNQUALIFIED_ACCEPTANCE",
+    "positives": [
+      "The control drivers use the shared trusted CDP click helper and compare visible control state with the real chrome.storage.local Settings payload.",
+      "The test explicitly keeps T40 capture behavior unverified and does not claim scrape integration.",
+      "The comparator predicates reject mismatched visible/stored values, a missing control, altered section roster, and changed settings digest."
+    ],
+    "required_repairs": [
+      "For T28, assert rendered visibility for open and closed content, and verify restoration to each section's recorded initial state in cleanup.",
+      "Make T40/T67 cleanup restore baseline even when the displayed value matches but persisted storage does not; verify the restored value after a reload.",
+      "Add a forcing check at the acceptance seam, or keep the helper unit tests clearly supplemental and do not treat them as browser-path regression coverage."
+    ]
+  },
+  "tests_run": [],
+  "commands_run": [
+    "git fetch origin main",
+    "git show dbfbb0dc --",
+    "Source inspection of SettingsView, Collapsible, persistence store, case brief, inventory, and acceptance harness"
+  ],
+  "limits": [
+    "No local tests, browser, build, or extension reload were run, as instructed.",
+    "Only this assigned review report is authored by this reviewer."
+  ]
+}
