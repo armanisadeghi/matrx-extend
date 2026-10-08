@@ -39,7 +39,7 @@ importers:
         version: 0.10.7(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@ai-matrx/realtime':
         specifier: latest
-        version: 0.9.2(react@19.3.0)
+        version: 0.10.0(react@19.3.0)
       '@ai-matrx/records':
         specifier: latest
         version: 0.81.2(@tanstack/react-query@5.104.0(react@19.3.0))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -358,8 +358,8 @@ packages:
       react-dom:
         optional: true
 
-  '@ai-matrx/realtime@0.9.2':
-    resolution: {integrity: sha512-Dib8Dn+X1l+Vlt/+cknmXnAdIi763x30BxBJgtcHOusY81xb8RRzBmY7FcExeBVV06ShpZRoSXK5TQZY5fj7rA==}
+  '@ai-matrx/realtime@0.10.0':
+    resolution: {integrity: sha512-r8ahFbjbfZ6v3+ItneICWhbcXLeQINHBfUBFKZlqAlvAWHpeSD2Cq5dXVF2HFGsLJvRddY09yoT+Lw0efIjMLw==}
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=18.0.0'
@@ -5262,7 +5262,7 @@ snapshots:
   '@ai-matrx/data@0.19.0(@supabase/supabase-js@2.117.2)(react@19.3.0)':
     dependencies:
       '@ai-matrx/kit': 0.37.0(react@19.3.0)
-      '@ai-matrx/realtime': 0.9.2(react@19.3.0)
+      '@ai-matrx/realtime': 0.10.0(react@19.3.0)
       '@supabase/ssr': 0.12.7(@supabase/supabase-js@2.117.2)
       '@supabase/supabase-js': 2.117.2
     optionalDependencies:
@@ -5341,7 +5341,7 @@ snapshots:
       '@ai-matrx/data': 0.19.0(@supabase/supabase-js@2.117.2)(react@19.3.0)
       '@ai-matrx/design-system': 0.80.6(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@ai-matrx/kit': 0.37.0(react@19.3.0)
-      '@ai-matrx/realtime': 0.9.2(react@19.3.0)
+      '@ai-matrx/realtime': 0.10.0(react@19.3.0)
       '@supabase/postgrest-js': 2.117.3
       '@supabase/supabase-js': 2.117.2
       dexie: 4.4.6
@@ -5396,7 +5396,9 @@ snapshots:
       - '@types/react-dom'
       - supports-color
 
-  '@ai-matrx/realtime@0.9.2(react@19.3.0)':
+  '@ai-matrx/realtime@0.10.0(react@19.3.0)':
+    dependencies:
+      '@ai-matrx/kit': 0.37.0(react@19.3.0)
     optionalDependencies:
       react: 19.3.0
 
@@ -5405,7 +5407,7 @@ snapshots:
       '@ai-matrx/alchemy': 0.20.6(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@ai-matrx/design-system': 0.80.6(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@ai-matrx/kit': 0.37.0(react@19.3.0)
-      '@ai-matrx/realtime': 0.9.2(react@19.3.0)
+      '@ai-matrx/realtime': 0.10.0(react@19.3.0)
     optionalDependencies:
       '@tanstack/react-query': 5.104.0(react@19.3.0)
       react: 19.3.0
