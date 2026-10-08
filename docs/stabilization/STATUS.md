@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-08 21:54 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T21:53:49.775225+00:00. 205 features · 769 cases · 1358 controls · 184 linked defect records.
+Generated 2026-10-08 22:14 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T22:14:08.830206+00:00. 205 features · 769 cases · 1358 controls · 185 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -3467,7 +3467,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0071, EXT-D-0089, EXT-D-0091
 
-**Linked defects:** [EXT-D-0071](defects/EXT-D-0071.json) (fixed), [EXT-D-0089](defects/EXT-D-0089.json) (fixed), [EXT-D-0091](defects/EXT-D-0091.json) (in-fix)
+**Linked defects:** [EXT-D-0071](defects/EXT-D-0071.json) (fixed), [EXT-D-0089](defects/EXT-D-0089.json) (fixed), [EXT-D-0091](defects/EXT-D-0091.json) (in-fix), [EXT-D-0185](defects/EXT-D-0185.json) (closed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -3477,7 +3477,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 **Recorded case details and evidence:**
 
 - EXT-F-4130-T01 · admin: Partial.
-  Evidence / build / date recorded: 37825307247, ['.research/records-card-native-retest-20261008.json', '.research/records-card-diagnostics-peer-20261008.json']
+  Evidence / build / date recorded: 37850891584, ['.research/records-detail-cleanup-native-20261008.json', '.research/records-detail-cleanup-native-peer-20261008.json']
 
 **Other remaining work:** Author concrete fixture-specific server procedures before this tool is executed; gated/negative permission cases required; Current source identifies a server capability, absent from the local generated executor catalog. Imported input schema and live DB binding need fresh reconciliation.
 
