@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "lane": "settings-reload-native-retest-B",
+  "status": "resource_invalid_no_acceptance_credit",
+  "scope": "One guarded hosted ARM macos-15 settings-controls run against the frozen development artifact. Native observations are retained, but resource-invalid evidence earns no product acceptance credit.",
+  "dispatch": {
+    "workflow": "Hosted guest side-panel acceptance",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37716001386",
+    "run_id": 37716001386,
+    "job_id": 113112480256,
+    "status": "completed",
+    "conclusion": "failure",
+    "event": "workflow_dispatch",
+    "head_branch": "main",
+    "workflow_checkout_sha": "20048283e04b1e0661796cc526800286d9da854d",
+    "acceptance_lane": "B",
+    "runner_label": "macos-15",
+    "runner_architecture": "ARM64",
+    "acceptance_case": "settings-controls",
+    "auth_mode": "signed-out guest",
+    "started_at": "2026-10-08T02:03:50Z",
+    "completed_at": "2026-10-08T02:10:31Z",
+    "dispatch_count": 1
+  },
+  "selected_development_artifact": {
+    "run_id": 37698216289,
+    "artifact_id": 11516342905,
+    "artifact_name": "matrx-extend-development-test-52487361b1b6a8663b958dbb2196cbcc9b1af31c-37698216289-1",
+    "artifact_digest": "sha256:927854cfdda6e57d272277653e0b4c507720c29d74978da235d80c064c1017ee",
+    "expired": false,
+    "ci_conclusion": "success",
+    "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "version": "0.2.391",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+    "receipt_path": ".research/settings-reload-native-retest-20261007/evidence/raw/ci-build-receipt.json",
+    "receipt_sha256": "d8b29a5eb04a778400ffd595a0d71eae43873b28bcfcd1639b64572f0c8da490",
+    "provenance_path": ".research/settings-reload-native-retest-20261007/evidence/raw/ci-build-provenance.json",
+    "provenance_sha256": "950b326ca3800c8b350471c72a79a6adee25962fe71c66e1a8508ec521187a79"
+  },
+  "source_readiness": {
+    "repair_sha": "65637cd5",
+    "focused_ci_correction_sha": "c8459a93f67cff9319e24841cfe69edb4be05f3f",
+    "focused_ci_run_id": 37715732203,
+    "focused_ci_conclusion": "success",
+    "peer_report": ".research/settings-reload-final-readiness-peer-20261007.json",
+    "peer_verdict": "PASS_FOR_ONE_RERUN"
+  },
+  "native_outcome": {
+    "driver_report_path": ".research/settings-reload-native-retest-20261007/evidence/raw/settings-local-controls-acceptance.json",
+    "driver_report_sha256": "a18c3abc1216bc121ab98ac139e2a1e698c5b871ad6148eb9588b55139ff9b81",
+    "report_status": "unverified",
+    "full_extension_reload": {
+      "management_reload_clicked": true,
+      "old_targets_retired": true,
+      "worker_replaced": true,
+      "panel_replaced": true,
+      "post_reload_settings_status": "settings_opened",
+      "settings_tab_count": 1,
+      "settings_active_count": 1,
+      "runtime_id_matches": true,
+      "document_ready": true
+    },
+    "cases": {
+      "EXT-F-1003-T63": {
+        "status": "unverified",
+        "observed": "After full extension Reload and panel replacement, the guest Settings view opened and its guest admin/optional-permission controls were absent in warm and reload observations.",
+        "ordinary_member_denial": "unverified; this guest runner has no ordinary-member principal",
+        "acceptance_credit": false
+      },
+      "EXT-F-1003-T64": {
+        "driver_status": "pass",
+        "observed_criteria": 5,
+        "acceptance_credit": false
+      },
+      "EXT-F-1003-T73": {
+        "driver_status": "pass",
+        "observed_criteria": 2,
+        "acceptance_credit": false
+      },
+      "EXT-F-1003-T76": {
+        "driver_status": "pass",
+        "observed_criteria": 2,
+        "acceptance_credit": false
+      },
+      "EXT-F-1003-T92": {
+        "driver_status": "pass",
+        "observed_criteria": 2,
+        "acceptance_credit": false
+      },
+      "surrounding_settings_controls": {
+        "T04": "pass observed",
+        "T10": "partial; new-chat inheritance unverified",
+        "T13": "pass observed",
+        "T22": "pass observed",
+        "T37": "pass observed",
+        "T46": "pass observed",
+        "T70": "partial; unavailable and update branches unverified",
+        "acceptance_credit": false
+      }
+    },
+    "resource_verdict": {
+      "status": "invalid",
+      "resource_invalid": true,
+      "invalid_journal": "hosted-guest-37716001386-1.jsonl",
+      "invalid_reason": "RESOURCE_CPU_HIGH_LOAD_BUSY",
+      "observed_sample": {
+        "cpu_busy_fraction": 0.65,
+        "one_minute_load": 2.76,
+        "logical_cpus": 3
+      },
+      "child_exit_code": 0,
+      "wrapper_exit_code": 3,
+      "journal_paths": [
+        ".research/settings-reload-native-retest-20261007/evidence/resource-journals/hosted-package-37716001386-1.jsonl",
+        ".research/settings-reload-native-retest-20261007/evidence/resource-journals/hosted-browser-37716001386-1.jsonl",
+        ".research/settings-reload-native-retest-20261007/evidence/resource-journals/hosted-guest-37716001386-1.jsonl"
+      ],
+      "journal_sha256": {
+        "hosted-package-37716001386-1.jsonl": "7ff5eea0a651eaf3750e6763af9a233f7c9921197ef15ceffd4a2a953631dc49",
+        "hosted-browser-37716001386-1.jsonl": "7c1d867f9172f358927f86db26b3d6ef4a53985cc280434ec2528fc01ad4566f",
+        "hosted-guest-37716001386-1.jsonl": "79afc0f9cecb8f756abdaa137ce7aa00130cbb1fb588fedd6a6ee3314c40ac0"
+      },
+      "decisions": {
+        "hosted-package-37716001386-1.jsonl": {
+          "decision": "valid",
+          "resource_invalid": false,
+          "exit_code": 0
+        },
+        "hosted-browser-37716001386-1.jsonl": {
+          "decision": "valid",
+          "resource_invalid": false,
+          "exit_code": 0
+        },
+        "hosted-guest-37716001386-1.jsonl": {
+          "decision": "invalid",
+          "resource_invalid": true,
+          "exit_code": 3
+        }
+      },
+      "result": "All native observations are retained for diagnosis; none are credited because one required current-run resource journal is invalid."
+    },
+    "native_artifact": {
+      "artifact_id": 11523857531,
+      "name": "hosted-guest-37716001386-1",
+      "digest": "sha256:e2bcd49abac8b576fa297d5ca0311d24347f39356329455fca9fe188eb0c4122",
+      "expired": false
+    },
+    "review": {
+      "independent_native_review": "pending; root owns review",
+      "inventory_credit": "none"
+    },
+    "limitations": [
+      "The failed workflow reflects resource invalidation after the browser observations; it does not establish a product failure.",
+      "T63 ordinary-member denial remains untested.",
+      "No local browser, auth secret, manual build, release, deploy, version change, or inventory update was used."
+    ]
+  },
+  "curated_evidence_directory": ".research/settings-reload-native-retest-20261007/evidence",
+  "excluded_artifact_content": "The workflow artifact also contained stale 371053 journals and setup screenshots. They are not included in the curated evidence; current-run journals are listed above.",
+  "next_action": "Root independently review the terminal native receipt. Keep the guest Settings and surrounding case cells uncredited pending a resource-valid native run; do not retry in this lane."
+}
