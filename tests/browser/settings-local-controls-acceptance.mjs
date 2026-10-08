@@ -20,6 +20,11 @@ import {
 } from './settings-guest-privacy-batch.mjs';
 import { runGuestAskAgainCase } from './settings-guest-unrecorded-cases.mjs';
 import {
+  runGuestAutoScrapeCase,
+  runGuestAutoScrapeModeCase,
+  runGuestSectionsCase,
+} from './settings-guest-scrape-controls.mjs';
+import {
   activeTabPanelExpression,
   click,
   evaluate,
@@ -52,12 +57,15 @@ const IDS = [
   'T16',
   'T19',
   'T22',
+  'T28',
   'T31',
   'T34',
   'T37',
+  'T40',
   'T46',
   'T63',
   'T64',
+  'T67',
   'T70',
   'T73',
   'T76',
@@ -639,6 +647,26 @@ try {
           );
         }
       });
+      for (const [suffix, run] of [
+        ['T28', runGuestSectionsCase],
+        ['T40', runGuestAutoScrapeCase],
+        ['T67', runGuestAutoScrapeModeCase],
+      ]) {
+        await runCase(byId(suffix), async () => {
+          const c = byId(suffix);
+          await run(panel, reloadSettings, (phase, action, observation, passed) => {
+            c.steps.push({ phase, action, observation });
+            criterion(c, action, passed ? 'pass' : 'fail', observation);
+          });
+          if (suffix === 'T40')
+            criterion(
+              c,
+              'background capture follows the persisted switch',
+              'unverified',
+              'This batch observes the native Settings control; a page-load capture is not exercised.',
+            );
+        });
+      }
       await runCase(byId('T37'), async () => {
         const c = byId('T37');
         await openSection(panel, 'Scrape');
