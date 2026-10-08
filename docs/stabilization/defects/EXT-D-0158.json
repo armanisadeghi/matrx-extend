@@ -7,7 +7,7 @@
   "title": "Picker listener tracker may throw on untracked event registration before replacement picker initializes",
   "severity": "S2: invalid test instrumentation blocks native reinjection verification; product failure not established",
   "priority": "P1",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "root/picker_reinject_escalation",
   "reproduction": [
     "Run showcase-stale-admin after enabling listener-tracking hook.",
@@ -27,7 +27,9 @@
     ".research/picker-count-native-20261007.json",
     ".research/focused-ci-native-peer-20261007.json",
     ".research/picker-auth-recovery-native-20261007.json",
-    ".research/picker-auth-recovery-native-peer-20261007.json"
+    ".research/picker-auth-recovery-native-peer-20261007.json",
+    ".research/picker-reinjection-count-escalation-20261007.json",
+    ".research/picker-stamped-count-peer-20261007.json"
   ],
   "transition_history": [
     {
@@ -65,10 +67,16 @@
       "from": "retest-fail",
       "to": "in-fix",
       "reason": "Diagnose final detection-count boundary before another native attempt; source trace places missing teardown observation after Done, not proof of startup failure."
+    },
+    {
+      "at": "2026-10-08T02:09:46.049672+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Fresh escalation confirmed driver combines raw producer and stamped broadcast observations;6d7b299e selects authoritative stamped delivery without deduplicating. Exact focusedCI37716254653 and fresh4e98e3dc source peer pass. Historical two-event split remains unknown; native retest pending."
     }
   ],
   "closure_requirement": "Causal frozen-bundle red/green proof, fresh source review, then resource-valid native reinjection and surrounding scenarios; no globalD42closure.",
   "root_cause": "Optional chaining does not suppress false; capture classifier returned boolean instead of null for untracked events/options.",
-  "fix_commits": ["eb9ee865"],
-  "next_action": "Fresh Astra escalation owns causal distinction of one producer detection versus two current-session relays on original391 run37714880948. Auth now succeeds; no native retry before reviewed correction. D42/nonadmin remain open."
+  "fix_commits": ["eb9ee865", "6d7b299e"],
+  "next_action": "One original391 guarded A retest with stamped/unstamped discriminant after GitHub API quota recovers. No secrets staged; safe prior owner picker_auth_setup_recovery retains future admission. D42/nonadmin and actual native closure remain open."
 }
