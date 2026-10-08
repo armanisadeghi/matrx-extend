@@ -268,7 +268,9 @@ async function organizationObservation(panel, approved) {
     const buttons=[...(row?.parentElement?.parentElement?.querySelectorAll('button[role="combobox"]')??[])];
     const sectionButton=[...document.querySelectorAll('button[aria-expanded]')]
       .find(el=>el.textContent.trim()==='Organization');
-    const section=sectionButton?.parentElement?.nextElementSibling;
+    const section=document.getElementById(sectionButton?.getAttribute('aria-controls')??'');
+    const visible=el=>{const r=el.getBoundingClientRect(),style=getComputedStyle(el);
+      return r.width>0&&r.height>0&&style.visibility!=='hidden'&&style.display!=='none'&&!el.closest('[inert]');};
     const scopedLabels=[...(section?.querySelectorAll('span')??[])]
       .filter(el=>el.textContent.trim()==='Acting as');
     const scopedButtons=scopedLabels.flatMap(el=>[...el.parentElement.parentElement.querySelectorAll('button[role="combobox"]')]);
@@ -277,7 +279,17 @@ async function organizationObservation(panel, approved) {
     return {globalActingAsLabelCount:labels.length, originalComboboxCount:buttons.length,
       originalPickerMatchesApproved:buttons[0]?.textContent.trim()===${JSON.stringify(approved.name)},
       originalPickerTextSha256:await hash(buttons[0]?.textContent.trim()),
-      organizationSectionPresent:!!section, scopedActingAsLabelCount:scopedLabels.length,
+      organizationSectionPresent:!!section, organizationSectionExpanded:sectionButton?.getAttribute('aria-expanded')==='true',
+      organizationLoadingVisible:!!section&&[...section.querySelectorAll('div')]
+        .some(el=>el.childElementCount===0&&el.textContent.trim()==='Loading…'&&visible(el)),
+      organizationReadErrorVisible:!!section?.querySelector('.text-destructive'),
+      organizationSignInRequired:!!section?.textContent.includes('Sign in to choose'),
+      organizationNoEligibleMemberships:!!section&&(section.textContent.includes('No active organization to choose.')||
+        section.textContent.includes('No organizations match this archive filter.')),
+      organizationArchivedOnly:!!section?.textContent.includes('Archived organizations are view-only'),
+      originalVisibleComboboxCount:buttons.filter(visible).length,
+      originalEnabledComboboxCount:buttons.filter(el=>visible(el)&&!el.disabled).length,
+      scopedActingAsLabelCount:scopedLabels.length,
       scopedComboboxCount:scopedButtons.length,
       scopedPickerMatchesApproved:scopedButtons[0]?.textContent.trim()===${JSON.stringify(approved.name)},
       persistedNameMatchesApproved:active?.name===${JSON.stringify(approved.name)},
@@ -292,35 +304,56 @@ async function organizationObservation(panel, approved) {
 async function selectOrganization(panel, approvedIdentity) {
   const approved = approvedIdentity.name;
   stage = 'select_approved_organization';
-  await click(panel, 'title', 'Settings');
-  const account = await evaluate(
-    panel,
-    `(() => [...document.querySelectorAll('button[aria-expanded]')]
+  try {
+    await click(panel, 'title', 'Settings');
+    const account = await evaluate(
+      panel,
+      `(() => [...document.querySelectorAll('button[aria-expanded]')]
     .filter(el => el.textContent.trim()==='Account').map(el => el.getAttribute('aria-expanded')))()`,
-  );
-  if (account?.length !== 1) fail('account_section_not_unique');
-  if (account[0] === 'true') await click(panel, 'section', 'Account');
-  await waitFor(
-    'account_collapsed',
-    () =>
-      evaluate(
-        panel,
-        `(() => [...document.querySelectorAll(
+    );
+    if (account?.length !== 1) fail('account_section_not_unique');
+    if (account[0] === 'true') await click(panel, 'section', 'Account');
+    await waitFor(
+      'account_collapsed',
+      () =>
+        evaluate(
+          panel,
+          `(() => [...document.querySelectorAll(
     'button[aria-expanded]')].find(el => el.textContent.trim()==='Account')
     ?.getAttribute('aria-expanded'))()`,
-      ),
-    (value) => value === 'false',
-  );
-  await openSection(panel, 'Organization');
-  await click(panel, 'organization', 'Acting as');
-  const choices = await evaluate(
-    panel,
-    `(() => [...document.querySelectorAll('[role="option"]')]
-    .filter(el => el.textContent.trim()===${JSON.stringify(approved)}).length)()`,
-  );
-  if (choices !== 1) fail('approved_option_not_unique');
-  await click(panel, 'option', approved);
-  try {
+        ),
+      (value) => value === 'false',
+    );
+    await openSection(panel, 'Organization');
+    report.organizationReadiness = { first: null, last: null };
+    await waitFor(
+      'approved_organization_control_ready',
+      async () => {
+        const observed = await organizationObservation(panel, approvedIdentity);
+        report.organizationReadiness.first ??= observed;
+        report.organizationReadiness.last = observed;
+        return observed;
+      },
+      (value) =>
+        value?.organizationSectionExpanded &&
+        value.originalComboboxCount === 1 &&
+        value.originalVisibleComboboxCount === 1 &&
+        value.originalEnabledComboboxCount === 1,
+      30_000,
+    );
+    await click(panel, 'organization', 'Acting as');
+    await waitFor(
+      'approved_organization_option_ready',
+      () =>
+        evaluate(
+          panel,
+          `(() => [...document.querySelectorAll('[role="option"]')]
+      .filter(el => el.textContent.trim()===${JSON.stringify(approved)}).length)()`,
+        ),
+      (count) => count === 1,
+      30_000,
+    );
+    await click(panel, 'option', approved);
     const selected = await waitFor(
       'approved_organization_selected',
       () => organizationObservation(panel, approvedIdentity),

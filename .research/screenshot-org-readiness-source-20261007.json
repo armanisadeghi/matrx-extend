@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "lane": "screenshot organization readiness source diagnosis",
+  "diagnosis_count": 1,
+  "status": "HANDOFF",
+  "actual_native_boundary": {
+    "evidence": ".research/retained-share-diagnostic-native-corrected-20261007.json",
+    "artifact_source_sha": "4a5c78a50f8d41709b6abffb30c351898e5eb0ae",
+    "observation": "Native Acting as pointer matched zero controls before any service lookup or revoke; no organization observation was captured."
+  },
+  "established_source_cause": "openSection awaits only the header aria-expanded state. SettingsView independently loads organizations and renders the Acting as combobox only when loading completes. The harness dispatched its picker pointer before observing that control, and its catch began after both picker and option clicks.",
+  "runtime_cause": "unverified: previous run did not distinguish membership loading from persistent missing control, read failure, sign-in state, empty membership or archived-only membership.",
+  "repair": [
+    "Observe the first and last safe organization readiness samples before any picker pointer.",
+    "Wait for one visible enabled Acting as combobox in an expanded section, then retain the stable hit-tested native pointer driver.",
+    "Wait for the unique approved option before native selection.",
+    "Capture safe final organization state and private screenshot at every selection failure, including opening failures."
+  ],
+  "source_verification": [
+    "node --check passed",
+    "scoped Biome check passed",
+    "git diff --check passed"
+  ],
+  "native_verdict": "pending independent guarded retest against the imported current artifact; no browser launched by author",
+  "owned_jobs": [],
+  "next_action": "Fresh independent verifier reviews source and runs the canonical retained-grant recovery when root authorizes the free host."
+}
