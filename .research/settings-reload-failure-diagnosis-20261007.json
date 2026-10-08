@@ -34,7 +34,9 @@
       "The replacement-panel probe previously spread an unchecked CDP object into the receipt."
     ],
     "repair": "Decode only the producer-shaped final wait sample before choosing guest-state versus transport category. Admit only fixed, typed booleans and nonnegative integer counts from the CDP panel sample; all other fields and malformed values are dropped.",
-    "verification_pending": "Focused source and independent re-review; no native diagnostic yet."
+    "repair_source_sha": "ed97df724c958dce6040a90b2830d688af5e3e5c",
+    "focused_ci": "37714158197 succeeded at exact repair source SHA; source guard only.",
+    "verification_pending": "Independent re-review and native diagnostic; product cause remains unknown."
   },
   "verification": {
     "local_source_check": "Targeted node checks 6/6 passed; syntax and diff checks passed. Supporting source evidence only.",
