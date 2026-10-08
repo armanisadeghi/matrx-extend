@@ -1,0 +1,24 @@
+{
+  "scope": "Independent source review of D182 commit 8f908184; no heavy integration, browser, native, build, or manual dispatch run.",
+  "reviewed_source": "scripts/test-stabilization-resource-cpu-integration.mjs",
+  "verdict_a_real_scenario_preservation": {
+    "result": "pass_source_review",
+    "evidence": [
+      "The seven scenario kinds match the former grouped array exactly and retain its order: recovered, confirmed, pending-exit, completion-recovered, completion-unsafe, completion-expired, completion-memory-unsafe.",
+      "The diff leaves runScenario, fixture, guard-event and journal assertions, resource-action refusals, child-close handling, and scratch cleanup untouched. Each new top-level Node test awaits the same runScenario(kind, ...) promise.",
+      "Each of the seven gets timeout: 30000 and concurrency: false. The two other grouped tests retain their bodies and 30000 ms limits. The CI workflow still invokes the entire file with node --test on Node 22.",
+      "The scenario exception is rethrown after cleanup by unchanged runScenario; the new callback returns its promise, with no skip or catch at registration."
+    ],
+    "limit": "Source review cannot prove hosted timing; the next automatic CI run must exercise all seven real guards and the surrounding checks."
+  },
+  "verdict_b_lightweight_proof": {
+    "result": "partial",
+    "evidence": [
+      "MATRX_RESOURCE_CPU_DIAGNOSTIC_SELF_TEST=1 node --test --test-name-pattern='watch scenarios are separate|scenario diagnostic reports' scripts/test-stabilization-resource-cpu-integration.mjs passed: 2 tests, 0 failures, 75.445125 ms, without launching a guard.",
+      "The self-test invokes the registration helper with injected callbacks, selects the recovered body alone, and observes rejection from the completion-expired body.",
+      "Its expected names come from watchScenarioKinds, the same array the helper iterates. Removing any kind from that array would remove it from both actual registrations and expected names, leaving the self-test green. The injected register/run callbacks also do not exercise Node's actual test discovery or name-pattern selection."
+    ],
+    "recommendation": "Use an independent literal seven-case expected list in the lightweight test; preserve the source comparison and require automatic CI evidence for actual Node runner behavior."
+  },
+  "closure": "Do not close D182 on this source review. Obtain the automatic CI run with all seven named real scenarios and surrounding checks passing."
+}
