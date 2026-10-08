@@ -1,0 +1,270 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "task_id": "settings397-fresh-native-B",
+  "lane": "B",
+  "status": "resource_valid_native_step_failed",
+  "feature_id": "EXT-F-1003",
+  "workflow": {
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37729701473",
+    "run_id": 37729701473,
+    "job_id": 113155803939,
+    "attempt": 1,
+    "head_sha": "ae437676714d30fce63adf99ce528b73cf534e90",
+    "status": "completed",
+    "conclusion": "failure",
+    "acceptance_case": "settings-controls",
+    "runner_label": "macos-15-intel",
+    "runner_name": "GitHub Actions 1000097595",
+    "runner_group": "GitHub Actions",
+    "started_at": "2026-10-08T04:54:13Z",
+    "completed_at": "2026-10-08T05:01:43Z"
+  },
+  "source_review": {
+    "reviewed_repair_sha": "ff548299f0c6b34541c0409ea8173e069f8d91a1",
+    "reviewed_repair_ancestor_of_workflow_head": true,
+    "driver_path": "tests/browser/settings-local-controls-acceptance.mjs",
+    "driver_sha256": "0b5963f4af06970aaf3428a1c7f78f33b4af1f27da7765cff317a137551c49b9",
+    "workflow_sha256": "7d53dcc41676c898b21eb504f0a4d4623c18edced97c375cb9980aed6a7573f3"
+  },
+  "frozen_build": {
+    "development_run_id": 37724859892,
+    "development_artifact_id": 11527132614,
+    "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+    "version": "0.2.397",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "1035cd28ce5a63ac6233626f35102f016f7c7e7e0ef0717d259a3ec40fc856ed",
+    "kind": "local_dev_unpacked",
+    "publish_state": "not_published",
+    "verified": true
+  },
+  "resource_gate": {
+    "package": "valid",
+    "browser": "valid",
+    "guest": "child_failed",
+    "guest_admitted": true,
+    "guest_resource_invalid": false,
+    "guest_child_exit_code": 1,
+    "host_isolated": "GitHub-hosted ephemeral runner; unique runner name and B lane concurrency group",
+    "journals": "Three current-run original journals are copied byte for byte; older 37105304739 and 37724762467 journals were excluded."
+  },
+  "native_outcome": {
+    "receipt_status": "fail",
+    "scope": "real isolated Chrome-for-Testing native side panel; signed-out guest",
+    "real_guest_panel_opened": true,
+    "guest_extension_reload": {
+      "managementReloadClicked": true,
+      "oldTargetsRetired": true,
+      "workerReplaced": true,
+      "panelReplaced": true
+    },
+    "guest_reload_boundary": {
+      "status": "settings_opened",
+      "panel": {
+        "sampled": true,
+        "runtimeIdMatches": true,
+        "documentReady": true,
+        "visible": true,
+        "settingsTabCount": 1,
+        "settingsActiveCount": 1,
+        "guestBannerPresent": false,
+        "guestOrganizationGuidancePresent": true
+      }
+    },
+    "cases": [
+      {
+        "id": "EXT-F-1003-T04",
+        "receipt_status": "pass",
+        "observed_steps": 6,
+        "failed_criteria": [],
+        "unverified_criteria": []
+      },
+      {
+        "id": "EXT-F-1003-T10",
+        "receipt_status": "unverified",
+        "observed_steps": 4,
+        "failed_criteria": [],
+        "unverified_criteria": [
+          "new chat inherits selected default mode"
+        ]
+      },
+      {
+        "id": "EXT-F-1003-T13",
+        "receipt_status": "pass",
+        "observed_steps": 4,
+        "failed_criteria": [],
+        "unverified_criteria": []
+      },
+      {
+        "id": "EXT-F-1003-T16",
+        "receipt_status": "unverified",
+        "observed_steps": 4,
+        "failed_criteria": [],
+        "unverified_criteria": [
+          "preference changes its downstream browser behavior"
+        ]
+      },
+      {
+        "id": "EXT-F-1003-T19",
+        "receipt_status": "unverified",
+        "observed_steps": 4,
+        "failed_criteria": [],
+        "unverified_criteria": [
+          "preference changes its downstream browser behavior"
+        ]
+      },
+      {
+        "id": "EXT-F-1003-T22",
+        "receipt_status": "pass",
+        "observed_steps": 2,
+        "failed_criteria": [],
+        "unverified_criteria": []
+      },
+      {
+        "id": "EXT-F-1003-T31",
+        "receipt_status": "unverified",
+        "observed_steps": 4,
+        "failed_criteria": [],
+        "unverified_criteria": [
+          "preference changes its downstream browser behavior"
+        ]
+      },
+      {
+        "id": "EXT-F-1003-T34",
+        "receipt_status": "fail",
+        "observed_steps": 4,
+        "failed_criteria": [
+          {
+            "name": "runner completed the case",
+            "evidence": "replacement_settings_tab_ready_not_observed:{\"matched\":0,\"visible\":0}"
+          }
+        ],
+        "unverified_criteria": []
+      },
+      {
+        "id": "EXT-F-1003-T37",
+        "receipt_status": "pass",
+        "observed_steps": 4,
+        "failed_criteria": [],
+        "unverified_criteria": []
+      },
+      {
+        "id": "EXT-F-1003-T46",
+        "receipt_status": "pass",
+        "observed_steps": 11,
+        "failed_criteria": [],
+        "unverified_criteria": []
+      },
+      {
+        "id": "EXT-F-1003-T63",
+        "receipt_status": "unverified",
+        "observed_steps": 2,
+        "failed_criteria": [],
+        "unverified_criteria": [
+          "ordinary member denial"
+        ]
+      },
+      {
+        "id": "EXT-F-1003-T64",
+        "receipt_status": "fail",
+        "observed_steps": 0,
+        "failed_criteria": [
+          {
+            "name": "runner completed the case",
+            "evidence": "owned_never_capture_fixture_requires_signed_out_guest\n\nfalse !== true\n"
+          }
+        ],
+        "unverified_criteria": []
+      },
+      {
+        "id": "EXT-F-1003-T70",
+        "receipt_status": "unverified",
+        "observed_steps": 3,
+        "failed_criteria": [],
+        "unverified_criteria": [
+          "password-flow API unavailable branch",
+          "update available branch",
+          "throttled branch",
+          "update error branch",
+          "update API unavailable branch"
+        ]
+      },
+      {
+        "id": "EXT-F-1003-T73",
+        "receipt_status": "pass",
+        "observed_steps": 2,
+        "failed_criteria": [],
+        "unverified_criteria": []
+      },
+      {
+        "id": "EXT-F-1003-T76",
+        "receipt_status": "pass",
+        "observed_steps": 2,
+        "failed_criteria": [],
+        "unverified_criteria": []
+      },
+      {
+        "id": "EXT-F-1003-T92",
+        "receipt_status": "pass",
+        "observed_steps": 2,
+        "failed_criteria": [],
+        "unverified_criteria": []
+      }
+    ],
+    "privacy_ui_storage_panel_reload": {
+      "EXT-F-1003-T16": "four on/off visible and stored checks passed across warm and panel reload; downstream agent consumer unverified",
+      "EXT-F-1003-T19": "four on/off visible and stored checks passed across warm and panel reload; post-login save offer unverified",
+      "EXT-F-1003-T31": "four on/off visible and stored checks passed across warm and panel reload; supported-form saved-login offer unverified",
+      "EXT-F-1003-T34": "four on/off visible and stored checks passed across warm and panel reload; replacement Settings tab reacquisition failed after observations; on-page suggestion consumer unverified"
+    },
+    "restoration_proof": "The original receipt has no explicit baseline restoration observation or criterion for these four switches. T34 failed at replacement_settings_tab_ready_not_observed during the helper finalization; do not infer restoration from earlier toggle observations. The successful helper returns for T16/T19/T31 imply completion by driver control flow, but no separate original-state evidence was recorded.",
+    "T64_failure": "owned_never_capture_fixture_requires_signed_out_guest; no case steps recorded. Treat as fixture/precondition or runner issue until diagnosed, not a confirmed product defect."
+  },
+  "evidence": {
+    "artifact_id": 11529184279,
+    "artifact_name": "hosted-guest-37729701473-1",
+    "artifact_digest": "sha256:a94f25cd79fff895eb1a703acde650079130326f0588f8a4c05d866106dcd280",
+    "downloaded_zip_sha256": "a94f25cd79fff895eb1a703acde650079130326f0588f8a4c05d866106dcd280",
+    "artifact_search": "Recursively enumerated nested matrx-extend/matrx-extend artifact; copied only current-run receipt, two screenshots, and three 37729701473-1 journals; excluded stale journals.",
+    "originals": [
+      {
+        "path": ".research/settings397-fresh-native-20261007-originals/resource-journals/hosted-browser-37729701473-1.jsonl",
+        "sha256": "6a6413ff58927316eb3ba5a1b0f58a7a5283cfdf6fab689bd4513c1a986fd0c9",
+        "bytes": 992
+      },
+      {
+        "path": ".research/settings397-fresh-native-20261007-originals/resource-journals/hosted-guest-37729701473-1.jsonl",
+        "sha256": "9f1dc4b347e142e85a402ecd7d2fe3f00003b7d09ea7e5dcf69a692266f52284",
+        "bytes": 2666
+      },
+      {
+        "path": ".research/settings397-fresh-native-20261007-originals/resource-journals/hosted-package-37729701473-1.jsonl",
+        "sha256": "f21b73e812e6e084241c9e6e485a6e39f8bd4a283a00fb51a435fddfd1a8a96f",
+        "bytes": 985
+      },
+      {
+        "path": ".research/settings397-fresh-native-20261007-originals/screenshots/native-side-panel.png",
+        "sha256": "1d63139057f53ee3ac982ae29568b45d67ea403a3e151bad798d84a8c3d27f1a",
+        "bytes": 26403
+      },
+      {
+        "path": ".research/settings397-fresh-native-20261007-originals/screenshots/normal-target-after-open.png",
+        "sha256": "60d95c01c8bf5fa8f0807e1aed08d2adb43b4a5532190ae0eadd54c5e3aef79c",
+        "bytes": 25178
+      },
+      {
+        "path": ".research/settings397-fresh-native-20261007-originals/settings-local-controls-acceptance.json",
+        "sha256": "fafe281e068915c128e90f42876520e93cf309e7cac00aca1a385796ede9dde3",
+        "bytes": 65280
+      }
+    ]
+  },
+  "limitations": [
+    "This is one fresh hosted lane B attempt; no retry or third run.",
+    "Run-level failure prevents blanket pass or closure of all 16 cases.",
+    "Four Privacy downstream consumers are unverified; T34 cleanup restoration is unproven; T64 fixture failed.",
+    "Full extension reload evidence is distinct from warm and Settings panel reload evidence.",
+    "Development build is not a Store release. No local build, release, deploy, source edit or inventory update occurred."
+  ],
+  "next_action": "Hand off targeted diagnosis of T34 replacement Settings tab reacquisition and T64 guest fixture precondition. Retest on a fresh admitted hosted run only after a reviewed cause and changed hypothesis; retain downstream consumer and restoration gates as unverified."
+}
