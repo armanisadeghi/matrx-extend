@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "scope": "One authorized hosted guest Settings-controls native run using the existing frozen development artifact; no retry.",
+  "run": {
+    "id": "37840985992",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37840985992",
+    "workflow_head_sha": "2d7e0a93ba2511db3c5bd2bc4fff6c1a80db3269",
+    "lane": "B",
+    "case": "settings-controls",
+    "runner": "macos-15",
+    "conclusion": "failure",
+    "failed_step": "Exercise the selected Chrome side-panel case",
+    "artifact": {
+      "id": "11577787460",
+      "name": "hosted-guest-37840985992-1",
+      "size_bytes": 66344,
+      "digest": "sha256:e2956fe6196d546dcf67827bd2586ed0d025aac8caa951f4a413af258001970a"
+    }
+  },
+  "product_artifact": {
+    "source_run": "37818621428",
+    "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+    "artifact_id": "11568846736",
+    "version": "0.2.414",
+    "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+    "native_receipt_verified": true,
+    "scope": "Unpublished development artifact; not Store/current-main product acceptance."
+  },
+  "source_binding": {
+    "reviewed_settings_driver_commits": ["4f298672", "30ba65be", "2cd75588"],
+    "workflow_driver_matches_reviewed_source": true,
+    "Settings_product_source_matches_frozen_artifact": true,
+    "focused_gate": {
+      "run_id": "37840515487",
+      "commit": "0b2db9963f84512e133365e26e5fe02d436a4f6e",
+      "result": "passed; root verified"
+    },
+    "review_limit": "The reviewer authored the Settings census harness change; this is not an independent native adjudication. A separate peer should inspect the receipt."
+  },
+  "resource": {
+    "package": {"admitted": true, "final_decision": "valid", "exit_code": 0},
+    "browser": {"admitted": true, "final_decision": "valid", "exit_code": 0},
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "final_decision": "child_failed",
+      "exit_code": 1,
+      "cpu_pending": true,
+      "cpu_recovered_before_exit": true,
+      "details": "One high-busy sample entered CPU_PENDING; three subsequent healthy samples emitted CPU_RECOVERED before the child exited. Resource validity is intact; failure is the native assertion result."
+    },
+    "journals": "Exact package/browser/guest resource journals are preserved in evidence/raw."
+  },
+  "verdict_a_behavior": {
+    "status": "partial_with_T28_failure",
+    "overall_case_status_counts": {"pass": 11, "fail": 1, "unverified": 7},
+    "T04": "Pass. Dark, Light, and System each changed the visible choice, stored value, and rendered appearance and persisted across panel-document reload.",
+    "T10": "Pass. Ask and Act each changed the visible choice and stored value, persisted across panel-document reload, and were inherited by a newly started chat with the matching label/icon.",
+    "T28": {
+      "status": "fail_before_section_actions",
+      "active_settings": true,
+      "aria_expanded_control_count": 15,
+      "recognized_expected_section_labels": [
+        "Account",
+        "Organization",
+        "Appearance",
+        "Chat",
+        "Privacy",
+        "Scrape",
+        "Data",
+        "SEO",
+        "Desktop bridge",
+        "Data & reset",
+        "About"
+      ],
+      "unrecognized_label_count": 4,
+      "error": "guest_settings_sections_missing:{\"active\":true,\"count\":15,\"headings\":[\"Account\",\"Organization\",\"Appearance\",\"Chat\",\"Privacy\",\"Scrape\",\"Data\",\"SEO\",\"Desktop bridge\",\"Data & reset\",\"About\"],\"unrecognizedHeadingCount\":4}",
+      "interpretation": "The native DOM has four additional button[aria-expanded] controls beyond the eleven recognized section labels. The corrected exact-roster gate caught this before any expand/collapse actions. The extra controls are not classified here, so section behavior remains unverified and no product defect is inferred."
+    },
+    "T40": "Unverified overall. Both Auto-scrape switch directions matched stored state after warm interaction and panel-document reload; cleanup restored the baseline. Downstream page-load capture was not exercised.",
+    "T67": "Pass for picker selection and storage across panel-document reload for Capture and Scroll & capture, with baseline restoration. No downstream capture behavior is claimed.",
+    "full_extension_reload": "The run completed its extension reload boundary and reopened Settings, but did not rerun T04, T10, T28, T40, or T67 after that boundary. No full-extension persistence credit.",
+    "other_case_results": [
+      ["T13", "pass"], ["T16", "unverified"], ["T19", "unverified"],
+      ["T22", "pass"], ["T31", "unverified"], ["T34", "unverified"],
+      ["T37", "pass"], ["T46", "pass"], ["T63", "unverified"],
+      ["T64", "pass"], ["T70", "unverified"], ["T73", "pass"],
+      ["T76", "pass"], ["T92", "pass"]
+    ]
+  },
+  "verdict_b_evidence_quality": {
+    "status": "resource_valid_bounded_receipt",
+    "identity": "Native receipt confirms verified local_dev_unpacked version 0.2.414 and exact frozen tree hash.",
+    "T28_diagnostic": "Safe and useful: active flag, total control count, only allowlisted known section labels, and unknown count. It exposes the actual mismatch without retaining unknown label text.",
+    "limitations": [
+      "No T28 section was expanded or collapsed because the exact census precondition failed.",
+      "T04/T10/T40/T67 were observed across panel-document reload, not reasserted after the full extension reload.",
+      "No page-load/background capture behavior was exercised for T40/T67.",
+      "The four unrecognized controls are not identified by this safe receipt."
+    ],
+    "no_retry": true,
+    "no_secrets_or_local_heavy_work": true
+  },
+  "raw_evidence": {
+    "directory": ".research/settings-census-native-20261008/evidence/raw/",
+    "sha256": {
+      "settings-local-controls-acceptance.json": "afe04a2d3cb0d4482421a2843ca7e6772eab71250fa28be5487185ab06ab558b",
+      "hosted-package-37840985992-1.jsonl": "1f4eb9f4bbcaf7bf421bf175e90230275552adf366e8dbaec7c050aeed81ac5e",
+      "hosted-browser-37840985992-1.jsonl": "b6d9e97eebb4f4434a9bd3758baee3804c6533050009a757542c89bfc86d594f",
+      "hosted-guest-37840985992-1.jsonl": "bdec48a0c035575aad71dccffba30265e548846cf660216637f5aa8c5ae123b7"
+    },
+    "screenshots": "Not copied; they do not contain the failed initial census and add no evidence for the bounded failure."
+  }
+}

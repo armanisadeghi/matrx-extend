@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "task": "One Records A hosted native replay after bounded fixture diagnostic repair",
+  "authorship": "This native operator authored the fixture diagnostic helper tested by focused CI. The receipt requires an independent reviewer before any acceptance promotion.",
+  "source": {
+    "run_head_sha": "2d7e0a93ba2511db3c5bd2bc4fff6c1a80db3269",
+    "fixture_helper_blob": "234ca84ea08727146d78dd6301c4894fb4afde1f",
+    "native_acceptance_blob": "8f2a5f490ab7b56a96fef3bd60928d14bd980483",
+    "workflow_blob": "a8cda2ffa6678fbf7fccc8b6b8c3c3e615928e64",
+    "focused_gate": {
+      "run_id": 37840515487,
+      "head_sha": "0b2db9963f84512e133365e26e5fe02d436a4f6e",
+      "conclusion": "success",
+      "relevant_source_blobs_match_native_head": true
+    }
+  },
+  "frozen_artifact": {
+    "ci_run_id": 37790643945,
+    "artifact_id": 11556064167,
+    "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+    "version": "0.2.414",
+    "digest": "sha256:7a93776a9322c27973756ddb542fd2e8580d900c356d28a0ad1504928edf3964",
+    "native_receipt_tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046",
+    "expired_at_dispatch": false
+  },
+  "native_attempt": {
+    "run_id": 37840973320,
+    "attempt": 1,
+    "lane": "A records-readonly-admin",
+    "runner": "macos-15",
+    "started_at": "2026-10-08T20:38:39Z",
+    "completed_at": "2026-10-08T20:46:10Z",
+    "status": "completed",
+    "conclusion": "failure",
+    "no_retry": true,
+    "resource_admission": {
+      "package": "admitted, resource-valid, exit 0",
+      "browser": "admitted, resource-valid, exit 0",
+      "guest": "admitted, resource-valid, child exit 1"
+    },
+    "failure_boundary": "Fixture recovery-list GET threw before a response or browser preflight phase returned.",
+    "first_diagnostic": {
+      "boundary": "body",
+      "phase": "records_fixture_recovery_list",
+      "classification": "records_fixture_request_exception",
+      "request_method": "GET",
+      "http_status": null,
+      "browser_error_stage": null
+    },
+    "cleanup_diagnostic": "None emitted; the journal remained planned, so the cleanup branch made no archive or other write.",
+    "underlying_exception": "Not retained. The shared evaluate helper emits panel_runtime_exception only after receiving CDP exceptionDetails; the fixture received a different request exception. A panel.send rejection or pre-evaluate expression construction remains possible. The existing logs expose only the wrapper exit assertion, no safe underlying type/code."
+  },
+  "product_observations": {
+    "C02_table_list": "Finished authenticated HTTP 200, matching visible output, 50 results and approved organization coverage; full panel reload retained admin and organization and repeated the successful read.",
+    "C03_metadata_search": "Finished authenticated HTTP 200 with matching visible output and independent selected-table identity match.",
+    "negative_reads": "Malformed metadata_search query, record_read record_id, and record_aggregate table_id each received finished visible invalid_arguments refusal naming the field.",
+    "C04_positive_record_read": "unverified",
+    "C05_positive_record_aggregate": "unverified"
+  },
+  "fixture_and_credential_cleanup": {
+    "journal_phase": "planned",
+    "journal_has_table_id": false,
+    "journal_has_row_id": false,
+    "write_boundary": "No table-create or row-create call was reached; helper writes create_sent durably before table-create POST.",
+    "separate_read_only_status": {
+      "admin_auth_status": 200,
+      "approved_org_table_list_status": 200,
+      "list_complete": true,
+      "live_exact_owned_marker_count": 0,
+      "raw_body_or_identifiers_retained": false
+    },
+    "fixture_result": "No owned live fixture remained; no cleanup write was necessary for this run.",
+    "temporary_secret_names_deleted_after_terminal": true,
+    "names_only_absence_verified": true,
+    "external_0600_payload_files_removed": true,
+    "external_artifact_extraction_removed": true,
+    "credential_values_or_tokens_retained": false
+  },
+  "backend_identity": {
+    "before_health_version_sha": "9ec37c66a983f170b34a602ce58daf7d02f076f6",
+    "after_health_version_sha": "bb6c324372d5937a3353a303c6213038fabc64ed",
+    "request_time_attribution": "unknown; the bracketing backend version changed, and neither sample identifies the server handling the native fixture request"
+  },
+  "verdict_A_behavior_and_spec": "Partial C02/C03 and malformed-input evidence only. No positive C04/C05 credit or full Records acceptance claim.",
+  "verdict_B_quality_and_validity": "Credential preflight, exact artifact import, and host resource admission succeeded. The native driver failed before fixture setup with a newly narrowed GET request exception. The first failure and no-write fixture state are retained. This is a failed native attempt; independent receipt review is pending.",
+  "tests": {
+    "hosted_focused_gate": "Run 37840515487 passed on the reviewed helper source.",
+    "hosted_native": "Run 37840973320 failed in fixture recovery-list GET.",
+    "local": "No local browser, heavy test, build, or release."
+  },
+  "evidence_files": ".research/records-recovery-native-20261008/raw/ contains the byte-exact sanitized native receipt and current resource journals, aggregate journal/fixture/secret status, exact artifact/source/run metadata, backend health samples, and allowlisted log-token scan."
+}

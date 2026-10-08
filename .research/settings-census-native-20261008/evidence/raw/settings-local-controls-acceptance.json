@@ -1,0 +1,2873 @@
+{
+  "schema_version": 1,
+  "scope": "real isolated Chrome-for-Testing native side panel; signed-out guest",
+  "build": {
+    "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "kind": "local_dev_unpacked",
+    "publishState": "not_published",
+    "version": "0.2.414",
+    "treeSha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+    "verified": true
+  },
+  "preconditions": [
+    "Owned disposable profile",
+    "Extension receipt and tree hash verified",
+    "Guest panel settled before interaction"
+  ],
+  "cases": [
+    {
+      "id": "EXT-F-1003-T04",
+      "role": "guest",
+      "status": "pass",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Dark changes UI, persisted preference, and applied appearance",
+          "observation": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Dark",
+            "stored": "dark",
+            "darkClass": true,
+            "systemDark": false,
+            "renderedBackgroundMatches": true
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Dark survives panel reload",
+          "observation": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Dark",
+            "stored": "dark",
+            "darkClass": true,
+            "systemDark": false,
+            "renderedBackgroundMatches": true
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Light changes UI, persisted preference, and applied appearance",
+          "observation": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Light",
+            "stored": "light",
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Light survives panel reload",
+          "observation": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Light",
+            "stored": "light",
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "System changes UI, persisted preference, and applied appearance",
+          "observation": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "System",
+            "stored": "system",
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "System survives panel reload",
+          "observation": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "System",
+            "stored": "system",
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "Dark changes UI, persisted preference, and applied appearance",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Dark",
+            "stored": "dark",
+            "darkClass": true,
+            "systemDark": false,
+            "renderedBackgroundMatches": true
+          }
+        },
+        {
+          "name": "Dark survives panel reload",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Dark",
+            "stored": "dark",
+            "darkClass": true,
+            "systemDark": false,
+            "renderedBackgroundMatches": true
+          }
+        },
+        {
+          "name": "Light changes UI, persisted preference, and applied appearance",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Light",
+            "stored": "light",
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true
+          }
+        },
+        {
+          "name": "Light survives panel reload",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Light",
+            "stored": "light",
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true
+          }
+        },
+        {
+          "name": "System changes UI, persisted preference, and applied appearance",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "System",
+            "stored": "system",
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true
+          }
+        },
+        {
+          "name": "System survives panel reload",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "System",
+            "stored": "system",
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true
+          }
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.414",
+        "treeSha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-gdnFqG"
+    },
+    {
+      "id": "EXT-F-1003-T10",
+      "role": "guest",
+      "status": "pass",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Act without asking changes UI, persisted preference",
+          "observation": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Act without asking",
+            "stored": "act",
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Act without asking survives panel reload",
+          "observation": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Act without asking",
+            "stored": "act",
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true
+          }
+        },
+        {
+          "phase": "consumer",
+          "action": "Start a new chat and observe its inherited default mode",
+          "observation": {
+            "activeChat": true,
+            "newChatCount": 1,
+            "modeControlCount": 1,
+            "modeLabel": "Act without asking",
+            "modeIcon": "act"
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Ask before acting changes UI, persisted preference",
+          "observation": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Ask before acting",
+            "stored": "ask",
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Ask before acting survives panel reload",
+          "observation": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Ask before acting",
+            "stored": "ask",
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true
+          }
+        },
+        {
+          "phase": "consumer",
+          "action": "Start a new chat and observe its inherited default mode",
+          "observation": {
+            "activeChat": true,
+            "newChatCount": 1,
+            "modeControlCount": 1,
+            "modeLabel": "Ask before acting",
+            "modeIcon": "ask"
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "Act without asking changes UI, persisted preference",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Act without asking",
+            "stored": "act",
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true
+          }
+        },
+        {
+          "name": "Act without asking survives panel reload",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Act without asking",
+            "stored": "act",
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true
+          }
+        },
+        {
+          "name": "new chat inherits Act without asking",
+          "status": "pass",
+          "evidence": {
+            "activeChat": true,
+            "newChatCount": 1,
+            "modeControlCount": 1,
+            "modeLabel": "Act without asking",
+            "modeIcon": "act"
+          }
+        },
+        {
+          "name": "Ask before acting changes UI, persisted preference",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Ask before acting",
+            "stored": "ask",
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true
+          }
+        },
+        {
+          "name": "Ask before acting survives panel reload",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Ask before acting",
+            "stored": "ask",
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true
+          }
+        },
+        {
+          "name": "new chat inherits Ask before acting",
+          "status": "pass",
+          "evidence": {
+            "activeChat": true,
+            "newChatCount": 1,
+            "modeControlCount": 1,
+            "modeLabel": "Ask before acting",
+            "modeIcon": "ask"
+          }
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.414",
+        "treeSha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-gdnFqG"
+    },
+    {
+      "id": "EXT-F-1003-T13",
+      "role": "guest",
+      "status": "pass",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Thinking changes UI, persisted preference",
+          "observation": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Thinking",
+            "stored": "thinking",
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Thinking survives panel reload",
+          "observation": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Thinking",
+            "stored": "thinking",
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Fast changes UI, persisted preference",
+          "observation": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Fast",
+            "stored": "fast",
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Fast survives panel reload",
+          "observation": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Fast",
+            "stored": "fast",
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "Thinking changes UI, persisted preference",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Thinking",
+            "stored": "thinking",
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true
+          }
+        },
+        {
+          "name": "Thinking survives panel reload",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Thinking",
+            "stored": "thinking",
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true
+          }
+        },
+        {
+          "name": "Fast changes UI, persisted preference",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Fast",
+            "stored": "fast",
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true
+          }
+        },
+        {
+          "name": "Fast survives panel reload",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Fast",
+            "stored": "fast",
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true
+          }
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.414",
+        "treeSha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-gdnFqG"
+    },
+    {
+      "id": "EXT-F-1003-T16",
+      "role": "guest",
+      "status": "unverified",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Switch off changes visible and stored values",
+          "observation": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": false,
+            "stored": false,
+            "saveError": false
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Switch off survives panel reload",
+          "observation": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": false,
+            "stored": false,
+            "saveError": false
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Switch on changes visible and stored values",
+          "observation": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": true,
+            "stored": true,
+            "saveError": false
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Switch on survives panel reload",
+          "observation": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": true,
+            "stored": true,
+            "saveError": false
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "Switch off changes visible and stored values",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": false,
+            "stored": false,
+            "saveError": false
+          }
+        },
+        {
+          "name": "Switch off survives panel reload",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": false,
+            "stored": false,
+            "saveError": false
+          }
+        },
+        {
+          "name": "Switch on changes visible and stored values",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": true,
+            "stored": true,
+            "saveError": false
+          }
+        },
+        {
+          "name": "Switch on survives panel reload",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": true,
+            "stored": true,
+            "saveError": false
+          }
+        },
+        {
+          "name": "preference changes its downstream browser behavior",
+          "status": "unverified",
+          "evidence": "This bounded batch checks the real Settings switch and persistence; the site or agent consumer is not exercised."
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.414",
+        "treeSha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-gdnFqG"
+    },
+    {
+      "id": "EXT-F-1003-T19",
+      "role": "guest",
+      "status": "unverified",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Switch off changes visible and stored values",
+          "observation": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": false,
+            "stored": false,
+            "saveError": false
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Switch off survives panel reload",
+          "observation": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": false,
+            "stored": false,
+            "saveError": false
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Switch on changes visible and stored values",
+          "observation": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": true,
+            "stored": true,
+            "saveError": false
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Switch on survives panel reload",
+          "observation": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": true,
+            "stored": true,
+            "saveError": false
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "Switch off changes visible and stored values",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": false,
+            "stored": false,
+            "saveError": false
+          }
+        },
+        {
+          "name": "Switch off survives panel reload",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": false,
+            "stored": false,
+            "saveError": false
+          }
+        },
+        {
+          "name": "Switch on changes visible and stored values",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": true,
+            "stored": true,
+            "saveError": false
+          }
+        },
+        {
+          "name": "Switch on survives panel reload",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": true,
+            "stored": true,
+            "saveError": false
+          }
+        },
+        {
+          "name": "preference changes its downstream browser behavior",
+          "status": "unverified",
+          "evidence": "This bounded batch checks the real Settings switch and persistence; the site or agent consumer is not exercised."
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.414",
+        "treeSha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-gdnFqG"
+    },
+    {
+      "id": "EXT-F-1003-T22",
+      "role": "guest",
+      "status": "pass",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Inspect guest Settings section list and admin controls",
+          "observation": {
+            "active": true,
+            "sections": [
+              "Account",
+              "Organization",
+              "Appearance",
+              "System",
+              "Chat",
+              "Ask before acting",
+              "Fast",
+              "Privacy",
+              "Scrape",
+              "Capture",
+              "Data",
+              "SEO",
+              "Desktop bridge",
+              "Data & reset",
+              "About"
+            ],
+            "advancedText": false,
+            "adminControls": [],
+            "permissionControlCount": 0
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Inspect guest Settings section list and admin controls",
+          "observation": {
+            "active": true,
+            "sections": [
+              "Account",
+              "Organization",
+              "Appearance",
+              "System",
+              "Chat",
+              "Ask before acting",
+              "Fast",
+              "Privacy",
+              "Scrape",
+              "Capture",
+              "Data",
+              "SEO",
+              "Desktop bridge",
+              "Data & reset",
+              "About"
+            ],
+            "advancedText": false,
+            "adminControls": [],
+            "permissionControlCount": 0
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "warm admin section and controls absent",
+          "status": "pass",
+          "evidence": {
+            "active": true,
+            "sections": [
+              "Account",
+              "Organization",
+              "Appearance",
+              "System",
+              "Chat",
+              "Ask before acting",
+              "Fast",
+              "Privacy",
+              "Scrape",
+              "Capture",
+              "Data",
+              "SEO",
+              "Desktop bridge",
+              "Data & reset",
+              "About"
+            ],
+            "advancedText": false,
+            "adminControls": [],
+            "permissionControlCount": 0
+          }
+        },
+        {
+          "name": "reload admin section and controls absent",
+          "status": "pass",
+          "evidence": {
+            "active": true,
+            "sections": [
+              "Account",
+              "Organization",
+              "Appearance",
+              "System",
+              "Chat",
+              "Ask before acting",
+              "Fast",
+              "Privacy",
+              "Scrape",
+              "Capture",
+              "Data",
+              "SEO",
+              "Desktop bridge",
+              "Data & reset",
+              "About"
+            ],
+            "advancedText": false,
+            "adminControls": [],
+            "permissionControlCount": 0
+          }
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.414",
+        "treeSha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-gdnFqG"
+    },
+    {
+      "id": "EXT-F-1003-T28",
+      "role": "guest",
+      "status": "fail",
+      "steps": [],
+      "criteria": [
+        {
+          "name": "runner completed the case",
+          "status": "fail",
+          "evidence": "guest_settings_sections_missing:{\"active\":true,\"count\":15,\"headings\":[\"Account\",\"Organization\",\"Appearance\",\"Chat\",\"Privacy\",\"Scrape\",\"Data\",\"SEO\",\"Desktop bridge\",\"Data & reset\",\"About\"],\"unrecognizedHeadingCount\":4}\n\nfalse !== true\n"
+        }
+      ],
+      "error": "guest_settings_sections_missing:{\"active\":true,\"count\":15,\"headings\":[\"Account\",\"Organization\",\"Appearance\",\"Chat\",\"Privacy\",\"Scrape\",\"Data\",\"SEO\",\"Desktop bridge\",\"Data & reset\",\"About\"],\"unrecognizedHeadingCount\":4}\n\nfalse !== true\n",
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.414",
+        "treeSha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-gdnFqG"
+    },
+    {
+      "id": "EXT-F-1003-T31",
+      "role": "guest",
+      "status": "unverified",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Switch off changes visible and stored values",
+          "observation": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": false,
+            "stored": false,
+            "saveError": false
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Switch off survives panel reload",
+          "observation": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": false,
+            "stored": false,
+            "saveError": false
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Switch on changes visible and stored values",
+          "observation": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": true,
+            "stored": true,
+            "saveError": false
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Switch on survives panel reload",
+          "observation": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": true,
+            "stored": true,
+            "saveError": false
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "Switch off changes visible and stored values",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": false,
+            "stored": false,
+            "saveError": false
+          }
+        },
+        {
+          "name": "Switch off survives panel reload",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": false,
+            "stored": false,
+            "saveError": false
+          }
+        },
+        {
+          "name": "Switch on changes visible and stored values",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": true,
+            "stored": true,
+            "saveError": false
+          }
+        },
+        {
+          "name": "Switch on survives panel reload",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": true,
+            "stored": true,
+            "saveError": false
+          }
+        },
+        {
+          "name": "preference changes its downstream browser behavior",
+          "status": "unverified",
+          "evidence": "This bounded batch checks the real Settings switch and persistence; the site or agent consumer is not exercised."
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.414",
+        "treeSha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-gdnFqG"
+    },
+    {
+      "id": "EXT-F-1003-T34",
+      "role": "guest",
+      "status": "unverified",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Switch on changes visible and stored values",
+          "observation": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": true,
+            "stored": "on_page",
+            "saveError": false
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Switch on survives panel reload",
+          "observation": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": true,
+            "stored": "on_page",
+            "saveError": false
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Switch off changes visible and stored values",
+          "observation": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": false,
+            "stored": "quiet",
+            "saveError": false
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Switch off survives panel reload",
+          "observation": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": false,
+            "stored": "quiet",
+            "saveError": false
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "Switch on changes visible and stored values",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": true,
+            "stored": "on_page",
+            "saveError": false
+          }
+        },
+        {
+          "name": "Switch on survives panel reload",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": true,
+            "stored": "on_page",
+            "saveError": false
+          }
+        },
+        {
+          "name": "Switch off changes visible and stored values",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": false,
+            "stored": "quiet",
+            "saveError": false
+          }
+        },
+        {
+          "name": "Switch off survives panel reload",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "privacyOpen": true,
+            "count": 1,
+            "checked": false,
+            "stored": "quiet",
+            "saveError": false
+          }
+        },
+        {
+          "name": "preference changes its downstream browser behavior",
+          "status": "unverified",
+          "evidence": "This bounded batch checks the real Settings switch and persistence; the site or agent consumer is not exercised."
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.414",
+        "treeSha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-gdnFqG"
+    },
+    {
+      "id": "EXT-F-1003-T37",
+      "role": "guest",
+      "status": "pass",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Observe initial Deep clean preference",
+          "observation": {
+            "count": 1,
+            "checked": "false",
+            "hint": "Deep cleancoming soon"
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Toggle Deep clean",
+          "observation": {
+            "count": 1,
+            "checked": "true",
+            "hint": "Deep cleancoming soon"
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Inspect persisted state",
+          "observation": {
+            "count": 1,
+            "checked": "true",
+            "hint": "Deep cleancoming soon"
+          }
+        },
+        {
+          "phase": "cleanup",
+          "action": "Restore original preference",
+          "observation": {
+            "count": 1,
+            "checked": "false",
+            "hint": "Deep cleancoming soon"
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "visible coming-soon hint",
+          "status": "pass",
+          "evidence": {
+            "count": 1,
+            "checked": "false",
+            "hint": "Deep cleancoming soon"
+          }
+        },
+        {
+          "name": "toggle changes state",
+          "status": "pass",
+          "evidence": {
+            "count": 1,
+            "checked": "true",
+            "hint": "Deep cleancoming soon"
+          }
+        },
+        {
+          "name": "state and coming-soon hint persist after reload",
+          "status": "pass",
+          "evidence": {
+            "count": 1,
+            "checked": "true",
+            "hint": "Deep cleancoming soon"
+          }
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.414",
+        "treeSha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-gdnFqG"
+    },
+    {
+      "id": "EXT-F-1003-T40",
+      "role": "guest",
+      "status": "unverified",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Auto-scrape on appears and persists",
+          "observation": {
+            "active": true,
+            "sectionOpen": true,
+            "toggle": {
+              "count": 1,
+              "visible": true,
+              "stored": true
+            },
+            "mode": {
+              "count": 1,
+              "visible": "Capture",
+              "stored": "capture"
+            }
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Auto-scrape on survives reload",
+          "observation": {
+            "active": true,
+            "sectionOpen": true,
+            "toggle": {
+              "count": 1,
+              "visible": true,
+              "stored": true
+            },
+            "mode": {
+              "count": 1,
+              "visible": "Capture",
+              "stored": "capture"
+            }
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Auto-scrape off appears and persists",
+          "observation": {
+            "active": true,
+            "sectionOpen": true,
+            "toggle": {
+              "count": 1,
+              "visible": false,
+              "stored": false
+            },
+            "mode": {
+              "count": 1,
+              "visible": "Capture",
+              "stored": "capture"
+            }
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Auto-scrape off survives reload",
+          "observation": {
+            "active": true,
+            "sectionOpen": true,
+            "toggle": {
+              "count": 1,
+              "visible": false,
+              "stored": false
+            },
+            "mode": {
+              "count": 1,
+              "visible": "Capture",
+              "stored": "capture"
+            }
+          }
+        },
+        {
+          "phase": "cleanup",
+          "action": "Original Auto-scrape value restored in UI and storage",
+          "observation": {
+            "active": true,
+            "sectionOpen": true,
+            "toggle": {
+              "count": 1,
+              "visible": false,
+              "stored": false
+            },
+            "mode": {
+              "count": 1,
+              "visible": "Capture",
+              "stored": "capture"
+            }
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "Auto-scrape on appears and persists",
+          "status": "pass",
+          "evidence": {
+            "active": true,
+            "sectionOpen": true,
+            "toggle": {
+              "count": 1,
+              "visible": true,
+              "stored": true
+            },
+            "mode": {
+              "count": 1,
+              "visible": "Capture",
+              "stored": "capture"
+            }
+          }
+        },
+        {
+          "name": "Auto-scrape on survives reload",
+          "status": "pass",
+          "evidence": {
+            "active": true,
+            "sectionOpen": true,
+            "toggle": {
+              "count": 1,
+              "visible": true,
+              "stored": true
+            },
+            "mode": {
+              "count": 1,
+              "visible": "Capture",
+              "stored": "capture"
+            }
+          }
+        },
+        {
+          "name": "Auto-scrape off appears and persists",
+          "status": "pass",
+          "evidence": {
+            "active": true,
+            "sectionOpen": true,
+            "toggle": {
+              "count": 1,
+              "visible": false,
+              "stored": false
+            },
+            "mode": {
+              "count": 1,
+              "visible": "Capture",
+              "stored": "capture"
+            }
+          }
+        },
+        {
+          "name": "Auto-scrape off survives reload",
+          "status": "pass",
+          "evidence": {
+            "active": true,
+            "sectionOpen": true,
+            "toggle": {
+              "count": 1,
+              "visible": false,
+              "stored": false
+            },
+            "mode": {
+              "count": 1,
+              "visible": "Capture",
+              "stored": "capture"
+            }
+          }
+        },
+        {
+          "name": "Original Auto-scrape value restored in UI and storage",
+          "status": "pass",
+          "evidence": {
+            "active": true,
+            "sectionOpen": true,
+            "toggle": {
+              "count": 1,
+              "visible": false,
+              "stored": false
+            },
+            "mode": {
+              "count": 1,
+              "visible": "Capture",
+              "stored": "capture"
+            }
+          }
+        },
+        {
+          "name": "background capture follows the persisted switch",
+          "status": "unverified",
+          "evidence": "This batch observes the native Settings control; a page-load capture is not exercised."
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.414",
+        "treeSha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-gdnFqG"
+    },
+    {
+      "id": "EXT-F-1003-T46",
+      "role": "guest",
+      "status": "pass",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Record original engine port state",
+          "observation": {
+            "value": "",
+            "saved": null,
+            "button": [
+              "Set"
+            ],
+            "override": false,
+            "error": null
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Save valid port",
+          "observation": {
+            "value": "65001",
+            "saved": 65001,
+            "button": [
+              "Save"
+            ],
+            "override": true,
+            "error": null
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Observe worker rediscovery enter and reach post-probe broadcast after Save",
+          "observation": {
+            "saveStartedAt": 1791492353987,
+            "pauses": [
+              {
+                "reason": "other",
+                "hitBreakpoints": [
+                  "4:29:140430:5"
+                ],
+                "callFrames": [
+                  {
+                    "functionName": "",
+                    "url": "",
+                    "location": {
+                      "scriptId": "5",
+                      "lineNumber": 29,
+                      "columnNumber": 140430
+                    }
+                  },
+                  {
+                    "functionName": "i",
+                    "url": "",
+                    "location": {
+                      "scriptId": "5",
+                      "lineNumber": 1,
+                      "columnNumber": 25686
+                    }
+                  }
+                ],
+                "observedAt": 1791492354172
+              },
+              {
+                "reason": "other",
+                "hitBreakpoints": [
+                  "4:29:140506:5"
+                ],
+                "callFrames": [
+                  {
+                    "functionName": "",
+                    "url": "",
+                    "location": {
+                      "scriptId": "5",
+                      "lineNumber": 29,
+                      "columnNumber": 140506
+                    }
+                  }
+                ],
+                "observedAt": 1791492354181
+              }
+            ],
+            "entryBreakpoint": "4:29:140430:5",
+            "completionBreakpoint": "4:29:140506:5",
+            "resumeError": null,
+            "port": 65001,
+            "healthRequests": [
+              {
+                "method": "GET",
+                "path": "/health",
+                "observedAt": 1791492354178
+              }
+            ]
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Inspect valid override after reload",
+          "observation": {
+            "value": "65001",
+            "saved": 65001,
+            "button": [
+              "Save"
+            ],
+            "override": true,
+            "error": null
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Save inclusive boundary port 1",
+          "observation": {
+            "value": "1",
+            "saved": 1,
+            "button": [
+              "Save"
+            ],
+            "override": true,
+            "error": null
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Read inclusive boundary port 1 after reload",
+          "observation": {
+            "value": "1",
+            "saved": 1,
+            "button": [
+              "Save"
+            ],
+            "override": true,
+            "error": null
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Save inclusive boundary port 65535",
+          "observation": {
+            "value": "65535",
+            "saved": 65535,
+            "button": [
+              "Save"
+            ],
+            "override": true,
+            "error": null
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Read inclusive boundary port 65535 after reload",
+          "observation": {
+            "value": "65535",
+            "saved": 65535,
+            "button": [
+              "Save"
+            ],
+            "override": true,
+            "error": null
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Submit invalid range",
+          "observation": {
+            "value": "65536",
+            "saved": 65535,
+            "button": [
+              "Save"
+            ],
+            "override": true,
+            "error": "Port must be 1–65535."
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Clear override without leaving the invalid-error view",
+          "observation": {
+            "value": "",
+            "saved": null,
+            "button": [
+              "Set"
+            ],
+            "override": false,
+            "error": null
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Inspect cleared override after reload",
+          "observation": {
+            "value": "",
+            "saved": null,
+            "button": [
+              "Set"
+            ],
+            "override": false,
+            "error": null
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "valid port saved",
+          "status": "pass",
+          "evidence": {
+            "value": "65001",
+            "saved": 65001,
+            "button": [
+              "Save"
+            ],
+            "override": true,
+            "error": null
+          }
+        },
+        {
+          "name": "saved port triggers desktop worker rediscovery",
+          "status": "pass",
+          "evidence": {
+            "saveStartedAt": 1791492353987,
+            "pauses": [
+              {
+                "reason": "other",
+                "hitBreakpoints": [
+                  "4:29:140430:5"
+                ],
+                "callFrames": [
+                  {
+                    "functionName": "",
+                    "url": "",
+                    "location": {
+                      "scriptId": "5",
+                      "lineNumber": 29,
+                      "columnNumber": 140430
+                    }
+                  },
+                  {
+                    "functionName": "i",
+                    "url": "",
+                    "location": {
+                      "scriptId": "5",
+                      "lineNumber": 1,
+                      "columnNumber": 25686
+                    }
+                  }
+                ],
+                "observedAt": 1791492354172
+              },
+              {
+                "reason": "other",
+                "hitBreakpoints": [
+                  "4:29:140506:5"
+                ],
+                "callFrames": [
+                  {
+                    "functionName": "",
+                    "url": "",
+                    "location": {
+                      "scriptId": "5",
+                      "lineNumber": 29,
+                      "columnNumber": 140506
+                    }
+                  }
+                ],
+                "observedAt": 1791492354181
+              }
+            ],
+            "entryBreakpoint": "4:29:140430:5",
+            "completionBreakpoint": "4:29:140506:5",
+            "resumeError": null
+          }
+        },
+        {
+          "name": "valid override persists after reload",
+          "status": "pass",
+          "evidence": {
+            "value": "65001",
+            "saved": 65001,
+            "button": [
+              "Save"
+            ],
+            "override": true,
+            "error": null
+          }
+        },
+        {
+          "name": "boundary port 1 saves and persists after reload",
+          "status": "pass",
+          "evidence": {
+            "accepted": {
+              "value": "1",
+              "saved": 1,
+              "button": [
+                "Save"
+              ],
+              "override": true,
+              "error": null
+            },
+            "persisted": {
+              "value": "1",
+              "saved": 1,
+              "button": [
+                "Save"
+              ],
+              "override": true,
+              "error": null
+            }
+          }
+        },
+        {
+          "name": "boundary port 65535 saves and persists after reload",
+          "status": "pass",
+          "evidence": {
+            "accepted": {
+              "value": "65535",
+              "saved": 65535,
+              "button": [
+                "Save"
+              ],
+              "override": true,
+              "error": null
+            },
+            "persisted": {
+              "value": "65535",
+              "saved": 65535,
+              "button": [
+                "Save"
+              ],
+              "override": true,
+              "error": null
+            }
+          }
+        },
+        {
+          "name": "invalid range shows error and retains saved port",
+          "status": "pass",
+          "evidence": {
+            "value": "65536",
+            "saved": 65535,
+            "button": [
+              "Save"
+            ],
+            "override": true,
+            "error": "Port must be 1–65535."
+          }
+        },
+        {
+          "name": "blank clears override and stale error",
+          "status": "pass",
+          "evidence": {
+            "value": "",
+            "saved": null,
+            "button": [
+              "Set"
+            ],
+            "override": false,
+            "error": null
+          }
+        },
+        {
+          "name": "cleared override persists after reload",
+          "status": "pass",
+          "evidence": {
+            "value": "",
+            "saved": null,
+            "button": [
+              "Set"
+            ],
+            "override": false,
+            "error": null
+          }
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.414",
+        "treeSha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-gdnFqG"
+    },
+    {
+      "id": "EXT-F-1003-T63",
+      "role": "guest",
+      "scope": "guest-negative-access-only",
+      "status": "unverified",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Inspect guest Settings admin section and actions",
+          "observation": {
+            "signedOut": true,
+            "active": true,
+            "sections": [
+              "Account",
+              "Organization",
+              "Appearance",
+              "System",
+              "Chat",
+              "Ask before acting",
+              "Fast",
+              "Privacy",
+              "Scrape",
+              "Capture",
+              "Data",
+              "SEO",
+              "Desktop bridge",
+              "Data & reset",
+              "About"
+            ],
+            "advancedText": false,
+            "adminControls": [],
+            "permissionControlCount": 0
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Inspect guest Settings admin section and actions",
+          "observation": {
+            "signedOut": true,
+            "active": true,
+            "sections": [
+              "Account",
+              "Organization",
+              "Appearance",
+              "System",
+              "Chat",
+              "Ask before acting",
+              "Fast",
+              "Privacy",
+              "Scrape",
+              "Capture",
+              "Data",
+              "SEO",
+              "Desktop bridge",
+              "Data & reset",
+              "About"
+            ],
+            "advancedText": false,
+            "adminControls": [],
+            "permissionControlCount": 0
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "warm: guest admin section, optional controls and audit actions absent",
+          "status": "pass",
+          "evidence": {
+            "signedOut": true,
+            "active": true,
+            "sections": [
+              "Account",
+              "Organization",
+              "Appearance",
+              "System",
+              "Chat",
+              "Ask before acting",
+              "Fast",
+              "Privacy",
+              "Scrape",
+              "Capture",
+              "Data",
+              "SEO",
+              "Desktop bridge",
+              "Data & reset",
+              "About"
+            ],
+            "advancedText": false,
+            "adminControls": [],
+            "permissionControlCount": 0
+          }
+        },
+        {
+          "name": "reload: guest admin section, optional controls and audit actions absent",
+          "status": "pass",
+          "evidence": {
+            "signedOut": true,
+            "active": true,
+            "sections": [
+              "Account",
+              "Organization",
+              "Appearance",
+              "System",
+              "Chat",
+              "Ask before acting",
+              "Fast",
+              "Privacy",
+              "Scrape",
+              "Capture",
+              "Data",
+              "SEO",
+              "Desktop bridge",
+              "Data & reset",
+              "About"
+            ],
+            "advancedText": false,
+            "adminControls": [],
+            "permissionControlCount": 0
+          }
+        },
+        {
+          "name": "ordinary member denial",
+          "status": "unverified",
+          "evidence": "This guest runner has no ordinary-member principal."
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.414",
+        "treeSha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-gdnFqG"
+    },
+    {
+      "id": "EXT-F-1003-T64",
+      "role": "guest",
+      "status": "pass",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Two disposable loopback origins are visible and stored",
+          "observation": {
+            "privacyOpen": true,
+            "rowCount": 2,
+            "storageCount": 2,
+            "firstRow": true,
+            "secondRow": true,
+            "firstStored": true,
+            "secondStored": true,
+            "otherStored": false,
+            "headingVisible": true,
+            "guest": true
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "First Ask again removes only selected origin",
+          "observation": {
+            "privacyOpen": true,
+            "rowCount": 1,
+            "storageCount": 1,
+            "firstRow": false,
+            "secondRow": true,
+            "firstStored": false,
+            "secondStored": true,
+            "otherStored": false,
+            "headingVisible": true,
+            "guest": true
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Unrelated origin remains after panel reload",
+          "observation": {
+            "privacyOpen": true,
+            "rowCount": 1,
+            "storageCount": 1,
+            "firstRow": false,
+            "secondRow": true,
+            "firstStored": false,
+            "secondStored": true,
+            "otherStored": false,
+            "headingVisible": true,
+            "guest": true
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Last Ask again hides the empty list",
+          "observation": {
+            "privacyOpen": true,
+            "rowCount": 0,
+            "storageCount": 0,
+            "firstRow": false,
+            "secondRow": false,
+            "firstStored": false,
+            "secondStored": false,
+            "otherStored": false,
+            "headingVisible": false,
+            "guest": true
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Empty list remains hidden after panel reload",
+          "observation": {
+            "privacyOpen": true,
+            "rowCount": 0,
+            "storageCount": 0,
+            "firstRow": false,
+            "secondRow": false,
+            "firstStored": false,
+            "secondStored": false,
+            "otherStored": false,
+            "headingVisible": false,
+            "guest": true
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "Two disposable loopback origins are visible and stored",
+          "status": "pass",
+          "evidence": {
+            "privacyOpen": true,
+            "rowCount": 2,
+            "storageCount": 2,
+            "firstRow": true,
+            "secondRow": true,
+            "firstStored": true,
+            "secondStored": true,
+            "otherStored": false,
+            "headingVisible": true,
+            "guest": true
+          }
+        },
+        {
+          "name": "First Ask again removes only selected origin",
+          "status": "pass",
+          "evidence": {
+            "privacyOpen": true,
+            "rowCount": 1,
+            "storageCount": 1,
+            "firstRow": false,
+            "secondRow": true,
+            "firstStored": false,
+            "secondStored": true,
+            "otherStored": false,
+            "headingVisible": true,
+            "guest": true
+          }
+        },
+        {
+          "name": "Unrelated origin remains after panel reload",
+          "status": "pass",
+          "evidence": {
+            "privacyOpen": true,
+            "rowCount": 1,
+            "storageCount": 1,
+            "firstRow": false,
+            "secondRow": true,
+            "firstStored": false,
+            "secondStored": true,
+            "otherStored": false,
+            "headingVisible": true,
+            "guest": true
+          }
+        },
+        {
+          "name": "Last Ask again hides the empty list",
+          "status": "pass",
+          "evidence": {
+            "privacyOpen": true,
+            "rowCount": 0,
+            "storageCount": 0,
+            "firstRow": false,
+            "secondRow": false,
+            "firstStored": false,
+            "secondStored": false,
+            "otherStored": false,
+            "headingVisible": false,
+            "guest": true
+          }
+        },
+        {
+          "name": "Empty list remains hidden after panel reload",
+          "status": "pass",
+          "evidence": {
+            "privacyOpen": true,
+            "rowCount": 0,
+            "storageCount": 0,
+            "firstRow": false,
+            "secondRow": false,
+            "firstStored": false,
+            "secondStored": false,
+            "otherStored": false,
+            "headingVisible": false,
+            "guest": true
+          }
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.414",
+        "treeSha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-gdnFqG"
+    },
+    {
+      "id": "EXT-F-1003-T67",
+      "role": "guest",
+      "status": "pass",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Scroll & capture appears and persists",
+          "observation": {
+            "active": true,
+            "sectionOpen": true,
+            "toggle": {
+              "count": 1,
+              "visible": false,
+              "stored": false
+            },
+            "mode": {
+              "count": 1,
+              "visible": "Scroll & capture",
+              "stored": "scroll-capture"
+            }
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Scroll & capture survives reload",
+          "observation": {
+            "active": true,
+            "sectionOpen": true,
+            "toggle": {
+              "count": 1,
+              "visible": false,
+              "stored": false
+            },
+            "mode": {
+              "count": 1,
+              "visible": "Scroll & capture",
+              "stored": "scroll-capture"
+            }
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Capture appears and persists",
+          "observation": {
+            "active": true,
+            "sectionOpen": true,
+            "toggle": {
+              "count": 1,
+              "visible": false,
+              "stored": false
+            },
+            "mode": {
+              "count": 1,
+              "visible": "Capture",
+              "stored": "capture"
+            }
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Capture survives reload",
+          "observation": {
+            "active": true,
+            "sectionOpen": true,
+            "toggle": {
+              "count": 1,
+              "visible": false,
+              "stored": false
+            },
+            "mode": {
+              "count": 1,
+              "visible": "Capture",
+              "stored": "capture"
+            }
+          }
+        },
+        {
+          "phase": "cleanup",
+          "action": "Original Auto-scrape mode restored in UI and storage",
+          "observation": {
+            "active": true,
+            "sectionOpen": true,
+            "toggle": {
+              "count": 1,
+              "visible": false,
+              "stored": false
+            },
+            "mode": {
+              "count": 1,
+              "visible": "Capture",
+              "stored": "capture"
+            }
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "Scroll & capture appears and persists",
+          "status": "pass",
+          "evidence": {
+            "active": true,
+            "sectionOpen": true,
+            "toggle": {
+              "count": 1,
+              "visible": false,
+              "stored": false
+            },
+            "mode": {
+              "count": 1,
+              "visible": "Scroll & capture",
+              "stored": "scroll-capture"
+            }
+          }
+        },
+        {
+          "name": "Scroll & capture survives reload",
+          "status": "pass",
+          "evidence": {
+            "active": true,
+            "sectionOpen": true,
+            "toggle": {
+              "count": 1,
+              "visible": false,
+              "stored": false
+            },
+            "mode": {
+              "count": 1,
+              "visible": "Scroll & capture",
+              "stored": "scroll-capture"
+            }
+          }
+        },
+        {
+          "name": "Capture appears and persists",
+          "status": "pass",
+          "evidence": {
+            "active": true,
+            "sectionOpen": true,
+            "toggle": {
+              "count": 1,
+              "visible": false,
+              "stored": false
+            },
+            "mode": {
+              "count": 1,
+              "visible": "Capture",
+              "stored": "capture"
+            }
+          }
+        },
+        {
+          "name": "Capture survives reload",
+          "status": "pass",
+          "evidence": {
+            "active": true,
+            "sectionOpen": true,
+            "toggle": {
+              "count": 1,
+              "visible": false,
+              "stored": false
+            },
+            "mode": {
+              "count": 1,
+              "visible": "Capture",
+              "stored": "capture"
+            }
+          }
+        },
+        {
+          "name": "Original Auto-scrape mode restored in UI and storage",
+          "status": "pass",
+          "evidence": {
+            "active": true,
+            "sectionOpen": true,
+            "toggle": {
+              "count": 1,
+              "visible": false,
+              "stored": false
+            },
+            "mode": {
+              "count": 1,
+              "visible": "Capture",
+              "stored": "capture"
+            }
+          }
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.414",
+        "treeSha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-gdnFqG"
+    },
+    {
+      "id": "EXT-F-1003-T70",
+      "role": "guest",
+      "status": "unverified",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Inspect About identity, API readiness, and update affordance",
+          "observation": {
+            "browser": "Chrome",
+            "version": "0.2.414",
+            "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "readiness": "Available",
+            "expectedBrowser": "Chrome",
+            "manifestVersion": "0.2.414",
+            "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "passwordApis": true,
+            "updateApi": true,
+            "hasUpdateButton": true,
+            "updateText": null,
+            "browserManaged": false,
+            "unavailableRemedy": false
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Request real browser update check",
+          "observation": {
+            "browser": "Chrome",
+            "version": "0.2.414",
+            "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "readiness": "Available",
+            "expectedBrowser": "Chrome",
+            "manifestVersion": "0.2.414",
+            "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "passwordApis": true,
+            "updateApi": true,
+            "hasUpdateButton": true,
+            "updateText": "Your browser did not find an update right now.",
+            "browserManaged": false,
+            "unavailableRemedy": false
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Inspect current identity and API readiness",
+          "observation": {
+            "browser": "Chrome",
+            "version": "0.2.414",
+            "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "readiness": "Available",
+            "expectedBrowser": "Chrome",
+            "manifestVersion": "0.2.414",
+            "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "passwordApis": true,
+            "updateApi": true,
+            "hasUpdateButton": true,
+            "updateText": null,
+            "browserManaged": false,
+            "unavailableRemedy": false
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "identity matches running browser, manifest, receipt and runtime ID",
+          "status": "pass",
+          "evidence": {
+            "browser": "Chrome",
+            "version": "0.2.414",
+            "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "readiness": "Available",
+            "expectedBrowser": "Chrome",
+            "manifestVersion": "0.2.414",
+            "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "passwordApis": true,
+            "updateApi": true,
+            "hasUpdateButton": true,
+            "updateText": null,
+            "browserManaged": false,
+            "unavailableRemedy": false
+          }
+        },
+        {
+          "name": "password-flow API readiness label and remedy",
+          "status": "pass",
+          "evidence": {
+            "browser": "Chrome",
+            "version": "0.2.414",
+            "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "readiness": "Available",
+            "expectedBrowser": "Chrome",
+            "manifestVersion": "0.2.414",
+            "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "passwordApis": true,
+            "updateApi": true,
+            "hasUpdateButton": true,
+            "updateText": null,
+            "browserManaged": false,
+            "unavailableRemedy": false
+          }
+        },
+        {
+          "name": "password-flow API unavailable branch",
+          "status": "unverified",
+          "evidence": "No browser API was removed or mocked."
+        },
+        {
+          "name": "observed browser update result shown accurately",
+          "status": "pass",
+          "evidence": {
+            "browser": "Chrome",
+            "version": "0.2.414",
+            "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "readiness": "Available",
+            "expectedBrowser": "Chrome",
+            "manifestVersion": "0.2.414",
+            "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "passwordApis": true,
+            "updateApi": true,
+            "hasUpdateButton": true,
+            "updateText": "Your browser did not find an update right now.",
+            "browserManaged": false,
+            "unavailableRemedy": false
+          }
+        },
+        {
+          "name": "no-update outcome",
+          "status": "pass",
+          "evidence": {
+            "browser": "Chrome",
+            "version": "0.2.414",
+            "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "readiness": "Available",
+            "expectedBrowser": "Chrome",
+            "manifestVersion": "0.2.414",
+            "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "passwordApis": true,
+            "updateApi": true,
+            "hasUpdateButton": true,
+            "updateText": "Your browser did not find an update right now.",
+            "browserManaged": false,
+            "unavailableRemedy": false
+          }
+        },
+        {
+          "name": "update available branch",
+          "status": "unverified",
+          "evidence": "No browser API or update result was fabricated."
+        },
+        {
+          "name": "throttled branch",
+          "status": "unverified",
+          "evidence": "No browser API or update result was fabricated."
+        },
+        {
+          "name": "update error branch",
+          "status": "unverified",
+          "evidence": "No browser API or update result was fabricated."
+        },
+        {
+          "name": "update API unavailable branch",
+          "status": "unverified",
+          "evidence": "No browser API or update result was fabricated."
+        },
+        {
+          "name": "identity and API readiness remain current after reload",
+          "status": "pass",
+          "evidence": {
+            "browser": "Chrome",
+            "version": "0.2.414",
+            "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "readiness": "Available",
+            "expectedBrowser": "Chrome",
+            "manifestVersion": "0.2.414",
+            "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "passwordApis": true,
+            "updateApi": true,
+            "hasUpdateButton": true,
+            "updateText": null,
+            "browserManaged": false,
+            "unavailableRemedy": false
+          }
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.414",
+        "treeSha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-gdnFqG"
+    },
+    {
+      "id": "EXT-F-1003-T73",
+      "role": "guest",
+      "status": "pass",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Inspect native guest Settings Account and Organization",
+          "observation": {
+            "active": true,
+            "accessTokenPresent": false,
+            "profilePresent": false,
+            "organizationChoicePresent": false,
+            "accountSectionCount": 1,
+            "accountOpen": true,
+            "emailRowCount": 1,
+            "emailUnavailable": true,
+            "nameRowCount": 0,
+            "roleRowCount": 0,
+            "footerSignInCount": 1,
+            "footerSignOutCount": 0,
+            "organizationSectionCount": 1,
+            "organizationOpen": true,
+            "signInToChooseCount": 1,
+            "organizationOnlyGuestRow": true,
+            "archiveFilterCount": 0,
+            "actingAsRowCount": 0,
+            "archivedMarkerCount": 0,
+            "restorationActionCount": 0,
+            "archivedCopyPresent": false,
+            "organizationRequests": 0
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Inspect native guest Settings Account and Organization",
+          "observation": {
+            "active": true,
+            "accessTokenPresent": false,
+            "profilePresent": false,
+            "organizationChoicePresent": false,
+            "accountSectionCount": 1,
+            "accountOpen": true,
+            "emailRowCount": 1,
+            "emailUnavailable": true,
+            "nameRowCount": 0,
+            "roleRowCount": 0,
+            "footerSignInCount": 1,
+            "footerSignOutCount": 0,
+            "organizationSectionCount": 1,
+            "organizationOpen": true,
+            "signInToChooseCount": 1,
+            "organizationOnlyGuestRow": true,
+            "archiveFilterCount": 0,
+            "actingAsRowCount": 0,
+            "archivedMarkerCount": 0,
+            "restorationActionCount": 0,
+            "archivedCopyPresent": false,
+            "organizationRequests": 0
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "warm: Account unavailable, no Name/role, Sign in footer",
+          "status": "pass",
+          "evidence": {
+            "signedOut": true,
+            "checkPassed": true,
+            "organizationRequests": 0
+          }
+        },
+        {
+          "name": "reload: Account unavailable, no Name/role, Sign in footer",
+          "status": "pass",
+          "evidence": {
+            "signedOut": true,
+            "checkPassed": true,
+            "organizationRequests": 0
+          }
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.414",
+        "treeSha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-gdnFqG"
+    },
+    {
+      "id": "EXT-F-1003-T76",
+      "role": "guest",
+      "status": "pass",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Inspect native guest Settings Account and Organization",
+          "observation": {
+            "active": true,
+            "accessTokenPresent": false,
+            "profilePresent": false,
+            "organizationChoicePresent": false,
+            "accountSectionCount": 1,
+            "accountOpen": true,
+            "emailRowCount": 1,
+            "emailUnavailable": true,
+            "nameRowCount": 0,
+            "roleRowCount": 0,
+            "footerSignInCount": 1,
+            "footerSignOutCount": 0,
+            "organizationSectionCount": 1,
+            "organizationOpen": true,
+            "signInToChooseCount": 1,
+            "organizationOnlyGuestRow": true,
+            "archiveFilterCount": 0,
+            "actingAsRowCount": 0,
+            "archivedMarkerCount": 0,
+            "restorationActionCount": 0,
+            "archivedCopyPresent": false,
+            "organizationRequests": 0
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Inspect native guest Settings Account and Organization",
+          "observation": {
+            "active": true,
+            "accessTokenPresent": false,
+            "profilePresent": false,
+            "organizationChoicePresent": false,
+            "accountSectionCount": 1,
+            "accountOpen": true,
+            "emailRowCount": 1,
+            "emailUnavailable": true,
+            "nameRowCount": 0,
+            "roleRowCount": 0,
+            "footerSignInCount": 1,
+            "footerSignOutCount": 0,
+            "organizationSectionCount": 1,
+            "organizationOpen": true,
+            "signInToChooseCount": 1,
+            "organizationOnlyGuestRow": true,
+            "archiveFilterCount": 0,
+            "actingAsRowCount": 0,
+            "archivedMarkerCount": 0,
+            "restorationActionCount": 0,
+            "archivedCopyPresent": false,
+            "organizationRequests": 0
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "warm: archive filter absent and no organization read or choice",
+          "status": "pass",
+          "evidence": {
+            "signedOut": true,
+            "checkPassed": true,
+            "organizationRequests": 0
+          }
+        },
+        {
+          "name": "reload: archive filter absent and no organization read or choice",
+          "status": "pass",
+          "evidence": {
+            "signedOut": true,
+            "checkPassed": true,
+            "organizationRequests": 0
+          }
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.414",
+        "treeSha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-gdnFqG"
+    },
+    {
+      "id": "EXT-F-1003-T92",
+      "role": "guest",
+      "scope": "guest-negative-access-only",
+      "status": "pass",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Inspect native guest Settings Account and Organization",
+          "observation": {
+            "active": true,
+            "accessTokenPresent": false,
+            "profilePresent": false,
+            "organizationChoicePresent": false,
+            "accountSectionCount": 1,
+            "accountOpen": true,
+            "emailRowCount": 1,
+            "emailUnavailable": true,
+            "nameRowCount": 0,
+            "roleRowCount": 0,
+            "footerSignInCount": 1,
+            "footerSignOutCount": 0,
+            "organizationSectionCount": 1,
+            "organizationOpen": true,
+            "signInToChooseCount": 1,
+            "organizationOnlyGuestRow": true,
+            "archiveFilterCount": 0,
+            "actingAsRowCount": 0,
+            "archivedMarkerCount": 0,
+            "restorationActionCount": 0,
+            "archivedCopyPresent": false,
+            "organizationRequests": 0
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Inspect native guest Settings Account and Organization",
+          "observation": {
+            "active": true,
+            "accessTokenPresent": false,
+            "profilePresent": false,
+            "organizationChoicePresent": false,
+            "accountSectionCount": 1,
+            "accountOpen": true,
+            "emailRowCount": 1,
+            "emailUnavailable": true,
+            "nameRowCount": 0,
+            "roleRowCount": 0,
+            "footerSignInCount": 1,
+            "footerSignOutCount": 0,
+            "organizationSectionCount": 1,
+            "organizationOpen": true,
+            "signInToChooseCount": 1,
+            "organizationOnlyGuestRow": true,
+            "archiveFilterCount": 0,
+            "actingAsRowCount": 0,
+            "archivedMarkerCount": 0,
+            "restorationActionCount": 0,
+            "archivedCopyPresent": false,
+            "organizationRequests": 0
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "warm: no archived membership or restoration action",
+          "status": "pass",
+          "evidence": {
+            "signedOut": true,
+            "checkPassed": true,
+            "organizationRequests": 0
+          }
+        },
+        {
+          "name": "reload: no archived membership or restoration action",
+          "status": "pass",
+          "evidence": {
+            "signedOut": true,
+            "checkPassed": true,
+            "organizationRequests": 0
+          }
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.414",
+        "treeSha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-gdnFqG"
+    }
+  ],
+  "guestExtensionReload": {
+    "managementReloadClicked": true,
+    "oldTargetsRetired": true,
+    "workerReplaced": true,
+    "panelReplaced": true
+  },
+  "guestReloadBoundary": {
+    "status": "settings_opened",
+    "panel": {
+      "sampled": true,
+      "runtimeIdMatches": true,
+      "documentReady": true,
+      "visible": true,
+      "settingsTabCount": 1,
+      "settingsActiveCount": 1,
+      "guestBannerPresent": false,
+      "guestOrganizationGuidancePresent": true
+    }
+  },
+  "artifacts": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-gdnFqG",
+  "status": "fail"
+}
