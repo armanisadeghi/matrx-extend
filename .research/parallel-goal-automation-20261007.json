@@ -25,11 +25,11 @@
     "Independent guard review does not establish actual simultaneous native test success."
   ],
   "current_observation": {
-    "observed_at": "2026-10-08T08:03:38.947162+00:00",
+    "observed_at": "2026-10-08T08:57:48.002858+00:00",
     "app_goal_status": "active",
-    "app_goal_objective": "Existing inventory-first text cannot be edited by available goal API; approved PLAN governs.",
+    "app_goal_objective": "Existing inventory-first text cannot be edited by available goal API; approved parallel PLAN governs.",
     "automation_status": "ACTIVE",
     "approved_parallel_prompt_verified": true,
-    "evidence": "get_goal; automation view; local automation.toml readback confirms two hosted test lanes, one fixer, inventory completion in parallel, host-local guards and frequent main integration. No settings changed."
+    "evidence": "Current get_goal confirms active with unchanged old objective; available goal tool schemas still expose status changes only. Prior automation readback remains the evidence for approved parallel prompt. No false completion or new automation verification claimed."
   }
 }
