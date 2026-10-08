@@ -7,7 +7,7 @@
   "title": "D47 native drivers omit verified organization UUID required by shared checkpoint",
   "severity": "S2: acceptance infrastructure prevents testing; no product failure established",
   "priority": "P1",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root/d47_org_handoff_fix",
   "preconditions": [
     "Frozen development0.2.407 CI37754055905 artifact11539827040; hosted workflow sourcefae3d07d",
@@ -26,7 +26,9 @@
     ".research/parallel-native-failure-peer-20261008.json",
     ".research/d47-org-handoff-fix-20261008.json",
     ".research/d47-org-handoff-peer-20261008.json",
-    ".research/d47-org-handoff-final-peer-20261008.json"
+    ".research/d47-org-handoff-final-peer-20261008.json",
+    ".research/t57-correct-staging-native-20261008.json",
+    ".research/t57-native-final-adjudication-20261008.json"
   ],
   "evidence_limits": [
     "Native37767661089 final guest resource envelope is invalid; native observations alone do not establish product behavior. Caller omission is independently source-confirmed.",
@@ -56,15 +58,27 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Source and actual-import guard independently accepted66b7b5c8; native checkpoint remains pending, source-onlyfixed."
+    },
+    {
+      "at": "2026-10-08T13:14:22.136864+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Resource-valid native37780192222 and fresh independent75195918 verify the bounded original prerequisite; temporary secret names independently absent. Full T57 remains unverified."
+    },
+    {
+      "at": "2026-10-08T13:14:22.136864+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Resource-valid native37780192222 and fresh independent75195918 verify the bounded original prerequisite; temporary secret names independently absent. Full T57 remains unverified."
     }
   ],
-  "next_action": "Repair and independently review all caller handoffs, then one resource-valid original native test with actual matching product request/header lineage.",
+  "next_action": "Bounded infrastructure defect closed; continue full T57 at public_race_old_response_missing without widening prerequisite acceptance.",
   "closure_requirement": "Original D47 path passes verified organization checkpoint in resource-valid native run and surrounding caller guard remains green; original product T57 result tracked separately.",
   "source_candidate": {
     "sha": "0eebbca39c95d62f401f3866123177ce92c4d51a",
     "source_review": "PASS: both actual imports/callers correct",
     "guard_review": "PASS: independent66b7b5c8 exercises actual import resolution; removed/wrong-binding mutations fail;11 focused tests pass",
-    "native_retest": "Pending next resource-admitted original native checkpoint; no product acceptance claimed",
+    "native_retest": "PASS: resource-valid37780192222 original public path; fresh independent75195918. Full T57 remains unverified.",
     "guard_sha": "3749335640ea68887e00e38560fab302cda03aca"
   }
 }
