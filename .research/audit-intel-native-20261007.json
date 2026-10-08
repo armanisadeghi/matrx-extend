@@ -1,0 +1,179 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-D-0159",
+  "lane": "hosted-native-A Intel audit-key-admin original retry retest",
+  "scope": "One existing hosted TEST attempt on the exact original CI artifact. No build, release, deployment, version bump, code edit, or inventory promotion.",
+  "source_repair": {
+    "fix_commit": "29b22795e6ff4a09b3f522e684b181fd7e8fe777",
+    "independent_source_peer_commit": "ab2464b0",
+    "peer_file": ".research/guest-audit-source-peer-20261007.json",
+    "peer_verdict": "SOURCE_READY_NATIVE_PENDING",
+    "focused_ci_run_id": 37705690477,
+    "focused_ci_conclusion": "success",
+    "full_ci_run_id": 37707353523,
+    "full_ci_conclusion": "success"
+  },
+  "execution": {
+    "workflow_run_id": 37708712354,
+    "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37708712354",
+    "attempt": 1,
+    "checkout_sha": "0fbec09268721e436e5e2b7a93856576d0413822",
+    "runner_label": "macos-15-intel",
+    "runner_arch": "X64",
+    "runner_name": "GitHub Actions 1000096878",
+    "started_at": "2026-10-08T00:37:10Z",
+    "terminal_at": "2026-10-08T00:44:22Z",
+    "run_conclusion": "failure",
+    "failed_step": "Exercise the selected Chrome side-panel case",
+    "case_child_exit_code": 0,
+    "resource_wrapper_exit_code": 3
+  },
+  "selected_artifact": {
+    "ci_run_id": 37698216289,
+    "ci_run_conclusion": "success",
+    "artifact_id": 11516342905,
+    "artifact_digest": "sha256:927854cfdda6e57d272277653e0b4c507720c29d74978da235d80c064c1017ee",
+    "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "source_version": "0.2.391",
+    "tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+    "runtime_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "eligibility": "Existing successful main-push CI development-test artifact, imported and identity-checked by the canonical hosted workflow. No newer artifact was substituted."
+  },
+  "resource_admission": {
+    "package": {
+      "journal": ".research/audit-intel-native-evidence/resource-journals/hosted-package-37708712354-1.jsonl",
+      "sha256": "5555693d8e32806e5a299ac24e0308ca618d88772c97a96e803f9859ca8ee827",
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "valid",
+      "admission_sample": {
+        "available_memory_gib": 12.6,
+        "required_memory_gib": 4,
+        "logical_cpus": 4,
+        "runner_arch": "X64",
+        "one_minute_load": 2.62,
+        "cpu_busy_fraction": 0.02,
+        "swap_used_mib": 0,
+        "system_free_gib": 109.71088409423828
+      }
+    },
+    "browser": {
+      "journal": ".research/audit-intel-native-evidence/resource-journals/hosted-browser-37708712354-1.jsonl",
+      "sha256": "058a1d89a4d279d7595f95054ac4dfc56ec6c4389716c6d629c6f88ce8d103e9",
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "valid",
+      "admission_sample": {
+        "available_memory_gib": 12.6,
+        "required_memory_gib": 4,
+        "logical_cpus": 4,
+        "runner_arch": "X64",
+        "one_minute_load": 1.27,
+        "cpu_busy_fraction": 0.058571428571428566,
+        "swap_used_mib": 0,
+        "system_free_gib": 109.72686004638672
+      }
+    },
+    "acceptance": {
+      "journal": ".research/audit-intel-native-evidence/resource-journals/hosted-guest-37708712354-1.jsonl",
+      "sha256": "79f53d050cb5ce69cc3d61da1d6bd21cd7339ef7c214eb1a79c8c0a8942b47df",
+      "admitted": true,
+      "resource_invalid": true,
+      "wrapper_exit_code": 3,
+      "child_exit_code": 0,
+      "decision": "invalid",
+      "admission_sample": {
+        "available_memory_gib": 12.6,
+        "required_memory_gib": 4,
+        "logical_cpus": 4,
+        "runner_arch": "X64",
+        "one_minute_load": 1.73,
+        "cpu_busy_fraction": 0.032857142857142856,
+        "swap_used_mib": 0,
+        "system_free_gib": 109.47121047973633
+      },
+      "watch_event": {
+        "code": "RESOURCE_CPU_PENDING",
+        "at": "2026-10-08T00:44:01.688Z",
+        "available_memory_gib": 12.46,
+        "one_minute_load": 1.31,
+        "logical_cpus": 4,
+        "cpu_busy_fraction": 0.92,
+        "swap_used_mib": 0,
+        "reasons": ["RESOURCE_CPU_BUSY"]
+      },
+      "terminal_reason": "The guarded child exited before the resource watchdog recorded the three healthy samples required to resume. The wrapper finalized invalid-resource; this is not a product failure."
+    },
+    "interpretation": "The Intel host provided the anticipated 4 logical CPUs and about 12.6 GiB available memory at admission, confirming the capacity assumption. The unchanged CPU watchdog still invalidated this attempt after a 0.92 busy sample."
+  },
+  "native_receipt": {
+    "path": ".research/audit-intel-native-evidence/receipts/audit-key-native-4ca3fbc0-d97f-471f-9a93-50771687d928.json",
+    "sha256": "267dc933f9e1bf57a11bf1b23c777d53ef17687a0c6db10f53c169b892719ef6",
+    "status": "fail",
+    "failure_stage": "native:cdp_connect",
+    "failure_code": "owned_cdp_endpoint_timeout",
+    "case_count": 0,
+    "case_results": [],
+    "interpretation": "The native driver did not connect to its owned CDP endpoint. No audit case was recorded; T86/T27/T61/T62 were not reached. This is a harness/runtime boundary failure, not a product behavior verdict."
+  },
+  "acceptance_mapping": {
+    "EXT-F-1003-T27": {
+      "receipt_status": "not reached",
+      "resource_status": "invalid-resource",
+      "acceptance_verdict": "unverified; no acceptance credit",
+      "inventory_changed": false
+    },
+    "EXT-F-1003-T61": {
+      "receipt_status": "not reached",
+      "resource_status": "invalid-resource",
+      "acceptance_verdict": "unverified; no acceptance credit",
+      "inventory_changed": false
+    },
+    "EXT-F-1003-T62": {
+      "receipt_status": "not reached",
+      "resource_status": "invalid-resource",
+      "acceptance_verdict": "unverified; no acceptance credit",
+      "inventory_changed": false
+    },
+    "EXT-F-1003-T86": {
+      "receipt_status": "not reached in this attempt",
+      "prior_observation": "zero active-key writes; direct rotateDeviceKey invocation was not observed",
+      "acceptance_verdict": "partial; zero writes do not prove the rotation function was never invoked",
+      "inventory_changed": false
+    }
+  },
+  "secret_cleanup": {
+    "names": ["MATRX_PREPARE_ADMIN_CREDENTIALS_JSON", "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"],
+    "deleted_immediately_after_terminal": true,
+    "both_names_absent_verified": true,
+    "values_recorded": false
+  },
+  "evidence_artifact": {
+    "id": 11521285656,
+    "name": "hosted-guest-37708712354-1",
+    "digest": "sha256:cf5514163741e9d346c7ee33bc48b4990764503d71cf7f6aacc8737b31789e90",
+    "curated_files": [
+      {
+        "path": ".research/audit-intel-native-evidence/receipts/audit-key-native-4ca3fbc0-d97f-471f-9a93-50771687d928.json",
+        "sha256": "267dc933f9e1bf57a11bf1b23c777d53ef17687a0c6db10f53c169b892719ef6"
+      },
+      {
+        "path": ".research/audit-intel-native-evidence/resource-journals/hosted-package-37708712354-1.jsonl",
+        "sha256": "5555693d8e32806e5a299ac24e0308ca618d88772c97a96e803f9859ca8ee827"
+      },
+      {
+        "path": ".research/audit-intel-native-evidence/resource-journals/hosted-browser-37708712354-1.jsonl",
+        "sha256": "058a1d89a4d279d7595f95054ac4dfc56ec6c4389716c6d629c6f88ce8d103e9"
+      },
+      {
+        "path": ".research/audit-intel-native-evidence/resource-journals/hosted-guest-37708712354-1.jsonl",
+        "sha256": "79f53d050cb5ce69cc3d61da1d6bd21cd7339ef7c214eb1a79c8c0a8942b47df"
+      }
+    ],
+    "stale_imported_journals_copied": false
+  },
+  "prior_native_results_unchanged": true,
+  "no_inventory_promotion": true,
+  "retry_dispatched": false,
+  "next_action": "This single authorized attempt is consumed. Keep T27/T61/T62 unverified, retain T86 as partial, and leave D159 native closure outstanding. No blind retry was dispatched."
+}

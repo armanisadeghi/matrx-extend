@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0093",
+  "status": "fail",
+  "source": {
+    "sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "version": "0.2.391",
+    "tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793"
+  },
+  "artifact_id": 11516342905,
+  "run_id": 37698216289,
+  "cases": [],
+  "failure_stage": "native:cdp_connect",
+  "failure_code": "owned_cdp_endpoint_timeout"
+}
