@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "at": "2026-10-08T21:53:49.775225+00:00",
+  "reviewer": "root; independent of native execution and final Settings repair",
+  "verification": "Original receipts, artifact identities, six resource journals and hashes inspected. Both jobs terminal failure, resource-valid. Temporary secret names independently absent.",
+  "settings": {
+    "T04": "System baseline and appearance survive full extension reload; Dark/Light/System cycle with panel reload and restore. Nondefault full-extension persistence remains unverified.",
+    "T10": "Ask baseline survives full extension reload; Act/Ask new-chat inheritance and panel persistence pass with restoration. Actual tool behavior and nondefault full-extension persistence remain unverified.",
+    "T28": "All11 guest sections verified warm and after full extension reload with content, empty-state and expand/collapse checks;44 post-extension criteria pass.",
+    "T40": "Full-extension preference checks pass; downstream background capture remains unverified.",
+    "T67": "Four mode/panel-reload criteria pass after full extension reload; subsequent generic exception leaves restoration unresolved, not proven product failure."
+  },
+  "records": "C04/C05 bounded visible positives accepted; cleanup failed. Operator proved marker through canonical columns detail, archived exact fixture and checked absence; root did not repeat authenticated cleanup.",
+  "limits": "No overall health or Store acceptance; exact T67 restoration-stage cause unproved. All owned workers/jobs terminal.",
+  "credential_setup_incident": "Earlier operator sourced env and a parser error emitted a source fragment. No native dispatch from that attempt; staging removed. Actual run used non-evaluating named-key parser. No values retained in this report."
+}
