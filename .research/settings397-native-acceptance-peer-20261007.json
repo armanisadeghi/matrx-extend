@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "reviewer": "fresh independent native receipt review; zero authorship",
+  "reviewed_commit": "6917a788",
+  "run_id": 37729701473,
+  "verdict_a": {
+    "scope": "EXT-F-1003 guest cases exercised by run 37729701473 against frozen development artifact 0.2.397, source cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+    "cases": {
+      "T04": "PASS for theme selection, persisted value, applied appearance, and Settings panel reload; full extension reload is a separate inventory dimension and is not established here.",
+      "T10": "PARTIAL: Ask/Act choice persists through Settings panel reload; new-chat inheritance is unverified.",
+      "T13": "PASS for Thinking/Fast selection and Settings panel reload.",
+      "T16": "PARTIAL: four visible/stored on/off checks across warm and Settings panel reload pass; downstream browser behavior is unverified.",
+      "T19": "PARTIAL: four visible/stored on/off checks across warm and Settings panel reload pass; post-login save offer is unverified.",
+      "T22": "PASS for guest absence of admin controls across warm and Settings panel reload.",
+      "T31": "PARTIAL: four visible/stored on/off checks across warm and Settings panel reload pass; supported-form saved-login offer is unverified.",
+      "T34": "PARTIAL: four visible/stored on/off checks across warm and Settings panel reload pass; replacement Settings tab reacquisition failed, on-page consumer is unverified, and restoration to original state is not proven.",
+      "T37": "PASS for visible coming-soon hint, toggle state, and Settings panel reload persistence.",
+      "T46": "PASS for observed port save, worker rediscovery, boundary values, invalid input feedback, clear, and Settings panel reload persistence.",
+      "T63": "PARTIAL: guest admin controls/actions absent warm and after full extension reload; ordinary-member denial is unverified because this run has no member principal.",
+      "T64": "FAIL at zero steps: owned fixture precondition failed (requires signed-out guest); this is a fixture/precondition or runner failure, not evidence of a product authentication defect.",
+      "T70": "PARTIAL: identity/readiness and observed no-update branch pass; listed unavailable, update-available, throttled, and error branches are unverified.",
+      "T73": "PASS for guest account visibility across warm and full extension reload.",
+      "T76": "PASS for guest organization archive-filter absence and no organization read/choice across warm and full extension reload.",
+      "T92": "PASS for guest archived-membership/restoration-action absence across warm and full extension reload; member/admin and navigation outcomes remain outside this run."
+    },
+    "overall": "PARTIAL; run-level failure blocks blanket pass or closure of all 16 cases."
+  },
+  "verdict_b": {
+    "provenance": "PASS: driver hash 0b5963f4af06970aaf3428a1c7f78f33b4af1f27da7765cff317a137551c49b9 and workflow hash 7d53dcc41676c898b21eb504f0a4d4623c18edced97c375cb9980aed6a7573f3 match; reviewed repair ff548299f0c6b34541c0409ea8173e069f8d91a1 is an ancestor of workflow head ae437676714d30fce63adf99ce528b73cf534e90.",
+    "evidence_integrity": "PASS for six recursively selected originals: raw receipt, two screenshots, and three current-run journals match their recorded SHA-256 values. Journal IDs/times align with run 37729701473 attempt 1. Package and browser jobs were admitted and exited 0; guest job was admitted, remained resource-valid, and exited 1. The supplied artifact digest is recorded in the receipt; independent re-download of the workflow artifact was not performed.",
+    "scope_quality": "Adequate for the bounded native guest observations; case-level pass labels must not be promoted beyond the stated observed scope. Settings panel reload and full Chrome extension replacement are distinct: the privacy switches and most controls use panel reload, while T63/T73/T76/T92 include a replacement extension worker/panel boundary.",
+    "gaps": [
+      "T16/T19/T31/T34 prove switch UI/storage and panel reload only; downstream consumers remain unverified.",
+      "T34's failed replacement-tab reacquisition does not prove restoration; no baseline restoration criterion/observation is recorded.",
+      "T64 has no case steps and a failed fixture precondition; do not classify it as a product auth defect.",
+      "One admitted lane B attempt is not a whole-feature acceptance or Store release result."
+    ]
+  },
+  "method_limits": "Read-only receipt, original evidence, inventory and driver review. No browser, tests, build, release, source or inventory edits, credential/clipboard retention, or child agents.",
+  "next_action": "Targeted diagnosis should address T34 tab reacquisition/restoration evidence and T64 fixture precondition before any fresh admitted rerun."
+}
