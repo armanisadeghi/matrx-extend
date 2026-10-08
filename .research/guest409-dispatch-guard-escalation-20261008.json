@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0172",
+  "status": "source_guard_strengthened_live_unverified",
+  "repository": "aidream",
+  "source_commit": "54a1e1b978a8efde6b9232aa56aad9f12a1bf214",
+  "guard_commit": "3b271b385a",
+  "guard": {
+    "path": "packages/matrx-ai/tests/test_guest_delegation_checkpoint.py",
+    "chain": "The test now runs the orchestrator provider turn through real handle_tool_calls, handle_tool_calls_v2, ToolExecutor.execute_batch, and ToolExecutor._execute_delegated. Provider send, database operations, and the tool body's nondelegated result are local fakes.",
+    "mixed_batch": "One response has server_lookup and get_page_text. With a live client tool set, the server sibling receives the same durable assistant message ID before concurrent dispatch. The delegated call publishes only after the active assistant tool_call can be read back. Rebuild pairs that assistant call with a completed tool row.",
+    "classifier_miss": "With the earlier live-client name predicate forced false and an empty client tool set, the actual delegation publication callback still checkpoints the assistant row.",
+    "mutation_red": [
+      "Removing assistant_checkpoint forwarding only at the orchestrator to handle_tool_calls_v2 seam caused the no-preflight variant to fail instead of suspend; source was restored.",
+      "Disabling the client-connected preflight caused the mixed server sibling to receive message_id=None; source was restored."
+    ],
+    "other_invariants": "Existing guards still cover failed checkpoint preventing publication, same-lineage empty reservation repair, foreign or occupied reservation refusal, and store=False handoff preservation."
+  },
+  "verification": {
+    "before_rebase": "27 focused tests passed; Ruff passed; git diff --check passed.",
+    "after_rebase": "8 guard tests passed against final pushed commit.",
+    "limitation": "ToolExecutor.execute itself is replaced by a minimal test tool body so the test can isolate batch context propagation. The batch dispatcher and actual delegated publication method run. No hosted browser or production deployment verification was performed."
+  },
+  "attribution_limit": "This proves the callback plumbing and mixed-batch lineage would fail under targeted source mutations. It does not identify which first-write failure mechanism produced the observed hosted pending/content[] assistant row, nor does it prove the public guest 409 is fixed.",
+  "open_gates": [
+    "Independent review of final source and guard at exact commit 3b271b385a",
+    "Observe authorized automatic deployment and exact server SHA",
+    "Fresh published public Store 0.2.205 guest first reply, followup, reload/new-conversation tool/resume acceptance"
+  ]
+}

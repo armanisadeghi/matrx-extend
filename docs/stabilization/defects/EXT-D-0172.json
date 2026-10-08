@@ -7,7 +7,7 @@
   "title": "Post-reload guest conversation receives continuation HTTP 409 after page tool, without assistant reply",
   "severity": "S1: public guest conversation cannot finish an otherwise accepted request",
   "priority": "P0",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "root/guest409_authoritative_fix",
   "preconditions": [
     "Public Store CRX0.2.205 loaded unpacked with matching public identity in isolated signed-out Chromium; tree08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8.",
@@ -31,7 +31,9 @@
     ".research/guest409-fix-source-peer-20261008.json",
     ".research/guest409-authoritative-fix-20261008.json",
     ".research/guest409-authoritative-source-peer-20261008.json",
-    ".research/guest409-deployment-observation-20261008.json"
+    ".research/guest409-deployment-observation-20261008.json",
+    ".research/guest409-dispatch-guard-escalation-20261008.json",
+    ".research/guest409-dispatch-guard-peer-20261008.json"
   ],
   "transition_history": [
     {
@@ -51,16 +53,23 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Sol diagnosis owns exact continuation boundary and canonicalrepair, using newer prioraccepted server1d535d99 comparison."
+    },
+    {
+      "at": "2026-10-08T09:06:09.985371+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source candidate54a1e1b978 and guard3b271b385a independently accepted in badb30a9/ca537ede. Fixed means source only: deployment and original public browser retest pending; guest case remains fail."
     }
   ],
-  "next_action": "Second implementation owns durable context at actual delegation; require independent source review, verified automatic production deployment, then resource-valid public guest first/followup/reload browser retest. No manual deployment from this machine.",
+  "next_action": "Observe authorized automatic deployment containing source54a1e1b978, then run resource-valid published205 first/followup/reload guest acceptance on stable server and obtain independent native review. Do not close or promote guest fail before original reproduction passes.",
   "closure_requirement": "Original public guest reproduction and surrounding first/followup cases pass independently on real browser/live server with valid resources; actual Store installation remains separately unverified.",
   "source_candidate": {
     "repository": "aidream",
     "sha": "54a1e1b978a8efde6b9232aa56aad9f12a1bf214",
     "contract_review": "pass in source",
-    "guard_review": "important gap: real dispatch callback plumbing and mixed sibling lineage not exercised; narrow repair active",
-    "deployment": "not included in observed production 8de41d9c36c1251240ea68fd5d41afcaa80b4ee1 at 2026-10-08T08:58:34Z",
-    "runtime_retest": "pending"
+    "guard_review": "pass for exact callback propagation and mixed sibling findings; independent 8 guard tests pass; routing body stub remains explicit source-test limit",
+    "deployment": "not included in observed production 8de41d9c36c1251240ea68fd5d41afcaa80b4ee1 at 2026-10-08T09:04:18Z",
+    "runtime_retest": "pending",
+    "guard_sha": "3b271b385a92fdc2778dd09aae1d06f3de2e2d5d"
   }
 }

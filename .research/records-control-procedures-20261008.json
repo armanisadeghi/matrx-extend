@@ -12,10 +12,7 @@
       "packages/matrx-records/matrx_records/agent/guidance.py",
       "packages/matrx-records/matrx_records/agent/tool.py"
     ],
-    "extension_route": [
-      "src/features/tools/ToolsView.tsx",
-      "src/lib/tools/manual-server.ts"
-    ],
+    "extension_route": ["src/features/tools/ToolsView.tsx", "src/lib/tools/manual-server.ts"],
     "live_guide_observed": false,
     "live_schema_observed": false,
     "records_mutation_calls": 0,
@@ -39,11 +36,11 @@
       "C11 disposable table only with cleanup",
       "C06 case row",
       "C04,C05,C08 safe reads",
-      "C09 restore while row exists",
+      "C09 patch case row to a different synthetic value, verify change, restore C08.original_version while row exists, then verify revert",
       "C07 delete last",
       "proposal branches only after separate cleanup proof"
     ],
-    "approval": "applied:false/awaiting_approval is pending, not a pass; never approve or retry without case-specific authorization and cancellation path"
+    "approval": "applied:false/awaiting_approval is pending, not a pass. Routine owned-fixture tests are already authorized; honor any actual product approval decision and require a verified cancellation path before creating a held write. Never treat a pending receipt as applied."
   },
   "manual_route": "Signed-in side panel > Tools > Catalog > All > records. Schema from GET /tools/test/list; Run POST /tools/test/execute with {tool_name:\"records\",arguments:{action,args}} and X-Organization-Id; inline full_result is observable. This does not prove agent chat/persistence.",
   "global_stop_conditions": [
@@ -70,10 +67,18 @@
           "topic": "__not_an_action__"
         }
       },
-      "negative_expected": "Read-only refusal or empty authorized result; no store mutation. Unknown guide topic must return supported actions.",
+      "negative_expected": "Unknown topic is a successful guide response, not a refusal: assert success=true, output.topic=null, output.actions equals the 24 action names excluding guide, output.note identifies the unsupported topic, and no store dispatch or mutation occurs.",
       "supported_cleanup_or_gap": "none",
-      "guide_argument_contract": {},
-      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass."
+      "guide_argument_contract": {
+        "topic": {
+          "type": "string",
+          "required": false,
+          "enum": null
+        }
+      },
+      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+      "negative_status": "SOURCE_DETERMINISTIC_READ_ONLY",
+      "negative_source": "GuideWire.topic is optional string; guide_for returns topic=null plus the known actions for unknown topics; tool dispatch returns this before principal/store resolution."
     },
     "EXT-F-4130-C02": {
       "action": "table_list",
@@ -93,7 +98,7 @@
           "limit": "not-an-integer"
         }
       },
-      "negative_expected": "Read-only refusal or empty authorized result; no store mutation. Unknown guide topic must return supported actions.",
+      "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
       "supported_cleanup_or_gap": "none",
       "guide_argument_contract": {
         "limit": {
@@ -112,7 +117,9 @@
           "enum": null
         }
       },
-      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass."
+      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+      "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+      "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
     },
     "EXT-F-4130-C03": {
       "action": "metadata_search",
@@ -133,7 +140,7 @@
           "query": null
         }
       },
-      "negative_expected": "Read-only refusal or empty authorized result; no store mutation. Unknown guide topic must return supported actions.",
+      "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
       "supported_cleanup_or_gap": "none",
       "guide_argument_contract": {
         "query": {
@@ -152,7 +159,9 @@
           "enum": null
         }
       },
-      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass."
+      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+      "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+      "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
     },
     "EXT-F-4130-C04": {
       "action": "record_read",
@@ -164,9 +173,7 @@
           "record_id": "$C06.record_id"
         }
       },
-      "required_id_lineage": [
-        "C06.record_id"
-      ],
+      "required_id_lineage": ["C06.record_id"],
       "expected_observable": "Result record id equals C06 and name equals synthetic value; capture triples/withheld honestly.",
       "negative_input": {
         "action": "record_read",
@@ -174,7 +181,7 @@
           "record_id": "not-a-uuid"
         }
       },
-      "negative_expected": "Read-only refusal or empty authorized result; no store mutation. Unknown guide topic must return supported actions.",
+      "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
       "supported_cleanup_or_gap": "none",
       "guide_argument_contract": {
         "record_id": {
@@ -213,7 +220,9 @@
           "enum": null
         }
       },
-      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass."
+      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+      "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+      "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
     },
     "EXT-F-4130-C05": {
       "action": "record_aggregate",
@@ -229,10 +238,7 @@
           }
         }
       },
-      "required_id_lineage": [
-        "C11.table_id",
-        "C06.record_id"
-      ],
+      "required_id_lineage": ["C11.table_id", "C06.record_id"],
       "expected_observable": "Count reflects the case-owned row before C07; no client-side summing or page count.",
       "negative_input": {
         "action": "record_aggregate",
@@ -240,7 +246,7 @@
           "table_id": "not-a-uuid"
         }
       },
-      "negative_expected": "Read-only refusal or empty authorized result; no store mutation. Unknown guide topic must return supported actions.",
+      "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
       "supported_cleanup_or_gap": "none",
       "guide_argument_contract": {
         "table_id": {
@@ -281,13 +287,7 @@
         "bucket": {
           "type": "string",
           "required": false,
-          "enum": [
-            "day",
-            "week",
-            "month",
-            "quarter",
-            "year"
-          ]
+          "enum": ["day", "week", "month", "quarter", "year"]
         },
         "related_to": {
           "type": "array",
@@ -297,11 +297,7 @@
         "order": {
           "type": "string",
           "required": false,
-          "enum": [
-            "count_desc",
-            "measure_desc",
-            "measure_asc"
-          ]
+          "enum": ["count_desc", "measure_desc", "measure_asc"]
         },
         "limit": {
           "type": "integer",
@@ -314,7 +310,9 @@
           "enum": null
         }
       },
-      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass."
+      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+      "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+      "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
     },
     "EXT-F-4130-C06": {
       "action": "record_write",
@@ -330,9 +328,7 @@
           }
         }
       },
-      "required_id_lineage": [
-        "C11.table_id"
-      ],
+      "required_id_lineage": ["C11.table_id"],
       "expected_observable": "Applied result supplies a case-owned record id and version; a held result is NOT a write and needs approval resolution.",
       "negative_input": {
         "action": "record_write",
@@ -343,7 +339,7 @@
           }
         }
       },
-      "negative_expected": "Reject named invalid argument or unavailable target; compare case-owned baseline before/after and require no mutation. For guide unknown topic, return supported actions rather than rejection.",
+      "negative_expected": "NOT_EXECUTABLE: source wire accepts values as an object, but this unknown field key is not rejected by the wire model and no deterministic source-level refusal oracle was established for the downstream store. Do not pass on generic refusal, empty result, or unchanged baseline alone.",
       "supported_cleanup_or_gap": "record_delete of this returned id, after history/restore; if approval held, cancel via verified approval route",
       "guide_argument_contract": {
         "values": {
@@ -372,7 +368,9 @@
           "enum": null
         }
       },
-      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass."
+      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+      "negative_status": "NOT_EXECUTABLE_UNVERIFIED_ORACLE",
+      "negative_source": "RecordWriteWire.values is dict; RecordStore.record_write forwards the values to custom.record_write. The reviewed source does not establish this unknown key is rejected before database behavior."
     },
     "EXT-F-4130-C07": {
       "action": "record_delete",
@@ -384,10 +382,7 @@
           "record_id": "$C06.record_id"
         }
       },
-      "required_id_lineage": [
-        "C06.record_id",
-        "C09 complete"
-      ],
+      "required_id_lineage": ["C06.record_id", "C09 complete"],
       "expected_observable": "Soft delete receipt identifies C06; record_read no longer presents it; undo=true restores same id when tested.",
       "negative_input": {
         "action": "record_delete",
@@ -395,7 +390,7 @@
           "record_id": "not-a-uuid"
         }
       },
-      "negative_expected": "Reject named invalid argument or unavailable target; compare case-owned baseline before/after and require no mutation. For guide unknown topic, return supported actions rather than rejection.",
+      "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
       "supported_cleanup_or_gap": "undo=true is the supported reversal; final delete only after every read/history/restore dependent on the row",
       "guide_argument_contract": {
         "record_id": {
@@ -409,7 +404,9 @@
           "enum": null
         }
       },
-      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass."
+      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+      "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+      "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
     },
     "EXT-F-4130-C08": {
       "action": "record_history",
@@ -421,9 +418,7 @@
           "record_id": "$C06.record_id"
         }
       },
-      "required_id_lineage": [
-        "C06.record_id"
-      ],
+      "required_id_lineage": ["C06.record_id"],
       "expected_observable": "History identifies case-owned row, numbered versions and author/time; capture an actual version for C09.",
       "negative_input": {
         "action": "record_history",
@@ -431,7 +426,7 @@
           "record_id": "not-a-uuid"
         }
       },
-      "negative_expected": "Read-only refusal or empty authorized result; no store mutation. Unknown guide topic must return supported actions.",
+      "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
       "supported_cleanup_or_gap": "none",
       "guide_argument_contract": {
         "record_id": {
@@ -455,7 +450,9 @@
           "enum": null
         }
       },
-      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass."
+      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+      "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+      "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
     },
     "EXT-F-4130-C09": {
       "action": "record_restore_version",
@@ -468,11 +465,8 @@
           "version": "$C08.original_version"
         }
       },
-      "required_id_lineage": [
-        "C06.record_id",
-        "C08.version"
-      ],
-      "expected_observable": "Restoration creates a new version on existing C06 row; read verifies restored case value; history retains old versions.",
+      "required_id_lineage": ["C06.record_id", "C06.applied_version", "C08.original_version"],
+      "expected_observable": "Read C06 after the intervening applied record_write and assert name is the changed case value and version advanced. Restore C08.original_version, then read again and assert name reverted to EXT-F-4130-20261008-row while history retains create, update and restore versions. A held or refused update is not enough to run this assertion.",
       "negative_input": {
         "action": "record_restore_version",
         "args": {
@@ -480,8 +474,8 @@
           "version": "not-an-integer"
         }
       },
-      "negative_expected": "Reject named invalid argument or unavailable target; compare case-owned baseline before/after and require no mutation. For guide unknown topic, return supported actions rather than rejection.",
-      "supported_cleanup_or_gap": "restore the latest pre-test case-created version before final C07 delete",
+      "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+      "supported_cleanup_or_gap": "If the update applied, restore the case-created original version and verify the revert before final C07 delete; stop on held approval without verified cancellation.",
       "guide_argument_contract": {
         "record_id": {
           "type": "string",
@@ -499,7 +493,19 @@
           "enum": null
         }
       },
-      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass."
+      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+      "intervening_update": {
+        "action": "record_write",
+        "args": {
+          "record_id": "$C06.record_id",
+          "expected_version": "$C06.applied_version",
+          "values": {
+            "name": "EXT-F-4130-20261008-row-changed"
+          }
+        }
+      },
+      "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+      "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
     },
     "EXT-F-4130-C10": {
       "action": "field_propose",
@@ -513,9 +519,7 @@
           "field_type": "text"
         }
       },
-      "required_id_lineage": [
-        "C11.table_id"
-      ],
+      "required_id_lineage": ["C11.table_id"],
       "expected_observable": "Applied receipt names a new case field key/id on C11; held response is explicitly not applied.",
       "negative_input": {
         "action": "field_propose",
@@ -524,7 +528,7 @@
           "name": "bad"
         }
       },
-      "negative_expected": "Reject named invalid argument or unavailable target; compare case-owned baseline before/after and require no mutation. For guide unknown topic, return supported actions rather than rejection.",
+      "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
       "supported_cleanup_or_gap": "No field deletion action exists in 25-action Records contract; use disposable table and a verified table-removal door or retain isolated fixture",
       "guide_argument_contract": {
         "table_id": {
@@ -588,7 +592,9 @@
           "enum": null
         }
       },
-      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass."
+      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+      "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+      "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
     },
     "EXT-F-4130-C11": {
       "action": "table_propose",
@@ -619,7 +625,7 @@
           "fields": "not-an-array"
         }
       },
-      "negative_expected": "Reject named invalid argument or unavailable target; compare case-owned baseline before/after and require no mutation. For guide unknown topic, return supported actions rather than rejection.",
+      "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
       "supported_cleanup_or_gap": "No table deletion action in Records contract; require verified disposable table removal outside this tool before run",
       "guide_argument_contract": {
         "name": {
@@ -653,7 +659,9 @@
           "enum": null
         }
       },
-      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass."
+      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+      "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+      "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
     },
     "EXT-F-4130-C12": {
       "action": "form_propose",
@@ -675,9 +683,7 @@
           "notify": false
         }
       },
-      "required_id_lineage": [
-        "C11.table_id"
-      ],
+      "required_id_lineage": ["C11.table_id"],
       "expected_observable": "Applied receipt identifies case form and publish state; no public link use or notification.",
       "negative_input": {
         "action": "form_propose",
@@ -686,7 +692,7 @@
           "table_id": "not-a-uuid"
         }
       },
-      "negative_expected": "Reject named invalid argument or unavailable target; compare case-owned baseline before/after and require no mutation. For guide unknown topic, return supported actions rather than rejection.",
+      "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
       "supported_cleanup_or_gap": "No form deletion action in Records contract; require verified form/archive removal by returned id",
       "guide_argument_contract": {
         "title": {
@@ -760,7 +766,9 @@
           "enum": null
         }
       },
-      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass."
+      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+      "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+      "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
     },
     "EXT-F-4130-C13": {
       "action": "booking_propose",
@@ -786,9 +794,7 @@
           "notify": false
         }
       },
-      "required_id_lineage": [
-        "C11.table_id"
-      ],
+      "required_id_lineage": ["C11.table_id"],
       "expected_observable": "Applied receipt identifies case booking and unpublished state; no slot booked.",
       "negative_input": {
         "action": "booking_propose",
@@ -797,7 +803,7 @@
           "table_id": "not-a-uuid"
         }
       },
-      "negative_expected": "Reject named invalid argument or unavailable target; compare case-owned baseline before/after and require no mutation. For guide unknown topic, return supported actions rather than rejection.",
+      "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
       "supported_cleanup_or_gap": "No booking deletion action in Records contract; require verified booking removal by returned id",
       "guide_argument_contract": {
         "title": {
@@ -871,7 +877,9 @@
           "enum": null
         }
       },
-      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass."
+      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+      "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+      "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
     },
     "EXT-F-4130-C14": {
       "action": "import_propose",
@@ -891,9 +899,7 @@
           "dedupe_key": "name"
         }
       },
-      "required_id_lineage": [
-        "C11.table_id"
-      ],
+      "required_id_lineage": ["C11.table_id"],
       "expected_observable": "Receipt reports one accepted case-owned row or exact refused/approval rows; capture each returned row id.",
       "negative_input": {
         "action": "import_propose",
@@ -901,7 +907,7 @@
           "table_id": "not-a-uuid"
         }
       },
-      "negative_expected": "Reject named invalid argument or unavailable target; compare case-owned baseline before/after and require no mutation. For guide unknown topic, return supported actions rather than rejection.",
+      "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
       "supported_cleanup_or_gap": "Delete each actually created case-owned row by returned id; unresolved approval/candidate columns need explicit cancellation/removal",
       "guide_argument_contract": {
         "table": {
@@ -965,7 +971,9 @@
           "enum": null
         }
       },
-      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass."
+      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+      "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+      "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
     },
     "EXT-F-4130-C15": {
       "action": "dashboard_propose",
@@ -989,9 +997,7 @@
           ]
         }
       },
-      "required_id_lineage": [
-        "C11.table_id"
-      ],
+      "required_id_lineage": ["C11.table_id"],
       "expected_observable": "Receipt identifies saved dashboard and numeric case count; compare to C05 for same table/snapshot.",
       "negative_input": {
         "action": "dashboard_propose",
@@ -1000,7 +1006,7 @@
           "blocks": "not-an-array"
         }
       },
-      "negative_expected": "Reject named invalid argument or unavailable target; compare case-owned baseline before/after and require no mutation. For guide unknown topic, return supported actions rather than rejection.",
+      "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
       "supported_cleanup_or_gap": "No dashboard deletion action in Records contract; require verified dashboard removal by returned id",
       "guide_argument_contract": {
         "name": {
@@ -1049,7 +1055,9 @@
           "enum": null
         }
       },
-      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass."
+      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+      "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+      "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
     },
     "EXT-F-4130-C16": {
       "action": "pipeline_propose",
@@ -1062,10 +1070,7 @@
           "stage_field": {
             "key": "case_stage",
             "label": "Case stage",
-            "options": [
-              "New",
-              "Done"
-            ]
+            "options": ["New", "Done"]
           },
           "transitions": [
             {
@@ -1075,9 +1080,7 @@
           ]
         }
       },
-      "required_id_lineage": [
-        "C11.table_id"
-      ],
+      "required_id_lineage": ["C11.table_id"],
       "expected_observable": "Receipt names stage field, ordered options, saved board and rule; no existing unrelated row is changed.",
       "negative_input": {
         "action": "pipeline_propose",
@@ -1085,7 +1088,7 @@
           "stage_field": "not-an-object"
         }
       },
-      "negative_expected": "Reject named invalid argument or unavailable target; compare case-owned baseline before/after and require no mutation. For guide unknown topic, return supported actions rather than rejection.",
+      "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
       "supported_cleanup_or_gap": "No board/rule/field deletion action in Records contract; require verified removal of all returned IDs",
       "guide_argument_contract": {
         "table": {
@@ -1154,7 +1157,9 @@
           "enum": null
         }
       },
-      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass."
+      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+      "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+      "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
     },
     "EXT-F-4130-C17": {
       "action": "document_propose",
@@ -1169,10 +1174,7 @@
           "body": "Case row: {{field:name}}."
         }
       },
-      "required_id_lineage": [
-        "C11.table_id",
-        "C06.record_id"
-      ],
+      "required_id_lineage": ["C11.table_id", "C06.record_id"],
       "expected_observable": "Receipt identifies template/render id and the case row; inspect rendered value without external delivery.",
       "negative_input": {
         "action": "document_propose",
@@ -1181,7 +1183,7 @@
           "body": null
         }
       },
-      "negative_expected": "Reject named invalid argument or unavailable target; compare case-owned baseline before/after and require no mutation. For guide unknown topic, return supported actions rather than rejection.",
+      "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
       "supported_cleanup_or_gap": "No template/render deletion action in Records contract; require verified removal for each returned id",
       "guide_argument_contract": {
         "title": {
@@ -1235,7 +1237,9 @@
           "enum": null
         }
       },
-      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass."
+      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+      "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+      "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
     },
     "EXT-F-4130-C18": {
       "action": "checklist_propose",
@@ -1254,9 +1258,7 @@
           ]
         }
       },
-      "required_id_lineage": [
-        "C11.table_id"
-      ],
+      "required_id_lineage": ["C11.table_id"],
       "expected_observable": "Receipt identifies case checklist; no start_for and no assigned external work.",
       "negative_input": {
         "action": "checklist_propose",
@@ -1265,7 +1267,7 @@
           "steps": "not-an-array"
         }
       },
-      "negative_expected": "Reject named invalid argument or unavailable target; compare case-owned baseline before/after and require no mutation. For guide unknown topic, return supported actions rather than rejection.",
+      "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
       "supported_cleanup_or_gap": "No checklist deletion action in Records contract; require verified removal by returned id",
       "guide_argument_contract": {
         "name": {
@@ -1324,7 +1326,9 @@
           "enum": null
         }
       },
-      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass."
+      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+      "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+      "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
     },
     "EXT-F-4130-C19": {
       "action": "capture_propose",
@@ -1345,9 +1349,7 @@
           "open_to_crew": false
         }
       },
-      "required_id_lineage": [
-        "C11.table_id"
-      ],
+      "required_id_lineage": ["C11.table_id"],
       "expected_observable": "Receipt identifies case capture surface; no crew response or public use.",
       "negative_input": {
         "action": "capture_propose",
@@ -1356,7 +1358,7 @@
           "table_id": "not-a-uuid"
         }
       },
-      "negative_expected": "Reject named invalid argument or unavailable target; compare case-owned baseline before/after and require no mutation. For guide unknown topic, return supported actions rather than rejection.",
+      "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
       "supported_cleanup_or_gap": "No capture deletion action in Records contract; require verified removal by returned id",
       "guide_argument_contract": {
         "title": {
@@ -1415,7 +1417,9 @@
           "enum": null
         }
       },
-      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass."
+      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+      "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+      "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
     },
     "EXT-F-4130-C20": {
       "action": "enrich_propose",
@@ -1430,9 +1434,7 @@
               "name": "case summary",
               "instruction": "Summarize the synthetic case name in three words",
               "type": "text",
-              "inputs": [
-                "name"
-              ]
+              "inputs": ["name"]
             }
           ],
           "run": false,
@@ -1440,18 +1442,16 @@
           "preview_only": true
         }
       },
-      "required_id_lineage": [
-        "C11.table_id"
-      ],
-      "expected_observable": "Preview or disabled receipt lists proposed column and confirms no model run/cost/value write.",
+      "required_id_lineage": ["C11.table_id"],
+      "expected_observable": "run=false prevents the enrichment model run and value writes, but field_propose may persist a new column and enrich_declare persists its disabled configuration even with preview_only=true. Capture applied field_id and enrichment identifiers; a held field proposal is pending, not created.",
       "negative_input": {
         "action": "enrich_propose",
         "args": {
           "columns": "not-an-array"
         }
       },
-      "negative_expected": "Reject named invalid argument or unavailable target; compare case-owned baseline before/after and require no mutation. For guide unknown topic, return supported actions rather than rejection.",
-      "supported_cleanup_or_gap": "Confirm preview_only creates no persistent artifact; otherwise require returned-id removal for column/job",
+      "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+      "supported_cleanup_or_gap": "NOT_EXECUTABLE until a verified removal path exists for the persisted field and enrichment configuration (and any held approval). run=false and preview_only=true do not provide cleanup.",
       "guide_argument_contract": {
         "columns": {
           "type": "array",
@@ -1499,7 +1499,9 @@
           "enum": null
         }
       },
-      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass."
+      "run_condition": "Do not execute until current live schema/guide and an owned table fixture are verified AND every created field/enrichment configuration and held proposal has a verified cleanup path; no model run does not mean no write.",
+      "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+      "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
     },
     "EXT-F-4130-C21": {
       "action": "portal_propose",
@@ -1519,9 +1521,7 @@
           "invite": []
         }
       },
-      "required_id_lineage": [
-        "C11.table_id"
-      ],
+      "required_id_lineage": ["C11.table_id"],
       "expected_observable": "Receipt identifies portal and relation; no invitation recipient.",
       "negative_input": {
         "action": "portal_propose",
@@ -1530,7 +1530,7 @@
           "tables": "not-an-array"
         }
       },
-      "negative_expected": "Reject named invalid argument or unavailable target; compare case-owned baseline before/after and require no mutation. For guide unknown topic, return supported actions rather than rejection.",
+      "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
       "supported_cleanup_or_gap": "No portal/relation deletion action in Records contract; require verified removal by returned IDs",
       "guide_argument_contract": {
         "title": {
@@ -1569,34 +1569,30 @@
           "enum": null
         }
       },
-      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass."
+      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+      "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+      "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
     },
     "EXT-F-4130-C22": {
       "action": "signature_request",
-      "status": "blocked_external_effect_cleanup",
+      "status": "NOT_EXECUTABLE_missing_owned_signature_document_fixture_and_revocation",
       "source_wire_validated": true,
-      "valid_synthetic_owned_input": {
-        "action": "signature_request",
-        "args": {
-          "record_id": "$C06.record_id",
-          "field": "case_signature",
-          "signer_email": "case-signature@example.invalid",
-          "signer_name": "Case Signer"
-        }
-      },
+      "valid_synthetic_owned_input": null,
       "required_id_lineage": [
         "C06.record_id",
-        "precreated owned signature field"
+        "verified text field with format=signature on C11 table",
+        "owned rendered document version id or owned template id",
+        "owned test signer destination"
       ],
-      "expected_observable": "If allowed, receipt returns one-time link for C06 and expires; do not send/open link or represent as signed.",
+      "expected_observable": "Only after an owned signature-format text field and document render/template are verified: an applied result returns a one-time link for C06 and an expiry; no link is sent or opened and no signing is claimed. A product approval refusal means no link was made.",
       "negative_input": {
         "action": "signature_request",
         "args": {
           "record_id": "not-a-uuid"
         }
       },
-      "negative_expected": "Reject named invalid argument or unavailable target; compare case-owned baseline before/after and require no mutation. For guide unknown topic, return supported actions rather than rejection.",
-      "supported_cleanup_or_gap": "No signature-request cancellation action in Records contract; require verified revocation and signature field fixture before run",
+      "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+      "supported_cleanup_or_gap": "No owned signature-format field or document render/template fixture is established, and Records exposes no signature-request cancellation action. Require verified fixture creation and revocation/removal before execution; do not substitute case_signature plain text or omit render_id/template_id.",
       "guide_argument_contract": {
         "record_id": {
           "type": "string",
@@ -1634,7 +1630,19 @@
           "enum": null
         }
       },
-      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass."
+      "run_condition": "NOT_EXECUTABLE: source requires a signature-format text field on the case table and render_id or template_id; neither owned valid fixture nor revocation path is established. Live schema/guide and product approval behavior remain unverified.",
+      "required_success_input_shape": {
+        "action": "signature_request",
+        "args": {
+          "record_id": "$C06.record_id",
+          "field": "$owned_signature_format_text_field.key",
+          "signer_email": "$owned_test_signer.email",
+          "signer_name": "$owned_test_signer.name",
+          "render_id": "$owned_document_render.id"
+        }
+      },
+      "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+      "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
     },
     "EXT-F-4130-C23": {
       "action": "subscription_propose",
@@ -1656,10 +1664,7 @@
           ]
         }
       },
-      "required_id_lineage": [
-        "C11.table_id",
-        "owned notification destination"
-      ],
+      "required_id_lineage": ["C11.table_id", "owned notification destination"],
       "expected_observable": "Receipt identifies view/subscription and delivery policy; no notification may be sent.",
       "negative_input": {
         "action": "subscription_propose",
@@ -1668,7 +1673,7 @@
           "tell": []
         }
       },
-      "negative_expected": "Reject named invalid argument or unavailable target; compare case-owned baseline before/after and require no mutation. For guide unknown topic, return supported actions rather than rejection.",
+      "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
       "supported_cleanup_or_gap": "No subscription/view deletion action in Records contract; require verified disable/removal and owned recipient before run",
       "guide_argument_contract": {
         "table_id": {
@@ -1697,7 +1702,9 @@
           "enum": null
         }
       },
-      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass."
+      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+      "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+      "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
     },
     "EXT-F-4130-C24": {
       "action": "entity_read",
@@ -1710,9 +1717,7 @@
           "record_id": "$owned_standard_entity.record_id"
         }
       },
-      "required_id_lineage": [
-        "preverified owned standard entity token/id"
-      ],
+      "required_id_lineage": ["preverified owned standard entity token/id"],
       "expected_observable": "Response token/id equal preverified owned standard row and separates columns/custom_fields/written_by.",
       "negative_input": {
         "action": "entity_read",
@@ -1721,7 +1726,7 @@
           "record_id": "not-a-uuid"
         }
       },
-      "negative_expected": "Read-only refusal or empty authorized result; no store mutation. Unknown guide topic must return supported actions.",
+      "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
       "supported_cleanup_or_gap": "none",
       "guide_argument_contract": {
         "entity": {
@@ -1735,7 +1740,9 @@
           "enum": null
         }
       },
-      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass."
+      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+      "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+      "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
     },
     "EXT-F-4130-C25": {
       "action": "entity_write",
@@ -1763,7 +1770,7 @@
           "values": {}
         }
       },
-      "negative_expected": "Reject named invalid argument or unavailable target; compare case-owned baseline before/after and require no mutation. For guide unknown topic, return supported actions rather than rejection.",
+      "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
       "supported_cleanup_or_gap": "Restore captured original custom value on same row; cannot proceed without owned standard row, writable field and approval cleanup",
       "guide_argument_contract": {
         "entity": {
@@ -1782,7 +1789,9 @@
           "enum": null
         }
       },
-      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass."
+      "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
+      "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
+      "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
     }
   },
   "counts": {
@@ -1793,5 +1802,11 @@
     "blocked_or_conditional": 25,
     "runnable_now": 0
   },
-  "unresolved": "The designated admin authentication returned HTTP 401 before a live schema could be fetched; no live guide or Records action was executed. Source guide does not establish deployed schema, authorized fixtures, response receipts, approvals or cleanup of tables, fields, proposals, subscriptions, portal, signature, or standard-entity changes. All 25 controls remain unexecuted."
+  "unresolved": "The designated admin authentication returned HTTP 401 before a live schema could be fetched; no live guide or Records action was executed. Source guide does not establish deployed schema, authorized fixtures, response receipts, approvals or cleanup of tables, fields, proposals, subscriptions, portal, signature, or standard-entity changes. All 25 controls remain unexecuted.",
+  "negative_review": {
+    "source_basis": "Canonical aidream Records source at recorded source revision a0ef97ac36bd3528d02249d052a746d04e7c1db3; no live or runtime validation.",
+    "census": "All 25 stable control IDs retain a negative_input and now have an explicit negative_status, source-grounded expected oracle, or NOT_EXECUTABLE disposition.",
+    "runtime_credit": 0,
+    "remaining": "C06 unknown-field negative lacks a deterministic source-only rejection oracle and is NOT_EXECUTABLE. Live schema/guide, fixture authorization, receipts, actual product approval, and cleanup remain outside this source procedure."
+  }
 }

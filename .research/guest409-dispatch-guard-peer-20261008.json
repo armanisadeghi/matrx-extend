@@ -1,0 +1,32 @@
+{
+  "incident": "EXT-D-0172",
+  "role": "narrow independent re-review of guard-only follow-up",
+  "candidate_sha": "3b271b385a92fdc2778dd09aae1d06f3de2e2d5d",
+  "reviewed_at": "2026-10-08",
+  "prior_finding": "The prior orchestrator test stubbed handle_tool_calls and manually carried assistant_checkpoint, so it could not catch a dropped callback in handle_tool_calls -> handle_tool_calls_v2 -> execute_batch, and its mixed batch had no server sibling.",
+  "verdict_a_contract": {
+    "status": "UNCHANGED source contract; live public outcome unverified",
+    "facts": [
+      "This follow-up changes only packages/matrx-ai/tests/test_guest_delegation_checkpoint.py. The callback/readback handoff behavior from aidream 54a1e1b978 is unchanged.",
+      "No public205 first/followup/new-conversation-after-reload, deployed server, or database check was run in this read-only peer lane."
+    ]
+  },
+  "verdict_b_guard_quality": {
+    "status": "PASS for the exact prior callback-propagation and mixed-sibling findings",
+    "addressed": [
+      "The test no longer monkeypatches orchestrator.handle_tool_calls. The real orchestrator wrapper calls handle_tool_calls_v2, which constructs ToolContext with assistant_checkpoint; the real execute_batch copies that context into sibling calls. A dropped callback in one of these changed links is now observable through the delegated call's failed checkpoint/event assertion.",
+      "The provider response now has server_lookup and get_page_text tool calls. With client_tools present, the test asserts that the server sibling received a nonempty assistant message ID before concurrent dispatch. The client-tools-empty case exercises the callback when the early checkpoint does not run."
+    ],
+    "scope_limit_not_blocker": {
+      "severity": "Observation",
+      "location": "packages/matrx-ai/tests/test_guest_delegation_checkpoint.py:175",
+      "issue": "The test monkeypatches ToolExecutor.execute with execute_tool, which branches on tool name and calls _execute_delegated directly. It bypasses real ToolExecutor.execute routing, alias handling, and authorization. This limits the guard to callback propagation through the real batch wrapper and publication boundary, which is the exact prior gap. Existing targeted executor tests such as test_desktop_discovery_contract.py exercise the routing decision separately; this review found no demonstrated current routing defect and does not elevate the separate coverage possibility into a blocker."
+    },
+    "red_proof": "Builder reports RED when wrapper callback pass was removed and separately when preflight was disabled; this peer did not run the mutations or see their captured output. The diff contains no committed self-test proving those RED cases. Source inspection supports that removing the callback pass breaks the client_tools=[] case.",
+    "independent_focused_checks": [
+      "git show --check 3b271b385a92fdc2778dd09aae1d06f3de2e2d5d: clean",
+      "git show --name-only: only the guard file changed",
+      "Independent `uv run --no-sync pytest packages/matrx-ai/tests/test_guest_delegation_checkpoint.py -q`: 8 passed in 0.13s. No browser, build, deployment, or live network check was run. Builder-reported RED mutations and wider 27 focused checks were not independently re-run."
+    ]
+  }
+}
