@@ -2,7 +2,7 @@
   "schema_version": 1,
   "purpose": "Run four source acceptance guards promptly after relevant main pushes without waiting for the full CI queue.",
   "scope": [
-    ".github/workflows/focused-acceptance.yml runs on main pushes for workflow, dependency, browser-test, and relevant feature source changes; docs and evidence changes do not trigger it.",
+    ".github/workflows/focused-acceptance.yml runs on main pushes for workflow, dependency, source, test, and script changes; docs and evidence changes do not trigger it.",
     "Its own concurrency group retains the newest relevant commit and does not share the full CI queue.",
     "package.json has the single test:focused-acceptance command consumed by the fast lane and the early full CI step.",
     "The command covers audit key faults, guest Settings, guest SEO clipboard, and showcase stale runtime boundary guards. The latter is removed from the later broad CI command to avoid a duplicate run."
@@ -27,5 +27,10 @@
   "limits": [
     "This lane proves only the four source guards. Full CI remains the release gate, and native/browser behavior requires separate admitted execution.",
     "A docs-only push will not trigger the focused lane by design."
-  ]
+  ],
+  "path_filter_repair": {
+    "finding_source": ".research/focused-lane-lint-diagnosis-20261007.json",
+    "change": "Replace the incomplete feature file list with src/**, tests/**, and scripts/**. This includes audit and settings libraries, state files, and acceptance harness helpers.",
+    "status": "awaiting_automatic_push_run"
+  }
 }

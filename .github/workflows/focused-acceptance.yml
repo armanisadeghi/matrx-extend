@@ -8,13 +8,9 @@ on:
       - '.github/workflows/focused-acceptance.yml'
       - 'package.json'
       - 'pnpm-lock.yaml'
-      - 'tests/browser/**'
-      - 'src/components/CopyMenu.tsx'
-      - 'src/features/settings/**'
-      - 'src/features/seo/**'
-      - 'src/features/showcase/**'
-      - 'src/lib/clipboard/**'
-      - 'src/lib/seo/**'
+      - 'src/**'
+      - 'tests/**'
+      - 'scripts/**'
 
 # Keep the newest relevant main commit independent of the full CI queue.
 concurrency:
