@@ -1,0 +1,31 @@
+{
+  "scope": "Independent source review of 892253e1 metadata_search native acceptance extension; C03 only, with C02 prerequisite examined",
+  "verdict_A_spec": "PARTIAL: the new C03 path submits the exact metadata_search action/query/limit/org args, correlates the finished request to the panel bearer and approved organization, requires the visible output to equal that request's completion, and checks a table identity returned by a separate table_list call. The acceptance sends include_app_tables on both table_list calls. Current aidream main source at 46cab297 (including its Oct 8 source change) declares include_platform_tables instead; the old and current native receipts targeted a frozen development artifact/backend and do not identify the exact running server source. So this is a confirmed source-contract mismatch and an unverified live prerequisite, not proof that the previously passing deployment refuses it. C03 remains native-unverified; no wider Records controls/modes are established.",
+  "verdict_B_quality": "PARTIAL: query echo, same id/name/kind/org match, count consistency, success, visible completion, privacy-bounded receipt, and failure rejection are sound. The driver tests pass, but their fake executor does not validate wire args, so it cannot catch the mismatch against current aidream source or establish C02/reload compatibility on a matching deployment. Existing listener and failure checks remain intact by source inspection.",
+  "findings": [
+    {
+      "severity": "important",
+      "file": "tests/browser/records-readonly-native-acceptance.mjs:159",
+      "detail": "The baseline and post-reload table_list requests use include_app_tables. Current aidream main source at 46cab297 declares include_platform_tables in aidream/packages/matrx-records/matrx_records/agent/args.py:138-157; records() calls RecordsArgs.model_validate(args) directly in agent/tool.py:1949, and ToolArgs sets extra=forbid in matrx-ai/tools/declared.py:37-56. There is no source-side alias on this path. This confirms mismatch with current source. Whether the existing frozen native artifact's deployed backend had this exact validator is unverified; prior native evidence reportedly passed against deployed backend 8924a396, so do not call this a reproduced live failure. Require a matching-source deployment/native rerun or align the acceptance and source contract before relying on C03."
+    },
+    {
+      "severity": "observation",
+      "file": "tests/browser/records-readonly-native-driver.test.mjs:356-383",
+      "detail": "Negative cases reject unrelated id, wrong query echo, and refusal, but mock completions bypass the Records wire model. This is why the wrong table_list property passes the focused simulation."
+    }
+  ],
+  "source_contract": {
+    "metadata_search": "MetadataSearchWire defines query, limit, and optional organization_id. Store metadata_search matches table and field names/descriptions and returns id/kind/name; the tool adds organization_id per organization and returns query/count/organizations_covered.",
+    "table_list": "TableListWire on aidream main 46cab297 names the visibility option include_platform_tables. The records entry point validates args directly through RecordsArgs.model_validate; shared ToolArgs configuration forbids unknown keys. This source is not proven to be the source revision behind the frozen native target.",
+    "independent_oracle": "A table_list Table id and name can honestly be matched by metadata_search because search includes the Table structure name and emits the same row id/name; tool aggregation adds the organization id. The acceptance enforces this match."
+  },
+  "privacy_and_failures": "The acceptance report stores only bounded booleans, action names, counts, and artifact identifiers. It omits query, table identity, organization id, bearer, raw response, and row contents. Failures leave status unverified, record only stage-derived failure_code, and exit nonzero. Failed tool results cannot pass C03 assertions.",
+  "c02_reload": "The prior C02 request/result and reload sequence remains in the callback. Existing native evidence reportedly passed against deployed backend 8924a396, while current aidream main source differs on the table_list option name; neither result proves the other runtime. The extension driver verifies reload ordering and principal continuity only in a fake runtime; no native execution was performed here.",
+  "verification": {
+    "command": "node --test tests/browser/records-readonly-native-driver.test.mjs",
+    "result": "7 passed",
+    "syntax": "node --check tests/browser/records-readonly-native-acceptance.mjs passed",
+    "native": "Not run; no hosted/browser/live Records claim."
+  },
+  "required_follow_up": "Pin down the server source revision used by the exact native target. If it matches aidream main 46cab297, align the table_list key and make the driver assert against the current declared schema; otherwise document the deployed contract and verify it with an exact native rerun. Keep C03 open until a private native receipt passes."
+}
