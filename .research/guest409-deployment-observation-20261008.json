@@ -6,16 +6,25 @@
     "endpoint": "https://server.app.matrxserver.com/health/version",
     "method": "GET with User-Agent matrx-deployed-schema-guard/1.0 and Accept application/json",
     "http_status": 200,
-    "git_sha": "53aec906f047b524495ff0d93bae8e67eb55537f",
-    "built_at": "2026-10-08T07:42:57Z",
-    "evidence": "scripts/browser/guest-chat-store-acceptance.mjs uses this same endpoint. aidream db/schema_analysis/check_deployed_schema.py documents that urllib requires the explicit user agent because the edge returns 403 to its default user agent.",
-    "last_read_at_utc": "2026-10-08T08:57:02Z"
+    "git_sha": "8de41d9c36c1251240ea68fd5d41afcaa80b4ee1",
+    "built_at": "2026-10-08T08:39:50Z",
+    "last_read_at_utc": "2026-10-08T08:58:34.862Z",
+    "evidence": "Read-only GET using the documented user agent. The deployed SHA advanced from the earlier 53aec observation.",
+    "prior_observation": {
+      "endpoint": "https://server.app.matrxserver.com/health/version",
+      "method": "GET with User-Agent matrx-deployed-schema-guard/1.0 and Accept application/json",
+      "http_status": 200,
+      "git_sha": "53aec906f047b524495ff0d93bae8e67eb55537f",
+      "built_at": "2026-10-08T07:42:57Z",
+      "evidence": "scripts/browser/guest-chat-store-acceptance.mjs uses this same endpoint. aidream db/schema_analysis/check_deployed_schema.py documents that urllib requires the explicit user agent because the edge returns 403 to its default user agent.",
+      "last_read_at_utc": "2026-10-08T08:57:02Z"
+    }
   },
   "candidate": {
     "sha": "ffba17ba25c98599d78566bc8a74fce1c3dbe91e",
     "source": "aidream main candidate; ffba is an ancestor of fetched origin/main 0d88421ddcaef4fb5df895dd5ae7b401e21fab93.",
     "production_contains_candidate": false,
-    "proof": "Live git_sha differs; local Git confirms deployed 53aec is an ancestor of ffba, and ffba is not an ancestor of deployed 53aec."
+    "proof": "Git ancestry checks reported merge-base exit 1 for both ffba17ba25c98599d78566bc8a74fce1c3dbe91e and follow-up 54a1e1b978a8efde6b9232aa56aad9f12a1bf214 against deployed 8de41d9c36c1251240ea68fd5d41afcaa80b4ee1."
   },
   "automatic_deployment": {
     "repository_identity": {
@@ -46,7 +55,7 @@
       "last_or_next_run_status": "Not verified: correct-owner GitHub Actions API requests returned HTTP 403 rate limit exceeded. Current configuration supports automatic recovery, but no actual watcher run or pending deploy was established."
     },
     "api_correction": "The earlier Actions query used armanisadeghi/aidream, which is not the repository owner. The actual remote is AI-Matrix-Engine/aidream. Correct-owner run queries then hit GitHub API rate limits; earlier total_count=0 is invalid as execution evidence.",
-    "next_handle": "Automatic deployment handle is deploy-cadence-watch, not the test train or proposed aidream-release task. Observe a deploy.yml run for ffba or a descendant, then re-read /health/version. No exact execution time can be promised from the configured schedules."
+    "next_handle": "A deployment advance is now observed: the latest production build is 8de41d9c36c1251240ea68fd5d41afcaa80b4ee1, corresponding to the ship-all commit recorded at 2026-10-08T08:37:20Z. Neither the original fix ffba17ba25c98599d78566bc8a74fce1c3dbe91e nor follow-up 54a1e1b978a8efde6b9232aa56aad9f12a1bf214 is an ancestor of the deployed SHA, so neither fix is included. No further Actions API polling was performed."
   },
   "upcoming_followup": {
     "status": "No committed SHA yet at observation time.",
@@ -58,7 +67,7 @@
     "No build, release, deployment, browser, or workflow mutation was performed."
   ],
   "integration_schedule_observation": {
-    "observed_at_utc": "2026-10-08T08:57:02Z",
+    "observed_at_utc": "2026-10-08T08:58:34.862Z",
     "canonical_approval_and_status": {
       "aidream_release_task": "Canonical scheduled-tasks.md puts aidream-release every 30 minutes under Proposed, noting no job exists. Its prompt explicitly labels it DRAFT, not approved, not running, and says no cron, Codex automation, Claude schedule, or schedule_claim registration exists.",
       "ship_all_codex": "Canonical scheduled-tasks.md lists ship-all-codex every 30 minutes at :43 on the main workstation; matrx-ship SCHEDULES.md says this schedule is host runtime state and not copied in files. This is repository synchronization duty, not the aidream release task.",
@@ -66,7 +75,7 @@
     },
     "actual_automatic_deployment_safety_net": "deploy-cadence-watch.yml is ON every 10 minutes. If its >45-minute/no-active-deploy condition is met, it self-dispatches deploy.yml for the latest immutable runtime commit on main. Current run/queue status is unavailable: the earlier API request used the wrong repository owner, and corrected AI-Matrix-Engine/aidream run queries returned HTTP 403 rate limit exceeded. The 30-minute test.yml train is separately ON, but its source explicitly says deployment does not consult test results.",
     "tests_workflow_distinction": "The aidream test.yml 7,37 * * * * schedule is a 30-minute test train; its workflow source describes it as decoupled from push. It is not a deploy dispatch.",
-    "readiness": "Automatic deployment is configured through the cadence watcher, but its last execution and any pending dispatch cannot be confirmed. The proposed 30-minute aidream-release task is not active. Current production still returned 53aec906f047b524495ff0d93bae8e67eb55537f at 2026-10-08T08:57:02Z; candidate ffba is not deployed. Verify a deploy.yml run for ffba or descendant and then re-read health/version.",
+    "readiness": "Production advanced to 8de41d9c36c1251240ea68fd5d41afcaa80b4ee1 (built 2026-10-08T08:39:50Z), matching the ship-all commit timestamp 2026-10-08T08:37:20Z. Git ancestry checks show neither ffba17ba25c98599d78566bc8a74fce1c3dbe91e nor follow-up 54a1e1b978a8efde6b9232aa56aad9f12a1bf214 is included. Automatic deployment did advance the server, but it has not yet delivered either fix.",
     "sources": [
       "/Users/armanisadeghi/code/common-docs/operations/scheduled-tasks.md (Proposed aidream-release row; ship-all-codex row)",
       "/Users/armanisadeghi/code/common-docs/operations/scheduled-tasks/aidream-release.md (explicit DRAFT/not running/no job exists)",
@@ -75,5 +84,21 @@
       "/Users/armanisadeghi/code/aidream/.github/workflows/test.yml and deploy-cadence-watch.yml",
       "aidream Git remote and GitHub repo metadata: origin is https://github.com/AI-Matrix-Engine/aidream.git; verified AI-Matrix-Engine/aidream, main, not archived."
     ]
+  },
+  "deployment_followup_observation": {
+    "observed_at_utc": "2026-10-08T08:58:34.862Z",
+    "production": {
+      "http_status": 200,
+      "git_sha": "8de41d9c36c1251240ea68fd5d41afcaa80b4ee1",
+      "built_at": "2026-10-08T08:39:50Z"
+    },
+    "associated_git_event": "Commit at 2026-10-08T08:37:20Z was identified as ship-all.",
+    "fix_containment": {
+      "ffba17ba25c98599d78566bc8a74fce1c3dbe91e": false,
+      "54a1e1b978a8efde6b9232aa56aad9f12a1bf214": false,
+      "evidence": "Both merge-base ancestry checks against deployed SHA 8de41d9c36c1251240ea68fd5d41afcaa80b4ee1 exited 1."
+    },
+    "result": "Production advanced, but neither fix is deployed.",
+    "scope": "Read-only update; no repeated Actions API polling."
   }
 }
