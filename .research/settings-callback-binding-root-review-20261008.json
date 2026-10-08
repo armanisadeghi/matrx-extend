@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "at": "2026-10-08T22:44:53.103728+00:00",
+  "reviewer": "root; zero source authorship",
+  "source_commit": "4b14e0a6",
+  "verdict_a": {
+    "source": "pass",
+    "native": "unverified",
+    "finding": "Failed receipt shows reload guest observations complete before all per-choice cases missing; actual callback unbound variable reproduced with exit1 lint. Repair binds exact harness-supplied acquireLivePanel."
+  },
+  "verdict_b": {
+    "status": "pass",
+    "checks": "Independent14-entrypoint noUndeclaredVariables blocking gate and21relatedtests passed. CI runs guard as own step. No change to reload or preference semantics.",
+    "limits": "Guard scope is14 native acceptance entrypoints; broader browser globals not covered. Old static callback-presence assertion alone was insufficient."
+  }
+}

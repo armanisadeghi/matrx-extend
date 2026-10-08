@@ -18,7 +18,10 @@
   "fix_commit": "f24e494e1804a1bc6b0d78ca536ec291e71e2fa9",
   "evidence": [
     ".research/settings-per-choice-extension-preparation-20261008.json",
-    ".research/settings-per-choice-extension-root-review-20261008.json"
+    ".research/settings-per-choice-extension-root-review-20261008.json",
+    ".research/settings-per-choice-extension-native-20261008.json",
+    ".research/settings-callback-binding-repair-20261008.json",
+    ".research/settings-callback-binding-root-review-20261008.json"
   ],
   "state_history": [
     {
@@ -40,7 +43,22 @@
       "state": "fixed",
       "recorded_at": "2026-10-08T22:32:30.447806+00:00",
       "basis": "Red mutant,14 green focused tests and independent source review; native pending"
+    },
+    {
+      "state": "retest-fail",
+      "recorded_at": "2026-10-08T22:43:41.935717+00:00",
+      "basis": "Native37854142497 reaches replacement Settings/guest checks but all per-choice cases remain missing."
+    },
+    {
+      "state": "in-fix",
+      "recorded_at": "2026-10-08T22:43:41.935717+00:00",
+      "basis": "Root reproduces undeclared acquireLivePanel in native callback; escalated consumer binding and blocking undeclared-variable guard to Sol."
+    },
+    {
+      "state": "fixed",
+      "recorded_at": "2026-10-08T22:44:53.103728+00:00",
+      "basis": "4b14e0a6 binds harness callback; blocking14-entrypoint guard plus21tests independently pass. New native pending."
     }
   ],
-  "retest": "pending real repeated replacement-worker/panel proof"
+  "retest": "New per-choice native required after binding repair; prior failed run retained."
 }
