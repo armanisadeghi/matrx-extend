@@ -1,5 +1,6 @@
 {
   "schema_version": 1,
+  "defect_id": "EXT-D-0160",
   "run_id": 37707441895,
   "status": "diagnostic_ready_product_cause_unknown",
   "observed": {

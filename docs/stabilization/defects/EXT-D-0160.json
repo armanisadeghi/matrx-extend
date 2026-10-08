@@ -1,0 +1,52 @@
+{
+  "id": "EXT-D-0160",
+  "feature_id": "EXT-F-1012",
+  "case_ids": ["EXT-F-1012-T24", "EXT-F-1012-T51"],
+  "surface": "Testing infrastructure / shared native admin sign-in evidence",
+  "auth_mode": "admin native scenario",
+  "title": "Shared admin sign-in driver drops safe completion observations before picker receipt",
+  "severity": "S2: auth stop cannot be diagnosed from native receipt; product sign-in cause unknown",
+  "priority": "P1",
+  "state": "in-fix",
+  "owner": "root/admin_auth_completion_diagnosis",
+  "preconditions": [
+    "Run the native showcase-stale-admin case with real admin credentials through signInSettings.",
+    "The run reaches the extension auth-completion wait and fails before organization or picker steps."
+  ],
+  "reproduction": [
+    "Run 37707441895 receipt preserves auth_stage=admin_extension_auth_completion and guest banner/Sign in screenshot, but no categorical failure state.",
+    "Trace signInSettings: it passes a local diagnostic report to signInAdminSettings; the inner driver records safe panel observations in signin_observations on failure; the outer driver discards the report while rethrowing.",
+    "Compare successful admin run 37706132089 through the same driver; it reaches its audit cases. The failed picker build differs in unrelated source, so this is evidence loss only, not a product login diagnosis."
+  ],
+  "expected": "A failed shared admin sign-in forwards only fixed categorical auth state into the native receipt before rethrowing, so the stop can be localized without raw errors, URLs, credentials, identities or page content.",
+  "actual": "The picker receipt retained auth_stage alone. It cannot distinguish wait timeout, OAuth rejection or another completion failure; picker injection was never reached.",
+  "root_cause": "signInSettings created a local diagnostic object and never forwarded signin_observations from signInAdminSettings to the caller on failure.",
+  "evidence": [
+    ".research/picker-count-native-20261007.json",
+    ".research/focused-ci-native-peer-20261007.json",
+    ".research/admin-auth-completion-diagnosis-20261007.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-08T00:38:09Z",
+      "from": null,
+      "to": "open",
+      "reason": "Native picker run stopped at admin completion without enough safe receipt evidence to identify the first failing auth boundary."
+    },
+    {
+      "at": "2026-10-08T00:38:09Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Source trace confirms diagnostic object loss in the shared admin sign-in wrapper; product login cause remains unknown."
+    },
+    {
+      "at": "2026-10-08T00:38:09Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Safe categorical forwarding and a focused negative-control guard were committed; automatic focused CI and independent review pending."
+    }
+  ],
+  "closure_requirement": "Automatic focused CI plus independent review of safe diagnostic forwarding, then one resource-valid native admin completion retest; judge picker T24/T51 separately.",
+  "fix_commits": ["2c506c2d"],
+  "next_action": "Confirm exact-head focused CI and peer review. Preserve unknown product auth cause and do not credit picker counts from run 37707441895."
+}
