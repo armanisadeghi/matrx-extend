@@ -1,0 +1,199 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-D-0169 native retest",
+  "feature_id": "EXT-F-1008",
+  "status": "resource_valid_driver_refusal_before_new_criteria",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "run_id": 37736744238,
+    "attempt": 1,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37736744238",
+    "job": "guest",
+    "conclusion": "failure",
+    "checkout_sha": "9295e037c9d8e2bb23a04ec451a54f2bca123d6d",
+    "lane": "A",
+    "runner_label": "macos-15",
+    "runner_arch": "ARM64",
+    "case": "guest-seo",
+    "uploaded_artifact_id": 11532531266,
+    "uploaded_artifact_name": "hosted-guest-37736744238-1",
+    "uploaded_artifact_digest": "sha256:df8491156c09184949c88af56d28f8d9dfaa756b9cd8c5bf66ddad5ef559758e"
+  },
+  "driver": {
+    "reviewed_commit": "3dcf290381afd7a76eea45794af6a10a617117e9",
+    "independent_review": ".research/seo-escalation-final-peer-20261008.json",
+    "focused_ci_run_id": 37736350529,
+    "focused_ci_conclusion": "success",
+    "current_main_at_dispatch": "9295e037c9d8e2bb23a04ec451a54f2bca123d6d",
+    "relevant_paths_unchanged_since_review": true
+  },
+  "frozen_product": {
+    "kind": "ci_development_test",
+    "version": "0.2.397",
+    "ci_run_id": 37724859892,
+    "ci_conclusion": "success",
+    "artifact_id": 11527132614,
+    "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+    "tree_sha256": "1035cd28ce5a63ac6233626f35102f016f7c7e7e0ef0717d259a3ec40fc856ed",
+    "imported_exact_pushed_commit": true,
+    "post_case_build_identity_rechecked": false,
+    "store_eligible": false
+  },
+  "resource": {
+    "package": "valid",
+    "browser": "valid",
+    "guest": "admitted; healthy watch; child_failed; resourceInvalid=false",
+    "final_guard_invalid": false,
+    "all_owned_jobs_terminal": true
+  },
+  "native_receipt": {
+    "status": "unverified",
+    "last_safe_stage": "next_manual_public_after_inspected",
+    "current_operation": "next_detail_manual_source_stability_assertion",
+    "failure_stage": "next_detail_manual_source_stability_assertion",
+    "failure": {
+      "predicate": "manual_source_stability",
+      "assertion_label": "public DOM and navigation timing remain stable around manual re-audit",
+      "actual_scalar": null,
+      "expected_scalar": null
+    },
+    "source_stability": {
+      "manual_public_internal_links_before": 1783,
+      "manual_public_internal_links_after": 1784
+    },
+    "repeated_prior_pass_targets": 15,
+    "new_acceptance_credit": 0,
+    "observed_targets_in_order": [
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "page_0_title_and_headings",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_actual_clipboard_text_and_ai_page_0",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "page_1_title_and_headings",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_actual_clipboard_text_and_ai_page_1",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T01",
+        "subtarget": "new_url_replaces_visible_title",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T02",
+        "subtarget": "manual_button_returns_to_current_page",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_menu_offers_text_and_ai_but_hides_json",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T01",
+        "subtarget": "reload_audits_current_url",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_role_gate_after_reload",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_actual_clipboard_text_and_ai_reload",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T03",
+        "subtarget": "about_blank_clear_error_without_stale_audit",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T03",
+        "subtarget": "public_page_recovers_after_restricted_url",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "sparse_public_detail_groups",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "rich_public_detail_groups_and_canonical_door",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "canonical_outbound_opens_expected_public_tab",
+        "status": "pass"
+      }
+    ]
+  },
+  "new_criteria": {
+    "EXT-F-1008-T02": {
+      "verdict": "unverified",
+      "reason": "Driver stopped at public DOM source-stability assertion before independent fresh recapture."
+    },
+    "EXT-F-1008-T14": {
+      "verdict": "unverified",
+      "reason": "Driver stopped before social copy; no current valid-pane feedback or actual clipboard before/after observation."
+    }
+  },
+  "screenshot_limit": "The two uploaded PNG hashes exactly match the earlier 37731560399 screenshots; they are preserved as archive bytes but provide no fresh visual proof for this run.",
+  "interpretation": "The observed one-link change is in the live Wikipedia fixture between driver samples. This is a resource-valid case-step refusal, not evidence that the extension social copy passed or failed. The 14 receipt passes repeat earlier bounded coverage and add no T02/T14 credit.",
+  "evidence": {
+    "directory": ".research/seo169-native-retest-20261008-originals",
+    "files": [
+      {
+        "path": ".research/seo169-native-retest-20261008-originals/hosted-browser-37736744238-1.jsonl",
+        "sha256": "6bfaa779ce680cb2f12c6b4fcff076fea0968fa8fdfaea88cbbd0cbc6aa5ad62",
+        "bytes": 977
+      },
+      {
+        "path": ".research/seo169-native-retest-20261008-originals/hosted-guest-37736744238-1.jsonl",
+        "sha256": "2f39ca5f21a7542d7612603dfd6efbd8947d36f52d3cfe6b1d235d108c901576",
+        "bytes": 1402
+      },
+      {
+        "path": ".research/seo169-native-retest-20261008-originals/hosted-package-37736744238-1.jsonl",
+        "sha256": "b4802da238873c89098a532156f75b5ebe8a0b9020eff01482addf5099442186",
+        "bytes": 988
+      },
+      {
+        "path": ".research/seo169-native-retest-20261008-originals/native-side-panel.png",
+        "sha256": "bcee4631bbd726146862abe271a6dfe476837fbc2eb132f6a21374f00010c22f",
+        "bytes": 26230
+      },
+      {
+        "path": ".research/seo169-native-retest-20261008-originals/normal-target-after-open.png",
+        "sha256": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89",
+        "bytes": 25156
+      },
+      {
+        "path": ".research/seo169-native-retest-20261008-originals/seo-guest-acceptance.original.json.txt",
+        "sha256": "5ad0f98464cb4ca9e25e3da84f0c535ffd4da24cfeb7adfbd60b68611f3d2e23",
+        "bytes": 9026
+      }
+    ],
+    "curation": "Only current-run receipt and package/browser/guest journals plus the two uploaded PNGs were copied byte-for-byte. Six historical journals included in the workflow upload were excluded."
+  },
+  "limits": [
+    "No retry under this one-run assignment.",
+    "No product/source/inventory edits.",
+    "Store/current-main product behavior and D169 product cause remain unverified."
+  ],
+  "next_action": "Root owner should decide a revised stable public fixture or pre-social metadata path, obtain independent source review, then schedule a new guarded native run; this report does not authorize a retry.",
+  "sequencing_limit": "The broad guest SEO driver revisits previously proved T01/T02/T03/T07/T09 actions before the independent social-copy and fresh-recapture criteria. This run stopped during that prerequisite metadata segment; it cannot test T14 or the new T02 criterion in isolation."
+}
