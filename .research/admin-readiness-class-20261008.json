@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-08",
+  "status": "source_candidate_for_independent_review_native_unverified",
+  "scope": "Shared admin principal readiness; test helper and causal regression guard only. No product, auth flow, private fixture, database, build, native run, release, or deployment changes.",
+  "evidence": [
+    ".research/t57-org-checkpoint-native-20261008.json",
+    ".research/t57-membership-rpc-diagnosis-20261008.json",
+    ".research/t57-org-checkpoint-implementation-20261008.json",
+    "../common-docs/systems/account/organizations/STATE.md rules 12 and 14"
+  ],
+  "observed_boundary": "Native 37763007487 stopped upstream of T57 organization checkpoint: web/profile/token/admin/email/role/sign-out and rendered organization were true; device-storage comparison was false. Guest resource journal was invalid, so this is a harness reproduction input, never native product proof.",
+  "hypotheses": [
+    {
+      "cause": "Shared readiness confuses absent device choice with absent visible selection",
+      "prediction": "Keep captured admin DOM and storage unchanged; removing only the no-rendered-selection requirement lets actual signInSettings and reload readiness complete.",
+      "result": "Confirmed by red/green execution of signInSettings -> verifyCurrentSettingsIdentity -> actual DOM/storage readers -> currentSettingsIdentityMatches."
+    },
+    {
+      "cause": "Authentication or admin identity is insufficient",
+      "prediction": "Captured positive state would still reject after the organization-only repair.",
+      "result": "Not the source-loop cause; same state passes. Wrong email, profile, role, token and sign-out variants still reject."
+    },
+    {
+      "cause": "Approved T57 organization/header gate needs weakening",
+      "prediction": "Readiness repair alone would break existing T57 organization/header negative guards.",
+      "result": "Ruled out in source guards: checkpoint unchanged and its authenticated header, UUID, wrong-org, wrong-principal, response and fixture checks pass."
+    }
+  ],
+  "repair": "When expected and observed device organization UUIDs are null, general identity readiness requires the stored name also be null, but does not constrain the rendered organization. Any present device choice retains UUID/name/rendered consistency. requireSelectedOrganization remains strict. No organization ID is inferred from a label or created by the harness.",
+  "sibling_census": [
+    {
+      "paths": [
+        "tests/browser/settings-native-auth-driver.mjs: signInSettings admin path",
+        "tests/browser/settings-d87-native-acceptance.mjs: assertExpectedIdentity",
+        "tests/browser/settings-desktop-native-acceptance.mjs: assertIdentity",
+        "tests/browser/audit-key-native-acceptance.mjs: initial/reload/reopen checks",
+        "tests/browser/takeover-visible-census.mjs: signInSettings admin path"
+      ],
+      "disposition": "All consume the repaired shared readiness predicate, with no caller-specific bypass."
+    },
+    {
+      "paths": [
+        "tests/browser/showcase-picker-native-acceptance.mjs",
+        "tests/browser/showcase-d47-public-initial-load.mjs",
+        "tests/browser/showcase-d47-document-lifecycle.mjs"
+      ],
+      "disposition": "Consume repaired sign-in readiness, then unchanged runShowcaseOrganizationCheckpoint requiring approved private UUID and actual authenticated product request header."
+    },
+    {
+      "paths": [
+        "tests/browser/settings-native-auth-driver.mjs: selectRequiredSettingsOrganization",
+        "tests/browser/settings-native-auth-driver.mjs: member signInSettings",
+        "tests/browser/scrape-guest-native-acceptance.mjs: selected/reloaded organization"
+      ],
+      "disposition": "Outside admin-principal repair: these separate explicit device-organization proofs still assume storage after a skipped same-label selection. They lack the verified-UUID/request lineage used by T57. Tracked for owner; not converted to label-only proof or claimed fixed.",
+      "case_scope": "Scrape EXT-F-1007 authenticated routes, including T01/T02/T08/T20 reload proofs; member sign-in is also upstream of Profile EXT-F-1004, Settings EXT-D-0087 and desktop EXT-D-0084/EXT-D-0086, and takeover-visible-census member role.",
+      "next_lineage_requirement": "Privately verify exact approved fixture UUID/current membership; accept absent device override only with approved visible name plus observed real product request X-Organization-Id and authenticated principal; preserve explicit switch persistence and reload lineage. No same-label reselect workaround."
+    },
+    {
+      "paths": [
+        "tests/browser/profile-native-acceptance.mjs",
+        "tests/browser/profile-empty-row-restoration.mjs",
+        "tests/browser/profile-member-row-recovery.mjs"
+      ],
+      "disposition": "Separate owned-write and cleanup lineage intentionally requires a device UUID today. Not an admin principal predicate; changing it requires preserving row ownership/request lineage and is outside this lane.",
+      "case_scope": "Profile EXT-F-1004 member/admin routes; first-save case T28 and member recovery helper, with owner-row and reload checks shared by T01/T02/T03/T04/T05/T06/T17/T18/T21/T22/T25.",
+      "next_lineage_requirement": "Establish verified approved UUID and actual product request lineage before using it for scoped owner-row read/write/cleanup. Retain exact owner, organization, marker and created_at safeguards; do not source a UUID from display text."
+    },
+    {
+      "paths": [
+        "tests/browser/reviewer-chat-store-acceptance.mjs: approvedOrganizationObservation"
+      ],
+      "disposition": "Already permits absent device override while checking rendered approval and later actual request header. No change."
+    },
+    {
+      "paths": ["tests/browser/settings-panel-driver.mjs: guestSettingsState/guestSettingsChecks"],
+      "disposition": "Guest absence checks are intentional signed-out proofs and remain unchanged."
+    }
+  ],
+  "guard": {
+    "path": "tests/browser/admin-readiness-class.test.mjs",
+    "sut": "Actual signInSettings, verifyCurrentSettingsIdentity, currentSettingsIdentityMatches, accountIdentity and panelIdentity; DOM evaluated by happy-dom through actual evaluate/openSection.",
+    "external_doubles": "OAuth sign-in returns verified first-party identity; chrome storage/CDP use the captured boundary shape; polling calls actual read and accept once. No predicate or organization verifier is stubbed.",
+    "red": "Before repair: node --test tests/browser/admin-readiness-class.test.mjs failed d87_rendered_identity_not_observed from real signInSettings/verifyCurrentSettingsIdentity on captured selected-label/null-device state.",
+    "green": "After repair: sign-in and reload pass ladder and explicit-device states; missing email/role/sign-out/profile/token/admin, malformed device identity, mismatched stored/rendered name, and wrong expected approved UUID reject.",
+    "self_test": "In-memory obsolete no-selection mutation rejects the captured positive state. In-memory constant-true predicate mutation is killed by required-organization and identity refusals. Shared source is never weakened on disk."
+  },
+  "verification": {
+    "focused_command": "node --test tests/browser/admin-readiness-class.test.mjs tests/browser/settings-native-auth-driver.test.mjs tests/browser/settings-panel-driver.guest.test.mjs tests/browser/showcase-organization-diagnostic.test.mjs scripts/hosted-profile-route.test.mjs",
+    "focused_result": "34 tests passed; later added wrong-UUID and partial-device negative cases also pass in the focused guard.",
+    "format": "biome check passed for both JavaScript files; research is ignored by repo config, so its JSON was formatted through biome stdin as a normal .json file. git diff --check passed.",
+    "native": "Not run; prohibited by lane scope."
+  },
+  "claim_limit": "Shared admin readiness source repair only. T57 Network-race acceptance remains unverified. Fresh independent source peer required before any separately authorized native attempt. Remaining non-T57 organization-lineage siblings are explicitly open, not covered by this repair."
+}

@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "candidate_commit": "46ec5e17cda452591ad7b196ac0a07811b761c09",
+  "verdict": { "source_and_guard": "pass", "native_outcome": "unverified" },
+  "source_trace": "signInSettings verifies first-party user ID and admin flag, then verifyCurrentSettingsIdentity reads actual Account DOM and chrome.storage through evaluate. With no device row, the shared predicate requires null stored ID/name while allowing the load-ladder-rendered label; explicit device IDs still require UUID and matching stored/rendered names. Product active-org.ts resolves membership through device/account/start-up/first rungs without writing ladder results to device storage; SettingsView renders org.active.",
+  "strict_checks": "Email, role, sign-out, token, profile and admin flag refusals pass. requireSelectedOrganization rejects null device even with approved-looking label and rejects wrong expected UUID; T57's unchanged checkpoint separately requires private approved UUID, actual authenticated /tools/test/list request with matching X-Organization-Id, and completed HTTP 200.",
+  "guard": "node --test focused five-file suite: 34/34 pass. The new test runs actual signInSettings, identity reader and predicate through happy-dom/CDP, stubbing only OAuth and polling. In-memory obsolete no-selection and constant-true mutations both fail contract. Earlier RED on old predicate is documented by builder; peer did not rerun a source mutation.",
+  "sibling_census": "Shared admin sign-in/reload, D87, desktop, audit-key and takeover paths consume repaired predicate; Showcase T57 retains its later network checkpoint. Separate Scrape/member/profile explicit-organization flows still require device UUID and need real API/approved-UUID lineage before any change; no label-only success claimed.",
+  "limit": "No native browser, build, release, deployment or live API check performed in this review; T57 and non-T57 organization selection remain unverified on the real surface."
+}
