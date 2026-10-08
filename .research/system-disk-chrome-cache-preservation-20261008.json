@@ -1,0 +1,23 @@
+{
+  "at": "2026-10-08T20:09:26.663949+00:00",
+  "scope": "Only inactive generated Cache and Code Cache in Library/Caches. Chrome processes and open handles absent at both checks; every backup file hash/symlink verified. No Application Support profile, history, cookies, passwords or session store touched. Private external backup parent0700; contents never logged or committed.",
+  "rows": [
+    {
+      "source": "/Users/armanisadeghi/Library/Caches/Google/Chrome/Default/Cache",
+      "preserved_copy": "/Volumes/Samsung2TB/code/.stabilization-scratch/private-chrome-cache-preserved-20261008/Cache",
+      "verified_entries": 53818,
+      "bytes": 970617095,
+      "source_absent": true
+    },
+    {
+      "source": "/Users/armanisadeghi/Library/Caches/Google/Chrome/Default/Code Cache",
+      "preserved_copy": "/Volumes/Samsung2TB/code/.stabilization-scratch/private-chrome-cache-preserved-20261008/Code Cache",
+      "verified_entries": 10012,
+      "bytes": 257589098,
+      "source_absent": true
+    }
+  ],
+  "free_before": 118759424,
+  "free_after": 1530658816,
+  "limitation": "Still below20GiB local-heavy-test threshold."
+}

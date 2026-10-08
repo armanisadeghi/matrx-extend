@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T19:54:05.008887+00:00",
+  "updated_at": "2026-10-08T20:05:20.139763+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -6303,6 +6303,25 @@
                 ".research/settings-remaining-controls-peer-20261008.json"
               ],
               "scope": "T28 visibility/section restoration, T40/T67 toggle+picker storage restoration and real driver guard gaps identified. Source179tests green not sufficient; no native credit."
+            },
+            {
+              "source_commit": "a5c82404",
+              "merge_commit": "70b65e93",
+              "focused_ci": "37835391727",
+              "independent_review": "1d04d0af",
+              "status": "source-repaired-final-failure-test-gap-pending",
+              "evidence": [".research/settings-controls-restoration-peer-20261008.json"],
+              "scope": "Rendered section geometry + verified cleanup and UI/storage drift restoration implemented; actual case-runner simulations exercised. T28 changed-state failure cleanup test still being tightened. Native/downstream capture unverified."
+            },
+            {
+              "source_commit": "2d8ff3ff",
+              "scope": "T28 changed-state failure test now starts Account closed, opens it before injected failure and requires exact baseline map plus two opposing clicks. T40/T67 code unchanged from independent restoration review. Actual hosted37836070600 Settings subtests158-161 passed; later full focused37836302781 passed9c4280da. Native still unverified.",
+              "independent_review": "1d04d0af for driver repairs; coordinator inspected final11-line test change",
+              "status": "source-ready-native-pending",
+              "evidence": [
+                ".research/settings-remaining-controls-preparation-20261008.json",
+                ".research/settings-controls-restoration-peer-20261008.json"
+              ]
             }
           ]
         },
@@ -6983,6 +7002,25 @@
                 ".research/settings-remaining-controls-peer-20261008.json"
               ],
               "scope": "T28 visibility/section restoration, T40/T67 toggle+picker storage restoration and real driver guard gaps identified. Source179tests green not sufficient; no native credit."
+            },
+            {
+              "source_commit": "a5c82404",
+              "merge_commit": "70b65e93",
+              "focused_ci": "37835391727",
+              "independent_review": "1d04d0af",
+              "status": "source-repaired-final-failure-test-gap-pending",
+              "evidence": [".research/settings-controls-restoration-peer-20261008.json"],
+              "scope": "Rendered section geometry + verified cleanup and UI/storage drift restoration implemented; actual case-runner simulations exercised. T28 changed-state failure cleanup test still being tightened. Native/downstream capture unverified."
+            },
+            {
+              "source_commit": "2d8ff3ff",
+              "scope": "T28 changed-state failure test now starts Account closed, opens it before injected failure and requires exact baseline map plus two opposing clicks. T40/T67 code unchanged from independent restoration review. Actual hosted37836070600 Settings subtests158-161 passed; later full focused37836302781 passed9c4280da. Native still unverified.",
+              "independent_review": "1d04d0af for driver repairs; coordinator inspected final11-line test change",
+              "status": "source-ready-native-pending",
+              "evidence": [
+                ".research/settings-remaining-controls-preparation-20261008.json",
+                ".research/settings-controls-restoration-peer-20261008.json"
+              ]
             }
           ]
         },
@@ -8703,6 +8741,25 @@
                 ".research/settings-remaining-controls-peer-20261008.json"
               ],
               "scope": "T28 visibility/section restoration, T40/T67 toggle+picker storage restoration and real driver guard gaps identified. Source179tests green not sufficient; no native credit."
+            },
+            {
+              "source_commit": "a5c82404",
+              "merge_commit": "70b65e93",
+              "focused_ci": "37835391727",
+              "independent_review": "1d04d0af",
+              "status": "source-repaired-final-failure-test-gap-pending",
+              "evidence": [".research/settings-controls-restoration-peer-20261008.json"],
+              "scope": "Rendered section geometry + verified cleanup and UI/storage drift restoration implemented; actual case-runner simulations exercised. T28 changed-state failure cleanup test still being tightened. Native/downstream capture unverified."
+            },
+            {
+              "source_commit": "2d8ff3ff",
+              "scope": "T28 changed-state failure test now starts Account closed, opens it before injected failure and requires exact baseline map plus two opposing clicks. T40/T67 code unchanged from independent restoration review. Actual hosted37836070600 Settings subtests158-161 passed; later full focused37836302781 passed9c4280da. Native still unverified.",
+              "independent_review": "1d04d0af for driver repairs; coordinator inspected final11-line test change",
+              "status": "source-ready-native-pending",
+              "evidence": [
+                ".research/settings-remaining-controls-preparation-20261008.json",
+                ".research/settings-controls-restoration-peer-20261008.json"
+              ]
             }
           ]
         },
@@ -64936,6 +64993,28 @@
               "resource_valid": true,
               "evidence": [".research/records-card-native-retest-20261008.json"],
               "detail": "New bounded C03 positive search plus current C02/reload revalidation; prior intermittent failures not causally explained."
+            },
+            {
+              "at": "2026-10-08T20:00:59.460967+00:00",
+              "run_id": "37833716704",
+              "mode": "admin",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "resource_valid": true,
+              "evidence": [
+                ".research/records-positive-native-20261008.json",
+                ".research/records-fixture-native-diagnosis-20261008.json"
+              ],
+              "detail": "Positive fixture attempt stopped at generic cleanup failure; original cause was lost. Journal planned + source write ordering + exact scoped live/archived fixture/row absence prove no created fixture. C02/C03/negative regression checks passed but no new C04/C05 positive credit. Credentials removed; later API-only GET403 not attributed to native request."
+            },
+            {
+              "run_id": "37837090039",
+              "mode": "admin",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "resource_valid": null,
+              "evidence": [".research/records-positive-diagnostic-retest-20261008.json"],
+              "detail": "No browser/fixture/native execution: authentication preflight failed because delegated staging used gh --body - literal hyphen. Secrets removed. Uploaded journals stale, not current admission proof. Correctedstdin protocol assigned to new Sol owner; no product defect/pass attribution."
             }
           ],
           "results": {
