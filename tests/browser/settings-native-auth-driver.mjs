@@ -148,11 +148,14 @@ export function currentSettingsIdentityMatches(
     requiredOrganizationName,
   },
 ) {
+  // A missing device choice is not a missing active organization: the shell's
+  // load ladder can render one without persisting matrx.org.active. Identity
+  // readiness must not claim approved-organization proof from that label.
   const organizationMatches =
     organizationId === null
       ? !requireSelectedOrganization &&
         value?.organizationId === null &&
-        !value?.organizationSelected
+        value?.organizationName === null
       : value?.organizationId === organizationId &&
         UUID.test(value?.organizationId ?? '') &&
         value?.organizationSelected &&
