@@ -1,0 +1,177 @@
+{
+  "schema_version": 1,
+  "status": "COMPLETED_DIAGNOSTIC_ONLY_ZERO_ACCEPTANCE",
+  "cause_certainty": "Unconfirmed; one headless idle-panel run completed with a valid guard, while transient CPU-pending samples recovered.",
+  "preflight": {
+    "current_main": "d714f254b915ad03a9ab80a82cf462a5a9dcf2cd",
+    "reviewed_commit": "5b551f2a83eb6d7c26ca14541061fc7e0c1ca26b",
+    "current_relevant_source_matches_reviewed_commit": true,
+    "focused_ci_run_id": 37793634857,
+    "focused_ci_commit": "e6d83e7d0476ab91347a660bdea844d751d1aa72",
+    "focused_ci_conclusion": "success",
+    "focused_ci_contains_reviewed_commit": true,
+    "frozen_development_run_id": 37754055905,
+    "frozen_artifact_id": 11539827040,
+    "frozen_artifact_expired_at_preflight": false,
+    "active_hosted_acceptance_runs_at_dispatch": 0
+  },
+  "run": {
+    "id": 37793909272,
+    "attempt": 1,
+    "job_id": 113368237459,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37793909272",
+    "workflow": "hosted-guest-acceptance.yml",
+    "runner_label": "macos-15-intel",
+    "runner_arch": "X64",
+    "source_sha": "d714f254b915ad03a9ab80a82cf462a5a9dcf2cd",
+    "inputs": {
+      "acceptance_case": "startup-resource-diagnostic",
+      "startup_display_mode": "headless",
+      "development_run_id": 37754055905,
+      "development_artifact_id": 11539827040,
+      "acceptance_lane": "A"
+    },
+    "started_at": "2026-10-08T14:36:52Z",
+    "finished_at": "2026-10-08T14:44:40Z",
+    "workflow_conclusion": "success",
+    "diagnostic_step": "success",
+    "product_exercise_step": "skipped",
+    "acceptance_credit": 0,
+    "uploaded_artifact_id": 11557858053,
+    "uploaded_artifact_name": "hosted-guest-37793909272-1"
+  },
+  "native_startup": {
+    "report": "idle-headless-native-control-20261008/raw/startup-interval-diagnostic.json",
+    "requested_display_mode": "headless",
+    "observed_display_mode": "headless",
+    "mode_verified_by": "Browser.getBrowserCommandLine",
+    "startup_endpoint": {
+      "phase": "cdp_connected",
+      "endpoint_present": true,
+      "inspection_failed": false,
+      "exit_observed": false,
+      "elapsed_ms": 3196,
+      "polls": 0,
+      "at": "2026-10-08T14:43:20.965Z"
+    },
+    "native_stages": [
+      { "stage": "receipt", "at": "2026-10-08T14:43:16.958Z" },
+      { "stage": "artifact_verify", "at": "2026-10-08T14:43:16.959Z" },
+      { "stage": "browser_runtime", "at": "2026-10-08T14:43:17.632Z" },
+      { "stage": "profile_prepare", "at": "2026-10-08T14:43:17.649Z" },
+      { "stage": "browser_spawn", "at": "2026-10-08T14:43:17.687Z" },
+      { "stage": "cdp_connect", "at": "2026-10-08T14:43:17.692Z" },
+      { "stage": "endpoint_read", "at": "2026-10-08T14:43:20.966Z" },
+      { "stage": "command_line_query", "at": "2026-10-08T14:43:20.969Z" },
+      { "stage": "command_line_verify", "at": "2026-10-08T14:43:21.010Z" },
+      { "stage": "extension_worker", "at": "2026-10-08T14:43:21.011Z" },
+      { "stage": "spawn_owner", "at": "2026-10-08T14:43:21.124Z" },
+      { "stage": "local_server", "at": "2026-10-08T14:43:21.125Z" },
+      { "stage": "playwright_connect", "at": "2026-10-08T14:43:21.130Z" },
+      { "stage": "page_create", "at": "2026-10-08T14:43:21.253Z" },
+      { "stage": "local_page_navigation", "at": "2026-10-08T14:43:21.550Z" },
+      { "stage": "panel_open", "at": "2026-10-08T14:43:22.016Z" },
+      { "stage": "panel_reply", "at": "2026-10-08T14:43:22.400Z" },
+      { "stage": "panel_target", "at": "2026-10-08T14:43:22.406Z" },
+      { "stage": "panel_context", "at": "2026-10-08T14:43:22.406Z" },
+      { "stage": "panel_settle", "at": "2026-10-08T14:43:22.457Z" },
+      { "stage": "screenshot", "at": "2026-10-08T14:43:24.241Z" },
+      { "stage": "exercise_panel", "at": "2026-10-08T14:43:24.524Z" }
+    ],
+    "gpu_observation": {
+      "status": "RESOLVED",
+      "skia_backend_type": "GaneshGL",
+      "gl_renderer": "ANGLE (Apple Inc., Apple Software Renderer, OpenGL 4.1 APPLE-21.1.1)",
+      "feature_status": {
+        "gpu_compositing": "disabled_software",
+        "rasterization": "unavailable_off",
+        "webgl": "unavailable_off",
+        "webgl2": "unavailable_off"
+      }
+    },
+    "panel_ready_at": "2026-10-08T14:43:24.525Z",
+    "completed_at": "2026-10-08T14:44:18.540Z",
+    "owned_child_cleanup": {
+      "guard_journal_child_exit_code": 0,
+      "guard_journal_child_signal": null,
+      "final_decision_at": "2026-10-08T14:44:18.724Z"
+    }
+  },
+  "startup_cpu_interval": {
+    "raw": "idle-headless-native-control-20261008/raw/BROWSER_STARTUP_CPU_INTERVAL.json",
+    "before_started_at": "2026-10-08T14:43:17.650Z",
+    "before_completed_at": "2026-10-08T14:43:17.687Z",
+    "after_started_at": "2026-10-08T14:43:20.885Z",
+    "after_completed_at": "2026-10-08T14:43:20.961Z",
+    "outcome": "cdp_connected",
+    "resolution_seconds": 0.01,
+    "category_totals_cpu_seconds": {
+      "ownedChromium": 0,
+      "ownedOther": 0.14,
+      "hostProvisioner": 0.74,
+      "otherHost": 6.48
+    },
+    "other_host_observed_process_count": 489,
+    "limitation": "Centisecond ps snapshots bracket but do not equal the iostat interval; exited, spawned, reparented, and reused PIDs prevent exact CPU attribution."
+  },
+  "current_run_resource_journals": [
+    {
+      "path": "idle-headless-native-control-20261008/raw/resource-journals/hosted-package-37793909272-1.jsonl",
+      "final_decision": "valid",
+      "final_decision_at": "2026-10-08T14:39:06.162Z"
+    },
+    {
+      "path": "idle-headless-native-control-20261008/raw/resource-journals/hosted-browser-37793909272-1.jsonl",
+      "final_decision": "valid",
+      "final_decision_at": "2026-10-08T14:41:10.007Z"
+    },
+    {
+      "path": "idle-headless-native-control-20261008/raw/resource-journals/hosted-startup-37793909272-1.jsonl",
+      "final_decision": "valid",
+      "final_decision_at": "2026-10-08T14:44:18.724Z",
+      "cpu_pending_samples": [
+        { "at": "2026-10-08T14:43:29.029Z", "cpu_busy_fraction": 0.82, "one_minute_load": 1.81 },
+        { "at": "2026-10-08T14:43:45.217Z", "cpu_busy_fraction": 0.62, "one_minute_load": 1.92 },
+        { "at": "2026-10-08T14:44:01.469Z", "cpu_busy_fraction": 0.08, "one_minute_load": 2.3 }
+      ],
+      "recovered_at": "2026-10-08T14:44:17.597Z",
+      "unsafe_stop": false
+    }
+  ],
+  "comparison": {
+    "prior_run_id": 37791330758,
+    "prior_case": "guest-seo",
+    "prior_result": "guard invalid; unsafe boundary reached; no SEO result report",
+    "prior_startup_endpoint_elapsed_ms": 5946,
+    "prior_cpu_interval_category_totals_seconds": {
+      "ownedChromium": 0,
+      "ownedOther": 0.22,
+      "hostProvisioner": 1.01,
+      "otherHost": 11.71
+    },
+    "limits": [
+      "One attempt cannot establish repeatability or prove the cause.",
+      "The previous run used the guest SEO workload; this control ends at idle panel.",
+      "The new control was explicitly headless and captures GPU/native stages; the prior run was a headed SEO run.",
+      "Runs used separate ephemeral hosted VMs, so their process and CPU intervals are not controlled additive comparisons."
+    ],
+    "interpretation": "The cold headless browser and panel reached the idle control boundary. The startup guard saw transient CPU-pending samples, then recovered and finalized valid. This supports, but does not prove, that the prior sustained unsafe interval was associated with subsequent guest SEO activity or host variability rather than cold startup alone. No host repair or stable cure is established."
+  },
+  "privacy_review": {
+    "text_evidence_scanned_for_credential_patterns": true,
+    "findings": 0,
+    "screenshots_reviewed": true,
+    "retained_sensitive_user_content": false
+  },
+  "raw_sha256": {
+    "raw/attempt-receipt.json": "ade20e44ba67dd011c913eed7e3bce76196ec066e065846a94d3e058658a2247",
+    "raw/startup-interval-diagnostic.json": "432e5d212a43d5ab0fa940120adc9b16a095300c3dbdf75db3ccb379766512da",
+    "raw/BROWSER_STARTUP_CPU_INTERVAL.json": "58b7a115215b33bbeb510caf3718bd630dabf70393b0d2290344f917bdd52e63",
+    "raw/resource-journals/hosted-package-37793909272-1.jsonl": "6f29a7ca7ed46f5068dc33285282274693282e00e01d9fe1587b8cc2852cb626",
+    "raw/resource-journals/hosted-browser-37793909272-1.jsonl": "5fe0f9d850ba78bdd09e6828739003aa82cd2a6063942ee339803e6ac8a16a89",
+    "raw/resource-journals/hosted-startup-37793909272-1.jsonl": "0a7ab7e078962101ae6e764cbbf436db88ab10cc2f530b68fc7451924177b29c",
+    "raw/screenshots/native-side-panel.png": "1d63139057f53ee3ac982ae29568b45d67ea403a3e151bad798d84a8c3d27f1a",
+    "raw/screenshots/normal-target-after-open.png": "60d95c01c8bf5fa8f0807e1aed08d2adb43b4a5532190ae0eadd54c5e3aef79c"
+  },
+  "outstanding": "No active hosted acceptance run remains. Diagnostic only; zero product acceptance and no stable-cure claim."
+}
