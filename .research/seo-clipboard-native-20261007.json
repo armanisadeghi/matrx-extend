@@ -45,7 +45,7 @@
     "resource_invalid_journals": 1,
     "journals": [
       {
-        "file": "hosted-package-37707310443-1.jsonl",
+        "file": ".research/seo-clipboard-native-evidence/run37707310443/hosted-package-37707310443-1.jsonl",
         "sha256": "98ffda534aac31ef381e9ec908d24cbf4233309a8e24d10acddecb9b2632e147",
         "bytes": 988,
         "admitted": true,
@@ -54,7 +54,7 @@
         "decision": "valid"
       },
       {
-        "file": "hosted-browser-37707310443-1.jsonl",
+        "file": ".research/seo-clipboard-native-evidence/run37707310443/hosted-browser-37707310443-1.jsonl",
         "sha256": "79ee42e3e26a5191ea87dde011ca530518c3e5babdf20830b36371c77a9212ba",
         "bytes": 983,
         "admitted": true,
@@ -63,7 +63,7 @@
         "decision": "valid"
       },
       {
-        "file": "hosted-guest-37707310443-1.jsonl",
+        "file": ".research/seo-clipboard-native-evidence/run37707310443/hosted-guest-37707310443-1.jsonl",
         "sha256": "aa68a9e1760f7b00976ce689b694867d72e17171694b0d56403bce9e87f65ab4",
         "bytes": 3402,
         "admitted": true,
@@ -74,13 +74,14 @@
     ]
   },
   "uploaded_case_receipt": {
-    "file": "test-results/seo-guest-acceptance.json",
+    "file": ".research/seo-clipboard-native-evidence/run37707310443/seo-guest-acceptance.raw.json.txt",
     "sha256": "acacef785826cf2d72da09945f81d9eac49deb887ac1f8510be13e69a96ee335",
-    "status": "fresh run output; hash differs from prior run receipt",
+    "status": "byte-identical run receipt preserved in committed evidence directory",
     "prior_run_id": 37702963336,
     "prior_receipt_sha256": "43593cf6129afb5a74ebc2193b5752af6ed2279d8a11425c051fefc998ac5728",
     "prior_receipt_bytes": 9335,
-    "note": "The imported artifact run/artifact IDs identify the frozen comparator build and are expected; they do not identify the native run."
+    "note": "The imported artifact run/artifact IDs identify the frozen comparator build and are expected; they do not identify the native run.",
+    "artifact_member_path": "test-results/seo-guest-acceptance.json"
   },
   "limits": [
     "One native run observed successful Text and AI clipboard assertions on two public pages and after side-panel reload, but the guarded command ended resource-invalidated; no resource-valid T07 pass is claimed.",
@@ -146,6 +147,8 @@
         }
       }
     ],
-    "scope_limit": "The source peer notes the summary oracle checks core displayed/public facts and required sections, not every audit field or independently validated Description/Page stats values."
+    "scope_limit": "The source peer notes the summary oracle checks core displayed/public facts and required sections, not every audit field or independently validated Description/Page stats values.",
+    "receipt_path": ".research/seo-clipboard-native-evidence/run37707310443/seo-guest-acceptance.raw.json.txt",
+    "evidence_directory": ".research/seo-clipboard-native-evidence/run37707310443/"
   }
 }
