@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-08T17:12:00Z",
+  "reviewer_lane": "independent evidence adjudication",
+  "target": {
+    "case_id": "EXT-F-1012-T57",
+    "defect_id": "EXT-D-0047",
+    "run_id": 37810284956,
+    "report": ".research/t57-corrected-native-20261008.json",
+    "native_artifact_id": 11564618863
+  },
+  "verdicts": {
+    "A_acceptance": {
+      "verdict": "FAIL_UNVERIFIED",
+      "finding": "This run earns no T57 acceptance or product-defect verdict. The frozen artifact's admin identity, approved organization, and product request/header/principal checkpoint passed, but the race stopped before saved replay: one HTTP 200 prior-document response was already lifecycle=failed; no response was released, no current-page capture/binding was attested, and no saved result was observed.",
+      "severity": "Important",
+      "evidence": [
+        ".research/t57-corrected-native-20261008-originals/raw/receipt.sanitized.json",
+        ".research/t57-corrected-native-20261008-originals/raw/hosted-guest-37810284956-1.jsonl"
+      ]
+    },
+    "B_evidence_and_quality": {
+      "verdict": "PARTIAL",
+      "finding": "The report correctly labels the native outcome unverified and its source hashes for the four frozen product files match source e7b7dc1. The tracked native receipt is sanitized, not the original raw receipt, so its separately reported raw-receipt digest cannot be recomputed from this package. The workflow-source-current field also needs temporal wording: c2a1b6a was the workflow source at dispatch; it is no longer the current commit, although its workflow file blob is unchanged at current HEAD 04388133.",
+      "severity": "Minor",
+      "evidence": [
+        ".research/t57-corrected-native-20261008.json",
+        ".research/t57-corrected-native-20261008-originals/raw/receipt.sanitized.json",
+        ".github/workflows/hosted-guest-acceptance.yml"
+      ]
+    }
+  },
+  "earliest_failure": {
+    "stage": "public_race_prior_document_load",
+    "source_gate": "tests/browser/showcase-d47-public-initial-load.mjs:580-588",
+    "finding": "The first evidenced failed gate is the assertion that the old response was still pending before replay (`public_race_old_not_prior_to_replay`). Its conjunction requires an exact visible recipe row, not running, and lifecycle=pending; the receipt records lifecycle=failed and old_paused_before_replay=false. The receipt sanitizes the thrown assertion to generic AssertionError/unclassified_error, so the exact failed conjunct is inferred from source plus facts, not retained as a direct error code. No saved replay began.",
+    "cause": "Not established. The lifecycle terminal signal may reflect browser/navigation timing; it does not establish an extension defect or prove why the response failed."
+  },
+  "resource_timing": {
+    "package_and_browser": "Both admitted and completed valid (package 16:40:18Z; browser 16:42:18Z).",
+    "acceptance": "Admitted 16:44:07Z. First CPU_HIGH_LOAD_BUSY pending sample 16:44:40Z recovered 16:45:28Z; another busy interval began 16:45:44Z and recovered 16:46:33Z. Final busy/high-load sample was 16:47:05Z; child exit 1 followed at 16:47:07.026Z, while CPU was pending; final resource-invalid decision was 16:47:07.181Z.",
+    "interpretation": "The first busy samples were pending observations, not the final invalid decision. The run ended resource-invalid because the child exited while a later CPU-busy interval remained pending. Journal cadence does not timestamp the native assertion, so it cannot establish whether the assertion preceded or followed any resource event, or that load caused it."
+  },
+  "provenance_and_cleanup": {
+    "driver_and_workflow": "Workflow checkout c2a1b6a7 was the source at dispatch. The driver blob at c2a1b6a7, reviewed fix d69c55e1, and HEAD 04388133 is identical (25da3152); workflow blob at c2a1b6a7 and HEAD is identical (23b5dcab).",
+    "frozen_product": "The receipt product source is e7b7dc1, artifact 11556064167, version 0.2.414. Recomputed SHA-256 for runner, core, handler, and panel driver source exactly matches the receipt values. Product artifact bytes/digest were not independently downloaded or rehashed in this review.",
+    "raw_hashes": "SHA-256 of all three current-run journals matches the report. The tracked receipt hash 2cb22ab1 is the sanitized receipt; raw receipt hash 548a7f55 is only reported and cannot be recomputed here. All nine files in the prior 37804469749 raw directory independently match the prior report's SHA-256 map; that earlier evidence remains unchanged.",
+    "owned_recipe": "Native receipt says driver cleanup=removed; corrected report additionally records a read-only source-of-record query returning HTTP 200 twice and exact total/active rows=0. The exact query response and fixture title are intentionally absent from tracked material, so this independent review can verify the recorded claim's provenance description but not replay its exact-name query.",
+    "secrets": "Report records values not printed/committed, mode-0600 local staging removal, post-terminal GitHub secret deletion, and an absent independent secret-name listing. The sanitized receipt contains no credential values. Those host-side deletion/listing claims are report-attested and cannot be independently queried from this evidence package."
+  },
+  "next_step": "No product-source repair is justified by this run. The observed failure is at the driver's prior-response precondition and its cause is unresolved; because acceptance also ended resource-invalid and the assertion time is not journaled, the next informative step is a resource-valid observation of the same boundary before changing product source. This report does not authorize another native run.",
+  "limits": [
+    "No native run, build, test, source edit, or secret-bearing query was performed for this review.",
+    "No raw unsanitized receipt, screenshots, artifact bytes, or GitHub secret-list response were in the tracked evidence package."
+  ]
+}
