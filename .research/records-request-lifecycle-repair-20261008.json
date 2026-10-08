@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "cause": "Native 37844046722: recovery GET awaited fetch inside Runtime.evaluate(awaitPromise=true), exceeding the owned CDP 5000 ms command deadline.",
+  "code_commit": "62e8f541",
+  "files": ["tests/browser/records-positive-fixture.mjs", "tests/browser/records-positive-fixture.test.mjs"],
+  "change": "Start one browser-side request, poll safe completion with short CDP calls, and abort at configurable request lifetime. Token and response body remain in browser; principal, organization, and exact ownership checks remain.",
+  "cleanup": "A timed-out or thrown write durably records pending_write_unknown. Empty immediate recovery cannot claim fixture absence; exact owned fixture archive verification remains required.",
+  "red_before": "Slow-fetch regression failed in 23 ms with owned_cdp_transport_failed on the old awaited evaluate path.",
+  "green_after": "Focused fixture and native-driver unit suite: 37 passed, 0 failed; slow fetch issued one HTTP request, and canceled create retained ambiguous ownership across recovery.",
+  "gaps": "No hosted native replay, browser build, release, or C04/C05 acceptance in this source unit. Fresh independent seat unavailable because system disk has about 100 MiB free."
+}
