@@ -1,0 +1,38 @@
+name: Focused acceptance
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/ci.yml'
+      - '.github/workflows/focused-acceptance.yml'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'tests/browser/**'
+      - 'src/components/CopyMenu.tsx'
+      - 'src/features/settings/**'
+      - 'src/features/seo/**'
+      - 'src/features/showcase/**'
+      - 'src/lib/clipboard/**'
+      - 'src/lib/seo/**'
+
+# Keep the newest relevant main commit independent of the full CI queue.
+concurrency:
+  group: focused-acceptance-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Focused acceptance guards
+        run: pnpm test:focused-acceptance

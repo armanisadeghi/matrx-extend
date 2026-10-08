@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "purpose": "Run four source acceptance guards promptly after relevant main pushes without waiting for the full CI queue.",
+  "scope": [
+    ".github/workflows/focused-acceptance.yml runs on main pushes for workflow, dependency, browser-test, and relevant feature source changes; docs and evidence changes do not trigger it.",
+    "Its own concurrency group retains the newest relevant commit and does not share the full CI queue.",
+    "package.json has the single test:focused-acceptance command consumed by the fast lane and the early full CI step.",
+    "The command covers audit key faults, guest Settings, guest SEO clipboard, and showcase stale runtime boundary guards. The latter is removed from the later broad CI command to avoid a duplicate run."
+  ],
+  "verification": {
+    "static": [
+      "git diff --check passed",
+      "Ruby parsed both workflow YAML files",
+      "Node confirmed the package command names all four guards",
+      "Biome package.json format passed"
+    ],
+    "local_tests": "not_run_resource_DISK_LOW_guard_not_bypassed",
+    "automatic_run": "pending_push"
+  },
+  "limits": [
+    "This lane proves only the four source guards. Full CI remains the release gate, and native/browser behavior requires separate admitted execution.",
+    "A docs-only push will not trigger the focused lane by design."
+  ]
+}

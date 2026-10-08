@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "role": "independent native evidence review; no native execution or product authorship",
+  "reviewed_runs": [37705986945, 37706132089],
+  "A_target_verdicts": {
+    "EXT-F-1003-T73": {
+      "verdict": "PASS",
+      "scope": "Frozen 52487361 development artifact, signed-out guest Account, warm and full extension reload",
+      "reason": "The original driver report records unavailable email, no Name or role row, and exactly one Sign in footer in both phases. Access token and profile were absent; management reload retired old targets and replaced worker and panel."
+    },
+    "EXT-F-1003-T76": {
+      "verdict": "PASS",
+      "scope": "Same frozen artifact, signed-out guest Organization, warm and full extension reload",
+      "reason": "Both original observations record the guest prompt as the sole Organization row, no archive filter or Acting as row, no organization choice, and zero organization requests."
+    },
+    "EXT-F-1003-T92": {
+      "verdict": "PARTIAL",
+      "scope": "Guest negative access PASS on the frozen artifact; whole multi-role case remains partial",
+      "reason": "Warm and reload observations show only the signed-out prompt, with no archived membership content or restoration action. Member/admin archived-membership destination, navigation no-write, and restoration behavior were not exercised."
+    },
+    "EXT-F-1003-T27": {
+      "verdict": "PARTIAL",
+      "scope": "Native receipt observation only; no acceptance credit",
+      "reason": "The original audit receipt records public ID, generated time, count and two genuine WebMCP rows matching before and after Settings reload, but the guarded acceptance journal finalized invalid due to unresolved CPU pending."
+    },
+    "EXT-F-1003-T61": {
+      "verdict": "PARTIAL",
+      "scope": "Native receipt observation only; no acceptance credit",
+      "reason": "The receipt records cancellation preserving the key and confirmation changing its public ID while retaining two rows. The same invalid resource decision prevents promotion."
+    },
+    "EXT-F-1003-T62": {
+      "verdict": "PARTIAL",
+      "scope": "Native receipt observation only; no acceptance credit",
+      "reason": "The receipt records all five filters; WebMCP and All show two rows while agent, pilot and parallel show genuine zero-count empty states. The same invalid resource decision prevents promotion."
+    },
+    "EXT-F-1003-T86": {
+      "verdict": "PARTIAL",
+      "scope": "Original EXT-D-0159 runner boundary observed, but resource-invalid and direct rotation invocation unobserved",
+      "reason": "The repaired child passed the details-read rejection and recovery sequence with zero active-key writes and a new-document reload marker. This shows the former post-restore counter dereference did not abort that child. The resource guard invalidated this run, and zero writes cannot prove rotateDeviceKey was never invoked."
+    }
+  },
+  "B_integrity_and_doctrine": {
+    "guest_package": "PASS: original CI build receipt and provenance, original native report, and all three current-run package/browser/guest journals match the reported SHA-256 values. All three journals end valid with child exit zero. The broad driver report itself says unverified; only the named individual case records are credited. Context screenshots do not show Settings and are not used as case proof.",
+    "audit_package": "PASS for truthful provenance and gate handling: original native receipt and all three reported journal SHA-256 values match. Package and browser journals are valid. The guest/acceptance journal was admitted but ends resourceInvalid=true, exitCode=3, decision=invalid after CPU pending despite childExitCode=0. The report correctly withholds acceptance credit and inventory promotion; this is not evidence of a product failure.",
+    "source_scope": "Both packages use CI development artifact 11516342905, source 52487361b1b6a8663b958dbb2196cbcc9b1af31c, version 0.2.391, tree 04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793. Neither establishes current-main or Store health.",
+    "original_D159": "Earlier run 37703766572 stopped at details_failure/compare_storage_after_retry with zero case results; EXT-D-0159 identifies a runner fault object removed before its activeWrites read. Run 37706132089 passed that child boundary, but invalid resource status leaves the closure requirement unmet."
+  },
+  "evidence": [
+    ".research/guest-settings-breadth-native-20261007.json",
+    ".research/guest-settings-breadth-native-20261007/evidence/native-original/matrx-extend/matrx-extend/test-results/settings-local-controls-acceptance.json",
+    ".research/audit-retry-native-20261007.json",
+    ".research/audit-retry-native-evidence/run37706132089/matrx-extend/matrx-extend/test-results/audit-key-native-75b66f3f-f60a-4f6b-8bf6-322595690347.json",
+    "docs/stabilization/defects/EXT-D-0159.json",
+    "docs/stabilization/inventory.json"
+  ],
+  "limits": "Read-only hash and receipt review; no local test, browser, auth, build or deployment. No inventory edits or release/current-main health transfer."
+}
