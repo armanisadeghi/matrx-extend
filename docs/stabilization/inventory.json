@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T05:10:28.331547+00:00",
+  "updated_at": "2026-10-08T05:33:02.596941+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -17044,16 +17044,22 @@
           "results": {
             "guest": {
               "status": "partial",
-              "passed_subtargets": ["new_url_replaces_visible_title", "reload_audits_current_url"],
-              "unverified_dimensions": ["one audit per URL", "slow-old-result race"],
-              "run_id": "37702963336",
-              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
-              "build_version": "0.2.391",
-              "evidence": [
-                ".research/guest-seo-native-20261007.json",
-                ".research/seo-picker-independent-peer-20261007.json"
+              "passed_subtargets": [
+                "new_url_replaces_visible_title",
+                "reload_audits_current_url"
               ],
-              "release_scope": "Exact frozen guest development artifact; broaderdimensions/member/admin/Store unverified."
+              "unverified_dimensions": [
+                "one audit per URL",
+                "slow old result cannot overwrite new page"
+              ],
+              "run_id": "37731560399",
+              "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+              "build_version": "0.2.397",
+              "evidence": [
+                ".research/seo397-guest-native-20261007.json",
+                ".research/seo397-native-peer-20261007.json"
+              ],
+              "release_scope": "Bounded guest native acceptance on exact frozen CI development artifact; no full case, current-main, or Store verdict. Member/admin remain separate unverified modes."
             }
           },
           "result_history": [
@@ -17124,6 +17130,28 @@
                   "docs/stabilization/reports/seo-native-final-peer-20261002.json"
                 ]
               }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "passed_subtargets": [
+                  "new_url_replaces_visible_title",
+                  "reload_audits_current_url"
+                ],
+                "unverified_dimensions": [
+                  "one audit per URL",
+                  "slow-old-result race"
+                ],
+                "run_id": "37702963336",
+                "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+                "build_version": "0.2.391",
+                "evidence": [
+                  ".research/guest-seo-native-20261007.json",
+                  ".research/seo-picker-independent-peer-20261007.json"
+                ],
+                "release_scope": "Exact frozen guest development artifact; broaderdimensions/member/admin/Store unverified."
+              }
             }
           ]
         },
@@ -17143,16 +17171,23 @@
           "results": {
             "guest": {
               "status": "partial",
-              "passed_subtargets": ["manual_button_returns_to_current_page"],
-              "unverified_dimensions": ["fresh capture", "stale advice replacement after re-audit"],
-              "run_id": "37702963336",
-              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
-              "build_version": "0.2.391",
-              "evidence": [
-                ".research/guest-seo-native-20261007.json",
-                ".research/seo-picker-independent-peer-20261007.json"
+              "passed_subtargets": [
+                "manual_button_returns_to_current_page"
               ],
-              "release_scope": "Exact frozen guest development artifact; broaderdimensions/member/admin/Store unverified."
+              "unverified_dimensions": [
+                "fresh capture and updated audit",
+                "running button state",
+                "stale advice cleared",
+                "failure report"
+              ],
+              "run_id": "37731560399",
+              "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+              "build_version": "0.2.397",
+              "evidence": [
+                ".research/seo397-guest-native-20261007.json",
+                ".research/seo397-native-peer-20261007.json"
+              ],
+              "release_scope": "Bounded guest native acceptance on exact frozen CI development artifact; no full case, current-main, or Store verdict. Member/admin remain separate unverified modes."
             }
           },
           "result_history": [
@@ -17208,6 +17243,27 @@
                   "docs/stabilization/reports/seo-native-final-peer-20261002.json"
                 ]
               }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "passed_subtargets": [
+                  "manual_button_returns_to_current_page"
+                ],
+                "unverified_dimensions": [
+                  "fresh capture",
+                  "stale advice replacement after re-audit"
+                ],
+                "run_id": "37702963336",
+                "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+                "build_version": "0.2.391",
+                "evidence": [
+                  ".research/guest-seo-native-20261007.json",
+                  ".research/seo-picker-independent-peer-20261007.json"
+                ],
+                "release_scope": "Exact frozen guest development artifact; broaderdimensions/member/admin/Store unverified."
+              }
             }
           ]
         },
@@ -17234,16 +17290,16 @@
               "unverified_dimensions": [
                 "unreachable HTTP(S)",
                 "other restricted schemes",
-                "reload dimension"
+                "reload behavior"
               ],
-              "run_id": "37702963336",
-              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
-              "build_version": "0.2.391",
+              "run_id": "37731560399",
+              "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+              "build_version": "0.2.397",
               "evidence": [
-                ".research/guest-seo-native-20261007.json",
-                ".research/seo-picker-independent-peer-20261007.json"
+                ".research/seo397-guest-native-20261007.json",
+                ".research/seo397-native-peer-20261007.json"
               ],
-              "release_scope": "Exact frozen guest development artifact; broaderdimensions/member/admin/Store unverified."
+              "release_scope": "Bounded guest native acceptance on exact frozen CI development artifact; no full case, current-main, or Store verdict. Member/admin remain separate unverified modes."
             }
           },
           "result_history": [
@@ -17317,6 +17373,29 @@
                   "docs/stabilization/reports/seo-native-final-peer-20261002.json"
                 ]
               }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "passed_subtargets": [
+                  "about_blank_clear_error_without_stale_audit",
+                  "public_page_recovers_after_restricted_url"
+                ],
+                "unverified_dimensions": [
+                  "unreachable HTTP(S)",
+                  "other restricted schemes",
+                  "reload dimension"
+                ],
+                "run_id": "37702963336",
+                "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+                "build_version": "0.2.391",
+                "evidence": [
+                  ".research/guest-seo-native-20261007.json",
+                  ".research/seo-picker-independent-peer-20261007.json"
+                ],
+                "release_scope": "Exact frozen guest development artifact; broaderdimensions/member/admin/Store unverified."
+              }
             }
           ]
         },
@@ -17377,24 +17456,25 @@
             "guest": {
               "status": "partial",
               "passed_subtargets": [
+                "guest_actual_clipboard_text_and_ai_page_0",
+                "guest_actual_clipboard_text_and_ai_page_1",
                 "guest_menu_offers_text_and_ai_but_hides_json",
                 "guest_role_gate_after_reload",
-                "actual_text_clipboard_readback_two_pages_and_reload",
-                "actual_ai_clipboard_readback_two_pages_and_reload",
-                "key_public_facts_present_and_exact_ai_wrapping",
-                "clipboard_permission_restored"
+                "guest_actual_clipboard_text_and_ai_reload"
               ],
               "unverified_dimensions": [
-                "complete displayed audit field parity with clipboard payload"
+                "complete displayed audit field parity with clipboard payload",
+                "member and admin role gates",
+                "admin JSON content"
               ],
-              "run_id": "37708611887",
-              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
-              "build_version": "0.2.391",
+              "run_id": "37731560399",
+              "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+              "build_version": "0.2.397",
               "evidence": [
-                ".research/seo-intel-native-20261007.json",
-                ".research/auth-repair-intel-native-peer-20261007.json"
+                ".research/seo397-guest-native-20261007.json",
+                ".research/seo397-native-peer-20261007.json"
               ],
-              "release_scope": "Resource-valid bounded guest evidence on exact frozen development artifact. Full field parity remains unverified; member/admin gates and JSON content belong to their separate mode slots. No current-main or Store claim."
+              "release_scope": "Bounded guest native acceptance on exact frozen CI development artifact; no full case, current-main, or Store verdict. Member/admin remain separate unverified modes. Guest Text/AI clipboard readback and menu gates only; admin JSON and other roles were not exercised."
             }
           },
           "result_history": [
@@ -17489,6 +17569,31 @@
                 ],
                 "release_scope": "Exact frozen guest development artifact; broaderdimensions/member/admin/Store unverified."
               }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "passed_subtargets": [
+                  "guest_menu_offers_text_and_ai_but_hides_json",
+                  "guest_role_gate_after_reload",
+                  "actual_text_clipboard_readback_two_pages_and_reload",
+                  "actual_ai_clipboard_readback_two_pages_and_reload",
+                  "key_public_facts_present_and_exact_ai_wrapping",
+                  "clipboard_permission_restored"
+                ],
+                "unverified_dimensions": [
+                  "complete displayed audit field parity with clipboard payload"
+                ],
+                "run_id": "37708611887",
+                "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+                "build_version": "0.2.391",
+                "evidence": [
+                  ".research/seo-intel-native-20261007.json",
+                  ".research/auth-repair-intel-native-peer-20261007.json"
+                ],
+                "release_scope": "Resource-valid bounded guest evidence on exact frozen development artifact. Full field parity remains unverified; member/admin gates and JSON content belong to their separate mode slots. No current-main or Store claim."
+              }
             }
           ]
         },
@@ -17535,22 +17640,26 @@
                 "guest_manual_readability_display_is_populated_and_explained",
                 "guest_manual_performance_reflects_current_navigation"
               ],
+              "unverified_dimensions": [
+                "hreflang and schema outbound activation",
+                "readability value correctness",
+                "broken social preview image",
+                "other detail controls"
+              ],
+              "run_id": "37731560399",
+              "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+              "build_version": "0.2.397",
+              "evidence": [
+                ".research/seo397-guest-native-20261007.json",
+                ".research/seo397-native-peer-20261007.json"
+              ],
+              "release_scope": "Bounded guest native acceptance on exact frozen CI development artifact; no full case, current-main, or Store verdict. Member/admin remain separate unverified modes. The optional Airbnb continuation was not run; automatic Wikipedia exact-data and readability metric correctness remain unverified.",
               "unverified_subtargets": [
                 {
                   "name": "guest_manual_hreflang_and_schema_doors_match_page",
-                  "reason": "Public DOM had no unique hreflang and openable schema door candidates."
-                },
-                "metric value correctness",
-                "broken social preview image and detail controls outside bounded driver"
-              ],
-              "run_id": "37702963336",
-              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
-              "build_version": "0.2.391",
-              "evidence": [
-                ".research/guest-seo-native-20261007.json",
-                ".research/seo-picker-independent-peer-20261007.json"
-              ],
-              "release_scope": "Exact frozen guest development artifact; broaderdimensions/member/admin/Store unverified."
+                  "reason": "The live Wikipedia DOM exposed no unique hreflang and openable schema door pair."
+                }
+              ]
             }
           },
           "result_history": [
@@ -17760,6 +17869,39 @@
                   "docs/stabilization/reports/seo-native-final-peer-20261002.json"
                 ]
               }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "passed_subtargets": [
+                  "page_0_title_and_headings",
+                  "page_1_title_and_headings",
+                  "sparse_public_detail_groups",
+                  "rich_public_detail_groups_and_canonical_door",
+                  "canonical_outbound_opens_expected_public_tab",
+                  "guest_manual_link_counts_match_live_dom",
+                  "guest_manual_image_alt_counts_match_live_dom",
+                  "guest_manual_readability_display_is_populated_and_explained",
+                  "guest_manual_performance_reflects_current_navigation"
+                ],
+                "unverified_subtargets": [
+                  {
+                    "name": "guest_manual_hreflang_and_schema_doors_match_page",
+                    "reason": "Public DOM had no unique hreflang and openable schema door candidates."
+                  },
+                  "metric value correctness",
+                  "broken social preview image and detail controls outside bounded driver"
+                ],
+                "run_id": "37702963336",
+                "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+                "build_version": "0.2.391",
+                "evidence": [
+                  ".research/guest-seo-native-20261007.json",
+                  ".research/seo-picker-independent-peer-20261007.json"
+                ],
+                "release_scope": "Exact frozen guest development artifact; broaderdimensions/member/admin/Store unverified."
+              }
             }
           ]
         },
@@ -17864,9 +18006,10 @@
             "seo-guest-019",
             "seo-guest-frozen-20261002T140308Z",
             "seo-boundary-20261002T142200Z",
-            "seo-current-ci-20261002-02"
+            "seo-current-ci-20261002-02",
+            "37731560399"
           ],
-          "retest_status": "D76 guest spinner retest-pass/closed; full feature partial"
+          "retest_status": "D76 guest spinner retest-pass/closed; full feature partial; frozen 0.2.397 bounded guest native receipt accepted"
         },
         "member": {
           "test_status": "unverified",
@@ -18528,6 +18671,121 @@
             }
           ],
           "limits": "Seventeen of eighteen bounded targets pass; one T09 Wikipedia door target remains unverified. Automatic title exactness and readability metric value correctness remain unverified. Feature guest cell remains test_status unverified and retest_status not-run; no full case/feature pass."
+        },
+        {
+          "run_id": "37731560399",
+          "mode": "guest",
+          "build": "0.2.397",
+          "status": "partial",
+          "artifact_source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+          "hosted_driver_sha": "11564fe786ca47bade2c33718710504ed145eb66",
+          "artifact_id": 11527132614,
+          "receipt": ".research/seo397-guest-native-20261007.json",
+          "independent_review": ".research/seo397-native-peer-20261007.json",
+          "case_links": [
+            {
+              "case_id": "EXT-F-1008-T01",
+              "subtarget": "new_url_replaces_visible_title",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T01",
+              "subtarget": "reload_audits_current_url",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T02",
+              "subtarget": "manual_button_returns_to_current_page",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T03",
+              "subtarget": "about_blank_clear_error_without_stale_audit",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T03",
+              "subtarget": "public_page_recovers_after_restricted_url",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T07",
+              "subtarget": "guest_actual_clipboard_text_and_ai_page_0",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T07",
+              "subtarget": "guest_actual_clipboard_text_and_ai_page_1",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T07",
+              "subtarget": "guest_menu_offers_text_and_ai_but_hides_json",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T07",
+              "subtarget": "guest_role_gate_after_reload",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T07",
+              "subtarget": "guest_actual_clipboard_text_and_ai_reload",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "page_0_title_and_headings",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "page_1_title_and_headings",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "sparse_public_detail_groups",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "rich_public_detail_groups_and_canonical_door",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "canonical_outbound_opens_expected_public_tab",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "guest_manual_link_counts_match_live_dom",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "guest_manual_image_alt_counts_match_live_dom",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "guest_manual_readability_display_is_populated_and_explained",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "guest_manual_performance_reflects_current_navigation",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "guest_manual_hreflang_and_schema_doors_match_page",
+              "status": "unverified",
+              "observation": "The live Wikipedia DOM exposed no unique hreflang and openable schema door pair."
+            }
+          ],
+          "limits": "Exactly 19 bounded guest subtargets pass across T01/T02/T03/T07/T09, one T09 metadata door remains unverified. Automatic Wikipedia exact-data counts and readability metric correctness are not established. Other case criteria, T04-T06/T08/T10-T14, member/admin, full extension reload, Store, and current-main health remain unverified; no whole case or feature pass."
         }
       ]
     },

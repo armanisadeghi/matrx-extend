@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-08 05:21 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T05:10:28.331547+00:00. 205 features · 769 cases · 1351 controls · 167 linked defect records.
+Generated 2026-10-08 05:34 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T05:33:02.596941+00:00. 205 features · 769 cases · 1351 controls · 167 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -950,15 +950,15 @@ These current-build checks supplement the inventory matrix; they do not promote 
 **Recorded case details and evidence:**
 
 - EXT-F-1008-T01 · guest: Partial.
-  Evidence / build / date recorded: 37702963336, ['.research/guest-seo-native-20261007.json', '.research/seo-picker-independent-peer-20261007.json']
+  Evidence / build / date recorded: 37731560399, ['.research/seo397-guest-native-20261007.json', '.research/seo397-native-peer-20261007.json']
 - EXT-F-1008-T02 · guest: Partial.
-  Evidence / build / date recorded: 37702963336, ['.research/guest-seo-native-20261007.json', '.research/seo-picker-independent-peer-20261007.json']
+  Evidence / build / date recorded: 37731560399, ['.research/seo397-guest-native-20261007.json', '.research/seo397-native-peer-20261007.json']
 - EXT-F-1008-T03 · guest: Partial.
-  Evidence / build / date recorded: 37702963336, ['.research/guest-seo-native-20261007.json', '.research/seo-picker-independent-peer-20261007.json']
+  Evidence / build / date recorded: 37731560399, ['.research/seo397-guest-native-20261007.json', '.research/seo397-native-peer-20261007.json']
 - EXT-F-1008-T07 · guest: Partial.
-  Evidence / build / date recorded: 37708611887, ['.research/seo-intel-native-20261007.json', '.research/auth-repair-intel-native-peer-20261007.json']
+  Evidence / build / date recorded: 37731560399, ['.research/seo397-guest-native-20261007.json', '.research/seo397-native-peer-20261007.json']
 - EXT-F-1008-T09 · guest: Partial.
-  Evidence / build / date recorded: 37702963336, ['.research/guest-seo-native-20261007.json', '.research/seo-picker-independent-peer-20261007.json']
+  Evidence / build / date recorded: 37731560399, ['.research/seo397-guest-native-20261007.json', '.research/seo397-native-peer-20261007.json']
 
 
 ## Screenshots

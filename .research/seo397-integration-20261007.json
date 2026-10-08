@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "task": "Integrate independently reviewed native guest SEO receipt 37731560399 into canonical inventory",
+  "status": "bounded_partial_integrated",
+  "feature_id": "EXT-F-1008",
+  "mode": "guest",
+  "run_id": "37731560399",
+  "artifact": {
+    "version": "0.2.397",
+    "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+    "artifact_id": 11527132614,
+    "ci_run_id": 37724859892,
+    "hosted_driver_sha": "11564fe786ca47bade2c33718710504ed145eb66"
+  },
+  "review": {
+    "report": ".research/seo397-guest-native-20261007.json",
+    "independent_peer": ".research/seo397-native-peer-20261007.json",
+    "verdict": "ACCEPT_BOUNDED_PARTIAL"
+  },
+  "case_results": {
+    "EXT-F-1008-T01": {
+      "passed": 2,
+      "unverified": [
+        "one audit per URL",
+        "slow old result cannot overwrite new page"
+      ],
+      "prior_result_preserved": "37702963336"
+    },
+    "EXT-F-1008-T02": {
+      "passed": 1,
+      "unverified": [
+        "fresh capture and updated audit",
+        "running button state",
+        "stale advice cleared",
+        "failure report"
+      ],
+      "prior_result_preserved": "37702963336"
+    },
+    "EXT-F-1008-T03": {
+      "passed": 2,
+      "unverified": [
+        "unreachable HTTP(S)",
+        "other restricted schemes",
+        "reload behavior"
+      ],
+      "prior_result_preserved": "37702963336"
+    },
+    "EXT-F-1008-T07": {
+      "passed": 5,
+      "unverified": [
+        "complete displayed audit field parity with clipboard payload",
+        "member and admin role gates",
+        "admin JSON content"
+      ],
+      "prior_result_preserved": "37708611887"
+    },
+    "EXT-F-1008-T09": {
+      "passed": 9,
+      "unverified": [
+        "hreflang and schema outbound activation",
+        "readability value correctness",
+        "broken social preview image",
+        "other detail controls"
+      ],
+      "prior_result_preserved": "37702963336"
+    }
+  },
+  "totals": {
+    "passed_subtargets": 19,
+    "unverified_subtargets": 1,
+    "full_case_passes": 0,
+    "full_feature_passes": 0
+  },
+  "preserved": "Prior guest result objects copied to each case result_history; existing histories and runtime evidence retained. Guest feature cell stays partial; member/admin and all other case results unchanged.",
+  "limits": "Exactly 19 bounded guest subtargets pass across T01/T02/T03/T07/T09, one T09 metadata door remains unverified. Automatic Wikipedia exact-data counts and readability metric correctness are not established. Other case criteria, T04-T06/T08/T10-T14, member/admin, full extension reload, Store, and current-main health remain unverified; no whole case or feature pass.",
+  "verification": "Semantic comparison to HEAD confirms only five guest case results and appended prior-result histories, one guest cell run reference, one scoped runtime receipt, and updated timestamp; canonical tracker regenerated from inventory."
+}
