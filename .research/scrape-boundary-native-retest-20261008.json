@@ -1,0 +1,212 @@
+{
+  "schema_version": 1,
+  "task": "scrape-boundary-native-retest-20261008",
+  "status": "terminal_native_reload_refusal_capture_probe_not_exercised",
+  "scope": "One hosted isolated lane B guest-scrape-development normal 600px attempt; no retry, build, release, deployment, product edit, or inventory edit.",
+  "workflow": {
+    "run_id": 37767763301,
+    "attempt": 1,
+    "job_id": 113279493298,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37767763301",
+    "status": "completed",
+    "conclusion": "failure",
+    "head_sha": "62c0241264460b8ca63206ee1915c0ec2359e745",
+    "created_at_utc": "2026-10-08T11:05:23Z",
+    "completed_at_utc": "2026-10-08T11:12:57Z",
+    "result_artifact_id": 11546631716,
+    "result_artifact_name": "hosted-guest-37767763301-1"
+  },
+  "selection": {
+    "acceptance_lane": "B",
+    "runner_label": "macos-15",
+    "acceptance_case": "guest-scrape-development",
+    "scrape_auth_mode": "guest",
+    "scrape_width_mode": "normal",
+    "scrape_normal_width_px": 600,
+    "frozen_ci_run_id": 37754055905,
+    "frozen_artifact_id": 11539827040,
+    "frozen_artifact": {
+      "kind": "ci_development_test",
+      "channel": "development",
+      "version": "0.2.407",
+      "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+      "tree_sha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+      "run_id": 37754055905,
+      "artifact_id": 11539827040
+    }
+  },
+  "admission": {
+    "active_lane_b_job_before_dispatch": false,
+    "parallel_lane_a_run_id": 37767661089,
+    "isolated_ephemeral_host": true,
+    "dispatch_count": 1,
+    "resource_journals_current_run_only": true,
+    "resource_invalid": false
+  },
+  "native_receipt": {
+    "path": ".research/scrape-boundary-native-retest-20261008-evidence/run37767763301/scrape-guest-native-5fa45db4-13e7-4f8b-8914-5319a428965f.json",
+    "bytes": 149653,
+    "sha256": "3819625637e7fc2c410154e51552bdc450794a30899988be72d7abeb27844254",
+    "status": "unverified",
+    "stage": "extension_reload",
+    "native_stage": "exercise_panel",
+    "failure_code": "native_extension_replacement_panel_unverified",
+    "guest_account_observed": true,
+    "guest_auth_storage": {
+      "hasAccessToken": false,
+      "hasUserProfile": false
+    },
+    "warm_panel_width_px": 600,
+    "post_reload_capture_boundary": null
+  },
+  "reload_boundary": {
+    "old_worker_execution_retired": true,
+    "old_worker_destroyed_event": false,
+    "old_worker_absent": true,
+    "old_panel_absent": true,
+    "replacement_worker_present": true,
+    "replacement_worker_created_event": true,
+    "observed_worker_count": 1,
+    "target_timeline_final_predicate": true,
+    "version_observation": "visible",
+    "replacement_version_activated": true,
+    "open_panel_request": {
+      "click_monotonic_ms": 55193,
+      "worker_at_click": {
+        "status": "activated",
+        "running_status": "running"
+      },
+      "received": false,
+      "ok": null,
+      "opened": null,
+      "category": "reply_not_observed"
+    },
+    "fresh_replacement": null
+  },
+  "cases": [
+    {
+      "id": "EXT-F-1007-T20",
+      "verdict": "partial",
+      "remaining": [
+        "Full extension reload lifecycle remains unverified."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T01",
+      "verdict": "partial",
+      "remaining": [
+        "Full extension reload and post-reload capture not yet exercised."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T08",
+      "verdict": "partial",
+      "remaining": [
+        "member/admin modes remain unverified by this receipt.",
+        "Full extension reload lifecycle remains unverified."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T10",
+      "verdict": "partial",
+      "remaining": [
+        "Repeat controls after full extension reload."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T11",
+      "verdict": "partial",
+      "remaining": [
+        "Repeat controls after full extension reload."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T12",
+      "verdict": "partial",
+      "remaining": [
+        "Repeat controls after full extension reload; verify native link and clipboard outcomes."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T13",
+      "verdict": "partial",
+      "remaining": [
+        "Repeat controls after full extension reload; member/admin modes remain unverified by this receipt."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T02",
+      "verdict": "partial",
+      "remaining": [
+        "Deep failure retry mode and post-reload deep capture remain unverified."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T07",
+      "verdict": "partial",
+      "remaining": [
+        "Repeat after full extension reload."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T09",
+      "verdict": "partial",
+      "remaining": [
+        "Repeat after full extension reload."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T14",
+      "verdict": "partial",
+      "remaining": [
+        "Recoverable Reload page and Try again, including deep retry mode, need a natural browser failure."
+      ]
+    }
+  ],
+  "case_counts": {
+    "passed": 0,
+    "partial": 11,
+    "failed": 0,
+    "unverified": 0
+  },
+  "resource_journals": {
+    "package": {
+      "path": ".research/scrape-boundary-native-retest-20261008-evidence/run37767763301/hosted-package-37767763301-1.jsonl",
+      "bytes": 985,
+      "sha256": "157010ce60f9b35cc460d6bcc22f11bad243ac0bc1b6328a8cb3282516c293e7",
+      "final": {
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    "browser": {
+      "path": ".research/scrape-boundary-native-retest-20261008-evidence/run37767763301/hosted-browser-37767763301-1.jsonl",
+      "bytes": 992,
+      "sha256": "385923eabab3c691bf0184ea31426ad8a4f7b57bd31298d287751cdbc6d9b343",
+      "final": {
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    "guest": {
+      "path": ".research/scrape-boundary-native-retest-20261008-evidence/run37767763301/hosted-guest-37767763301-1.jsonl",
+      "bytes": 3073,
+      "sha256": "77c34e62e62ae8339f526405d90700453052b34d682f78a119c3217997142a5c",
+      "final": {
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    }
+  },
+  "interpretation": "The repaired post-reload Capture click/busy probe was not exercised. The native run reached extension reload, observed replacement worker activation and old worker retirement, but the replacement side panel could not be verified: the open-panel request had no reply. This is a reload/panel reopening boundary, not evidence that the post-reload capture repair passed or failed. Warm guest observations remain partial and do not close member/admin or post-reload cases.",
+  "next_boundary": "Investigate the activated replacement worker open-panel request with no reply before another authorized native attempt; preserve this failed receipt as-is."
+}
