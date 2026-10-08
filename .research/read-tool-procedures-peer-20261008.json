@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent_source_procedure_review",
+  "reviewed_artifact": {
+    "path": ".research/read-tool-procedures-20261008.json",
+    "commit": "09576b1a"
+  },
+  "scope": "Static review of EXT-F-4145-T01, EXT-F-4148-T01, and EXT-F-4149-T01 against current inventory, handler, catalog, Tools UI, and saved-pattern routing. No runtime or network execution.",
+  "verdict_A_procedure_usability": {
+    "verdict": "REVISION_REQUIRED",
+    "cases": {
+      "EXT-F-4145-T01": "Positive audible fixture, conditional recently_audible observation, and owned-tab cleanup are usable, but the proposed extra-property negative test cannot show rejection.",
+      "EXT-F-4148-T01": "Read and save/delete branches are conditionally usable with owned fixtures, but the saved run procedure targets the wrong execution path and promises a row limit and possible health update that the manual path does not provide. The saved manual_css fixture also needs an explicit list root to test multiple product rows.",
+      "EXT-F-4149-T01": "Correctly records current-build non-runnability and preserves the stable inventory case. Future execution remains conditional on a new current handler/catalog contract and owned HTTP fixture."
+    }
+  },
+  "verdict_B_source_quality": {
+    "verdict": "REVISION_REQUIRED",
+    "strengths": [
+      "The proposal keeps all three runtime cases and role outcomes unverified, requires build/fixture provenance, and separates Tools manual execution from normal agent dispatch.",
+      "The vanished fetch_url_as_markdown is not replaced with a fabricated handler or silently removed from scope; current source and the dated DB snapshot support only source absence/current-build non-runnability, while retirement, replacement, applicability, and owner intent remain unresolved."
+    ],
+    "findings": [
+      {
+        "severity": "Important",
+        "case_id": "EXT-F-4145-T01",
+        "anchor": ".research/read-tool-procedures-20261008.json:43",
+        "source": "src/lib/tools/handlers/extras.ts:86; src/features/tools/ToolsView.tsx:416",
+        "issue": "TabAudioInspectArgs is z.object({}).default({}) without .strict(). Zod strips the unexpected key, so ToolsView safeParse succeeds for {\"unexpected\":true} and invokes the handler with {}. The proposal incorrectly expects local rejection.",
+        "required_revision": "Use a truly invalid JSON type such as [] for a schema rejection, or describe the extra-property behavior as accepted-and-stripped; do not claim unknown-key denial."
+      },
+      {
+        "severity": "Important",
+        "case_id": "EXT-F-4148-T01",
+        "anchor": ".research/read-tool-procedures-20261008.json:93",
+        "source": "src/features/tools/ToolsView.tsx:442; src/lib/data-pattern/document-network-transport.ts:234; src/lib/tools/dispatch.ts:1770; src/lib/tools/handlers/data-patterns.ts:316",
+        "issue": "For action=run, ToolsView calls openSavedPatternOperation instead of handler.run. Its port sends only patternId and tabId; runLocalSavedPattern reconstructs args without rows_limit and marks localInvocation=true. The result therefore includes all extracted rows, not a two-row bound. The proposal's shared direct-handler route and <=2-row assertion are false for this branch.",
+        "required_revision": "Describe the saved-operation route separately. Assert actual row count/fixture values without claiming rows_limit bounds on the Tools path; test bounded agent dispatch separately if needed."
+      },
+      {
+        "severity": "Important",
+        "case_id": "EXT-F-4148-T01",
+        "anchor": ".research/read-tool-procedures-20261008.json:93",
+        "source": "src/lib/tools/handlers/data-patterns.ts:313; src/lib/tools/handlers/data-patterns.ts:340",
+        "issue": "Manual saved runs set localInvocation=true, which explicitly skips bumpPatternRun on both matched and error paths. The proposed before/after health capture is harmless evidence, but its statement that this Tools run may update health is incorrect.",
+        "required_revision": "Expect unchanged run-health fields for the manual path, or keep health effects explicitly unverified until a normal agent dispatch."
+      },
+      {
+        "severity": "Important",
+        "case_id": "EXT-F-4148-T01",
+        "anchor": ".research/read-tool-procedures-20261008.json:94",
+        "source": "src/lib/tools/handlers/data-patterns.ts:369; src/lib/data-pattern/modes/manual-css.ts:41",
+        "issue": "data_patterns save fixes list_root_selector=null. Manual CSS then uses the entire document as one root and returns at most one row, reading only the first element for each scalar field. The proposed save payload cannot demonstrate extraction of multiple fixture product rows or a row cap.",
+        "required_revision": "State that the Tools save branch verifies one extracted row from the first product, or provision a separately owned pattern with list_root_selector set through the product UI for multirow coverage."
+      }
+    ]
+  },
+  "source_checks": {
+    "current_manual_catalog": "ToolsView builds its list from listAllHandlers plus SERVER_CATALOG; registry includes extras_handlers and data_pattern_handlers, while fetch_url_as_markdown is absent from registry, category mapping, generated catalog, and server catalog.",
+    "saved_run_route": "The Tools action=run special case uses a port to runLocalSavedPattern; other local actions directly invoke handler.run. Manual tests do not establish ordinary dispatch permission decisions.",
+    "inventory_preservation": "Canonical EXT-F-4149/C01/T01 remains present and unverified; its source_reconciliation records source-absent-current-build-nonrunnable. The dated DB census shows an inactive definition/binding pair; it is not a runtime result."
+  },
+  "limits": [
+    "No browser, handler, fixture, network, database, test suite, release, or live role observation was performed under this static-review assignment.",
+    "All three cases remain runtime unverified; this review cannot assign pass/fail or resolve fetch_url_as_markdown retirement intent."
+  ],
+  "recommended_disposition": "Return the proposal for the four source corrections above, then integrate only as conditional procedures. Keep canonical inventory and runtime cells unchanged until separately authorized execution with owned fixtures and build receipts."
+}
