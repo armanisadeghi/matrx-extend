@@ -7,7 +7,7 @@
   "title": "Shared admin sign-in driver drops safe completion observations before picker receipt",
   "severity": "S2: auth stop cannot be diagnosed from native receipt; product sign-in cause unknown",
   "priority": "P1",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "root/admin_auth_completion_diagnosis",
   "preconditions": [
     "Run the native showcase-stale-admin case with real admin credentials through signInSettings.",
@@ -24,7 +24,8 @@
   "evidence": [
     ".research/picker-count-native-20261007.json",
     ".research/focused-ci-native-peer-20261007.json",
-    ".research/admin-auth-completion-diagnosis-20261007.json"
+    ".research/admin-auth-completion-diagnosis-20261007.json",
+    ".research/auth-repair-intel-native-peer-20261007.json"
   ],
   "transition_history": [
     {
@@ -44,9 +45,15 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Safe categorical forwarding and a focused negative-control guard were committed; automatic focused CI and independent review pending."
+    },
+    {
+      "at": "2026-10-08T00:48:26.547746+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Exact-head focused CI37709098725 passed ce0d39c5; fresh independent source/privacy review b206b2f3 accepted. Native original auth-completion retest still required."
     }
   ],
   "closure_requirement": "Automatic focused CI plus independent review of safe diagnostic forwarding, then one resource-valid native admin completion retest; judge picker T24/T51 separately.",
-  "fix_commits": ["2c506c2d"],
-  "next_action": "Confirm exact-head focused CI and peer review. Preserve unknown product auth cause and do not credit picker counts from run 37707441895."
+  "fix_commits": ["2c506c2d", "ce0d39c5"],
+  "next_action": "Resource-valid native admin completion retest with reviewed categorical forwarding; product auth cause and picker T24/T51 remain unverified."
 }
