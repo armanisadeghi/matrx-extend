@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "task_id": "settings397-boundary-native-B",
+  "lane": "B",
+  "status": "resource_invalid_no_native_verdict",
+  "feature_id": "EXT-F-1003",
+  "defect_id": "EXT-D-0167",
+  "workflow": {
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37731576716",
+    "run_id": 37731576716,
+    "job_id": 113161662339,
+    "artifact_id": 11529882017,
+    "artifact_name": "hosted-guest-37731576716-1",
+    "head_sha": "11564fe786ca47bade2c33718710504ed145eb66",
+    "runner_label": "macos-15-intel",
+    "acceptance_case": "settings-controls",
+    "started_at": "2026-10-08T05:16:53Z",
+    "completed_at": "2026-10-08T05:23:29Z",
+    "conclusion": "failure",
+    "dispatch_count": 1
+  },
+  "frozen_product": {
+    "development_run_id": 37724859892,
+    "development_artifact_id": 11527132614,
+    "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+    "version": "0.2.397",
+    "tree_sha256": "1035cd28ce5a63ac6233626f35102f016f7c7e7e0ef0717d259a3ec40fc856ed",
+    "kind": "local_dev_unpacked"
+  },
+  "driver_review": {
+    "reviewed_sha": "d46aa7227f605a5efa564fa2808091f75e9ff240",
+    "peer_receipt": ".research/settings-reacquire-final-peer-20261007.json",
+    "current_main_diff_in_relevant_driver_workflow_paths": "empty",
+    "focused_ci_run_id": 37731217427,
+    "focused_ci_verdict": "success_66_tests"
+  },
+  "resource_verdict": {
+    "package": "valid",
+    "browser": "valid",
+    "guest": "invalid",
+    "guest_admitted": true,
+    "guest_final_resource_invalid": true,
+    "guest_final_exit_code": 3,
+    "guest_final_decision": "invalid",
+    "unsafe_observations": [
+      {
+        "at": "2026-10-08T05:23:07.837Z",
+        "code": "RESOURCE_CPU_PENDING",
+        "cpu_busy_fraction": 0.99,
+        "one_minute_load": 1.55
+      },
+      {
+        "at": "2026-10-08T05:23:23.958Z",
+        "code": "RESOURCE_WATCH_UNSAFE",
+        "cpu_busy_fraction": 0.75,
+        "one_minute_load": 3.5
+      }
+    ],
+    "watchdog_stopped_child_at": "2026-10-08T05:23:24.160Z"
+  },
+  "native_outcome": {
+    "panel_context_ready_observed_in_log": true,
+    "settings_case_receipt_uploaded": false,
+    "T34": "unverified_resource_invalid_before_case_receipt",
+    "T34_failure_boundary_diagnostic": "unobserved",
+    "baseline_restoration": "unverified",
+    "T64": "unverified_no_case_steps",
+    "privacy_downstream_consumers": "unverified",
+    "panel_reload": "unverified",
+    "full_extension_reload": "unverified"
+  },
+  "original_evidence": [
+    {
+      "path": ".research/settings397-boundary-native-20261007-originals/docs/stabilization/resource-journals/hosted-browser-37731576716-1.jsonl",
+      "sha256": "b824141eba218a64f7e8719da4edf3f612306e883c817ade491b7a464b50fde1",
+      "size_bytes": 993
+    },
+    {
+      "path": ".research/settings397-boundary-native-20261007-originals/docs/stabilization/resource-journals/hosted-guest-37731576716-1.jsonl",
+      "sha256": "1f808f8b1b3b13e159c42d0d6d37f1388c68119cc2de2a84070e42713c8fb321",
+      "size_bytes": 5074
+    },
+    {
+      "path": ".research/settings397-boundary-native-20261007-originals/docs/stabilization/resource-journals/hosted-package-37731576716-1.jsonl",
+      "sha256": "70547212de3bd63f8bbbe2d037822e6f5f45cb0f3d638441eebb373a48c5e491",
+      "size_bytes": 992
+    },
+    {
+      "path": ".research/settings397-boundary-native-20261007-originals/test-results/native-sidepanel-qa-ejR18F/native-side-panel.png",
+      "sha256": "285cb116f6a01b27f4369461a721f3dee875045d335f1ec54a36a49f756311d0",
+      "size_bytes": 4635
+    },
+    {
+      "path": ".research/settings397-boundary-native-20261007-originals/test-results/native-sidepanel-qa-ejR18F/normal-target-after-open.png",
+      "sha256": "60d95c01c8bf5fa8f0807e1aed08d2adb43b4a5532190ae0eadd54c5e3aef79c",
+      "size_bytes": 25178
+    }
+  ],
+  "evidence_selection": "Artifact recursively enumerated. Only two screenshots and three journals whose run IDs equal 37731576716 were retained byte for byte; older journals were excluded.",
+  "limitations": [
+    "This resource-invalid attempt provides zero native Settings acceptance credit.",
+    "No T34 cause or product behavior is inferred from the watchdog termination or opening screenshot.",
+    "T64 remains a separate guest precondition question, not a product authentication verdict.",
+    "No retry, source edit, inventory edit, local build, release, or deployment was performed."
+  ],
+  "next_action": "Root should retain D167 native acceptance pending and decide a bounded host/resource strategy before another attempt; preserve the reviewed driver and frozen product identity."
+}
