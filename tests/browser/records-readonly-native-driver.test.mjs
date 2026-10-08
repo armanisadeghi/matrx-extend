@@ -37,6 +37,28 @@ function visit(node) {
 visit(tree);
 assert.ok(callback);
 const sha = (value) => createHash('sha256').update(value).digest('hex');
+
+test('fixture first failure remains the receipt classification when cleanup also fails', () => {
+  const report = {
+    stage: 'records_fixture_cleanup',
+    fixture_diagnostics: [
+      {
+        boundary: 'body',
+        phase: 'records_fixture_recovery_list',
+        classification: 'records_fixture_recovery_list_failed',
+      },
+      {
+        boundary: 'cleanup',
+        phase: 'records_fixture_cleanup',
+        classification: 'records_fixture_cleanup_list_failed',
+      },
+    ],
+  };
+  retainRecordsFailure(report);
+  assert.equal(report.failure_phase, 'records_fixture_recovery_list');
+  assert.equal(report.failure_classification, 'records_fixture_recovery_list_failed');
+});
+
 const organizationId = 'ba05beee-625e-43bb-931e-c2ea99d718d2';
 const approved = { id: organizationId, name: 'Harbor Dental' };
 const positive = (name) => ({

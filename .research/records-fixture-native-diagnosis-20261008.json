@@ -1,0 +1,39 @@
+{
+  "case": "EXT-F-4130-C04-C05",
+  "native_run": 37833716704,
+  "native_head": "18e1b21fcb4de35b987e9d19f0233f28eb4d41f0",
+  "result": "unverified",
+  "observed": {
+    "failure_code": "records_fixture_cleanup_failed",
+    "positive_reads": 0,
+    "fixture_cleanup": null,
+    "private_journal_phase": "planned",
+    "private_journal_has_table_or_row_id": false,
+    "first_fixture_request_status_retained": false,
+    "same_principal_marker_check": {
+      "principal_matches": 1,
+      "organization_matches": 1,
+      "membership_matches": 1,
+      "matching_tables_live": 0,
+      "matching_tables_archived": 0,
+      "matching_child_rows_live": 0,
+      "source": "Independent read-only server query by native owner; counts only."
+    }
+  },
+  "source_contract": {
+    "route": "GET /api/v1/tables accepts search and organization query filters",
+    "response": "TableList has tables and not_listed; TableSummary has description, organization_id and kind",
+    "helper": "The fixture helper's request projection matches these fields. No API contract mismatch was proved."
+  },
+  "boundary": {
+    "proved": "The fixture had not reached a create POST: the helper persists create_sent before sending it, and the journal remained planned. The first failure may be in recovery listing, prior marked-fixture cleanup, preflight listing or the journal write before create. Independent same-principal server queries found zero matching live or archived tables and zero live child rows.",
+    "unknown": "The first request status and original assertion were discarded by the native driver. The current run's exact failure remains unknown.",
+    "diagnostic_loss": "The helper overwrote the visible stage with cleanup in finally, and the acceptance catch discarded the original error."
+  },
+  "repair": {
+    "scope": "Preserve fixed-shape first failure and cleanup failure observations in the native receipt: phase, fixed classification, request method and numeric HTTP status only.",
+    "status": "source change prepared; hosted native replay pending",
+    "verification": "Source-level fixture lifecycle tests cover simultaneous body and cleanup failures and a planned-journal recovery-list failure. No local browser, build or test run was performed under the lane instruction."
+  },
+  "next_native_observation": "Run the guarded hosted native case on the repaired source and inspect fixture_diagnostics before changing API requests. Independently verify the same principal's marked fixtures before any cleanup."
+}

@@ -101,6 +101,7 @@ export async function withRecordsPositiveFixture({
   journalPath,
   exercise,
   onStage = () => {},
+  onFailure = () => {},
   request = recordsFixtureRequest,
   id = randomUUID,
   maxArchiveAttempts = 3,
@@ -108,6 +109,24 @@ export async function withRecordsPositiveFixture({
 }) {
   requireRecordsHostedFixture(environment);
   const marker = recordsFixtureMarker(principalId, orgId);
+  let phase = 'records_fixture_journal';
+  let lastRequest = null;
+  const mark = (value) => {
+    phase = value;
+    lastRequest = null;
+    onStage(value);
+  };
+  const reportFailure = (boundary, error) => {
+    onFailure({
+      boundary,
+      phase,
+      classification: /^records_fixture_[a-z0-9_]+$/.test(error?.message ?? '')
+        ? error.message
+        : 'records_fixture_unexpected_error',
+      request_method: lastRequest?.method ?? null,
+      http_status: lastRequest?.status ?? null,
+    });
+  };
   let state;
   try {
     state = JSON.parse(await readFile(journalPath, 'utf8'));
@@ -143,6 +162,13 @@ export async function withRecordsPositiveFixture({
       name: state.name,
       marker,
     });
+    lastRequest = {
+      method,
+      status:
+        Number.isInteger(answer?.status) && answer.status >= 100 && answer.status <= 599
+          ? answer.status
+          : null,
+    };
     assert.equal(answer?.token_matches, true, 'records_fixture_principal_mismatch');
     assert.equal(answer.transport_failed, undefined, 'records_fixture_transport_failed');
     return answer;
@@ -170,6 +196,7 @@ export async function withRecordsPositiveFixture({
   let bodyError;
   let cleanupError;
   try {
+    mark('records_fixture_recovery_list');
     const prior = await listOwned();
     assert.equal(prior.status, 200, 'records_fixture_recovery_list_failed');
     assert.equal(prior.list_complete, true, 'records_fixture_recovery_list_incomplete');
@@ -178,10 +205,11 @@ export async function withRecordsPositiveFixture({
       assert.match(table.name, OWNED_NAME, 'records_fixture_recovery_name_invalid');
       assert.match(table.id, UUID, 'records_fixture_recovery_id_invalid');
       if (table.name === state.name) continue;
-      onStage('records_fixture_prior_cleanup');
+      mark('records_fixture_prior_cleanup');
       await archiveOwned(table.id);
     }
     if (prior.owned_tables.some((table) => table.name !== state.name)) {
+      mark('records_fixture_recovery_verify');
       const remaining = await listOwned();
       assert.equal(remaining.status, 200, 'records_fixture_recovery_verify_failed');
       assert.equal(remaining.list_complete, true, 'records_fixture_recovery_verify_incomplete');
@@ -191,6 +219,7 @@ export async function withRecordsPositiveFixture({
         'records_fixture_prior_still_visible',
       );
     }
+    mark('records_fixture_preflight');
     const before = await list();
     assert.equal(before.status, 200, 'records_fixture_preflight_failed');
     assert.equal(before.list_complete, true, 'records_fixture_preflight_incomplete');
@@ -200,7 +229,7 @@ export async function withRecordsPositiveFixture({
     // run, and never count an old run's evidence as this run's native credit.
     if (state.phase !== 'planned') throw new Error('records_fixture_recovery_cleanup_only');
     if (!state.table_id) {
-      onStage('records_fixture_table_create');
+      mark('records_fixture_table_create');
       state.phase = 'create_sent';
       await journal(journalPath, state);
       const made = await call('POST', '', {
@@ -225,7 +254,7 @@ export async function withRecordsPositiveFixture({
       state.phase = 'table_owned';
       await journal(journalPath, state);
     }
-    onStage('records_fixture_row_create');
+    mark('records_fixture_row_create');
     const rowName = `${state.name}-row`;
     const row = await call('POST', `/${state.table_id}/rows`, {
       values: { Name: rowName, Amount: 7 },
@@ -237,6 +266,7 @@ export async function withRecordsPositiveFixture({
     state.row_id = row.row_id;
     state.phase = 'row_owned';
     await journal(journalPath, state);
+    mark('records_fixture_positive_reads');
     await exercise({
       tableId: state.table_id,
       rowId: state.row_id,
@@ -245,9 +275,10 @@ export async function withRecordsPositiveFixture({
     });
   } catch (error) {
     bodyError = error;
+    reportFailure('body', error);
   } finally {
     try {
-      onStage('records_fixture_cleanup');
+      mark('records_fixture_cleanup');
       // A timed-out create can have committed. Resolve only the run-unique
       // preflighted name; never archive a table whose ownership is ambiguous.
       if (state.phase !== 'planned') {
@@ -294,6 +325,7 @@ export async function withRecordsPositiveFixture({
       }
     } catch (error) {
       cleanupError = error;
+      reportFailure('cleanup', error);
     }
   }
   if (cleanupError) throw cleanupError;
