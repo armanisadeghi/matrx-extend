@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T15:40:58.052500+00:00",
+  "updated_at": "2026-10-08T15:48:53.830295+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -15654,72 +15654,16 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": 37778965029,
-              "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
-              "artifact_ref": {
-                "channel": "development",
-                "version": "0.2.407",
-                "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
-                "ci_run_id": 37754055905,
-                "artifact_id": 11539827040,
-                "artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1"
-              },
+              "run_id": "37801787667",
+              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+              "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
+              "build_version": "0.2.414",
               "evidence": [
-                ".research/scrape-confirmation-native-retest-20261008.json",
-                ".research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json",
-                ".research/scrape-case-scope-adjudication-20261008.json",
-                ".research/scrape-uninstrumented-final-peer-20261008.json",
-                ".research/scrape-reload-observer-native-peer-20261008.json",
-                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029"
+                ".research/scrape-arm-414-native-20261008-1532.json",
+                ".research/scrape-live-peer-20261008-1544.json"
               ],
-              "independent_review": [
-                ".research/scrape-case-scope-adjudication-20261008.json",
-                ".research/scrape-uninstrumented-final-peer-20261008.json"
-              ],
-              "verified_at": "2026-10-08T12:53:01Z",
-              "detail": "Warm and post-reload fast capture, disabled busy control, article, and result tabs are observed. C01 and the case expected text also require error recovery actions. This receipt does not exercise a natural capture error or its recovery controls; T14 remains partial for that same guest gap. Missing member/admin evidence is irrelevant to this guest verdict.",
-              "remaining_criteria": [
-                "Natural capture error and applicable recovery action in fast mode"
-              ],
-              "historical_result": {
-                "status": "partial",
-                "run_id": "37251782627",
-                "evidence": ".research/guest-scrape-normal-native.json",
-                "detail": "Frozen development244 guest ARM: Fast busy disable and real capture before/after full reload verified. Case expected error recovery is not exhausted; T14 natural recovery remains unverified.",
-                "build_variant": "development0.2.244/sourceb8158702/CI37233480033/artifact11315305224",
-                "viewport": "owned SIDE_PANEL CDP viewport emulation600px warm/reload; initialphysicalmeasurement360x373; no physicalresize claim",
-                "verified_at": "2026-10-05T01:45:35.094250+00:00",
-                "historical_result": {
-                  "status": "partial",
-                  "run_id": "37222954472",
-                  "evidence": ".research/scrape231-recapture-native.json",
-                  "detail": "Exact development231 guest ARM: Fast capture and post-reload repopulated article observed. Raw early case remaining note is stale; no exhaustive case promotion from that discrepancy.",
-                  "historical_result": {
-                    "status": "partial",
-                    "run_id": "37221586281",
-                    "evidence": ".research/scrape231-context-diagnostic-native.json",
-                    "detail": "Exact development231 guest ARM: Fast capture disabled busy button, expected article and lazy-content absence observed; reload not reached.",
-                    "historical_result": {
-                      "status": "partial",
-                      "run_id": "37195986118",
-                      "evidence": ".research/scrape-freshness-fixed-native.json",
-                      "detail": "Healthy exact development215 run observed disabled Capturing and real article/no lazy content; same original busy fix remains working. Full-duration/retry and replacement-panel recovery remain unverified. Store205 predates busy/layoutfixes.",
-                      "historical_result": {
-                        "status": "unverified",
-                        "run_id": "render-retest-001",
-                        "evidence": "docs/stabilization/runs/render-retest-001.json",
-                        "verified_substeps": [
-                          "Capture produced a 16-word article and result tabs were visible."
-                        ],
-                        "remaining_criteria": [
-                          "Observe busy-button disable/progress while capture runs and exercise error recovery actions."
-                        ]
-                      }
-                    }
-                  }
-                }
-              },
-              "new_subtarget": "post-reload fast capture revalidated"
+              "detail": "Fast capture and busy/result behavior are observed, but no natural capture error and corresponding recovery actions are exercised.",
+              "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
             },
             "member": {
               "status": "partial",
@@ -15757,6 +15701,79 @@
                 "acceptance_credit": false,
                 "detail": "Resource-valid warm observations only; full case remains unverified after runner stopped at Links pointer targeting. Prior accepted build-specific results retained; no new full-case pass."
               }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": 37778965029,
+                "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
+                "artifact_ref": {
+                  "channel": "development",
+                  "version": "0.2.407",
+                  "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+                  "ci_run_id": 37754055905,
+                  "artifact_id": 11539827040,
+                  "artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1"
+                },
+                "evidence": [
+                  ".research/scrape-confirmation-native-retest-20261008.json",
+                  ".research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json",
+                  ".research/scrape-case-scope-adjudication-20261008.json",
+                  ".research/scrape-uninstrumented-final-peer-20261008.json",
+                  ".research/scrape-reload-observer-native-peer-20261008.json",
+                  "https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029"
+                ],
+                "independent_review": [
+                  ".research/scrape-case-scope-adjudication-20261008.json",
+                  ".research/scrape-uninstrumented-final-peer-20261008.json"
+                ],
+                "verified_at": "2026-10-08T12:53:01Z",
+                "detail": "Warm and post-reload fast capture, disabled busy control, article, and result tabs are observed. C01 and the case expected text also require error recovery actions. This receipt does not exercise a natural capture error or its recovery controls; T14 remains partial for that same guest gap. Missing member/admin evidence is irrelevant to this guest verdict.",
+                "remaining_criteria": [
+                  "Natural capture error and applicable recovery action in fast mode"
+                ],
+                "historical_result": {
+                  "status": "partial",
+                  "run_id": "37251782627",
+                  "evidence": ".research/guest-scrape-normal-native.json",
+                  "detail": "Frozen development244 guest ARM: Fast busy disable and real capture before/after full reload verified. Case expected error recovery is not exhausted; T14 natural recovery remains unverified.",
+                  "build_variant": "development0.2.244/sourceb8158702/CI37233480033/artifact11315305224",
+                  "viewport": "owned SIDE_PANEL CDP viewport emulation600px warm/reload; initialphysicalmeasurement360x373; no physicalresize claim",
+                  "verified_at": "2026-10-05T01:45:35.094250+00:00",
+                  "historical_result": {
+                    "status": "partial",
+                    "run_id": "37222954472",
+                    "evidence": ".research/scrape231-recapture-native.json",
+                    "detail": "Exact development231 guest ARM: Fast capture and post-reload repopulated article observed. Raw early case remaining note is stale; no exhaustive case promotion from that discrepancy.",
+                    "historical_result": {
+                      "status": "partial",
+                      "run_id": "37221586281",
+                      "evidence": ".research/scrape231-context-diagnostic-native.json",
+                      "detail": "Exact development231 guest ARM: Fast capture disabled busy button, expected article and lazy-content absence observed; reload not reached.",
+                      "historical_result": {
+                        "status": "partial",
+                        "run_id": "37195986118",
+                        "evidence": ".research/scrape-freshness-fixed-native.json",
+                        "detail": "Healthy exact development215 run observed disabled Capturing and real article/no lazy content; same original busy fix remains working. Full-duration/retry and replacement-panel recovery remain unverified. Store205 predates busy/layoutfixes.",
+                        "historical_result": {
+                          "status": "unverified",
+                          "run_id": "render-retest-001",
+                          "evidence": "docs/stabilization/runs/render-retest-001.json",
+                          "verified_substeps": [
+                            "Capture produced a 16-word article and result tabs were visible."
+                          ],
+                          "remaining_criteria": [
+                            "Observe busy-button disable/progress while capture runs and exercise error recovery actions."
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "new_subtarget": "post-reload fast capture revalidated"
+              },
+              "superseded_at": "2026-10-08T15:48:53.830295+00:00"
             }
           ],
           "attempt_history": [
@@ -15806,6 +15823,19 @@
                 "https://github.com/armanisadeghi/matrx-extend/actions/runs/37767763301"
               ],
               "detail": "Frozen 0.2.407 guest 600px attempt: warm observations remain partial. The replacement worker activated, but the open-panel request received no reply, so extension reload/panel readiness remained unverified. The post-reload capture probe was not exercised. Resource journals were valid; no new pass or acceptance credit."
+            },
+            {
+              "at": "2026-10-08T15:48:53.830295+00:00",
+              "run_id": "37801787667",
+              "mode": "guest",
+              "status": "partial",
+              "resource_valid": true,
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/scrape-arm-414-native-20261008-1532.json",
+                ".research/scrape-live-peer-20261008-1544.json"
+              ],
+              "detail": "Fast capture and busy/result behavior are observed, but no natural capture error and corresponding recovery actions are exercised."
             }
           ]
         },
@@ -15825,67 +15855,16 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": 37778965029,
-              "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
-              "artifact_ref": {
-                "channel": "development",
-                "version": "0.2.407",
-                "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
-                "ci_run_id": 37754055905,
-                "artifact_id": 11539827040,
-                "artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1"
-              },
+              "run_id": "37801787667",
+              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+              "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
+              "build_version": "0.2.414",
               "evidence": [
-                ".research/scrape-confirmation-native-retest-20261008.json",
-                ".research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json",
-                ".research/scrape-case-scope-adjudication-20261008.json",
-                ".research/scrape-uninstrumented-final-peer-20261008.json",
-                ".research/scrape-reload-observer-native-peer-20261008.json",
-                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029"
+                ".research/scrape-arm-414-native-20261008-1532.json",
+                ".research/scrape-live-peer-20261008-1544.json"
               ],
-              "independent_review": [
-                ".research/scrape-case-scope-adjudication-20261008.json",
-                ".research/scrape-uninstrumented-final-peer-20261008.json"
-              ],
-              "verified_at": "2026-10-08T12:53:01Z",
-              "detail": "Warm deep progress and lazy content are observed. The documented warm/reload dimensions and expected failure preserving deep retry mode are not exhausted: post-reload deep capture and natural deep failure/retry are absent.",
-              "remaining_criteria": [
-                "Post-reload deep capture",
-                "Natural deep failure and retry in deep mode"
-              ],
-              "historical_result": {
-                "status": "partial",
-                "run_id": "37251782627",
-                "evidence": ".research/guest-scrape-normal-native.json",
-                "detail": "Frozen development244 guest ARM: Warm deep capture and unsaved-edit confirmation verified; deep failure retry and post-reload deep capture remain unverified.",
-                "build_variant": "development0.2.244/sourceb8158702/CI37233480033/artifact11315305224",
-                "viewport": "owned SIDE_PANEL CDP viewport emulation600px warm/reload; initialphysicalmeasurement360x373; no physicalresize claim",
-                "verified_at": "2026-10-05T01:45:35.094250+00:00",
-                "historical_result": {
-                  "status": "partial",
-                  "run_id": "37222954472",
-                  "evidence": ".research/scrape231-recapture-native.json",
-                  "detail": "Exact development231 guest ARM: Unsaved-edit Cancel preserves edits; explicit confirmation starts Scrolling and lazy-content deep result. Natural deep-retry failure and deep capture after reload remain unverified.",
-                  "historical_result": {
-                    "status": "fail",
-                    "run_id": "37221586281",
-                    "evidence": ".research/scrape231-context-diagnostic-native.json",
-                    "detail": "After warm media edits, Scroll & capture expected deep result not observed. D125 source diagnosis pending; no product cause established from assertion. Four healthy resource watches.",
-                    "historical_result": {
-                      "status": "partial",
-                      "run_id": "37195986118",
-                      "evidence": ".research/scrape-freshness-fixed-native.json",
-                      "detail": "Healthy exact development215 run observed disabled Scrolling plus lazy content in real page/capture; narrow layoutcontained. Deepretry and replacement-panel recovery remainunverified.",
-                      "historical_result": {
-                        "status": "unverified",
-                        "run_id": "render-retest-001",
-                        "detail": "unverified_short_static_fixture_identical_output_inconclusive",
-                        "evidence": "docs/stabilization/runs/render-retest-001.json"
-                      }
-                    }
-                  }
-                }
-              }
+              "detail": "Post-reload deep capture and a natural deep failure/retry with mode preservation remain unverified.",
+              "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
             },
             "member": {
               "status": "partial",
@@ -15944,6 +15923,89 @@
                 "https://github.com/armanisadeghi/matrx-extend/actions/runs/37767763301"
               ],
               "detail": "Frozen 0.2.407 guest 600px attempt: warm observations remain partial. The replacement worker activated, but the open-panel request received no reply, so extension reload/panel readiness remained unverified. The post-reload capture probe was not exercised. Resource journals were valid; no new pass or acceptance credit."
+            },
+            {
+              "at": "2026-10-08T15:48:53.830295+00:00",
+              "run_id": "37801787667",
+              "mode": "guest",
+              "status": "partial",
+              "resource_valid": true,
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/scrape-arm-414-native-20261008-1532.json",
+                ".research/scrape-live-peer-20261008-1544.json"
+              ],
+              "detail": "Post-reload deep capture and a natural deep failure/retry with mode preservation remain unverified."
+            }
+          ],
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": 37778965029,
+                "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
+                "artifact_ref": {
+                  "channel": "development",
+                  "version": "0.2.407",
+                  "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+                  "ci_run_id": 37754055905,
+                  "artifact_id": 11539827040,
+                  "artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1"
+                },
+                "evidence": [
+                  ".research/scrape-confirmation-native-retest-20261008.json",
+                  ".research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json",
+                  ".research/scrape-case-scope-adjudication-20261008.json",
+                  ".research/scrape-uninstrumented-final-peer-20261008.json",
+                  ".research/scrape-reload-observer-native-peer-20261008.json",
+                  "https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029"
+                ],
+                "independent_review": [
+                  ".research/scrape-case-scope-adjudication-20261008.json",
+                  ".research/scrape-uninstrumented-final-peer-20261008.json"
+                ],
+                "verified_at": "2026-10-08T12:53:01Z",
+                "detail": "Warm deep progress and lazy content are observed. The documented warm/reload dimensions and expected failure preserving deep retry mode are not exhausted: post-reload deep capture and natural deep failure/retry are absent.",
+                "remaining_criteria": [
+                  "Post-reload deep capture",
+                  "Natural deep failure and retry in deep mode"
+                ],
+                "historical_result": {
+                  "status": "partial",
+                  "run_id": "37251782627",
+                  "evidence": ".research/guest-scrape-normal-native.json",
+                  "detail": "Frozen development244 guest ARM: Warm deep capture and unsaved-edit confirmation verified; deep failure retry and post-reload deep capture remain unverified.",
+                  "build_variant": "development0.2.244/sourceb8158702/CI37233480033/artifact11315305224",
+                  "viewport": "owned SIDE_PANEL CDP viewport emulation600px warm/reload; initialphysicalmeasurement360x373; no physicalresize claim",
+                  "verified_at": "2026-10-05T01:45:35.094250+00:00",
+                  "historical_result": {
+                    "status": "partial",
+                    "run_id": "37222954472",
+                    "evidence": ".research/scrape231-recapture-native.json",
+                    "detail": "Exact development231 guest ARM: Unsaved-edit Cancel preserves edits; explicit confirmation starts Scrolling and lazy-content deep result. Natural deep-retry failure and deep capture after reload remain unverified.",
+                    "historical_result": {
+                      "status": "fail",
+                      "run_id": "37221586281",
+                      "evidence": ".research/scrape231-context-diagnostic-native.json",
+                      "detail": "After warm media edits, Scroll & capture expected deep result not observed. D125 source diagnosis pending; no product cause established from assertion. Four healthy resource watches.",
+                      "historical_result": {
+                        "status": "partial",
+                        "run_id": "37195986118",
+                        "evidence": ".research/scrape-freshness-fixed-native.json",
+                        "detail": "Healthy exact development215 run observed disabled Scrolling plus lazy content in real page/capture; narrow layoutcontained. Deepretry and replacement-panel recovery remainunverified.",
+                        "historical_result": {
+                          "status": "unverified",
+                          "run_id": "render-retest-001",
+                          "detail": "unverified_short_static_fixture_identical_output_inconclusive",
+                          "evidence": "docs/stabilization/runs/render-retest-001.json"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "superseded_at": "2026-10-08T15:48:53.830295+00:00"
             }
           ]
         },
@@ -15964,12 +16026,50 @@
           "dimensions": ["warm", "reload"],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": "37222954472",
-              "evidence": ".research/scrape231-recapture-native.json",
-              "detail": "Trusted exact dialog Cancel retained edited state/idle deep button; second request confirmed Re-capture and deep mode completed. Evidence is native script assertion contract plus subsequent deep result; no separate dialog screenshot. Other auth/mode variants unverified."
+              "status": "pass",
+              "run_id": "37801787667",
+              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+              "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/scrape-arm-414-native-20261008-1532.json",
+                ".research/scrape-live-peer-20261008-1544.json"
+              ],
+              "detail": "Warm deep capture tests visible dialog Cancel preserving edits, then confirmation and actual deep result; post-reload fast capture explicitly records dialog/trusted confirmation and expected Article. This meets the stated guest recapture case across warm/reload and fast/deep. Cancel is not separately repeated after reload; no member/admin inference.",
+              "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference.",
+              "passed_subtargets": [
+                "warm_deep_cancel_preserves_edits_and_confirm_captures",
+                "post_reload_fast_owned_edits_discard_confirmation_then_expected_article"
+              ]
             }
-          }
+          },
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37222954472",
+                "evidence": ".research/scrape231-recapture-native.json",
+                "detail": "Trusted exact dialog Cancel retained edited state/idle deep button; second request confirmed Re-capture and deep mode completed. Evidence is native script assertion contract plus subsequent deep result; no separate dialog screenshot. Other auth/mode variants unverified."
+              },
+              "superseded_at": "2026-10-08T15:48:53.830295+00:00"
+            }
+          ],
+          "attempt_history": [
+            {
+              "at": "2026-10-08T15:48:53.830295+00:00",
+              "run_id": "37801787667",
+              "mode": "guest",
+              "status": "pass",
+              "resource_valid": true,
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/scrape-arm-414-native-20261008-1532.json",
+                ".research/scrape-live-peer-20261008-1544.json"
+              ],
+              "detail": "Warm deep capture tests visible dialog Cancel preserving edits, then confirmation and actual deep result; post-reload fast capture explicitly records dialog/trusted confirmation and expected Article. This meets the stated guest recapture case across warm/reload and fast/deep. Cancel is not separately repeated after reload; no member/admin inference."
+            }
+          ]
         },
         {
           "id": "EXT-F-1007-T04",
@@ -16055,51 +16155,16 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": 37778965029,
-              "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
-              "artifact_ref": {
-                "channel": "development",
-                "version": "0.2.407",
-                "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
-                "ci_run_id": 37754055905,
-                "artifact_id": 11539827040,
-                "artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1"
-              },
+              "run_id": "37801787667",
+              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+              "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
+              "build_version": "0.2.414",
               "evidence": [
-                ".research/scrape-confirmation-native-retest-20261008.json",
-                ".research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json",
-                ".research/scrape-case-scope-adjudication-20261008.json",
-                ".research/scrape-uninstrumented-final-peer-20261008.json",
-                ".research/scrape-reload-observer-native-peer-20261008.json",
-                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029"
+                ".research/scrape-arm-414-native-20261008-1532.json",
+                ".research/scrape-live-peer-20261008-1544.json"
               ],
-              "independent_review": [
-                ".research/scrape-case-scope-adjudication-20261008.json",
-                ".research/scrape-uninstrumented-final-peer-20261008.json"
-              ],
-              "verified_at": "2026-10-08T12:53:01Z",
-              "detail": "Warm and reload observations cover Sync scroll on following page scroll and off stopping synchronization; raw case has no remaining criteria.",
-              "historical_result": {
-                "status": "pass",
-                "run_id": "37761144784",
-                "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
-                "evidence": [
-                  ".research/scrape-reload-observer-native-20261008.json",
-                  ".research/scrape-reload-observer-native-peer-20261008.json"
-                ],
-                "independent_review": ".research/scrape-reload-observer-native-peer-20261008.json",
-                "verified_at": "2026-10-08T10:20:23.473222+00:00",
-                "detail": "Frozen407 guest600px warm/fullreload revalidation. Original strict watcher proved oldworker retirement and exactreplacement running/activated; allthree resourcejournals valid. No member/admin, Store or latermain proof; fresh diagnostic notexercised and prior intermittentfailure unexplained.",
-                "historical_result": {
-                  "status": "pass",
-                  "run_id": "37729682008",
-                  "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
-                  "evidence": ".research/scrape397-reply-native-20261007.json",
-                  "independent_review": ".research/scrape397-reload-pass-peer-20261007.json",
-                  "verified_at": "2026-10-08T05:08:04.308991+00:00",
-                  "detail": "Native warm and full-extension-reload on/off scroll synchronization passes: Article follows live page while enabled and holds measured position after Stop during reverse page scroll. Fresh peer verified original receipt, driver predicates and current resource journals. This bounded guest pass does not establish member/admin, Store, current-main or complete Scrape health; D166 historical panel absence cause remains open."
-                }
-              }
+              "detail": "Guest warm/reload scroll synchronization and off-stops-sync observations match the historical pass.",
+              "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
             }
           },
           "result_history": [
@@ -16128,6 +16193,58 @@
                 "detail": "Warm on/off passes: page650\u21920 with Article310 held after Stop; full extension reload replacement panel unverified. Peer checked original receipt/journals; no separate browser replay or Store/current-main claim. Original CI artifact provenance independently checked in d165-full-ci-closure-peer-20261007.json."
               },
               "superseded_at": "2026-10-08T05:08:04.308991+00:00"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": 37778965029,
+                "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
+                "artifact_ref": {
+                  "channel": "development",
+                  "version": "0.2.407",
+                  "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+                  "ci_run_id": 37754055905,
+                  "artifact_id": 11539827040,
+                  "artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1"
+                },
+                "evidence": [
+                  ".research/scrape-confirmation-native-retest-20261008.json",
+                  ".research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json",
+                  ".research/scrape-case-scope-adjudication-20261008.json",
+                  ".research/scrape-uninstrumented-final-peer-20261008.json",
+                  ".research/scrape-reload-observer-native-peer-20261008.json",
+                  "https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029"
+                ],
+                "independent_review": [
+                  ".research/scrape-case-scope-adjudication-20261008.json",
+                  ".research/scrape-uninstrumented-final-peer-20261008.json"
+                ],
+                "verified_at": "2026-10-08T12:53:01Z",
+                "detail": "Warm and reload observations cover Sync scroll on following page scroll and off stopping synchronization; raw case has no remaining criteria.",
+                "historical_result": {
+                  "status": "pass",
+                  "run_id": "37761144784",
+                  "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
+                  "evidence": [
+                    ".research/scrape-reload-observer-native-20261008.json",
+                    ".research/scrape-reload-observer-native-peer-20261008.json"
+                  ],
+                  "independent_review": ".research/scrape-reload-observer-native-peer-20261008.json",
+                  "verified_at": "2026-10-08T10:20:23.473222+00:00",
+                  "detail": "Frozen407 guest600px warm/fullreload revalidation. Original strict watcher proved oldworker retirement and exactreplacement running/activated; allthree resourcejournals valid. No member/admin, Store or latermain proof; fresh diagnostic notexercised and prior intermittentfailure unexplained.",
+                  "historical_result": {
+                    "status": "pass",
+                    "run_id": "37729682008",
+                    "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
+                    "evidence": ".research/scrape397-reply-native-20261007.json",
+                    "independent_review": ".research/scrape397-reload-pass-peer-20261007.json",
+                    "verified_at": "2026-10-08T05:08:04.308991+00:00",
+                    "detail": "Native warm and full-extension-reload on/off scroll synchronization passes: Article follows live page while enabled and holds measured position after Stop during reverse page scroll. Fresh peer verified original receipt, driver predicates and current resource journals. This bounded guest pass does not establish member/admin, Store, current-main or complete Scrape health; D166 historical panel absence cause remains open."
+                  }
+                }
+              },
+              "superseded_at": "2026-10-08T15:48:53.830295+00:00"
             }
           ],
           "defect_ids": ["EXT-D-0166"],
@@ -16178,6 +16295,19 @@
                 "https://github.com/armanisadeghi/matrx-extend/actions/runs/37767763301"
               ],
               "detail": "Frozen 0.2.407 guest 600px attempt: warm observations remain partial. The replacement worker activated, but the open-panel request received no reply, so extension reload/panel readiness remained unverified. The post-reload capture probe was not exercised. Resource journals were valid; no new pass or acceptance credit."
+            },
+            {
+              "at": "2026-10-08T15:48:53.830295+00:00",
+              "run_id": "37801787667",
+              "mode": "guest",
+              "status": "pass",
+              "resource_valid": true,
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/scrape-arm-414-native-20261008-1532.json",
+                ".research/scrape-live-peer-20261008-1544.json"
+              ],
+              "detail": "Guest warm/reload scroll synchronization and off-stops-sync observations match the historical pass."
             }
           ]
         },
@@ -16197,63 +16327,16 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": 37778965029,
-              "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
-              "artifact_ref": {
-                "channel": "development",
-                "version": "0.2.407",
-                "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
-                "ci_run_id": 37754055905,
-                "artifact_id": 11539827040,
-                "artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1"
-              },
+              "run_id": "37801787667",
+              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+              "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
+              "build_version": "0.2.414",
               "evidence": [
-                ".research/scrape-confirmation-native-retest-20261008.json",
-                ".research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json",
-                ".research/scrape-case-scope-adjudication-20261008.json",
-                ".research/scrape-uninstrumented-final-peer-20261008.json",
-                ".research/scrape-reload-observer-native-peer-20261008.json",
-                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029"
+                ".research/scrape-arm-414-native-20261008-1532.json",
+                ".research/scrape-live-peer-20261008-1544.json"
               ],
-              "independent_review": [
-                ".research/scrape-case-scope-adjudication-20261008.json",
-                ".research/scrape-uninstrumented-final-peer-20261008.json"
-              ],
-              "verified_at": "2026-10-08T12:53:01Z",
-              "detail": "Six populated panes and capture invariance are recorded warm and after reload; the new post-reload referrals capture shows empty Images and Video panes. Canonical expected behavior says each selected tab renders matching data and empty states, and the existing guest detail explicitly leaves exhaustive per-pane empty-state coverage unverified. No Article, Links, SEO, or Schema empty-state observations are retained. Member/admin absence alone would not keep this guest cell partial.",
-              "remaining_criteria": [
-                "Empty-state behavior for Article, Links, SEO, and Schema panes, to the extent each documented pane supports an empty capture"
-              ],
-              "historical_result": {
-                "status": "partial",
-                "run_id": "37251782627",
-                "evidence": ".research/guest-scrape-normal-native.json",
-                "detail": "Frozen development244 guest ARM: All six populated panes verified warm and after full reload; image/video empty states verified. Normal600 viewport emulation now observed, but exhaustive per-pane empty-state coverage remains unverified.",
-                "build_variant": "development0.2.244/sourceb8158702/CI37233480033/artifact11315305224",
-                "viewport": "owned SIDE_PANEL CDP viewport emulation600px warm/reload; initialphysicalmeasurement360x373; no physicalresize claim",
-                "verified_at": "2026-10-05T01:45:35.094250+00:00",
-                "historical_result": {
-                  "status": "partial",
-                  "run_id": "37222954472",
-                  "evidence": ".research/scrape231-recapture-native.json",
-                  "detail": "Exact development231 guest ARM: All result panes populated before and after reload; normal width unverified.",
-                  "historical_result": {
-                    "status": "partial",
-                    "run_id": "37221586281",
-                    "evidence": ".research/scrape231-context-diagnostic-native.json",
-                    "detail": "Exact development231 guest ARM: All six result panes had matching content; image/video empty states exercised later; reload unverified.",
-                    "historical_result": {
-                      "status": "partial",
-                      "run_id": "37205211642",
-                      "evidence": ".research/startup-attributed-native.json",
-                      "detail": "Guest warm capture selected all6tabs with matching content; image loaded640x480, video URLrow matched, media-free recapture showed image/videoempty states. Globalreload and emptyScrape renderingpassed, but data-pane capture/assertions afterreload, normalwidth and othermodes remainunverified. No video playbackclaim.",
-                      "build_variant": "Frozen development215/source3536b5cb/CI37193761291/artifact11299613935",
-                      "verified_at": "2026-10-04T13:30:38.711263+00:00"
-                    }
-                  }
-                }
-              },
-              "new_subtarget": "Post-reload empty Images and Video panes after Capture boundary, with zero rows"
+              "detail": "All six tabs, populated content, capture invariance, and empty Images/Video panes are evidenced. The earlier peer identified empty Article, Links, SEO, and Schema pane states as outstanding where supported; this receipt records those panes as populated, not empty. Member/admin omissions do not determine this guest verdict.",
+              "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
             },
             "member": {
               "status": "partial",
@@ -16297,6 +16380,70 @@
                 "acceptance_credit": false,
                 "detail": "Resource-valid warm observations only; full case remains unverified after runner stopped at Links pointer targeting. Prior accepted build-specific results retained; no new full-case pass."
               }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": 37778965029,
+                "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
+                "artifact_ref": {
+                  "channel": "development",
+                  "version": "0.2.407",
+                  "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+                  "ci_run_id": 37754055905,
+                  "artifact_id": 11539827040,
+                  "artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1"
+                },
+                "evidence": [
+                  ".research/scrape-confirmation-native-retest-20261008.json",
+                  ".research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json",
+                  ".research/scrape-case-scope-adjudication-20261008.json",
+                  ".research/scrape-uninstrumented-final-peer-20261008.json",
+                  ".research/scrape-reload-observer-native-peer-20261008.json",
+                  "https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029"
+                ],
+                "independent_review": [
+                  ".research/scrape-case-scope-adjudication-20261008.json",
+                  ".research/scrape-uninstrumented-final-peer-20261008.json"
+                ],
+                "verified_at": "2026-10-08T12:53:01Z",
+                "detail": "Six populated panes and capture invariance are recorded warm and after reload; the new post-reload referrals capture shows empty Images and Video panes. Canonical expected behavior says each selected tab renders matching data and empty states, and the existing guest detail explicitly leaves exhaustive per-pane empty-state coverage unverified. No Article, Links, SEO, or Schema empty-state observations are retained. Member/admin absence alone would not keep this guest cell partial.",
+                "remaining_criteria": [
+                  "Empty-state behavior for Article, Links, SEO, and Schema panes, to the extent each documented pane supports an empty capture"
+                ],
+                "historical_result": {
+                  "status": "partial",
+                  "run_id": "37251782627",
+                  "evidence": ".research/guest-scrape-normal-native.json",
+                  "detail": "Frozen development244 guest ARM: All six populated panes verified warm and after full reload; image/video empty states verified. Normal600 viewport emulation now observed, but exhaustive per-pane empty-state coverage remains unverified.",
+                  "build_variant": "development0.2.244/sourceb8158702/CI37233480033/artifact11315305224",
+                  "viewport": "owned SIDE_PANEL CDP viewport emulation600px warm/reload; initialphysicalmeasurement360x373; no physicalresize claim",
+                  "verified_at": "2026-10-05T01:45:35.094250+00:00",
+                  "historical_result": {
+                    "status": "partial",
+                    "run_id": "37222954472",
+                    "evidence": ".research/scrape231-recapture-native.json",
+                    "detail": "Exact development231 guest ARM: All result panes populated before and after reload; normal width unverified.",
+                    "historical_result": {
+                      "status": "partial",
+                      "run_id": "37221586281",
+                      "evidence": ".research/scrape231-context-diagnostic-native.json",
+                      "detail": "Exact development231 guest ARM: All six result panes had matching content; image/video empty states exercised later; reload unverified.",
+                      "historical_result": {
+                        "status": "partial",
+                        "run_id": "37205211642",
+                        "evidence": ".research/startup-attributed-native.json",
+                        "detail": "Guest warm capture selected all6tabs with matching content; image loaded640x480, video URLrow matched, media-free recapture showed image/videoempty states. Globalreload and emptyScrape renderingpassed, but data-pane capture/assertions afterreload, normalwidth and othermodes remainunverified. No video playbackclaim.",
+                        "build_variant": "Frozen development215/source3536b5cb/CI37193761291/artifact11299613935",
+                        "verified_at": "2026-10-04T13:30:38.711263+00:00"
+                      }
+                    }
+                  }
+                },
+                "new_subtarget": "Post-reload empty Images and Video panes after Capture boundary, with zero rows"
+              },
+              "superseded_at": "2026-10-08T15:48:53.830295+00:00"
             }
           ],
           "attempt_history": [
@@ -16406,6 +16553,19 @@
               "workflow_checkout_sha": "64b756a5332073c4e9d2d594507f0a4430d6af81",
               "evidence": [".research/scrape-startup-repair-acceptance-20261008.json"],
               "detail": "Owned CDP endpoint timed out after8018ms; guest journal resource-invalid before any Scrape target or D178 confirmation branch. Zero acceptance; prior bounded results preserved; startup process attribution escalated."
+            },
+            {
+              "at": "2026-10-08T15:48:53.830295+00:00",
+              "run_id": "37801787667",
+              "mode": "guest",
+              "status": "partial",
+              "resource_valid": true,
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/scrape-arm-414-native-20261008-1532.json",
+                ".research/scrape-live-peer-20261008-1544.json"
+              ],
+              "detail": "All six tabs, populated content, capture invariance, and empty Images/Video panes are evidenced. The earlier peer identified empty Article, Links, SEO, and Schema pane states as outstanding where supported; this receipt records those panes as populated, not empty. Member/admin omissions do not determine this guest verdict."
             }
           ],
           "defect_ids": ["EXT-D-0175", "EXT-D-0178", "EXT-D-0180"]
@@ -16428,51 +16588,16 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": 37778965029,
-              "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
-              "artifact_ref": {
-                "channel": "development",
-                "version": "0.2.407",
-                "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
-                "ci_run_id": 37754055905,
-                "artifact_id": 11539827040,
-                "artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1"
-              },
+              "run_id": "37801787667",
+              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+              "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
+              "build_version": "0.2.414",
               "evidence": [
-                ".research/scrape-confirmation-native-retest-20261008.json",
-                ".research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json",
-                ".research/scrape-case-scope-adjudication-20261008.json",
-                ".research/scrape-uninstrumented-final-peer-20261008.json",
-                ".research/scrape-reload-observer-native-peer-20261008.json",
-                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029"
+                ".research/scrape-arm-414-native-20261008-1532.json",
+                ".research/scrape-live-peer-20261008-1544.json"
               ],
-              "independent_review": [
-                ".research/scrape-case-scope-adjudication-20261008.json",
-                ".research/scrape-uninstrumented-final-peer-20261008.json"
-              ],
-              "verified_at": "2026-10-08T12:53:01Z",
-              "detail": "Warm/reload Copy capture and section representations and current-content equality are recorded; raw case has no remaining criteria.",
-              "historical_result": {
-                "status": "pass",
-                "run_id": "37761144784",
-                "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
-                "evidence": [
-                  ".research/scrape-reload-observer-native-20261008.json",
-                  ".research/scrape-reload-observer-native-peer-20261008.json"
-                ],
-                "independent_review": ".research/scrape-reload-observer-native-peer-20261008.json",
-                "verified_at": "2026-10-08T10:20:23.473222+00:00",
-                "detail": "Frozen407 guest600px warm/fullreload revalidation. Original strict watcher proved oldworker retirement and exactreplacement running/activated; allthree resourcejournals valid. No member/admin, Store or latermain proof; fresh diagnostic notexercised and prior intermittentfailure unexplained.",
-                "historical_result": {
-                  "status": "pass",
-                  "run_id": "37729682008",
-                  "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
-                  "evidence": ".research/scrape397-reply-native-20261007.json",
-                  "independent_review": ".research/scrape397-reload-pass-peer-20261007.json",
-                  "verified_at": "2026-10-08T05:08:05.445470+00:00",
-                  "detail": "Native intake22 offered copy options, referrals13 offered options plus3 explicit empty-section checks, and22 options after full extension reload pass current-fixture/format predicates; clipboard values not retained. Fresh peer verified original receipt, driver predicates and current resource journals. This bounded guest pass does not establish member/admin, Store, current-main or complete Scrape health; D166 historical panel absence cause remains open."
-                }
-              }
+              "detail": "Guest copy formats and current-content equality remain covered warm and after reload.",
+              "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
             }
           },
           "linked_defects": ["EXT-D-0164"],
@@ -16502,6 +16627,58 @@
                 "detail": "Warm intake22 offered copy options and referrals13 offered options plus3 explicit empty-section checks pass recorded fixture predicates; full extension reload replacement panel unverified. No clipboard values retained. Peer checked original receipt/journals; no separate browser replay or Store/current-main claim. Original CI artifact provenance independently checked in d165-full-ci-closure-peer-20261007.json."
               },
               "superseded_at": "2026-10-08T05:08:05.445470+00:00"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": 37778965029,
+                "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
+                "artifact_ref": {
+                  "channel": "development",
+                  "version": "0.2.407",
+                  "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+                  "ci_run_id": 37754055905,
+                  "artifact_id": 11539827040,
+                  "artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1"
+                },
+                "evidence": [
+                  ".research/scrape-confirmation-native-retest-20261008.json",
+                  ".research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json",
+                  ".research/scrape-case-scope-adjudication-20261008.json",
+                  ".research/scrape-uninstrumented-final-peer-20261008.json",
+                  ".research/scrape-reload-observer-native-peer-20261008.json",
+                  "https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029"
+                ],
+                "independent_review": [
+                  ".research/scrape-case-scope-adjudication-20261008.json",
+                  ".research/scrape-uninstrumented-final-peer-20261008.json"
+                ],
+                "verified_at": "2026-10-08T12:53:01Z",
+                "detail": "Warm/reload Copy capture and section representations and current-content equality are recorded; raw case has no remaining criteria.",
+                "historical_result": {
+                  "status": "pass",
+                  "run_id": "37761144784",
+                  "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
+                  "evidence": [
+                    ".research/scrape-reload-observer-native-20261008.json",
+                    ".research/scrape-reload-observer-native-peer-20261008.json"
+                  ],
+                  "independent_review": ".research/scrape-reload-observer-native-peer-20261008.json",
+                  "verified_at": "2026-10-08T10:20:23.473222+00:00",
+                  "detail": "Frozen407 guest600px warm/fullreload revalidation. Original strict watcher proved oldworker retirement and exactreplacement running/activated; allthree resourcejournals valid. No member/admin, Store or latermain proof; fresh diagnostic notexercised and prior intermittentfailure unexplained.",
+                  "historical_result": {
+                    "status": "pass",
+                    "run_id": "37729682008",
+                    "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
+                    "evidence": ".research/scrape397-reply-native-20261007.json",
+                    "independent_review": ".research/scrape397-reload-pass-peer-20261007.json",
+                    "verified_at": "2026-10-08T05:08:05.445470+00:00",
+                    "detail": "Native intake22 offered copy options, referrals13 offered options plus3 explicit empty-section checks, and22 options after full extension reload pass current-fixture/format predicates; clipboard values not retained. Fresh peer verified original receipt, driver predicates and current resource journals. This bounded guest pass does not establish member/admin, Store, current-main or complete Scrape health; D166 historical panel absence cause remains open."
+                  }
+                }
+              },
+              "superseded_at": "2026-10-08T15:48:53.830295+00:00"
             }
           ],
           "defect_ids": ["EXT-D-0166"],
@@ -16552,6 +16729,19 @@
                 "https://github.com/armanisadeghi/matrx-extend/actions/runs/37767763301"
               ],
               "detail": "Frozen 0.2.407 guest 600px attempt: warm observations remain partial. The replacement worker activated, but the open-panel request received no reply, so extension reload/panel readiness remained unverified. The post-reload capture probe was not exercised. Resource journals were valid; no new pass or acceptance credit."
+            },
+            {
+              "at": "2026-10-08T15:48:53.830295+00:00",
+              "run_id": "37801787667",
+              "mode": "guest",
+              "status": "pass",
+              "resource_valid": true,
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/scrape-arm-414-native-20261008-1532.json",
+                ".research/scrape-live-peer-20261008-1544.json"
+              ],
+              "detail": "Guest copy formats and current-content equality remain covered warm and after reload."
             }
           ]
         },
@@ -16582,70 +16772,16 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": 37778965029,
-              "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
-              "artifact_ref": {
-                "channel": "development",
-                "version": "0.2.407",
-                "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
-                "ci_run_id": 37754055905,
-                "artifact_id": 11539827040,
-                "artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1"
-              },
+              "run_id": "37801787667",
+              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+              "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
+              "build_version": "0.2.414",
               "evidence": [
-                ".research/scrape-confirmation-native-retest-20261008.json",
-                ".research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json",
-                ".research/scrape-case-scope-adjudication-20261008.json",
-                ".research/scrape-uninstrumented-final-peer-20261008.json",
-                ".research/scrape-reload-observer-native-peer-20261008.json",
-                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029"
+                ".research/scrape-arm-414-native-20261008-1532.json",
+                ".research/scrape-live-peer-20261008-1544.json"
               ],
-              "independent_review": [
-                ".research/scrape-case-scope-adjudication-20261008.json",
-                ".research/scrape-uninstrumented-final-peer-20261008.json"
-              ],
-              "verified_at": "2026-10-08T12:53:01Z",
-              "detail": "Warm/reload removal of large, medium, and icon images updates rows/count; raw case has no remaining criteria.",
-              "historical_result": {
-                "status": "pass",
-                "run_id": "37761144784",
-                "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
-                "evidence": [
-                  ".research/scrape-reload-observer-native-20261008.json",
-                  ".research/scrape-reload-observer-native-peer-20261008.json"
-                ],
-                "independent_review": ".research/scrape-reload-observer-native-peer-20261008.json",
-                "verified_at": "2026-10-08T10:20:23.473222+00:00",
-                "detail": "Frozen407 guest600px warm/fullreload revalidation. Original strict watcher proved oldworker retirement and exactreplacement running/activated; allthree resourcejournals valid. No member/admin, Store or latermain proof; fresh diagnostic notexercised and prior intermittentfailure unexplained.",
-                "historical_result": {
-                  "status": "pass",
-                  "run_id": "37251782627",
-                  "evidence": ".research/guest-scrape-normal-native.json",
-                  "detail": "Frozen development244 guest ARM: Exact image removals through empty state warm and after full reload verified.",
-                  "build_variant": "development0.2.244/sourceb8158702/CI37233480033/artifact11315305224",
-                  "viewport": "owned SIDE_PANEL CDP viewport emulation600px warm/reload; initialphysicalmeasurement360x373; no physicalresize claim",
-                  "verified_at": "2026-10-05T01:45:35.094250+00:00",
-                  "historical_result": {
-                    "status": "pass",
-                    "run_id": "37222954472",
-                    "evidence": ".research/scrape231-recapture-native.json",
-                    "detail": "Exact development231 guest ARM: Three exact image removals through empty and valid replacement image/alt verified warm and after full reload.",
-                    "historical_result": {
-                      "status": "partial",
-                      "run_id": "37221586281",
-                      "evidence": ".research/scrape231-context-diagnostic-native.json",
-                      "detail": "Exact development231 guest ARM: Three selective image removals reached empty and exact follow-up image/alt was added; full reload remains.",
-                      "historical_result": {
-                        "status": "partial",
-                        "build": "development0.2.215/source3536b5cb",
-                        "run_id": "37214124282",
-                        "evidence": [".research/scrape-transition-native-diagnostic.json"],
-                        "detail": "Warm native medium/icon/large removals verified with exact before/after identities, trusted pointer events, Images retained and count3\u21922\u21921\u2192empty. Later control sequence failed with Article selected; earlier third-removal inference refuted. Fullreload and otherroles unverified."
-                      }
-                    }
-                  }
-                }
-              }
+              "detail": "Guest image removal through empty state and valid add remain covered warm and after reload.",
+              "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
             },
             "member": {
               "status": "partial",
@@ -16674,6 +16810,77 @@
                 "acceptance_credit": false,
                 "detail": "Resource-valid warm observations only; full case remains unverified after runner stopped at Links pointer targeting. Prior accepted build-specific results retained; no new full-case pass."
               }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": 37778965029,
+                "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
+                "artifact_ref": {
+                  "channel": "development",
+                  "version": "0.2.407",
+                  "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+                  "ci_run_id": 37754055905,
+                  "artifact_id": 11539827040,
+                  "artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1"
+                },
+                "evidence": [
+                  ".research/scrape-confirmation-native-retest-20261008.json",
+                  ".research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json",
+                  ".research/scrape-case-scope-adjudication-20261008.json",
+                  ".research/scrape-uninstrumented-final-peer-20261008.json",
+                  ".research/scrape-reload-observer-native-peer-20261008.json",
+                  "https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029"
+                ],
+                "independent_review": [
+                  ".research/scrape-case-scope-adjudication-20261008.json",
+                  ".research/scrape-uninstrumented-final-peer-20261008.json"
+                ],
+                "verified_at": "2026-10-08T12:53:01Z",
+                "detail": "Warm/reload removal of large, medium, and icon images updates rows/count; raw case has no remaining criteria.",
+                "historical_result": {
+                  "status": "pass",
+                  "run_id": "37761144784",
+                  "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
+                  "evidence": [
+                    ".research/scrape-reload-observer-native-20261008.json",
+                    ".research/scrape-reload-observer-native-peer-20261008.json"
+                  ],
+                  "independent_review": ".research/scrape-reload-observer-native-peer-20261008.json",
+                  "verified_at": "2026-10-08T10:20:23.473222+00:00",
+                  "detail": "Frozen407 guest600px warm/fullreload revalidation. Original strict watcher proved oldworker retirement and exactreplacement running/activated; allthree resourcejournals valid. No member/admin, Store or latermain proof; fresh diagnostic notexercised and prior intermittentfailure unexplained.",
+                  "historical_result": {
+                    "status": "pass",
+                    "run_id": "37251782627",
+                    "evidence": ".research/guest-scrape-normal-native.json",
+                    "detail": "Frozen development244 guest ARM: Exact image removals through empty state warm and after full reload verified.",
+                    "build_variant": "development0.2.244/sourceb8158702/CI37233480033/artifact11315305224",
+                    "viewport": "owned SIDE_PANEL CDP viewport emulation600px warm/reload; initialphysicalmeasurement360x373; no physicalresize claim",
+                    "verified_at": "2026-10-05T01:45:35.094250+00:00",
+                    "historical_result": {
+                      "status": "pass",
+                      "run_id": "37222954472",
+                      "evidence": ".research/scrape231-recapture-native.json",
+                      "detail": "Exact development231 guest ARM: Three exact image removals through empty and valid replacement image/alt verified warm and after full reload.",
+                      "historical_result": {
+                        "status": "partial",
+                        "run_id": "37221586281",
+                        "evidence": ".research/scrape231-context-diagnostic-native.json",
+                        "detail": "Exact development231 guest ARM: Three selective image removals reached empty and exact follow-up image/alt was added; full reload remains.",
+                        "historical_result": {
+                          "status": "partial",
+                          "build": "development0.2.215/source3536b5cb",
+                          "run_id": "37214124282",
+                          "evidence": [".research/scrape-transition-native-diagnostic.json"],
+                          "detail": "Warm native medium/icon/large removals verified with exact before/after identities, trusted pointer events, Images retained and count3\u21922\u21921\u2192empty. Later control sequence failed with Article selected; earlier third-removal inference refuted. Fullreload and otherroles unverified."
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "superseded_at": "2026-10-08T15:48:53.830295+00:00"
             }
           ],
           "attempt_history": [
@@ -16723,6 +16930,19 @@
                 "https://github.com/armanisadeghi/matrx-extend/actions/runs/37767763301"
               ],
               "detail": "Frozen 0.2.407 guest 600px attempt: warm observations remain partial. The replacement worker activated, but the open-panel request received no reply, so extension reload/panel readiness remained unverified. The post-reload capture probe was not exercised. Resource journals were valid; no new pass or acceptance credit."
+            },
+            {
+              "at": "2026-10-08T15:48:53.830295+00:00",
+              "run_id": "37801787667",
+              "mode": "guest",
+              "status": "pass",
+              "resource_valid": true,
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/scrape-arm-414-native-20261008-1532.json",
+                ".research/scrape-live-peer-20261008-1544.json"
+              ],
+              "detail": "Guest image removal through empty state and valid add remain covered warm and after reload."
             }
           ]
         },
@@ -16754,69 +16974,16 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": 37778965029,
-              "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
-              "artifact_ref": {
-                "channel": "development",
-                "version": "0.2.407",
-                "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
-                "ci_run_id": 37754055905,
-                "artifact_id": 11539827040,
-                "artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1"
-              },
+              "run_id": "37801787667",
+              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+              "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
+              "build_version": "0.2.414",
               "evidence": [
-                ".research/scrape-confirmation-native-retest-20261008.json",
-                ".research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json",
-                ".research/scrape-case-scope-adjudication-20261008.json",
-                ".research/scrape-uninstrumented-final-peer-20261008.json",
-                ".research/scrape-reload-observer-native-peer-20261008.json",
-                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029"
+                ".research/scrape-arm-414-native-20261008-1532.json",
+                ".research/scrape-live-peer-20261008-1544.json"
               ],
-              "independent_review": [
-                ".research/scrape-case-scope-adjudication-20261008.json",
-                ".research/scrape-uninstrumented-final-peer-20261008.json"
-              ],
-              "verified_at": "2026-10-08T12:53:01Z",
-              "detail": "Warm/reload blank URL rejection, valid URL with alt, and Cancel clearing draft are recorded; raw case has no remaining criteria.",
-              "historical_result": {
-                "status": "pass",
-                "run_id": "37761144784",
-                "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
-                "evidence": [
-                  ".research/scrape-reload-observer-native-20261008.json",
-                  ".research/scrape-reload-observer-native-peer-20261008.json"
-                ],
-                "independent_review": ".research/scrape-reload-observer-native-peer-20261008.json",
-                "verified_at": "2026-10-08T10:20:23.473222+00:00",
-                "detail": "Frozen407 guest600px warm/fullreload revalidation. Original strict watcher proved oldworker retirement and exactreplacement running/activated; allthree resourcejournals valid. No member/admin, Store or latermain proof; fresh diagnostic notexercised and prior intermittentfailure unexplained.",
-                "historical_result": {
-                  "status": "pass",
-                  "run_id": "37251782627",
-                  "evidence": ".research/guest-scrape-normal-native.json",
-                  "detail": "Frozen development244 guest ARM: Blank image rejection, valid URL/alt addition and Cancel clearing verified warm and after full reload.",
-                  "build_variant": "development0.2.244/sourceb8158702/CI37233480033/artifact11315305224",
-                  "viewport": "owned SIDE_PANEL CDP viewport emulation600px warm/reload; initialphysicalmeasurement360x373; no physicalresize claim",
-                  "verified_at": "2026-10-05T01:45:35.094250+00:00",
-                  "historical_result": {
-                    "status": "pass",
-                    "run_id": "37222954472",
-                    "evidence": ".research/scrape231-recapture-native.json",
-                    "detail": "Exact development231 guest ARM: Blank image rejected, valid URL/alt added, Cancel cleared form warm and after full reload.",
-                    "historical_result": {
-                      "status": "partial",
-                      "run_id": "37221586281",
-                      "evidence": ".research/scrape231-context-diagnostic-native.json",
-                      "detail": "Exact development231 guest ARM: Blank image rejected, valid URL/alt added, Cancel cleared form; full reload remains.",
-                      "historical_result": {
-                        "status": "partial",
-                        "evidence": ".research/scrape231-arm-native.json",
-                        "run_id": "37218903375",
-                        "detail": "Healthy exact231 ARM warm Add image blank/valid+alt/Cancel sequence completed; full reload and other roles unverified."
-                      }
-                    }
-                  }
-                }
-              }
+              "detail": "Guest blank rejection, valid add, and Cancel draft clearing remain covered warm and after reload.",
+              "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
             },
             "member": {
               "status": "partial",
@@ -16845,6 +17012,76 @@
                 "acceptance_credit": false,
                 "detail": "Resource-valid warm observations only; full case remains unverified after runner stopped at Links pointer targeting. Prior accepted build-specific results retained; no new full-case pass."
               }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": 37778965029,
+                "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
+                "artifact_ref": {
+                  "channel": "development",
+                  "version": "0.2.407",
+                  "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+                  "ci_run_id": 37754055905,
+                  "artifact_id": 11539827040,
+                  "artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1"
+                },
+                "evidence": [
+                  ".research/scrape-confirmation-native-retest-20261008.json",
+                  ".research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json",
+                  ".research/scrape-case-scope-adjudication-20261008.json",
+                  ".research/scrape-uninstrumented-final-peer-20261008.json",
+                  ".research/scrape-reload-observer-native-peer-20261008.json",
+                  "https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029"
+                ],
+                "independent_review": [
+                  ".research/scrape-case-scope-adjudication-20261008.json",
+                  ".research/scrape-uninstrumented-final-peer-20261008.json"
+                ],
+                "verified_at": "2026-10-08T12:53:01Z",
+                "detail": "Warm/reload blank URL rejection, valid URL with alt, and Cancel clearing draft are recorded; raw case has no remaining criteria.",
+                "historical_result": {
+                  "status": "pass",
+                  "run_id": "37761144784",
+                  "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
+                  "evidence": [
+                    ".research/scrape-reload-observer-native-20261008.json",
+                    ".research/scrape-reload-observer-native-peer-20261008.json"
+                  ],
+                  "independent_review": ".research/scrape-reload-observer-native-peer-20261008.json",
+                  "verified_at": "2026-10-08T10:20:23.473222+00:00",
+                  "detail": "Frozen407 guest600px warm/fullreload revalidation. Original strict watcher proved oldworker retirement and exactreplacement running/activated; allthree resourcejournals valid. No member/admin, Store or latermain proof; fresh diagnostic notexercised and prior intermittentfailure unexplained.",
+                  "historical_result": {
+                    "status": "pass",
+                    "run_id": "37251782627",
+                    "evidence": ".research/guest-scrape-normal-native.json",
+                    "detail": "Frozen development244 guest ARM: Blank image rejection, valid URL/alt addition and Cancel clearing verified warm and after full reload.",
+                    "build_variant": "development0.2.244/sourceb8158702/CI37233480033/artifact11315305224",
+                    "viewport": "owned SIDE_PANEL CDP viewport emulation600px warm/reload; initialphysicalmeasurement360x373; no physicalresize claim",
+                    "verified_at": "2026-10-05T01:45:35.094250+00:00",
+                    "historical_result": {
+                      "status": "pass",
+                      "run_id": "37222954472",
+                      "evidence": ".research/scrape231-recapture-native.json",
+                      "detail": "Exact development231 guest ARM: Blank image rejected, valid URL/alt added, Cancel cleared form warm and after full reload.",
+                      "historical_result": {
+                        "status": "partial",
+                        "run_id": "37221586281",
+                        "evidence": ".research/scrape231-context-diagnostic-native.json",
+                        "detail": "Exact development231 guest ARM: Blank image rejected, valid URL/alt added, Cancel cleared form; full reload remains.",
+                        "historical_result": {
+                          "status": "partial",
+                          "evidence": ".research/scrape231-arm-native.json",
+                          "run_id": "37218903375",
+                          "detail": "Healthy exact231 ARM warm Add image blank/valid+alt/Cancel sequence completed; full reload and other roles unverified."
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "superseded_at": "2026-10-08T15:48:53.830295+00:00"
             }
           ],
           "attempt_history": [
@@ -16894,6 +17131,19 @@
                 "https://github.com/armanisadeghi/matrx-extend/actions/runs/37767763301"
               ],
               "detail": "Frozen 0.2.407 guest 600px attempt: warm observations remain partial. The replacement worker activated, but the open-panel request received no reply, so extension reload/panel readiness remained unverified. The post-reload capture probe was not exercised. Resource journals were valid; no new pass or acceptance credit."
+            },
+            {
+              "at": "2026-10-08T15:48:53.830295+00:00",
+              "run_id": "37801787667",
+              "mode": "guest",
+              "status": "pass",
+              "resource_valid": true,
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/scrape-arm-414-native-20261008-1532.json",
+                ".research/scrape-live-peer-20261008-1544.json"
+              ],
+              "detail": "Guest blank rejection, valid add, and Cancel draft clearing remain covered warm and after reload."
             }
           ]
         },
@@ -16923,53 +17173,16 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": 37778965029,
-              "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
-              "artifact_ref": {
-                "channel": "development",
-                "version": "0.2.407",
-                "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
-                "ci_run_id": 37754055905,
-                "artifact_id": 11539827040,
-                "artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1"
-              },
+              "run_id": "37801787667",
+              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+              "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
+              "build_version": "0.2.414",
               "evidence": [
-                ".research/scrape-confirmation-native-retest-20261008.json",
-                ".research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json",
-                ".research/scrape-case-scope-adjudication-20261008.json",
-                ".research/scrape-uninstrumented-final-peer-20261008.json",
-                ".research/scrape-reload-observer-native-peer-20261008.json",
-                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029"
+                ".research/scrape-arm-414-native-20261008-1532.json",
+                ".research/scrape-live-peer-20261008-1544.json"
               ],
-              "independent_review": [
-                ".research/scrape-case-scope-adjudication-20261008.json",
-                ".research/scrape-uninstrumented-final-peer-20261008.json"
-              ],
-              "verified_at": "2026-10-08T12:53:01Z",
-              "detail": "Warm/reload video open, clipboard equality, removal, blank rejection, and valid add are recorded; raw case has no remaining criteria.",
-              "historical_result": {
-                "status": "pass",
-                "run_id": "37761144784",
-                "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
-                "evidence": [
-                  ".research/scrape-reload-observer-native-20261008.json",
-                  ".research/scrape-reload-observer-native-peer-20261008.json"
-                ],
-                "independent_review": ".research/scrape-reload-observer-native-peer-20261008.json",
-                "verified_at": "2026-10-08T10:20:23.473222+00:00",
-                "detail": "Frozen407 guest600px warm/fullreload revalidation. Original strict watcher proved oldworker retirement and exactreplacement running/activated; allthree resourcejournals valid. No member/admin, Store or latermain proof; fresh diagnostic notexercised and prior intermittentfailure unexplained.",
-                "historical_result": {
-                  "status": "pass",
-                  "run_id": "37693691959",
-                  "evidence": [
-                    ".research/scrape-counted-native-retest-20261007.json",
-                    ".research/native-batch-evidence-peer-20261007.json"
-                  ],
-                  "detail": "Video Open, exact Copy, remove/add and blank rejection verified warm and full reload; permission restored. Guest only; other modes retain their own evidence.",
-                  "build_variant": "development0.2.385/source87f6649b",
-                  "observed_at": "2026-10-07T22:18:59.711910+00:00"
-                }
-              }
+              "detail": "Guest video open/copy/remove, blank rejection, and valid add remain covered warm and after reload.",
+              "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
             },
             "member": {
               "status": "partial",
@@ -17033,6 +17246,60 @@
                   }
                 }
               }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": 37778965029,
+                "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
+                "artifact_ref": {
+                  "channel": "development",
+                  "version": "0.2.407",
+                  "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+                  "ci_run_id": 37754055905,
+                  "artifact_id": 11539827040,
+                  "artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1"
+                },
+                "evidence": [
+                  ".research/scrape-confirmation-native-retest-20261008.json",
+                  ".research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json",
+                  ".research/scrape-case-scope-adjudication-20261008.json",
+                  ".research/scrape-uninstrumented-final-peer-20261008.json",
+                  ".research/scrape-reload-observer-native-peer-20261008.json",
+                  "https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029"
+                ],
+                "independent_review": [
+                  ".research/scrape-case-scope-adjudication-20261008.json",
+                  ".research/scrape-uninstrumented-final-peer-20261008.json"
+                ],
+                "verified_at": "2026-10-08T12:53:01Z",
+                "detail": "Warm/reload video open, clipboard equality, removal, blank rejection, and valid add are recorded; raw case has no remaining criteria.",
+                "historical_result": {
+                  "status": "pass",
+                  "run_id": "37761144784",
+                  "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
+                  "evidence": [
+                    ".research/scrape-reload-observer-native-20261008.json",
+                    ".research/scrape-reload-observer-native-peer-20261008.json"
+                  ],
+                  "independent_review": ".research/scrape-reload-observer-native-peer-20261008.json",
+                  "verified_at": "2026-10-08T10:20:23.473222+00:00",
+                  "detail": "Frozen407 guest600px warm/fullreload revalidation. Original strict watcher proved oldworker retirement and exactreplacement running/activated; allthree resourcejournals valid. No member/admin, Store or latermain proof; fresh diagnostic notexercised and prior intermittentfailure unexplained.",
+                  "historical_result": {
+                    "status": "pass",
+                    "run_id": "37693691959",
+                    "evidence": [
+                      ".research/scrape-counted-native-retest-20261007.json",
+                      ".research/native-batch-evidence-peer-20261007.json"
+                    ],
+                    "detail": "Video Open, exact Copy, remove/add and blank rejection verified warm and full reload; permission restored. Guest only; other modes retain their own evidence.",
+                    "build_variant": "development0.2.385/source87f6649b",
+                    "observed_at": "2026-10-07T22:18:59.711910+00:00"
+                  }
+                }
+              },
+              "superseded_at": "2026-10-08T15:48:53.830295+00:00"
             }
           ],
           "attempt_history": [
@@ -17082,6 +17349,19 @@
                 "https://github.com/armanisadeghi/matrx-extend/actions/runs/37767763301"
               ],
               "detail": "Frozen 0.2.407 guest 600px attempt: warm observations remain partial. The replacement worker activated, but the open-panel request received no reply, so extension reload/panel readiness remained unverified. The post-reload capture probe was not exercised. Resource journals were valid; no new pass or acceptance credit."
+            },
+            {
+              "at": "2026-10-08T15:48:53.830295+00:00",
+              "run_id": "37801787667",
+              "mode": "guest",
+              "status": "pass",
+              "resource_valid": true,
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/scrape-arm-414-native-20261008-1532.json",
+                ".research/scrape-live-peer-20261008-1544.json"
+              ],
+              "detail": "Guest video open/copy/remove, blank rejection, and valid add remain covered warm and after reload."
             }
           ]
         },
@@ -17119,53 +17399,16 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": 37778965029,
-              "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
-              "artifact_ref": {
-                "channel": "development",
-                "version": "0.2.407",
-                "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
-                "ci_run_id": 37754055905,
-                "artifact_id": 11539827040,
-                "artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1"
-              },
+              "run_id": "37801787667",
+              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+              "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
+              "build_version": "0.2.414",
               "evidence": [
-                ".research/scrape-confirmation-native-retest-20261008.json",
-                ".research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json",
-                ".research/scrape-case-scope-adjudication-20261008.json",
-                ".research/scrape-uninstrumented-final-peer-20261008.json",
-                ".research/scrape-reload-observer-native-peer-20261008.json",
-                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029"
+                ".research/scrape-arm-414-native-20261008-1532.json",
+                ".research/scrape-live-peer-20261008-1544.json"
               ],
-              "independent_review": [
-                ".research/scrape-case-scope-adjudication-20261008.json",
-                ".research/scrape-uninstrumented-final-peer-20261008.json"
-              ],
-              "verified_at": "2026-10-08T12:53:01Z",
-              "detail": "The raw warm/reload link evidence covers open, copy with clipboard equality, remove, blank href rejection, valid href/text add, and cancel. These exhaust guest C13, steps, expected behavior, and warm/reload dimensions. Canonical guest cell already says pass; raw aggregate partial and peer partial stem solely from member/admin absence and do not demote guest.",
-              "historical_result": {
-                "status": "pass",
-                "run_id": "37761144784",
-                "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
-                "evidence": [
-                  ".research/scrape-reload-observer-native-20261008.json",
-                  ".research/scrape-reload-observer-native-peer-20261008.json"
-                ],
-                "independent_review": ".research/scrape-reload-observer-native-peer-20261008.json",
-                "verified_at": "2026-10-08T10:20:23.473222+00:00",
-                "detail": "Frozen407 guest600px warm/fullreload revalidation. Original strict watcher proved oldworker retirement and exactreplacement running/activated; allthree resourcejournals valid. No member/admin, Store or latermain proof; fresh diagnostic notexercised and prior intermittentfailure unexplained. Independent per-mode review confirms all guestcase criteria; receipt aggregatepartial reflects othermodes only.",
-                "historical_result": {
-                  "status": "pass",
-                  "run_id": "37693691959",
-                  "evidence": [
-                    ".research/scrape-counted-native-retest-20261007.json",
-                    ".research/native-batch-evidence-peer-20261007.json"
-                  ],
-                  "detail": "Links Open, exact Copy, selective removal, blank rejection, valid add and Cancel verified warm and full reload. Guest only; other modes retain their own evidence.",
-                  "build_variant": "development0.2.385/source87f6649b",
-                  "observed_at": "2026-10-07T22:18:59.711910+00:00"
-                }
-              }
+              "detail": "Guest link open/copy/remove, blank rejection, valid add, and cancel remain covered warm and after reload.",
+              "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
             },
             "member": {
               "status": "partial",
@@ -17223,6 +17466,60 @@
                   }
                 }
               }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": 37778965029,
+                "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
+                "artifact_ref": {
+                  "channel": "development",
+                  "version": "0.2.407",
+                  "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+                  "ci_run_id": 37754055905,
+                  "artifact_id": 11539827040,
+                  "artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1"
+                },
+                "evidence": [
+                  ".research/scrape-confirmation-native-retest-20261008.json",
+                  ".research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json",
+                  ".research/scrape-case-scope-adjudication-20261008.json",
+                  ".research/scrape-uninstrumented-final-peer-20261008.json",
+                  ".research/scrape-reload-observer-native-peer-20261008.json",
+                  "https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029"
+                ],
+                "independent_review": [
+                  ".research/scrape-case-scope-adjudication-20261008.json",
+                  ".research/scrape-uninstrumented-final-peer-20261008.json"
+                ],
+                "verified_at": "2026-10-08T12:53:01Z",
+                "detail": "The raw warm/reload link evidence covers open, copy with clipboard equality, remove, blank href rejection, valid href/text add, and cancel. These exhaust guest C13, steps, expected behavior, and warm/reload dimensions. Canonical guest cell already says pass; raw aggregate partial and peer partial stem solely from member/admin absence and do not demote guest.",
+                "historical_result": {
+                  "status": "pass",
+                  "run_id": "37761144784",
+                  "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
+                  "evidence": [
+                    ".research/scrape-reload-observer-native-20261008.json",
+                    ".research/scrape-reload-observer-native-peer-20261008.json"
+                  ],
+                  "independent_review": ".research/scrape-reload-observer-native-peer-20261008.json",
+                  "verified_at": "2026-10-08T10:20:23.473222+00:00",
+                  "detail": "Frozen407 guest600px warm/fullreload revalidation. Original strict watcher proved oldworker retirement and exactreplacement running/activated; allthree resourcejournals valid. No member/admin, Store or latermain proof; fresh diagnostic notexercised and prior intermittentfailure unexplained. Independent per-mode review confirms all guestcase criteria; receipt aggregatepartial reflects othermodes only.",
+                  "historical_result": {
+                    "status": "pass",
+                    "run_id": "37693691959",
+                    "evidence": [
+                      ".research/scrape-counted-native-retest-20261007.json",
+                      ".research/native-batch-evidence-peer-20261007.json"
+                    ],
+                    "detail": "Links Open, exact Copy, selective removal, blank rejection, valid add and Cancel verified warm and full reload. Guest only; other modes retain their own evidence.",
+                    "build_variant": "development0.2.385/source87f6649b",
+                    "observed_at": "2026-10-07T22:18:59.711910+00:00"
+                  }
+                }
+              },
+              "superseded_at": "2026-10-08T15:48:53.830295+00:00"
             }
           ],
           "attempt_history": [
@@ -17272,6 +17569,19 @@
                 "https://github.com/armanisadeghi/matrx-extend/actions/runs/37767763301"
               ],
               "detail": "Frozen 0.2.407 guest 600px attempt: warm observations remain partial. The replacement worker activated, but the open-panel request received no reply, so extension reload/panel readiness remained unverified. The post-reload capture probe was not exercised. Resource journals were valid; no new pass or acceptance credit."
+            },
+            {
+              "at": "2026-10-08T15:48:53.830295+00:00",
+              "run_id": "37801787667",
+              "mode": "guest",
+              "status": "pass",
+              "resource_valid": true,
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/scrape-arm-414-native-20261008-1532.json",
+                ".research/scrape-live-peer-20261008-1544.json"
+              ],
+              "detail": "Guest link open/copy/remove, blank rejection, valid add, and cancel remain covered warm and after reload."
             }
           ]
         },
@@ -17293,56 +17603,16 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": 37778965029,
-              "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
-              "artifact_ref": {
-                "channel": "development",
-                "version": "0.2.407",
-                "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
-                "ci_run_id": 37754055905,
-                "artifact_id": 11539827040,
-                "artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1"
-              },
+              "run_id": "37801787667",
+              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+              "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
+              "build_version": "0.2.414",
               "evidence": [
-                ".research/scrape-confirmation-native-retest-20261008.json",
-                ".research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json",
-                ".research/scrape-case-scope-adjudication-20261008.json",
-                ".research/scrape-uninstrumented-final-peer-20261008.json",
-                ".research/scrape-reload-observer-native-peer-20261008.json",
-                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029"
+                ".research/scrape-arm-414-native-20261008-1532.json",
+                ".research/scrape-live-peer-20261008-1544.json"
               ],
-              "independent_review": [
-                ".research/scrape-case-scope-adjudication-20261008.json",
-                ".research/scrape-uninstrumented-final-peer-20261008.json"
-              ],
-              "verified_at": "2026-10-08T12:53:01Z",
-              "detail": "Historical restricted-URL error and Dismiss evidence remains. The receipt does not show natural recoverable Reload page or Try again, including preservation of deep mode on retry, so guest recovery criteria remain open.",
-              "remaining_criteria": [
-                "Natural recoverable Reload page",
-                "Natural Try again",
-                "Deep-mode retry preservation"
-              ],
-              "historical_result": {
-                "status": "partial",
-                "run_id": "37251782627",
-                "evidence": ".research/guest-scrape-normal-native.json",
-                "detail": "Frozen development244 guest ARM: Restricted-page error/Dismiss verified; natural recoverable Reload/Try again/deep retry remain unverified.",
-                "build_variant": "development0.2.244/sourceb8158702/CI37233480033/artifact11315305224",
-                "viewport": "owned SIDE_PANEL CDP viewport emulation600px warm/reload; initialphysicalmeasurement360x373; no physicalresize claim",
-                "verified_at": "2026-10-05T01:45:35.094250+00:00",
-                "historical_result": {
-                  "status": "partial",
-                  "run_id": "37222954472",
-                  "evidence": ".research/scrape231-recapture-native.json",
-                  "detail": "Exact development231 guest ARM: Restricted-page error/Dismiss exercised. Recoverable Reload/Try again and deep-retry path remain unverified.",
-                  "historical_result": {
-                    "status": "partial",
-                    "evidence": ".research/scrape-freshness-fixed-native.json",
-                    "run_id": "37195986118",
-                    "detail": "Healthy exactdevelopment215 observed restrictedchrome://settings norecoveryactions andDismiss; recoverableReload/Tryagain/deepretryunverified."
-                  }
-                }
-              }
+              "detail": "A restricted-URL dismiss is present, but natural recoverable Reload page/Try again and deep-mode retry behavior remain open.",
+              "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
             }
           },
           "component_evidence": [
@@ -17397,6 +17667,78 @@
                 "https://github.com/armanisadeghi/matrx-extend/actions/runs/37767763301"
               ],
               "detail": "Frozen 0.2.407 guest 600px attempt: warm observations remain partial. The replacement worker activated, but the open-panel request received no reply, so extension reload/panel readiness remained unverified. The post-reload capture probe was not exercised. Resource journals were valid; no new pass or acceptance credit."
+            },
+            {
+              "at": "2026-10-08T15:48:53.830295+00:00",
+              "run_id": "37801787667",
+              "mode": "guest",
+              "status": "partial",
+              "resource_valid": true,
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/scrape-arm-414-native-20261008-1532.json",
+                ".research/scrape-live-peer-20261008-1544.json"
+              ],
+              "detail": "A restricted-URL dismiss is present, but natural recoverable Reload page/Try again and deep-mode retry behavior remain open."
+            }
+          ],
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": 37778965029,
+                "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
+                "artifact_ref": {
+                  "channel": "development",
+                  "version": "0.2.407",
+                  "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+                  "ci_run_id": 37754055905,
+                  "artifact_id": 11539827040,
+                  "artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1"
+                },
+                "evidence": [
+                  ".research/scrape-confirmation-native-retest-20261008.json",
+                  ".research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json",
+                  ".research/scrape-case-scope-adjudication-20261008.json",
+                  ".research/scrape-uninstrumented-final-peer-20261008.json",
+                  ".research/scrape-reload-observer-native-peer-20261008.json",
+                  "https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029"
+                ],
+                "independent_review": [
+                  ".research/scrape-case-scope-adjudication-20261008.json",
+                  ".research/scrape-uninstrumented-final-peer-20261008.json"
+                ],
+                "verified_at": "2026-10-08T12:53:01Z",
+                "detail": "Historical restricted-URL error and Dismiss evidence remains. The receipt does not show natural recoverable Reload page or Try again, including preservation of deep mode on retry, so guest recovery criteria remain open.",
+                "remaining_criteria": [
+                  "Natural recoverable Reload page",
+                  "Natural Try again",
+                  "Deep-mode retry preservation"
+                ],
+                "historical_result": {
+                  "status": "partial",
+                  "run_id": "37251782627",
+                  "evidence": ".research/guest-scrape-normal-native.json",
+                  "detail": "Frozen development244 guest ARM: Restricted-page error/Dismiss verified; natural recoverable Reload/Try again/deep retry remain unverified.",
+                  "build_variant": "development0.2.244/sourceb8158702/CI37233480033/artifact11315305224",
+                  "viewport": "owned SIDE_PANEL CDP viewport emulation600px warm/reload; initialphysicalmeasurement360x373; no physicalresize claim",
+                  "verified_at": "2026-10-05T01:45:35.094250+00:00",
+                  "historical_result": {
+                    "status": "partial",
+                    "run_id": "37222954472",
+                    "evidence": ".research/scrape231-recapture-native.json",
+                    "detail": "Exact development231 guest ARM: Restricted-page error/Dismiss exercised. Recoverable Reload/Try again and deep-retry path remain unverified.",
+                    "historical_result": {
+                      "status": "partial",
+                      "evidence": ".research/scrape-freshness-fixed-native.json",
+                      "run_id": "37195986118",
+                      "detail": "Healthy exactdevelopment215 observed restrictedchrome://settings norecoveryactions andDismiss; recoverableReload/Tryagain/deepretryunverified."
+                    }
+                  }
+                }
+              },
+              "superseded_at": "2026-10-08T15:48:53.830295+00:00"
             }
           ]
         },
@@ -17514,71 +17856,16 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": 37778965029,
-              "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
-              "artifact_ref": {
-                "channel": "development",
-                "version": "0.2.407",
-                "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
-                "ci_run_id": 37754055905,
-                "artifact_id": 11539827040,
-                "artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1"
-              },
+              "run_id": "37801787667",
+              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+              "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
+              "build_version": "0.2.414",
               "evidence": [
-                ".research/scrape-confirmation-native-retest-20261008.json",
-                ".research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json",
-                ".research/scrape-case-scope-adjudication-20261008.json",
-                ".research/scrape-uninstrumented-final-peer-20261008.json",
-                ".research/scrape-reload-observer-native-peer-20261008.json",
-                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029"
+                ".research/scrape-arm-414-native-20261008-1532.json",
+                ".research/scrape-live-peer-20261008-1544.json"
               ],
-              "independent_review": [
-                ".research/scrape-case-scope-adjudication-20261008.json",
-                ".research/scrape-uninstrumented-final-peer-20261008.json"
-              ],
-              "verified_at": "2026-10-08T12:53:01Z",
-              "detail": "Initial/reload empty state and navigation clear prior content and saved badge; raw case has no remaining criteria.",
-              "historical_result": {
-                "status": "pass",
-                "run_id": "37761144784",
-                "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
-                "evidence": [
-                  ".research/scrape-reload-observer-native-20261008.json",
-                  ".research/scrape-reload-observer-native-peer-20261008.json"
-                ],
-                "independent_review": ".research/scrape-reload-observer-native-peer-20261008.json",
-                "verified_at": "2026-10-08T10:20:23.473222+00:00",
-                "detail": "Frozen407 guest600px warm/fullreload revalidation. Original strict watcher proved oldworker retirement and exactreplacement running/activated; allthree resourcejournals valid. No member/admin, Store or latermain proof; fresh diagnostic notexercised and prior intermittentfailure unexplained.",
-                "historical_result": {
-                  "status": "pass",
-                  "run_id": "37251782627",
-                  "evidence": ".research/guest-scrape-normal-native.json",
-                  "detail": "Frozen development244 guest ARM: Initial and full-reload empty state verified; original worker/panel retired and exact replacements observed.",
-                  "build_variant": "development0.2.244/sourceb8158702/CI37233480033/artifact11315305224",
-                  "viewport": "owned SIDE_PANEL CDP viewport emulation600px warm/reload; initialphysicalmeasurement360x373; no physicalresize claim",
-                  "verified_at": "2026-10-05T01:45:35.094250+00:00",
-                  "historical_result": {
-                    "status": "pass",
-                    "run_id": "37222954472",
-                    "evidence": ".research/scrape231-recapture-native.json",
-                    "detail": "Exact development231 guest ARM: Original and replacement panel navigation/reload observed; worker retired/replaced and sole running replacement; empty capture state verified.",
-                    "historical_result": {
-                      "status": "partial",
-                      "run_id": "37221586281",
-                      "evidence": ".research/scrape231-context-diagnostic-native.json",
-                      "detail": "Exact development231 guest ARM: Initial empty panel and exact fixture observed; full reload not reached.",
-                      "historical_result": {
-                        "status": "pass",
-                        "run_id": "37205211642",
-                        "evidence": ".research/startup-attributed-native.json",
-                        "detail": "Exact development215 genuine guest initialempty, navigation clearing priorcapture, prere-loadempty, actual fullreload and replacementScrape empty/capture-enabled normalpage with expectedtitle. Root matched receipt and3healthyjournals.",
-                        "build_variant": "Frozen development215/source3536b5cb/CI37193761291/artifact11299613935",
-                        "verified_at": "2026-10-04T13:30:38.711263+00:00"
-                      }
-                    }
-                  }
-                }
-              }
+              "detail": "Initial/reload empty state and navigation clearing prior content and saved state remain covered.",
+              "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
             },
             "member": {
               "status": "partial",
@@ -17638,6 +17925,78 @@
                 "acceptance_credit": false,
                 "detail": "Resource-valid warm observations only; full case remains unverified after runner stopped at Links pointer targeting. Prior accepted build-specific results retained; no new full-case pass."
               }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": 37778965029,
+                "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
+                "artifact_ref": {
+                  "channel": "development",
+                  "version": "0.2.407",
+                  "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+                  "ci_run_id": 37754055905,
+                  "artifact_id": 11539827040,
+                  "artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1"
+                },
+                "evidence": [
+                  ".research/scrape-confirmation-native-retest-20261008.json",
+                  ".research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json",
+                  ".research/scrape-case-scope-adjudication-20261008.json",
+                  ".research/scrape-uninstrumented-final-peer-20261008.json",
+                  ".research/scrape-reload-observer-native-peer-20261008.json",
+                  "https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029"
+                ],
+                "independent_review": [
+                  ".research/scrape-case-scope-adjudication-20261008.json",
+                  ".research/scrape-uninstrumented-final-peer-20261008.json"
+                ],
+                "verified_at": "2026-10-08T12:53:01Z",
+                "detail": "Initial/reload empty state and navigation clear prior content and saved badge; raw case has no remaining criteria.",
+                "historical_result": {
+                  "status": "pass",
+                  "run_id": "37761144784",
+                  "build_variant": "development0.2.407/source5d845f42/CI37754055905/artifact11539827040",
+                  "evidence": [
+                    ".research/scrape-reload-observer-native-20261008.json",
+                    ".research/scrape-reload-observer-native-peer-20261008.json"
+                  ],
+                  "independent_review": ".research/scrape-reload-observer-native-peer-20261008.json",
+                  "verified_at": "2026-10-08T10:20:23.473222+00:00",
+                  "detail": "Frozen407 guest600px warm/fullreload revalidation. Original strict watcher proved oldworker retirement and exactreplacement running/activated; allthree resourcejournals valid. No member/admin, Store or latermain proof; fresh diagnostic notexercised and prior intermittentfailure unexplained.",
+                  "historical_result": {
+                    "status": "pass",
+                    "run_id": "37251782627",
+                    "evidence": ".research/guest-scrape-normal-native.json",
+                    "detail": "Frozen development244 guest ARM: Initial and full-reload empty state verified; original worker/panel retired and exact replacements observed.",
+                    "build_variant": "development0.2.244/sourceb8158702/CI37233480033/artifact11315305224",
+                    "viewport": "owned SIDE_PANEL CDP viewport emulation600px warm/reload; initialphysicalmeasurement360x373; no physicalresize claim",
+                    "verified_at": "2026-10-05T01:45:35.094250+00:00",
+                    "historical_result": {
+                      "status": "pass",
+                      "run_id": "37222954472",
+                      "evidence": ".research/scrape231-recapture-native.json",
+                      "detail": "Exact development231 guest ARM: Original and replacement panel navigation/reload observed; worker retired/replaced and sole running replacement; empty capture state verified.",
+                      "historical_result": {
+                        "status": "partial",
+                        "run_id": "37221586281",
+                        "evidence": ".research/scrape231-context-diagnostic-native.json",
+                        "detail": "Exact development231 guest ARM: Initial empty panel and exact fixture observed; full reload not reached.",
+                        "historical_result": {
+                          "status": "pass",
+                          "run_id": "37205211642",
+                          "evidence": ".research/startup-attributed-native.json",
+                          "detail": "Exact development215 genuine guest initialempty, navigation clearing priorcapture, prere-loadempty, actual fullreload and replacementScrape empty/capture-enabled normalpage with expectedtitle. Root matched receipt and3healthyjournals.",
+                          "build_variant": "Frozen development215/source3536b5cb/CI37193761291/artifact11299613935",
+                          "verified_at": "2026-10-04T13:30:38.711263+00:00"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "superseded_at": "2026-10-08T15:48:53.830295+00:00"
             }
           ],
           "attempt_history": [
@@ -17687,6 +18046,19 @@
                 "https://github.com/armanisadeghi/matrx-extend/actions/runs/37767763301"
               ],
               "detail": "Frozen 0.2.407 guest 600px attempt: warm observations remain partial. The replacement worker activated, but the open-panel request received no reply, so extension reload/panel readiness remained unverified. The post-reload capture probe was not exercised. Resource journals were valid; no new pass or acceptance credit."
+            },
+            {
+              "at": "2026-10-08T15:48:53.830295+00:00",
+              "run_id": "37801787667",
+              "mode": "guest",
+              "status": "pass",
+              "resource_valid": true,
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/scrape-arm-414-native-20261008-1532.json",
+                ".research/scrape-live-peer-20261008-1544.json"
+              ],
+              "detail": "Initial/reload empty state and navigation clearing prior content and saved state remain covered."
             }
           ]
         },
@@ -18101,7 +18473,8 @@
             "37721838779",
             "37778965029",
             "37783167613",
-            "37783925411"
+            "37783925411",
+            "37801787667"
           ],
           "retest_status": "Partial surface coverage. Frozen407 native37778965029 independently revalidates guest T07/T09/T10/T11/T12/T13/T20 and adds post-reload empty Images/Video evidence; exact conditional-confirmation branch D178 and remaining guest/member/admin cases unverified. Subsequent37783167613 failed runner setup D180 before browser, with zero acceptance credit."
         },
