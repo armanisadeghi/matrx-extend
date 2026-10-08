@@ -25,8 +25,9 @@
     "terminal_at": "2026-10-08T00:44:22Z",
     "run_conclusion": "failure",
     "failed_step": "Exercise the selected Chrome side-panel case",
-    "case_child_exit_code": 0,
-    "resource_wrapper_exit_code": 3
+    "resource_wrapper_exit_code": 3,
+    "guarded_acceptance_process_exit_code": 1,
+    "exit_code_note": "RESOURCE_JOB_EXIT records childExitCode=1 for the guarded acceptance process; the resource wrapper returned 3, which is the failed workflow-step exit. The native receipt independently records owned_cdp_endpoint_timeout before any case result."
   },
   "selected_artifact": {
     "ci_run_id": 37698216289,
@@ -80,7 +81,7 @@
       "admitted": true,
       "resource_invalid": true,
       "wrapper_exit_code": 3,
-      "child_exit_code": 0,
+      "child_exit_code": 1,
       "decision": "invalid",
       "admission_sample": {
         "available_memory_gib": 12.6,
