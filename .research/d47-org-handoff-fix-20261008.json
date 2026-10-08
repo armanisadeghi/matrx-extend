@@ -1,0 +1,20 @@
+{
+  "defect_id": "EXT-D-0173",
+  "scope": "Acceptance infrastructure: D47 public initial-load and document-lifecycle checkpoint handoff",
+  "root_cause": "Both D47 drivers read only the approved organization name from the private fixture and omitted requiredOrganizationId at runShowcaseOrganizationCheckpoint; the picker sibling already read and passed the approved name and UUID.",
+  "repair": "Both D47 entrypoints now read the approved name and UUID together and pass both to the unchanged strict checkpoint.",
+  "red": "node --test tests/browser/showcase-d47-organization-handoff.test.mjs failed on the pre-fix public caller with approved private fixture identity must be loaded; the second caller had the same omission.",
+  "green": [
+    "node --test tests/browser/showcase-d47-organization-handoff.test.mjs: 3/3 pass; caller census rejects missing or exchanged UUID in each D47 entrypoint and executes both actual handoff expressions with two distinct private fixture identities",
+    "node --test tests/browser/showcase-d47-organization-handoff.test.mjs tests/browser/showcase-organization-diagnostic.test.mjs: 10/10 pass",
+    "node --check on both D47 drivers: pass",
+    "pnpm exec biome check on the three touched browser files: pass",
+    "git diff --check: pass"
+  ],
+  "siblings": {
+    "fixed": ["showcase-d47-public-initial-load.mjs", "showcase-d47-document-lifecycle.mjs"],
+    "working_reference": "showcase-picker-native-acceptance.mjs passes approvedOrganization.name and approvedOrganization.id",
+    "checkpoint": "showcase-organization-checkpoint.mjs remains strict and unchanged"
+  },
+  "limit": "Source-only repair and light checks. No native checkpoint, D47 product verdict, or original T57 acceptance claim; the prior resource-invalid receipt remains non-product evidence."
+}

@@ -9,7 +9,7 @@ import { join, resolve } from 'node:path';
 import { promisify } from 'node:util';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
-import { approvedAdminOrganizationName, signInSettings } from './settings-native-auth-driver.mjs';
+import { approvedShowcaseOrganization, signInSettings } from './settings-native-auth-driver.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 import {
   assessD47ManualRelease,
@@ -329,7 +329,7 @@ try {
   assert.match(process.env.MATRX_SHOWCASE_CI_SOURCE_SHA ?? '', /^[a-f0-9]{40}$/);
   assert.match(process.env.MATRX_SHOWCASE_CI_RUN_ID ?? '', /^[1-9][0-9]*$/);
   assert.match(process.env.MATRX_SHOWCASE_CI_ARTIFACT_ID ?? '', /^[1-9][0-9]*$/);
-  const requiredOrganizationName = await approvedAdminOrganizationName(
+  const approvedOrganization = await approvedShowcaseOrganization(
     process.env.MATRX_APPROVED_ADMIN_ORGANIZATION_FILE,
   );
   const receipt = JSON.parse(await readFile(receiptPath, 'utf8'));
@@ -401,7 +401,8 @@ try {
             auth,
             resourceAction,
             report,
-            requiredOrganizationName,
+            requiredOrganizationName: approvedOrganization.name,
+            requiredOrganizationId: approvedOrganization.id,
           });
           await resourceAction(() => reopenPanel());
           await resourceAction(() => page.goto(`${origin}/document-race/`));
