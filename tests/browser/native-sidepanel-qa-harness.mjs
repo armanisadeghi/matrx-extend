@@ -1460,11 +1460,32 @@ export async function runNativeSidepanelQa({
   let startupStartedAt;
   let gpuObservation;
   let gpuAbort;
+  let finishStartupInterval;
+  let startupIntervalFinished = false;
+  const startupIntervalEnabled = process.env.MATRX_STARTUP_INTERVAL_DIAGNOSTIC === '1';
+  const recordStartupInterval = async (outcome) => {
+    if (!startupIntervalEnabled || startupIntervalFinished) return;
+    startupIntervalFinished = true;
+    let observation;
+    try {
+      observation = await finishStartupInterval(outcome);
+    } catch {
+      observation = { outcome, unavailable: true };
+    }
+    try {
+      process.stderr.write(`BROWSER_STARTUP_CPU_INTERVAL ${JSON.stringify(observation)}\n`);
+    } catch {
+      // A diagnostic sink failure must not replace startup or cleanup behavior.
+    }
+  };
   try {
-    const finishStartupInterval =
-      process.env.MATRX_STARTUP_INTERVAL_DIAGNOSTIC === '1'
-        ? await beginStartupProcessInterval()
-        : null;
+    if (startupIntervalEnabled) {
+      try {
+        finishStartupInterval = await beginStartupProcessInterval();
+      } catch {
+        // The startup result remains authoritative; record unavailable at its end.
+      }
+    }
     onStage('browser_spawn');
     startupStartedAt = performance.now();
     child = spawn(
@@ -1502,10 +1523,7 @@ export async function runNativeSidepanelQa({
       cdp = await connectNativeStartupOwnedCdp({ preparedProfile, chromeExecutable });
       if (launchError) throw launchError;
       const startupElapsedMs = Math.round(performance.now() - startupStartedAt);
-      if (finishStartupInterval)
-        process.stderr.write(
-          `BROWSER_STARTUP_CPU_INTERVAL ${JSON.stringify(await finishStartupInterval('cdp_connected'))}\n`,
-        );
+      await recordStartupInterval('cdp_connected');
       if (onStartupEndpointObservation)
         await onStartupEndpointObservation({
           phase: 'cdp_connected',
@@ -1532,10 +1550,7 @@ export async function runNativeSidepanelQa({
       // Guest result summaries truncate errors; preserve bounded startup evidence
       // in the runner log before forwarding the unchanged failure.
       process.stderr.write(`BROWSER_STARTUP_FAILURE ${JSON.stringify(startupDiagnostic)}\n`);
-      if (finishStartupInterval)
-        process.stderr.write(
-          `BROWSER_STARTUP_CPU_INTERVAL ${JSON.stringify(await finishStartupInterval('cdp_failed'))}\n`,
-        );
+      await recordStartupInterval('cdp_failed');
       if (
         error?.message === 'owned_cdp_endpoint_timeout' &&
         onStartupEndpointObservation &&
@@ -1761,6 +1776,9 @@ export async function runNativeSidepanelQa({
       panelTargetId: panelTarget.targetId,
       verified,
     });
+  } catch (error) {
+    await recordStartupInterval('spawn_failed');
+    throw error;
   } finally {
     // Browser.close is intentionally absent, including for Playwright's CDP
     // connection. Only the exact ChildProcess this harness spawned is ended.

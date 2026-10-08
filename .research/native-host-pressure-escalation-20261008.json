@@ -89,5 +89,19 @@
   "raw_sha256": {
     ".research/native-scrape-startup-repair-acceptance-20261008-37787769611/raw/resource-guest.jsonl": "67aea1481a147c580d0379f9e49ec773c3125641559c5235886246f5d773986e",
     ".research/raw-seo-startup-repair-acceptance-20261008-run37787701142/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37787701142-1.jsonl": "319e7f03cab7376294e750829e46516124908f0fdc82816beca82bd3fe5b6ba0"
+  },
+  "peer_repair": {
+    "finding": "364c2ca0 missed synchronous spawn exceptions and observation errors could replace startup outcomes.",
+    "change": "Exactly-once recorder surrounds full spawn-to-CDP startup; synchronous spawn exceptions now emit spawn_failed before unchanged finally cleanup. Begin/finish observation failures emit unavailable and preserve original driver result.",
+    "proof": "Executed actual full driver source in VM with artifact/runtime/OS/CDP boundaries supplied; original errors compared by identity and real driver finally order asserted. No replacement of driver instrumentation or cleanup control flow.",
+    "red": "Same five tests against committed 364c2ca0: synchronous spawn bracket and observation isolation both failed; 3 passed, 2 failed.",
+    "green": "14 focused tests pass including five complete-driver seam tests; scoped Biome passes.",
+    "gate": "test:focused-acceptance now includes native-startup-interval-callsite and startup-process-interval tests. Full hosted gate/native launch not run in this lane.",
+    "files": [
+      "tests/browser/native-sidepanel-qa-harness.mjs",
+      "tests/browser/native-startup-interval-callsite.test.mjs",
+      "package.json"
+    ],
+    "limitations": "VM seam intentionally substitutes external artifact/runtime/OS/CDP boundaries; native Chrome/host reliability remains unverified."
   }
 }
