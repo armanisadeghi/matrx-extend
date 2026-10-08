@@ -1,5 +1,5 @@
 {
-  "scope": "D182 bounded repair of the resource CPU integration test's first seven-scenario Node test after automatic CI timing evidence; no production guard or resource policy change.",
+  "scope": "D182 bounded repair of the resource CPU integration test's first seven-scenario Node test and its independent self-test oracle after automatic CI timing evidence; no production guard or resource policy change.",
   "ci_evidence": {
     "successful_run": "37791552019 at e87d1d29; checks and resource-guard-integration jobs succeeded",
     "first_group_tap_duration_ms": 28882.973084,
@@ -15,11 +15,12 @@
     "common_completion": "Each of the seven ended with RESOURCE_FINAL_DECISION, child closed true, and scratch cleanup done.",
     "comparison": "Identical pre-instrumentation sources passed the first group in 29031.809167 ms on run 37789394542, then expired at 30003.821875 ms on run 37789659379. The successful instrumented run finished the group just 1117 ms under the same 30000 ms aggregate limit. The failed run did not identify its active scenario, so an individual delay in that run cannot be ruled out."
   },
-  "repair": "Register the seven independent real-wrapper scenarios as separate serial Node tests, retaining their order, assertions, cleanup, and existing 30000 ms per-test timeout. This removes their shared aggregate deadline while preserving a timeout that identifies any slow or stuck case. The other two groups remain unchanged.",
+  "repair": "Register the seven independent real-wrapper scenarios as separate serial Node tests, retaining their order, assertions, cleanup, and existing 30000 ms per-test timeout. The focused self-test now compares their registrations with seven literal expected names independent of the source array, so dropping a case cannot make the expectation shrink with it. The other two groups remain unchanged.",
   "verification": [
     "node --check scripts/test-stabilization-resource-cpu-integration.mjs passed.",
     "MATRX_RESOURCE_CPU_DIAGNOSTIC_SELF_TEST=1 node --test --test-name-pattern='watch scenarios are separate|scenario diagnostic reports' scripts/test-stabilization-resource-cpu-integration.mjs passed: two focused tests, no guard or browser launched.",
-    "The new light self-test checks all seven registrations and their 30000 ms options, selects one callback without invoking siblings, and confirms a selected scenario rejection reaches the test callback."
+    "The light self-test checks all seven registrations against a literal oracle and their 30000 ms options, selects one callback without invoking siblings, and confirms a selected scenario rejection reaches the test callback.",
+    "The focused Node self-test passed with two tests and no guard launch after the oracle repair. plant.py temporarily removed confirmed from the real scenario array; the focused self-test failed because the literal expected name was missing, then plant.py restored the source byte-for-byte."
   ],
   "remaining_verification": "The parent's independent review and next automatic CI run must verify the real split under the hosted runner. No local heavy integration, browser, build, or manual dispatch was run."
 }

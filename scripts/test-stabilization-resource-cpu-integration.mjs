@@ -566,7 +566,15 @@ if (process.env.MATRX_RESOURCE_CPU_DIAGNOSTIC_SELF_TEST === '1') {
     );
     assert.deepEqual(
       [...cases.keys()],
-      watchScenarioKinds.map((kind) => `actual guard watch journal: ${kind}`),
+      [
+        'actual guard watch journal: recovered',
+        'actual guard watch journal: confirmed',
+        'actual guard watch journal: pending-exit',
+        'actual guard watch journal: completion-recovered',
+        'actual guard watch journal: completion-unsafe',
+        'actual guard watch journal: completion-expired',
+        'actual guard watch journal: completion-memory-unsafe',
+      ],
     );
     assert(cases.values().every(({ options }) => options.timeout === 30_000));
     await cases.get('actual guard watch journal: recovered').body();
