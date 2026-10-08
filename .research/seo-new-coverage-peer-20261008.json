@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "reviewed_commit": "3658c0bcd6d06703d7c9146a2938685d76d387c0",
+  "review_kind": "independent source peer; native acceptance was not run",
+  "verdict_A_criterion_sufficiency": {
+    "status": "READY_FOR_NATIVE_EXECUTION_PRODUCT_UNVERIFIED",
+    "finding": "The two new criteria distinguish a changed public DOM from the old SEO audit and a changed social snippet from stale clipboard text. The driver observes the active SEO pane, uses hit-tested trusted input, reads the actual clipboard with a temporary permission, and restores the owned page's title and description in finally. None of this is a native result until the frozen extension run completes.",
+    "evidence": [
+      "tests/browser/seo-guest-acceptance.mjs:269 publicSocialSource reads the owned tab independently",
+      "tests/browser/seo-guest-acceptance.mjs:299 copySocialTags requires one visible action, trusted click, feedback, clipboard readback and permission restoration",
+      "tests/browser/seo-guest-acceptance.mjs:1445 controlled page state changes before trusted Re-audit and is restored in finally",
+      "tests/browser/seo-new-coverage-oracle.mjs:4 exact expected meta lines derive from the independently observed source",
+      "tests/browser/seo-new-coverage-oracle.mjs:28 stale native title cannot pass the recapture oracle"
+    ],
+    "open_dimensions": [
+      "No native observation of the new subtargets yet; do not increase inventory results from this source review or repeat the previous 19 passes as new progress.",
+      "Full T02 still needs running button disablement, stale advice cleared, failure report and reload coverage.",
+      "Full T14 still needs absence of the copy action when no snippet applies and reload coverage.",
+      "Member and admin modes remain separate and unverified."
+    ]
+  },
+  "verdict_B_implementation_quality": {
+    "status": "PASS_SOURCE_WITH_NATIVE_GATE",
+    "finding": "The additions use the existing capture UI and shared native click and clipboard permission helpers. The clipboard oracle compares full text, including line order and values, on two distinct source states. The mutation stays in the owned public tab and restores its original head state even after an assertion failure. The change adds no product code, migration, dependency or new access path.",
+    "checks_run": [
+      "node --test tests/browser/seo-new-coverage-oracle.test.mjs: 2 passed, 0 failed",
+      "node --check tests/browser/seo-guest-acceptance.mjs: passed",
+      "pnpm exec biome check tests/browser/seo-guest-acceptance.mjs tests/browser/seo-new-coverage-oracle.mjs tests/browser/seo-new-coverage-oracle.test.mjs package.json .research/seo-new-coverage-20261008.json: passed"
+    ],
+    "forcing_function": "The tests reject stale original clipboard text after the metadata change and a stale native title after Re-audit. Builder-reported scratch mutants are leads only; the independent peer did not rerun them.",
+    "privacy_and_cleanup": "The driver uses a fixed public example.org page in a fresh owned profile, restores the controlled DOM in finally, and restores clipboard-read permission in the shared helper's finally. It reads the real clipboard after the product action; no clipboard state is manufactured. Native cleanup remains to be confirmed from the run receipt."
+  },
+  "overall": "SOURCE_FLIP_TO_NATIVE_GATE; PRODUCT_REMAINS_PARTIAL",
+  "inventory_change_authorized_by_this_review": false
+}
