@@ -77,7 +77,10 @@
       "busy_observed": true
     },
     "post_reload_article_result": "The boundary helper returned and the procedure advanced to post-reload empty-media observations without a failure. Its success predicate requires the visible Harbor Dental referral Article and the sentence 'Referral coordinators answer weekday calls.' either immediately after Capture or after confirming the owned recapture dialog. The receipt does not persist which branch occurred or the Article text itself.",
-    "case_verdict": "T08 remains partial for this guest receipt because member/admin modes remain unverified; this run exercised guest only."
+    "case_verdict": "T08 remains partial for this guest receipt because member/admin modes remain unverified; this run exercised guest only.",
+    "prior_post_reload_article_failure_reproduced": false,
+    "prior_failure_outcome": "The original post-reload Article failure did not reproduce in this uninstrumented, resource-valid run.",
+    "fresh_article_capture_status": "BOUNDARY_PASSED"
   },
   "confirmation_result": {
     "status": "UNVERIFIED",
