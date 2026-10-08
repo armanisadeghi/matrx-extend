@@ -1,0 +1,74 @@
+{
+  "task_id": "cold-reload-conversation-trust-repair",
+  "defect_id": "EXT-D-0156",
+  "status": "HANDOFF",
+  "source_commit": "7601248b",
+  "cause": "Remembered conversation approvals used Chrome session storage, which full extension reload clears. Transient run metadata correctly remains session scoped.",
+  "changed_files": [
+    "src/lib/tools/dispatch-persist.ts",
+    "tests/unit/conversation-trust-across-runs.test.ts",
+    "docs/feature-tests.md"
+  ],
+  "behavior_verdict": "native_author_unverified_requires_new_artifact",
+  "code_guard_verdict": "pass",
+  "baseline_red": {
+    "run_id": "cold-trust-baseline-red-20261007",
+    "tests": 7,
+    "passed": 4,
+    "failed": 3,
+    "assertions": [
+      "Same saved chat action after session clear/module reset: real registered handler ran 1 time; expected 2.",
+      "Same actor/chat after reload: empty approvals; expected navigate@app.notion.com.",
+      "Same guest/chat after reload: empty approvals; expected navigate@app.notion.com."
+    ]
+  },
+  "constant_gut": {
+    "run_id": "cold-trust-constant-gut-20261007",
+    "replacement": "Whole loadConversationTrust returns constant [navigate@app.notion.com].",
+    "failed_assertions": [
+      "Other conversation expected [] but got navigate@app.notion.com.",
+      "Signed-in actor after guest expected [] but got navigate@app.notion.com."
+    ],
+    "plant_verdict": "RED",
+    "restored_identical": true,
+    "original_and_restored_sha256": "24c63291de579e94831ac6ffda28605d05a6ab2c8d121fe3af875a11856eaa05"
+  },
+  "green": {
+    "run_id": "cold-trust-final-green-admitted-20261007",
+    "tests": 8,
+    "passed": 8,
+    "resource_valid": true
+  },
+  "typecheck": {
+    "run_id": "cold-trust-typecheck-20261007",
+    "verdict": "pass",
+    "resource_valid": true
+  },
+  "catalog": {
+    "run_id": "cold-trust-catalog-20261007",
+    "verdict": "pass",
+    "tools": 167,
+    "resource_valid": true
+  },
+  "limitations": [
+    "Unit guards model Chrome area lifetime; native verifier must exercise updated artifact.",
+    "Store publication and installation unverified."
+  ],
+  "process_ledger": {
+    "gut": "terminal_exit0_restored",
+    "green": "terminal_exit0",
+    "typecheck": "terminal_exit0",
+    "catalog": "terminal_exit0"
+  },
+  "independent_source_review": {
+    "commit": "86ca7beb",
+    "report": ".research/cold-trust-source-review-20261007.json",
+    "verdict": "pass",
+    "native_verdict": "unverified"
+  },
+  "next_action": "Independent real same-conversation full extension reload retest on a fresh CI artifact containing 7601248b, then required Store handoff.",
+  "refused_attempt": {
+    "run_id": "cold-trust-final-green-20261007",
+    "reason": "Prior owned green runner was completing cleanup; no child launched. Prior runner confirmed terminal before unique admitted retry."
+  }
+}
