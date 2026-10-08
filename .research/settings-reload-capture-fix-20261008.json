@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "scope": "Source-only Settings native guest reload receipt repair related to EXT-D-0166. No product behavior, browser build, hosted run, release, or deployment changed.",
+  "finding": "The Settings guest-stage catch retained only guestStageFailed and unverified criteria. A reloadExtension failure could already carry safe lifecycleEvidence and contextBoundary, but neither survived into the Settings report.",
+  "change": "The catch now uses the existing profile-reload-capture captureFailure helper with the harness transportFailureClass callback. It records allowlisted failure code and transport class plus sanitized lifecycle and context counts when extension reload fails or carries those evidence fields. Existing unverified case criteria and verdicts remain unchanged.",
+  "verification": {
+    "command": "node --test tests/browser/settings-reload-boundary.test.mjs tests/browser/profile-reload-capture.test.mjs",
+    "result": "12 passed",
+    "code_path": "The test evaluates the actual Settings guest catch body from settings-local-controls-acceptance.mjs with two different failure inputs, then serializes the resulting report. It asserts fixed classes and safe lifecycle/context evidence, unchanged unverified cases, and absence of injected raw error and URL text.",
+    "mutation": "Replacing the catch's transportFailureClass callback with a constant none made the targeted test fail; plant.py restored the source identically."
+  },
+  "limits": [
+    "No native Settings rerun was performed, so the historical failure's runtime cause remains unverified.",
+    "This repairs missing Settings receipt evidence in the EXT-D-0166 failure class; it does not close EXT-D-0166 or establish the original Scrape failure cause."
+  ]
+}

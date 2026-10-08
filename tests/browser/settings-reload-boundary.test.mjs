@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
+import { captureFailure } from './profile-reload-capture.mjs';
 import { evaluate, waitFor, waitForReplacementSettingsTab } from './settings-panel-driver.mjs';
 import {
   classifyReloadSettingsFailure,
@@ -326,4 +327,113 @@ test('failed native Settings panel reload serializes the owned document and cont
   assert.equal(mismatch.renderer.rootCount, 0);
   assert.equal(mismatch.renderer.exactSidePanelContextCount, 0);
   assert.equal(JSON.stringify(mismatch).includes(wrongUrl), false);
+});
+
+test('actual Settings guest catch persists safe extension reload failure evidence', async () => {
+  const source = await readFile(
+    new URL('./settings-local-controls-acceptance.mjs', import.meta.url),
+    'utf8',
+  );
+  const start = source.indexOf(
+    '      } catch (error) {\n        report.guestStageFailed = guestStage;',
+  );
+  const end = source.indexOf("      criterion(\n        byId('T63')", start);
+  assert.ok(start >= 0 && end > start);
+  const actualCatch = source.slice(start, end);
+  const runCatch = new Function(
+    'injected',
+    'report',
+    'guestStage',
+    'byId',
+    'criterion',
+    'captureFailure',
+    'transportFailureClass',
+    `try { throw injected;\n${actualCatch}\nreturn report;`,
+  );
+  const error = new Error(
+    'native_extension_replacement_panel_unverified: private browser response',
+  );
+  error.lifecycleEvidence = {
+    old_worker_absent: true,
+    observed_worker_count: 1,
+    secret: 'private browser response',
+  };
+  error.contextBoundary = {
+    first: { side_panel_count: 0, exact_expected_count: 0 },
+    last: { side_panel_count: 0, exact_expected_count: 0 },
+    attempts: 2,
+    exact_expected_appeared: false,
+    secret: 'private context URL',
+  };
+  const report = {
+    cases: ['T63', 'T73', 'T76', 'T92'].map((suffix) => ({
+      suffix,
+      status: 'unverified',
+      steps: [],
+      criteria: [],
+    })),
+  };
+  const saved = JSON.parse(
+    JSON.stringify(
+      runCatch(
+        error,
+        report,
+        'extension_reload',
+        (suffix) => report.cases.find((item) => item.suffix === suffix),
+        (item, name, status, evidence) => item.criteria.push({ name, status, evidence }),
+        captureFailure,
+        () => 'socket_error',
+      ),
+    ),
+  );
+  assert.equal(saved.guestStageFailed, 'extension_reload');
+  assert.equal(
+    saved.guestExtensionReloadFailure.failure_code,
+    'native_extension_replacement_panel_unverified',
+  );
+  assert.equal(saved.guestExtensionReloadFailure.transport_failure_class, 'socket_error');
+  assert.equal(saved.guestExtensionReloadFailure.retirement_evidence.old_worker_absent, true);
+  assert.equal(saved.guestExtensionReloadFailure.context_boundary.attempts, 2);
+  assert.equal(
+    saved.cases.every(
+      (item) => item.status === 'unverified' && item.criteria[0]?.status === 'unverified',
+    ),
+    true,
+  );
+  assert.doesNotMatch(JSON.stringify(saved), /private browser response|private context URL/);
+  const other = new Error('private unrelated error');
+  other.contextBoundary = {
+    attempts: 5,
+    exact_expected_appeared: true,
+    secret: 'another private URL',
+  };
+  const secondReport = {
+    cases: ['T63', 'T73', 'T76', 'T92'].map((suffix) => ({
+      suffix,
+      status: 'unverified',
+      steps: [],
+      criteria: [],
+    })),
+  };
+  const second = JSON.parse(
+    JSON.stringify(
+      runCatch(
+        other,
+        secondReport,
+        'reload_settings',
+        (suffix) => secondReport.cases.find((item) => item.suffix === suffix),
+        (item, name, status, evidence) => item.criteria.push({ name, status, evidence }),
+        captureFailure,
+        () => 'private transport class',
+      ),
+    ),
+  );
+  assert.equal(second.guestExtensionReloadFailure.failure_code, 'unclassified');
+  assert.equal(second.guestExtensionReloadFailure.transport_failure_class, 'other');
+  assert.equal(second.guestExtensionReloadFailure.context_boundary.attempts, 5);
+  assert.equal(second.guestExtensionReloadFailure.retirement_evidence, null);
+  assert.doesNotMatch(
+    JSON.stringify(second),
+    /private unrelated error|private transport class|another private URL/,
+  );
 });

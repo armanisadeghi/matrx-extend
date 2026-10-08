@@ -8,6 +8,7 @@ import { verifyFrozenArtifactIdentity } from '../../scripts/frozen-artifact-iden
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { captureFailure } from './profile-reload-capture.mjs';
 import { GUEST_PREFERENCES, runGuestPreferenceCase } from './settings-guest-preference-batch.mjs';
 import {
   GUEST_PRIVACY_SWITCHES,
@@ -544,7 +545,7 @@ try {
       expectedRelease: { version: receipt.version, treeSha256: receipt.treeSha256 },
       localDevReceiptPath: DEV_BUILD_RECEIPT,
     }),
-    exercisePanel: async ({ panel, attachWorker, reloadExtension }) => {
+    exercisePanel: async ({ panel, attachWorker, reloadExtension, transportFailureClass }) => {
       await settings(panel);
       for (const preference of GUEST_PREFERENCES) {
         await runCase(byId(preference.caseId), async () => {
@@ -1030,8 +1031,10 @@ try {
         const reloadedGuest = await observeGuestIdentityAndOrganization(replacement.panel);
         recordGuestPhase('reload', reloadedGuest);
         await recordGuestAdvancedDenial('reload', replacement.panel, reloadedGuest);
-      } catch {
+      } catch (error) {
         report.guestStageFailed = guestStage;
+        if (guestStage === 'extension_reload' || error?.lifecycleEvidence || error?.contextBoundary)
+          report.guestExtensionReloadFailure = captureFailure(error, transportFailureClass);
         for (const suffix of ['T63', 'T73', 'T76', 'T92']) {
           const c = byId(suffix);
           criterion(c, `${guestStage}: native observation complete`, 'unverified', {
