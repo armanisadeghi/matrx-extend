@@ -1,0 +1,46 @@
+{
+  "defect_id": "EXT-D-0172",
+  "status": "source_candidate_pending_independent_review_and_native_retest",
+  "observed_native_red": {
+    "run_id": "37748038743",
+    "store_version": "0.2.205",
+    "server_sha": "53aec906f047b524495ff0d93bae8e67eb55537f",
+    "behavior": "First and followup public guest replies pass. After panel reload and new conversation, get_page_text result posts, then resume returns HTTP 409 and no reply."
+  },
+  "proven_boundary": {
+    "conversation_id": "6b374920-9521-4542-9574-64970bf31cad",
+    "user_request_id": "09f96c54-7a59-4b58-96c5-05f7602cf380",
+    "assistant_message_id": "d973d6e1-06fa-4d79-8419-bc52cf58293a",
+    "assistant_status": "pending",
+    "assistant_content_blocks": 0,
+    "tool_status": "completed",
+    "tool_resolution_source": "client_post",
+    "resume_code": "resume_context_not_ready",
+    "reason": "Conversation rebuild requires a persisted assistant tool_call to pair with the completed tool row; it drops the empty assistant reservation."
+  },
+  "causal_limit": "The live trace proves missing assistant checkpoint at resume, but does not distinguish a skipped precheckpoint predicate, a swallowed queue error, or a zero-row/silent update. No exact write-failure mechanism is claimed.",
+  "candidate": {
+    "repo": "aidream",
+    "source_commit": "ffba17ba25",
+    "files": [
+      "packages/matrx-ai/matrx_ai/orchestrator/executor.py",
+      "packages/matrx-ai/matrx_ai/tools/executor.py",
+      "packages/matrx-ai/tests/test_guest_delegation_checkpoint.py",
+      "packages/matrx-ai/matrx_ai/orchestrator/FEATURE.md"
+    ],
+    "contract": "Read back the assistant tool_call before client publication; repair only an untouched same-conversation same-position pending reservation; refuse conflicting or still-unwritten rows. The tool executor independently refuses to publish a client handoff without a matching active assistant call. Capture missing checkpoint with safe status metadata."
+  },
+  "verification": {
+    "host": "local source checkout",
+    "resource_admission": "No guarded disk admission; lightweight focused unit checks only. No hosted browser or native run charged.",
+    "command": "uv run --no-sync pytest -q packages/matrx-ai/tests/test_guest_delegation_checkpoint.py packages/matrx-ai/tests/test_conversation_rebuild_hydration.py packages/matrx-ai/tests/test_executor_user_message_reservation.py",
+    "result": "16 passed, 3 pre-existing coroutine warnings in 0.21s; Ruff check, Python compile, and diff whitespace check passed",
+    "red_before_green": "Live native HTTP 409 is the observed RED; new test was not run against old source. No red-before-green unit claim.",
+    "positive_chain": "The focused test starts with a pending empty reservation, observes tool publication refusal, repairs via the persistence coordinator, emits the real delegated event, then rebuilds assistant tool_use plus the matching completed tool_result for resume."
+  },
+  "open_gates": [
+    "Independent source review",
+    "Authorized automatic package integration and server deployment",
+    "Fresh public Store 0.2.205 native acceptance run"
+  ]
+}
