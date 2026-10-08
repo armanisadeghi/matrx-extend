@@ -1,0 +1,43 @@
+{
+    "schema_version": 1,
+    "task_id": "EXT-D-0170 controlled native acceptance partition",
+    "review_scope": {
+        "source_commits": [
+            "ad3a7c3a394a07bf5ea2518d89073719e3b37b60",
+            "b6b4eb0e88d36bbdf5a8d09f79d9169064bce52e",
+            "8b796abd9ac148f096d06241ece011aa029286a5"
+        ],
+        "focused_ci_head_sha": "e69745283b59426ed5fc6532871f4c1609c10fda",
+        "method": "Independent source inspection and exact-head remote CI evidence; no local build, native browser, or heavy tests because system disk is below the 20 GiB floor."
+    },
+    "verdict_a_native_behavior": {
+        "result": "source_ready_native_unverified",
+        "basis": "Workflow input defaults to full and rejects invalid or cross-case controlled scope. The hosted wrapper passes the selected scope through the route to the native driver. Controlled mode keeps real public-page, clipboard, changed-DOM re-audit, and post-case build identity observations, then requires passing T14 before, T02 changed metadata, and T14 after receipt entries. It skips the volatile T09 public-detail callback and optional metadata fixture. Full mode still executes those callbacks and preserves their assertions and refusals.",
+        "limit": "No native controlled-scope run or resource-valid receipt was reviewed. No T02/T14 acceptance credit or D170 closure is established."
+    },
+    "verdict_b_source_quality": {
+        "result": "pass_for_reviewed_scope",
+        "findings": [],
+        "basis": "The selected/excluded case receipt names the omitted T09 detail phases while retaining the earlier T09 checks, and native report status remains partial on successful completion. The sequence, driver reachability, route, and actual YAML lane-admission guards are in the focused command. Negative tests reject invalid scope and cross-case controlled selection. The existing build identity recheck remains after the controlled sequence."
+    },
+    "remote_evidence": {
+        "focused_ci": {
+            "run_id": 37745523179,
+            "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37745523179",
+            "head_sha": "e69745283b59426ed5fc6532871f4c1609c10fda",
+            "conclusion": "success",
+            "results": "102 tests passed, 0 failed; actual YAML lane admission ok 6 and controlled SEO scope sequence ok 47."
+        },
+        "initial_full_ci": {
+            "run_id": 37744762381,
+            "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37744762381",
+            "head_sha": "ad3a7c3a394a07bf5ea2518d89073719e3b37b60",
+            "conclusion": "failure",
+            "cause": "The lane-admission fixture omitted SEO_CASE_SCOPE; b6b4eb0e supplied the default and negative cases, and 8b796abd included that guard in the focused command."
+        }
+    },
+    "limits": [
+        "Remote focused tests are source guards, not native browser acceptance.",
+        "No broad full-CI, release, Store, or current-main health claim is made."
+    ]
+}
