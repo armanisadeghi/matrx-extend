@@ -773,6 +773,31 @@ async function cleanup(panel, journal, row, fixtureUrl, fixtureCanonical, page) 
   if (rows.some((entry) => entry.id === row.id)) fail('owned_row_still_present');
   return true;
 }
+// Page.reload returns before React restores authenticated feature tabs. Wait for
+// the actual control, then keep the driver's unique, stable, hit-tested click.
+async function reloadScreenshotPanel(panel) {
+  stage = 'reload_screenshot_panel';
+  viewerStep = null;
+  pointerTarget = null;
+  await panel.send('Page.reload');
+  await waitFor(
+    'reloaded_screenshots_tab_visible',
+    () =>
+      evaluate(
+        panel,
+        `(() => {
+      const buttons=[...document.querySelectorAll('button[role="tab"]')]
+        .filter(el=>(el.getAttribute('title')??el.getAttribute('data-matrx-title'))==='Screenshots');
+      return buttons.filter(el=>{
+        const r=el.getBoundingClientRect(), s=getComputedStyle(el);
+        return r.width>0&&r.height>0&&s.display!=='none'&&s.visibility!=='hidden'&&!el.closest('[inert]');
+      }).length;
+    })()`,
+      ),
+    (count) => count === 1,
+  );
+  await click(panel, 'title', 'Screenshots');
+}
 async function exerciseCase({ page, panel }, mode) {
   let server;
   let journal;
@@ -905,8 +930,7 @@ async function exerciseCase({ page, panel }, mode) {
     await verifyLocalViewer(panel, image, 'initial');
     report.cases.localViewer = 'pass';
     const reloadMarker = journal.marker();
-    await panel.send('Page.reload');
-    await click(panel, 'title', 'Screenshots');
+    await reloadScreenshotPanel(panel);
     const reloadedRows = await nextRead(journal, reloadMarker, 1);
     if (reloadedRows[0].id !== ownedRow.id || reloadedRows[0].file_id !== ownedRow.file_id)
       fail('reload_owned_row_identity_changed');
@@ -1061,8 +1085,7 @@ async function recoverOwnedFixture({ page, panel }, recoveryPath) {
     report.recovery = { exactOwnedRowRead: true, ownedRowCount: 1 };
     await verifyLocalViewer(panel, image, 'recovery_initial');
     const reloadMarker = journal.marker();
-    await panel.send('Page.reload');
-    await click(panel, 'title', 'Screenshots');
+    await reloadScreenshotPanel(panel);
     const reloaded = await nextRead(journal, reloadMarker, 1);
     if (reloaded[0].id !== ownedRow.id || reloaded[0].file_id !== ownedRow.file_id)
       fail('recovery_reload_identity_mismatch');
