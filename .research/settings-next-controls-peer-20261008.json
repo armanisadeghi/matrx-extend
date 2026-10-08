@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "reviewer_lane": "settings-next-controls-peer",
+  "worker_commit": "f20f554cb283a983f7c493b20394fcbf31e2c2bd",
+  "review_scope": "Independent source and assertion review for guest EXT-F-1003 T04 and T10; no native run, build, or inventory changes.",
+  "verdict_a_behavior_and_spec": {
+    "status": "partial_candidate_ready_native_unverified",
+    "T04": "Candidate now checks selected and stored value, theme class, and body background against resolved --background in warm and panel-document-reload observations. This strengthens applied-appearance evidence. It does not show the extension was fully reloaded/reopened or prove the visible side-panel surface by screenshot; canonical T04 therefore remains partial until native evidence closes those gaps.",
+    "T10": "Candidate selects each Ask/Act value, panel-reloads, then opens Chat, clicks New chat, and requires the mode label and icon to match. This exercises the consumer UI. It does not send a first action or assert a server payload, and it does not cover full extension reload; retain those gaps.",
+    "scope": "These are acceptance-driver changes, not application behavior fixes. Current candidate has no native acceptance receipt, so neither outcome is proven for the installed extension."
+  },
+  "verdict_b_quality": {
+    "status": "pass_for_candidate_source",
+    "assertions": "The theme and chat predicates reject wrong rendered-background flag, wrong mode label/icon, missing new-chat control, and inactive chat. Runtime observations use a unique active pane and allowlisted preference values; new-chat waits for the combined expected UI state.",
+    "automation": "The focused helper test is listed in package.json test:focused-acceptance. Independently ran node --test tests/browser/settings-guest-preference-batch.test.mjs: 2 passed, 0 failed. No browser/native/build run was made.",
+    "data_scope": "Observed fields are fixed labels, allowlisted values, booleans, and counts; raw settings state is not returned. The appearance probe is appended hidden and removed immediately."
+  },
+  "evidence": [
+    "git show f20f554cb283a983f7c493b20394fcbf31e2c2bd",
+    "docs/stabilization/inventory.json EXT-F-1003-T04 and T10",
+    ".research/settings-next-controls-preparation-20261008.json",
+    "tests/browser/settings-guest-preference-batch.mjs and .test.mjs",
+    "tests/browser/settings-local-controls-acceptance.mjs",
+    "package.json test:focused-acceptance"
+  ],
+  "not_run": "No local browser, heavy test, build, extension reload, server action, native dispatch, or inventory mutation."
+}
