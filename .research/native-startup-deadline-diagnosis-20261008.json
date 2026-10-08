@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "task_id": "native-startup-deadline-diagnosis-20261008",
+  "status": "ENDPOINT_ABSENT_CAUSE_UNCONFIRMED",
+  "scope": "Read-only diagnosis of recurring owned Chromium startup failures. No native job, local browser, build, release, timeout change, resource-policy change, or acceptance promotion.",
+  "current_run": {
+    "run_id": 37783095637,
+    "case": "guest-seo",
+    "frozen_artifact": "development run 37754055905, artifact 11539827040, source 5d845f42cb22c10e2486af8048d1ac9f3ac8e114, version 0.2.407",
+    "first_boundary_failure": "owned_cdp_endpoint_timeout at cdp_connect, before any SEO target or panel action",
+    "startup": {
+      "spawn_observed": true,
+      "elapsed_ms": 5022,
+      "endpoint_wait_ms": 5006,
+      "endpoint_polls": 116,
+      "longest_read_ms": 75,
+      "observed_child_exit_code_at_timeout": null,
+      "observed_child_signal_at_timeout": null,
+      "stderr_observed": false
+    },
+    "resource": {
+      "admitted": true,
+      "pending_at": "2026-10-08T13:23:20.343Z",
+      "pending_reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
+      "one_minute_load": 12.26,
+      "logical_cpus": 4,
+      "cpu_busy_fraction": 1,
+      "final_decision": "invalid",
+      "resource_invalid": true,
+      "wrapper_exit_code": 3
+    },
+    "acceptance_credit": "none; six selected cases, zero executed targets"
+  },
+  "prior_sibling": {
+    "run_id": 37735318823,
+    "case": "settings-controls",
+    "result": "spawn observed, 154 endpoint polls over 5022 ms, endpoint absent, CPU_PENDING after startup timeout, child exit 1, final resource-invalid, all 16 cases zero steps",
+    "D168_boundary": "The successful-child pending recovery branch was not exercised because the child failed. The separately documented valid local Settings retest closed D168 only at its infrastructure gate, without proving real-host CPU recovery."
+  },
+  "source_contract": {
+    "owned_cdp": "connectOwnedCdp has a timeoutMs argument but defaults to fixed DEADLINE_MS=5000; runNativeSidepanelQa does not pass a timeoutMs value. ENOENT reads are polled every 25 ms. The timeout occurs before endpoint record, process-owner, or socket checks.",
+    "existing_diagnostic": "runNativeSidepanelQa can observe DevToolsActivePort for startupEndpointObservationMs after the 5-second timeout, but only when given a callback and positive observation window. The startup-resource-diagnostic route supplies a 15-second window from the existing resource policy and runs headed Chromium. The failed guest-seo route did not supply this callback, and its seo_resource_diagnostic flag adds guard process bracketing without enabling post-timeout endpoint observation.",
+    "prior_diagnostic_result": "Intel run 37710954422 connected CDP after 4894 ms from spawn and never entered post-timeout observation; it used headed Chromium and an older 0.2.391 artifact. Its elapsed span includes more than endpoint polling and establishes no safe margin or cause for current headless failures."
+  },
+  "causal_limits": [
+    "116 polls and longest read 75 ms rule out an entirely stalled polling loop during the five-second wait, but do not show why Chromium did not publish the endpoint.",
+    "Null child exit and signal fields are snapshots, not proof the child stayed alive for the entire wait.",
+    "The process attribution snapshot after CPU_PENDING lists many macOS host daemons and Chromium at low sampled CPU; it cannot assign a causal CPU share over the preceding five-second endpoint wait.",
+    "CPU_PENDING occurred before the logged timeout and the final guard decision was invalid. This neither proves host load caused endpoint delay nor permits acceptance credit."
+  ],
+  "falsifiable_hypotheses": [
+    {
+      "cause": "Cold Chromium startup publishes the endpoint just after five seconds",
+      "prediction": "The owned endpoint appears during the existing bounded post-timeout observation before child exit, with a healthy or independently classified resource journal."
+    },
+    {
+      "cause": "Chromium stalls or exits before publishing the endpoint",
+      "prediction": "No endpoint appears throughout the same observation, or an observed child exit precedes endpoint creation."
+    },
+    {
+      "cause": "Transient host work delays startup",
+      "prediction": "Comparable fresh runs show endpoint publication tracking measured host pressure and process attribution; a single pressure snapshot cannot establish this."
+    }
+  ],
+  "smallest_runnable_discriminator": {
+    "precondition": "Wait for the existing B native job to finish and root to authorize the reserved A slot; do not dispatch an unchanged acceptance retry.",
+    "source_step": "Wire the existing 15-second post-timeout endpoint observation into the guest-seo diagnostic-only path when seo_resource_diagnostic=true, preserving headed=false, the exact 0.2.407 artifact, the 5000 ms CDP deadline, ownership checks, and every resource threshold. Record only safe endpoint/exit observations in a diagnostic receipt; never turn a late endpoint or an invalid journal into acceptance credit.",
+    "test_step": "Run one guarded macos-15-intel guest-seo diagnostic with development run 37754055905/artifact 11539827040, seo_resource_diagnostic=true, full scope and Airbnb fixture, retaining the startup observation, BROWSER_STARTUP_FAILURE if any, and current-run package/browser/guest resource journals.",
+    "interpretation": "A late endpoint supports the cold-launch timing hypothesis; persistent absence or child exit points to a Chromium/host stall. A successful connection without timeout is a bounded non-reproduction only. None alone proves the underlying cause or product behavior."
+  },
+  "sources": [
+    "tests/browser/vault-owned-cdp.cjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "scripts/hosted-startup-interval-diagnostic.mjs",
+    ".github/workflows/hosted-guest-acceptance.yml",
+    ".research/seo-uninstrumented-acceptance-20261008.json",
+    ".research/seo-uninstrumented-acceptance-20261008/raw/native-boundary-log.txt",
+    ".research/seo-uninstrumented-acceptance-20261008/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37783095637-1.jsonl",
+    ".research/settings-completion-native-peer-20261008.json",
+    ".research/intel-headed-startup-native-20261007.json",
+    "docs/stabilization/defects/EXT-D-0168.json"
+  ]
+}

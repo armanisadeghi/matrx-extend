@@ -24,7 +24,8 @@
     ".research/profile-admin-fields-second-native.json",
     ".research/guest-scrape-store-native.json",
     ".research/hosted-chrome-startup-repair.json",
-    ".research/hosted-startup-diagnostics-peer.json"
+    ".research/hosted-startup-diagnostics-peer.json",
+    ".research/native-startup-deadline-diagnosis-20261008.json"
   ],
   "transition_history": [
     {
@@ -41,5 +42,5 @@
     }
   ],
   "closure_requirement": "Prove and repair demonstrated startup class with actual helper red/green and independent review; native admin original scenario and surrounding ownership rejection must pass.",
-  "next_action": "A separate hosted exact Store205 guest Scrape attempt 37186201850 timed out before UI. No observed child exit or signal and no owned endpoint do not establish the cause or equivalence to the original refusal. Instrumentation cd5d0d9d adds sanitized spawn/poll timing, independently reviewed, without changing deadline, ownership or resource rules. One controlled hosted run will collect these diagnostics; preserve original admin closure requirement and triaged state."
+  "next_action": "The original admin endpoint refusal remains unresolved. Later guest SEO run 37783095637 and Settings run 37735318823 timed out before UI with repeated endpoint polls and CPU_PENDING, but do not prove the same source cause or justify changing the five-second deadline. The existing post-timeout observation is enabled only on a separate headed diagnostic route. Before another A acceptance attempt, add bounded post-timeout observation to the diagnostic-only headless SEO path and run one guarded exact-artifact discriminator after the B job; preserve resource validity and zero acceptance credit for an invalid run. See .research/native-startup-deadline-diagnosis-20261008.json."
 }
