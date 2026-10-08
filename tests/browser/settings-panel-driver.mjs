@@ -11,7 +11,13 @@ export async function evaluate(panel, expression) {
   return response.result?.value;
 }
 
-export async function waitFor(label, read, accept, timeoutMs = 10000) {
+export async function waitFor(
+  label,
+  read,
+  accept,
+  timeoutMs = 10000,
+  diagnostic = (value) => value,
+) {
   const deadline = Date.now() + timeoutMs;
   let last;
   do {
@@ -24,7 +30,7 @@ export async function waitFor(label, read, accept, timeoutMs = 10000) {
     if (accept(last)) return last;
     await new Promise((resolveWait) => setTimeout(resolveWait, 100));
   } while (Date.now() < deadline);
-  throw new Error(`${label}_not_observed:${JSON.stringify(last)}`);
+  throw new Error(`${label}_not_observed:${JSON.stringify(diagnostic(last))}`);
 }
 
 // A replacement CDP target can exist before React mounts its tabs. Do not
