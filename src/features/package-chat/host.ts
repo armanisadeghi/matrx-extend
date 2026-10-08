@@ -23,6 +23,7 @@ import type {
   ChatOrganization,
 } from '@ai-matrx/chat/host';
 import { memoryNavigation, restoreChatAddress } from './memory-navigation';
+import { registerExtensionToolRenderers } from './tool-renderers';
 
 async function readBearer(): Promise<string | null> {
   const stored = await chrome.storage.local.get([STORAGE_KEYS.ACCESS_TOKEN]);
@@ -84,6 +85,7 @@ async function invokeDeviceTool(
 
 /** Build the host once the backend address and organization are known. */
 export async function createExtensionChatHost(): Promise<ChatHost> {
+  registerExtensionToolRenderers();
   const [baseUrl, org] = await Promise.all([getApiBaseUrl(), Promise.resolve(createPanelOrg())]);
   await Promise.all([org.refresh(), restoreChatAddress()]);
   return {
