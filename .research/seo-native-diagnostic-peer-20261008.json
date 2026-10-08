@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "review_kind": "fresh independent native evidence and metadata-only source review",
+  "reviewed_run": 37777965952,
+  "reviewed_commit": "f2e96b8f91db9a9c60fa06328616131236b278cc",
+  "scope": "Read-only review of retained hosted artifact, two infrastructure closure requirements, and one workflow title line; no native dispatch, build, release, source or inventory change.",
+  "verdict_A_actual_scope": {
+    "status": "PASS_INFRASTRUCTURE_SCOPES_ONLY",
+    "d174_fixture_route": "Can close within its documented infrastructure scope: the resource-valid hosted execution selected guest-seo/full/Airbnb and reached the actual T09 metadata door criterion. The receipt records stable public Airbnb title and complete alternates/schema types before and after re-audit, matching side-panel detail groups, then trusted activation of the es-US alternate and WebSite schema doors. This does not grant T09 product acceptance.",
+    "d176_classification": "Can close within its documented classification scope: the previously independently reproduced pass-retention defect has old-red/new-green classifier and consumer review, and this actual opt-in hosted receipt is diagnostic_only with DIAGNOSTIC_ONLY_NO_ACCEPTANCE_CREDIT, original partial status preserved, zero targets and 24 diagnostic_targets. No diagnostic target earns acceptance credit.",
+    "product_T09": "UNVERIFIED: a separate uninstrumented resource-valid native run must produce an acceptance receipt. This diagnostic cannot close EXT-F-1008-T09 or the wider SEO feature.",
+    "run_name": "SOURCE_PASS_RUNTIME_UNVERIFIED: run-name uses the documented inputs context with two declared workflow_dispatch choice inputs. The single-line f2e96b8f change only changes displayed workflow-run metadata; job concurrency and execution steps are unchanged. No later run proves the rendered title yet."
+  },
+  "verdict_B_provenance_and_quality": {
+    "status": "PASS_WITH_MEASUREMENT_LIMITS",
+    "frozen_build": {
+      "development_run_id": 37754055905,
+      "development_artifact_id": 11539827040,
+      "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+      "artifact_digest": "sha256:1b883fc212351a6ef30e3b6cc43f9cb1a03c8584affaf3ffecdf679c59087893",
+      "tree_sha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+      "extension_version": "0.2.407",
+      "before_after_tree_match": true
+    },
+    "artifact_checks": "Hosted run metadata says workflow_dispatch attempt 1 success at head a3c12998334b8bdf89e3d379ef80faa148bccdd7. Retained artifact listing binds artifact 11551077906 to this run. Local SHA-256 of the receipt and all three journals matches the uploaded file manifest. Receipt's imported artifact identity matches the frozen development import observation.",
+    "resource_checks": "Package, browser and guest journals each record admitted, resourceInvalid=false, exitCode=0 and final decision=valid. Guest journal has three CPU_PENDING events, six process brackets, recovery and no RESOURCE_WATCH_UNSAFE. At 12:42:17Z, iostat sampled 91% busy and the matched-PID bracket measured 2.71 CPU seconds owned Chromium, 0.29 owned other, 0.48 host provisioner and 0.09 other host. Chromium is the lead for profiling at this stage, not a proven exclusive cause or sustained unsafe episode.",
+    "measurement_limits": "Matched-PID deltas exclude exited, newly appeared, reparented or reused PIDs; ps has centisecond resolution; snapshot span differs from the iostat span. The short-lived ps census cost was not measured, so its CPU bias cannot be quantified. Subsequent pending samples fell to 1% and 37% busy before recovery.",
+    "findings": []
+  },
+  "remaining_gap": "Obtain an uninstrumented native T09 acceptance receipt on the frozen or later explicitly identified build; separately profile Chromium/driver if resolving the transient high-CPU stage. Observe a later hosted run title before calling the run-name change runtime-proven.",
+  "sources": [
+    ".research/seo-cpu-optin-native-20261008.json",
+    ".research/seo-cpu-optin-native-20261008/raw/seo-guest-acceptance.json",
+    ".research/seo-cpu-optin-native-20261008/raw/hosted-run-metadata.json",
+    ".research/seo-cpu-optin-native-20261008/raw/imported-artifact-observation.json",
+    ".research/seo-cpu-optin-native-20261008/raw/remote-artifact-listing.json",
+    ".research/seo-cpu-optin-native-20261008/raw/uploaded-artifact-file-manifest.json",
+    ".research/seo-cpu-optin-native-20261008/raw/hosted-package-37777965952-1.jsonl",
+    ".research/seo-cpu-optin-native-20261008/raw/hosted-browser-37777965952-1.jsonl",
+    ".research/seo-cpu-optin-native-20261008/raw/hosted-guest-37777965952-1.jsonl",
+    "docs/stabilization/defects/EXT-D-0174.json",
+    "docs/stabilization/defects/EXT-D-0176.json",
+    "https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#run-name"
+  ]
+}
