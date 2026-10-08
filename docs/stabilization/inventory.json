@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T18:07:11Z",
+  "updated_at": "2026-10-08T18:29:01Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -5058,6 +5058,18 @@
               "independent_review": "373b28df",
               "detail": "Dark/Light/System UI, storage, and document appearance marker survive panel reload; the original applied-appearance/reopen criterion is not fully established.",
               "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            },
+            {
+              "mode": "guest",
+              "run_id": "37822887930",
+              "status": "partial",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-reload-native-20261008.json"],
+              "independent_review": "4a5a8e98",
+              "detail": "Original missing dimensions remain; T04 theme-specific full reload not inferred from general guest reload. See report and prior case result.",
+              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
           ]
         },
@@ -5332,6 +5344,18 @@
               "independent_review": "373b28df",
               "detail": "Ask/Act UI and storage survive panel reload; new-chat default behavior is explicitly unverified.",
               "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            },
+            {
+              "mode": "guest",
+              "run_id": "37822887930",
+              "status": "partial",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-reload-native-20261008.json"],
+              "independent_review": "4a5a8e98",
+              "detail": "Original missing dimensions remain; T04 theme-specific full reload not inferred from general guest reload. See report and prior case result.",
+              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
           ]
         },
@@ -5384,15 +5408,15 @@
           "results": {
             "guest": {
               "mode": "guest",
-              "run_id": "37820053159",
+              "run_id": "37822887930",
               "status": "pass",
               "build_version": "0.2.414",
               "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
               "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
-              "evidence": [".research/settings-controls-live-20261008.json"],
-              "independent_review": "373b28df",
-              "detail": "Fast/Thinking selection and displayed/persisted values pass the guest inventory expectation.",
-              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+              "evidence": [".research/settings-reload-native-20261008.json"],
+              "independent_review": "4a5a8e98",
+              "detail": "Independent review confirms original guest criteria.",
+              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
           },
           "linked_defects": ["EXT-D-0087"],
@@ -5420,6 +5444,18 @@
               ],
               "detail": "Fast/Thinking trusted selection and UI/storage persistence pass warm and after each panel reload. No deeper Chat behavior claimed.",
               "release_scope": "Frozen development artifact only. Three current journals valid; later shared full-extension Settings reload failed and does not certify baseline reload cases."
+            },
+            {
+              "mode": "guest",
+              "run_id": "37820053159",
+              "status": "pass",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-controls-live-20261008.json"],
+              "independent_review": "373b28df",
+              "detail": "Fast/Thinking selection and displayed/persisted values pass the guest inventory expectation.",
+              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
             }
           ],
           "attempt_history": [
@@ -5477,6 +5513,18 @@
               "independent_review": "373b28df",
               "detail": "Fast/Thinking selection and displayed/persisted values pass the guest inventory expectation.",
               "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            },
+            {
+              "mode": "guest",
+              "run_id": "37822887930",
+              "status": "pass",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-reload-native-20261008.json"],
+              "independent_review": "4a5a8e98",
+              "detail": "Independent review confirms original guest criteria.",
+              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
           ]
         },
@@ -5637,6 +5685,18 @@
               "independent_review": "373b28df",
               "detail": "Toggle and persistence pass; identity/email context consumer behavior is unverified.",
               "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            },
+            {
+              "mode": "guest",
+              "run_id": "37822887930",
+              "status": "partial",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-reload-native-20261008.json"],
+              "independent_review": "4a5a8e98",
+              "detail": "Original missing dimensions remain; T04 theme-specific full reload not inferred from general guest reload. See report and prior case result.",
+              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
           ]
         },
@@ -5775,6 +5835,18 @@
               "independent_review": "373b28df",
               "detail": "Toggle and persistence pass; post-login offer behavior is unverified.",
               "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            },
+            {
+              "mode": "guest",
+              "run_id": "37822887930",
+              "status": "partial",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-reload-native-20261008.json"],
+              "independent_review": "4a5a8e98",
+              "detail": "Original missing dimensions remain; T04 theme-specific full reload not inferred from general guest reload. See report and prior case result.",
+              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
           ]
         },
@@ -5832,15 +5904,15 @@
           "results": {
             "guest": {
               "mode": "guest",
-              "run_id": "37820053159",
+              "run_id": "37822887930",
               "status": "pass",
               "build_version": "0.2.414",
               "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
               "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
-              "evidence": [".research/settings-controls-live-20261008.json"],
-              "independent_review": "373b28df",
-              "detail": "Guest Settings has no advanced section, admin controls, or permission controls in both warm and reload observations.",
-              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+              "evidence": [".research/settings-reload-native-20261008.json"],
+              "independent_review": "4a5a8e98",
+              "detail": "Independent review confirms original guest criteria.",
+              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
           },
           "result_history": [
@@ -5926,6 +5998,18 @@
               "detail": "Guest admin controls absent warm and after reload; 2/2 criteria. Guest only; other modes retain their own evidence.",
               "build_variant": "development0.2.387/source14305391",
               "observed_at": "2026-10-07T22:18:59.711910+00:00"
+            },
+            {
+              "mode": "guest",
+              "run_id": "37820053159",
+              "status": "pass",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-controls-live-20261008.json"],
+              "independent_review": "373b28df",
+              "detail": "Guest Settings has no advanced section, admin controls, or permission controls in both warm and reload observations.",
+              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
             }
           ],
           "attempt_history": [
@@ -5983,6 +6067,18 @@
               "independent_review": "373b28df",
               "detail": "Guest Settings has no advanced section, admin controls, or permission controls in both warm and reload observations.",
               "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            },
+            {
+              "mode": "guest",
+              "run_id": "37822887930",
+              "status": "pass",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-reload-native-20261008.json"],
+              "independent_review": "4a5a8e98",
+              "detail": "Independent review confirms original guest criteria.",
+              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
           ]
         },
@@ -6310,6 +6406,18 @@
               "independent_review": "373b28df",
               "detail": "Toggle and persistence pass; supported sign-in form consumer behavior is unverified.",
               "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            },
+            {
+              "mode": "guest",
+              "run_id": "37822887930",
+              "status": "partial",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-reload-native-20261008.json"],
+              "independent_review": "4a5a8e98",
+              "detail": "Original missing dimensions remain; T04 theme-specific full reload not inferred from general guest reload. See report and prior case result.",
+              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
           ]
         },
@@ -6480,6 +6588,18 @@
               "independent_review": "373b28df",
               "detail": "Toggle and persistence pass; downstream website suggestion presentation is unverified.",
               "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            },
+            {
+              "mode": "guest",
+              "run_id": "37822887930",
+              "status": "partial",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-reload-native-20261008.json"],
+              "independent_review": "4a5a8e98",
+              "detail": "Original missing dimensions remain; T04 theme-specific full reload not inferred from general guest reload. See report and prior case result.",
+              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
           ]
         },
@@ -6536,15 +6656,15 @@
           "results": {
             "guest": {
               "mode": "guest",
-              "run_id": "37820053159",
+              "run_id": "37822887930",
               "status": "pass",
               "build_version": "0.2.414",
               "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
               "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
-              "evidence": [".research/settings-controls-live-20261008.json"],
-              "independent_review": "373b28df",
-              "detail": "Toggle state and visible coming-soon hint persist; original guest expectation met.",
-              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+              "evidence": [".research/settings-reload-native-20261008.json"],
+              "independent_review": "4a5a8e98",
+              "detail": "Independent review confirms original guest criteria.",
+              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
           },
           "linked_defects": ["EXT-D-0087"],
@@ -6631,6 +6751,18 @@
               "detail": "Deep clean toggle, reload persistence and original state restoration;3/3 criteria. Guest only; other modes retain their own evidence.",
               "build_variant": "development0.2.387/source14305391",
               "observed_at": "2026-10-07T22:18:59.711910+00:00"
+            },
+            {
+              "mode": "guest",
+              "run_id": "37820053159",
+              "status": "pass",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-controls-live-20261008.json"],
+              "independent_review": "373b28df",
+              "detail": "Toggle state and visible coming-soon hint persist; original guest expectation met.",
+              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
             }
           ],
           "attempt_history": [
@@ -6688,6 +6820,18 @@
               "independent_review": "373b28df",
               "detail": "Toggle state and visible coming-soon hint persist; original guest expectation met.",
               "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            },
+            {
+              "mode": "guest",
+              "run_id": "37822887930",
+              "status": "pass",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-reload-native-20261008.json"],
+              "independent_review": "4a5a8e98",
+              "detail": "Independent review confirms original guest criteria.",
+              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
           ]
         },
@@ -6998,15 +7142,15 @@
           "results": {
             "guest": {
               "mode": "guest",
-              "run_id": "37820053159",
+              "run_id": "37822887930",
               "status": "pass",
               "build_version": "0.2.414",
               "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
               "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
-              "evidence": [".research/settings-controls-live-20261008.json"],
-              "independent_review": "373b28df",
-              "detail": "Valid save/rediscovery, bounds, invalid range, clearing, and panel reload persistence all pass.",
-              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+              "evidence": [".research/settings-reload-native-20261008.json"],
+              "independent_review": "4a5a8e98",
+              "detail": "Independent review confirms original guest criteria.",
+              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
           },
           "linked_defects": ["EXT-D-0086", "EXT-D-0084"],
@@ -7171,6 +7315,18 @@
               ],
               "detail": "Independently verified65001,1,65535 Save/readback after Settings Page.reload;65536 visible error preserves65535;blank clears and remainsnull;actual worker rediscovery entry and health request observed. All3 exact resource journals valid. HTTP503 fixture gives no healthy-engine claim; Page.reload is not full extension Reload. Exact guest case only.",
               "release_scope": "Frozen development artifact only, not Store or current-main/full Settings health."
+            },
+            {
+              "mode": "guest",
+              "run_id": "37820053159",
+              "status": "pass",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-controls-live-20261008.json"],
+              "independent_review": "373b28df",
+              "detail": "Valid save/rediscovery, bounds, invalid range, clearing, and panel reload persistence all pass.",
+              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
             }
           ],
           "attempt_history": [
@@ -7239,6 +7395,18 @@
               "independent_review": "373b28df",
               "detail": "Valid save/rediscovery, bounds, invalid range, clearing, and panel reload persistence all pass.",
               "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            },
+            {
+              "mode": "guest",
+              "run_id": "37822887930",
+              "status": "pass",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-reload-native-20261008.json"],
+              "independent_review": "4a5a8e98",
+              "detail": "Independent review confirms original guest criteria.",
+              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
           ]
         },
@@ -8099,13 +8267,16 @@
           "linked_defects": ["EXT-D-0161", "EXT-D-0162"],
           "results": {
             "guest": {
+              "mode": "guest",
+              "run_id": "37822887930",
               "status": "pass",
-              "run_id": "37729701473",
-              "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
-              "evidence": ".research/settings397-fresh-native-20261007.json",
-              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
-              "verified_at": "2026-10-08T05:10:28.331547+00:00",
-              "detail": "Guest negative visibility before and after genuine full extension reload passes; replacement worker/panel and active Settings are observed. Ordinary-member/admin dimensions are separate and remain at their own recorded status. No Store/current-main/whole-feature health claim."
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-reload-native-20261008.json"],
+              "independent_review": "4a5a8e98",
+              "detail": "Independent review confirms original guest criteria.",
+              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
           },
           "result_history": [
@@ -8141,6 +8312,16 @@
                 "release_scope": "Frozen development artifact, actual Intel native observation. Three current journals valid; no current-main/Store/whole-feature health. Browser package revision1194 logged; exact runtime browser version absent from retained receipt."
               },
               "superseded_at": "2026-10-08T05:10:28.331547+00:00"
+            },
+            {
+              "mode": "guest",
+              "status": "pass",
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "verified_at": "2026-10-08T05:10:28.331547+00:00",
+              "detail": "Guest negative visibility before and after genuine full extension reload passes; replacement worker/panel and active Settings are observed. Ordinary-member/admin dimensions are separate and remain at their own recorded status. No Store/current-main/whole-feature health claim."
             }
           ],
           "attempt_history": [
@@ -8199,6 +8380,18 @@
               "independent_review": "373b28df",
               "detail": "Guest admin-only boundary is observed in warm state; the shared extension reload did not reach completion. Ordinary-member criteria are a separate mode and are not judged here.",
               "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            },
+            {
+              "mode": "guest",
+              "run_id": "37822887930",
+              "status": "pass",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-reload-native-20261008.json"],
+              "independent_review": "4a5a8e98",
+              "detail": "Independent review confirms original guest criteria.",
+              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
           ]
         },
@@ -8219,15 +8412,15 @@
           "results": {
             "guest": {
               "mode": "guest",
-              "run_id": "37820053159",
+              "run_id": "37822887930",
               "status": "pass",
               "build_version": "0.2.414",
               "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
               "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
-              "evidence": [".research/settings-controls-live-20261008.json"],
-              "independent_review": "373b28df",
-              "detail": "The inventory steps and expected outcome are met: remove one selected origin, preserve the other, hide empty list, and verify state after Settings panel reload.",
-              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+              "evidence": [".research/settings-reload-native-20261008.json"],
+              "independent_review": "4a5a8e98",
+              "detail": "Independent review confirms original guest criteria.",
+              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
           },
           "result_history": [
@@ -8274,6 +8467,18 @@
               "independent_review": ".research/settings-local397-peer-20261008.json",
               "verified_at": "2026-10-08T06:30:08.992059+00:00",
               "detail": "Two disposable loopback origins visible/stored; selected Ask again removed only one while the other survived panel reload; final removal emptied and hid list, still empty after panel reload. Guest frozen unpublished 0.2.397 artifact; preceding capture-choice flow and Store/current-main behavior unverified."
+            },
+            {
+              "mode": "guest",
+              "run_id": "37820053159",
+              "status": "pass",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-controls-live-20261008.json"],
+              "independent_review": "373b28df",
+              "detail": "The inventory steps and expected outcome are met: remove one selected origin, preserve the other, hide empty list, and verify state after Settings panel reload.",
+              "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
             }
           ],
           "attempt_history": [
@@ -8332,6 +8537,18 @@
               "independent_review": "373b28df",
               "detail": "The inventory steps and expected outcome are met: remove one selected origin, preserve the other, hide empty list, and verify state after Settings panel reload.",
               "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            },
+            {
+              "mode": "guest",
+              "run_id": "37822887930",
+              "status": "pass",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-reload-native-20261008.json"],
+              "independent_review": "4a5a8e98",
+              "detail": "Independent review confirms original guest criteria.",
+              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
           ]
         },
@@ -8598,6 +8815,18 @@
               "independent_review": "373b28df",
               "detail": "Identity/readiness and no-update result pass; unavailable, update-available, throttled, and error branches are explicitly unverified.",
               "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            },
+            {
+              "mode": "guest",
+              "run_id": "37822887930",
+              "status": "partial",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-reload-native-20261008.json"],
+              "independent_review": "4a5a8e98",
+              "detail": "Original missing dimensions remain; T04 theme-specific full reload not inferred from general guest reload. See report and prior case result.",
+              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
           ]
         },
@@ -8708,13 +8937,16 @@
           "dimensions": ["warm", "reload"],
           "results": {
             "guest": {
+              "mode": "guest",
+              "run_id": "37822887930",
               "status": "pass",
-              "run_id": "37729701473",
-              "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
-              "evidence": ".research/settings397-fresh-native-20261007.json",
-              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
-              "verified_at": "2026-10-08T05:10:28.331547+00:00",
-              "detail": "Guest negative visibility before and after genuine full extension reload passes; replacement worker/panel and active Settings are observed. Ordinary-member/admin dimensions are separate and remain at their own recorded status. No Store/current-main/whole-feature health claim."
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-reload-native-20261008.json"],
+              "independent_review": "4a5a8e98",
+              "detail": "Independent review confirms original guest criteria.",
+              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
           },
           "linked_defects": ["EXT-D-0161", "EXT-D-0162"],
@@ -8752,6 +8984,16 @@
                 "release_scope": "Frozen development artifact, actual Intel native observation. Three current journals valid; no current-main/Store/whole-feature health. Browser package revision1194 logged; exact runtime browser version absent from retained receipt."
               },
               "superseded_at": "2026-10-08T05:10:28.331547+00:00"
+            },
+            {
+              "mode": "guest",
+              "status": "pass",
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "verified_at": "2026-10-08T05:10:28.331547+00:00",
+              "detail": "Guest negative visibility before and after genuine full extension reload passes; replacement worker/panel and active Settings are observed. Ordinary-member/admin dimensions are separate and remain at their own recorded status. No Store/current-main/whole-feature health claim."
             }
           ],
           "attempt_history": [
@@ -8809,6 +9051,18 @@
               "independent_review": "373b28df",
               "detail": "Warm guest identity and sign-in state pass; extension_reload observation is unverified.",
               "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            },
+            {
+              "mode": "guest",
+              "run_id": "37822887930",
+              "status": "pass",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-reload-native-20261008.json"],
+              "independent_review": "4a5a8e98",
+              "detail": "Independent review confirms original guest criteria.",
+              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
           ]
         },
@@ -8870,13 +9124,16 @@
           "dimensions": ["warm", "reload"],
           "results": {
             "guest": {
+              "mode": "guest",
+              "run_id": "37822887930",
               "status": "pass",
-              "run_id": "37729701473",
-              "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
-              "evidence": ".research/settings397-fresh-native-20261007.json",
-              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
-              "verified_at": "2026-10-08T05:10:28.331547+00:00",
-              "detail": "Guest negative visibility before and after genuine full extension reload passes; replacement worker/panel and active Settings are observed. Ordinary-member/admin dimensions are separate and remain at their own recorded status. No Store/current-main/whole-feature health claim."
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-reload-native-20261008.json"],
+              "independent_review": "4a5a8e98",
+              "detail": "Independent review confirms original guest criteria.",
+              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
           },
           "linked_defects": ["EXT-D-0161", "EXT-D-0162"],
@@ -8914,6 +9171,16 @@
                 "release_scope": "Frozen development artifact, actual Intel native observation. Three current journals valid; no current-main/Store/whole-feature health. Browser package revision1194 logged; exact runtime browser version absent from retained receipt."
               },
               "superseded_at": "2026-10-08T05:10:28.331547+00:00"
+            },
+            {
+              "mode": "guest",
+              "status": "pass",
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "verified_at": "2026-10-08T05:10:28.331547+00:00",
+              "detail": "Guest negative visibility before and after genuine full extension reload passes; replacement worker/panel and active Settings are observed. Ordinary-member/admin dimensions are separate and remain at their own recorded status. No Store/current-main/whole-feature health claim."
             }
           ],
           "attempt_history": [
@@ -8971,6 +9238,18 @@
               "independent_review": "373b28df",
               "detail": "Warm guest archive-filter absence/no org request passes; extension_reload observation is unverified.",
               "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            },
+            {
+              "mode": "guest",
+              "run_id": "37822887930",
+              "status": "pass",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-reload-native-20261008.json"],
+              "independent_review": "4a5a8e98",
+              "detail": "Independent review confirms original guest criteria.",
+              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
           ]
         },
@@ -9566,13 +9845,16 @@
           ],
           "results": {
             "guest": {
+              "mode": "guest",
+              "run_id": "37822887930",
               "status": "pass",
-              "run_id": "37729701473",
-              "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
-              "evidence": ".research/settings397-fresh-native-20261007.json",
-              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
-              "verified_at": "2026-10-08T05:10:28.331547+00:00",
-              "detail": "Guest negative visibility before and after genuine full extension reload passes; replacement worker/panel and active Settings are observed. Ordinary-member/admin dimensions are separate and remain at their own recorded status. No Store/current-main/whole-feature health claim."
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-reload-native-20261008.json"],
+              "independent_review": "4a5a8e98",
+              "detail": "Independent review confirms original guest criteria.",
+              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             },
             "member": {
               "status": "unverified",
@@ -9626,6 +9908,16 @@
                 "release_scope": "Frozen development artifact, actual Intel native observation. Three current journals valid; no current-main/Store/whole-feature health. Browser package revision1194 logged; exact runtime browser version absent from retained receipt."
               },
               "superseded_at": "2026-10-08T05:10:28.331547+00:00"
+            },
+            {
+              "mode": "guest",
+              "status": "pass",
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "verified_at": "2026-10-08T05:10:28.331547+00:00",
+              "detail": "Guest negative visibility before and after genuine full extension reload passes; replacement worker/panel and active Settings are observed. Ordinary-member/admin dimensions are separate and remain at their own recorded status. No Store/current-main/whole-feature health claim."
             }
           ],
           "linked_defects": ["EXT-D-0161", "EXT-D-0162"],
@@ -9684,6 +9976,18 @@
               "independent_review": "373b28df",
               "detail": "Warm guest no-membership/no-restoration-action passes; extension_reload observation is unverified.",
               "release_scope": "Unpublished development artifact11568846736, distinct from prior version414 tree; no Store or member/admin acceptance."
+            },
+            {
+              "mode": "guest",
+              "run_id": "37822887930",
+              "status": "pass",
+              "build_version": "0.2.414",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+              "evidence": [".research/settings-reload-native-20261008.json"],
+              "independent_review": "4a5a8e98",
+              "detail": "Independent review confirms original guest criteria.",
+              "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
           ]
         }
@@ -16897,7 +17201,9 @@
               "source_commit": "6dbc360d",
               "evidence": ".research/scrape-empty-panels-preparation-20261008.json",
               "status": "native-unverified",
-              "detail": "Existing real referrals page has no links; warm/postreload empty Links checks now require zero count/rows, Add link, and unchanged full capture export. Source8 tests pass; independent review and native pending. Other empty-pane applicability requires source-backed review; no acceptance promotion."
+              "detail": "Existing real referrals page has no links; warm/postreload empty Links checks now require zero count/rows, Add link, and unchanged full capture export. Source8 tests pass; independent review and native pending. Other empty-pane applicability requires source-backed review; no acceptance promotion.",
+              "independent_review": "54863312",
+              "review_evidence": ".research/scrape-empty-panels-peer-20261008.json"
             }
           ]
         },
@@ -64476,6 +64782,20 @@
               "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
               "evidence": [".research/records-metadata-live-20261008.json"],
               "detail": "Current schema and first authenticated exact-body HTTP200 request passed; completion extraction/visible-output correlation failed with insufficient diagnostic detail. C03 not reached. Backend samples changed across run; no request-time SHA attribution. Earlier bounded C02 history retained, no new product verdict."
+            },
+            {
+              "run_id": "37823085569",
+              "mode": "admin",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "resource_valid": true,
+              "build_version": "0.2.414",
+              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+              "evidence": [
+                ".research/records-completion-native-20261008.json",
+                ".research/records-card-native-peer-20261008.json"
+              ],
+              "detail": "No table_list action. Failed within card/schema/currentcontract interval before completiondiagnostics. Stable sampledbackend40750ce2; both temporarycredentials absent. Earlierboundedhistoryretained, no productverdict."
             }
           ],
           "results": {
