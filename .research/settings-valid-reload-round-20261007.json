@@ -1,0 +1,838 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "task_id": "settings_valid_reload_round",
+  "lane": "B",
+  "status": "resource_invalid_no_acceptance_credit",
+  "scope": "One fresh hosted ARM macos-15 guest settings-controls run against frozen development artifact; no retry authorized after resource invalidation.",
+  "ownership_preflight": {
+    "checkout": "main",
+    "head_sha": "a7753e7273eaee0f8ffcd983dbe0fdeddbeb434c",
+    "worktree_clean_before_dispatch": true,
+    "prior_hosted_acceptance_jobs_terminal": true,
+    "artifact_id": 11516342905,
+    "artifact_expired": false,
+    "readiness_fix_sha": "65637cd5",
+    "focused_coverage_fix_sha": "c8459a93f67cff9319e24841cfe69edb4be05f3f",
+    "driver_files_match_reviewed_coverage_commit": true,
+    "concurrent_lane_or_owned_process_seen_before_dispatch": false
+  },
+  "dispatch": {
+    "workflow": "Hosted guest side-panel acceptance",
+    "run_id": 37718106224,
+    "job_id": 113119215046,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37718106224",
+    "lane": "B",
+    "runner_label": "macos-15",
+    "acceptance_case": "settings-controls",
+    "auth_mode": "signed-out guest",
+    "started_at": "2026-10-08T02:29:28Z",
+    "completed_at": "2026-10-08T02:36:02Z",
+    "workflow_checkout_sha": "a7753e7273eaee0f8ffcd983dbe0fdeddbeb434c",
+    "dispatch_count": 1,
+    "conclusion": "failure"
+  },
+  "artifact": {
+    "development_run_id": 37698216289,
+    "development_artifact_id": 11516342905,
+    "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "version": "0.2.391",
+    "artifact_digest": "sha256:927854cfdda6e57d272277653e0b4c507720c29d74978da235d80c064c1017ee",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793"
+  },
+  "native_observation": {
+    "report_path": ".research/settings-valid-reload-round-20261007-originals/hosted-guest-37718106224-1/matrx-extend/matrx-extend/test-results/settings-local-controls-acceptance.json",
+    "report_sha256": "2a7ab1772026e0ce42159b3fc0794d77ccf5968e2c9f24c33da77a870b846192",
+    "report_status": "unverified",
+    "reload": {
+      "managementReloadClicked": true,
+      "oldTargetsRetired": true,
+      "workerReplaced": true,
+      "panelReplaced": true
+    },
+    "boundary": {
+      "status": "settings_opened",
+      "panel": {
+        "sampled": true,
+        "runtimeIdMatches": true,
+        "documentReady": true,
+        "visible": true,
+        "settingsTabCount": 1,
+        "settingsActiveCount": 1,
+        "guestBannerPresent": false,
+        "guestOrganizationGuidancePresent": true
+      }
+    },
+    "cases": [
+      {
+        "id": "EXT-F-1003-T04",
+        "driver_status": "pass",
+        "criteria_count": 6,
+        "step_count": 6
+      },
+      {
+        "id": "EXT-F-1003-T10",
+        "driver_status": "unverified",
+        "criteria_count": 5,
+        "step_count": 4
+      },
+      {
+        "id": "EXT-F-1003-T13",
+        "driver_status": "pass",
+        "criteria_count": 4,
+        "step_count": 4
+      },
+      {
+        "id": "EXT-F-1003-T22",
+        "driver_status": "pass",
+        "criteria_count": 2,
+        "step_count": 2
+      },
+      {
+        "id": "EXT-F-1003-T37",
+        "driver_status": "pass",
+        "criteria_count": 3,
+        "step_count": 4
+      },
+      {
+        "id": "EXT-F-1003-T46",
+        "driver_status": "pass",
+        "criteria_count": 8,
+        "step_count": 11
+      },
+      {
+        "id": "EXT-F-1003-T63",
+        "driver_status": "unverified",
+        "criteria_count": 3,
+        "step_count": 2
+      },
+      {
+        "id": "EXT-F-1003-T64",
+        "driver_status": "pass",
+        "criteria_count": 5,
+        "step_count": 5
+      },
+      {
+        "id": "EXT-F-1003-T70",
+        "driver_status": "unverified",
+        "criteria_count": 10,
+        "step_count": 3
+      },
+      {
+        "id": "EXT-F-1003-T73",
+        "driver_status": "pass",
+        "criteria_count": 2,
+        "step_count": 2
+      },
+      {
+        "id": "EXT-F-1003-T76",
+        "driver_status": "pass",
+        "criteria_count": 2,
+        "step_count": 2
+      },
+      {
+        "id": "EXT-F-1003-T92",
+        "driver_status": "pass",
+        "criteria_count": 2,
+        "step_count": 2
+      }
+    ],
+    "acceptance_credit": "none; all observations are retained but invalid resource verdict blocks credit",
+    "ordinary_member_scope": "not tested by signed-out guest"
+  },
+  "resource_verdict": {
+    "status": "invalid",
+    "reason": "RESOURCE_CPU_BUSY remained pending when the browser child exited before the required recovery samples; wrapper exited 3.",
+    "watch_interval_seconds": 15,
+    "unsafe_samples_to_stop": 2,
+    "healthy_samples_to_resume": 3,
+    "measurements": {
+      "guest_preflight": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 5.88,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.26,
+        "logicalCpus": 3,
+        "cpuBusyFraction": 0.07142857142857142,
+        "swapUsedMiB": 0,
+        "repoFreeGiB": 43.017818450927734,
+        "profileFreeGiB": 43.017818450927734,
+        "safetyFreeGiB": 43.017818450927734,
+        "systemFreeGiB": 43.017818450927734
+      },
+      "first_watch_sample": {
+        "schema": 1,
+        "at": "2026-10-08T02:35:27.043Z",
+        "runId": "hosted-guest-37718106224-1",
+        "reasons": [
+          "RESOURCE_CPU_BUSY"
+        ],
+        "sample": {
+          "pressureLevel": 1,
+          "availableMemoryGiB": 5.81,
+          "requiredMemoryGiB": 4,
+          "oneMinuteLoad": 1.01,
+          "logicalCpus": 3,
+          "cpuBusyFraction": 0.85,
+          "swapUsedMiB": 0,
+          "repoFreeGiB": 42.94133377075195,
+          "profileFreeGiB": 42.94133377075195,
+          "safetyFreeGiB": 42.94133377075195,
+          "systemFreeGiB": 42.94133377075195
+        },
+        "code": "RESOURCE_CPU_PENDING"
+      },
+      "next_watch_sample": {
+        "schema": 1,
+        "at": "2026-10-08T02:35:43.227Z",
+        "runId": "hosted-guest-37718106224-1",
+        "reasons": [],
+        "sample": {
+          "pressureLevel": 1,
+          "availableMemoryGiB": 5.74,
+          "requiredMemoryGiB": 4,
+          "oneMinuteLoad": 3.53,
+          "logicalCpus": 3,
+          "cpuBusyFraction": 0.36,
+          "swapUsedMiB": 0,
+          "repoFreeGiB": 43.26131820678711,
+          "profileFreeGiB": 43.26131820678711,
+          "safetyFreeGiB": 43.26131820678711,
+          "systemFreeGiB": 43.26131820678711
+        },
+        "code": "RESOURCE_CPU_PENDING"
+      },
+      "process_attribution": {
+        "schema": 1,
+        "at": "2026-10-08T02:35:27.087Z",
+        "runId": "hosted-guest-37718106224-1",
+        "processes": [
+          {
+            "pid": 10220,
+            "parentPid": 1,
+            "cpuPercent": 84.7,
+            "executable": "MTLCompilerServi"
+          },
+          {
+            "pid": 10221,
+            "parentPid": 1,
+            "cpuPercent": 25.6,
+            "executable": "MTLCompilerServi"
+          },
+          {
+            "pid": 886,
+            "parentPid": 883,
+            "cpuPercent": 22.1,
+            "executable": "provjobd11896593"
+          },
+          {
+            "pid": 10153,
+            "parentPid": 10152,
+            "cpuPercent": 17.7,
+            "executable": "Chromium"
+          },
+          {
+            "pid": 10167,
+            "parentPid": 10153,
+            "cpuPercent": 8.8,
+            "executable": "Chromium Helper"
+          },
+          {
+            "pid": 10219,
+            "parentPid": 10153,
+            "cpuPercent": 6.9,
+            "executable": "Chromium Helper"
+          },
+          {
+            "pid": 10152,
+            "parentPid": 9819,
+            "cpuPercent": 6.1,
+            "executable": "node"
+          },
+          {
+            "pid": 10420,
+            "parentPid": 1,
+            "cpuPercent": 5.1,
+            "executable": "ManagementTestSu"
+          },
+          {
+            "pid": 10433,
+            "parentPid": 10153,
+            "cpuPercent": 5.1,
+            "executable": "Chromium Helper"
+          },
+          {
+            "pid": 2735,
+            "parentPid": 1,
+            "cpuPercent": 4.8,
+            "executable": "duetexpertd"
+          },
+          {
+            "pid": 881,
+            "parentPid": 868,
+            "cpuPercent": 3.7,
+            "executable": "hosted-compute-a"
+          },
+          {
+            "pid": 10168,
+            "parentPid": 10153,
+            "cpuPercent": 2.6,
+            "executable": "Chromium Helper"
+          },
+          {
+            "pid": 10487,
+            "parentPid": 1,
+            "cpuPercent": 2.5,
+            "executable": "ASConfigurationS"
+          },
+          {
+            "pid": 10208,
+            "parentPid": 10153,
+            "cpuPercent": 2.3,
+            "executable": "Chromium Helper"
+          },
+          {
+            "pid": 3044,
+            "parentPid": 3039,
+            "cpuPercent": 1.8,
+            "executable": "Runner.Worker"
+          },
+          {
+            "pid": 1,
+            "parentPid": 0,
+            "cpuPercent": 1.2,
+            "executable": "launchd"
+          },
+          {
+            "pid": 9819,
+            "parentPid": 8434,
+            "cpuPercent": 0.8,
+            "executable": "node"
+          },
+          {
+            "pid": 380,
+            "parentPid": 1,
+            "cpuPercent": 0.6,
+            "executable": "trustd"
+          },
+          {
+            "pid": 414,
+            "parentPid": 1,
+            "cpuPercent": 0.5,
+            "executable": "fontd"
+          },
+          {
+            "pid": 120,
+            "parentPid": 1,
+            "cpuPercent": 0.3,
+            "executable": "opendirectoryd"
+          },
+          {
+            "pid": 512,
+            "parentPid": 1,
+            "cpuPercent": 0.3,
+            "executable": "swcd"
+          },
+          {
+            "pid": 10362,
+            "parentPid": 1,
+            "cpuPercent": 0.3,
+            "executable": "AccountSubscribe"
+          },
+          {
+            "pid": 82,
+            "parentPid": 1,
+            "cpuPercent": 0.2,
+            "executable": "logd"
+          },
+          {
+            "pid": 141,
+            "parentPid": 1,
+            "cpuPercent": 0.2,
+            "executable": "notifyd"
+          },
+          {
+            "pid": 196,
+            "parentPid": 1,
+            "cpuPercent": 0.2,
+            "executable": "mDNSResponder"
+          },
+          {
+            "pid": 309,
+            "parentPid": 1,
+            "cpuPercent": 0.2,
+            "executable": "usbd"
+          },
+          {
+            "pid": 86,
+            "parentPid": 1,
+            "cpuPercent": 0.1,
+            "executable": "fseventsd"
+          },
+          {
+            "pid": 236,
+            "parentPid": 1,
+            "cpuPercent": 0.1,
+            "executable": "symptomsd"
+          },
+          {
+            "pid": 284,
+            "parentPid": 1,
+            "cpuPercent": 0.1,
+            "executable": "audioclocksyncd"
+          },
+          {
+            "pid": 326,
+            "parentPid": 1,
+            "cpuPercent": 0.1,
+            "executable": "cfprefsd"
+          },
+          {
+            "pid": 374,
+            "parentPid": 1,
+            "cpuPercent": 0.1,
+            "executable": "tccd"
+          },
+          {
+            "pid": 475,
+            "parentPid": 1,
+            "cpuPercent": 0.1,
+            "executable": "amsaccountsd"
+          },
+          {
+            "pid": 546,
+            "parentPid": 1,
+            "cpuPercent": 0.1,
+            "executable": "CloudTelemetrySe"
+          },
+          {
+            "pid": 10214,
+            "parentPid": 1,
+            "cpuPercent": 0.1,
+            "executable": "RemoteManagement"
+          },
+          {
+            "pid": 10321,
+            "parentPid": 1,
+            "cpuPercent": 0.1,
+            "executable": "PasscodeSettings"
+          }
+        ],
+        "code": "RESOURCE_PROCESS_ATTRIBUTION"
+      }
+    },
+    "journals": {
+      "package": {
+        "path": ".research/settings-valid-reload-round-20261007-originals/hosted-guest-37718106224-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37718106224-1.jsonl",
+        "sha256": "d651f1a4ab0c66f2331d41f7b4522405b6b86d64277102e139918d789fadbe2d",
+        "final": {
+          "schema": 1,
+          "at": "2026-10-08T02:31:19.713Z",
+          "runId": "hosted-package-37718106224-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "admission": {
+          "schema": 1,
+          "at": "2026-10-08T02:31:17.719Z",
+          "runId": "hosted-package-37718106224-1",
+          "mode": "run",
+          "policySchema": 1,
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 6.02,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 7.41,
+            "logicalCpus": 3,
+            "cpuBusyFraction": 0.11857142857142856,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 43.326175689697266,
+            "profileFreeGiB": 43.326175689697266,
+            "safetyFreeGiB": 43.326175689697266,
+            "systemFreeGiB": 43.326175689697266
+          },
+          "cpuBusySamples": [
+            0.07,
+            0.01,
+            0.08,
+            0.03,
+            0.47,
+            0.15,
+            0.02
+          ],
+          "reasons": [],
+          "swapWindowSeconds": 60,
+          "code": "RESOURCE_ADMITTED"
+        }
+      },
+      "browser": {
+        "path": ".research/settings-valid-reload-round-20261007-originals/hosted-guest-37718106224-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37718106224-1.jsonl",
+        "sha256": "87be83cfae69c989dc07459ae177882de3268cde2243ed3db3d98429cd94a39c",
+        "final": {
+          "schema": 1,
+          "at": "2026-10-08T02:33:18.773Z",
+          "runId": "hosted-browser-37718106224-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "admission": {
+          "schema": 1,
+          "at": "2026-10-08T02:33:14.029Z",
+          "runId": "hosted-browser-37718106224-1",
+          "mode": "run",
+          "policySchema": 1,
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 6.02,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 2.26,
+            "logicalCpus": 3,
+            "cpuBusyFraction": 0.11000000000000001,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 43.28118896484375,
+            "profileFreeGiB": 43.28118896484375,
+            "safetyFreeGiB": 43.28118896484375,
+            "systemFreeGiB": 43.28118896484375
+          },
+          "cpuBusySamples": [
+            0.03,
+            0.2,
+            0.07,
+            0.33,
+            0.03,
+            0.01,
+            0.1
+          ],
+          "reasons": [],
+          "swapWindowSeconds": 60,
+          "code": "RESOURCE_ADMITTED"
+        }
+      },
+      "guest": {
+        "path": ".research/settings-valid-reload-round-20261007-originals/hosted-guest-37718106224-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37718106224-1.jsonl",
+        "sha256": "1db08925a269a9767d375c00218672e9cf5cad5d8aaab2f09473a02af3e78dcf",
+        "final": {
+          "schema": 1,
+          "at": "2026-10-08T02:35:54.371Z",
+          "runId": "hosted-guest-37718106224-1",
+          "admitted": true,
+          "resourceInvalid": true,
+          "exitCode": 3,
+          "decision": "invalid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "admission": {
+          "schema": 1,
+          "at": "2026-10-08T02:35:10.795Z",
+          "runId": "hosted-guest-37718106224-1",
+          "mode": "run",
+          "policySchema": 1,
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 5.88,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 1.26,
+            "logicalCpus": 3,
+            "cpuBusyFraction": 0.07142857142857142,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 43.017818450927734,
+            "profileFreeGiB": 43.017818450927734,
+            "safetyFreeGiB": 43.017818450927734,
+            "systemFreeGiB": 43.017818450927734
+          },
+          "cpuBusySamples": [
+            0.4,
+            0.05,
+            0.01,
+            0.01,
+            0.01,
+            0.01,
+            0.01
+          ],
+          "reasons": [],
+          "swapWindowSeconds": 60,
+          "code": "RESOURCE_ADMITTED"
+        },
+        "cpu_watch_events": [
+          {
+            "schema": 1,
+            "at": "2026-10-08T02:35:27.043Z",
+            "runId": "hosted-guest-37718106224-1",
+            "reasons": [
+              "RESOURCE_CPU_BUSY"
+            ],
+            "sample": {
+              "pressureLevel": 1,
+              "availableMemoryGiB": 5.81,
+              "requiredMemoryGiB": 4,
+              "oneMinuteLoad": 1.01,
+              "logicalCpus": 3,
+              "cpuBusyFraction": 0.85,
+              "swapUsedMiB": 0,
+              "repoFreeGiB": 42.94133377075195,
+              "profileFreeGiB": 42.94133377075195,
+              "safetyFreeGiB": 42.94133377075195,
+              "systemFreeGiB": 42.94133377075195
+            },
+            "code": "RESOURCE_CPU_PENDING"
+          },
+          {
+            "schema": 1,
+            "at": "2026-10-08T02:35:27.087Z",
+            "runId": "hosted-guest-37718106224-1",
+            "processes": [
+              {
+                "pid": 10220,
+                "parentPid": 1,
+                "cpuPercent": 84.7,
+                "executable": "MTLCompilerServi"
+              },
+              {
+                "pid": 10221,
+                "parentPid": 1,
+                "cpuPercent": 25.6,
+                "executable": "MTLCompilerServi"
+              },
+              {
+                "pid": 886,
+                "parentPid": 883,
+                "cpuPercent": 22.1,
+                "executable": "provjobd11896593"
+              },
+              {
+                "pid": 10153,
+                "parentPid": 10152,
+                "cpuPercent": 17.7,
+                "executable": "Chromium"
+              },
+              {
+                "pid": 10167,
+                "parentPid": 10153,
+                "cpuPercent": 8.8,
+                "executable": "Chromium Helper"
+              },
+              {
+                "pid": 10219,
+                "parentPid": 10153,
+                "cpuPercent": 6.9,
+                "executable": "Chromium Helper"
+              },
+              {
+                "pid": 10152,
+                "parentPid": 9819,
+                "cpuPercent": 6.1,
+                "executable": "node"
+              },
+              {
+                "pid": 10420,
+                "parentPid": 1,
+                "cpuPercent": 5.1,
+                "executable": "ManagementTestSu"
+              },
+              {
+                "pid": 10433,
+                "parentPid": 10153,
+                "cpuPercent": 5.1,
+                "executable": "Chromium Helper"
+              },
+              {
+                "pid": 2735,
+                "parentPid": 1,
+                "cpuPercent": 4.8,
+                "executable": "duetexpertd"
+              },
+              {
+                "pid": 881,
+                "parentPid": 868,
+                "cpuPercent": 3.7,
+                "executable": "hosted-compute-a"
+              },
+              {
+                "pid": 10168,
+                "parentPid": 10153,
+                "cpuPercent": 2.6,
+                "executable": "Chromium Helper"
+              },
+              {
+                "pid": 10487,
+                "parentPid": 1,
+                "cpuPercent": 2.5,
+                "executable": "ASConfigurationS"
+              },
+              {
+                "pid": 10208,
+                "parentPid": 10153,
+                "cpuPercent": 2.3,
+                "executable": "Chromium Helper"
+              },
+              {
+                "pid": 3044,
+                "parentPid": 3039,
+                "cpuPercent": 1.8,
+                "executable": "Runner.Worker"
+              },
+              {
+                "pid": 1,
+                "parentPid": 0,
+                "cpuPercent": 1.2,
+                "executable": "launchd"
+              },
+              {
+                "pid": 9819,
+                "parentPid": 8434,
+                "cpuPercent": 0.8,
+                "executable": "node"
+              },
+              {
+                "pid": 380,
+                "parentPid": 1,
+                "cpuPercent": 0.6,
+                "executable": "trustd"
+              },
+              {
+                "pid": 414,
+                "parentPid": 1,
+                "cpuPercent": 0.5,
+                "executable": "fontd"
+              },
+              {
+                "pid": 120,
+                "parentPid": 1,
+                "cpuPercent": 0.3,
+                "executable": "opendirectoryd"
+              },
+              {
+                "pid": 512,
+                "parentPid": 1,
+                "cpuPercent": 0.3,
+                "executable": "swcd"
+              },
+              {
+                "pid": 10362,
+                "parentPid": 1,
+                "cpuPercent": 0.3,
+                "executable": "AccountSubscribe"
+              },
+              {
+                "pid": 82,
+                "parentPid": 1,
+                "cpuPercent": 0.2,
+                "executable": "logd"
+              },
+              {
+                "pid": 141,
+                "parentPid": 1,
+                "cpuPercent": 0.2,
+                "executable": "notifyd"
+              },
+              {
+                "pid": 196,
+                "parentPid": 1,
+                "cpuPercent": 0.2,
+                "executable": "mDNSResponder"
+              },
+              {
+                "pid": 309,
+                "parentPid": 1,
+                "cpuPercent": 0.2,
+                "executable": "usbd"
+              },
+              {
+                "pid": 86,
+                "parentPid": 1,
+                "cpuPercent": 0.1,
+                "executable": "fseventsd"
+              },
+              {
+                "pid": 236,
+                "parentPid": 1,
+                "cpuPercent": 0.1,
+                "executable": "symptomsd"
+              },
+              {
+                "pid": 284,
+                "parentPid": 1,
+                "cpuPercent": 0.1,
+                "executable": "audioclocksyncd"
+              },
+              {
+                "pid": 326,
+                "parentPid": 1,
+                "cpuPercent": 0.1,
+                "executable": "cfprefsd"
+              },
+              {
+                "pid": 374,
+                "parentPid": 1,
+                "cpuPercent": 0.1,
+                "executable": "tccd"
+              },
+              {
+                "pid": 475,
+                "parentPid": 1,
+                "cpuPercent": 0.1,
+                "executable": "amsaccountsd"
+              },
+              {
+                "pid": 546,
+                "parentPid": 1,
+                "cpuPercent": 0.1,
+                "executable": "CloudTelemetrySe"
+              },
+              {
+                "pid": 10214,
+                "parentPid": 1,
+                "cpuPercent": 0.1,
+                "executable": "RemoteManagement"
+              },
+              {
+                "pid": 10321,
+                "parentPid": 1,
+                "cpuPercent": 0.1,
+                "executable": "PasscodeSettings"
+              }
+            ],
+            "code": "RESOURCE_PROCESS_ATTRIBUTION"
+          },
+          {
+            "schema": 1,
+            "at": "2026-10-08T02:35:43.227Z",
+            "runId": "hosted-guest-37718106224-1",
+            "reasons": [],
+            "sample": {
+              "pressureLevel": 1,
+              "availableMemoryGiB": 5.74,
+              "requiredMemoryGiB": 4,
+              "oneMinuteLoad": 3.53,
+              "logicalCpus": 3,
+              "cpuBusyFraction": 0.36,
+              "swapUsedMiB": 0,
+              "repoFreeGiB": 43.26131820678711,
+              "profileFreeGiB": 43.26131820678711,
+              "safetyFreeGiB": 43.26131820678711,
+              "systemFreeGiB": 43.26131820678711
+            },
+            "code": "RESOURCE_CPU_PENDING"
+          }
+        ]
+      }
+    },
+    "explanation": "Guest preflight admitted at mean CPU busy 0.0714, available memory 5.88 GiB, pressure 1, load 1.26/3 logical CPUs, swap 0 MiB, disk 43.02 GiB. During browser work, CPU busy sampled 0.85 (RESOURCE_CPU_BUSY), then 16 seconds later 0.36 with no reasons. A single unsafe sample did not trigger stop (two required), but the browser child exited before three healthy recovery samples cleared pending state; final journal therefore records resourceInvalid=true, exitCode=3, decision=invalid. Attribution at the high sample showed MTLCompilerServi 84.7% and 25.6%, provjobd11896593 22.1%, Chromium 17.7%, with other listed processes lower. Memory stayed above 5.7 GiB, pressure 1, swap 0; no disk violation."
+  },
+  "limitations": [
+    "Native replacement panel opened after actual full extension reload, with old targets retired and worker/panel replaced; this is diagnostic only due invalid resource journal.",
+    "T63 remains unverified: guest checks observed, ordinary-member denial not exercised.",
+    "T10 and T70 remain partial; unavailable/new-chat-inheritance and unavailable/update branches are unverified.",
+    "T64, T73, T76, T92 and the other visible pass labels in this report receive no acceptance credit from this invalid run.",
+    "No current-main or Store acceptance is established by the frozen 0.2.391 artifact."
+  ],
+  "evidence_directory": ".research/settings-valid-reload-round-20261007-originals",
+  "next_action": "Escalate exact hosted watchdog measurements for a different host strategy; do not retry in lane B or count any cases from this run."
+}
