@@ -7,7 +7,7 @@
   "title": "Settings acceptance clicks before replacement tab readiness is established",
   "severity": "S2: repeated test failure prevents full-reload acceptance; product regression unproven",
   "priority": "P1",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "root/settings_reload_target_diagnosis",
   "preconditions": [
     "Frozen CI37698216289/artifact11516342905/version0.2.391 with reviewed D161 diagnostics, isolated signed-out profile and valid resource permits."
@@ -22,7 +22,8 @@
   "evidence": [
     ".research/settings-unrecorded-native-20261007.json",
     ".research/settings-unrecorded-native-peer-20261007.json",
-    ".research/settings-reload-target-diagnosis-20261007.json"
+    ".research/settings-reload-target-diagnosis-20261007.json",
+    ".research/settings-reload-final-readiness-peer-20261007.json"
   ],
   "transition_history": [
     {
@@ -42,8 +43,15 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Candidate readiness repair65637cd5 awaits independent source review, exact covering CI and native retest."
+    },
+    {
+      "at": "2026-10-08T02:03:59.439550+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Readiness repair65637cd5 plus covering causal guard c8459a93; exact focusedCI37715732203 succeeded and fresh20048283 peer accepted source readiness. Native retest pending."
     }
   ],
   "closure_requirement": "Independent source review and covering negative control plus resource-valid original native full-reload and surrounding Settings checks. Preserve guest versus member scope.",
-  "next_action": "Resolve peer findings, verify focused CI includes new test, then one admitted original frozen-artifact native retest."
+  "next_action": "One admitted frozen391 original Settings full-reload retest assigned to settings_reload_native_retest; no source-only product acceptance.",
+  "fix_commits": ["65637cd5", "c8459a93"]
 }

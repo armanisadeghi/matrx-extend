@@ -25,7 +25,9 @@
     ".research/picker-count-native-20261007.json",
     ".research/focused-ci-native-peer-20261007.json",
     ".research/admin-auth-completion-diagnosis-20261007.json",
-    ".research/auth-repair-intel-native-peer-20261007.json"
+    ".research/auth-repair-intel-native-peer-20261007.json",
+    ".research/picker-auth-recovery-native-20261007.json",
+    ".research/picker-auth-recovery-native-peer-20261007.json"
   ],
   "transition_history": [
     {
@@ -55,5 +57,5 @@
   ],
   "closure_requirement": "Automatic focused CI plus independent review of safe diagnostic forwarding, then one resource-valid native admin completion retest; judge picker T24/T51 separately.",
   "fix_commits": ["2c506c2d", "ce0d39c5"],
-  "next_action": "Resource-valid native admin completion retest with reviewed categorical forwarding; product auth cause and picker T24/T51 remain unverified."
+  "next_action": "Original391 native37714880948 now passes admin sign-in and selected organization under valid resources; earlier auth failure cause remains unknown and diagnostic failure path was not exercised. Preserve fixed scope, independently inspect exact closure criteria before closing; picker mismatch is separately D158/D42."
 }
