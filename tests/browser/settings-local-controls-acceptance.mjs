@@ -1116,6 +1116,7 @@ try {
           reloadExtension,
           acquireLivePanel,
           preferenceMatches,
+          transportFailureClass,
         });
       } catch (error) {
         report.guestStageFailed = guestStage;

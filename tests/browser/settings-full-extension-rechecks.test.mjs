@@ -3,7 +3,6 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import {
   FULL_EXTENSION_RECHECK_IDS,
-  captureGuestPreferenceBaselines,
   enforceFullExtensionRechecks,
   initializeFullExtensionRechecks,
   rerunGuestSettingsAfterExtensionReload,
@@ -87,7 +86,13 @@ test('missing or failed full-extension rechecks force the individual case to fai
   assert.equal(JSON.stringify(failed).includes('injected_full_extension_failure'), false);
 });
 
-function fullRestartFixture({ skipChoice = null, failNewChat = false } = {}) {
+function fullRestartFixture({
+  skipChoice = null,
+  failNewChat = false,
+  failSettingsCalls = [],
+  failAcquireLivePanel = false,
+  transportClasses = [],
+} = {}) {
   const reportCases = cases();
   initializeFullExtensionRechecks(reportCases);
   const states = {
@@ -108,6 +113,7 @@ function fullRestartFixture({ skipChoice = null, failNewChat = false } = {}) {
     },
   };
   const calls = { reloads: [], options: [], chats: [] };
+  let settingsCalls = 0;
   let activePanel = { targetId: 'panel-initial-replacement', detach: async () => {} };
   let currentPreference;
   const allChoices = [
@@ -147,6 +153,13 @@ function fullRestartFixture({ skipChoice = null, failNewChat = false } = {}) {
   };
   const settings = async (panel) => {
     assert.equal(panel, activePanel);
+    settingsCalls += 1;
+    if (failSettingsCalls.includes(settingsCalls)) {
+      const error = new Error('private page https://private.example/path?token=secret');
+      error.pageText = 'private user content';
+      error.token = 'secret';
+      throw error;
+    }
     if (states.T04) states.T04.activeSettings = true;
     if (states.T10) states.T10.activeSettings = true;
   };
@@ -242,9 +255,14 @@ function fullRestartFixture({ skipChoice = null, failNewChat = false } = {}) {
         runAutoScrapeCase: async (_panel, _reload, record) =>
           record('switch', 'warm', { restored: true }, true),
         reloadExtension,
-        acquireLivePanel: async () => activePanel,
+        acquireLivePanel: async () => {
+          if (failAcquireLivePanel)
+            throw new Error('private recovery URL https://private.example/recover?token=secret');
+          return activePanel;
+        },
         choiceDriver,
         observeAutoScrapeMode,
+        transportFailureClass: () => transportClasses.shift() ?? 'none',
       });
       enforceFullExtensionRechecks(reportCases);
     },
@@ -318,6 +336,41 @@ test('pre-extension mode drift fails its case, restores the captured baseline, a
   assert.ok(f.calls.reloads.length >= 1);
 });
 
+test('full-extension callbacks retain separate safe choice and restore stages plus allowlisted transport classes', async () => {
+  const f = fullRestartFixture({
+    failSettingsCalls: [2, 3],
+    failAcquireLivePanel: true,
+    transportClasses: ['command_timeout', 'protocol_error'],
+  });
+  await f.run();
+  const theme = f.reportCases.find((item) => item.id.endsWith('T04'));
+  assert.equal(theme.fullExtensionReload.status, 'fail');
+  assert.equal(theme.fullExtensionReload.firstChoiceFailureStage, 'choice_settings_reopen');
+  assert.equal(theme.fullExtensionReload.restorationFailureStage, 'restore_acquire_panel');
+  assert.equal(theme.fullExtensionReload.firstChoiceTransportClass, 'command_timeout');
+  assert.equal(theme.fullExtensionReload.restorationTransportClass, 'protocol_error');
+  const serialized = JSON.stringify(theme.fullExtensionReload);
+  assert.doesNotMatch(serialized, /private|secret|https?:\/\//);
+  assert.ok(
+    theme.fullExtensionReload.criteria.some(
+      ({ evidence }) => evidence?.firstChoiceFailureStage === 'choice_settings_reopen',
+    ),
+    'the sanitized failure stage must reach the receipt criterion',
+  );
+});
+
+test('unrecognized transport details collapse to the safe other enum', async () => {
+  const f = fullRestartFixture({
+    failSettingsCalls: [2],
+    transportClasses: ['private URL https://private.example/?token=secret'],
+  });
+  await f.run();
+  const theme = f.reportCases.find((item) => item.id.endsWith('T04'));
+  assert.equal(theme.fullExtensionReload.firstChoiceTransportClass, 'other');
+  assert.equal(JSON.stringify(theme.fullExtensionReload).includes('private.example'), false);
+  assert.equal(JSON.stringify(theme.fullExtensionReload).includes('secret'), false);
+});
+
 test('native callback invokes tested orchestration after replacement Settings opens and enforces its result', async () => {
   const source = await readFile(
     new URL('./settings-local-controls-acceptance.mjs', import.meta.url),
@@ -340,7 +393,7 @@ test('native callback invokes tested orchestration after replacement Settings op
   );
   assert.match(
     source.slice(recheck, reloadCatch),
-    /panel: replacement\.panel,[\s\S]*cases: report\.cases,[\s\S]*preExtensionBaselines,[\s\S]*reloadExtension,[\s\S]*acquireLivePanel,[\s\S]*preferenceMatches/,
+    /panel: replacement\.panel,[\s\S]*cases: report\.cases,[\s\S]*preExtensionBaselines,[\s\S]*reloadExtension,[\s\S]*acquireLivePanel,[\s\S]*preferenceMatches,[\s\S]*transportFailureClass/,
   );
   assert.match(source, /enforceFullExtensionRechecks\(report\.cases\)/);
   assert.match(
