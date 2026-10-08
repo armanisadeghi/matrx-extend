@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "scope": "Diagnostic-only observation for the guest Scrape native extension reload route. No frozen artifact, product behavior, auth/org state, acceptance timeout, or inventory edit.",
+  "prior_failure": {
+    "run_id": 37767763301,
+    "same_frozen_build_working_siblings": [37761144784, 37764002686],
+    "first_unverified_boundary": "fixture message dispatch through replacement-worker panel open and reply",
+    "cause": "unproven"
+  },
+  "implementation": {
+    "fixture": "The actual owned test page records fixed booleans for trusted click entry, sendMessage invocation/return/throw, callback entry, reply presence and runtime.lastError presence. The existing #result reply path remains intact; the receipt reads the fixed fields without retaining error text.",
+    "worker": "Only the Scrape reload route attaches a CDP diagnostic observer to the replacement worker before the trusted click. A second onMessageExternal listener marks matching FRONTEND_RPC/openPanel request ingress; a synchronous wrapper records sidePanel.open invocation and promise settlement, returning the original promise. The listener and wrapper are removed and CDP detached on success and failure.",
+    "target": "The existing Target.targetCreated listener now records whether a replacement side-panel target creation event was seen separately from the target poll.",
+    "reply": "The existing result observer still classifies the callback reply, and the new fixture fields distinguish absent callback, no reply and runtime.lastError without copying raw text.",
+    "send_response": "Unobservable inside the frozen extension through passive CDP. The diagnostic emits unobservable_without_instrumented_build; a separate instrumented CI artifact would be required to prove sendResponse itself. The reply callback and worker-open milestones narrow that gap but do not prove it."
+  },
+  "causal_limits": [
+    "CDP worker attachment can keep a service worker alive; replacing sidePanel.open can perturb gesture timing. The receipt labels this perturbation, so the diagnostic cannot close acceptance for frozen 0.2.407 or prove the same result occurs without the observer.",
+    "The open wrapper observes calls during the probe window. Because the extension listener was registered first, the passive diagnostic ingress listener runs after its synchronous open call; the two markers are correlated by the owned one-click route and fixed request ID, but cannot exclude an unrelated concurrent open without a new instrumented build.",
+    "No native run was executed in this lane. The parent owns exact native verification after peer review."
+  ],
+  "verification": {
+    "focused": "node --test tests/browser/native-panel-open-reply.test.mjs tests/browser/scrape-reload-open-diagnostic.test.mjs tests/browser/reload-lifetime-diagnostic.test.mjs: 11 pass, 0 fail",
+    "mutation_red": "In-memory removal of the diagnostic onMessageExternal listener produced RED: request ingress vanished when listener registration was removed; the source tree was not mutated.",
+    "format": "pnpm exec biome check on touched source and test files passed after formatting",
+    "types": "pnpm -s compile blocked by pre-existing @ai-matrx/media/react useReadAloud and @ai-matrx/chat/host createMemoryNavigation package export drift plus related implicit-any errors; no touched TypeScript files."
+  },
+  "status": "diagnostic_wired_local_tests_green_native_unverified"
+}

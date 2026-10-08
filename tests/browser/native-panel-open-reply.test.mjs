@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { beginReloadPanelReplyObservation } from './native-sidepanel-qa-harness.mjs';
+import { runInNewContext } from 'node:vm';
+import { beginReloadPanelReplyObservation, testPage } from './native-sidepanel-qa-harness.mjs';
 
 function ownedPage(response, readFails = false) {
   let result = '{"ok":true,"result":{"opened":true}}';
@@ -45,7 +46,7 @@ test('reload observer captures fixed callback classes without changing the trust
     });
     await observation.settled();
     assert.equal(clicked, true);
-    assert.equal(observation.close().category, category);
+    assert.equal((await observation.close()).category, category);
     assert.doesNotMatch(JSON.stringify(observation.outcome), /private|token/);
   }
 });
@@ -56,7 +57,56 @@ test('reply read failure stays bounded, and no callback remains unobserved', asy
     () => {},
   );
   await unreadable.settled();
-  assert.equal(unreadable.close().category, 'reply_read_failed');
+  assert.equal((await unreadable.close()).category, 'reply_read_failed');
   const absent = await beginReloadPanelReplyObservation(ownedPage(null), () => {});
-  assert.equal(absent.close().category, 'reply_not_observed');
+  assert.equal((await absent.close()).category, 'reply_not_observed');
+});
+
+test('real fixture click records send and callback milestones without retaining reply text', () => {
+  const html = testPage('cihdmkcdjjckfhjpgoedmgfpoljebaml');
+  const script = html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
+  assert.ok(script);
+  const elements = new Map([
+    [
+      '#open-panel',
+      {
+        addEventListener(_name, handler) {
+          this.click = handler;
+        },
+      },
+    ],
+    ['#open-trace', { textContent: '' }],
+    ['#result', { textContent: '' }],
+  ]);
+  let callback;
+  const chrome = {
+    runtime: {
+      lastError: null,
+      sendMessage(id, message, cb) {
+        assert.equal(id, 'cihdmkcdjjckfhjpgoedmgfpoljebaml');
+        assert.equal(message.requestId, 'native-sidepanel-qa');
+        callback = cb;
+      },
+    },
+  };
+  runInNewContext(script, {
+    chrome,
+    document: { querySelector: (selector) => elements.get(selector) },
+  });
+  elements.get('#open-panel').click();
+  assert.deepEqual(JSON.parse(elements.get('#open-trace').textContent), {
+    click_received: true,
+    send_invoked: true,
+    send_returned: true,
+    callback_entered: false,
+    callback_has_reply: false,
+    callback_last_error: false,
+    send_threw: false,
+  });
+  chrome.runtime.lastError = { message: 'private token' };
+  callback(undefined);
+  const trace = elements.get('#open-trace').textContent;
+  assert.equal(JSON.parse(trace).callback_last_error, true);
+  assert.equal(JSON.parse(trace).callback_has_reply, false);
+  assert.doesNotMatch(trace, /private|token/);
 });

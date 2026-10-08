@@ -1658,7 +1658,7 @@ try {
       t20.evidence.previous_content_cleared_before_reload = true;
       const replacement = await resourceAction(() => {
         recordReloadMilestone(report, 'reload_extension');
-        return reloadExtension();
+        return reloadExtension({ scrapeOpenDiagnostic: true });
       });
       report.reload_lifecycle = {
         observed_at: new Date().toISOString(),

@@ -29,6 +29,7 @@ import { resolveBrowserRuntime } from './browser-runtime.mjs';
 import { awaitNativeResourceHealth, runNativeResourceAction } from './native-resource-boundary.mjs';
 import { serveOwnedFixture } from './owned-fixture-server.mjs';
 import { startReloadLifetimeDiagnostic } from './reload-lifetime-diagnostic.mjs';
+import { startScrapeReloadOpenDiagnostic } from './scrape-reload-open-diagnostic.mjs';
 
 const require = createRequire(import.meta.url);
 const { prepareOwnedProfile, connectOwnedCdp } = require('./vault-owned-cdp.cjs');
@@ -101,10 +102,28 @@ async function beginReloadPanelReplyObservation(page, beforeClick) {
   return {
     outcome,
     settled: () => pending,
-    close: () => {
+    close: async () => {
       active = false;
       void pending;
-      return { ...outcome };
+      let fixture = { availability: 'unavailable' };
+      try {
+        const value = await page
+          .locator('#open-trace')
+          .evaluate((element) => JSON.parse(element.textContent || '{}'));
+        fixture = {
+          availability: 'ready',
+          click_received: value.click_received === true,
+          send_invoked: value.send_invoked === true,
+          send_returned: value.send_returned === true,
+          callback_entered: value.callback_entered === true,
+          callback_has_reply: value.callback_has_reply === true,
+          callback_last_error: value.callback_last_error === true,
+          send_threw: value.send_threw === true,
+        };
+      } catch {
+        /* The page may have been retired; absence stays explicit. */
+      }
+      return { ...outcome, fixture };
     },
   };
 }
@@ -588,11 +607,20 @@ function requireReloadEnabled(state) {
   }
 }
 
-async function reloadOwnedExtension({ cdp, browser, context, page, extensionId, oldPanelId }) {
+async function reloadOwnedExtension({
+  cdp,
+  browser,
+  context,
+  page,
+  extensionId,
+  oldPanelId,
+  scrapeOpenDiagnostic = false,
+}) {
   let details;
   let lifetime;
   const destroyedTargets = new Set();
   const createdWorkers = new Set();
+  const createdPanels = new Set();
   const workerUrlPrefix = `chrome-extension://${extensionId}/`;
   const timeline = [];
   let timelineDropped = 0;
@@ -604,6 +632,7 @@ async function reloadOwnedExtension({ cdp, browser, context, page, extensionId, 
   let finalPredicate = false;
   let retirementEvidence;
   let replyObservation;
+  let openDiagnostic;
   const record = (phase, data = {}) => {
     const entry = { at: new Date().toISOString(), phase, ...data };
     if (timeline.length < 80) timeline.push(entry);
@@ -639,6 +668,7 @@ async function reloadOwnedExtension({ cdp, browser, context, page, extensionId, 
   const onCreated = ({ targetInfo }) => {
     const identity = describe(targetInfo);
     if (identity) record('target_created', { target: identity });
+    if (identity?.kind === 'panel') createdPanels.add(targetInfo.targetId);
     if (targetInfo?.type === 'service_worker' && targetInfo.url.startsWith(workerUrlPrefix))
       createdWorkers.add(targetInfo.targetId);
   };
@@ -772,6 +802,10 @@ async function reloadOwnedExtension({ cdp, browser, context, page, extensionId, 
       throw error;
     }
     await page.bringToFront();
+    // Diagnostic-only CDP attachment can perturb worker lifetime and the
+    // gesture route. The receipt labels it; it never changes acceptance.
+    if (scrapeOpenDiagnostic)
+      openDiagnostic = await startScrapeReloadOpenDiagnostic(cdp, replacementWorker.targetId);
     try {
       replyObservation = await beginReloadPanelReplyObservation(page, () => {
         retirementEvidence.open_panel_request = {
@@ -806,6 +840,9 @@ async function reloadOwnedExtension({ cdp, browser, context, page, extensionId, 
       await wait(WAIT_MS);
     }
     if (!replacementPanel) throw new Error('native_extension_replacement_panel_unverified');
+    retirementEvidence.replacement_panel_created_event = createdPanels.has(
+      replacementPanel.targetId,
+    );
     const contextBoundary = await observeSidePanelContext({
       readContexts: () => sidePanelContexts(cdp, replacementWorker.targetId),
       panelUrl,
@@ -822,7 +859,11 @@ async function reloadOwnedExtension({ cdp, browser, context, page, extensionId, 
     retirementEvidence.timeline.final_snapshot = lastOwned;
     retirementEvidence.timeline.dropped_entries = timelineDropped;
     retirementEvidence.reload_lifetime = lifetime.evidence;
-    Object.assign(retirementEvidence.open_panel_request, replyObservation.close());
+    Object.assign(retirementEvidence.open_panel_request, await replyObservation.close());
+    if (openDiagnostic) {
+      retirementEvidence.open_panel_diagnostic = await openDiagnostic.close();
+      openDiagnostic = null;
+    }
     return {
       management_before: managementBefore,
       management_after: managementAfter,
@@ -836,7 +877,16 @@ async function reloadOwnedExtension({ cdp, browser, context, page, extensionId, 
     };
   } catch (error) {
     if (replyObservation && retirementEvidence?.open_panel_request)
-      Object.assign(retirementEvidence.open_panel_request, replyObservation.close());
+      Object.assign(retirementEvidence.open_panel_request, await replyObservation.close());
+    if (retirementEvidence)
+      retirementEvidence.replacement_panel_created_event = [...createdPanels].some(
+        (id) => id !== oldPanelId,
+      );
+    if (openDiagnostic) {
+      const diagnostic = await openDiagnostic.close();
+      if (retirementEvidence) retirementEvidence.open_panel_diagnostic = diagnostic;
+      openDiagnostic = null;
+    }
     if (error && typeof error === 'object') {
       error.lifecycleEvidence = {
         ...retirementEvidence,
@@ -856,6 +906,7 @@ async function reloadOwnedExtension({ cdp, browser, context, page, extensionId, 
     }
     throw error;
   } finally {
+    if (openDiagnostic) await openDiagnostic.close();
     await lifetime?.close();
     cdp.off('Target.targetDestroyed', onDestroyed);
     cdp.off('Target.targetCreated', onCreated);
@@ -1147,17 +1198,32 @@ function stopOwnedChild(child) {
 function testPage(extensionId) {
   return `<!doctype html><meta charset="utf-8"><title>Research brief: product discovery</title>
     <main><article><h1>Research brief: product discovery</h1><p>A short demo article for a real guest Scrape capture.</p><p>Capture the page, review its structure, and identify SEO improvements before sharing the result.</p></article></main>
-    <button id="open-panel">Open panel</button><pre id="result"></pre>
+    <button id="open-panel">Open panel</button><pre id="result"></pre><pre id="open-trace"></pre>
     <script>
       document.querySelector('#open-panel').addEventListener('click', () => {
-        chrome.runtime.sendMessage(${JSON.stringify(extensionId)}, {
-          channel: 'FRONTEND_RPC', action: 'openPanel', payload: { panelId: 'chat' },
-          requestId: 'native-sidepanel-qa',
-        }, (reply) => {
-          document.querySelector('#result').textContent = JSON.stringify(
-            reply ?? { error: chrome.runtime.lastError?.message ?? 'no reply' },
-          );
-        });
+        const trace = { click_received: true, send_invoked: false, send_returned: false,
+          callback_entered: false, callback_has_reply: false, callback_last_error: false,
+          send_threw: false };
+        const publish = () => { document.querySelector('#open-trace').textContent = JSON.stringify(trace); };
+        publish();
+        try {
+          trace.send_invoked = true;
+          publish();
+          chrome.runtime.sendMessage(${JSON.stringify(extensionId)}, {
+            channel: 'FRONTEND_RPC', action: 'openPanel', payload: { panelId: 'chat' },
+            requestId: 'native-sidepanel-qa',
+          }, (reply) => {
+            trace.callback_entered = true;
+            trace.callback_has_reply = reply !== undefined;
+            trace.callback_last_error = Boolean(chrome.runtime.lastError);
+            publish();
+            document.querySelector('#result').textContent = JSON.stringify(
+              reply ?? { error: chrome.runtime.lastError?.message ?? 'no reply' },
+            );
+          });
+          trace.send_returned = true;
+          publish();
+        } catch (error) { trace.send_threw = true; publish(); throw error; }
       });
     </script>`;
 }
@@ -1618,7 +1684,7 @@ export async function runNativeSidepanelQa({
                 throw new Error('native_sidepanel_offscreen_target_missing');
               return attachTargetSession(cdp, targets[0].targetId);
             },
-            reloadExtension: () =>
+            reloadExtension: (options = {}) =>
               reloadOwnedExtension({
                 cdp,
                 browser: playwrightBrowser,
@@ -1626,6 +1692,7 @@ export async function runNativeSidepanelQa({
                 page,
                 extensionId: expectedExtensionId,
                 oldPanelId: panelTarget.targetId,
+                scrapeOpenDiagnostic: options.scrapeOpenDiagnostic === true,
               }),
             acquireLivePanel: () =>
               acquireLiveExtensionPanel({ cdp, page, extensionId: expectedExtensionId }),
@@ -1664,6 +1731,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 }
 
 export {
+  testPage,
   observeAuthenticatedPanelHost,
   waitForInitialPanelReady,
   activateOwnedSidePanel,
