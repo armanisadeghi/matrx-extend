@@ -10,6 +10,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifact.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
+import { withClipboardReadPermission } from './clipboard-observation.mjs';
 import { matchesFullPageAspect } from './full-page-aspect.mjs';
 import { nativeRuntimeFailureCode } from './native-runtime-failure.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
@@ -42,13 +43,14 @@ const report = {
   feature: 'EXT-F-1009-T03',
   status: 'unverified',
   scope:
-    'root and nested scrolling capture, persisted image, local viewer, reload, and canonical public sharing',
+    'root and nested scrolling capture, persisted image, local viewer, reload, quick public-link clipboard, and canonical share manager',
   cases: {
     rootPersistence: 'unverified',
     nestedPersistence: 'unverified',
     localViewer: 'unverified',
     reloadPersistence: 'unverified',
     canonicalShare: 'unverified',
+    quickPublicLink: 'unverified',
     unsupportedPage: 'unverified',
     persistenceFailure: 'unverified',
     tileCap: 'unverified',
@@ -66,6 +68,8 @@ const PUBLIC_TARGETS = new Set([
   'Delete',
   'Close',
   'Refresh',
+  'Copy public link',
+  'Create public link',
   'Full page',
   'Sign in',
   'Account',
@@ -436,14 +440,28 @@ function watchShareRpcs(panel) {
   const entries = new Map();
   const offRequest = panel.on('Network.requestWillBeSent', ({ requestId, request }) => {
     try {
-      const operation = new URL(request.url).pathname.split('/').pop();
+      const path = new URL(request.url).pathname;
+      const quickCreate = path.match(/\/files\/([a-f0-9-]+)\/share-links$/);
+      const operation = quickCreate ? 'create_file_share_link' : path.split('/').pop();
       if (
         request.method !== 'POST' ||
-        !['create_share_link', 'list_share_links', 'revoke_share_link'].includes(operation)
+        ![
+          'create_share_link',
+          'create_file_share_link',
+          'list_share_links',
+          'revoke_share_link',
+        ].includes(operation)
       )
         return;
       entries.set(requestId, {
         operation,
+        ...(quickCreate
+          ? {
+              fileId: quickCreate[1],
+              requestOrigin: new URL(request.url).origin,
+              requestBasePath: path.slice(0, quickCreate.index),
+            }
+          : {}),
         request: JSON.parse(request.postData),
         organization: Object.entries(request.headers ?? {}).find(
           ([key]) => key.toLowerCase() === 'x-organization-id',
@@ -480,10 +498,53 @@ function watchShareRpcs(panel) {
     },
   };
 }
+// Inspect the actual OS clipboard in the harness-owned browser only. This
+// temporary read permission is restored before any product action can run.
+async function observeShareClipboard({ browserSession, panel, panelTarget }, evidence) {
+  const read = async () => {
+    const response = await panel.send('Runtime.evaluate', {
+      expression: `(async () => {
+        try { return {ok:true,text:await navigator.clipboard.readText()}; }
+        catch (error) { return {ok:false,name:error?.name}; }
+      })()`,
+      awaitPromise: true,
+      returnByValue: true,
+    });
+    const result = response.result?.value;
+    if (!response.exceptionDetails && result?.ok === true && typeof result.text === 'string')
+      return result.text;
+    const names = new Set(['NotAllowedError', 'SecurityError', 'NotFoundError', 'AbortError']);
+    evidence.readFailure = names.has(result?.name) ? result.name : 'clipboard_read_unavailable';
+    throw new Error('clipboard_read_unavailable');
+  };
+  return withClipboardReadPermission({
+    browserSession,
+    panel,
+    panelUrl: panelTarget.url,
+    read,
+    evidence,
+  });
+}
+async function openShareManager(panel) {
+  const manageLabel = await waitFor(
+    'canonical_share_manager_ready',
+    () =>
+      evaluate(
+        panel,
+        `(() => {
+      const buttons=[...document.querySelectorAll('button')].filter(el=>el.textContent.includes('Manage all links'));
+      return buttons.length===1 ? buttons[0].textContent.trim() : null;
+    })()`,
+      ),
+    (value) => typeof value === 'string' && value.length > 0,
+  );
+  await click(panel, 'button-text', manageLabel);
+}
 // No session/store injection: create and revoke through the UI, observe real RPCs,
 // then open the actual public URL in a fresh, unauthenticated browser context.
-async function verifyCanonicalShare(page, panel, row, recovery) {
-  stage = 'canonical_public_share';
+async function verifyCanonicalShare(context, row, recovery, flow) {
+  const { page, panel } = context;
+  stage = flow === 'quick' ? 'canonical_quick_public_link' : 'canonical_public_share';
   const expectedOrganization = await evaluate(
     panel,
     `(async () => (await chrome.storage.local.get('matrx.org.active'))['matrx.org.active']?.id)()`,
@@ -505,6 +566,10 @@ async function verifyCanonicalShare(page, panel, row, recovery) {
   let anonymous;
   let revoked = false;
   let createAttempted = false;
+  let managerOpen = false;
+  let clipboardBefore;
+  let copiedUrl;
+  const clipboardEvidence = {};
   try {
     await click(panel, 'title', 'Share');
     await waitFor(
@@ -517,15 +582,8 @@ async function verifyCanonicalShare(page, panel, row, recovery) {
         ),
       (value) => value === true,
     );
-    const manageLabel = await evaluate(
-      panel,
-      `(() => {
-      const buttons=[...document.querySelectorAll('button')].filter(el=>el.textContent.includes('Manage all links'));
-      return buttons.length===1 ? buttons[0].textContent.trim() : null;
-    })()`,
-    );
-    if (!manageLabel) fail('canonical_share_manager_not_unique');
-    await click(panel, 'button-text', manageLabel);
+    await openShareManager(panel);
+    managerOpen = true;
     await waitFor(
       'real_share_list',
       () => journal.entries(),
@@ -536,12 +594,46 @@ async function verifyCanonicalShare(page, panel, row, recovery) {
             entry.status === 200 &&
             Array.isArray(entry.response) &&
             entry.request.p_resource_id === row.file_id &&
-            entry.response.length === 0,
+            entry.response.every((link) => link.is_active === false),
         ),
       30_000,
     );
-    createAttempted = true;
-    await click(panel, 'button-text', 'Create public link');
+    if (flow === 'quick') {
+      await click(panel, 'button-text', 'Close');
+      managerOpen = false;
+      await click(panel, 'title', 'Share');
+      const quickLabel = await waitFor(
+        'quick_public_link_ready',
+        () =>
+          evaluate(
+            panel,
+            `(() => {
+          const buttons=[...document.querySelectorAll('button')].filter(el=>el.textContent.includes('Copy public link'));
+          return buttons.length===1&&!buttons[0].disabled ? buttons[0].textContent.trim() : null;
+        })()`,
+          ),
+        (value) => typeof value === 'string' && value.length > 0,
+      );
+      report.evidence.quickClipboard = clipboardEvidence;
+      // A pre-action read proves the observer works and leaves permissions as
+      // they were; it never writes an expected value to make the copy pass.
+      clipboardBefore = await observeShareClipboard(context, clipboardEvidence);
+      createAttempted = true;
+      await click(panel, 'button-text', quickLabel);
+      await waitFor(
+        'quick_public_link_copied_feedback',
+        () => evaluate(panel, `document.body.innerText.includes('Public link copied')`),
+        (value) => value === true,
+        30_000,
+      );
+      copiedUrl = await observeShareClipboard(context, clipboardEvidence);
+      await click(panel, 'title', 'Share');
+      await openShareManager(panel);
+      managerOpen = true;
+    } else {
+      createAttempted = true;
+      await click(panel, 'button-text', 'Create public link');
+    }
     created = await waitFor(
       'real_owned_share_created',
       () =>
@@ -549,17 +641,22 @@ async function verifyCanonicalShare(page, panel, row, recovery) {
           .entries()
           .find(
             (entry) =>
-              entry.operation === 'create_share_link' &&
+              entry.operation ===
+                (flow === 'quick' ? 'create_file_share_link' : 'create_share_link') &&
               entry.status === 200 &&
-              entry.response?.success === true,
+              (flow === 'quick'
+                ? typeof entry.response?.token === 'string'
+                : entry.response?.success === true),
           ),
       (entry) => !!entry,
       30_000,
     );
     if (
-      created.request.p_resource_type !== 'file' ||
-      created.request.p_resource_id !== row.file_id ||
-      created.request.p_permission_level !== 'viewer' ||
+      (flow === 'quick'
+        ? created.fileId !== row.file_id || created.request.permission_level !== 'viewer'
+        : created.request.p_resource_type !== 'file' ||
+          created.request.p_resource_id !== row.file_id ||
+          created.request.p_permission_level !== 'viewer') ||
       created.organization !== expectedOrganization ||
       typeof created.response.token !== 'string'
     )
@@ -581,23 +678,34 @@ async function verifyCanonicalShare(page, panel, row, recovery) {
     // Retain recovery privately before opening a public surface or making assertions.
     const prior = JSON.parse(await readFile(recovery, 'utf8'));
     await writeFile(recovery, JSON.stringify({ ...prior, shareLinkId: link.id }), { mode: 0o600 });
-    const url = await waitFor(
-      'new_public_url',
-      () => evaluate(panel, `document.querySelector('input[aria-label="New public link"]')?.value`),
-      (value) => typeof value === 'string',
-      30_000,
-    );
+    const url =
+      flow === 'quick'
+        ? copiedUrl
+        : await waitFor(
+            'new_public_url',
+            () =>
+              evaluate(
+                panel,
+                `document.querySelector('input[aria-label="New public link"]')?.value`,
+              ),
+            (value) => typeof value === 'string',
+            30_000,
+          );
     const parsed = new URL(url);
-    if (
+    if (parsed.protocol !== 'https:' || parsed.search) fail('canonical_public_url_failed');
+    if (flow === 'quick') {
+      if (
+        parsed.origin !== created.requestOrigin ||
+        parsed.pathname !== `${created.requestBasePath}/share/${encodeURIComponent(link.token)}` ||
+        link.permission_level !== 'viewer' ||
+        link.expires_at ||
+        link.max_uses
+      )
+        fail('quick_public_url_not_owned_permanent_viewer_grant');
+    } else if (
       !['aimatrx.com', 'www.aimatrx.com'].includes(parsed.hostname) ||
-      parsed.protocol !== 'https:' ||
-      parsed.search ||
-      !/^\/(?:r|s)\/[^/]+$/.test(parsed.pathname)
-    )
-      fail('canonical_public_url_failed');
-    if (
       parsed.pathname !==
-      (link.short_token ? `/r/${link.short_token}` : `/s/${encodeURIComponent(link.token)}`)
+        (link.short_token ? `/r/${link.short_token}` : `/s/${encodeURIComponent(link.token)}`)
     )
       fail('public_url_not_owned_grant');
     anonymous = await page.context().browser().newContext();
@@ -635,7 +743,8 @@ async function verifyCanonicalShare(page, panel, row, recovery) {
         .digest('hex') !== originalImageSha
     )
       fail('anonymous_shared_image_bytes_differ');
-    report.evidence.publicShare = {
+    report.evidence[flow === 'quick' ? 'quickPublicLink' : 'publicShare'] = {
+      ...(flow === 'quick' ? { actualClipboardOwnedGrantUrl: true, realCopyFeedback: true } : {}),
       canonicalBody: true,
       realOwnerGrant: true,
       anonymousImageLoaded: true,
@@ -645,10 +754,22 @@ async function verifyCanonicalShare(page, panel, row, recovery) {
     await anonymous?.close();
     // Revoke even when the anonymous surface fails; never leave a test grant active.
     const candidate =
-      created ?? journal.entries().find((entry) => entry.operation === 'create_share_link');
+      created ??
+      journal
+        .entries()
+        .find((entry) => ['create_share_link', 'create_file_share_link'].includes(entry.operation));
     try {
       if (createAttempted || candidate) {
         report.shareCleanup = 'unverified';
+        if (!managerOpen) {
+          const shareBodyPresent = await evaluate(
+            panel,
+            `[...document.querySelectorAll('button')].some(el=>el.textContent.includes('Manage all links'))`,
+          );
+          if (!shareBodyPresent) await click(panel, 'title', 'Share');
+          await openShareManager(panel);
+          managerOpen = true;
+        }
         // A committed POST can lose its response. Recover using this new file's
         // real grant list rather than assuming no write happened.
         await click(panel, 'button-text', 'Refresh');
@@ -720,13 +841,39 @@ async function verifyCanonicalShare(page, panel, row, recovery) {
           revoked = true;
         } finally {
           report.shareCleanup = revoked ? 'pass' : 'unverified';
+          report.shareCleanupByFlow ??= {};
+          report.shareCleanupByFlow[flow] = report.shareCleanup;
         }
       }
       if ((createAttempted || candidate) && !revoked) fail('owned_share_cleanup_unverified');
     } finally {
       journal.stop();
-      if (await evaluate(panel, `document.querySelectorAll('[role="dialog"]').length`))
-        await click(panel, 'button-text', 'Close');
+      try {
+        if (await evaluate(panel, `document.querySelectorAll('[role="dialog"]').length`))
+          await click(panel, 'button-text', 'Close');
+      } finally {
+        if (
+          flow === 'quick' &&
+          typeof copiedUrl === 'string' &&
+          typeof clipboardBefore === 'string'
+        ) {
+          // Restore only our own observed copy. Never overwrite a clipboard changed
+          // by another actor, and never write a fixture URL to manufacture success.
+          const current = await observeShareClipboard(context, clipboardEvidence);
+          if (current === copiedUrl) {
+            await evaluate(
+              panel,
+              `navigator.clipboard.writeText(${JSON.stringify(clipboardBefore)})`,
+            );
+            clipboardEvidence.originalClipboardRestored =
+              (await observeShareClipboard(context, clipboardEvidence)) === clipboardBefore;
+            if (!clipboardEvidence.originalClipboardRestored)
+              fail('original_clipboard_restore_failed');
+          } else {
+            clipboardEvidence.changedByAnotherActor = true;
+          }
+        }
+      }
     }
   }
 }
@@ -798,7 +945,8 @@ async function reloadScreenshotPanel(panel) {
   );
   await click(panel, 'title', 'Screenshots');
 }
-async function exerciseCase({ page, panel }, mode) {
+async function exerciseCase(context, mode) {
+  const { page, panel } = context;
   let server;
   let journal;
   let fixtureUrl;
@@ -949,7 +1097,9 @@ async function exerciseCase({ page, panel }, mode) {
     await verifyLocalViewer(panel, image, 'after_reload');
     report.cases.reloadPersistence = 'pass';
     if (mode === 'root') {
-      await verifyCanonicalShare(page, panel, ownedRow, RECOVERY);
+      await verifyCanonicalShare(context, ownedRow, RECOVERY, 'quick');
+      report.cases.quickPublicLink = 'pass';
+      await verifyCanonicalShare(context, ownedRow, RECOVERY, 'manager');
       report.cases.canonicalShare = 'pass';
     }
     cleaned = await cleanup(panel, journal, ownedRow, fixtureUrl, fixtureCanonical, page);

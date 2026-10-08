@@ -23,7 +23,9 @@
   "evidence": [
     ".research/scrape397-final-native-20261007.json",
     ".research/scrape397-native-peer-20261007.json",
-    ".research/scrape397-reload-diagnosis-20261007.json"
+    ".research/scrape397-reload-diagnosis-20261007.json",
+    ".research/scrape-reload-reply-capture-20261007.json",
+    ".research/reload-reply-independent-peer-20261007.json"
   ],
   "cause": "Diagnostic omission confirmed against initial-open sibling; cause of missing panel remains unknown. Distinct from D162 because no replacement panel existed.",
   "transition_history": [
@@ -47,5 +49,15 @@
     }
   ],
   "closure_requirement": "Meaningful diagnostic guard and fresh source review; resource-valid original native reproduction with causal attribution/repair as needed; actual replacement panel and post-reload T07/T09 independently verified.",
-  "next_action": "Finish safe reply diagnostic, review independently, then one guarded exact-artifact native discriminator; preserve unresolved failure if still present."
+  "next_action": "Implement diagnostic-only nonblocking capture and CI guard wiring; fresh independent re-review before any native retry.",
+  "source_review": {
+    "candidate_commit": "011ce6f2",
+    "peer_commit": "d337ee3d",
+    "disposition": "repair_required_before_native",
+    "findings": [
+      "Callback observation became serial and an acceptance gate; retain original target discovery and timing independent of callback outcome.",
+      "New standalone guards omitted from automatic command; wire meaningful fast guards before native use."
+    ],
+    "focused_ci": "37728489848 succeeded but omitted new standalone guards; does not resolve findings."
+  }
 }
