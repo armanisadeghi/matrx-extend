@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "run": {
+    "id": 37825316724,
+    "attempt": 1,
+    "title": "Native B · guest-scrape-development",
+    "workflow": "Hosted guest side-panel acceptance",
+    "status": "completed",
+    "conclusion": "failure",
+    "head_sha": "b0344e84ca1891ce70029aea95d83adeaaf6fc2e",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37825316724",
+    "inputs": {
+      "acceptance_lane": "B",
+      "runner_label": "macos-15",
+      "acceptance_case": "guest-scrape-development",
+      "scrape_auth_mode": "guest",
+      "scrape_width_mode": "normal",
+      "scrape_normal_width_px": "600",
+      "scrape_reload_open_diagnostic": false,
+      "development_run_id": 37790643945,
+      "development_artifact_id": 11556064167,
+      "dispatches": 1,
+      "retries": 0
+    },
+    "hosted_artifact": {
+      "id": 11572200387,
+      "name": "hosted-guest-37825316724-1",
+      "digest": "sha256:8a57610bd3d92887501d1d9da5b4035df338f3cd5d9e14790b3f95abeb34287e",
+      "expired": false
+    }
+  },
+  "source_gate": {
+    "preparation_commit": "6dbc360d469dada57c7ab5096b2bf3ad94857e99",
+    "peer_review_commit": "54863312",
+    "focused_ci_run_id": 37824689860,
+    "focused_ci_sha": "94180827bb2d0bb5a53c8d5a1ad2c383cafb3158",
+    "focused_ci_conclusion": "success",
+    "focused_blobs_match_native_head": true
+  },
+  "product_artifact": {
+    "ci_run_id": 37790643945,
+    "ci_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+    "ci_conclusion": "success",
+    "development_artifact_id": 11556064167,
+    "development_artifact_name": "matrx-extend-development-test-e7b7dc1ecae946369cebb482915faf7ef792c692-37790643945-1",
+    "development_artifact_digest": "sha256:7a93776a9322c27973756ddb542fd2e8580d900c356d28a0ad1504928edf3964",
+    "development_artifact_expired": false,
+    "version": "0.2.414",
+    "tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "guest_account_observed": true,
+    "guest_auth_storage_empty": true,
+    "normal_width_px": 600
+  },
+  "receipt": {
+    "path": "scrape-guest-native-report.json",
+    "sha256": "dad3eaa2cdd095e3d57b76f6295d39a8a1cdd1e091b4fe0f0100d4ea494dc138",
+    "status": "unverified",
+    "stage": "extension_reload",
+    "failure_code": "native_extension_replacement_panel_unverified",
+    "T08": {
+      "status": "partial",
+      "links_empty_warm": "pass",
+      "links_empty_after_full_reload": "not_observed",
+      "all_six_populated_panes_warm": "pass",
+      "warm_capture_invariance": "pass",
+      "empty_images_warm": "pass",
+      "empty_video_warm": "pass"
+    },
+    "reload_diagnostic": {
+      "old_worker_execution_retired": true,
+      "old_worker_absent": true,
+      "old_panel_absent": true,
+      "replacement_worker_present": true,
+      "replacement_worker_created_event": true,
+      "replacement_panel_created_event": false,
+      "open_panel_reply": "reply_not_observed"
+    }
+  },
+  "current_run_journals": [
+    {
+      "path": "hosted-package-37825316724-1.jsonl",
+      "sha256": "e567a5b0a6259e4b76500c2b3e871ec606a17fabfd16924a3f933dc2369d3efd",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    {
+      "path": "hosted-browser-37825316724-1.jsonl",
+      "sha256": "99ff8c6ff14e31d7cc3cfb4e7f1cffe46ded3954264e2a1395c37976bdefff0f",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    {
+      "path": "hosted-guest-37825316724-1.jsonl",
+      "sha256": "c4f54295fd8a93cfe8883dde0b2b3a93c48cec8d34e3cd043c1cfa1b65f6552f",
+      "decision": "child_failed",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1
+    }
+  ],
+  "prior_t08_receipt": {
+    "path": ".research/scrape-reload-deep-native-20261008/report.json",
+    "run_id": 37816940141,
+    "same_product_version": "0.2.414",
+    "established": "Six populated panes, capture invariance, and empty Images/Video panes; T08 remained partial."
+  },
+  "retention_note": "Only the exact current-run native receipt and its three current-run journals are retained. Screenshots and historical journals present in the artifact are not copied."
+}

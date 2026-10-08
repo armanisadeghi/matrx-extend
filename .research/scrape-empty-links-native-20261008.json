@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "task": "One hosted guest Scrape development lane B attempt to record the added T08 empty Links observation.",
+  "run": {
+    "id": 37825316724,
+    "attempt": 1,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37825316724",
+    "workflow": "Hosted guest side-panel acceptance",
+    "display_title": "Native B · guest-scrape-development",
+    "status": "completed",
+    "conclusion": "failure",
+    "head_sha": "b0344e84ca1891ce70029aea95d83adeaaf6fc2e",
+    "dispatch": {
+      "acceptance_lane": "B",
+      "runner_label": "macos-15",
+      "acceptance_case": "guest-scrape-development",
+      "scrape_auth_mode": "guest",
+      "scrape_width_mode": "normal",
+      "scrape_normal_width_px": 600,
+      "scrape_reload_open_diagnostic": false,
+      "development_run_id": 37790643945,
+      "development_artifact_id": 11556064167,
+      "attempts": 1,
+      "retries": 0
+    }
+  },
+  "product_identity": {
+    "kind": "ci_development_test",
+    "version": "0.2.414",
+    "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+    "tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "verified_guest": true,
+    "guest_auth_storage_empty": true,
+    "measured_width_px": 600,
+    "browser": "Chrome/141.0.7390.37"
+  },
+  "verdicts": {
+    "A_behavior": {
+      "verdict": "PARTIAL",
+      "warm_observations": [
+        "All six T08 populated panes and warm capture invariance passed.",
+        "Images and Video empty-pane observations passed.",
+        "The new Links observation passed: the Links pane was visible with zero rows and null count, Add link remained visible, and full-capture export identity and payload stayed unchanged across selection."
+      ],
+      "reload_observations": "The run failed during extension_reload before the replacement panel was established. The new post-reload Links check and full post-reload T08 coverage assertion were not observed. T08 remains partial; no new complete T08 credit is claimed.",
+      "safe_failure_boundary": {
+        "stage": "extension_reload",
+        "code": "native_extension_replacement_panel_unverified",
+        "old_worker_execution_retired": true,
+        "old_worker_absent": true,
+        "old_panel_absent": true,
+        "replacement_worker_present": true,
+        "replacement_worker_created_event": true,
+        "replacement_panel_created_event": false,
+        "open_panel_reply": "reply_not_observed"
+      },
+      "empty_state_applicability": {
+        "Article": "Empty Article remains unverified; the controlled referrals page has article content, and no empty Article observation was made.",
+        "SEO": "No whole-pane empty branch is supported by the reviewed renderer; Title and Description rows remain visible with fallback values. No missing-pane claim is made.",
+        "Schema": "No whole-pane empty branch is supported by the reviewed renderer; its JSON view remains present when structured data is absent. No missing-pane claim is made."
+      },
+      "limits": [
+        "This was one guest mode on frozen development artifact 0.2.414 at 600px normal width.",
+        "The reload boundary failure cause is not established by this receipt.",
+        "No overall Scrape health or member/admin claim is made."
+      ]
+    },
+    "B_evidence_quality": {
+      "verdict": "PASS_PROVENANCE_AND_OWNED_JOURNALS_WITH_NATIVE_CASE_FAILURE",
+      "source": "Preparation commit 6dbc360d and peer review commit 54863312 are ancestors of current main. Focused CI run 37824689860 at 94180827 succeeded. The three changed source/test blobs match at preparation commit, gate commit, and hosted run head.",
+      "frozen_artifact": "CI run 37790643945 succeeded; artifact 11556064167 is nonexpired and has the recorded digest. The native report independently identifies the same source SHA, version, tree hash, and extension ID.",
+      "resource_journals": "Package and browser journals finalized valid, admitted, resourceInvalid=false, exitCode=0. The guest journal finalized child_failed, admitted, resourceInvalid=false, exitCode=1. The native failure was not a resource invalidation.",
+      "retention": "The exact native receipt and exactly three current-run journals are retained under raw/. Screenshots and historical journals from the artifact are excluded. Hashes are in raw/manifest.json."
+    }
+  },
+  "evidence": {
+    "manifest": "raw/manifest.json",
+    "native_receipt": "raw/scrape-guest-native-report.json",
+    "current_run_journals": [
+      "raw/hosted-package-37825316724-1.jsonl",
+      "raw/hosted-browser-37825316724-1.jsonl",
+      "raw/hosted-guest-37825316724-1.jsonl"
+    ],
+    "prior_baseline": ".research/scrape-reload-deep-native-20261008/report.json"
+  }
+}
