@@ -10,9 +10,10 @@
       "verdict": "PARTIAL",
       "observed_behavior": "The exact run completed successfully. The previously incomplete extension reload now has all four lifecycle flags true; the replacement panel reopened Settings with a matching runtime ID, ready document, and visible active Settings tab. No guestExtensionReloadFailure was emitted because this run's reload succeeded.",
       "case_adjudication": {
-        "guest_cases_fully_met": 10,
-        "guest_cases_partial": 6,
+        "guest_cases_fully_met": 9,
+        "guest_cases_partial": 7,
         "partial_case_ids": [
+          "EXT-F-1003-T04",
           "EXT-F-1003-T10",
           "EXT-F-1003-T16",
           "EXT-F-1003-T19",
@@ -21,7 +22,6 @@
           "EXT-F-1003-T70"
         ],
         "fully_met_ids": [
-          "EXT-F-1003-T04",
           "EXT-F-1003-T13",
           "EXT-F-1003-T22",
           "EXT-F-1003-T37",
@@ -34,6 +34,7 @@
         ]
       },
       "t63_scope": "The receipt marks the separate ordinary-member criterion unverified. It is outside this guest lane; the two guest-boundary criteria both pass, so the member-only omission does not downgrade the guest result.",
+      "t04_scope": "The retained T04-specific observations show Dark, Light, and System selected/stored values plus the document dark-class marker in warm and panel-reload phases. They do not show the chosen appearance and preference after a full extension reload. The later general guest reload reopened Settings after the batch baseline was restored; it cannot satisfy the missing per-theme full-reload criterion. Preserve T04 as partial in accordance with the original inventory.",
       "reload_relevant_cases": {
         "T73": "warm and reload guest account-unavailable/sign-in-footer criteria pass",
         "T76": "warm and reload archive-filter/no-organization-read criteria pass",

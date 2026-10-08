@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "reviewed_report": ".research/records-completion-native-20261008.json",
+  "source_run": {
+    "id": 37823085569,
+    "head_sha": "d8903c3e4a95ed9c42b6cb1d091fd891303a8ee1",
+    "conclusion": "failure",
+    "case": "records-readonly-admin",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37823085569"
+  },
+  "reviewer_seat": {
+    "authorship_of_product_or_test_code": "none",
+    "scope": "Read exact run source, retained receipt and journals, and provenance; no new run or code changes."
+  },
+  "verdicts": {
+    "A_behavior": {
+      "verdict": "UNVERIFIED_NO_RECORDS_COMPLETION_OBSERVED",
+      "findings": [
+        "The raw receipt has stage records_card, native_stage admin_rendered_identity, failure_code records_card_failed, and null failure_phase, failure_classification, completion_diagnostics, request, result, invalid_input, reload, and metadata_search.",
+        "At the exact run source, records_card begins before separate waits for records_card_ready and records_schema_ready, followed by a current server-contract assertion. Only after those steps does the driver prepare input and enter execute(), where completion diagnostics are created.",
+        "The receipt therefore bounds the failure to the card-ready/schema-ready/current-contract interval but does not identify which step failed. There was no Records table_list request or completion; no completion product behavior can be adjudicated from this run.",
+        "Do not infer a product defect, server failure, parsing failure, or causal relation to any other feature from this opaque interval."
+      ]
+    },
+    "B_evidence_quality": {
+      "verdict": "PASS_SAFE_PROVENANCE_WITH_PREEXECUTION_DIAGNOSTIC_GAP",
+      "findings": [
+        "The native report's interpretation matches the retained receipt and exact driver sequence. The focused source and completion tests cannot explain this particular run because the failure precedes the execute() diagnostic boundary.",
+        "The frozen development artifact is nonexpired and its run 37790643945 is successful at e7b7dc1. Receipt version/tree are 0.2.414 and 550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046.",
+        "The package and browser journals are valid with exit code 0; the guest journal ends child_failed with exit code 1 and resourceInvalid false. Backend before/after hashes match. These facts establish an owned native child failure, not its cause.",
+        "All retained raw evidence hashes match the reviewed report. No raw response body, credentials, or arbitrary error text is needed to reach this verdict."
+      ],
+      "limits": [
+        "The failure is still opaque among three source steps; the newly added completion diagnostics did not run.",
+        "The artifact is a frozen development build, not current-main or Store behavior."
+      ]
+    }
+  },
+  "exact_source_boundary": {
+    "commit": "d8903c3e4a95ed9c42b6cb1d091fd891303a8ee1",
+    "steps_before_completion_diagnostics": [
+      "stage records_card",
+      "wait records_card_ready",
+      "wait records_schema_ready",
+      "assert current table_list server contract",
+      "prepare input and authenticated bearer",
+      "enter execute and create completion_diagnostics entry"
+    ],
+    "interpretation": "The failure receipt stops at records_card and has no execute entry, so it provides no evidence of the table_list completion interval."
+  },
+  "raw_evidence": {
+    "directory": ".research/records-completion-native-20261008-originals/raw",
+    "hashes_rechecked": [
+      "artifacts.raw.json",
+      "backend-after.raw.json",
+      "backend-before.raw.json",
+      "browser-journal.raw.jsonl",
+      "guest-journal.raw.jsonl",
+      "jobs.raw.json",
+      "package-journal.raw.jsonl",
+      "receipt.raw.json",
+      "run.raw.json"
+    ]
+  },
+  "settings_t04_correction": {
+    "evidence": "The current native receipt records theme-specific warm and panel-reload observations only. It records selected/stored values and a document dark-class marker, not each selected theme after a full extension reload.",
+    "adjudication": "T04 remains partial under the original inventory. The general guest reload after restoring baseline does not fill this gap.",
+    "corrected_settings_report": ".research/settings-reload-native-20261008.json"
+  }
+}
