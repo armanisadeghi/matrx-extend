@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "task": "deploy-cadence-repair-final-peer-20261008",
+  "reviewed_repository": "aidream",
+  "reviewed_commit": "441b5e4b8c750ab984a8bdb73cafbddd40902c31",
+  "verdict_a_requested_outcome": "PASS at source and hermetic execution; live GitHub wake and production movement unverified. Main runtime pushes wake the existing serialized watch. Root and nested conftest.py are excluded from both push wake and newest-runtime selection. The 10-minute schedule, 45-minute threshold, active-deploy suppression, dry-run suppression, and immutable release_ref dispatch remain in the executed shell.",
+  "verdict_b_doctrine_and_guard": "PASS for the repair scope. The decision test runs the workflow's actual shell body in a temporary Git repository, replacing only external date and gh commands. A wrong breach branch fails two decision scenarios; removing the fixture exclusions fails both classification checks. No material unguarded repair branch was found.",
+  "findings": [],
+  "evidence": [
+    "aidream/.github/workflows/deploy-cadence-watch.yml:3-25,39-41,53-100 and tests/test_deploy_cadence_watch.py:54-247 inspected against the requested outcome and prior review findings.",
+    "uv run --no-sync pytest -q tests/test_deploy_cadence_watch.py: 10 passed in 3.71s.",
+    "Scratch copy with only the breach condition replaced by if true: decision guard 2 failed (healthy and stale_code), 4 passed; shared source untouched.",
+    "Scratch copy with both conftest exclusions removed: classification guard 2 failed, including a real git-log selection of root conftest.py; shared source untouched.",
+    "uv run --no-sync ruff check tests/test_deploy_cadence_watch.py: passed."
+  ],
+  "bounded_limit": "This watch measures starts of deploy.yml, not deployed SHA or live health. Verify-only, candidate-report-only, and browser-image-only starts can reset its clock; this predates the repair and is now documented in aidream/scripts/FEATURE.md. No manual workflow dispatch, build, release, or deploy occurred in this review.",
+  "status": "DONE_SOURCE_REVIEW_LIVE_WAKE_UNVERIFIED"
+}
