@@ -6,6 +6,7 @@ import {
   copyOracle,
   copyResultMatches,
   menuMatches,
+  runGuestCopyMenus,
   scrollSyncMatches,
 } from './scrape-guest-behavior-batch.mjs';
 
@@ -112,6 +113,87 @@ test('copy oracle separates section formats, empty URL lists and page freshness'
       origin,
     ),
     false,
+  );
+});
+
+test('schema AI uses JSON fence; wrong fence, no-op, stale and wrong option fail the actual copy loop', async () => {
+  const origin = 'http://127.0.0.1:65000';
+  const fixture = COPY_FIXTURES.intake;
+  const body = JSON.stringify(
+    { metadata: { title: fixture.title }, ld_json: [{ '@type': 'Dentist' }] },
+    null,
+    2,
+  );
+  const samples = {
+    Markdown: `## Metadata & schema\n\n\`\`\`json\n${body}\n\`\`\``,
+    JSON: body,
+    'For AI agent': `The following is metadata + JSON-LD schema extracted from a webpage.\n\n- Source URL: ${origin}/intake\n\n\`\`\`json\n${body}\n\`\`\``,
+  };
+  const wrongFence = samples['For AI agent'].replace('```json', '```markdown');
+  assert.equal(
+    copyOracle(samples['For AI agent'], 'seed', 'Copy schema', 'For AI agent', fixture, origin),
+    true,
+  );
+  assert.equal(
+    copyOracle(wrongFence, 'seed', 'Copy schema', 'For AI agent', fixture, origin),
+    false,
+  );
+  assert.equal(copyOracle(samples.JSON, 'seed', 'Copy schema', 'JSON', fixture, origin), true);
+  assert.equal(copyOracle(samples.Markdown, 'seed', 'Copy schema', 'JSON', fixture, origin), false);
+
+  async function exercise(producer) {
+    let clipboard = '';
+    const navigator = {
+      clipboard: {
+        writeText: async (value) => {
+          clipboard = value;
+        },
+        readText: async () => clipboard,
+      },
+    };
+    return runGuestCopyMenus({
+      panel: {},
+      browserSession: {},
+      panelUrl: 'chrome-extension://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/panel.html',
+      origin,
+      fixtureKey: 'intake',
+      resourceAction: (action) => action(),
+      menus: [['Copy schema', 'Schema', ['Markdown', 'JSON', 'For AI agent']]],
+      adapters: {
+        click: async (_panel, kind, option) => {
+          if (kind === 'scrape-copy-option') clipboard = producer(option, clipboard);
+        },
+        evaluate: async (_panel, expression) => {
+          if (expression.includes('[data-radix-popper-content-wrapper]'))
+            return ['Markdown', 'JSON', 'For AI agent'];
+          return Function('navigator', `return ${expression}`)(navigator);
+        },
+        waitFor: async (_label, read, accept) => {
+          const value = await read();
+          if (!accept(value)) throw new Error('menu_not_observed');
+          return value;
+        },
+        withClipboardReadPermission: async ({ read, evidence }) => {
+          const result = await read();
+          evidence.clipboardObservationPermissionRestored = true;
+          return result;
+        },
+      },
+    });
+  }
+  assert.equal((await exercise((option) => samples[option])).length, 3);
+  await assert.rejects(() => exercise((_option, prior) => prior), /scrape_copy_mismatch/);
+  await assert.rejects(
+    () => exercise((option) => (option === 'JSON' ? samples.Markdown : samples[option])),
+    /scrape_copy_mismatch:Copy schema:JSON/,
+  );
+  await assert.rejects(
+    () => exercise((option) => (option === 'For AI agent' ? wrongFence : samples[option])),
+    /scrape_copy_mismatch:Copy schema:For AI agent/,
+  );
+  await assert.rejects(
+    () => exercise((option) => `${samples[option]}\n${fixture.stale}`),
+    /scrape_copy_mismatch/,
   );
 });
 

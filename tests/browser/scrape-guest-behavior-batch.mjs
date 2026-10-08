@@ -8,7 +8,7 @@ export const GUEST_COPY_MENUS = [
   ['Copy videos', 'Video', ['Markdown', 'URLs (one per line)', 'For AI agent']],
   ['Copy links', 'Links', ['Markdown', 'URLs (one per line)', 'For AI agent']],
   ['Copy SEO audit', 'SEO', ['Markdown', 'Plain text', 'For AI agent']],
-  ['Copy schema', 'Schema', ['Markdown', 'For AI agent']],
+  ['Copy schema', 'Schema', ['Markdown', 'JSON', 'For AI agent']],
 ];
 
 export const COPY_FIXTURES = {
@@ -49,6 +49,7 @@ export function copyOracle(value, sentinel, title, option, fixture, origin) {
   const markdown = option === 'Markdown';
   const plain = option === 'Plain text';
   const urls = option === 'URLs (one per line)';
+  const schemaJson = title === 'Copy schema' && option === 'JSON';
   if (ai) {
     const description = {
       'Copy capture': 'a full Matrx scrape result',
@@ -62,7 +63,8 @@ export function copyOracle(value, sentinel, title, option, fixture, origin) {
     if (
       !value.startsWith(`The following is ${description}`) ||
       !value.includes(`- Source URL: ${url}`) ||
-      !value.includes('```markdown\n')
+      !value.includes(title === 'Copy schema' ? '```json\n' : '```markdown\n') ||
+      (title === 'Copy schema' && value.includes('```markdown\n'))
     )
       return false;
   } else if (value.startsWith('The following is ') || value.includes('- Source URL: '))
@@ -101,8 +103,22 @@ export function copyOracle(value, sentinel, title, option, fixture, origin) {
   }
   if (title === 'Copy schema') {
     if (!value.includes('"metadata"') || !value.includes(fixture.title)) return false;
+    if (schemaJson) {
+      try {
+        const parsed = JSON.parse(value);
+        return (
+          parsed?.metadata?.title === fixture.title &&
+          Array.isArray(parsed.ld_json) &&
+          (fixture.schema === null ||
+            JSON.stringify(parsed.ld_json).includes(`"@type":"${fixture.schema}"`))
+        );
+      } catch {
+        return false;
+      }
+    }
     return (
-      (ai || (markdown && value.startsWith('## Metadata & schema'))) &&
+      (ai ||
+        (markdown && value.startsWith('## Metadata & schema') && value.includes('```json\n'))) &&
       (fixture.schema === null || value.includes(`"@type": "${fixture.schema}"`))
     );
   }
@@ -193,8 +209,8 @@ export async function runGuestScrollSync({ panel, page, resourceAction }) {
   return { start, followed, stopped, passed: scrollSyncMatches(start, followed, stopped) };
 }
 
-async function menuLabels(panel) {
-  return evaluate(
+async function menuLabels(panel, sample = evaluate) {
+  return sample(
     panel,
     `(() => [...document.querySelectorAll('[data-radix-popper-content-wrapper] button')]
     .map((button) => button.querySelector('span.truncate')?.textContent.trim())
@@ -217,15 +233,21 @@ export async function runGuestCopyMenus({
   origin,
   fixtureKey,
   resourceAction,
+  adapters = {},
+  menus = GUEST_COPY_MENUS,
 }) {
+  const pointer = adapters.click ?? click;
+  const sample = adapters.evaluate ?? evaluate;
+  const poll = adapters.waitFor ?? waitFor;
+  const clipboardPermission = adapters.withClipboardReadPermission ?? withClipboardReadPermission;
   const fixture = COPY_FIXTURES[fixtureKey];
   if (!fixture) throw new Error('scrape_copy_fixture_unknown');
   const evidence = [];
-  for (const [title, tab, options] of GUEST_COPY_MENUS) {
-    if (tab) await resourceAction(() => click(panel, 'scrape-result-tab', tab));
+  for (const [title, tab, options] of menus) {
+    if (tab) await resourceAction(() => pointer(panel, 'scrape-result-tab', tab));
     for (const option of options) {
       const sentinel = `MATRX_QA_COPY_SENTINEL:${fixtureKey}:${title}:${option}`;
-      const seeded = await evaluate(
+      const seeded = await sample(
         panel,
         `(async () => {
         await navigator.clipboard.writeText(${JSON.stringify(sentinel)});
@@ -233,21 +255,21 @@ export async function runGuestCopyMenus({
       })()`,
       );
       if (seeded !== true) throw new Error(`scrape_copy_sentinel_not_seeded:${title}:${option}`);
-      await resourceAction(() => click(panel, 'title', title));
-      const labels = await waitFor(
+      await resourceAction(() => pointer(panel, 'title', title));
+      const labels = await poll(
         `copy_menu_${title}_${option}`,
-        () => menuLabels(panel),
+        () => menuLabels(panel, sample),
         (actual) => menuMatches(actual, options),
       );
-      await resourceAction(() => click(panel, 'scrape-copy-option', option));
+      await resourceAction(() => pointer(panel, 'scrape-copy-option', option));
       const permissionEvidence = {};
-      const copied = await withClipboardReadPermission({
+      const copied = await clipboardPermission({
         browserSession,
         panel,
         panelUrl,
         evidence: permissionEvidence,
         read: () =>
-          evaluate(
+          sample(
             panel,
             `(async () => {
           const oracle = ${copyOracle.toString()};
