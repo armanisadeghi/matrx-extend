@@ -1,0 +1,2 @@
+var e={"&":`&amp;`,"<":`&lt;`,">":`&gt;`,'"':`&quot;`,"'":`&#39;`},t=/[&<>"']/g;function n(n){return typeof n==`string`?n.replace(t,t=>e[t]??t):``}export{n as t};
+//# sourceMappingURL=html-escape-BSkDt_7I.js.map

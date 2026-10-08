@@ -1,0 +1,2 @@
+import{Dt as e}from"./preload-helper-BS7-PSjQ.js";import{a as t}from"./registry-BRjup-le.js";var n=e({reportKindComponentIncident:()=>r});function r(e){let n=t(`reportKindComponentIncident`);n?n(e):console.warn(`[rich-content] kind component incident (${e.errorType}) for "${e.kind}": ${e.message}`)}export{r as n,n as t};
+//# sourceMappingURL=kind-incident-BE_ONjZM.js.map

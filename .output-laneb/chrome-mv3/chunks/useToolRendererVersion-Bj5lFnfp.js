@@ -1,0 +1,2 @@
+import{ht as e,kt as t}from"./preload-helper-BS7-PSjQ.js";import{r as n,s as r}from"./toolRendererCache-uSjWhO8q.js";var i=t(e(),1);function a(e){return(0,i.useSyncExternalStore)(r,()=>e?n(e):0,()=>0)}export{a as t};
+//# sourceMappingURL=useToolRendererVersion-Bj5lFnfp.js.map

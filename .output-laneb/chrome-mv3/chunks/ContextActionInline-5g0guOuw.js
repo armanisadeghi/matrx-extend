@@ -1,0 +1,2 @@
+import{Za as e}from"./globals-CkYqf0Y5.js";import{r as t}from"./_shared-D5qLN-pz.js";import{t as n}from"./GenericRenderer-FCSaeGt4.js";import{CtxGetInline as r}from"./CtxGetInline-fBjxwOxw.js";import{CtxBatchInline as i}from"./CtxBatchInline-FJkhBcu7.js";var a=e(),o=e=>{let o=(t(e.entry,`action`)??`get`).trim();return o===`batch`?(0,a.jsx)(i,{...e}):o===`get`||o===``?(0,a.jsx)(r,{...e}):(0,a.jsx)(n,{...e})};export{o as ContextActionInline};
+//# sourceMappingURL=ContextActionInline-5g0guOuw.js.map

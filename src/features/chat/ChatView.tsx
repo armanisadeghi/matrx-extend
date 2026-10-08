@@ -26,6 +26,7 @@ import { ensureAuthenticatedCatalogLoaded } from '@/lib/agents/catalog';
 import { USER_MODEL_LABEL_BY_ID, USER_MODEL_PRESETS } from '@/lib/agents/model-presets';
 import { useAgentRow } from '@/lib/agents/use-agent-row';
 import { enqueueInboxMessage } from '@/lib/api/routes/ai';
+import { openMicGrantWindow } from '@/lib/audio/mic-grant';
 import { useRecordAndTranscribe } from '@/lib/audio/useRecordAndTranscribe';
 import { triggerColdResume } from '@/lib/chat/cold-resume';
 import { chatTargetForViewer, shouldDiscardChatOnIdentityChange } from '@/lib/chat/guest-boundary';
@@ -1383,12 +1384,9 @@ function Composer({
       // MIC_GRANT_RESULT listener below.
       if (code === 'PERMISSION_DENIED') {
         try {
-          void chrome.windows.create({
-            url: chrome.runtime.getURL('mic-grant.html'),
-            type: 'popup',
-            width: 400,
-            height: 280,
-            focused: true,
+          void openMicGrantWindow().catch((err: unknown) => {
+            log.error('audio', 'ui: failed to open mic-grant popup', err);
+            setVoiceError(formatMicErrorForUser(msg, code));
           });
         } catch (err) {
           // chrome.windows.create should always succeed in extension

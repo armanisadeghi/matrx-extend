@@ -1,0 +1,2 @@
+import{t as e}from"./createLucideIcon-B1WwSIHv.js";var t={name:`angle`,size:24,node:[[`path`,{d:`M3 3v16a2 2 0 0 0 2 2h16`,key:`c24i48`}],[`path`,{d:`M3 11a10 10 0 0 1 10 10`,key:`jhvw44`}]]};t.node;var n=e(t);export{t as __iconData,n as default};
+//# sourceMappingURL=angle-BfeDrAwS.js.map

@@ -24,6 +24,7 @@
  */
 
 import { getActiveTabIdentitySnapshot, isCurrentPageIdentity } from '@/hooks/use-active-tab';
+import { highlightsContextValue } from '@/lib/chat/attached-context';
 import { log } from '@/lib/debug/log';
 import { fetchPatternsForDomain } from '@/lib/supabase/queries';
 import { prewarmReadPageCache } from '@/lib/tools/handlers/page-refs';
@@ -297,10 +298,7 @@ export async function buildContextV2Bundled(
   // passage. Only attached when the user has highlights queued. One bundled
   // key (rich payload is free; menu cost is one line).
   if (inputs.highlights && inputs.highlights.length > 0) {
-    ctx.highlights = {
-      count: inputs.highlights.length,
-      items: inputs.highlights,
-    };
+    ctx.highlights = highlightsContextValue(inputs.highlights);
   }
 
   // ── __google_files — RESERVED key, attached Google Docs / Sheets ────────

@@ -1,0 +1,2 @@
+import{t as e}from"./createLucideIcon-B1WwSIHv.js";var t={name:`tv-minimal`,size:24,node:[[`path`,{d:`M7 21h10`,key:`1b0cd5`}],[`rect`,{width:`20`,height:`14`,x:`2`,y:`3`,rx:`2`,key:`48i651`}]],aliases:[`tv-2`]};t.node;var n=e(t);export{t as __iconData,n as default};
+//# sourceMappingURL=tv-minimal-DK0__fI8.js.map

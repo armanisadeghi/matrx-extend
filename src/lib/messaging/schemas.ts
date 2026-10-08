@@ -185,6 +185,10 @@ export const CHANNELS = {
   // delegated one of this browser's tools; the dispatcher runs it and replies
   // `{ ok, result?, error? }` (same answer as WEBMCP_CALL).
   DEVICE_TOOL_INVOKE: 'tool:device-invoke',
+  // Side panel → SW on `pagehide`: the package chat's in-flight delegated tool calls, handed over
+  // because the panel is going away. The SW finishes each and POSTs the result itself.
+  // Payload: { calls: [{ conversationId, requestId, callId, toolName, args }] }.
+  DEVICE_TOOL_HANDOFF: 'tool:device-handoff',
 
   // Frontend bridge (Phase 2 C1) — matrx-frontend admin app sends RPC
   // envelopes via chrome.runtime.sendMessage(extId, …) (externally_connectable)

@@ -1,0 +1,1 @@
+export{t as sanitizeSvg}from"./AnnotationEditor-BCsgsm-A.js";

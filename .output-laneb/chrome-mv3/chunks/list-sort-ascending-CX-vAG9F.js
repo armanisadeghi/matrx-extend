@@ -1,0 +1,2 @@
+import{t as e}from"./createLucideIcon-B1WwSIHv.js";var t={name:`list-sort-ascending`,size:24,node:[[`path`,{d:`M3 19h18`,key:`awlh7x`}],[`path`,{d:`M15 12H3`,key:`6jk70r`}],[`path`,{d:`M9 5H3`,key:`15j2za`}]]};t.node;var n=e(t);export{t as __iconData,n as default};
+//# sourceMappingURL=list-sort-ascending-CX-vAG9F.js.map

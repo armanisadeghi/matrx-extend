@@ -1,0 +1,2 @@
+import{Y as e}from"./SpeakerButton-aUvzZvXv.js";import{f as t,p as n}from"./block-dispatch-BTgAVXX3.js";var r=e(n,{ownedTypes:t}),i=r.applyIrKindRoute;r.kindServerDataFromStoredValue;export{i as t};
+//# sourceMappingURL=kind-route-DO31Wxsj.js.map

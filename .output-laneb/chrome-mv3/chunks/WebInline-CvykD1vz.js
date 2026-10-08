@@ -1,0 +1,2 @@
+import{Za as e}from"./globals-CkYqf0Y5.js";import{r as t}from"./_shared-D5qLN-pz.js";import{t as n}from"./GenericRenderer-FCSaeGt4.js";import{SearchInline as r}from"./SearchInline-DQ5Y-Zz1.js";import{ScrapeInline as i}from"./ScrapeInline-4kirv-Ja.js";import{t as a}from"./webAction-CDoD7C6Y.js";var o=e(),s=e=>{let s=a(t(e.entry,`action`));return s===`search`?(0,o.jsx)(r,{...e}):s===`read`?(0,o.jsx)(i,{...e}):(0,o.jsx)(n,{...e})};export{s as WebInline};
+//# sourceMappingURL=WebInline-CvykD1vz.js.map

@@ -1,0 +1,2 @@
+function e(e){let t=e.toLowerCase();return t===`batch_read`||t===`read`||t.endsWith(`_read`)||t.startsWith(`read`)||t.startsWith(`fetch`)||t.startsWith(`scrape`)||t.startsWith(`browse`)}function t(t){if(typeof t!=`string`||t.length===0)return`generic`;let n=t.toLowerCase();return n===`search`||n.startsWith(`search`)?`search`:e(n)?`read`:`generic`}export{t};
+//# sourceMappingURL=webAction-CDoD7C6Y.js.map
