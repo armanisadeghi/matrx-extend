@@ -1,0 +1,45 @@
+{
+  "authorship": "Reused the native review seat; zero authorship of the repair. No source edits, local tests, browser, build, API, or native run.",
+  "hosted_evidence": {
+    "coverage": "Retained diagnosis evidence reports fixture lifecycle subtests 57, 59 and 60 passing; this reviewer did not independently fetch the run. Earlier runs 37835814703 and 37836070600 exposed two classification assertion failures and motivated the repair.",
+    "focused_run": 37836302781,
+    "head": "9c4280da",
+    "result": "passed"
+  },
+  "limitations": [
+    "No local tests, browser, build, API, or native execution per task scope.",
+    "Hosted result is from retained evidence, not independently fetched.",
+    "Reused native review seat; reviewer did not author repair."
+  ],
+  "review_scope": "Source-only independent review of the Records fixture diagnostic repair and focused-test inclusion.",
+  "reviewed_source": {
+    "current_head": "9c4280dad79b388f141340b2458e4af678164742",
+    "files_reviewed": [
+      "tests/browser/records-positive-fixture.mjs",
+      "tests/browser/records-positive-fixture.test.mjs",
+      "tests/browser/records-readonly-native-acceptance.mjs",
+      "tests/browser/records-readonly-native-proof.mjs",
+      "tests/browser/records-readonly-native-driver.test.mjs",
+      "package.json"
+    ],
+    "relevant_commits": [
+      "76e0c0ad: preserve first body failure and cleanup diagnostics",
+      "be961622: bound classifications after hosted failures",
+      "42b8fc90: select only enumerated fixture assertion codes",
+      "34f450f6: include fixture guard suite in focused acceptance",
+      "9c4280da: select fixed code membership in assertion message"
+    ]
+  },
+  "schema_version": 1,
+  "verdict_A_behavior_and_spec": {
+    "result": "Source matches the intended bounded diagnostic contract: body and cleanup failures are both retained; labels are fixed phase/boundary values, classification is limited to an enumerated assertion-code set (plus a fixed recovery-only code), and only request method/numeric status are copied. No raw response, token, or error message is emitted.",
+    "scope_limit": "This improves diagnosis only. It does not prove native fixture success, positive C04/C05 behavior, or feature acceptance.",
+    "support": "The fixture helper calls onFailure in both the body and cleanup catches; native acceptance wires it to fixture_diagnostics; receipt promotion chooses the first diagnostic. Positive-read phase suppresses fixture classification for arbitrary read assertions."
+  },
+  "verdict_B_quality_and_validity": {
+    "impact": "A future regression dropping or reshaping fixture_diagnostics between helper callback and persisted receipt could leave the helper tests and synthetic driver test green. Current callback wiring is visible in source, so this is a test-seam gap rather than a demonstrated runtime defect.",
+    "no_green_claim": "No native run, positive fixture, or full-feature claim follows from the focused suite.",
+    "result": "Source looks internally consistent; hosted focused acceptance is reported green after two red runs. No local execution was performed.",
+    "specific_gap": "Helper tests cover actual helper-to-onFailure projection for simultaneous body/cleanup failure and a recovery-list failure. The driver test for first-diagnostic retention supplies a hand-built fixture_diagnostics array directly to retainRecordsFailure; it does not exercise the callback-generated diagnostics through acceptance catch and serialized receipt end to end."
+  }
+}
