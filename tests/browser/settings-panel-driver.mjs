@@ -211,6 +211,8 @@ function pointerFailure(code, location) {
     matchedTargetCount: Number.isInteger(location?.matchedCount) ? location.matchedCount : null,
     visibleMatchCount: Number.isInteger(location?.count) ? location.count : null,
     uniqueVisibleTarget: location?.count === 1,
+    toolsPanelActive:
+      typeof location?.toolsPanelActive === 'boolean' ? location.toolsPanelActive : null,
     hitTarget: location?.hitTarget === true,
     animating: location?.animating === true,
     stableSamples: location?.stableSamples ?? 0,
@@ -259,6 +261,7 @@ export async function click(panel, kind, label, onPhase = undefined) {
         style.display !== 'none' && !el.closest('[inert]');
     };
     let candidates;
+    let toolsPanelActive = null;
     // The shared title tooltip temporarily preserves a hovered title in data-matrx-title.
     if (kind === 'title') candidates = [...document.querySelectorAll('button[title], button[data-matrx-title]')]
       .filter((el) => (el.getAttribute('title') ?? el.getAttribute('data-matrx-title')) === label);
@@ -291,8 +294,12 @@ export async function click(panel, kind, label, onPhase = undefined) {
     }
     else if (kind === 'button-text') candidates = [...document.querySelectorAll('button')]
       .filter((el) => el.textContent.trim() === label);
-    else if (kind === 'tool-row') candidates = [...(${activeTabPanelExpression('Tools')}?.querySelectorAll('button') ?? [])]
-      .filter((el) => el.querySelector('span.font-mono')?.textContent.trim() === label);
+    else if (kind === 'tool-row') {
+      const pane = ${activeTabPanelExpression('Tools')};
+      toolsPanelActive = Boolean(pane);
+      candidates = [...(pane?.querySelectorAll('button') ?? [])]
+        .filter((el) => el.querySelector('span.font-mono')?.textContent.trim() === label);
+    }
     else if (kind === 'save-pattern-name') candidates = [...document.querySelectorAll('[data-radix-popper-content-wrapper]')]
       .filter((wrapper) => [...wrapper.querySelectorAll('button')]
         .some((button) => button.textContent.trim() === 'Save'))
@@ -394,7 +401,7 @@ export async function click(panel, kind, label, onPhase = undefined) {
     sampleFailureStage = 'visibility_filter';
     const matchedCount = candidates.length;
     candidates = candidates.filter(visible);
-    if (candidates.length !== 1) return { count: candidates.length, matchedCount };
+    if (candidates.length !== 1) return { count: candidates.length, matchedCount, toolsPanelActive };
     const target = candidates[0];
     // Viewport preparation is not the acceptance action. Reposition on every
     // sample because an expanding section can invalidate a one-shot scroll.
@@ -589,7 +596,7 @@ export async function click(panel, kind, label, onPhase = undefined) {
         break;
       }
     }
-    return { count: 1, matchedCount, x, y, hitTarget, animating,
+    return { count: 1, matchedCount, toolsPanelActive, x, y, hitTarget, animating,
       viewport: { width: innerWidth, height: innerHeight },
       pointerDiagnostic };
     } catch {

@@ -51,6 +51,9 @@ const OBSERVATIONS = new Set([
   'target_in_viewport',
   'target_center_hit',
   'archive_filter',
+  'records_target_match_count',
+  'records_target_visible_count',
+  'tools_panel_active',
 ]);
 const KNOWN_FAILURES = new Set([
   ...[...SUBSTAGES].map((stage) => `${stage}_failed`),
@@ -95,7 +98,13 @@ export function observeShowcaseOrganization(diagnostic, values) {
     if (key === 'archive_filter' && ['active', 'archived', 'all', 'unknown'].includes(value)) {
       diagnostic.observations[key] = value;
     } else if (
-      ['visible_option_count', 'exact_match_count', 'exact_visible_match_count'].includes(key) &&
+      [
+        'visible_option_count',
+        'exact_match_count',
+        'exact_visible_match_count',
+        'records_target_match_count',
+        'records_target_visible_count',
+      ].includes(key) &&
       Number.isSafeInteger(value) &&
       value >= 0 &&
       value <= 10000
@@ -107,6 +116,8 @@ export function observeShowcaseOrganization(diagnostic, values) {
         'visible_option_count',
         'exact_match_count',
         'exact_visible_match_count',
+        'records_target_match_count',
+        'records_target_visible_count',
       ].includes(key) &&
       (typeof value === 'boolean' || value === null)
     ) {
@@ -133,6 +144,14 @@ export function safeShowcaseOrganizationFailure(error) {
 
 // The fallback is selected from our fixed stage vocabulary, never an external error string.
 export function recordShowcaseOrganizationFailure(diagnostic, error) {
+  if (diagnostic.substage === 'organization_records_click') {
+    const pointer = error?.driverFailure;
+    observeShowcaseOrganization(diagnostic, {
+      records_target_match_count: pointer?.matchedTargetCount,
+      records_target_visible_count: pointer?.visibleMatchCount,
+      tools_panel_active: pointer?.toolsPanelActive,
+    });
+  }
   const known = safeShowcaseOrganizationFailure(error);
   diagnostic.failure_code =
     known === 'organization_unclassified_failure'

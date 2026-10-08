@@ -1,0 +1,10 @@
+{
+  "case_id": "EXT-F-1012-T57",
+  "frozen_source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+  "native_run_id": 37773402208,
+  "observed_first_failure": "organization_records_click:pointer_target_not_unique; no GET /tools/test/list",
+  "source_finding": "Frozen UI has one canonical server records entry rendered as a button with span.font-mono; prior receipt discarded pointer matched and visible counts, so missing versus duplicate remains unproven.",
+  "change": "Persist bounded matched count, visible count, and active Tools panel state at the failed trusted pointer boundary; no selector, request, timeout, or acceptance relaxation.",
+  "proof": "Targeted guard failed before change and passed after; real checkpoint tests cover zero and two matches; 25 focused tests and four-file Biome check passed.",
+  "remaining_gap": "A fresh native receipt must reveal the actual count and panel state before a causal selector or readiness repair; product GET/header/principal/HTTP finish remains unverified."
+}

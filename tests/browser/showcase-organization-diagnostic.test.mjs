@@ -9,6 +9,7 @@ import { runShowcaseOrganizationCheckpoint } from './showcase-organization-check
 import {
   createShowcaseOrganizationDiagnostic,
   observeShowcaseOrganization,
+  recordShowcaseOrganizationFailure,
   safeShowcaseOrganizationFailure,
   stageShowcaseOrganization,
 } from './showcase-organization-diagnostic.mjs';
@@ -82,6 +83,30 @@ test('organization failures persist bounded diagnostics through the native drive
     assert.equal(raw.includes('token'), false);
   } finally {
     rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test('records pointer failure preserves bounded rendered counts and panel readiness', () => {
+  for (const [matched, visible, active] of [
+    [0, 0, false],
+    [2, 2, true],
+  ]) {
+    const diagnostic = createShowcaseOrganizationDiagnostic();
+    stageShowcaseOrganization(diagnostic, 'organization_records_click');
+    recordShowcaseOrganizationFailure(diagnostic, {
+      driverFailure: {
+        code: 'pointer_target_not_unique',
+        matchedTargetCount: matched,
+        visibleMatchCount: visible,
+        toolsPanelActive: active,
+        privateText: 'must-never-escape',
+      },
+    });
+    assert.equal(diagnostic.failure_code, 'pointer_target_not_unique');
+    assert.equal(diagnostic.observations.records_target_match_count, matched);
+    assert.equal(diagnostic.observations.records_target_visible_count, visible);
+    assert.equal(diagnostic.observations.tools_panel_active, active);
+    assert.equal(JSON.stringify(diagnostic).includes('must-never-escape'), false);
   }
 });
 

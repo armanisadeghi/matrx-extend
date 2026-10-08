@@ -42,6 +42,10 @@ async function probe(failure) {
         if (failure === kind) throw new Error(secret);
         if (failure === 'ambiguous_tools' && kind === 'title')
           return { result: { value: { count: 2 } } };
+        if (kind === 'tool-row' && ['missing_records', 'ambiguous_records'].includes(failure)) {
+          const count = failure === 'missing_records' ? 0 : 2;
+          return { result: { value: { count, matchedCount: count, toolsPanelActive: true } } };
+        }
       }
       if (method === 'Network.enable' && failure === 'enable') throw new Error(secret);
       const result = await base.send(method, parameters);
@@ -105,6 +109,8 @@ for (const [failure, stage, code] of [
   ['ambiguous_tools', 'organization_tools_click', 'pointer_target_not_unique'],
   ['organization_records_gate', 'organization_records_gate', 'organization_records_gate_failed'],
   ['tool-row', 'organization_records_click', 'pointer_initial_evaluation_failed'],
+  ['missing_records', 'organization_records_click', 'pointer_target_not_unique'],
+  ['ambiguous_records', 'organization_records_click', 'pointer_target_not_unique'],
   ['absent', 'organization_request_wait', 'showcase_product_organization_request_not_observed'],
   ['unfinished', 'organization_request_wait', 'showcase_product_organization_request_not_observed'],
   ['cleanup', 'organization_observer_cleanup', 'organization_observer_cleanup_failed'],
@@ -137,6 +143,13 @@ for (const [failure, stage, code] of [
     if (failure === 'absent') {
       assert.equal(diagnostic.observations.product_request_observed, false);
       assert.equal(diagnostic.observations.product_response_observed, false);
+    }
+    if (failure === 'missing_records' || failure === 'ambiguous_records') {
+      const count = failure === 'missing_records' ? 0 : 2;
+      assert.equal(diagnostic.observations.records_target_match_count, count);
+      assert.equal(diagnostic.observations.records_target_visible_count, count);
+      assert.equal(diagnostic.observations.tools_panel_active, true);
+      assert.equal(diagnostic.observations.product_request_observed, false);
     }
   });
 }
