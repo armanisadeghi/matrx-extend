@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { writeFile } from 'node:fs/promises';
+import { isRfc9562Uuid } from '@ai-matrx/kit/uuid';
 import { join } from 'node:path';
 import { requireSettingsCredential } from '../tests/browser/settings-native-auth-driver.mjs';
 
@@ -100,11 +101,7 @@ export function profileOrganizationConfig(env, requireId = false) {
   );
   const id = config?.approved_organization_id;
   if (requireId || id !== undefined)
-    assert.match(
-      id ?? '',
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
-      'hosted_profile_org_id_invalid',
-    );
+    assert.ok(isRfc9562Uuid(id ?? ''), 'hosted_profile_org_id_invalid');
   return { approved_organization_name: name, ...(id && { approved_organization_id: id }) };
 }
 
