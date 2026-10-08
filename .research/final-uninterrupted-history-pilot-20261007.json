@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "scope": "imported CI artifact; real admin sign-in; native Chat approval acceptance",
+  "status": "unverified",
+  "build": {
+    "version": "0.2.397",
+    "tree_sha256": "9e0c2f1e18317f856c79aaf0a3529b4637cdf5858ddb64a2ebfff7fac37311cd",
+    "receipt_kind": "local_dev_unpacked"
+  },
+  "account": {
+    "reviewer_fingerprint": "5edfa2692bdacc5e",
+    "web_signed_in": true
+  },
+  "authentication_method": "password_login",
+  "chat": null,
+  "screenshots": null,
+  "approval": {
+    "cases": [],
+    "limitations": []
+  },
+  "failure_stage": "approved_organization_selected",
+  "failure_code": "unclassified_failure",
+  "imported_artifact": {
+    "schema_version": 1,
+    "kind": "ci_development_test",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/ci.yml",
+    "sourceSha": "4a5c78a50f8d41709b6abffb30c351898e5eb0ae",
+    "runId": 37727998755,
+    "runAttempt": 1,
+    "artifactId": 11528732938,
+    "githubArtifactDigest": "sha256:e996032fdecac4e515632f242962856351703cc22bcaad9e945d6a7c9b90ddff",
+    "treeSha256": "9e0c2f1e18317f856c79aaf0a3529b4637cdf5858ddb64a2ebfff7fac37311cd",
+    "source": {
+      "originMain": "f2349967e5656553839a53eadda1e54a28e447a3",
+      "localHead": "197f405303eed3f529ff6fcee475b3f8e8483525",
+      "trackedDirty": true,
+      "untrackedRunnerInputs": [],
+      "claim": "exact_pushed_commit_only"
+    }
+  },
+  "independent_review": {
+    "lane": "final_native_remaining_acceptance",
+    "source_quality": "partial",
+    "behavior": "unverified_before_actions",
+    "causal_failure": "Organization section first combobox is archive filter; approved organization observer must read Acting as row instead. Native selection already uses correct Acting as driver.",
+    "terminal_processes": true,
+    "resource_journal": "docs/stabilization/resource-journals/final-native-uninterrupted-history-pilot-20261007.jsonl",
+    "store_acceptance": "unverified"
+  }
+}
