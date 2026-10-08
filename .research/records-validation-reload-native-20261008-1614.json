@@ -1,0 +1,229 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-08T16:21:01.933271+00:00",
+  "scope": "One hosted native Records C02 validation and full-panel-reload acceptance attempt on the exact frozen development414 artifact. Read-only Records table_list; no product writes or source changes.",
+  "case": {
+    "defect_id": "EXT-D-0091",
+    "case_id": "EXT-F-4130-C02",
+    "action": "table_list",
+    "verdict": "bounded_pass"
+  },
+  "source_gate": {
+    "implementation_commit": "ac4d5b237a9fc01ae55e83a6f1c3ccf72d2052a6",
+    "focused_ci_run_id": 37804765159,
+    "focused_ci_conclusion": "success",
+    "focused_ci_source_sha": "ac4d5b237a9fc01ae55e83a6f1c3ccf72d2052a6",
+    "independent_source_review": ".research/records-dimensions-peer-20261008-1559.json",
+    "native_workflow_checkout_sha": "38ec4a2ad4a77155351b358c05ab868617297fca",
+    "implementation_is_ancestor_of_checkout": true
+  },
+  "frozen_artifact": {
+    "ci_run_id": 37790643945,
+    "ci_conclusion": "success",
+    "artifact_id": 11556064167,
+    "artifact_name": "matrx-extend-development-test-e7b7dc1ecae946369cebb482915faf7ef792c692-37790643945-1",
+    "artifact_digest": "sha256:7a93776a9322c27973756ddb542fd2e8580d900c356d28a0ad1504928edf3964",
+    "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+    "version": "0.2.414",
+    "tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046"
+  },
+  "native_run": {
+    "id": 37806859039,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37806859039",
+    "event": "workflow_dispatch",
+    "status": "completed",
+    "conclusion": "success",
+    "lane": "A",
+    "acceptance_case": "records-readonly-admin",
+    "runner_label": "macos-15",
+    "runner_architecture": "ARM64 gate passed: workflow requires RUNNER_ARCH=ARM64 and uname arm64 for macos-15; inferred from successful gate, not retained as a standalone native field.",
+    "started_at": "2026-10-08T16:11:45Z",
+    "completed_at": "2026-10-08T16:18:19Z",
+    "exercise_step_conclusion": "success",
+    "uploaded_artifact_id": 11563093896,
+    "uploaded_artifact_name": "hosted-guest-37806859039-1",
+    "uploaded_artifact_digest": "sha256:078eaf41bedec7e3bba5e9ad209f1ad2aa6ec1d2189f4e67cd49be25d69450d4"
+  },
+  "native_receipt": {
+    "status": "passed",
+    "stage": "records_reloaded_completion",
+    "artifact": {
+      "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+      "run_id": 37790643945,
+      "artifact_id": 11556064167,
+      "tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046",
+      "version": "0.2.414"
+    },
+    "positive_read": {
+      "visible": true,
+      "success": true,
+      "action": "table_list",
+      "count": 50,
+      "approved_organization_covered": true
+    },
+    "request": {
+      "path": "/tools/test/execute",
+      "method": "POST",
+      "organization_matches": true,
+      "authenticated_principal_matches": true,
+      "completion_observed": true,
+      "include_app_tables": true,
+      "status": 200,
+      "finished": true
+    },
+    "invalid_arguments_refusal": {
+      "finished": true,
+      "status": 200,
+      "completion_observed": true,
+      "visible": true,
+      "success": false,
+      "error_type": "invalid_arguments",
+      "limit_named": true
+    },
+    "full_panel_reload_and_renewed_read": {
+      "full_panel_reload": true,
+      "admin_identity_matches": true,
+      "organization_matches": true,
+      "authenticated_principal_matches": true,
+      "finished": true,
+      "completion_observed": true,
+      "visible": true,
+      "success": true,
+      "count": 50
+    },
+    "failure_code": null
+  },
+  "resource_phases": {
+    "package": {
+      "run_id": "hosted-package-37806859039-1",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "journal": ".research/records-validation-reload-native-20261008-1614/raw/hosted-package-37806859039-1.jsonl"
+    },
+    "browser": {
+      "run_id": "hosted-browser-37806859039-1",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "journal": ".research/records-validation-reload-native-20261008-1614/raw/hosted-browser-37806859039-1.jsonl"
+    },
+    "guest": {
+      "run_id": "hosted-guest-37806859039-1",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "journal": ".research/records-validation-reload-native-20261008-1614/raw/hosted-guest-37806859039-1.jsonl"
+    }
+  },
+  "backend_health_version": {
+    "endpoint": "https://server.app.matrxserver.com/health/version",
+    "observations": [
+      {
+        "label": "pre_run",
+        "observed_at_utc": "2026-10-08T16:11:24.966102+00:00",
+        "http_status": 200,
+        "git_sha": "8924a396d490558ec31253b2a3db3dc3b32655e9"
+      },
+      {
+        "label": "post_run",
+        "observed_at_utc": "2026-10-08T16:19:32.049477+00:00",
+        "http_status": 200,
+        "git_sha": "8924a396d490558ec31253b2a3db3dc3b32655e9"
+      }
+    ],
+    "sampled_identity_stable": true,
+    "scope_note": "These are local-clock pre-run and post-run public endpoint samples; they do not claim the exact backend SHA at each Records request."
+  },
+  "secret_lifecycle": {
+    "temporary_secret_names": [
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "absent_before_staging": true,
+    "staged_from_existing_admin_and_approved_org_fixture_via_stdin": true,
+    "deleted_after_terminal": true,
+    "absence_verified_after_delete": true,
+    "private_0600_staging_files_removed": {
+      "admin_tempfile_absent": true,
+      "organization_tempfile_absent": true
+    },
+    "exact_owned_recipe_state": "The preceding T57 owner independently verified its exact generated recipe has zero active and zero soft-deleted rows; this Records case itself is read-only and creates no recipe."
+  },
+  "raw_evidence": [
+    {
+      "path": ".research/records-validation-reload-native-20261008-1614/raw/artifact-manifest.json",
+      "bytes": 2882,
+      "sha256": "37d9e2116343a0958d3335124c47c6b1a3af5b4104e71470e09494d005a63015"
+    },
+    {
+      "path": ".research/records-validation-reload-native-20261008-1614/raw/artifacts.raw.json",
+      "bytes": 737,
+      "sha256": "cc057cb47569fe06f32fa454a4e92be35f4a23003af9eabdd6af888f691f04e1"
+    },
+    {
+      "path": ".research/records-validation-reload-native-20261008-1614/raw/backend-version-after.json",
+      "bytes": 152,
+      "sha256": "840f117455aad11efe8a3e264af1ed35b2a4e81c3e15379a5dddbc73c39477bf"
+    },
+    {
+      "path": ".research/records-validation-reload-native-20261008-1614/raw/backend-version-before.json",
+      "bytes": 151,
+      "sha256": "a9a0429d9a71dad284041f8426d39637eff9802f6000123e24b69d36935b284e"
+    },
+    {
+      "path": ".research/records-validation-reload-native-20261008-1614/raw/focused-ci.raw.json",
+      "bytes": 324,
+      "sha256": "7f953cd0183eb0888f47e9224d47aeb6a9acdacf9fecb787fe9edd0688289dfc"
+    },
+    {
+      "path": ".research/records-validation-reload-native-20261008-1614/raw/hosted-browser-37806859039-1.jsonl",
+      "bytes": 984,
+      "sha256": "48e6afbcd710ca91148fd3a15f041063af847218c98c3222b725f3e0617c13c7"
+    },
+    {
+      "path": ".research/records-validation-reload-native-20261008-1614/raw/hosted-guest-37806859039-1.jsonl",
+      "bytes": 1813,
+      "sha256": "eacf49ef66a9e41e40a60ff45c36bf0e88ca630a11fb538ed395be30600c1389"
+    },
+    {
+      "path": ".research/records-validation-reload-native-20261008-1614/raw/hosted-package-37806859039-1.jsonl",
+      "bytes": 1001,
+      "sha256": "35c5c36ba8d183eaee6572c84484e4acc9ce0c0aa213c9b41bfa737afa75a1cd"
+    },
+    {
+      "path": ".research/records-validation-reload-native-20261008-1614/raw/jobs.raw.json",
+      "bytes": 4375,
+      "sha256": "93c63ee9837439c5604c3830652719c8a3e1f0bfe09bf12d5661b678f0158a0f"
+    },
+    {
+      "path": ".research/records-validation-reload-native-20261008-1614/raw/local-secret-cleanup.json",
+      "bytes": 70,
+      "sha256": "b0a9a0d5d4dccfa499b19460dc727a3d9e317d82062cbd3db59a44b6aae3ee37"
+    },
+    {
+      "path": ".research/records-validation-reload-native-20261008-1614/raw/native-receipt.json",
+      "bytes": 2255,
+      "sha256": "0e8cec6e4920c60cdf7c1c7794710d8f00ab6c0269385e89b678a203b0d32b9d"
+    },
+    {
+      "path": ".research/records-validation-reload-native-20261008-1614/raw/run.raw.json",
+      "bytes": 4030,
+      "sha256": "33074f56dd6d9eb58affe5673dfe5a0f19096fe091f766fbf7ec268ab3d6015c"
+    },
+    {
+      "path": ".research/records-validation-reload-native-20261008-1614/raw/source-artifacts.raw.json",
+      "bytes": 798,
+      "sha256": "9e4d6e339829b6ff2af38829f19bf1128a25b1840d02dff4c5e04d43bf1dafe7"
+    },
+    {
+      "path": ".research/records-validation-reload-native-20261008-1614/raw/source-run.raw.json",
+      "bytes": 308,
+      "sha256": "96c7892c3e7e30ddfc7734cfc87d219538524b86c728613798ee4a99b77222bf"
+    }
+  ],
+  "limitations": "This is one bounded admin Records C02 native pass on unpublished development414. It does not establish full Records T01, member/guest coverage, latest-main behavior, Store installation, or full extension health."
+}
