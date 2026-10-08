@@ -14,6 +14,15 @@
   ],
   "red_proof": "The two new focused tests were run against HEAD versions of the helper and receipt capture in a temporary directory. Both failed: the old helper lacked the error-boundary method, and it could not retain a later activated observation. The temporary copy was removed by Python TemporaryDirectory.",
   "automatic_gate": "package.json test:focused-acceptance now includes the existing reload-lifetime-diagnostic.test.mjs helper suite. That suite exercises the real lifecycle helper, wrong replacement identity, safe worker-error receipt, later matching activation, missing later observation, and cleanup. The broad native-sidepanel-qa-harness.test.mjs remains in the separate CI lane; its long simulated reload loop is not added to the focused gate.",
+  "hosted_gate": {
+    "run_id": 37831362497,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37831362497",
+    "head_sha": "12e43c4dfcabb388ba85cabbecedaf56f906c31c",
+    "conclusion": "success",
+    "executed_command": "pnpm test:focused-acceptance",
+    "log_evidence": "The executed node --test command included tests/browser/reload-lifetime-diagnostic.test.mjs; 176 tests passed, zero failed.",
+    "limit": "Hosted focused guards verify the diagnostic source seam, not a real Chrome extension reload or the intermittent startup cause."
+  },
   "verification": "The new focused tests passed 2/2 after the final test edit; the helper suite had passed 7/7 before that edit. A broader combined run passed 41 checks, including the reload-fresh-observer guard, then was canceled while native-sidepanel-qa-harness.test.mjs remained pending after 103 seconds during a local system-disk exhaustion incident. Syntax and JSON parse checks passed. No claim is made for the canceled file. Native verification remains pending; this is diagnostic instrumentation, not a causal product fix or Scrape acceptance.",
   "open": "The original failure's worker startup cause remains unconfirmed. A resource-admitted native reload must supply the new categories and later-observation field before attributing the intermittent activation stall; D166's activated-but-missing-panel and D107's pre-CDP startup boundary remain separate."
 }
