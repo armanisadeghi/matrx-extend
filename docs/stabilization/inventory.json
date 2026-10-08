@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T12:35:51.331330+00:00",
+  "updated_at": "2026-10-08T12:39:39.400809+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -23369,11 +23369,7 @@
             "EXT-F-1012-C42",
             "EXT-F-1012-C47"
           ],
-          "defect_ids": [
-            "EXT-D-0047",
-            "EXT-D-0049",
-            "EXT-D-0173"
-          ],
+          "defect_ids": ["EXT-D-0047", "EXT-D-0049", "EXT-D-0173", "EXT-D-0177"],
           "preconditions": [
             "Fresh development build; verify receipt and reload the extension and page in Chrome. Use a real public website with a reproducible request during initial document load and an owned recipe. No localhost/test server. Guest/member denial uses EXT-F-1012-T38."
           ],

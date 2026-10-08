@@ -7,7 +7,7 @@
   "title": "Scrape persisted receipt drops replacement-panel diagnostic milestones",
   "severity": "S2: diagnostic evidence loss prevents lifecycle diagnosis; no product root cause established",
   "priority": "P1",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root/scrape_receipt_serializer_fix",
   "preconditions": [
     "Opt-in Scrape replacement-panel diagnostic candidate e42c95b2/e82b79eb/537f1de4; canonical captureLifecycleEvidence serializer before repair."
@@ -22,7 +22,9 @@
   "evidence": [
     ".research/scrape-reload-diagnostic-peer-20261008.json",
     ".research/scrape-receipt-serializer-fix-20261008.json",
-    ".research/scrape-receipt-fresh-peer-20261008.json"
+    ".research/scrape-receipt-fresh-peer-20261008.json",
+    ".research/scrape-optin-diagnostic-native-20261008.json",
+    ".research/native-diagnostics-peer-20261008.json"
   ],
   "reproducibility_count": 2,
   "root_cause": "Whitelist serializer was not extended with diagnostic producer fields; focused producer tests did not cover persisted receipt.",
@@ -50,9 +52,21 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Fresh peer verified actual success/failure caller serialization and fourteen focused guards; native diagnostic delivery remains pending."
+    },
+    {
+      "at": "2026-10-08T12:38:22.263682+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Actual resource-valid hosted diagnostic37776576395 persisted all three formerly lost milestone fields; fresh independent peer3a0a395f verified original serializer reproduction and surrounding default/privacy/classification guards14/14."
+    },
+    {
+      "at": "2026-10-08T12:38:22.263682+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Receipt-infrastructure defect independently resolved. Instrumented product Scrape remains unverified with no native acceptance credit; later capture failure remains open work."
     }
   ],
   "closure_requirement": "Fresh independent review of actual persisted success/failure output with old-red/new-green guard, privacy checks and default/diagnostic classification retained. Native Scrape health is separately unverified.",
   "fix_commits": ["8c4db823"],
-  "next_action": "One resource-admitted hosted opt-in diagnostic to establish actual milestone delivery; keep product Scrape acceptance separate and unverified."
+  "next_action": "No serializer repair remains. Investigate the separately observed post-reload capture visibility failure; do not reopen from missing panel-created event alone when final target exists."
 }

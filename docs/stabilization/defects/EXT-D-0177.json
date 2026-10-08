@@ -1,0 +1,48 @@
+{
+  "id": "EXT-D-0177",
+  "feature_id": "EXT-F-1012",
+  "case_ids": ["EXT-F-1012-T57"],
+  "surface": "Hosted authenticated Tools Catalog checkpoint",
+  "auth_mode": "admin",
+  "title": "Records checkpoint clicks before lazy Catalog is ready",
+  "severity": "S2: test harness can fail before product request; native cause still conditional",
+  "priority": "P1",
+  "state": "in-fix",
+  "owner": "root/records_missing_row_rootcause",
+  "preconditions": [
+    "Frozen407 includes static Records catalog row; Tools view mounts lazily.",
+    "Checkpoint navigates to Tools then immediately targets Records without waiting for inner Catalog readiness."
+  ],
+  "reproduction": [
+    "Select Tools while the lazy Tools view has not completed mounting.",
+    "The outer active panel exists but the inner Catalog and its Records row do not yet exist.",
+    "Current checkpoint attempts the trusted Records click immediately; selector has zero matches and aborts before product request."
+  ],
+  "expected": "Wait for observable Catalog readiness before selecting the visible unique Records row; expose safe loading/error/selection evidence if readiness fails.",
+  "actual": "Native37776597696 recorded active Tools panel with zero matched/visible Records targets; source establishes a missing readiness await, but that receipt lacks inner state so the native cause is not yet proven.",
+  "evidence": [
+    ".research/t57-records-counts-native-20261008.json",
+    ".research/native-diagnostics-peer-20261008.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-08T12:39:03.454035+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Native receipt narrowed pre-request failure to absent Records row."
+    },
+    {
+      "at": "2026-10-08T12:39:03.454035+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Source identifies async inner view and immediate click with no readiness wait; native correlation remains conditional."
+    },
+    {
+      "at": "2026-10-08T12:39:03.454035+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Implementation lane owns state-based readiness and causal guard plus safe failure observations."
+    }
+  ],
+  "closure_requirement": "Independent source/causal guard review plus native observed Catalog readiness and actual Records activation without weakening real product GET/header/principal/finished-response acceptance."
+}
