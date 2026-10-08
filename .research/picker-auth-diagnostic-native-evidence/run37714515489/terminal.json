@@ -1,0 +1,34 @@
+{
+  "run_id": 37714515489,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37714515489",
+  "workflow_head_sha": "6764c8b903cb39719157b9e80952f3b74b00a0e6",
+  "dispatch": {
+    "lane": "A",
+    "runner_label": "macos-15",
+    "acceptance_case": "showcase-stale-admin",
+    "selected_development_run_id": 37698216289,
+    "selected_development_artifact_id": 11516342905
+  },
+  "terminal": {
+    "run_status": "completed",
+    "run_conclusion": "cancelled",
+    "job_id": 113107823632,
+    "job_conclusion": "cancelled",
+    "runner_name": "",
+    "steps": [],
+    "evidence": "GitHub Actions run and jobs API; no workflow steps or runner name were recorded"
+  },
+  "temporary_secrets": {
+    "names": ["MATRX_PREPARE_ADMIN_CREDENTIALS_JSON", "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"],
+    "deleted_after_terminal": true,
+    "absence_verified": true,
+    "values_recorded": false
+  },
+  "credential_sources": {
+    "approved_fixture": "test-results/admin-profile-approved-organization-private.json",
+    "admin_source": "../aidream/.env",
+    "files_written": false,
+    "rotated": false
+  },
+  "product_observation": "No authenticated flow or picker case ran; no product verdict or acceptance credit."
+}

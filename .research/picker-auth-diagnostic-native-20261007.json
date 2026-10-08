@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "task_id": "picker-auth-diagnostic-native-20261007",
+  "status": "setupfailure_aborted",
+  "scope": "One authenticated native A original-picker retest on the explicitly selected frozen development artifact.",
+  "prior_failure": {
+    "run_id": 37707441895,
+    "report": ".research/picker-count-native-20261007.json",
+    "category": "admin_extension_auth_completion_failed",
+    "last_safe_panel_state": "Guest banner and Sign in control remained visible after the click.",
+    "picker_reached": false,
+    "product_cause": "unknown",
+    "artifact_deviation": "That attempt imported CI 37705690477 / artifact 11519921113 / version 0.2.393; it did not test the required original 0.2.391 artifact."
+  },
+  "reviewed_diagnostic": {
+    "source_repair_commit": "ce0d39c5",
+    "focused_ci_run_id": 37709098725,
+    "independent_source_peer": ".research/auth-repair-intel-native-peer-20261007.json",
+    "source_verdict": "PASS for bounded categorical auth observations and privacy guard; no native authentication verdict."
+  },
+  "selected_original_artifact": {
+    "ci_run_id": 37698216289,
+    "artifact_id": 11516342905,
+    "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "version": "0.2.391",
+    "availability_verified": true,
+    "consumed_by_native_job": false
+  },
+  "native_attempt": {
+    "run_id": 37714515489,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37714515489",
+    "evidence": ".research/picker-auth-diagnostic-native-evidence/run37714515489/terminal.json",
+    "lane": "A",
+    "runner_image": "macos-15",
+    "acceptance_case": "showcase-stale-admin",
+    "workflow_head_sha": "6764c8b903cb39719157b9e80952f3b74b00a0e6",
+    "terminal_status": "cancelled",
+    "failure_category": "setup_staging_command_error_then_owner_abort",
+    "runner_name": null,
+    "workflow_steps": [],
+    "safe_auth_observations": "not_observed",
+    "picker_t24_t51_observations": "not_observed",
+    "resource_admitted": "not_established; workflow steps never started",
+    "product_credit": "none",
+    "retry": "none"
+  },
+  "credential_handling": {
+    "canonical_preflight": "Passed using the approved private fixture, the authorized sibling admin source, requireHostedAcceptanceCredential('showcase-stale-admin', privateEnv), and approvedAdminOrganizationName.",
+    "initial_staging_attempt": "Failed because the GitHub CLI command supplied a literal body argument instead of using stdin; no secret names were present afterward.",
+    "corrected_staging": "Both approved temporary names were staged through stdin before the owner stop arrived; no secret values entered arguments or output.",
+    "cleanup": "After the owned run reached authoritative cancelled terminal state, both names were deleted and their absence verified.",
+    "sources_modified": false,
+    "credentials_rotated": false,
+    "sanitized_parser_incident": "A shell-source attempt against dotenv syntax produced a token-shaped command-not-found fragment in local tool output. The exact field/value is not recorded or inferred; no fragment was written to repository or artifact evidence, and no credential source was modified."
+  },
+  "journals": {
+    "previous_attempt_package": "picker-count-native-evidence/run37707441895/hosted-guest-37707441895-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37707441895-1.jsonl",
+    "previous_attempt_browser": "picker-count-native-evidence/run37707441895/hosted-guest-37707441895-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37707441895-1.jsonl",
+    "previous_attempt_acceptance": "picker-count-native-evidence/run37707441895/hosted-guest-37707441895-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37707441895-1.jsonl",
+    "current_package": null,
+    "current_browser": null,
+    "current_acceptance": null,
+    "current_journal_reason": "The canceled job recorded no runner and no steps; no current native resource journals were produced."
+  },
+  "interpretation": {
+    "EXT-D-0158": "No native retest evidence; picker reinjection was not reached.",
+    "EXT-D-0042": "No native retest evidence; picker lifecycle and T24/T51 observations were not reached.",
+    "auth_diagnosis": "Unresolved. This aborted setup provides no evidence about the product authentication boundary.",
+    "next_action": "Root owns the recovery route after cleanup; do not relaunch from this lane."
+  }
+}
