@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "artifact_type": "inventory-case-procedure-patch",
+  "task_id": "user-tool-procedures-20261008",
+  "patch_id": "source-backed-user-tools-procedures-20261008",
+  "source": {
+    "source_inventory": "docs/stabilization/inventory.json",
+    "scope": "Proposal-only procedures for EXT-F-4121-T01 through EXT-F-4124-T01. No canonical inventory/status changes and no runtime execution.",
+    "source_files_reviewed": [
+      "docs/stabilization/PLAN.md",
+      "docs/stabilization/inventory.json",
+      "docs/stabilization/reports/inventory-tools.json",
+      "types/tool-catalog.json",
+      "src/lib/tools/registry.ts",
+      "src/features/tools/ToolsView.tsx",
+      "src/config/sidepanel-visibility.ts",
+      "src/lib/tools/handlers/user.ts",
+      "src/lib/tools/handlers/lists.ts",
+      "src/lib/lists/storage.ts",
+      "src/hooks/use-tool-inbox.ts",
+      "src/features/chat/AgentAskUserCard.tsx",
+      "src/features/chat/tool-display/registry.tsx",
+      "src/features/lists/TaskPanel.tsx",
+      "src/state/lists.ts"
+    ],
+    "manual_execution_route": "In a signed-in member or admin profile: side panel > Tools > Catalog, choose Internal or All surface if needed, search the exact tool, expand, replace JSON and Run. ToolsView validates local argsSchema, then calls handler.run directly with conversationId=null, runId=manual-test, permissionMode=act, assignedTabId=null and emits local TOOL_TIMELINE_EVENT started/completed/error. This bypasses dispatch.ts permission/approval routing and aidream execution. TOOL_ASK_USER_REQUEST is still broadcast to the inbox; its null conversation falls back to the currently selected chat, where the card can be answered. A manual result is UI handler evidence only; it does not create the server tool call/message lifecycle or prove streamed tool_event/tool message persistence.",
+    "build_reload_identity": "Before any eventual execution, follow docs/stabilization/PLAN.md § Build and reload contract: resource permit and receipt with source/dirty hash, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, actual profile/auth/role/org, permissions, backend, fixture IDs and timestamp. Verify the loaded unpacked runtime/build. After relevant build/config changes reload extension, reopen side panel and confirm replacement identity. DevTools-open inspection is not evidence of idle worker restart.",
+    "role_applicability": "Run member and admin separately and retain separate observations. The inventory marks guest not applicable because Tools requires sign-in; guest denial belongs to the Tools UI case. Role applicability does not imply an admin-only restriction: current metadata marks these bindings admin_only=false. Do not change the existing guest/member/admin status cells from this proposal."
+  },
+  "case_updates": {
+    "EXT-F-4121-T01": {
+      "feature_id": "EXT-F-4121",
+      "control_ids": ["EXT-F-4121-C01"],
+      "title": "Controlled manual execution: user",
+      "modes": ["member", "admin"],
+      "dimensions": ["valid-input", "invalid-input", "permissions", "reload", "manual-ask-card"],
+      "execution_status": "procedure_proposed_runtime_unverified",
+      "preconditions_fixtures": [
+        "Complete shared build/reload identity and role setup above. Select an existing disposable test conversation in the side panel before opening Tools so null-conversation ask cards can fall back to that selected conversation.",
+        "Use only non-sensitive synthetic content. Do not use type=secret, enter secrets, or send a real notification. The handler's prompt/response can expose input in UI receipts. No backend fixture is needed for a simple question."
+      ],
+      "steps": [
+        "In the selected test conversation, run {\"type\":\"choice\",\"question\":\"Procedure fixture: choose the marked option\",\"options\":[\"fixture-A\",\"fixture-B\"],\"context\":\"owned manual tool procedure\",\"timeout_seconds\":60}.",
+        "Confirm the ask card appears in the side-panel inbox for the selected conversation; choose fixture-B and submit. Observe the inline manual runner output and that the card disappears.",
+        "Run {\"type\":\"choice\",\"question\":\"Procedure fixture: cancellation control\",\"options\":[\"fixture-A\",\"fixture-B\"],\"timeout_seconds\":60} and cancel the card. Record the explicit cancelled result. Do not leave it waiting for timeout.",
+        "Run {\"type\":\"choice\",\"question\":\"invalid input control\",\"options\":[],\"timeout_seconds\":60}. Confirm local schema/refinement validation reports the invalid choice before handler execution and no ask card appears.",
+        "After a full extension reload and reopening Tools, repeat the positive choice once. Record this as a separate warm-after-reload observation, not worker-idle restart evidence."
+      ],
+      "expected": [
+        "Positive: the card visibly contains the synthetic question/options and returns an answer envelope with selected=[\"fixture-B\"], cancelled=false, timed_out=false; the Tools runner shows the direct handler output. Cancellation returns cancelled=true and removes the card.",
+        "The invalid options input is rejected by local schema validation and emits no card. Notification permission is not exercised by this choice case; the catalog declares notifications for user generally, but this chosen branch does not call fireSystemNotification.",
+        "Only direct manual handler/card behavior is evidenced. The manual timeline event is local UI state, not an aidream tool_event or persisted role=tool message. Dispatcher gating, live agent invocation, streaming delivery, message persistence, permission denial and cold worker restart remain unverified."
+      ],
+      "cleanup": "Resolve or cancel every synthetic pending card before leaving the conversation. No persistent backend data is created by this chosen branch.",
+      "source_refs": [
+        "docs/stabilization/PLAN.md:24-32,45-63 (receipt/reload and evidence/status rules)",
+        "docs/stabilization/inventory.json: EXT-F-4121 (current modes and case ID)",
+        "types/tool-catalog.json: user schema, ask-user tier, notifications metadata and binding",
+        "src/features/tools/ToolsView.tsx: manual schema validation, direct handler context and timeline events",
+        "src/lib/tools/handlers/user.ts: UserArgs validation, runSingleQuestion, awaitUserResponse and notification branch",
+        "src/hooks/use-tool-inbox.ts: null conversation fallback and response broadcast",
+        "src/features/chat/AgentAskUserCard.tsx: ask-card interaction/rendering"
+      ],
+      "unverified_limits": ["dispatcher/agent path", "tool_event and persisted tool message", "permission denial", "cold idle restart", "real notification branch"]
+    },
+    "EXT-F-4122-T01": {
+      "feature_id": "EXT-F-4122",
+      "control_ids": ["EXT-F-4122-C01"],
+      "title": "Controlled manual execution: request_user_takeover",
+      "modes": ["member", "admin"],
+      "dimensions": ["valid-input", "invalid-input", "permissions", "reload", "manual-ask-card"],
+      "execution_status": "procedure_proposed_runtime_unverified",
+      "preconditions_fixtures": [
+        "Complete shared build/reload identity and role setup above. Select an existing disposable test conversation so the inbox can associate the null-conversation manual request with the selected chat.",
+        "Omit tab_id: this avoids focusing another tab and isolates the takeover request/card behavior. Use synthetic reason/instructions only; do not claim browser control was transferred based on the card alone."
+      ],
+      "steps": [
+        "Run {\"reason\":\"Owned manual takeover procedure\",\"instructions\":\"Read the visible fixture page and report its heading in this card\",\"expected_action\":\"Reply with the word fixture-complete\",\"timeout_seconds\":60}.",
+        "Confirm the inbox card displays the reason and both instructions and expected action, separated into readable text. Reply with the synthetic text fixture-complete, then inspect the runner output and card removal.",
+        "Run {\"reason\":\"invalid control\",\"timeout_seconds\":0}. Confirm local schema validation rejects the value before handler execution and no card appears.",
+        "Reload the extension, reopen Tools, select the same test conversation and repeat the positive request once; record it separately."
+      ],
+      "expected": [
+        "The valid call produces an ask card whose question includes reason, instructions and expected_action; the user reply resolves with answer fixture-complete, cancellation false and any additional note null unless entered. This proves a user-facing takeover request/response prompt only.",
+        "The invalid timeout is rejected by the runner's schema validation. No tab activation occurs because tab_id is omitted.",
+        "Direct manual execution does not establish agent pause/resume, tab assignment, server tool_event, persisted tool message, dispatcher permission gate or live binding behavior. Those require a real agent-dispatched conversation fixture; none is supplied here, so keep those acceptance dimensions unverified."
+      ],
+      "cleanup": "Resolve the ask card by replying before leaving. No browser tab state or backend data is changed by the proposed inputs.",
+      "source_refs": [
+        "docs/stabilization/PLAN.md:24-32,45-63",
+        "docs/stabilization/inventory.json: EXT-F-4122",
+        "types/tool-catalog.json: request_user_takeover schema and binding metadata",
+        "src/features/tools/ToolsView.tsx: direct handler context and manual timeline",
+        "src/lib/tools/handlers/user.ts: takeover prompt composition, optional tab activation, response and timeout handling",
+        "src/hooks/use-tool-inbox.ts: ask request routing and response",
+        "src/features/chat/AgentAskUserCard.tsx: rendered response card"
+      ],
+      "unverified_limits": ["agent pause/resume and assigned-tab semantics", "dispatcher permission/approval", "tool_event and persisted tool message", "cold idle restart"]
+    },
+    "EXT-F-4123-T01": {
+      "feature_id": "EXT-F-4123",
+      "control_ids": ["EXT-F-4123-C01"],
+      "title": "Controlled manual execution: update_plan",
+      "modes": ["member", "admin"],
+      "dimensions": ["valid-input", "invalid-input", "permissions", "reload", "manual-ask-card"],
+      "execution_status": "procedure_proposed_runtime_unverified",
+      "preconditions_fixtures": [
+        "Complete shared build/reload identity and role setup above. Select an existing disposable test conversation and open its plan/tasks panel before running.",
+        "Use synthetic plan content and omit domains to avoid implying that browser navigation is authorized. Direct Tools execution passes conversationId=null: it can render and answer the approval card but deliberately skips savePlan/setPlanStatus/addTasks persistence. Therefore this procedure is only a manual prompt/result smoke; persistence/approval-to-task acceptance requires a real agent-dispatched conversation fixture and must remain unverified without one."
+      ],
+      "steps": [
+        "Run {\"title\":\"Owned plan procedure\",\"steps\":[\"Inspect the owned test conversation\",\"Record the visible result\"],\"reasoning\":\"Synthetic manual procedure\",\"estimated_minutes\":2,\"timeout_seconds\":60}.",
+        "Confirm the approval card displays title, reasoning, ordered steps and estimate. Select Reject to avoid creating follow-on tasks; inspect the direct handler result and card removal.",
+        "Confirm the selected conversation's plan panel has no newly persisted proposed/rejected plan from this manual call. Treat this as expected direct-run limitation, not as successful persistence.",
+        "Run {\"steps\":[],\"timeout_seconds\":60}. Confirm local validation rejects the empty steps array and no card appears.",
+        "Reload extension and reopen the same Tools route; repeat the valid synthetic prompt and reject it. Do not infer persistence across reload from this route."
+      ],
+      "expected": [
+        "The card shows the synthetic plan fields and Reject returns approved=false with a rejection note/result. The empty steps input is rejected before handler execution.",
+        "No plan persistence or task population is expected when invoked manually because conversationId is null; absence from the panel is not evidence that the agent path works. A passing card interaction cannot close the inventory's broader plan behavior.",
+        "Live agent invocation, plan proposal storage, accepted/rejected status persistence, auto-population into chat.agent_task, tool_event/tool message persistence, dispatcher gates and cold worker restart remain unverified without a real agent-dispatched conversation fixture."
+      ],
+      "cleanup": "Reject the proposal and clear any ask card. Since conversationId is null, the proposed path should not create local plan or task records.",
+      "source_refs": [
+        "docs/stabilization/PLAN.md:24-32,45-63",
+        "docs/stabilization/inventory.json: EXT-F-4123",
+        "types/tool-catalog.json: update_plan schema and binding metadata",
+        "src/features/tools/ToolsView.tsx: conversationId=null direct handler invocation",
+        "src/lib/tools/handlers/user.ts: plan prompt, async persistence guard and approve/reject result",
+        "src/lib/lists/storage.ts: savePlan/setPlanStatus/addTasks persistence",
+        "src/features/lists/TaskPanel.tsx: visible plan/tasks panel"
+      ],
+      "unverified_limits": ["plan persistence and status", "approved-plan task population", "live agent dispatch", "tool_event and persisted tool message", "cold idle restart"]
+    },
+    "EXT-F-4124-T01": {
+      "feature_id": "EXT-F-4124",
+      "control_ids": ["EXT-F-4124-C01", "EXT-F-4124-C02", "EXT-F-4124-C03", "EXT-F-4124-C04", "EXT-F-4124-C05", "EXT-F-4124-C06", "EXT-F-4124-C07"],
+      "title": "Controlled manual execution: user_todos",
+      "modes": ["member", "admin"],
+      "dimensions": ["valid-input", "invalid-input", "permissions", "reload", "conversation-local-persistence"],
+      "execution_status": "NOT_EXECUTABLE",
+      "not_executable_reasons": [
+        "Every user_todos branch requires ctx.conversationId. ToolsView invokes the handler with conversationId=null, so its actual result is {ok:false,reason:'No active conversation'} before list/add/update/remove/mark_done/clear_done branches. The manual runner cannot exercise the seven inventory controls or establish their persistence.",
+        "The required real agent-dispatched conversation fixture is absent from this assignment. Do not fabricate a conversation ID in the manual UI or claim that a handler result from another route proves agent dispatch. A future procedure must obtain a genuine owned test conversation through normal UI and invoke user_todos from the real agent path, with its real conversation ID supplied by dispatch."
+      ],
+      "future_fixture_requirements": [
+        "Use a disposable real conversation in both member and admin profiles, created through normal UI and bound to the genuine selected conversation. Do not inject a session, mock services, edit extension storage, or send a fabricated conversation ID.",
+        "Use unique synthetic title/context strings. Execute add with silent=true to avoid notification side effects; capture returned owned todo id. Then list, update title/context, mark_done true and false, remove, and clear_done using only that owned fixture todo. To exercise clear_done positively, add a second owned item and mark only it done before clearing. Verify state in the conversation's TaskPanel and after extension reload; confirm unrelated baseline todos remain unchanged.",
+        "Include schema-negative input and unknown owned ID controls, and capture the actual agent tool event/result plus rendered tool message; preserve raw message content only if sanitized synthetic text."
+      ],
+      "source_refs": [
+        "docs/stabilization/PLAN.md:24-32,45-63",
+        "docs/stabilization/inventory.json: EXT-F-4124 and its seven controls",
+        "types/tool-catalog.json: user_todos schema and binding metadata",
+        "src/features/tools/ToolsView.tsx: manual context sets conversationId=null",
+        "src/lib/tools/handlers/lists.ts: no-conversation guard precedes all six action branches; action/list tier",
+        "src/lib/lists/storage.ts: conversation-keyed chrome.storage.local persistence and LISTS_CHANGED broadcast",
+        "src/features/lists/TaskPanel.tsx: visible todo state"
+      ],
+      "unverified_limits": ["all seven control branches", "member/admin runtime behavior", "persistence and reload", "dispatcher access/approval", "tool_event and persisted tool message"]
+    }
+  },
+  "limitations": [
+    "Source and rendered-component review only; none of these proposals was run in Chrome. No runtime pass/fail or role status is asserted.",
+    "Manual Tools execution is direct handler invocation with conversationId=null and permissionMode=act. It cannot stand in for the registered live agent dispatcher, server streaming, persisted role=tool message or normal Ask/Act permission gate.",
+    "No real agent-dispatched owned conversation fixture was provided. user_todos is explicitly NOT_EXECUTABLE on the manual route; update_plan persistence and agent tool-message outcomes remain unverified even if its manual ask card is observed.",
+    "Member/admin roles remain separate applicable modes; guest remains N/A per current inventory because Tools requires sign-in. This patch does not modify canonical inventory or status cells."
+  ]
+}
