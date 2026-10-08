@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-10-08T05:14:29.648536+00:00",
+  "observed_at": "2026-10-08T05:28:12.801308+00:00",
   "all_tasks_complete": false,
   "screenshots": {
     "schema_version": 1,
@@ -231,14 +231,25 @@
     "all_tasks_complete": false,
     "approval": {
       "five_native_cases": "pass",
-      "same_chat_full_extension_reload": "confirmed product failure; durable storage repair in progress",
-      "evidence": ".research/approval-current-contract-acceptance-20261007.json"
+      "same_chat_full_extension_reload": "source repair7601248b passes independent source review and8 meaningful guards; updated exact artifact native acceptance running",
+      "evidence": ".research/approval-current-contract-acceptance-20261007.json",
+      "source_evidence": ".research/cold-reload-conversation-trust-repair-20261007.json",
+      "updated_automatic_ci": {
+        "run_id": 37731510284,
+        "source_sha": "11564fe786ca47bade2c33718710504ed145eb66",
+        "conclusion": "success",
+        "artifact_id": 11530615740,
+        "tree_sha256": "e27ae7d17f776970c61f6de1ae2596c5181d4df5024ca96210d94f1f07ab3ae3",
+        "version": "0.2.397",
+        "publish_state": "not_published"
+      }
     },
     "screenshots": {
       "capture_local_viewer_warm_reload": "pass",
       "primary_copy_public_link_clipboard_anonymous_identical_bytes": "pass",
-      "retained_owned_test_grant_cleanup": "pending; owner-gated lookup failed before revoke; bounded service diagnosis",
-      "evidence": ".research/screenshot-supported-org-final-acceptance-20261007.json"
+      "retained_owned_test_grant_cleanup": "pending; corrected identity setup then native org picker zero matches before lookup; condition-based readiness diagnostic repair in progress",
+      "evidence": ".research/screenshot-supported-org-final-acceptance-20261007.json",
+      "latest_attempt_evidence": ".research/retained-share-diagnostic-native-corrected-20261007.json"
     },
     "disk_cleanup": "complete; approximately14GiB recovered",
     "publication": "Store installation/release unverified"
