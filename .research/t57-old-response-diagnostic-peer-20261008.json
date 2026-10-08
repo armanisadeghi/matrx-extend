@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "reviewed_commit": "a7796d2b635d241b210a2373ce0b6ff0c10007bb",
+  "native_run_under_diagnosis": 37780192222,
+  "status": "DONE_WITH_CONCERNS",
+  "verdict_A_spec_and_native_limits": {
+    "verdict": "PARTIAL",
+    "evidence": [
+      "The original resource-valid native receipt failed at public_race_prior_document_load with public_race_old_response_missing, two main-frame contexts, zero paused responses, one unmatched target count, zero release attempts, and completed cleanup. It did not identify the rejected CDP branch.",
+      "The new fixed-key counters live directly on report.public_race_preflight, which the native driver serializes with JSON.stringify(report); the simulated no-Network and failed-body cases yield different receipt categories while assessPublicRacePreflight stays unverified.",
+      "The controller still intercepts only real response-stage traffic, continues unmatched requests, holds matching responses, and preserves the existing two-response release and acceptance checks. No new native T57 run was performed."
+    ],
+    "findings": [
+      {
+        "severity": "important",
+        "location": "tests/browser/showcase-d47-public-race-preflight.mjs:258-263,298-314",
+        "issue": "target_outside_main_frame cannot increment: onRequest saves only main-frame requests, so a target Fetch pause with a Network.requestWillBeSent from another frame is recorded as target_without_network. The proposed counters therefore cannot distinguish absent Network identity from an observed wrong-frame identity.",
+        "required_correction": "Keep only safe frame-membership metadata for the relevant Network identity, or add a separate fixed counter for observed non-main-frame identities, and prove this branch with a simulated event."
+      },
+      {
+        "severity": "important",
+        "location": "tests/browser/showcase-d47-public-race-preflight.mjs:285-290,295-315",
+        "issue": "A failed Fetch.continueRequest for a non-target also increments unmatched_target_count, although the new rejection counters only mark non_target; the original receipt's unmatched_target_count=1 alone could represent this path. There is no fixed continuation-failure counter to isolate that boundary.",
+        "required_correction": "Record a fixed, sanitized continuation-rejection counter split by target/non-target and cover a non-target rejection in the diagnostic test."
+      }
+    ],
+    "native_limit": "Run 37780192222 predates these counters; its exact cause remains unconfirmed until a fresh resource-valid original public race records the new receipt and reaches pause, binding, ordered release, and terminal acceptance or honest refusal."
+  },
+  "verdict_B_doctrine_and_quality": {
+    "verdict": "IMPORTANT_FINDINGS",
+    "passes": [
+      "Fixed counter keys and integer counts keep raw URLs, headers, request bodies, response bodies, and CDP error messages out of the serialized receipt.",
+      "The change reuses the existing preflight object and does not change response interception, release order, or acceptance predicates.",
+      "The reported RED is causally credible because fetch_event_count is absent in the parent version and the new test asserts it equals one. The current focused test ran 11/11 green; Biome checked both changed harness files."
+    ],
+    "findings": [
+      "The two unreachable or unclassified rejection paths above make the diagnostic taxonomy incomplete for the very failure it is meant to explain. These are evidence-quality defects, not product-race acceptance failures.",
+      "The new test exercises no-Network and body-failure only. It does not prove wrong-frame attribution or a non-target continuation failure; add those RED-to-GREEN cases when correcting the taxonomy."
+    ]
+  },
+  "store_record_verdict": {
+    "verdict": "APPROVE_WITH_MINOR_COPY_CORRECTION",
+    "basis": "The dirty single-paragraph replacement in matrx-common-docs/systems/apps/extension/CHROME-WEB-STORE.md matches the adjudicated run and original receipt: three HTTP 200 terminal turns, completed page tools, distinct post-reload conversation, 23 continuation text chunks, stable server SHA, and an adapted unpacked public CRX. It correctly limits closure to the original bounded reproduction and excludes actual Store UI installation and overall health. The cited adjudication commit is 4a72d8b0.",
+    "copy_correction": "Change 'with23 text chunks' to 'with 23 text chunks'.",
+    "evidence_limit": "Full opening and same-conversation reply wording is established by per-turn assertions and booleans, not fully visible screenshots; the paragraph's bounded wording is acceptable."
+  },
+  "checks": {
+    "focused_test": "node --test tests/browser/showcase-d47-public-race-preflight.test.mjs: 11 passed, 0 failed",
+    "format": "pnpm exec biome check on the two harness files: passed",
+    "red_basis": "Compared parent source and new test assertion; did not rerun the scratch-copy RED test.",
+    "native_run": "not performed by this review lane"
+  }
+}
