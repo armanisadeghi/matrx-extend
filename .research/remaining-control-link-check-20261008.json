@@ -1,0 +1,208 @@
+{
+  "schema_version": 1,
+  "artifact_type": "remaining_control_link_check",
+  "reviewed_artifact": ".research/remaining-control-links-peer-20261008.json",
+  "reviewed_input_sha256": "22582810ab5a7e994e7eb7bc1cc29ebefbfa63fb94342a5b64662e89b0b030e9",
+  "reviewed_inventory": "docs/stabilization/inventory.json",
+  "inventory_source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
+  "scope": "Only the nine cases with no proposed links in the peer review; no inventory or procedure changes.",
+  "cases": [
+    {
+      "case_id": "EXT-F-0003-T07",
+      "expected_old_controls": [
+        "EXT-F-0003-C02",
+        "EXT-F-0003-C03"
+      ],
+      "proposed_controls": [],
+      "source_anchors": [
+        "release.sh:432",
+        "release.sh:773-801",
+        "scripts/test-release-ship-path.sh:207-218"
+      ],
+      "result": "cannot_map",
+      "reason": "Current release source evidences stale @ai-matrx package refusal, not stale shared dependency-graph refusal. These anchors do not support the case assertion; C02/C03 remain too broad to claim that behavior.",
+      "prior_rejected_reason": "Existing release controls cover fetch/reconciliation, red candidate refusal, validation, and remote races, but none specifically asserts stale shared dependency-graph refusal before expensive validation. Linking C02/C03 would broaden those controls beyond their stated behavior."
+    },
+    {
+      "case_id": "EXT-F-0003-T10",
+      "expected_old_controls": [
+        "EXT-F-0003-C02",
+        "EXT-F-0003-C03",
+        "EXT-F-0003-C11"
+      ],
+      "proposed_controls": [],
+      "source_anchors": [
+        "scripts/test-release-ship-path.sh:1",
+        "release.sh:1"
+      ],
+      "result": "cannot_map",
+      "reason": "The case asserts popup-test lazy-import teardown and unhandled errors, a test-runner lifecycle property. Release validation/publication and CI concurrency controls do not represent this behavior.",
+      "prior_rejected_reason": "This is a test-harness lifecycle/unhandled-import check. The owning release controls govern candidate validation/publication and CI concurrency, not popup-test teardown behavior."
+    },
+    {
+      "case_id": "EXT-F-1015-T39",
+      "expected_old_controls": [
+        "EXT-F-1015-C09",
+        "EXT-F-1015-C13",
+        "EXT-F-1015-C14"
+      ],
+      "proposed_controls": [],
+      "source_anchors": [
+        "src/hooks/use-auth.ts:1",
+        "src/components/AuthGate.tsx:14",
+        "src/lib/auth/identity-transport.ts:1",
+        "src/lib/supabase/db-failure.ts:1",
+        "src/state/notices.ts:1"
+      ],
+      "result": "missing_control",
+      "reason": "The case covers persisted admin authorization across extension contexts plus simultaneous storage failures. Existing org selection, sign-out and retry controls do not state this execution-time authorization invariant. A dedicated cross-context admin-gate/storage-failure control is needed.",
+      "prior_rejected_reason": "This cross-context persisted-admin execution gate and storage-outage race is not represented by the existing organization picker, sign-out, or retry-auth controls. It needs a dedicated auth-gate control."
+    },
+    {
+      "case_id": "EXT-F-2011-T05",
+      "expected_old_controls": [
+        "EXT-F-2011-C05"
+      ],
+      "proposed_controls": [
+        {
+          "control_id": null,
+          "proposed_action": "Verify guest cannot access the owning signed-in surface, including persisted/stale tab selection; signed-in access remains available.",
+          "status": "candidate_missing_inventory_control"
+        }
+      ],
+      "source_anchors": [
+        "src/config/sidepanel-visibility.ts:16-49",
+        "src/entrypoints/sidepanel/App.tsx:178-179",
+        "src/entrypoints/sidepanel/App.tsx:233",
+        "src/entrypoints/sidepanel/App.tsx:486-487",
+        "src/entrypoints/sidepanel/App.tsx:676-677",
+        "src/features/vault/VaultView.tsx:365"
+      ],
+      "result": "missing_control",
+      "reason": "Current source explicitly assigns Vault and Tools to signed-in audience and checks access before navigation/content rendering. Existing feature controls cover sign-in or surface actions, not guest exclusion; add an audience-gate control to this feature before linking the case.",
+      "prior_rejected_reason": "Guest Vault exclusion is an access/audience gate; existing Vault controls cover individual Vault actions and do not specify the guest visibility boundary. It needs a dedicated access control."
+    },
+    {
+      "case_id": "EXT-F-2012-T03",
+      "expected_old_controls": [
+        "EXT-F-2012-C12",
+        "EXT-F-2012-C13",
+        "EXT-F-2012-C14"
+      ],
+      "proposed_controls": [
+        {
+          "control_id": null,
+          "proposed_action": "Verify guest cannot access the owning signed-in surface, including persisted/stale tab selection; signed-in access remains available.",
+          "status": "candidate_missing_inventory_control"
+        }
+      ],
+      "source_anchors": [
+        "src/config/sidepanel-visibility.ts:16-49",
+        "src/entrypoints/sidepanel/App.tsx:178-179",
+        "src/entrypoints/sidepanel/App.tsx:233",
+        "src/entrypoints/sidepanel/App.tsx:486-487",
+        "src/entrypoints/sidepanel/App.tsx:676-677",
+        "src/features/tools/ToolsView.tsx:1"
+      ],
+      "result": "missing_control",
+      "reason": "Current source explicitly assigns Vault and Tools to signed-in audience and checks access before navigation/content rendering. Existing feature controls cover sign-in or surface actions, not guest exclusion; add an audience-gate control to this feature before linking the case.",
+      "prior_rejected_reason": "Guest Tools exclusion is an access/audience gate with no corresponding control in the owning Tools feature; tab selection controls do not establish guest denial."
+    },
+    {
+      "case_id": "EXT-F-2015-T05",
+      "expected_old_controls": [
+        "EXT-F-2015-C01",
+        "EXT-F-2015-C05"
+      ],
+      "proposed_controls": [
+        {
+          "control_id": null,
+          "proposed_action": "Verify guest cannot access the owning signed-in surface, including persisted/stale tab selection; signed-in access remains available.",
+          "status": "candidate_missing_inventory_control"
+        }
+      ],
+      "source_anchors": [
+        "src/config/sidepanel-visibility.ts:16-49",
+        "src/entrypoints/sidepanel/App.tsx:178-179",
+        "src/entrypoints/sidepanel/App.tsx:233",
+        "src/entrypoints/sidepanel/App.tsx:486-487",
+        "src/entrypoints/sidepanel/App.tsx:676-677",
+        "src/features/tools/SmartTestsView.tsx:1"
+      ],
+      "result": "missing_control",
+      "reason": "Current source explicitly assigns Vault and Tools to signed-in audience and checks access before navigation/content rendering. Existing feature controls cover sign-in or surface actions, not guest exclusion; add an audience-gate control to this feature before linking the case.",
+      "prior_rejected_reason": "Guest denial of the Tools/Smart tests surface is an audience gate, while the existing controls cover signed-in Smart Tests actions. It needs a dedicated guest-access control."
+    },
+    {
+      "case_id": "EXT-F-2016-T04",
+      "expected_old_controls": [
+        "EXT-F-2016-C03",
+        "EXT-F-2016-C05"
+      ],
+      "proposed_controls": [
+        {
+          "control_id": null,
+          "proposed_action": "Verify guest cannot access the owning signed-in surface, including persisted/stale tab selection; signed-in access remains available.",
+          "status": "candidate_missing_inventory_control"
+        }
+      ],
+      "source_anchors": [
+        "src/config/sidepanel-visibility.ts:16-49",
+        "src/entrypoints/sidepanel/App.tsx:178-179",
+        "src/entrypoints/sidepanel/App.tsx:233",
+        "src/entrypoints/sidepanel/App.tsx:486-487",
+        "src/entrypoints/sidepanel/App.tsx:676-677",
+        "src/features/tools/RecorderPane.tsx:1"
+      ],
+      "result": "missing_control",
+      "reason": "Current source explicitly assigns Vault and Tools to signed-in audience and checks access before navigation/content rendering. Existing feature controls cover sign-in or surface actions, not guest exclusion; add an audience-gate control to this feature before linking the case.",
+      "prior_rejected_reason": "Guest denial of Tools/Recorder is an audience gate; existing Recorder controls cover recording and local row actions, not visibility/authorization."
+    },
+    {
+      "case_id": "EXT-F-2017-T04",
+      "expected_old_controls": [
+        "EXT-F-2017-C01",
+        "EXT-F-2017-C22"
+      ],
+      "proposed_controls": [
+        {
+          "control_id": null,
+          "proposed_action": "Verify guest cannot access the owning signed-in surface, including persisted/stale tab selection; signed-in access remains available.",
+          "status": "candidate_missing_inventory_control"
+        }
+      ],
+      "source_anchors": [
+        "src/config/sidepanel-visibility.ts:16-49",
+        "src/entrypoints/sidepanel/App.tsx:178-179",
+        "src/entrypoints/sidepanel/App.tsx:233",
+        "src/entrypoints/sidepanel/App.tsx:486-487",
+        "src/entrypoints/sidepanel/App.tsx:676-677",
+        "src/features/vault/PasswordGenerator.tsx:1"
+      ],
+      "result": "missing_control",
+      "reason": "Current source explicitly assigns Vault and Tools to signed-in audience and checks access before navigation/content rendering. Existing feature controls cover sign-in or surface actions, not guest exclusion; add an audience-gate control to this feature before linking the case.",
+      "prior_rejected_reason": "Guest denial of Vault and its password generator is an access/audience gate; the generator controls describe signed-in generator interactions and do not establish guest exclusion."
+    },
+    {
+      "case_id": "EXT-F-2012-T02",
+      "expected_old_controls": [
+        "EXT-F-2012-C13",
+        "EXT-F-2012-C14"
+      ],
+      "proposed_controls": [],
+      "source_anchors": [
+        "src/features/tools/ToolsView.tsx:1",
+        "src/features/tools/SmartTestsView.tsx:1",
+        "src/features/tools/RecorderPane.tsx:1"
+      ],
+      "result": "cannot_map",
+      "reason": "This umbrella case spans Smart Tests and Recorder behaviors owned and enumerated by EXT-F-2015 and EXT-F-2016. Linking the two tab-open controls would not cover each expected interaction; preserve their specific child cases.",
+      "prior_rejected_reason": "This umbrella case combines Smart tests and Recorder behavior. The owning Tools controls are fine-grained filters/manual-runner controls; detailed Smart test and recording behaviors belong to EXT-F-2015/2016. No existing EXT-F-2012 control represents the umbrella case."
+    }
+  ],
+  "summary": {
+    "checked": 9,
+    "missing_control": 6,
+    "cannot_map": 3
+  }
+}
