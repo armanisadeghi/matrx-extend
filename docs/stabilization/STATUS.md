@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-08 03:40 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T03:40:14.154920+00:00. 205 features · 769 cases · 1351 controls · 165 linked defect records.
+Generated 2026-10-08 03:47 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T03:40:14.154920+00:00. 205 features · 769 cases · 1351 controls · 165 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -70,7 +70,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0077, EXT-D-0165
 
-**Linked defects:** [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0014](defects/EXT-D-0014.json) (closed), [EXT-D-0028](defects/EXT-D-0028.json) (closed), [EXT-D-0077](defects/EXT-D-0077.json) (fixed), [EXT-D-0080](defects/EXT-D-0080.json) (closed), [EXT-D-0090](defects/EXT-D-0090.json) (closed), [EXT-D-0099](defects/EXT-D-0099.json) (closed), [EXT-D-0106](defects/EXT-D-0106.json) (closed), [EXT-D-0120](defects/EXT-D-0120.json) (closed), [EXT-D-0121](defects/EXT-D-0121.json) (closed), [EXT-D-0165](defects/EXT-D-0165.json) (open)
+**Linked defects:** [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0014](defects/EXT-D-0014.json) (closed), [EXT-D-0028](defects/EXT-D-0028.json) (closed), [EXT-D-0077](defects/EXT-D-0077.json) (fixed), [EXT-D-0080](defects/EXT-D-0080.json) (closed), [EXT-D-0090](defects/EXT-D-0090.json) (closed), [EXT-D-0099](defects/EXT-D-0099.json) (closed), [EXT-D-0106](defects/EXT-D-0106.json) (closed), [EXT-D-0120](defects/EXT-D-0120.json) (closed), [EXT-D-0121](defects/EXT-D-0121.json) (closed), [EXT-D-0165](defects/EXT-D-0165.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -892,7 +892,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: 37251782627, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T01:45:35.094250+00:00, .research/guest-scrape-normal-native.json
 - EXT-F-1007-T08 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Image and video empty states and reload lifecycle need full observation. Empty-media harness failure stops later acceptance.
   Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
-- EXT-F-1007-T09 · guest: Partial. Guest intake warm22 CopyMenu options pass current-fixture sentinel/format predicates. After referrals navigation first Copy capture target missing; no referrals option or reload proof. Clipboard values intentionally not retained; predicates independently source-reviewed.
+- EXT-F-1007-T09 · guest: Partial. Guest intake warm22 CopyMenu options pass current-fixture sentinel/format predicates. Referrals batch fails a zero-target pointer assertion; exact action and completed referrals count unknown because failure omits partial progress. Reload not reached. Clipboard values intentionally not retained.
   Evidence / build / date recorded: 37721838779, development0.2.391/source52487361/CI37698216289/artifact11516342905, 2026-10-08T03:27:23.881881+00:00, .research/scrape-scroll-native-retest-20261007.json
 - EXT-F-1007-T10 · guest: Pass. Frozen development244 guest ARM: Exact image removals through empty state warm and after full reload verified.
   Evidence / build / date recorded: 37251782627, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T01:45:35.094250+00:00, .research/guest-scrape-normal-native.json

@@ -15109,7 +15109,7 @@
               "evidence": ".research/scrape-scroll-native-retest-20261007.json",
               "independent_review": ".research/scrape-warm-native-peer-20261007.json",
               "verified_at": "2026-10-08T03:27:23.881881+00:00",
-              "detail": "Guest intake warm22 CopyMenu options pass current-fixture sentinel/format predicates. After referrals navigation first Copy capture target missing; no referrals option or reload proof. Clipboard values intentionally not retained; predicates independently source-reviewed."
+              "detail": "Guest intake warm22 CopyMenu options pass current-fixture sentinel/format predicates. Referrals batch fails a zero-target pointer assertion; exact action and completed referrals count unknown because failure omits partial progress. Reload not reached. Clipboard values intentionally not retained."
             }
           },
           "linked_defects": ["EXT-D-0164"]

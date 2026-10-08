@@ -4,11 +4,11 @@
   "case_ids": ["EXT-F-1007-T09"],
   "surface": "Scrape / copy after page navigation",
   "auth_mode": "guest",
-  "title": "Native Scrape copy batch cannot resolve Copy capture after navigation",
+  "title": "Native Scrape navigation copy batch fails without retaining failed action or progress",
   "severity": "S2: navigation copy procedure cannot continue; product versus driver cause unverified",
   "priority": "P1",
   "state": "open",
-  "owner": "root/scrape_navigation_copy_diagnosis",
+  "owner": "root/scrape_d164_escalated_diagnosis",
   "preconditions": [
     "Frozen development0.2.391 CI37698216289/artifact11516342905/source52487361; repaired driver fa05a939; isolated guest narrow360px ARM Chrome141.0.7390.37 with all current resource journals valid."
   ],
@@ -16,11 +16,14 @@
     "Run hosted guest-scrape-development on original frozen391, laneA, guest/narrow; observed run37721838779 checkoutd8ff02ed.",
     "Complete warm T07 on/off and all22 copy options on controlled intake fixture.",
     "Navigate owned page to referrals and wait for driver capture readiness.",
-    "Attempt the first Copy capture menu in guest_copy_after_navigation."
+    "Observe pointer_target_not_unique inside referrals batch; failure receipt omits exact action and any partially completed options."
   ],
   "expected": "Copy capture resolves in the current Scrape panel and copied representations identify the new referrals capture, followed by reload proof.",
-  "actual": "pointer_target_not_unique with zero matched and zero visible targets before any referrals option result. Warm22 intake options passed; no reload test ran.",
-  "evidence": [".research/scrape-scroll-native-retest-20261007.json"],
+  "actual": "Zero-target pointer failure within referrals copy batch. Warm22 intake options pass; referrals completed count and exact failed action unknown because partial progress is saved only after whole batch success. Reload not reached.",
+  "evidence": [
+    ".research/scrape-scroll-native-retest-20261007.json",
+    ".research/scrape-copy-context-native-20261007.json"
+  ],
   "resource_verdict": "All3 current-run journals admitted/resourceInvalidfalse; guest child1 is assertion failure.",
   "transition_history": [
     {
@@ -31,5 +34,6 @@
     }
   ],
   "closure_requirement": "Confirm cause; smallest repair with meaningful causal guard and fresh source review; resource-valid current-capture navigation and reload native proof with surrounding copy options; independent retest review.",
-  "next_action": "Diagnose original evidence without weakening freshness or selector uniqueness. Preserve new warm successes separately from failed navigation."
+  "next_action": "Escalated Astra diagnosis repairs whole-batch action/progress capture before further native run; do not infer first Copy capture failure or zero completed referrals actions from missing array.",
+  "evidence_correction": "Frozen driver assigns after_navigation only after all menu options finish. On rejection, completed progress is lost; an empty/missing array does not prove zero actions or identify the first Copy capture control. The exact failed menu/action is unknown. Original receipts remain unchanged."
 }

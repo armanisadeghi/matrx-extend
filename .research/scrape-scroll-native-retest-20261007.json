@@ -2,7 +2,7 @@
   "schema_version": 1,
   "task_id": "scrape-scroll-native-retest-20261007",
   "status": "terminal_behavior_failure_with_valid_resources",
-  "summary": "One guarded hosted guest-scrape-development run exercised the repaired driver against the frozen 0.2.391 artifact. Warm T07 passed. Intake T09 copy options passed 22/22, then the referrals-phase Copy capture target could not be uniquely resolved. Reload T07 and T09 remain unverified. Resource admission was valid; no product defect is inferred from this driver interaction failure.",
+  "summary": "Frozen391 resource-valid run: warm T07 and22 intake T09 predicates pass; referrals batch fails at a zero-target pointer assertion. Failed action/completed referrals progress are not retained; reload unverified.",
   "workflow": {
     "run_id": 37721838779,
     "attempt": 1,
@@ -139,12 +139,30 @@
             "menu": "Copy capture",
             "choices": ["Markdown", "Plain text", "Page URL", "For AI agent"]
           },
-          { "menu": "Copy article", "choices": ["Markdown", "Plain text", "For AI agent"] },
-          { "menu": "Copy images", "choices": ["Markdown", "URLs (one per line)", "For AI agent"] },
-          { "menu": "Copy videos", "choices": ["Markdown", "URLs (one per line)", "For AI agent"] },
-          { "menu": "Copy links", "choices": ["Markdown", "URLs (one per line)", "For AI agent"] },
-          { "menu": "Copy SEO audit", "choices": ["Markdown", "Plain text", "For AI agent"] },
-          { "menu": "Copy schema", "choices": ["Markdown", "JSON", "For AI agent"] }
+          {
+            "menu": "Copy article",
+            "choices": ["Markdown", "Plain text", "For AI agent"]
+          },
+          {
+            "menu": "Copy images",
+            "choices": ["Markdown", "URLs (one per line)", "For AI agent"]
+          },
+          {
+            "menu": "Copy videos",
+            "choices": ["Markdown", "URLs (one per line)", "For AI agent"]
+          },
+          {
+            "menu": "Copy links",
+            "choices": ["Markdown", "URLs (one per line)", "For AI agent"]
+          },
+          {
+            "menu": "Copy SEO audit",
+            "choices": ["Markdown", "Plain text", "For AI agent"]
+          },
+          {
+            "menu": "Copy schema",
+            "choices": ["Markdown", "JSON", "For AI agent"]
+          }
         ],
         "each_option": {
           "menu_correct": true,
@@ -157,14 +175,14 @@
       },
       "referrals_warm": {
         "driver_stage": "guest_copy_after_navigation",
-        "attempted_action": "Resolve and click the Copy capture title in the referrals copy-menu pass",
-        "verdict": "failed_before_a_referrals_copy_option_was_completed_or_recorded",
+        "attempted_action": "Unknown menu/action inside referrals copy batch",
+        "verdict": "failed_with_no_partial_referrals_progress_serialized",
         "failure_code": "pointer_target_not_unique",
         "matched_target_count": 0,
         "visible_match_count": 0
       },
       "reload_verdict": "unverified_not_reached",
-      "limitation": "No referrals menu option result or post-reload copy result was recorded. Raw clipboard values are omitted."
+      "limitation": "No referrals progress serialized before failure; completed count unknown. Reload not reached."
     },
     {
       "other_cases": {
@@ -183,5 +201,6 @@
   "originals_directory": ".research/scrape-scroll-native-retest-20261007-run37721838779-originals",
   "originals_note": "Contains the unmodified downloaded artifact, including all three current-run resource journals, receipt, and screenshots. The artifact also included prior run 37105304739 journals; they are retained here and excluded from current-run admission. The run receipt records clipboard result booleans only; this curated report contains no clipboard or credential values.",
   "no_retry": true,
-  "next_action": "Root owns the native interaction failure and any defect triage. Keep EXT-D-0163 open; warm T07 passed, while reload T07, referrals T09, and reload T09 remain unverified."
+  "next_action": "Root owns the native interaction failure and any defect triage. Keep EXT-D-0163 open; warm T07 passed, while reload T07, referrals T09, and reload T09 remain unverified.",
+  "evidence_correction": "Frozen driver assigns after_navigation only after all menu options finish. On rejection, completed progress is lost; an empty/missing array does not prove zero actions or identify the first Copy capture control. The exact failed menu/action is unknown. Original receipts remain unchanged."
 }

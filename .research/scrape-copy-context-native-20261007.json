@@ -119,9 +119,10 @@
         "read_permission_restored": true
       },
       "referrals_warm": {
-        "attempted_action": "Resolve and click Copy capture after navigation",
+        "attempted_action": "Unknown action inside referrals copy batch",
         "pointer_target_failure_count": 1,
-        "completed_copy_option_count": 0
+        "completed_copy_option_count": null,
+        "recorded_copy_option_count": 0
       },
       "reload_verdict": "unverified_not_reached",
       "reload_action_count": 0,
@@ -142,7 +143,7 @@
     },
     "copy_target_context_field_present": false,
     "copy_target_context": null,
-    "interpretation": "The fresh receipt does not contain the discriminator observation, so this run does not distinguish capture disappearance, selector mismatch, or panel switching. No product cause is inferred."
+    "interpretation": "No discriminator is present. The code only instruments Copy capture title failures; errors at later tabs/menus/options bypass it. Missing context does not prove receipt serialization lost it or that Copy capture failed. Cause remains unknown."
   },
   "originals_directory": ".research/scrape-copy-context-native-20261007-run37723346094-originals",
   "artifact_download": {
@@ -162,5 +163,6 @@
     "credential_values_reported": false
   },
   "no_retry": true,
-  "next_action": "Root owns the missing diagnostic field and native interaction triage; do not infer product cause from zero pointer targets. Reload T07/T09 and referrals option actions remain unverified."
+  "next_action": "Root owns the missing diagnostic field and native interaction triage; do not infer product cause from zero pointer targets. Reload T07/T09 and referrals option actions remain unverified.",
+  "evidence_correction": "Frozen driver assigns after_navigation only after all menu options finish. On rejection, completed progress is lost; an empty/missing array does not prove zero actions or identify the first Copy capture control. The exact failed menu/action is unknown. Original receipts remain unchanged."
 }
