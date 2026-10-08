@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "cold-trust-source-review",
+  "lane": "fresh independent source verifier",
+  "status": "DONE",
+  "observed_at": "2026-10-08T05:18:45.705470+00:00",
+  "reviewed_commit": "7601248b8886208048f8b52e163c057193290b20",
+  "zero_authorship": true,
+  "verdict_a": {
+    "source": "pass",
+    "native": "unverified",
+    "scope": "Remembering the same tool and host in the same saved chat across full extension and browser reloads.",
+    "reason": "Remembered choices now live in local storage, while run and pending-confirm metadata remain session-scoped. Real dispatcher call sites await saving before executing an approved action. User Act mode and tier decisions are untouched.",
+    "not_claimed": [
+      "Cold native acceptance of this new commit",
+      "Pilot opposing modes",
+      "Parallel native actions",
+      "Store installation"
+    ]
+  },
+  "verdict_b": {
+    "source_quality": "pass",
+    "executed_forcing_proof": "pass_builder_evidence_reviewed",
+    "findings": [],
+    "checks": {
+      "reuse": "Existing canonical current-user and stable guest-signature readers; no second identity resolver.",
+      "isolation": "Durable map keys include actor and exact conversation; entries include tool and host. Other chat, other actor and signed-in/guest cases have distinct forcing expectations.",
+      "atomicity": "The complete shared-map read/modify/write is serialized. Lookup waits on queued mutations; approval identity starts resolving before the queued write.",
+      "guard_seam": "The cold guard uses the real dispatcher to approve and execute, clears session storage and reloads modules, then requires the same action without another prompt and a different host with a prompt. Only external messaging, registry execution, API and storage are stubbed.",
+      "no_legacy": "No migrated compatibility store or duplicate policy implementation. Arbitrary remembered-conversation eviction removed.",
+      "permission_contract": "The existing privileged and external-initiator confirmation boundaries remain unchanged by the reviewed commit."
+    }
+  },
+  "evidence": {
+    "original_native_failure": ".research/approval-current-contract-acceptance-20261007.json",
+    "review_method": "Own commit diff plus production callers and canonical identity implementation; no BASE..HEAD comparison.",
+    "reviewer_executions": "No browser or heavy test execution; explicitly outside this source-only brief.",
+    "builder_journals_observed": {
+      "cold-trust-baseline-red-20261007": "Valid admitted exit 1: 4 passing and 3 intended assertion failures, cold dispatcher ran 1 action instead of 2; same-actor and same-guest reload lost saved approval.",
+      "cold-trust-final-green-admitted-20261007": "Valid admitted exit 0: corrected guards passed 8 of 8.",
+      "cold-trust-constant-gut-20261007": "Valid admitted exit 1: 7 assertion failures of 8 tests against constant remembered host, including another conversation and signed-in versus guest isolation; no import or syntax failures."
+    },
+    "restoration_sha256": "24c63291de579e94831ac6ffda28605d05a6ab2c8d121fe3af875a11856eaa05",
+    "restoration_matches_reviewed_commit": true,
+    "execution_provenance": "Builder supplied assertion details, reviewer inspected completed resource journals and independently compared restored production bytes against the reviewed commit. Reviewer did not execute the test suite."
+  },
+  "limitations": [
+    "Source review does not establish the live product result.",
+    "Builder typecheck and catalog import gates are still pending at this report; owner must reconcile their terminal results."
+  ],
+  "owned_processes": "none",
+  "next_action": "Independent native verification on an automatic CI artifact containing the reviewed fix."
+}
