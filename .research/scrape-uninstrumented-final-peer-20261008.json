@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "task": "independent final review of uninstrumented Scrape run 37778965029",
+  "scope": "Read-only review of saved report, raw native receipt, selected resource journals, original defect, and source seam; no native run, build, release, source, or inventory change.",
+  "verdict_A_runtime": {
+    "run": "Hosted lane B guest, normal 600px, development 0.2.407, CI run 37754055905/artifact 11539827040, source 5d845f42cb22c10e2486af8048d1ac9f3ac8e114; reload-open diagnostic disabled.",
+    "new_guest_subtarget": {
+      "case_id": "EXT-F-1007-T08",
+      "verdict": "Post-reload empty Images and Video panes now observed after the referrals Capture boundary returned; both panes contain zero rows. Warm and reload six populated panes and capture invariance across tab selection are also recorded. This closes the prior guest empty-media observation gap for frozen 0.2.407, but T08 remains partial overall because member/admin modes are unverified."
+    },
+    "revalidated_passed_guest_cases": [
+      "EXT-F-1007-T20",
+      "EXT-F-1007-T10",
+      "EXT-F-1007-T11",
+      "EXT-F-1007-T12",
+      "EXT-F-1007-T07",
+      "EXT-F-1007-T09"
+    ],
+    "partial_cases": {
+      "EXT-F-1007-T01": "Guest warm/reload fast capture and busy state observed; member/admin modes and natural error recovery remain unverified.",
+      "EXT-F-1007-T08": "Guest tab content, invariance, and empty media states observed warm and after reload; member/admin modes unverified.",
+      "EXT-F-1007-T13": "Guest link controls and copy equality observed warm and after reload; member/admin modes unverified. Guest behavior revalidated, not a new full-case pass.",
+      "EXT-F-1007-T02": "Deep capture and lazy content observed; deep failure retry and post-reload deep capture unverified.",
+      "EXT-F-1007-T14": "Restricted URL dismiss observed; natural recoverable Reload page/Try again and deep retry unverified."
+    },
+    "post_reload_article": "The strict helper returned without failure after one delivered Capture click and busy observation; the procedure advanced to post-reload empty-media pane checks. Given the helper's predicate, visible referrals Article/title/sentence was reached either immediately or after dialog confirmation. The receipt does not retain the branch or Article content fields. The earlier postReloadArticle failure did not reproduce.",
+    "defect_EXT_D_0178": {
+      "closure_verdict": "INSUFFICIENT_NATIVE_BRANCH_EVIDENCE",
+      "reason": "The canonical reproduction requires owned unsaved media edits, the visible exact discard-edits dialog, its Re-capture confirmation, and then newly captured referrals Article content. The helper accepts already captured Article as an alternate success path. This run retains click/busy probes and downstream pane observations but neither the dialog observation nor confirmation click nor actual Article predicate fields. Thus it cannot establish which path ran and cannot satisfy the original reproduction/closure requirement, despite the Article boundary passing.",
+      "minimum_missing_evidence": "On one uninstrumented, resource-valid native run, persist the owned pre-capture edited state; exact visible 'Discard unsaved edits?' dialog with 'Re-capture'; trusted confirmation action returned; and subsequent visible referrals Article title plus sentinel sentence. Preserve branch identity even if the already-captured path succeeds.",
+      "source_seam": "tests/browser/scrape-post-reload-capture-boundary.mjs runPostReloadCaptureBoundary, after the first waitFor outcome and within its ownedRecaptureDialog branch; tests/browser/scrape-guest-native-acceptance.mjs near report.post_reload_capture_boundary assignment persists the bounded receipt."
+    },
+    "runtime_limits": "Only guest/normal-width development artifact; no member/admin, alternate width, Store, or later-main acceptance is inferred."
+  },
+  "verdict_B_provenance_quality": {
+    "status": "PASS_WITH_SPECIFIC_RECEIPT_LIMIT",
+    "source_review": "Independent source review commit 9fc0a22159d7285679d5280bc18a55abf4b77dac passed the exact dialog selector, trusted pointer, and focused guard for source commit 175718392f597d214caaf9310afc5122a2f4ae62. This is source quality evidence, not proof the native dialog branch ran.",
+    "artifact": "Native receipt identifies the frozen development 0.2.407 source, CI run and artifact; saved metadata agrees with dispatch inputs and the report. Workflow head differs from artifact source because it runs the test harness; this does not imply a later product build.",
+    "resource_gate": "Selected package, browser, and guest journals each end RESOURCE_FINAL_DECISION admitted=true, resourceInvalid=false, exitCode=0, decision=valid. Selected files are run-specific; metadata explicitly excludes unrelated prior-run journals in the downloaded artifact.",
+    "hash_check": "Recomputed SHA-256 of native receipt and three selected journals; all four equal the hashes in the reviewed report.",
+    "receipt_limit": "Workflow success and a completed boundary prove progress, not the conditional confirmation branch. The parent report correctly withholds that acceptance credit."
+  },
+  "evidence": [
+    ".research/scrape-confirmation-native-retest-20261008.json",
+    ".research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json",
+    ".research/scrape-confirmation-native-retest-20261008-evidence/run37778965029-metadata.json",
+    "docs/stabilization/defects/EXT-D-0178.json",
+    "tests/browser/scrape-post-reload-capture-boundary.mjs",
+    "tests/browser/scrape-guest-native-acceptance.mjs"
+  ]
+}
