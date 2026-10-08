@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "case_id": "EXT-F-1012-T57",
+  "lane": "A; one guarded hosted native public prior-document Network attempt",
+  "status": "unverified_resource_invalid_signin_boundary",
+  "attempt_count": 1,
+  "source_readiness": {
+    "accepted_repair_commit": "a2b73385729b6f89fdb0ae7b1b1defa308aa56fd",
+    "independent_peer": ".research/t57-prior-sequence-independent-peer-20261007.json",
+    "focused_acceptance_run": 37747090979,
+    "focused_acceptance_conclusion": "success",
+    "ci_run": 37747090976,
+    "ci_conclusion": "success",
+    "frozen_source_sha": "befaf2142f77cbf91af697a0e902584161442e66",
+    "dispatch_source_sha": "bc52bdf6424e0c0233d6c2d2a95000c2cdf24806",
+    "frozen_to_dispatch_relevant_diff": ["package.json", "pnpm-lock.yaml"],
+    "unchanged_from_frozen_source": [
+      "public D47 driver and race controller",
+      "hosted wrapper, showcase route and artifact importer",
+      "hosted workflow and app source"
+    ],
+    "scope_limit": "The installed frozen 0.2.405 artifact tests its own source and dependencies. The later package/lock changes are outside this artifact and this attempt does not establish current-main health."
+  },
+  "run": {
+    "id": 37748442466,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37748442466",
+    "workflow": "Hosted guest side-panel acceptance",
+    "event": "workflow_dispatch",
+    "case": "showcase-d47-public-admin",
+    "public_race_preflight": true,
+    "conclusion": "failure",
+    "failed_step": "Exercise the selected Chrome side-panel case",
+    "artifact_upload_step": "success"
+  },
+  "installed_build": {
+    "ci_run_id": 37747090976,
+    "artifact_id": 11537245045,
+    "artifact_digest": "sha256:dc62051338c6d710b489de5051d0d63879eb8e3816e605f55b37dce710f38b28",
+    "receipt_source_sha": "befaf2142f77cbf91af697a0e902584161442e66",
+    "receipt_tree_sha256": "a1e3c67b1c115ac15dac87726103bb8ec06281caddd3937963cd0d9557613eea",
+    "version": "0.2.405"
+  },
+  "fixture_preflight": {
+    "admin_identity": "admin@admin.com",
+    "admin_credential_source": "existing sibling aidream environment; values never logged or committed",
+    "approved_organization_source": "existing named admin fixture, mode 0600; value omitted",
+    "hosted_selected_auth_preflight": "success",
+    "hosted_artifact_provenance_preflight": "success"
+  },
+  "observed_boundary": {
+    "receipt_status": "unverified",
+    "stage": "signin",
+    "native_stage": "exercise_panel",
+    "auth_stage": "admin_extension_auth_completion",
+    "failure_name": "Error",
+    "failure_code": "d87_rendered_identity_not_observed",
+    "interpretation": "The signed-in Account rendering did not satisfy the D87 identity assertion within its wait. The receipt has no granular rendered-identity observations, so the reason is unresolved. The captured panel image shows guest controls, but its capture time does not establish the precise sign-in transition failure.",
+    "hn_capture_reached": false,
+    "owned_recipe_created": false,
+    "prior_response_observed": false,
+    "current_response_observed": false,
+    "terminal_saved_result_or_refusal_observed": false
+  },
+  "resources": {
+    "package": {
+      "decision": "valid",
+      "resource_invalid": false,
+      "child_exit_code": 0,
+      "sha256": "5cda3e661301d674128b79344627e70f87e8e5fc58db8daa423332b2e2dbee24"
+    },
+    "browser": {
+      "decision": "valid",
+      "resource_invalid": false,
+      "child_exit_code": 0,
+      "sha256": "ac18b9e1f3a7dc7b09d0cfec477f8bdc0665a08b536339c8e07b509d31c7ce2e"
+    },
+    "guest": {
+      "admitted": true,
+      "decision": "invalid",
+      "resource_invalid": true,
+      "child_exit_code": 1,
+      "guard_exit_code": 3,
+      "observations": "One CPU-busy/high-load sample at 08:20:10 UTC; two later samples had no unsafe reasons. The final guard decision remained invalid, so the child failure earns no product verdict.",
+      "sha256": "955f79d326eeaea962263f573a64bf4f7a4ad0b698a41cdf05b734c3124ca1a2"
+    }
+  },
+  "originals": {
+    "artifact_id": 11537082932,
+    "artifact_digest": "sha256:c3ae218bb320a0b29d87c47a999d1a27bbb7a9305274854866a50bb9a03aab45",
+    "private_recursive_download": ".research/t57-native-20261008-originals/private/artifact",
+    "private_failed_step_log": ".research/t57-native-20261008-originals/private/failed-step.log",
+    "manifest": ".research/t57-native-20261008-originals/manifest.json",
+    "tracked_original_receipt": ".research/t57-native-20261008-originals/receipt.raw.json.txt",
+    "receipt_sha256": "7c5c84357baa045a0542489c95d78f646bf22736b79327e31b15e52c9edb4676",
+    "tracked_current_run_journals": ".research/t57-native-20261008-originals/current-run-journals/",
+    "private_original_count": 13,
+    "private_directory_mode": "0700",
+    "private_files_mode": "0600"
+  },
+  "cleanup": {
+    "owned_recipe": "none_created",
+    "temporary_admin_secret": "deleted_after_terminal",
+    "temporary_approved_organization_secret": "deleted_after_terminal",
+    "temporary_secret_names_absent": true,
+    "retry_dispatched": false
+  },
+  "claim_limit": "This one admitted but resource-invalid attempt stops at D87 rendered identity before the T57 Network race. It neither accepts nor disproves the repaired prior-document sequence and does not establish a product defect. Diagnose the identity rendering and hosted resource invalidation before a separately authorized new native run."
+}
