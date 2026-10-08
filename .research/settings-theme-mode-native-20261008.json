@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "lane": "settings-theme-mode-native",
+  "reviewer": {
+    "independent_native_review": true,
+    "source_review_seat_reused": ".research/settings-next-controls-peer-20261008.json",
+    "candidate_authorship": "zero"
+  },
+  "candidate": {
+    "commit": "f20f554cb283a983f7c493b20394fcbf31e2c2bd",
+    "source_peer_commit": "91b3bc98",
+    "scope": "EXT-F-1003 guest T04 theme and T10 default mode",
+    "source_comparison": "SettingsView.tsx, ChatView.tsx, settings state, and candidate acceptance driver/helper blobs match the candidate. The test inclusion remains in package.json test:focused-acceptance."
+  },
+  "artifact": {
+    "ci_run_id": "37818621428",
+    "ci_run_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+    "ci_artifact_id": "11568846736",
+    "ci_artifact_name": "matrx-extend-development-test-5f7fe7c29d7dd78528161c8928d3da78b41aa55b-37818621428-1",
+    "ci_artifact_digest": "sha256:22afa363bf065f0bfcf7a2ab2e1b3f994c2adde07bde0d9f21d0d5f4c3fa6958",
+    "version": "0.2.414",
+    "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+    "verified_in_native_receipt": true
+  },
+  "native_run": {
+    "run_id": "37833297355",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37833297355",
+    "workflow_commit": "6194dedfa3164430cc57071fd1649092df596435",
+    "case": "settings-controls",
+    "lane": "B",
+    "runner": "macos-15 ARM64",
+    "conclusion": "success",
+    "artifact_id": "11574433118",
+    "artifact_name": "hosted-guest-37833297355-1",
+    "artifact_digest": "sha256:6684353d254a23039cc37bb2a091194d6ed40797cc232434a6c7ce70db1e84e6",
+    "artifact_size_bytes": 65123
+  },
+  "verdict_a_behavior": {
+    "status": "pass_for_panel_reload_scope",
+    "T04": "Dark, Light, and System each passed warm and panel-document-reload checks. The real guest panel reported the selected and stored values, matching dark class, and rendered body background equal to the resolved --background token.",
+    "T10": "Act and Ask each passed warm and panel-document-reload checks. After each reload, the runner opened Chat, clicked New chat, and observed the expected active mode label and icon.",
+    "full_extension_reload": "The driver did reload the extension, retired old targets, replaced worker and panel, and reopened Settings. It did not recheck T04/T10 preferences after that boundary, so full-extension-reload persistence is unverified.",
+    "first_action": "No message was sent and no server request or first-action payload was asserted.",
+    "appearance_limit": "The functional oracle reads computed body background against --background; no screenshot was captured after a theme selection and no RGB value was recorded."
+  },
+  "verdict_b_evidence_quality": {
+    "status": "pass_bounded_native_execution",
+    "native_report_status": "unverified overall because unrelated downstream Settings checks retain unverified criteria; T04 and T10 themselves are pass.",
+    "resource_journals": "All package, browser, and guest journals end with admitted=true, resourceInvalid=false, exitCode=0, decision=valid.",
+    "focused_acceptance": "Run 37832596142 at 2b94356cf45ac225720f204fa3547784d7fedf6a completed successfully; its Focused acceptance guards step passed. The updated test remains included in package.json.",
+    "artifact_scope": "The native receipt confirms the frozen extension version and tree hash. App source blobs for SettingsView.tsx, ChatView.tsx, and settings state match between artifact SHA 5f7fe7c and candidate f20f554c."
+  },
+  "regression_comparison": {
+    "baseline_run_id": "37822887930",
+    "same_version_and_tree": true,
+    "previously_passing_cases_still_pass": [
+      "T04",
+      "T13",
+      "T22",
+      "T37",
+      "T46",
+      "T64",
+      "T73",
+      "T76",
+      "T92"
+    ],
+    "improved_from_unverified": ["T10"],
+    "still_unverified_in_both_runs": ["T16", "T19", "T31", "T34", "T63", "T70"],
+    "regressions": []
+  },
+  "raw_evidence": {
+    "directory": ".research/settings-theme-mode-native-20261008/evidence/raw/",
+    "files": {
+      "settings-local-controls-acceptance.json": "4d735bcd75331c6a47107ff4a14a8f2270a30fcebcc66ed5d03dbc802a0fe1ff",
+      "settings-local-controls-acceptance-previous-37822887930.json": "cf67fd4c6b7824c36b8a83cc6cf8bac951cf10c97b5665f42c7b0e5166a25f8e",
+      "hosted-package-37833297355-1.jsonl": "a2121dda6a767daf1ef1c243195760485f2a8568d9a07de8b9036f8b6df97a78",
+      "hosted-browser-37833297355-1.jsonl": "ee2dcbd03d3918cdd43cc864e22f67006a74ef346f01b6f6fc657c02000f7829",
+      "hosted-guest-37833297355-1.jsonl": "ce3f0272c8ad45e7ead25012448b11c20ac88d82c534db8cdb0bba0174abb8c0"
+    },
+    "screenshots": "The hosted artifact contains setup screenshots; they are not post-selection appearance evidence and are not copied here."
+  },
+  "not_run": "No local browser, build, release, server action, or inventory mutation."
+}
