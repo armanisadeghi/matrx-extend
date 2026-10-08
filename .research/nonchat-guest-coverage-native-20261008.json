@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "task_id": "nonchat-guest-coverage-native-20261008",
+  "lane": "B hosted guest non-Chat acceptance admission",
+  "status": "NOT_ADMITTED_HARNESS_GAP",
+  "scope": "Select one registered executable guest SEO/Data/Settings case with open criteria that the current hosted runner can newly observe on the frozen development artifact.",
+  "preflight": {
+    "inspection_calls": 10,
+    "frozen_artifact_candidate": {
+      "ci_run_id": 37754055905,
+      "artifact_id": 11539827040,
+      "version": "0.2.407",
+      "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114"
+    },
+    "active_hosted_job_at_inspection": {
+      "workflow_run_id": 37773402208,
+      "job": "guest",
+      "status": "in_progress",
+      "started_at": "2026-10-08T11:56:36Z"
+    },
+    "launch": "none",
+    "resource_permit": "not requested because no qualifying new criterion was available from the current runner contract",
+    "private_admin_secrets": "not accessed"
+  },
+  "candidates": [
+    {
+      "case_id": "EXT-F-1003-T70",
+      "runner": "settings-controls -> tests/browser/settings-local-controls-acceptance.mjs",
+      "assessment": "not selected: the last resource-valid native report already records real browser/manifest/receipt/runtime identity, password API readiness, a real no-update response, and post-reload identity/readiness as pass. Remaining alternate API/update branches are explicitly unverified because the driver does not fabricate browser outcomes. Re-running the selected 0.2.407 artifact would duplicate passed criteria and could not qualify the open branches."
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "runner": "guest-seo -> tests/browser/seo-guest-acceptance.mjs",
+      "open_criterion": "guest_manual_hreflang_and_schema_doors_match_page",
+      "assessment": "not selected: the existing driver gates this real-page check on SEO_GUEST_METADATA_FIXTURE=airbnb, but the hosted workflow does not expose/pass that variable. The latest SEO receipt leaves the criterion unverified; its normal full route would repeat other passing checks and still skip this criterion. No mock or assumed qualification used."
+    },
+    {
+      "case_id": "EXT-F-2005-T01",
+      "runner": null,
+      "assessment": "not selected: the hosted workflow routes no Data guest native acceptance case."
+    }
+  ],
+  "implementation_gap": {
+    "recommended": "Wire an explicit hosted-workflow input for the existing real AirBnB metadata fixture selector through to the SEO driver, with its ordinary public-page and fixture outcomes separately recorded. Then run only EXT-F-1008-T09 on the frozen 0.2.407 artifact and judge the actual DOM values against the live document.",
+    "unsupported_contract": "workflow_dispatch currently exposes acceptance_case=guest-seo and seo_case_scope=full|controlled, but no SEO_GUEST_METADATA_FIXTURE input/environment pass-through exists."
+  },
+  "evidence_reviewed": [
+    ".research/settings-local397-native-20261008.json",
+    ".research/settings-local397-native-peer-20261008.json",
+    ".research/seo-new-native-20261008.json",
+    ".research/seo-new-native-20261008-originals/seo-guest-acceptance.original.json.txt",
+    ".github/workflows/hosted-guest-acceptance.yml",
+    "scripts/hosted-guest-acceptance.mjs",
+    "tests/browser/seo-guest-acceptance.mjs",
+    "docs/stabilization/PLAN.md",
+    "docs/stabilization/COORDINATOR.md"
+  ],
+  "limitations": [
+    "No hosted browser acceptance was launched, so there is no fresh native receipt or resource journal.",
+    "This admission record is not product verification and grants no inventory status or coverage credit.",
+    "No overall health claim is made."
+  ]
+}
