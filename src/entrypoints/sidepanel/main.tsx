@@ -1,6 +1,7 @@
 import { RealtimeHost } from '@/components/RealtimeHost';
 import { RootErrorBoundary } from '@/components/RootErrorBoundary';
 import { log, startDebugRelay } from '@/lib/debug/log';
+import { installSpeechHost } from '@/lib/tts/speech-host';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
@@ -21,6 +22,7 @@ const queryClient = new QueryClient({
   },
 });
 
+installSpeechHost();
 const root = createRoot(document.getElementById('app')!);
 root.render(
   <React.StrictMode>
