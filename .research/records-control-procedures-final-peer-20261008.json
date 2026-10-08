@@ -1,0 +1,26 @@
+{
+  "review_role": "independent source-only peer",
+  "reviewed_at_utc": "2026-10-08T09:14:12Z",
+  "proposal_commit": "69b0230c851050c3df8d6a6a2fb92f04618ce01a",
+  "proposal_path": ".research/records-control-procedures-20261008.json",
+  "canonical_source": "aidream/packages/matrx-records/matrx_records/agent/{args.py,definition.py,tool.py}; no diff between proposal's recorded source a0ef97ac36bd3528d02249d052a746d04e7c1db3 and reviewed aidream HEAD 0ff0cde42e5f9d7a3e06a3f4c773ebb93b2e4810 for matrx_records",
+  "verdict_a_contract": {
+    "status": "PASS_SOURCE_ONLY",
+    "facts": [
+      "All 25 stable control actions match RECORD_ACTIONS. C01 unknown topic is a successful guide response before principal/store resolution: topic=null, a note naming the unsupported topic, and 24 actions excluding guide; this is not a refusal.",
+      "The 23 negatives marked SOURCE_DETERMINISTIC_WIRE_VALIDATION produce Pydantic ValidationError at RecordsArgs.model_validate with case ID placeholders replaced by valid UUIDs for local validation only. The tool maps this failure to success=false/error_type=validation before principal/store dispatch. These are shared wire guard cases, not proof of each action's store refusal.",
+      "C06's unknown_case_field values object passes RecordsArgs validation when its table ID is valid. The proposal correctly marks that negative NOT_EXECUTABLE_UNVERIFIED_ORACLE rather than treating generic refusal or an empty result as proof.",
+      "The previously reviewed C09 intervening update/revert, C20 persistence despite run=false, and C22 missing signature fixture remain intact. Cleanup and product approval holds remain explicit."
+    ],
+    "limits": "No live schema, guide, authenticated product call, database row, approval, or cleanup was observed. Current deployed Records source and response shape remain unverified."
+  },
+  "verdict_b_quality": {
+    "status": "PASS_FOR_SOURCE_PROCEDURE_INTEGRATION_WITH_ZERO_RUNTIME_CREDIT",
+    "checks": [
+      "git show --check 69b0230c: clean; only the proposal JSON changed",
+      "Local read-only RecordsArgs validation over all 25 supplied negative inputs: C01 accepted guide, C06 accepted record_write wire, other 23 raised ValidationError; guide_for('__not_an_action__') returned topic=None and 24 of 25 action names.",
+      "Proposal counts retain live_executable_verified=0 and runnable_now=0; all 25 controls remain conditional or blocked with owned fixture, cleanup, approval, and current live-contract requirements."
+    ],
+    "remaining": "Integration may record source-grounded procedure readiness only. It must not promote any guest/admin/member runtime cell, claim a C06 refusal, or remove verified cleanup and approval stop conditions."
+  }
+}
