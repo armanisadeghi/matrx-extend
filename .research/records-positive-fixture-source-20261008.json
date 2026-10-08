@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-4130",
+  "status": "SOURCE_READY_NATIVE_PENDING",
+  "scope": "Positive C04 record_read and C05 record_aggregate on a person-API-created, run-unique table and row through the existing authenticated Records Tools card. No product request, native run, build, release, or user-data mutation occurred in this source unit.",
+  "fixture_contract": "The sidepanel's own OAuth token makes REST POST /api/v1/tables and POST /api/v1/tables/{id}/rows with X-Organization-Id. The page returns only safe status, ownership flags and generated IDs. A run-unique synthetic name is journaled atomically before the first write; table ownership requires created=true, done=true and matching organization. Returned table and row IDs feed the Records UI requests. Finally, same-principal DELETE /api/v1/tables/{id} archives the table and its rows, repeating 503 busy responses within the configured attempt budget, and a filtered table list must show the table absent. An interrupted journal is cleanup-only and cannot earn new read credit.",
+  "source_contract": [
+    "aidream/aidream/api/routers/table_api.py:114 POST create table; :122 DELETE archive table; :300 POST create row",
+    "aidream/aidream/services/table_api/schema.py:253 table_ensure returns created/id/organization; :425 table_archive may answer busy",
+    "aidream/aidream/services/table_api/service.py:499 REST row create uses record_write as the person",
+    "aidream/packages/matrx-records/matrx_records/agent/tool.py:1441 record_read returns record and triples; :1085 aggregate returns measured buckets"
+  ],
+  "native_assertions": [
+    "C04 exact authenticated Records POST, HTTP 200, correlated completion equal to visible output, success=true, returned row/table/organization identity, synthetic name value and a name-field provenance triple",
+    "C05 exact authenticated Records POST, HTTP 200, correlated completion equal to visible output, success=true, same owned table, measure=count, one matched bucket with row_count=1 and count=1",
+    "The preexisting C02/C03 positive, reload, and C03/C04/C05 malformed-input negative assertions remain in the same driver and keep their earlier credit boundaries"
+  ],
+  "safe_receipts": "The final report contains only fixed case/action labels, statuses and booleans. The separate 0600 cleanup journal carries only a synthetic run name, generated table/row IDs and a fixed phase; it carries no token, organization, raw response, error text or existing user values. A failed archive leaves the journal for recovery and fails the native run.",
+  "verification": {
+    "command": "TMPDIR=/Volumes/Samsung2TB/.codex-records-test-tmp node --test tests/browser/records-positive-fixture.test.mjs tests/browser/records-readonly-native-driver.test.mjs tests/browser/records-readonly-native-proof.test.mjs",
+    "result": "Focused tests pass. They execute the actual native driver callback against controlled UI/network completion, reject wrong C04 value and C05 count, and exercise the real fixture helper's pre-write journal, principal check, partial-failure cleanup, busy archive, interrupted recovery and safe page request shape.",
+    "environment": "The system temporary filesystem had ENOSPC; focused tests used the workspace volume as TMPDIR. No unrelated files were removed."
+  },
+  "unverified": "Hosted native creation, UI reads and archival remain pending independent review and execution. The API fixture does not test or credit C11 table_propose or C06 record_write, whose agent approval and held-request cleanup remain unresolved. Archive is restorable rather than hard deletion."
+}
