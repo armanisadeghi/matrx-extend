@@ -9,8 +9,7 @@ import {
   missingSocialTagsSnippet,
 } from '@/lib/seo/evaluators/from-audit';
 import { cn } from '@/lib/utils';
-import { useChatStore } from '@/state/chat';
-import { useSidepanelTabStore } from '@/state/sidepanel-tab';
+import { putTextInChatDraft } from '@/lib/chat-target';
 import { Button } from '@ai-matrx/design-system';
 import { Bot, CheckCircle } from 'lucide-react';
 import { AuditIssueList } from './AuditIssueList';
@@ -44,9 +43,6 @@ export function SeoVerdict({
   audit: SeoAudit;
   evaluation: SeoEvaluation;
 }) {
-  const setDraft = useChatStore((s) => s.setDraft);
-  const draft = useChatStore((s) => s.draft);
-  const setSidepanelTab = useSidepanelTabStore((s) => s.setTab);
 
   const sendToAgent = (body: string) => {
     const payload = [
@@ -56,8 +52,7 @@ export function SeoVerdict({
       '',
       'Read the page if you need to, then tell me exactly what to change: the precise markup and where it goes. If the page has an editor or CMS open that lets you make the change, make it and confirm what you did.',
     ].join('\n');
-    setDraft(draft ? `${draft}\n\n${payload}` : payload);
-    setSidepanelTab('chat');
+    void putTextInChatDraft(payload);
   };
 
   const fixOne = (finding: SeoFinding) =>
