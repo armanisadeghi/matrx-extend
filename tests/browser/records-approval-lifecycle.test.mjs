@@ -42,6 +42,7 @@ const row = () => ({
 });
 const cleanup = () => ({ archived_verified: true, same_principal: true, table_invisible: true });
 const click = () => ({ surface: '/approvals', rowMatched: true, confirmed: true });
+const approveClick = () => ({ ...click(), appliedRecordId: rowId });
 
 async function scenario(overrides = {}) {
   const directory = await mkdtemp(join(tmpdir(), 'records-approval-lifecycle-'));
@@ -62,7 +63,7 @@ async function scenario(overrides = {}) {
     },
     approveInUi: async () => {
       events.push('ui_approve');
-      return click();
+      return approveClick();
     },
     declineInUi: async () => {
       events.push('ui_decline');
@@ -108,6 +109,7 @@ test('held create is journaled before dispatch, approved through UI, read back, 
     'approval_read',
     'row_read',
     'cleanup',
+    'approval_read',
   ]);
   assert.equal((await s.journal()).phase, 'archived_verified');
   assert.equal((await s.journal()).pending_write_unknown, false);
@@ -162,6 +164,16 @@ test('foreign approval, pending after click, wrong UI receipt and wrong readback
     assert.equal(s.events.includes('cleanup'), true);
     assert.notEqual((await s.journal()).phase, 'archived_verified');
   }
+});
+
+test('wrong UI decision RPC row ID refuses credit despite matching approval and Tools readback', async () => {
+  const s = await scenario({
+    approveInUi: async () => ({ ...approveClick(), appliedRecordId: owner.tableId }),
+  });
+  await assert.rejects(runOwnedApprovalCreate(s.adapters), /records_approval_ui_row_id_mismatch/);
+  assert.equal(s.events.includes('row_read'), false);
+  assert.equal(s.events.includes('cleanup'), true);
+  assert.notEqual((await s.journal()).phase, 'archived_verified');
 });
 
 test('cleanup is mandatory after valid approval and matching readback', async () => {
@@ -269,7 +281,8 @@ test('lost approve response settles from authoritative approved state without a 
     },
   });
   await assert.rejects(runOwnedApprovalCreate(s.adapters), /click_response_lost/);
-  assert.equal((await s.journal()).approval_decision_unknown, true);
+  assert.equal((await s.journal()).approval_decision_unknown, false);
+  assert.equal((await s.journal()).approval_terminal_state, 'approved');
   let clicks = 0;
   const recovered = await recoverOwnedApprovalCreate({
     journalPath: s.adapters.journalPath,
@@ -325,6 +338,7 @@ test('lost decision still pending remains unknown after cleanup', async () => {
     approveInUi: async () => {
       throw new Error('click_response_lost');
     },
+    readApproval: async () => approval('pending'),
   });
   await assert.rejects(runOwnedApprovalCreate(s.adapters), /click_response_lost/);
   const recovered = await recoverOwnedApprovalCreate({
@@ -349,6 +363,7 @@ test('archive withdrawal settles a lost pending decision only after authoritativ
     approveInUi: async () => {
       throw new Error('click_response_lost');
     },
+    readApproval: async () => approval('pending'),
   });
   await assert.rejects(runOwnedApprovalCreate(s.adapters), /click_response_lost/);
   let reads = 0;

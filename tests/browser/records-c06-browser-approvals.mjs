@@ -150,7 +150,12 @@ export async function openRecordsC06Approvals({ context, principalId, expectedEm
           assert.equal(decisionResult.applied, false, 'records_c06_decline_false_applied');
         }
         await row.waitFor({ state: 'detached', timeout: 30_000 });
-        return { surface: '/approvals', rowMatched: true, confirmed: true };
+        return {
+          surface: '/approvals',
+          rowMatched: true,
+          confirmed: true,
+          ...(decision === 'Approve' && { appliedRecordId: decisionResult.record_ids[0] }),
+        };
       },
       async close() {
         web.off('request', onRequest);

@@ -7,6 +7,31 @@ export async function signInRecordsAdmin({ onStage, ...options }, signIn = signI
   return signIn({ ...options, mode: 'admin', onStage });
 }
 
+export function recordsApprovalCleanupVerdict(state) {
+  if (!state || state.schema_version !== 1)
+    return { journal_present: true, unresolved: true, receipt_invalid: true };
+  const terminal = ['approved', 'declined', 'withdrawn'].includes(state.approval_terminal_state)
+    ? state.approval_terminal_state
+    : null;
+  return {
+    journal_present: true,
+    table_cleanup_verified: state.table_cleanup_verified === true,
+    approval_id_known: typeof state.approval_id === 'string',
+    approval_terminal_state: terminal,
+    pending_write_unknown: state.pending_write_unknown === true,
+    approval_decision_unknown: state.approval_decision_unknown === true,
+    approval_reconcile_failed: state.approval_reconcile_failed === true,
+    cleanup_failed: state.cleanup_failed === true,
+    unresolved:
+      state.pending_write_unknown === true ||
+      state.approval_decision_unknown === true ||
+      state.approval_reconcile_failed === true ||
+      state.cleanup_failed === true ||
+      state.table_cleanup_verified !== true ||
+      !terminal,
+  };
+}
+
 export async function enterRecordsInput(
   panel,
   evaluate,
@@ -158,8 +183,8 @@ export function observeRecordsExecution(panel, organizationId, expectedBearerHas
       }
       assert.equal(completions.length, 1, 'records_execute_completion_count');
       observedConversationId =
-        typeof completions[0].data?.conversation_id === 'string'
-          ? completions[0].data.conversation_id
+        typeof completions[0].data?.result?.conversation_id === 'string'
+          ? completions[0].data.result.conversation_id
           : null;
       const full = completions[0].data?.result?.full_result;
       assert.ok(

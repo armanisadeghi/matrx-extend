@@ -14,6 +14,7 @@ import {
   assertRecordsVisibleCompletion,
   enterRecordsInput,
   observeRecordsExecution,
+  recordsApprovalCleanupVerdict,
   recordsCompletionShape,
   recordsVisibleShape,
   retainRecordsFailure,
@@ -58,6 +59,7 @@ const report = {
   negative_mutations: [],
   positive_reads: [],
   positive_mutations: [],
+  approval_cleanup: null,
   fixture_cleanup: null,
   fixture_diagnostics: [],
   invalid_input: null,
@@ -648,6 +650,13 @@ try {
         ).push(negativeReceipt);
       }
       stage('records_positive_fixture');
+      const c06JournalPath = `${output}.c06-approval-journal.json`;
+      try {
+        await readFile(c06JournalPath, 'utf8');
+        throw new Error('records_c06_prior_journal_present');
+      } catch (error) {
+        if (error?.code !== 'ENOENT') throw error;
+      }
       const fixture = await withRecordsPositiveFixture({
         panel,
         evaluate,
@@ -926,7 +935,7 @@ try {
           const approvalRowName = `${tableName}-approval-row`;
           try {
             const completed = await runOwnedApprovalCreate({
-              journalPath: `${output}.c06-approval-journal.json`,
+              journalPath: c06JournalPath,
               conversationId: toolTestConversationId,
               owner: {
                 tableId,
@@ -1025,5 +1034,12 @@ try {
   );
   process.exitCode = 1;
 } finally {
+  try {
+    const state = JSON.parse(await readFile(`${output}.c06-approval-journal.json`, 'utf8'));
+    report.approval_cleanup = recordsApprovalCleanupVerdict(state);
+  } catch (error) {
+    if (error?.code !== 'ENOENT')
+      report.approval_cleanup = { journal_present: true, unresolved: true, receipt_invalid: true };
+  }
   await writeFile(output, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
 }

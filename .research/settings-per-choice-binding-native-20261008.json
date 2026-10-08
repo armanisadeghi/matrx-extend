@@ -1,0 +1,109 @@
+{
+    "schema_version": 1,
+    "task": "One authorized Settings-controls lane B native run for per-choice full-extension rechecks",
+    "workflow": {
+        "run_id": 37858551975,
+        "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37858551975",
+        "job_id": 113588522275,
+        "status": "completed",
+        "conclusion": "failure",
+        "attempt": 1,
+        "lane": "B guest Settings-controls",
+        "runner": "macos-15",
+        "head_sha": "e6964c5e93ba88bc19cb1a971860fe04a09c86c9",
+        "started_at": "2026-10-08T23:16:57Z",
+        "completed_at": "2026-10-08T23:25:29Z",
+        "no_retry": true,
+        "step_durations_seconds": {
+            "package_readiness": 33,
+            "browser_driver_preparation": 83,
+            "browser_readiness": 34,
+            "chromium_preparation": 83,
+            "acceptance_readiness": 33,
+            "settings_acceptance_step": 212,
+            "result_upload": 2
+        }
+    },
+    "preflight": {
+        "focused_gate_run_id": 37855322634,
+        "focused_gate_head": "4b14e0a6ea09c424ecc0564d83ab5c7ef5a8f2ac",
+        "focused_gate_conclusion": "success",
+        "relevant_settings_driver_blobs_match_gate": true,
+        "differences_after_gate": [
+            "settings-full-extension-rechecks.mjs import ordering only",
+            "package.json adds the unrelated Records lifecycle test to focused acceptance",
+            "pnpm-lock.yaml advanced; native product payload remains the explicitly frozen development artifact"
+        ],
+        "frozen_ci_run_id": 37818621428,
+        "frozen_ci_source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+        "frozen_artifact_id": 11568846736,
+        "frozen_artifact_name": "matrx-extend-development-test-5f7fe7c29d7dd78528161c8928d3da78b41aa55b-37818621428-1",
+        "frozen_artifact_expired": false,
+        "frozen_artifact_digest": "sha256:22afa363bf065f0bfcf7a2ab2e1b3f994c2adde07bde0d9f21d0d5f4c3fa6958",
+        "frozen_version": "0.2.414",
+        "frozen_tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+        "lane_b_idle_before_dispatch": true,
+        "lane_admission_step": "success"
+    },
+    "result_artifact": {
+        "artifact_id": 11584754484,
+        "name": "hosted-guest-37858551975-1",
+        "size_bytes": 69401,
+        "digest": "sha256:2d279519303d3ed1cb7c32944d9f9988b6b471d5a534cbb7decf4fd129459331",
+        "expired": false,
+        "raw_directory": ".research/settings-per-choice-binding-native-20261008/raw",
+        "retained_files": [
+            {
+                "path": "settings-local-controls-acceptance.json",
+                "sha256": "9656e78be5e7b0dc939de10bfeca89ba734d5d182540e21ccb8cb58de15eb139"
+            },
+            {
+                "path": "resource-journals/hosted-browser-37858551975-1.jsonl",
+                "sha256": "25ca6b5031da177ebaf8270cf8ae5fc78d7e312b72e6371acce24ea184912dc9"
+            },
+            {
+                "path": "resource-journals/hosted-guest-37858551975-1.jsonl",
+                "sha256": "65b9994dd5143d28c53bd62e075b3508e07a3d3e11de674cbcb7460faf6d3a57"
+            },
+            {
+                "path": "resource-journals/hosted-package-37858551975-1.jsonl",
+                "sha256": "c0224171b64af4d79e1bb0a6050d462bc3c0c6ae2c342108a963c21981d2776b"
+            }
+        ],
+        "zip_sha256": "2d279519303d3ed1cb7c32944d9f9988b6b471d5a534cbb7decf4fd129459331",
+        "artifact_selection": "Used the exact run-named artifact; retained only this run's receipt and journals, excluding bundled journals from prior runs."
+    },
+    "resource_admission": {
+        "package": "admitted; child exit 0; resourceInvalid false; final decision valid",
+        "browser": "admitted; child exit 0; resourceInvalid false; final decision valid",
+        "guest": "admitted; repeated RESOURCE_WATCH_HEALTHY; child exit 1; resourceInvalid false; final decision child_failed"
+    },
+    "case_results": {
+        "T04_theme": {
+            "status": "fail",
+            "warm_and_panel_reload": "Dark, Light, and System each changed the visible selection and stored value; rendered appearance matched.",
+            "full_extension": "Baseline System and initial preference were confirmed; Dark was selected and the worker/panel replacement was confirmed. The post-replacement preference/restore phase failed with full_extension_preference_or_restore_failed. No Dark post-restart confirmation, Light/System separate restart, or final baseline restoration is claimed."
+        },
+        "T10_default_mode": {
+            "status": "fail",
+            "warm_and_panel_reload": "Act and Ask each changed the visible selection and stored value; new chat inherited each selected mode.",
+            "full_extension": "Recheck ended with full_extension_recheck_exception before any per-choice restart results were recorded. No per-choice restart or baseline restoration is claimed."
+        },
+        "T40_auto_scrape": {
+            "status": "fail",
+            "warm_and_panel_reload": "Auto-scrape on/off appeared and persisted; the original setting was restored in UI and storage.",
+            "full_extension": "Recheck ended with full_extension_recheck_exception. Downstream background capture remained explicitly unverified."
+        },
+        "T67_capture_mode": {
+            "status": "fail",
+            "warm_and_panel_reload": "Scroll & capture and Capture appeared and persisted; the original mode was restored in UI and storage.",
+            "full_extension": "Recheck ended with full_extension_recheck_exception before per-choice restart results were recorded. No downstream capture or per-choice restart claim is made."
+        }
+    },
+    "limitations": [
+        "The first extension worker/panel replacement itself was observed; the per-choice post-replacement preference and restoration phase did not complete successfully.",
+        "The receipt preserves failure stages but does not establish a more specific cause; no product or harness cause is inferred.",
+        "T40's automatic page-load capture effect remains unverified."
+    ],
+    "credential_scope": "Guest lane only; no credentials or environment files were accessed."
+}

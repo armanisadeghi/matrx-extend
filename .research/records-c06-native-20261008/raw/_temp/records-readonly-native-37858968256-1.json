@@ -1,0 +1,715 @@
+{
+  "schema_version": 1,
+  "inventory_case": "D91 / EXT-F-4130-C02",
+  "status": "unverified",
+  "stage": "records_fixture_cleanup",
+  "native_stage": "admin_rendered_identity",
+  "artifact": {
+    "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+    "run_id": 37790643945,
+    "artifact_id": 11556064167,
+    "tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046",
+    "version": "0.2.414"
+  },
+  "action": "table_list",
+  "organization_diagnostic": {
+    "substage": "organization_identity_compare",
+    "observations": {
+      "admin_role_verified": true,
+      "picker_available": true,
+      "picker_has_selection": true,
+      "selection_required": true,
+      "menu_open": true,
+      "visible_option_count": 59,
+      "exact_match_count": 1,
+      "exact_visible_match_count": 1,
+      "target_in_viewport": false,
+      "target_center_hit": false,
+      "archive_filter": "unknown",
+      "storage_has_uuid": true,
+      "storage_name_matches": true,
+      "rendered_email_matches": true,
+      "rendered_role_matches": true,
+      "rendered_profile_matches": true,
+      "rendered_organization_matches": true,
+      "tools_view_state": "catalog",
+      "product_request_observed": true,
+      "product_request_duplicate": false,
+      "product_response_observed": true,
+      "product_response_finished": true,
+      "product_loading_failed": false,
+      "product_response_success": true,
+      "product_header_matches": true,
+      "product_principal_matches": true,
+      "observer_cleanup_success": true
+    }
+  },
+  "request": {
+    "path": "/tools/test/execute",
+    "method": "POST",
+    "organization_matches": true,
+    "authenticated_principal_matches": true,
+    "completion_observed": true,
+    "include_platform_tables": true,
+    "status": 200,
+    "finished": true
+  },
+  "result": {
+    "visible": true,
+    "success": true,
+    "action": "table_list",
+    "count": 50,
+    "approved_organization_covered": true
+  },
+  "metadata_search": {
+    "inventory_case": "EXT-F-4130-C03",
+    "finished": true,
+    "status": 200,
+    "completion_observed": true,
+    "visible": true,
+    "success": true,
+    "action": "metadata_search",
+    "independent_table_identity_matched": true,
+    "count": 1
+  },
+  "negative_reads": [
+    {
+      "inventory_case": "EXT-F-4130-C03",
+      "action": "metadata_search",
+      "finished": true,
+      "status": 200,
+      "completion_observed": true,
+      "visible": true,
+      "refused": true,
+      "field_named": true,
+      "error_class": "invalid_arguments",
+      "positive_read_verified": false
+    },
+    {
+      "inventory_case": "EXT-F-4130-C04",
+      "action": "record_read",
+      "finished": true,
+      "status": 200,
+      "completion_observed": true,
+      "visible": true,
+      "refused": true,
+      "field_named": true,
+      "error_class": "invalid_arguments",
+      "positive_read_verified": false
+    },
+    {
+      "inventory_case": "EXT-F-4130-C05",
+      "action": "record_aggregate",
+      "finished": true,
+      "status": 200,
+      "completion_observed": true,
+      "visible": true,
+      "refused": true,
+      "field_named": true,
+      "error_class": "invalid_arguments",
+      "positive_read_verified": false
+    },
+    {
+      "inventory_case": "EXT-F-4130-C08",
+      "action": "record_history",
+      "finished": true,
+      "status": 200,
+      "completion_observed": true,
+      "visible": true,
+      "refused": true,
+      "field_named": true,
+      "error_class": "invalid_arguments",
+      "positive_read_verified": false
+    }
+  ],
+  "negative_mutations": [
+    {
+      "inventory_case": "EXT-F-4130-C07",
+      "action": "record_delete",
+      "finished": true,
+      "status": 200,
+      "completion_observed": true,
+      "visible": true,
+      "refused": true,
+      "field_named": true,
+      "error_class": "invalid_arguments",
+      "positive_read_verified": false
+    },
+    {
+      "inventory_case": "EXT-F-4130-C09",
+      "action": "record_restore_version",
+      "finished": true,
+      "status": 200,
+      "completion_observed": true,
+      "visible": true,
+      "refused": true,
+      "field_named": true,
+      "error_class": "invalid_arguments",
+      "positive_read_verified": false
+    }
+  ],
+  "positive_reads": [
+    {
+      "inventory_case": "EXT-F-4130-C02",
+      "action": "table_list",
+      "finished": true,
+      "status": 200,
+      "completion_observed": true,
+      "visible": true,
+      "owned_fixture_matched": true
+    },
+    {
+      "inventory_case": "EXT-F-4130-C03",
+      "action": "metadata_search",
+      "finished": true,
+      "status": 200,
+      "completion_observed": true,
+      "visible": true,
+      "owned_fixture_matched": true,
+      "row_text_excluded": true
+    },
+    {
+      "inventory_case": "EXT-F-4130-C04",
+      "action": "record_read",
+      "finished": true,
+      "status": 200,
+      "completion_observed": true,
+      "visible": true,
+      "owned_fixture_matched": true
+    },
+    {
+      "inventory_case": "EXT-F-4130-C05",
+      "action": "record_aggregate",
+      "finished": true,
+      "status": 200,
+      "completion_observed": true,
+      "visible": true,
+      "owned_fixture_matched": true
+    },
+    {
+      "inventory_case": "EXT-F-4130-C08",
+      "action": "record_history",
+      "finished": true,
+      "status": 200,
+      "completion_observed": true,
+      "visible": true,
+      "owned_fixture_matched": true,
+      "original_version_observed": true,
+      "author_and_time_observed": true
+    }
+  ],
+  "positive_mutations": [],
+  "approval_cleanup": null,
+  "fixture_cleanup": null,
+  "fixture_diagnostics": [
+    {
+      "boundary": "body",
+      "phase": "records_fixture_positive_reads",
+      "classification": "records_fixture_unexpected_error",
+      "request_method": null,
+      "http_status": null
+    }
+  ],
+  "invalid_input": {
+    "finished": true,
+    "status": 200,
+    "completion_observed": true,
+    "visible": true,
+    "success": false,
+    "error_type": "invalid_arguments",
+    "limit_named": true
+  },
+  "reload": {
+    "full_panel_reload": true,
+    "admin_identity_matches": true,
+    "organization_matches": true,
+    "authenticated_principal_matches": true,
+    "finished": true,
+    "completion_observed": true,
+    "visible": true,
+    "success": true,
+    "count": 50
+  },
+  "failure_code": "records_fixture_cleanup_failed",
+  "failure_phase": "records_fixture_positive_reads",
+  "failure_classification": "records_fixture_unexpected_error",
+  "card_diagnostic": {
+    "phase": "complete",
+    "failure": null,
+    "card_ready": true,
+    "schema_ready": true,
+    "contract": {
+      "present": true,
+      "canonical_boolean": true,
+      "retired_field_present": false,
+      "action_available": true,
+      "limit_integer": true
+    }
+  },
+  "completion_diagnostics": [
+    {
+      "action": "table_list",
+      "phase": "complete",
+      "failure": null,
+      "http_status": 200,
+      "completion": {
+        "object": true,
+        "success": true,
+        "action": "table_list",
+        "tables_count": 50,
+        "matches_count": null,
+        "covered_organizations_count": 1,
+        "error_type": null
+      },
+      "visible": {
+        "visible": true,
+        "json": true,
+        "equals_completion": true,
+        "shape": {
+          "object": true,
+          "success": true,
+          "action": "table_list",
+          "tables_count": 50,
+          "matches_count": null,
+          "covered_organizations_count": 1,
+          "error_type": null
+        }
+      }
+    },
+    {
+      "action": "table_list",
+      "phase": "complete",
+      "failure": null,
+      "http_status": 200,
+      "completion": {
+        "object": true,
+        "success": false,
+        "action": null,
+        "tables_count": null,
+        "matches_count": null,
+        "covered_organizations_count": null,
+        "error_type": "invalid_arguments"
+      },
+      "visible": {
+        "visible": true,
+        "json": true,
+        "equals_completion": true,
+        "shape": {
+          "object": true,
+          "success": false,
+          "action": null,
+          "tables_count": null,
+          "matches_count": null,
+          "covered_organizations_count": null,
+          "error_type": "invalid_arguments"
+        }
+      }
+    },
+    {
+      "action": "table_list",
+      "phase": "complete",
+      "failure": null,
+      "http_status": 200,
+      "completion": {
+        "object": true,
+        "success": true,
+        "action": "table_list",
+        "tables_count": 50,
+        "matches_count": null,
+        "covered_organizations_count": 1,
+        "error_type": null
+      },
+      "visible": {
+        "visible": true,
+        "json": true,
+        "equals_completion": true,
+        "shape": {
+          "object": true,
+          "success": true,
+          "action": "table_list",
+          "tables_count": 50,
+          "matches_count": null,
+          "covered_organizations_count": 1,
+          "error_type": null
+        }
+      }
+    },
+    {
+      "action": "metadata_search",
+      "phase": "complete",
+      "failure": null,
+      "http_status": 200,
+      "completion": {
+        "object": true,
+        "success": true,
+        "action": "metadata_search",
+        "tables_count": null,
+        "matches_count": 1,
+        "covered_organizations_count": 1,
+        "error_type": null
+      },
+      "visible": {
+        "visible": true,
+        "json": true,
+        "equals_completion": true,
+        "shape": {
+          "object": true,
+          "success": true,
+          "action": "metadata_search",
+          "tables_count": null,
+          "matches_count": 1,
+          "covered_organizations_count": 1,
+          "error_type": null
+        }
+      }
+    },
+    {
+      "action": "metadata_search",
+      "phase": "complete",
+      "failure": null,
+      "http_status": 200,
+      "completion": {
+        "object": true,
+        "success": false,
+        "action": null,
+        "tables_count": null,
+        "matches_count": null,
+        "covered_organizations_count": null,
+        "error_type": "invalid_arguments"
+      },
+      "visible": {
+        "visible": true,
+        "json": true,
+        "equals_completion": true,
+        "shape": {
+          "object": true,
+          "success": false,
+          "action": null,
+          "tables_count": null,
+          "matches_count": null,
+          "covered_organizations_count": null,
+          "error_type": "invalid_arguments"
+        }
+      }
+    },
+    {
+      "action": "record_read",
+      "phase": "complete",
+      "failure": null,
+      "http_status": 200,
+      "completion": {
+        "object": true,
+        "success": false,
+        "action": null,
+        "tables_count": null,
+        "matches_count": null,
+        "covered_organizations_count": null,
+        "error_type": "invalid_arguments"
+      },
+      "visible": {
+        "visible": true,
+        "json": true,
+        "equals_completion": true,
+        "shape": {
+          "object": true,
+          "success": false,
+          "action": null,
+          "tables_count": null,
+          "matches_count": null,
+          "covered_organizations_count": null,
+          "error_type": "invalid_arguments"
+        }
+      }
+    },
+    {
+      "action": "record_aggregate",
+      "phase": "complete",
+      "failure": null,
+      "http_status": 200,
+      "completion": {
+        "object": true,
+        "success": false,
+        "action": null,
+        "tables_count": null,
+        "matches_count": null,
+        "covered_organizations_count": null,
+        "error_type": "invalid_arguments"
+      },
+      "visible": {
+        "visible": true,
+        "json": true,
+        "equals_completion": true,
+        "shape": {
+          "object": true,
+          "success": false,
+          "action": null,
+          "tables_count": null,
+          "matches_count": null,
+          "covered_organizations_count": null,
+          "error_type": "invalid_arguments"
+        }
+      }
+    },
+    {
+      "action": "record_history",
+      "phase": "complete",
+      "failure": null,
+      "http_status": 200,
+      "completion": {
+        "object": true,
+        "success": false,
+        "action": null,
+        "tables_count": null,
+        "matches_count": null,
+        "covered_organizations_count": null,
+        "error_type": "invalid_arguments"
+      },
+      "visible": {
+        "visible": true,
+        "json": true,
+        "equals_completion": true,
+        "shape": {
+          "object": true,
+          "success": false,
+          "action": null,
+          "tables_count": null,
+          "matches_count": null,
+          "covered_organizations_count": null,
+          "error_type": "invalid_arguments"
+        }
+      }
+    },
+    {
+      "action": "record_delete",
+      "phase": "complete",
+      "failure": null,
+      "http_status": 200,
+      "completion": {
+        "object": true,
+        "success": false,
+        "action": null,
+        "tables_count": null,
+        "matches_count": null,
+        "covered_organizations_count": null,
+        "error_type": "invalid_arguments"
+      },
+      "visible": {
+        "visible": true,
+        "json": true,
+        "equals_completion": true,
+        "shape": {
+          "object": true,
+          "success": false,
+          "action": null,
+          "tables_count": null,
+          "matches_count": null,
+          "covered_organizations_count": null,
+          "error_type": "invalid_arguments"
+        }
+      }
+    },
+    {
+      "action": "record_restore_version",
+      "phase": "complete",
+      "failure": null,
+      "http_status": 200,
+      "completion": {
+        "object": true,
+        "success": false,
+        "action": null,
+        "tables_count": null,
+        "matches_count": null,
+        "covered_organizations_count": null,
+        "error_type": "invalid_arguments"
+      },
+      "visible": {
+        "visible": true,
+        "json": true,
+        "equals_completion": true,
+        "shape": {
+          "object": true,
+          "success": false,
+          "action": null,
+          "tables_count": null,
+          "matches_count": null,
+          "covered_organizations_count": null,
+          "error_type": "invalid_arguments"
+        }
+      }
+    },
+    {
+      "action": "table_list",
+      "phase": "complete",
+      "failure": null,
+      "http_status": 200,
+      "completion": {
+        "object": true,
+        "success": true,
+        "action": "table_list",
+        "tables_count": 72,
+        "matches_count": null,
+        "covered_organizations_count": 1,
+        "error_type": null
+      },
+      "visible": {
+        "visible": true,
+        "json": true,
+        "equals_completion": true,
+        "shape": {
+          "object": true,
+          "success": true,
+          "action": "table_list",
+          "tables_count": 72,
+          "matches_count": null,
+          "covered_organizations_count": 1,
+          "error_type": null
+        }
+      }
+    },
+    {
+      "action": "metadata_search",
+      "phase": "complete",
+      "failure": null,
+      "http_status": 200,
+      "completion": {
+        "object": true,
+        "success": true,
+        "action": "metadata_search",
+        "tables_count": null,
+        "matches_count": 1,
+        "covered_organizations_count": 1,
+        "error_type": null
+      },
+      "visible": {
+        "visible": true,
+        "json": true,
+        "equals_completion": true,
+        "shape": {
+          "object": true,
+          "success": true,
+          "action": "metadata_search",
+          "tables_count": null,
+          "matches_count": 1,
+          "covered_organizations_count": 1,
+          "error_type": null
+        }
+      }
+    },
+    {
+      "action": "metadata_search",
+      "phase": "complete",
+      "failure": null,
+      "http_status": 200,
+      "completion": {
+        "object": true,
+        "success": true,
+        "action": "metadata_search",
+        "tables_count": null,
+        "matches_count": 0,
+        "covered_organizations_count": 1,
+        "error_type": null
+      },
+      "visible": {
+        "visible": true,
+        "json": true,
+        "equals_completion": true,
+        "shape": {
+          "object": true,
+          "success": true,
+          "action": "metadata_search",
+          "tables_count": null,
+          "matches_count": 0,
+          "covered_organizations_count": 1,
+          "error_type": null
+        }
+      }
+    },
+    {
+      "action": "record_read",
+      "phase": "complete",
+      "failure": null,
+      "http_status": 200,
+      "completion": {
+        "object": true,
+        "success": true,
+        "action": null,
+        "tables_count": null,
+        "matches_count": null,
+        "covered_organizations_count": null,
+        "error_type": null
+      },
+      "visible": {
+        "visible": true,
+        "json": true,
+        "equals_completion": true,
+        "shape": {
+          "object": true,
+          "success": true,
+          "action": null,
+          "tables_count": null,
+          "matches_count": null,
+          "covered_organizations_count": null,
+          "error_type": null
+        }
+      }
+    },
+    {
+      "action": "record_aggregate",
+      "phase": "complete",
+      "failure": null,
+      "http_status": 200,
+      "completion": {
+        "object": true,
+        "success": true,
+        "action": null,
+        "tables_count": null,
+        "matches_count": null,
+        "covered_organizations_count": null,
+        "error_type": null
+      },
+      "visible": {
+        "visible": true,
+        "json": true,
+        "equals_completion": true,
+        "shape": {
+          "object": true,
+          "success": true,
+          "action": null,
+          "tables_count": null,
+          "matches_count": null,
+          "covered_organizations_count": null,
+          "error_type": null
+        }
+      }
+    },
+    {
+      "action": "record_history",
+      "phase": "complete",
+      "failure": null,
+      "http_status": 200,
+      "completion": {
+        "object": true,
+        "success": true,
+        "action": null,
+        "tables_count": null,
+        "matches_count": null,
+        "covered_organizations_count": null,
+        "error_type": null
+      },
+      "visible": {
+        "visible": true,
+        "json": true,
+        "equals_completion": true,
+        "shape": {
+          "object": true,
+          "success": true,
+          "action": null,
+          "tables_count": null,
+          "matches_count": null,
+          "covered_organizations_count": null,
+          "error_type": null
+        }
+      }
+    }
+  ]
+}

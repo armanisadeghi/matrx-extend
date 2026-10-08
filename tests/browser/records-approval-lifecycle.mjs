@@ -171,15 +171,17 @@ export async function runOwnedApprovalCreate({
       tableId: state.table_id,
     });
     assert.deepEqual(
-      click,
+      { surface: click?.surface, rowMatched: click?.rowMatched, confirmed: click?.confirmed },
       { surface: '/approvals', rowMatched: true, confirmed: true },
       'records_approval_ui_not_confirmed',
     );
+    assert.match(click.appliedRecordId ?? '', UUID, 'records_approval_ui_row_id_missing');
     const after = approvalMatches(
       await readApproval(state.approval_id, state.organization_id),
       state,
     );
     const rowId = appliedRow(after, state);
+    assert.equal(click.appliedRecordId, rowId, 'records_approval_ui_row_id_mismatch');
     state.approval_decision_unknown = false;
     state.phase = 'approved';
     await save(journalPath, state);
@@ -230,7 +232,42 @@ export async function runOwnedApprovalCreate({
         principalId: state.principal_id,
       });
       cleanupMatches(cleanup);
-      if (state.phase === 'readback_verified' || state.phase === 'declined') {
+      state.table_cleanup_verified = true;
+      await save(journalPath, state);
+      // The UI response may have been lost after the person clicked. The
+      // archive can also withdraw a pending request. Read the exact known row
+      // once more; never issue another decision merely because a reply vanished.
+      if (state.approval_id) {
+        try {
+          const terminal = approvalMatches(
+            await readApproval(state.approval_id, state.organization_id),
+            state,
+          );
+          if (terminal.state !== 'pending') {
+            if (terminal.state === 'approved') appliedRow(terminal, state);
+            else
+              assert.equal(
+                terminal.applied_record_ids?.length ?? 0,
+                0,
+                'records_approval_nonapproved_has_applied_rows',
+              );
+            state.approval_decision_unknown = false;
+            state.approval_terminal_state = terminal.state;
+            if (!['readback_verified', 'declined'].includes(state.phase))
+              state.phase = terminal.state;
+          }
+        } catch {
+          state.approval_reconcile_failed = true;
+        }
+        await save(journalPath, state);
+      }
+      if (
+        !state.approval_decision_unknown &&
+        !state.pending_write_unknown &&
+        (state.phase === 'readback_verified' || state.phase === 'declined') &&
+        ['approved', 'declined', 'withdrawn'].includes(state.approval_terminal_state) &&
+        !state.approval_reconcile_failed
+      ) {
         state.phase = 'archived_verified';
         await save(journalPath, state);
       }
@@ -240,9 +277,9 @@ export async function runOwnedApprovalCreate({
       await save(journalPath, state);
     }
   }
-  if (bodyError && cleanupError) throw new Error('records_approval_body_and_cleanup_failed');
   if (bodyError) throw bodyError;
   if (cleanupError) throw cleanupError;
+  assert.equal(state.approval_reconcile_failed, undefined, 'records_approval_reconcile_failed');
   assert.equal(state.phase, 'archived_verified', 'records_approval_not_terminal');
   assert.equal(state.approval_decision_unknown, false, 'records_approval_decision_unknown');
   assert.equal(state.pending_write_unknown, false, 'records_approval_write_unknown');

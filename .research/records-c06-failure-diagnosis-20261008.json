@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "run_id": 37858968256,
+  "status": "source_cause_reproduced_and_repaired_native_pending",
+  "boundary": "The native receipt passed C02/C03/C04/C05/C08 and malformed refusals, then failed before the C06 approval journal. The owned fixture archived and no positive mutation was recorded.",
+  "backend_contract": "Post-run sampled aidream b4400cb74030856c53c9373074a77e7231c832db services/ai_execution/tool_testing.py sends CompletionPayload.result.conversation_id; the SSE completion envelope is data.result.conversation_id. The sample does not prove the SHA was constant during the run.",
+  "cause": "Records observeRecordsExecution read data.conversation_id instead. Every successful tool result therefore left toolTestConversationId null; the C06 preflight assertion records_c06_conversation_unobserved failed before opening the approval adapter or dispatching a write.",
+  "repair": "Read only completion.data.result.conversation_id. The actual callback test now emits that canonical envelope rather than mirroring the incorrect outer field.",
+  "forcing_proof": "With the canonical test envelope and old parser, the actual callback test failed at records_c06_conversation_unobserved. After the parser change, all 68 focused Records tests and Biome for the two touched files passed.",
+  "scope": "No native run, API action, credentials, product build, or release in this diagnosis unit. Live C06 browser approval and readback remain unverified; another hosted attempt requires independent review and authorization."
+}
