@@ -27,7 +27,9 @@
   "published_store_artifact": {
     "kind": "published_store_crx_unpacked",
     "version": "0.2.205",
-    "extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "expected_extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "runtime_extension_id": null,
+    "identity_observation": "Expected package identity only; the browser never connected to the extension runtime.",
     "tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
     "artifact_unchanged_during_acceptance": "not established; browser did not connect"
   },
