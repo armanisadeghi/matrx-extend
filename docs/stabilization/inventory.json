@@ -31788,7 +31788,16 @@
             ],
             "status": "unverified_current_main",
             "required_followup": "Reconcile current Chat controls and guest/member/admin behavior on an exact current artifact. Preserve historical Store205/frozen397 evidence at original scopes; it does not verify this new default Chat surface. Systematic Chat remains deferred except public regressions."
-          }
+          },
+        {
+          "observed_main_sha": "09576b1ab13d929c7ceaf453dcc55ca6e1783b55",
+          "change": "Current loader uses ChatView by default; PackageChatView is opt-in through sidepanel.html?chat=package. Earlier default replacement observation does not describe this newer source.",
+          "source_refs": [
+            "src/entrypoints/sidepanel/App.tsx"
+          ],
+          "status": "unverified_current_main",
+          "required_followup": "Verify actual current artifact default and opt-in surfaces separately; no historical result transfers to current source merely because a prior loader returned."
+        }
       ]
     },
     {
