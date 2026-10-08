@@ -381,6 +381,7 @@ export interface AgentStudioFromChatProgressData {
   says: string;
   build_id?: string | null;
   proof_cases?: number | null;
+  run_conversation_id?: string | null;
 }
 
 export interface AgentStudioBriefVariable {
@@ -405,6 +406,9 @@ export interface AgentStudioFromChatResultData {
   accepted_result?: string | null;
   proof_output?: string | null;
   proof_error?: string | null;
+  brief_conversation_id?: string | null;
+  builder_conversation_id?: string | null;
+  proof_conversation_id?: string | null;
   says: string;
 }
 

@@ -844,6 +844,14 @@
  "/ai/user/pending_calls": {
   "get": []
  },
+ "/ai/warm": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/warm/health": {
+  "get": []
+ },
  "/air-inc/public/status": {
   "get": []
  },
@@ -4342,6 +4350,12 @@
  "/mandates/references/board": {
   "get": []
  },
+ "/mandates/runs/{conversation_id}": {
+  "get": []
+ },
+ "/mandates/runs/{conversation_id}/replay": {
+  "post": []
+ },
  "/mandates/runs/{request_id}/answer": {
   "post": [
    "application/json"
@@ -4402,6 +4416,11 @@
  },
  "/mandates/{mandate_key}/input-surface": {
   "get": []
+ },
+ "/mandates/{mandate_key}/placement": {
+  "post": [
+   "application/json"
+  ]
  },
  "/mandates/{mandate_key}/provenance": {
   "get": []
