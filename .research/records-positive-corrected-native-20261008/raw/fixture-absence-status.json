@@ -1,0 +1,10 @@
+{
+  "auth_status": 200,
+  "principal_valid": true,
+  "get_status": 200,
+  "content_type": "application/json",
+  "list_complete": true,
+  "owned_live_count": 0,
+  "exact_run_table_visible": false,
+  "raw_body_or_ids_retained": false
+}
