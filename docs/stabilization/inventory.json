@@ -16182,6 +16182,21 @@
                 ".research/scrape-reload-observer-native-peer-20261008.json"
               ],
               "detail": "Frozen407 guest600px warm/fullreload revalidation. Original strict watcher proved oldworker retirement and exactreplacement running/activated; allthree resourcejournals valid. No member/admin, Store or latermain proof; fresh diagnostic notexercised and prior intermittentfailure unexplained. Reload empty panes and capture invariance across tab switches remain untested."
+            },
+            {
+              "at": "2026-10-08",
+              "mode": "guest",
+              "run_id": "37764002686",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/scrape-tabs-native-20261008.json",
+                ".research/scrape-tabs-native-20261008-evidence/run37764002686/"
+              ],
+              "detail": "Frozen 0.2.407 guest 600px attempt: six populated panes matched warm and after extension reload; both empty media panes were observed warm. Post-reload empty-media capture produced no result or error within 30 seconds after Capture; receipt cannot distinguish timing race from product failure. No acceptance credit; member/admin and other widths remain outside this run."
             }
           ]
         },
@@ -23292,6 +23307,21 @@
                 ".research/t57-org-checkpoint-native-peer-20261008.json"
               ],
               "detail": "Upstream rendered identity stopped on organization-to-device-storage mismatch; approved UUID/request checkpoint and Network race never reached. Guest final resourceInvalid=true exit3 after CPU event; no product verdict. Both staged secret names independently absent. Shared principal readiness class repair required before another attempt."
+            },
+            {
+              "at": "2026-10-08",
+              "mode": "admin",
+              "run_id": "37766646825",
+              "status": "unverified",
+              "resource_valid": null,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/t57-readiness-retest-20261008.json",
+                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37766646825"
+              ],
+              "detail": "Fresh-runner setup failed at module import before package installation, artifact import, resource admission, browser setup or sign-in. Current-run resource journals are absent and resource validity is unverified. T57 product behavior, organization/header checkpoint and original race remain unverified; no product verdict or acceptance credit."
             }
           ]
         },
