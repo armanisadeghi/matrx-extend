@@ -1,0 +1,300 @@
+{
+  "schema_version": 1,
+  "task_id": "scrape397-final-native-20261007",
+  "recorded_at_utc": "2026-10-08T04:23:41.753094+00:00",
+  "status": "PARTIAL_NATIVE_RELOAD_UNVERIFIED",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "path": ".github/workflows/hosted-guest-acceptance.yml",
+    "run_id": 37726590928,
+    "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37726590928",
+    "event": "workflow_dispatch",
+    "ref": "main",
+    "checkout_sha": "d2553a1757fa0d7da5f9031ec466339e69092f53",
+    "conclusion": "failure",
+    "inputs": {
+      "acceptance_lane": "A",
+      "runner_label": "macos-15",
+      "acceptance_case": "guest-scrape-development",
+      "development_run_id": "37724859892",
+      "development_artifact_id": "11527132614",
+      "scrape_auth_mode": "guest",
+      "scrape_width_mode": "narrow"
+    },
+    "result_artifact_id": 11528685061,
+    "result_artifact_name": "hosted-guest-37726590928-1",
+    "result_artifact_digest": "sha256:6bb9c19dea5af7ed645d27c5002f2121fd2fa6f1d341b79d181ddcd511937654",
+    "result_artifact_size_bytes": 180944
+  },
+  "product": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.397",
+    "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+    "tree_sha256": "1035cd28ce5a63ac6233626f35102f016f7c7e7e0ef0717d259a3ec40fc856ed",
+    "run_id": 37724859892,
+    "artifact_id": 11527132614,
+    "browser_version": "Chrome/141.0.7390.37",
+    "extension_runtime_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "driver": {
+    "checkout_sha": "d2553a1757fa0d7da5f9031ec466339e69092f53",
+    "focused_ci_run_id": 37725833684,
+    "focused_ci_source_sha": "2125df6a67ddf39acb3a538ff4b169427bf4bd78"
+  },
+  "resource": {
+    "package": {
+      "path": ".research/scrape397-final-native-20261007-run37726590928-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37726590928-1.jsonl",
+      "admission_observed": true,
+      "healthy_watch_count": 0,
+      "child_exit_code": 0,
+      "final_decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "wrapper_exit_code": 0
+    },
+    "browser": {
+      "path": ".research/scrape397-final-native-20261007-run37726590928-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37726590928-1.jsonl",
+      "admission_observed": true,
+      "healthy_watch_count": 0,
+      "child_exit_code": 0,
+      "final_decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "wrapper_exit_code": 0
+    },
+    "guest": {
+      "path": ".research/scrape397-final-native-20261007-run37726590928-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37726590928-1.jsonl",
+      "admission_observed": true,
+      "healthy_watch_count": 4,
+      "child_exit_code": 1,
+      "final_decision": "child_failed",
+      "admitted": true,
+      "resource_invalid": false,
+      "wrapper_exit_code": 1
+    }
+  },
+  "observations": {
+    "T07": {
+      "scope": "guest/narrow/warm only",
+      "status": "warm_pass_reload_unverified",
+      "warm": {
+        "start": {
+          "selected": true,
+          "scrollerCount": 1,
+          "top": 0,
+          "max": 1505,
+          "on": false,
+          "off": true,
+          "pageY": 0
+        },
+        "followed": {
+          "selected": true,
+          "scrollerCount": 1,
+          "top": 310,
+          "max": 1847,
+          "on": true,
+          "off": false,
+          "pageY": 650
+        },
+        "armed": {
+          "selected": true,
+          "scrollerCount": 1,
+          "top": 310,
+          "max": 1847,
+          "on": false,
+          "off": true,
+          "pageY": 650
+        },
+        "stopped": {
+          "selected": true,
+          "scrollerCount": 1,
+          "top": 310,
+          "max": 1847,
+          "on": false,
+          "off": true,
+          "pageY": 0
+        },
+        "passed": true
+      },
+      "reload": "unverified_not_reached"
+    },
+    "T09": {
+      "scope": "guest/narrow/warm_and_navigation_only",
+      "status": "warm_and_navigation_pass_reload_unverified",
+      "intake_offered_options_passed": 22,
+      "referrals_offered_options_passed": 13,
+      "referrals_empty_sections_proven": [
+        "Copy images",
+        "Copy videos",
+        "Copy links"
+      ],
+      "all_offered_options_clipboard_and_format_predicates_passed": true,
+      "reload": "unverified_not_reached"
+    },
+    "surrounding_cases": [
+      {
+        "id": "EXT-F-1007-T20",
+        "receipt_status": "partial"
+      },
+      {
+        "id": "EXT-F-1007-T01",
+        "receipt_status": "partial"
+      },
+      {
+        "id": "EXT-F-1007-T08",
+        "receipt_status": "partial"
+      },
+      {
+        "id": "EXT-F-1007-T10",
+        "receipt_status": "partial"
+      },
+      {
+        "id": "EXT-F-1007-T11",
+        "receipt_status": "partial"
+      },
+      {
+        "id": "EXT-F-1007-T12",
+        "receipt_status": "partial"
+      },
+      {
+        "id": "EXT-F-1007-T13",
+        "receipt_status": "partial"
+      },
+      {
+        "id": "EXT-F-1007-T02",
+        "receipt_status": "partial"
+      },
+      {
+        "id": "EXT-F-1007-T14",
+        "receipt_status": "partial"
+      }
+    ],
+    "stop": {
+      "receipt_status": "unverified",
+      "stage": "extension_reload",
+      "failure_code": "native_extension_replacement_panel_unverified",
+      "reload_milestones": [
+        {
+          "name": "reload_extension",
+          "at": "2026-10-08T04:21:56.499Z"
+        }
+      ],
+      "old_worker_retired": true,
+      "old_panel_absent": true,
+      "replacement_worker_present": true,
+      "replacement_panel_verified": false,
+      "final_worker_count": 1
+    }
+  },
+  "evidence": {
+    "original_receipt": ".research/scrape397-final-native-20261007-run37726590928-originals/matrx-extend/matrx-extend/test-results/scrape-guest-native-4a07e4d8-566b-43d4-b4ab-ec4b6bd60514.json",
+    "originals_directory": ".research/scrape397-final-native-20261007-run37726590928-originals",
+    "files": [
+      {
+        "path": ".research/scrape397-final-native-20261007-run37726590928-originals/hosted-guest-37726590928-1.zip",
+        "sha256": "6bb9c19dea5af7ed645d27c5002f2121fd2fa6f1d341b79d181ddcd511937654",
+        "bytes": 180944,
+        "kind": "original_artifact_zip"
+      },
+      {
+        "path": ".research/scrape397-final-native-20261007-run37726590928-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37105304739-1.jsonl",
+        "sha256": "6c45eac59dd17d7194ac61d92a8571331e9db92593361e9a622a461786b58dea",
+        "bytes": 1532,
+        "kind": "stale_prior_journal_excluded"
+      },
+      {
+        "path": ".research/scrape397-final-native-20261007-run37726590928-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37724762467-1.jsonl",
+        "sha256": "70dd9b6fb4de6e5f119e939acd296782dfb56cf5cdd091c056f09d73c18a0344",
+        "bytes": 991,
+        "kind": "stale_prior_journal_excluded"
+      },
+      {
+        "path": ".research/scrape397-final-native-20261007-run37726590928-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37726590928-1.jsonl",
+        "sha256": "0e4994b346786497e6745a04e9e6170230fd8380a308c86672f588436b83313a",
+        "bytes": 989,
+        "kind": "current_resource_journal"
+      },
+      {
+        "path": ".research/scrape397-final-native-20261007-run37726590928-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37105304739-1.jsonl",
+        "sha256": "1a2654d74ad70721a101c9710333ced8d23da567266d2f5653db2849e8ea51d2",
+        "bytes": 1530,
+        "kind": "stale_prior_journal_excluded"
+      },
+      {
+        "path": ".research/scrape397-final-native-20261007-run37726590928-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37724762467-1.jsonl",
+        "sha256": "c36252c0fe502603e65d7fb7a4435642035ebacadc52757c1930fffe04e33d3a",
+        "bytes": 6443,
+        "kind": "stale_prior_journal_excluded"
+      },
+      {
+        "path": ".research/scrape397-final-native-20261007-run37726590928-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37726590928-1.jsonl",
+        "sha256": "865d6fb5e3da6bbb3637e35ff6cbadea5cd5b93da626bff28f03d01d6116ea1c",
+        "bytes": 2646,
+        "kind": "current_resource_journal"
+      },
+      {
+        "path": ".research/scrape397-final-native-20261007-run37726590928-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37105304739-1.jsonl",
+        "sha256": "15fbd74ef4739e033a278c80463ff29b182947b96eb802f93473d88c6e978692",
+        "bytes": 1057,
+        "kind": "stale_prior_journal_excluded"
+      },
+      {
+        "path": ".research/scrape397-final-native-20261007-run37726590928-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37724762467-1.jsonl",
+        "sha256": "3410f7e6f9442f56e34a9bd6f9c381de721bff440e31487f370e0d094733e3a0",
+        "bytes": 986,
+        "kind": "stale_prior_journal_excluded"
+      },
+      {
+        "path": ".research/scrape397-final-native-20261007-run37726590928-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37726590928-1.jsonl",
+        "sha256": "698278f32c88bbc53d2bb7e7e65af2e0083c7c88a2cac94ed249eebc34728505",
+        "bytes": 985,
+        "kind": "current_resource_journal"
+      },
+      {
+        "path": ".research/scrape397-final-native-20261007-run37726590928-originals/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-AxKccx/native-side-panel.png",
+        "sha256": "d9d40c6d68da4b569c22cf9f15aa3a50bc01b2f83e15210328075548e6abe106",
+        "bytes": 32353,
+        "kind": "screenshot"
+      },
+      {
+        "path": ".research/scrape397-final-native-20261007-run37726590928-originals/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-AxKccx/normal-target-after-open.png",
+        "sha256": "c939d4f6417b874eefffbe4a8c9bd1cf05088fe2b42ab7a7e13c65d79a024fd2",
+        "bytes": 27078,
+        "kind": "screenshot"
+      },
+      {
+        "path": ".research/scrape397-final-native-20261007-run37726590928-originals/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-AxKccx/scrape-deep-article.png",
+        "sha256": "2dd0d99923921d29b3600dc17192d400ae528fc06d4d4ec3eb354974f3aa1564",
+        "bytes": 37721,
+        "kind": "screenshot"
+      },
+      {
+        "path": ".research/scrape397-final-native-20261007-run37726590928-originals/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-AxKccx/scrape-fast-article.png",
+        "sha256": "c8cd672f63c1a5fdffa588773683e4c42f425d8cdcbddcf5063d3c75b087e4c4",
+        "bytes": 37920,
+        "kind": "screenshot"
+      },
+      {
+        "path": ".research/scrape397-final-native-20261007-run37726590928-originals/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-AxKccx/scrape-restricted-error.png",
+        "sha256": "bed07fcacb70ac9271da2807541b2ded54f2bbd99b57a1a7e0d83c83befb3e98",
+        "bytes": 32752,
+        "kind": "screenshot"
+      },
+      {
+        "path": ".research/scrape397-final-native-20261007-run37726590928-originals/matrx-extend/matrx-extend/test-results/scrape-guest-native-4a07e4d8-566b-43d4-b4ab-ec4b6bd60514.json",
+        "sha256": "7b799cd9cc7ebaf624f46255bb7a640938a4e53e5605c6f74d13b3470df07554",
+        "bytes": 148122,
+        "kind": "receipt"
+      }
+    ],
+    "prior_371053_and_377247_journals_excluded_from_current_resource_verdict": true,
+    "original_artifact_zip": ".research/scrape397-final-native-20261007-run37726590928-originals/hosted-guest-37726590928-1.zip"
+  },
+  "limits": [
+    "One attempt only; no retry.",
+    "No T07 or T09 post-reload product proof; no whole Scrape health or Store claim.",
+    "Workflow failure is native extension replacement panel verification, not a current-run resource refusal.",
+    "Original receipts and screenshots are preserved byte-for-byte; copied clipboard contents are not reproduced in this report."
+  ]
+}
