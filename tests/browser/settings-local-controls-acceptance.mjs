@@ -23,6 +23,13 @@ import {
   runGuestAutoScrapeModeCase,
   runGuestSectionsCase,
 } from './settings-guest-scrape-controls.mjs';
+import {
+  enforceFullExtensionRechecks,
+  FULL_EXTENSION_RECHECK_IDS,
+  initializeFullExtensionRechecks,
+  runFullExtensionRecheck,
+  snapshotPanelDocumentReload,
+} from './settings-full-extension-rechecks.mjs';
 import { runGuestAskAgainCase } from './settings-guest-unrecorded-cases.mjs';
 import {
   activeTabPanelExpression,
@@ -91,6 +98,7 @@ const report = {
 };
 const byId = (suffix) => report.cases.find((c) => c.id.endsWith(suffix));
 const criterion = (c, name, status, evidence) => c.criteria.push({ name, status, evidence });
+initializeFullExtensionRechecks(report.cases);
 
 async function startObservedDeadPort() {
   const requests = [];
@@ -515,6 +523,56 @@ async function runCase(c, fn) {
       : 'unverified';
 }
 
+async function rerunGuestSettingsAfterExtensionReload(panel) {
+  for (const preference of GUEST_PREFERENCES.filter((item) =>
+    ['T04', 'T10'].includes(item.caseId),
+  )) {
+    const c = byId(preference.caseId);
+    await runFullExtensionRecheck(c, async (record) => {
+      await runGuestPreferenceCase(
+        panel,
+        reloadSettings,
+        preference,
+        (name, observation, passed) => record(name, passed ? 'pass' : 'fail', observation),
+        async ({ value, label }) => {
+          if (preference.caseId !== 'T10') return;
+          const chat = await observeGuestNewChatDefault(panel, value, label);
+          record(
+            `new chat inherits ${label}`,
+            chat.modeLabel === label && chat.modeIcon === value ? 'pass' : 'fail',
+            chat,
+          );
+          await settings(panel);
+          await openSection(panel, preference.section);
+        },
+      );
+    });
+  }
+
+  for (const [suffix, run] of [
+    ['T28', runGuestSectionsCase],
+    ['T40', runGuestAutoScrapeCase],
+    ['T67', runGuestAutoScrapeModeCase],
+  ]) {
+    const c = byId(suffix);
+    await runFullExtensionRecheck(c, async (record, result) => {
+      await run(panel, reloadSettings, (phase, action, observation, passed) =>
+        record(`${phase}: ${action}`, passed ? 'pass' : 'fail', observation),
+      );
+      if (suffix === 'T40')
+        result.downstreamCapture = {
+          status: 'unverified',
+          evidence: 'A page-load/background capture was not exercised.',
+        };
+      if (suffix === 'T67')
+        result.downstreamCapture = {
+          status: 'unverified',
+          evidence: 'The selected capture mode was checked; downstream capture was not exercised.',
+        };
+    });
+  }
+}
+
 let observedPort;
 try {
   const packageJson = JSON.parse(await readFile(join(REPO, 'package.json'), 'utf8'));
@@ -667,6 +725,7 @@ try {
             );
         });
       }
+      for (const suffix of FULL_EXTENSION_RECHECK_IDS) snapshotPanelDocumentReload(byId(suffix));
       await runCase(byId('T37'), async () => {
         const c = byId('T37');
         await openSection(panel, 'Scrape');
@@ -1073,6 +1132,7 @@ try {
         const reloadedGuest = await observeGuestIdentityAndOrganization(replacement.panel);
         recordGuestPhase('reload', reloadedGuest);
         await recordGuestAdvancedDenial('reload', replacement.panel, reloadedGuest);
+        await rerunGuestSettingsAfterExtensionReload(replacement.panel);
       } catch (error) {
         report.guestStageFailed = guestStage;
         if (guestStage === 'extension_reload' || error?.lifecycleEvidence || error?.contextBoundary)
@@ -1122,6 +1182,7 @@ try {
     if (c.criteria.length === 0) criterion(c, 'setup completed', 'unverified', report.setup_error);
 } finally {
   await observedPort?.close();
+  enforceFullExtensionRechecks(report.cases);
   for (const c of report.cases) {
     c.build = report.build;
     c.preconditions = report.preconditions;
