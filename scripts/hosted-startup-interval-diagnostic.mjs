@@ -8,6 +8,28 @@ const policy = JSON.parse(
 );
 const sleep = (ms) => new Promise((done) => setTimeout(done, ms));
 
+export function safeStartupEndpointObservation(value) {
+  assert.ok(
+    ['cdp_connected', 'cdp_timeout', 'post_timeout'].includes(value?.phase),
+    'startup_endpoint_phase_refused',
+  );
+  for (const key of ['endpointPresent', 'inspectionFailed', 'exitObserved'])
+    assert.equal(typeof value[key], 'boolean', 'startup_endpoint_boolean_refused');
+  for (const key of ['elapsedMs', 'polls'])
+    assert.ok(
+      Number.isSafeInteger(value[key]) && value[key] >= 0,
+      'startup_endpoint_count_refused',
+    );
+  return {
+    phase: value.phase,
+    endpointPresent: value.endpointPresent,
+    inspectionFailed: value.inspectionFailed,
+    exitObserved: value.exitObserved,
+    elapsedMs: value.elapsedMs,
+    polls: value.polls,
+  };
+}
+
 export async function runHostedStartupIntervalDiagnostic({
   executable,
   extensionDir,
@@ -19,7 +41,7 @@ export async function runHostedStartupIntervalDiagnostic({
 }) {
   assert.equal(process.env.GITHUB_ACTIONS, 'true', 'hosted_startup_runner_required');
   assert.equal(process.env.RUNNER_ENVIRONMENT, 'github-hosted', 'hosted_startup_vm_required');
-  assert.equal(process.env.RUNNER_ARCH, 'ARM64', 'hosted_startup_arm_required');
+  assert.ok(['ARM64', 'X64'].includes(process.env.RUNNER_ARCH), 'hosted_startup_arch_required');
   assert.ok(process.env.MATRX_RESOURCE_OWNER, 'hosted_startup_permit_required');
   assert.equal(process.env.MATRX_STARTUP_INTERVAL_DIAGNOSTIC, '1');
   assert.ok(process.env.MATRX_HOSTED_GUEST_OUTPUT_DIR, 'hosted_startup_output_required');
@@ -36,6 +58,8 @@ export async function runHostedStartupIntervalDiagnostic({
     startedAt: new Date().toISOString(),
     lastNativeStage: null,
     nativeStages: [],
+    runnerArch: process.env.RUNNER_ARCH,
+    startupEndpointObservations: [],
     gpuObservation: { status: 'UNKNOWN' },
     panelReadyAt: null,
     completedAt: null,
@@ -50,11 +74,20 @@ export async function runHostedStartupIntervalDiagnostic({
   await save();
   try {
     await nativeRunner({
+      headed: true,
       extensionDir,
       localDevReceiptPath: relocatedReceipt,
       expectedRelease: receipt,
       chromeExecutable: executable,
       artifactRoot: outputDir,
+      startupEndpointObservationMs: policy.watchIntervalSeconds * 1000,
+      onStartupEndpointObservation: async (observation) => {
+        report.startupEndpointObservations.push({
+          ...safeStartupEndpointObservation(observation),
+          at: new Date().toISOString(),
+        });
+        await save();
+      },
       onStage: (stage) => {
         report.lastNativeStage = stage;
         report.nativeStages.push({ stage, at: new Date().toISOString() });

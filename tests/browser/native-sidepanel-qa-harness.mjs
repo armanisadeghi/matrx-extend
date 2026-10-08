@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { mkdir, mkdtemp, readFile, readlink, rm, writeFile } from 'node:fs/promises';
+import { lstat, mkdir, mkdtemp, readFile, readlink, rm, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 /**
  * Isolated, native-side-panel browser QA harness.
@@ -1152,6 +1152,55 @@ function safeEndpointWaitDiagnostic(error) {
   };
 }
 
+async function observeOwnedEndpointAfterTimeout({
+  profile,
+  child,
+  windowMs,
+  fileSystem = { lstat },
+  sleep = wait,
+  clock = performance,
+}) {
+  const started = clock.now();
+  let polls = 0;
+  while (clock.now() - started < windowMs) {
+    polls += 1;
+    let endpointPresent = false;
+    try {
+      await fileSystem.lstat(join(profile, 'DevToolsActivePort'));
+      endpointPresent = true;
+    } catch (error) {
+      if (error?.code !== 'ENOENT')
+        return {
+          phase: 'post_timeout',
+          endpointPresent: false,
+          inspectionFailed: true,
+          exitObserved: child.exitCode !== null || child.signalCode !== null,
+          elapsedMs: Math.round(clock.now() - started),
+          polls,
+        };
+    }
+    const exitObserved = child.exitCode !== null || child.signalCode !== null;
+    if (endpointPresent || exitObserved)
+      return {
+        phase: 'post_timeout',
+        endpointPresent,
+        inspectionFailed: false,
+        exitObserved,
+        elapsedMs: Math.round(clock.now() - started),
+        polls,
+      };
+    await sleep(Math.min(WAIT_MS, Math.max(0, windowMs - (clock.now() - started))));
+  }
+  return {
+    phase: 'post_timeout',
+    endpointPresent: false,
+    inspectionFailed: false,
+    exitObserved: child.exitCode !== null || child.signalCode !== null,
+    elapsedMs: Math.round(clock.now() - started),
+    polls,
+  };
+}
+
 export async function runNativeSidepanelQa({
   headed = false,
   extensionDir,
@@ -1169,6 +1218,8 @@ export async function runNativeSidepanelQa({
   onStartupGpuObservation,
   onPanelVisibilityObservation,
   onBrowserLaunchObservation,
+  onStartupEndpointObservation,
+  startupEndpointObservationMs = 0,
 } = {}) {
   onStage('receipt');
   let receipt;
@@ -1247,6 +1298,15 @@ export async function runNativeSidepanelQa({
       onStage('cdp_connect');
       cdp = await connectOwnedCdp({ preparedProfile, chromeExecutable });
       if (launchError) throw launchError;
+      if (onStartupEndpointObservation)
+        await onStartupEndpointObservation({
+          phase: 'cdp_connected',
+          endpointPresent: true,
+          inspectionFailed: false,
+          exitObserved: false,
+          elapsedMs: Math.round(performance.now() - startupStartedAt),
+          polls: 0,
+        });
     } catch (error) {
       const endpointDiagnostic = safeEndpointDiagnostic(error);
       const endpointWaitDiagnostic = safeEndpointWaitDiagnostic(error);
@@ -1264,6 +1324,27 @@ export async function runNativeSidepanelQa({
       // Guest result summaries truncate errors; preserve bounded startup evidence
       // in the runner log before forwarding the unchanged failure.
       process.stderr.write(`BROWSER_STARTUP_FAILURE ${JSON.stringify(startupDiagnostic)}\n`);
+      if (
+        error?.message === 'owned_cdp_endpoint_timeout' &&
+        onStartupEndpointObservation &&
+        startupEndpointObservationMs > 0
+      ) {
+        await onStartupEndpointObservation({
+          phase: 'cdp_timeout',
+          endpointPresent: false,
+          inspectionFailed: false,
+          exitObserved: child.exitCode !== null || child.signalCode !== null,
+          elapsedMs: startupDiagnostic.elapsedMs,
+          polls: endpointWaitDiagnostic?.polls ?? 0,
+        });
+        await onStartupEndpointObservation(
+          await observeOwnedEndpointAfterTimeout({
+            profile,
+            child,
+            windowMs: startupEndpointObservationMs,
+          }),
+        );
+      }
       throw error;
     }
     onStage('endpoint_read');
@@ -1506,6 +1587,7 @@ export {
   safeStartupFailureCode,
   safeEndpointDiagnostic,
   safeEndpointWaitDiagnostic,
+  observeOwnedEndpointAfterTimeout,
   panelContextDiagnostic,
   panelContextFailureDiagnostic,
   panelDocumentDiagnostic,

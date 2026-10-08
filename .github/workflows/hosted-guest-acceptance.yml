@@ -216,9 +216,6 @@ jobs:
             [[ "$RUNNER_ARCH" == X64 && "$(uname -m)" == x86_64 ]] || exit 1
           fi
           printf 'HOSTED_RUNNER_PLATFORM label=%s runner_arch=%s machine=%s\n' "$RUNNER_LABEL" "$RUNNER_ARCH" "$(uname -m)"
-          if [[ "$ACCEPTANCE_CASE" == startup-resource-diagnostic ]]; then
-            [[ "$RUNNER_LABEL" == macos-15 ]] || { echo 'Startup diagnostic requires the configured ARM runner.' >&2; exit 1; }
-          fi
           if [[ -n "$SCRAPE_DIAGNOSTIC_CPU_RATE" ]]; then
             [[ "$ACCEPTANCE_CASE" == guest-scrape || "$ACCEPTANCE_CASE" == guest-scrape-development ]] || exit 1
             node -e 'const n=Number(process.argv[1]); if (!Number.isFinite(n)||n<=1) process.exit(1)' "$SCRAPE_DIAGNOSTIC_CPU_RATE"
@@ -338,7 +335,7 @@ jobs:
           node scripts/stabilization-resource.mjs run --run-id "hosted-guest-${{ github.run_id }}-${{ github.run_attempt }}" --profile-dir "$RUNNER_TEMP/guest-resource-profile" -- node scripts/hosted-guest-acceptance.mjs
 
       - name: Measure owned Chromium startup during the existing guard interval
-        if: inputs.acceptance_case == 'startup-resource-diagnostic' && inputs.runner_label == 'macos-15'
+        if: inputs.acceptance_case == 'startup-resource-diagnostic'
         env:
           MATRX_HOSTED_PHASE: startup-diagnostic
           MATRX_STARTUP_INTERVAL_DIAGNOSTIC: '1'
