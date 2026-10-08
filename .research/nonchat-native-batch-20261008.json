@@ -10,7 +10,7 @@
     "scrape_auth_mode": "guest",
     "scrape_width_mode": "normal",
     "scrape_normal_width_px": 600,
-    "reason": "Normal-width guest Scrape media controls T10/T11/T12 remained unverified after prior narrow-width guest evidence. This registered driver also exercises full extension reload before completing those cases."
+    "reason": "Current-build regression revalidation of normal-width guest Scrape controls on frozen0.2.407. T10/T11 already have older normal-width244 passes and T12 an older385 pass; these do not certify407. This driver exercises full extension reload before completing the current attempt."
   },
   "admission": {
     "initial_exact_workflow_query": "HTTP 403 GitHub core rate limit at 2026-10-08 09:12:16 UTC; no job dispatched then. One exact query after header reset succeeded at 09:15:33 UTC.",

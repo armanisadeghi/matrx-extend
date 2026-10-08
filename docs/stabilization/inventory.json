@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T09:17:03.533058+00:00",
+  "updated_at": "2026-10-08T10:06:03.686508+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -15615,16 +15615,27 @@
         {
           "id": "EXT-F-1007-T01",
           "title": "Fast capture",
-          "modes": ["guest", "member", "admin"],
-          "control_ids": ["EXT-F-1007-C01"],
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C01"
+          ],
           "preconditions": [
             "Open Scrape on a controlled page with extension access and record auth/org state."
           ],
-          "steps": ["Click Capture; while running verify progress and then inspect result."],
+          "steps": [
+            "Click Capture; while running verify progress and then inspect result."
+          ],
           "expected": [
             "Current active page is captured in fast mode; busy button disables, result tabs appear, and errors show recovery actions."
           ],
-          "dimensions": ["warm", "reload"],
+          "dimensions": [
+            "warm",
+            "reload"
+          ],
           "results": {
             "guest": {
               "status": "partial",
@@ -15701,21 +15712,49 @@
                 "detail": "Resource-valid warm observations only; full case remains unverified after runner stopped at Links pointer targeting. Prior accepted build-specific results retained; no new full-case pass."
               }
             }
+          ],
+          "attempt_history": [
+            {
+              "at": "2026-10-08T09:24:33Z",
+              "mode": "guest",
+              "run_id": "37755458660",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/nonchat-native-batch-20261008.json",
+                ".research/nonchat-native-batch-peer-20261008.json"
+              ],
+              "detail": "Current-artifact regression attempt: warm observations remain partial; strict replacement-worker activation proof failed at extension reload. Older accepted build-specific results remain historical, not transferred to407. No product-defect claim."
+            }
           ]
         },
         {
           "id": "EXT-F-1007-T02",
           "title": "Deep capture",
-          "modes": ["guest", "member", "admin"],
-          "control_ids": ["EXT-F-1007-C02"],
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C02"
+          ],
           "preconditions": [
             "Open Scrape on a controlled page with extension access and record auth/org state."
           ],
-          "steps": ["Click Scroll & capture on lazy-loaded page; inspect progress and result."],
+          "steps": [
+            "Click Scroll & capture on lazy-loaded page; inspect progress and result."
+          ],
           "expected": [
             "Page scroll progress is visible and completed capture includes content loaded during scroll; failure preserves correct deep retry mode."
           ],
-          "dimensions": ["warm", "reload"],
+          "dimensions": [
+            "warm",
+            "reload"
+          ],
           "results": {
             "guest": {
               "status": "partial",
@@ -15759,7 +15798,24 @@
               "viewport": "600px owned SIDE_PANEL CDP viewport emulation; actual headed browser, not physical resize proof",
               "verified_at": "2026-10-05T04:38:29.178906+00:00"
             }
-          }
+          },
+          "attempt_history": [
+            {
+              "at": "2026-10-08T09:24:33Z",
+              "mode": "guest",
+              "run_id": "37755458660",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/nonchat-native-batch-20261008.json",
+                ".research/nonchat-native-batch-peer-20261008.json"
+              ],
+              "detail": "Current-artifact regression attempt: warm observations remain partial; strict replacement-worker activation proof failed at extension reload. Older accepted build-specific results remain historical, not transferred to407. No product-defect claim."
+            }
+          ]
         },
         {
           "id": "EXT-F-1007-T03",
@@ -15857,15 +15913,30 @@
         {
           "id": "EXT-F-1007-T07",
           "title": "Article scroll sync",
-          "modes": ["guest", "member", "admin"],
-          "control_ids": ["EXT-F-1007-C07"],
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C07"
+          ],
           "preconditions": [
             "Open Scrape on a controlled page with extension access and record auth/org state."
           ],
-          "steps": ["Toggle Sync scroll with live page while article pane scrolls."],
-          "expected": ["On state follows live page scroll; toggle off stops synchronization."],
-          "dimensions": ["warm", "reload"],
-          "linked_defects": ["EXT-D-0163"],
+          "steps": [
+            "Toggle Sync scroll with live page while article pane scrolls."
+          ],
+          "expected": [
+            "On state follows live page scroll; toggle off stops synchronization."
+          ],
+          "dimensions": [
+            "warm",
+            "reload"
+          ],
+          "linked_defects": [
+            "EXT-D-0163"
+          ],
           "results": {
             "guest": {
               "status": "pass",
@@ -15905,21 +15976,51 @@
               "superseded_at": "2026-10-08T05:08:04.308991+00:00"
             }
           ],
-          "defect_ids": ["EXT-D-0166"]
+          "defect_ids": [
+            "EXT-D-0166"
+          ],
+          "attempt_history": [
+            {
+              "at": "2026-10-08T09:24:33Z",
+              "mode": "guest",
+              "run_id": "37755458660",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/nonchat-native-batch-20261008.json",
+                ".research/nonchat-native-batch-peer-20261008.json"
+              ],
+              "detail": "Current-artifact regression attempt: warm observations remain partial; strict replacement-worker activation proof failed at extension reload. Older accepted build-specific results remain historical, not transferred to407. No product-defect claim."
+            }
+          ]
         },
         {
           "id": "EXT-F-1007-T08",
           "title": "Scrape result tabs",
-          "modes": ["guest", "member", "admin"],
-          "control_ids": ["EXT-F-1007-C08"],
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C08"
+          ],
           "preconditions": [
             "Open Scrape on a controlled page with extension access and record auth/org state."
           ],
-          "steps": ["Select Article, Images, Video, Links, SEO and Schema."],
+          "steps": [
+            "Select Article, Images, Video, Links, SEO and Schema."
+          ],
           "expected": [
             "Each selected tab renders its matching capture data and empty states without changing capture."
           ],
-          "dimensions": ["warm", "reload"],
+          "dimensions": [
+            "warm",
+            "reload"
+          ],
           "results": {
             "guest": {
               "status": "partial",
@@ -15993,13 +16094,36 @@
                 "detail": "Resource-valid warm observations only; full case remains unverified after runner stopped at Links pointer targeting. Prior accepted build-specific results retained; no new full-case pass."
               }
             }
+          ],
+          "attempt_history": [
+            {
+              "at": "2026-10-08T09:24:33Z",
+              "mode": "guest",
+              "run_id": "37755458660",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/nonchat-native-batch-20261008.json",
+                ".research/nonchat-native-batch-peer-20261008.json"
+              ],
+              "detail": "Current-artifact regression attempt: warm observations remain partial; strict replacement-worker activation proof failed at extension reload. Older accepted build-specific results remain historical, not transferred to407. No product-defect claim."
+            }
           ]
         },
         {
           "id": "EXT-F-1007-T09",
           "title": "Copy capture and section data",
-          "modes": ["guest", "member", "admin"],
-          "control_ids": ["EXT-F-1007-C09"],
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C09"
+          ],
           "preconditions": [
             "Open Scrape on a controlled page with extension access and record auth/org state."
           ],
@@ -16009,7 +16133,10 @@
           "expected": [
             "Each menu offers the documented representations and copies current capture content, not stale page data."
           ],
-          "dimensions": ["warm", "reload"],
+          "dimensions": [
+            "warm",
+            "reload"
+          ],
           "results": {
             "guest": {
               "status": "pass",
@@ -16021,7 +16148,9 @@
               "detail": "Native intake22 offered copy options, referrals13 offered options plus3 explicit empty-section checks, and22 options after full extension reload pass current-fixture/format predicates; clipboard values not retained. Fresh peer verified original receipt, driver predicates and current resource journals. This bounded guest pass does not establish member/admin, Store, current-main or complete Scrape health; D166 historical panel absence cause remains open."
             }
           },
-          "linked_defects": ["EXT-D-0164"],
+          "linked_defects": [
+            "EXT-D-0164"
+          ],
           "result_history": [
             {
               "mode": "guest",
@@ -16050,32 +16179,69 @@
               "superseded_at": "2026-10-08T05:08:05.445470+00:00"
             }
           ],
-          "defect_ids": ["EXT-D-0166"]
+          "defect_ids": [
+            "EXT-D-0166"
+          ],
+          "attempt_history": [
+            {
+              "at": "2026-10-08T09:24:33Z",
+              "mode": "guest",
+              "run_id": "37755458660",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/nonchat-native-batch-20261008.json",
+                ".research/nonchat-native-batch-peer-20261008.json"
+              ],
+              "detail": "Current-artifact regression attempt: warm observations remain partial; strict replacement-worker activation proof failed at extension reload. Older accepted build-specific results remain historical, not transferred to407. No product-defect claim."
+            }
+          ]
         },
         {
           "id": "EXT-F-1007-T10",
           "title": "Remove image",
-          "modes": ["guest", "member", "admin"],
-          "control_ids": ["EXT-F-1007-C10"],
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C10"
+          ],
           "preconditions": [
             "Open Scrape on a controlled page with extension access and record auth/org state."
           ],
-          "steps": ["Remove large, medium and icon image entries."],
+          "steps": [
+            "Remove large, medium and icon image entries."
+          ],
           "expected": [
             "Selected image disappears from in-memory capture and image count/toolbar updates."
           ],
-          "dimensions": ["warm", "reload"],
+          "dimensions": [
+            "warm",
+            "reload"
+          ],
           "supporting_evidence": [
             {
               "level": "source/component; guest auth is mocked, not native authentication",
               "report": ".research/scrape-media-controls-test.json",
               "independent_review": ".research/scrape-media-controls-peer.json",
-              "commits": ["dfa74dc0", "4540020c", "e1539f56"],
+              "commits": [
+                "dfa74dc0",
+                "4540020c",
+                "e1539f56"
+              ],
               "result": "7 scoped tests pass across real ScrapeView and real media store; selective removal/exact survivors/count, blank/valid/cancel forms, video link target and copy request; no actual tab or clipboard access claimed.",
               "limits": "Native guest/member/admin interactions and reload remain unverified. No mode cell promoted from component tests."
             }
           ],
-          "defect_ids": ["EXT-D-0122", "EXT-D-0123"],
+          "defect_ids": [
+            "EXT-D-0122",
+            "EXT-D-0123"
+          ],
           "results": {
             "guest": {
               "status": "pass",
@@ -16099,7 +16265,9 @@
                     "status": "partial",
                     "build": "development0.2.215/source3536b5cb",
                     "run_id": "37214124282",
-                    "evidence": [".research/scrape-transition-native-diagnostic.json"],
+                    "evidence": [
+                      ".research/scrape-transition-native-diagnostic.json"
+                    ],
                     "detail": "Warm native medium/icon/large removals verified with exact before/after identities, trusted pointer events, Images retained and count3\u21922\u21921\u2192empty. Later control sequence failed with Article selected; earlier third-removal inference refuted. Fullreload and otherroles unverified."
                   }
                 }
@@ -16133,13 +16301,36 @@
                 "detail": "Resource-valid warm observations only; full case remains unverified after runner stopped at Links pointer targeting. Prior accepted build-specific results retained; no new full-case pass."
               }
             }
+          ],
+          "attempt_history": [
+            {
+              "at": "2026-10-08T09:24:33Z",
+              "mode": "guest",
+              "run_id": "37755458660",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/nonchat-native-batch-20261008.json",
+                ".research/nonchat-native-batch-peer-20261008.json"
+              ],
+              "detail": "Current-artifact regression attempt: warm observations remain partial; strict replacement-worker activation proof failed at extension reload. Older accepted build-specific results remain historical, not transferred to407. No product-defect claim."
+            }
           ]
         },
         {
           "id": "EXT-F-1007-T11",
           "title": "Add image URL validation",
-          "modes": ["guest", "member", "admin"],
-          "control_ids": ["EXT-F-1007-C11"],
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C11"
+          ],
           "preconditions": [
             "Open Scrape on a controlled page with extension access and record auth/org state."
           ],
@@ -16149,13 +16340,20 @@
           "expected": [
             "Blank src is rejected and retained for correction; valid image appears; Cancel closes and clears draft."
           ],
-          "dimensions": ["warm", "reload"],
+          "dimensions": [
+            "warm",
+            "reload"
+          ],
           "supporting_evidence": [
             {
               "level": "source/component; guest auth is mocked, not native authentication",
               "report": ".research/scrape-media-controls-test.json",
               "independent_review": ".research/scrape-media-controls-peer.json",
-              "commits": ["dfa74dc0", "4540020c", "e1539f56"],
+              "commits": [
+                "dfa74dc0",
+                "4540020c",
+                "e1539f56"
+              ],
               "result": "7 scoped tests pass across real ScrapeView and real media store; selective removal/exact survivors/count, blank/valid/cancel forms, video link target and copy request; no actual tab or clipboard access claimed.",
               "limits": "Native guest/member/admin interactions and reload remain unverified. No mode cell promoted from component tests."
             }
@@ -16216,27 +16414,59 @@
                 "detail": "Resource-valid warm observations only; full case remains unverified after runner stopped at Links pointer targeting. Prior accepted build-specific results retained; no new full-case pass."
               }
             }
+          ],
+          "attempt_history": [
+            {
+              "at": "2026-10-08T09:24:33Z",
+              "mode": "guest",
+              "run_id": "37755458660",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/nonchat-native-batch-20261008.json",
+                ".research/nonchat-native-batch-peer-20261008.json"
+              ],
+              "detail": "Current-artifact regression attempt: warm observations remain partial; strict replacement-worker activation proof failed at extension reload. Older accepted build-specific results remain historical, not transferred to407. No product-defect claim."
+            }
           ]
         },
         {
           "id": "EXT-F-1007-T12",
           "title": "Video actions",
-          "modes": ["guest", "member", "admin"],
-          "control_ids": ["EXT-F-1007-C12"],
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C12"
+          ],
           "preconditions": [
             "Open Scrape on a controlled page with extension access and record auth/org state."
           ],
-          "steps": ["Open video link, copy URL, remove row; add blank then valid video URL."],
+          "steps": [
+            "Open video link, copy URL, remove row; add blank then valid video URL."
+          ],
           "expected": [
             "URL opens/copies; remove deletes item; blank source is rejected; valid URL creates row."
           ],
-          "dimensions": ["warm", "reload"],
+          "dimensions": [
+            "warm",
+            "reload"
+          ],
           "supporting_evidence": [
             {
               "level": "source/component; guest auth is mocked, not native authentication",
               "report": ".research/scrape-media-controls-test.json",
               "independent_review": ".research/scrape-media-controls-peer.json",
-              "commits": ["dfa74dc0", "4540020c", "e1539f56"],
+              "commits": [
+                "dfa74dc0",
+                "4540020c",
+                "e1539f56"
+              ],
               "result": "7 scoped tests pass across real ScrapeView and real media store; selective removal/exact survivors/count, blank/valid/cancel forms, video link target and copy request; no actual tab or clipboard access claimed.",
               "limits": "Native guest/member/admin interactions and reload remain unverified. No mode cell promoted from component tests."
             }
@@ -16316,27 +16546,59 @@
                 }
               }
             }
+          ],
+          "attempt_history": [
+            {
+              "at": "2026-10-08T09:24:33Z",
+              "mode": "guest",
+              "run_id": "37755458660",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/nonchat-native-batch-20261008.json",
+                ".research/nonchat-native-batch-peer-20261008.json"
+              ],
+              "detail": "Current-artifact regression attempt: warm observations remain partial; strict replacement-worker activation proof failed at extension reload. Older accepted build-specific results remain historical, not transferred to407. No product-defect claim."
+            }
           ]
         },
         {
           "id": "EXT-F-1007-T13",
           "title": "Link actions",
-          "modes": ["guest", "member", "admin"],
-          "control_ids": ["EXT-F-1007-C13"],
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C13"
+          ],
           "preconditions": [
             "Open Scrape on a controlled page with extension access and record auth/org state."
           ],
-          "steps": ["Open link, copy URL, remove row; add blank href then valid href+text."],
+          "steps": [
+            "Open link, copy URL, remove row; add blank href then valid href+text."
+          ],
           "expected": [
             "URL opens/copies; remove deletes item; blank href rejected; valid link appears."
           ],
-          "dimensions": ["warm", "reload"],
+          "dimensions": [
+            "warm",
+            "reload"
+          ],
           "supporting_evidence": [
             {
               "level": "source/component; unrelated runtime dependencies and clipboard boundary mocked",
               "report": ".research/scrape-links-controls-test.json",
               "independent_review": ".research/scrape-links-controls-final-peer.json",
-              "commits": ["21af0218", "0f1665b0", "b604e8f6"],
+              "commits": [
+                "21af0218",
+                "0f1665b0",
+                "b604e8f6"
+              ],
               "result": "Four real ScrapeView/store tests pass: selective removal with exact survivors/count; blank, valid and cancelled forms; link target attributes and copy-boundary delivery. Remove-all and constant-link mutants rejected.",
               "limits": "Guest/member/admin native, warm/reload, actual new-tab opening and OS clipboard remain unverified; no mode cell promoted."
             },
@@ -16344,7 +16606,10 @@
               "level": "native procedure source only; native execution pending",
               "report": ".research/scrape-links-native-implementation.json",
               "independent_review": ".research/scrape-links-native-peer.json",
-              "commits": ["9515804d", "b78b94f1"],
+              "commits": [
+                "9515804d",
+                "b78b94f1"
+              ],
               "result": "Prepared exact rendered href/text/count checks for open/copy/selective remove/blank and valid Add/Cancel, warm and populated after full reload. Fresh peer scope PARTIAL and source quality PASS;18focused checks and compile pass.",
               "limits": "No native launch after latest startup resource refusal. Capacity resolution required; all auth-mode results unchanged."
             }
@@ -16418,13 +16683,36 @@
                 }
               }
             }
+          ],
+          "attempt_history": [
+            {
+              "at": "2026-10-08T09:24:33Z",
+              "mode": "guest",
+              "run_id": "37755458660",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/nonchat-native-batch-20261008.json",
+                ".research/nonchat-native-batch-peer-20261008.json"
+              ],
+              "detail": "Current-artifact regression attempt: warm observations remain partial; strict replacement-worker activation proof failed at extension reload. Older accepted build-specific results remain historical, not transferred to407. No product-defect claim."
+            }
           ]
         },
         {
           "id": "EXT-F-1007-T14",
           "title": "Capture error recovery",
-          "modes": ["guest", "member", "admin"],
-          "control_ids": ["EXT-F-1007-C14"],
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C14"
+          ],
           "preconditions": [
             "Open Scrape on a controlled page with extension access and record auth/org state."
           ],
@@ -16434,7 +16722,10 @@
           "expected": [
             "Error details/actions match recovery classification; retry preserves last chosen mode; dismiss clears card."
           ],
-          "dimensions": ["warm", "reload"],
+          "dimensions": [
+            "warm",
+            "reload"
+          ],
           "results": {
             "guest": {
               "status": "partial",
@@ -16462,6 +16753,23 @@
             ".research/scrape-error-controls-test.json",
             ".research/scrape-error-controls-repair.json",
             ".research/scrape-error-controls-final-peer.json"
+          ],
+          "attempt_history": [
+            {
+              "at": "2026-10-08T09:24:33Z",
+              "mode": "guest",
+              "run_id": "37755458660",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/nonchat-native-batch-20261008.json",
+                ".research/nonchat-native-batch-peer-20261008.json"
+              ],
+              "detail": "Current-artifact regression attempt: warm observations remain partial; strict replacement-worker activation proof failed at extension reload. Older accepted build-specific results remain historical, not transferred to407. No product-defect claim."
+            }
           ]
         },
         {
@@ -16565,16 +16873,27 @@
         {
           "id": "EXT-F-1007-T20",
           "title": "No current capture empty state",
-          "modes": ["guest", "member", "admin"],
-          "control_ids": ["EXT-F-1007-C20"],
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C20"
+          ],
           "preconditions": [
             "Open Scrape on a controlled page with extension access and record auth/org state."
           ],
-          "steps": ["Open Scrape before capturing, then navigate active tab to another URL."],
+          "steps": [
+            "Open Scrape before capturing, then navigate active tab to another URL."
+          ],
           "expected": [
             "Empty state invites capture; previous page\u2019s content and Saved badge clear after navigation."
           ],
-          "dimensions": ["warm", "reload"],
+          "dimensions": [
+            "warm",
+            "reload"
+          ],
           "results": {
             "guest": {
               "status": "pass",
@@ -16641,7 +16960,9 @@
                   "run_id": "37185080238",
                   "evidence": ".research/guest-scrape-hosted-native.json",
                   "detail": "Release205 local development ZIP: signed-out token/profile absence and initial Scrape empty state observed. Navigation/reload were not reached. Exact Store ZIP rerun37186201850 failed at browser startup before any UI case; no Store pass.",
-                  "additional_evidence": [".research/guest-scrape-store-native.json"]
+                  "additional_evidence": [
+                    ".research/guest-scrape-store-native.json"
+                  ]
                 }
               }
             }
@@ -16663,6 +16984,23 @@
                 "acceptance_credit": false,
                 "detail": "Resource-valid warm observations only; full case remains unverified after runner stopped at Links pointer targeting. Prior accepted build-specific results retained; no new full-case pass."
               }
+            }
+          ],
+          "attempt_history": [
+            {
+              "at": "2026-10-08T09:24:33Z",
+              "mode": "guest",
+              "run_id": "37755458660",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/nonchat-native-batch-20261008.json",
+                ".research/nonchat-native-batch-peer-20261008.json"
+              ],
+              "detail": "Current-artifact regression attempt: warm observations remain partial; strict replacement-worker activation proof failed at extension reload. Older accepted build-specific results remain historical, not transferred to407. No product-defect claim."
             }
           ]
         },
@@ -22622,7 +22960,7 @@
             "artifact_id": 11474839620,
             "app_tree_sha256": "e41e0fe5243284e1781a2c997078a05bd4ae50f68a3543914a21e13a18d9ddc7",
             "source_review": ".research/t57-public-race-preflight-final-peer-20261007.json",
-            "next_action": "Revised prior-document sequence a2b73385 independently source-reviewed; controller10/10 and driver4/4 guarded pass. No revised native run. Finish current source/auth visibility inventory gate, then one guarded exact-artifact public run with positive current context/binding/body identity and recipe terminal result/refusal. Keep cancellation event order explicit; never require removed oldcallback route. T57 unverified, original D47 closed.",
+            "next_action": "Resolve approved organization UUID/current membership against actual frozen artifact origin, then align checkpoint with real product request header before another T57 attempt. Registered tests proceed in parallel with census; no global inventory gate. Latest attempts in attempt_history; prior execution fields retain historical provenance.",
             "workflow_conclusion": "failure",
             "failure_stage": "public_race_release",
             "report": ".research/t57-public-race-native-20261007.json",
@@ -22660,6 +22998,36 @@
                 ".research/t57-native-peer-20261008.json"
               ],
               "detail": "Sign-in stopped at d87_rendered_identity_not_observed before T57 capture/recipe/prior/current response. One unsafeCPU sample then only twohealthy samples before childfailure left recovery incomplete; resourcefinalinvalid. No product verdict. Actual temporary admin/org secret names independently absent; no retry. Resolve sign-in observation before another attempt."
+            },
+            {
+              "at": "2026-10-08T10:06:03.686508+00:00",
+              "mode": "admin",
+              "run_id": "37755803603",
+              "status": "unverified",
+              "resource_valid": null,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/t57-diagnostic-native-20261008.json",
+                ".research/hosted-indexing-peer-20261008.json"
+              ],
+              "detail": "Setup failed on aggregate indexing status before resource admission or browser startup; no product test. Both temporary secret names removed."
+            },
+            {
+              "at": "2026-10-08T10:06:03.686508+00:00",
+              "mode": "admin",
+              "run_id": "37756410153",
+              "status": "unverified",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/t57-diagnostic-retry-20261008.json",
+                ".research/t57-diagnostic-retry-peer-20261008.json"
+              ],
+              "detail": "Admin sign-in/rendered identity passed; organization storage checkpoint failed before Network capture or recipe. Requires approved UUID/current membership and actual product header proof. No product org defect inferred; temporary secrets independently absent."
             }
           ]
         },
