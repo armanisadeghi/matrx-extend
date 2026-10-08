@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "review_id": "T57-active-loader-final-peer-20261008-1617",
+  "reviewed_commit": "d69c55e1edc90434208782be8db72f39a64433f7",
+  "source_review": {
+    "verdict": "ready_for_authorized_native_rerun",
+    "prior_finding": "current_slot_accepts_nonactive_loader_with_prior_context",
+    "finding_status": "ADDRESSED",
+    "evidence": [
+      "Candidate response slot is synchronously reserved only after its Network loader equals the active main-frame loader.",
+      "currentPaused rechecks the second slot against activeLoader; releaseInOrder rechecks it after old release and before current release.",
+      "Previously observed stale-loader scenario is now covered: stale is continued and counted, then the active current response fills slot 1; a subsequent navigation makes release reject."
+    ],
+    "identity_and_hash": "Original slot-1 URL/method/body identity SHA-256 equality check remains; both response body bytes are hashed before entering facts.paused.",
+    "race_and_cleanup": "Slots reserve synchronously before body reads; body-read failures remove held state and continue; late body settlement after cleanup cannot append evidence. Existing cleanup attempts Fetch.disable and detach independently.",
+    "false_success": "assessPublicRacePreflight still requires two distinct loader IDs, matching identity hashes, distinct contexts, ordered release with current continued, terminal lifecycle, response hashes, capture and binding proof, terminal outcome, and successful cleanup."
+  },
+  "native_status": {
+    "verdict": "pending_unverified",
+    "reason": "No native run performed in this review lane. Existing receipt does not retain the rejected third target's request identity or response hash, so its document origin remains unknown."
+  },
+  "quality_verdict": {
+    "verdict": "PASS_WITH_NATIVE_LIMIT",
+    "prior_finding": "ADDRESSED",
+    "no_false_packet_success": "No weakening found; public-race assessment still requires explicit terminal outcome and capture/binding proof predicates.",
+    "tests": "node --test tests/browser/showcase-d47-public-race-preflight.test.mjs: 15 passed, 0 failed. Focused stale-loader case: 1 passed, 0 failed.",
+    "before_after": "Prior independent probe recorded stale accepted before repair in .research/t57-loader-peer-20261008-1614.json; new regression on d69c55e1 rejects that stale candidate and accepts the active current loader."
+  },
+  "remaining_native_proof": [
+    "On authorized exact-artifact native run, retain distinct old/current loaders and show current equals active main-frame loader at pause and release.",
+    "Record exact request identity and response hashes; verify current binding equals the released current response hash and exact saved result settles.",
+    "Verify interception and capture-probe cleanup. Do not infer whether the unretained third target was current or old."
+  ]
+}
