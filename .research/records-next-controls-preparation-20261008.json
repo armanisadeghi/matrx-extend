@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-4130",
+  "scope": "Source-only preparation for authenticated Records malformed-input read controls C03, C04, and C05. No local browser, hosted native run, build, release, or data write occurred.",
+  "previous_credit": "The prior hosted Records receipt passed C02 table_list positive, its invalid-limit refusal, full panel reload and repeated positive; it also passed C03 metadata_search positive against a table identity from the completed table_list. This unit does not count those observations again.",
+  "new_executable_negative_cases": [
+    {
+      "inventory_case": "EXT-F-4130-C03",
+      "action": "metadata_search",
+      "input_dimension": "query is null",
+      "credit_boundary": "Negative malformed-argument path only; C03 positive has separate prior native credit."
+    },
+    {
+      "inventory_case": "EXT-F-4130-C04",
+      "action": "record_read",
+      "input_dimension": "record_id is malformed",
+      "credit_boundary": "Negative shared wire refusal only; record_read positive remains unverified."
+    },
+    {
+      "inventory_case": "EXT-F-4130-C05",
+      "action": "record_aggregate",
+      "input_dimension": "table_id is malformed with measure=count",
+      "credit_boundary": "Negative shared wire refusal only; record_aggregate positive remains unverified."
+    }
+  ],
+  "oracle": "The currently visible Records card schema must advertise each action and named field before these calls. Each native Run must emit one exact-body authenticated POST with matching organization and bearer, finish with HTTP 200, yield one correlated completion and exactly equal visible output, then report success=false, error_type=invalid_arguments and a message naming the malformed field. The receipt retains only fixed action/case labels, status and booleans; it does not persist values, IDs, organization, bearer, response text or error text.",
+  "error_class_basis": "The current aidream RecordsArgs model rejects null required query and malformed *_id values; records_definition derives its declared schema from that model, and the executor's pre-dispatch validation returns invalid_arguments. The prior C02 hosted invalid-limit path returned the same class. A different deployed contract fails this strict native assertion and must be diagnosed, not silently accepted.",
+  "positive_prerequisite": "C04/C05 positive observations require C11 disposable table_id and C06 disposable record_id returned by applied writes in the approved organization, followed by read/history assertions and verified cleanup through the owned C07 path. A future owner must authorize and operate that setup/cleanup as one controlled native unit; existing user rows and fabricated IDs cannot substitute. These positives are out of scope here.",
+  "verification": {
+    "command": "node --test tests/browser/records-readonly-native-driver.test.mjs tests/browser/records-readonly-native-proof.test.mjs",
+    "result": "16 focused tests passed; the actual native driver callback is executed against a controlled network/UI seam in the driver test.",
+    "red_proof": "plant.py changed the actual callback's field-specific error assertion to a permissive expression; the test failed with Missing expected rejection and restored the source identically. Separate callback tests reject false success, wrong error class, unrelated error field, absent live card action/field, stale output and wrong principal.",
+    "native_status": "Pending independent review and hosted native execution; no C04/C05 positive pass or complete control credit is claimed."
+  }
+}

@@ -85,21 +85,41 @@ const metadataResult = (
     organizations_covered: [organizationId],
   },
 });
+const negativeInputs = [
+  { action: 'metadata_search', args: { organization_id: organizationId, query: null } },
+  { action: 'record_read', args: { record_id: 'not-a-uuid' } },
+  { action: 'record_aggregate', args: { table_id: 'not-a-uuid', measure: 'count' } },
+];
+const negativeResult = (field) => ({
+  success: false,
+  error: { error_type: 'invalid_arguments', message: `Invalid arguments: ${field} is invalid` },
+});
 const tableListSchema = (visibilityField = 'include_platform_tables') => ({
-  action: { enum: ['table_list', 'metadata_search'] },
+  action: { enum: ['table_list', 'metadata_search', 'record_read', 'record_aggregate'] },
   $variants: {
     table_list: {
       [visibilityField]: { type: 'boolean', default: false },
       limit: { type: 'integer', default: 50 },
       organization_id: { type: 'string' },
     },
+    metadata_search: { query: { type: 'string' } },
+    record_read: { record_id: { type: 'string' } },
+    record_aggregate: { table_id: { type: 'string' } },
   },
 });
 
 function runDriver({
   platform = 'darwin',
   token = 'admin-session',
-  completions = [positive('appointments'), refusal, positive('invoices'), metadataResult()],
+  completions = [
+    positive('appointments'),
+    refusal,
+    positive('invoices'),
+    metadataResult(),
+    negativeResult('query'),
+    negativeResult('record_id'),
+    negativeResult('table_id'),
+  ],
   changedVisible = false,
   visibleMode = 'normal',
   responseMode = 'normal',
@@ -120,6 +140,7 @@ function runDriver({
     request: null,
     result: null,
     metadata_search: null,
+    negative_reads: [],
     invalid_input: null,
     reload: null,
     completion_diagnostics: [],
@@ -219,13 +240,29 @@ function runDriver({
       return editor.focused && editor.start === 0 && editor.end === editor.value.length;
     if (script.includes("querySelector('textarea')?.value"))
       return (
-        editor.value === JSON.stringify(runs === 1 ? invalid : runs === 3 ? metadataInput : input)
+        editor.value ===
+        JSON.stringify(
+          runs === 1
+            ? invalid
+            : runs === 3
+              ? metadataInput
+              : runs >= 4
+                ? negativeInputs[runs - 4]
+                : input,
+        )
       );
     return true;
   };
   const click = async (_panel, kind, label) => {
     if (label === 'Run') {
-      const expected = runs === 1 ? invalid : runs === 3 ? metadataInput : input;
+      const expected =
+        runs === 1
+          ? invalid
+          : runs === 3
+            ? metadataInput
+            : runs >= 4
+              ? negativeInputs[runs - 4]
+              : input;
       assert.equal(editor.value, JSON.stringify(expected), 'Run requires actual input');
       const requestId = `records-execute-${runs++}`;
       events.emit('Network.requestWillBeSent', {
@@ -305,7 +342,7 @@ function runDriver({
 test('actual callback requires finished matching success, refusal, and post-reload success', async () => {
   const scenario = runDriver();
   await scenario.run();
-  assert.equal(scenario.runs, 4);
+  assert.equal(scenario.runs, 7);
   assert.equal(scenario.reloads, 1);
   assert.equal(scenario.report.native_stage, 'admin_authenticated');
   assert.equal(scenario.report.result?.success, true);
@@ -340,6 +377,36 @@ test('actual callback requires finished matching success, refusal, and post-relo
     independent_table_identity_matched: true,
     count: 1,
   });
+  assert.deepEqual(
+    scenario.report.negative_reads.map(
+      ({ inventory_case, action, error_class, positive_read_verified }) => ({
+        inventory_case,
+        action,
+        error_class,
+        positive_read_verified,
+      }),
+    ),
+    [
+      {
+        inventory_case: 'EXT-F-4130-C03',
+        action: 'metadata_search',
+        error_class: 'invalid_arguments',
+        positive_read_verified: false,
+      },
+      {
+        inventory_case: 'EXT-F-4130-C04',
+        action: 'record_read',
+        error_class: 'invalid_arguments',
+        positive_read_verified: false,
+      },
+      {
+        inventory_case: 'EXT-F-4130-C05',
+        action: 'record_aggregate',
+        error_class: 'invalid_arguments',
+        positive_read_verified: false,
+      },
+    ],
+  );
   assert.equal(scenario.active.size, 0);
   assert.doesNotMatch(
     JSON.stringify(scenario.report),
@@ -350,7 +417,7 @@ test('actual callback requires finished matching success, refusal, and post-relo
 test('trusted input helper replaces an existing draft on Linux', async () => {
   const scenario = runDriver({ platform: 'linux' });
   await scenario.run();
-  assert.equal(scenario.runs, 4);
+  assert.equal(scenario.runs, 7);
 });
 
 test('missing selection refuses before execution', async () => {
@@ -565,6 +632,57 @@ test('metadata search rejects unrelated matches, wrong echo, and false success',
   }
 });
 
+test('actual callback refuses malformed read inputs with their own field named', async () => {
+  const base = [
+    positive('appointments'),
+    refusal,
+    positive('invoices'),
+    metadataResult(),
+    negativeResult('query'),
+    negativeResult('record_id'),
+    negativeResult('table_id'),
+  ];
+  for (const [index, field, action] of [
+    [4, 'query', 'metadata_search'],
+    [5, 'record_id', 'record_read'],
+    [6, 'table_id', 'record_aggregate'],
+  ]) {
+    for (const [bad, failure] of [
+      [{ success: true, output: { action } }, /false_success/],
+      [
+        { success: false, error: { error_type: 'execution', message: `${field} invalid` } },
+        /wrong_error_class/,
+      ],
+      [negativeResult('unrelated'), /field_missing/],
+    ]) {
+      const completions = [...base];
+      completions[index] = bad;
+      const scenario = runDriver({ completions });
+      await assert.rejects(scenario.run(), failure);
+      assert.equal(scenario.runs, index + 1);
+      assert.equal(scenario.report.negative_reads.length, index - 4);
+      assert.equal(scenario.active.size, 0);
+    }
+  }
+});
+
+test('negative read action or field missing from live card contract refuses before negative calls', async () => {
+  const baseline = tableListSchema();
+  for (const serverSchema of [
+    {
+      ...baseline,
+      action: { enum: baseline.action.enum.filter((action) => action !== 'record_read') },
+    },
+    { ...baseline, $variants: { ...baseline.$variants, record_aggregate: {} } },
+  ]) {
+    const scenario = runDriver({ serverSchema });
+    await assert.rejects(scenario.run(), /records_negative_read_contract_drift/);
+    assert.equal(scenario.runs, 4);
+    assert.deepEqual(scenario.report.negative_reads, []);
+    assert.equal(scenario.active.size, 0);
+  }
+});
+
 test('constant completion cannot pass callback identity and request checks', async () => {
   const scenario = runDriver({
     driverSource: 'async () => { report.result = { success: true }; }',
@@ -615,7 +733,7 @@ test('actual callback persists distinct safe failure phases after an authenticat
   }
 });
 
-test('successful callback retains four exact completion guards and safe shapes', async () => {
+test('successful callback retains all exact completion guards and safe shapes', async () => {
   const scenario = runDriver();
   await scenario.run();
   const saved = JSON.parse(JSON.stringify(scenario.report));
@@ -632,14 +750,14 @@ test('successful callback retains four exact completion guards and safe shapes',
       limit_integer: true,
     },
   });
-  assert.equal(saved.completion_diagnostics.length, 4);
+  assert.equal(saved.completion_diagnostics.length, 7);
   assert.deepEqual(
     saved.completion_diagnostics.map(({ failure }) => failure),
-    [null, null, null, null],
+    [null, null, null, null, null, null, null],
   );
   assert.deepEqual(
     saved.completion_diagnostics.map(({ completion }) => completion?.action),
-    ['table_list', null, 'table_list', 'metadata_search'],
+    ['table_list', null, 'table_list', 'metadata_search', null, null, null],
   );
   assert.equal(saved.completion_diagnostics[0].completion.tables_count, 1);
   assert.equal(saved.completion_diagnostics[3].completion.matches_count, 1);
