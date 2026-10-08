@@ -17682,6 +17682,17 @@
               "evidence": [
                 ".research/seo170-native-20261008.json"
               ]
+            },
+            {
+              "run_id": "seo-local397-native-20261008",
+              "auth_mode": "guest",
+              "resource_valid": true,
+              "acceptance_credit": false,
+              "result": "Admitted child exited before browser/profile creation after artifact identity; zero targets. Playwright setup cause is source/environment inference because original exception absent. Corrected-runtime preflights refused disk floor; corrected browser never launched.",
+              "evidence": [
+                ".research/seo-local397-native-20261008.json",
+                ".research/seo-local397-peer-20261008.json"
+              ]
             }
           ]
         },
@@ -18352,6 +18363,17 @@
               "evidence": [
                 ".research/seo170-native-20261008.json"
               ]
+            },
+            {
+              "run_id": "seo-local397-native-20261008",
+              "auth_mode": "guest",
+              "resource_valid": true,
+              "acceptance_credit": false,
+              "result": "Admitted child exited before browser/profile creation after artifact identity; zero targets. Playwright setup cause is source/environment inference because original exception absent. Corrected-runtime preflights refused disk floor; corrected browser never launched.",
+              "evidence": [
+                ".research/seo-local397-native-20261008.json",
+                ".research/seo-local397-peer-20261008.json"
+              ]
             }
           ]
         },
@@ -18475,6 +18497,17 @@
               "result": "Controlled T02/T14 observations precede later dynamic-page stability refusal; CPU-pending journal ends invalid. No acceptance or closure credit.",
               "evidence": [
                 ".research/seo170-native-20261008.json"
+              ]
+            },
+            {
+              "run_id": "seo-local397-native-20261008",
+              "auth_mode": "guest",
+              "resource_valid": true,
+              "acceptance_credit": false,
+              "result": "Admitted child exited before browser/profile creation after artifact identity; zero targets. Playwright setup cause is source/environment inference because original exception absent. Corrected-runtime preflights refused disk floor; corrected browser never launched.",
+              "evidence": [
+                ".research/seo-local397-native-20261008.json",
+                ".research/seo-local397-peer-20261008.json"
               ]
             }
           ]
