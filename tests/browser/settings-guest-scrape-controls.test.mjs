@@ -127,18 +127,7 @@ test('T28 case runner rejects an open section without rendered content and verif
   assert.equal(state.reloads, 0);
 });
 
-test('T28 onFailure receipt retains only safe initial census diagnostics', async () => {
-  const { state, driver, reload } = simulatedPanel();
-  const originalEvaluate = driver.evaluate;
-  driver.evaluate = async (...args) => {
-    const observed = await originalEvaluate(...args);
-    if (observed.headings) {
-      observed.active = false;
-      observed.headings = [];
-    }
-    return observed;
-  };
-
+test('T28 onFailure receipt bounds diagnostics for inactive and same-count roster drift', async () => {
   const acceptanceSource = await readFile(
     new URL('./settings-local-controls-acceptance.mjs', import.meta.url),
     'utf8',
@@ -150,18 +139,53 @@ test('T28 onFailure receipt retains only safe initial census diagnostics', async
     'criterion',
     `${acceptanceSource.slice(runCaseStart, runCaseEnd)}\nreturn runCase;`,
   )((c, name, status, evidence) => c.criteria.push({ name, status, evidence }));
-  const receipt = { criteria: [] };
-  await runCase(receipt, () => runGuestSectionsCase(null, reload, () => {}, driver));
 
-  assert.equal(receipt.status, 'fail');
-  assert.match(
-    receipt.error,
-    /guest_settings_sections_missing:\{"active":false,"count":0,"headings":\[\],"unrecognizedHeadingCount":0\}/,
-  );
-  assert.match(receipt.criteria[0].evidence, /"unrecognizedHeadingCount":0/);
-  assert.equal(JSON.stringify(receipt).includes('guest_settings_sections_missing'), true);
-  assert.deepEqual(state.clicks, []);
-  assert.equal(state.reloads, 0);
+  const privateLookingHeading = 'Patient preview private-record-7f3c';
+  const cases = [
+    {
+      label: 'inactive empty census',
+      active: false,
+      observedHeadings: [],
+      expected:
+        /guest_settings_sections_missing:\{"active":false,"count":0,"headings":\[\],"unrecognizedHeadingCount":0\}/,
+      privateLookingHeading: null,
+    },
+    {
+      label: 'same-count roster drift',
+      active: true,
+      observedHeadings: [...headings.slice(0, 4), privateLookingHeading, ...headings.slice(5)],
+      expected:
+        /guest_settings_sections_missing:\{"active":true,"count":11,"headings":\["Account","Organization","Appearance","Chat","Scrape","Data","SEO","Desktop bridge","Data & reset","About"\],"unrecognizedHeadingCount":1\}/,
+      privateLookingHeading,
+    },
+  ];
+
+  for (const scenario of cases) {
+    const { state, driver, reload } = simulatedPanel();
+    const originalEvaluate = driver.evaluate;
+    driver.evaluate = async (...args) => {
+      const observed = await originalEvaluate(...args);
+      if (observed.headings) {
+        observed.active = scenario.active;
+        observed.headings = scenario.observedHeadings;
+      }
+      return observed;
+    };
+
+    const receipt = { criteria: [] };
+    await runCase(receipt, () => runGuestSectionsCase(null, reload, () => {}, driver));
+
+    assert.equal(receipt.status, 'fail', scenario.label);
+    assert.match(receipt.error, scenario.expected, scenario.label);
+    if (scenario.privateLookingHeading)
+      assert.equal(
+        JSON.stringify(receipt).includes(scenario.privateLookingHeading),
+        false,
+        `${scenario.label}_unsafe_evidence`,
+      );
+    assert.deepEqual(state.clicks, [], scenario.label);
+    assert.equal(state.reloads, 0, scenario.label);
+  }
 });
 
 test('T40 case runner repairs UI-baseline/storage-drift through clicks and verifies after reload', async () => {

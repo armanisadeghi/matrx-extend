@@ -277,7 +277,10 @@ function sectionCensusDiagnostic(state) {
 export async function runGuestSectionsCase(panel, reloadSettings, record, driver = nativeDriver) {
   const baseline = await observeSection(panel, 'Account', driver);
   assert.equal(
-    baseline.active && baseline.headings.length === SECTIONS.length,
+    baseline.active &&
+      Array.isArray(baseline.headings) &&
+      baseline.headings.length === SECTIONS.length &&
+      SECTIONS.every((name, index) => baseline.headings[index] === name),
     true,
     `guest_settings_sections_missing:${sectionCensusDiagnostic(baseline)}`,
   );
