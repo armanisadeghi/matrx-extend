@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { writeFile } from 'node:fs/promises';
-import { isRfc9562Uuid } from '@ai-matrx/kit/uuid';
 import { join } from 'node:path';
+import { isRfc9562Uuid } from '@ai-matrx/kit/uuid';
 import { requireSettingsCredential } from '../tests/browser/settings-native-auth-driver.mjs';
 
 export function hostedProfileRoute(acceptanceCase, prepared, outputDir, runId) {
