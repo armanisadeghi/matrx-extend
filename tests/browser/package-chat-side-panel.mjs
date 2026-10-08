@@ -78,20 +78,32 @@ try {
   page.on('pageerror', (e) => errors.push(String(e)));
   await page.goto(`chrome-extension://${extensionId}/sidepanel.html?chat=package`);
   await page.evaluate(
-    async ([accessToken, expiresIn, user, org]) => {
+    async ([accessToken, refreshToken, expiresIn, user, org]) => {
+      // The panel restores a session only with the refresh token encrypted the way
+      // src/lib/auth/crypto.ts does it (PBKDF2 over the runtime id → AES-GCM); an
+      // access token alone reads as "Could not restore your saved sign-in".
+      const enc = new TextEncoder();
+      const base = await crypto.subtle.importKey('raw', enc.encode('matrx-extend.refresh-token.v1'), { name: 'PBKDF2' }, false, ['deriveKey']);
+      const key = await crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt: enc.encode(chrome.runtime.id), iterations: 100_000, hash: 'SHA-256' },
+        base,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        ['encrypt'],
+      );
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(refreshToken)));
+      const b64 = (bytes) => btoa(String.fromCharCode(...bytes));
       await chrome.storage.local.set({
         'matrx.auth.accessToken': accessToken,
+        'matrx.auth.refreshTokenEnc': b64(ct),
+        'matrx.auth.refreshTokenIv': b64(iv),
         'matrx.auth.expiresAt': Date.now() + expiresIn * 1000,
         'matrx.user.profile': user,
         'matrx.org.active': org,
       });
     },
-    [
-      session.access_token,
-      session.expires_in ?? 3600,
-      session.user,
-      { id: ORGANIZATION_ID, name: "Admin's Workspace" },
-    ],
+    [session.access_token, session.refresh_token, session.expires_in ?? 3600, session.user, { id: ORGANIZATION_ID, name: "Admin's Workspace" }],
   );
   await page.reload();
   const root = page.locator('[data-package-chat]');
@@ -100,6 +112,8 @@ try {
   const composer = page.locator('[data-package-chat] textarea').first();
   await composer.waitFor({ timeout: 45_000 }).catch(() => undefined);
   check('composer is ready', await composer.isEditable().catch(() => false));
+  const banner = await page.getByText(/Could not (restore|verify) your saved sign-in/).count();
+  check('extension sign-in restored (no sign-in failure banner)', banner === 0);
   await page.screenshot({ path: join(SHOTS, '1-new-chat.png') });
 
   await page.getByRole('button', { name: 'Conversations' }).click();
