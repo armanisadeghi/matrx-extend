@@ -21,8 +21,11 @@ const safeCount = (value) => (Number.isInteger(value) && value >= 0 ? value : nu
 const TRANSPORT_CLOSED = /Target closed|Session closed|WebSocket closed/;
 
 function guestWaitFailureCategory(message) {
-  const prefix = 'guest_settings_not_observed:';
-  if (!message.startsWith(prefix)) return null;
+  const prefix = [
+    'guest_settings_not_observed:',
+    'replacement_settings_tab_ready_not_observed:',
+  ].find((candidate) => message.startsWith(candidate));
+  if (!prefix) return null;
   try {
     const last = JSON.parse(message.slice(prefix.length));
     if (typeof last?.transient === 'string') {
@@ -30,7 +33,9 @@ function guestWaitFailureCategory(message) {
       if (last.transient === 'panel_runtime_exception') return 'panel_runtime_exception';
       return 'guest_observation_unavailable';
     }
-    return 'guest_state_not_observed';
+    return prefix === 'replacement_settings_tab_ready_not_observed:'
+      ? 'settings_tab_not_ready'
+      : 'guest_state_not_observed';
   } catch {
     return 'guest_observation_unavailable';
   }
@@ -68,7 +73,12 @@ export function classifyReloadSettingsFailure(error, step) {
   const pointerCode = POINTER_CODES.has(pointer?.code) ? pointer.code : null;
   const message = String(error?.message ?? '');
   return {
-    step: ['before_click', 'click_returned', 'guest_wait_started'].includes(step)
+    step: [
+      'settings_tab_wait_started',
+      'before_click',
+      'click_returned',
+      'guest_wait_started',
+    ].includes(step)
       ? step
       : 'unknown',
     category:

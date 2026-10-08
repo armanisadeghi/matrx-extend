@@ -18,6 +18,7 @@ import {
   guestSettingsState,
   openSection,
   waitFor,
+  waitForReplacementSettingsTab,
 } from './settings-panel-driver.mjs';
 import {
   classifyReloadSettingsFailure,
@@ -97,6 +98,8 @@ async function startObservedDeadPort() {
 }
 
 async function settings(panel, onStep = () => {}) {
+  onStep('settings_tab_wait_started');
+  await waitForReplacementSettingsTab(panel);
   onStep('before_click');
   await click(panel, 'title', 'Settings');
   onStep('click_returned');

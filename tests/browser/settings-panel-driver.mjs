@@ -27,6 +27,34 @@ export async function waitFor(label, read, accept, timeoutMs = 10000) {
   throw new Error(`${label}_not_observed:${JSON.stringify(last)}`);
 }
 
+// A replacement CDP target can exist before React mounts its tabs. Do not
+// dispatch a native pointer until the same visible Settings target is ready.
+export async function waitForReplacementSettingsTab(panel, timeoutMs = 10000) {
+  let first;
+  const last = await waitFor(
+    'replacement_settings_tab_ready',
+    async () => {
+      const sample = await evaluate(
+        panel,
+        `(() => {
+    const tabs = [...document.querySelectorAll('button[role="tab"][title="Settings"]')];
+    const visible = tabs.filter((tab) => {
+      const style = getComputedStyle(tab), rect = tab.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' &&
+        style.display !== 'none' && !tab.closest('[inert]');
+    });
+    return { matched: tabs.length, visible: visible.length };
+  })()`,
+      );
+      first ??= sample;
+      return sample;
+    },
+    (sample) => sample?.matched === 1 && sample.visible === 1,
+    timeoutMs,
+  );
+  return { first, last };
+}
+
 export async function openSection(panel, label) {
   const section = await waitFor(
     `${label}_section_ready`,
