@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_final_peer",
+  "reviewed_at_utc": "2026-10-08",
+  "source_report": ".research/public-guest-native-20261008-1620.json",
+  "run_id": 37807565859,
+  "source_checkout_sha": "29366e9dcbba04309069cbdb7a7a57a8cc35329f",
+  "producer_source_verified_at_checkout": true,
+  "verdicts": {
+    "A_acceptance": {
+      "verdict": "pass",
+      "basis": "The actual guest acceptance receipt reports terminal_answer on all three turns; each turn has a visible timeline ending with streaming=false and a completed reply. The source at the run checkout requires guest identity with token/profile/organization absent, actual non-refusal answers grounded in unpredictable fixture codes, the same-conversation identity on the first follow-up, and a distinct new conversation after full panel reload. The result receipt satisfies these checks, and the screenshots show the signed-out panel with assistant responses.",
+      "claims_supported": [
+        "signed-out public Chat opening answer",
+        "same-conversation follow-up retains conversation fingerprint 96dd8d773c3fccdd",
+        "after full panel reload, a distinct new conversation answers",
+        "all three requests returned HTTP 200",
+        "real page tools completed against the controlled fixture"
+      ]
+    },
+    "B_evidence_and_quality": {
+      "verdict": "pass_with_scope_limit",
+      "basis": "The recorded run is internally consistent with the checked-out producer. Run log confirms workflow dispatch, lane B, macos-15 ARM64, public CRX version 0.2.205 preparation, matching extension id and tree hash, acceptance receipt PASS, and artifact upload. SHA-256 recomputation exactly matches the report for each of the three current-run resource journals. All are admitted, child exit 0, decision valid. Receipt assertions, turn timelines, transport observations, and screenshots corroborate the result.",
+      "limitations": [
+        "The public Store CRX was loaded as an unpacked adaptation: producer adds the verified signing key to manifest.json and removes _metadata/verified_contents.json for Chromium. This validates the downloaded public payload under native headed Chromium, not Chrome Web Store UI installation or a Store-installed copy.",
+        "The downloaded CRX and extracted extension tree were not included in the reviewed raw artifact bundle, so their recorded CRX and tree hashes could not be independently recomputed here. The source producer verifies CRX3 signing identity and CRX SHA-256, and the runner log records the matching prepared tree hash.",
+        "The receipt stores pass booleans, response fingerprints, and screenshots rather than full raw assistant response bodies or raw backend event bodies. The three screenshots are genuine UI captures but show only the viewport portion of each answer.",
+        "The context-read observer attaches after panel load, as the receipt states; it cannot establish activity before observer attachment. Backend health/version was sampled immediately before and after, not continuously.",
+        "This is one successful run on one artifact/backend pair; it does not establish recurrence rate or general service health."
+      ]
+    }
+  },
+  "independent_hash_checks": {
+    "hosted-package-37807565859-1.jsonl": {
+      "expected_sha256": "726af3bb5131ec6c549c44de3f7427c16791b947abeed5bacec9b0201be92763",
+      "observed_sha256": "726af3bb5131ec6c549c44de3f7427c16791b947abeed5bacec9b0201be92763",
+      "matches": true
+    },
+    "hosted-browser-37807565859-1.jsonl": {
+      "expected_sha256": "840efb52700ebf2218303d2555d8951d69d1975a102c7d2b3c608e400c1b4ef1",
+      "observed_sha256": "840efb52700ebf2218303d2555d8951d69d1975a102c7d2b3c608e400c1b4ef1",
+      "matches": true
+    },
+    "hosted-guest-37807565859-1.jsonl": {
+      "expected_sha256": "33d459cabc6556f796341c21fcab28516459becff402b620786f4d868a4a55e4",
+      "observed_sha256": "33d459cabc6556f796341c21fcab28516459becff402b620786f4d868a4a55e4",
+      "matches": true
+    },
+    "hosted_artifact_zip_sha256": {
+      "expected_sha256": "68243948eabdcbbcbb895bbb6454f4b93ce8b4b9d446b1c90a88bbfd2d4a96f7",
+      "observed_sha256": null,
+      "matches": null,
+      "reason": "The uploaded ZIP itself is not present in the reviewed local raw bundle; digest was cross-checked against the runner upload log only."
+    }
+  },
+  "evidence_paths": {
+    "run_log": ".research/public-guest-native-20261008-1620-raw/hosted-job.log",
+    "result_receipt": ".research/public-guest-native-20261008-1620-raw/matrx-extend/matrx-extend/test-results/guest-chat-store-2cab6123-2e54-43a7-b9fa-35888756bef6.json",
+    "producer_script": "scripts/hosted-guest-acceptance.mjs",
+    "acceptance_script": "tests/browser/guest-chat-store-acceptance.mjs"
+  }
+}
