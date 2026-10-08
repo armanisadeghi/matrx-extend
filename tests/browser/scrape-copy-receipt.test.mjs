@@ -35,7 +35,7 @@ for (const title of ['Copy capture', 'Copy images']) {
       assert.equal(report.driver_failure.code, 'pointer_target_not_unique');
       assert.equal(report.driver_failure.matchedTargetCount, 0);
       assert.deepEqual(report.copy_batch_failure, {
-        fixtureKey: 'referrals',
+        fixtureKey: title === 'Copy images' ? 'intake' : 'referrals',
         action: { stage: 'open_menu', title, option: 'Markdown' },
         completed:
           title === 'Copy images'

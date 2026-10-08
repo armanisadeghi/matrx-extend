@@ -265,6 +265,59 @@ export function menuMatches(actual, expected) {
   );
 }
 
+const emptySectionPaths = {
+  'Copy images': { fixtureField: 'image', addLabel: 'Add image URL' },
+  'Copy videos': { fixtureField: 'video', addLabel: 'Add video URL' },
+  'Copy links': { fixtureField: 'link', addLabel: 'Add link' },
+};
+
+export function emptySectionMatches(state) {
+  return (
+    state?.activeScrapePanel === true &&
+    state?.selectedPaneVisible === true &&
+    state?.selectedTabCorrect === true &&
+    state?.currentCaptureControlCount === 1 &&
+    state?.fixtureTitlePresent === true &&
+    state?.previousPageBanner === false &&
+    state?.tabCount === null &&
+    state?.copyControlCount === 0 &&
+    state?.itemCount === 0 &&
+    state?.addControlPresent === true
+  );
+}
+
+async function emptySectionState(panel, sample, title, tab, addLabel, fixtureTitle) {
+  return sample(
+    panel,
+    `(() => {
+    const rootTab = document.querySelector('button[role="tab"][title="Scrape"][data-state="active"]');
+    const root = rootTab ? document.getElementById(rootTab.getAttribute('aria-controls') ?? '') : null;
+    const selected = [...(root?.querySelectorAll('[role="tablist"] [role="tab"]') ?? [])]
+      .find((tab) => tab.getAttribute('aria-selected') === 'true');
+    const content = selected ? document.getElementById(selected.getAttribute('aria-controls') ?? '') : null;
+    const buttons = [...(content?.querySelectorAll('button') ?? [])];
+    const rootButtons = [...(root?.querySelectorAll('button') ?? [])];
+    return {
+      activeScrapePanel: root?.getAttribute('data-state') === 'active',
+      selectedTabCorrect: selected?.firstChild?.textContent?.trim() === ${JSON.stringify(tab)},
+      selectedPaneVisible: content?.getAttribute('data-state') === 'active' &&
+        content.getBoundingClientRect().height > 0,
+      currentCaptureControlCount: rootButtons.filter((button) =>
+        button.getAttribute('title') === 'Copy capture' ||
+        button.getAttribute('data-matrx-title') === 'Copy capture').length,
+      fixtureTitlePresent: root?.textContent.includes(${JSON.stringify(fixtureTitle)}) === true,
+      previousPageBanner: root?.textContent.includes('A capture from a previous page is retained') === true,
+      tabCount: selected?.querySelector('span')?.textContent?.trim() ?? null,
+      copyControlCount: buttons.filter((button) =>
+        ['title', 'data-matrx-title', 'aria-label'].some((attribute) =>
+          button.getAttribute(attribute) === ${JSON.stringify(title)})).length,
+      itemCount: content?.querySelectorAll('a[href], img').length ?? null,
+      addControlPresent: buttons.some((button) => button.textContent.trim() === ${JSON.stringify(addLabel)}),
+    };
+  })()`,
+  );
+}
+
 async function copyTargetContext(panel, sample, title) {
   return sample(
     panel,
@@ -320,6 +373,22 @@ export async function runGuestCopyMenus({
     for (const [title, tab, options] of menus) {
       action = { stage: 'select_tab', title, tab };
       if (tab) await resourceAction(() => pointer(panel, 'scrape-result-tab', tab));
+      const emptySection = emptySectionPaths[title];
+      if (emptySection && fixture[emptySection.fixtureField] === null) {
+        action = { stage: 'observe_empty_section', title, tab };
+        const state = await emptySectionState(
+          panel,
+          sample,
+          title,
+          tab,
+          emptySection.addLabel,
+          fixture.title,
+        );
+        if (!emptySectionMatches(state))
+          throw new Error(`scrape_copy_empty_section_mismatch:${title}`);
+        evidence.push({ title, state: 'empty', sectionCorrect: true });
+        continue;
+      }
       for (const option of options) {
         action = { stage: 'seed_clipboard', title, option };
         const sentinel = `MATRX_QA_COPY_SENTINEL:${fixtureKey}:${title}:${option}`;

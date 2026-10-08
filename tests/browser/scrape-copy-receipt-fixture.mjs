@@ -29,7 +29,7 @@ export async function exerciseCopyReceiptFailure(title) {
   };
   return runGuestCopyMenus({
     panel,
-    fixtureKey: 'referrals',
+    fixtureKey: title === 'Copy images' ? 'intake' : 'referrals',
     origin: 'http://127.0.0.1:65000',
     resourceAction: (action) => runNativeResourceAction(async () => {}, action),
     menus:
@@ -51,7 +51,7 @@ export async function exerciseCopyReceiptFailure(title) {
           return;
         }
         if (title === 'Copy images' && kind === 'scrape-copy-option') {
-          clipboard = 'http://127.0.0.1:65000/referrals';
+          clipboard = 'http://127.0.0.1:65000/intake';
           window.document.querySelector('[data-radix-popper-content-wrapper]').remove();
           return;
         }
