@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0183",
+  "run_id": 37815373369,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37815373369",
+  "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+  "workflow_head_sha": "468cab2c053a5f470670362bda94310b8520353b",
+  "run_status": "completed",
+  "run_conclusion": "failure",
+  "artifact": {
+    "id": 11567206981,
+    "name": "hosted-guest-37815373369-1",
+    "digest": "sha256:95d81260c43d7bb84876794a61e65d5f7d0959eac39e960c0c7d7742a70b36de",
+    "expired": false,
+    "raw_directory": ".research/seo-interruption-live-adjudication-20261008/raw/hosted-guest-37815373369-1",
+    "raw_log": ".research/seo-interruption-live-adjudication-20261008/raw/run.log",
+    "manifest": ".research/seo-interruption-live-adjudication-20261008/raw/sha256-manifest.txt"
+  },
+  "dispatch": {
+    "lane": "B",
+    "acceptance_case": "guest-seo",
+    "scope": "controlled",
+    "metadata_fixture": "none",
+    "resource_diagnostic": false,
+    "interrupt_selector": "manual_button_returns_to_current_page",
+    "product_artifact_run_id": 37790643945,
+    "product_artifact_id": 11556064167,
+    "product_source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+    "product_version": "0.2.414",
+    "product_tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046"
+  },
+  "verdicts": {
+    "A_native_browser": {
+      "result": "pass_for_requested_interruption_diagnostic",
+      "credit": "none",
+      "evidence": [
+        "Receipt status is unverified and receipt_state is in_progress.",
+        "interruption_test_target is manual_button_returns_to_current_page.",
+        "The selected target has status pass and is retained in targets after checkpoint.",
+        "last_safe_stage is manual_reaudit_settle_wait_accepted and current_operation is null.",
+        "Receipt evidence_classification is DIAGNOSTIC_ONLY_NO_ACCEPTANCE_CREDIT."
+      ],
+      "interpretation": "The hosted native child reported SIGTERM after the selected target completed and its progress checkpoint was written. The outer runner's assertion expecting exit code zero failed as designed for this diagnostic."
+    },
+    "B_executed_source_and_guard": {
+      "result": "pass",
+      "child_signal": "SIGTERM, explicitly reported by the native acceptance child's assertion in the preserved run log",
+      "resource_journal": {
+        "current_run": "hosted-guest-37815373369-1",
+        "admitted": true,
+        "resource_invalid": false,
+        "outer_child_exit_code": 1,
+        "decision": "child_failed",
+        "cleanup": "guard requested SIGTERM for owned descendants; no cleanup failure or unconfirmed group/process event followed; guard finalized the journal and permit",
+        "historical_journals": "Other hosted-* journal files included by the workflow artifact glob have prior run IDs and are not evidence for this run."
+      },
+      "source_checks": {
+        "independently_reviewed_source_sha": "5de616d941356c8ef62aad6a23bc82bc75f3c15e",
+        "focused_guard_ci_run_id": 37813115576,
+        "focused_guard_ci_source_sha": "43006024fadf38dd67f77439bd97ee6521e6ae81",
+        "focused_guard_tests": 159,
+        "focused_guard_passed": 159,
+        "reviewed_source_is_ancestor_of_guard_sha": true,
+        "reviewed_SEO_driver_sources_match_executed_workflow_sha": true,
+        "driver_order": "tests/browser/seo-guest-acceptance.mjs appends the selected target, writes checkpoint(), then invokes interruptSeoAfterCheckpoint(); that helper sends SIGTERM to the driver process."
+      }
+    }
+  },
+  "neighboring_normal_run": {
+    "run_id": 37811146242,
+    "workflow_head_sha": "73693f5a9f85077de60ed84dbe4effe0bb32a7c6",
+    "receipt_sha256": "24278127caed17afe10f70874b3f2319dd48aac6b7e9d91286394148b73fbc7c",
+    "resource_journal_sha256": "c93b040557c0b1d716e742e9bcf2f4f5f82c8b3eb12f695926220910b9894b44",
+    "receipt": "18 completed targets; native child exited 0; resourceInvalid false; decision valid; no in_progress marker.",
+    "executed_source_difference": "Normal run used workflow/source 73693f5 and product tree ff458688a6b9034438be404e78b86184cef750ec29f484931780afb035d74ae6. Interruption run used workflow/source 468cab2 and product tree 550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046. The interruption source adds selector plumbing, validation, checkpoint-then-SIGTERM behavior, and diagnostic receipt conversion. The product trees also differ.",
+    "use_limit": "This confirms the neighboring pre-interruption route completed normally. It is not evidence that the current workflow or current product artifact passes the normal route."
+  },
+  "limits": [
+    "GitHub workflow conclusion is failure because the diagnostic child terminated by SIGTERM and the outer runner asserts zero exit; this is expected diagnostic behavior, not a product acceptance result.",
+    "The outer resource wrapper journal records its own exit code 1, not the inner driver's signal; SIGTERM is independently evidenced by the inner acceptance assertion in run.log.",
+    "Artifact includes journal files from older run IDs; only hosted-guest-37815373369-1 is attributed to this attempt.",
+    "No normal current-source run was executed or inferred."
+  ]
+}
