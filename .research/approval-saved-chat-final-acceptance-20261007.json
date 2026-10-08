@@ -1,0 +1,36 @@
+{
+  "task_id": "approval_saved_chat_final_acceptance",
+  "lane": "fresh independent native verifier",
+  "status": "unverified",
+  "behavior_verdict": "unverified_before_actions",
+  "code_quality_verdict": "pass_ae437676",
+  "defect_ids": ["EXT-D-0156"],
+  "run_id": "approval-saved-chat-final-20261007",
+  "source_sha": "4a5c78a50f8d41709b6abffb30c351898e5eb0ae",
+  "artifact_id": 11528732938,
+  "native_evidence": ".research/approval-saved-chat-final-native-20261007.json",
+  "actual_boundary": {
+    "stage": "approved_organization_selected",
+    "acting_as_picker_unique": true,
+    "approved_name_matches": true,
+    "native_option_pointer_verified": true,
+    "persisted_device_choice_present": false,
+    "actual_action_cases_observed": 0
+  },
+  "interpretation": "The new load ladder may select the approved account organization without writing the device choice. The native harness still requires device persistence after selecting an already selected option; no approval defect was observed in this run. Confirm or repair that oracle before retrying.",
+  "limitations": [
+    "Act, Ask, original-chat warm/full reload, and Pilot were not reached.",
+    "CI development artifact is not Store acceptance."
+  ],
+  "cleanup": {
+    "native_session_terminal": true,
+    "resource_invalid": false,
+    "exit_code": 1,
+    "owned_tmpdir_empty": true,
+    "owned_browser_profile_cleanup": "native harness finally stopped its direct child and removed its owned root; resource job terminal",
+    "screenshots_or_share_grants_mutated": false,
+    "action_fixtures_created": false,
+    "credential_staging_files_created": false
+  },
+  "next_action": "Replace the obsolete mandatory device-choice oracle with the actual current active-organization contract; keep selected approved UI organization and actual request-header assertion. Then use a fresh independent reviewer and one guarded native run."
+}

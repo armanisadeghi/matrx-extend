@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "scope": "imported CI artifact; real admin sign-in; native Chat approval acceptance",
+  "status": "unverified",
+  "build": {
+    "version": "0.2.397",
+    "tree_sha256": "9e0c2f1e18317f856c79aaf0a3529b4637cdf5858ddb64a2ebfff7fac37311cd",
+    "receipt_kind": "local_dev_unpacked"
+  },
+  "account": {
+    "reviewer_fingerprint": "5edfa2692bdacc5e",
+    "extension_signed_in": true,
+    "observed_role_category": "admin",
+    "approved_organization_selection": {
+      "option_count": 57,
+      "eligible_count": 57,
+      "matched_count": 1,
+      "pointer_target_verified": true,
+      "approved_name_fingerprint": "61e154af11cd32c0",
+      "actingAsPickerCount": 1,
+      "pickerMatchesApproved": true,
+      "persistedIdMatchesApproved": false,
+      "name_fingerprint": "61e154af11cd32c0",
+      "id_fingerprint": "8c4b25f5099470bf"
+    },
+    "storage_shape": {
+      "accessTokenPresent": true,
+      "profilePresent": true,
+      "activeOrganizationPresent": false
+    }
+  },
+  "authentication_method": "password_login",
+  "chat": null,
+  "screenshots": null,
+  "approval": {
+    "cases": [],
+    "limitations": []
+  },
+  "failure_stage": "approved_organization_selected",
+  "failure_code": "unclassified_failure",
+  "imported_artifact": {
+    "schema_version": 1,
+    "kind": "ci_development_test",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/ci.yml",
+    "sourceSha": "4a5c78a50f8d41709b6abffb30c351898e5eb0ae",
+    "runId": 37727998755,
+    "runAttempt": 1,
+    "artifactId": 11528732938,
+    "githubArtifactDigest": "sha256:e996032fdecac4e515632f242962856351703cc22bcaad9e945d6a7c9b90ddff",
+    "treeSha256": "9e0c2f1e18317f856c79aaf0a3529b4637cdf5858ddb64a2ebfff7fac37311cd",
+    "source": {
+      "originMain": "529f579286fa0e7a04da33d02f1869ae14ab3cc8",
+      "localHead": "529f579286fa0e7a04da33d02f1869ae14ab3cc8",
+      "trackedDirty": false,
+      "untrackedRunnerInputs": [],
+      "claim": "exact_pushed_commit_only"
+    }
+  }
+}
