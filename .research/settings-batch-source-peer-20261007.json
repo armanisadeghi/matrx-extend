@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "reviewer_lane": "settings-batch-source-peer",
+  "worker_commit": "601590d580dcaae168eb251dda719075dd47585e",
+  "review_scope": "Exact worker commit, original EXT-F-1003 guest T04/T10/T13 inventory, and current Settings/Chat source. Source review only.",
+  "verdict_a_original_spec_coverage": {
+    "status": "partial_native_unverified",
+    "T04": "PARTIAL candidate: trusted Dark/Light/System selection, persisted values, and root dark class after panel reload are exercised. Original current-build native result is still absent; rendered appearance and preference after full Chrome extension Reload/reopen are not observed.",
+    "T10": "PARTIAL candidate: trusted Ask/Act selection and persistence after panel reload are exercised. The inventory also requires the choice to become the new-chat default; the runner correctly marks this unverified. ChatView reads the default when no per-agent override exists, but source does not prove the user's actual new-chat path.",
+    "T13": "MATCHED bounded candidate: trusted Thinking/Fast selection and persistence after panel reload cover the original guest preference expectation. Native result remains absent.",
+    "baseline_and_siblings": "The existing guest Settings proof block and T22/T37/T46/T70/T73/T76/T92 cases remain in the driver after the new batch. This commit makes no member/admin claim."
+  },
+  "verdict_b_code_quality": {
+    "status": "pass_for_source_candidate",
+    "behavior_mapping": "Values and labels match SettingsView PillSelect options; keys match Zustand settings state and matrx.settings.v1 persistence. Theme class oracle matches App.tsx system/light/dark logic.",
+    "false_positive_controls": "Runner requires a unique active Settings control, trusted CDP click, expected UI label, expected allowlisted persisted value, and theme class; waitFor timeout marks the case failed. Unit negatives reject wrong label/value, inactive or duplicate target, and wrong theme class. These are helper guards; native execution must test the actual path.",
+    "privacy": "The page evaluation returns only fixed option labels/values, booleans, and counts. It does not return arbitrary Settings storage, account identity, or credentials.",
+    "cleanup": "The batch ends at the guest defaults System, Ask, and Fast; it does not restore an arbitrary initial preference. The driver uses an owned disposable guest profile, so no personal setting is modified; record this as a scope limit if reused in a persistent profile.",
+    "native_readiness": "Ready for resource-valid native execution as a candidate, subject to the two Verdict A limits. Source self-check and CI cannot close inventory cases."
+  },
+  "evidence": [
+    "git show --format= -U8 601590d5 -- named worker files",
+    "docs/stabilization/inventory.json T04/T10/T13",
+    "docs/stabilization/reports/first-test-brief.json",
+    "src/features/settings/SettingsView.tsx PillSelect and ControlRow",
+    "src/state/settings.ts and src/entrypoints/sidepanel/App.tsx",
+    "src/features/chat/ChatView.tsx defaultPermissionMode path",
+    ".research/nonchat-batch-execution-20261007.json"
+  ],
+  "not_run": "No native browser, build, release, heavy test, or secret access in this review lane. Builder's focused CI 37712443593 is reported at exact SHA by builder; not independently fetched here."
+}
