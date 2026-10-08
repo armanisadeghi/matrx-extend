@@ -50,5 +50,13 @@
       }
     ]
   },
+  "frozen391_source_compatibility": {
+    "status": "COMPATIBLE_FOR_BOUNDED_PRODUCT_OBSERVATION",
+    "product_source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "product_version": "0.2.391",
+    "provenance_reference": "Development run 37698216289, artifact 11516342905; a future native run must verify its actual receipt and loaded identity.",
+    "basis": "The frozen source has the same four exact Privacy aria-labels and bindings to sharePageIdentity, captureLoginsEnabled, offerSavedLoginsEnabled and credentialAssistancePresentation. Defaults, setters, matrx.settings.v1 persistence, persisted readers, and identity/email context consumer paths match current source. A git diff from frozen source through those relevant paths shows only an unrelated Organization hint deletion in SettingsView.tsx.",
+    "boundary": "This establishes source compatibility only. Current-main driver identity and frozen product identity must be recorded separately; a frozen391 native result cannot prove current-main product health."
+  },
   "review_limits": "No browser, native run, build, release, or secret handling in this lane. The exact committed diff, inventory, shared pointer driver, Settings component and focused CI list were source-read."
 }

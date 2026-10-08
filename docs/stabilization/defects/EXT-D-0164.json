@@ -1,0 +1,35 @@
+{
+  "id": "EXT-D-0164",
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T09"],
+  "surface": "Scrape / copy after page navigation",
+  "auth_mode": "guest",
+  "title": "Native Scrape copy batch cannot resolve Copy capture after navigation",
+  "severity": "S2: navigation copy procedure cannot continue; product versus driver cause unverified",
+  "priority": "P1",
+  "state": "open",
+  "owner": "root/scrape_navigation_copy_diagnosis",
+  "preconditions": [
+    "Frozen development0.2.391 CI37698216289/artifact11516342905/source52487361; repaired driver fa05a939; isolated guest narrow360px ARM Chrome141.0.7390.37 with all current resource journals valid."
+  ],
+  "reproduction": [
+    "Run hosted guest-scrape-development on original frozen391, laneA, guest/narrow; observed run37721838779 checkoutd8ff02ed.",
+    "Complete warm T07 on/off and all22 copy options on controlled intake fixture.",
+    "Navigate owned page to referrals and wait for driver capture readiness.",
+    "Attempt the first Copy capture menu in guest_copy_after_navigation."
+  ],
+  "expected": "Copy capture resolves in the current Scrape panel and copied representations identify the new referrals capture, followed by reload proof.",
+  "actual": "pointer_target_not_unique with zero matched and zero visible targets before any referrals option result. Warm22 intake options passed; no reload test ran.",
+  "evidence": [".research/scrape-scroll-native-retest-20261007.json"],
+  "resource_verdict": "All3 current-run journals admitted/resourceInvalidfalse; guest child1 is assertion failure.",
+  "transition_history": [
+    {
+      "at": "2026-10-08T03:24:54.382367+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "New native navigation boundary failure after22 successful warm copy options; causal diagnosis assigned, independent evidence review pending."
+    }
+  ],
+  "closure_requirement": "Confirm cause; smallest repair with meaningful causal guard and fresh source review; resource-valid current-capture navigation and reload native proof with surrounding copy options; independent retest review.",
+  "next_action": "Diagnose original evidence without weakening freshness or selector uniqueness. Preserve new warm successes separately from failed navigation."
+}

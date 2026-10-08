@@ -34,6 +34,13 @@ export function privacySwitchMatches(state, preference, expected) {
   );
 }
 
+export function nextPrivacyRestoreClick(state, preference, original) {
+  if (privacySwitchMatches(state, preference, original)) return null;
+  if (state?.checked === original) return !original;
+  if (state?.checked === !original) return original;
+  throw new Error(`${preference.caseId}_cleanup_switch_unreadable`);
+}
+
 async function observe(panel, preference) {
   return evaluate(
     panel,
@@ -63,23 +70,38 @@ async function observe(panel, preference) {
   );
 }
 
-export async function runGuestPrivacySwitchCase(panel, reloadSettings, preference, record) {
-  assert.equal(
-    guestSettingsChecks(await guestSettingsState(panel), 0).signedOut,
-    true,
-    `${preference.caseId}_requires_signed_out_guest`,
-  );
-  await openSection(panel, 'Privacy');
-  const before = await observe(panel, preference);
+export async function runGuestPrivacySwitchCase(
+  panel,
+  reloadSettings,
+  preference,
+  record,
+  operations = {},
+) {
+  const read = operations.observe ?? observe;
+  const tap = operations.click ?? click;
+  const expand = operations.openSection ?? openSection;
+  const poll = operations.waitFor ?? waitFor;
+  const refresh = operations.reloadSettings ?? reloadSettings;
+  const signedOut =
+    operations.signedOut ??
+    (async () => guestSettingsChecks(await guestSettingsState(panel), 0).signedOut);
+  assert.equal(await signedOut(panel), true, `${preference.caseId}_requires_signed_out_guest`);
+  await expand(panel, 'Privacy');
+  const before = await read(panel, preference);
   assert.equal(before.count, 1, `${preference.caseId}_requires_unique_switch`);
   assert.equal(typeof before.checked, 'boolean', `${preference.caseId}_requires_readable_switch`);
+  assert.equal(
+    privacySwitchMatches(before, preference, before.checked),
+    true,
+    `${preference.caseId}_requires_matching_ui_and_persisted_baseline`,
+  );
   const original = before.checked;
   try {
     for (const expected of [!original, original]) {
-      await click(panel, 'switch', preference.label);
-      const warm = await waitFor(
+      await tap(panel, 'switch', preference.label);
+      const warm = await poll(
         `${preference.caseId}_${expected}_warm`,
-        () => observe(panel, preference),
+        () => read(panel, preference),
         (state) => privacySwitchMatches(state, preference, expected),
       );
       record(
@@ -88,9 +110,9 @@ export async function runGuestPrivacySwitchCase(panel, reloadSettings, preferenc
         warm,
         'pass',
       );
-      await reloadSettings(panel);
-      await openSection(panel, 'Privacy');
-      const reloaded = await observe(panel, preference);
+      await refresh(panel);
+      await expand(panel, 'Privacy');
+      const reloaded = await read(panel, preference);
       record(
         'reload',
         `Switch ${expected ? 'on' : 'off'} survives panel reload`,
@@ -104,15 +126,34 @@ export async function runGuestPrivacySwitchCase(panel, reloadSettings, preferenc
       );
     }
   } finally {
-    // If a check fails after the first click, restore the original guest choice.
-    const current = await observe(panel, preference);
-    if (current.checked !== original) {
-      await click(panel, 'switch', preference.label);
-      await waitFor(
-        `${preference.caseId}_restored`,
-        () => observe(panel, preference),
-        (state) => privacySwitchMatches(state, preference, original),
+    // A failed reload can leave the old panel document gone. Reenter before
+    // cleanup, then use actual clicks to restore both the UI and storage.
+    await refresh(panel);
+    await expand(panel, 'Privacy');
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const current = await read(panel, preference);
+      const target = nextPrivacyRestoreClick(current, preference, original);
+      if (target === null) break;
+      await tap(panel, 'switch', preference.label);
+      await poll(
+        `${preference.caseId}_cleanup_${target}`,
+        () => read(panel, preference),
+        (state) => privacySwitchMatches(state, preference, target),
       );
     }
+    const settled = await read(panel, preference);
+    assert.equal(
+      privacySwitchMatches(settled, preference, original),
+      true,
+      `${preference.caseId}_restoration_failed`,
+    );
+    await refresh(panel);
+    await expand(panel, 'Privacy');
+    const restored = await read(panel, preference);
+    assert.equal(
+      privacySwitchMatches(restored, preference, original),
+      true,
+      `${preference.caseId}_restoration_not_persisted_after_reload`,
+    );
   }
 }

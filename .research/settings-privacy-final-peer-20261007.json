@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "review_type": "fresh_independent_reverification_source_only",
+  "reviewed_commits": [
+    "a862176b4348b498a16d5688b26b1188429d0dd7",
+    "7c392415e8c08452e09ec67b6fe9a446e49e53e8",
+    "a40bf42cd93712bf8ab26d280097c8b06a0d7ee9",
+    "ff548299f0c6b34541c0409ea8173e069f8d91a1"
+  ],
+  "finding_disposition": [
+    {
+      "finding": "UI/storage baseline agreement and restoration after failed reload",
+      "status": "ADDRESSED",
+      "evidence": "The runner refuses a baseline unless the active Privacy switch and matrx.settings.v1 agree. Its finally path reloads, reopens Privacy, uses trusted switch clicks to reconcile UI and storage, checks the original state, and reloads again to verify persistence. The runner-boundary tests exercise mismatched baseline, failed first reload with recovery, and failed cleanup click."
+    },
+    {
+      "finding": "Predicate-only fabricated tests do not guard runner orchestration",
+      "status": "ADDRESSED",
+      "evidence": "The tests now invoke runGuestPrivacySwitchCase with controlled panel operations. They assert exact switch label, both click transitions, four reload calls on success, refusal before click, rejection of ignored click, recovery after reload failure, and failure of unsuccessful restoration. The focused package script includes this test file."
+    }
+  ],
+  "verdict_a_scope_and_behavior": {
+    "status": "PARTIAL",
+    "source_readiness": "READY_FOR_BOUNDED_NATIVE_RUN",
+    "per_target": {
+      "EXT-F-1003-T16": "Source runner can observe switch and persistence; identity and email context sharing remains native-unverified.",
+      "EXT-F-1003-T19": "Source runner can observe switch and persistence; post-login save offer remains native-unverified.",
+      "EXT-F-1003-T31": "Source runner can observe switch and persistence; supported-form saved-login offer remains native-unverified.",
+      "EXT-F-1003-T34": "Source runner can observe switch and persistence; on-page suggestion presentation remains native-unverified."
+    },
+    "reason": "The bounded runner records downstream browser behavior as unverified and this review did not launch a native session. Frozen391 source compatibility was established in the prior review, but only a receipt tied to the actual loaded artifact can establish runtime behavior."
+  },
+  "verdict_b_source_quality": {
+    "status": "PASS",
+    "new_breakage": "None found in the reviewed repair diff.",
+    "basis": "The production runner uses the shared Settings panel driver for trusted clicks, observes the active tab and unique switch, checks stored state on both transitions, and verifies restoration after reload. Tests exercise the actual runner orchestration through a controlled operations boundary rather than only the predicate."
+  },
+  "evidence": {
+    "local_runner_tests": "node --test tests/browser/settings-guest-privacy-batch.test.mjs: 6 passed, 0 failed",
+    "local_focused_tests": "pnpm test:focused-acceptance: 49 passed, 0 failed",
+    "format": "pnpm exec biome check tests/browser/settings-local-controls-acceptance.mjs tests/browser/settings-guest-privacy-batch.mjs tests/browser/settings-guest-privacy-batch.test.mjs: passed",
+    "focused_ci": "GitHub Actions run 37722302031, head ff548299f0c6b34541c0409ea8173e069f8d91a1, completed success"
+  },
+  "limits": "No native browser launch, build, release, or secret handling was performed. Controlled panel tests prove runner calls and failure handling, not an actual Chrome reload or downstream product behavior. A native receipt must retain the four case statuses as partial or unverified until those consumers are exercised."
+}

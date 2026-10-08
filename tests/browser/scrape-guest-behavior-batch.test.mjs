@@ -1,11 +1,13 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { Window } from 'happy-dom';
 import {
   COPY_FIXTURES,
   GUEST_COPY_MENUS,
   copyOracle,
   copyResultMatches,
   menuMatches,
+  retainCopyTargetContext,
   runGuestCopyMenus,
   runGuestScrollSync,
   scrollSyncMatches,
@@ -61,6 +63,80 @@ test('copy verdict rejects unchanged clipboard and wrong selected representation
   assert.equal(menuMatches(labels, labels), true);
   assert.equal(menuMatches(labels.slice(1), labels), false);
   assert.equal(menuMatches([...labels, 'Full capture (JSON)'], labels), false);
+});
+
+test('Copy capture failure observes real DOM states and forwards only bounded receipt data', async () => {
+  const secret = 'PRIVATE_PAGE_BODY_AND_TOKEN';
+  for (const state of ['inactive', 'missing', 'aria-only', 'title']) {
+    const window = new Window();
+    const control =
+      state === 'aria-only'
+        ? '<button aria-label="Copy capture">Copy</button>'
+        : state === 'title'
+          ? '<button title="Copy capture" aria-label="Copy capture">Copy</button>'
+          : '';
+    const result =
+      state === 'missing'
+        ? ''
+        : `<div role="tablist"><button role="tab" aria-selected="true" aria-controls="article-pane">Article</button></div>
+        <div id="article-pane" data-state="active">${secret}</div>`;
+    window.document.body.innerHTML = `<button role="tab" title="Scrape" data-state="${state === 'inactive' ? 'inactive' : 'active'}" aria-controls="scrape-pane">Scrape</button>
+      <section id="scrape-pane" role="tabpanel" data-state="active">
+        ${control}
+        ${result}
+        ${state === 'missing' ? 'A capture from a previous page is retained. Capture this page to extract content.' : ''}
+      </section>`;
+    const article = window.document.getElementById('article-pane');
+    if (article) article.getBoundingClientRect = () => ({ height: 40 });
+    const failure = new Error('unique visible pointer target');
+    failure.driverFailure = { code: 'pointer_target_not_unique', matchedTargetCount: 0 };
+    let observations = 0;
+    await assert.rejects(
+      runGuestCopyMenus({
+        panel: {},
+        browserSession: {},
+        panelUrl: 'chrome-extension://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/panel.html',
+        origin: 'http://127.0.0.1:65000',
+        fixtureKey: 'referrals',
+        resourceAction: (action) => action(),
+        menus: [['Copy capture', null, ['Markdown']]],
+        adapters: {
+          click: async () => {
+            throw failure;
+          },
+          evaluate: async (_panel, expression) => {
+            if (expression.includes('MATRX_QA_COPY_SENTINEL')) return true;
+            observations++;
+            return window.eval(expression);
+          },
+        },
+      }),
+      (caught) => caught === failure,
+    );
+    assert.equal(observations, 1);
+    const receipt = {};
+    retainCopyTargetContext(receipt, failure);
+    const serialized = JSON.parse(JSON.stringify(receipt));
+    assert.deepEqual(serialized, {
+      copy_target_context: {
+        activeScrapeTabs: state === 'inactive' ? 0 : 1,
+        activeScrapePanel: state !== 'inactive',
+        copyTitleCount: state === 'title' ? 1 : 0,
+        copyDataTitleCount: 0,
+        copyAriaLabelCount: state === 'aria-only' || state === 'title' ? 1 : 0,
+        captureContentVisible: state !== 'inactive' && state !== 'missing',
+        previousPageBanner: state === 'missing',
+        emptyPrompt: state === 'missing',
+      },
+    });
+    assert.equal(JSON.stringify(serialized).includes(secret), false);
+    assert.equal(
+      Object.values(serialized.copy_target_context).every(
+        (value) => typeof value === 'boolean' || Number.isInteger(value),
+      ),
+      true,
+    );
+  }
 });
 
 test('copy oracle separates section formats, empty URL lists and page freshness', () => {

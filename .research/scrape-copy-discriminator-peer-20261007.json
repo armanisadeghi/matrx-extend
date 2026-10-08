@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "41a31a2033f5ddf23200d533e65c30d7b9af8d43",
+  "review_scope": "Failure-only DOM discriminator for D164 navigation Copy capture zero-target failure; no product repair or native rerun in this review.",
+  "source_failure": {
+    "run_id": 37721838779,
+    "stage": "guest_copy_after_navigation",
+    "driver_code": "pointer_target_not_unique",
+    "matched_target_count": 0,
+    "warm_copy_options_passed": 22,
+    "cause": "unconfirmed"
+  },
+  "verdict_a": {
+    "status": "PARTIAL",
+    "finding": "The failure-only observation can separate an inactive Scrape panel, a panel with no Copy capture control, and a rendered control whose aria-label remains while the driver's title attributes are absent. It records counts and booleans without clipboard values, credentials, URLs, or page content. It leaves the original pointer error and clipboard oracle intact. A fresh guarded native run using the original v0.2.391 product artifact with this changed driver is still needed to establish which state occurred. The observation follows the pointer's failed sample, so a fast transition between the two samples can remain ambiguous.",
+    "severity": "Minor",
+    "evidence": [
+      "tests/browser/scrape-guest-behavior-batch.mjs:268",
+      "tests/browser/scrape-guest-behavior-batch.mjs:323",
+      "tests/browser/scrape-guest-native-acceptance.mjs:1895",
+      "src/features/scrape/ScrapeView.tsx:100",
+      "src/features/scrape/ScrapeView.tsx:326"
+    ]
+  },
+  "verdict_b": {
+    "status": "PARTIAL",
+    "finding": "The focused test preserves the exact error object and confirms one observation call, but stubs evaluate to return the expected context object. It does not execute the new DOM expression against differing DOM states, verify serialized receipt output, or catch a changed field value or accidental content read in that expression. This weakens confidence in the claimed three-way discrimination and privacy bound until the guarded native receipt is inspected or a DOM-backed test is added.",
+    "severity": "Important",
+    "evidence": [
+      "tests/browser/scrape-guest-behavior-batch.test.mjs:65",
+      "tests/browser/scrape-guest-behavior-batch.test.mjs:91",
+      "tests/browser/scrape-guest-behavior-batch.mjs:268",
+      "tests/browser/scrape-guest-native-acceptance.mjs:1896"
+    ]
+  },
+  "verification": {
+    "focused_test": "node --test tests/browser/scrape-guest-behavior-batch.test.mjs: 6 passed, 0 failed",
+    "ci_run": "37722813390 completed success at exact head 41a31a2033f5ddf23200d533e65c30d7b9af8d43; focused acceptance 50 passed, 0 failed",
+    "native_rerun": "not performed in this review"
+  },
+  "recommendation": "Run the original v0.2.391 product artifact with the changed driver, inspect copy_target_context beside driver_failure, and retain the unchanged copy oracle. Treat the new diagnostic as useful evidence, not a confirmed root cause or product fix."
+}
