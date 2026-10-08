@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "task": "One guest Settings-controls lane B full-extension reload retest",
+  "authorship": "Native operator did not author the reviewed Settings changes; no credentials or environment files were accessed.",
+  "source": {
+    "reviewed_commit": "12a9fa2f57e74f688ec327a5a0e77e4a3bee0d2e",
+    "native_head_sha": "d52c1b8b75bef63ec97c25e8c118a6d02cabbce9",
+    "relevant_settings_blobs_match_reviewed_commit": true,
+    "focused_gate": {
+      "run_id": 37847622681,
+      "head_sha": "12a9fa2f57e74f688ec327a5a0e77e4a3bee0d2e",
+      "conclusion": "success"
+    }
+  },
+  "frozen_artifact": {
+    "ci_run_id": 37818621428,
+    "artifact_id": 11568846736,
+    "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+    "version": "0.2.414",
+    "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+    "expired_at_dispatch": false
+  },
+  "native_attempt": {
+    "run_id": 37847922569,
+    "attempt": 1,
+    "lane": "B settings-controls guest",
+    "runner": "macos-15",
+    "started_at": "2026-10-08T21:36:05Z",
+    "completed_at": "2026-10-08T21:44:50Z",
+    "status": "completed",
+    "conclusion": "failure",
+    "no_retry": true,
+    "resource_admission": {
+      "package": {
+        "admitted": true,
+        "decision": "valid",
+        "exit_code": 0,
+        "resource_invalid": false
+      },
+      "browser": {
+        "admitted": true,
+        "decision": "valid",
+        "exit_code": 0,
+        "resource_invalid": false
+      },
+      "guest": {
+        "admitted": true,
+        "decision": "child_failed",
+        "exit_code": 1,
+        "resource_invalid": false
+      }
+    }
+  },
+  "case_results": {
+    "T04_theme": {
+      "panel_reload": "pass",
+      "full_extension_reload": "pass",
+      "pre_extension_baseline": {
+        "selected": "System",
+        "stored": "system"
+      },
+      "full_extension_choices": [
+        {
+          "label": "Dark",
+          "selected": "Dark",
+          "stored": "dark",
+          "appearance_matches": true,
+          "status": "pass"
+        },
+        {
+          "label": "Light",
+          "selected": "Light",
+          "stored": "light",
+          "appearance_matches": true,
+          "status": "pass"
+        },
+        {
+          "label": "System",
+          "selected": "System",
+          "stored": "system",
+          "appearance_matches": true,
+          "status": "pass"
+        }
+      ],
+      "post_case_baseline": {
+        "selected": "System",
+        "stored": "system",
+        "restored": true
+      }
+    },
+    "T10_default_mode": {
+      "panel_reload": "pass",
+      "full_extension_reload": "pass",
+      "pre_extension_baseline": {
+        "selected": "Ask before acting",
+        "stored": "ask"
+      },
+      "full_extension_choices": [
+        {
+          "label": "Act without asking",
+          "selected": "Act without asking",
+          "stored": "act",
+          "new_chat_mode_label": "Act without asking",
+          "new_chat_mode_icon": "act",
+          "status": "pass"
+        },
+        {
+          "label": "Ask before acting",
+          "selected": "Ask before acting",
+          "stored": "ask",
+          "new_chat_mode_label": "Ask before acting",
+          "new_chat_mode_icon": "ask",
+          "status": "pass"
+        }
+      ],
+      "post_case_baseline": {
+        "selected": "Ask before acting",
+        "stored": "ask",
+        "restored": true
+      }
+    },
+    "T28_sections": {
+      "panel_reload": "pass",
+      "full_extension_reload": "pass",
+      "section_assertions": 44
+    },
+    "T40_auto_scrape": {
+      "full_extension_reload": "pass",
+      "criteria_count": 5,
+      "downstream_capture": "unverified"
+    },
+    "T67_capture_mode": {
+      "panel_reload": "pass",
+      "full_extension_reload": "fail",
+      "failure": "full_extension_recheck_exception",
+      "downstream_capture": "unverified"
+    }
+  },
+  "verdict": "T04 and T10 passed the full-extension reload checks, including captured pre-run values and verified post-case restoration. T28 also passed. T40's setting checks passed but downstream capture remains unverified. T67's warm and panel-reload checks passed, but its full-extension recheck threw the generic recorded exception; the suite therefore failed. No cause is inferred from the receipt.",
+  "evidence_files": ".research/settings-full-extension-native-20261008/raw/ contains the byte-exact native acceptance receipt and package, browser, and guest resource journals for this run. Screenshot files were not retained.",
+  "limitations": [
+    "No every-choice persistence claim beyond the captured Settings checks and new-chat consumer assertions above.",
+    "T40 downstream capture and T67 downstream capture remain unverified.",
+    "T67 full-extension failure details were not retained beyond the generic exception classification."
+  ]
+}
