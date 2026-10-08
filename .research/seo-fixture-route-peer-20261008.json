@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0174",
+  "reviewed_commit": "5d5b985f46ae854a5442e2f4977f7ff0f84097df",
+  "verdict_A": "PASS_EXECUTABLE_CONTRACT_NATIVE_PENDING: workflow fixture input reaches admission, hosted preflight, selected-development route env, and the existing SEO driver. The driver conditionally visits real Airbnb and compares public DOM hreflang/schema data to the actual side-panel UI before trusted outbound activation. No new native run or product pass is established.",
+  "verdict_B": "PASS_SOURCE: none leaves the existing run unchanged; unknown fixture, non-SEO case, controlled scope, release/Store artifact, and mismatched receipt are refused. The imported artifact is verified before dispatch; the driver verifies frozen identity before and after. No mocked page, API, result, or fabricated acceptance was added.",
+  "proofs": [".github/workflows/hosted-guest-acceptance.yml:70,154,284,354", "scripts/hosted-guest-acceptance.mjs:70-84,340-346,421,516-518,583-590", "scripts/hosted-seo-route.mjs:4-42", "tests/browser/seo-guest-acceptance.mjs:116-131,1668-1848,1854-1870", "node --test scripts/hosted-seo-route.test.mjs scripts/test-hosted-acceptance-lanes.mjs: 8 pass, 0 fail", "pnpm exec biome check changed source and report inputs: pass"],
+  "limits": ["Source review only; no native browser, hosted dispatch, build, install, or release executed.", "Public Airbnb metadata can change or be absent; the driver correctly reports the door subtarget unverified if no unique candidates exist.", "Full EXT-F-1008 and other T09 dimensions remain unverified."],
+  "inventory_promotion": false
+}
