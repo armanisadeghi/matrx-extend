@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "review_of": "eaa4fbe6ac7a35a6efd5707898ff3ad08cd6db56",
+  "scope": "EXT-D-0170 scoped independent source review of the native SEO driver sequence repair",
+  "prior_findings": [
+    {
+      "finding": "A direct return before the actual runSeoCaseSequence call leaves the prior guard green",
+      "status": "ADDRESSED",
+      "evidence": "The new assertReachable rejects an in-memory direct-return mutation of the actual exercisePanel body with 'native panel sequence is reachable'."
+    },
+    {
+      "finding": "A direct return at the start of the controlled callback leaves the prior guard green",
+      "status": "ADDRESSED",
+      "evidence": "The new assertReachable rejects an in-memory direct-return mutation of the actual controlled callback with 'controlled phase is reachable'."
+    }
+  ],
+  "verdict_a_native_acceptance_readiness": {
+    "status": "PARTIAL",
+    "evidence": "The current driver still directly awaits runSeoCaseSequence with controlled T14 social copy and T02 changed-metadata recapture before the volatile manual detail phase. The source guard passes, and focused source/oracle tests pass.",
+    "limit": "No native browser or build was run in this review. Real T02/T14 behavior and full EXT-D-0170 acceptance remain unverified."
+  },
+  "verdict_b_source_guard_quality_and_ci": {
+    "status": "IMPORTANT_FINDING",
+    "ci_registration": "PASS: package.json test:focused-acceptance includes seo-driver-sequence.test.mjs, and both .github/workflows/focused-acceptance.yml and ci.yml invoke that command.",
+    "finding": {
+      "severity": "Important",
+      "location": "tests/browser/seo-driver-sequence.test.mjs:35",
+      "detail": "alwaysExits does not analyze a TryStatement or a truthy numeric condition. In-memory mutations of the actual driver inserting `try { return; } finally {}` before runSeoCaseSequence or at the start of the controlled callback both pass inspectDriverSequence. `if (1) return;` at the start of the controlled callback also passes. These are unconditional early exits that skip the retained sequence or T14/T02 work, so the prior bypass class is still not fully guarded.",
+      "impact": "A driver that silently skips independent observations can remain green in focused CI despite retaining all expected call syntax."
+    },
+    "new_breakage": "No regression in the unchanged driver observed; the repair's reachability logic has the bypass above."
+  },
+  "verification": {
+    "focused": "node --test tests/browser/seo-driver-sequence.test.mjs tests/browser/seo-new-coverage-oracle.test.mjs tests/browser/seo-guest-clipboard.test.mjs: 30 passed, 0 failed",
+    "mutations": "Against the actual driver source and extracted inspectDriverSequence: direct sequence and controlled returns rejected; try/finally returns in both positions and literal-true controlled return passed the guard.",
+    "format": "pnpm exec biome check tests/browser/seo-driver-sequence.test.mjs: passed",
+    "diff": "git diff --check eaa4fbe6^ eaa4fbe6: passed"
+  }
+}
