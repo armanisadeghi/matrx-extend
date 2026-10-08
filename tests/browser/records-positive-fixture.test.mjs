@@ -97,6 +97,7 @@ async function scenario(options = {}) {
         GITHUB_ACTIONS: 'true',
         RUNNER_ENVIRONMENT: 'github-hosted',
         MATRX_HOSTED_ACCEPTANCE_CASE: 'records-readonly-admin',
+        MATRX_HOSTED_ACCEPTANCE_LANE: 'A',
       },
       journalPath,
       exercise,
@@ -205,16 +206,24 @@ test('fixture recovery refuses any caller outside the guarded hosted Records cas
       GITHUB_ACTIONS: 'true',
       RUNNER_ENVIRONMENT: 'github-hosted',
       MATRX_HOSTED_ACCEPTANCE_CASE: 'guest-chat',
+      MATRX_HOSTED_ACCEPTANCE_LANE: 'A',
     },
     {
       GITHUB_ACTIONS: 'true',
       RUNNER_ENVIRONMENT: 'self-hosted',
       MATRX_HOSTED_ACCEPTANCE_CASE: 'records-readonly-admin',
+      MATRX_HOSTED_ACCEPTANCE_LANE: 'A',
+    },
+    {
+      GITHUB_ACTIONS: 'true',
+      RUNNER_ENVIRONMENT: 'github-hosted',
+      MATRX_HOSTED_ACCEPTANCE_CASE: 'records-readonly-admin',
+      MATRX_HOSTED_ACCEPTANCE_LANE: 'B',
     },
   ]) {
     const s = await scenario({ environment });
     try {
-      await assert.rejects(s.run(), /records_fixture_(hosted|runner|case)_required/);
+      await assert.rejects(s.run(), /records_fixture_(hosted|runner|case|lane_a)_required/);
       assert.equal(s.calls.length, 0);
     } finally {
       await s.cleanup();
@@ -429,7 +438,7 @@ test('page-local recovery scan selects only exact marked synthetic tables in the
   assert.doesNotMatch(JSON.stringify(result), /someone else|Customer records/);
 });
 
-test('hosted Records attempts share one concurrency group across both lanes', async () => {
+test('hosted Records keeps the canonical A/B groups and passes admitted lane A to the driver', async () => {
   const workflow = await readFile(
     new URL('../../.github/workflows/hosted-guest-acceptance.yml', import.meta.url),
     'utf8',
@@ -439,11 +448,11 @@ test('hosted Records attempts share one concurrency group across both lanes', as
   const group = new Function('inputs', `return ${expression};`);
   assert.equal(
     group({ acceptance_case: 'records-readonly-admin', acceptance_lane: 'A' }),
-    'hosted-records-native',
+    'hosted-guest-side-panel-A',
   );
   assert.equal(
     group({ acceptance_case: 'records-readonly-admin', acceptance_lane: 'B' }),
-    'hosted-records-native',
+    'hosted-guest-side-panel-B',
   );
   assert.equal(
     group({ acceptance_case: 'guest-chat', acceptance_lane: 'A' }),
@@ -454,4 +463,5 @@ test('hosted Records attempts share one concurrency group across both lanes', as
     'hosted-guest-side-panel-B',
   );
   assert.match(workflow, /cancel-in-progress: false/);
+  assert.match(workflow, /MATRX_HOSTED_ACCEPTANCE_LANE: \$\{\{ inputs\.acceptance_lane \}\}/);
 });
