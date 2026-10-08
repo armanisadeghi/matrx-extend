@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "lane": "fresh retained grant native verifier",
+  "zero_authorship": true,
+  "source_review_commits": [
+    "5d09cdbd1707877fdbce2c70a3cd49819868ddb8",
+    "11564fe786ca47bade2c33718710504ed145eb66"
+  ],
+  "verdict_a": {
+    "status": "unverified",
+    "reason": "artifact selection rejected before browser or service call; three required selector environment values omitted by verifier"
+  },
+  "verdict_b": {
+    "status": "pass",
+    "reason": "Differentiated safe HTTP, shape, count diagnostics preserve real actor, exact file and grant creation checks before canonical revoke and inactive reread; no product logic replaced."
+  },
+  "run_id": "retained-share-diagnostic-native-20261007",
+  "resource_journal": "docs/stabilization/resource-journals/retained-share-diagnostic-native-20261007.jsonl",
+  "runtime_report": "test-results/screenshot-full-page-b4e1dccd-9f81-4889-9228-027484c0209c.json",
+  "runtime_sha256": "e98a6a833ad3ae05a08780511ea4dbc1fee0e58c688225ea873f1670407828e9",
+  "first_boundary": "build_identity:selected_ci_artifact_mismatch",
+  "native_browser_started": false,
+  "service_lookup_attempted": false,
+  "revoke_attempted": false,
+  "private_recovery": "retained unchanged mode 0600",
+  "owned_jobs": "all terminal; no browser/profile created",
+  "remaining": "Correct required artifact selector environment before a native service diagnostic; no product/service failure inferred."
+}
