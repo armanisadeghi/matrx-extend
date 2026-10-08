@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0169",
+  "feature_id": "EXT-F-1008",
+  "status": "SOURCE_ERROR_BOUNDARY_READY_FOR_FRESH_PEER; NATIVE_UNVERIFIED",
+  "starting_evidence": {
+    "peer": ".research/seo-social-feedback-final-peer-20261008.json",
+    "reviewed_commit": "4094c08d8bd69f5836a1378402515689c10cb8a9",
+    "finding": "The social feedback poll used the shared general waitFor, which converts every read error into a transient sample. Its timeout was then treated as a missed icon, allowing clipboard and T02 actions after a lost target or resource failure."
+  },
+  "repair": {
+    "boundary": "Only the social feedback read now uses pollSocialFeedback. It accepts ordinary intact-pane false Check/X samples until the bounded icon window ends, then returns iconObserved false and permits actual clipboard verification.",
+    "fatal_errors": "Any read rejection propagates immediately. No lost-target, resource, or unexpected read error can become a missed-icon result; clipboard and independent T02 work are not reached after such a rejection.",
+    "other_callers": "The shared settings-panel-driver waitFor and other acceptance callers are unchanged."
+  },
+  "source_validation": {
+    "green": "node --test tests/browser/seo-new-coverage-oracle.test.mjs: 6 pass, 0 fail; node --check tests/browser/seo-guest-acceptance.mjs passed; Biome check passed after formatting.",
+    "red": "Scratch-copy mutation that catches and converts the actual poller's read error to a false sample: exit 1, the lost-target boundary test failed.",
+    "test_scope": "The test drives the same pollSocialFeedback function imported by the native driver. It proves ordinary missed feedback is distinguishable from a thrown lost_target read, and a thrown read stops clipboard and T02 callbacks."
+  },
+  "native_execution": "PENDING_FRESH_REVIEW; no native rerun or coverage credit",
+  "limits": [
+    "The earlier native run did not establish whether a selector mismatch, missed icon, or actual copy failure occurred.",
+    "This repairs a runner error boundary, not a proven product defect.",
+    "T02 and T14 remain unverified on the native surface until a reviewed new run."
+  ],
+  "owned_paths": [
+    "tests/browser/seo-guest-acceptance.mjs",
+    "tests/browser/seo-new-coverage-oracle.mjs",
+    "tests/browser/seo-new-coverage-oracle.test.mjs",
+    ".research/seo-social-feedback-error-fix-20261008.json"
+  ]
+}

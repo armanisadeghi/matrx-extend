@@ -7,8 +7,8 @@
   "title": "Successful acceptance child exits before pending resource recovery can complete",
   "severity": "S3: repeated invalid test attempts, no established product failure",
   "priority": "P1",
-  "state": "in-fix",
-  "owner": "root/resource_completion_repair",
+  "state": "fixed",
+  "owner": "root/settings_completion_native",
   "preconditions": [
     "Exact Settings ARM run37732615934: package/browser valid; guest admitted; resource policy requires three healthy recovery samples."
   ],
@@ -22,7 +22,10 @@
   "cause": "Source guard child-exit path ends watch loop when CPU recovery remains pending.",
   "evidence": [
     ".research/settings397-arm-native-20261007.json",
-    ".research/settings397-arm-resource-peer-20261007.json"
+    ".research/settings397-arm-resource-peer-20261007.json",
+    ".research/resource-completion-repair-20261008.json",
+    ".research/resource-completion-peer-20261008.json",
+    ".research/resource-completion-final-peer-20261008.json"
   ],
   "transition_history": [
     {
@@ -42,8 +45,15 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Implementer owns bounded guard completion with unchanged limits and explicit failure controls."
+    },
+    {
+      "at": "2026-10-08T06:00:50.221206+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Admitted causalRED/final3of3GREEN; fresh sourcepeer4144d854 acceptsfailurecontrols and code. Native Settings remains pending."
     }
   ],
   "closure_requirement": "Causal original-behavior failure; corrected recovery success plus second-bad/timeout/child-error/lease semantics; fresh independent source review and exact resource-valid original Settings native retest.",
-  "next_action": "Finish guarded source evidence, independent review, then one exact-artifact native attempt. No retroactive credit for previous resource-invalid runs."
+  "next_action": "One reviewed exact-artifact ARM Settings run owned by settings_completion_native; final resource validity and original-boundary observations require independent review before closure.",
+  "fix_commit": "7e72f04a0cce79cd3bd0f2cf0c5c8a5879020f03"
 }

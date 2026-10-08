@@ -5,7 +5,7 @@
   "title": "Full-page capture misses overflow scrolling panes",
   "surface": "Screenshots",
   "auth_mode": "member/admin",
-  "state": "fixed",
+  "state": "retest-pass",
   "owner": "screenshots-repair",
   "priority": "P1",
   "severity": "S2",
@@ -27,7 +27,9 @@
     ".research/screenshots-final-source-review.json",
     ".research/screenshots-source-handoff.json",
     "docs/stabilization/resource-journals/screenshots-lint-20261005.jsonl",
-    ".research/resumed-completion-20261007.json"
+    ".research/resumed-completion-20261007.json",
+    ".research/final-screenshot-native-20261008.json",
+    ".research/final-screenshot400-native-20261008.json"
   ],
   "transition_history": [
     {
@@ -53,19 +55,26 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Source repair pushed with independent component/source review and final15 focused tests/typecheck pass; native acceptance and release unverified."
+    },
+    {
+      "at": "2026-10-08T05:51:31.320420+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Fresh independent source and complete requested native targets PASS on exact updated development artifact; all test grants revoked and owned screenshot rows absent. Store acceptance remains separate pending."
     }
   ],
   "closure_requirement": "Independent source review, meaningful regression checks and real native capture/view/share acceptance on exact artifact. Store/native release acceptance remains separate.",
-  "next_action": "Requested screenshot targets passed independently on exact development artifact. Permitted release owner must claim and perform canonical package catch-up/release gates and Store acceptance; broader expiry/max-views and unsupported/failure cases remain unverified. Do not represent development acceptance as shipped.",
+  "next_action": "Permitted release host: canonical package catch-up, strict release gates, publish and observe installed Store behavior. Source and requested development native targets pass; broader unsupported/failure/expiry/max-views cases remain explicitly unverified.",
   "fix_shas": ["1dfb119a", "59617c92", "854323c7", "89c8875d"],
   "review_queue_id": "e7a27ff2-b763-4a5c-a19f-1b808bb94c37",
   "verification": {
     "source": "15 focused tests pass; typecheck passes; valid resource journals. Initial typecheck caught scroll mock overload mismatch; final typecheck passed after correction.",
-    "native": "Independent native requested targets PASS on CI source61a9b1ca / artifact11515715192 / version0.2.391: root+nested full-page pixels/restoration, same loaded local blob without second image GET, warm reload, canonical owner grant, anonymous identical image bytes, revocation and exact owned row cleanup. Broader failure cases and Store installation remain unverified.",
+    "native": "PASS fresh independent all requested targets on same final CI source787bd6cd/run37733771636/artifact11531101830/tree69035dd3/version0.2.400: root+nested top/middle/bottom pixels and scroll restoration, loaded local viewer with zero second image GET, warm reload, actual quick public-link clipboard and anonymous identical image bytes, canonical manager anonymous identical bytes, both exact native grant revocations and owned screenshot row deletions.",
     "release": "pending permitted machine; no local build/version/release attempted",
     "original_reported_page": "not supplied or observed in native browser",
     "owned_jobs": "All terminal; no owned browser tabs/processes remain.",
-    "lint": "Full pnpm lint PASS with existing advisory warnings; finalized valid journal."
+    "lint": "Full pnpm lint PASS with existing advisory warnings; finalized valid journal.",
+    "latest_acceptance_at": "2026-10-08T06:03:30.107441+00:00"
   },
   "limitations": [
     "Only largest fully visible overflow pane selected when root fits viewport; clipped/multi-pane layouts need native acceptance.",
@@ -109,5 +118,15 @@
     "Screenshots thumbnail already holds full blob bytes; separate Files icon retains explicit website navigation.",
     "Persisted cloud and inline captures expose truncation differently; tab now reads both forms."
   ],
-  "release_owner": "screenshots-repair on a permitted release host / canonical automatic pipeline"
+  "release_owner": "screenshots-repair on a permitted release host / canonical automatic pipeline",
+  "release_handoff": {
+    "owner": "root/extension-bugfix-release",
+    "state": "prepared; policy pending permitted host",
+    "required_gates": [
+      "canonical package catch-up",
+      "strict release gates",
+      "publication and actual installed Store acceptance"
+    ],
+    "no_manual_local_release": true
+  }
 }

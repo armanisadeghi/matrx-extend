@@ -634,6 +634,7 @@ async function main() {
   await acquire(owner);
   let child;
   let settled;
+  let completionPending = false;
   let groupId;
   let stop = false;
   let wakeStop;
@@ -722,7 +723,6 @@ async function main() {
         break;
       }
       if (result) {
-        if (cpu.pending) resourceInvalid = true;
         emit('RESOURCE_JOB_EXIT', { runId, ...result });
         childFinished = true;
         if (
@@ -730,6 +730,21 @@ async function main() {
           !(await stopOwnedGroup(groupId, runId, 'child-exited-with-owned-descendants'))
         )
           throw new Error('RESOURCE_GROUP_UNCONFIRMED');
+        if (
+          cpu.pending &&
+          result.childExitCode === 0 &&
+          !result.childSignal &&
+          !result.childError
+        ) {
+          // The child can finish between recovery watches. Keep its permit
+          // until this guard confirms recovery or reaches its existing stop.
+          // RESOURCE_JOB_EXIT prevents any further native action in this run.
+          completionPending = true;
+          settled = undefined;
+          emit('RESOURCE_COMPLETION_RECOVERY_PENDING', { runId });
+          continue;
+        }
+        if (cpu.pending) resourceInvalid = true;
         process.exitCode = resourceInvalid ? 3 : (result.childExitCode ?? 1);
         break;
       }
@@ -826,6 +841,10 @@ async function main() {
         const hold = JSON.parse(await readFile(holdPath, 'utf8'));
         await persistSafetyState(holdPath, { ...hold, healthySamples: healthy });
         emit('RESOURCE_RECOVERY_SAMPLES_READY', { runId });
+      }
+      if (completionPending && !cpu.pending) {
+        process.exitCode = 0;
+        break;
       }
     }
   } finally {

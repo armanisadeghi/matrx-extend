@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "defect_id": "EXT-D-0169",
+  "review_kind": "fresh scoped re-review of social feedback error boundary",
+  "reviewed_commit": "2d3a7de283ef379d4597d656c9d52406d41161b0",
+  "prior_finding": {
+    "status": "ADDRESSED_FOR_THROWN_READS",
+    "detail": "copySocialTags now imports the actual pollSocialFeedback function. Its awaited read rejection is not caught by the poller or caller. A lost-target/resource exception stops before clipboard and before the runCopyCheckThenRecapture T02 callback. The focused test drives this imported function and observes both callbacks remain untouched."
+  },
+  "verdict_A_behavior_readiness": {
+    "status": "UNVERIFIED_NATIVE_PENDING",
+    "detail": "No fresh native SEO/social acceptance run was in scope. The earlier native result still cannot establish actual icon, clipboard or T02 behavior, so this review grants no T02/T14 pass. The source boundary still permits an invalid SEO pane sample to reach clipboard verification."
+  },
+  "verdict_B_quality_and_guards": {
+    "status": "REPAIR_REQUIRED_BEFORE_NEXT_NATIVE_RUN",
+    "accepted": [
+      "Thrown read errors now propagate directly; ordinary bounded false-icon samples remain nonfatal.",
+      "The focused guard imports the same poller used by the native driver and would reject the old catch-and-convert behavior.",
+      "The negative copy criteria, permission restoration helper and controlled DOM mutation cleanup were unchanged in this commit."
+    ],
+    "new_findings": [
+      {
+        "severity": "Important",
+        "location": "tests/browser/seo-new-coverage-oracle.mjs:63; tests/browser/seo-guest-acceptance.mjs:342",
+        "title": "Invalid SEO pane is accepted as a missed feedback icon",
+        "detail": "socialCopyState returns scopeValid, buttonCount and visible for every sample, but pollSocialFeedback considers only check/failed. If Runtime.evaluate succeeds while the linked SEO pane is gone, inactive, or the copy action disappears, repeated scopeValid:false or buttonCount:0 samples return iconObserved:false. copySocialTags then reads clipboard and can mark T14 pass when its text matches and changed. Only a valid pane with an absent transient icon should continue; invalid pane or missing action should stop clipboard and T02.",
+        "evidence": "A direct probe of the imported poller with {scopeValid:false,buttonCount:0,visible:false,check:false,failed:false,idle:false} returned {iconObserved:false} after the deadline. The new test's missed-icon samples contain only check:false and failed:false, so it cannot reject this state.",
+        "remedy": "Validate every feedback sample's scope and unique visible action before accepting icon absence, then add a focused invalid-pane guard alongside the lost-target case."
+      }
+    ],
+    "guard_assessment": "The thrown-read regression is covered, but the controlled missed-icon test does not encode the required valid-pane precondition."
+  },
+  "checks_run": [
+    "node --test tests/browser/seo-new-coverage-oracle.test.mjs tests/browser/clipboard-observation.test.mjs: 7 passed",
+    "Direct imported-poller invalid-pane probe: returned iconObserved false instead of rejecting"
+  ],
+  "limits": [
+    "No build or native run was performed under this review assignment.",
+    "No source or inventory files were edited."
+  ]
+}

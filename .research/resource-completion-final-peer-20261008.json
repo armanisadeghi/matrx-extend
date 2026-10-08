@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "resource-completion-final-peer-20261008",
+  "defect_id": "EXT-D-0168",
+  "status": "INDEPENDENT_SOURCE_REVIEW_COMPLETE_NATIVE_ACCEPTANCE_PENDING",
+  "reviewed_commits": [
+    "7e72f04a0cce79cd3bd0f2cf0c5c8a5879020f03",
+    "5743918ef5cddeb1f9f7fc8464734753e9c975e8"
+  ],
+  "prior_findings": [
+    {
+      "finding": "Pending child nonzero/error and operator-stop controls absent from the initial GREEN snapshot",
+      "status": "ADDRESSED",
+      "evidence": "The committed integration test adds pending-failed-child, pending-child-error, and completion-stop scenarios. The admitted controls run reports 3/3 passing, and its outer journal ends valid after child exit 0. Each inner scenario asserts exit 3 and invalid final decision; child error and stop also assert their causal events."
+    }
+  ],
+  "verdict_A_behavior_acceptance": {
+    "result": "PARTIAL_SOURCE_BEHAVIOR_PASS_NATIVE_PENDING",
+    "evidence": "The committed guard records child exit 0 during CPU pending, retains the same lease, disables further native actions through RESOURCE_JOB_EXIT, and continues the existing watch. Controlled scenarios assert confirmed recovery returns valid, while second bad CPU, confirmation expiry, memory unsafe, child failure/error, and operator stop return invalid. No exact-artifact, resource-valid Settings native run was reviewed.",
+    "remaining": "Run one admitted native Settings retest on the exact artifact before closing D168 or crediting acceptance. ARM 37732615934 remains invalid."
+  },
+  "verdict_B_code_quality_evidence": {
+    "result": "PASS_WITH_LIMITS",
+    "evidence": "The change reuses the existing CPU episode, watch, lease, and native-action boundary. The old-behavior mutant fails causally; committed GREEN and controls GREEN runs pass under the real outer host guard. Recorded SHA-256 values match all six committed log and journal files. The policy only adds an explanation; its stop count, healthy count, and timeout calculation are unchanged.",
+    "new_breakage": [],
+    "limits": "Inner scratch guards stub telemetry and legacy-host ownership, so these are controlled lifecycle checks, not a real CPU spike or native Settings proof. Measurement failure after successful child exit has no dedicated completion scenario; production cpuEpisode classifies non-CPU measurement failure as terminal unsafe, and the guard's existing unsafe branch invalidates the run. This is an evidence limit, not an observed breakage."
+  },
+  "review_method": "Inspected exact builder commits, defect and prior peer report, production guard and CPU episode, native-action boundary, integration assertions, six evidence file hashes, and real outer control journal. No source, native job, build, launch, child agent, or redundant test run by reviewer."
+}

@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "task_id": "settings-completion-native-20261008",
+  "status": "DONE_INVALID_NO_NATIVE_ACCEPTANCE",
+  "scope": "One hosted ARM macos-15 lane B settings-controls attempt against the frozen 0.2.397 development artifact; no retry.",
+  "workflow": {
+    "run_id": 37735318823,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37735318823",
+    "ref": "main",
+    "dispatch_head_sha": "4144d854a5f3682d92eb3fd9e78babd545f51da1",
+    "observed_head_sha": "4144d854a5f3682d92eb3fd9e78babd545f51da1",
+    "acceptance_lane": "B",
+    "runner_label": "macos-15",
+    "runner_architecture": "ARM64",
+    "acceptance_case": "settings-controls",
+    "job_id": 113173415104,
+    "attempt": 1,
+    "created_at": "2026-10-08T06:00:57Z",
+    "completed_at": "2026-10-08T06:07:32Z",
+    "conclusion": "failure"
+  },
+  "frozen_product": {
+    "ci_run_id": 37724859892,
+    "artifact_id": 11527132614,
+    "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+    "version": "0.2.397",
+    "kind": "local_dev_unpacked",
+    "publish_state": "not_published",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "receipt_tree_sha256": "1035cd28ce5a63ac6233626f35102f016f7c7e7e0ef0717d259a3ec40fc856ed"
+  },
+  "preflight": {
+    "no_queued_or_in_progress_hosted_guest_run": true,
+    "repair_and_peer_ancestor_of_main": true,
+    "relevant_paths_match_peer_head": true,
+    "frozen_ci_artifact_available_and_digest_verified": true
+  },
+  "resource_gate": {
+    "package": "valid, admitted, child exit 0",
+    "browser": "valid, admitted, child exit 0",
+    "guest": "invalid, admitted, child exit 1, wrapper exit 3",
+    "guest_events": [
+      "RESOURCE_ADMITTED",
+      "RESOURCE_CPU_PENDING",
+      "RESOURCE_PROCESS_ATTRIBUTION",
+      "RESOURCE_JOB_EXIT",
+      "RESOURCE_FINAL_DECISION"
+    ],
+    "guest_cpu_pending_sample": {
+      "at": "2026-10-08T06:07:10.789Z",
+      "reason": "RESOURCE_CPU_BUSY",
+      "one_minute_load": 1.6,
+      "logical_cpus": 3,
+      "cpu_busy_fraction": 0.97,
+      "available_memory_gib": 5.81
+    },
+    "final": {
+      "at": "2026-10-08T06:07:12.526Z",
+      "resource_invalid": true,
+      "exit_code": 3,
+      "decision": "invalid"
+    },
+    "completion_recovery_observation": "Absent: child exited nonzero while CPU was pending, so the successful-child completion path and its three-healthy-sample recovery were not exercised. No later CPU watch was recorded."
+  },
+  "native_outcome": {
+    "status": "unverified",
+    "setup_error": "owned_cdp_endpoint_timeout",
+    "startup_failure": "Owned Chromium process spawned, but its CDP endpoint did not become available within 5029 ms; no launch exit or crash signature was observed. The child exited 1 before native panel interaction.",
+    "cases_total": 16,
+    "cases_unverified": 16,
+    "all_case_steps_empty": true,
+    "T34": "Unverified at setup; original failure identity, baseline restoration, and downstream password-suggestion consumer were not exercised.",
+    "T64": "Unverified at setup; guest fixture, Ask again action, and authentication distinction were not exercised.",
+    "screenshots": "None uploaded for this run because the panel did not open.",
+    "product_vs_driver_vs_host": "The frozen product artifact imported with the expected tree hash. The hosted driver failed to obtain the owned Chromium CDP endpoint during startup amid a measured CPU-busy episode; this run does not show a Settings product behavior failure or prove which process caused the startup timeout."
+  },
+  "evidence": {
+    "artifact_id": 11531453088,
+    "artifact_name": "hosted-guest-37735318823-1",
+    "artifact_digest": "sha256:28d51a4ceaed415d7e1e9fee8386623f323c4ca30f5f662380749d8498531e72",
+    "downloaded_zip_sha256": "28d51a4ceaed415d7e1e9fee8386623f323c4ca30f5f662380749d8498531e72",
+    "artifact_search": "Recursively enumerated nested artifact; copied only receipt and three journals with run ID 37735318823-1. Six journals from older run IDs were excluded. Complete downloaded ZIP and workflow log retained.",
+    "originals": [
+      {
+        "path": ".research/settings-completion-native-20261008-originals/artifact.zip",
+        "sha256": "28d51a4ceaed415d7e1e9fee8386623f323c4ca30f5f662380749d8498531e72",
+        "bytes": 9534
+      },
+      {
+        "path": ".research/settings-completion-native-20261008-originals/workflow.log",
+        "sha256": "a806c6cfb8138cd5cdb02c4679f4dc6beccb7c30dc54aa4591d59c6701cae864"
+      },
+      {
+        "path": ".research/settings-completion-native-20261008-originals/settings-local-controls-acceptance.json",
+        "sha256": "06f7d4eb3ae3217f7de71253bbb41aade7b3152af47f246031263bf4f91b01d4"
+      },
+      {
+        "path": ".research/settings-completion-native-20261008-originals/resource-journals/hosted-package-37735318823-1.jsonl",
+        "sha256": "d0ed42f0284ee8439a12f3206fc65c4dcd04d96c2669e9f74e1feede33f98528",
+        "bytes": 1003
+      },
+      {
+        "path": ".research/settings-completion-native-20261008-originals/resource-journals/hosted-browser-37735318823-1.jsonl",
+        "sha256": "7226921b40fdbb03763654876f0b9c30482eb530081dca82fea9092d7f129029",
+        "bytes": 988
+      },
+      {
+        "path": ".research/settings-completion-native-20261008-originals/resource-journals/hosted-guest-37735318823-1.jsonl",
+        "sha256": "3bf53808e1bd8e46b94fa8bf26b97662efc6630e70dadc640e4189ec0261c883",
+        "bytes": 4917
+      }
+    ]
+  },
+  "limits": "Exactly one hosted attempt, no retry. D168 repair retains source/control approval but gets no native recovery credit here. D167 diagnostic remains source-reviewed but its T34 failed-reload branch was not reached. Prior invalid runs receive no retroactive acceptance credit. No product, driver, policy, threshold, inventory, release, secret, or account change."
+}

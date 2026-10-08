@@ -14,7 +14,13 @@ import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs
 import { withClipboardReadPermission } from './clipboard-observation.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { verifyGuestCopy } from './seo-guest-clipboard.mjs';
-import { verifyManualRecapture, verifySocialClipboard } from './seo-new-coverage-oracle.mjs';
+import {
+  observeSocialCopyOutcome,
+  requireSocialCopyTarget,
+  runCopyCheckThenRecapture,
+  socialCopyButtonObservation,
+  verifyManualRecapture,
+} from './seo-new-coverage-oracle.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '..', '..');
@@ -294,58 +300,105 @@ async function socialCopyState(panel) {
     panel,
     `(() => {
     ${SEO_SCOPE}
-    const buttons = [...(pane?.querySelectorAll('button[title="Copy the meta tags this page is missing"]') ?? [])];
+    const inspect = ${socialCopyButtonObservation.toString()};
     return { scopeValid: linked && tab?.getAttribute('aria-selected') === 'true',
-      buttonCount: buttons.length,
-      visible: buttons.length === 1 && buttons[0].getBoundingClientRect().width > 0 };
+      ...inspect(pane, 'Copy the meta tags this page is missing') };
   })()`,
   );
 }
 
 async function copySocialTags({ panel, browserSession, panelTarget }, source, phase) {
+  assert.equal(source.social.title, false, 'public fixture lacks social title for copy check');
   const state = await observe(`social_${phase}_copy_preflight`, () => socialCopyState(panel));
-  assert.deepEqual(
-    { scopeValid: state.scopeValid, buttonCount: state.buttonCount, visible: state.visible },
-    { scopeValid: true, buttonCount: 1, visible: true },
-    'social snippet has one visible action in active SEO pane',
-  );
-  enter(`social_${phase}_trusted_copy_click`);
-  await click(panel, 'title', 'Copy the meta tags this page is missing');
-  await waitObserved(
-    `social_${phase}_copy_feedback`,
-    () =>
-      evaluate(
-        panel,
-        `(() => {
-    ${SEO_SCOPE}
-    const button = pane?.querySelector('button[title="Copy the meta tags this page is missing"]');
-    return linked && !!button?.querySelector('svg.lucide-check');
-  })()`,
-      ),
-    (copied) => copied === true,
-  );
-  await panel.send('Page.bringToFront');
-  const clipboardObservation = {};
-  const actual = await withClipboardReadPermission({
+  requireSocialCopyTarget(state);
+  const priorObservation = {};
+  const previousClipboard = await withClipboardReadPermission({
     browserSession,
     panel,
     panelUrl: panelTarget.url,
-    evidence: clipboardObservation,
+    evidence: priorObservation,
     read: () => evaluate(panel, 'navigator.clipboard.readText()'),
   });
   assert.equal(
-    clipboardObservation.clipboardObservationPermissionRestored,
+    priorObservation.clipboardObservationPermissionRestored,
     true,
-    'clipboard observation permission restored',
+    'pre-click clipboard observation permission restored',
   );
-  const verified = verifySocialClipboard(actual, source);
+  enter(`social_${phase}_trusted_copy_click`);
+  const clickAt = Date.now();
+  await click(panel, 'title', 'Copy the meta tags this page is missing');
+  const feedbackSamples = [];
+  const sample = async () => {
+    const state = await socialCopyState(panel);
+    const observation = { atMs: Date.now() - clickAt, ...state };
+    feedbackSamples.push(observation);
+    return observation;
+  };
+  enter(`social_${phase}_copy_feedback`);
+  let outcome;
+  try {
+    outcome = await observeSocialCopyOutcome({
+      readFeedback: sample,
+      source,
+      previousClipboard,
+      pollOptions: { timeoutMs: 1500 },
+      readClipboard: async () => {
+        await panel.send('Page.bringToFront');
+        const clipboardObservation = {};
+        enter(`social_${phase}_clipboard_read`);
+        const actual = await withClipboardReadPermission({
+          browserSession,
+          panel,
+          panelUrl: panelTarget.url,
+          evidence: clipboardObservation,
+          read: () => evaluate(panel, 'navigator.clipboard.readText()'),
+        });
+        assert.equal(
+          clipboardObservation.clipboardObservationPermissionRestored,
+          true,
+          'clipboard observation permission restored',
+        );
+        return actual;
+      },
+    });
+  } finally {
+    report.social_copy_feedback ??= [];
+    report.social_copy_feedback.push({ phase, samples: feedbackSamples });
+  }
+  const { state: feedback, iconObserved } = outcome;
+  advance(`social_${phase}_feedback_sampled`, {
+    buttonCount: feedback.buttonCount,
+    hasTitleAttr: feedback.hasTitleAttr,
+    hasDataTitleAttr: feedback.hasDataTitleAttr,
+    check: feedback.check,
+    failed: feedback.failed,
+    idle: feedback.idle,
+    iconObserved,
+  });
+  if (outcome.status !== 'pass') {
+    const { status, reason_code } = outcome;
+    report.targets.push({
+      case_id: 'EXT-F-1008-T14',
+      subtarget: `guest_social_missing_tags_clipboard_${phase}`,
+      status,
+      reason_code,
+    });
+    report.copy_case_issues ??= [];
+    report.copy_case_issues.push({ phase, status, reason_code });
+    return { status, reason_code };
+  }
+  const { verified, actual } = outcome;
   target('T14', `guest_social_missing_tags_clipboard_${phase}`, {
     ...verified,
     trustedCopyClick: true,
     sourceTitleMatches: actual.includes(source.title),
     clipboardReadback: true,
     observationPermissionRestored: true,
+    feedbackObserved: feedbackSamples.some((item) => item.check),
+    feedbackFailureAbsent: !feedbackSamples.some((item) => item.failed),
+    clipboardChanged: actual !== previousClipboard,
   });
+  return { status: 'pass' };
 }
 
 // Expected detail values come from the public tab's DOM, independently of the
@@ -1449,62 +1502,94 @@ try {
       // Restore the page before leaving, including if a native assertion fails.
       enter('controlled_public_page_navigation');
       await page.goto(PAGES[0], { waitUntil: 'load' });
-      const originalSocial = await observe('controlled_public_social_source', () =>
-        publicSocialSource(page),
-      );
+      const originalSocial = await publicSocialSource(page);
+      advance('controlled_public_social_source', { sourceCaptured: true });
       await waitObserved(
         'controlled_public_audit_wait',
-        () => seoContent(panel),
-        (state) =>
-          state?.scopeValid &&
-          state.title === originalSocial.title &&
-          state.reAudit &&
-          !state.error,
+        async () => {
+          const state = await seoContent(panel);
+          return {
+            scopeValid: state?.scopeValid,
+            titleMatches: state?.title === originalSocial.title,
+            reAudit: state?.reAudit,
+            error: state?.error,
+          };
+        },
+        (state) => state?.scopeValid && state.titleMatches && state.reAudit && !state.error,
         30000,
       );
       let mutation = null;
       try {
-        await copySocialTags(
-          { panel, browserSession, panelTarget },
-          originalSocial,
-          'before_reaudit',
+        const { recaptureResult: changedSocial } = await runCopyCheckThenRecapture(
+          () =>
+            copySocialTags(
+              { panel, browserSession, panelTarget },
+              originalSocial,
+              'before_reaudit',
+            ),
+          async () => {
+            mutation = await page.evaluate(() => {
+              const title = document.title;
+              const existing = document.querySelector('meta[name="description"]');
+              const description = existing?.getAttribute('content') ?? null;
+              const created = !existing;
+              return { title, description, created };
+            });
+            await page.evaluate(({ title, created }) => {
+              const existing = document.querySelector('meta[name="description"]');
+              const node = existing ?? document.createElement('meta');
+              if (created) {
+                node.setAttribute('name', 'description');
+                document.head.append(node);
+              }
+              document.title = `${title} — updated`;
+              node.setAttribute('content', `${title} updated page description`);
+            }, mutation);
+            const changedSocial = await publicSocialSource(page);
+            advance('controlled_public_changed_source', {
+              titleChanged: changedSocial.title !== originalSocial.title,
+              descriptionChanged: changedSocial.description !== originalSocial.description,
+            });
+            const stale = await seoContent(panel);
+            advance('controlled_public_before_reaudit', {
+              titleMatchesOriginal: stale.title === originalSocial.title,
+            });
+            assert.equal(
+              stale.title,
+              originalSocial.title,
+              'old native audit remains before Re-audit',
+            );
+            enter('controlled_public_trusted_reaudit_click');
+            await click(panel, 'button', 'Re-audit');
+            let refreshed;
+            await waitObserved(
+              'controlled_public_reaudit_result',
+              async () => {
+                refreshed = await seoContent(panel);
+                return {
+                  scopeValid: refreshed?.scopeValid,
+                  titleMatchesChanged: refreshed?.title === changedSocial.title,
+                  reAudit: refreshed?.reAudit,
+                  error: refreshed?.error,
+                };
+              },
+              (state) =>
+                state?.scopeValid && state.titleMatchesChanged && state.reAudit && !state.error,
+              30000,
+            );
+            const recapture = verifyManualRecapture(
+              originalSocial,
+              changedSocial,
+              stale,
+              refreshed,
+            );
+            target('T02', 'guest_reaudit_captures_changed_page_metadata', {
+              ...recapture,
+              trustedReauditClick: true,
+            });
+            return changedSocial;
+          },
         );
-        mutation = await page.evaluate(() => {
-          const title = document.title;
-          const existing = document.querySelector('meta[name="description"]');
-          const description = existing?.getAttribute('content') ?? null;
-          const created = !existing;
-          const node = existing ?? document.createElement('meta');
-          if (created) {
-            node.setAttribute('name', 'description');
-            document.head.append(node);
-          }
-          document.title = `${title} — updated`;
-          node.setAttribute('content', `${title} updated page description`);
-          return { title, description, created };
-        });
-        const changedSocial = await observe('controlled_public_changed_source', () =>
-          publicSocialSource(page),
-        );
-        const stale = await observe('controlled_public_before_reaudit', () => seoContent(panel));
-        assert.equal(stale.title, originalSocial.title, 'old native audit remains before Re-audit');
-        enter('controlled_public_trusted_reaudit_click');
-        await click(panel, 'button', 'Re-audit');
-        const refreshed = await waitObserved(
-          'controlled_public_reaudit_result',
-          () => seoContent(panel),
-          (state) =>
-            state?.scopeValid &&
-            state.title === changedSocial.title &&
-            state.reAudit &&
-            !state.error,
-          30000,
-        );
-        const recapture = verifyManualRecapture(originalSocial, changedSocial, stale, refreshed);
-        target('T02', 'guest_reaudit_captures_changed_page_metadata', {
-          ...recapture,
-          trustedReauditClick: true,
-        });
         await copySocialTags(
           { panel, browserSession, panelTarget },
           changedSocial,
@@ -1521,9 +1606,8 @@ try {
           }, mutation);
         }
       }
-      const restoredSocial = await observe('controlled_public_source_restored', () =>
-        publicSocialSource(page),
-      );
+      const restoredSocial = await publicSocialSource(page);
+      advance('controlled_public_source_restored', { sourceRestored: true });
       assert.deepEqual(
         restoredSocial,
         originalSocial,
@@ -1721,7 +1805,8 @@ try {
   const after = await buildIdentity();
   assert.deepEqual(after, before, 'build identity remained stable during native run');
   report.build.after = after;
-  report.status = 'partial';
+  report.status = report.copy_case_issues?.length ? 'unverified' : 'partial';
+  if (report.copy_case_issues?.length) process.exitCode = 1;
 } catch (error) {
   report.status = 'unverified';
   report.failure_stage = report.current_operation ?? report.last_safe_stage;

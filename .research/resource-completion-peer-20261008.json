@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "task_id": "resource-completion-peer-20261008",
+  "defect_id": "EXT-D-0168",
+  "status": "INITIAL_SNAPSHOT_REVIEW_COMPLETE_FINAL_SOURCE_REVIEW_PENDING",
+  "reviewed_commits": [],
+  "reviewed_snapshot": {
+    "source_state": "Uncommitted initial GREEN candidate, inspected before the builder added failure controls; no source blob hash was recorded. The initial diff added only completion-recovered, completion-unsafe, completion-expired, and completion-memory-unsafe to scripts/test-stabilization-resource-cpu-integration.mjs:363-369.",
+    "red_log_sha256": "e345f3da5be17dc12d1ecaf2f8746e9b7c4a237450ef07de0b54ba18ba14a520",
+    "green_log_sha256": "57eef27f545c62dd4ba3183219b00000e3edebbd8e4903b3e283dfd3ba96963a",
+    "red_outer_journal_sha256": "12d5b0915cc02cf3c1ab44e4a4aec5d145eea91f5a4338a8154d28dbde510756",
+    "green_outer_journal_sha256": "aede1ea813a02f840063c9d52d891e26a203190786e47702b4ccc86964ef7d5f"
+  },
+  "verdict_A_behavior_acceptance": {
+    "result": "PARTIAL_SOURCE_ONLY_NATIVE_PENDING",
+    "finding": "The candidate holds the acquired lease after child exit 0 during CPU pending and continues the existing watch until confirmed recovery or existing unsafe/expiry stop. RESOURCE_JOB_EXIT makes further native actions fail. The original Settings ARM 37732615934 remains resource-invalid with no acceptance credit. This peer did not run a native Settings case.",
+    "evidence": [
+      "scripts/stabilization-resource.mjs:733-748 completion branch and invalid failure branch",
+      "scripts/stabilization-resource.mjs:815-847 unchanged unsafe/expiry stop and confirmed recovery exit",
+      "tests/browser/native-resource-boundary.mjs:87-100 rejects RESOURCE_JOB_EXIT",
+      "docs/stabilization/resource-journals/resource-completion-green-20261008.jsonl real outer guard admitted and finalized valid/exit0; inner controlled host is synthetic"
+    ],
+    "limit": "No exact-artifact Settings native run exists for this repair; D168 closure requires one resource-valid retest."
+  },
+  "verdict_B_code_quality_privacy_guards": {
+    "result": "INITIAL_SNAPSHOT_REPAIR_REQUIRED_FINAL_REVISION_UNREVIEWED",
+    "positive_evidence": "Causal RED: real outer guard admitted, nested old-behavior mutant produced child0 then invalid/exit3 after one bad and two good samples; outer test ended child_failed. GREEN: real outer guard admitted and valid, nested integration 2/2 passes recovery, second bad CPU, confirmation expiry, memory unsafe, post-exit native-action refusal, and lease retention. No threshold, recovery count, or timeout was relaxed. Attribution journal uses executable basename and PID without command arguments or credentials.",
+    "important_finding": {
+      "location": "scripts/test-stabilization-resource-cpu-integration.mjs:252-369",
+      "issue": "The initial GREEN snapshot omitted pending child nonzero/error and operator stop, despite docs/stabilization/defects/EXT-D-0168.json closure_requirement naming child-error and the brief naming failed child/operator stop. The source branch appeared to exclude a failed child, and stopEvent appeared to invalidate pending completion, but these paths lacked causal integration evidence in the reviewed snapshot.",
+      "impact": "A regression in either path could credit or release a run incorrectly, and the closure claim cannot be independently verified from the current guard tests.",
+      "remedy": "Builder subsequently added pending child nonzero/error and operator-stop scenarios in the still-uncommitted file. Those changes were not included in the original GREEN run and require a fresh independent review of the final commit and fresh real-outer-guard evidence. Include a forced measurement failure if claiming that explicit control as tested."
+    },
+    "limits": "The inner scratch guards replace host telemetry and legacy-host ownership; they are valid controlled lifecycle tests, not real host-spike or native Settings proof. Builder commits were pending at initial review; the final revision is outside this verdict."
+  },
+  "review_method": "Read defect, previous Settings ARM peer, candidate guard, CPU episode, native boundary, changed integration test, RED/GREEN logs and durable real outer journals. No source changes, native job, build, release, or child agent by reviewer."
+}

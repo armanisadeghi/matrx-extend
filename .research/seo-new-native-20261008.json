@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "status": "resource_valid_native_case_failed_no_new_coverage",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "run_id": 37734224612,
+    "attempt": 1,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37734224612",
+    "checkout_sha": "a58478db6db8024f2b6bbef7afb549d6496a19b1",
+    "conclusion": "failure",
+    "job": "guest",
+    "job_duration": "6m36s",
+    "native_case_step": "failure",
+    "case": "guest-seo",
+    "lane": "A",
+    "runner_label": "macos-15",
+    "runner_arch": "ARM64",
+    "uploaded_artifact_id": 11531370849,
+    "uploaded_artifact_name": "hosted-guest-37734224612-1",
+    "uploaded_artifact_digest": "sha256:eaf52a338e5d72c00b33e2d5012100c7ded19ff2c7c51e5a7bcba47f1b83dc31"
+  },
+  "source_and_product": {
+    "reviewed_driver_sha": "3658c0bcd6d06703d7c9146a2938685d76d387c0",
+    "driver_peer_review_sha": "906b3233",
+    "focused_ci_run_id": 37734011447,
+    "focused_ci_conclusion": "success",
+    "frozen_product_ci_run_id": 37724859892,
+    "frozen_product_ci_conclusion": "success",
+    "frozen_product_artifact_id": 11527132614,
+    "frozen_product_source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+    "frozen_product_version": "0.2.397",
+    "frozen_product_tree_sha256": "1035cd28ce5a63ac6233626f35102f016f7c7e7e0ef0717d259a3ec40fc856ed",
+    "imported_source_claim": "exact_pushed_commit_only",
+    "resource_guard_remote_unchanged_from_reviewed_driver": true,
+    "local_dirty_guard_edits_used": false
+  },
+  "native_receipt": {
+    "status": "unverified",
+    "failure_stage": "social_before_reaudit_copy_feedback",
+    "current_operation": "social_before_reaudit_copy_feedback",
+    "last_safe_stage": "social_before_reaudit_copy_feedback_sample",
+    "last_safe_observable": false,
+    "previously_known_subtargets_reobserved": 19,
+    "previously_known_unverified_subtargets_reobserved": 1,
+    "new_T14_before_clipboard": "unverified; the trusted copy click was attempted, but success feedback was not observed and no clipboard readback occurred",
+    "new_T02_changed_metadata": "not reached; the controlled DOM mutation and Re-audit were after the failed first copy checkpoint",
+    "new_T14_after_clipboard": "not reached",
+    "build_identity_before": "local_dev_unpacked 0.2.397; frozen tree hash matched",
+    "build_identity_after": "not recorded because the case exited before completion",
+    "owned_DOM_cleanup": "no controlled mutation was made before failure; the restore branch had no mutation to revert",
+    "failure_cause_limit": "The receipt does not distinguish a clipboard write failure, absent feedback, or feedback missed by polling. No product defect cause is proven."
+  },
+  "resource_verdict": {
+    "package": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "childExitCode": 0,
+      "finalDecision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "childExitCode": 0,
+      "finalDecision": "valid"
+    },
+    "guest": {
+      "admitted": true,
+      "watch": "healthy",
+      "resourceInvalid": false,
+      "childExitCode": 1,
+      "finalDecision": "child_failed"
+    },
+    "overall_resource_invalid": false
+  },
+  "coverage_verdict": {
+    "new_criteria_passed": 0,
+    "T02": "partial baseline only; fresh changed-metadata recapture unverified",
+    "T14": "unverified; real clipboard before/after comparison not reached",
+    "prior_19": "repeat observations in this failed run, no inventory increase",
+    "full_guest_feature": "partial; member/admin and the peer-listed open dimensions remain unverified"
+  },
+  "evidence": {
+    "directory": ".research/seo-new-native-20261008-originals",
+    "files": [
+      {
+        "path": ".research/seo-new-native-20261008-originals/hosted-browser-37734224612-1.jsonl",
+        "bytes": 989,
+        "sha256": "6f23f12c27fa5a939c203cca9c2ac30b0786487739a2c8bb5b7e9e592dc7f07e"
+      },
+      {
+        "path": ".research/seo-new-native-20261008-originals/hosted-guest-37734224612-1.jsonl",
+        "bytes": 1795,
+        "sha256": "7898c4b2034c3c22264c8e85329394f6b13f5a9e2db60f8f1e4f5025c59f6f16"
+      },
+      {
+        "path": ".research/seo-new-native-20261008-originals/hosted-package-37734224612-1.jsonl",
+        "bytes": 984,
+        "sha256": "83e061387d0c40deededf58c5faf39fed85d35cc700eacb6e7bcd4eb690b4972"
+      },
+      {
+        "path": ".research/seo-new-native-20261008-originals/native-side-panel.png",
+        "bytes": 26223,
+        "sha256": "e057f1b26a910b74f7f87b4255fd33454ef2462051d610d33f014c419f78ea13"
+      },
+      {
+        "path": ".research/seo-new-native-20261008-originals/normal-target-after-open.png",
+        "bytes": 25156,
+        "sha256": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89"
+      },
+      {
+        "path": ".research/seo-new-native-20261008-originals/seo-guest-acceptance.original.json.txt",
+        "bytes": 10270,
+        "sha256": "25dc3e4c9217f41f05dd19dbd37e08336909c315be3a4c8ef3e29f3cab22506b"
+      }
+    ],
+    "curation": "Only byte-exact current run 37734224612 receipt, three journals, and two screenshots retained. Historical journals bundled in the downloaded archive were excluded."
+  }
+}

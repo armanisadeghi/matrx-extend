@@ -1,0 +1,16 @@
+{"schema":1,"at":"2026-10-08T05:49:39.818Z","runId":"resource-completion-green-20261008","path":"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/resource-completion-green-20261008.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-08T05:50:47.034Z","runId":"resource-completion-green-20261008","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":10.88,"requiredMemoryGiB":4,"oneMinuteLoad":1.08,"logicalCpus":10,"cpuBusyFraction":0.09999999999999999,"swapUsedMiB":3413.5,"repoFreeGiB":1676.35298538208,"profileFreeGiB":1676.35298538208,"safetyFreeGiB":31.5517578125,"systemFreeGiB":31.5517578125},"cpuBusySamples":[0.09,0.08,0.07,0.09,0.07,0.11,0.19],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+{"schema":1,"at":"2026-10-08T05:51:03.073Z","runId":"resource-completion-green-20261008","reasons":[],"sample":{"pressureLevel":1,"availableMemoryGiB":11.04,"requiredMemoryGiB":4,"oneMinuteLoad":1.37,"logicalCpus":10,"cpuBusyFraction":0.07,"swapUsedMiB":3413.5,"repoFreeGiB":1676.35298538208,"profileFreeGiB":1676.35298538208,"safetyFreeGiB":31.550251007080078,"systemFreeGiB":31.550251007080078},"code":"RESOURCE_WATCH_HEALTHY"}
+✔ actual guard watch journal controls recovery, confirmation, and pending child exit (28175.368291ms)
+{"schema":1,"at":"2026-10-08T05:51:19.100Z","runId":"resource-completion-green-20261008","reasons":[],"sample":{"pressureLevel":1,"availableMemoryGiB":11.04,"requiredMemoryGiB":4,"oneMinuteLoad":1.29,"logicalCpus":10,"cpuBusyFraction":0.08,"swapUsedMiB":3413.5,"repoFreeGiB":1676.3483543395996,"profileFreeGiB":1676.3483543395996,"safetyFreeGiB":31.548133850097656,"systemFreeGiB":31.548133850097656},"code":"RESOURCE_WATCH_HEALTHY"}
+✔ CPU boundary waits for startup owner rewrite before reading identity (9633.126792ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 37877.234042
+{"schema":1,"at":"2026-10-08T05:51:24.997Z","runId":"resource-completion-green-20261008","childExitCode":0,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-08T05:51:25.044Z","runId":"resource-completion-green-20261008","admitted":true,"resourceInvalid":false,"exitCode":0,"decision":"valid","code":"RESOURCE_FINAL_DECISION"}
