@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-08 17:44 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T17:43:59.594877+00:00. 205 features · 769 cases · 1358 controls · 184 linked defect records.
+Generated 2026-10-08 18:07 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T18:07:11Z. 205 features · 769 cases · 1358 controls · 184 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -484,16 +484,16 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: admin-default-agent-002, docs/stabilization/runs/admin-default-agent-002.json
 - EXT-F-1003-T10 · guest: Partial. Ask/Act choice UI/storage persists across panel-document reload; new-chat inheritance and full-extension default behavior unverified. No Store/current-main/whole-feature health claim.
   Evidence / build / date recorded: 37729701473, development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614, 2026-10-08T05:10:28.331547+00:00, .research/settings397-fresh-native-20261007.json
-- EXT-F-1003-T13 · guest: Pass. Fast/Thinking trusted selection and UI/storage persistence pass warm and after each panel reload. No deeper Chat behavior claimed.
-  Evidence / build / date recorded: 37712686956, ['.research/settings-batch-native-20261007.json', '.research/settings-native-newcases-peer-20261007.json']
+- EXT-F-1003-T13 · guest: Pass. Fast/Thinking selection and displayed/persisted values pass the guest inventory expectation.
+  Evidence / build / date recorded: 37820053159, ['.research/settings-controls-live-20261008.json']
 - EXT-F-1003-T15 · admin: Pass. Actual adminUI on0.2.51; full control criteria includingreload verified, System/Fast/groups restored; resourcehealthy.
   Evidence / build / date recorded: admin-settings-local-001, docs/stabilization/runs/admin-settings-local-001.json
 - EXT-F-1003-T16 · guest: Partial. Four on/off visible/stored checks pass across warm and panel-document reload. Downstream consumer behavior and full-extension-reload preference behavior unverified. T34 cleanup Settings reacquisition failed and restoration is not proven; this run does not independently expose final restored baseline values for the privacy batch. No Store/current-main/whole-feature health claim.
   Evidence / build / date recorded: 37729701473, development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614, 2026-10-08T05:10:28.331547+00:00, .research/settings397-fresh-native-20261007.json
 - EXT-F-1003-T19 · guest: Partial. Four on/off visible/stored checks pass across warm and panel-document reload. Downstream consumer behavior and full-extension-reload preference behavior unverified. T34 cleanup Settings reacquisition failed and restoration is not proven; this run does not independently expose final restored baseline values for the privacy batch. No Store/current-main/whole-feature health claim.
   Evidence / build / date recorded: 37729701473, development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614, 2026-10-08T05:10:28.331547+00:00, .research/settings397-fresh-native-20261007.json
-- EXT-F-1003-T22 · guest: Pass. Guest admin controls absent warm and after reload; 2/2 criteria. Guest only; other modes retain their own evidence.
-  Evidence / build / date recorded: 37693743871, development0.2.387/source14305391, ['.research/frozen-settings-native-retest-20261007.json', '.research/native-batch-evidence-peer-20261007.json']
+- EXT-F-1003-T22 · guest: Pass. Guest Settings has no advanced section, admin controls, or permission controls in both warm and reload observations.
+  Evidence / build / date recorded: 37820053159, ['.research/settings-controls-live-20261008.json']
 - EXT-F-1003-T25 · guest: N/A. Audit key is admin-only: source isAdmin gate and actual guest T22 evidence confirm absence. Negative access remains covered byT22/T63; this does not waive member/direct-state checks.
   Evidence / build / date recorded: ['docs/stabilization/reports/guest-settings-applicability.json', 'docs/stabilization/runs/guest-settings-local-003.json']
 - EXT-F-1003-T27 · admin: Partial. Admin identity and key-read/error recovery exercised; no assertions for creation time, receipt count, recent rows, filters, or a normal warm/reload display comparison.
@@ -506,8 +506,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: 37729701473, development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614, 2026-10-08T05:10:28.331547+00:00, .research/settings397-fresh-native-20261007.json
 - EXT-F-1003-T34 · guest: Partial. On-page/quiet UI and stored values passed warm and panel-document reload. Cleanup assertions passed in source-controlled driver, though raw receipt does not separately serialize original/final baseline. Downstream password-suggestion consumer and full-extension reload of this preference remain unverified. Frozen unpublished guest build only.
   Evidence / build / date recorded: settings-local397-native-20261008, development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614, 2026-10-08T06:30:08.992059+00:00, .research/settings-local397-native-20261008.json
-- EXT-F-1003-T37 · guest: Pass. Deep clean toggle, reload persistence and original state restoration;3/3 criteria. Guest only; other modes retain their own evidence.
-  Evidence / build / date recorded: 37693743871, development0.2.387/source14305391, ['.research/frozen-settings-native-retest-20261007.json', '.research/native-batch-evidence-peer-20261007.json']
+- EXT-F-1003-T37 · guest: Pass. Toggle state and visible coming-soon hint persist; original guest expectation met.
+  Evidence / build / date recorded: 37820053159, ['.research/settings-controls-live-20261008.json']
 - EXT-F-1003-T40 · guest: Partial. Actual profile and Loaded from path verified before and after reload. Auto-scrape On persisted; no-send context preview displayed Page content/count only. Restored Off and Capture.
   Evidence / build / date recorded: guest-autoscrape-native-20261002-01, docs/stabilization/reports/guest-autoscrape-native-20261002.json
 - EXT-F-1003-T43 · guest: Partial.
@@ -516,8 +516,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: desktop-settings-member-20261003-independent01, ['.research/desktop-settings-independent-native.json', '.research/desktop-settings-guard-proof.json', '.research/settings-forget-reset-final.json']
 - EXT-F-1003-T45 · admin: Partial.
   Evidence / build / date recorded: desktop-settings-admin-final-20261003-01, ['.research/desktop-settings-admin-final.json', '.research/desktop-settings-guard-proof.json', '.research/settings-forget-reset-final.json']
-- EXT-F-1003-T46 · guest: Pass. Independently verified65001,1,65535 Save/readback after Settings Page.reload;65536 visible error preserves65535;blank clears and remainsnull;actual worker rediscovery entry and health request observed. All3 exact resource journals valid. HTTP503 fixture gives no healthy-engine claim; Page.reload is not full extension Reload. Exact guest case only.
-  Evidence / build / date recorded: 37699338786, ['.research/settings-valid-native-20261007.json', '.research/settings-audit-native-peer-20261007.json']
+- EXT-F-1003-T46 · guest: Pass. Valid save/rediscovery, bounds, invalid range, clearing, and panel reload persistence all pass.
+  Evidence / build / date recorded: 37820053159, ['.research/settings-controls-live-20261008.json']
 - EXT-F-1003-T47 · member: Partial.
   Evidence / build / date recorded: desktop-settings-member-20261003-independent01, ['.research/desktop-settings-independent-native.json', '.research/desktop-settings-guard-proof.json', '.research/settings-forget-reset-final.json']
 - EXT-F-1003-T48 · admin: Partial.
@@ -546,8 +546,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
 - EXT-F-1003-T63 · guest: Pass. Guest negative visibility before and after genuine full extension reload passes; replacement worker/panel and active Settings are observed. Ordinary-member/admin dimensions are separate and remain at their own recorded status. No Store/current-main/whole-feature health claim.
   Evidence / build / date recorded: 37729701473, development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614, 2026-10-08T05:10:28.331547+00:00, .research/settings397-fresh-native-20261007.json
-- EXT-F-1003-T64 · guest: Pass. Two disposable loopback origins visible/stored; selected Ask again removed only one while the other survived panel reload; final removal emptied and hid list, still empty after panel reload. Guest frozen unpublished 0.2.397 artifact; preceding capture-choice flow and Store/current-main behavior unverified.
-  Evidence / build / date recorded: settings-local397-native-20261008, development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614, 2026-10-08T06:30:08.992059+00:00, .research/settings-local397-native-20261008.json
+- EXT-F-1003-T64 · guest: Pass. The inventory steps and expected outcome are met: remove one selected origin, preserve the other, hide empty list, and verify state after Settings panel reload.
+  Evidence / build / date recorded: 37820053159, ['.research/settings-controls-live-20261008.json']
 - EXT-F-1003-T67 · guest: Pass. Capture and Scroll & capture each persisted after full extension Reload. Restored Capture and verified after final reload.
   Evidence / build / date recorded: guest-autoscrape-native-20261002-01, docs/stabilization/reports/guest-autoscrape-native-20261002.json
 - EXT-F-1003-T70 · guest: Partial. Observed identity/readiness and no-update branch pass. Password API unavailable, update available, throttled, error and update API unavailable branches remain unverified. No Store/current-main/whole-feature health claim.

@@ -151,7 +151,7 @@
 		"values_printed_or_committed": false,
 		"deleted_after_terminal_run": true,
 		"absence_verified_after_delete": true,
-		"absence_evidence": ".research/records-metadata-live-20261008/raw/secrets-after-cleanup.raw.json",
+		"absence_evidence": ".research/records-metadata-live-20261008/raw/secrets-after-cleanup.raw.json.txt",
 		"both_local_mode_0600_staging_directories_removed": true,
 		"approved_org_fixture_mutated": false,
 		"owned_runs_terminal": true
