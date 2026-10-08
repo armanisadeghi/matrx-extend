@@ -21,4 +21,6 @@ All owned workers and native jobs are terminal; both temporary admin secret name
 
 ## Handoff discipline
 
+Verified remote checkpoint: `a8fb581d`, October8 at11:52:29UTC. Next synchronization deadline while active:12:52:29UTC. The latest ten-repository snapshot is [the workspace ledger](reports/workspace-sync-guest-incident-20261003.json); refresh remotes at every task boundary and before each push.
+
 At each task boundary fetch and reconcile `origin/main`, inspect active worker/job/secret ownership, and read the linked receipt before repeating work. Commit and push only owned exact paths; preserve the concurrent workspace-sync ledger and other dirty paths. Independently verify source and live behavior at the same artifact/commit boundary. Record a deployed SHA and observed endpoint before calling a server repair live; record an installed Store build separately from an unpacked Store package. Do not infer product health from an automation schedule, source pass, procedure count, or a closed defect. Keep every unresolved cell in the canonical inventory and the next concrete action in this checkpoint.
