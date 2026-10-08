@@ -117,12 +117,15 @@ export async function withRecordsPositiveFixture({
     onStage(value);
   };
   const reportFailure = (boundary, error) => {
+    const fixedAssertion =
+      error instanceof assert.AssertionError && /^records_fixture_[a-z0-9_]+$/.test(error.message);
     onFailure({
       boundary,
       phase,
-      classification: /^records_fixture_[a-z0-9_]+$/.test(error?.message ?? '')
-        ? error.message
-        : 'records_fixture_unexpected_error',
+      classification:
+        fixedAssertion || error?.message === 'records_fixture_recovery_cleanup_only'
+          ? error.message
+          : 'records_fixture_unexpected_error',
       request_method: lastRequest?.method ?? null,
       http_status: lastRequest?.status ?? null,
     });

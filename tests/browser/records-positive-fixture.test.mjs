@@ -190,7 +190,7 @@ test('fixture receipt retains both the first body failure and cleanup failure wi
   try {
     await assert.rejects(
       s.run(async () => {
-        throw new Error('private read detail');
+        throw new Error('records_fixture_private_value');
       }),
       /records_fixture_archive_failed/,
     );
@@ -210,7 +210,7 @@ test('fixture receipt retains both the first body failure and cleanup failure wi
         http_status: 503,
       },
     ]);
-    assert.equal(JSON.stringify(diagnostics).includes('private read detail'), false);
+    assert.equal(JSON.stringify(diagnostics).includes('records_fixture_private_value'), false);
   } finally {
     await s.cleanup();
   }
