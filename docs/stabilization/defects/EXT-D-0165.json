@@ -7,7 +7,7 @@
   "title": "Full CI panel-reopen regressions fail before development artifact build",
   "severity": "S2: full CI red prevents newer automatic development artifacts and current-build acceptance",
   "priority": "P1",
-  "state": "open",
+  "state": "in-fix",
   "owner": "root/full_ci_panel_reopen_repair",
   "preconditions": [
     "CI on main exacte5d76c11, Node22 hosted Linux, installed lockfile dependencies."
@@ -26,8 +26,22 @@
       "from": null,
       "to": "open",
       "reason": "Confirmed terminal full CI failure; source diagnostic/repair delegated. No guest Chat production failure inferred from CI step label."
+    },
+    {
+      "at": "2026-10-08T03:45:25.780052+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Reproduced six failures. fa05a939 added Browser.getVersion read to real setup; three extracted setup fixtures omit browserSession. No production transport failure established."
+    },
+    {
+      "at": "2026-10-08T03:45:25.780052+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "012955b8 adds the missing dependency in three fixtures. Narrow suites pass; fresh source peer and surviving full automaticCI pending. Local whole-command run cancelled before completion, no full localpass."
     }
   ],
   "closure_requirement": "Reproduce root cause, causal regression and surrounding guard tests red\u2192green, fresh independent source review, successful full automatic CI including development artifact/provenance generation.",
-  "next_action": "Diagnose smallest failing source command; preserve safety oracle, repair boundary class, review and await exact full CI."
+  "next_action": "Fresh source review and successful covering full automatic CI with artifact output; preserve separate driver/product provenance.",
+  "cause": "Test fixture drift introduced with fa05a939 diagnostic provenance read; browserSession absent in extracted setup fixtures.",
+  "candidate_fix": "012955b8"
 }
