@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "reviewed_at_utc": "2026-10-08T09:35:00Z",
+  "review_role": "independent source review",
+  "candidate_sha": "1f165644fa736a85971aebb06082ea2fbca445f6",
+  "scope": "Only the candidate commit was reviewed; no product/auth code change is claimed beyond fixed diagnostic capture.",
+  "verdict_A_source": {
+    "status": "SOURCE_BOUNDARY_CAPTURED_NATIVE_UNVERIFIED",
+    "findings": [
+      {
+        "file": "tests/browser/settings-native-auth-driver.mjs:476",
+        "severity": "none",
+        "finding": "The branch is reached after admin web sign-in completion and matching extension storage profile/admin assertions, immediately before verifyCurrentSettingsIdentity. The new stage and diagnostic therefore identify the requested late rendered-identity boundary."
+      },
+      {
+        "file": "tests/browser/settings-native-auth-driver.mjs:493",
+        "severity": "none",
+        "finding": "The emitted object contains fixed phase/outcome values and boolean/null fields only. It does not include token, email, profile ID, organization ID/name, page text, credentials, or the original error message. It rethrows the original verification error after reporting."
+      },
+      {
+        "file": "tests/browser/showcase-d47-public-initial-load.mjs:437",
+        "severity": "none",
+        "finding": "The D47 caller stores the diagnostic on its receipt. This confirms source wiring; it does not establish native execution or a product authentication defect."
+      }
+    ],
+    "native_product_result": "UNVERIFIED: no native/browser attempt was run in this review; no product auth fix or success claim is supported."
+  },
+  "verdict_B_guard_quality": {
+    "status": "PARTIAL",
+    "verified": [
+      "node --test tests/browser/settings-panel-driver.guest.test.mjs passed all 5 tests.",
+      "The new test asserts the late stage, exact sanitized categories, absence of private marker values, and preservation of the original rendered-identity failure."
+    ],
+    "finding": {
+      "file": "tests/browser/settings-panel-driver.guest.test.mjs:171",
+      "severity": "Important",
+      "finding": "The guard extracts signInSettings and supplies its own onAuthDiagnostic callback that writes to a test receipt. It does not exercise the D47 caller wiring at showcase-d47-public-initial-load.mjs:437. Removing the real caller callback would still leave the test green, so dropped driver-to-caller receipt linkage is unguarded."
+    }
+  },
+  "limits": [
+    "Source and focused-test review only; no native app, browser, live auth, network, build, or deployment run.",
+    "No tokens, credentials, or live user data were accessed or included."
+  ]
+}
