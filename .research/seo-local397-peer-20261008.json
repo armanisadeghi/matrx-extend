@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "review_type": "fresh_independent_local_native_evidence_peer",
+  "status": "DONE_WITH_LIMITS",
+  "reviewed_report": ".research/seo-local397-native-20261008.json",
+  "reviewed_run": "seo-local397-native-20261008",
+  "verdict_a_execution_and_acceptance": {
+    "result": "ACCEPT_SETUP_FAILURE_ONLY",
+    "first_attempt": "The saved native receipt has status unverified, zero targets, failure_stage build_identity_verified, and no last_safe_observable. The resource journal records admission, child exit 1, then final decision child_failed with resourceInvalid false. The driver verifies the frozen build and then calls the native harness; that harness resolves its browser runtime before creating the owned profile. No controlled SEO target, Chrome profile, or image was reached.",
+    "playwright_cause_confidence": "Supported diagnosis, not directly observed exception: the harness calls resolveBrowserRuntime after artifact verification and before profile creation; browser-runtime.mjs throws browser_runtime_playwright_missing when MATRX_PLAYWRIGHT_MODULE is unset and require.resolve('playwright') fails with MODULE_NOT_FOUND. The saved native receipt suppresses the thrown error, so the specific exception is not independently confirmed by this run output. The report correctly labels this as inferred.",
+    "corrected_attempts": "Neither corrected attempt launched. Both process-scoped preflights ended refused / RESOURCE_DISK_LOW / exitCode 2 / resourceInvalid false. The second used an external process temp directory, yet the safety/system volume remained 14.72 GiB free, below the unchanged 20 GiB floor. No retry followed; no guard threshold was changed.",
+    "acceptance": "T02 and T14 remain unverified; new case credit is zero; D170 native closure is false; member/admin is unverified. The Wikipedia instability is explicitly prior evidence and was not reached in this attempt. No product or feature acceptance claim is supported."
+  },
+  "verdict_b_identity_and_evidence": {
+    "result": "ACCEPT_PROVENANCE_WITH_LIMITS",
+    "artifact_identity": "CI development-test artifact only: version 0.2.397, source cedcec02a3fb4e52a3f63ebfda8728809eff418a, run 37724859892 attempt 1, artifact 11527132614, tree SHA-256 1035cd28ce5a63ac6233626f35102f016f7c7e7e0ef0717d259a3ec40fc856ed. The report records pre-attempt import and post-attempt manual tree matches. It is not Store eligible and has no native build-after receipt.",
+    "provenance_consistency": "The original provenance and CI receipt agree on source SHA, run, artifact, version, and tree digest. Import status independently records the artifact digest sha256:5a9092de49bc5fa47a0ca907e86104519397d9977c3344a482173fc61f2e004f and repeats the matching tree digest. The local-dev receipt identifies the imported unpacked path and same tree digest. No downloaded CI artifact was rehashed in this peer review.",
+    "originals_integrity": "All nine original files match the byte sizes and SHA-256 values declared by the reviewed report. The three run journals end in terminal decisions: initial preflight valid; first child failed after admission; and both corrected preflights refused. These journals support the stated execution boundaries, not SEO behavior.",
+    "system_floor": "The guard remained effective for both runtime preflights, including the external-temp attempt. ResourceInvalid stayed false; evidence shows a valid refusal, not a broken guard or bypass.",
+    "cleanup_and_claim_limit": "The report records terminal journals, no owned browser/driver process, no temporary profile, no manual user-profile touch, and no new download/build. This review confirms the report’s claims against the supplied journals and receipt, but performed no live process or disk inspection. No test output, screenshots, SEO target result, current-main status, or Store behavior is claimed."
+  },
+  "originals_sha256": {
+    "seo-guest-acceptance.original.json.txt": "1c1024e81697a63815e523fd9eff0c52b6c3c9b473f9b3a028e17f8b2a1c2078",
+    "resource-preflight.jsonl": "a7de937e09d15cd544d89ff6f518e842a8868c60a30194bf3e44b6dc2259c842",
+    "resource-native.jsonl": "e23d2ea88893b57f720f7bed60826e3f7af62c21f385cb98bf63f14581c67a95",
+    "resource-runtime-preflight.jsonl": "b5372bb732368e17161b9a019536834b0bdb434b3bfe8f45e51eda795dc0b41c",
+    "resource-runtime-external-preflight.jsonl": "f627658c10ec58c5859a0d2c272d98519ed8ba8fe805446d9b5ad4a72db3eca6",
+    "ci-receipt.json": "f6537a25117ab97838d722f0a1fba94a0798b8d8b06345fd72af04b88a29069d",
+    "local-dev-receipt.json": "31445c8870b1289e6434e95815acb080fbeeabff561a5545462b3fe472a0d225",
+    "import-status.json": "c36020631481aa993b0224e730c1154b2ae90bb9adcd24127b3f4b9c948cd261",
+    "provenance.json": "b9576e3ddcf74d5ae6031064ab044774572527c094f653593f3118d2fd42ebd1"
+  },
+  "sources": [
+    ".research/seo-local397-native-20261008.json",
+    ".research/seo-local397-native-20261008-originals/",
+    "tests/browser/seo-guest-acceptance.mjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "tests/browser/browser-runtime.mjs"
+  ]
+}
