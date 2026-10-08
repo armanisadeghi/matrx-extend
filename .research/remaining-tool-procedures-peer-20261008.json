@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent-procedure-review",
+  "reviewed_commit": "bc52bdf6",
+  "reviewed_path": ".research/remaining-tool-procedures-20261008.json",
+  "scope": "Fresh source-only peer review of the six proposed cases. No Chrome, native engine, backend, database, build, or release execution; no canonical inventory edit. Verdicts judge procedure quality, never runtime behavior.",
+  "verdict_A_spec_and_reproducibility": {
+    "overall": "PARTIAL",
+    "by_case": {
+      "EXT-F-4124-T01": "PARTIAL: direct-runner limitation is correct; the future agent-run suite has no reproducible command path and clear_done can erase baseline completed todos.",
+      "EXT-F-4127-T01": "PASS_FOR_BOUNDED_PROPOSAL: health and empty-command checks fit the current native bridge, contingent on a paired owned engine; privileged dispatcher approval remains untested.",
+      "EXT-F-4128-T01": "PARTIAL: the prompt forbids the read-only tool use needed to inspect each fixture label; Tasks is the parallel-runs panel location, absent from the steps.",
+      "EXT-F-4130-T01": "PARTIAL: dynamic schema/guide dependency is honestly blocked, but 25 controls lack distinct executable inputs and outcomes, and cleanup/version ordering is underspecified.",
+      "EXT-F-4150-T01": "PARTIAL: screenshot side effects and result form are misstated; the inert heading cannot prove focus/blur, and the malformed tab ID produces a parse error rather than a tab lookup error.",
+      "EXT-F-4160-T01": "PASS_FOR_BOUNDED_PROPOSAL: eight synthetic text/availability inputs and conditional image fixture cover the current action enum. Runtime capability, image control, and model results remain unverified."
+    }
+  },
+  "verdict_B_doctrine_and_evidence_quality": {
+    "overall": "PARTIAL",
+    "by_case": {
+      "EXT-F-4124-T01": "PARTIAL: honest NOT_EXECUTABLE state, but clear_done cleanup is not case scoped.",
+      "EXT-F-4127-T01": "PASS: no shell command, mutation, or phantom permission pass proposed.",
+      "EXT-F-4128-T01": "PARTIAL: owned tabs and model-cost caveat are sound; success could be inferred from metadata without actually reading fixture labels.",
+      "EXT-F-4130-T01": "PARTIAL: current server contract is rightly required; proposed cleanup must account for every created proposal/version and must not delete an unrelated baseline.",
+      "EXT-F-4150-T01": "FAIL: screenshot defaults to persistent cloud/index writes and the proposed cleanup says none occur. A returned file reference can replace inline image data.",
+      "EXT-F-4160-T01": "PASS: no fabricated image or fixed wording assertion; separate availability from functional success."
+    }
+  },
+  "findings": [
+    {
+      "id": "RTP-01",
+      "severity": "Important",
+      "case_ids": ["EXT-F-4150-T01"],
+      "finding": "The screenshot step calls the wrapper with persist:true. take_screenshot writes to cld_files and the screenshot index when persistence succeeds, then the wrapper returns file_id/file_url instead of an inline image. The statement that no network or persistent storage is written and the close-tab-only cleanup are false.",
+      "required_change": "Use a case-owned organization/storage fixture, record returned file and screenshot IDs, verify the persisted result or explicit inline fallback, and remove only artifacts this case created using a supported product cleanup path. If safe cleanup cannot be proven, hold the screenshot control unexecutable.",
+      "evidence": ["src/lib/tools/handlers/canonical.ts:318-373", "src/lib/tools/handlers/read.ts:331-445", ".research/remaining-tool-procedures-20261008.json:239-250"]
+    },
+    {
+      "id": "RTP-02",
+      "severity": "Important",
+      "case_ids": ["EXT-F-4128-T01"],
+      "finding": "The sub_prompt says not to call other tools but requires reading a fixture label. Child request state contains page_title/current_url/current_tab_id and no page label; a model could echo metadata without inspecting the page. The panel is mounted in Tasks, not Tools.",
+      "required_change": "Permit a named read-only page inspection tool, verify it is available to sub-runs, require each returned label to match the distinct page, and direct the tester to Tasks after capturing the Tools inline result.",
+      "evidence": ["src/lib/tools/handlers/parallel.ts:189-240", "src/features/tasks/TasksView.tsx:929-931", ".research/remaining-tool-procedures-20261008.json:121-130"]
+    },
+    {
+      "id": "RTP-03",
+      "severity": "Important",
+      "case_ids": ["EXT-F-4124-T01"],
+      "finding": "clear_done removes every completed todo in the selected conversation, not just the second case-created row. A baseline with completed rows is not protected by the stated procedure. The agent invocation remains a goal, not a reproducible way to issue all six actions with returned IDs.",
+      "required_change": "Use a new empty disposable conversation or prove baseline has no completed rows immediately before clear_done. Specify how a known authorized agent/mandate issues each action and how tool-call/results are captured; otherwise keep the positive controls blocked. Remove only returned case-owned IDs during cleanup.",
+      "evidence": ["src/lib/lists/storage.ts:392-403", "src/lib/tools/handlers/lists.ts:87-137", ".research/remaining-tool-procedures-20261008.json:42-56"]
+    },
+    {
+      "id": "RTP-04",
+      "severity": "Important",
+      "case_ids": ["EXT-F-4130-T01"],
+      "finding": "The 25-control Records case defers almost all payloads and assertions to a guide not captured here; this is an honest discovery outline, not yet a reproducible procedure for those controls. The suggested record_delete before record_restore_version does not specify a valid remaining target/version or final row state. Proposal actions may create durable objects, while cleanup only says remove or archive where supported.",
+      "required_change": "After fetching the live guide/schema, record one exact input, expected response/state, ID lineage, and cleanup per control before execution. Restore a case-created version while its target remains valid, then delete the case-created row last. Mark any proposal without a verified inert path and deletion method blocked; do not substitute a general cleanup sentence for that proof.",
+      "evidence": ["src/features/tools/ToolsView.tsx:360-455", "src/lib/tools/manual-server.ts:17-78", "docs/stabilization/inventory.json:58679-58807", ".research/remaining-tool-procedures-20261008.json:179-191"]
+    },
+    {
+      "id": "RTP-05",
+      "severity": "Important",
+      "case_ids": ["EXT-F-4150-T01"],
+      "finding": "focus_element returns ok:true even when focused:false. The fixture specifies a noninteractive heading for focus/blur, so both controls can appear to pass without a focus transition. The provided nonnumeric tab_id returns Invalid tab_id, not a tab lookup error; unknown-key Zod behavior is not a rejection test.",
+      "required_change": "Use a case-owned focusable element and assert document.activeElement before/after focus and blur; use a current numeric but nonexistent tab ID for the lookup branch, and assert Invalid tab_id separately for the malformed string. Provide exact per-action arguments and observable changes, including scrollable area and event counters where needed.",
+      "evidence": ["src/lib/tools/handlers/keyboard.ts:249-308", "src/lib/tools/handlers/canonical.ts:66-78,84-203", ".research/remaining-tool-procedures-20261008.json:240-250"]
+    }
+  ],
+  "accepted_scope_and_limits": [
+    "All six inventory control-ID sets match their listed inventory features; no control is evidenced as run or passed by this patch.",
+    "Tools Run directly invokes local handlers with conversationId=null and skips dispatch approval. Records uses live /tools/test/list and authenticated /tools/test/execute; these routes cannot establish agent binding, chat persistence, or role/permission gates.",
+    "desktop_run_command health, parallel_for_each_tab, Records, computer, and user_todos may remain NOT_EXECUTABLE until the stated owned fixtures and live contract exist. AI text inputs are proposed only; describe_image remains fixture-blocked.",
+    "The earlier EXT-F-4124 peer review already accepted its null-conversation limitation; this review adds the clear_done baseline hazard. No guest/member/admin observation, service availability, or release identity was produced here."
+  ]
+}
