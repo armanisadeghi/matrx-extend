@@ -50,39 +50,38 @@
         "permissions",
         "reload"
       ],
-      "design_status": "NOT_EXECUTABLE: owned manual fixture host and repeatable focus-preserving call path are unresolved; keep permissions and runtime unverified",
+      "design_status": "NOT_EXECUTABLE: manual fixture host and insertion-time focus/selection oracle are unresolved; keep positive, permission and runtime results unverified.",
       "preconditions": [
-        "Complete shared preconditions for the selected existing member/admin mode and verify the owned /form-controls route is actually mounted with the fixture hash recorded. Use a fresh tab on that route and record its numeric tab ID.",
-        "Confirm debugger permission is already granted and that the owned tab has no pre-existing debugger attachment/banner. Record cdp_session {\"action\":\"list\"} as baseline only in the admin profile; for member, do not use the admin-only helper as an assumed authorized permission check.",
-        "The page's #keys input starts at seed, and #state exposes activeElement. cdp_input_type only calls CDP Input.insertText; it does not focus an element. Clicking the manual Run button may move focus away from the page. The required browser focus/value smoke is an unresolved gate: do not mark the positive path executable from source alone."
+        "Complete shared receipt/build/reload requirements. Use only existing member/admin profile and already-granted debugger permission; if permission is absent, record not-run and stop.",
+        "Fixture source initializes #keys to seed and initially focuses #other-focus. Reload before the case and record that baseline. Before any eventual attempt, explicitly click #keys and select the seeded text with Ctrl+A; observe the selection in the page. This establishes intended setup only.",
+        "No current manual fixture host exists. Even after one is supplied, the procedure has no source-backed oracle for effective focus and selection at the Input.insertText boundary after opening/running the side panel. Until a native preflight demonstrates that boundary, do not execute or score a positive."
       ],
       "steps": [
-        "Open Tools \u2192 Catalog, select All handlers if needed, search cdp_input_type, and verify the displayed schema/tier. With the owned page visible, click #keys and confirm the page's #state says activeElement=keys before opening/running the side-panel call. Run {\"text\":\"ext-f-4106-probe\",\"tab_id\":<owned numeric tab ID>}.",
-        "Immediately inspect the actual page: require #keys value exactly ext-f-4106-probe, visible #state keys value matching it, activeElement=keys at the insertion boundary, and no navigation/submission. Record the inline result and debugger banner. If the focus boundary cannot be observed at call time or the value does not change, record the attempt as inconclusive/failing and leave the positive procedure unresolved; do not infer success from {ok:true}.",
-        "Invalid-input segment: record the current #keys value, run {\"text\":17,\"tab_id\":<owned numeric tab ID>}, require a visible Schema mismatch before handler invocation, then confirm #keys is unchanged. This is schema validation only, not a permissions denial.",
-        "After a fresh page reload and full extension Reload, reacquire the same receipt-bound extension identity, tab ID, fixture route/hash and baseline. Repeat the positive only if the warm native focus/value smoke has already established a reproducible focus path; otherwise mark the reloaded positive not run/unverified. Repeat the schema-negative and verify the field remains unchanged.",
-        "As a separate future dispatcher/access test, use only a confirmed advertised route and an actual permission/approval UI with the existing applicable profile. Record denial and unchanged field state if such a route exists; this manual Run procedure cannot provide that result. No permission setting is changed here."
+        "Setup definition for a future native preflight: reload the exact fixture; require #keys value seed and initial activeElement other-focus. Click #keys, use Ctrl+A so the intended selection is the complete word seed, and visually confirm selection before opening the side panel. This does not establish that the selection/effective focus survives to CDP insertion.",
+        "Do not run the positive until a native preflight can independently observe #keys as the effective target with the full seed selection at the Input.insertText boundary. If that preflight becomes available, call {\"text\":\"ext-f-4106-probe\",\"tab_id\":<owned numeric tab ID>} and require the selected seed to be replaced, yielding exactly ext-f-4106-probe. Without that boundary proof, leave the positive not run; do not infer it from {ok:true} or a later value.",
+        "Schema negative, only after fixture host exists: record current #keys value; run {\"text\":17,\"tab_id\":<owned numeric tab ID>}; require visible schema mismatch before handler invocation and unchanged field value. This is input validation, not permission denial.",
+        "Repeat any executable segment only after a full extension Reload plus fixture page reload and a new receipt bound to the actual loaded extension identity. The positive remains not executable unless the warm focus/selection boundary was independently proven and is reproducible."
       ],
       "expected": [
-        "Source-defined valid handler result is {ok:true} after a CDP attach and Input.insertText. Product success additionally requires independently observed focused target and exact #keys value change; that browser fact is unknown until native smoke. No successful positive claim is authorized by the current source-only evidence.",
-        "Non-string text is rejected by the local Zod schema before handler.run and leaves #keys unchanged. This does not test Chrome debugger permission or dispatch authorization.",
-        "Warm/reloaded behavior and member/admin runtime behavior remain unverified. Record observed banner/attachment state immediately; explicit detach, idle detach and worker restart are different outcomes."
+        "Fixture begins with #keys=seed and focus on #other-focus. Handler sends Input.insertText at the current focused target/caret; it does not focus, clear, or select. If and only if full seed selection and effective #keys focus are independently established at insertion, exact expected value is ext-f-4106-probe.",
+        "Those insertion-time conditions are currently unknown and no manual host exists, so no exact positive oracle or runtime status is claimed.",
+        "A non-string text value is rejected by the local schema and leaves #keys unchanged."
       ],
       "source_evidence": [
-        "docs/stabilization/inventory.json feature/case EXT-F-4106 / EXT-F-4106-T01: control C01, member/admin modes, exact dimensions and readiness gaps",
-        "src/lib/tools/handlers/cdp.ts:370-394: text string, optional integer tab_id, debugger requirement, CDP Input.insertText, no focus operation",
-        "src/features/tools/ToolsView.tsx:390-459: schema validation and direct handler.run with assignedTabId=null",
-        "tests/browser/fixtures/form-controls.html: #keys, initial value, visible activeElement/value state and form-action CSP",
-        "tests/browser/form-control-owned-fixture.test.mjs: fixture route served only inside its local test server",
-        ".research/input-navigation-final-peer-20261007.json: prior independent finding that side-panel Run focus is unresolved"
+        "docs/stabilization/inventory.json EXT-F-4106 / EXT-F-4106-T01: control, schema, applicable modes and dimensions",
+        "tests/browser/fixtures/form-controls.html:14, 23-24, 35-40: seed value, initial focus on other-focus, and activeElement state rendering",
+        "src/lib/tools/handlers/cdp.ts:370-394: Input.insertText receives text; no focus/select/replace operation",
+        "src/features/tools/ToolsView.tsx:390-462: schema validation and direct handler.run with assignedTabId:null",
+        "tests/browser/form-control-owned-fixture.test.mjs:72-94: ephemeral fixture route is mounted and then closed"
       ],
       "limits": [
         "This case's positive path is explicitly conditional and is not presently certified executable. The required native focus/value boundary has not been observed.",
         "The permission dimension stays open: manual Run bypasses dispatcher optional-permission and authorization gates; schema-negative input is not a permission test."
       ],
-      "source_revision": "11ea54bce23286f8abf8268605b2ba7510439da3",
-      "fixture_setup_blocker": "Native focus-preserving side-panel call path has not been proven; fixture route also lacks a standalone manual host.",
-      "permission_boundary": "Inventory lists activeTab plus optional debugger; handler declares optional debugger. The direct manual runner bypasses dispatcher permission checks, so manual execution cannot prove either permission grant or denial. It also cannot prove member/admin role gating."
+      "source_revision": "2f2e0522cc763dbd03b70b2908a51eb57d621e21",
+      "fixture_setup_blocker": "Keep design_status NOT_EXECUTABLE until both a reviewed manual fixture host exists and native evidence establishes full selection plus effective target focus at Input.insertText time.",
+      "permission_boundary": "Inventory lists activeTab plus optional debugger; handler declares optional debugger. The direct manual runner bypasses dispatcher permission checks, so manual execution cannot prove either permission grant or denial. It also cannot prove member/admin role gating.",
+      "inventory_design_status_current": "needed"
     },
     {
       "feature_id": "EXT-F-4156",
@@ -119,7 +118,7 @@
         "permissions",
         "reload"
       ],
-      "design_status": "NOT_EXECUTABLE: the owned fixture has no guarded manual-runner host; keep permissions and runtime unverified",
+      "design_status": "NOT_EXECUTABLE: canonical schema/branches are source-supported, but no owned manual fixture host is available; permissions/runtime remain unverified.",
       "preconditions": [
         "Complete shared preconditions for the selected existing member/admin mode. The target must be the owned /form-controls fixture route served from the recorded loopback origin and verified exact fixture hash. The existing fixture unit test does not itself leave a route running for manual Tools work; if the route is not independently mounted, stop and leave all positive branches unverified.",
         "In Tools \u2192 Catalog choose All handlers, search wait_for, and select the row labeled Read. There are two same-name rows: the canonical Read handler is EXT-F-4156 and takes tab_id string + condition/target; the legacy Action handler has selector/ready_state and is the distinct EXT-F-4058 row. Do not run the Action row for this case.",
@@ -150,9 +149,10 @@
         "No currently running manually accessible local fixture route was found. The exact route must be mounted by a future native runner before these steps are executed; do not substitute a guessed route or public site.",
         "The inventory permission dimension stays unverified; manual execution bypasses dispatcher authorization and cannot establish scripting/activeTab refusal."
       ],
-      "source_revision": "11ea54bce23286f8abf8268605b2ba7510439da3",
-      "fixture_setup_blocker": "Fixture route lacks a standalone manual host. Existing test uses listen(0) then closes server; do not infer route availability.",
-      "permission_boundary": "Inventory lists activeTab and scripting; canonical handler is Read and declares no optional permission. Manual Run bypasses dispatcher permission/authorization checks; schema rejection and timeout are not permission outcomes."
+      "source_revision": "2f2e0522cc763dbd03b70b2908a51eb57d621e21",
+      "fixture_setup_blocker": "Do not promote to executable/design-ready until a reviewed manual host serves exact owned fixture bytes with actual origin, port and hash in the receipt.",
+      "permission_boundary": "Inventory lists activeTab and scripting; canonical handler is Read and declares no optional permission. Manual Run bypasses dispatcher permission/authorization checks; schema rejection and timeout are not permission outcomes.",
+      "inventory_design_status_current": "needed"
     },
     {
       "feature_id": "EXT-F-4168",
@@ -187,18 +187,18 @@
         "permissions",
         "reload"
       ],
-      "design_status": "NOT_EXECUTABLE: the owned fixture has no guarded manual-runner host; keep permissions and runtime unverified",
+      "design_status": "NOT_EXECUTABLE: source-supported actions await the owned manual fixture host; permission and runtime outcomes remain unverified.",
       "preconditions": [
         "Complete shared preconditions in the existing admin profile, with debugger permission already granted. Do not exercise this case as member; its inventory applicability is admin only. The owned /form-controls route must already be mounted by an approved guarded manual-runner host, with actual loopback URL and served-byte hash recorded. No such host is currently available, so do not execute this procedure until it exists. Record the route's numeric tab ID from the owned browser tab.",
         "Open Tools \u2192 Catalog \u2192 All handlers, search cdp_session, verify the admin badge, privileged tier and displayed enum schema. The manual runner bypasses admin and permission gates; this test does not establish a dispatch-access result.",
         "Take cdp_session {\"action\":\"list\"} before any attach and preserve the complete tab_ids baseline. If the owned tab is already listed, shows a debugger banner, or the relationship between listed tabs and the owned target is ambiguous, stop without detaching anything. No concurrent debugger operations may occur during the run."
       ],
       "steps": [
-        "Warm list branch: call {\"action\":\"list\"}. Confirm result has tab_ids array and equals the saved baseline; do not treat it as a census beyond this worker's in-memory attachment set.",
+        "Warm list branch: call {\"action\":\"list\"}; confirm result has tab_ids array and record the worker-local baseline. This is not a Chrome-wide census. If the worker restarts, idle auto-detach occurs, or the list changes unexpectedly during the procedure, mark the run inconclusive, preserve observations and do not treat the change alone as a product failure.",
         "Attach branch: call {\"action\":\"attach\",\"tab_id\":<recorded owned numeric tab ID>}. Require {ok:true}. Immediately call list and compare to baseline; require exactly one new numeric ID equal to explicit tab_id, tied to owned target. If delta is not exactly one or does not equal that ID, stop without detaching any ID.",
         "Call attach again with {\"action\":\"attach\",\"tab_id\":<exact owned delta ID>}; require {ok:true} and list unchanged from the one-delta set. Invalid schema branch: call {\"action\":\"unknown\"}; require Schema mismatch before handler invocation, then call list and require no mutation.",
         "Detach branch: call {\"action\":\"detach\",\"tab_id\":<exact owned delta ID>}. Require {ok:true}; call list and require that exact owned delta absent while all pre-existing baseline IDs remain. Confirm Chrome's debugger banner clears on the owned target. Never detach an unknown or baseline ID.",
-        "After full extension Reload and reloading the owned target, take a fresh list baseline. Repeat list, attach, same-ID repeated attach, schema-negative, exact-ID detach and list/banner cleanup. Reacquire owned ID from the fresh post-attach delta; never reuse an earlier run's ID as ownership proof.",
+        "After exact extension Reload and fixture reload, take a fresh list baseline. Repeat only if the baseline and owned target are unambiguous. Any service-worker restart, idle detach, or unexplained list delta makes the attachment comparison inconclusive; reacquire the target ID from a fresh post-attach delta and never reuse a prior run ID.",
         "If attach fails, record the actual reason and stop the positive path; do not infer permission denial. If exact owned detach fails, stop, preserve the observed ID/result and request the existing scoped cleanup path; do not use a detach-all action.",
         "The inventory permissions dimension needs a separate authorized dispatcher/access-denial path with a verified current advertised tool and actual refusal UI. Direct manual Run cannot establish it; keep the permission result open."
       ],
@@ -220,9 +220,10 @@
         "The permissions dimension remains unverified. The manual runner's displayed admin badge does not enforce admin_only and does not prove actual dispatcher denial for other roles.",
         "The list is the extension worker's in-memory CDP set, not a complete browser-wide inventory; a service-worker restart can clear its view and sweep orphaned sessions."
       ],
-      "source_revision": "11ea54bce23286f8abf8268605b2ba7510439da3",
-      "fixture_setup_blocker": "Fixture route lacks standalone manual host. Attach step explicitly supplies recorded numeric tab_id because ToolsView assigns null.",
-      "permission_boundary": "Handler and delegated attach/detach/list leaves declare admin_only and optional debugger permission. Manual Run bypasses both dispatcher checks; direct success cannot prove either gate."
+      "source_revision": "2f2e0522cc763dbd03b70b2908a51eb57d621e21",
+      "fixture_setup_blocker": "Keep design_status NOT_EXECUTABLE until a reviewed manual fixture host serves the exact owned route. Attachment list is worker-local; a worker restart or idle auto-detach during the procedure makes its baseline comparison inconclusive.",
+      "permission_boundary": "Handler and delegated attach/detach/list leaves declare admin_only and optional debugger permission. Manual Run bypasses both dispatcher checks; direct success cannot prove either gate.",
+      "inventory_design_status_current": "needed"
     },
     {
       "feature_id": "EXT-F-4169",
@@ -254,45 +255,46 @@
         "permissions",
         "reload"
       ],
-      "design_status": "PROPOSED_SOURCE_ONLY; positive execution blocked until owned fixture has a reviewed manual host; no runtime proof.",
+      "design_status": "NOT_EXECUTABLE: owned manual fixture host is missing; native set/restore observations are required and cleanup success is not proven by handler result.",
       "preconditions": [
-        "Complete shared receipt, build and reload preconditions in this artifact. Use existing admin profile only; do not alter role, organization or permissions. Debugger permission must already be granted; if absent record not-run/unavailable and stop.",
-        "Use a fresh case-owned /form-controls tab from the exact fixture bytes. Record actual loopback URL/port, served-byte hash, numeric tab ID, viewport and user-agent baseline. No pre-existing debugger attachment or emulation may exist; if clean baseline cannot be established, stop.",
-        "Fixture setup blocker: only tests/browser/form-control-owned-fixture.test.mjs mounts this path on 127.0.0.1 with listen(0) and closes it in finally. No manual runner is present; require a reviewed disposable host that records the actual origin/port and hash before attempting positive steps."
+        "Use the existing admin profile only and require debugger permission already granted. Do not change role, organization or permissions.",
+        "After an owned fixture host is available, open a fresh case-owned tab with no prior emulation/attachment. Record tab ID and actual baseline viewport width/height, devicePixelRatio and navigator.userAgent through native Chrome DevTools, then close DevTools before invoking the extension handler. If the baseline cannot be independently read, stop.",
+        "Record cdp_session list baseline. cdp_emulate set automatically attaches to its tab; after set, measure and record any owned attachment delta. The test fixture host is currently unavailable outside the ephemeral unit-test route, so do not execute until a reviewed host and receipt exist."
       ],
       "steps": [
-        "Set emulation using {\"action\":\"set\",\"tab_id\":<owned numeric tab ID>,\"width\":390,\"height\":844,\"device_scale_factor\":2,\"mobile\":true,\"user_agent\":\"Matrx-EXT-F-4169-Probe\"}. Require the handler result {ok:true}; record the actual visible tab behavior and reliable viewport/user-agent observation if available. Do not infer those effects from result alone.",
-        "Handler-level missing-field boundary: run {\"action\":\"set\",\"tab_id\":<owned numeric tab ID>,\"width\":390}; expect {ok:false,reason:\"'width' and 'height' required for set\"}. This should return before delegate invocation.",
-        "Schema-negative boundary: run with width 99 and height 844; expect schema rejection before handler invocation. Record visible result; this is not a permission denial.",
-        "Always clean up with {\"action\":\"clear\",\"tab_id\":<owned numeric tab ID>}; expect {ok:true}. Verify normal viewport/user-agent restoration where observable. Detach only any attachment newly created by this procedure and verify its banner clears; preserve baseline IDs.",
-        "After exact extension Reload and fixture page reload, reacquire receipt-bound identity and tab ID, re-establish clean baseline, and repeat the positive and negative segments only if the fixture host and debugger permission remain available."
+        "Set emulation with {\"action\":\"set\",\"tab_id\":<owned numeric tab ID>,\"width\":390,\"height\":844,\"device_scale_factor\":2,\"mobile\":true,\"user_agent\":\"Matrx-EXT-F-4169-Probe\"}. Require {ok:true} as handler result only, then independently read actual viewport width/height, devicePixelRatio and navigator.userAgent in the owned tab through native DevTools. Record exact observed values; do not infer emulation from the handler result.",
+        "Handler boundary: run {\"action\":\"set\",\"tab_id\":<owned numeric tab ID>,\"width\":390}; require the source-defined missing height refusal. Schema boundary: width 99 with height 844 is rejected before handler.run. Neither boundary proves a permission outcome.",
+        "Cleanup: call {\"action\":\"clear\",\"tab_id\":<owned numeric tab ID>} and record its returned value, but treat {ok:true} as insufficient. After the call, independently read viewport width/height, devicePixelRatio and navigator.userAgent in native Chrome DevTools. Cleanup is verified only if every value matches the recorded baseline. If DevTools cannot read these values without making the extension debugger state ambiguous, or any value differs, mark cleanup unverified, keep the owned tab open, preserve the evidence and do not detach its debugger session or claim restoration.",
+        "Only after readback matches baseline, compare cdp_session list to baseline and detach an exact new attachment delta owned by this procedure; confirm banner clears. Opening DevTools can affect debugger attachment state, so if the delta is ambiguous, stop without detaching and leave attachment cleanup unverified.",
+        "Repeat after exact extension Reload and fixture reload with fresh receipt and baseline. A failure to match baseline after clear remains cleanup-unverified even when clear returned {ok:true}."
       ],
       "expected": [
-        "Source schema: action set|clear; optional integer tab_id; width and height integers >=100; optional positive device_scale_factor, boolean mobile and string user_agent. Handler requires width and height for set.",
-        "set delegates to cdp_emulate_device, which attaches, sends Emulation.setDeviceMetricsOverride and optionally Emulation.setUserAgentOverride; leaf returns {ok:true} on success. clear delegates and returns {ok:true} even if not attached; when attached it clears metrics and resets UA override.",
-        "Missing dimensions yields handler refusal; out-of-range width is rejected by local schema. Neither result proves permission behavior or actual viewport/UA change."
+        "Set delegates metrics override and optional UA override. Expected requested values are width 390, height 844, devicePixelRatio 2, mobile true and UA Matrx-EXT-F-4169-Probe; acceptance uses actual native readback, not {ok:true}.",
+        "Clear returns {ok:true} even when unattached; attached-path UA reset errors are swallowed. Therefore only independent native readback matching the pre-run baseline proves restoration. If the readback cannot be made without ambiguous debugger state, or any value differs, cleanup remains unverified."
       ],
       "permission_boundary": "cdp_emulate and delegated leaves are admin_only, privileged and require optional debugger permission. Manual Run bypasses dispatcher admin and optional-permission checks; it cannot establish these gates.",
-      "cleanup": "Clear emulation on only the case-owned tab, restore/verify normal viewport and user-agent where observable, detach only a newly created attachment delta and confirm the banner clears, close only the owned tab, stop only the host process started for the procedure. If initial state is ambiguous, stop without cleanup mutations.",
+      "cleanup": "Clear emulation on the exact case-owned tab and independently verify viewport width/height, devicePixelRatio and navigator.userAgent all match the recorded baseline. Handler {ok:true} alone is not cleanup proof. On any mismatch, unavailable readback, or ambiguous debugger state, keep the tab open, mark cleanup unverified and do not detach. Only after verified restoration may an exact new attachment delta be detached and banner clearing confirmed. Close only the owned tab and stop only the host started for this procedure.",
       "source_evidence": [
         "docs/stabilization/inventory.json EXT-F-4169 / EXT-F-4169-T01: C01, admin-only modes, dimensions and source-listed-pending-reconciliation status",
         "src/lib/tools/handlers/canonical-mergers.ts:517-562: cdp_emulate schema, admin_only/debugger gate declaration, required width/height refusal and delegate mapping",
         "src/lib/tools/handlers/cdp.ts:562-611: cdp_emulate_device and cdp_clear_emulation schemas/behavior",
         "src/features/tools/ToolsView.tsx:453-462: direct manual handler invocation and assignedTabId:null",
         "tests/browser/form-control-owned-fixture.test.mjs:72-94: fixture test mounts ephemeral route and closes it in finally",
-        "tests/browser/owned-fixture-server.mjs:1-24: serving helper only; no process startup API"
+        "tests/browser/owned-fixture-server.mjs:1-24: serving helper only; no process startup API",
+        "src/lib/cdp/client.ts:271-301,352-388: worker-local attachment list, attach retention and detach behavior; it cannot establish page emulation state",
+        "tests/browser/form-control-owned-fixture.test.mjs:72-94: ephemeral fixture host lifecycle"
       ],
       "cannot_prove": [
-        "Native viewport/user-agent effect without runtime observation.",
-        "Dispatcher admin/permission refusal, agent advertisement/routing or role behavior through manual Run.",
-        "Positive runtime behavior while standalone fixture hosting is unavailable.",
-        "Reload result from source-only evidence."
+        "Native emulation effect or restoration from source alone.",
+        "Clear handler result proves neither attached state nor user-agent reset because it returns true when unattached and swallows the UA reset error.",
+        "Dispatcher admin/permission enforcement, role-specific result, and positive runtime while fixture host is unavailable."
       ],
-      "source_revision": "11ea54bce23286f8abf8268605b2ba7510439da3"
+      "source_revision": "2f2e0522cc763dbd03b70b2908a51eb57d621e21",
+      "inventory_design_status_current": "needed"
     }
   ],
-  "non_promotion": "All three inventory procedures remain source proposals. No mode cell, runtime verdict, permission result, fixture availability, advertisement, or build/reload result is promoted.",
-  "source_commit": "11ea54bce23286f8abf8268605b2ba7510439da3",
+  "non_promotion": "All four inventory cases remain source proposals. No mode cell, runtime verdict, permission result, fixture availability, advertisement, or build/reload result is promoted.",
+  "source_commit": "2f2e0522cc763dbd03b70b2908a51eb57d621e21",
   "execution_status": "SOURCE_ONLY; no browser, handler, build, test, release, auth, permission or runtime execution.",
   "source_findings": [
     "The canonical wait_for handler is the Read row; a same-name legacy Action row is separately inventoried and must not be selected for EXT-F-4156.",
@@ -300,5 +302,10 @@
     "The owned form fixture route is only mounted inside an automated test using an ephemeral port and closed in finally. No standalone manual host startup/cleanup procedure was found, so fixture-dependent positive paths remain blocked.",
     "cdp_input_type sends Input.insertText but does not focus a field; its insertion-time focus behavior through the sidepanel remains unproven.",
     "No runtime pass, role cell, permission result, loaded extension identity or fixture availability is asserted."
-  ]
+  ],
+  "peer_review": {
+    "path": ".research/cdp-procedures-peer-20261007.json",
+    "reviewed_commit": "529f579286fa0e7a04da33d02f1869ae14ab3cc8",
+    "disposition": "Applied source-grounded corrections. No runtime claim or inventory status changed."
+  }
 }
