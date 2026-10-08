@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "64fcd17a",
+  "reviewed_report": ".research/picker-auth-recovery-native-20261007.json",
+  "reviewed_run": 37714880948,
+  "method": "Independent read-only review of committed report, native receipt, three resource journals, terminal result, original CI provenance and build receipt, GitHub run/artifact metadata, D158/D42/D160 records, T24/T51 inventory, and the diagnostic count source. No browser, build, native run, secret access, or product edit.",
+  "verdict_A_requested_behavior": {
+    "overall": "PARTIAL",
+    "targets": [
+      {
+        "target": "Real admin sign-in and approved organization",
+        "verdict": "PASS",
+        "evidence": "Native receipt records real_admin_signin_and_device_organization pass; guest control showed Scrape visible and Showcase absent before sign-in. The organization diagnostic records admin_role_verified, storage and rendered identity matches, and exactly one visible intended option. The prior D160 auth-completion failure did not recur; this run does not explain that earlier failure."
+      },
+      {
+        "target": "Old A EXIT, ITEM_DETECTED, and RESULT after B starts",
+        "verdict": "PASS",
+        "evidence": "Named native cases passed for A EXIT, A detected, and A result relay rejection while current B remained usable. For detected and result, B extracted three fixture rows in the same tab/document after stamped stale relay."
+      },
+      {
+        "target": "Delayed A cancel and delayed A install",
+        "verdict": "PASS",
+        "evidence": "Both named genuine delayed cases passed with B extracting three rows on the unchanged page; delayed install recorded no obsolete A start."
+      },
+      {
+        "target": "Current B detection, Done/extract, restart, and ordinary page click",
+        "verdict": "PASS for observed slice",
+        "evidence": "Current B detection relayed, B card/field Done produced three titles/rows, same-page cancel/start had one overlay, and an ordinary page click after cancel registered once. Completion diagnostic separately records Done detach, extraction, repick attach, and cancel detach boundaries."
+      },
+      {
+        "target": "Reinjected content context and exactly one B detection",
+        "verdict": "FAIL",
+        "evidence": "Resource-valid native run stopped at lifecycle_B_detection_count_failed after three B rows. Last safe sample: detected_count 2, current_session_detected_count 2, other_session_detected_count 0, producer_current_detected_count 1, install_count 2. A start-world probe saw distinct replacement start/teardown hooks. Post-Done observer reported teardown_distinct false and zero listeners, which cannot by itself prove failed teardown. Two relays versus one producer observation does not establish whether product delivery duplicated an event or the instrumentation observed one twice. Exact listener cleanup remains unverified."
+      },
+      {
+        "target": "D158 native closure",
+        "verdict": "PARTIAL",
+        "evidence": "The former untracked-listener tracker exception did not block this run, and prior stale cases advanced. D158 requires the surrounding native reinjection and exact-count criteria, which failed at the count boundary."
+      },
+      {
+        "target": "D42 native lifecycle closure",
+        "verdict": "PARTIAL",
+        "evidence": "Stale relay, delayed cancellation, deferred installation, and current B extraction passed. Reinjection exactly-one detection failed; exact listener cleanup and nonadmin role gating were not established."
+      },
+      {
+        "target": "EXT-F-1012-T24 full picker finish/restart",
+        "verdict": "PARTIAL",
+        "evidence": "Done transfer, restart/repick, and bounded extraction were observed. The run failed before completion of the full reinjection lifecycle and does not promote the inventory case as a whole."
+      },
+      {
+        "target": "EXT-F-1012-T51 seeded fields and nested scope",
+        "verdict": "PARTIAL",
+        "evidence": "Card/title field extraction and repick were observed. Doctor-seeded field preservation, explicit nested outer/alternate scope choices, and page-change behavior in the inventory were not completed by this run."
+      },
+      {
+        "target": "Nonadmin role gating",
+        "verdict": "UNVERIFIED",
+        "evidence": "Guest Showcase absence is a useful control, but it is not a signed-in nonadmin role test."
+      }
+    ]
+  },
+  "verdict_B_evidence_quality_privacy": {
+    "evidence_quality": "PARTIAL",
+    "evidence": "The committed receipt and journals support the bounded positive cases and a genuine first failed target. Receipt status remains unverified. Its static unverified_criteria list still names stale A channels and delayed cancellation even though named cases passed; use the per-case observations and failure stage, not that list alone. The retained package/browser/acceptance journals end respectively valid exit 0, valid exit 0, and child_failed exit 1 with resourceInvalid false. This is a test/product failure boundary, not resource exhaustion. No native causal localization of the two-relay/one-producer mismatch is present.",
+    "provenance": "GitHub API confirms original successful CI run 37698216289 at source 52487361b1b6a8663b958dbb2196cbcc9b1af31c and artifact 11516342905 named for that source/run. Retained original ci-build-provenance.json and ci-build-receipt.json agree on version 0.2.391 and tree SHA256 04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793; current native receipt repeats those values. Workflow head 3131ed79bea2b8e46e260cae95dce074376f8365 is a later harness checkout, not the imported product source. The original archive was not independently rehashed in this review; the tree hash is cross-checked between retained build records and current receipt.",
+    "privacy": "PASS for retained evidence. A pattern scan of all five committed run evidence files found no email address, credential/token/password assignment, or URL. The receipt stores bounded booleans/counts/session identities; the reviewer did not inspect credentials. Secret staging/deletion is reported by the worker but not independently verified here.",
+    "limits": [
+      "No live browser or new native test was run in this reviewer seat.",
+      "The completed job's failed exercise step and child_failed resource decision are authoritative for run outcome; a successful artifact upload is evidence retention, not test success.",
+      "Do not close D158/D42 or promote T24/T51 wholesale until the reinjection count cause and remaining inventory dimensions are checked."
+    ]
+  }
+}
