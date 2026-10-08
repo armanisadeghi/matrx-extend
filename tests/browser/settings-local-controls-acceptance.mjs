@@ -21,8 +21,8 @@ import {
   GUEST_PREFERENCES,
   observeGuestNewChatDefault,
   observeGuestPreference,
-  preferenceMatches,
   preferenceBaseline,
+  preferenceMatches,
   runGuestPreferenceCase,
 } from './settings-guest-preference-batch.mjs';
 import {

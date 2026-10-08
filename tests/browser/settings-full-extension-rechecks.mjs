@@ -1,9 +1,9 @@
+import { runGuestChoicesAcrossExtensionRestarts } from './settings-guest-extension-rechecks.mjs';
 import { AUTO_SCRAPE_MODE_FAILURE_STAGES } from './settings-guest-scrape-controls.mjs';
 import {
   observeGuestAutoScrapeMode,
   scrapeModeMatches,
 } from './settings-guest-scrape-controls.mjs';
-import { runGuestChoicesAcrossExtensionRestarts } from './settings-guest-extension-rechecks.mjs';
 
 export const FULL_EXTENSION_RECHECK_IDS = ['T04', 'T10', 'T28', 'T40', 'T67'];
 
