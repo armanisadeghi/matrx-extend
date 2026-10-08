@@ -1,0 +1,41 @@
+{
+    "schema_version": 1,
+    "review_type": "fresh_independent_inventory_integration_peer",
+    "status": "DONE_ACCEPT_BOUNDED_INTEGRATION",
+    "reviewed_commits": [
+        "2f0690cdd99b5b8c6324d11f71b1dffbaf958d3a",
+        "a5e27435"
+    ],
+    "evidence": {
+        "native_peer": ".research/seo397-native-peer-20261007.json",
+        "native_receipt": ".research/seo397-guest-native-20261007.json",
+        "integration_receipt": ".research/seo397-integration-20261007.json",
+        "inventory": "docs/stabilization/inventory.json",
+        "generated_status": [
+            "docs/stabilization/STATUS.md",
+            "docs/stabilization/STATUS.html",
+            "docs/stabilization/CHECKLIST.md"
+        ]
+    },
+    "verdict_a_coverage_and_evidence": {
+        "result": "ACCEPT_BOUNDED_PARTIAL",
+        "feature_identity": "EXT-F-1008 SEO; EXT-F-1009 is screenshot capture and is untouched.",
+        "case_results": {
+            "EXT-F-1008-T01": "The 0.2.397 guest run records 2 bounded passes; exactly-once auditing and the slow-old-result race remain unverified.",
+            "EXT-F-1008-T02": "The run records 1 pass (manual button returns to current page); refreshed capture, running state, stale advice, and failure handling remain unverified.",
+            "EXT-F-1008-T03": "The run records 2 passes (about:blank error/no stale audit and recovery to public page); unreachable HTTP(S), other restricted schemes, and reload behavior remain unverified.",
+            "EXT-F-1008-T07": "The new run records 5 narrower guest clipboard/menu subtargets in result_history. The active inventory result remains the stronger 37708611887 guest result with 6 passed subtargets; it was not replaced or cross-credited to member/admin. JSON contents and member/admin role gates remain unverified.",
+            "EXT-F-1008-T09": "The run records 9 bounded detail/link passes and 1 unverified metadata-door subtarget; readability correctness, broken social preview fallback, and other details remain unverified."
+        },
+        "receipt_scope": "The new receipt is for guest use on exact frozen CI development artifact 0.2.397 (source cedcec02a3fb4e52a3f63ebfda8728809eff418a). It supports 19 run-level passed subtargets and one unverified subtarget, not complete cases or a full feature pass. T07's five newer passes remain historical evidence while its stronger prior result stays active.",
+        "untouched_scope": "T04-T06, T08, T10-T14 have no new result. Member and admin results, other features, and the screenshot feature remain unchanged by the reviewed integration commits. No role cross-credit is present.",
+        "limits_retained": "The automatic Wikipedia exact snapshot counts and readability metric correctness are unverified; only the manual re-audit counts were checked against stable live DOM. Full extension reload, current-main health, Store behavior, and the optional Airbnb path were not established."
+    },
+    "verdict_b_integration_quality": {
+        "result": "ACCEPT",
+        "inventory_scope": "Comparing the inventory before 2f0690cd with HEAD shows changes only under feature EXT-F-1008 and its five guest cases T01/T02/T03/T07/T09. For T07 the new receipt was appended to result_history while the prior stronger current result remained active. Existing histories were retained.",
+        "generated_counts": "Generated tracker reports 205 features, 769 cases, and 1351 controls. SEO guest is 0 full, 5 partial, 9 unverified; member and admin are each 0 full, 14 unverified. These counts agree with the canonical case results and do not turn subtarget passes into full-case passes.",
+        "no_material_integration_defect_found": true,
+        "verification": "Read-only comparison of the curated receipt, prior peer verdict, integration receipt, inventory history, and generated tracker. No build, browser run, test, source edit, or inventory edit performed."
+    }
+}
