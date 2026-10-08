@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "task_id": "scrape397-native-peer-20261007",
+  "role": "independent_native_evidence_review_zero_product_authorship",
+  "reviewed_report": ".research/scrape397-final-native-20261007.json",
+  "verdict_a_acceptance": {
+    "status": "PARTIAL",
+    "scope": "development 0.2.397 guest, native narrow side panel, one hosted attempt",
+    "passed_observations": [
+      "T07 warm: the receipt records the chosen internal scroller at top 0, then 310 with follow on, then follow off when armed, and page Y reset to 0 when stopped.",
+      "T09 warm: 22 offered copy options across seven menus have menuCorrect, clipboard read, sentinel replacement, formatCorrect, and permissionRestored true.",
+      "T09 after navigation: 13 offered options have the same true predicates; Copy images, Copy videos, and Copy links are recorded as empty sections with sectionCorrect true, so they are not offered options.",
+      "The original receipt records warm guest observations for T20, T01, T08, T10, T11, T12, T13, T02, and T14, each explicitly partial with its own remaining work."
+    ],
+    "unverified": [
+      "T07 and T09 after full extension reload: no replacement side panel was verified, so neither post-reload exercise was reached.",
+      "All 11 cases in the original receipt have status partial; no whole Scrape, all-auth-mode, or Store acceptance is established.",
+      "T14 natural recoverable browser failure, Reload page and Try again, and deep retry mode were not exercised."
+    ],
+    "stop": {
+      "receipt_status": "unverified",
+      "stage": "extension_reload",
+      "failure_code": "native_extension_replacement_panel_unverified",
+      "observed": "Old panel disappeared; old worker became absent/redundant; a replacement worker appeared and activated; the replacement panel was not verified. This is an acceptance evidence gap, not an established product root cause."
+    }
+  },
+  "verdict_b_evidence_quality": {
+    "status": "PARTIAL",
+    "confirmed": [
+      "GitHub API reports run 37726590928 as completed/failure, workflow_dispatch on checkout d2553a1757fa0d7da5f9031ec466339e69092f53, with artifact 11528685061 named hosted-guest-37726590928-1, 180944 bytes, digest sha256:6bb9c19dea5af7ed645d27c5002f2121fd2fa6f1d341b79d181ddcd511937654.",
+      "The local original zip independently hashes to that digest and size. Every one of its 15 nested entries matches its extracted original byte-for-byte; the receipt hashes to sha256:7b799cd9cc7ebaf624f46255bb7a640938a4e53e5605c6f74d13b3470df07554 (148122 bytes).",
+      "GitHub API identifies development artifact 11527132614 with source SHA cedcec02a3fb4e52a3f63ebfda8728809eff418a from successful run 37724859892. The receipt names development version 0.2.397, that run/artifact pair, Chrome/141.0.7390.37, and extension runtime ID cihdmkcdjjckfhjpgoedmgfpoljebaml.",
+      "Current-run resource journals are nested originals named hosted-package-37726590928-1, hosted-browser-37726590928-1, and hosted-guest-37726590928-1. Their internal runId values agree with those names. Each has RESOURCE_ADMITTED and a RESOURCE_FINAL_DECISION with resourceInvalid false. Package and browser exit 0/valid; guest has four healthy watches and exits 1/child_failed. No current-run RESOURCE_REFUSED or invalid decision appears.",
+      "The six journals bearing run IDs 37105304739 or 37724762467 are prior-run contamination inside the same zip and were correctly excluded from the current-run resource verdict. The curator's listed SHA-256 and byte size agree with all 15 original zip entries."
+    ],
+    "limits": [
+      "T07 and T09 action and clipboard predicates come from the native harness receipt. The zip contains screenshots but no independently replayable clipboard transcript or post-reload screenshot, so those UI predicates are verified as recorded evidence rather than independently re-observed behavior.",
+      "The nested artifact proves what the failed hosted attempt captured. It does not prove the replacement panel could or could not reopen, identify a product defect, or complete post-reload acceptance.",
+      "The original development package bytes are not included in this result zip; its run and source linkage is checked against GitHub artifact metadata and the receipt, while the claimed tree_sha256 is receipt-only."
+    ]
+  },
+  "source_paths": {
+    "artifact_zip": ".research/scrape397-final-native-20261007-run37726590928-originals/hosted-guest-37726590928-1.zip",
+    "receipt": ".research/scrape397-final-native-20261007-run37726590928-originals/matrx-extend/matrx-extend/test-results/scrape-guest-native-4a07e4d8-566b-43d4-b4ab-ec4b6bd60514.json",
+    "resource_journal_directory": ".research/scrape397-final-native-20261007-run37726590928-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals"
+  }
+}
