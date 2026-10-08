@@ -185,6 +185,7 @@
       "aidream/services/organizations/tests/test_guest_public_app_run_acts_in_the_apps_organization.py"
     ],
     ["node", "--test", "scripts/test-stabilization-resource-safety.mjs"],
+    ["node", "--test", "scripts/test-stabilization-resource-cpu-integration.mjs"],
     ["node", "--test", "scripts/hosted-driver-dependencies.test.mjs"],
     ["node", "--test", "tests/browser/showcase-d47-public-initial-load.test.mjs"]
   ],

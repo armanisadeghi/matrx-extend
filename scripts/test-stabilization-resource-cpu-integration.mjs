@@ -22,12 +22,13 @@ const watchCodes = new Set([
   'RESOURCE_WATCH_UNSAFE',
 ]);
 
-async function fixture({ pauseOwnerRewrite = false } = {}) {
+async function fixture({ pauseOwnerRewrite = false, simulateChildError = false } = {}) {
   const scratch = await mkdtemp(join(tmpdir(), 'resource-cpu-wrapper-'));
   const scripts = join(scratch, 'scripts');
   const docs = join(scratch, 'docs/stabilization');
   const leaseRoot = join(scratch, 'lease');
   const cpuPhase = join(scratch, 'cpu-phase');
+  const memoryPhase = join(scratch, 'memory-phase');
   const childPhase = join(scratch, 'child-phase');
   const ownerRewriteRelease = join(scratch, 'owner-rewrite-release');
   await mkdir(scripts);
@@ -36,13 +37,58 @@ async function fixture({ pauseOwnerRewrite = false } = {}) {
   await setHealthyHostMeasurements(scripts);
   const guardPath = join(scripts, 'stabilization-resource.mjs');
   let guardSource = await readFile(guardPath, 'utf8');
+  const healthyMemory = "Promise.resolve('System-wide memory free percentage: 80%'),";
+  assert.equal(guardSource.split(healthyMemory).length, 2);
+  guardSource = guardSource.replace(
+    healthyMemory,
+    `readFile(${JSON.stringify(memoryPhase)}, 'utf8').then((value) =>
+      'System-wide memory free percentage: ' + value.trim() + '%'),`,
+  );
   // Only the external CPU measurement is controlled. The real wrapper owns
   // preflight, watch decisions, journal writes, child lifecycle and verdict.
   assert.equal(guardSource.split('Promise.resolve(0.1),').length, 2);
   guardSource = guardSource.replace(
     'Promise.resolve(0.1),',
-    `readFile(${JSON.stringify(cpuPhase)}, 'utf8').then(Number),`,
+    `readFile(${JSON.stringify(cpuPhase)}, 'utf8').then(async (raw) => {
+      if (raw.trim() === 'slow-healthy') {
+        await sleep(3000);
+        return 0.1;
+      }
+      return Number(raw);
+    }),`,
   );
+  // The outer real-host guard owns admission for this test. Nested scratch
+  // guards exercise watch/lifecycle behavior and must not refuse their
+  // legitimate ancestor as another live host runner.
+  const hostOwnershipCheck = 'await assertNoLegacyWork();';
+  assert.equal(guardSource.split(hostOwnershipCheck).length, 2);
+  if (process.env.MATRX_RESOURCE_OWNER)
+    guardSource = guardSource.replace(hostOwnershipCheck, '/* outer guard owns host admission */');
+  if (process.env.MATRX_CPU_COMPLETION_SELF_TEST === '1') {
+    const successfulExit = 'cpu.pending &&\n          result.childExitCode === 0 &&';
+    assert.equal(guardSource.split(successfulExit).length, 2);
+    guardSource = guardSource.replace(
+      successfulExit,
+      'false &&\n          result.childExitCode === 0 &&',
+    );
+  }
+  if (simulateChildError) {
+    // Simulate the external ChildProcess error event only. The copied guard
+    // still owns settlement, descendant cleanup, journal, and final verdict.
+    const errorListener = "child.once('error', (error) =>";
+    assert.equal(guardSource.split(errorListener).length, 2);
+    guardSource = guardSource.replace(
+      errorListener,
+      `const errorProbe = setInterval(async () => {
+          if ((await readFile(${JSON.stringify(childPhase)}, 'utf8')).trim() === 'error') {
+            clearInterval(errorProbe);
+            child.emit('error', new Error('synthetic child error'));
+          }
+        }, 20);
+        errorProbe.unref();
+        ${errorListener}`,
+    );
+  }
   if (pauseOwnerRewrite) {
     // Hold the real startup writer after truncation. The parent must wait for
     // watch readiness rather than treating admission as completed child setup.
@@ -89,16 +135,28 @@ async function fixture({ pauseOwnerRewrite = false } = {}) {
   policy.watchIntervalSeconds = 0.5;
   await writeFile(join(docs, 'resource-policy.json'), `${JSON.stringify(policy)}\n`);
   await writeFile(cpuPhase, '0.1\n');
+  await writeFile(memoryPhase, '80\n');
   await writeFile(childPhase, 'run\n');
   await writeFile(
     join(scripts, 'prove-desktop-settings-guards.mjs'),
     `import { readFile } from 'node:fs/promises';
      setInterval(async () => {
-       if ((await readFile(${JSON.stringify(childPhase)}, 'utf8')).trim() === 'exit0') process.exit(0);
+       const phase = (await readFile(${JSON.stringify(childPhase)}, 'utf8')).trim();
+       if (phase === 'exit0') process.exit(0);
+       if (phase === 'exit1') process.exit(1);
      }, 20);
     `,
   );
-  return { scratch, docs, leaseRoot, cpuPhase, childPhase, guardPath, ownerRewriteRelease };
+  return {
+    scratch,
+    docs,
+    leaseRoot,
+    cpuPhase,
+    memoryPhase,
+    childPhase,
+    guardPath,
+    ownerRewriteRelease,
+  };
 }
 
 function observe(child) {
@@ -130,7 +188,9 @@ function observe(child) {
           if (predicate(event)) return event;
         }
         if (child.exitCode !== null)
-          throw new Error(`guard exited before expected event: ${stderr}`);
+          throw new Error(
+            `guard exited before expected event: ${stderr} ${JSON.stringify(events)}`,
+          );
         await new Promise((done) => setTimeout(done, 10));
       }
       throw new Error(`guard event timeout: ${stderr}`);
@@ -150,7 +210,10 @@ async function readWatchReadyOwner(stream, item) {
 }
 
 async function runScenario(kind, { pauseOwnerRewrite = false } = {}) {
-  const item = await fixture({ pauseOwnerRewrite });
+  const item = await fixture({
+    pauseOwnerRewrite,
+    simulateChildError: kind === 'pending-child-error',
+  });
   const runId = `cpu-${kind}-${randomUUID()}`;
   const child = spawn(
     process.execPath,
@@ -212,7 +275,16 @@ async function runScenario(kind, { pauseOwnerRewrite = false } = {}) {
       /cpu_pending/,
     );
     assert.equal(actions, 0);
-    if (kind === 'recovered') {
+    if (
+      [
+        'recovered',
+        'completion-recovered',
+        'completion-unsafe',
+        'completion-expired',
+        'completion-memory-unsafe',
+        'completion-stop',
+      ].includes(kind)
+    ) {
       await writeFile(item.cpuPhase, '0.1\n');
       for (let i = 0; i < 2; i++) {
         const watch = await stream.next((event) => watchCodes.has(event.code));
@@ -223,11 +295,54 @@ async function runScenario(kind, { pauseOwnerRewrite = false } = {}) {
           /cpu_pending/,
         );
       }
-      const recovered = await stream.next((event) => watchCodes.has(event.code));
-      assert.equal(recovered.code, 'RESOURCE_CPU_RECOVERED');
-      assert.deepEqual(recovered.reasons, []);
-      assert.equal(await runNativeResourceAction(check, () => ++actions), 1);
-      await writeFile(item.childPhase, 'exit0\n');
+      if (kind.startsWith('completion-')) {
+        await writeFile(item.childPhase, 'exit0\n');
+        await stream.next((event) => event.code === 'RESOURCE_JOB_EXIT');
+        assert.equal(child.exitCode, null, 'lease holder must remain alive while CPU is pending');
+        const heldOwner = JSON.parse(
+          await readFile(join(item.leaseRoot, 'heavy/owner.json'), 'utf8'),
+        );
+        assert.equal(heldOwner.nonce, owner.nonce, 'same lease must remain held after child exit');
+        await assert.rejects(
+          runNativeResourceAction(check, () => ++actions),
+          /run_stopped/,
+        );
+        if (kind === 'completion-unsafe') await writeFile(item.cpuPhase, '0.88\n');
+        if (kind === 'completion-expired') await writeFile(item.cpuPhase, 'slow-healthy\n');
+        if (kind === 'completion-memory-unsafe') await writeFile(item.memoryPhase, '10\n');
+        if (kind === 'completion-stop') {
+          child.kill('SIGTERM');
+          await stream.next((event) => event.code === 'RESOURCE_STOP_REQUESTED');
+        }
+      }
+      if (kind !== 'completion-stop') {
+        const next = await stream.next((event) => watchCodes.has(event.code));
+        assert.equal(
+          next.code,
+          kind === 'completion-unsafe'
+            ? 'RESOURCE_CPU_PENDING'
+            : kind === 'completion-expired' || kind === 'completion-memory-unsafe'
+              ? 'RESOURCE_WATCH_UNSAFE'
+              : 'RESOURCE_CPU_RECOVERED',
+        );
+        if (kind === 'completion-expired')
+          assert.deepEqual(next.reasons, ['RESOURCE_CPU_CONFIRMATION_EXPIRED']);
+        if (kind === 'completion-memory-unsafe')
+          assert.deepEqual(next.reasons, ['RESOURCE_MEMORY_LOW']);
+        if (kind === 'completion-unsafe') {
+          const unsafe = await stream.next((event) => watchCodes.has(event.code));
+          assert.equal(unsafe.code, 'RESOURCE_WATCH_UNSAFE');
+        }
+        if (
+          !['completion-unsafe', 'completion-expired', 'completion-memory-unsafe'].includes(kind)
+        ) {
+          assert.deepEqual(next.reasons, []);
+          if (kind === 'recovered') {
+            assert.equal(await runNativeResourceAction(check, () => ++actions), 1);
+            await writeFile(item.childPhase, 'exit0\n');
+          }
+        }
+      }
     } else if (kind === 'confirmed') {
       const second = await stream.next((event) => watchCodes.has(event.code));
       assert.equal(second.code, 'RESOURCE_WATCH_UNSAFE');
@@ -236,21 +351,62 @@ async function runScenario(kind, { pauseOwnerRewrite = false } = {}) {
         /unsafe_sample|stop_requested|unsafe_hold/,
       );
     } else {
-      await writeFile(item.childPhase, 'exit0\n');
+      await writeFile(
+        item.childPhase,
+        kind === 'pending-failed-child'
+          ? 'exit1\n'
+          : kind === 'pending-child-error'
+            ? 'error\n'
+            : 'exit0\n',
+      );
+      if (kind === 'pending-failed-child' || kind === 'pending-child-error') {
+        const job = await stream.next((event) => event.code === 'RESOURCE_JOB_EXIT');
+        if (kind === 'pending-failed-child') assert.equal(job.childExitCode, 1);
+        else assert.equal(job.childError, 'synthetic child error');
+      }
     }
     const exit = await closed;
     finished = true;
-    assert.deepEqual(exit, { code: kind === 'recovered' ? 0 : 3, signal: null }, stream.stderr);
+    assert.deepEqual(
+      exit,
+      { code: ['recovered', 'completion-recovered'].includes(kind) ? 0 : 3, signal: null },
+      stream.stderr,
+    );
     const journal = (await readFile(join(item.docs, 'resource-journals', `${runId}.jsonl`), 'utf8'))
       .trim()
       .split('\n')
       .map(JSON.parse);
-    assert.equal(journal.at(-1).decision, kind === 'recovered' ? 'valid' : 'invalid');
-    assert.equal(journal.at(-1).resourceInvalid, kind !== 'recovered');
-    if (kind === 'confirmed') {
+    assert.equal(
+      journal.at(-1).decision,
+      ['recovered', 'completion-recovered'].includes(kind) ? 'valid' : 'invalid',
+    );
+    assert.equal(
+      journal.at(-1).resourceInvalid,
+      !['recovered', 'completion-recovered'].includes(kind),
+    );
+    if (
+      ['confirmed', 'completion-unsafe', 'completion-expired', 'completion-memory-unsafe'].includes(
+        kind,
+      )
+    ) {
       assert(journal.some((event) => event.code === 'RESOURCE_STOP_AT_SAFE_BOUNDARY'));
       assert.equal((await stat(join(item.leaseRoot, 'unsafe-hold.json'))).isFile(), true);
     }
+    if (kind === 'pending-failed-child')
+      assert(
+        journal.some((event) => event.code === 'RESOURCE_JOB_EXIT' && event.childExitCode === 1),
+      );
+    if (kind === 'pending-child-error')
+      assert(
+        journal.some(
+          (event) =>
+            event.code === 'RESOURCE_JOB_EXIT' &&
+            event.childExitCode === null &&
+            event.childSignal === null,
+        ),
+      );
+    if (kind === 'completion-stop')
+      assert(journal.some((event) => event.code === 'RESOURCE_STOP_REQUESTED'));
     assert.equal(actions, kind === 'recovered' ? 1 : 0);
   } finally {
     if (!finished) {
@@ -268,6 +424,20 @@ test(
     await runScenario('recovered');
     await runScenario('confirmed');
     await runScenario('pending-exit');
+    await runScenario('completion-recovered');
+    await runScenario('completion-unsafe');
+    await runScenario('completion-expired');
+    await runScenario('completion-memory-unsafe');
+  },
+);
+
+test(
+  'pending child failure, child error, and operator stop remain invalid',
+  { timeout: 30_000 },
+  async () => {
+    await runScenario('pending-failed-child');
+    await runScenario('pending-child-error');
+    await runScenario('completion-stop');
   },
 );
 
