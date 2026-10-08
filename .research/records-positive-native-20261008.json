@@ -1,0 +1,133 @@
+{
+  "api_only_observation": {
+    "authentication_status": 200,
+    "error_code": "unknown",
+    "http_status": 403,
+    "limitation": "This separate post-run API observation cannot establish the status or response shape of the native helper's first request; multiple backend 403 layers exist. No further API request was made.",
+    "request": "one read-only GET to the matching table-list/search preflight path",
+    "response_body_retained": false,
+    "results_count": null,
+    "same_admin_and_approved_org": true,
+    "tables_array_shape": "unknown",
+    "timing": "after native run"
+  },
+  "artifact_identity": {
+    "artifact_id": 11556064167,
+    "frozen_ci_run": 37790643945,
+    "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+    "tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046",
+    "version": "0.2.414"
+  },
+  "authorship": "Reused the source-review seat; zero driver authorship and no source edits.",
+  "backend_version_bracket": {
+    "after": {
+      "built_at": "2026-10-08T18:46:58Z",
+      "git_sha": "fe43bf66245fe3abb71b8a52ce22bf0bfb1cc45d",
+      "observed_at_utc": "2026-10-08T19:54:52.220575+00:00"
+    },
+    "before": {
+      "built_at": "2026-10-08T18:46:58Z",
+      "git_sha": "fe43bf66245fe3abb71b8a52ce22bf0bfb1cc45d",
+      "observed_at_utc": "2026-10-08T19:40:46.603347+00:00"
+    },
+    "limitation": "These are bracketing health/version observations, not request-time server attribution."
+  },
+  "credential_cleanup": {
+    "deleted_after_terminal": true,
+    "external_volume_staging_directory_removed": true,
+    "names_only_absence_verified": true,
+    "only_owned_temporary_github_secret_names_staged": [
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "secret_values_retained": false
+  },
+  "evidence_files": ".research/records-positive-native-20261008/raw/ contains sanitized native receipt, resource events, run/job/artifact metadata, fixture phase/absence aggregates, backend version samples, and names-only credential cleanup proof.",
+  "fixture_state": {
+    "cleanup_result": "Exact owned marker fixture absence was verified by scoped read-only counts; no owned fixture remained to clean up. This does not identify the hidden assertion failure.",
+    "journal_has_row_id": false,
+    "journal_has_table_id": false,
+    "journal_phase": "planned",
+    "read_only_exact_marker_counts": {
+      "approved_membership_matches": 1,
+      "approved_organization_matches": 1,
+      "archived_owned_tables": 0,
+      "authenticated_principal_matches": 1,
+      "live_owned_rows": 0,
+      "live_owned_tables": 0,
+      "retained_identifiers_or_raw_records": false
+    },
+    "source_order": "The helper persists phase=create_sent before issuing table-create POST; this run's persisted phase remained planned. No table-create request was sent by this run, absent an earlier journal-write failure (which also occurs before POST). A row create cannot occur before obtaining a table ID."
+  },
+  "native_execution": {
+    "artifact_digest": "sha256:3e0cea03a15b71a2bcec52362dabac4f79a1285415b6375064104c41a9d04d84",
+    "artifact_id": 11575900000,
+    "attempt": 1,
+    "case": "records-readonly-admin",
+    "completed_at": "2026-10-08T19:48:00Z",
+    "conclusion": "failure",
+    "failure": {
+      "driver_exit_code": 1,
+      "failure_code": "records_fixture_cleanup_failed",
+      "native_stage": "admin_rendered_identity",
+      "receipt_stage": "records_fixture_cleanup",
+      "source_boundary": "The helper sets report.stage to records_fixture_cleanup in finally before rethrowing bodyError; the driver catch emits the stage/native_stage and discards the underlying error. Do not interpret this wrapper label as the actual failing operation.",
+      "underlying_assertion_or_request": "unknown; wrapper label is not sufficient to identify it"
+    },
+    "lane": "A records-readonly-admin",
+    "observed_steps": [
+      "C02 table_list succeeded: HTTP 200, exact completion visible, 50 table results and approved organization coverage.",
+      "Full panel reload retained admin identity and approved organization; table_list again completed visibly with 50 results.",
+      "Invalid table_list limit was refused with a visible finished invalid_arguments completion naming limit.",
+      "C03 metadata_search valid request completed visibly with count 1 and independently matched table identity.",
+      "Malformed metadata_search query, C04 malformed record_id, and C05 malformed table_id each completed visibly and were refused as invalid_arguments with the field named.",
+      "No positive C04 record read or C05 aggregate was verified."
+    ],
+    "resource_admission": {
+      "browser": "admitted, resource valid, exit 0",
+      "guest": "admitted, resource valid, exit 1 (child failed)",
+      "package": "admitted, resource valid, exit 0"
+    },
+    "run_id": 37833716704,
+    "runner": "macos-15",
+    "started_at": "2026-10-08T19:40:33Z",
+    "status": "completed"
+  },
+  "schema_version": 1,
+  "source_identity": {
+    "focused_ci_exact_head": "2b94356cf45ac225720f204fa3547784d7fedf6a",
+    "focused_ci_result": "success",
+    "focused_ci_run": 37832596142,
+    "head_sha": "18e1b21fcb4de35b987e9d19f0233f28eb4d41f0",
+    "recovery_commit": "66914d3a",
+    "reviewed_coordination_commit": "2b94356cf45ac225720f204fa3547784d7fedf6a",
+    "run_source_blobs": {
+      "native_acceptance_driver": "5b1fcfb9ecd888e3784f7b276df4b389747f6636",
+      "route": "aa7127717dd805e281e66552fe592fa47912bf2d",
+      "tests/browser/records-positive-fixture.mjs": "91c63c95ac6be4fceab11a7c920d7158cac33e4e",
+      "workflow": "a8cda2ffa6678fbf7fccc8b6b8c3c3e615928e64",
+      "wrapper": "061a939ca6dd28d27a575ed419179b9a31156cf2"
+    }
+  },
+  "task": "independent Records native hosted fixture verification",
+  "tests_and_limits": {
+    "browser_or_build": "None locally.",
+    "hosted_focused_ci": "Run 37832596142 passed on the reviewed coordination SHA.",
+    "local_tests": "None; constrained to hosted evidence/source inspection and read-only fixture proof.",
+    "native": "Run 37833716704 completed failure; no retry or redispatch."
+  },
+  "verdict_A_behavior_and_spec": {
+    "not_supported": "No positive C04 record read, C05 aggregate, or full-feature acceptance claim.",
+    "result": "Partial negative-path evidence only; positive C04/C05 behavior and end-to-end Records acceptance remain unverified.",
+    "supported": "The hosted authenticated lane showed exact visible, finished, field-specific refusal for malformed query, record_id, and table_id. C02/C03 positive controls passed in this run."
+  },
+  "verdict_B_quality_and_validity": {
+    "basis": "Package/browser/resource admission passed and the native artifact is retained; driver exit was 1 with a lossy cleanup-stage wrapper label. Exact marker fixture absence and credential cleanup were independently verified. The after-run API-only 403 is not the native request response.",
+    "remaining_gaps": [
+      "Underlying helper assertion/request failure is not retained by the driver.",
+      "Minor receipt-flag test gap remains recorded; no runtime acceptance bypass was attempted.",
+      "C04/C05 positive paths and sequential fixture recovery remain unverified in this run."
+    ],
+    "result": "Native run is resource-valid but failed; do not count it as a passing acceptance run."
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "source": "read-only Supabase query of the exact helper marker, scoped to the authenticated admin principal and approved organization; only aggregate counts retained",
+  "principal_matches": 1,
+  "approved_org_matches": 1,
+  "approved_membership_matches": 1,
+  "live_owned_tables": 0,
+  "archived_owned_tables": 0,
+  "live_owned_rows": 0,
+  "identifiers_or_raw_records_retained": false
+}
