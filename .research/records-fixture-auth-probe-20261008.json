@@ -1,0 +1,29 @@
+{
+  "auth_source": {
+    "designated_admin": "aidream .env (AI_ADMIN_USERNAME and AI_ADMIN_PASSWORD)",
+    "organization": "existing approved organization fixture, read privately",
+    "preflight": "host matched db.matrxserver.com; principal matched admin@admin.com; required values were present; no credential or token values/hashes were emitted",
+    "public_supabase_config": "repo .env.production (WXT_SUPABASE_URL and WXT_SUPABASE_PUBLISHABLE_KEY)"
+  },
+  "comparison": {
+    "conclusion": "The earlier 403 was not reproduced. A configuration/request mismatch is plausible, but cannot be identified from the retained evidence. This read is separate from the native helper request and does not establish the native request's status or response shape.",
+    "current_observation": "Using the documented public production Supabase config, designated admin password-grant flow, approved organization, and matching organization header, the same API path returned 200.",
+    "prior_observation": "A separate earlier probe was recorded as auth 200 then GET 403, but its exact resolved configuration/request details and response body were not retained."
+  },
+  "limitations": [
+    "No response data or identifiers were retained; the probe was limited to status/content type and allowlisted error code extraction.",
+    "No additional API request, native run, or backend change was made."
+  ],
+  "request": {
+    "allowlisted_error_category": "not_applicable",
+    "auth_method": "Supabase password grant, POST /auth/v1/token?grant_type=password",
+    "auth_status": 200,
+    "content_type": "application/json",
+    "get_status": 200,
+    "identity_valid": true,
+    "read": "single GET /api/v1/tables with approved organization query and matching X-Organization-Id header; search prefix EXT-F-4130-",
+    "response_body_or_record_data_retained": false
+  },
+  "schema_version": 1,
+  "scope": "One privately authenticated, read-only discriminator attempt; no native rerun, writes, or credential restaging."
+}
