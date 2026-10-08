@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "role": "fresh independent peer; read-only source and remote CI review, no source authorship or native execution",
+  "scope": "EXT-D-0160 safe admin auth diagnostic forwarding at commit 2c506c2d and exact-head focused CI 37708778415; Intel native A/B packages pending at this checkpoint",
+  "verdict_A_source": "PASS: signInSettings forwards bounded auth observations from the formerly discarded local diagnostic on shared admin sign-in failure, sets picker report.auth_diagnostic, and rethrows. No product auth cause or picker case is inferred. Native admin completion remains unverified.",
+  "verdict_B_quality": "PARTIAL, Important test gap: the source emits an explicit categorical allowlist and does not serialize the raw exception, URL, body, token, identity, or page content. Its focused test contrasts signed-out and authenticated panel/storage states, but poisons only an unused secret and two private-* labels. It does not inject or reject raw error, URL, body, or data fields, nor a disallowed value in an allowed field. Add those negative controls before treating the privacy guard as complete.",
+  "evidence": {
+    "source_commit": "2c506c2ddad96db64310feda8e100f45b8b2f4ca",
+    "focused_ci_run": 37708778415,
+    "focused_ci_head": "2c506c2ddad96db64310feda8e100f45b8b2f4ca",
+    "focused_ci_conclusion": "success; focused acceptance guards 24 passed, 0 failed",
+    "source_paths": ["tests/browser/settings-native-auth-driver.mjs", "tests/browser/settings-panel-driver.guest.test.mjs", "tests/browser/showcase-picker-native-acceptance.mjs"],
+    "diagnosis": ".research/admin-auth-completion-diagnosis-20261007.json",
+    "defect": "docs/stabilization/defects/EXT-D-0160.json"
+  },
+  "native_checkpoint": {
+    "audit_A_run": 37708712354,
+    "audit_A_status": "in_progress; no terminal result package reviewed",
+    "seo_B_run": 37708611887,
+    "seo_B_status": "in_progress; no terminal result package reviewed",
+    "frozen_build": "CI 37698216289 / artifact 11516342905 / source 52487361 / version 0.2.391",
+    "coverage": "none credited from pending runs; prior resource-invalid observations remain uncredited"
+  },
+  "open_items": [
+    "Complete poison negative controls for D160 and obtain fresh independent review of the repaired source.",
+    "Obtain one resource-valid native admin completion retest for D160; keep product auth cause unknown until observed.",
+    "At A/B terminal, independently verify each run's three current resource journals and receipt hashes, artifact provenance, and bounded case observations. T86 zero active-key writes alone does not prove rotateDeviceKey was never invoked. SEO actual clipboard readback and build_recheck are distinct from all-field parity and native run identity. Close D159 only if the original retry boundary and surrounding cases are resource-valid."
+  ]
+}
