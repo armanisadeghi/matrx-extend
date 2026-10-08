@@ -1,0 +1,47 @@
+{
+  "id": "EXT-D-0181",
+  "feature_id": "EXT-F-0002",
+  "case_ids": ["EXT-F-0002-T08"],
+  "surface": "Scrape launch regression guard",
+  "auth_mode": "guest",
+  "title": "Extracted headed-launch caller lacks reload diagnostic binding",
+  "severity": "S2: required CI regression stops before build; production caller has valid binding",
+  "priority": "P1",
+  "state": "fixed",
+  "owner": "extend-stabilization",
+  "reproduction": [
+    "Run node --test tests/browser/scrape-headed-launch.test.mjs against64b756a5.",
+    "The test evaluates the actual caller prefix containing RELOAD_OPEN_DIAGNOSTIC without binding that variable.",
+    "ReferenceError aborts headed-mode assertion, as in CI37787448900."
+  ],
+  "expected": "Regression exercises actual headed caller with diagnostic flag off and on and retains missing-headed refusal.",
+  "actual": "CI Guest transport observer regression fails with RELOAD_OPEN_DIAGNOSTIC is not defined; source caller itself defines the flag.",
+  "evidence": ["https://github.com/armanisadeghi/matrx-extend/actions/runs/37787448900"],
+  "transition_history": [
+    {
+      "at": "2026-10-08T13:59:34.078692+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Required CI failure observed."
+    },
+    {
+      "at": "2026-10-08T13:59:34.078692+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Actual test extraction omits newly referenced diagnostic flag."
+    },
+    {
+      "at": "2026-10-08T13:59:34.078692+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Bind flag in extracted caller test and exercise both values."
+    },
+    {
+      "at": "2026-10-08T13:59:34.078692+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Three focused tests pass; independent review pending."
+    }
+  ],
+  "closure_requirement": "Independent actual guard rerun passes both diagnostic values and omission/display-mode negative assertions; full CI status tracked separately."
+}

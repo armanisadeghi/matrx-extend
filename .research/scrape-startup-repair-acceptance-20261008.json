@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "task": "Lane B uninstrumented guest Scrape after native CDP startup repair",
+  "attempts": 1,
+  "verdict": "resource_invalid_zero_acceptance",
+  "native_run": {
+    "workflow": "Hosted guest side-panel acceptance",
+    "workflow_run_id": 37787769611,
+    "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37787769611",
+    "workflow_checkout_sha": "64b756a5332073c4e9d2d594507f0a4430d6af81",
+    "job_id": 113346856145,
+    "runner_label": "macos-15-intel",
+    "case": "guest-scrape-development",
+    "auth_mode": "guest",
+    "width_mode": "normal",
+    "requested_panel_width_px": 600,
+    "diagnostics": "off",
+    "duration": "7m33s",
+    "conclusion": "failure"
+  },
+  "frozen_app_artifact": {
+    "ci_run_id": 37754055905,
+    "artifact_id": 11539827040,
+    "version": "0.2.407",
+    "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "tree_sha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0"
+  },
+  "source_gate": {
+    "reviewed_source_sha": "37ca7d888269e9a780fc671c73d5eafb4bc3f7a2",
+    "independent_review": ".research/native-deadline-final-peer-20261008.json",
+    "focused_acceptance_run_id": 37787030446,
+    "focused_acceptance_conclusion": "success",
+    "focused_acceptance_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37787030446",
+    "workflow_source_comparison": "The native checkout is 64b756a; files used by the native harness and hosted workflow match reviewed source 37ca7d88. Commits after 37ca7d88 through this checkout change docs and research records only."
+  },
+  "observed_result": {
+    "receipt_path": ".research/native-scrape-startup-repair-acceptance-20261008-37787769611/raw/native-receipt.json",
+    "receipt_sha256": "c4896f4933d527b98afcb2f780ce0aae49737a7885db08ec41d35921f727932c",
+    "status": "unverified",
+    "stage": "inputs",
+    "native_stage": "cdp_connect",
+    "failure_code": "owned_cdp_endpoint_timeout",
+    "guest_account_observed": false,
+    "cases": [],
+    "resource_journal_decision": "invalid",
+    "resource_invalid": true,
+    "resource_invalid_reason": "The guest journal recorded CPU_BUSY and CPU_HIGH_LOAD_BUSY during teardown after child exit 1; the final decision is invalid."
+  },
+  "resource_journals": [
+    {
+      "path": ".research/native-scrape-startup-repair-acceptance-20261008-37787769611/raw/resource-package.jsonl",
+      "sha256": "644a13364b57fab3b734d17cd434a321bfc24bdc9a2121c14c2454e3e5824f48",
+      "decision": "valid"
+    },
+    {
+      "path": ".research/native-scrape-startup-repair-acceptance-20261008-37787769611/raw/resource-browser.jsonl",
+      "sha256": "e5107374f8f965749a05f0414cc4cd6ceddd19cd443278cba4ecdb5fd05ff3ff",
+      "decision": "valid"
+    },
+    {
+      "path": ".research/native-scrape-startup-repair-acceptance-20261008-37787769611/raw/resource-guest.jsonl",
+      "sha256": "67aea1481a147c580d0379f9e49ec773c3125641559c5235886246f5d773986e",
+      "decision": "invalid"
+    }
+  ],
+  "d178": {
+    "status": "not_exercised",
+    "reason": "The run failed before browser/account setup. Owned edited state, visible discard confirmation, trusted Re-capture, and the Article oracle were not reached; no D178 behavior is inferred."
+  },
+  "raw_evidence_dir": ".research/native-scrape-startup-repair-acceptance-20261008-37787769611/raw",
+  "raw_sha256_manifest": ".research/native-scrape-startup-repair-acceptance-20261008-37787769611/raw/SHA256SUMS",
+  "next_action": "Keep native acceptance pending. Do not retry this attempt; route the startup timeout and resource-invalid journal for a changed diagnostic hypothesis before a separately authorized native run."
+}

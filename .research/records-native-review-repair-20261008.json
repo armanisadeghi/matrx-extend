@@ -1,0 +1,19 @@
+{
+  "scope": "D91 / EXT-F-4130-C02 read-only native Records table_list driver repair",
+  "source_review": ".research/records-readonly-case-peer-20261008.json",
+  "status": "source_repair_verified_native_execution_pending",
+  "changes": [
+    "Pass mandatory onStage through the real admin sign-in helper and keep the latest native sign-in stage in the bounded receipt.",
+    "Hash the panel session bearer using the existing organization checkpoint helper and require the execute request bearer to match it.",
+    "Read the completion from the same finished CDP requestId and require the visible Records output to equal its full_result.",
+    "Report listener removal failure rather than silently accepting incomplete observer cleanup."
+  ],
+  "verification": {
+    "focused_command": "node --test tests/browser/records-readonly-native-proof.test.mjs scripts/hosted-showcase-route.test.mjs",
+    "result": "18 passed",
+    "syntax_command": "node --check tests/browser/records-readonly-native-acceptance.mjs",
+    "syntax_result": "passed"
+  },
+  "privacy": "The receipt records only bounded stage, action, request flags, result count, and approved-organization coverage; no bearer, response body, table names, or row content is persisted.",
+  "remaining": "D91 remains open until the exact current CI development artifact runs in hosted native Chrome with the real approved organization and produces a private passing receipt."
+}

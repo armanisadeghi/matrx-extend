@@ -7,9 +7,17 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
-import { approvedShowcaseOrganization, signInSettings } from './settings-native-auth-driver.mjs';
+import { approvedShowcaseOrganization } from './settings-native-auth-driver.mjs';
+import {
+  assertRecordsVisibleCompletion,
+  observeRecordsExecution,
+  signInRecordsAdmin,
+} from './records-readonly-native-proof.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
-import { runShowcaseOrganizationCheckpoint } from './showcase-organization-checkpoint.mjs';
+import {
+  panelBearerHash,
+  runShowcaseOrganizationCheckpoint,
+} from './showcase-organization-checkpoint.mjs';
 
 const REPO = resolve(import.meta.dirname, '../..');
 const extensionDir = process.env.MATRX_SHOWCASE_EXTENSION_DIR;
@@ -33,63 +41,6 @@ const report = {
 const stage = (value) => {
   report.stage = value;
 };
-
-function observeExecution(panel, organizationId) {
-  const requests = new Map();
-  const removers = [];
-  removers.push(
-    panel.on('Network.requestWillBeSent', ({ requestId, request }) => {
-      let url;
-      try {
-        url = new URL(request.url);
-      } catch {
-        return;
-      }
-      if (
-        url.origin !== 'https://server.app.matrxserver.com' ||
-        url.pathname !== '/tools/test/execute'
-      )
-        return;
-      let body = null;
-      try {
-        body = JSON.parse(request.postData ?? '');
-      } catch {
-        /* Fail below. */
-      }
-      requests.set(requestId, {
-        method: request.method,
-        organizationMatches: Object.entries(request.headers ?? {}).some(
-          ([key, value]) => key.toLowerCase() === 'x-organization-id' && value === organizationId,
-        ),
-        bearerPresent: Object.entries(request.headers ?? {}).some(
-          ([key, value]) => key.toLowerCase() === 'authorization' && /^Bearer \S+$/i.test(value),
-        ),
-        body,
-        status: null,
-        finished: false,
-      });
-    }),
-  );
-  removers.push(
-    panel.on('Network.responseReceived', ({ requestId, response }) => {
-      const entry = requests.get(requestId);
-      if (entry) entry.status = response.status;
-    }),
-  );
-  removers.push(
-    panel.on('Network.loadingFinished', ({ requestId }) => {
-      const entry = requests.get(requestId);
-      if (entry) entry.finished = true;
-    }),
-  );
-  return {
-    start: () => panel.send('Network.enable'),
-    entries: () => [...requests.values()],
-    stop: () => {
-      for (const remove of removers.splice(0)) remove();
-    },
-  };
-}
 
 async function outputState(panel) {
   return evaluate(
@@ -149,12 +100,14 @@ try {
     exercisePanel: async ({ page, panel, resourceAction }) => {
       stage('admin_signin');
       const auth = await resourceAction(() =>
-        signInSettings({
-          mode: 'admin',
+        signInRecordsAdmin({
           page,
           panel,
           repo: REPO,
           adminCredentialsFile: process.env.MATRX_PREPARE_ADMIN_CREDENTIALS_FILE,
+          onStage: (value) => {
+            report.native_stage = value;
+          },
         }),
       );
       assert.equal(auth.admin_role, true, 'records_admin_role_unverified');
@@ -224,7 +177,10 @@ try {
         true,
         'records_input_not_visible',
       );
-      const observer = observeExecution(panel, approved.id);
+      stage('records_bearer_read');
+      const bearerHash = await panelBearerHash(panel);
+      assert.match(bearerHash ?? '', /^[0-9a-f]{64}$/, 'records_authenticated_token_unavailable');
+      const observer = observeRecordsExecution(panel, approved.id, bearerHash);
       try {
         await observer.start();
         stage('records_run');
@@ -238,18 +194,21 @@ try {
         const [request] = observer.entries();
         assert.equal(request.method, 'POST');
         assert.equal(request.organizationMatches, true, 'records_execute_org_header_mismatch');
-        assert.equal(request.bearerPresent, true, 'records_execute_auth_missing');
+        assert.equal(request.bearerMatches, true, 'records_execute_principal_mismatch');
         assert.deepEqual(
           request.body,
           { tool_name: 'records', arguments: input },
           'records_include_app_tables_not_preserved',
         );
         assert.equal(request.status, 200, 'records_execute_http_failed');
+        stage('records_completion');
+        const completion = await observer.completion(request);
         report.request = {
           path: '/tools/test/execute',
           method: 'POST',
           organization_matches: true,
-          bearer_present: true,
+          authenticated_principal_matches: true,
+          completion_observed: true,
           include_app_tables: true,
           status: request.status,
           finished: true,
@@ -258,10 +217,17 @@ try {
         const visible = await waitFor(
           'records_output_visible',
           () => outputState(panel),
-          (value) => value?.visible && value.raw,
+          (value) => {
+            if (!value?.visible || !value.raw) return false;
+            try {
+              return JSON.stringify(JSON.parse(value.raw)) === JSON.stringify(completion);
+            } catch {
+              return false;
+            }
+          },
           30_000,
         );
-        const result = JSON.parse(visible.raw);
+        const result = assertRecordsVisibleCompletion(visible, completion);
         assert.equal(result.success, true, 'records_tool_refused');
         assert.equal(result.output?.action, 'table_list', 'records_wrong_action_result');
         assert.ok(Array.isArray(result.output?.tables), 'records_tables_missing');

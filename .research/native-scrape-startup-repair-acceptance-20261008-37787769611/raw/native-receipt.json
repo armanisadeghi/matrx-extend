@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007",
+  "mode": "guest",
+  "status": "unverified",
+  "artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.407",
+    "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "tree_sha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+    "run_id": 37754055905,
+    "artifact_id": 11539827040
+  },
+  "guest_account_observed": false,
+  "cases": [],
+  "stage": "inputs",
+  "native_stage": "cdp_connect",
+  "failure": {
+    "stage": "inputs",
+    "code": "owned_cdp_endpoint_timeout"
+  },
+  "original_busy_failure": null,
+  "cpu_diagnostic": null,
+  "horizontal_geometry": [],
+  "reload_milestones": [],
+  "reload_lifecycle": null,
+  "reload_open_diagnostic": {
+    "enabled": false,
+    "evidence_class": "acceptance_eligible",
+    "perturbation": "none"
+  },
+  "driver_failure": null,
+  "media_transitions": [],
+  "media_event_traces": [],
+  "authentication": null,
+  "panel_viewports": [],
+  "panel_visibility_timeline": [],
+  "browser_launch": null,
+  "panel_transition": null,
+  "width_mode": "normal"
+}

@@ -123,7 +123,7 @@ export function observeShowcaseProductRequest(
   };
 }
 
-async function panelBearerHash(panel) {
+export async function panelBearerHash(panel) {
   return evaluate(
     panel,
     `(async () => {
