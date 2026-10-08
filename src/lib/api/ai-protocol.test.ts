@@ -9,7 +9,7 @@
  * and one that drifts the moment the backend's v2 surface changes. These tests
  * assert every path helper in `routes/ai.ts` still produces EXACTLY the string
  * it produced before, and that the sub-resource paths the extension must keep
- * on v1 (warm / cancel / inbox) are still left alone.
+ * on v1 (cancel / inbox) are still left alone.
  *
  * The expected strings below are written as literals ON PURPOSE. Deriving them
  * from the same package function the code under test uses would prove nothing.
@@ -26,7 +26,6 @@ import {
   CHAT_PATH,
   agentExecutePath,
   agentTargetExecutePath,
-  agentWarmPath,
   cancelPath,
   conversationInboxPath,
   mandateExecutePath,
@@ -49,7 +48,6 @@ describe('AI path versioning is the package policy, and the wire did not move', 
     // makes these sub-resources safe. If that ever changes, the extension
     // would start POSTing to routes the backend does not expose — and this is
     // the test that fails first.
-    expect(agentWarmPath('abc-123')).toBe('/ai/agents/abc-123/warm');
     expect(cancelPath('req-1')).toBe('/ai/cancel/req-1');
     expect(conversationInboxPath('conv-1')).toBe('/ai/conversations/conv-1/inbox');
   });
