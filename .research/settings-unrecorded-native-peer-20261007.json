@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "lane": "fresh_independent_peer_review",
+  "scope": "Read-only review of the original hosted native Settings receipt from workflow 37714389856 and its current-run resource journals. No browser rerun, product edit, inventory edit, or secret access.",
+  "source_report": ".research/settings-unrecorded-native-20261007.json",
+  "source_commit": "ea0ef9053cb8a53611222fe27366f9f557a96e4f",
+  "original_evidence": ".research/settings-unrecorded-native-20261007/evidence/",
+  "verdict_a_product_spec": {
+    "EXT-F-1003-T64": {
+      "result": "PASS_BOUNDED",
+      "evidence": "The native report records two disposable loopback origins in the Privacy list and chrome.storage.local. Clicking Ask again for the first yields exactly the second in both places; it remains after panel reload. Clicking the last yields zero rows and zero stored origins, with the empty-list heading hidden; these states persist after a second panel reload.",
+      "limits": "This exercises Settings list behavior from direct preference seeding. It does not prove the preceding Never-for-this-site capture flow. The retained screenshots are setup captures, not post-click images. Cleanup runs in a finally block but has no separate post-cleanup readback."
+    },
+    "EXT-F-1003-T63": {
+      "result": "PARTIAL",
+      "evidence": "Warm signed-out guest Settings observation shows no admin section/actions and zero optional-permission controls. The native report records a management-page extension reload, retired old targets, and replacement worker and panel.",
+      "missing": "Settings did not open in the replacement panel. The after-reload admin-gate result and ordinary-member denial are unverified; the guest run has no ordinary-member principal.",
+      "failure_boundary": "guestStageFailed=reload_settings; guestReloadBoundary.status=settings_open_failed; first step=before_click, category=pointer_target_not_unique, matchedTargetCount=0, visibleMatchCount=0. A panel probe says runtime ID matched and the document was ready and visible, with one Settings tab but no active Settings tab and no guest banner/guidance. This identifies the failed observation boundary, not the product cause or recovery."
+    },
+    "EXT-D-0161": {
+      "result": "PASS_DIAGNOSTIC_SCOPE",
+      "evidence": "The current-run native receipt preserves the first failed Settings-open boundary and a typed, allowlisted replacement-panel probe after a real extension reload. Source inspection confirms the classifier emits fixed step/category/pointer fields and the panel probe constructs fixed booleans and nonnegative counts.",
+      "limit": "No successful post-reload guest Settings observation was recorded, so this diagnostic result cannot credit product recovery."
+    }
+  },
+  "verdict_b_evidence_quality_privacy": {
+    "result": "PASS_WITH_BOUNDED_LIMITS",
+    "artifact_identity": "The raw native report marks the unpacked development build verified, with extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml, version 0.2.391, and tree SHA-256 04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793. The preserved CI receipt and provenance agree on the version/tree; provenance ties it to source 52487361b1b6a8663b958dbb2196cbcc9b1af31c, run 37698216289. This is a frozen product artifact consumed by the later workflow; the newer test/diagnostic source does not change its identity.",
+    "resources": "All 14 entries across the package, browser, and guest resource journals carry current workflow run ID 37714389856 and attempt 1. Each journal opens, admits, records child exit 0, and ends in RESOURCE_FINAL_DECISION valid with resourceInvalid=false. No stale or foreign journal appears in this retained evidence set.",
+    "integrity": "The raw native report, CI receipt, and all three journal SHA-256 values match those recorded in the source report. The eight retained evidence files are tracked in the source commit.",
+    "privacy": "The D161 native boundary has only fixed step/category/count/boolean fields and no raw exception, URL, body text, or credentials. Source tests feed contaminated probe values through the producer and assert their exclusion; those tests are guards, not native product proof. The raw report contains Boolean auth-presence fields but no token or password value was found in the reviewed evidence.",
+    "limits": "The original native JSON is the behavioral record; setup screenshots do not independently prove the T64 post-click states. A completed successful GitHub job means the harness completed, while its overall native report remains unverified and T63 remains partial."
+  },
+  "disposition": "Credit only bounded T64 Settings-list behavior, T63 warm guest gate observation, and D161 diagnostic capture. Keep T63 after-reload and ordinary-member outcomes open."
+}
