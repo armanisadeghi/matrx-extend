@@ -15,11 +15,11 @@ import { withClipboardReadPermission } from './clipboard-observation.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { verifyGuestCopy } from './seo-guest-clipboard.mjs';
 import {
-  pollSocialFeedback,
+  observeSocialCopyOutcome,
+  requireSocialCopyTarget,
   runCopyCheckThenRecapture,
   socialCopyButtonObservation,
   verifyManualRecapture,
-  verifySocialCopyOutcome,
 } from './seo-new-coverage-oracle.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
@@ -310,11 +310,7 @@ async function socialCopyState(panel) {
 async function copySocialTags({ panel, browserSession, panelTarget }, source, phase) {
   assert.equal(source.social.title, false, 'public fixture lacks social title for copy check');
   const state = await observe(`social_${phase}_copy_preflight`, () => socialCopyState(panel));
-  assert.deepEqual(
-    { scopeValid: state.scopeValid, buttonCount: state.buttonCount, visible: state.visible },
-    { scopeValid: true, buttonCount: 1, visible: true },
-    'social snippet has one visible action in active SEO pane',
-  );
+  requireSocialCopyTarget(state);
   const priorObservation = {};
   const previousClipboard = await withClipboardReadPermission({
     browserSession,
@@ -339,9 +335,37 @@ async function copySocialTags({ panel, browserSession, panelTarget }, source, ph
     return observation;
   };
   enter(`social_${phase}_copy_feedback`);
-  const { state: feedback, iconObserved } = await pollSocialFeedback(sample, { timeoutMs: 1500 });
-  report.social_copy_feedback ??= [];
-  report.social_copy_feedback.push({ phase, samples: feedbackSamples });
+  let outcome;
+  try {
+    outcome = await observeSocialCopyOutcome({
+      readFeedback: sample,
+      source,
+      previousClipboard,
+      pollOptions: { timeoutMs: 1500 },
+      readClipboard: async () => {
+        await panel.send('Page.bringToFront');
+        const clipboardObservation = {};
+        enter(`social_${phase}_clipboard_read`);
+        const actual = await withClipboardReadPermission({
+          browserSession,
+          panel,
+          panelUrl: panelTarget.url,
+          evidence: clipboardObservation,
+          read: () => evaluate(panel, 'navigator.clipboard.readText()'),
+        });
+        assert.equal(
+          clipboardObservation.clipboardObservationPermissionRestored,
+          true,
+          'clipboard observation permission restored',
+        );
+        return actual;
+      },
+    });
+  } finally {
+    report.social_copy_feedback ??= [];
+    report.social_copy_feedback.push({ phase, samples: feedbackSamples });
+  }
+  const { state: feedback, iconObserved } = outcome;
   advance(`social_${phase}_feedback_sampled`, {
     buttonCount: feedback.buttonCount,
     hasTitleAttr: feedback.hasTitleAttr,
@@ -351,47 +375,19 @@ async function copySocialTags({ panel, browserSession, panelTarget }, source, ph
     idle: feedback.idle,
     iconObserved,
   });
-  await panel.send('Page.bringToFront');
-  const clipboardObservation = {};
-  enter(`social_${phase}_clipboard_read`);
-  const actual = await withClipboardReadPermission({
-    browserSession,
-    panel,
-    panelUrl: panelTarget.url,
-    evidence: clipboardObservation,
-    read: () => evaluate(panel, 'navigator.clipboard.readText()'),
-  });
-  assert.equal(
-    clipboardObservation.clipboardObservationPermissionRestored,
-    true,
-    'clipboard observation permission restored',
-  );
-  let verified;
-  try {
-    verified = verifySocialCopyOutcome(actual, source, {
-      feedbackFailed: feedbackSamples.some((item) => item.failed),
-      previousClipboard,
-    });
-  } catch (error) {
-    const status = error?.code === 'SOCIAL_CLIPBOARD_UNCHANGED' ? 'unverified' : 'fail';
-    if (
-      ![
-        'SOCIAL_CLIPBOARD_MISMATCH',
-        'SOCIAL_COPY_FAILURE_FEEDBACK',
-        'SOCIAL_CLIPBOARD_UNCHANGED',
-      ].includes(error?.code)
-    )
-      throw error;
+  if (outcome.status !== 'pass') {
+    const { status, reason_code } = outcome;
     report.targets.push({
       case_id: 'EXT-F-1008-T14',
       subtarget: `guest_social_missing_tags_clipboard_${phase}`,
       status,
-      reason_code: error.code,
+      reason_code,
     });
     report.copy_case_issues ??= [];
-    report.copy_case_issues.push({ phase, status, reason_code: error.code });
-    return { status, reason_code: error.code };
+    report.copy_case_issues.push({ phase, status, reason_code });
+    return { status, reason_code };
   }
+  const { verified, actual } = outcome;
   target('T14', `guest_social_missing_tags_clipboard_${phase}`, {
     ...verified,
     trustedCopyClick: true,

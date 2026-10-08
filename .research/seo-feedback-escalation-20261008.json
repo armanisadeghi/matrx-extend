@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0169",
+  "feature_id": "EXT-F-1008",
+  "status": "SOURCE_BOUNDARY_READY_FOR_FRESH_INDEPENDENT_REVIEW; NATIVE_UNVERIFIED",
+  "starting_evidence": {
+    "source_commit": "2d3a7de283ef379d4597d656c9d52406d41161b0",
+    "peer": ".research/seo-error-boundary-peer-20261008.json",
+    "native_attempt": "37734224612"
+  },
+  "confirmed_cause": "A successful native evaluation with invalid scope or missing/ambiguous/invisible copy button was reduced to absent icon by pollSocialFeedback; a matching changed clipboard could then earn T14 pass and start T02.",
+  "hypotheses": [
+    {
+      "cause": "Invalid successful native read bypasses target validation",
+      "prediction": "Null, malformed, inactive, missing, duplicate and invisible samples reach clipboard/T02 before repair; target validation rejects each",
+      "result": "Confirmed: six pre-fix invalid-state guards failed with Missing expected rejection."
+    },
+    {
+      "cause": "All copy failures are safely isolated by the continuation boundary",
+      "prediction": "Unknown returned failure should refuse recapture",
+      "result": "Refuted: pre-fix unknown resource_stop result allowed T02; explicit code/status allowlist now refuses."
+    },
+    {
+      "cause": "Native original failure was necessarily a transient missed icon",
+      "prediction": "Original evidence distinguishes intact button from lost target and contains actual clipboard readback",
+      "result": "Unproven; no native rerun and no product root-cause or coverage claim."
+    }
+  ],
+  "repair": [
+    "One shared requireSocialCopyTarget validates scopeValid === true, buttonCount === 1 and visible === true at native preflight, every actual poll sample and after clipboard readback.",
+    "observeSocialCopyOutcome is used by the native driver and tests; it owns polling, final target validation, actual clipboard verification and contained-copy classification. Native click/read/permission APIs remain existing driver primitives.",
+    "Only SOCIAL_CLIPBOARD_MISMATCH/fail, SOCIAL_COPY_FAILURE_FEEDBACK/fail and SOCIAL_CLIPBOARD_UNCHANGED/unverified authorize independent T02 continuation; invalid target, resource, native-read, permission and unexpected source failures propagate.",
+    "Genuine no-icon valid-pane samples may use actual changed clipboard. Check cannot rescue wrong text; X and unchanged text cannot earn pass.",
+    "Feedback samples are retained in finally even after abort; existing clipboard permission restoration and public DOM mutation finally cleanup remain in place."
+  ],
+  "source_verification": {
+    "pre_fix_red": "node --test tests/browser/seo-new-coverage-oracle.test.mjs: 6 passed / 7 failed, all Missing expected rejection for invalid samples and unknown returned copy failure.",
+    "green": "node --test tests/browser/seo-new-coverage-oracle.test.mjs tests/browser/clipboard-observation.test.mjs: 27 passed / 0 failed.",
+    "syntax": "node --check tests/browser/seo-guest-acceptance.mjs passed.",
+    "format": "pnpm exec biome check on the three edited .mjs files passed.",
+    "mutations": [
+      {
+        "plant": "Remove requireSocialCopyTarget from actual poll sample",
+        "result": "RED: invalid feedback and native end-boundary guards reject mutation; restored byte-identically."
+      },
+      {
+        "plant": "Replace poller with constant valid missed-icon result",
+        "result": "RED: actual poll timing/read behavior and native end-boundary guards reject constant; restored byte-identically."
+      },
+      {
+        "plant": "Remove final target validation after clipboard read",
+        "result": "RED: lost pane during clipboard observation would allow T02; guard rejects mutation; restored byte-identically."
+      }
+    ],
+    "mutation_method": ".claude/skills/forcing-function-tests/plant.py; each targeted one test file and exited 0 with VERDICT RED (test rc=1)."
+  },
+  "limits": [
+    "No browser, native, build or release actions were run under the bounded escalation assignment.",
+    "Native T02/T14 remain unverified; source guards are not live product evidence.",
+    "Fresh independent review is required before native rerun.",
+    "No root inventory, defect register or resource guard files were edited."
+  ],
+  "owned_paths": [
+    "tests/browser/seo-guest-acceptance.mjs",
+    "tests/browser/seo-new-coverage-oracle.mjs",
+    "tests/browser/seo-new-coverage-oracle.test.mjs",
+    ".research/seo-feedback-escalation-20261008.json"
+  ]
+}

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   expectedMissingSocialTags,
+  observeSocialCopyOutcome,
   pollSocialFeedback,
   runCopyCheckThenRecapture,
   socialCopyButtonObservation,
@@ -17,6 +18,7 @@ const sparse = {
   canonical: null,
   social: { title: false, description: false, url: false, type: false, card: false, image: false },
 };
+const validPane = { scopeValid: true, buttonCount: 1, visible: true };
 const changed = {
   ...sparse,
   title: 'Example Domain — updated',
@@ -111,7 +113,7 @@ test('copy case failure continues independent recapture; guard stop does not', a
   const result = await runCopyCheckThenRecapture(
     async () => {
       calls.push('copy-failed');
-      return { status: 'fail' };
+      return { status: 'fail', reason_code: 'SOCIAL_CLIPBOARD_MISMATCH' };
     },
     async () => {
       calls.push('recapture');
@@ -119,7 +121,10 @@ test('copy case failure continues independent recapture; guard stop does not', a
     },
   );
   assert.deepEqual(calls, ['copy-failed', 'recapture']);
-  assert.deepEqual(result, { copyResult: { status: 'fail' }, recaptureResult: { status: 'pass' } });
+  assert.deepEqual(result, {
+    copyResult: { status: 'fail', reason_code: 'SOCIAL_CLIPBOARD_MISMATCH' },
+    recaptureResult: { status: 'pass' },
+  });
   calls.length = 0;
   await assert.rejects(
     () =>
@@ -139,22 +144,28 @@ test('copy case failure continues independent recapture; guard stop does not', a
 
 test('actual feedback poll distinguishes a missed icon from a fatal native read', async () => {
   let tick = 0;
-  const missed = await pollSocialFeedback(async () => ({ check: false, failed: false }), {
-    timeoutMs: 200,
-    intervalMs: 100,
-    now: () => tick,
-    sleep: async (ms) => {
-      tick += ms;
+  const missed = await pollSocialFeedback(
+    async () => ({ ...validPane, check: false, failed: false }),
+    {
+      timeoutMs: 200,
+      intervalMs: 100,
+      now: () => tick,
+      sleep: async (ms) => {
+        tick += ms;
+      },
     },
+  );
+  assert.deepEqual(missed, {
+    state: { ...validPane, check: false, failed: false },
+    iconObserved: false,
   });
-  assert.deepEqual(missed, { state: { check: false, failed: false }, iconObserved: false });
 
   tick = 0;
   let reads = 0;
   const observed = await pollSocialFeedback(
     async () => {
       reads += 1;
-      return { check: reads === 2, failed: false };
+      return { ...validPane, check: reads === 2, failed: false };
     },
     {
       timeoutMs: 200,
@@ -165,7 +176,10 @@ test('actual feedback poll distinguishes a missed icon from a fatal native read'
       },
     },
   );
-  assert.deepEqual(observed, { state: { check: true, failed: false }, iconObserved: true });
+  assert.deepEqual(observed, {
+    state: { ...validPane, check: true, failed: false },
+    iconObserved: true,
+  });
 
   tick = 0;
   let clipboardRead = false;
@@ -179,7 +193,7 @@ test('actual feedback poll distinguishes a missed icon from a fatal native read'
             async () => {
               samples += 1;
               if (samples === 2) throw new Error('lost_target');
-              return { check: false, failed: false };
+              return { ...validPane, check: false, failed: false };
             },
             {
               timeoutMs: 200,
@@ -200,4 +214,205 @@ test('actual feedback poll distinguishes a missed icon from a fatal native read'
   );
   assert.equal(clipboardRead, false);
   assert.equal(recaptureStarted, false);
+});
+
+// These are successful native evaluations whose pane/button is unusable, not thrown reads.
+for (const invalid of [
+  null,
+  {},
+  { scopeValid: false },
+  { buttonCount: 0 },
+  { buttonCount: 2 },
+  { visible: false },
+]) {
+  test(`invalid feedback sample aborts before clipboard or T02: ${JSON.stringify(invalid)}`, async () => {
+    const sample =
+      invalid === null ? null : { ...validPane, ...invalid, check: false, failed: false };
+    // Empty/malformed native return must not acquire valid defaults.
+    const observation = invalid && Object.keys(invalid).length === 0 ? {} : sample;
+    const calls = [];
+    await assert.rejects(
+      () =>
+        runCopyCheckThenRecapture(
+          async () => {
+            await pollSocialFeedback(async () => observation, { timeoutMs: 0 });
+            calls.push('clipboard');
+            return { status: 'pass' };
+          },
+          async () => calls.push('T02'),
+        ),
+      { code: 'SOCIAL_COPY_TARGET_INVALID' },
+    );
+    assert.deepEqual(calls, []);
+  });
+}
+
+test('unclassified returned copy failure cannot authorize T02', async () => {
+  let recaptured = false;
+  await assert.rejects(
+    () =>
+      runCopyCheckThenRecapture(
+        async () => ({ status: 'fail', reason_code: 'resource_stop' }),
+        async () => {
+          recaptured = true;
+        },
+      ),
+    /social_copy_result_unclassified/,
+  );
+  assert.equal(recaptured, false);
+});
+
+// Independent expected clipboard for the real example.org public-page use case.
+const copiedTags = [
+  '<meta property="og:title" content="Example Domain" />',
+  '<meta property="og:url" content="https://example.org/" />',
+  '<meta property="og:type" content="website" />',
+  '<meta name="twitter:card" content="summary_large_image" />',
+  '<meta property="og:image" content="https://example.com/your-share-image.png" />',
+].join('\n');
+const idleFeedback = { ...validPane, check: false, failed: false, idle: true };
+
+for (const scenario of [
+  { name: 'valid idle button can pass from actual changed clipboard', status: 'pass' },
+  {
+    name: 'Check cannot rescue wrong clipboard',
+    check: true,
+    actual: 'wrong',
+    status: 'fail',
+    reason: 'SOCIAL_CLIPBOARD_MISMATCH',
+  },
+  {
+    name: 'X cannot pass even with exact changed clipboard',
+    failed: true,
+    status: 'fail',
+    reason: 'SOCIAL_COPY_FAILURE_FEEDBACK',
+  },
+  {
+    name: 'unchanged exact clipboard earns no pass',
+    previousClipboard: copiedTags,
+    status: 'unverified',
+    reason: 'SOCIAL_CLIPBOARD_UNCHANGED',
+  },
+]) {
+  test(`native copy end boundary: ${scenario.name}`, async () => {
+    const calls = [];
+    const result = await runCopyCheckThenRecapture(
+      () =>
+        observeSocialCopyOutcome({
+          readFeedback: async () => {
+            calls.push('feedback');
+            return {
+              ...idleFeedback,
+              check: scenario.check ?? false,
+              failed: scenario.failed ?? false,
+            };
+          },
+          readClipboard: async () => {
+            calls.push('clipboard');
+            return scenario.actual ?? copiedTags;
+          },
+          source: sparse,
+          previousClipboard: scenario.previousClipboard ?? '',
+          pollOptions: { timeoutMs: 0 },
+        }),
+      async () => {
+        calls.push('T02');
+        return 'recaptured';
+      },
+    );
+    assert.equal(result.copyResult.status, scenario.status);
+    assert.equal(result.copyResult.reason_code, scenario.reason);
+    assert.equal(result.recaptureResult, 'recaptured');
+    assert.deepEqual(calls, ['feedback', 'clipboard', 'feedback', 'T02']);
+    if (scenario.status === 'pass')
+      assert.deepEqual(result.copyResult.verified, { copiedTags: 5, exactClipboardMatch: true });
+    else assert.equal(result.copyResult.verified, undefined);
+  });
+}
+
+for (const scenario of [
+  {
+    name: 'invalid pane despite Check',
+    first: { ...idleFeedback, scopeValid: false, check: true },
+    code: 'SOCIAL_COPY_TARGET_INVALID',
+  },
+  {
+    name: 'missing button despite exact clipboard',
+    first: { ...idleFeedback, buttonCount: 0 },
+    code: 'SOCIAL_COPY_TARGET_INVALID',
+  },
+  { name: 'lost target read', error: 'lost_target' },
+  { name: 'resource stop read', error: 'resource_stop' },
+  { name: 'unexpected read error', error: 'unexpected_native_error' },
+  {
+    name: 'lost pane during clipboard observation',
+    final: { ...idleFeedback, scopeValid: false },
+    code: 'SOCIAL_COPY_TARGET_INVALID',
+  },
+  { name: 'clipboard read lost target', clipboardError: 'lost_target' },
+  { name: 'clipboard permission restoration failure', clipboardError: 'permission_restore_failed' },
+]) {
+  test(`native copy end boundary aborts: ${scenario.name}`, async () => {
+    const calls = [];
+    let reads = 0;
+    await assert.rejects(
+      () =>
+        runCopyCheckThenRecapture(
+          () =>
+            observeSocialCopyOutcome({
+              readFeedback: async () => {
+                calls.push('feedback');
+                reads++;
+                if (scenario.error) throw new Error(scenario.error);
+                return reads === 1
+                  ? (scenario.first ?? idleFeedback)
+                  : (scenario.final ?? idleFeedback);
+              },
+              readClipboard: async () => {
+                calls.push('clipboard');
+                if (scenario.clipboardError) throw new Error(scenario.clipboardError);
+                return copiedTags;
+              },
+              source: sparse,
+              previousClipboard: '',
+              pollOptions: { timeoutMs: 0 },
+            }),
+          async () => calls.push('T02'),
+        ),
+      scenario.code
+        ? { code: scenario.code }
+        : { message: scenario.error ?? scenario.clipboardError },
+    );
+    assert.equal(calls.includes('T02'), false);
+    assert.deepEqual(
+      calls,
+      scenario.final
+        ? ['feedback', 'clipboard', 'feedback']
+        : scenario.clipboardError
+          ? ['feedback', 'clipboard']
+          : ['feedback'],
+    );
+  });
+}
+
+test('unexpected source failure is not isolated as a clipboard mismatch', async () => {
+  let recaptured = false;
+  await assert.rejects(
+    () =>
+      runCopyCheckThenRecapture(
+        () =>
+          observeSocialCopyOutcome({
+            readFeedback: async () => idleFeedback,
+            readClipboard: async () => copiedTags,
+            source: { ...sparse, title: null },
+            previousClipboard: '',
+            pollOptions: { timeoutMs: 0 },
+          }),
+        async () => {
+          recaptured = true;
+        },
+      ),
+    /source must expose a missing social title/,
+  );
+  assert.equal(recaptured, false);
 });
