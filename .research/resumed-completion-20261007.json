@@ -166,7 +166,8 @@
       "cause": "Native test required obsolete internal leaf open_new_tab; actual server roster uses canonical tabs. Real failed-test conversation completed tabs.create successfully and final reply.",
       "harness_fix_sha": "4a5c78a5",
       "fresh_independent_rerun": "running completion-uninterrupted-canonical-20261007"
-    }
+    },
+    "native_core": "Four real cases PASS: Act first+repeat zero approvals; Ask remember genuine prompt before effect; Ask repeat zero approvals. Warmreload test incorrectly started freshchat; product intentionally requires historyreopen. Corrected native historydriver0f573742; fresh verification pending."
   },
   "disk_cleanup": {
     "status": "complete",
@@ -180,11 +181,50 @@
     "conversation_trust_race": "clean meaningful old-behavior RED then repaired GREEN",
     "catalog_and_tool_docs": "regenerated and pushed",
     "current_typecheck": "PASS guarded completion-current-types-20261007",
-    "current_lint": "PASS guarded completion-current-lint-retry-20261007, existing advisory warnings"
+    "current_lint": "PASS guarded completion-current-lint-retry-20261007, existing advisory warnings",
+    "constant_gut_proof": {
+      "run_id": "completion-constant-guts-20261007",
+      "semantic_assertion_failures": 7,
+      "mutations": [
+        "browser DOM always Ask",
+        "run metadata lookup always null",
+        "conversation trust always empty"
+      ],
+      "source_restored_identical": true,
+      "green_run_id": "completion-guts-restored-green-20261007",
+      "restored_green": "21 tests across6files PASS",
+      "source_restoration": [
+        {
+          "file": "src/lib/chat/build-browser-dom-state.ts",
+          "sha256": "f1504ce9bd8eae7c848c241de01e21a24e86c349a4c2c6ed9dcf984cd9d59068",
+          "restored_identical": true
+        },
+        {
+          "file": "src/lib/tools/dispatch-persist.ts",
+          "sha256": "cbae61dafe37b9a0da41a4e3c1126668fd439263a9257ab0a1478719cec09b92",
+          "restored_identical": true
+        }
+      ]
+    }
   },
   "release": {
     "status": "pending",
     "reason": "Workspace forbids manual build/release initiation from this machine; CI development artifact is not Store publication."
   },
-  "next_action": "Diagnose missing real action completion before claiming uninterrupted native acceptance."
+  "next_action": "Diagnose missing real action completion before claiming uninterrupted native acceptance.",
+  "latest_automatic_ci": {
+    "run_id": 37727998755,
+    "source_sha": "4a5c78a50f8d41709b6abffb30c351898e5eb0ae",
+    "conclusion": "success",
+    "artifact_id": 11528732938,
+    "version": "0.2.397",
+    "tree_sha256": "9e0c2f1e18317f856c79aaf0a3529b4637cdf5858ddb64a2ebfff7fac37311cd",
+    "native_acceptance": "running; development only, not published"
+  },
+  "remaining": [
+    "Native primary Copy public link shortcut",
+    "Native sameconversation warm/fullreload and Pilot",
+    "Native parallel initial action/concurrent approval scopes",
+    "Store publication and installation"
+  ]
 }
