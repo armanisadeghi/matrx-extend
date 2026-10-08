@@ -7,7 +7,7 @@
   "title": "Post-reload guest conversation receives continuation HTTP 409 after page tool, without assistant reply",
   "severity": "S1: public guest conversation cannot finish an otherwise accepted request",
   "priority": "P0",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root/guest_resume_runtimeerror",
   "preconditions": [
     "Public Store CRX0.2.205 loaded unpacked with matching public identity in isolated signed-out Chromium; tree08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8.",
@@ -38,7 +38,10 @@
     ".research/guest409-live-retest-peer-20261008.json",
     ".research/guest-resume-runtimeerror-fix-20261008.json",
     ".research/guest-resume-runtimeerror-peer-20261008.json",
-    ".research/guest-position-deployment-observation-20261008.json"
+    ".research/guest-position-deployment-observation-20261008.json",
+    ".research/guest-position-fix-live-retest-20261008.json",
+    ".research/guest-position-fix-live-peer-20261008.json",
+    ".research/guest-position-native-adjudication-20261008.json"
   ],
   "transition_history": [
     {
@@ -82,9 +85,21 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Second source repair7ec6c76205 independently accepted16a32d73: rebuilt model history and physical database positions differ. Source/guard pass only; production remains5be and original guest acceptance remains fail."
+    },
+    {
+      "at": "2026-10-08T11:50:58.056313+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Resource-valid original public205 native37770686993 on stableproduction32f3 includes7ec6; freshindependent4a72d8b0 confirms allthree groundedterminalturns. Earlier165bf4ab objection refuted: finaldiagnostic describes a differentprompt, not openingstage-order criteria."
+    },
+    {
+      "at": "2026-10-08T11:50:58.056313+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original postreload tool-continuation reproduction and surroundingfirst/followup now pass. Closure scopedtoEXT-D-0172; Storeinstalledacceptance and broaderChatremain separatelyunverified."
     }
   ],
-  "next_action": "Complete original public205 native37770686993 and fresh independent review. Retain guest failure until grounded first/followup/reload tool-continuation terminal answers are proven with valid resources.",
+  "next_action": "Closed this bounded regression; continue scheduled real guest checks and remaining inventory. Actual Store UI installation and broader guest/Chat modes remain tracked separately.",
   "closure_requirement": "Original public guest reproduction and surrounding first/followup cases pass independently on real browser/live server with valid resources; actual Store installation remains separately unverified.",
   "source_candidate": {
     "repository": "aidream",
@@ -92,16 +107,16 @@
     "contract_review": "PASS: independent16a32d73",
     "guard_review": "PASS: independent17 checkpoint tests; builder29 focused tests; actual rebuild and orchestrator callback exercised",
     "deployment": "Observed production 32f3a398789e0a56b590089ff47b90aff6abe159 at2026-10-08T11:34:20.769003+00:00; ancestry verified; external release37768140185 successful.",
-    "runtime_retest": "Pending original public205 native37770686993; prior37764808590 remains fail."
+    "runtime_retest": "PASS37770686993, independentlyadjudicated4a72d8b0; samepublic205tree andstablelive32f3; no overallhealthclaim."
   },
   "latest_retest": {
-    "run_id": "37764808590",
+    "run_id": "37770686993",
     "mode": "guest",
-    "status": "fail",
+    "status": "pass",
     "resource_valid": true,
     "public_extension_version": "0.2.205",
-    "deployed_sha": "5be7a37ba1e53ca311f3787bb041a402ec863052",
-    "detail": "First/followupgroundedterminalpass. Afterreloadget_page_textcompleted; continuationopened and emitted8textchunks thenuser_request_failed/endReasonerror, noassistantreply. UIScreenshotConversationResumeRuntimeError. Causeunderrepair; no overallhealthclaim."
+    "deployed_sha": "32f3a398789e0a56b590089ff47b90aff6abe159",
+    "detail": "Three grounded visible terminal answers: opening, same-conversation follow-up, full panel reload/new conversation. Postreload fixture-matching page tool completed; continuation ended complete/success with23 chunks and visible reply. Independent4a72d8b0 confirms per-turn criteria; adapted unpacked publicCRX, not actualStoreUIinstallation."
   },
   "prior_source_candidate": {
     "repository": "aidream",
@@ -111,5 +126,16 @@
     "deployment": "Observed live5be7a37ba1e53ca311f3787bb041a402ec863052 at2026-10-08T10:37:21.294736+00:00; release37762164523 completed/success; repair54a1 is ancestor.",
     "runtime_retest": "FAILED originalacceptance:37764808590 afterdeployed5be; newRuntimeError instead of immediate409, independent1661d1ff.",
     "guard_sha": "3b271b385a92fdc2778dd09aae1d06f3de2e2d5d"
-  }
+  },
+  "retest_history": [
+    {
+      "run_id": "37764808590",
+      "mode": "guest",
+      "status": "fail",
+      "resource_valid": true,
+      "public_extension_version": "0.2.205",
+      "deployed_sha": "5be7a37ba1e53ca311f3787bb041a402ec863052",
+      "detail": "First/followupgroundedterminalpass. Afterreloadget_page_textcompleted; continuationopened and emitted8textchunks thenuser_request_failed/endReasonerror, noassistantreply. UIScreenshotConversationResumeRuntimeError. Causeunderrepair; no overallhealthclaim."
+    }
+  ]
 }

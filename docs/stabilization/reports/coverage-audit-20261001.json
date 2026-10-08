@@ -236,30 +236,11 @@
       "fail": 1
     },
     "by_mode": {
-      "guest": {
-        "unverified": 25,
-        "pass": 24,
-        "no-result": 80,
-        "not-applicable": 1,
-        "fail": 1
-      },
-      "member": {
-        "no-result": 390,
-        "unverified": 26,
-        "pass": 10
-      },
-      "admin": {
-        "no-result": 479,
-        "pass": 23,
-        "unverified": 73,
-        "partial": 28
-      }
+      "guest": { "unverified": 25, "pass": 24, "no-result": 80, "not-applicable": 1, "fail": 1 },
+      "member": { "no-result": 390, "unverified": 26, "pass": 10 },
+      "admin": { "no-result": 479, "pass": 23, "unverified": 73, "partial": 28 }
     },
-    "feature_role_pairs_fully_verified": {
-      "guest": 0,
-      "member": 0,
-      "admin": 0
-    },
+    "feature_role_pairs_fully_verified": { "guest": 0, "member": 0, "admin": 0 },
     "feature_role_pairs_applicable": 394,
     "note": "Only cases whose feature applicability is true for the case mode are included. 38 case-mode pairings are excluded because feature applicability says the role is not applicable."
   },
@@ -487,51 +468,15 @@
         "case_id": "EXT-F-1015-T39",
         "surface": "Profile/auth/org picker"
       },
-      {
-        "feature_id": "EXT-F-2002",
-        "case_id": "EXT-F-2002-T01",
-        "surface": "Tasks capture flow"
-      },
-      {
-        "feature_id": "EXT-F-2011",
-        "case_id": "EXT-F-2011-T01",
-        "surface": "Vault side-panel"
-      },
-      {
-        "feature_id": "EXT-F-2011",
-        "case_id": "EXT-F-2011-T02",
-        "surface": "Vault side-panel"
-      },
-      {
-        "feature_id": "EXT-F-2011",
-        "case_id": "EXT-F-2011-T03",
-        "surface": "Vault side-panel"
-      },
-      {
-        "feature_id": "EXT-F-2011",
-        "case_id": "EXT-F-2011-T04",
-        "surface": "Vault side-panel"
-      },
-      {
-        "feature_id": "EXT-F-2011",
-        "case_id": "EXT-F-2011-T05",
-        "surface": "Vault side-panel"
-      },
-      {
-        "feature_id": "EXT-F-2012",
-        "case_id": "EXT-F-2012-T01",
-        "surface": "Tools/manual runner"
-      },
-      {
-        "feature_id": "EXT-F-2012",
-        "case_id": "EXT-F-2012-T02",
-        "surface": "Tools/manual runner"
-      },
-      {
-        "feature_id": "EXT-F-2012",
-        "case_id": "EXT-F-2012-T03",
-        "surface": "Tools/manual runner"
-      },
+      { "feature_id": "EXT-F-2002", "case_id": "EXT-F-2002-T01", "surface": "Tasks capture flow" },
+      { "feature_id": "EXT-F-2011", "case_id": "EXT-F-2011-T01", "surface": "Vault side-panel" },
+      { "feature_id": "EXT-F-2011", "case_id": "EXT-F-2011-T02", "surface": "Vault side-panel" },
+      { "feature_id": "EXT-F-2011", "case_id": "EXT-F-2011-T03", "surface": "Vault side-panel" },
+      { "feature_id": "EXT-F-2011", "case_id": "EXT-F-2011-T04", "surface": "Vault side-panel" },
+      { "feature_id": "EXT-F-2011", "case_id": "EXT-F-2011-T05", "surface": "Vault side-panel" },
+      { "feature_id": "EXT-F-2012", "case_id": "EXT-F-2012-T01", "surface": "Tools/manual runner" },
+      { "feature_id": "EXT-F-2012", "case_id": "EXT-F-2012-T02", "surface": "Tools/manual runner" },
+      { "feature_id": "EXT-F-2012", "case_id": "EXT-F-2012-T03", "surface": "Tools/manual runner" },
       {
         "feature_id": "EXT-F-2013",
         "case_id": "EXT-F-2013-T01",
@@ -562,16 +507,8 @@
         "case_id": "EXT-F-2014-T02",
         "surface": "Pilot (deferred wave D)"
       },
-      {
-        "feature_id": "EXT-F-2015",
-        "case_id": "EXT-F-2015-T01",
-        "surface": "Tools Smart tests"
-      },
-      {
-        "feature_id": "EXT-F-2015",
-        "case_id": "EXT-F-2015-T02",
-        "surface": "Tools Smart tests"
-      }
+      { "feature_id": "EXT-F-2015", "case_id": "EXT-F-2015-T01", "surface": "Tools Smart tests" },
+      { "feature_id": "EXT-F-2015", "case_id": "EXT-F-2015-T02", "surface": "Tools Smart tests" }
     ]
   },
   "surface_coverage": {
@@ -580,15 +517,9 @@
       "cases": 7,
       "controls": 48,
       "by_mode": {
-        "guest": {
-          "no-result": 1
-        },
-        "member": {
-          "no-result": 6
-        },
-        "admin": {
-          "no-result": 6
-        }
+        "guest": { "no-result": 1 },
+        "member": { "no-result": 6 },
+        "admin": { "no-result": 6 }
       }
     },
     "Capture side-panel": {
@@ -596,15 +527,9 @@
       "cases": 4,
       "controls": 20,
       "by_mode": {
-        "guest": {
-          "no-result": 1
-        },
-        "member": {
-          "no-result": 3
-        },
-        "admin": {
-          "no-result": 3
-        }
+        "guest": { "no-result": 1 },
+        "member": { "no-result": 3 },
+        "admin": { "no-result": 3 }
       }
     },
     "Chat (deferred wave D)": {
@@ -612,19 +537,9 @@
       "cases": 10,
       "controls": 136,
       "by_mode": {
-        "guest": {
-          "no-result": 3,
-          "unverified": 3,
-          "fail": 1
-        },
-        "member": {
-          "no-result": 4,
-          "unverified": 4
-        },
-        "admin": {
-          "no-result": 4,
-          "unverified": 4
-        }
+        "guest": { "no-result": 3, "unverified": 3, "fail": 1 },
+        "member": { "no-result": 4, "unverified": 4 },
+        "admin": { "no-result": 4, "unverified": 4 }
       }
     },
     "Content-page overlays / context menus / commands": {
@@ -632,15 +547,9 @@
       "cases": 19,
       "controls": 19,
       "by_mode": {
-        "guest": {
-          "no-result": 19
-        },
-        "member": {
-          "no-result": 19
-        },
-        "admin": {
-          "no-result": 19
-        }
+        "guest": { "no-result": 19 },
+        "member": { "no-result": 19 },
+        "admin": { "no-result": 19 }
       }
     },
     "Data side-panel": {
@@ -648,16 +557,9 @@
       "cases": 4,
       "controls": 31,
       "by_mode": {
-        "guest": {
-          "no-result": 1
-        },
-        "member": {
-          "no-result": 3
-        },
-        "admin": {
-          "no-result": 2,
-          "partial": 1
-        }
+        "guest": { "no-result": 1 },
+        "member": { "no-result": 3 },
+        "admin": { "no-result": 2, "partial": 1 }
       }
     },
     "Debug bridges": {
@@ -665,15 +567,9 @@
       "cases": 30,
       "controls": 30,
       "by_mode": {
-        "guest": {
-          "no-result": 2
-        },
-        "member": {
-          "no-result": 2
-        },
-        "admin": {
-          "no-result": 28
-        }
+        "guest": { "no-result": 2 },
+        "member": { "no-result": 2 },
+        "admin": { "no-result": 28 }
       }
     },
     "Debug log": {
@@ -681,18 +577,9 @@
       "cases": 53,
       "controls": 53,
       "by_mode": {
-        "guest": {
-          "no-result": 2
-        },
-        "member": {
-          "no-result": 2
-        },
-        "admin": {
-          "no-result": 20,
-          "unverified": 26,
-          "pass": 4,
-          "partial": 1
-        }
+        "guest": { "no-result": 2 },
+        "member": { "no-result": 2 },
+        "admin": { "no-result": 20, "unverified": 26, "pass": 4, "partial": 1 }
       }
     },
     "Development installation": {
@@ -700,19 +587,9 @@
       "cases": 5,
       "controls": 5,
       "by_mode": {
-        "guest": {
-          "unverified": 1,
-          "pass": 1,
-          "no-result": 3
-        },
-        "member": {
-          "no-result": 4,
-          "unverified": 1
-        },
-        "admin": {
-          "no-result": 4,
-          "pass": 1
-        }
+        "guest": { "unverified": 1, "pass": 1, "no-result": 3 },
+        "member": { "no-result": 4, "unverified": 1 },
+        "admin": { "no-result": 4, "pass": 1 }
       }
     },
     "Files side-panel": {
@@ -720,15 +597,9 @@
       "cases": 4,
       "controls": 28,
       "by_mode": {
-        "guest": {
-          "no-result": 1
-        },
-        "member": {
-          "no-result": 3
-        },
-        "admin": {
-          "no-result": 3
-        }
+        "guest": { "no-result": 1 },
+        "member": { "no-result": 3 },
+        "admin": { "no-result": 3 }
       }
     },
     "Guidance": {
@@ -736,15 +607,9 @@
       "cases": 24,
       "controls": 24,
       "by_mode": {
-        "guest": {
-          "no-result": 1
-        },
-        "member": {
-          "no-result": 23
-        },
-        "admin": {
-          "no-result": 23
-        }
+        "guest": { "no-result": 1 },
+        "member": { "no-result": 23 },
+        "admin": { "no-result": 23 }
       }
     },
     "Highlights": {
@@ -752,15 +617,9 @@
       "cases": 21,
       "controls": 21,
       "by_mode": {
-        "guest": {
-          "no-result": 1
-        },
-        "member": {
-          "no-result": 20
-        },
-        "admin": {
-          "no-result": 20
-        }
+        "guest": { "no-result": 1 },
+        "member": { "no-result": 20 },
+        "admin": { "no-result": 20 }
       }
     },
     "Keyboard commands": {
@@ -768,15 +627,9 @@
       "cases": 1,
       "controls": 1,
       "by_mode": {
-        "guest": {
-          "no-result": 1
-        },
-        "member": {
-          "no-result": 1
-        },
-        "admin": {
-          "no-result": 1
-        }
+        "guest": { "no-result": 1 },
+        "member": { "no-result": 1 },
+        "admin": { "no-result": 1 }
       }
     },
     "Lists side-panel": {
@@ -784,15 +637,9 @@
       "cases": 6,
       "controls": 36,
       "by_mode": {
-        "guest": {
-          "no-result": 1
-        },
-        "member": {
-          "no-result": 5
-        },
-        "admin": {
-          "no-result": 5
-        }
+        "guest": { "no-result": 1 },
+        "member": { "no-result": 5 },
+        "admin": { "no-result": 5 }
       }
     },
     "Navigation / shell": {
@@ -800,47 +647,25 @@
       "cases": 15,
       "controls": 5,
       "by_mode": {
-        "guest": {
-          "no-result": 4,
-          "pass": 1
-        },
-        "member": {
-          "no-result": 5
-        },
-        "admin": {
-          "unverified": 1,
-          "no-result": 4
-        }
+        "guest": { "no-result": 4, "pass": 1 },
+        "member": { "no-result": 5 },
+        "admin": { "unverified": 1, "no-result": 4 }
       }
     },
     "Notes editor": {
       "features": 1,
       "cases": 4,
       "controls": 27,
-      "by_mode": {
-        "guest": {},
-        "member": {
-          "no-result": 4
-        },
-        "admin": {
-          "no-result": 4
-        }
-      }
+      "by_mode": { "guest": {}, "member": { "no-result": 4 }, "admin": { "no-result": 4 } }
     },
     "Notes side-panel": {
       "features": 1,
       "cases": 3,
       "controls": 13,
       "by_mode": {
-        "guest": {
-          "no-result": 1
-        },
-        "member": {
-          "no-result": 2
-        },
-        "admin": {
-          "no-result": 2
-        }
+        "guest": { "no-result": 1 },
+        "member": { "no-result": 2 },
+        "admin": { "no-result": 2 }
       }
     },
     "Pilot (deferred wave D)": {
@@ -848,16 +673,9 @@
       "cases": 5,
       "controls": 59,
       "by_mode": {
-        "guest": {
-          "no-result": 1
-        },
-        "member": {
-          "no-result": 1
-        },
-        "admin": {
-          "no-result": 2,
-          "unverified": 3
-        }
+        "guest": { "no-result": 1 },
+        "member": { "no-result": 1 },
+        "admin": { "no-result": 2, "unverified": 3 }
       }
     },
     "Popup / options / mic permission": {
@@ -865,15 +683,9 @@
       "cases": 20,
       "controls": 6,
       "by_mode": {
-        "guest": {
-          "no-result": 6
-        },
-        "member": {
-          "no-result": 7
-        },
-        "admin": {
-          "no-result": 7
-        }
+        "guest": { "no-result": 6 },
+        "member": { "no-result": 7 },
+        "admin": { "no-result": 7 }
       }
     },
     "Profile": {
@@ -881,15 +693,9 @@
       "cases": 28,
       "controls": 17,
       "by_mode": {
-        "guest": {
-          "no-result": 1
-        },
-        "member": {
-          "no-result": 16
-        },
-        "admin": {
-          "no-result": 16
-        }
+        "guest": { "no-result": 1 },
+        "member": { "no-result": 16 },
+        "admin": { "no-result": 16 }
       }
     },
     "Profile/auth/org picker": {
@@ -897,18 +703,9 @@
       "cases": 41,
       "controls": 20,
       "by_mode": {
-        "guest": {
-          "no-result": 9,
-          "unverified": 1
-        },
-        "member": {
-          "no-result": 14,
-          "unverified": 4
-        },
-        "admin": {
-          "no-result": 13,
-          "unverified": 5
-        }
+        "guest": { "no-result": 9, "unverified": 1 },
+        "member": { "no-result": 14, "unverified": 4 },
+        "admin": { "no-result": 13, "unverified": 5 }
       }
     },
     "Release infrastructure": {
@@ -916,18 +713,9 @@
       "cases": 10,
       "controls": 6,
       "by_mode": {
-        "guest": {
-          "pass": 8,
-          "no-result": 2
-        },
-        "member": {
-          "pass": 8,
-          "no-result": 2
-        },
-        "admin": {
-          "pass": 8,
-          "no-result": 2
-        }
+        "guest": { "pass": 8, "no-result": 2 },
+        "member": { "pass": 8, "no-result": 2 },
+        "admin": { "pass": 8, "no-result": 2 }
       }
     },
     "SEO": {
@@ -935,16 +723,9 @@
       "cases": 14,
       "controls": 14,
       "by_mode": {
-        "guest": {
-          "unverified": 5,
-          "no-result": 9
-        },
-        "member": {
-          "no-result": 14
-        },
-        "admin": {
-          "no-result": 14
-        }
+        "guest": { "unverified": 5, "no-result": 9 },
+        "member": { "no-result": 14 },
+        "admin": { "no-result": 14 }
       }
     },
     "Saved captures side-panel": {
@@ -952,17 +733,9 @@
       "cases": 8,
       "controls": 39,
       "by_mode": {
-        "guest": {
-          "no-result": 1
-        },
-        "member": {
-          "no-result": 5,
-          "unverified": 2
-        },
-        "admin": {
-          "no-result": 5,
-          "unverified": 2
-        }
+        "guest": { "no-result": 1 },
+        "member": { "no-result": 5, "unverified": 2 },
+        "admin": { "no-result": 5, "unverified": 2 }
       }
     },
     "Scrape": {
@@ -970,19 +743,9 @@
       "cases": 31,
       "controls": 33,
       "by_mode": {
-        "guest": {
-          "unverified": 5,
-          "no-result": 20,
-          "pass": 1
-        },
-        "member": {
-          "no-result": 26,
-          "unverified": 5
-        },
-        "admin": {
-          "no-result": 26,
-          "unverified": 5
-        }
+        "guest": { "unverified": 5, "no-result": 20, "pass": 1 },
+        "member": { "no-result": 26, "unverified": 5 },
+        "admin": { "no-result": 26, "unverified": 5 }
       }
     },
     "Screenshots": {
@@ -990,15 +753,9 @@
       "cases": 9,
       "controls": 9,
       "by_mode": {
-        "guest": {
-          "unverified": 1
-        },
-        "member": {
-          "no-result": 8
-        },
-        "admin": {
-          "unverified": 8
-        }
+        "guest": { "unverified": 1 },
+        "member": { "no-result": 8 },
+        "admin": { "unverified": 8 }
       }
     },
     "Settings": {
@@ -1006,20 +763,9 @@
       "cases": 72,
       "controls": 31,
       "by_mode": {
-        "guest": {
-          "pass": 11,
-          "unverified": 6,
-          "no-result": 4,
-          "not-applicable": 1
-        },
-        "member": {
-          "no-result": 22
-        },
-        "admin": {
-          "pass": 7,
-          "no-result": 16,
-          "unverified": 6
-        }
+        "guest": { "pass": 11, "unverified": 6, "no-result": 4, "not-applicable": 1 },
+        "member": { "no-result": 22 },
+        "admin": { "pass": 7, "no-result": 16, "unverified": 6 }
       }
     },
     "Showcase": {
@@ -1027,48 +773,25 @@
       "cases": 59,
       "controls": 49,
       "by_mode": {
-        "guest": {
-          "no-result": 1
-        },
-        "member": {
-          "no-result": 1
-        },
-        "admin": {
-          "no-result": 28,
-          "partial": 26,
-          "unverified": 3,
-          "pass": 1
-        }
+        "guest": { "no-result": 1 },
+        "member": { "no-result": 1 },
+        "admin": { "no-result": 28, "partial": 26, "unverified": 3, "pass": 1 }
       }
     },
     "Tasks capture flow": {
       "features": 1,
       "cases": 1,
       "controls": 16,
-      "by_mode": {
-        "guest": {},
-        "member": {
-          "no-result": 1
-        },
-        "admin": {
-          "no-result": 1
-        }
-      }
+      "by_mode": { "guest": {}, "member": { "no-result": 1 }, "admin": { "no-result": 1 } }
     },
     "Tasks side-panel": {
       "features": 1,
       "cases": 7,
       "controls": 55,
       "by_mode": {
-        "guest": {
-          "no-result": 1
-        },
-        "member": {
-          "no-result": 6
-        },
-        "admin": {
-          "no-result": 6
-        }
+        "guest": { "no-result": 1 },
+        "member": { "no-result": 6 },
+        "admin": { "no-result": 6 }
       }
     },
     "Testing infrastructure": {
@@ -1076,18 +799,9 @@
       "cases": 6,
       "controls": 6,
       "by_mode": {
-        "guest": {
-          "unverified": 4,
-          "pass": 2
-        },
-        "member": {
-          "unverified": 4,
-          "pass": 2
-        },
-        "admin": {
-          "unverified": 4,
-          "pass": 2
-        }
+        "guest": { "unverified": 4, "pass": 2 },
+        "member": { "unverified": 4, "pass": 2 },
+        "admin": { "unverified": 4, "pass": 2 }
       }
     },
     "Token broker": {
@@ -1095,15 +809,9 @@
       "cases": 11,
       "controls": 11,
       "by_mode": {
-        "guest": {
-          "no-result": 2
-        },
-        "member": {
-          "no-result": 2
-        },
-        "admin": {
-          "no-result": 9
-        }
+        "guest": { "no-result": 2 },
+        "member": { "no-result": 2 },
+        "admin": { "no-result": 9 }
       }
     },
     "Tools / registered executor": {
@@ -1112,14 +820,8 @@
       "controls": 293,
       "by_mode": {
         "guest": {},
-        "member": {
-          "no-result": 150,
-          "unverified": 4
-        },
-        "admin": {
-          "no-result": 169,
-          "unverified": 4
-        }
+        "member": { "no-result": 150, "unverified": 4 },
+        "admin": { "no-result": 169, "unverified": 4 }
       }
     },
     "Tools Recorder": {
@@ -1127,15 +829,9 @@
       "cases": 5,
       "controls": 18,
       "by_mode": {
-        "guest": {
-          "no-result": 1
-        },
-        "member": {
-          "no-result": 4
-        },
-        "admin": {
-          "no-result": 4
-        }
+        "guest": { "no-result": 1 },
+        "member": { "no-result": 4 },
+        "admin": { "no-result": 4 }
       }
     },
     "Tools Smart tests": {
@@ -1143,15 +839,9 @@
       "cases": 5,
       "controls": 26,
       "by_mode": {
-        "guest": {
-          "no-result": 1
-        },
-        "member": {
-          "no-result": 4
-        },
-        "admin": {
-          "no-result": 4
-        }
+        "guest": { "no-result": 1 },
+        "member": { "no-result": 4 },
+        "admin": { "no-result": 4 }
       }
     },
     "Tools/manual runner": {
@@ -1159,15 +849,9 @@
       "cases": 3,
       "controls": 35,
       "by_mode": {
-        "guest": {
-          "no-result": 1
-        },
-        "member": {
-          "no-result": 2
-        },
-        "admin": {
-          "no-result": 2
-        }
+        "guest": { "no-result": 1 },
+        "member": { "no-result": 2 },
+        "admin": { "no-result": 2 }
       }
     },
     "Vault password generator": {
@@ -1175,15 +859,9 @@
       "cases": 4,
       "controls": 22,
       "by_mode": {
-        "guest": {
-          "no-result": 1
-        },
-        "member": {
-          "no-result": 3
-        },
-        "admin": {
-          "no-result": 3
-        }
+        "guest": { "no-result": 1 },
+        "member": { "no-result": 3 },
+        "admin": { "no-result": 3 }
       }
     },
     "Vault side-panel": {
@@ -1191,60 +869,21 @@
       "cases": 9,
       "controls": 52,
       "by_mode": {
-        "guest": {
-          "no-result": 2
-        },
-        "member": {
-          "no-result": 6,
-          "unverified": 2
-        },
-        "admin": {
-          "no-result": 6,
-          "unverified": 2
-        }
+        "guest": { "no-result": 2 },
+        "member": { "no-result": 6, "unverified": 2 },
+        "admin": { "no-result": 6, "unverified": 2 }
       }
     }
   },
   "defects": {
     "records": 71,
-    "by_state": {
-      "closed": 44,
-      "fixed": 21,
-      "open": 1,
-      "in-fix": 4,
-      "retest-pass": 1
-    },
+    "by_state": { "closed": 44, "fixed": 21, "open": 1, "in-fix": 4, "retest-pass": 1 },
     "nonclosed": [
-      {
-        "id": "EXT-D-0022",
-        "state": "fixed",
-        "title": null,
-        "verification_status": null
-      },
-      {
-        "id": "EXT-D-0024",
-        "state": "open",
-        "title": null,
-        "verification_status": null
-      },
-      {
-        "id": "EXT-D-0036",
-        "state": "fixed",
-        "title": null,
-        "verification_status": null
-      },
-      {
-        "id": "EXT-D-0038",
-        "state": "fixed",
-        "title": null,
-        "verification_status": null
-      },
-      {
-        "id": "EXT-D-0040",
-        "state": "fixed",
-        "title": null,
-        "verification_status": null
-      },
+      { "id": "EXT-D-0022", "state": "fixed", "title": null, "verification_status": null },
+      { "id": "EXT-D-0024", "state": "open", "title": null, "verification_status": null },
+      { "id": "EXT-D-0036", "state": "fixed", "title": null, "verification_status": null },
+      { "id": "EXT-D-0038", "state": "fixed", "title": null, "verification_status": null },
+      { "id": "EXT-D-0040", "state": "fixed", "title": null, "verification_status": null },
       {
         "id": "EXT-D-0041",
         "state": "fixed",
@@ -1257,12 +896,7 @@
         "title": null,
         "verification_status": "Original focused19/19 green; combined D41+D42 compile passed at16:33:55Z. Helper-only focused rerun and independent UI still pending."
       },
-      {
-        "id": "EXT-D-0043",
-        "state": "fixed",
-        "title": null,
-        "verification_status": null
-      },
+      { "id": "EXT-D-0043", "state": "fixed", "title": null, "verification_status": null },
       {
         "id": "EXT-D-0044",
         "state": "fixed",
@@ -1384,9 +1018,9 @@
     "release_commit": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
     "release_claim": "Last authenticated primary Store observation, October7 at16:23UTC: published/draft0.2.205, public, no pending review or reviewer action. No newer eligible Store ZIP established. Evidence .research/daily-store-20261007.json and daily-release-inventory-20261007.json. D97/D112 actual Store-installed acceptance and D96 owner-table/published verification remain open; no overall health claim. October8 dashboard observation was not admitted by the local resource guard; no newer dashboard status is claimed.",
     "local_artifact": "Exact submitted Store 0.2.205 ZIP from hosted strict release run 37180303468, artifact 11294843385, source 2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3, SHA-256 6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26. This is a release package, not an installed Store build. Separate Profile development 0.2.189 evidence remains scoped to that older artifact.",
-    "native_notes": "October8 latest public205 unpacked native37764808590 on deployed5be7a37ba1e53ca311f3787bb041a402ec863052: first/followup grounded terminal pass; new conversation after reload completed get_page_text then continuation failed with RuntimeError/no assistant answer. All three resources valid; independent1661d1ff confirms original reproduction still fails. Earlier immediate409 was resolved, but first repair introduced physical-versus-logical message position mismatch. Second source repair7ec6c76205 independently accepted16a32d73; production inclusion and original live retest pending. EXT-D-0172 fixed means source only, guest cell remains fail. Evidence .research/guest409-live-retest-20261008.json and .research/guest-resume-runtimeerror-peer-20261008.json. Earlier build-specific evidence follows and does not override this failure. October7 hosted37649504416 tested publicCRX205 unpacked: first, same-conversation follow-up and new conversation after reload returned actual terminal answers over HTTP200 against stable server8fe201b44e7a4c8fe3bf726b77546ad533926a60; all three owned guard journals valid. Evidence .research/daily-guest-20261007.json. This is not Store UI installation proof or broad health. Historical candidate/allowance/nonadmin evidence follows: Independent exact 0.2.205 Store payload loaded unpacked with only its public manifest key adapted: four real fresh-guest answers, fifth live HTTP 402 guest_ai_allowance_used with free-account remedy/no Retry, and returning exhausted-guest panel reload/New chat with a second distinct live HTTP 402 and same remedy. Signed-in non-admin Chat answered with admin check HTTP 200/zero rows. The organization-present probe was source-fixed at bef9a4de after its string/object mismatch, and independent source/narrow-guard review 216c24c0 passed. The historical local receipt remains false. Corrected hosted local-development-ZIP 0.2.205 member run 37182939504 passed organization presence, canonical non-admin HTTP 200/zero rows and a real Chat answer; D113 is closed. Evidence: .research/hosted-member205-final.json. That hosted member run does not verify the Store ZIP, full organization lifecycle, or a Store installation. See .research/guest-402-native-acceptance.json, .research/guest-returning-final-acceptance.json, and .research/member-org-diagnostic-repair.json. Historical Profile 0.2.189 bounded results are retained in inventory; none certify Store 0.2.205.",
+    "native_notes": "October8 original public205 adapted-unpacked guest regression passes in native37770686993 on stablelive32f3a398789e0a56b590089ff47b90aff6abe159 containing7ec6c76205. Opening/same-conversation follow-up/full-panel-reload new conversation each produced grounded visible terminal answers; postreload page tool completed and continuation ended complete/success. All3 current resourcejournals valid. Independent4a72d8b0 resolves earlier cross-turn diagnostic objection and confirms boundedpass. EXT-D-0172 closed; T10 guest pass preserves priorfailhistory. No StoreUIinstallation or overallChat/extensionhealth claim. Evidence .research/guest-position-fix-live-retest-20261008.json and .research/guest-position-native-adjudication-20261008.json. Earlier build-specific evidence follows and does not override this failure. October7 hosted37649504416 tested publicCRX205 unpacked: first, same-conversation follow-up and new conversation after reload returned actual terminal answers over HTTP200 against stable server8fe201b44e7a4c8fe3bf726b77546ad533926a60; all three owned guard journals valid. Evidence .research/daily-guest-20261007.json. This is not Store UI installation proof or broad health. Historical candidate/allowance/nonadmin evidence follows: Independent exact 0.2.205 Store payload loaded unpacked with only its public manifest key adapted: four real fresh-guest answers, fifth live HTTP 402 guest_ai_allowance_used with free-account remedy/no Retry, and returning exhausted-guest panel reload/New chat with a second distinct live HTTP 402 and same remedy. Signed-in non-admin Chat answered with admin check HTTP 200/zero rows. The organization-present probe was source-fixed at bef9a4de after its string/object mismatch, and independent source/narrow-guard review 216c24c0 passed. The historical local receipt remains false. Corrected hosted local-development-ZIP 0.2.205 member run 37182939504 passed organization presence, canonical non-admin HTTP 200/zero rows and a real Chat answer; D113 is closed. Evidence: .research/hosted-member205-final.json. That hosted member run does not verify the Store ZIP, full organization lifecycle, or a Store installation. See .research/guest-402-native-acceptance.json, .research/guest-returning-final-acceptance.json, and .research/member-org-diagnostic-repair.json. Historical Profile 0.2.189 bounded results are retained in inventory; none certify Store 0.2.205.",
     "supersession": "Only this current checkpoint is updated; historical audit counts below remain dated snapshots. Current coverage totals are generated from inventory and defect records.",
-    "updated_at": "2026-10-08T11:00:31.174750+00:00"
+    "updated_at": "2026-10-08T11:50:58.056313+00:00"
   },
   "major_gaps_and_next_actions": [
     {

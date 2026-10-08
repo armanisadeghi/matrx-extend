@@ -33057,7 +33057,8 @@
             "EXT-D-0096",
             "EXT-D-0097",
             "EXT-D-0112",
-            "EXT-D-0144"
+            "EXT-D-0144",
+            "EXT-D-0172"
           ],
           "run_ids": [
             "guest-grounding-peer-native-20261001-001",
@@ -33066,9 +33067,10 @@
             "37239792825",
             "37240870438",
             "37267858358",
-            "37356729984"
+            "37356729984",
+            "37770686993"
           ],
-          "retest_status": "T10 bounded publicCRX205 first/same-conversation/reload pass37356729984 server624b0cee. D144oracleclosed. ActualStoreinstalled/returningguest lifecycle and broaderChat remainunverified; wholefeatureguestcell remains partial."
+          "retest_status": "T10 bounded publicCRX205 adapted-unpacked first/same-conversation/full-panel-reload pass37770686993 on stablelive32f3; independent4a72d8b0, EXT-D-0172 closed. ActualStoreinstalled acceptance and broaderChat remain unverified; wholefeature guestcell stays partial."
         },
         "member": {
           "test_status": "unverified",
