@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "defect_id": "EXT-D-0169",
+  "review_kind": "independent source and focused-guard review",
+  "reviewed_commit": "4094c08d8bd69f5836a1378402515689c10cb8a9",
+  "verdict_A_native_behavior": {
+    "status": "UNVERIFIED_NO_NEW_NATIVE_RUN",
+    "finding": "The prior resource-valid native run 37734224612 still proves only that the trusted social click returned and the old feedback poll did not accept. Its actual clipboard, icon state, and T02 recapture are unknown. This source review grants no new T02 or T14 coverage and no full SEO case pass."
+  },
+  "verdict_B_source_and_guards": {
+    "status": "REPAIR_REQUIRED_BEFORE_NEXT_NATIVE_RUN",
+    "accepted": [
+      "The social button observation now uses the same title/data-matrx-title identity as trusted click, inside the linked SEO pane, and records bounded Check/X/Copy observations without clipboard text.",
+      "The runner reads the actual clipboard after a missed transient feedback icon. Wrong text, observed X, or an unchanged already-matching clipboard cannot become T14 pass; controlled copy failures remain recorded while independent T02 recapture proceeds.",
+      "The pre-click and post-click clipboard reads use the existing temporary permission helper, whose finally restores the original permission; the owned DOM mutation is inside a finally restoration path. The overall native report exits nonzero when a copy case is failed or unverified."
+    ],
+    "findings": [
+      {
+        "severity": "Important",
+        "location": "tests/browser/seo-guest-acceptance.mjs:343",
+        "title": "Lost-target and resource errors are swallowed as missed copy feedback",
+        "detail": "The feedback poll calls settings-panel-driver.waitFor, which catches every read exception and replaces it with {transient: message}. The caller then catches its generic social_*_copy_feedback_not_observed timeout and continues to clipboard read. A lost target or resource failure during feedback sampling can therefore be treated as a harmless missed icon; if later calls recover and the clipboard matches, T14 can pass despite that failure. The requirement is to abort on resource/lost-target errors, reserving continuation for an intact pane whose icon was merely too brief to observe.",
+        "evidence": "A read that always threw Error('lost_target') yielded social_before_reaudit_copy_feedback_not_observed:{\"transient\":\"lost_target\"}, exactly the error prefix suppressed by the caller. The new tests exercise helper predicates and a generic orchestration callback, not this native feedback catch branch.",
+        "remedy": "Use a feedback poll that propagates target/resource errors, or inspect and rethrow all non-icon absence outcomes before clipboard read; add a focused guard at the actual feedback boundary for lost target and ordinary missed feedback."
+      }
+    ],
+    "guard_assessment": "The moved-title test would fail with the old title-only selector: its fake pane returns the button only when the data-matrx-title selector is present. Wrong clipboard, X feedback, unchanged clipboard, stale audit, and generic copy-result continuation have focused negative cases. The critical native feedback exception branch remains unguarded."
+  },
+  "checks_run": [
+    "node --test tests/browser/seo-new-coverage-oracle.test.mjs: 5 passed",
+    "node --test tests/browser/clipboard-observation.test.mjs: 1 passed",
+    "Focused waitFor lost_target probe: reproduced swallowed exception and generic timeout"
+  ],
+  "limits": [
+    "No build or native run was performed under this review assignment.",
+    "No source or inventory files were edited.",
+    "The prior native failure cause remains unknown until a corrected fresh native run observes icon and exact clipboard."
+  ]
+}
