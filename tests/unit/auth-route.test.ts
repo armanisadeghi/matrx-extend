@@ -33,6 +33,7 @@ const mocks = vi.hoisted(() => {
     orgSelect: vi.fn(),
     prefsSelect: vi.fn(),
     schemaRpc: vi.fn(),
+    pushNotice: vi.fn(),
     getOne: vi.fn(async (key: string) => store.get(key) ?? null),
     setOne: vi.fn(async (key: string, value: unknown) => {
       store.set(key, value);
@@ -76,6 +77,7 @@ vi.mock('@/lib/storage/chrome-local', () => ({
   setOne: mocks.setOne,
   onChange: mocks.onChange,
 }));
+vi.mock('@/state/notices', () => ({ pushNotice: mocks.pushNotice }));
 vi.mock('@/lib/debug/log', () => ({
   log: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), success: vi.fn() },
 }));
@@ -205,6 +207,26 @@ describe('the load ladder — the organization this install acts in', () => {
       p_organization_id: ORG_B,
     });
     await expect(getActiveOrganizationId()).resolves.toBe(ORG_B);
+  });
+
+  it('a failed account save raises a visible notice while the device switch stands', async () => {
+    membershipsFor(ORG_A, ORG_B);
+    mocks.schemaRpc.mockResolvedValue({ error: { message: 'rpc down' } });
+    const { setActiveOrganization, getActiveOrganizationId } = await import('@/lib/org/active-org');
+    await setActiveOrganization(ORG_B);
+    expect(mocks.store.get(ACTIVE)).toEqual({ id: ORG_B, name: expect.any(String) });
+    await expect(getActiveOrganizationId()).resolves.toBe(ORG_B);
+    expect(mocks.pushNotice).toHaveBeenCalledTimes(1);
+    expect(mocks.pushNotice).toHaveBeenCalledWith(
+      expect.objectContaining({ tone: 'warning', title: expect.stringMatching(/not saved/i) }),
+    );
+  });
+
+  it('a successful account save raises no notice', async () => {
+    membershipsFor(ORG_A, ORG_B);
+    const { setActiveOrganization } = await import('@/lib/org/active-org');
+    await setActiveOrganization(ORG_B);
+    expect(mocks.pushNotice).not.toHaveBeenCalled();
   });
 
   it('excludes archived organizations and clears a stored choice after its organization closes', async () => {

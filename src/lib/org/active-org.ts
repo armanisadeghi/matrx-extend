@@ -38,6 +38,7 @@ import { log } from '@/lib/debug/log';
 import { getOne, onChange, setOne } from '@/lib/storage/chrome-local';
 import { getSupabase } from '@/lib/supabase/client';
 import { iamDb, usersDb } from '@/lib/supabase/schemas';
+import { pushNotice } from '@/state/notices';
 import type { ArchiveFilterValue } from '@ai-matrx/design-system';
 
 export interface MemberOrganization {
@@ -338,7 +339,7 @@ export async function requireActiveOrganizationId(): Promise<string> {
  * Save the person's switch to their account so the next load, on any device,
  * opens in it. The write door is `users.set_last_active_organization`; it
  * refuses a non-membership. The device choice is already stored, so a failed
- * account write is logged loudly and never undoes the switch here.
+ * account write raises a notice and never undoes the switch here.
  */
 async function saveLastActiveOrganization(organizationId: string): Promise<void> {
   const { error } = await getSupabase()
@@ -348,6 +349,14 @@ async function saveLastActiveOrganization(organizationId: string): Promise<void>
     log.error('auth', 'could not save the last active organization to the account', {
       organization_id: organizationId,
       message: error.message,
+    });
+    // Visible, not silent: the switch stands here, the person is told.
+    pushNotice({
+      tone: 'warning',
+      title: 'Organization not saved to your account',
+      message:
+        "You switched organization here, but it could not be saved to your account, so your other devices won't follow it. Switch again to retry.",
+      detail: error.message,
     });
   }
 }
