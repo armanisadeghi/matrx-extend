@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "reviewed_unit": "b709ae1c (present after integration 2a0a1a67)",
+  "verdict_a_source_readiness_native": {
+    "status": "PARTIAL",
+    "evidence": "Saved native run 37764002686 used source 5d845f42 before the observer commit. It proved ready, titled, empty post-reload referrals and a returned trusted pointer, then timed out with an empty enabled panel. Its receipt has no post_reload_capture_boundary field. Earlier warm and post-reload populated captures passed, but the final empty-media recapture did not.",
+    "first_unverified_boundary": "A new native run must observe the instrumented click event and busy state before assigning missing input versus application failure. Even click_events=1 and busy_observed=false locates a boundary between DOM capture and React state; it does not alone prove why the handler did not run.",
+    "result": "Actual captured referrals data after the trusted final action is not proven. T08 remains partial."
+  },
+  "verdict_b_guard_quality_privacy": {
+    "status": "FAIL",
+    "findings": [
+      {
+        "severity": "Important",
+        "location": "tests/browser/scrape-guest-native-acceptance.mjs:2008; tests/browser/settings-panel-driver.mjs:18",
+        "issue": "The unchanged waitFor timeout serializes the entire last scrapeState into report.failure.code. scrapeState includes resultText, media image URLs, and labels. If the capture renders data but fails the exact article assertion, the failure receipt can expose page contents despite the new scalar-only boundary object. The saved prior failure had resultText null, so it did not demonstrate this leak, but the path is executable.",
+        "required_proof": "Constrain this boundary's timeout diagnostic to allowlisted booleans/counts and prove a failed assertion cannot serialize page text or account/authorization data."
+      },
+      {
+        "severity": "Important",
+        "location": "tests/browser/scrape-guest-native-acceptance.mjs:1984",
+        "issue": "The document click listener is anonymous and never removed. The finally block reads its counter and disconnects the busy observer, but leaves the listener in the panel document. A rerun in the same document stacks listeners; if arming the busy observer throws before entering try, its cleanup is also skipped.",
+        "required_proof": "Give the click probe explicit disposal in a finally that begins before arming; retain null for an unmeasured boundary."
+      },
+      {
+        "severity": "Important",
+        "location": "tests/browser/scrape-guest-native-acceptance.mjs:1981",
+        "issue": "No focused test exercises the newly added pointer-phase/click-count/busy receipt path or proves missing input and application failure remain distinct. The existing busy-observer and native-media tests cover lower-level helpers, not this integration. The current saved native receipt predates the change.",
+        "required_proof": "Run a focused boundary test with distinct no-click, delivered-click/no-busy, and delivered-click/busy outcomes, then one authorized native observation of the actual final action."
+      }
+    ],
+    "positive_evidence": "The listener filters the same title/data-matrx-title pair as the pointer driver; armBusyObserver scopes to the visible active Scrape panel, and readBusyExpression disconnects its MutationObserver. The new boundary receipt object contains only a pointer phase string, click count, and busy boolean/null. Node syntax, targeted Biome, and 35 focused observer/native-media tests passed."
+  },
+  "limits": "Read-only review; no new native launch, application modification, release, or deployment. The exact final capture sequence remains unverified on a live side panel."
+}
