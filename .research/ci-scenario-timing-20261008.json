@@ -1,0 +1,10 @@
+{
+  "scope": "Diagnostic-only instrumentation for the existing resource CPU wrapper integration test after automatic CI run 37789659379 timed out its first seven-scenario group at 30003.821875 ms.",
+  "change": "Every scenario reports monotonic scenario and group elapsed milliseconds, stage, last guard event, child exit/close status, and scratch cleanup status to test stderr. A one-second live progress report and each guard event identify the active boundary even if the Node test timeout fires before a scenario returns. The three groups retain their existing scenario order, assertions, and 30000 ms timeout.",
+  "verification": [
+    "node --check scripts/test-stabilization-resource-cpu-integration.mjs passed.",
+    "MATRX_RESOURCE_CPU_DIAGNOSTIC_SELF_TEST=1 node --test --test-name-pattern='scenario diagnostic reports' scripts/test-stabilization-resource-cpu-integration.mjs passed in 70 ms without launching a guard or browser.",
+    "A scratch-copy mutation that changed the reported guard event code to BROKEN made the diagnostic self-test fail with ERR_ASSERTION; the scratch copy was removed."
+  ],
+  "limits": "The heavy integration and browser paths were deliberately not run locally. The next automatic CI run is needed to distinguish aggregate budget exhaustion from a specific scenario stall; no production guard behavior or timeout changed. If fixture creation fails before returning its scratch path, cleanup reports unavailable, because the pre-existing fixture API does not expose that path."
+}

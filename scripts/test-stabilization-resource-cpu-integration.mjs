@@ -159,7 +159,7 @@ async function fixture({ pauseOwnerRewrite = false, simulateChildError = false }
   };
 }
 
-function observe(child) {
+function observe(child, onEvent) {
   const events = [];
   let stdout = '';
   let stderr = '';
@@ -169,7 +169,9 @@ function observe(child) {
     stdout = lines.pop();
     for (const line of lines) {
       try {
-        events.push(JSON.parse(line));
+        const event = JSON.parse(line);
+        events.push(event);
+        if (event && typeof event.code === 'string') onEvent(event);
       } catch {
         // The owned test child may print ordinary output.
       }
@@ -201,6 +203,66 @@ function observe(child) {
   };
 }
 
+function scenarioDiagnostic(kind, groupStartedAt) {
+  const startedAt = process.hrtime.bigint();
+  const elapsedMs = (start) => Number((process.hrtime.bigint() - start) / 1_000_000n);
+  let stage = 'fixture';
+  let lastGuardEvent = null;
+  let child = null;
+  let childClosed = false;
+  let cleanup = 'not_started';
+  const report = (point) => {
+    console.error(
+      `resource-cpu-scenario ${JSON.stringify({
+        kind,
+        point,
+        elapsedMs: elapsedMs(startedAt),
+        groupElapsedMs: elapsedMs(groupStartedAt),
+        stage,
+        lastGuardEvent,
+        child: child
+          ? {
+              pid: child.pid ?? null,
+              exitCode: child.exitCode,
+              signalCode: child.signalCode,
+              closed: childClosed,
+            }
+          : null,
+        cleanup,
+      })}`,
+    );
+  };
+  // Node's test timeout can fire while a scenario is awaiting a guard event.
+  // A live, unref'ed status line preserves the active scenario in CI output.
+  const ticker = setInterval(() => report('progress'), 1_000);
+  ticker.unref();
+  report('start');
+  return {
+    report,
+    stop: () => clearInterval(ticker),
+    setStage: (value) => {
+      stage = value;
+    },
+    setChild: (value) => {
+      child = value;
+    },
+    setChildClosed: () => {
+      childClosed = true;
+    },
+    setCleanup: (value) => {
+      cleanup = value;
+    },
+    onEvent: (event) => {
+      lastGuardEvent = {
+        code: event.code,
+        ...(event.reasons && { reasons: event.reasons }),
+        ...(event.childExitCode !== undefined && { childExitCode: event.childExitCode }),
+      };
+      report('guard_event');
+    },
+  };
+}
+
 async function readWatchReadyOwner(stream, item) {
   // Admission precedes truncate/writeFile updates to owner.json. A watch event
   // is emitted only after child setup and all startup owner writes complete.
@@ -209,33 +271,44 @@ async function readWatchReadyOwner(stream, item) {
   return JSON.parse(await readFile(join(item.leaseRoot, 'heavy/owner.json'), 'utf8'));
 }
 
-async function runScenario(kind, { pauseOwnerRewrite = false } = {}) {
-  const item = await fixture({
-    pauseOwnerRewrite,
-    simulateChildError: kind === 'pending-child-error',
-  });
-  const runId = `cpu-${kind}-${randomUUID()}`;
-  const child = spawn(
-    process.execPath,
-    [
-      item.guardPath,
-      'run',
-      '--run-id',
-      runId,
-      '--profile-dir',
-      item.scratch,
-      '--',
-      'node',
-      'scripts/prove-desktop-settings-guards.mjs',
-    ],
-    { cwd: item.scratch, stdio: ['ignore', 'pipe', 'pipe'] },
-  );
-  const stream = observe(child);
-  const closed = new Promise((done) =>
-    child.once('close', (code, signal) => done({ code, signal })),
-  );
+async function runScenario(kind, groupStartedAt, { pauseOwnerRewrite = false } = {}) {
+  const diagnostic = scenarioDiagnostic(kind, groupStartedAt);
+  let item;
+  let child;
+  let closed;
   let finished = false;
+  let scenarioError;
   try {
+    item = await fixture({
+      pauseOwnerRewrite,
+      simulateChildError: kind === 'pending-child-error',
+    });
+    const runId = `cpu-${kind}-${randomUUID()}`;
+    diagnostic.setStage('guard_spawn');
+    child = spawn(
+      process.execPath,
+      [
+        item.guardPath,
+        'run',
+        '--run-id',
+        runId,
+        '--profile-dir',
+        item.scratch,
+        '--',
+        'node',
+        'scripts/prove-desktop-settings-guards.mjs',
+      ],
+      { cwd: item.scratch, stdio: ['ignore', 'pipe', 'pipe'] },
+    );
+    diagnostic.setChild(child);
+    const stream = observe(child, diagnostic.onEvent);
+    closed = new Promise((done) =>
+      child.once('close', (code, signal) => {
+        diagnostic.setChildClosed();
+        done({ code, signal });
+      }),
+    );
+    diagnostic.setStage('admission');
     await stream.next((event) => event.code === 'RESOURCE_ADMITTED');
     if (pauseOwnerRewrite) {
       await stream.next((event) => event.code === 'TEST_OWNER_REWRITE_PAUSED');
@@ -254,6 +327,7 @@ async function runScenario(kind, { pauseOwnerRewrite = false } = {}) {
         }
       : stream;
     const owner = await readWatchReadyOwner(readinessStream, item);
+    diagnostic.setStage('watch');
     const env = {
       MATRX_RESOURCE_RUN_ID: runId,
       MATRX_RESOURCE_OWNER: owner.nonce,
@@ -365,8 +439,10 @@ async function runScenario(kind, { pauseOwnerRewrite = false } = {}) {
         else assert.equal(job.childError, 'synthetic child error');
       }
     }
+    diagnostic.setStage('awaiting_child_close');
     const exit = await closed;
     finished = true;
+    diagnostic.setStage('journal_assertions');
     assert.deepEqual(
       exit,
       { code: ['recovered', 'completion-recovered'].includes(kind) ? 0 : 3, signal: null },
@@ -408,26 +484,106 @@ async function runScenario(kind, { pauseOwnerRewrite = false } = {}) {
     if (kind === 'completion-stop')
       assert(journal.some((event) => event.code === 'RESOURCE_STOP_REQUESTED'));
     assert.equal(actions, kind === 'recovered' ? 1 : 0);
-  } finally {
-    if (!finished) {
+  } catch (error) {
+    diagnostic.report('failure');
+    scenarioError = error;
+  }
+  diagnostic.setCleanup('started');
+  diagnostic.report('cleanup_start');
+  try {
+    if (child && closed && !finished) {
       child.kill('SIGTERM');
       await closed;
     }
-    await rm(item.scratch, { recursive: true, force: true });
+    if (item) await rm(item.scratch, { recursive: true, force: true });
+    diagnostic.setCleanup(item ? 'done' : 'unavailable');
+  } catch (error) {
+    diagnostic.setCleanup('failed');
+    diagnostic.report('cleanup_failure');
+    throw error;
+  } finally {
+    diagnostic.setStage('complete');
+    diagnostic.report('end');
+    diagnostic.stop();
   }
+  if (scenarioError) throw scenarioError;
+}
+
+async function runScenarioGroup(kinds, options) {
+  const groupStartedAt = process.hrtime.bigint();
+  for (const kind of kinds) await runScenario(kind, groupStartedAt, options);
+}
+
+if (process.env.MATRX_RESOURCE_CPU_DIAGNOSTIC_SELF_TEST === '1') {
+  test('scenario diagnostic reports each distinct lifecycle without running a guard', () => {
+    const lines = [];
+    const originalError = console.error;
+    console.error = (line) => lines.push(line);
+    try {
+      const groupStartedAt = process.hrtime.bigint();
+      const first = scenarioDiagnostic('recovered', groupStartedAt);
+      first.setChild({ pid: 123, exitCode: null, signalCode: null });
+      first.onEvent({ code: 'RESOURCE_CPU_RECOVERED', reasons: [] });
+      first.setChildClosed();
+      first.setCleanup('done');
+      first.report('end');
+      first.stop();
+      const second = scenarioDiagnostic('completion-expired', groupStartedAt);
+      second.onEvent({
+        code: 'RESOURCE_WATCH_UNSAFE',
+        reasons: ['RESOURCE_CPU_CONFIRMATION_EXPIRED'],
+      });
+      second.setCleanup('unavailable');
+      second.report('end');
+      second.stop();
+    } finally {
+      console.error = originalError;
+    }
+    const entries = lines.map((line) => JSON.parse(line.slice('resource-cpu-scenario '.length)));
+    const ends = entries.filter((entry) => entry.point === 'end');
+    assert.deepEqual(
+      ends.map(({ kind, lastGuardEvent, child, cleanup }) => ({
+        kind,
+        lastGuardEvent,
+        child,
+        cleanup,
+      })),
+      [
+        {
+          kind: 'recovered',
+          lastGuardEvent: { code: 'RESOURCE_CPU_RECOVERED', reasons: [] },
+          child: { pid: 123, exitCode: null, signalCode: null, closed: true },
+          cleanup: 'done',
+        },
+        {
+          kind: 'completion-expired',
+          lastGuardEvent: {
+            code: 'RESOURCE_WATCH_UNSAFE',
+            reasons: ['RESOURCE_CPU_CONFIRMATION_EXPIRED'],
+          },
+          child: null,
+          cleanup: 'unavailable',
+        },
+      ],
+    );
+    assert(entries.every(({ elapsedMs, groupElapsedMs }) => elapsedMs >= 0 && groupElapsedMs >= 0));
+    assert.equal(entries.filter(({ point }) => point === 'guard_event').length, 2);
+  });
 }
 
 test(
   'actual guard watch journal controls recovery, confirmation, and pending child exit',
   { timeout: 30_000 },
   async () => {
-    await runScenario('recovered');
-    await runScenario('confirmed');
-    await runScenario('pending-exit');
-    await runScenario('completion-recovered');
-    await runScenario('completion-unsafe');
-    await runScenario('completion-expired');
-    await runScenario('completion-memory-unsafe');
+    await runScenarioGroup([
+      'recovered',
+      'confirmed',
+      'pending-exit',
+      'completion-recovered',
+      'completion-unsafe',
+      'completion-expired',
+      'completion-memory-unsafe',
+    ]);
   },
 );
 
@@ -435,9 +591,7 @@ test(
   'pending child failure, child error, and operator stop remain invalid',
   { timeout: 30_000 },
   async () => {
-    await runScenario('pending-failed-child');
-    await runScenario('pending-child-error');
-    await runScenario('completion-stop');
+    await runScenarioGroup(['pending-failed-child', 'pending-child-error', 'completion-stop']);
   },
 );
 
@@ -445,8 +599,8 @@ test(
   'CPU boundary waits for startup owner rewrite before reading identity',
   { timeout: 30_000 },
   async () => {
-    await runScenario('recovered', { pauseOwnerRewrite: true });
-    await runScenario('confirmed', { pauseOwnerRewrite: true });
-    await runScenario('pending-exit', { pauseOwnerRewrite: true });
+    await runScenarioGroup(['recovered', 'confirmed', 'pending-exit'], {
+      pauseOwnerRewrite: true,
+    });
   },
 );
