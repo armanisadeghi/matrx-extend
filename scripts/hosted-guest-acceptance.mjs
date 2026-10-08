@@ -337,7 +337,12 @@ async function run(prepared, artifactMode) {
       'Guest Chat release requires exact Store ZIP payload',
     );
   const scrapeRoute = requireHostedScrapeRoute(acceptanceCase, artifactMode, prepared);
-  const seoRoute = hostedGuestSeoRoute(acceptanceCase, artifactMode, prepared);
+  const seoRoute = hostedGuestSeoRoute(
+    acceptanceCase,
+    artifactMode,
+    prepared,
+    process.env.MATRX_HOSTED_SEO_CASE_SCOPE ?? 'full',
+  );
   const scrapeSelection = scrapeRoute ? scrapeNativeSelection(process.env) : null;
   if (acceptanceCase === 'prepare-stale-results' || acceptanceCase.startsWith('showcase-'))
     assert.equal(kind, 'ci_development_test', 'Native case requires exact CI development receipt');

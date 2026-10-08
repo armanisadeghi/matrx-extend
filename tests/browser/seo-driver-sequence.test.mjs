@@ -61,6 +61,11 @@ function assertReachable(call, boundary, message) {
 // Inspect the callback the native harness actually executes. The guard is
 // derived from calls that perform the cases, rather than a line or text order.
 function inspectDriverSequence(source) {
+  assert.match(
+    source,
+    /const SEO_CASE_SCOPE = process\.env\.SEO_GUEST_CASE_SCOPE \?\? 'full';/,
+    'native driver reads scope with full default',
+  );
   const ast = ts.createSourceFile('seo-guest-acceptance.mjs', source, ts.ScriptTarget.Latest, true);
   assert.equal(ast.parseDiagnostics.length, 0, 'SEO driver parses');
   const harnesses = callsNamed(ast, 'runNativeSidepanelQa');
@@ -83,8 +88,12 @@ function inspectDriverSequence(source) {
     'native panel executes the sequence directly',
   );
   assertReachable(sequence, panel, 'native panel sequence is reachable');
-  assert.equal(sequence.arguments.length, 2, 'controlled and detail phases are both present');
-  const [controlled, dynamic] = sequence.arguments;
+  assert.equal(sequence.arguments.length, 3, 'controlled, detail, and scope are wired');
+  const [controlled, dynamic, scope] = sequence.arguments;
+  assert.ok(
+    ts.isIdentifier(scope) && scope.text === 'SEO_CASE_SCOPE',
+    'native driver passes selected scope',
+  );
   assert.ok(ts.isArrowFunction(controlled), 'first phase is an executable callback');
   assert.ok(ts.isArrowFunction(dynamic), 'second phase is an executable callback');
 
@@ -126,6 +135,16 @@ function inspectDriverSequence(source) {
     1,
     'one volatile source assertion runs inside the second phase',
   );
+  assert.ok(
+    callsNamed(panel, 'target').some(
+      (call) => literal(call, 1) === 'guest_reaudit_captures_changed_page_metadata',
+    ),
+    'actual driver records controlled T02 result',
+  );
+  assert.ok(
+    callsNamed(panel, 'copySocialTags').length === 2,
+    'actual driver executes both T14 copy states',
+  );
   return { ast, sequence };
 }
 
@@ -133,6 +152,15 @@ test('actual native driver wires independent cases before volatile detail checks
   const source = await readFile(DRIVER, 'utf8');
   const { ast, sequence } = inspectDriverSequence(source);
   const [controlled, dynamic] = sequence.arguments;
+  const unfiltered =
+    source.slice(0, sequence.arguments[2].getStart(ast)) +
+    "'full'" +
+    source.slice(sequence.arguments[2].end);
+  assert.throws(() => inspectDriverSequence(unfiltered), /selected scope/);
+  assert.throws(
+    () => inspectDriverSequence(source.replace('process.env.SEO_GUEST_CASE_SCOPE ??', "'full' ??")),
+    /reads scope with full default/,
+  );
   const swapped =
     source.slice(0, controlled.getStart(ast)) +
     dynamic.getText(ast) +

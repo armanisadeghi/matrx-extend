@@ -142,9 +142,24 @@ export async function runCopyCheckThenRecapture(copyCheck, recapture) {
 // The controlled page checks use their own public source. A volatile detail
 // fixture must run only after they have produced their native observations.
 // Errors still propagate so a broken source or lost target fails the run.
-export async function runSeoCaseSequence(runControlledCases, runDynamicDetailCases) {
+export function seoCaseSelection(scope = 'full') {
+  assert.ok(scope === 'full' || scope === 'controlled', 'unknown_seo_case_scope');
+  return {
+    scope,
+    selected_cases: ['T01', 'T02', 'T03', 'T07', 'T09', 'T14'],
+    excluded_cases:
+      scope === 'controlled' ? ['T09 volatile public detail', 'T09 optional metadata fixture'] : [],
+  };
+}
+
+export async function runSeoCaseSequence(
+  runControlledCases,
+  runDynamicDetailCases,
+  scope = 'full',
+) {
+  seoCaseSelection(scope);
   await runControlledCases();
-  await runDynamicDetailCases();
+  if (scope === 'full') await runDynamicDetailCases();
 }
 
 export function verifyManualRecapture(before, changed, stale, refreshed) {

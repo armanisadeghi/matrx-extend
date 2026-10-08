@@ -16,9 +16,22 @@ test('guest SEO passes the selected development artifact and receipt to the exis
     env: {
       SEO_GUEST_EXTENSION_DIR: selected.extensionDir,
       SEO_GUEST_DEV_BUILD_RECEIPT: selected.relocatedReceipt,
+      SEO_GUEST_CASE_SCOPE: 'full',
     },
   });
   assert.equal(hostedGuestSeoRoute('guest-chat', 'development', selected), null);
+});
+
+test('guest SEO controlled scope reaches the native driver and unknown scope fails', () => {
+  assert.equal(
+    hostedGuestSeoRoute('guest-seo', 'development', selected, 'controlled').env
+      .SEO_GUEST_CASE_SCOPE,
+    'controlled',
+  );
+  assert.throws(
+    () => hostedGuestSeoRoute('guest-seo', 'development', selected, 'unknown'),
+    /unknown_seo_case_scope/,
+  );
 });
 
 test('guest SEO refuses release, Store, and mismatched development selection', () => {
@@ -45,4 +58,5 @@ test('hosted workflow admits guest SEO on lane B with one exact development arti
     /"\$ACCEPTANCE_CASE" == guest-seo[^\n]*\n\s*\[\[ -z "\$RELEASE_RUN_ID" && -n "\$DEVELOPMENT_RUN_ID" && -n "\$DEVELOPMENT_ARTIFACT_ID" && "\$PUBLISHED_STORE_CRX" != true \]\]/,
   );
   assert.match(workflow, /test-results\/seo-guest-acceptance\.json/);
+  assert.match(workflow, /MATRX_HOSTED_SEO_CASE_SCOPE: \$\{\{ inputs\.seo_case_scope \}\}/);
 });

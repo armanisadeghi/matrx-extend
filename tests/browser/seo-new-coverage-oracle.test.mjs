@@ -6,11 +6,41 @@ import {
   pollSocialFeedback,
   runCopyCheckThenRecapture,
   runSeoCaseSequence,
+  seoCaseSelection,
   socialCopyButtonObservation,
   verifyManualRecapture,
   verifySocialClipboard,
   verifySocialCopyOutcome,
 } from './seo-new-coverage-oracle.mjs';
+
+test('controlled SEO scope reaches T14 and T02 while excluding volatile detail; full still fails it', async () => {
+  const observed = [];
+  const controlled = async () => observed.push('T14 before', 'T02 changed metadata', 'T14 after');
+  const volatile = async () => {
+    observed.push('T09 volatile detail');
+    throw new Error('unstable_source');
+  };
+  await runSeoCaseSequence(controlled, volatile, 'controlled');
+  assert.deepEqual(observed, ['T14 before', 'T02 changed metadata', 'T14 after']);
+  assert.deepEqual(seoCaseSelection('controlled').excluded_cases, [
+    'T09 volatile public detail',
+    'T09 optional metadata fixture',
+  ]);
+  observed.length = 0;
+  await assert.rejects(() => runSeoCaseSequence(controlled, volatile), /unstable_source/);
+  assert.deepEqual(observed, [
+    'T14 before',
+    'T02 changed metadata',
+    'T14 after',
+    'T09 volatile detail',
+  ]);
+  observed.length = 0;
+  await assert.rejects(
+    () => runSeoCaseSequence(controlled, volatile, 'invalid'),
+    /unknown_seo_case_scope/,
+  );
+  assert.deepEqual(observed, []);
+});
 
 test('volatile detail assertion runs after controlled T14 and T02 observations and still fails', async () => {
   const observed = [];

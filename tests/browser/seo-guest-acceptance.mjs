@@ -19,6 +19,7 @@ import {
   requireSocialCopyTarget,
   runCopyCheckThenRecapture,
   runSeoCaseSequence,
+  seoCaseSelection,
   socialCopyButtonObservation,
   verifyManualRecapture,
 } from './seo-new-coverage-oracle.mjs';
@@ -41,6 +42,7 @@ const DETAIL_PAGE = 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/l
 const NEXT_DETAIL_PAGE = 'https://en.wikipedia.org/wiki/HTML';
 const METADATA_FIXTURE_PAGE = 'https://www.airbnb.com/';
 const RUN_METADATA_FIXTURE = process.env.SEO_GUEST_METADATA_FIXTURE === 'airbnb';
+const SEO_CASE_SCOPE = process.env.SEO_GUEST_CASE_SCOPE ?? 'full';
 const report = {
   schema_version: 1,
   feature_id: 'EXT-F-1008',
@@ -70,6 +72,7 @@ const report = {
   current_operation: null,
   build: null,
   imported_artifact: null,
+  case_selection: null,
 };
 const advance = (stage, observable = null) => {
   report.last_safe_stage = stage;
@@ -1057,6 +1060,7 @@ async function checkGuestCopyFormats(context, publicPage, phase, existingMenu = 
 }
 
 try {
+  report.case_selection = seoCaseSelection(SEO_CASE_SCOPE);
   enter('build_identity');
   const before = await buildIdentity();
   report.build = { before, after: null };
@@ -1644,11 +1648,24 @@ try {
             doorStatus: report.targets.at(-1).status,
           });
         },
+        SEO_CASE_SCOPE,
       );
+
+      if (SEO_CASE_SCOPE === 'controlled') {
+        for (const subtarget of [
+          'guest_social_missing_tags_clipboard_before_reaudit',
+          'guest_social_missing_tags_clipboard_after_reaudit',
+          'guest_reaudit_captures_changed_page_metadata',
+        ])
+          assert.ok(
+            report.targets.some((item) => item.subtarget === subtarget && item.status === 'pass'),
+            `controlled SEO target missing: ${subtarget}`,
+          );
+      }
 
       // Optional bounded continuation for public sources whose HTTP markup
       // exposes both metadata groups. The default Wikipedia run is unchanged.
-      if (RUN_METADATA_FIXTURE) {
+      if (SEO_CASE_SCOPE === 'full' && RUN_METADATA_FIXTURE) {
         // Passive browser-boundary evidence distinguishes capture work from an
         // unresolved page identity; neither is inferred from missing output.
         await evaluate(

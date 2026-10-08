@@ -66,6 +66,14 @@ on:
           - profile-admin
           - profile-member
           - startup-resource-diagnostic
+      seo_case_scope:
+        description: Guest SEO checks to run; controlled keeps the T02/T14 phase and excludes volatile public-detail checks
+        required: false
+        default: full
+        type: choice
+        options:
+          - full
+          - controlled
       desktop_settings_case:
         description: Desktop Settings guest path; remaining covers pair-code forget and reset cancel
         required: false
@@ -136,6 +144,7 @@ jobs:
         env:
           ACCEPTANCE_LANE: ${{ inputs.acceptance_lane }}
           ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
+          SEO_CASE_SCOPE: ${{ inputs.seo_case_scope }}
           SCRAPE_AUTH_MODE: ${{ inputs.scrape_auth_mode }}
           DESKTOP_SETTINGS_CASE: ${{ inputs.desktop_settings_case }}
         run: |
@@ -146,6 +155,8 @@ jobs:
             *) echo 'Unknown hosted acceptance case.' >&2; exit 1 ;;
           esac
           [[ "$DESKTOP_SETTINGS_CASE" == full || "$DESKTOP_SETTINGS_CASE" == remaining ]] || { echo 'Unknown Desktop Settings case.' >&2; exit 1; }
+          [[ "$SEO_CASE_SCOPE" == full || "$SEO_CASE_SCOPE" == controlled ]] || { echo 'Unknown SEO case scope.' >&2; exit 1; }
+          [[ "$SEO_CASE_SCOPE" == full || "$ACCEPTANCE_CASE" == guest-seo ]] || { echo 'Controlled SEO scope requires guest-seo.' >&2; exit 1; }
           if [[ "$DESKTOP_SETTINGS_CASE" == remaining ]]; then
             [[ "$ACCEPTANCE_CASE" == desktop-settings-guest ]] || { echo 'Remaining Desktop Settings case requires guest.' >&2; exit 1; }
           fi
@@ -253,6 +264,7 @@ jobs:
         env:
           MATRX_HOSTED_PHASE: preflight
           MATRX_HOSTED_ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
+          MATRX_HOSTED_SEO_CASE_SCOPE: ${{ inputs.seo_case_scope }}
           MATRX_HOSTED_DESKTOP_SETTINGS_CASE: ${{ inputs.desktop_settings_case }}
           MATRX_HOSTED_PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx == true && '0.2.205' || '' }}
           MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE: ${{ inputs.scrape_diagnostic_cpu_rate }}
@@ -320,6 +332,7 @@ jobs:
           MATRX_HOSTED_ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
           MATRX_HOSTED_DESKTOP_SETTINGS_CASE: ${{ inputs.desktop_settings_case }}
           MATRX_D47_RESPONSE_ORDER: ${{ inputs.d47_response_order }}
+          MATRX_HOSTED_SEO_CASE_SCOPE: ${{ inputs.seo_case_scope }}
           MATRX_D47_PUBLIC_RACE_PREFLIGHT: ${{ inputs.d47_public_race_preflight == true && '1' || '0' }}
           MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE: ${{ inputs.scrape_diagnostic_cpu_rate }}
           MATRX_SCRAPE_AUTH_MODE: ${{ inputs.scrape_auth_mode }}

@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import { dirname, join } from 'node:path';
 
-export function hostedGuestSeoRoute(acceptanceCase, artifactMode, prepared) {
+export function hostedGuestSeoRoute(acceptanceCase, artifactMode, prepared, scope = 'full') {
   if (acceptanceCase !== 'guest-seo') return null;
+  assert.ok(scope === 'full' || scope === 'controlled', 'unknown_seo_case_scope');
   assert.equal(artifactMode, 'development', 'hosted_seo_development_mode_required');
   assert.equal(prepared?.kind, 'ci_development_test', 'hosted_seo_ci_receipt_required');
   assert.equal(prepared?.eligibleStore, false, 'hosted_seo_store_artifact_refused');
@@ -19,6 +20,7 @@ export function hostedGuestSeoRoute(acceptanceCase, artifactMode, prepared) {
     env: {
       SEO_GUEST_EXTENSION_DIR: prepared.extensionDir,
       SEO_GUEST_DEV_BUILD_RECEIPT: prepared.relocatedReceipt,
+      SEO_GUEST_CASE_SCOPE: scope,
     },
   };
 }
