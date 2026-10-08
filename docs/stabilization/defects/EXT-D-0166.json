@@ -1,0 +1,51 @@
+{
+  "id": "EXT-D-0166",
+  "feature_id": "EXT-F-0001",
+  "case_ids": ["EXT-F-0001-T02", "EXT-F-1007-T07", "EXT-F-1007-T09"],
+  "surface": "Extension reload / Scrape native acceptance",
+  "auth_mode": "guest",
+  "title": "Replacement panel absent after reload with Open-panel reply missing from diagnostic receipt",
+  "severity": "S2: full reload acceptance blocked; underlying product defect not established",
+  "priority": "P1",
+  "state": "in-fix",
+  "owner": "root/scrape_reload_reply_capture",
+  "preconditions": [
+    "Frozen development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614; guest narrow ARM Chrome141; current resource journals admitted and valid."
+  ],
+  "reproduction": [
+    "Run hosted guest-scrape-development lane A; observed workflow37726590928 at d2553a17.",
+    "Complete warm T07 and intake22/referrals13 copy options plus3 empty-section checks.",
+    "Use Chrome management full Reload; observe old worker execution and panel retired, distinct worker appears.",
+    "Click owned fixture Open panel, then observe native_extension_replacement_panel_unverified; no callback reply is retained in receipt."
+  ],
+  "expected": "Replacement panel opens and full reload cases execute; if open fails the receipt identifies actual callback outcome safely.",
+  "actual": "Only replacement worker remains; no panel target. Missing callback and click-time activation state prevent attribution.",
+  "evidence": [
+    ".research/scrape397-final-native-20261007.json",
+    ".research/scrape397-native-peer-20261007.json",
+    ".research/scrape397-reload-diagnosis-20261007.json"
+  ],
+  "cause": "Diagnostic omission confirmed against initial-open sibling; cause of missing panel remains unknown. Distinct from D162 because no replacement panel existed.",
+  "transition_history": [
+    {
+      "at": "2026-10-08T04:28:35.530547+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Resource-valid native reload failure recorded."
+    },
+    {
+      "at": "2026-10-08T04:28:35.530547+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Independent original evidence review confirms failure before replacement panel; diagnostic gap isolated."
+    },
+    {
+      "at": "2026-10-08T04:28:35.530547+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Bounded implementation assigned to retain actual callback category and activation state; no timing workaround or guessed product fix."
+    }
+  ],
+  "closure_requirement": "Meaningful diagnostic guard and fresh source review; resource-valid original native reproduction with causal attribution/repair as needed; actual replacement panel and post-reload T07/T09 independently verified.",
+  "next_action": "Finish safe reply diagnostic, review independently, then one guarded exact-artifact native discriminator; preserve unresolved failure if still present."
+}

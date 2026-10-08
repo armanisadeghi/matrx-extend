@@ -691,11 +691,14 @@ async function reloadCase({
   retainedHost = false,
   multipleWorkers = false,
   executionEvidence = 'valid',
+  openReply = { ok: true, result: { opened: true } },
+  panelAppears = true,
   expectFailure = false,
 }) {
   let developerMode = initiallyEnabled;
   let reloaded = false;
   let opened = false;
+  let openResult = '{"ok":true,"result":{"opened":true}}'; // stale initial-open reply
   let toggles = 0;
   let contextReads = 0;
   let targetReads = 0;
@@ -864,11 +867,37 @@ async function reloadCase({
     context: { newPage: async () => details, newCDPSession: async () => pageSession },
     page: {
       bringToFront: async () => {},
-      locator: () => ({
-        click: async () => {
-          opened = true;
-        },
-      }),
+      locator: (selector) => {
+        assert.ok(['#open-panel', '#result'].includes(selector));
+        const locator = {
+          evaluate: async (mutate) => {
+            assert.equal(selector, '#result');
+            const element = { textContent: openResult };
+            mutate(element);
+            openResult = element.textContent;
+          },
+          click: async () => {
+            assert.equal(selector, '#open-panel');
+            assert.equal(openResult, '', 'reload must clear the initial-open callback');
+            opened = panelAppears;
+            if (openReply !== null) openResult = JSON.stringify(openReply);
+          },
+          filter: ({ hasText }) => {
+            assert.equal(hasText.test(''), false);
+            return locator;
+          },
+          waitFor: async () => {
+            assert.equal(selector, '#result');
+            if (!openResult.trim()) {
+              const error = new Error('request timed out');
+              error.name = 'TimeoutError';
+              throw error;
+            }
+          },
+          textContent: async () => openResult,
+        };
+        return locator;
+      },
     },
     extensionId,
     oldPanelId: oldPanel.targetId,
@@ -880,6 +909,17 @@ async function reloadCase({
   assert.equal(result.old_targets_retired, true);
   assert.equal(result.worker_replaced, true);
   assert.equal(result.panel_replaced, true);
+  assert.deepEqual(
+    { ...result.retirement_evidence.open_panel_request, click_monotonic_ms: null },
+    {
+      click_monotonic_ms: null,
+      worker_at_click: { status: 'activated', running_status: 'running' },
+      received: true,
+      ok: true,
+      opened: true,
+      category: 'opened',
+    },
+  );
   const timeline = result.retirement_evidence.timeline;
   assert.equal(timeline.old_worker_id, oldWorker.targetId);
   assert.equal(timeline.replacement_worker_id, worker.targetId);
@@ -911,6 +951,27 @@ async function reloadCase({
 }
 await reloadCase({ initiallyEnabled: false });
 await reloadCase({ initiallyEnabled: true });
+for (const [openReply, category] of [
+  [{ ok: true, result: { opened: false, reason: 'private URL token' } }, 'open_refused'],
+  [{ ok: false, error: 'private URL token' }, 'rpc_refused'],
+  [null, 'reply_not_observed'],
+]) {
+  await assert.rejects(
+    reloadCase({ initiallyEnabled: true, openReply, panelAppears: false, expectFailure: true }),
+    (error) => {
+      const captured = captureLifecycleEvidence(error.lifecycleEvidence);
+      const request = captured?.open_panel_request;
+      assert.equal(error.message, 'native_extension_replacement_open_refused');
+      assert.equal(request?.category, category);
+      assert.equal(request?.received, openReply !== null);
+      assert.equal(request?.worker_at_click.status, 'activated');
+      assert.equal(request?.worker_at_click.running_status, 'running');
+      assert.equal(Number.isSafeInteger(request?.click_monotonic_ms), true);
+      assert.doesNotMatch(JSON.stringify(captured), /private|token|chrome-extension:\/\//);
+      return true;
+    },
+  );
+}
 for (const executionEvidence of [
   'restartable',
   'noReplacementVersion',

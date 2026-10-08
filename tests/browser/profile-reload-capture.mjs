@@ -7,6 +7,7 @@ const FAILURE_CODES = new Set([
   'native_extension_old_worker_retired_before_reload',
   'native_extension_worker_retirement_unverified',
   'native_extension_replacement_panel_unverified',
+  'native_extension_replacement_open_refused',
   'native_sidepanel_runtime_context_missing',
   'owned_cdp_transport_failed',
 ]);
@@ -72,6 +73,43 @@ export function captureLifecycleEvidence(value) {
   for (const key of BOOL_KEYS) evidence[key] = typeof value[key] === 'boolean' ? value[key] : null;
   evidence.observed_worker_count = safeCount(value.observed_worker_count);
   evidence.management = captureManagement(value.management);
+  if (value.open_panel_request && typeof value.open_panel_request === 'object') {
+    const request = value.open_panel_request;
+    const worker = request.worker_at_click;
+    evidence.open_panel_request = {
+      click_monotonic_ms: safeCount(request.click_monotonic_ms),
+      worker_at_click: {
+        status: ['new', 'installing', 'installed', 'activating', 'activated', 'redundant'].includes(
+          worker?.status,
+        )
+          ? worker.status
+          : null,
+        running_status: ['stopped', 'starting', 'running', 'stopping'].includes(
+          worker?.running_status,
+        )
+          ? worker.running_status
+          : null,
+      },
+      received: request.received === true,
+      ok: typeof request.ok === 'boolean' ? request.ok : null,
+      opened: typeof request.opened === 'boolean' ? request.opened : null,
+      category: [
+        'click_pending',
+        'click_failed',
+        'opened',
+        'open_refused',
+        'rpc_refused',
+        'transport_error',
+        'unexpected_reply',
+        'malformed_reply',
+        'reply_not_observed',
+        'reply_wait_failed',
+        'reply_read_failed',
+      ].includes(request.category)
+        ? request.category
+        : 'unexpected_reply',
+    };
+  }
   if (value.timeline && typeof value.timeline === 'object') {
     const safeId = (id) => (typeof id === 'string' && /^[A-Za-z0-9-]{1,128}$/.test(id) ? id : null);
     const safeTarget = (target) => {

@@ -48,6 +48,7 @@ const SAFE_FAILURE_CODES = new Set([
   'native_sidepanel_override_provenance_refused',
   'native_sidepanel_local_build_receipt_missing',
   'native_sidepanel_local_build_provenance_refused',
+  'approval_action_completion_not_observed',
 ]);
 const REVIEWER_FINGERPRINT = '3d6137db6c081c07';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -440,7 +441,7 @@ async function approvalObservation(panel, surface = 'Chat') {
     const remember = card?.querySelector('label input[type="checkbox"]');
     return { ready: Boolean(pane?.querySelector('textarea')), streaming: buttons.some((el) => (el.title || el.getAttribute('data-matrx-title')) === 'Stop'), replies: pane?.querySelectorAll('button[title="Copy reply"], button[data-matrx-title="Copy reply"]').length ?? 0,
       mode: mode?.textContent.trim() ?? null, approvals: allow.length,
-      ordinaryOpenTabApproval: card?.textContent.includes('Approve open_new_tab') === true && !card?.textContent.includes('privileged'),
+      ordinaryCreateTabApproval: card?.textContent.includes('Approve tabs') === true && !card?.textContent.includes('privileged'),
       rememberOffered: Boolean(remember), rememberChecked: remember?.checked === true };
   })()`,
   );
@@ -521,7 +522,7 @@ async function observeActionTransport(native, expectedUrl, mode) {
         entry.requestSurface = body.client?.state?.['browser-dom']?.surface;
       } else {
         entry.calls = (body.results ?? [])
-          .filter((result) => result.tool_name === 'open_new_tab')
+          .filter((result) => result.tool_name === 'tabs')
           .map((result) => ({
             call: typeof result.call_id === 'string' ? hash(result.call_id) : null,
             is_error: result.is_error === true,
@@ -623,8 +624,12 @@ async function observeActionTransport(native, expectedUrl, mode) {
         ),
         backend_request_fingerprint: start?.backendRequest ?? null,
         start_http_status: start?.status ?? null,
-        successful_open_new_tab_result_posted: Boolean(result),
+        successful_create_tab_result_posted: Boolean(result),
         result_http_status: result?.status ?? null,
+        result_post_count: results.length,
+        create_tab_result_count: results.flatMap((row) => row.calls).length,
+        create_tab_error_count: results.flatMap((row) => row.calls).filter((call) => call.is_error)
+          .length,
         call_fingerprint:
           result?.calls.find(
             (call) =>
@@ -693,7 +698,7 @@ async function exerciseApproval(native) {
     const transport = await observeActionTransport(native, url, mode);
     try {
       await panel.send('Input.insertText', {
-        text: `Use the ordinary browser action tool open_new_tab exactly once with url ${url} and active false. This is my owned local workflow review page. Do not navigate or fetch it another way. After it opens, reply with Done.`,
+        text: `Use the canonical ordinary browser action tool tabs exactly once with action create and url ${url}. This is my owned local workflow review page. Do not navigate or fetch it another way. After it opens, reply with Done.`,
       });
       await pointer(
         panel,
@@ -704,13 +709,17 @@ async function exerciseApproval(native) {
       let pendingBeforeEffect = false;
       let firstApprovalSaved = false;
       let final;
+      let lastObservation = null;
+      let lastOpenedCount = 0;
       const deadline = Date.now() + 180_000;
       while (Date.now() < deadline) {
         const observed = await approvalObservation(panel, surface);
+        lastObservation = observed;
         const opened = page
           .context()
           .pages()
           .filter((candidate) => candidate.url() === url);
+        lastOpenedCount = opened.length;
         if (opened.length === 1) {
           // Read the tab created by the real action, then correlate its returned id.
           // The harness never supplies this id to dispatch or creates the marker tab.
@@ -736,7 +745,7 @@ async function exerciseApproval(native) {
           );
           assert.equal(observed.approvals, 1);
           assert.equal(
-            observed.ordinaryOpenTabApproval,
+            observed.ordinaryCreateTabApproval,
             true,
             'must be the real ordinary action approval',
           );
@@ -758,7 +767,7 @@ async function exerciseApproval(native) {
           !observed.streaming &&
           observed.replies > before.replies &&
           observed.approvals === 0 &&
-          transport.snapshot().successful_open_new_tab_result_posted
+          transport.snapshot().successful_create_tab_result_posted
         ) {
           final = observed;
           assert.equal(await opened[0].title(), 'Workflow review workspace');
@@ -766,7 +775,19 @@ async function exerciseApproval(native) {
         }
         await new Promise((resolvePoll) => setTimeout(resolvePoll, 100));
       }
-      assert.ok(final, `${caseId}: real browser action and completed reply not observed`);
+      if (!final) {
+        report.approval.last_case_boundary = {
+          case_id: caseId,
+          observation: lastObservation,
+          approval_samples: approvalSamples,
+          approved,
+          marker_tab_count: lastOpenedCount,
+          fixture_received_request: paths.has(marker),
+          reply_count_increased: (lastObservation?.replies ?? 0) > before.replies,
+          screenshot: await capture(panel, artifacts, `${caseId}-completion-failure`),
+        };
+        throw new Error('approval_action_completion_not_observed');
+      }
       if (expected !== 'none')
         assert.equal(
           approved && pendingBeforeEffect,
@@ -788,7 +809,10 @@ async function exerciseApproval(native) {
       assert.equal(network.start_http_status, 200);
       assert.equal(network.response_matches_request_conversation, true);
       assert.ok(network.backend_request_fingerprint, 'real backend request identity required');
-      assert.ok(network.call_fingerprint, 'real successful open_new_tab completion required');
+      assert.ok(
+        network.call_fingerprint,
+        'real successful canonical tabs create completion required',
+      );
       for (const prior of report.approval.cases)
         assert.notEqual(
           network.backend_request_fingerprint,

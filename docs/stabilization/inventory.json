@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T03:40:14.154920+00:00",
+  "updated_at": "2026-10-08T04:28:35.530547+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -209,7 +209,7 @@
               "detail": "Frozen189 guest trusted pane transition and strict old-context retirement/exact replacement passed with zero runtime/manifest errors. Post-reload rendered content not sampled; full rendering case and current-main/Store-installation behavior remain unverified."
             }
           ],
-          "defect_ids": ["EXT-D-0099", "EXT-D-0106", "EXT-D-0120", "EXT-D-0121"]
+          "defect_ids": ["EXT-D-0099", "EXT-D-0106", "EXT-D-0120", "EXT-D-0121", "EXT-D-0166"]
         },
         {
           "id": "EXT-F-0001-T03",
@@ -331,7 +331,7 @@
               "detail": "D80 actual profile/loaded-path/version check validated with fresh admin repeat; complete CI import collision/error matrix and all artifact coverage remain unverified."
             }
           },
-          "defect_ids": ["EXT-D-0080"]
+          "defect_ids": ["EXT-D-0080", "EXT-D-0165"]
         },
         {
           "id": "EXT-F-0001-T07",
@@ -4975,6 +4975,19 @@
               "superseded_at": "2026-10-08T01:37:08.426904+00:00",
               "reason": "Fresh independently reviewed scoped guest Settings native evidence; retain historical scope without transferring it to current artifact."
             }
+          ],
+          "attempt_history": [
+            {
+              "mode": "guest",
+              "run_id": "37726731642",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "status": "unverified",
+              "resource_invalid": true,
+              "evidence": ".research/settings397-native-20261007.json",
+              "independent_review": ".research/settings397-resource-peer-20261007.json",
+              "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
+              "at": "2026-10-08T04:28:35.530547+00:00"
+            }
           ]
         },
         {
@@ -5179,6 +5192,19 @@
               "superseded_at": "2026-10-08T01:37:08.426904+00:00",
               "reason": "Fresh independently reviewed scoped guest Settings native evidence; retain historical scope without transferring it to current artifact."
             }
+          ],
+          "attempt_history": [
+            {
+              "mode": "guest",
+              "run_id": "37726731642",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "status": "unverified",
+              "resource_invalid": true,
+              "evidence": ".research/settings397-native-20261007.json",
+              "independent_review": ".research/settings397-resource-peer-20261007.json",
+              "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
+              "at": "2026-10-08T04:28:35.530547+00:00"
+            }
           ]
         },
         {
@@ -5253,6 +5279,19 @@
               },
               "superseded_at": "2026-10-08T01:37:08.426904+00:00",
               "reason": "Fresh independently reviewed scoped guest Settings native evidence; retain historical scope without transferring it to current artifact."
+            }
+          ],
+          "attempt_history": [
+            {
+              "mode": "guest",
+              "run_id": "37726731642",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "status": "unverified",
+              "resource_invalid": true,
+              "evidence": ".research/settings397-native-20261007.json",
+              "independent_review": ".research/settings397-resource-peer-20261007.json",
+              "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
+              "at": "2026-10-08T04:28:35.530547+00:00"
             }
           ]
         },
@@ -5344,6 +5383,19 @@
                 ]
               }
             }
+          ],
+          "attempt_history": [
+            {
+              "mode": "guest",
+              "run_id": "37726731642",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "status": "unverified",
+              "resource_invalid": true,
+              "evidence": ".research/settings397-native-20261007.json",
+              "independent_review": ".research/settings397-resource-peer-20261007.json",
+              "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
+              "at": "2026-10-08T04:28:35.530547+00:00"
+            }
           ]
         },
         {
@@ -5410,7 +5462,20 @@
               ],
               "detail": "Freshpeer3db847dc accepts bounded UI/storage proof and original valid resource journals. Overall case remains incomplete. Restoration assertions passed but receipt omits final restored-value samples."
             }
-          }
+          },
+          "attempt_history": [
+            {
+              "mode": "guest",
+              "run_id": "37726731642",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "status": "unverified",
+              "resource_invalid": true,
+              "evidence": ".research/settings397-native-20261007.json",
+              "independent_review": ".research/settings397-resource-peer-20261007.json",
+              "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
+              "at": "2026-10-08T04:28:35.530547+00:00"
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T20",
@@ -5547,6 +5612,19 @@
                 ".research/settings-hosted-retest.json"
               ],
               "detail": "Bounded actual guest controls before/after reload; see exact per-criterion observations. Does not exercise D84 rejected storage/retry or D86 overlapping writes. T70 retains unverified branches."
+            }
+          ],
+          "attempt_history": [
+            {
+              "mode": "guest",
+              "run_id": "37726731642",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "status": "unverified",
+              "resource_invalid": true,
+              "evidence": ".research/settings397-native-20261007.json",
+              "independent_review": ".research/settings397-resource-peer-20261007.json",
+              "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
+              "at": "2026-10-08T04:28:35.530547+00:00"
             }
           ]
         },
@@ -5805,6 +5883,19 @@
                 ]
               }
             }
+          ],
+          "attempt_history": [
+            {
+              "mode": "guest",
+              "run_id": "37726731642",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "status": "unverified",
+              "resource_invalid": true,
+              "evidence": ".research/settings397-native-20261007.json",
+              "independent_review": ".research/settings397-resource-peer-20261007.json",
+              "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
+              "at": "2026-10-08T04:28:35.530547+00:00"
+            }
           ]
         },
         {
@@ -5888,6 +5979,19 @@
                   "Verify on-page suggestion presentation changes between enabled and quiet; no credential form was exercised."
                 ]
               }
+            }
+          ],
+          "attempt_history": [
+            {
+              "mode": "guest",
+              "run_id": "37726731642",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "status": "unverified",
+              "resource_invalid": true,
+              "evidence": ".research/settings397-native-20261007.json",
+              "independent_review": ".research/settings397-resource-peer-20261007.json",
+              "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
+              "at": "2026-10-08T04:28:35.530547+00:00"
             }
           ]
         },
@@ -6026,6 +6130,19 @@
                 ".research/settings-hosted-retest.json"
               ],
               "detail": "Bounded actual guest controls before/after reload; see exact per-criterion observations. Does not exercise D84 rejected storage/retry or D86 overlapping writes. T70 retains unverified branches."
+            }
+          ],
+          "attempt_history": [
+            {
+              "mode": "guest",
+              "run_id": "37726731642",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "status": "unverified",
+              "resource_invalid": true,
+              "evidence": ".research/settings397-native-20261007.json",
+              "independent_review": ".research/settings397-resource-peer-20261007.json",
+              "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
+              "at": "2026-10-08T04:28:35.530547+00:00"
             }
           ]
         },
@@ -6509,6 +6626,17 @@
                 ".research/parallel-native-evidence-peer-20261007.json"
               ],
               "observed_at": "2026-10-07T22:43:08.259405+00:00"
+            },
+            {
+              "mode": "guest",
+              "run_id": "37726731642",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "status": "unverified",
+              "resource_invalid": true,
+              "evidence": ".research/settings397-native-20261007.json",
+              "independent_review": ".research/settings397-resource-peer-20261007.json",
+              "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
+              "at": "2026-10-08T04:28:35.530547+00:00"
             }
           ]
         },
@@ -7371,6 +7499,19 @@
               "superseded_at": "2026-10-08T03:03:29.534526+00:00",
               "reason": "Independent resource-valid Intel frozen391 full-reload evidence; retain prior build/scope."
             }
+          ],
+          "attempt_history": [
+            {
+              "mode": "guest",
+              "run_id": "37726731642",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "status": "unverified",
+              "resource_invalid": true,
+              "evidence": ".research/settings397-native-20261007.json",
+              "independent_review": ".research/settings397-resource-peer-20261007.json",
+              "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
+              "at": "2026-10-08T04:28:35.530547+00:00"
+            }
           ]
         },
         {
@@ -7418,6 +7559,19 @@
               },
               "superseded_at": "2026-10-08T03:03:29.534526+00:00",
               "reason": "Independent resource-valid Intel frozen391 full-reload evidence; retain prior build/scope."
+            }
+          ],
+          "attempt_history": [
+            {
+              "mode": "guest",
+              "run_id": "37726731642",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "status": "unverified",
+              "resource_invalid": true,
+              "evidence": ".research/settings397-native-20261007.json",
+              "independent_review": ".research/settings397-resource-peer-20261007.json",
+              "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
+              "at": "2026-10-08T04:28:35.530547+00:00"
             }
           ]
         },
@@ -7615,6 +7769,19 @@
               ],
               "detail": "Bounded actual guest controls before/after reload; see exact per-criterion observations. Does not exercise D84 rejected storage/retry or D86 overlapping writes. T70 retains unverified branches."
             }
+          ],
+          "attempt_history": [
+            {
+              "mode": "guest",
+              "run_id": "37726731642",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "status": "unverified",
+              "resource_invalid": true,
+              "evidence": ".research/settings397-native-20261007.json",
+              "independent_review": ".research/settings397-resource-peer-20261007.json",
+              "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
+              "at": "2026-10-08T04:28:35.530547+00:00"
+            }
           ]
         },
         {
@@ -7756,6 +7923,19 @@
               "superseded_at": "2026-10-08T03:03:29.534526+00:00",
               "reason": "Independent resource-valid Intel frozen391 full-reload evidence; retain prior build/scope."
             }
+          ],
+          "attempt_history": [
+            {
+              "mode": "guest",
+              "run_id": "37726731642",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "status": "unverified",
+              "resource_invalid": true,
+              "evidence": ".research/settings397-native-20261007.json",
+              "independent_review": ".research/settings397-resource-peer-20261007.json",
+              "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
+              "at": "2026-10-08T04:28:35.530547+00:00"
+            }
           ]
         },
         {
@@ -7847,6 +8027,19 @@
               },
               "superseded_at": "2026-10-08T03:03:29.534526+00:00",
               "reason": "Independent resource-valid Intel frozen391 full-reload evidence; retain prior build/scope."
+            }
+          ],
+          "attempt_history": [
+            {
+              "mode": "guest",
+              "run_id": "37726731642",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "status": "unverified",
+              "resource_invalid": true,
+              "evidence": ".research/settings397-native-20261007.json",
+              "independent_review": ".research/settings397-resource-peer-20261007.json",
+              "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
+              "at": "2026-10-08T04:28:35.530547+00:00"
             }
           ]
         },
@@ -8491,7 +8684,20 @@
               "reason": "Independent resource-valid Intel frozen391 full-reload evidence; retain prior build/scope."
             }
           ],
-          "linked_defects": ["EXT-D-0161", "EXT-D-0162"]
+          "linked_defects": ["EXT-D-0161", "EXT-D-0162"],
+          "attempt_history": [
+            {
+              "mode": "guest",
+              "run_id": "37726731642",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "status": "unverified",
+              "resource_invalid": true,
+              "evidence": ".research/settings397-native-20261007.json",
+              "independent_review": ".research/settings397-resource-peer-20261007.json",
+              "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
+              "at": "2026-10-08T04:28:35.530547+00:00"
+            }
+          ]
         }
       ],
       "cells": {
@@ -14989,14 +15195,30 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37721838779",
-              "build_variant": "development0.2.391/source52487361/CI37698216289/artifact11516342905",
-              "evidence": ".research/scrape-scroll-native-retest-20261007.json",
-              "independent_review": ".research/scrape-warm-native-peer-20261007.json",
-              "verified_at": "2026-10-08T03:27:23.881881+00:00",
-              "detail": "Guest warm on/off native scroll proof passes; measured Article310 remains310 after Stop and reverse page650\u21920. Full extension reload not reached, member/admin unverified."
+              "run_id": "37726590928",
+              "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
+              "evidence": ".research/scrape397-final-native-20261007.json",
+              "independent_review": ".research/scrape397-native-peer-20261007.json",
+              "verified_at": "2026-10-08T04:28:35.530547+00:00",
+              "detail": "Warm on/off passes: page650\u21920 with Article310 held after Stop; full extension reload replacement panel unverified. Peer checked original receipt/journals; no separate browser replay or Store/current-main claim. Original CI artifact provenance independently checked in d165-full-ci-closure-peer-20261007.json."
             }
-          }
+          },
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37721838779",
+                "build_variant": "development0.2.391/source52487361/CI37698216289/artifact11516342905",
+                "evidence": ".research/scrape-scroll-native-retest-20261007.json",
+                "independent_review": ".research/scrape-warm-native-peer-20261007.json",
+                "verified_at": "2026-10-08T03:27:23.881881+00:00",
+                "detail": "Guest warm on/off native scroll proof passes; measured Article310 remains310 after Stop and reverse page650\u21920. Full extension reload not reached, member/admin unverified."
+              },
+              "superseded_at": "2026-10-08T04:28:35.530547+00:00"
+            }
+          ],
+          "defect_ids": ["EXT-D-0166"]
         },
         {
           "id": "EXT-F-1007-T08",
@@ -15104,15 +15326,31 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37721838779",
-              "build_variant": "development0.2.391/source52487361/CI37698216289/artifact11516342905",
-              "evidence": ".research/scrape-scroll-native-retest-20261007.json",
-              "independent_review": ".research/scrape-warm-native-peer-20261007.json",
-              "verified_at": "2026-10-08T03:27:23.881881+00:00",
-              "detail": "Guest intake warm22 CopyMenu options pass current-fixture sentinel/format predicates. Referrals batch fails a zero-target pointer assertion; exact action and completed referrals count unknown because failure omits partial progress. Reload not reached. Clipboard values intentionally not retained."
+              "run_id": "37726590928",
+              "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
+              "evidence": ".research/scrape397-final-native-20261007.json",
+              "independent_review": ".research/scrape397-native-peer-20261007.json",
+              "verified_at": "2026-10-08T04:28:35.530547+00:00",
+              "detail": "Warm intake22 offered copy options and referrals13 offered options plus3 explicit empty-section checks pass recorded fixture predicates; full extension reload replacement panel unverified. No clipboard values retained. Peer checked original receipt/journals; no separate browser replay or Store/current-main claim. Original CI artifact provenance independently checked in d165-full-ci-closure-peer-20261007.json."
             }
           },
-          "linked_defects": ["EXT-D-0164"]
+          "linked_defects": ["EXT-D-0164"],
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37721838779",
+                "build_variant": "development0.2.391/source52487361/CI37698216289/artifact11516342905",
+                "evidence": ".research/scrape-scroll-native-retest-20261007.json",
+                "independent_review": ".research/scrape-warm-native-peer-20261007.json",
+                "verified_at": "2026-10-08T03:27:23.881881+00:00",
+                "detail": "Guest intake warm22 CopyMenu options pass current-fixture sentinel/format predicates. Referrals batch fails a zero-target pointer assertion; exact action and completed referrals count unknown because failure omits partial progress. Reload not reached. Clipboard values intentionally not retained."
+              },
+              "superseded_at": "2026-10-08T04:28:35.530547+00:00"
+            }
+          ],
+          "defect_ids": ["EXT-D-0166"]
         },
         {
           "id": "EXT-F-1007-T10",

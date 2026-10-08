@@ -44,6 +44,65 @@ const ATTEMPTS = 150;
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+function panelOpenReplyCategory(reply) {
+  if (reply?.ok === true && reply?.result?.opened === true) return 'opened';
+  if (reply?.ok === true && reply?.result?.opened === false) return 'open_refused';
+  if (reply?.ok === false) return 'rpc_refused';
+  if (reply?.error !== undefined) return 'transport_error';
+  return 'unexpected_reply';
+}
+
+async function requestOwnedPanelOpen(page, beforeClick = () => {}, timeoutMs = undefined) {
+  const result = page.locator('#result');
+  await result.evaluate((element) => {
+    element.textContent = '';
+  });
+  beforeClick();
+  await page.locator('#open-panel').click();
+  const replyTimeoutMs = typeof timeoutMs === 'function' ? timeoutMs() : timeoutMs;
+  try {
+    await result.filter({ hasText: /\S/ }).waitFor({
+      state: 'visible',
+      ...(replyTimeoutMs !== undefined && { timeout: replyTimeoutMs }),
+    });
+  } catch (error) {
+    return {
+      received: false,
+      ok: null,
+      opened: null,
+      category: error?.name === 'TimeoutError' ? 'reply_not_observed' : 'reply_wait_failed',
+    };
+  }
+  let rawReply;
+  try {
+    rawReply = await result.textContent();
+  } catch {
+    return { received: false, ok: null, opened: null, category: 'reply_read_failed' };
+  }
+  let reply;
+  try {
+    reply = JSON.parse(rawReply || '');
+  } catch {
+    return { received: true, ok: null, opened: null, category: 'malformed_reply' };
+  }
+  return {
+    received: true,
+    ok: typeof reply?.ok === 'boolean' ? reply.ok : null,
+    opened: typeof reply?.result?.opened === 'boolean' ? reply.result.opened : null,
+    category: panelOpenReplyCategory(reply),
+  };
+}
+
+function workerActivationAtClick(lifetime, targetId) {
+  const versions = lifetime.evidence.versions;
+  const matched = versions.findLast((item) => item.target_id === targetId);
+  const version = matched && versions.findLast((item) => item.version_id === matched.version_id);
+  return {
+    status: version?.status ?? null,
+    running_status: version?.running_status ?? null,
+  };
+}
+
 function sha256(value) {
   return createHash('sha256').update(value).digest('hex');
 }
@@ -695,9 +754,37 @@ async function reloadOwnedExtension({ cdp, browser, context, page, extensionId, 
       throw error;
     }
     await page.bringToFront();
-    await page.locator('#open-panel').click();
+    let openDeadline;
+    let reply;
+    try {
+      reply = await requestOwnedPanelOpen(
+        page,
+        () => {
+          openDeadline = performance.now() + ATTEMPTS * WAIT_MS;
+          retirementEvidence.open_panel_request = {
+            click_monotonic_ms: Math.round(performance.now()),
+            worker_at_click: workerActivationAtClick(lifetime, replacementWorker.targetId),
+            received: false,
+            ok: null,
+            opened: null,
+            category: 'click_pending',
+          };
+        },
+        () => Math.max(1, Math.round(openDeadline - performance.now())),
+      );
+    } catch (error) {
+      if (retirementEvidence.open_panel_request)
+        retirementEvidence.open_panel_request.category = 'click_failed';
+      throw error;
+    }
+    Object.assign(retirementEvidence.open_panel_request, reply);
+    if (reply.category !== 'opened') throw new Error('native_extension_replacement_open_refused');
     let replacementPanel;
-    for (let attempt = 0; attempt < ATTEMPTS; attempt += 1) {
+    for (
+      let attempt = 0;
+      attempt < ATTEMPTS && (attempt === 0 || performance.now() < openDeadline);
+      attempt += 1
+    ) {
       const { targetInfos } = await cdp.send('Target.getTargets');
       const owned = targetInfos.map(describe).filter(Boolean);
       lastOwned = owned.slice(0, 16);
@@ -711,7 +798,7 @@ async function reloadOwnedExtension({ cdp, browser, context, page, extensionId, 
           target.type === 'page' && target.url === panelUrl && target.targetId !== oldPanelId,
       );
       if (replacementPanel) break;
-      await wait(WAIT_MS);
+      await wait(Math.min(WAIT_MS, Math.max(0, openDeadline - performance.now())));
     }
     if (!replacementPanel) throw new Error('native_extension_replacement_panel_unverified');
     const contextBoundary = await observeSidePanelContext({
@@ -1411,12 +1498,9 @@ export async function runNativeSidepanelQa({
     onStage('local_page_navigation');
     await page.goto(`http://localhost:${serverPort}/`);
     onStage('panel_open');
-    await page.locator('#open-panel').click(); // Real trusted Chromium input.
-    await page.locator('#result').waitFor({ state: 'visible' });
+    const reply = await requestOwnedPanelOpen(page); // Real trusted Chromium input.
     onStage('panel_reply');
-    const reply = JSON.parse((await page.locator('#result').textContent()) || '{}');
-    if (reply?.ok !== true || reply?.result?.opened !== true)
-      throw new Error(`native_sidepanel_open_refused:${JSON.stringify(reply)}`);
+    if (reply.category !== 'opened') throw new Error('native_sidepanel_open_refused');
 
     const normalTarget = (await cdp.send('Target.getTargets')).targetInfos.find(
       (entry) => entry.type === 'page' && entry.url === page.url(),
@@ -1573,6 +1657,7 @@ export {
   waitForInitialPanelReady,
   activateOwnedSidePanel,
   reloadOwnedExtension,
+  requestOwnedPanelOpen,
   isSettledGuestPanel,
   requireReleaseReceipt,
   requireExpectedExtension,

@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "lane": "settings397-native-B",
+  "status": "resource_invalid_no_acceptance",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37726731642",
+    "run_id": 37726731642,
+    "job_id": 113146494940,
+    "head_sha": "bd64e8cf64bd35168f70218131ddee6735840856",
+    "event": "workflow_dispatch",
+    "branch": "main",
+    "status": "completed",
+    "conclusion": "failure",
+    "acceptance_lane": "B",
+    "acceptance_case": "settings-controls",
+    "runner_label": "macos-15-intel",
+    "runner_architecture": "X64",
+    "runner_name": "GitHub Actions 1000097431",
+    "auth_mode": "signed-out guest requested; panel was not reached",
+    "chromium_version": "141.0.7390.37",
+    "playwright_build": "1194"
+  },
+  "driver_identity": {
+    "path": "tests/browser/settings-local-controls-acceptance.mjs",
+    "sha256_at_workflow_head": "0b5963f4af06970aaf3428a1c7f78f33b4af1f27da7765cff317a137551c49b9",
+    "workflow_path": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_sha256_at_head": "7d53dcc41676c898b21eb504f0a4d4623c18edced97c375cb9980aed6a7573f3"
+  },
+  "selected_development_artifact": {
+    "ci_run_id": 37724859892,
+    "ci_artifact_id": 11527132614,
+    "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+    "version": "0.2.397",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "1035cd28ce5a63ac6233626f35102f016f7c7e7e0ef0717d259a3ec40fc856ed",
+    "provenance": "Native log records DEVELOPMENT_TEST_IMPORTED exact_pushed_commit_only and PREPARED_DEVELOPMENT with the same source and tree; original report records extension ID, version, tree, and not_published. CI artifact identity and tree were independently checked in .research/d165-full-ci-closure-peer-20261007.json."
+  },
+  "native_outcome": {
+    "status": "unverified",
+    "setup_error": "owned_cdp_endpoint_timeout",
+    "failure_stage": "Chromium startup before CDP endpoint and before side-panel interaction",
+    "startup_diagnostic": {
+      "elapsed_ms": 5015,
+      "endpoint_polls": 109,
+      "spawn_observed": true,
+      "launch_failed": false,
+      "stderr_observed": false
+    },
+    "all_16_case_ids": [
+      "EXT-F-1003-T04", "EXT-F-1003-T10", "EXT-F-1003-T13", "EXT-F-1003-T16",
+      "EXT-F-1003-T19", "EXT-F-1003-T22", "EXT-F-1003-T31", "EXT-F-1003-T34",
+      "EXT-F-1003-T37", "EXT-F-1003-T46", "EXT-F-1003-T63", "EXT-F-1003-T64",
+      "EXT-F-1003-T70", "EXT-F-1003-T73", "EXT-F-1003-T76", "EXT-F-1003-T92"
+    ],
+    "case_verdict": "Every original case status is unverified with empty steps and only setup completed=unverified. No Settings replacement, Privacy switch off/on UI or storage, panel reload, baseline restoration, extension reload, or guest account denial was exercised. The four Privacy downstream consumers were also not exercised. No case pass or product fail is inferred."
+  },
+  "resource_gate": {
+    "decision": "invalid",
+    "current_run_original_journals": [
+      {
+        "file": ".research/settings397-native-20261007-originals/resource-journals/hosted-package-37726731642-1.jsonl",
+        "sha256": "bcafc5a4b828220bc44990bbe24b1c79ddf9334613af744cd0e2ae3b49630128",
+        "events": 4,
+        "final_decision": "valid"
+      },
+      {
+        "file": ".research/settings397-native-20261007-originals/resource-journals/hosted-browser-37726731642-1.jsonl",
+        "sha256": "bc90b17448c1c99885258dbfde5d44e2c8ed51dc1c5e875bf12bc9f572f05a0f",
+        "events": 4,
+        "final_decision": "valid"
+      },
+      {
+        "file": ".research/settings397-native-20261007-originals/resource-journals/hosted-guest-37726731642-1.jsonl",
+        "sha256": "e278db5a724e84a795aa68db8206b9cae72c674678ede085300b37f564d12681",
+        "events": 6,
+        "final_decision": "invalid",
+        "resource_invalid": true,
+        "child_exit_code": 1,
+        "wrapper_exit_code": 3,
+        "observation": "Initial admission passed; subsequent 98% CPU busy and one-minute load 11.58 on four logical CPUs produced RESOURCE_CPU_PENDING, then the final decision invalid."
+      }
+    ]
+  },
+  "evidence": {
+    "native_artifact_id": 11528207653,
+    "native_artifact_name": "hosted-guest-37726731642-1",
+    "native_artifact_digest": "sha256:06147861a78daf2fe7a75f87a4f8443e209e540cc7475207665a64bea3330aad",
+    "downloaded_zip_sha256": "06147861a78daf2fe7a75f87a4f8443e209e540cc7475207665a64bea3330aad",
+    "receipt": ".research/settings397-native-20261007-originals/settings-local-controls-acceptance.json",
+    "receipt_sha256": "06f7d4eb3ae3217f7de71253bbb41aade7b3152af47f246031263bf4f91b01d4",
+    "artifact_search": "The downloaded ZIP was searched recursively. It contains the original receipt and all three current-run journals nested under matrx-extend/matrx-extend, plus older unrelated journals. It contains no screenshot files for this failed startup. Older 37105304739 and 37724762467 journals were excluded from this report."
+  },
+  "limits": [
+    "One authorized hosted lane B run; no retry.",
+    "Resource-invalid startup provides no native Settings acceptance credit for v0.2.397.",
+    "No local browser, build, release, deploy, source edit, credential handling, or inventory update in this lane."
+  ]
+}

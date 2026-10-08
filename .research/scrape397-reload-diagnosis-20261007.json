@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "task_id": "scrape397_reload_diagnosis",
+  "status": "evidence_bounded_handoff",
+  "run_id": "37726590928",
+  "artifact": "development 0.2.397",
+  "source_receipt": ".research/scrape397-final-native-20261007-run37726590928-originals/matrx-extend/matrx-extend/test-results/scrape-guest-native-4a07e4d8-566b-43d4-b4ab-ec4b6bd60514.json",
+  "first_failing_boundary": {
+    "observed": "After Chrome management Reload, the old panel target was absent and a distinct replacement worker target appeared. The driver clicked the owned fixture page's #open-panel button, then exhausted its CDP target polling without seeing a distinct page target at the exact sidepanel.html URL.",
+    "failure_code": "native_extension_replacement_panel_unverified",
+    "native_evidence": {
+      "old_worker_execution_retired": true,
+      "old_worker_absent": true,
+      "old_panel_absent": true,
+      "replacement_worker_present": true,
+      "replacement_worker_created_event": true,
+      "observed_worker_count": 1,
+      "final_owned_target_kinds": ["worker"],
+      "new_worker_activated_event_recorded": true
+    },
+    "precise_limit": "The click's FRONTEND_RPC reply is not captured. The receipt therefore cannot distinguish a missing receiver, a bridge or sidePanel.open refusal, a successful open whose target was missed, or an unexpected Chrome side-panel state. Worker activation was recorded after the worker target first appeared, but the receipt does not time the click against activation."
+  },
+  "comparison": {
+    "d162": "Distinct boundary. EXT-D-0162 had a replacement panel target and runtime context, then failed on an immediate Settings tab click before the tab mounted. This run never reached a replacement panel target or a Scrape or Settings tab click.",
+    "initial_open": "The same harness validates the fixture #result reply on initial open (reply.ok and reply.result.opened) before looking for a panel target. The reload path omits that reply check and only polls targets.",
+    "prior_success": "The shared native reload harness has recorded replacement-panel success in earlier Settings and Scrape runs. This single failure does not prove a product regression or a deterministic driver timing cause."
+  },
+  "discriminator_needed": "At the existing reload click boundary, capture a bounded allowlisted fixture reply (received, ok, result.opened, a safe reason class) and a monotonic click timestamp; separately record the replacement worker's activation state and the final owned target kinds. A resource-admitted native rerun of this exact frozen artifact can then assign the first failure to message delivery, panel-open refusal, or target discovery. Preserve the existing 15-second polling limit; no blind retry or timeout increase is justified.",
+  "changes": "Diagnostic report only. No source patch because the cause of the missing replacement panel was not reproduced or proved.",
+  "verification": "Read the original run receipt, the production reload harness, the initial-open sibling, the FRONTEND_RPC openPanel handler, and the independent D162 diagnosis and closure evidence. Native launch was outside this lane's authorization.",
+  "questions": []
+}
