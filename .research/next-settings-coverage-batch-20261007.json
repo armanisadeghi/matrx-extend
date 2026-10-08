@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "source_ready_native_pending",
+  "feature_id": "EXT-F-1003",
+  "mode": "guest",
+  "case_ids": [
+    "EXT-F-1003-T16",
+    "EXT-F-1003-T19",
+    "EXT-F-1003-T31",
+    "EXT-F-1003-T34"
+  ],
+  "scope": "Trusted native pointer toggles each Privacy switch to its opposite value, observes the active Settings panel and persisted setting, reloads and reobserves, then restores and verifies the original value. Both on and off states are exercised.",
+  "product_behavior_remaining": {
+    "EXT-F-1003-T16": "Identity and email context sharing at the agent consumer is unverified.",
+    "EXT-F-1003-T19": "Post-login save offer is unverified.",
+    "EXT-F-1003-T31": "Saved-login offer on a supported sign-in form is unverified.",
+    "EXT-F-1003-T34": "On-page suggestion presentation on a supported site is unverified."
+  },
+  "runtime": "Not run in this source-only batch; no inventory result is promoted.",
+  "ci_handle": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "dispatch_input": "acceptance_case=settings-controls",
+    "driver": "tests/browser/settings-local-controls-acceptance.mjs",
+    "receipt": "test-results/settings-local-controls-acceptance.json",
+    "artifact_requirements": "Pass exact successful development_run_id and development_artifact_id under host resource guard; no frozen391 result transfers to a newer artifact."
+  },
+  "self_verification": [
+    "node --test tests/browser/settings-guest-privacy-batch.test.mjs",
+    "node --check tests/browser/settings-local-controls-acceptance.mjs",
+    "node --check tests/browser/settings-guest-privacy-batch.mjs",
+    "pnpm exec biome check tests/browser/settings-local-controls-acceptance.mjs tests/browser/settings-guest-privacy-batch.mjs tests/browser/settings-guest-privacy-batch.test.mjs"
+  ],
+  "source_files": [
+    "tests/browser/settings-local-controls-acceptance.mjs",
+    "tests/browser/settings-guest-privacy-batch.mjs",
+    "tests/browser/settings-guest-privacy-batch.test.mjs"
+  ],
+  "limits": "The four case statuses must remain partial or unverified after this runner because their downstream consumers are not exercised. No native launch, build, release, or dispatch occurred in this lane."
+}
