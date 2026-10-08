@@ -1,25 +1,20 @@
 {
-  "task": "EXT-F-1003-T40 automatic page-load scrape behavior preparation",
-  "status": "source_prepared_unwired_no_live_acceptance_credit",
-  "source_findings": {
-    "setting_and_trigger": "src/hooks/use-auto-scrape.ts reads scrapeAutoOnLoad and invokes captureWithFallback for the active HTTP(S) page after its settle delay.",
-    "readback": "The auto-scrape store feeds chat context; ContextRulesComposerChip provides a no-send preview with Page content, and the context builder labels background content auto-background.",
-    "controlled_check": "The new helper requires a fresh controlled HTTP(S) document, a unique marker in Page content, and auto-background provenance while enabled; it requires no marker/provenance capture for a separate fresh page while disabled and restores the original visible+stored setting."
-  },
-  "forcing_tests": {
-    "file": "tests/browser/settings-auto-scrape-behavior.test.mjs",
-    "command": "TMPDIR=/Volumes/Samsung2TB/tmp node --test tests/browser/settings-auto-scrape-behavior.test.mjs",
-    "result": "4 passed; includes enabled-missing-capture rejection, disabled-captured-page rejection, baseline storage-drift rejection, and successful ON/OFF/restoration assertions.",
-    "limitation": "Tests exercise the helper through an adapter model; no native browser adapter currently invokes real Settings UI, controlled navigation, or ContextRulesComposerChip preview."
-  },
-  "gaps": [
-    "Wire this helper into the existing Settings controls native runner using the actual setting UI, controlled fresh pages, and no-send Page content preview.",
-    "Run the focused acceptance gate and a hosted guest run before crediting T40.",
-    "No downstream capture acceptance, full-extension reload acceptance, or live product behavior is claimed here."
-  ],
-  "owned_files": [
-    "tests/browser/settings-auto-scrape-behavior.mjs",
-    "tests/browser/settings-auto-scrape-behavior.test.mjs",
-    ".research/settings-auto-scrape-behavior-preparation-20261008.json"
-  ]
+    "task": "EXT-F-1003-T40 automatic page-load scrape behavior preparation",
+    "status": "source_backed_observability_gap_no_executable_behavior_helper",
+    "source_findings": {
+        "setting_and_trigger": "src/hooks/use-auto-scrape.ts reads scrapeAutoOnLoad and invokes captureWithFallback for the active HTTP(S) page after a 600ms settle delay.",
+        "readback": "ContextRulesComposerChip calls useAutoScrapeStore.getState().current internally when building the no-send preview. The store also has inFlight/current state, but neither is exposed through the rendered preview DOM or a native harness observation channel.",
+        "default_context_shape": "src/lib/chat/context/shape-config.ts defaults to v2-bundled. That builder can expose page_full_content when a trustworthy scrape exists, but does not expose scrape provenance. scrape_source is emitted only by legacy v1-flat, whose source explicitly says new keys belong in v2-bundled.",
+        "missing_trigger": "A native runner can observe rendered Page content when present, but current UI does not distinguish auto-background capture from manual capture, does not expose preview measurement/readiness when the Page content row is absent, and does not expose whether an auto capture is in flight or cached for the active document. Therefore no honest ON/OFF forcing helper can assert the required distinctions against the existing rendered UI."
+    },
+    "gaps": [
+        "Expose safe, read-only T40 evidence through an existing UI or harness-accessible runtime surface: preview readiness/document identity, capture provenance, and active-document inFlight/current-cache state.",
+        "Then write forcing tests against a real controlled page-load and the actual ContextRules preview; no helper tests or native acceptance are claimed in this preparation.",
+        "No downstream capture acceptance, full-extension reload acceptance, or live product behavior is claimed here."
+    ],
+    "owned_files": [
+        ".research/settings-auto-scrape-behavior-preparation-20261008.json"
+    ],
+    "superseded_preparation_commit": "5967a7ca",
+    "scope_note": "The adapter-model helper and tests from 5967a7ca were removed because their required runtime fields are not exposed by the current app."
 }
