@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "review_kind": "independent evidence and diagnostic peer of resource-valid native run 37734224612",
+  "verdict_A_native_behavior_scope_and_provenance": {
+    "status": "RESOURCE_VALID_CASE_FAILED_NO_NEW_COVERAGE",
+    "finding": "The frozen 0.2.397 local development build was exercised in the owned guest native side panel. The package and browser resource journals ended valid, and the guest journal recorded healthy watches followed by child exit 1 without resource invalidation. The raw receipt records 19 previously known pass observations and one previously known unverified detail door, then stops at the first T14 social copy feedback poll. A trusted pointer click returned, but feedback was not accepted, actual clipboard readback did not occur, and the controlled title/description mutation and Re-audit were not reached. There is no new T02 or T14 credit and no demonstrated clipboard or product failure.",
+    "source_run_sha": "a58478db6db8024f2b6bbef7afb549d6496a19b1",
+    "frozen_product_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+    "frozen_tree_sha256": "1035cd28ce5a63ac6233626f35102f016f7c7e7e0ef0717d259a3ec40fc856ed",
+    "evidence": [
+      ".research/seo-new-native-20261008.json workflow, native_receipt, resource_verdict, coverage_verdict and original-file hashes",
+      ".research/seo-new-native-20261008-originals/seo-guest-acceptance.original.json.txt targets and last_safe_stage=social_before_reaudit_copy_feedback_sample, last_safe_observable=false",
+      ".research/seo-new-native-20261008-originals/hosted-package-37734224612-1.jsonl final valid exit 0; hosted-browser-37734224612-1.jsonl final valid exit 0; hosted-guest-37734224612-1.jsonl healthy watch then child_failed exit 1, resourceInvalid=false"
+    ],
+    "originals_integrity": "All six retained original files independently match the SHA-256 values in the native report; no original was edited. The two screenshots show initial panel/target setup, not the post-click SEO state."
+  },
+  "verdict_B_runner_oracle_quality_and_diagnosis": {
+    "status": "POST_CLICK_ORACLE_AMBIGUOUS; SELECTOR_MISMATCH_IS_SOURCE_SUPPORTED, RUN_CAUSE_UNPROVEN",
+    "finding": "The social feedback poll samples only a boolean and discards which of its conditions failed. It queries button[title=...] inside the linked SEO pane and then svg.lucide-check. The shared click helper explicitly accepts either title or data-matrx-title because the mounted design-system TooltipProvider lifts title while a button is hovered or focused; an earlier SEO copy feedback poll likewise accepts both attributes. The social poll can therefore return false even if the click copied successfully and the check icon appeared. The tooltip also restores title on pointerdown, so the existing receipt's false value alone cannot prove that this selector mismatch actually occurred. The component may instead show its red failure icon after clipboard write/fallback failure, or the short success state may have gone unobserved. The current 10-second, 100-ms poll has no evidence for a timeout fix.",
+    "product_contract": "SeoVerdict renders the social CopyButton when missingSocialTagsSnippet is present. CopyButton awaits copyToClipboard, renders Check on true or X on false, then resets to idle after 1200 ms. copyToClipboard tries navigator.clipboard.writeText and falls back to document.execCommand('copy'); a false result represents both paths failing. The existing receipt contains neither the button icon state nor a clipboard read after the click.",
+    "source_evidence": [
+      "tests/browser/seo-guest-acceptance.mjs:294-323 preflight and feedback query title only; waitObserved stores only false at failure",
+      "tests/browser/settings-panel-driver.mjs:14-30 waitFor polls every 100 ms with default 10 seconds; :242-266 click's title candidate supports data-matrx-title; :620-670 dispatches native press/release",
+      "tests/browser/seo-guest-acceptance.mjs:960-970 earlier Copy audit feedback selector supports title and data-matrx-title",
+      "src/features/seo/SeoVerdict.tsx:135-141 social action; src/components/CopyMenu.tsx:42-82 1200-ms success/failure icon; src/lib/clipboard/copy.ts:15-36 native write plus execCommand fallback",
+      "src/entrypoints/sidepanel/App.tsx:328 mounts TooltipProvider; installed @ai-matrx/design-system CHANGELOG title takeover; aidream/apps/shared/design-system/src/title-tooltips.ts lift/restore and pointer handlers"
+    ],
+    "smallest_safe_missing_observation": "At the next authorized native acceptance, after the same trusted click and before any clipboard permission change, sample the active SEO pane's one social button by either title or data-matrx-title and record only booleans for each attribute, linked pane, Check/X/Copy icon, and timestamp. Read the real clipboard even if feedback is missed, under the existing temporary read permission with its restoration. If exact text matches while the title-only query is false, the runner oracle is at fault. If the red X appears with wrong/unchanged clipboard, investigate clipboard write and fallback. If neither icon appears, inspect click delivery and component remount. Capture these distinctions before changing timeout or product code.",
+    "inventory_change_authorized": false
+  }
+}
