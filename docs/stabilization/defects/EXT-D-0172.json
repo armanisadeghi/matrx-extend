@@ -8,7 +8,7 @@
   "severity": "S1: public guest conversation cannot finish an otherwise accepted request",
   "priority": "P0",
   "state": "in-fix",
-  "owner": "root/guest409_diagnose_fix",
+  "owner": "root/guest409_authoritative_fix",
   "preconditions": [
     "Public Store CRX0.2.205 loaded unpacked with matching public identity in isolated signed-out Chromium; tree08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8.",
     "Live aidream53aec906f047b524495ff0d93bae8e67eb55537f before/after/post; actual hosted run37748038743 with all three resource journals valid."
@@ -22,11 +22,13 @@
   "expected": "New conversation after reload completes client-tool continuation and displays a grounded terminal assistant answer.",
   "actual": "Continuation HTTP409; zero visible assistant replies; terminal_not_observed. First and same-conversation turns pass.",
   "reproducibility": "One current resource-valid native failure; no blind retry. Previous Oct7 same public tree passed all three turns against older server; comparison does not establish cause.",
-  "cause": "Unassigned; independent evidence review and source-boundary diagnosis active.",
+  "cause": "Live diagnostics prove the completed delegated tool result lacked its persisted assistant tool-call context: the assistant reservation remained pending with empty content, and resume refused with resume_context_not_ready. Exact reason the checkpoint was skipped or lost remains unproven. Independent source review rejected the first candidate as insufficient because repair remained behind a speculative delegation classifier.",
   "evidence": [
     ".research/daily-guest-20261008.json",
     ".research/daily-guest-20261008-run37748038743/raw/guest-chat.receipt.original.json",
-    ".research/daily-guest-409-peer-20261008.json"
+    ".research/daily-guest-409-peer-20261008.json",
+    ".research/guest409-diagnosis-fix-20261008.json",
+    ".research/guest409-fix-source-peer-20261008.json"
   ],
   "transition_history": [
     {
@@ -48,6 +50,6 @@
       "reason": "Sol diagnosis owns exact continuation boundary and canonicalrepair, using newer prioraccepted server1d535d99 comparison."
     }
   ],
-  "next_action": "Fresh independent evidence review then prove failing continuation boundary/cause. Fix canonical origin, verify gates and authorized automatic deployment, retest actual public guest first/followup/reload flow on exact stable server.",
+  "next_action": "Second implementation owns durable context at actual delegation; require independent source review, verified automatic production deployment, then resource-valid public guest first/followup/reload browser retest. No manual deployment from this machine.",
   "closure_requirement": "Original public guest reproduction and surrounding first/followup cases pass independently on real browser/live server with valid resources; actual Store installation remains separately unverified."
 }
