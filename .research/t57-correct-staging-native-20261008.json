@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-08T13:02:09Z",
+  "case_id": "EXT-F-1012-T57",
+  "lane": "A",
+  "scope": "One corrected-staging hosted native T57 attempt on the reviewed catalog-readiness source and frozen 0.2.407 development artifact. No product, harness, build, release, or deployment changes.",
+  "source_gate": {
+    "catalog_readiness_candidate": "a7340e6ca0c5f6860ac19440644d4b38b84e203d",
+    "independent_review_evidence": ".research/catalog-readiness-peer-20261008.json",
+    "review_verdict": "PASS for source readiness; native product outcome unverified",
+    "run_checkout_sha": "5bee4fafe505927f49a330fc856ec8891b2324c5",
+    "origin_main_sha_at_dispatch": "5bee4fafe505927f49a330fc856ec8891b2324c5",
+    "candidate_is_run_checkout_ancestor": true,
+    "candidate_to_run_compare": "ahead by 9 commits; merge base is the candidate",
+    "frozen_artifact_source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114"
+  },
+  "frozen_artifact": {
+    "ci_run_id": 37754055905,
+    "ci_conclusion": "success",
+    "artifact_id": 11539827040,
+    "artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1",
+    "artifact_digest": "sha256:1b883fc212351a6ef30e3b6cc43f9cb1a03c8584affaf3ffecdf679c59087893",
+    "tree_sha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+    "version": "0.2.407",
+    "expired_at_verification": false
+  },
+  "run": {
+    "id": 37780192222,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37780192222",
+    "workflow": "Hosted guest side-panel acceptance",
+    "event": "workflow_dispatch",
+    "status": "completed",
+    "conclusion": "failure",
+    "attempt": 1,
+    "workflow_head_sha": "5bee4fafe505927f49a330fc856ec8891b2324c5",
+    "acceptance_lane": "A",
+    "acceptance_case": "showcase-d47-public-admin",
+    "d47_public_race_preflight": true,
+    "development_run_id": 37754055905,
+    "development_artifact_id": 11539827040,
+    "runner_label": "macos-15",
+    "created_at": "2026-10-08T12:53:54Z",
+    "started_at": "2026-10-08T12:54:06Z",
+    "completed_at": "2026-10-08T13:02:08Z"
+  },
+  "native_receipt": {
+    "status": "unverified",
+    "stage": "public_race_prior_document_load",
+    "native_stage": "exercise_panel",
+    "auth_stage": "admin_rendered_identity",
+    "failure_name": "Error",
+    "failure_code": "public_race_old_response_missing",
+    "failure_boundary": "The public prior-document race could not observe and pause the old response.",
+    "organization_checkpoint": {
+      "rendered_admin_identity_matches": true,
+      "rendered_approved_organization_matches": true,
+      "device_storage_has_organization_uuid": false,
+      "device_storage_name_matches": false,
+      "product_request_observed": true,
+      "product_request_organization_header_matches_approved_membership": true,
+      "product_request_principal_matches": true,
+      "product_response_finished": true,
+      "product_response_success": true,
+      "product_request_duplicate": false,
+      "product_loading_failed": false
+    },
+    "race_observations": {
+      "old_response_paused_before_replay": false,
+      "extension_capture_at_current_pause": false,
+      "current_binding_matches_response": false,
+      "paused_response_count": 0,
+      "unmatched_target_count": 1,
+      "release_attempt_count": 0,
+      "terminal_outcome": "unverified",
+      "probe_cleanup": "removed detached probe; disabled and detached cleanup completed"
+    },
+    "claim_limit": "The exact product request and approved organization header/principal were observed with a finished successful response. The T57 prior-versus-current response race did not reach its pause/replay assertions, so this run earns no T57 race acceptance and does not establish a product defect."
+  },
+  "resource_phases": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "valid",
+      "exit_code": 0,
+      "final_at": "2026-10-08T12:56:20.269Z"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "valid",
+      "exit_code": 0,
+      "final_at": "2026-10-08T12:58:17.723Z"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "child_failed",
+      "exit_code": 1,
+      "healthy_watch_samples": 5,
+      "final_at": "2026-10-08T13:01:57.471Z"
+    }
+  },
+  "private_preflight": {
+    "canonical_admin_source": "/Volumes/Samsung2TB/code/aidream/.env",
+    "admin_identity_schema": "passed locally; password was not printed or logged",
+    "approved_organization_fixture": "test-results/admin-profile-approved-organization-private.json",
+    "approved_fixture_schema": "passed locally; approved name and UUID shapes valid",
+    "approved_fixture_mode": "0600",
+    "canonical_membership_evidence": ".research/t57-membership-rpc-diagnosis-20261008.json",
+    "values_printed_or_committed": false
+  },
+  "secret_lifecycle": {
+    "temporary_repository_secret_names": [
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "staging_command_shape": "gh secret set NAME -R armanisadeghi/matrx-extend < private-file; --body omitted so stdin bytes were used",
+    "secret_names_present_before_dispatch": true,
+    "secret_names_deleted_after_terminal": true,
+    "independent_secret_name_listing_absent": true,
+    "local_admin_json_mode": "0600",
+    "local_admin_json_removed_after_terminal": true,
+    "approved_private_fixture_retained_mode_0600": true
+  },
+  "resource_and_artifacts": {
+    "resource_guard_source_changed_by_this_lane": false,
+    "attempt_count": 1,
+    "current_run_artifact_id": 11552830587,
+    "current_run_artifact_name": "hosted-guest-37780192222-1",
+    "current_run_artifact_digest": "sha256:22b85b58c27dc8b56b5ba467b9fcb549d8e8fb9fcdf7c4c1e7e6b6b277188b35",
+    "current_run_artifact_size_bytes": 67426,
+    "private_artifact_download": "/Volumes/Samsung2TB/.stabilization-scratch/t57-correct-staging-native-37780192222",
+    "private_download_contains_screenshots": true,
+    "tracked_raw_evidence": ".research/t57-correct-staging-native-20261008-originals/raw",
+    "original_sha256": {
+      "artifacts.raw.json": "b60314d6741d90f202c6e8ccd14e7944812c0c45fb57f063d2fd9e92b64800e3",
+      "hosted-browser-37780192222-1.jsonl.txt": "e3184d862e23e0f63e42bd15e685becbf39762956d8c7723824e66ac6798d0f1",
+      "hosted-guest-37780192222-1.jsonl.txt": "2c29376b74d550a790983c2c6c1929921d5471e502b94b26539cd35d2cefe7db",
+      "hosted-package-37780192222-1.jsonl.txt": "99619781be6917d6a5e32a10b8446561f45fb629a46b1b250ca92a4c8d7e9872",
+      "jobs.raw.json": "722dc211fc41327b1b22d4861f9a9ca601a45586a816869434931c414fefb5c1",
+      "receipt.raw.json.txt": "c52d843d6a15fd4834576272f51dc1303649704a08bc13554f37ffb12001d813",
+      "run.raw.json": "2c17cf2a5f003d2837d4dd121a57ecf60f2cbc95190205a054bbd614e5ce168d",
+      "source-artifacts.raw.json": "a997f1affcdccd0f7c7a01eb111c0d8ffc1c23685a1a904c22c46ad59f158b07",
+      "source-run.raw.json": "84a86d0536df2ddb78c0f592c3dffb694882cfb91546f676370a0607eb13ec04"
+    }
+  },
+  "claim_limit": "Corrected staging is verified: local private authentication passed, hosted authentication preflight passed, and the one run reached native execution with all resource guards valid. The public race stopped before old-response pause/replay; no retry was dispatched."
+}

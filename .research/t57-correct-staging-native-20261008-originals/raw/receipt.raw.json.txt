@@ -1,0 +1,678 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "status": "unverified",
+  "stage": "public_race_prior_document_load",
+  "target": {
+    "host": "hn.algolia.com",
+    "public": true,
+    "injected_fetch": false
+  },
+  "artifact": {
+    "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "run_id": 37754055905,
+    "artifact_id": 11539827040,
+    "tree_sha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+    "version": "0.2.407"
+  },
+  "capture": {
+    "selected_rows": 1,
+    "selected_row_matches": true,
+    "preview_url_matches": true,
+    "post_200": true,
+    "target_host": true,
+    "endpoint_shape": "/1/indexes/Item_dev/query",
+    "endpoint_path_segments": 4,
+    "endpoint_has_query": true,
+    "query_endpoint": true,
+    "response_tables": 1,
+    "response_rows": 1,
+    "intended_query": true,
+    "hits_preview": true,
+    "credential_key_present": true,
+    "credential_masked": false
+  },
+  "capture_observations": {
+    "terminal": {
+      "discovering": false,
+      "responses": true,
+      "error": false
+    },
+    "list": {
+      "visible_rows": 10,
+      "post_200_rows": 2,
+      "algolia_rows": 8,
+      "algolia_post_200_rows": 1,
+      "query_label_rows": 0,
+      "exact_candidates": 0
+    },
+    "previews": [
+      {
+        "selected_rows": 1,
+        "selected_row_matches": true,
+        "preview_url_matches": true,
+        "post_200": true,
+        "target_host": true,
+        "endpoint_shape": "/1/indexes/Item_dev/query",
+        "endpoint_path_segments": 4,
+        "endpoint_has_query": true,
+        "query_endpoint": true,
+        "response_tables": 1,
+        "response_rows": 1,
+        "intended_query": true,
+        "hits_preview": true,
+        "credential_key_present": true,
+        "credential_masked": false
+      }
+    ],
+    "last_preview": {
+      "selected_rows": 1,
+      "selected_row_matches": true,
+      "preview_url_matches": true,
+      "post_200": true,
+      "target_host": true,
+      "endpoint_shape": "/1/indexes/Item_dev/query",
+      "endpoint_path_segments": 4,
+      "endpoint_has_query": true,
+      "query_endpoint": true,
+      "response_tables": 1,
+      "response_rows": 1,
+      "intended_query": true,
+      "hits_preview": true,
+      "credential_key_present": true,
+      "credential_masked": false
+    },
+    "matched_previews": 1,
+    "preview": {
+      "selected_rows": 1,
+      "selected_row_matches": true,
+      "preview_url_matches": true,
+      "post_200": true,
+      "target_host": true,
+      "endpoint_shape": "/1/indexes/Item_dev/query",
+      "endpoint_path_segments": 4,
+      "endpoint_has_query": true,
+      "query_endpoint": true,
+      "response_tables": 1,
+      "response_rows": 1,
+      "intended_query": true,
+      "hits_preview": true,
+      "credential_key_present": true,
+      "credential_masked": false
+    }
+  },
+  "saved_result": null,
+  "owned_recipe": {
+    "name": "Codex D47 public HN e30ccc20-0a08-4132-baa0-36bc8209a45a",
+    "host": "hn.algolia.com",
+    "creation": "observed_in_patterns",
+    "cleanup": "removed"
+  },
+  "auth_diagnostic": null,
+  "click_observations": [
+    {
+      "stage": "initial_capture",
+      "phase": "target_evaluation",
+      "state": null
+    },
+    {
+      "stage": "initial_capture",
+      "phase": "target_resolution",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 33,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "initial_capture",
+      "phase": "mouse_press",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 33,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "initial_capture",
+      "phase": "mouse_release",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 33,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "initial_capture",
+      "phase": "mouse_released",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 33,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "initial_capture",
+      "phase": "target_evaluation",
+      "state": null
+    },
+    {
+      "stage": "initial_capture",
+      "phase": "target_resolution",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 10,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "initial_capture",
+      "phase": "mouse_press",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 10,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "initial_capture",
+      "phase": "mouse_release",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 10,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "initial_capture",
+      "phase": "mouse_released",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 10,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "initial_capture",
+      "phase": "target_evaluation",
+      "state": null
+    },
+    {
+      "stage": "initial_capture",
+      "phase": "target_resolution",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 1,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "initial_capture",
+      "phase": "mouse_press",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 1,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "initial_capture",
+      "phase": "mouse_release",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 1,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "initial_capture",
+      "phase": "mouse_released",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 1,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "save_recipe",
+      "phase": "target_evaluation",
+      "state": null
+    },
+    {
+      "stage": "save_recipe",
+      "phase": "target_resolution",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 33,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "save_recipe",
+      "phase": "mouse_press",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 33,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "save_recipe",
+      "phase": "mouse_release",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 33,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "save_recipe",
+      "phase": "mouse_released",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 33,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "public_race_prior_document_load",
+      "phase": "target_evaluation",
+      "state": null
+    },
+    {
+      "stage": "public_race_prior_document_load",
+      "phase": "target_resolution",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 33,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "public_race_prior_document_load",
+      "phase": "mouse_press",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 33,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "public_race_prior_document_load",
+      "phase": "mouse_release",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 33,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "public_race_prior_document_load",
+      "phase": "mouse_released",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 33,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "public_race_prior_document_load",
+      "phase": "target_evaluation",
+      "state": null
+    },
+    {
+      "stage": "public_race_prior_document_load",
+      "phase": "target_resolution",
+      "state": {
+        "patterns_active": true,
+        "host_matches": true,
+        "selector_count": 7042,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 1,
+        "row_title_count": 1,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "public_race_prior_document_load",
+      "phase": "mouse_press",
+      "state": {
+        "patterns_active": true,
+        "host_matches": true,
+        "selector_count": 7042,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 1,
+        "row_title_count": 1,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "public_race_prior_document_load",
+      "phase": "mouse_release",
+      "state": {
+        "patterns_active": true,
+        "host_matches": true,
+        "selector_count": 7042,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 1,
+        "row_title_count": 1,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "public_race_prior_document_load",
+      "phase": "mouse_released",
+      "state": {
+        "patterns_active": true,
+        "host_matches": true,
+        "selector_count": 7042,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 1,
+        "row_title_count": 1,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "public_race_prior_document_load",
+      "phase": "target_evaluation",
+      "state": null
+    },
+    {
+      "stage": "public_race_prior_document_load",
+      "phase": "target_resolution",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 2,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "public_race_prior_document_load",
+      "phase": "mouse_press",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 2,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "public_race_prior_document_load",
+      "phase": "mouse_release",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 2,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    },
+    {
+      "stage": "public_race_prior_document_load",
+      "phase": "mouse_released",
+      "state": {
+        "patterns_active": null,
+        "host_matches": null,
+        "selector_count": 2,
+        "exact_match_count": 1,
+        "visible_count": 1,
+        "enabled_count": 1,
+        "exact_row_count": 0,
+        "row_title_count": 0,
+        "row_stored_title_count": 0,
+        "center_hits_target": true
+      }
+    }
+  ],
+  "failure": {
+    "name": "Error",
+    "stage": "public_race_prior_document_load",
+    "message_code": "public_race_old_response_missing"
+  },
+  "terminal_budget": {
+    "capture_window_ms": 20000,
+    "cleanup_ms": 20000,
+    "delivery_ms": 10000,
+    "poll_ms": 100,
+    "timeout_ms": 50000,
+    "source_sha256": {
+      "runner": "ec8af7d4e75da1997c2dcb3064b8484fe26bae4d1d3413b56bebd3e88fd93046",
+      "core": "c65b4678be7e49829f4f346926d9ff9dbdce8b7b8506be23565abf644dba3596",
+      "handler": "fa1eb3990d5611c597004b23999829d42d3833a6765f79d3865bedc8267d62cb",
+      "panelDriver": "d0262fc0057d8f170d5ad7e5d3e51d4c9f877aaeaae1e15dd40c0d5453c4c255"
+    }
+  },
+  "native_stage": "exercise_panel",
+  "auth_stage": "admin_rendered_identity",
+  "organization_diagnostic": {
+    "substage": "organization_identity_compare",
+    "observations": {
+      "admin_role_verified": true,
+      "picker_available": true,
+      "picker_has_selection": true,
+      "selection_required": false,
+      "storage_has_uuid": false,
+      "storage_name_matches": false,
+      "rendered_email_matches": true,
+      "rendered_role_matches": true,
+      "rendered_profile_matches": true,
+      "rendered_organization_matches": true,
+      "tools_view_state": "catalog",
+      "product_request_observed": true,
+      "product_request_duplicate": false,
+      "product_response_observed": true,
+      "product_response_finished": true,
+      "product_loading_failed": false,
+      "product_response_success": true,
+      "product_header_matches": true,
+      "product_principal_matches": true,
+      "observer_cleanup_success": true
+    }
+  },
+  "public_race_preflight": {
+    "paused": [],
+    "contexts": [
+      {
+        "unique_id": "4120129055236745320.912614457048432684",
+        "frame_id": "58689975418A10803878D3B62933D94A",
+        "loader_id": "19D9C141CBCFB6C17F552151090DF63D"
+      },
+      {
+        "unique_id": "-2323589145512076299.-4876903547499772013",
+        "frame_id": "58689975418A10803878D3B62933D94A",
+        "loader_id": "041332B4C23C0467F964B2B9058BB4DD"
+      }
+    ],
+    "release_order": [],
+    "release_attempts": [],
+    "cleanup_attempts": [
+      {
+        "step": "disable",
+        "outcome": "completed"
+      },
+      {
+        "step": "detach",
+        "outcome": "completed"
+      }
+    ],
+    "unmatched_target_count": 1,
+    "cleanup": "disabled_detached",
+    "old_paused_before_replay": false,
+    "extension_capture_at_current_pause": false,
+    "current_binding_matches_response": false,
+    "terminal_outcome": "unverified",
+    "capture_probe_cleanup": "removed_detached",
+    "verdict": "unverified"
+  }
+}
