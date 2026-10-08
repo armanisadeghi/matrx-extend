@@ -35,9 +35,11 @@ import { recordReloadMilestone } from './scrape-reload-milestones.mjs';
 import { waitForReplacementScrapeTab } from './scrape-replacement-tab.mjs';
 import { observeScrapeRows } from './scrape-row-observer.mjs';
 import {
+  assertCaptureExportUnchanged,
   assertCompleteTabCoverage,
   capturePaneSnapshot,
   observeEmptyMediaPanes,
+  readCaptureExport,
   verifyCaptureUnchanged,
 } from './scrape-tab-coverage.mjs';
 import {
@@ -1273,6 +1275,16 @@ try {
         expectedTabs,
         'scrape_result_tab_roster',
       );
+      const warmExportBefore = await readCaptureExport({
+        panel,
+        browserSession,
+        panelUrl: panelTarget.url,
+        mode: selection.mode,
+        url: `${origin}/intake`,
+        title: article,
+        resourceAction,
+        requireResourceHealth,
+      });
       const viewed = {};
       const mediaEvidence = {};
       const warmPaneSnapshots = {};
@@ -1339,6 +1351,21 @@ try {
         waitFor,
         phase: 'warm',
       });
+      const warmExportAfter = await readCaptureExport({
+        panel,
+        browserSession,
+        panelUrl: panelTarget.url,
+        mode: selection.mode,
+        url: `${origin}/intake`,
+        title: article,
+        resourceAction,
+        requireResourceHealth,
+      });
+      warmCaptureInvariance.export = assertCaptureExportUnchanged(
+        warmExportBefore,
+        warmExportAfter,
+        'warm',
+      );
       mark(
         'EXT-F-1007-T08',
         'partial',
@@ -1805,6 +1832,16 @@ try {
             : ['Normal-width verification remains unverified.']),
         ];
         const postReloadPanes = { article: recaptured.resultText.includes(article) };
+        const reloadExportBefore = await readCaptureExport({
+          panel: replacement.panel,
+          browserSession,
+          panelUrl: replacement.panelTarget?.url ?? panelTarget.url,
+          mode: selection.mode,
+          url: `${origin}/intake`,
+          title: article,
+          resourceAction,
+          requireResourceHealth,
+        });
         const reloadPaneSnapshots = { Article: capturePaneSnapshot(recaptured) };
         for (const [label, pattern] of [
           ['Links', /Patient forms/],
@@ -1842,6 +1879,21 @@ try {
           waitFor,
           phase: 'reload',
         });
+        const reloadExportAfter = await readCaptureExport({
+          panel: replacement.panel,
+          browserSession,
+          panelUrl: replacement.panelTarget?.url ?? panelTarget.url,
+          mode: selection.mode,
+          url: `${origin}/intake`,
+          title: article,
+          resourceAction,
+          requireResourceHealth,
+        });
+        reloadCaptureInvariance.export = assertCaptureExportUnchanged(
+          reloadExportBefore,
+          reloadExportAfter,
+          'reload',
+        );
         report.stage = 'post_reload_media_controls';
         const reloadControls = await captureMediaFailure(
           replacement.panel,
