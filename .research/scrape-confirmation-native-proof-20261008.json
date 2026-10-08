@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "task": "scrape-confirmation-native-proof-20261008",
+  "defect_id": "EXT-D-0178",
+  "case_id": "EXT-F-1007-T08",
+  "status": "NATIVE_ATTEMPT_UNUSABLE_PREFLIGHT_FAILURE",
+  "scope": "One uninstrumented lane B guest-scrape-development normal 600px attempt against the frozen development artifact; no retry, source change, build, release, or inventory change.",
+  "source_gate": {
+    "timeout_fix_commit": "c429178346eb029d63138ba549aadf0b644736ad",
+    "timeout_fix_focused_run": 37781866750,
+    "timeout_fix_focused_run_conclusion": "success",
+    "branch_receipt_fix_commit": "17abbbfe59d841af388d586e43bdcd2888afcdd7",
+    "branch_receipt_focused_run": 37781219170,
+    "branch_receipt_focused_run_conclusion": "success",
+    "timeout_fix_independent_review": "570dbb4a",
+    "checkout_head_at_dispatch": "5569ae6410ad56c68e5243d80bbd57d2bbfbeec6"
+  },
+  "dispatch": {
+    "run_id": 37783167613,
+    "job_id": 113331130861,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37783167613",
+    "event": "workflow_dispatch",
+    "workflow": "Hosted guest side-panel acceptance",
+    "attempt": 1,
+    "status": "completed",
+    "conclusion": "failure",
+    "workflow_head_sha": "333151cdc85431cc22932af1d8b726aaf7dbe776",
+    "started_at_utc": "2026-10-08T13:17:17Z",
+    "job_started_at_utc": "2026-10-08T13:17:27Z",
+    "completed_at_utc": "2026-10-08T13:17:43Z",
+    "inputs": {
+      "acceptance_lane": "B",
+      "runner_label": "macos-15",
+      "acceptance_case": "guest-scrape-development",
+      "development_run_id": 37754055905,
+      "development_artifact_id": 11539827040,
+      "scrape_auth_mode": "guest",
+      "scrape_width_mode": "normal",
+      "scrape_normal_width_px": 600,
+      "scrape_reload_open_diagnostic": false,
+      "scrape_diagnostic_cpu_rate": null
+    },
+    "admission": {
+      "lane_b_active_before_dispatch": false,
+      "lane_b_queued_before_dispatch": false,
+      "other_lane": "SEO run 37783095637 was active on a separate hosted runner",
+      "secret_inputs": "none"
+    },
+    "steps": {
+      "passed": [
+        "Set up job",
+        "Require bounded lane and isolate shared credentials",
+        "Run actions/checkout@v4",
+        "Run actions/setup-node@v4",
+        "Require exactly one artifact provenance mode",
+        "Require selected authentication before browser setup"
+      ],
+      "failed": "Disable indexing on the disposable hosted VM",
+      "browser_and_resource_steps": "skipped"
+    }
+  },
+  "frozen_artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.407",
+    "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "tree_sha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+    "ci_run_id": 37754055905,
+    "artifact_id": 11539827040,
+    "artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1",
+    "artifact_bytes": 41766868,
+    "artifact_archive_sha256": "1b883fc212351a6ef30e3b6cc43f9cb1a03c8584affaf3ffecdf679c59087893",
+    "expired": false,
+    "imported_and_matched_by_hosted_workflow": true
+  },
+  "failure_observation": {
+    "step": "Disable indexing on the disposable hosted VM",
+    "cause": "With set -e active, `sudo /usr/bin/mdutil -a -i off` exited nonzero while `/System/Volumes/Preboot` was transitioning.",
+    "preboot_output": [
+      "Error: invalid operation.",
+      "Error: unexpected indexing state. kMDConfigSearchLevelTransitioning"
+    ],
+    "root_volume_status": "Indexing disabled.",
+    "data_volume_status": "Indexing disabled.",
+    "outcome": "Workflow stopped before package readiness and the guarded browser run; this is an infrastructure/preflight failure and provides no native product verdict.",
+    "provenance_review": "The same indexing step passed in prior successful run 37778965029 (workflow head 3d0d9b1ffbbdd8058bf652d3dbbe532155a08e52) and is text-identical at failing head 333151cdc85431cc22932af1d8b726aaf7dbe776. Git blame attributes the step to a43ed74ceb5eedb50ccb1aebf8d6b23d64d1e063, before that prior success. Intervening workflow changes concerned SEO fixture wiring and run-title display; neither changed this step."
+  },
+  "evidence": {
+    "directory": ".research/scrape-confirmation-native-proof-20261008-evidence/run37783167613/",
+    "raw_failure_log": {
+      "path": ".research/scrape-confirmation-native-proof-20261008-evidence/run37783167613/hosted-failure-log.txt",
+      "sha256": "75152dee1fae40b0cc33d2460d689a457e411bfbdd1d03ebb635de0b9179527b",
+      "bytes": 2903,
+      "source": "gh run view 37783167613 --log-failed"
+    },
+    "workflow_artifact": {
+      "id": 11552813285,
+      "name": "hosted-guest-37783167613-1",
+      "bytes": 5648,
+      "sha256": "ba055b50f75bdd6c3e9f2337f791b59418c011aa189aaaeb6d6ea2ec5c3f9dec",
+      "downloaded": true,
+      "contents": "The downloaded artifact contained six stale resource journals for prior run IDs 37105304739 and 37724762467. It contained no journal named for 37783167613, no native receipt, and no screenshot; historical journals are excluded from this attempt evidence.",
+      "current_run_resource_credit": "zero; none of the six embedded journals belongs to run 37783167613"
+    },
+    "native_receipt": null,
+    "resource_journals": {
+      "package": null,
+      "browser": null,
+      "guest": null,
+      "reason": "The workflow failed before any guarded resource command ran. No current-run journals exist to hash."
+    },
+    "confirmation_result": {
+      "status": "UNVERIFIED",
+      "reason": "The native panel did not run, so no owned edited-state, visible discard dialog, trusted Re-capture branch, or subsequent Article oracle was observed."
+    },
+    "stale_resource_journals": [
+      {
+        "run_id": "hosted-browser-37105304739-1",
+        "path": ".research/scrape-confirmation-native-proof-20261008-evidence/run37783167613/hosted-guest-37783167613-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37105304739-1.jsonl",
+        "sha256": "6c45eac59dd17d7194ac61d92a8571331e9db92593361e9a622a461786b58dea",
+        "decision": "valid",
+        "provenance_only": true
+      },
+      {
+        "run_id": "hosted-browser-37724762467-1",
+        "path": ".research/scrape-confirmation-native-proof-20261008-evidence/run37783167613/hosted-guest-37783167613-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37724762467-1.jsonl",
+        "sha256": "70dd9b6fb4de6e5f119e939acd296782dfb56cf5cdd091c056f09d73c18a0344",
+        "decision": "valid",
+        "provenance_only": true
+      },
+      {
+        "run_id": "hosted-guest-37105304739-1",
+        "path": ".research/scrape-confirmation-native-proof-20261008-evidence/run37783167613/hosted-guest-37783167613-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37105304739-1.jsonl",
+        "sha256": "1a2654d74ad70721a101c9710333ced8d23da567266d2f5653db2849e8ea51d2",
+        "decision": "child_failed",
+        "provenance_only": true
+      },
+      {
+        "run_id": "hosted-guest-37724762467-1",
+        "path": ".research/scrape-confirmation-native-proof-20261008-evidence/run37783167613/hosted-guest-37783167613-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37724762467-1.jsonl",
+        "sha256": "c36252c0fe502603e65d7fb7a4435642035ebacadc52757c1930fffe04e33d3a",
+        "decision": "child_failed",
+        "provenance_only": true
+      },
+      {
+        "run_id": "hosted-package-37105304739-1",
+        "path": ".research/scrape-confirmation-native-proof-20261008-evidence/run37783167613/hosted-guest-37783167613-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37105304739-1.jsonl",
+        "sha256": "15fbd74ef4739e033a278c80463ff29b182947b96eb802f93473d88c6e978692",
+        "decision": "valid",
+        "provenance_only": true
+      },
+      {
+        "run_id": "hosted-package-37724762467-1",
+        "path": ".research/scrape-confirmation-native-proof-20261008-evidence/run37783167613/hosted-guest-37783167613-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37724762467-1.jsonl",
+        "sha256": "3410f7e6f9442f56e34a9bd6f9c381de721bff440e31487f370e0d094733e3a0",
+        "decision": "valid",
+        "provenance_only": true
+      }
+    ]
+  },
+  "limits": [
+    "No native confirmation evidence or acceptance credit is claimed.",
+    "EXT-D-0178 remains fixed with native retest pending.",
+    "This was one attempt; no retry was made."
+  ]
+}
