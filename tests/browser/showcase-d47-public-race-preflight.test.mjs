@@ -317,6 +317,61 @@ test('controller continues original paused responses in order and disables inter
   );
 });
 
+test('missing old response records the first failing CDP boundary without exposing traffic', async () => {
+  const observe = async (networkSeen, bodyAvailable) => {
+    const cdp = new EventEmitter();
+    cdp.send = async (method) => {
+      if (method === 'Page.getFrameTree')
+        return { frameTree: { frame: { id: 'main', loaderId: 'initial' } } };
+      if (method === 'Runtime.enable')
+        queueMicrotask(() =>
+          cdp.emit('Runtime.executionContextCreated', {
+            context: { uniqueId: 'initial-context', auxData: { isDefault: true, frameId: 'main' } },
+          }),
+        );
+      if (method === 'Fetch.getResponseBody') {
+        if (!bodyAvailable) throw new Error(`Body unavailable ${request.url}`);
+        return { body: '{"hits":[]}', base64Encoded: false };
+      }
+      return {};
+    };
+    cdp.detach = async () => {};
+    const controller = await createPublicRacePreflight(
+      { context: () => ({ newCDPSession: async () => cdp }) },
+      {},
+      '/1/indexes/Item_dev/query',
+      20,
+    );
+    if (networkSeen)
+      cdp.emit('Network.requestWillBeSent', {
+        requestId: 'old',
+        frameId: 'main',
+        loaderId: 'initial',
+      });
+    cdp.emit('Fetch.requestPaused', {
+      requestId: 'hold-old',
+      networkId: 'old',
+      responseStatusCode: 200,
+      request,
+    });
+    await assert.rejects(controller.oldPaused(), /public_race_old_response_missing/);
+    await controller.cleanup();
+    assert.equal(controller.facts.paused.length, 0);
+    assert.equal(controller.facts.unmatched_target_count, 1);
+    assert.equal(controller.facts.fetch_event_count, 1);
+    assert.equal(controller.facts.network_event_count, Number(networkSeen));
+    assert.equal(JSON.stringify(controller.facts).includes('private'), false);
+    assert.equal(assessPublicRacePreflight(controller.facts), 'unverified');
+    return controller.facts.pause_rejections;
+  };
+  const noNetwork = await observe(false, true);
+  const noBody = await observe(true, false);
+  assert.equal(noNetwork.target_without_network, 1);
+  assert.equal(noNetwork.target_body_unavailable, 0);
+  assert.equal(noBody.target_without_network, 0);
+  assert.equal(noBody.target_body_unavailable, 1);
+});
+
 test('canceled old release still attempts current release and every owned cleanup step', async () => {
   const cdp = new EventEmitter();
   const calls = [];
@@ -332,7 +387,7 @@ test('canceled old release still attempts current release and every owned cleanu
       );
     if (method === 'Fetch.getResponseBody') return { body: '{"hits":[]}', base64Encoded: false };
     if (method === 'Fetch.continueRequest' && args.requestId === 'hold-old')
-      throw new Error(`Invalid Interception id https://private.example/?token=secret`);
+      throw new Error('Invalid Interception id https://private.example/?token=secret');
     if (method === 'Fetch.continueRequest' && args.requestId === 'hold-new')
       cdp.emit('Network.loadingFinished', { requestId: 'new' });
     return {};

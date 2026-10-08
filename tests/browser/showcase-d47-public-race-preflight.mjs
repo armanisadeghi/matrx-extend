@@ -229,6 +229,16 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
     release_attempts: [],
     cleanup_attempts: [],
     unmatched_target_count: 0,
+    network_event_count: 0,
+    fetch_event_count: 0,
+    pause_rejections: {
+      non_target: 0,
+      target_without_response: 0,
+      target_without_network: 0,
+      target_outside_main_frame: 0,
+      target_unexpected_status_or_extra: 0,
+      target_body_unavailable: 0,
+    },
     cleanup: 'pending',
     old_paused_before_replay: false,
     extension_capture_at_current_pause: false,
@@ -247,6 +257,7 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
   let closed = false;
   const onRequest = (event) => {
     if (closed) return;
+    facts.network_event_count++;
     if (event.requestId && event.frameId === mainFrame)
       requests.set(event.requestId, { frame_id: event.frameId, loader_id: event.loaderId });
   };
@@ -281,6 +292,7 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
   };
   const onPaused = async (event) => {
     if (closed) return;
+    facts.fetch_event_count++;
     const network = requests.get(event.networkId);
     const identity = publicRaceRequestIdentity(event.request, expectedPath);
     const target = identity !== null;
@@ -290,6 +302,14 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
       !network ||
       network.frame_id !== mainFrame
     ) {
+      const reason = !target
+        ? 'non_target'
+        : event.responseStatusCode === undefined
+          ? 'target_without_response'
+          : !network
+            ? 'target_without_network'
+            : 'target_outside_main_frame';
+      facts.pause_rejections[reason]++;
       if (target) facts.unmatched_target_count++;
       // Fetch pauses every Algolia response matching the domain pattern. Every
       // non-target must be resumed immediately, without modifying it.
@@ -305,6 +325,7 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
       lifecycle: terminal.get(event.networkId) ?? 'pending',
     };
     if (facts.paused.length >= 2 || item.status !== 200) {
+      facts.pause_rejections.target_unexpected_status_or_extra++;
       facts.unmatched_target_count++;
       continueUnmatched(event.requestId);
       return;
@@ -325,6 +346,7 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
       facts.paused.push(item);
     } catch {
       if (closed) return;
+      facts.pause_rejections.target_body_unavailable++;
       facts.unmatched_target_count++;
       held.delete(event.requestId);
       continueUnmatched(event.requestId);

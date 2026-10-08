@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "native_run_id": 37780192222,
+  "status": "missing_discriminator_instrumented",
+  "root_cause_certainty": "unconfirmed",
+  "retained_observations": {
+    "source": ".research/t57-correct-staging-native-20261008-originals/raw/receipt.raw.json.txt",
+    "failure": "public_race_old_response_missing at public_race_prior_document_load",
+    "main_frame_contexts": 2,
+    "paused_responses": 0,
+    "unmatched_targets": 1,
+    "release_attempts": 0,
+    "cleanup": "disabled_detached",
+    "prior_native_sibling": "Run 37608190442 paused two real matching public responses, so response-stage interception has worked on this site; that run failed later at release."
+  },
+  "boundary": "In createPublicRacePreflight, a Fetch.requestPaused target can be counted as unmatched before entering facts.paused when its response status is absent, its Network.requestWillBeSent identity is absent or outside the main frame, its HTTP status is not 200 or it is extra, or Fetch.getResponseBody fails. The run's one unmatched target narrows the failure to these branches but the old receipt did not record which branch.",
+  "falsifiable_candidates": [
+    {
+      "cause": "Target Fetch pause had no matching Network.requestWillBeSent record",
+      "prediction": "target_without_network=1 and target_body_unavailable=0"
+    },
+    {
+      "cause": "Target Fetch pause lacked response status or belonged to another frame",
+      "prediction": "target_without_response=1 or target_outside_main_frame=1"
+    },
+    {
+      "cause": "Fetch.getResponseBody rejected or returned unusable data",
+      "prediction": "target_body_unavailable=1, while target_without_network=0"
+    },
+    {
+      "cause": "Response status was not 200 or target count exceeded the two-response scope",
+      "prediction": "target_unexpected_status_or_extra=1"
+    }
+  ],
+  "change": "Add bounded Network and Fetch event counts plus fixed rejection-reason counters to the existing sanitized preflight receipt. Do not alter interception, timing, request identity, release, or acceptance verdict.",
+  "validation": {
+    "red": "New diagnostic test failed against HEAD controller copied to a scratch directory: undefined !== 1 for fetch_event_count.",
+    "green": "node --test tests/browser/showcase-d47-public-race-preflight.test.mjs: 11 passed",
+    "format": "pnpm exec biome check on both touched harness files: no errors",
+    "test_scope": "Simulated CDP events validate that missing Network identity and failed response-body read produce different safe receipts and remain unverified. They do not prove which branch occurred in native run 37780192222."
+  },
+  "remaining_native_proof": "A new resource-valid original public race is required to observe the fixed reason counters, then pause both real responses, bind the current capture, release in order and verify the saved result or honest refusal. No native run was dispatched by this lane."
+}
