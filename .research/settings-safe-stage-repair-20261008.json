@@ -1,0 +1,33 @@
+{
+  "status": "source_repair_focused_tests_pass_native_unverified",
+  "scope": "Safe per-choice/full-extension failure diagnostics only; no product behavior changes",
+  "failure_boundary": "Per-choice extension reload and restoration exceptions were discarded by nested catches, leaving T04/T10 generic categories and no transport class in the full-extension receipt.",
+  "implementation": {
+    "stages": "A fixed allowlist now records first-choice and restoration failure stages independently, including replacement validation, old-panel detach, Settings reopen, section open, preference observation, and panel recovery.",
+    "transport": "The actual Settings native callback passes its existing transportFailureClass reader through both catches. Shared profile-reload-capture normalization maps unknown values to other and observer failures to unavailable.",
+    "redaction": "Only allowlisted stages/classes reach fullExtensionReload and its failure criterion. Error messages, arbitrary properties, page text, URLs, and tokens are discarded."
+  },
+  "files": [
+    "tests/browser/settings-guest-extension-rechecks.mjs",
+    "tests/browser/settings-full-extension-rechecks.mjs",
+    "tests/browser/settings-local-controls-acceptance.mjs",
+    "tests/browser/profile-reload-capture.mjs",
+    "tests/browser/settings-full-extension-rechecks.test.mjs"
+  ],
+  "verification": {
+    "command": "TMPDIR=/Volumes/Samsung2TB/tmp node --test tests/browser/settings-guest-extension-rechecks.test.mjs tests/browser/settings-full-extension-rechecks.test.mjs tests/browser/settings-guest-scrape-controls.test.mjs tests/browser/profile-reload-capture.test.mjs tests/browser/settings-reload-boundary.test.mjs",
+    "passed": 33,
+    "failed": 0,
+    "skipped": 0,
+    "forcing_assertions": [
+      "Injected first-choice and restoration failures report different allowlisted stages and transport classes through the full-extension callback.",
+      "Injected exception messages/properties and unrecognized transport text containing a private URL/token do not appear in the retained result.",
+      "A source-path guard requires the actual native callback to supply transportFailureClass."
+    ]
+  },
+  "limitations": [
+    "No browser or native run was performed; these diagnostics have no runtime acceptance credit.",
+    "The underlying cause of native run 37858551975 remains unknown until a separately authorized run produces the new safe stage evidence.",
+    "T40 downstream automatic capture remains unverified."
+  ]
+}

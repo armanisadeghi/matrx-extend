@@ -1,4 +1,8 @@
-import { runGuestChoicesAcrossExtensionRestarts } from './settings-guest-extension-rechecks.mjs';
+import { safeTransportFailureClass } from './profile-reload-capture.mjs';
+import {
+  GUEST_EXTENSION_RECHECK_FAILURE_STAGES,
+  runGuestChoicesAcrossExtensionRestarts,
+} from './settings-guest-extension-rechecks.mjs';
 import { AUTO_SCRAPE_MODE_FAILURE_STAGES } from './settings-guest-scrape-controls.mjs';
 import {
   observeGuestAutoScrapeMode,
@@ -6,6 +10,20 @@ import {
 } from './settings-guest-scrape-controls.mjs';
 
 export const FULL_EXTENSION_RECHECK_IDS = ['T04', 'T10', 'T28', 'T40', 'T67'];
+
+function safeGuestFailureDiagnostics(error) {
+  const safeStage = (stage) =>
+    stage === 'not_failed' || GUEST_EXTENSION_RECHECK_FAILURE_STAGES.includes(stage)
+      ? stage
+      : 'unavailable';
+  const safeTransport = (value) => safeTransportFailureClass(() => value);
+  return {
+    firstChoiceFailureStage: safeStage(error?.safeFirstChoiceFailureStage),
+    restorationFailureStage: safeStage(error?.safeRestorationFailureStage),
+    firstChoiceTransportClass: safeTransport(error?.safeFirstChoiceTransportClass),
+    restorationTransportClass: safeTransport(error?.safeRestorationTransportClass),
+  };
+}
 
 const statusFrom = (criteria) =>
   criteria.some((entry) => entry.status === 'fail')
@@ -55,11 +73,20 @@ export async function runFullExtensionRecheck(item, execute) {
       result.failureKind = error.safeFailureKind;
       if (AUTO_SCRAPE_MODE_FAILURE_STAGES.includes(error.safeOriginalStage))
         result.originalFailureStage = error.safeOriginalStage;
+      Object.assign(result, safeGuestFailureDiagnostics(error));
       record('full extension reload recheck completed', 'fail', {
         category: result.error,
         stage: result.failureStage,
         kind: result.failureKind,
+        ...safeGuestFailureDiagnostics(error),
         ...(result.originalFailureStage && { originalStage: result.originalFailureStage }),
+      });
+    } else if (error?.safeCategory === 'full_extension_preference_or_restore_failed') {
+      result.error = error.safeCategory;
+      Object.assign(result, safeGuestFailureDiagnostics(error));
+      record('full extension reload recheck completed', 'fail', {
+        category: result.error,
+        ...safeGuestFailureDiagnostics(error),
       });
     } else {
       result.error =
@@ -134,6 +161,7 @@ export async function rerunGuestSettingsAfterExtensionReload({
   preferenceMatches,
   choiceDriver,
   observeAutoScrapeMode = observeGuestAutoScrapeMode,
+  transportFailureClass = () => 'unavailable',
 }) {
   let activePanel = panel;
   try {
@@ -174,6 +202,7 @@ export async function rerunGuestSettingsAfterExtensionReload({
               activePanel = target;
             },
             record,
+            transportFailureClass,
             ...(choiceDriver && { driver: choiceDriver }),
             ...(preference.caseId === 'T10' && {
               afterReload: async ({ panel: target, value, label }) => {
@@ -188,10 +217,15 @@ export async function rerunGuestSettingsAfterExtensionReload({
               },
             }),
           });
-        } catch {
-          throw Object.assign(new Error('full_extension_preference_or_restore_failed'), {
+        } catch (caughtError) {
+          const error = Object.assign(new Error('full_extension_preference_or_restore_failed'), {
             safeCategory: 'full_extension_preference_or_restore_failed',
           });
+          error.safeFirstChoiceFailureStage = caughtError?.safeFirstChoiceFailureStage;
+          error.safeRestorationFailureStage = caughtError?.safeRestorationFailureStage;
+          error.safeFirstChoiceTransportClass = caughtError?.safeFirstChoiceTransportClass;
+          error.safeRestorationTransportClass = caughtError?.safeRestorationTransportClass;
+          throw error;
         }
       });
     }
@@ -244,6 +278,7 @@ export async function rerunGuestSettingsAfterExtensionReload({
         record,
         failureCategory: 'auto_scrape_mode_recheck_failed',
         safeStages: AUTO_SCRAPE_MODE_FAILURE_STAGES,
+        transportFailureClass,
         ...(choiceDriver && { driver: choiceDriver }),
       });
       result.downstreamCapture = {

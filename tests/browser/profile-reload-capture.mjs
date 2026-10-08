@@ -387,17 +387,20 @@ export function captureReloadLifetime(value) {
 
 export function captureFailure(error, readTransportClass) {
   const candidate = typeof error?.message === 'string' ? error.message.split(':', 1)[0] : '';
-  let transport = 'unavailable';
-  try {
-    const observed = readTransportClass();
-    transport = TRANSPORT_CLASSES.has(observed) ? observed : 'other';
-  } catch {
-    /* The transport observer itself failed. */
-  }
+  const transport = safeTransportFailureClass(readTransportClass);
   return {
     failure_code: FAILURE_CODES.has(candidate) ? candidate : 'unclassified',
     transport_failure_class: transport,
     retirement_evidence: captureLifecycleEvidence(error?.lifecycleEvidence),
     context_boundary: captureContextBoundary(error?.contextBoundary),
   };
+}
+
+export function safeTransportFailureClass(readTransportClass) {
+  try {
+    const observed = readTransportClass();
+    return TRANSPORT_CLASSES.has(observed) ? observed : 'other';
+  } catch {
+    return 'unavailable';
+  }
 }
