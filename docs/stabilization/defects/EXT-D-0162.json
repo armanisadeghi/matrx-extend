@@ -23,7 +23,9 @@
     ".research/settings-unrecorded-native-20261007.json",
     ".research/settings-unrecorded-native-peer-20261007.json",
     ".research/settings-reload-target-diagnosis-20261007.json",
-    ".research/settings-reload-final-readiness-peer-20261007.json"
+    ".research/settings-reload-final-readiness-peer-20261007.json",
+    ".research/settings-reload-native-retest-20261007.json",
+    ".research/settings-reload-resource-peer-20261007.json"
   ],
   "transition_history": [
     {
@@ -52,6 +54,16 @@
     }
   ],
   "closure_requirement": "Independent source review and covering negative control plus resource-valid original native full-reload and surrounding Settings checks. Preserve guest versus member scope.",
-  "next_action": "One admitted frozen391 original Settings full-reload retest assigned to settings_reload_native_retest; no source-only product acceptance.",
-  "fix_commits": ["65637cd5", "c8459a93"]
+  "next_action": "Re-admit original frozen391 full-reload case on a fresh host when capacity is valid. Do not weaken thresholds; current source fix remains fixed, not closed.",
+  "fix_commits": ["65637cd5", "c8459a93"],
+  "retest_attempts": [
+    {
+      "run_id": "37716001386",
+      "recorded_at": "2026-10-08T02:19:13.782365+00:00",
+      "status": "resource-invalid",
+      "observation": "Real replacement panel opened Settings; guest/warm/reload surrounding observations retained.",
+      "acceptance_credit": false,
+      "reason": "Guest journal RESOURCE_CPU_HIGH_LOAD_BUSY final invalid; native child0/wrapper3. Independent peer a2cfa706 confirms no acceptance. Existing earlier legitimate case results preserved."
+    }
+  ]
 }
