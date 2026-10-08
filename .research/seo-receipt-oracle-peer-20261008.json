@@ -1,0 +1,45 @@
+{
+  "scope": "Fresh independent review of SEO receipt commit 035caed8 and CI literal-oracle commit e6d83e7d. No native browser, heavy guard integration, build, or manual CI dispatch was run.",
+  "seo_d183": {
+    "verdict_a": {
+      "result": "partial_live_unverified",
+      "evidence": [
+        "The actual SEO driver calls the synchronous checkpoint after completed stages, pass targets, unverified targets, and the direct social-copy outcome branch. The first checkpoint follows verified build identity and retains guest mode, selected case scope, exact version/tree digest, and last safe stage.",
+        "The controlled child runs the driver's checkpoint, advance, and target declarations, receives SIGTERM before final writing, and leaves a parseable unverified in-progress receipt with the completed target in ordinary and diagnostic modes.",
+        "The hosted launcher creates test-results before starting the driver. An actual native interrupted run remains unverified."
+      ],
+      "missing_or_unverified": [
+        "No native browser run was performed under this review constraint; actual resource termination and artifact upload remain unverified."
+      ]
+    },
+    "verdict_b": {
+      "result": "pass_source_review",
+      "evidence": [
+        "The progress writer constructs an allowlisted schema, omitting raw page observations, target evidence, URLs, errors, and credentials. It keeps status unverified, and diagnostic classification moves all checkpoint targets to diagnostic_targets with zero acceptance targets.",
+        "The writer fsyncs a mode-0600 temporary file and atomically renames it into place. The final writer preserves the existing full report shape; caught failures preserve last_safe_stage and set failure_stage.",
+        "Focused Node tests passed 12/12, including SIGTERM and final success/failure shape. Biome check passed for all touched source files."
+      ],
+      "findings": []
+    }
+  },
+  "ci_d182": {
+    "verdict_a": {
+      "result": "partial_ci_unverified",
+      "evidence": [
+        "The seven real-wrapper kinds and their order remain the same. Each is a separate Node test with 30000 ms timeout and a returned runScenario promise; guard/resource assertions and scratch cleanup are unchanged, as are the two other scenario groups.",
+        "The focused lightweight self-test passed 2/2. A scratch copy with confirmed removed from the actual scenario array failed the literal-name oracle, then was removed."
+      ],
+      "missing_or_unverified": [
+        "The full integration file and hosted CI timing were not run under this review constraint. Automatic CI still needs to verify all seven real scenarios and surrounding checks."
+      ]
+    },
+    "verdict_b": {
+      "result": "pass_source_review",
+      "evidence": [
+        "The expected seven test names are literal strings independent of the registration source array. Removing a real kind makes the lightweight test fail.",
+        "Per-scenario errors still reject the selected test callback, and the unchanged runScenario cleanup executes before the rejection surfaces. Node syntax and Biome checks passed."
+      ],
+      "findings": []
+    }
+  }
+}
