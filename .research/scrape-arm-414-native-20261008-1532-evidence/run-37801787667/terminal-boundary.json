@@ -1,0 +1,122 @@
+{
+  "workflow": "Hosted guest side-panel acceptance",
+  "workflow_file": ".github/workflows/hosted-guest-acceptance.yml",
+  "run_id": 37801787667,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37801787667",
+  "status": "completed",
+  "conclusion": "success",
+  "created_at": "2026-10-08T15:33:47Z",
+  "started_at": "2026-10-08T15:33:47Z",
+  "completed_at": "2026-10-08T15:42:24Z",
+  "workflow_checkout_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
+  "job": {
+    "name": "guest",
+    "id": 113395595183,
+    "status": "completed",
+    "conclusion": "success",
+    "exercise_step": "Exercise the selected Chrome side-panel case",
+    "exercise_step_conclusion": "success"
+  },
+  "inputs": {
+    "acceptance_lane": "A",
+    "runner_label": "macos-15",
+    "acceptance_case": "guest-scrape-development",
+    "scrape_auth_mode": "guest",
+    "scrape_width_mode": "normal",
+    "scrape_normal_width_px": 600,
+    "scrape_diagnostic_cpu_rate": null,
+    "scrape_reload_open_diagnostic": false,
+    "release_run_id": null,
+    "development_run_id": 37790643945,
+    "development_artifact_id": 11556064167
+  },
+  "native_target": {
+    "runner_label": "macos-15",
+    "runner_arch": "ARM64",
+    "machine": "arm64",
+    "browser_version": "Chrome/141.0.7390.37",
+    "runtime_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "observed_browser_mode": "headed",
+    "browser_mode_verified_by": "Browser.getBrowserCommandLine",
+    "guest_auth_storage": {
+      "hasAccessToken": false,
+      "hasUserProfile": false
+    }
+  },
+  "artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.414",
+    "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+    "tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046",
+    "ci_run_id": 37790643945,
+    "artifact_id": 11556064167,
+    "artifact_name": "matrx-extend-development-test-e7b7dc1ecae946369cebb482915faf7ef792c692-37790643945-1",
+    "artifact_expired": false,
+    "focused_acceptance_guards": "success",
+    "full_ci_run_conclusion": "success"
+  },
+  "resource_journal_terminal_decisions": [
+    {
+      "path": "run-37801787667/resource-journals/hosted-browser-37801787667-1.jsonl",
+      "sha256": "0a993151e1f15cc3a0e9330a89049205b6a5c839145d326e759c178d136b0415",
+      "run_id": "hosted-browser-37801787667-1",
+      "events": 4,
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "child_exit_code": 0,
+      "decision": "valid"
+    },
+    {
+      "path": "run-37801787667/resource-journals/hosted-guest-37801787667-1.jsonl",
+      "sha256": "fc67023b4368d4ba767e8a8cc169fde3b3a10692dc964ddef4dfb758c3aeab7c",
+      "run_id": "hosted-guest-37801787667-1",
+      "events": 11,
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "child_exit_code": 0,
+      "decision": "valid"
+    },
+    {
+      "path": "run-37801787667/resource-journals/hosted-package-37801787667-1.jsonl",
+      "sha256": "eac99fdf85a0cad8f2b122530b3063c4e26e1c02cbbe4100e6d00407dc679d59",
+      "run_id": "hosted-package-37801787667-1",
+      "events": 4,
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "child_exit_code": 0,
+      "decision": "valid"
+    }
+  ],
+  "optional_shared_auth_secrets": {
+    "checked_by_name_only": [
+      "MATRX_REVIEWER_MAGIC_LINK_JSON",
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON"
+    ],
+    "present": [],
+    "values_read": false,
+    "used": false
+  },
+  "screenshots": {
+    "artifact_contained_screenshots": true,
+    "copied_or_inspected": false,
+    "included_in_committed_evidence": false
+  },
+  "executed_source_sha256": {
+    ".github/workflows/hosted-guest-acceptance.yml": "1f3453f577d68c97f8109649b0a79162abd5bc950839fb52810a4e48f2aba327",
+    "tests/browser/scrape-guest-native-acceptance.mjs": "6bebacc32b9d780918ea05baed5457e79d0245b489e574c42ca30a688f4e54f7",
+    "tests/browser/scrape-post-reload-capture-boundary.mjs": "094e75ee1e20339361749d74f1a599f714da28fa1333b873d2195426fe576fb7",
+    "tests/browser/scrape-native-recapture.mjs": "cbd8f99843f70d5672a2cdcbd721c74470fa2ab1e880678ec1bcecfb46fb1888"
+  },
+  "driver_receipt": {
+    "raw_compressed_path": "driver-receipt.raw.json.gz",
+    "raw_compressed_sha256": "b3e6fbf8873a0654558799905637760fc05ed5bf93d591b112213caf6d8be03d",
+    "raw_uncompressed_sha256": "f799be3adeb1a90206c2bff4dd0f391fa454f6feca0539b2d1cef290d5196f84",
+    "readable_path": "driver-receipt.json",
+    "readable_sha256": "8ded57452eddcc193381fb9de574669b2622e427da8bba1ef2001d8581385b60",
+    "raw_content_preserved": true
+  }
+}
