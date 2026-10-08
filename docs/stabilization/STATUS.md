@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-08 16:11 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T16:11:50.063236+00:00. 205 features · 769 cases · 1358 controls · 184 linked defect records.
+Generated 2026-10-08 16:13 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T16:13:38.966554+00:00. 205 features · 769 cases · 1358 controls · 184 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -950,17 +950,17 @@ These current-build checks supplement the inventory matrix; they do not promote 
 **Recorded case details and evidence:**
 
 - EXT-F-1008-T01 · guest: Partial.
-  Evidence / build / date recorded: 37800877872, ['.research/seo-arm-414-native-20261008-1527.json', '.research/seo-arm-live-peer-20261008-1536.json']
+  Evidence / build / date recorded: 37804374798, ['.research/seo-full-arm-414-native-20261008-1552.json', '.research/seo-full-live-peer-20261008-1610.json']
 - EXT-F-1008-T02 · guest: Partial.
-  Evidence / build / date recorded: 37800877872, ['.research/seo-arm-414-native-20261008-1527.json', '.research/seo-arm-live-peer-20261008-1536.json']
+  Evidence / build / date recorded: 37804374798, ['.research/seo-full-arm-414-native-20261008-1552.json', '.research/seo-full-live-peer-20261008-1610.json']
 - EXT-F-1008-T03 · guest: Partial.
-  Evidence / build / date recorded: 37800877872, ['.research/seo-arm-414-native-20261008-1527.json', '.research/seo-arm-live-peer-20261008-1536.json']
+  Evidence / build / date recorded: 37804374798, ['.research/seo-full-arm-414-native-20261008-1552.json', '.research/seo-full-live-peer-20261008-1610.json']
 - EXT-F-1008-T07 · guest: Partial.
-  Evidence / build / date recorded: 37800877872, ['.research/seo-arm-414-native-20261008-1527.json', '.research/seo-arm-live-peer-20261008-1536.json']
+  Evidence / build / date recorded: 37804374798, ['.research/seo-full-arm-414-native-20261008-1552.json', '.research/seo-full-live-peer-20261008-1610.json']
 - EXT-F-1008-T09 · guest: Partial.
-  Evidence / build / date recorded: 37800877872, ['.research/seo-arm-414-native-20261008-1527.json', '.research/seo-arm-live-peer-20261008-1536.json']
+  Evidence / build / date recorded: 37804374798, ['.research/seo-full-arm-414-native-20261008-1552.json', '.research/seo-full-live-peer-20261008-1610.json']
 - EXT-F-1008-T14 · guest: Partial.
-  Evidence / build / date recorded: 37800877872, ['.research/seo-arm-414-native-20261008-1527.json', '.research/seo-arm-live-peer-20261008-1536.json']
+  Evidence / build / date recorded: 37804374798, ['.research/seo-full-arm-414-native-20261008-1552.json', '.research/seo-full-live-peer-20261008-1610.json']
 
 
 ## Screenshots
