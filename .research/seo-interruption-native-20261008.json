@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0183",
+  "status": "NATIVE_INTERRUPTION_CAPABILITY_GAP_ESTABLISHED",
+  "acceptance_credit": "none",
+  "source_gate": {
+    "focused_ci_run_id": 37808394240,
+    "focused_ci_head_sha": "380e34ee0a8f6588c8a67765e54987372d18264f",
+    "focused_ci_conclusion": "success",
+    "repair_commit": "035caed8",
+    "repair_is_ancestor_of_ci_source": true,
+    "frozen_artifact_id": 11564416863,
+    "frozen_artifact_expired_at_dispatch": false,
+    "frozen_source_sha": "380e34ee0a8f6588c8a67765e54987372d18264f",
+    "frozen_version": "0.2.414",
+    "workflow_source_sha": "c2a1b6a7fc497706c0457bc033806bc134ae31d3"
+  },
+  "dispatch": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "lane": "B",
+    "runner": "macos-15 ARM64",
+    "acceptance_case": "guest-seo",
+    "seo_case_scope": "controlled",
+    "seo_metadata_fixture": "none",
+    "seo_resource_diagnostic": false,
+    "fixture_or_credentials": "none; guest account path",
+    "intentional_interruption_input": "none exists; cancellation was requested through the existing GitHub workflow control"
+  },
+  "attempts": [
+    {
+      "run_id": 37809984111,
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37809984111",
+      "artifact_id": 11565371104,
+      "artifact_name": "hosted-guest-37809984111-1",
+      "artifact_digest": "sha256:8d1165447e33ce7e5d0aeae78dc90321ce76269fb9c954b23d33fefdb9fc5637",
+      "artifact_expired": false,
+      "cancel_requested_while_step_reported_active": true,
+      "native_step": {
+        "started_at": "2026-10-08T16:40:35Z",
+        "completed_at": "2026-10-08T16:43:08Z",
+        "conclusion": "success"
+      },
+      "current_run_resource_journal": "raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37809984111-1.jsonl",
+      "current_run_resource_journal_sha256": "4bca97a7de3a85c08624846e561742a22cfb678ec028c45d281a54103c7be78a",
+      "resource_observation": {
+        "admitted_at": "2026-10-08T16:41:43.090Z",
+        "child_exit_at": "2026-10-08T16:42:19.770Z",
+        "child_exit_code": 0,
+        "child_signal": null,
+        "resource_invalid": false,
+        "decision": "valid"
+      },
+      "receipt": {
+        "path": "raw/matrx-extend/matrx-extend/test-results/seo-guest-acceptance.json",
+        "sha256": "0e6eda7c31ce902258da49d76a273382d61522342ccc5071ec2a368cea139f82",
+        "status": "partial",
+        "receipt_state": "no in_progress marker",
+        "last_safe_stage": "controlled_public_source_restored",
+        "current_operation": "build_recheck",
+        "completed_targets": 18,
+        "target_statuses": { "pass": 18 }
+      },
+      "classification": "Normal native completion preceded the cancellation request. The later cancelled workflow conclusion does not turn this into an interrupted run; the receipt is the ordinary final report."
+    },
+    {
+      "run_id": 37811146242,
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37811146242",
+      "artifact_id": 11565825536,
+      "artifact_name": "hosted-guest-37811146242-1",
+      "artifact_digest": "sha256:ed82b71f217def2766a94c8c4e671c3bc44b85b0b52399153323ad25cc2eddc4",
+      "artifact_expired": false,
+      "cancel_requested_during_native_step": true,
+      "native_step": {
+        "started_at": "2026-10-08T16:49:19Z",
+        "completed_at": "2026-10-08T16:51:10Z",
+        "conclusion": "cancelled"
+      },
+      "upload_step": {
+        "completed_at": "2026-10-08T16:51:12Z",
+        "conclusion": "success"
+      },
+      "current_run_resource_journal": "raw/attempt-37811146242/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37811146242-1.jsonl",
+      "current_run_resource_journal_sha256": "c93b040557c0b1d716e742e9bcf2f4f5f82c8b3eb12f695926220910b9894b44",
+      "resource_observation": {
+        "admitted_at": "2026-10-08T16:50:27.386Z",
+        "child_exit_at": "2026-10-08T16:51:08.995Z",
+        "child_exit_code": 0,
+        "child_signal": null,
+        "resource_invalid": false,
+        "decision": "valid"
+      },
+      "receipt": {
+        "path": "raw/attempt-37811146242/matrx-extend/matrx-extend/test-results/seo-guest-acceptance.json",
+        "sha256": "24278127caed17afe10f70874b3f2319dd48aac6b7e9d91286394148b73fbc7c",
+        "status": "partial",
+        "receipt_state": "no in_progress marker",
+        "last_safe_stage": "controlled_public_source_restored",
+        "current_operation": "build_recheck",
+        "completed_targets": 18,
+        "target_statuses": { "pass": 18 }
+      },
+      "classification": "The job step was marked cancelled, but the owned child exited zero before that step completed. The uploaded receipt is again a normal final report, not an interrupted checkpoint. No completed-target interruption durability is proven."
+    }
+  ],
+  "native_capability_gap": {
+    "finding": "The existing hosted TEST pathway has no target-selectable interruption input. Canceling the GitHub job is not a deterministic interrupt of the SEO child: both cancellation attempts yielded child exit code 0 and ordinary final receipts, including the attempt whose workflow step was marked cancelled.",
+    "evidence_limit": "Resource journals and final receipts are present in both uploaded artifacts. The current-run journals show clean child exits; older journal files included by the workflow's broad artifact glob are historical and are not attributed to these attempts.",
+    "narrow_implementation_handoff": "Add a fail-closed test-only hosted SEO interruption selector that names one existing controlled target. In the native SEO driver, after that target's real browser assertions pass and its atomic progress checkpoint has completed, immediately terminate the driver process with SIGTERM. Restrict the selector to guest-seo, controlled scope, fixture none, and the existing development-test artifact route. Keep the checkpoint status unverified/in_progress with zero acceptance credit. The next hosted run must show the selected target retained in that checkpoint, a nonzero/signal child termination in the current-run resource journal, successful always-upload, and an independently reviewed neighboring normal success receipt."
+  },
+  "surrounding_success": {
+    "run_id": 37800877872,
+    "report": ".research/seo-arm-414-native-20261008-1527.json",
+    "classification": "separate normal controlled guest success; 18 targets, not D183 interruption evidence"
+  },
+  "raw_directory": ".research/seo-interruption-native-20261008/raw/"
+}

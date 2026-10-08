@@ -64,6 +64,7 @@ test('lane admission refuses unknown lanes and isolates shared credentials', () 
     scrapeAuth = 'guest',
     seoCaseScope = 'full',
     seoFixture = 'none',
+    seoInterrupt = 'none',
   ) =>
     spawnSync('bash', ['-euo', 'pipefail', '-c', admission], {
       encoding: 'utf8',
@@ -75,6 +76,7 @@ test('lane admission refuses unknown lanes and isolates shared credentials', () 
         DESKTOP_SETTINGS_CASE: 'full',
         SEO_CASE_SCOPE: seoCaseScope,
         SEO_METADATA_FIXTURE: seoFixture,
+        SEO_INTERRUPT_AFTER_TARGET: seoInterrupt,
       },
     });
   for (const lane of ['A', 'B']) assert.equal(check(lane, 'guest-chat').status, 0, lane);
@@ -106,4 +108,14 @@ test('lane admission refuses unknown lanes and isolates shared credentials', () 
   assert.notEqual(check('B', 'guest-seo', 'guest', 'full', 'bogus').status, 0);
   assert.notEqual(check('B', 'guest-chat', 'guest', 'full', 'airbnb').status, 0);
   assert.notEqual(check('B', 'guest-seo', 'guest', 'controlled', 'airbnb').status, 0);
+  const target = 'manual_button_returns_to_current_page';
+  assert.equal(check('B', 'guest-seo', 'guest', 'controlled', 'none', target).status, 0);
+  for (const [lane, acceptanceCase, scope, fixture, selector] of [
+    ['A', 'guest-seo', 'controlled', 'none', target],
+    ['B', 'guest-chat', 'controlled', 'none', target],
+    ['B', 'guest-seo', 'full', 'none', target],
+    ['B', 'guest-seo', 'controlled', 'airbnb', target],
+    ['B', 'guest-seo', 'controlled', 'none', 'unknown_target'],
+  ])
+    assert.notEqual(check(lane, acceptanceCase, 'guest', scope, fixture, selector).status, 0);
 });

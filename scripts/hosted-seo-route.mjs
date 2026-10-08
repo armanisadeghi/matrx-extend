@@ -19,7 +19,17 @@ export async function seoStartupObservationOptions(report, enabled) {
 }
 
 export async function writeSeoGuestReport(path, report, diagnosticEnabled) {
-  const finalReport = classifySeoResourceDiagnosticReport(report, diagnosticEnabled);
+  const classified = classifySeoResourceDiagnosticReport(report, diagnosticEnabled);
+  const finalReport = report.interruption_test_target
+    ? {
+        ...classified,
+        evidence_classification: 'DIAGNOSTIC_ONLY_NO_ACCEPTANCE_CREDIT',
+        diagnostic_source_status: classified.status,
+        diagnostic_targets: classified.targets,
+        targets: [],
+        status: 'unverified',
+      }
+    : classified;
   persistSeoReceipt(path, finalReport);
   return finalReport;
 }
@@ -37,6 +47,10 @@ export function writeSeoGuestProgress(path, report, diagnosticEnabled) {
     scope: report.scope,
     case_selection: report.case_selection,
     resource_diagnostic_enabled: diagnosticEnabled,
+    ...(report.interruption_test_target && {
+      interruption_test_target: report.interruption_test_target,
+      evidence_classification: 'DIAGNOSTIC_ONLY_NO_ACCEPTANCE_CREDIT',
+    }),
     build: report.build,
     last_safe_stage: report.last_safe_stage,
     current_operation: report.current_operation,
@@ -91,6 +105,27 @@ export function hostedSeoResourceDiagnostic(acceptanceCase, scope, fixture, enab
   return enabled === '1';
 }
 
+// This is a diagnostic of receipt durability, never a product acceptance result.
+export function hostedSeoInterruptTarget(
+  acceptanceCase,
+  scope,
+  fixture,
+  resourceDiagnostic = '0',
+  selector = 'none',
+) {
+  if (selector === 'none') return undefined;
+  assert.equal(selector, 'manual_button_returns_to_current_page', 'unknown_seo_interrupt_target');
+  assert.equal(acceptanceCase, 'guest-seo', 'seo_interrupt_requires_guest_seo');
+  assert.equal(scope, 'controlled', 'seo_interrupt_requires_controlled_scope');
+  assert.equal(fixture, 'none', 'seo_interrupt_requires_no_fixture');
+  assert.equal(resourceDiagnostic, '0', 'seo_interrupt_refuses_resource_diagnostic');
+  return selector;
+}
+
+export function interruptSeoAfterCheckpoint(selector, subtarget) {
+  if (selector === subtarget) process.kill(process.pid, 'SIGTERM');
+}
+
 export function classifySeoResourceDiagnosticReport(report, enabled) {
   if (!enabled) return report;
   return {
@@ -112,8 +147,17 @@ export function hostedGuestSeoRoute(
   prepared,
   scope = 'full',
   fixture = 'none',
+  interruptTarget = 'none',
+  resourceDiagnostic = '0',
 ) {
   const metadataFixture = hostedSeoMetadataFixture(acceptanceCase, scope, fixture);
+  const selectedInterruptTarget = hostedSeoInterruptTarget(
+    acceptanceCase,
+    scope,
+    fixture,
+    resourceDiagnostic,
+    interruptTarget,
+  );
   if (acceptanceCase !== 'guest-seo') return null;
   assert.ok(scope === 'full' || scope === 'controlled', 'unknown_seo_case_scope');
   assert.equal(artifactMode, 'development', 'hosted_seo_development_mode_required');
@@ -134,6 +178,7 @@ export function hostedGuestSeoRoute(
       SEO_GUEST_DEV_BUILD_RECEIPT: prepared.relocatedReceipt,
       SEO_GUEST_CASE_SCOPE: scope,
       SEO_GUEST_METADATA_FIXTURE: metadataFixture,
+      SEO_GUEST_INTERRUPT_AFTER_TARGET: selectedInterruptTarget,
     },
   };
 }

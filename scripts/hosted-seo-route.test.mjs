@@ -13,6 +13,7 @@ import {
   seoStartupObservationOptions,
   writeSeoGuestReport,
 } from './hosted-seo-route.mjs';
+import * as seoRoute from './hosted-seo-route.mjs';
 import { buildEvidenceRecord } from './record-stabilization-evidence.mjs';
 
 const selected = {
@@ -30,6 +31,7 @@ test('guest SEO passes the selected development artifact and receipt to the exis
       SEO_GUEST_DEV_BUILD_RECEIPT: selected.relocatedReceipt,
       SEO_GUEST_CASE_SCOPE: 'full',
       SEO_GUEST_METADATA_FIXTURE: undefined,
+      SEO_GUEST_INTERRUPT_AFTER_TARGET: undefined,
     },
   });
   assert.equal(hostedGuestSeoRoute('guest-chat', 'development', selected), null);
@@ -166,7 +168,7 @@ test('SEO reporter retains safe phase and completed targets after SIGTERM', asyn
           '--input-type=module',
           '-e',
           `
-        import { writeSeoGuestProgress } from ${JSON.stringify(writerUrl)};
+        import { writeSeoGuestProgress, interruptSeoAfterCheckpoint } from ${JSON.stringify(writerUrl)};
         const path = process.argv[1];
         const diagnostic = process.argv[2] === 'true';
         const report = {
@@ -179,6 +181,7 @@ test('SEO reporter retains safe phase and completed targets after SIGTERM', asyn
         };
         const OUTPUT = path;
         const SEO_RESOURCE_DIAGNOSTIC = diagnostic;
+        const SEO_INTERRUPT_AFTER_TARGET = undefined;
         ${driverFunctions}
         advance('owned_guest_panel_ready', { nativePanel: true });
         advance('public_page_0_ready', { title: 'private page text' });
@@ -252,6 +255,38 @@ test('SEO final writer preserves success and failure report shape', async () => 
   }
 });
 
+test('interruption diagnostic final writer cannot claim product acceptance', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'seo-interrupt-final-'));
+  try {
+    const path = join(directory, 'result.json');
+    await writeSeoGuestReport(
+      path,
+      {
+        status: 'pass',
+        interruption_test_target: 'manual_button_returns_to_current_page',
+        targets: [
+          {
+            case_id: 'EXT-F-1008-T02',
+            subtarget: 'manual_button_returns_to_current_page',
+            status: 'pass',
+          },
+        ],
+      },
+      false,
+    );
+    const persisted = JSON.parse(await readFile(path, 'utf8'));
+    assert.equal(persisted.status, 'unverified');
+    assert.equal(persisted.evidence_classification, 'DIAGNOSTIC_ONLY_NO_ACCEPTANCE_CREDIT');
+    assert.deepEqual(persisted.targets, []);
+    assert.equal(
+      persisted.diagnostic_targets[0].subtarget,
+      'manual_button_returns_to_current_page',
+    );
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
 test('instrumented SEO writer outcomes never become native pass in the evidence summary', async () => {
   const directory = await mkdtemp(join(tmpdir(), 'seo-diagnostic-contract-'));
   const guardLogPath = join(directory, 'guard.jsonl');
@@ -298,8 +333,8 @@ test('instrumented SEO writer outcomes never become native pass in the evidence 
   }
 });
 
-test('hosted preflight rejects invalid metadata and diagnostic selection before browser setup', () => {
-  const preflight = (acceptanceCase, scope, fixture, diagnostic = '0') =>
+test('hosted preflight rejects invalid metadata, resource diagnostic, and interruption selection before browser setup', () => {
+  const preflight = (acceptanceCase, scope, fixture, diagnostic = '0', interrupt = 'none') =>
     spawnSync(process.execPath, ['scripts/hosted-guest-acceptance.mjs'], {
       encoding: 'utf8',
       env: {
@@ -310,11 +345,17 @@ test('hosted preflight rejects invalid metadata and diagnostic selection before 
         MATRX_HOSTED_SEO_CASE_SCOPE: scope,
         MATRX_HOSTED_SEO_METADATA_FIXTURE: fixture,
         MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC: diagnostic,
+        MATRX_HOSTED_SEO_INTERRUPT_AFTER_TARGET: interrupt,
       },
     });
   assert.equal(preflight('guest-seo', 'full', undefined).status, 0);
   assert.equal(preflight('guest-seo', 'full', 'airbnb').status, 0);
   assert.equal(preflight('guest-seo', 'full', 'airbnb', '1').status, 0);
+  assert.equal(
+    preflight('guest-seo', 'controlled', 'none', '0', 'manual_button_returns_to_current_page')
+      .status,
+    0,
+  );
   for (const [acceptanceCase, scope, fixture] of [
     ['guest-seo', 'full', 'invalid'],
     ['guest-seo', 'controlled', 'airbnb'],
@@ -323,6 +364,18 @@ test('hosted preflight rejects invalid metadata and diagnostic selection before 
     assert.notEqual(preflight(acceptanceCase, scope, fixture).status, 0);
   assert.notEqual(preflight('guest-seo', 'full', 'none', '1').status, 0);
   assert.notEqual(preflight('guest-seo', 'controlled', 'airbnb', '1').status, 0);
+  for (const [acceptanceCase, scope, fixture, diagnostic] of [
+    ['guest-chat', 'controlled', 'none', '0'],
+    ['guest-seo', 'full', 'none', '0'],
+    ['guest-seo', 'controlled', 'airbnb', '0'],
+    ['guest-seo', 'controlled', 'none', '1'],
+  ])
+    assert.notEqual(
+      preflight(acceptanceCase, scope, fixture, diagnostic, 'manual_button_returns_to_current_page')
+        .status,
+      0,
+    );
+  assert.notEqual(preflight('guest-seo', 'controlled', 'none', '0', 'not_a_target').status, 0);
 });
 
 test('guest SEO controlled scope reaches the native driver and unknown scope fails', () => {
@@ -335,6 +388,105 @@ test('guest SEO controlled scope reaches the native driver and unknown scope fai
     () => hostedGuestSeoRoute('guest-seo', 'development', selected, 'unknown'),
     /unknown_seo_case_scope/,
   );
+});
+
+test('hosted SEO interruption is confined to one controlled development target', () => {
+  assert.equal(
+    typeof seoRoute.hostedSeoInterruptTarget,
+    'function',
+    'hosted interrupt selector is missing',
+  );
+  const { hostedSeoInterruptTarget } = seoRoute;
+  const target = 'manual_button_returns_to_current_page';
+  assert.equal(hostedSeoInterruptTarget('guest-seo', 'controlled', 'none', '0', target), target);
+  assert.equal(hostedSeoInterruptTarget('guest-seo', 'controlled', 'none', '0', 'none'), undefined);
+  for (const [acceptanceCase, scope, fixture, diagnostic, selector] of [
+    ['guest-chat', 'controlled', 'none', '0', target],
+    ['guest-seo', 'full', 'none', '0', target],
+    ['guest-seo', 'controlled', 'airbnb', '0', target],
+    ['guest-seo', 'controlled', 'none', '1', target],
+    ['guest-seo', 'controlled', 'none', '0', 'unknown_target'],
+  ])
+    assert.throws(() =>
+      hostedSeoInterruptTarget(acceptanceCase, scope, fixture, diagnostic, selector),
+    );
+  assert.equal(
+    hostedGuestSeoRoute('guest-seo', 'development', selected, 'controlled', 'none', target).env
+      .SEO_GUEST_INTERRUPT_AFTER_TARGET,
+    target,
+  );
+  assert.throws(() =>
+    hostedGuestSeoRoute('guest-seo', 'release', selected, 'controlled', 'none', target),
+  );
+});
+
+test('selected target survives the real progress writer before driver SIGTERM', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'seo-interrupt-'));
+  const writerUrl = new URL('./hosted-seo-route.mjs', import.meta.url).href;
+  const driverSource = await readFile(
+    new URL('../tests/browser/seo-guest-acceptance.mjs', import.meta.url),
+    'utf8',
+  );
+  const driverAst = ts.createSourceFile(
+    'seo-guest-acceptance.mjs',
+    driverSource,
+    ts.ScriptTarget.Latest,
+    true,
+  );
+  const declaration = driverAst.statements.find(
+    (statement) =>
+      ts.isVariableStatement(statement) &&
+      statement.declarationList.declarations.some(
+        (item) => ts.isIdentifier(item.name) && item.name.text === 'target',
+      ),
+  );
+  assert.ok(declaration, 'native driver target boundary exists');
+  try {
+    for (const [selector, expectedSignal, expectedTargets] of [
+      ['manual_button_returns_to_current_page', 'SIGTERM', 1],
+      ['none', null, 2],
+    ]) {
+      const path = join(directory, `${selector}.json`);
+      const child = spawnSync(
+        process.execPath,
+        [
+          '--input-type=module',
+          '-e',
+          `
+        import { writeSeoGuestProgress, interruptSeoAfterCheckpoint } from ${JSON.stringify(writerUrl)};
+        const OUTPUT = process.argv[1];
+        const SEO_INTERRUPT_AFTER_TARGET = process.argv[2] === 'none' ? undefined : process.argv[2];
+        const SEO_RESOURCE_DIAGNOSTIC = false;
+        const report = {schema_version: 1, feature_id: 'EXT-F-1008', mode: 'guest',
+          scope: 'public-page guest SEO actions', case_selection: {scope: 'controlled'},
+          build: {before: {kind: 'ci_development_test'}, after: null},
+          last_safe_stage: 'manual_reaudit_click_dispatched', current_operation: null,
+          targets: [], interruption_test_target: SEO_INTERRUPT_AFTER_TARGET};
+        const checkpoint = () => writeSeoGuestProgress(OUTPUT, report, SEO_RESOURCE_DIAGNOSTIC);
+        ${declaration.getText(driverAst)}
+        target('T02', 'manual_button_returns_to_current_page', {currentTitlePreserved: true});
+        target('T07', 'guest_menu_offers_text_and_ai_but_hides_json', {guestOnly: true});
+      `,
+          path,
+          selector,
+        ],
+        { encoding: 'utf8' },
+      );
+      assert.equal(child.signal, expectedSignal, child.stderr);
+      assert.equal(child.status, expectedSignal ? null : 0, child.stderr);
+      const persisted = JSON.parse(await readFile(path, 'utf8'));
+      assert.equal(persisted.status, 'unverified');
+      assert.equal(persisted.receipt_state, 'in_progress');
+      assert.equal(persisted.targets.length, expectedTargets);
+      assert.equal(persisted.targets[0].subtarget, 'manual_button_returns_to_current_page');
+      if (expectedSignal) {
+        assert.equal(persisted.interruption_test_target, selector);
+        assert.equal(persisted.evidence_classification, 'DIAGNOSTIC_ONLY_NO_ACCEPTANCE_CREDIT');
+      }
+    }
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
 });
 
 test('guest SEO refuses release, Store, and mismatched development selection', () => {
@@ -362,6 +514,19 @@ test('hosted workflow admits guest SEO on lane B with one exact development arti
   );
   assert.match(workflow, /test-results\/seo-guest-acceptance\.json/);
   assert.match(workflow, /seo_resource_diagnostic:\n[\s\S]*?default: false\n\s*type: boolean/);
+  assert.match(workflow, /seo_interrupt_after_target:\n[\s\S]*?default: none\n\s*type: choice/);
+  assert.equal(
+    (
+      workflow.match(
+        /MATRX_HOSTED_SEO_INTERRUPT_AFTER_TARGET: \$\{\{ inputs\.seo_interrupt_after_target \|\| 'none' \}\}/g,
+      ) ?? []
+    ).length,
+    2,
+  );
+  assert.match(
+    workflow,
+    /SEO_INTERRUPT_AFTER_TARGET: \$\{\{ inputs\.seo_interrupt_after_target \|\| 'none' \}\}/,
+  );
   assert.match(
     workflow,
     /MATRX_STARTUP_INTERVAL_DIAGNOSTIC: \$\{\{ inputs\.seo_resource_diagnostic == true && '1' \|\| '0' \}\}/,

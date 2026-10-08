@@ -29,6 +29,7 @@ import { hostedScrapeReloadDiagnostic } from './hosted-scrape-reload-diagnostic.
 import { requireHostedScrapeRoute } from './hosted-scrape-route.mjs';
 import {
   hostedGuestSeoRoute,
+  hostedSeoInterruptTarget,
   hostedSeoMetadataFixture,
   hostedSeoResourceDiagnostic,
 } from './hosted-seo-route.mjs';
@@ -353,6 +354,8 @@ async function run(prepared, artifactMode) {
     prepared,
     process.env.MATRX_HOSTED_SEO_CASE_SCOPE ?? 'full',
     process.env.MATRX_HOSTED_SEO_METADATA_FIXTURE ?? 'none',
+    process.env.MATRX_HOSTED_SEO_INTERRUPT_AFTER_TARGET ?? 'none',
+    process.env.MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC ?? '0',
   );
   const scrapeSelection = scrapeRoute ? scrapeNativeSelection(process.env) : null;
   if (
@@ -611,6 +614,13 @@ if (phase === 'preflight') {
     process.env.MATRX_HOSTED_SEO_METADATA_FIXTURE ?? 'none',
     process.env.MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC ?? '0',
   );
+  hostedSeoInterruptTarget(
+    process.env.MATRX_HOSTED_ACCEPTANCE_CASE,
+    process.env.MATRX_HOSTED_SEO_CASE_SCOPE ?? 'full',
+    process.env.MATRX_HOSTED_SEO_METADATA_FIXTURE ?? 'none',
+    process.env.MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC ?? '0',
+    process.env.MATRX_HOSTED_SEO_INTERRUPT_AFTER_TARGET ?? 'none',
+  );
   hostedDesktopSettingsCase(
     process.env.MATRX_HOSTED_ACCEPTANCE_CASE,
     process.env.MATRX_HOSTED_DESKTOP_SETTINGS_CASE,
@@ -632,6 +642,14 @@ if (phase === 'acceptance')
     process.env.MATRX_HOSTED_SEO_CASE_SCOPE ?? 'full',
     process.env.MATRX_HOSTED_SEO_METADATA_FIXTURE ?? 'none',
     process.env.MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC ?? '0',
+  );
+if (phase === 'acceptance')
+  hostedSeoInterruptTarget(
+    process.env.MATRX_HOSTED_ACCEPTANCE_CASE,
+    process.env.MATRX_HOSTED_SEO_CASE_SCOPE ?? 'full',
+    process.env.MATRX_HOSTED_SEO_METADATA_FIXTURE ?? 'none',
+    process.env.MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC ?? '0',
+    process.env.MATRX_HOSTED_SEO_INTERRUPT_AFTER_TARGET ?? 'none',
   );
 assert.ok(process.env.MATRX_RESOURCE_OWNER, 'hosted phase requires owned resource permit');
 const runtimeDir = resolve(process.env.MATRX_HOSTED_BROWSER_RUNTIME_DIR ?? '');
