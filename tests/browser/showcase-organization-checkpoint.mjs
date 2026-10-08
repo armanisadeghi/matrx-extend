@@ -6,7 +6,13 @@ import {
   selectOrganization,
   settingsOrganizationSelectionRequired,
 } from './settings-native-auth-driver.mjs';
-import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
+import {
+  click,
+  evaluate,
+  openSection,
+  toolsCatalogState,
+  waitFor,
+} from './settings-panel-driver.mjs';
 import {
   createShowcaseOrganizationDiagnostic,
   observeShowcaseOrganization,
@@ -253,7 +259,18 @@ export async function runShowcaseOrganizationCheckpoint({
       return click(panel, 'title', 'Tools');
     });
     stageShowcaseOrganization(diagnostic, 'organization_records_gate');
-    await resourceAction(() => {
+    await resourceAction(async () => {
+      // EXT-D-0177: the outer Tools pane can precede the lazy Catalog mount.
+      // Read the actual inner view state before the trusted Records pointer.
+      await waitFor(
+        'showcase_tools_catalog_ready',
+        async () => {
+          const state = await toolsCatalogState(panel);
+          observeShowcaseOrganization(diagnostic, { tools_view_state: state });
+          return state;
+        },
+        (state) => state === 'catalog',
+      );
       stageShowcaseOrganization(diagnostic, 'organization_records_click');
       return click(panel, 'tool-row', 'records');
     });

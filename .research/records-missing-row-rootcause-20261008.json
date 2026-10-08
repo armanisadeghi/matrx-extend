@@ -1,0 +1,12 @@
+{
+  "case_id": "EXT-F-1012-T57",
+  "native_run_id": 37776597696,
+  "frozen_app_source": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+  "status": "confirmed_checkpoint_readiness_gap_native_cause_unresolved",
+  "observed": "Tools outer panel active; Records target matched 0 and visible 0; no product GET, header, principal, or response.",
+  "source_finding": "Frozen ToolsView adds Records synchronously from SERVER_CATALOG, so a live DB catalog fetch cannot remove that row. The outer Tools panel uses a lazy ToolsView chunk and Suspense fallback; the checkpoint previously clicked Records immediately after Tools without awaiting Catalog mount. This confirms a checkpoint readiness gap (EXT-D-0177), but the native receipt lacked inner state and cannot prove that loading caused its zero count. A selected inner subtab or filter also remains possible.",
+  "change": "Checkpoint now waits for the actual active Catalog tab and mounted search control before the trusted Records pointer. On refusal it records bounded Tools view state (inactive/loading/catalog/other_tab/unknown), rendered catalog row count, empty-search boolean, and default-filters boolean in the same allowlisted receipt. No product click, request, organization, or acceptance gate changed.",
+  "red_green": "New real sampler tests failed 3/3 against HEAD driver (missing state), then passed 3/3 with this change. The loading-to-ready guard failed against original HEAD checkpoint at organization_records_click_failed because it attempted Records input before Catalog mounted; it passed with the repaired checkpoint. Focused suite passed 31/31.",
+  "limit": "No native run or screenshot after this change; source evidence does not establish which of lazy loading, inner tab, filtering, or unexpected rendering caused run 37776597696. Product acceptance remains unverified.",
+  "next_action": "On an authorized resource-valid native attempt with an exact artifact/driver binding, inspect the new single-receipt fields. If readiness never arrives, distinguish loading from other_tab or unknown. If catalog/default/empty and zero rows, inspect a screenshot and chunk/runtime error before changing the product. Preserve strict GET/header/principal/HTTP-finished gates."
+}

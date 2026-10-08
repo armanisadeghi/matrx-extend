@@ -110,6 +110,90 @@ test('records pointer failure preserves bounded rendered counts and panel readin
   }
 });
 
+test('missing Records row retains safe catalog state in the same receipt', () => {
+  for (const state of ['loading', 'catalog', 'other_tab', 'unknown']) {
+    const diagnostic = createShowcaseOrganizationDiagnostic();
+    stageShowcaseOrganization(diagnostic, 'organization_records_click');
+    recordShowcaseOrganizationFailure(diagnostic, {
+      driverFailure: {
+        code: 'pointer_target_not_unique',
+        matchedTargetCount: 0,
+        visibleMatchCount: 0,
+        toolsPanelActive: true,
+        toolsViewState: state,
+        toolsCatalogRowCount: 47,
+        toolsCatalogSearchEmpty: true,
+        toolsCatalogFiltersDefault: true,
+        privateText: 'must-never-escape',
+      },
+    });
+    assert.deepEqual(diagnostic.observations, {
+      records_target_match_count: 0,
+      records_target_visible_count: 0,
+      tools_panel_active: true,
+      tools_view_state: state,
+      tools_catalog_row_count: 47,
+      tools_catalog_search_empty: true,
+      tools_catalog_filters_default: true,
+    });
+    assert.equal(JSON.stringify(diagnostic).includes('must-never-escape'), false);
+  }
+  const diagnostic = createShowcaseOrganizationDiagnostic();
+  observeShowcaseOrganization(diagnostic, {
+    tools_view_state: 'private-value',
+    tools_catalog_row_count: 10001,
+    tools_catalog_search_empty: 'private-value',
+  });
+  assert.deepEqual(diagnostic.observations, {});
+});
+
+test('organization checkpoint waits for lazy Catalog mount before its trusted Records click', async () => {
+  const base = organizationProbePanel('ladder');
+  let catalogReads = 0;
+  let pointerEvents = 0;
+  let lastPointerKind = null;
+  const panel = {
+    on: base.on.bind(base),
+    async send(method, parameters) {
+      if (
+        method === 'Runtime.evaluate' &&
+        parameters.expression.includes("return pane.querySelector('input[placeholder=")
+      ) {
+        catalogReads++;
+        return { result: { value: catalogReads < 3 ? 'loading' : 'catalog' } };
+      }
+      if (method === 'Runtime.evaluate') {
+        lastPointerKind =
+          /const kind = "([^"]+)"/.exec(parameters.expression)?.[1] ?? lastPointerKind;
+      }
+      if (method === 'Input.dispatchMouseEvent') {
+        if (
+          parameters.type === 'mousePressed' &&
+          lastPointerKind === 'tool-row' &&
+          catalogReads < 3
+        ) {
+          throw new Error('premature_records_pointer');
+        }
+        pointerEvents++;
+      }
+      return base.send(method, parameters);
+    },
+  };
+  const report = {};
+  await runShowcaseOrganizationCheckpoint({
+    panel,
+    auth: probeAuth,
+    resourceAction: (action) => action(),
+    report,
+    requiredOrganizationName: MEMBER_TEST_ORGANIZATION_NAME,
+    requiredOrganizationId: ORGANIZATION_ID,
+  });
+  assert.equal(catalogReads, 3);
+  assert.ok(pointerEvents > 0);
+  assert.equal(report.organization_diagnostic.observations.tools_view_state, 'catalog');
+  assert.equal(report.organization_diagnostic.observations.product_response_success, true);
+});
+
 test('the real organization helper completes through the shared checkpoint with a selected device org', async () => {
   const report = { organization_diagnostic: null };
   const organization = await runShowcaseOrganizationCheckpoint({

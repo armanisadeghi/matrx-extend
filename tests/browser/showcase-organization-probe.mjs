@@ -75,6 +75,8 @@ export function organizationProbePanel(scenario) {
       let value;
       if (expression.includes('crypto.subtle.digest')) {
         value = 'b315e9825a0975c1785d769396ac4a6e0d701eb63d15ae035aa15ea540f9ae54';
+      } else if (expression.includes("return pane.querySelector('input[placeholder=")) {
+        value = 'catalog';
       } else if (
         expression.includes('const kind = "organization"') ||
         expression.includes('const kind = "organization-option"') ||

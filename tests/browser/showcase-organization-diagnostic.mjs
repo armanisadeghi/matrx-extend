@@ -54,6 +54,10 @@ const OBSERVATIONS = new Set([
   'records_target_match_count',
   'records_target_visible_count',
   'tools_panel_active',
+  'tools_view_state',
+  'tools_catalog_row_count',
+  'tools_catalog_search_empty',
+  'tools_catalog_filters_default',
 ]);
 const KNOWN_FAILURES = new Set([
   ...[...SUBSTAGES].map((stage) => `${stage}_failed`),
@@ -70,6 +74,7 @@ const KNOWN_FAILURES = new Set([
   'showcase_profile_changed',
   'showcase_organization_changed',
   'showcase_product_organization_request_not_observed',
+  'showcase_tools_catalog_ready_not_observed',
   'showcase_product_organization_header_mismatch',
   'showcase_product_principal_mismatch',
   'showcase_product_response_failed',
@@ -98,12 +103,18 @@ export function observeShowcaseOrganization(diagnostic, values) {
     if (key === 'archive_filter' && ['active', 'archived', 'all', 'unknown'].includes(value)) {
       diagnostic.observations[key] = value;
     } else if (
+      key === 'tools_view_state' &&
+      ['inactive', 'loading', 'catalog', 'other_tab', 'unknown'].includes(value)
+    ) {
+      diagnostic.observations[key] = value;
+    } else if (
       [
         'visible_option_count',
         'exact_match_count',
         'exact_visible_match_count',
         'records_target_match_count',
         'records_target_visible_count',
+        'tools_catalog_row_count',
       ].includes(key) &&
       Number.isSafeInteger(value) &&
       value >= 0 &&
@@ -118,6 +129,8 @@ export function observeShowcaseOrganization(diagnostic, values) {
         'exact_visible_match_count',
         'records_target_match_count',
         'records_target_visible_count',
+        'tools_catalog_row_count',
+        'tools_view_state',
       ].includes(key) &&
       (typeof value === 'boolean' || value === null)
     ) {
@@ -150,6 +163,10 @@ export function recordShowcaseOrganizationFailure(diagnostic, error) {
       records_target_match_count: pointer?.matchedTargetCount,
       records_target_visible_count: pointer?.visibleMatchCount,
       tools_panel_active: pointer?.toolsPanelActive,
+      tools_view_state: pointer?.toolsViewState,
+      tools_catalog_row_count: pointer?.toolsCatalogRowCount,
+      tools_catalog_search_empty: pointer?.toolsCatalogSearchEmpty,
+      tools_catalog_filters_default: pointer?.toolsCatalogFiltersDefault,
     });
   }
   const known = safeShowcaseOrganizationFailure(error);

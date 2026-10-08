@@ -213,6 +213,12 @@ function pointerFailure(code, location) {
     uniqueVisibleTarget: location?.count === 1,
     toolsPanelActive:
       typeof location?.toolsPanelActive === 'boolean' ? location.toolsPanelActive : null,
+    toolsViewState: location?.toolsViewState ?? null,
+    toolsCatalogRowCount: Number.isInteger(location?.toolsCatalogRowCount)
+      ? location.toolsCatalogRowCount
+      : null,
+    toolsCatalogSearchEmpty: location?.toolsCatalogSearchEmpty ?? null,
+    toolsCatalogFiltersDefault: location?.toolsCatalogFiltersDefault ?? null,
     hitTarget: location?.hitTarget === true,
     animating: location?.animating === true,
     stableSamples: location?.stableSamples ?? 0,
@@ -247,6 +253,24 @@ export function activeTabPanelExpression(title) {
   })()`;
 }
 
+// EXT-D-0177: the outer Tools tab becomes active before its lazy Catalog can mount.
+// This observation contains only a fixed state label and cannot dispatch input.
+export async function toolsCatalogState(panel) {
+  return evaluate(
+    panel,
+    `(() => {
+      const pane = ${activeTabPanelExpression('Tools')};
+      if (!pane) return 'inactive';
+      const tab = [...pane.querySelectorAll('[role="tab"]')]
+        .find((el) => el.textContent.trim() === 'Catalog');
+      if (!tab) return pane.querySelector('.animate-spin') ? 'loading' : 'unknown';
+      if (tab.getAttribute('data-state') !== 'active') return 'other_tab';
+      return pane.querySelector('input[placeholder="Search by name or description…"]')
+        ? 'catalog' : 'loading';
+    })()`,
+  );
+}
+
 export async function click(panel, kind, label, onPhase = undefined) {
   const pointerSample = () =>
     evaluate(
@@ -262,6 +286,8 @@ export async function click(panel, kind, label, onPhase = undefined) {
     };
     let candidates;
     let toolsPanelActive = null;
+    let toolsViewState = null, toolsCatalogRowCount = null;
+    let toolsCatalogSearchEmpty = null, toolsCatalogFiltersDefault = null;
     // The shared title tooltip temporarily preserves a hovered title in data-matrx-title.
     if (kind === 'title') candidates = [...document.querySelectorAll('button[title], button[data-matrx-title]')]
       .filter((el) => (el.getAttribute('title') ?? el.getAttribute('data-matrx-title')) === label);
@@ -297,6 +323,22 @@ export async function click(panel, kind, label, onPhase = undefined) {
     else if (kind === 'tool-row') {
       const pane = ${activeTabPanelExpression('Tools')};
       toolsPanelActive = Boolean(pane);
+      if (pane) {
+        const tab = [...pane.querySelectorAll('[role="tab"]')]
+          .find((el) => el.textContent.trim() === 'Catalog');
+        const search = pane.querySelector('input[placeholder="Search by name or description…"]');
+        toolsViewState = !tab ? (pane.querySelector('.animate-spin') ? 'loading' : 'unknown')
+          : tab.getAttribute('data-state') === 'active' ? (search ? 'catalog' : 'loading') : 'other_tab';
+        if (search) {
+          toolsCatalogRowCount = pane.querySelectorAll('button span.font-mono').length;
+          toolsCatalogSearchEmpty = search.value.trim() === '';
+          const filters = [...pane.querySelectorAll('button[role="combobox"]')]
+            .map((el) => el.textContent.trim());
+          toolsCatalogFiltersDefault = filters.length === 3 &&
+            filters[0].startsWith('All (') && filters[1].startsWith('Agent surface (') &&
+            filters[2].startsWith('All categories (');
+        }
+      }
       candidates = [...(pane?.querySelectorAll('button') ?? [])]
         .filter((el) => el.querySelector('span.font-mono')?.textContent.trim() === label);
     }
@@ -401,7 +443,9 @@ export async function click(panel, kind, label, onPhase = undefined) {
     sampleFailureStage = 'visibility_filter';
     const matchedCount = candidates.length;
     candidates = candidates.filter(visible);
-    if (candidates.length !== 1) return { count: candidates.length, matchedCount, toolsPanelActive };
+    if (candidates.length !== 1) return { count: candidates.length, matchedCount,
+      toolsPanelActive, toolsViewState, toolsCatalogRowCount,
+      toolsCatalogSearchEmpty, toolsCatalogFiltersDefault };
     const target = candidates[0];
     // Viewport preparation is not the acceptance action. Reposition on every
     // sample because an expanding section can invalidate a one-shot scroll.
