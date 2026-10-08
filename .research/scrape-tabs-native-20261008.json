@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "run": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37764002686; lane B; guest-scrape-development; normal 600px; workflow head 6a39f1b9e842d8a75ebaf91ad164811d4af05e98; one attempt, no retry",
+  "artifact": "CI 37754055905/artifact 11539827040; development 0.2.407; source 5d845f42cb22c10e2486af8048d1ac9f3ac8e114; imported tree SHA-256 f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+  "outcome": "Workflow failed in native case; resource package/browser/guest journals admitted with valid package/browser and resource-valid guest child failure. No build, release, deploy, or retry.",
+  "t08_guest": "PARTIAL: six populated panes selected warm and after extension reload; both warm empty media panes observed; full available For AI agent Markdown export (4106 bytes) and capturedAt identity unchanged across pane selection warm and reload. Post-reload empty media panes were not reached. This guest export omits hidden SoupResult fields; only admin JSON can prove those.",
+  "failure": "At post_reload_empty_media_capture, referrals page was ready and empty with correct title; after Capture click, no result appeared within 30 seconds. Last panel state had enabled Capture/Scroll & capture, no tabs, no visible result, and no error. Receipt cannot distinguish a navigation/click timing race from a product capture failure; no stale clipboard sentinel or export mismatch occurred.",
+  "inventory": "No new pass counted. Receipt T08 is partial; T20,T10,T11,T12,T07,T09 are prior guest pass revalidations, while T01,T13,T02,T14 retain their recorded gaps. Member/admin and normal-width outcomes beyond guest remain outside this run.",
+  "raw_evidence": ".research/scrape-tabs-native-20261008-evidence/run37764002686/ contains the unchanged raw receipt under test-results and all three current package/browser/guest JSONL journals under resource-journals; artifact 11544391101 uploaded successfully."
+}
