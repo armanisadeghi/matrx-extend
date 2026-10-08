@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-08T18:05:00Z",
+  "scope": "Independent evidence audit of .research/records-metadata-live-20261008.json against its retained raw receipt, run response, hosted log, and exact-run resource journals. No Records acceptance credit is assigned.",
+  "verdicts": {
+    "A_native_behavior": "UNVERIFIED, correctly bounded. The receipt records status=unverified, stage=records_completion, action=table_list, request=null, result=null, and failure_code=records_completion_failed. C02 did not produce a retained correlated completion/output; C02 invalid input, reload, and C03 metadata_search are not reached.",
+    "B_evidence_quality": "PASS with one path-label correction. Run metadata confirms the hosted run failed at the native exercise step; the log records the unverified records_completion receipt followed by the acceptance assertion exit. Receipt hash and all three exact-run journal hashes match the report."
+  },
+  "verified_claims": [
+    {
+      "claim": "Corrected attempt passed preflight, approved-organization identity checkpoint, and current visible table_list schema guard before the Records completion failure.",
+      "evidence": "raw/native-receipt.original.json.txt, raw/native-run.log, raw/native-run.raw.json.txt",
+      "finding": "The receipt contains matching rendered admin email/role/profile/organization, successful product request/response/header/principal checks, and no visible result body. The retained log reports stage records_completion at 17:55:55Z, then an AssertionError for the native side-panel process exiting 1. The run summary labels the native step failure."
+    },
+    {
+      "claim": "Failure location is bounded to the records_completion stage, but not to one internal operation.",
+      "evidence": "raw/native-receipt.original.json.txt",
+      "finding": "The stage and failure code establish the broad interval. The receipt does not retain completion/result data; it cannot distinguish completion extraction, visible-output wait, or equality assertion. The report states that uncertainty accurately. native_stage=admin_rendered_identity is the last recorded sign-in stage and should not be mistaken for the failing stage."
+    },
+    {
+      "claim": "Only current-run resource journals determine resource validity.",
+      "evidence": "raw/hosted-package-37819517326-1.jsonl, raw/hosted-browser-37819517326-1.jsonl, raw/hosted-guest-37819517326-1.jsonl, raw-manifest.json",
+      "finding": "All three match their recorded SHA-256 values. Package and browser decisions are valid with exit code 0. Guest journal decision is child_failed with exit code 1 and resourceInvalid=false; this is a failed child, not invalid resource evidence. Historical journals in the guest artifact are correctly excluded."
+    },
+    {
+      "claim": "Imported product artifact provenance is receipt-confirmed.",
+      "evidence": "raw/native-receipt.original.json.txt",
+      "finding": "Receipt identifies source e7b7dc1ecae946369cebb482915faf7ef792c692, development CI run 37790643945, artifact 11556064167, version 0.2.414, and tree SHA-256 550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046."
+    }
+  ],
+  "correction": {
+    "path": ".research/records-metadata-live-20261008.json",
+    "field": "credential_lifecycle.absence_evidence",
+    "reported": ".research/records-metadata-live-20261008/raw/secrets-after-cleanup.raw.json",
+    "actual": ".research/records-metadata-live-20261008/raw/secrets-after-cleanup.raw.json.txt",
+    "impact": "Path-label typo was corrected in the report; both receipt_path and absence_evidence now use the actual .json.txt filenames. This does not alter the native verdict.",
+    "reported_after_owner_fix": {
+      "absence_evidence": ".research/records-metadata-live-20261008/raw/secrets-after-cleanup.raw.json.txt",
+      "receipt_path": ".research/records-metadata-live-20261008/raw/native-receipt.original.json.txt"
+    }
+  },
+  "limits": [
+    "No exact Records request body, completion body, or visible output was retained, so the underlying completion failure cause remains unknown.",
+    "The before/after backend version observations do not establish the deployed SHA at the Records request time.",
+    "This audit provides no positive C02 acceptance and no C03 result."
+  ],
+  "raw_evidence": {
+    "report": ".research/records-metadata-live-20261008.json",
+    "manifest": ".research/records-metadata-live-20261008/raw-manifest.json",
+    "receipt_sha256": "771c3690870ca9247aef792fa9bf169c81a9f95a411ebd115ffcd5db81a85c67",
+    "native_run_summary_sha256": "7534607ec5588ca22851c006b17c39b41ca376c385f75d2e48dfeb41989903d5",
+    "resource_journal_sha256": {
+      "package": "59bd0db51cdf62d74185a570879cb90a7114172664429c127390fa45ea29cd0b",
+      "browser": "9ef3a103ee5f31186896578bb22a490dde24a9ae72bc1f720a90af5f63e8b799",
+      "guest": "373aeb18690eabe6498f782eb8bc657d5613008364b4f6992844c976163b9f0e"
+    }
+  }
+}

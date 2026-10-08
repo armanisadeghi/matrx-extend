@@ -1,0 +1,179 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-08T18:04:00Z",
+  "scope": "Independent observation/adjudication of an already-dispatched hosted guest Settings-controls run; no launch or source changes.",
+  "verdicts": {
+    "A_inventory_behavior": "PARTIAL. Five of 16 guest cases meet full original inventory criteria in this run: T13, T22, T37, T46, and T64. The remaining 11 stay partial because named dimensions are absent.",
+    "B_evidence_quality": "PASS for CI/artifact/run provenance and all three exact-run resource journals. Receipt and raw evidence are SHA-256 hashed in raw/manifest.json."
+  },
+  "provenance": {
+    "workflow_run_id": 37820053159,
+    "workflow_source_commit": "55682eec023daa4a3a16fd3b8fb406bd2428d0ba",
+    "workflow_status": "completed",
+    "workflow_conclusion": "success",
+    "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37820053159",
+    "artifact_id": 11568469526,
+    "artifact_name": "hosted-guest-37820053159-1",
+    "artifact_digest": "sha256:a87575c41e26d199a837b0b0d82ea2fe879d15f6450a94a291371470fe7800ec",
+    "artifact_expired": false,
+    "source_ci_run_id": 37818621428,
+    "source_ci_commit": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+    "source_ci_status": "completed",
+    "source_ci_conclusion": "success",
+    "development_artifact_id": 11568846736,
+    "development_artifact_name": "matrx-extend-development-test-5f7fe7c29d7dd78528161c8928d3da78b41aa55b-37818621428-1",
+    "development_artifact_digest": "sha256:22afa363bf065f0bfcf7a2ab2e1b3f994c2adde07bde0d9f21d0d5f4c3fa6958",
+    "development_artifact_expired": false,
+    "imported_source_commit": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+    "imported_version": "0.2.414",
+    "imported_tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+    "imported_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "imported_tree_verified": true
+  },
+  "case_count": 16,
+  "receipt_case_counts": {
+    "pass": 6,
+    "unverified": 10
+  },
+  "adjudicated_case_counts": {
+    "pass": 5,
+    "partial": 11
+  },
+  "cases": [
+    {
+      "id": "EXT-F-1003-T04",
+      "receipt_status": "pass",
+      "verdict_A": "PARTIAL",
+      "reason": "Dark/Light/System UI, storage, and document appearance marker survive panel reload; the original applied-appearance/reopen criterion is not fully established."
+    },
+    {
+      "id": "EXT-F-1003-T10",
+      "receipt_status": "unverified",
+      "verdict_A": "PARTIAL",
+      "reason": "Ask/Act UI and storage survive panel reload; new-chat default behavior is explicitly unverified."
+    },
+    {
+      "id": "EXT-F-1003-T13",
+      "receipt_status": "pass",
+      "verdict_A": "PASS",
+      "reason": "Fast/Thinking selection and displayed/persisted values pass the guest inventory expectation."
+    },
+    {
+      "id": "EXT-F-1003-T16",
+      "receipt_status": "unverified",
+      "verdict_A": "PARTIAL",
+      "reason": "Toggle and persistence pass; identity/email context consumer behavior is unverified."
+    },
+    {
+      "id": "EXT-F-1003-T19",
+      "receipt_status": "unverified",
+      "verdict_A": "PARTIAL",
+      "reason": "Toggle and persistence pass; post-login offer behavior is unverified."
+    },
+    {
+      "id": "EXT-F-1003-T22",
+      "receipt_status": "pass",
+      "verdict_A": "PASS",
+      "reason": "Guest Settings has no advanced section, admin controls, or permission controls in both warm and reload observations."
+    },
+    {
+      "id": "EXT-F-1003-T31",
+      "receipt_status": "unverified",
+      "verdict_A": "PARTIAL",
+      "reason": "Toggle and persistence pass; supported sign-in form consumer behavior is unverified."
+    },
+    {
+      "id": "EXT-F-1003-T34",
+      "receipt_status": "unverified",
+      "verdict_A": "PARTIAL",
+      "reason": "Toggle and persistence pass; downstream website suggestion presentation is unverified."
+    },
+    {
+      "id": "EXT-F-1003-T37",
+      "receipt_status": "pass",
+      "verdict_A": "PASS",
+      "reason": "Toggle state and visible coming-soon hint persist; original guest expectation met."
+    },
+    {
+      "id": "EXT-F-1003-T46",
+      "receipt_status": "pass",
+      "verdict_A": "PASS",
+      "reason": "Valid save/rediscovery, bounds, invalid range, clearing, and panel reload persistence all pass."
+    },
+    {
+      "id": "EXT-F-1003-T63",
+      "receipt_status": "unverified",
+      "verdict_A": "PARTIAL",
+      "reason": "Guest admin-only boundary is observed in warm state; the shared extension reload did not reach completion. Ordinary-member criteria are a separate mode and are not judged here."
+    },
+    {
+      "id": "EXT-F-1003-T64",
+      "receipt_status": "pass",
+      "verdict_A": "PASS",
+      "reason": "The inventory steps and expected outcome are met: remove one selected origin, preserve the other, hide empty list, and verify state after Settings panel reload."
+    },
+    {
+      "id": "EXT-F-1003-T70",
+      "receipt_status": "unverified",
+      "verdict_A": "PARTIAL",
+      "reason": "Identity/readiness and no-update result pass; unavailable, update-available, throttled, and error branches are explicitly unverified."
+    },
+    {
+      "id": "EXT-F-1003-T73",
+      "receipt_status": "unverified",
+      "verdict_A": "PARTIAL",
+      "reason": "Warm guest identity and sign-in state pass; extension_reload observation is unverified."
+    },
+    {
+      "id": "EXT-F-1003-T76",
+      "receipt_status": "unverified",
+      "verdict_A": "PARTIAL",
+      "reason": "Warm guest archive-filter absence/no org request passes; extension_reload observation is unverified."
+    },
+    {
+      "id": "EXT-F-1003-T92",
+      "receipt_status": "unverified",
+      "verdict_A": "PARTIAL",
+      "reason": "Warm guest no-membership/no-restoration-action passes; extension_reload observation is unverified."
+    }
+  ],
+  "failure_boundary": {
+    "driver_field": "extension_reload",
+    "interpretation": "Run reached a shared extension_reload stage after earlier scoped checks. T73, T76, and T92 explicitly lack completed extension_reload observations. T63 guest behavior is separately bounded; its member-mode criterion is outside this guest lane. The receipt gives the stage but no product exception, so no product failure is inferred.",
+    "evidence": "raw/settings-local-controls-acceptance.json"
+  },
+  "resource_journals": [
+    {
+      "path": "raw/hosted-package-37820053159-1.jsonl",
+      "sha256": "46d1110a74e799568e27ae7bee32791fb1a6f889d278402f85275c31b828a639",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    {
+      "path": "raw/hosted-browser-37820053159-1.jsonl",
+      "sha256": "f9621a12a61434415208760853134d6afada450c0bc4f79a7793c14dcd5dd25b",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    {
+      "path": "raw/hosted-guest-37820053159-1.jsonl",
+      "sha256": "50acba92f8e144a28563e33a1c7902ffca9301c39f7913cce4a880515418a651",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  ],
+  "limits": [
+    "Guest-only run; no member/admin promotion.",
+    "Development artifact only; no Store/current-main or whole-feature claim.",
+    "Artifact also contained historical journals; only the three exact run-ID journals above are credited.",
+    "No acceptance credit is given to partial cases for unobserved dimensions."
+  ],
+  "raw_evidence_directory": "raw/",
+  "raw_manifest": "raw/manifest.json"
+}
