@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "status": "source_candidate_native_unverified",
+  "source_base": "2da288aa",
+  "runner": "tests/browser/settings-local-controls-acceptance.mjs",
+  "dispatch": "settings-controls",
+  "newly_targeted_cases": [
+    {
+      "case_id": "EXT-F-1003-T63",
+      "inventory_expected": "The admin-only section, optional permission controls and audit-key actions are absent for guest and ordinary member before and after reload.",
+      "new_executable_scope": "Signed-out guest Settings inspection warm and after the existing full extension reload, including active section list, admin action text and DevTools permission control.",
+      "remaining": "Ordinary-member principal and behavior are unverified; the full case stays unverified."
+    },
+    {
+      "case_id": "EXT-F-1003-T64",
+      "inventory_expected": "Only the selected origin leaves the Never ask list; the empty list disappears.",
+      "new_executable_scope": "Seed two disposable loopback origins into the isolated profile's existing captureNeverOrigins local preference key; use trusted clicks to remove the first; verify the second remains in UI and storage after panel reload; remove the second; verify the empty UI and storage remain empty after panel reload.",
+      "fixture_limit": "Direct preference seed verifies Settings list behavior, not a preceding browser login or Never-for-this-site capture decision. Seeded values are removed individually at case end; unrelated values are preserved."
+    }
+  ],
+  "coverage_correction": "Earlier T04/T10/T13 work is fresh-build retesting of cases with historical partial/pass evidence, not three previously unrecorded cases.",
+  "negative_controls": [
+    "T64 rejects a no-op Ask again click because both UI and storage must lose exactly the selected origin.",
+    "T64 rejects deletion of the unrelated origin and an empty list whose heading remains visible.",
+    "T63 requires a signed-out active Settings panel; missing guest proof cannot count as access denial."
+  ],
+  "verification": {
+    "focused_source_check": "Pending exact-head automatic CI after push.",
+    "native": "Not launched by this lane. Existing frozen A run predates this source and cannot prove these cases."
+  },
+  "verdict_limit": "No inventory cells or defects changed. A source check cannot promote native case acceptance."
+}
