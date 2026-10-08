@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "defect_id": "EXT-D-0169",
+  "review_kind": "final independent source and focused-guard re-review",
+  "reviewed_commit": "3dcf290381afd7a76eea45794af6a10a617117e9",
+  "prior_findings": [
+    {
+      "finding": "Fatal native feedback reads were swallowed as a missed icon",
+      "status": "ADDRESSED",
+      "evidence": "The native copy path calls observeSocialCopyOutcome, whose pollSocialFeedback awaits readFeedback without a catch. A rejected read propagates before clipboard and T02. The focused lost-target, resource-stop and unexpected-read cases exercise this imported boundary."
+    },
+    {
+      "finding": "A successful read with an invalid SEO pane or copy button could become a missed icon",
+      "status": "ADDRESSED",
+      "evidence": "requireSocialCopyTarget now runs at native preflight, on every poll sample and after clipboard observation. It requires active linked scope and exactly one visible action. Null, malformed, inactive, missing, duplicate and invisible samples reject before clipboard or T02."
+    }
+  ],
+  "verdict_A_native_readiness": {
+    "status": "SOURCE_READY; NATIVE_BEHAVIOR_UNVERIFIED",
+    "detail": "The driver reaches the shared outcome boundary after its trusted click and continues independent T02 only for a valid pass or one of three explicit clipboard verdicts. A valid pane with a missed transient icon can still be decided from actual changed clipboard. No fresh native run was performed, so the earlier run does not establish the real Check/X icon, clipboard write, T02 recapture, product cause or T14 pass."
+  },
+  "verdict_B_source_quality_and_causal_evidence": {
+    "status": "PASS_FOR_SCOPED_REPAIR",
+    "blocking_findings": [],
+    "evidence": "The driver and focused tests import the same poller and outcome function. The outcome rechecks target validity after clipboard readback before any pass or contained failure. Wrong text, observed X and unchanged exact text remain fail/fail/unverified respectively; only those classified copy verdicts permit T02, while target/read/permission errors stop it. The clipboard helper restores temporary permission in finally, and the owned public-page mutation remains inside finally restoration. The builder recorded pre-fix red guards and three targeted mutation failures; the reviewed committed tests pass."
+  },
+  "checks_run": [
+    "node --test tests/browser/seo-new-coverage-oracle.test.mjs tests/browser/clipboard-observation.test.mjs: 27 passed, 0 failed",
+    "git diff --check: passed",
+    "Reviewed only commit 3dcf2903 source/report diff and the native caller, permission helper, and DOM restoration path"
+  ],
+  "limits": [
+    "No native run, browser launch, build, or product-behavior claim under this review assignment.",
+    "No source, inventory, or defect-register files were edited by this reviewer."
+  ]
+}
