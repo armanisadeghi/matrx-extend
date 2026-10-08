@@ -1,0 +1,275 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-D-0170 native controlled-sequence retest",
+  "feature_id": "EXT-F-1008",
+  "status": "terminal_resource_invalid_no_acceptance_credit",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "run_id": 37739519875,
+    "attempt": 1,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37739519875",
+    "job": "guest",
+    "conclusion": "failure",
+    "checkout_sha": "3a6cfef07036994c09764237f3a6ded8ca7307ac",
+    "lane": "A",
+    "runner_label": "macos-15",
+    "case": "guest-seo",
+    "uploaded_artifact_id": 11532853072,
+    "uploaded_artifact_name": "hosted-guest-37739519875-1",
+    "uploaded_artifact_digest": "sha256:cb8981f5c53f5eaf459b5d4d502679ecac7e199ca4be5049cba63e795ad11c1c"
+  },
+  "driver": {
+    "sequence_repair_commit": "510538cc",
+    "guard_repair_commit": "eaa4fbe6ac7a35a6efd5707898ff3ad08cd6db56",
+    "independent_review": ".research/seo170-escalation-peer-20261008.json",
+    "focused_ci_run_id": 37739262023,
+    "focused_ci_conclusion": "success",
+    "focused_ci_sha": "759b5f2de5c092e01c3c723f005168159a3ea9bd",
+    "current_main_at_dispatch": "3a6cfef07036994c09764237f3a6ded8ca7307ac",
+    "relevant_driver_workflow_tests_package_and_lock_paths_unchanged_since_focused_ci": true
+  },
+  "frozen_product": {
+    "kind": "ci_development_test",
+    "version": "0.2.397",
+    "ci_run_id": 37724859892,
+    "artifact_id": 11527132614,
+    "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+    "tree_sha256": "1035cd28ce5a63ac6233626f35102f016f7c7e7e0ef0717d259a3ec40fc856ed",
+    "imported_exact_pushed_commit": true,
+    "post_case_build_identity_rechecked": false,
+    "store_eligible": false
+  },
+  "resource": {
+    "package": "admitted_valid",
+    "browser": "admitted_valid",
+    "guest": "admitted_then_cpu_pending; child_failed; final_resourceInvalid=true",
+    "final_guard_invalid": true,
+    "guest_guard_exit_code": 3,
+    "all_owned_jobs_terminal": true,
+    "guest_event_order": [
+      {
+        "at": "2026-10-08T06:52:45.608Z",
+        "code": "RESOURCE_ADMITTED",
+        "reasons": []
+      },
+      {
+        "at": "2026-10-08T06:53:01.737Z",
+        "code": "RESOURCE_CPU_PENDING",
+        "reasons": [
+          "RESOURCE_CPU_BUSY"
+        ],
+        "cpuBusyFraction": 0.95
+      },
+      {
+        "at": "2026-10-08T06:53:17.798Z",
+        "code": "RESOURCE_CPU_PENDING",
+        "reasons": [],
+        "cpuBusyFraction": 0.47
+      },
+      {
+        "at": "2026-10-08T06:53:17.804Z",
+        "code": "RESOURCE_JOB_EXIT",
+        "childExitCode": 1
+      },
+      {
+        "at": "2026-10-08T06:53:17.886Z",
+        "code": "RESOURCE_FINAL_DECISION",
+        "decision": "invalid",
+        "resourceInvalid": true,
+        "exitCode": 3
+      }
+    ]
+  },
+  "native_receipt": {
+    "status": "unverified",
+    "last_safe_stage": "next_manual_public_after_inspected",
+    "current_operation": "next_detail_manual_source_stability_assertion",
+    "failure_stage": "next_detail_manual_source_stability_assertion",
+    "failure": {
+      "predicate": "manual_source_stability",
+      "assertion_label": "public DOM and navigation timing remain stable around manual re-audit"
+    },
+    "public_source_stability": {
+      "internal_links_before": 1784,
+      "internal_links_after": 1785,
+      "images_before": 28,
+      "images_after": 29
+    },
+    "observed_targets_in_order": [
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "page_0_title_and_headings",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_actual_clipboard_text_and_ai_page_0",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "page_1_title_and_headings",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_actual_clipboard_text_and_ai_page_1",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T01",
+        "subtarget": "new_url_replaces_visible_title",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T02",
+        "subtarget": "manual_button_returns_to_current_page",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_menu_offers_text_and_ai_but_hides_json",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T01",
+        "subtarget": "reload_audits_current_url",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_role_gate_after_reload",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_actual_clipboard_text_and_ai_reload",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T03",
+        "subtarget": "about_blank_clear_error_without_stale_audit",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T03",
+        "subtarget": "public_page_recovers_after_restricted_url",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "sparse_public_detail_groups",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "rich_public_detail_groups_and_canonical_door",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "canonical_outbound_opens_expected_public_tab",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T14",
+        "subtarget": "guest_social_missing_tags_clipboard_before_reaudit",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T02",
+        "subtarget": "guest_reaudit_captures_changed_page_metadata",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T14",
+        "subtarget": "guest_social_missing_tags_clipboard_after_reaudit",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "guest_manual_public_source_stability",
+        "status": "unverified"
+      }
+    ],
+    "new_acceptance_credit": 0
+  },
+  "new_criteria": {
+    "EXT-F-1008-T02": {
+      "receipt_observation": "pass",
+      "subtarget": "guest_reaudit_captures_changed_page_metadata",
+      "evidence": {
+        "publicTitleChanged": true,
+        "publicDescriptionChanged": true,
+        "oldAuditVisibleBeforeClick": true,
+        "nativeTitleMatchesChangedPublicDom": true,
+        "trustedReauditClick": true
+      },
+      "accepted_verdict": "unverified",
+      "reason": "The guest resource guard marked the run invalid after a CPU-pending sample; no acceptance credit."
+    },
+    "EXT-F-1008-T14": {
+      "receipt_observation": "pass",
+      "subtargets": [
+        "guest_social_missing_tags_clipboard_before_reaudit",
+        "guest_social_missing_tags_clipboard_after_reaudit"
+      ],
+      "evidence": {
+        "beforeCopiedTags": 5,
+        "afterCopiedTags": 6,
+        "exactClipboardMatchBoth": true,
+        "trustedCopyClickBoth": true,
+        "clipboardReadbackBoth": true,
+        "feedbackObservedBoth": true,
+        "feedbackFailureAbsentBoth": true
+      },
+      "accepted_verdict": "unverified",
+      "reason": "The guest resource guard marked the run invalid after a CPU-pending sample; no acceptance credit."
+    },
+    "event_timing_limit": "Receipt target entries are ordered before the final assertion, but have no wall-clock timestamps. They cannot be placed before or after the 06:53:01.737Z CPU-pending sample. No selective salvage is attempted."
+  },
+  "interpretation": "The repaired driver did execute its controlled T14/T02/T14 sequence before the volatile manual detail phase, as recorded by ordered target entries and feedback samples. The later live Wikipedia source changed between samples, causing a case-step refusal. One CPU-busy pending sample was followed by a healthy sample, but the final guard still marked the guest job resource-invalid; under the plan this entire run receives no product acceptance credit. It neither proves a product defect nor certifies current-main or Store behavior.",
+  "evidence": {
+    "directory": ".research/seo170-native-20261008-originals",
+    "files": [
+      {
+        "path": ".research/seo170-native-20261008-originals/hosted-package-37739519875-1.jsonl",
+        "sha256": "682ccb448653f516a34eb060e1b672fd55fc4a50daeb893231be26cc339b2678",
+        "bytes": 989
+      },
+      {
+        "path": ".research/seo170-native-20261008-originals/hosted-browser-37739519875-1.jsonl",
+        "sha256": "0c5208224bf3973aa7e73a23ae15dd67256fa274180084229d3f53d6892a7ed0",
+        "bytes": 989
+      },
+      {
+        "path": ".research/seo170-native-20261008-originals/hosted-guest-37739519875-1.jsonl",
+        "sha256": "ea0429ef189e6c725c04d8cbc69ea5b5050cd80217a7fdd1ab01d3d6fc531bad",
+        "bytes": 5252
+      },
+      {
+        "path": ".research/seo170-native-20261008-originals/seo-guest-acceptance.original.json.txt",
+        "sha256": "0838dec20c783d93fa6f94b8f4670caeefb34ab5ab699ed81215804ced1eb595",
+        "bytes": 12169
+      },
+      {
+        "path": ".research/seo170-native-20261008-originals/native-side-panel.png",
+        "sha256": "e057f1b26a910b74f7f87b4255fd33454ef2462051d610d33f014c419f78ea13",
+        "bytes": 26223
+      },
+      {
+        "path": ".research/seo170-native-20261008-originals/normal-target-after-open.png",
+        "sha256": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89",
+        "bytes": 25156
+      }
+    ],
+    "curation": "Only this run\u2019s receipt, three current-run resource journals, and the two uploaded PNGs were copied byte-for-byte from the recursively downloaded artifact; six historical journals in the upload were excluded."
+  },
+  "limits": [
+    "No retry under this one-run assignment.",
+    "The original receipt has build.after=null; no post-case build identity verification.",
+    "No source, inventory, defect or canonical status edits in this lane.",
+    "Current-main and Store product behavior remain unverified."
+  ],
+  "next_action": "Root owner should use this as sequencing evidence only. The resource-invalid attempt cannot close D170 or promote T02/T14; any future native attempt needs fresh admission and source/fixture judgment."
+}
