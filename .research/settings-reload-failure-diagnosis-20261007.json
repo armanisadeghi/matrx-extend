@@ -2,6 +2,7 @@
   "schema_version": 1,
   "date": "2026-10-07",
   "status": "boundary_diagnostic_added_product_cause_unverified",
+  "defect_id": "EXT-D-0161",
   "original_native_workflow": 37712686956,
   "original_development_source": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
   "original_driver_checkout": "271e9d479e4d4cbe97b3787ab8d01027728f80d3",
@@ -25,6 +26,16 @@
     "If the replacement CDP panel died, the category or panel probe identifies the transport failure without copying its raw message."
   ],
   "change": "Instrument only the existing post-extension-reload Settings opening boundary with fixed stage, allowlisted error category, and fixed replacement-panel booleans. No retry, timeout change, product change or native verdict promotion.",
+  "independent_source_review": {
+    "path": ".research/settings-reload-diagnostic-peer-20261007.json",
+    "verdict": "PARTIAL/PARTIAL on a5d30319",
+    "findings": [
+      "waitFor wraps CDP transport failures as guest_settings_not_observed transient errors, and the classifier previously checked the prefix first.",
+      "The replacement-panel probe previously spread an unchecked CDP object into the receipt."
+    ],
+    "repair": "Decode only the producer-shaped final wait sample before choosing guest-state versus transport category. Admit only fixed, typed booleans and nonnegative integer counts from the CDP panel sample; all other fields and malformed values are dropped.",
+    "verification_pending": "Focused source and independent re-review; no native diagnostic yet."
+  },
   "verification": {
     "local_source_check": "Targeted node checks 6/6 passed; syntax and diff checks passed. Supporting source evidence only.",
     "automatic_focused_ci": "Run 37713797315 succeeded at exact source a5d303193f8684c46512136f0d6ff30db040676d. This does not reproduce the native failure.",
