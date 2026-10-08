@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "reviewer": "root; zero code authorship; fresh seat creation failed ENOSPC",
+  "source_commit": "0a6968d6",
+  "verdict_a": {
+    "source": "pass",
+    "native": "unverified",
+    "scope": "C02 created-table visibility, C03 exact structural match and row-text exclusion, C08 returned record/version author/time/change; all through existing request/completion/visible equality checks"
+  },
+  "verdict_b": {
+    "status": "pass",
+    "verification": "Inspected actual callback and per-action assertions; independently ran44 focused driver/fixture tests, all passed in4.1seconds. Wrong/missing identity/history/search results refuse credit and enter cleanup. No shared harness edits."
+  },
+  "remaining": "Require matching hosted gate and reviewed shared harness before one native A run. No full Records or release claim."
+}
