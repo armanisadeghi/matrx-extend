@@ -55,28 +55,94 @@
       "at": "2026-10-08T14:43:20.965Z"
     },
     "native_stages": [
-      { "stage": "receipt", "at": "2026-10-08T14:43:16.958Z" },
-      { "stage": "artifact_verify", "at": "2026-10-08T14:43:16.959Z" },
-      { "stage": "browser_runtime", "at": "2026-10-08T14:43:17.632Z" },
-      { "stage": "profile_prepare", "at": "2026-10-08T14:43:17.649Z" },
-      { "stage": "browser_spawn", "at": "2026-10-08T14:43:17.687Z" },
-      { "stage": "cdp_connect", "at": "2026-10-08T14:43:17.692Z" },
-      { "stage": "endpoint_read", "at": "2026-10-08T14:43:20.966Z" },
-      { "stage": "command_line_query", "at": "2026-10-08T14:43:20.969Z" },
-      { "stage": "command_line_verify", "at": "2026-10-08T14:43:21.010Z" },
-      { "stage": "extension_worker", "at": "2026-10-08T14:43:21.011Z" },
-      { "stage": "spawn_owner", "at": "2026-10-08T14:43:21.124Z" },
-      { "stage": "local_server", "at": "2026-10-08T14:43:21.125Z" },
-      { "stage": "playwright_connect", "at": "2026-10-08T14:43:21.130Z" },
-      { "stage": "page_create", "at": "2026-10-08T14:43:21.253Z" },
-      { "stage": "local_page_navigation", "at": "2026-10-08T14:43:21.550Z" },
-      { "stage": "panel_open", "at": "2026-10-08T14:43:22.016Z" },
-      { "stage": "panel_reply", "at": "2026-10-08T14:43:22.400Z" },
-      { "stage": "panel_target", "at": "2026-10-08T14:43:22.406Z" },
-      { "stage": "panel_context", "at": "2026-10-08T14:43:22.406Z" },
-      { "stage": "panel_settle", "at": "2026-10-08T14:43:22.457Z" },
-      { "stage": "screenshot", "at": "2026-10-08T14:43:24.241Z" },
-      { "stage": "exercise_panel", "at": "2026-10-08T14:43:24.524Z" }
+      {
+        "stage": "receipt",
+        "at": "2026-10-08T14:43:16.958Z"
+      },
+      {
+        "stage": "artifact_verify",
+        "at": "2026-10-08T14:43:16.959Z"
+      },
+      {
+        "stage": "browser_runtime",
+        "at": "2026-10-08T14:43:17.632Z"
+      },
+      {
+        "stage": "profile_prepare",
+        "at": "2026-10-08T14:43:17.649Z"
+      },
+      {
+        "stage": "browser_spawn",
+        "at": "2026-10-08T14:43:17.687Z"
+      },
+      {
+        "stage": "cdp_connect",
+        "at": "2026-10-08T14:43:17.692Z"
+      },
+      {
+        "stage": "endpoint_read",
+        "at": "2026-10-08T14:43:20.966Z"
+      },
+      {
+        "stage": "command_line_query",
+        "at": "2026-10-08T14:43:20.969Z"
+      },
+      {
+        "stage": "command_line_verify",
+        "at": "2026-10-08T14:43:21.010Z"
+      },
+      {
+        "stage": "extension_worker",
+        "at": "2026-10-08T14:43:21.011Z"
+      },
+      {
+        "stage": "spawn_owner",
+        "at": "2026-10-08T14:43:21.124Z"
+      },
+      {
+        "stage": "local_server",
+        "at": "2026-10-08T14:43:21.125Z"
+      },
+      {
+        "stage": "playwright_connect",
+        "at": "2026-10-08T14:43:21.130Z"
+      },
+      {
+        "stage": "page_create",
+        "at": "2026-10-08T14:43:21.253Z"
+      },
+      {
+        "stage": "local_page_navigation",
+        "at": "2026-10-08T14:43:21.550Z"
+      },
+      {
+        "stage": "panel_open",
+        "at": "2026-10-08T14:43:22.016Z"
+      },
+      {
+        "stage": "panel_reply",
+        "at": "2026-10-08T14:43:22.400Z"
+      },
+      {
+        "stage": "panel_target",
+        "at": "2026-10-08T14:43:22.406Z"
+      },
+      {
+        "stage": "panel_context",
+        "at": "2026-10-08T14:43:22.406Z"
+      },
+      {
+        "stage": "panel_settle",
+        "at": "2026-10-08T14:43:22.457Z"
+      },
+      {
+        "stage": "screenshot",
+        "at": "2026-10-08T14:43:24.241Z"
+      },
+      {
+        "stage": "exercise_panel",
+        "at": "2026-10-08T14:43:24.524Z"
+      }
     ],
     "gpu_observation": {
       "status": "RESOLVED",
@@ -130,9 +196,21 @@
       "final_decision": "valid",
       "final_decision_at": "2026-10-08T14:44:18.724Z",
       "cpu_pending_samples": [
-        { "at": "2026-10-08T14:43:29.029Z", "cpu_busy_fraction": 0.82, "one_minute_load": 1.81 },
-        { "at": "2026-10-08T14:43:45.217Z", "cpu_busy_fraction": 0.62, "one_minute_load": 1.92 },
-        { "at": "2026-10-08T14:44:01.469Z", "cpu_busy_fraction": 0.08, "one_minute_load": 2.3 }
+        {
+          "at": "2026-10-08T14:43:29.029Z",
+          "cpu_busy_fraction": 0.82,
+          "one_minute_load": 1.81
+        },
+        {
+          "at": "2026-10-08T14:43:45.217Z",
+          "cpu_busy_fraction": 0.62,
+          "one_minute_load": 1.92
+        },
+        {
+          "at": "2026-10-08T14:44:01.469Z",
+          "cpu_busy_fraction": 0.08,
+          "one_minute_load": 2.3
+        }
       ],
       "recovered_at": "2026-10-08T14:44:17.597Z",
       "unsafe_stop": false
@@ -152,7 +230,7 @@
     "limits": [
       "One attempt cannot establish repeatability or prove the cause.",
       "The previous run used the guest SEO workload; this control ends at idle panel.",
-      "The new control was explicitly headless and captures GPU/native stages; the prior run was a headed SEO run.",
+      "Both runs used headless Chromium on Intel with frozen407. The idle control adds GPU/native-stage observation and omits SEO exercise; separate hosts and instrumentation prevent causal equivalence.",
       "Runs used separate ephemeral hosted VMs, so their process and CPU intervals are not controlled additive comparisons."
     ],
     "interpretation": "The cold headless browser and panel reached the idle control boundary. The startup guard saw transient CPU-pending samples, then recovered and finalized valid. This supports, but does not prove, that the prior sustained unsafe interval was associated with subsequent guest SEO activity or host variability rather than cold startup alone. No host repair or stable cure is established."
@@ -173,5 +251,10 @@
     "raw/screenshots/native-side-panel.png": "1d63139057f53ee3ac982ae29568b45d67ea403a3e151bad798d84a8c3d27f1a",
     "raw/screenshots/normal-target-after-open.png": "60d95c01c8bf5fa8f0807e1aed08d2adb43b4a5532190ae0eadd54c5e3aef79c"
   },
-  "outstanding": "No active hosted acceptance run remains. Diagnostic only; zero product acceptance and no stable-cure claim."
+  "outstanding": "No active hosted acceptance run remains. Diagnostic only; zero product acceptance and no stable-cure claim.",
+  "independent_review": {
+    "report": ".research/idle-native-evidence-peer-20261008.json",
+    "commit": "849c90a8",
+    "disposition": "Corrected prior display mode from headed to headless. Current raw/journal evidence conforms with limits; zero product acceptance."
+  }
 }
