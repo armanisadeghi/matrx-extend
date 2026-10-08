@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "reviewed_at_utc": "2026-10-08T09:05:00Z",
+  "case_id": "EXT-F-4130-T01",
+  "review_role": "independent source-only peer",
+  "target": {
+    "procedure_report": ".research/records-control-procedures-20261008.json",
+    "recorded_source_sha": "a0ef97ac36bd3528d02249d052a746d04e7c1db3",
+    "current_aidream_head": "54a1e1b978a8efde6b9232aa56aad9f12a1bf214",
+    "source_compatibility": "No diff across packages/matrx-records/matrx_records between recorded source revision and current aidream HEAD; the 25-action contract remains source-compatible.",
+    "extension_route": "src/features/tools/ToolsView.tsx plus src/lib/tools/manual-server.ts"
+  },
+  "verdict_A_contract": {
+    "status": "PARTIAL_SOURCE",
+    "supported": [
+      "The report's 25 action names exactly match RECORD_ACTIONS in packages/matrx-records/matrx_records/agent/args.py; there are no duplicates. guide_for(None/unknown) returns 24 names excluding guide, matching C01.",
+      "The reported {action, args} Records envelope matches definition.ENVELOPE and executor validation. The extension manual route fetches /tools/test/list, sends tool_name plus the supplied arguments to /tools/test/execute with the selected organization header, and returns full_result.",
+      "The run order for the case row is dependency-aware: create the table, write the row, read/history while it exists, restore before delete. Existing source guidance says a held approval is not applied and the agent must stop; the report does not treat it as success or prescribe a retry. No additional user-approval requirement is inferred by this review."
+    ],
+    "blockers": [
+      {
+        "controls": ["EXT-F-4130-C09"],
+        "finding": "The only row write (C06) creates a new row. C08 then reads its history, and no later write changes that row before C09 restores the captured version. That version is the test-created state, not a pre-test value; a successful call would not prove restoration of changed data. The positive case is syntactically supported but does not establish the advertised rollback behavior.",
+        "source": "RecordWriteWire.record_id absent means create; RecordRestoreVersionWire plus RecordStore.record_restore_version write a new version from a selected history version."
+      },
+      {
+        "controls": ["EXT-F-4130-C20"],
+        "finding": "The example says preview/disabled means no persistent artifact. In EnrichmentMixin.enrich_propose, run=false prevents run_enrichment, but the method still calls field_propose for a missing column and enrich_declare for the configuration. Thus the proposed case creates persistent field/enrichment rows. The report correctly marks the control blocked pending cleanup, but its expected observation is incomplete and the positive is not a no-write preview.",
+        "source": "packages/matrx-records/matrx_records/enrich/store.py::EnrichmentMixin.enrich_propose"
+      },
+      {
+        "controls": ["EXT-F-4130-C22"],
+        "finding": "The positive input names field case_signature, but C11 creates only name and amount and C10 adds only case note with default text type. It also supplies neither template_id nor render_id. The source requires one document version/template and a signature-format field; without them the successful path cannot run (or may return the source's explicit approval refusal first). The procedure is correctly blocked for absent revocation, but the current positive is not a valid success fixture.",
+        "source": "SignatureRequestWire and RecordStore.signature_request in packages/matrx-records/matrx_records/agent/args.py and store/client.py"
+      }
+    ],
+    "cleanup": "C07 is a soft delete, and the Records action set has no table-delete action. Deleting the case row therefore does not remove C11 or the other artifacts from proposal actions. The report explicitly blocks C11 and proposals without verified disposal; that is the right stop condition and means the 25-control set is not runnable as a complete cleanup-bounded pass yet."
+  },
+  "verdict_B_guard_quality": {
+    "status": "PARTIAL_SOURCE_ONLY_NO_RUNTIME_CREDIT",
+    "supported": [
+      "The negative inputs include meaningful shared-wire cases (bad UUIDs, wrong primitive/collection types, unknown write field, null required body, empty subscription tell). C23's empty tell is rejected by source before it creates a view or subscription.",
+      "The report makes no live schema, live guide, approval, mutation, or runtime pass claim; it records the HTTP 401 boundary before schema retrieval. Its fixture ownership and cleanup gates prevent using an existing user's row as a disposable target."
+    ],
+    "gaps": [
+      "Several malformed *_id negatives are rejected by the shared RecordsWire._ids_are_ids validator before the action's store handler. They verify the common ID guard, not action-specific refusal paths; C22's malformed record_id also masks the invalid successful fixture.",
+      "C09 has no intervening value change, so a green result would not show that the original state was restored.",
+      "C20's expected no-artifact interpretation conflicts with source persistence, and C22's positive cannot reach the intended signature success path.",
+      "No mutation-specific baseline/receipt has been observed. The source-only procedure remains conditional and cannot earn live execution or cleanup credit."
+    ],
+    "guard_read": "The current report's global no-unverified-cleanup rule covers the table and proposal artifacts. Do not remove that gate to make the set runnable."
+  },
+  "authorization_read": "This review adds no approval gate. Existing organization-specific approval behavior remains authoritative; a response with applied=false/awaiting_approval is not an applied result, and the procedure already says not to approve or retry it without separate case-specific authorization.",
+  "limits": [
+    "No tests, live API calls, browser, database, runtime, or product/inventory edits were performed.",
+    "The live schema and live guide remain unobserved; source compatibility does not establish deployment compatibility."
+  ]
+}
