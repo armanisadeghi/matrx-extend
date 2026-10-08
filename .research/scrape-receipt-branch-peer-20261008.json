@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "task": "Independent EXT-D-0178 receipt-seam review of 17abbbfe",
+  "verdict_a": "PARTIAL: native source is wired to observe the Article edited badge before navigation and persist bounded branch/dialog/confirmation/Article booleans; no fresh native run proves edited=true with the discard-confirmation branch and expected referral Article together.",
+  "verdict_b": "IMPORTANT GAP: success branches pass focused guards, but a capture timeout leaves the persisted boundary's Article predicates at constructor defaults rather than the last UI observation.",
+  "finding": "tests/browser/scrape-post-reload-capture-boundary.mjs:116-143: either waitFor can throw before captureTimeoutDiagnostic is assigned to boundary; tests/browser/settings-panel-driver.mjs:14-34 puts the last predicates only in the error string. This makes the failure receipt's false title/sentinel/visibility fields ambiguous, so the failed branch cannot be judged from its bounded receipt.",
+  "failing_case": "Invoked the actual runPostReloadCaptureBoundary with real waitFor bounded to 0ms and a last UI state of ready=true, Article selected/visible, expected title=true, sentinel=false. It threw a diagnostic with those observed predicates, while the persisted boundary still held ready=false, article_selected=false, visible=false, fixture_title_matches=false, fixture_text_present=false and branch=null.",
+  "failure_classification": "The constructor false values on a timeout mean unrecorded/unknown, not observed false; branch=null means no accepted branch was recorded, not proof that the dialog was absent. The thrown diagnostic carries a last sample, but the boundary does not.",
+  "verified_source": "tests/browser/scrape-guest-native-acceptance.mjs:1984-2006 samples edited before navigation, attaches the boundary to report before capture, and writes report in its final path at line 2060; ScrapeView.tsx:460-464 renders the edited span and :798-809 renders the matching discard dialog; the shared native click returns after mouse release.",
+  "branch_limits": "already_captured is recorded explicitly and does not claim a confirmation; discard_confirmation requires the owned visible dialog and records click return, but only a fresh uninstrumented native receipt can establish the original exact reproduction.",
+  "guard": "node --test tests/browser/scrape-post-reload-capture-boundary.test.mjs tests/browser/scrape-native-recapture.test.mjs: 11 passed, 0 failed; the candidate reports scratch old-red, which this review did not independently rerun; failure-test fixture still constructs the old three-field boundary.",
+  "privacy": "Persisted boundary is a fixed scalar object; observed page text is reduced to fixture booleans and the focused test rejects a private marker.",
+  "scope": "Source and existing-test review only; no native run, build, release, or code/inventory edits."
+}
