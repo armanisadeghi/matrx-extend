@@ -11,6 +11,8 @@ import { join, resolve } from 'node:path';
 import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifact.mjs';
 import { verifyFrozenArtifactIdentity } from '../../scripts/frozen-artifact-identity.mjs';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
+import { withClipboardReadPermission } from './clipboard-observation.mjs';
+import { verifyGuestCopy } from './seo-guest-clipboard.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
@@ -43,7 +45,10 @@ const report = {
     { case: 'T02', part: 'fresh capture and stale advice replacement after re-audit' },
     { case: 'T03', part: 'unreachable HTTP(S), other restricted schemes, and reload dimension' },
     { case: 'T04-T06,T08', part: 'database save, history, and diff flows' },
-    { case: 'T07', part: 'actual clipboard output, member/admin role gates, and JSON contents' },
+    {
+      case: 'T07',
+      part: 'member/admin role gates and JSON contents; guest clipboard formats are checked separately',
+    },
     {
       case: 'T09',
       part: 'broken social preview image and detail controls beyond the bounded next batch; optional hreflang/schema doors remain unverified when their live source data is absent',
@@ -864,6 +869,57 @@ async function copyMenu(panel) {
   );
 }
 
+// The clipboard itself is read only after a real trusted menu click. No
+// copied text, source URL, or title enters the native result receipt.
+async function copiedSeoText({ panel, browserSession, panelTarget, choice }) {
+  enter(`guest_copy_${choice === 'Summary (text)' ? 'text' : 'ai'}_click`);
+  await click(panel, 'button-text', choice);
+  await waitFor(
+    'seo_copy_feedback',
+    () =>
+      evaluate(
+        panel,
+        `(() => {
+    const button = [...document.querySelectorAll('button[title="Copy audit"], button[data-matrx-title="Copy audit"]')];
+    const menuOpen = [...document.querySelectorAll('[data-state="open"]')]
+      .some((node) => node.textContent?.includes('Summary (text)')
+        && node.textContent?.includes('For AI agent'));
+    return button.length === 1 && !menuOpen
+      && !!button[0].querySelector('svg[aria-label="Copied"]');
+  })()`,
+      ),
+    (copied) => copied === true,
+  );
+  await panel.send('Page.bringToFront');
+  const observation = {};
+  const text = await withClipboardReadPermission({
+    browserSession,
+    panel,
+    panelUrl: panelTarget.url,
+    evidence: observation,
+    read: () => evaluate(panel, 'navigator.clipboard.readText()'),
+  });
+  if (observation.clipboardObservationPermissionRestored !== true || typeof text !== 'string')
+    throw new Error('seo_clipboard_readback_unverified');
+  return text;
+}
+
+async function checkGuestCopyFormats(context, publicPage, phase, existingMenu = null) {
+  const { panel } = context;
+  const menu = existingMenu ?? (await copyMenu(panel));
+  if (menu.choices.includes('JSON')) throw new Error('guest_json_copy_option_exposed');
+  const summary = await copiedSeoText({ ...context, choice: 'Summary (text)' });
+  await copyMenu(panel);
+  const ai = await copiedSeoText({ ...context, choice: 'For AI agent' });
+  const checks = verifyGuestCopy(summary, ai, publicPage);
+  target('T07', `guest_actual_clipboard_text_and_ai_${phase}`, {
+    ...checks,
+    trustedCopyClicks: 2,
+    clipboardReadback: true,
+    observationPermissionRestored: true,
+  });
+}
+
 try {
   enter('build_identity');
   const before = await buildIdentity();
@@ -880,7 +936,7 @@ try {
       expectedRelease: before,
       releaseReceiptPath: RELEASE_RECEIPT,
     }),
-    exercisePanel: async ({ page, panel }) => {
+    exercisePanel: async ({ page, panel, browserSession, panelTarget }) => {
       advance('owned_guest_panel_ready', { nativePanel: true });
       const publicPages = [];
       for (const [index, url] of PAGES.entries()) {
@@ -932,10 +988,15 @@ try {
           headingsPresenceMatches: true,
         });
         advance(`seo_page_${index}_matched`, { title: observedPage.title });
+        await checkGuestCopyFormats(
+          { panel, browserSession, panelTarget },
+          observedPage,
+          `page_${index}`,
+        );
       }
       assert.notEqual(
-        report.targets[0].evidence.publicTitle,
-        report.targets[1].evidence.publicTitle,
+        publicPages[0].title,
+        publicPages[1].title,
         'public pages must distinguish stale audits',
       );
       target('T01', 'new_url_replaces_visible_title', { twoDistinctPublicTitles: true });
@@ -954,7 +1015,7 @@ try {
         () => seoContent(panel),
         (state) =>
           state?.scopeValid &&
-          state.title === report.targets[1].evidence.publicTitle &&
+          state.title === publicPages[1].title &&
           state.reAudit &&
           !state.error,
         30000,
@@ -1031,6 +1092,12 @@ try {
         agentChoice: reloadMenu.choices.includes('For AI agent'),
         jsonAbsent: true,
       });
+      await checkGuestCopyFormats(
+        { panel, browserSession, panelTarget },
+        publicPages[1],
+        'reload',
+        reloadMenu,
+      );
 
       // about:blank is a real browser-restricted scheme in the capture
       // contract. Keep the same owned tab and require the previous audit to

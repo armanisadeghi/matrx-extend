@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-F-1008-T07",
+  "scope": "Guest Summary (text) and For AI agent native clipboard proof on two distinct public pages and after side-panel reload; member/admin and JSON remain unverified.",
+  "status": "source_ready_execution_unverified",
+  "driver": "tests/browser/seo-guest-acceptance.mjs",
+  "helper": "tests/browser/seo-guest-clipboard.mjs",
+  "source_guard": "tests/browser/seo-guest-clipboard.test.mjs",
+  "causal_boundary": [
+    "The existing disposable hosted browser opens the real SEO panel on two public pages and waits for the visible audit title to match each source page.",
+    "Trusted pointer clicks select Summary (text) and For AI agent. Copied feedback and menu closure are observed before clipboard readback.",
+    "The existing clipboard observation primitive temporarily grants read access only after each product click and restores the original permission before another click.",
+    "The expected text URL, title, title length, heading and required sections come from the public tab. The AI payload must wrap the entire observed summary exactly, with the current page URL and title.",
+    "The native receipt records only fixed booleans and click counts, never clipboard contents or page values from this new check."
+  ],
+  "negative_controls": [
+    "A stale summary from page one must fail against page two.",
+    "A plain summary substituted for the AI variant must fail.",
+    "Dropping the Page stats section must fail."
+  ],
+  "execution": {
+    "local_tests": "not_run_resource_floor_below_admission",
+    "native": "not_run_source_lane",
+    "ci": "automatic CI expected after exact owned-file push; focused helper test is not yet routed to CI"
+  },
+  "limits": [
+    "The summary check confirms core displayed/public facts and required sections; it does not claim a field-by-field proof of every audit datum.",
+    "Actual clipboard readback requires Chrome to permit scoped observation in the hosted disposable profile; if unavailable, the run fails unverified rather than awarding T07 credit.",
+    "No inventory status changes or member/admin/JSON claims follow from this source change."
+  ]
+}
