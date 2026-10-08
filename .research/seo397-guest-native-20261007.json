@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "task": "EXT-F-1008 bounded guest SEO native acceptance on the frozen 0.2.397 development artifact",
+  "status": "resource_valid_bounded_partial",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "run_id": 37731560399,
+    "attempt": 1,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37731560399",
+    "checkout_sha": "11564fe786ca47bade2c33718710504ed145eb66",
+    "conclusion": "success",
+    "job": "guest",
+    "job_duration": "6m20s",
+    "native_case_step": "success",
+    "case": "guest-seo",
+    "lane": "A",
+    "runner_label": "macos-15",
+    "runner_arch": "ARM64",
+    "uploaded_artifact_id": 11530845119,
+    "uploaded_artifact_name": "hosted-guest-37731560399-1",
+    "uploaded_artifact_digest": "sha256:bfaabea0dd40a2661f9c1076baf9ea644cd297c6c60d5316a61c57e2cc8a3583"
+  },
+  "frozen_artifact": {
+    "ci_run_id": 37724859892,
+    "ci_run_conclusion": "success",
+    "artifact_id": 11527132614,
+    "artifact_expired": false,
+    "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "version": "0.2.397",
+    "tree_sha256_before_and_after": "1035cd28ce5a63ac6233626f35102f016f7c7e7e0ef0717d259a3ec40fc856ed",
+    "imported_source_claim": "exact_pushed_commit_only"
+  },
+  "native_receipt": {
+    "status": "partial",
+    "mode": "guest",
+    "scope": "public-page guest SEO actions in an owned native side panel",
+    "pass_subtargets": 19,
+    "unverified_subtargets": 1,
+    "failure_stage": null,
+    "last_safe_stage": "next_manual_detail_batch_observed",
+    "build_identity_rechecked": true
+  },
+  "case_results": {
+    "EXT-F-1008-T01": {
+      "status": "partial",
+      "passed": ["new_url_replaces_visible_title", "reload_audits_current_url"],
+      "unverified": ["one audit per URL", "slow-old-result race"]
+    },
+    "EXT-F-1008-T02": {
+      "status": "partial",
+      "passed": ["manual_button_returns_to_current_page"],
+      "unverified": ["fresh capture", "stale advice replacement after re-audit"]
+    },
+    "EXT-F-1008-T03": {
+      "status": "partial",
+      "passed": [
+        "about_blank_clear_error_without_stale_audit",
+        "public_page_recovers_after_restricted_url"
+      ],
+      "unverified": ["unreachable HTTP(S)", "other restricted schemes", "reload dimension"]
+    },
+    "EXT-F-1008-T07": {
+      "status": "partial",
+      "passed": [
+        "guest_actual_clipboard_text_and_ai_page_0",
+        "guest_actual_clipboard_text_and_ai_page_1",
+        "guest_menu_offers_text_and_ai_but_hides_json",
+        "guest_role_gate_after_reload",
+        "guest_actual_clipboard_text_and_ai_reload"
+      ],
+      "control_and_oracle": "Trusted Text and For AI agent menu clicks were followed by actual clipboard readback on two public pages and after panel reload; the guest menu omitted JSON and read permission was restored after each observation.",
+      "unverified": ["member/admin role gates", "JSON contents"]
+    },
+    "EXT-F-1008-T09": {
+      "status": "partial",
+      "passed": [
+        "page_0_title_and_headings",
+        "page_1_title_and_headings",
+        "sparse_public_detail_groups",
+        "rich_public_detail_groups_and_canonical_door",
+        "canonical_outbound_opens_expected_public_tab",
+        "guest_manual_link_counts_match_live_dom",
+        "guest_manual_image_alt_counts_match_live_dom",
+        "guest_manual_readability_display_is_populated_and_explained",
+        "guest_manual_performance_reflects_current_navigation"
+      ],
+      "control_and_oracle": "The driver observed live public DOM titles and detail groups, used a trusted canonical link activation, clicked Re-audit for current-page detail counts, and compared displayed navigation values with the current page response and performance entry.",
+      "unverified_subtarget": {
+        "name": "guest_manual_hreflang_and_schema_doors_match_page",
+        "reason": "The live Wikipedia DOM exposed no unique hreflang and openable schema door pair."
+      },
+      "other_unverified": [
+        "readability metric value correctness",
+        "broken social preview image and other detail controls"
+      ]
+    }
+  },
+  "coverage_limits": [
+    "T04-T06 and T08 database save, history, and diff were not exercised.",
+    "T10-T14 recommendations, Chat staging, and social snippet actions were not exercised.",
+    "Member and admin SEO modes, Store artifact behavior, and current-main product health remain unverified.",
+    "The optional public Airbnb metadata continuation exists in the driver but is not exposed by this hosted workflow; no Airbnb fixture claim is made.",
+    "The native screenshot proves an opened guest side panel, while the SEO case predicates come from the original driver receipt."
+  ],
+  "resource_verdict": {
+    "package": "admitted, child exit 0, final valid",
+    "browser": "admitted, child exit 0, final valid",
+    "guest": "admitted, healthy watch, child exit 0, final valid",
+    "resource_invalid": false
+  },
+  "evidence": {
+    "directory": ".research/seo397-guest-native-20261007-originals/",
+    "files": [
+      {
+        "path": "seo-guest-acceptance.original.json.txt",
+        "sha256": "35c37f97f64adda29269fdea146be84de8a89bfbb79cf341d0be53d885155491",
+        "bytes": 10416
+      },
+      {
+        "path": "hosted-package-37731560399-1.jsonl",
+        "sha256": "38ff33ba543f496c4c25af6eefcbe279d84b0e97fbc9c918a7f85f5262871450",
+        "bytes": 983
+      },
+      {
+        "path": "hosted-browser-37731560399-1.jsonl",
+        "sha256": "ea7c4e7e75e79a70ceebdf3df41866399d2e74513cfd4875556e464e0f96ab22",
+        "bytes": 988
+      },
+      {
+        "path": "hosted-guest-37731560399-1.jsonl",
+        "sha256": "b96c6ee9266a386f7509aec1d5c2cdea61a7cf8233dd8ecdca6d5f4abbc89772",
+        "bytes": 1400
+      },
+      {
+        "path": "native-side-panel.png",
+        "sha256": "bcee4631bbd726146862abe271a6dfe476837fbc2eb132f6a21374f00010c22f",
+        "bytes": 26230
+      },
+      {
+        "path": "normal-target-after-open.png",
+        "sha256": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89",
+        "bytes": 25156
+      }
+    ],
+    "excluded_from_curated_originals": "Six unrelated historical resource journals present in the workflow upload archive."
+  }
+}
