@@ -1,0 +1,58 @@
+{
+  "id": "EXT-D-0175",
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T08"],
+  "surface": "Scrape reload diagnostic infrastructure",
+  "auth_mode": "guest",
+  "title": "Scrape persisted receipt drops replacement-panel diagnostic milestones",
+  "severity": "S2: diagnostic evidence loss prevents lifecycle diagnosis; no product root cause established",
+  "priority": "P1",
+  "state": "fixed",
+  "owner": "root/scrape_receipt_serializer_fix",
+  "preconditions": [
+    "Opt-in Scrape replacement-panel diagnostic candidate e42c95b2/e82b79eb/537f1de4; canonical captureLifecycleEvidence serializer before repair."
+  ],
+  "reproduction": [
+    "Construct the actual lifecycle evidence carrying open_panel_diagnostic, open_panel_request.fixture and replacement_panel_created_event.",
+    "Pass it through captureLifecycleEvidence, used by Scrape success and failure receipt writers.",
+    "Inspect serialized output: all three decisive diagnostic fields are absent."
+  ],
+  "expected": "Sanitized diagnostic milestones survive the actual persisted receipt seam; diagnostic-only runs remain unverified/nonzero.",
+  "actual": "The new observations exist upstream but disappear in the committed receipt, leaving the native failure boundary unexplained.",
+  "evidence": [
+    ".research/scrape-reload-diagnostic-peer-20261008.json",
+    ".research/scrape-receipt-serializer-fix-20261008.json",
+    ".research/scrape-receipt-fresh-peer-20261008.json"
+  ],
+  "reproducibility_count": 2,
+  "root_cause": "Whitelist serializer was not extended with diagnostic producer fields; focused producer tests did not cover persisted receipt.",
+  "transition_history": [
+    {
+      "at": "2026-10-08T12:14:49.141370+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Fresh peer reproduced missing serialized fields twice."
+    },
+    {
+      "at": "2026-10-08T12:14:49.141370+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Actual receipt writer uses lossy serializer on both success and failure."
+    },
+    {
+      "at": "2026-10-08T12:14:49.141370+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Fresh implementation lane owns serializer and causal receipt guard."
+    },
+    {
+      "at": "2026-10-08T12:18:36.296202+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Fresh peer verified actual success/failure caller serialization and fourteen focused guards; native diagnostic delivery remains pending."
+    }
+  ],
+  "closure_requirement": "Fresh independent review of actual persisted success/failure output with old-red/new-green guard, privacy checks and default/diagnostic classification retained. Native Scrape health is separately unverified.",
+  "fix_commits": ["8c4db823"],
+  "next_action": "One resource-admitted hosted opt-in diagnostic to establish actual milestone delivery; keep product Scrape acceptance separate and unverified."
+}
