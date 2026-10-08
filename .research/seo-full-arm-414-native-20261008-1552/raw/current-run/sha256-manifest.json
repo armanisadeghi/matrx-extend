@@ -1,0 +1,20 @@
+{
+  "files": {
+    "seo-guest-acceptance.json": "e0d19ffc48f8ce15fe214c9d6f23ec169ede4a158f7fe63c6c6089d4b174a21a",
+    "seo-guest-acceptance.original.json.gz": "5a6ddbfeda3b9781beb2a2bfda488bebf03a0cac6f59abb12649dbb8a4c31e26",
+    "hosted-package-37804374798-1.jsonl": "cb3ca689912388c7ab3fdc279a9f16d1d313c5df485ebb16f9c725b0803c5751",
+    "hosted-browser-37804374798-1.jsonl": "812f7c6066a607dc84732c6cabc87f6ee046327f8152f65617146853a6277e98",
+    "hosted-guest-37804374798-1.jsonl": "ce613f345e19545304b056d52ab1f3229f1962bffa3467f39033a938abba33eb",
+    "native-side-panel.png": "7014b991b2908b07a38bb4189bff80a010f94ac1615c42aad08cc55b60de4276",
+    "normal-target-after-open.png": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89"
+  },
+  "formatted_github_api_metadata": {
+    "remote-run-metadata.json": "d8a4eeb17f0a7544b18be65dd8a117fc4f556681794af031611173798b64a4e6",
+    "remote-artifact-listing.json": "313d7e630c3809eec643f104d2203c1a5631c159fe98383ad6b1297f70c982af"
+  },
+  "original_uploaded_receipt": {
+    "sha256": "ed4c9f93e3b1ed039ec3d309aac495d305b85eb4cf3885d6f0d6757fddb8acff",
+    "gzip_file": "raw/current-run/seo-guest-acceptance.original.json.gz",
+    "gzip_sha256": "5a6ddbfeda3b9781beb2a2bfda488bebf03a0cac6f59abb12649dbb8a4c31e26"
+  }
+}
