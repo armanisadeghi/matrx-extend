@@ -41,7 +41,9 @@
     ".research/guest-position-deployment-observation-20261008.json",
     ".research/guest-position-fix-live-retest-20261008.json",
     ".research/guest-position-fix-live-peer-20261008.json",
-    ".research/guest-position-native-adjudication-20261008.json"
+    ".research/guest-position-native-adjudication-20261008.json",
+    ".research/public-guest-native-20261008-1620.json",
+    ".research/public-guest-final-peer-20261008.json"
   ],
   "transition_history": [
     {
@@ -136,6 +138,15 @@
       "public_extension_version": "0.2.205",
       "deployed_sha": "5be7a37ba1e53ca311f3787bb041a402ec863052",
       "detail": "First/followupgroundedterminalpass. Afterreloadget_page_textcompleted; continuationopened and emitted8textchunks thenuser_request_failed/endReasonerror, noassistantreply. UIScreenshotConversationResumeRuntimeError. Causeunderrepair; no overallhealthclaim."
+    },
+    {
+      "run_id": "37807565859",
+      "status": "bounded-pass",
+      "build_version": "0.2.205",
+      "installation_mode": "published_store_crx_unpacked",
+      "independent_review": ".research/public-guest-final-peer-20261008.json",
+      "observations": "Opening, same-conversation follow-up and new conversation after reload returned terminal assistant answers; three current journals valid. Backend8924a396 sampled before/after.",
+      "limits": "Not Store-installed acceptance. Raw CRX and full assistant response bodies unavailable for peer recomputation; executed producer assertions and receipt reviewed. No broader Chat or latest-main health claim."
     }
   ]
 }
