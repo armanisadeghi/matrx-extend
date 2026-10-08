@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0172",
+  "case_id": "EXT-F-2013-T10",
+  "observed_at_utc": "2026-10-08T10:45:38Z",
+  "lane": "A_public_no_login_guest_chat",
+  "run": {
+    "id": 37764808590,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37764808590",
+    "workflow": "hosted-guest-acceptance.yml",
+    "event": "workflow_dispatch",
+    "runner": "macos-15 ARM64",
+    "acceptance_case": "guest-chat",
+    "published_store_crx": true,
+    "head_sha": "46ec5e17cda452591ad7b196ac0a07811b761c09",
+    "conclusion": "failure",
+    "started_at_utc": "2026-10-08T10:38:42Z",
+    "completed_at_utc": "2026-10-08T10:45:37Z",
+    "artifact_id": 11543528787,
+    "artifact_name": "hosted-guest-37764808590-1",
+    "artifact_zip_sha256": "3a36dc76c49aea2e166af5f43b7b547af22bffd483390c58df288de2520e113e"
+  },
+  "verdict": {
+    "original_reproduction": "fail",
+    "harness_status": "unverified",
+    "resource_validity": "valid_resources_child_failed",
+    "overall_product_health": "not_established",
+    "reason": "The opening and same-conversation follow-up each had a grounded terminal answer. The distinct new conversation after full panel reload completed get_page_text on the correct fixture, then continuation opened and ended in ConversationResume RuntimeError with no visible assistant reply. The old immediate HTTP 409 was not observed, but the required grounded terminal answer remains absent."
+  },
+  "published_store_artifact": {
+    "kind": "published_store_crx_unpacked",
+    "version": "0.2.205",
+    "extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "pinned_public_crx_sha256": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23",
+    "tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "matches_original_failing_run_tree": true,
+    "public_download_sha256_matched_pinned_crx": true,
+    "unpacked_copy_adapted_for_chrome_identity": true
+  },
+  "server": {
+    "endpoint": "https://server.app.matrxserver.com/health/version",
+    "before_git_sha": "5be7a37ba1e53ca311f3787bb041a402ec863052",
+    "after_git_sha": "5be7a37ba1e53ca311f3787bb041a402ec863052",
+    "post_run_spot_check_git_sha": "5be7a37ba1e53ca311f3787bb041a402ec863052",
+    "stable_during_run_and_post_run_check": true,
+    "includes_repair_commit": "54a1e1b978a8efde6b9232aa56aad9f12a1bf214 is an ancestor per upstream deployment observation"
+  },
+  "source_comparison": {
+    "original_failing_run_head": "3ab075f80468a407bb44b246771289a98d75d086",
+    "guest_driver_sha256_both_runs": "4061408721291640117e4c679f8ce22b9b502d8bb024f28b0b84f9a276738032",
+    "hosted_runner_script_sha256_both_runs": "923a82922e654b983fe0587132932a290c95745763392e2a74cff5433fbbcff7",
+    "workflow_difference": "Only the disposable hosted VM indexing-status check changed; guest driver and acceptance flow did not."
+  },
+  "guest_chat": {
+    "opening": {
+      "terminal_verdict": "terminal_answer",
+      "http_status": 200,
+      "is_new": true,
+      "conversation_fingerprint": "658831b387955bd8",
+      "grounded_page_code": true,
+      "stage_names_in_order": true
+    },
+    "same_conversation_followup": {
+      "terminal_verdict": "terminal_answer",
+      "http_status": 200,
+      "is_new": false,
+      "conversation_fingerprint": "658831b387955bd8",
+      "grounded_page_code": true,
+      "conversation_identity_verified": true
+    },
+    "post_reload_new_conversation": {
+      "terminal_verdict": "terminal_error",
+      "initial_http_status": 200,
+      "is_new": true,
+      "conversation_fingerprint": "bce968742580e1a8",
+      "page_text_tool_completed_on_fixture": true,
+      "page_text_result_includes_followup_code_and_heading": true,
+      "continuation_opened": true,
+      "continuation_text_chunks_before_error": 8,
+      "continuation_end_reason": "error",
+      "continuation_user_request_outcome": "failed",
+      "visible_error": "ConversationResume failed unexpectedly (RuntimeError)",
+      "visible_assistant_reply_count_at_failure": 0,
+      "grounded_terminal_answer": false
+    }
+  },
+  "resources": {
+    "journals": {
+      "package": {"path": "raw/hosted-package-37764808590-1.jsonl", "admitted": true, "child_exit_code": 0, "final_decision": "valid", "resource_invalid": false, "sha256": "3cf58d044893b5fbbd786ddbbd758452aa045c85d9a3e663600dae0e2bdb8264"},
+      "browser": {"path": "raw/hosted-browser-37764808590-1.jsonl", "admitted": true, "child_exit_code": 0, "final_decision": "valid", "resource_invalid": false, "sha256": "16ccd768367ad6b5fd919e71b4277a9d9336638e608e9a56ea8ad8211f43de39"},
+      "guest": {"path": "raw/hosted-guest-37764808590-1.jsonl", "admitted": true, "child_exit_code": 1, "final_decision": "child_failed", "resource_invalid": false, "sha256": "afad857aebe38e5df96fa7bae93e4b9bb9ec8cec9dc31c5fd2ddf17a7ebce0b3"}
+    },
+    "stale_journals_from_upload_excluded": true,
+    "excluded_stale_run_ids": [37105304739, 37724762467]
+  },
+  "evidence": {
+    "directory": ".research/guest409-live-retest-20261008-run37764808590/raw",
+    "original_receipt": "raw/guest-chat.receipt.original.json",
+    "receipt_sha256": "af3d7f031b894e4a327a832443409ceebdad577ccea0685cf946c853897d1dde",
+    "failure_screenshot": "raw/guest-chat-failure.png",
+    "failure_screenshot_sha256": "ac561290690419a72323bab26dcb14116459dd2542d59055690583d4e3669a25",
+    "originals_byte_exact": true,
+    "reviewed_for_private_content": "Receipt, current-run journals, and five screenshots inspected; synthetic public demo and guest panel only, no credentials or private account content observed."
+  },
+  "limits": [
+    "This loads the published public CRX as an adapted unpacked extension; it does not prove installation through Chrome Web Store UI.",
+    "The CDP observer attaches after panel load, so it does not establish absence of earlier requests.",
+    "The new RuntimeError cause is unassigned; this single run establishes a bounded failure, not a server-wide recurrence rate.",
+    "The harness stops on a missing terminal answer and cannot certify the final loaded extension tree after the failed assertion. The initial tree matched the pinned public CRX and the original failing tree."
+  ],
+  "next_action": "Investigate the live ConversationResume RuntimeError at 2026-10-08T10:45:11Z to 10:45:22Z for this new guest conversation; repair its cause, then independently retest the exact public post-reload tool continuation and terminal answer. Do not close EXT-D-0172."
+}
