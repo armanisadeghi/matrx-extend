@@ -24,7 +24,9 @@
     ".research/t57-arm-414-native-20261008-1552.json",
     ".research/t57-binding-diagnosis-20261008-1608.json",
     ".research/t57-loader-peer-20261008-1614.json",
-    ".research/t57-active-loader-final-peer-20261008-1617.json"
+    ".research/t57-active-loader-final-peer-20261008-1617.json",
+    ".research/t57-corrected-native-20261008.json",
+    ".research/t57-corrected-native-peer-20261008.json"
   ],
   "cause": "Arrival-order assignment before loader classification, with asynchronous response-body reads requiring synchronous slot reservation.",
   "fix_commits": ["f7971902", "d69c55e1"],
@@ -60,5 +62,5 @@
     }
   ],
   "closure_requirement": "Fresh source review plus resource-valid native original scenario showing distinct old/current loader selection, exact response identity/binding, correct final saved output and owned cleanup. Do not reopen original productD47 based on this driver failure.",
-  "next_action": "One corrected native T57 attempt after A Records terminal and temporary credentials cleaned; require actual current document binding and settled result."
+  "next_action": "Obtain a resource-valid observation of prior-response gate before attributing failure or changing product source. Corrected37810284956 ended resource-invalid before required race; fresh peerd7d4e9a6 does not establish source defect or native closure. Source remains fixed/native unverified."
 }

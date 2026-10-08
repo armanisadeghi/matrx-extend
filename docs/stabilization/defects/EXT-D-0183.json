@@ -24,7 +24,8 @@
     ".research/seo-controlled-native-lane-b-20261008.json",
     ".research/parallel-product-attempt-peer-20261008.json",
     ".research/seo-arm-414-native-20261008-1527.json",
-    ".research/seo-arm-live-peer-20261008-1536.json"
+    ".research/seo-arm-live-peer-20261008-1536.json",
+    ".research/seo-interruption-native-20261008.json"
   ],
   "closure_requirement": "Durable phase/observation write proven by actual interrupted driver seam and freshreview, then independently inspected native interruption/surrounding successfulreceipt; no invalidrun promotion.",
   "transition_history": [
@@ -55,5 +56,10 @@
   ],
   "fix_commits": ["035caed8"],
   "native_partial": "37795616638 retained an early failure receipt at build_identity_verified with zero targets. Child exited1 after CDP timeout while CPU_PENDING; no confirmed guard kill. Receipt lacks an interim/checkpoint marker and may be final error output. Original post-panel/completed-target interruption durability remains unverified; no closure.",
-  "normal_completion_retest": "37800877872 preserves all18 selected targets on normal successful completion; peerf8425c5e verifies exact executed workflow driver and raw hashes. No intentional or resource interruption occurred. Original interrupted-target durability remains unverified."
+  "normal_completion_retest": "37800877872 preserves all18 selected targets on normal successful completion; peerf8425c5e verifies exact executed workflow driver and raw hashes. No intentional or resource interruption occurred. Original interrupted-target durability remains unverified.",
+  "native_interruption_attempts": {
+    "runs": ["37809984111", "37811146242"],
+    "result": "Both cancelled after native child exit0/null signal; ordinary final receipts with18 controlled passes, no interruption credit. GitHub step status is too coarse for deterministic timing.",
+    "next_action": "Implement opt-in deterministic stop after persisted target checkpoint in existing native path; source owner seo_deterministic_interrupt_fix; native proof pending."
+  }
 }

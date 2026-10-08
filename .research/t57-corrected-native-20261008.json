@@ -12,12 +12,12 @@
     "review": ".research/t57-active-loader-final-peer-20261008-1617.json",
     "review_verdict": "ready_for_authorized_native_rerun",
     "workflow_source_commit": "c2a1b6a7fc497706c0457bc033806bc134ae31d3",
-    "workflow_source_is_current_origin_main": true,
     "driver_git_blob_at_workflow_source": "25da315227f30feaf8bf049912503384a9208a5d",
     "workflow_git_blob": "23b5dcab904c8495fdd872b3efa13c3b1af2dd3b",
     "focused_ci_run_id": 37807243961,
     "focused_ci_head_sha": "290ee2fdf2cf2616032705cdfa7d19a2d1b9a9ee",
-    "focused_ci_conclusion": "success"
+    "focused_ci_conclusion": "success",
+    "workflow_source_scope": "c2a1b6a7 was origin/main at dispatch; later main is distinct. Exact workflow and driver blobs recorded separately."
   },
   "frozen_product_target": {
     "development_run_id": 37790643945,
@@ -104,9 +104,19 @@
       "release_order": [],
       "release_attempts": [],
       "cleanup_attempts": [
-        { "step": "old", "outcome": "cdp_rejected", "error_category": "other_cdp_failure" },
-        { "step": "disable", "outcome": "completed" },
-        { "step": "detach", "outcome": "completed" }
+        {
+          "step": "old",
+          "outcome": "cdp_rejected",
+          "error_category": "other_cdp_failure"
+        },
+        {
+          "step": "disable",
+          "outcome": "completed"
+        },
+        {
+          "step": "detach",
+          "outcome": "completed"
+        }
       ],
       "interception_cleanup_verdict": "unverified",
       "capture_probe_cleanup": "removed_detached",
