@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "run_id": 37847790922,
+  "run_head_sha": "d52c1b8b75bef63ec97c25e8c118a6d02cabbce9",
+  "workflow_conclusion": "failure",
+  "workflow_terminal_at_utc": "2026-10-08T21:43:28Z",
+  "frozen_product": {
+    "ci_run_id": 37790643945,
+    "artifact_id": 11556064167,
+    "version": "0.2.414",
+    "digest": "sha256:7a93776a9322c27973756ddb542fd2e8580d900c356d28a0ad1504928edf3964"
+  },
+  "native_artifact": {
+    "id": 11581490782,
+    "digest": "sha256:bc4b73fe46c6ed67d512cc3f704fdda6134c62d219af07970097af1a5b1739e5",
+    "receipt_sha256": "deed52eaecc18799bc9318a65e07930e08978d7d6bc76d7fcdbd7e110e9bb7e7",
+    "fixture_journal_sha256": "c2516bc6b898ae6555a941b7d507b6948f354d001f9fe3f584202b8cea1e6ca3",
+    "browser_journal_sha256": "279bd5ef019b2f988e857123df6582af019a2c91223592f115628e6319efb04e",
+    "guest_journal_sha256": "4ba6229b87e72df136fde021b75387ecaba6bead69194267a3263d55aa54e262",
+    "package_journal_sha256": "0b99a7bb714923c916f598fcc5cc6a8b73bae454e3699cbe4db15e4f32214f28"
+  },
+  "resource": "Package and browser resource-valid; guest child_failed after the fixture cleanup assertion.",
+  "native_receipt": {
+    "status": "unverified",
+    "failure_phase": "records_fixture_cleanup",
+    "failure_classification": "records_fixture_cleanup_ownership_ambiguous",
+    "journal_phase": "row_owned",
+    "c04_record_read": {
+      "http_status": 200,
+      "completion_observed": true,
+      "visible": true,
+      "owned_fixture_matched": true
+    },
+    "c05_record_aggregate": {
+      "http_status": 200,
+      "completion_observed": true,
+      "visible": true,
+      "owned_fixture_matched": true
+    }
+  },
+  "fixture_cleanup_after_terminal": {
+    "same_principal_auth_status": 200,
+    "cause": "The table-list API returned null description, so its strict marker filter could not see the created table; the canonical columns detail route returned the complete matching marker.",
+    "ownership_proof": {
+      "list_status": 200,
+      "list_complete": true,
+      "saved_table_id_match": true,
+      "unique_name_match": true,
+      "approved_organization_match": true,
+      "custom_kind_match": true,
+      "columns_detail_status": 200,
+      "detail_id_match": true,
+      "detail_name_match": true,
+      "principal_and_organization_marker_match": true
+    },
+    "exact_archive_status": 200,
+    "archive_done": true,
+    "archive_confirmed": true,
+    "archive_table_id_match": true,
+    "archive_organization_match": true,
+    "post_archive_list_status": 200,
+    "post_archive_list_complete": true,
+    "exact_id_absent": true,
+    "exact_name_absent": true
+  },
+  "credential_cleanup": {
+    "temporary_secret_names_deleted": true,
+    "names_only_absence_verified": true,
+    "private_staging_payload_removed": true
+  },
+  "claim_boundary": "C04/C05 native actions completed and were visible on the frozen product, but the hosted workflow failed its cleanup assertion. External exact-fixture archive and absence are independently verified after terminal; independent raw review is pending before acceptance.",
+  "raw_evidence": ".research/records-lifecycle-native-20261008/raw contains byte-exact hosted receipt, fixture journal, screenshots, and resource journals."
+}
