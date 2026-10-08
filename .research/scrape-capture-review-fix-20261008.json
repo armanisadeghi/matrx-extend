@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "source_sha": "617e65a6",
+  "status": "source_repaired_native_unverified",
+  "fixed": ["capture timeout uses allowlisted booleans", "click probe removed in finally, including busy-arm failure", "focused causal click/busy boundary test"],
+  "verification": ["RED: removing timeout projector exposed page text in failure", "RED: removing listener disposal failed listener-balance assertions", "GREEN: 25 focused tests", "node --check acceptance entrypoint", "Biome check four touched source files"],
+  "unverified": ["fresh native final click and resulting captured referrals", "release/deploy intentionally owned by parent lane"],
+  "review_basis": ".research/scrape-capture-boundary-peer-20261008.json"
+}
