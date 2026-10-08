@@ -1,0 +1,199 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-08T16:48:30Z",
+  "task_id": "EXT-F-1012-T57-corrected-native-lane-A",
+  "lane": "A",
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "scope": "One corrected hosted native T57 attempt after a setup-only preflight failure. No product source, harness, build, release, or deployment edits.",
+  "driver": {
+    "path": "tests/browser/showcase-d47-public-initial-load.mjs",
+    "reviewed_fix_commit": "d69c55e1edc90434208782be8db72f39a64433f7",
+    "review": ".research/t57-active-loader-final-peer-20261008-1617.json",
+    "review_verdict": "ready_for_authorized_native_rerun",
+    "workflow_source_commit": "c2a1b6a7fc497706c0457bc033806bc134ae31d3",
+    "workflow_source_is_current_origin_main": true,
+    "driver_git_blob_at_workflow_source": "25da315227f30feaf8bf049912503384a9208a5d",
+    "workflow_git_blob": "23b5dcab904c8495fdd872b3efa13c3b1af2dd3b",
+    "focused_ci_run_id": 37807243961,
+    "focused_ci_head_sha": "290ee2fdf2cf2616032705cdfa7d19a2d1b9a9ee",
+    "focused_ci_conclusion": "success"
+  },
+  "frozen_product_target": {
+    "development_run_id": 37790643945,
+    "development_run_conclusion": "success",
+    "development_source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+    "development_artifact_id": 11556064167,
+    "development_artifact_name": "matrx-extend-development-test-e7b7dc1ecae946369cebb482915faf7ef792c692-37790643945-1",
+    "development_artifact_digest": "sha256:7a93776a9322c27973756ddb542fd2e8580d900c356d28a0ad1504928edf3964",
+    "product_tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046",
+    "version": "0.2.414",
+    "identity_source": ".research/t57-arm-414-native-20261008-1552.json",
+    "imported_and_verified_by_corrected_run": true
+  },
+  "attempts": [
+    {
+      "run_id": 37809870811,
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37809870811",
+      "status": "completed",
+      "conclusion": "failure",
+      "workflow_head_sha": "c2a1b6a7fc497706c0457bc033806bc134ae31d3",
+      "runner_label": "macos-15",
+      "runner_arch": "ARM64",
+      "acceptance_case": "showcase-d47-public-admin",
+      "failed_step": "Require selected authentication before browser setup",
+      "failure_code": "hosted_admin_secret_required",
+      "classification": "setup_only_preflight_failure; no product or native verdict",
+      "native_and_resource_steps_started": false
+    },
+    {
+      "run_id": 37810284956,
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37810284956",
+      "status": "completed",
+      "conclusion": "failure",
+      "attempt": 1,
+      "event": "workflow_dispatch",
+      "workflow_source_commit": "c2a1b6a7fc497706c0457bc033806bc134ae31d3",
+      "runner_label": "macos-15",
+      "runner_arch": "ARM64",
+      "runner_machine": "arm64",
+      "acceptance_lane": "A",
+      "acceptance_case": "showcase-d47-public-admin",
+      "d47_public_race_preflight": true,
+      "created_at": "2026-10-08T16:37:46Z",
+      "started_at": "2026-10-08T16:38:01Z",
+      "completed_at": "2026-10-08T16:47:27Z",
+      "native_step": "Exercise the selected Chrome side-panel case",
+      "native_step_conclusion": "failure"
+    }
+  ],
+  "native_result": {
+    "verdict": "unverified_resource_invalid",
+    "stage": "public_race_prior_document_load",
+    "failure_code": "unclassified_error",
+    "auth_stage": "admin_rendered_identity",
+    "identity_and_org_checkpoint": {
+      "admin_role_verified": true,
+      "rendered_email_matches": true,
+      "rendered_role_matches": true,
+      "rendered_organization_matches": true,
+      "product_request_observed": true,
+      "product_response_finished": true,
+      "product_response_success": true,
+      "product_header_matches": true,
+      "product_principal_matches": true,
+      "observer_cleanup_success": true
+    },
+    "public_race": {
+      "paused_target_response_count": 1,
+      "paused_response": {
+        "endpoint_shape": "/1/indexes/Item_dev/query",
+        "request_identity_sha256": "9ba31e4753e1e6699bdf255ffe0f34f623eafe478e8b5582df3bdf2bd22374be",
+        "loader_id": "0E51B0FCF81703EB8687550A2C2F63F4",
+        "http_status": 200,
+        "lifecycle": "failed",
+        "response_sha256": "6d37526483fa2f9d6d753524b0ee08e064dca6c544e226a5b268e9975a125dff"
+      },
+      "old_paused_before_replay": false,
+      "pause_rejections": {
+        "target_duplicate_prior_document": 1,
+        "target_not_active_main_document": 0,
+        "target_current_identity_mismatch": 0,
+        "target_body_unavailable": 0
+      },
+      "release_order": [],
+      "release_attempts": [],
+      "cleanup_attempts": [
+        { "step": "old", "outcome": "cdp_rejected", "error_category": "other_cdp_failure" },
+        { "step": "disable", "outcome": "completed" },
+        { "step": "detach", "outcome": "completed" }
+      ],
+      "interception_cleanup_verdict": "unverified",
+      "capture_probe_cleanup": "removed_detached",
+      "extension_capture_at_current_pause": false,
+      "current_binding_matches_response": false,
+      "terminal_outcome": "unverified",
+      "saved_result_observed": false
+    },
+    "owned_recipe": {
+      "creation": "observed_in_patterns",
+      "cleanup_reported_by_native_driver": "removed",
+      "cleanup_verified_in_source_of_record": true,
+      "source_of_record": "authenticated read-only Data API query on extend.wbx_pattern using exact receipt-generated name, hn.algolia.com, and approved organization",
+      "exact_total_rows_after_cleanup": 0,
+      "exact_active_rows_after_cleanup": 0,
+      "http_statuses": [200, 200],
+      "fixture_name_sha256": "recorded in raw receipt hash; the title is omitted from committed evidence"
+    }
+  },
+  "resource_phases": {
+    "package": {
+      "run_id": "hosted-package-37810284956-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "journal_sha256": "2ec4a8824d790b34bb028ba233ba77a4fc1d0ab35b0cf23a89a92f68fe7c5fde"
+    },
+    "browser": {
+      "run_id": "hosted-browser-37810284956-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "journal_sha256": "400182771a2bc1f7884d3115de187c8f759d88cecffe713fab4d0b5c9e16ee9d"
+    },
+    "acceptance": {
+      "run_id": "hosted-guest-37810284956-1",
+      "admitted": true,
+      "resource_invalid": true,
+      "exit_code": 3,
+      "decision": "invalid",
+      "child_exit_code": 1,
+      "events": ["RESOURCE_CPU_HIGH_LOAD_BUSY", "RESOURCE_CPU_BUSY", "RESOURCE_CPU_RECOVERED"],
+      "final_pending_reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
+      "journal_sha256": "2749dbe25d0eda941fb7c27985ac637a147c94ae34278152976f4fd6fef556ac"
+    }
+  },
+  "artifact_evidence": {
+    "native_artifact_id": 11564618863,
+    "native_artifact_name": "hosted-guest-37810284956-1",
+    "native_artifact_digest": "sha256:f2eb022ca8d19e6e0e5abc2a4af69e79837784d076567e734a4db5468f3f6f7f",
+    "native_artifact_size_bytes": 68594,
+    "raw_native_receipt_sha256": "548a7f55fa5b8243d6d99201dbf5ec7660fe00ce402a270623bbb44379ee0014",
+    "sanitized_receipt_path": ".research/t57-corrected-native-20261008-originals/raw/receipt.sanitized.json",
+    "sanitized_receipt_sha256": "2cb22ab113023bd0fc447fe19d063c6c48b2d4cab9845e2251dc80b2a6379f7f",
+    "screenshots": {
+      "native-side-panel.png": "967c13093c4060073d1bb8cfc9d5702d42f05870dbe7e0eaffb0896e4988fcaa",
+      "normal-target-after-open.png": "c939d4f6417b874eefffbe4a8c9bd1cf05088fe2b42ab7a7e13c65d79a024fd2"
+    },
+    "historical_journals_in_uploaded_artifact": "Six already-tracked journals from unrelated earlier run IDs; not used as evidence for this run."
+  },
+  "credential_lifecycle": {
+    "temporary_secret_names": [
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "admin_source": "only AI_ADMIN_USERNAME and AI_ADMIN_PASSWORD parsed from aidream/.env; identity validated privately",
+    "organization_source": "existing mode-0600 test-results/admin-profile-approved-organization-private.json, previously membership-verified in .research/t57-membership-rpc-diagnosis-20261008.json",
+    "values_printed_or_committed": false,
+    "staged_through_stdin": true,
+    "local_mode_0600_staging_files_removed": true,
+    "github_secrets_deleted_after_terminal": true,
+    "independent_secret_name_listing_absent": true,
+    "organization_fixture_mutated": false
+  },
+  "preserved_prior_evidence": {
+    "report": ".research/t57-arm-414-native-20261008-1552.json",
+    "prior_raw_sha256_map_preserved_without_modification": true
+  },
+  "changed_files": [
+    ".research/t57-corrected-native-20261008.json",
+    ".research/t57-corrected-native-20261008-originals/raw/hosted-package-37810284956-1.jsonl",
+    ".research/t57-corrected-native-20261008-originals/raw/hosted-browser-37810284956-1.jsonl",
+    ".research/t57-corrected-native-20261008-originals/raw/hosted-guest-37810284956-1.jsonl",
+    ".research/t57-corrected-native-20261008-originals/raw/receipt.sanitized.json"
+  ],
+  "claim_limit": "The exact frozen 0.2.414 artifact was imported and its real admin, approved organization, and product request/header/principal checks passed. The run paused one HTTP 200 response with lifecycle failed; this is distinct from the later old-target CDP cleanup rejection. Disable and detach completed, but interception cleanup, current binding, terminal result, and saved result were unverified. The resource guard marks acceptance invalid after CPU busy/high-load events and child exit 1. Recipe cleanup is independently verified at zero exact active and total rows. No T57 acceptance, product defect verdict, D47 closure, or D184 native verification is claimed.",
+  "next_action": "Root routes the native observations for fresh diagnosis and review. No further attempt is authorized in this lane."
+}
