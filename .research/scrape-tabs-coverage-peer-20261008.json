@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007-T08",
+  "candidate": "dd21278c",
+  "verdict": "qualified_source_pass_native_unverified",
+  "observed": "Warm and reload native branches snapshot all six rendered panes, revisit each pane on the same controlled intake capture, and deep-compare title, selected tab, full visible text, tab roster, count, and rendered row identities. Reload then recaptures the media-free referrals page and checks active empty Images and Video panes. A missing, hidden, or populated reload empty pane and a changed rendered capture on revisit throw before final report completion.",
+  "tests": "12 focused tests passed locally. Mutated text on each of six revisits, changed image count, missing reload empty evidence, populated/hidden empty panes, and omitted reload comparison are rejected by helper tests.",
+  "limits": "Tests use constructed scrape states and directly call helpers; they do not execute or guard the full native driver wiring. Snapshots compare rendered capture state after pane actions, not an underlying capture ID or stored raw payload. No native run was performed for this candidate.",
+  "status_issue": "The driver leaves EXT-F-1007-T08 status=partial after assertCompleteTabCoverage succeeds; a passing native run therefore would not itself mark this case passed.",
+  "other_cases": "Diff adds T08 observations and replaces the warm empty-media loop with its shared observer; no other native case assertions were removed. The old test's source-extracted branch and health-check-count assertion were replaced with helper-level tests.",
+  "next": "Run the exact candidate natively and inspect the T08 receipt; decide whether successful T08 completion should set status=passed after all required dimensions are evidenced."
+}
