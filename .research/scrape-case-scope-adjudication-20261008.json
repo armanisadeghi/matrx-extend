@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "task": "Independent guest-cell scope adjudication for run 37778965029",
+  "scope": "Read-only comparison of canonical EXT-F-1007 controls, case criteria, dimensions, guest cells, raw receipt, and prior peer review. This report changes no inventory or source.",
+  "rule": "Each guest case cell is judged by its own documented controls, steps, expected behavior, and dimensions. Unverified member/admin cells do not lower a guest verdict. A receipt's aggregate or self-reported case status does not override missing guest criteria.",
+  "sources": [
+    "docs/stabilization/inventory.json#EXT-F-1007",
+    ".research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json",
+    ".research/scrape-confirmation-native-retest-20261008.json",
+    ".research/scrape-uninstrumented-final-peer-20261008.json"
+  ],
+  "run_context": "Frozen development 0.2.407, source 5d845f42cb22c10e2486af8048d1ac9f3ac8e114, guest, normal 600px, warm plus exact extension reload. No member/admin, alternate width, Store, or later-main transfer.",
+  "guest_case_verdicts": [
+    {
+      "case_id": "EXT-F-1007-T01",
+      "verdict": "partial",
+      "reason": "Warm and post-reload fast capture, disabled busy control, article, and result tabs are observed. C01 and the case expected text also require error recovery actions. This receipt does not exercise a natural capture error or its recovery controls; T14 remains partial for that same guest gap. Missing member/admin evidence is irrelevant to this guest verdict.",
+      "new_subtarget": "post-reload fast capture revalidated",
+      "guest_remaining": ["Natural capture error and applicable recovery action in fast mode"]
+    },
+    {
+      "case_id": "EXT-F-1007-T02",
+      "verdict": "partial",
+      "reason": "Warm deep progress and lazy content are observed. The documented warm/reload dimensions and expected failure preserving deep retry mode are not exhausted: post-reload deep capture and natural deep failure/retry are absent.",
+      "guest_remaining": ["Post-reload deep capture", "Natural deep failure and retry in deep mode"]
+    },
+    {
+      "case_id": "EXT-F-1007-T03",
+      "verdict": "partial-unchanged",
+      "reason": "The raw post-reload boundary records one Capture click and busy state, but neither the edited pre-state nor exact discard dialog, Cancel, trusted Re-capture confirmation, chosen mode, and resulting article fields. The helper can also succeed through an already-captured Article branch. Existing historical guest partial evidence is unchanged; this run does not close its reload/control coverage or EXT-D-0178.",
+      "guest_remaining": ["Receipt-bound post-reload unsaved-edit dialog branch and confirmed outcome"]
+    },
+    {
+      "case_id": "EXT-F-1007-T07",
+      "verdict": "pass-revalidated",
+      "reason": "Warm and reload observations cover Sync scroll on following page scroll and off stopping synchronization; raw case has no remaining criteria."
+    },
+    {
+      "case_id": "EXT-F-1007-T08",
+      "verdict": "partial",
+      "reason": "Six populated panes and capture invariance are recorded warm and after reload; the new post-reload referrals capture shows empty Images and Video panes. Canonical expected behavior says each selected tab renders matching data and empty states, and the existing guest detail explicitly leaves exhaustive per-pane empty-state coverage unverified. No Article, Links, SEO, or Schema empty-state observations are retained. Member/admin absence alone would not keep this guest cell partial.",
+      "new_subtarget": "Post-reload empty Images and Video panes after Capture boundary, with zero rows",
+      "guest_remaining": ["Empty-state behavior for Article, Links, SEO, and Schema panes, to the extent each documented pane supports an empty capture"]
+    },
+    {
+      "case_id": "EXT-F-1007-T09",
+      "verdict": "pass-revalidated",
+      "reason": "Warm/reload Copy capture and section representations and current-content equality are recorded; raw case has no remaining criteria."
+    },
+    {
+      "case_id": "EXT-F-1007-T10",
+      "verdict": "pass-revalidated",
+      "reason": "Warm/reload removal of large, medium, and icon images updates rows/count; raw case has no remaining criteria."
+    },
+    {
+      "case_id": "EXT-F-1007-T11",
+      "verdict": "pass-revalidated",
+      "reason": "Warm/reload blank URL rejection, valid URL with alt, and Cancel clearing draft are recorded; raw case has no remaining criteria."
+    },
+    {
+      "case_id": "EXT-F-1007-T12",
+      "verdict": "pass-revalidated",
+      "reason": "Warm/reload video open, clipboard equality, removal, blank rejection, and valid add are recorded; raw case has no remaining criteria."
+    },
+    {
+      "case_id": "EXT-F-1007-T13",
+      "verdict": "pass-revalidated",
+      "reason": "The raw warm/reload link evidence covers open, copy with clipboard equality, remove, blank href rejection, valid href/text add, and cancel. These exhaust guest C13, steps, expected behavior, and warm/reload dimensions. Canonical guest cell already says pass; raw aggregate partial and peer partial stem solely from member/admin absence and do not demote guest.",
+      "guest_remaining": []
+    },
+    {
+      "case_id": "EXT-F-1007-T14",
+      "verdict": "partial",
+      "reason": "Historical restricted-URL error and Dismiss evidence remains. The receipt does not show natural recoverable Reload page or Try again, including preservation of deep mode on retry, so guest recovery criteria remain open.",
+      "guest_remaining": ["Natural recoverable Reload page", "Natural Try again", "Deep-mode retry preservation"]
+    },
+    {
+      "case_id": "EXT-F-1007-T20",
+      "verdict": "pass-revalidated",
+      "reason": "Initial/reload empty state and navigation clear prior content and saved badge; raw case has no remaining criteria."
+    }
+  ],
+  "untouched_guest_cells": "All other guest cases retain their canonical status; this run has no evidence to promote them. In particular T06 remains its existing pass, while Save/Source, Diagnose, highlight, project, additional empty/identity, and chart cases require their separate documented controls and dimensions.",
+  "evidence_quality": {
+    "verdict": "valid-bounded-with-branch-limit",
+    "basis": "Peer review recomputed the receipt and three selected resource-journal SHA-256 hashes and found all selected journals admitted, valid, and exitCode 0. Artifact metadata matches frozen source/CI artifact. The strict reload evidence shows old worker retirement, replacement activation, open-panel reply, and a replacement Scrape panel.",
+    "limit": "The post-reload Capture helper can pass via an already-captured Article or conditional Re-capture dialog; the raw receipt stores no branch identity, dialog, confirmation click, or Article predicate fields. It supports the observed downstream panes and fast boundary, but not EXT-D-0178 closure or T03 confirmation promotion. Receipt case statuses/remaining arrays are not the canonical per-guest verdict authority."
+  },
+  "feature_health": "Guest surface remains partial across cases; member/admin and other dimensions remain independently open. No whole-feature health or defect closure follows from these bounded guest results."
+}
