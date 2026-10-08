@@ -173,6 +173,12 @@ const exerciseSetup = new Function(
 await exerciseSetup({
   page: {},
   panel: {},
+  browserSession: {
+    send: async (method) => {
+      assert.equal(method, 'Browser.getVersion');
+      return { product: 'Chrome/fixture' };
+    },
+  },
   activatePanel: async () => {
     throw new Error('focus-only activation cannot reopen hidden panel');
   },

@@ -28,6 +28,7 @@ async function exercise(text, initial, reply = { ok: true, result: { opened: tru
     send: async (_method, { expression }) => ({
       result: {
         value: runInNewContext(expression, {
+          chrome: { runtime: { id: 'fixture-extension' } },
           document: { visibilityState: visibility, hasFocus: () => true, readyState: 'complete' },
           window: { innerWidth: 360, innerHeight: 373 },
         }),
@@ -101,6 +102,12 @@ async function exercise(text, initial, reply = { ok: true, result: { opened: tru
   await run({
     panel,
     page,
+    browserSession: {
+      send: async (method) => {
+        assert.equal(method, 'Browser.getVersion');
+        return { product: 'Chrome/fixture' };
+      },
+    },
     observePanelVisibility: async () => {},
     reopenPanel: () =>
       activate({

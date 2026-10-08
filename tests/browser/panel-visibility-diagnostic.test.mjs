@@ -189,6 +189,12 @@ async function checkPath(source, scrape, refused = false) {
     exercise({
       page,
       panel,
+      browserSession: {
+        send: async (method) => {
+          assert.equal(method, 'Browser.getVersion');
+          return { product: 'Chrome/fixture' };
+        },
+      },
       observePanelVisibility: observe,
       observeAuthenticatedPanel: authObserve,
       reopenPanel: () =>
