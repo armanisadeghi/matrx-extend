@@ -23,9 +23,21 @@ import type {
   ChatOrgPort,
   ChatOrganization,
 } from '@ai-matrx/chat/host';
+import { createMemoryNavigation } from '@ai-matrx/chat/host';
 import { registerChatUi } from '@ai-matrx/chat/host/ui-slots';
-import { memoryNavigation, restoreChatAddress } from './memory-navigation';
 import { registerExtensionToolRenderers } from './tool-renderers';
+
+/** The panel's last chat address survives a reopen (session storage); a side panel's own URL never moves. */
+const ADDRESS_KEY = 'matrx-extend:chat-address';
+
+async function readStoredAddress(): Promise<string | null> {
+  try {
+    const value = (await chrome.storage.session.get(ADDRESS_KEY))[ADDRESS_KEY];
+    return typeof value === 'string' ? value : null;
+  } catch {
+    return null;
+  }
+}
 
 async function readBearer(): Promise<string | null> {
   const stored = await chrome.storage.local.get([STORAGE_KEYS.ACCESS_TOKEN]);
@@ -91,7 +103,7 @@ export async function createExtensionChatHost(): Promise<ChatHost> {
   // Read-aloud in the package chat: the extension's Cartesia speaker behind media's ReadAloudButton.
   registerChatUi({ SpeakerButton });
   const [baseUrl, org] = await Promise.all([getApiBaseUrl(), Promise.resolve(createPanelOrg())]);
-  await Promise.all([org.refresh(), restoreChatAddress()]);
+  const [initial] = await Promise.all([readStoredAddress(), org.refresh()]);
   return {
     db: getSupabase(),
     accessToken: readBearer,
@@ -102,7 +114,13 @@ export async function createExtensionChatHost(): Promise<ChatHost> {
       baseUrl: () => baseUrl,
       headers: () => buildHeaders(),
     },
-    navigation: memoryNavigation,
+    navigation: createMemoryNavigation({
+      initial,
+      persist: (address) =>
+        void chrome.storage?.session?.set({ [ADDRESS_KEY]: address }).catch(() => undefined),
+      // An aimatrx.com page opens in a browser tab, never inside the panel.
+      openExternal: (href) => void chrome.tabs.create({ url: href }),
+    }),
     deviceTools: { invoke: invokeDeviceTool },
   };
 }
