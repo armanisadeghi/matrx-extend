@@ -78,7 +78,6 @@
     "@ai-matrx/realtime": "latest",
     "@ai-matrx/records": "latest",
     "@ai-matrx/tap-target": "latest",
-    "@cartesia/cartesia-js": "^2.2.9",
     "@hookform/resolvers": "^3.10.0",
     "@joplin/turndown-plugin-gfm": "^1.0.68",
     "@mozilla/readability": "^0.6.0",
@@ -153,6 +152,10 @@
       "@ai-matrx/associations": "latest",
       "@ai-matrx/design-system": "latest"
     },
-    "onlyBuiltDependencies": ["@biomejs/biome", "esbuild", "spawn-sync"]
+    "onlyBuiltDependencies": [
+      "@biomejs/biome",
+      "esbuild",
+      "spawn-sync"
+    ]
   }
 }

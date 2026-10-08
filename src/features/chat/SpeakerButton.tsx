@@ -1,42 +1,31 @@
 /**
- * Read-aloud for one assistant message: the extension's Cartesia speaker
- * (`useCartesiaSpeaker`) behind the shared `ReadAloudButton` (@ai-matrx/media).
- * A press while speaking stops; an error shows the speaker's sentence for 4 s.
+ * Read-aloud for one assistant message: THE one speech engine (`useReadAloud`, @ai-matrx/media)
+ * behind the shared `ReadAloudButton`, in the compact message-footer size. Inside the package
+ * chat a slot caller may pass its own `variant` (chat's footer group).
  */
 
-import { useCartesiaSpeaker } from '@/lib/tts/useCartesiaSpeaker';
-import { ReadAloudButton, type ReadAloudStatus } from '@ai-matrx/media/react';
-import { useCallback, useState } from 'react';
+import { ReadAloudButton, useReadAloud } from '@ai-matrx/media/react';
+import type { ComponentProps } from 'react';
 
-export function SpeakerButton({ text, className }: { text: string; className?: string }) {
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const onError = useCallback((message: string) => {
-    setErrorMessage(message);
-    setTimeout(() => setErrorMessage(null), 4000);
-  }, []);
-  const { isLoading, isPlaying, isPaused, speak, stop } = useCartesiaSpeaker({
-    processMarkdown: true,
-    onError,
-  });
-  const status: ReadAloudStatus = errorMessage
-    ? 'error'
-    : isLoading
-      ? 'loading'
-      : isPlaying || isPaused
-        ? 'playing'
-        : 'idle';
-  const onPress = useCallback(() => {
-    setErrorMessage(null);
-    if (isPlaying || isPaused) void stop();
-    else if (text.trim()) void speak(text);
-  }, [isPlaying, isPaused, text, speak, stop]);
+type Variant = ComponentProps<typeof ReadAloudButton>['variant'];
+
+export function SpeakerButton({
+  text,
+  className,
+  variant,
+}: {
+  text: string;
+  className?: string;
+  variant?: Variant;
+}) {
+  const { status, error, onPress } = useReadAloud(text);
   return (
     <ReadAloudButton
       status={status}
-      error={errorMessage}
+      error={error}
       onPress={onPress}
       disabled={!text.trim()}
-      variant="transparent"
+      {...(variant !== undefined ? { variant } : { size: 'compact' as const })}
       {...(className !== undefined && { className })}
     />
   );
