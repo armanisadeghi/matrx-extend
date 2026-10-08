@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "status": "unverified",
+  "stage": "organization",
+  "target": {
+    "host": "hn.algolia.com",
+    "public": true,
+    "injected_fetch": false
+  },
+  "artifact": {
+    "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "run_id": 37754055905,
+    "artifact_id": 11539827040,
+    "tree_sha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+    "version": "0.2.407"
+  },
+  "capture": null,
+  "capture_observations": {},
+  "saved_result": null,
+  "owned_recipe": null,
+  "auth_diagnostic": null,
+  "click_observations": [],
+  "failure": {
+    "name": "Error",
+    "stage": "organization",
+    "message_code": "showcase_organization_pointer_failed"
+  },
+  "terminal_budget": {
+    "capture_window_ms": 20000,
+    "cleanup_ms": 20000,
+    "delivery_ms": 10000,
+    "poll_ms": 100,
+    "timeout_ms": 50000,
+    "source_sha256": {
+      "runner": "ec8af7d4e75da1997c2dcb3064b8484fe26bae4d1d3413b56bebd3e88fd93046",
+      "core": "c65b4678be7e49829f4f346926d9ff9dbdce8b7b8506be23565abf644dba3596",
+      "handler": "fa1eb3990d5611c597004b23999829d42d3833a6765f79d3865bedc8267d62cb",
+      "panelDriver": "d0262fc0057d8f170d5ad7e5d3e51d4c9f877aaeaae1e15dd40c0d5453c4c255"
+    }
+  },
+  "native_stage": "exercise_panel",
+  "auth_stage": "admin_rendered_identity",
+  "organization_diagnostic": {
+    "substage": "organization_records_click",
+    "observations": {
+      "admin_role_verified": true,
+      "picker_available": true,
+      "picker_has_selection": true,
+      "selection_required": false,
+      "storage_has_uuid": false,
+      "storage_name_matches": false,
+      "rendered_email_matches": true,
+      "rendered_role_matches": true,
+      "rendered_profile_matches": true,
+      "rendered_organization_matches": true,
+      "records_target_match_count": 0,
+      "records_target_visible_count": 0,
+      "tools_panel_active": true,
+      "product_request_observed": false,
+      "product_request_duplicate": false,
+      "product_response_observed": false,
+      "product_response_finished": false,
+      "product_loading_failed": false,
+      "product_response_success": false,
+      "product_header_matches": false,
+      "product_principal_matches": false,
+      "observer_cleanup_success": true
+    },
+    "failure_code": "pointer_target_not_unique"
+  }
+}

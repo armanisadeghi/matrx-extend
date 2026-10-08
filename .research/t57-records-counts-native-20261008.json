@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-08T12:32:00Z",
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "lane": "A",
+  "scope": "One hosted native attempt on the exact frozen development 0.2.407 artifact, using showcase-d47-public-admin with d47_public_race_preflight=true. The attempt ends at the Records target click and earns no product acceptance credit.",
+  "workflow": {
+    "run_id": 37776597696,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37776597696",
+    "attempt": 1,
+    "status": "completed",
+    "conclusion": "failure",
+    "checkout_sha": "24ee7e35bc790f1ca208fb103c72efac44827b25",
+    "acceptance_lane": "A",
+    "runner_label": "macos-15",
+    "acceptance_case": "showcase-d47-public-admin",
+    "d47_public_race_preflight": true
+  },
+  "frozen_artifact": {
+    "ci_run_id": 37754055905,
+    "artifact_id": 11539827040,
+    "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "tree_sha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+    "version": "0.2.407",
+    "exact_imported_receipt_match": true
+  },
+  "native_receipt": {
+    "stage": "organization",
+    "auth_stage": "admin_rendered_identity",
+    "organization_substage": "organization_records_click",
+    "observations": {
+      "admin_role_verified": true,
+      "picker_available": true,
+      "picker_has_selection": true,
+      "selection_required": false,
+      "storage_has_uuid": false,
+      "storage_name_matches": false,
+      "rendered_email_matches": true,
+      "rendered_role_matches": true,
+      "rendered_profile_matches": true,
+      "rendered_organization_matches": true,
+      "records_target_match_count": 0,
+      "records_target_visible_count": 0,
+      "tools_panel_active": true,
+      "product_request_observed": false,
+      "product_request_duplicate": false,
+      "product_response_observed": false,
+      "product_response_finished": false,
+      "product_loading_failed": false,
+      "product_response_success": false,
+      "product_header_matches": false,
+      "product_principal_matches": false,
+      "observer_cleanup_success": true
+    },
+    "failure_code": "pointer_target_not_unique",
+    "claim_limit": "The Records target had zero matches while the Tools panel was active. This establishes a missing rendered target at the click boundary for this frozen artifact; it does not establish a product request or organization-header defect. No GET /tools/test/list, selected organization header, bearer principal, HTTP 200/finished response, or public Network race was observed."
+  },
+  "resource_journals": {
+    "package": {
+      "run_id": "hosted-package-37776597696-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "raw": ".research/t57-records-counts-native-20261008-originals/raw/hosted-package-37776597696-1.jsonl"
+    },
+    "browser": {
+      "run_id": "hosted-browser-37776597696-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "raw": ".research/t57-records-counts-native-20261008-originals/raw/hosted-browser-37776597696-1.jsonl"
+    },
+    "guest": {
+      "run_id": "hosted-guest-37776597696-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed",
+      "raw": ".research/t57-records-counts-native-20261008-originals/raw/hosted-guest-37776597696-1.jsonl"
+    }
+  },
+  "artifact": {
+    "id": 11551005590,
+    "name": "hosted-guest-37776597696-1",
+    "digest": "sha256:7afdfc1199e730bee1237d6938f78a157be02bc8f9f64d4c8e06d8c850e5a7f7",
+    "expired": false,
+    "receipt_sha256": "193093289fca6dae9ad7d0c5fdea2a3f7dfe12c3d2432fc83feafc0c02aff281",
+    "raw_receipt": ".research/t57-records-counts-native-20261008-originals/raw/receipt.raw.json.txt",
+    "artifact_contents": "The hosted artifact contains the native JSON receipt only; no screenshot was retained. The workflow log was used to preserve the exact three emitted resource-journal event streams."
+  },
+  "credential_lifecycle": {
+    "canonical_private_preflight": "passed before staging",
+    "admin_identity": "admin@admin.com",
+    "approved_organization_fixture_mode": "0600",
+    "temporary_secret_names": [
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "temporary_secret_names_absent_after_terminal": true,
+    "local_secret_files_removed": true,
+    "credential_values_retained": false
+  },
+  "acceptance": {
+    "verdict": "unverified",
+    "product_acceptance_credit": false,
+    "strict_gate": "Requires the actual GET, selected organization X-Organization-Id, current principal, HTTP 200, and finished response; none were observed.",
+    "next_action": "Investigate why the frozen UI showed zero Records targets while the Tools panel was active. Preserve all strict product gates. Only a newly authorized attempt after a source or diagnostic change may test the resulting hypothesis; this report consumes the one attempt assigned here."
+  },
+  "raw_sha256": {
+    "receipt.raw.json.txt": "193093289fca6dae9ad7d0c5fdea2a3f7dfe12c3d2432fc83feafc0c02aff281",
+    "hosted-package-37776597696-1.jsonl": "1c153c8e78d88976c0ffa0a7902274a86a0b9f06f0543206cee4a4860c48de87",
+    "hosted-browser-37776597696-1.jsonl": "5b0bac63f37f004cb6da68f38f7fc8b0c605686f677ecfc93743e487e17f6856",
+    "hosted-guest-37776597696-1.jsonl": "1a03bca4b38cc30d36a5d1e0ff1222f233fd8f467b822191cf84df918ba80955"
+  }
+}
