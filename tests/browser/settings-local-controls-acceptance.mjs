@@ -27,6 +27,7 @@ import {
 import {
   classifyReloadSettingsFailure,
   observeReloadSettingsPanel,
+  observeSettingsReacquisition,
 } from './settings-reload-boundary.mjs';
 
 // Runs against a receipt-verified, disposable Chrome profile and its real native panel.
@@ -128,20 +129,32 @@ async function settings(panel, onStep = () => {}) {
 }
 
 async function reloadSettings(panel) {
-  await panel.send('Page.reload', { ignoreCache: true });
-  await waitFor(
-    'guest_panel_after_reload',
-    () =>
-      evaluate(
-        panel,
-        `(() => {
+  let beforeTargetId = null;
+  try {
+    beforeTargetId = (await panel.send('Target.getTargetInfo')).targetInfo?.targetId ?? null;
+  } catch {}
+  try {
+    await panel.send('Page.reload', { ignoreCache: true });
+    await waitFor(
+      'guest_panel_after_reload',
+      () =>
+        evaluate(
+          panel,
+          `(() => {
     const text = document.body?.innerText ?? '';
     return document.readyState === 'complete' && text.includes("You're using Matrx as a guest.");
   })()`,
-      ),
-    (v) => v === true,
-  );
-  await settings(panel);
+        ),
+      (v) => v === true,
+    );
+    await settings(panel);
+  } catch (error) {
+    error.reacquireDiagnostic = {
+      beforeTargetObserved: beforeTargetId !== null,
+      ...(await observeSettingsReacquisition(panel, EXTENSION_ID, beforeTargetId)),
+    };
+    throw error;
+  }
 }
 
 async function guestSections(panel) {
@@ -483,6 +496,7 @@ async function runCase(c, fn) {
     await fn();
   } catch (error) {
     c.error = String(error?.message ?? error);
+    if (error?.reacquireDiagnostic) c.reacquireDiagnostic = error.reacquireDiagnostic;
     criterion(c, 'runner completed the case', 'fail', c.error);
   }
   c.status = c.criteria.some((x) => x.status === 'fail')

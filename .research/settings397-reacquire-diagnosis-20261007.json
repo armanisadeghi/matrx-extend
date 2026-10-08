@@ -2,7 +2,7 @@
   "schema_version": 1,
   "date": "2026-10-07",
   "lane": "settings397-reacquire-diagnosis",
-  "status": "missing_discriminator_no_source_fix",
+  "status": "diagnostic_capture_repaired_underlying_cause_unknown",
   "run": {
     "id": 37729701473,
     "resource_decision": "valid_package_browser_guest_admitted_child_failed",
@@ -46,10 +46,19 @@
       "prediction": "A timestamped DOM transition and app-ready signal after the timeout show late mount on the same valid target. No timeout extension is justified until this is observed."
     }
   ],
-  "next_action": "On one resource-admitted hosted run, capture sanitized target ID equality, extension URL/path class, document ready/visibility, runtime-ID equality, root/tab counts, and first app exception immediately before Page.reload and at the failed readiness boundary. Keep the same readiness oracle and timeout. If the panel is valid but mount fails, trace the product render boundary; if target/navigation differs, trace panel attachment. Record a separate T64 signed-out predicate sample before any fixture action. Retest T34 restoration and T64 only after a proven cause and focused fix.",
+  "diagnostic_repair": {
+    "scope": "At the same-panel reload failure, serialize only allowlisted target identity equality, expected sidepanel URL booleans from target/frame/renderer, renderer readiness and visibility, runtime identity, app root and Settings tab counts, and exact side-panel context count. No raw IDs, URLs, text, or CDP errors enter the diagnostic.",
+    "source": [
+      "tests/browser/settings-local-controls-acceptance.mjs",
+      "tests/browser/settings-reload-boundary.mjs",
+      "tests/browser/settings-reload-boundary.test.mjs"
+    ],
+    "guard": "The focused test drives the real Settings readiness waiter through the native reloadSettings and runCase seams, then asserts the serialized receipt. Dropping the receipt field via SETTINGS_NEGATIVE_CONTROL_DROP_REACQUIRE makes the test fail; restored test passes. Existing focused CI script includes the test. The diagnostic does not alter readiness, timeout, case result, or product behavior."
+  },
+  "next_action": "On one resource-admitted hosted run with this diagnostic, distinguish valid document with missing app mount from changed/stale panel target, navigation, or delayed mount. Preserve T34 restoration and downstream consumer criteria as unverified until native proof. Record a separate T64 signed-out predicate sample before fixture action if it fails again; do not infer an auth regression from the prior zero-step failure.",
   "limits": [
     "No native retest was authorized in this lane; source review cannot establish the root cause.",
     "No product auth defect is inferred from T64; no restoration or downstream consumer pass is inferred from T34's four prior checks.",
-    "No driver or product source changed because no red-capable reproduction isolates a repair."
+    "Only failure-boundary diagnostic and a focused guard changed; no underlying product or driver reacquisition fix is claimed."
   ]
 }

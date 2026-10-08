@@ -1,9 +1,12 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import test from 'node:test';
-import { waitFor } from './settings-panel-driver.mjs';
+import { runInNewContext } from 'node:vm';
+import { evaluate, waitFor, waitForReplacementSettingsTab } from './settings-panel-driver.mjs';
 import {
   classifyReloadSettingsFailure,
   observeReloadSettingsPanel,
+  observeSettingsReacquisition,
 } from './settings-reload-boundary.mjs';
 
 test('reload failure keeps the first click boundary and only safe pointer fields', () => {
@@ -117,4 +120,136 @@ test('replacement-panel probe admits only fixed typed fields into receipt', asyn
     assert.deepEqual(result, { sampled: false });
     assert.equal(JSON.stringify(result).includes('private'), false);
   }
+});
+
+test('failed native Settings panel reload serializes the owned document and context boundary', async () => {
+  const extensionId = 'owned-extension';
+  const panelUrl = `chrome-extension://${extensionId}/sidepanel.html`;
+  const document = {
+    URL: panelUrl,
+    readyState: 'complete',
+    visibilityState: 'visible',
+    body: { innerText: "You're using Matrx as a guest." },
+    querySelectorAll: (selector) => (selector === '#app' ? [{}] : []),
+  };
+  const chrome = {
+    runtime: {
+      id: extensionId,
+      getContexts: async () => [{ contextType: 'SIDE_PANEL', documentUrl: panelUrl, tabId: -1 }],
+    },
+  };
+  let reloads = 0;
+  const panel = {
+    async send(method, params) {
+      if (method === 'Target.getTargetInfo')
+        return {
+          targetInfo: {
+            targetId: 'private-target-id',
+            type: 'page',
+            url: panelUrl,
+            title: 'private title',
+          },
+        };
+      if (method === 'Page.getFrameTree') return { frameTree: { frame: { url: panelUrl } } };
+      if (method === 'Page.reload') {
+        reloads++;
+        return {};
+      }
+      assert.equal(method, 'Runtime.evaluate');
+      const value = await runInNewContext(params.expression, { document, chrome });
+      return { result: { value } };
+    },
+  };
+  const source = await readFile(
+    new URL('./settings-local-controls-acceptance.mjs', import.meta.url),
+    'utf8',
+  );
+  const settingsStart = source.indexOf('async function settings(panel, onStep = () => {}) {');
+  const reloadStart = source.indexOf('\nasync function reloadSettings(panel) {', settingsStart);
+  const reloadEnd = source.indexOf('\nasync function guestSections(', reloadStart);
+  const runCaseStart = source.indexOf('async function runCase(c, fn) {');
+  const runCaseEnd = source.indexOf('\nlet observedPort;', runCaseStart);
+  assert.ok(settingsStart >= 0 && reloadStart > settingsStart && reloadEnd > reloadStart);
+  assert.ok(runCaseStart >= 0 && runCaseEnd > runCaseStart);
+  const originalRunCase = source.slice(runCaseStart, runCaseEnd);
+  const runCaseSource =
+    process.env.SETTINGS_NEGATIVE_CONTROL_DROP_REACQUIRE === '1'
+      ? originalRunCase.replace(
+          'if (error?.reacquireDiagnostic) c.reacquireDiagnostic = error.reacquireDiagnostic;',
+          '',
+        )
+      : originalRunCase;
+  const { reloadSettings, runCase } = new Function(
+    'waitForReplacementSettingsTab',
+    'click',
+    'waitFor',
+    'evaluate',
+    'observeSettingsReacquisition',
+    'EXTENSION_ID',
+    'criterion',
+    `${source.slice(settingsStart, reloadEnd)}\n${runCaseSource}\nreturn { reloadSettings, runCase };`,
+  )(
+    (ownedPanel) => waitForReplacementSettingsTab(ownedPanel, 120),
+    () => {
+      throw new Error('readiness must prevent click');
+    },
+    waitFor,
+    evaluate,
+    observeSettingsReacquisition,
+    extensionId,
+    (c, name, status, evidence) => c.criteria.push({ name, status, evidence }),
+  );
+  const c = { criteria: [] };
+  await runCase(c, () => reloadSettings(panel));
+  const receipt = JSON.parse(JSON.stringify(c));
+  assert.equal(reloads, 1);
+  assert.equal(receipt.status, 'fail');
+  assert.match(receipt.error, /replacement_settings_tab_ready_not_observed/);
+  assert.deepEqual(receipt.reacquireDiagnostic, {
+    beforeTargetObserved: true,
+    target: { sampled: true, sameAsBefore: true, expectedPanelUrl: true, typePage: true },
+    frame: { sampled: true, expectedPanelUrl: true, navigationError: false },
+    renderer: {
+      sampled: true,
+      expectedPanelUrl: true,
+      readyState: 'complete',
+      visible: true,
+      runtimeIdMatches: true,
+      rootCount: 1,
+      settingsTabCount: 0,
+      contextQueryAvailable: true,
+      contextQueryFailed: false,
+      exactSidePanelContextCount: 1,
+    },
+  });
+  for (const secret of ['private-target-id', 'private title', panelUrl])
+    assert.equal(JSON.stringify(receipt).includes(secret), false);
+
+  const wrongUrl = 'https://private.example/account?token=private-token';
+  const wrongPanel = {
+    async send(method, params) {
+      if (method === 'Target.getTargetInfo')
+        return { targetInfo: { targetId: 'other-private-id', type: 'page', url: wrongUrl } };
+      if (method === 'Page.getFrameTree')
+        return { frameTree: { frame: { url: wrongUrl, unreachableUrl: wrongUrl } } };
+      assert.equal(method, 'Runtime.evaluate');
+      const value = await runInNewContext(params.expression, {
+        document: { ...document, URL: wrongUrl, querySelectorAll: () => [] },
+        chrome: {
+          runtime: { ...chrome.runtime, id: 'other-extension', getContexts: async () => [] },
+        },
+      });
+      return { result: { value } };
+    },
+  };
+  const mismatch = await observeSettingsReacquisition(wrongPanel, extensionId, 'private-target-id');
+  assert.equal(mismatch.target.sameAsBefore, false);
+  assert.equal(mismatch.target.expectedPanelUrl, false);
+  assert.equal(mismatch.frame.expectedPanelUrl, false);
+  assert.equal(mismatch.frame.navigationError, true);
+  assert.equal(mismatch.renderer.expectedPanelUrl, false);
+  assert.equal(mismatch.renderer.runtimeIdMatches, false);
+  assert.equal(mismatch.renderer.rootCount, 0);
+  assert.equal(mismatch.renderer.exactSidePanelContextCount, 0);
+  assert.equal(JSON.stringify(mismatch).includes(wrongUrl), false);
 });

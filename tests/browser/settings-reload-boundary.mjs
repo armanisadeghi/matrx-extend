@@ -126,3 +126,89 @@ export async function observeReloadSettingsPanel(panel, extensionId) {
     return { sampled: false };
   }
 }
+
+// Failure-only probe for the same-panel Page.reload path. Raw target IDs,
+// URLs, page text, and CDP errors stay inside this function.
+export async function observeSettingsReacquisition(panel, extensionId, beforeTargetId = null) {
+  const expectedUrl = `chrome-extension://${extensionId}/sidepanel.html`;
+  const result = {
+    target: { sampled: false },
+    frame: { sampled: false },
+    renderer: { sampled: false },
+  };
+  try {
+    const { targetInfo } = await panel.send('Target.getTargetInfo');
+    if (targetInfo) {
+      result.target = {
+        sampled: true,
+        sameAsBefore: beforeTargetId === null ? null : targetInfo.targetId === beforeTargetId,
+        expectedPanelUrl: targetInfo.url === expectedUrl,
+        typePage: targetInfo.type === 'page',
+      };
+    }
+  } catch {}
+  try {
+    const { frameTree } = await panel.send('Page.getFrameTree');
+    if (frameTree?.frame)
+      result.frame = {
+        sampled: true,
+        expectedPanelUrl: frameTree.frame.url === expectedUrl,
+        navigationError: Boolean(frameTree.frame.unreachableUrl),
+      };
+  } catch {}
+  try {
+    const sample = await evaluate(
+      panel,
+      `(async () => {
+        const expectedUrl = ${JSON.stringify(expectedUrl)};
+        const expectedId = ${JSON.stringify(extensionId)};
+        const runtime = globalThis.chrome?.runtime;
+        let contexts = null;
+        let contextQueryFailed = false;
+        if (typeof runtime?.getContexts === 'function') {
+          try { contexts = await runtime.getContexts({ contextTypes: ['SIDE_PANEL'] }); }
+          catch { contextQueryFailed = true; }
+        }
+        return {
+          expectedPanelUrl: document.URL === expectedUrl,
+          readyState: document.readyState,
+          visible: document.visibilityState === 'visible',
+          runtimeIdMatches: runtime?.id === expectedId,
+          rootCount: document.querySelectorAll('#app').length,
+          settingsTabCount: document.querySelectorAll('button[role="tab"][title="Settings"]').length,
+          contextQueryAvailable: typeof runtime?.getContexts === 'function',
+          contextQueryFailed,
+          exactSidePanelContextCount: contexts?.filter((entry) =>
+            entry.contextType === 'SIDE_PANEL' && entry.documentUrl === expectedUrl &&
+            entry.tabId === -1).length ?? null,
+        };
+      })()`,
+    );
+    if (
+      typeof sample?.expectedPanelUrl === 'boolean' &&
+      ['loading', 'interactive', 'complete'].includes(sample.readyState) &&
+      typeof sample.visible === 'boolean' &&
+      typeof sample.runtimeIdMatches === 'boolean' &&
+      safeCount(sample.rootCount) !== null &&
+      safeCount(sample.settingsTabCount) !== null &&
+      typeof sample.contextQueryAvailable === 'boolean' &&
+      typeof sample.contextQueryFailed === 'boolean' &&
+      (sample.exactSidePanelContextCount === null ||
+        safeCount(sample.exactSidePanelContextCount) !== null)
+    ) {
+      result.renderer = {
+        sampled: true,
+        expectedPanelUrl: sample.expectedPanelUrl,
+        readyState: sample.readyState,
+        visible: sample.visible,
+        runtimeIdMatches: sample.runtimeIdMatches,
+        rootCount: sample.rootCount,
+        settingsTabCount: sample.settingsTabCount,
+        contextQueryAvailable: sample.contextQueryAvailable,
+        contextQueryFailed: sample.contextQueryFailed,
+        exactSidePanelContextCount: sample.exactSidePanelContextCount,
+      };
+    }
+  } catch {}
+  return result;
+}
