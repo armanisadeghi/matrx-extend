@@ -61,14 +61,14 @@
       "reason": "Source candidate54a1e1b978 and guard3b271b385a independently accepted in badb30a9/ca537ede. Fixed means source only: deployment and original public browser retest pending; guest case remains fail."
     }
   ],
-  "next_action": "Observe authorized automatic deployment containing source54a1e1b978, then run resource-valid published205 first/followup/reload guest acceptance on stable server and obtain independent native review. Do not close or promote guest fail before original reproduction passes.",
+  "next_action": "Live repair inclusion confirmed. root/guest_live_retest owns one resource-valid published205 first/followup/reload guest acceptance on stable server, followed by independent review. Guest result remains fail and defect fixed until original reproduction and surrounding cases pass.",
   "closure_requirement": "Original public guest reproduction and surrounding first/followup cases pass independently on real browser/live server with valid resources; actual Store installation remains separately unverified.",
   "source_candidate": {
     "repository": "aidream",
     "sha": "54a1e1b978a8efde6b9232aa56aad9f12a1bf214",
     "contract_review": "pass in source",
     "guard_review": "pass for exact callback propagation and mixed sibling findings; independent 8 guard tests pass; routing body stub remains explicit source-test limit",
-    "deployment": "not included in observed production 8de41d9c36c1251240ea68fd5d41afcaa80b4ee1 at 2026-10-08T09:04:18Z",
+    "deployment": "Observed live5be7a37ba1e53ca311f3787bb041a402ec863052 at2026-10-08T10:37:21.294736+00:00; release37762164523 completed/success; repair54a1 is ancestor.",
     "runtime_retest": "pending",
     "guard_sha": "3b271b385a92fdc2778dd09aae1d06f3de2e2d5d"
   }
