@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-08",
+  "scope": "Read-only comparison of the frozen T57 artifact's Supabase origin with the local origin used by the failed authenticated membership probe; no auth, database, fixture, product, native, or workflow mutation",
+  "frozen_artifact": {
+    "app_id": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "ci_run_id": 37754055905,
+    "artifact_id": 11539827040,
+    "extension_version": "0.2.407",
+    "source_evidence": "Downloaded exact CI artifact into private /Volumes/Samsung2TB/code/.stabilization-scratch/t57-origin-diagnosis/frozen.zip; configured Supabase host is embedded in .output/chrome-mv3/env-D2lwKofn.js and background.js. CI provenance and native receipt identify this exact frozen artifact."
+  },
+  "origin_comparison": {
+    "frozen_host": "db.matrxserver.com",
+    "local_host": "db.matrxserver.com",
+    "local_source": ".env.production WXT_SUPABASE_URL",
+    "verdict": "same_configured_origin; hosted-versus-local-origin mismatch is refuted",
+    "evidence_method": "Compared host internally; only sanitized host and source paths retained. No key, token, full environment value, or secret was logged."
+  },
+  "least_privilege_membership_path": {
+    "canonical_client_path": "Authenticated getSupabase().rpc('mbr_for_user', {p_container_type:'organization'}), then iamDb().from('organizations').select('id,name,archived_at').in('id', returnedIds); sources: src/lib/org/active-org.ts and src/lib/supabase/schemas.ts.",
+    "available_probe_result": "The prior exact client RPC probe against the same configured host returned HTTP 404 PGRST202 under default and iam request profiles; no membership rows were obtained.",
+    "assessment": "The canonical least-privilege route is identified, but is currently not demonstrated to resolve on this origin. PGRST202 indicates the requested function signature was not found in the exposed schema cache or is absent; it does not establish membership. No junction-table, service-role, admin, or guessed-UUID substitute was used.",
+    "documentation_check": "Supabase changelog fetch returned HTTP 503. Official Supabase docs say PGRST202 can mean stale function signature or absent function; custom-schema RPC use requires the schema to be exposed. These general docs do not establish this project's live function placement."
+  },
+  "exact_next_step": "On the same configured origin, establish the deployed least-privilege mbr_for_user function's canonical schema, exposed profile, signature, and authenticated EXECUTE path from the platform's authoritative database definition. Then use only that authenticated read to verify the approved organization UUID is a current active membership with the exact approved name. If the canonical route is broken, repair its owning server/database contract first; do not bypass it with privileged reads. Only after membership is verified can the fixture carry the UUID and the T57 product request header be compared against it.",
+  "claim_limit": "Origin mismatch is refuted. No current membership, organization UUID, successful membership read, fixture alignment, or T57 acceptance is claimed. No authenticated call was repeated in this lane."
+}
