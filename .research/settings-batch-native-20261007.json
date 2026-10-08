@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "lane": "settings-batch-native",
+  "status": "partial_native_resource_valid_independent_review_pending",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37712686956",
+    "run_id": 37712686956,
+    "job_id": 113101999719,
+    "status": "completed",
+    "conclusion": "success",
+    "head_branch": "main",
+    "head_sha": "271e9d479e4d4cbe97b3787ab8d01027728f80d3",
+    "acceptance_lane": "A",
+    "acceptance_case": "settings-controls",
+    "auth_mode": "signed-out guest",
+    "runner_label": "macos-15",
+    "runner_architecture": "ARM64",
+    "duration": "6m38s"
+  },
+  "selected_development_artifact": {
+    "run_id": 37698216289,
+    "artifact_id": 11516342905,
+    "artifact_name": "matrx-extend-development-test-52487361b1b6a8663b958dbb2196cbcc9b1af31c-37698216289-1",
+    "artifact_digest": "sha256:927854cfdda6e57d272277653e0b4c507720c29d74978da235d80c064c1017ee",
+    "expired": false,
+    "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "version": "0.2.391",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+    "verification": "The native report build tree hash matches the original CI receipt and provenance. The CI receipt reports verified=true."
+  },
+  "native_outcome": {
+    "driver": "tests/browser/settings-local-controls-acceptance.mjs",
+    "report_status": "unverified",
+    "scope": "Only guest EXT-F-1003-T04, T10, and T13 bounded subtargets are summarized below. The driver also ran its existing guest proof block; those results are not promoted here.",
+    "cases": {
+      "EXT-F-1003-T04": {
+        "status": "pass_bounded_panel_reload",
+        "observations": [
+          { "phase": "warm", "selected": "Dark", "stored": "dark", "darkClass": true, "systemDark": false },
+          { "phase": "panel_reload", "selected": "Dark", "stored": "dark", "darkClass": true, "systemDark": false },
+          { "phase": "warm", "selected": "Light", "stored": "light", "darkClass": false, "systemDark": false },
+          { "phase": "panel_reload", "selected": "Light", "stored": "light", "darkClass": false, "systemDark": false },
+          { "phase": "warm", "selected": "System", "stored": "system", "darkClass": false, "systemDark": false },
+          { "phase": "panel_reload", "selected": "System", "stored": "system", "darkClass": false, "systemDark": false }
+        ],
+        "not_proved": [
+          "Rendered color appearance was not captured.",
+          "Preference after a full Chrome extension Reload and reopen was not observed."
+        ]
+      },
+      "EXT-F-1003-T10": {
+        "status": "partial_preference_and_panel_reload",
+        "observations": [
+          { "phase": "warm", "selected": "Act without asking", "stored": "act" },
+          { "phase": "panel_reload", "selected": "Act without asking", "stored": "act" },
+          { "phase": "warm", "selected": "Ask before acting", "stored": "ask" },
+          { "phase": "panel_reload", "selected": "Ask before acting", "stored": "ask" }
+        ],
+        "unverified": "A new Chat inheriting the selected default mode was outside this batch."
+      },
+      "EXT-F-1003-T13": {
+        "status": "pass_bounded_panel_reload",
+        "observations": [
+          { "phase": "warm", "selected": "Thinking", "stored": "thinking" },
+          { "phase": "panel_reload", "selected": "Thinking", "stored": "thinking" },
+          { "phase": "warm", "selected": "Fast", "stored": "fast" },
+          { "phase": "panel_reload", "selected": "Fast", "stored": "fast" }
+        ],
+        "not_proved": "No deeper Chat behavior is claimed."
+      }
+    },
+    "run_limit": "The original driver continues its guest proof block after the focused cases. It clicked Chrome's extension Reload and replaced the worker and panel, then stopped at guestStageFailed=reload_settings. Existing T73/T76/T92 reload observations were unverified; this does not change the scoped preference observations above."
+  },
+  "resource_gate": {
+    "decision": "valid",
+    "resource_invalid": false,
+    "journal_count": 3,
+    "journals": [
+      ".research/settings-batch-native-20261007/evidence/resource-journals/hosted-package-37712686956-1.jsonl",
+      ".research/settings-batch-native-20261007/evidence/resource-journals/hosted-browser-37712686956-1.jsonl",
+      ".research/settings-batch-native-20261007/evidence/resource-journals/hosted-guest-37712686956-1.jsonl"
+    ],
+    "observation": "All three completed journals end with RESOURCE_FINAL_DECISION valid and exitCode 0. Guest-run watch samples were healthy."
+  },
+  "evidence": {
+    "directory": ".research/settings-batch-native-20261007/evidence/",
+    "files": [
+      "raw/ci-build-receipt.json",
+      "raw/ci-build-provenance.json",
+      "raw/settings-local-controls-acceptance.json",
+      "resource-journals/hosted-package-37712686956-1.jsonl",
+      "resource-journals/hosted-browser-37712686956-1.jsonl",
+      "resource-journals/hosted-guest-37712686956-1.jsonl",
+      "screenshots/native-side-panel.png",
+      "screenshots/normal-target-after-open.png"
+    ],
+    "native_artifact": {
+      "id": 11523051232,
+      "name": "hosted-guest-37712686956-1",
+      "digest": "sha256:8774cf065a6e627945ff6b59a9f106b06591013e3d7445ff38f688e08082d751"
+    },
+    "native_report_sha256": "4c0d1370bc0234bdd0d3f4e93e5abf78652897ef6935173ee43a67cfd909fe03",
+    "ci_receipt_sha256": "d8b29a5eb04a778400ffd595a0d71eae43873b28bcfcd1639b64572f0c8da490",
+    "resource_journal_sha256": {
+      "hosted-package-37712686956-1.jsonl": "0e244bd0af8ef9f8fddfc1df8f09af7a9c2c142cb4cd2943a78d19c7e89c32b7",
+      "hosted-browser-37712686956-1.jsonl": "ab5268783d5d53f493d3a7d38aa3adb537fcf13c5e1ca3772118cae65380719b",
+      "hosted-guest-37712686956-1.jsonl": "a238ff520f65e696bb01ea178dec5a01a0584d990d64dae1391294c603a70ff3"
+    },
+    "screenshot_scope": "Both retained screenshots are setup captures, not post-selection appearance evidence."
+  },
+  "review": {
+    "source_candidate": "601590d580dcaae168eb251dda719075dd47585e",
+    "source_peer": ".research/settings-batch-source-peer-20261007.json",
+    "native_peer_review": "pending; root owns independent review",
+    "inventory_credit": "No inventory cells are changed by this report. Root decides whether to record only the demonstrated bounded observations."
+  },
+  "not_run": [
+    "No retry or second hosted workflow was dispatched.",
+    "No build, release, deploy, version change, or settings inventory edit was performed.",
+    "No authentication secrets were accessed by this lane."
+  ]
+}
