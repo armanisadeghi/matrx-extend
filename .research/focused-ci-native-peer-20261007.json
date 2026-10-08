@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "reviewer_role": "independent_peer_no_code_authorship",
+  "focused_ci": {
+    "A_verdict": "PASS: 1e08e292 covers src/**, tests/**, scripts/** and workflow/dependency inputs; docs-only changes are excluded. The four-guard package command is shared with full CI and has a separate bounded queue. Automatic run 37707449227 succeeded on exact head 1e08e292.",
+    "B_verdict": "PASS: c85d9a57 corrected Biome import order and exposes all error-level diagnostics in CI without changing rule severity. This focused success does not establish full CI or release success."
+  },
+  "seo_native": {
+    "A_verdict": "PARTIAL: fresh run 37707310443 receipt observed trusted Text/For AI agent clipboard clicks and actual readback on two public pages and after reload, with bounded summary matches, restored observation permission, and guest JSON absent. The native journal ended resource-invalid, so no resource-valid T07 acceptance pass or product failure is credited.",
+    "B_verdict": "PASS for evidence scope: receipt SHA-256 acacef785826cf2d72da09945f81d9eac49deb887ac1f8510be13e69a96ee335; package/browser/native current journals SHA-256 98ffda534aac31ef381e9ec908d24cbf4233309a8e24d10acddecb9b2632e147 / 79ee42e3e26a5191ea87dde011ca530518c3e5babdf20830b36371c77a9212ba / aa68a9e1760f7b00976ce689b694867d72e17171694b0d56403bce9e87f65ab4 match downloaded artifact. Decisions valid/valid/invalid. Imported CI IDs identify the frozen app, while workflow log and driver write path establish this receipt as current native output. Member/admin, JSON contents, full field parity and current main remain unverified."
+  },
+  "picker_native": {
+    "A_verdict": "PARTIAL: run 37707441895 passed guest nonchat/showcase gate, then failed admin extension sign-in before picker injection or count measurement. No producer/relay/stale-session count, reinjection, listener, or nonadmin conclusion is possible.",
+    "B_verdict": "PASS for provenance and bounded reporting: receipt SHA-256 857dd39797060b442878b9b97cb7631a25b8b3fb2ce1311aa67e5c04afbe78cb; package/browser/native current journals SHA-256 8231d4c6e4c514c810a0f9d0162223a96e625fa4c4f153a145df3dba18d7a6d1 / d8a288e75941ff235f8e0378881d00162bb6cc3f90467662ad27ef6f1e02ee37 / f0338cdee22ba32009c33beeb50f7c66c59da14473e413bcc7dd55a6db41485c match downloaded artifact. Decisions valid/valid/child_failed; no resource invalidation.",
+    "artifact_limit": "This run imported newer CI 37705690477/artifact 11519921113/source 67e7986a (v0.2.393), not specified original CI 37698216289/artifact 11516342905/source 52487361 (v0.2.391). Picker product files compared unchanged, but workflow driver and other source changed; no exact original-artifact or current-main claim."
+  },
+  "verification": "Read the two terminal worker reports, both GitHub runs and downloaded native artifacts; independently checked receipt and all six current journal hashes/final decisions. No local test, browser, authentication, build, or deployment run."
+}
