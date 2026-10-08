@@ -1,7 +1,23 @@
 import assert from 'node:assert/strict';
 import { dirname, join } from 'node:path';
 
-export function hostedGuestSeoRoute(acceptanceCase, artifactMode, prepared, scope = 'full') {
+export function hostedSeoMetadataFixture(acceptanceCase, scope, fixture = 'none') {
+  assert.ok(fixture === 'none' || fixture === 'airbnb', 'unknown_seo_metadata_fixture');
+  if (fixture === 'airbnb') {
+    assert.equal(acceptanceCase, 'guest-seo', 'seo_metadata_fixture_requires_guest_seo');
+    assert.equal(scope, 'full', 'seo_metadata_fixture_requires_full_scope');
+  }
+  return fixture === 'airbnb' ? fixture : undefined;
+}
+
+export function hostedGuestSeoRoute(
+  acceptanceCase,
+  artifactMode,
+  prepared,
+  scope = 'full',
+  fixture = 'none',
+) {
+  const metadataFixture = hostedSeoMetadataFixture(acceptanceCase, scope, fixture);
   if (acceptanceCase !== 'guest-seo') return null;
   assert.ok(scope === 'full' || scope === 'controlled', 'unknown_seo_case_scope');
   assert.equal(artifactMode, 'development', 'hosted_seo_development_mode_required');
@@ -21,6 +37,7 @@ export function hostedGuestSeoRoute(acceptanceCase, artifactMode, prepared, scop
       SEO_GUEST_EXTENSION_DIR: prepared.extensionDir,
       SEO_GUEST_DEV_BUILD_RECEIPT: prepared.relocatedReceipt,
       SEO_GUEST_CASE_SCOPE: scope,
+      SEO_GUEST_METADATA_FIXTURE: metadataFixture,
     },
   };
 }

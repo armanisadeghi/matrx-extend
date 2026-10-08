@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0174",
+  "scope": "EXT-F-1008-T09 hosted guest SEO acceptance infrastructure",
+  "change": "The optional real Airbnb metadata fixture now travels from a guarded hosted dispatch input through the selected development artifact route to the existing native SEO driver.",
+  "default": "An omitted or none selection leaves the existing public-page run unchanged.",
+  "refusals": ["unknown fixture", "non-SEO case", "controlled SEO scope", "non-development or mismatched artifact receipt"],
+  "proof": "Focused workflow admission, hosted preflight, and receipt-bound route tests failed before wiring and passed after wiring; no synthetic service or page response was used.",
+  "native_status": "pending authorized hosted TEST on an exact development artifact; no product SEO verdict or inventory promotion"
+}

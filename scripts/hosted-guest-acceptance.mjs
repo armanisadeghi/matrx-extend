@@ -26,7 +26,7 @@ import {
 } from './hosted-profile-route.mjs';
 import { prepareHostedReleaseArtifact } from './hosted-release-artifact.mjs';
 import { requireHostedScrapeRoute } from './hosted-scrape-route.mjs';
-import { hostedGuestSeoRoute } from './hosted-seo-route.mjs';
+import { hostedGuestSeoRoute, hostedSeoMetadataFixture } from './hosted-seo-route.mjs';
 import { hostedShowcaseRoute } from './hosted-showcase-route.mjs';
 import { runHostedStartupIntervalDiagnostic } from './hosted-startup-interval-diagnostic.mjs';
 import {
@@ -342,6 +342,7 @@ async function run(prepared, artifactMode) {
     artifactMode,
     prepared,
     process.env.MATRX_HOSTED_SEO_CASE_SCOPE ?? 'full',
+    process.env.MATRX_HOSTED_SEO_METADATA_FIXTURE ?? 'none',
   );
   const scrapeSelection = scrapeRoute ? scrapeNativeSelection(process.env) : null;
   if (acceptanceCase === 'prepare-stale-results' || acceptanceCase.startsWith('showcase-'))
@@ -580,6 +581,11 @@ if (process.env.MATRX_HOSTED_ACCEPTANCE_CASE?.startsWith('profile-'))
   throw new Error('hosted_profile_durable_recovery_unavailable');
 if (phase === 'preflight') {
   assert.equal(process.env.GITHUB_ACTIONS, 'true', 'hosted_preflight_runner_required');
+  hostedSeoMetadataFixture(
+    process.env.MATRX_HOSTED_ACCEPTANCE_CASE,
+    process.env.MATRX_HOSTED_SEO_CASE_SCOPE ?? 'full',
+    process.env.MATRX_HOSTED_SEO_METADATA_FIXTURE ?? 'none',
+  );
   hostedDesktopSettingsCase(
     process.env.MATRX_HOSTED_ACCEPTANCE_CASE,
     process.env.MATRX_HOSTED_DESKTOP_SETTINGS_CASE,
