@@ -25,7 +25,11 @@
     ".research/scrape397-native-peer-20261007.json",
     ".research/scrape397-reload-diagnosis-20261007.json",
     ".research/scrape-reload-reply-capture-20261007.json",
-    ".research/reload-reply-independent-peer-20261007.json"
+    ".research/reload-reply-independent-peer-20261007.json",
+    ".research/reload-reply-final-peer-20261007.json",
+    ".research/reload-open-click-guard-20261007.json",
+    ".research/reload-click-guard-peer-20261007.json",
+    ".research/d166-source-integration-20261007.json"
   ],
   "cause": "Diagnostic omission confirmed against initial-open sibling; cause of missing panel remains unknown. Distinct from D162 because no replacement panel existed.",
   "transition_history": [
@@ -49,7 +53,7 @@
     }
   ],
   "closure_requirement": "Meaningful diagnostic guard and fresh source review; resource-valid original native reproduction with causal attribution/repair as needed; actual replacement panel and post-reload T07/T09 independently verified.",
-  "next_action": "Implement diagnostic-only nonblocking capture and CI guard wiring; fresh independent re-review before any native retry.",
+  "next_action": "One resource-valid Scrape397 native diagnostic run using source-reviewed driver197f4053 or a verified descendant; preserve originalfailure and any missing-panel cause. Full reload and independent native retest still required. No blanket health/release claim.",
   "source_review": {
     "candidate_commit": "011ce6f2",
     "peer_commit": "d337ee3d",
@@ -58,6 +62,17 @@
       "Callback observation became serial and an acceptance gate; retain original target discovery and timing independent of callback outcome.",
       "New standalone guards omitted from automatic command; wire meaningful fast guards before native use."
     ],
-    "focused_ci": "37728489848 succeeded but omitted new standalone guards; does not resolve findings."
-  }
+    "focused_ci": "37728489848 succeeded but omitted new standalone guards; does not resolve findings.",
+    "final_ruling": "Material callback gating/timing findings and final Open panel click guard gap are addressed. Exact automatic CI passes64. Source diagnostic is ready for one admitted native discriminator. No claim that local tests had resource admission; source checks are not native acceptance.",
+    "exact_final_ci": {
+      "run_id": "37729348256",
+      "head_sha": "197f405303eed3f529ff6fcee475b3f8e8483525",
+      "conclusion": "success",
+      "tests": 64,
+      "pass": 64,
+      "fail": 0,
+      "duration_ms": 15282.355827
+    }
+  },
+  "diagnostic_repair_commits": ["011ce6f2", "b42a2425", "197f405303eed3f529ff6fcee475b3f8e8483525"]
 }
