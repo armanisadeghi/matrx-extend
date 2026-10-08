@@ -93,6 +93,11 @@ test('lane admission refuses unknown lanes and isolates shared credentials', () 
       acceptanceCase.startsWith('showcase-');
     assert.equal(check('B', acceptanceCase).status === 0, !usesSharedFixture, acceptanceCase);
   }
+  assert.notEqual(
+    check('B', 'records-readonly-admin').status,
+    0,
+    'Records admin cannot enter lane B',
+  );
   for (const unknownCase of ['', 'surprise-guest', 'surprise-admin'])
     assert.notEqual(check('A', unknownCase).status, 0, unknownCase);
   for (const scrapeAuth of ['member', 'admin']) {

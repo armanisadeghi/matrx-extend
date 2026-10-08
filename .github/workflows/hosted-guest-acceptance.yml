@@ -170,7 +170,7 @@ jobs:
     timeout-minutes: 15
     concurrency:
       # The closed expression maps even malformed dispatch inputs to A; preflight then refuses them.
-      group: ${{ inputs.acceptance_case == 'records-readonly-admin' && 'hosted-records-native' || inputs.acceptance_lane == 'B' && 'hosted-guest-side-panel-B' || 'hosted-guest-side-panel-A' }}
+      group: ${{ inputs.acceptance_lane == 'B' && 'hosted-guest-side-panel-B' || 'hosted-guest-side-panel-A' }}
       cancel-in-progress: false
     env:
       GH_TOKEN: ${{ github.token }}
@@ -381,6 +381,7 @@ jobs:
           MATRX_HOSTED_DEV_ARTIFACT_ID: ${{ inputs.development_artifact_id }}
           MATRX_HOSTED_PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx == true && '0.2.205' || '' }}
           MATRX_HOSTED_ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
+          MATRX_HOSTED_ACCEPTANCE_LANE: ${{ inputs.acceptance_lane }}
           MATRX_HOSTED_DESKTOP_SETTINGS_CASE: ${{ inputs.desktop_settings_case }}
           MATRX_D47_RESPONSE_ORDER: ${{ inputs.d47_response_order }}
           MATRX_HOSTED_SEO_CASE_SCOPE: ${{ inputs.seo_case_scope }}

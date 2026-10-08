@@ -20,6 +20,7 @@ export function requireRecordsHostedFixture(environment) {
     'records-readonly-admin',
     'records_fixture_case_required',
   );
+  assert.equal(environment.MATRX_HOSTED_ACCEPTANCE_LANE, 'A', 'records_fixture_lane_a_required');
 }
 const PHASES = new Set([
   'planned',
