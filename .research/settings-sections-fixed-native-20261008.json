@@ -39,7 +39,7 @@
     "scope": "Frozen unpublished development artifact, not current-main or Store product acceptance."
   },
   "resource": {
-    "package_readiness": "Workflow step passed. The downloaded artifact contains no package journal for run 37843040511; older package journal files in the artifact are not attributed to this run.",
+    "package_readiness": "Current-run package journal is present, admitted, child exit0, final valid; earlier missing-journal statement was corrected by independent review.",
     "browser": {
       "admitted": true,
       "resource_invalid": false,
@@ -58,7 +58,9 @@
       "cpu_pending": true,
       "cpu_recovered_before_exit": true,
       "detail": "A high-load/busy sample entered CPU_PENDING; the process attribution listed NewsToday2 and Chromium. Subsequent healthy samples emitted CPU_RECOVERED before final RESOURCE_FINAL_DECISION valid."
-    }
+    },
+    "package_journal": ".research/settings-sections-fixed-native-20261008/raw/hosted-guest-37843040511-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37843040511-1.jsonl",
+    "package_sha256": "30826e37d8560aaea2fea56ebc9d700e8c1d141260251b6db286e4106365ca82"
   },
   "behavior": {
     "receipt_status": "unverified",
@@ -104,5 +106,11 @@
     "T40 downstream background capture and T67 downstream capture remain unverified.",
     "No retry or additional native launch was performed."
   ],
-  "next_harness_task": "Extend the existing shared full-extension reload stage to reassert T04, T10, T28, T40, and T67 after worker and panel replacement. Reuse the existing reload boundary, capture the selected UI value, storage, and consumer/downstream behavior required by each case, and keep T40/T67 downstream capture explicitly unverified until observed."
+  "next_harness_task": "Extend the existing shared full-extension reload stage to reassert T04, T10, T28, T40, and T67 after worker and panel replacement. Reuse the existing reload boundary, capture the selected UI value, storage, and consumer/downstream behavior required by each case, and keep T40/T67 downstream capture explicitly unverified until observed.",
+  "independent_review": {
+    "reviewer": "records_native_recover_2010",
+    "zero_Settings_authorship": true,
+    "A": "Bounded approve.44/44 T28 checks:22warm+22panel reload;11ordered sections,4nested controls excluded, unchanged preferences and restored open/closed state. No full-extension repeat.",
+    "B": "Approve.Receipt/hash/frozen414artifact/GitHubidentity checked; package/browser/guest journals valid. Corrected missing package-journal claim; no broader health inference."
+  }
 }

@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-08 20:53 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T20:53:55.163104+00:00. 205 features · 769 cases · 1358 controls · 184 linked defect records.
+Generated 2026-10-08 21:06 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T21:06:36.345686+00:00. 205 features · 769 cases · 1358 controls · 184 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1230** — Pass: 89 · Partial: 90 · Fail: 2 · Unverified: 1048 · N/A: 1.
-Unverified splits into **133 explicitly marked unverified** and **915 with no result record**.
+Applicable case-by-role slots: **1230** — Pass: 89 · Partial: 91 · Fail: 2 · Unverified: 1047 · N/A: 1.
+Unverified splits into **132 explicitly marked unverified** and **915 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -20,7 +20,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Navigation / shell](#navigation--shell) | 1 | 1 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 6, fail 0, unverified 17, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
-| [Settings](#settings) | 1 | 13 pass · 10 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | 12 pass · 7 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | pass 27, partial 20, fail 0, unverified 47, n/a 1 | 2 |
+| [Settings](#settings) | 1 | 13 pass · 11 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | 12 pass · 7 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | pass 27, partial 21, fail 0, unverified 46, n/a 1 | 2 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
@@ -400,7 +400,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1003-T25 guest: Audit key access denial | N/A | N/A | N/A | EXT-F-1003-C09 |
 | EXT-F-1003-T26 member: Audit key access denial | N/A | Unverified | N/A | EXT-F-1003-C09 |
 | EXT-F-1003-T27 admin: Audit key | N/A | N/A | Partial | EXT-F-1003-C09 |
-| EXT-F-1003-T28 guest: Collapsible groups | Unverified | N/A | N/A | EXT-F-1003-C10 |
+| EXT-F-1003-T28 guest: Collapsible groups | Partial | N/A | N/A | EXT-F-1003-C10 |
 | EXT-F-1003-T29 member: Collapsible groups | N/A | Unverified | N/A | EXT-F-1003-C10 |
 | EXT-F-1003-T30 admin: Collapsible groups | N/A | N/A | Pass | EXT-F-1003-C10 |
 | EXT-F-1003-T31 guest: Offer saved logins on sign-in forms | Partial | N/A | N/A | EXT-F-1003-C11 |
@@ -498,8 +498,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: ['docs/stabilization/reports/guest-settings-applicability.json', 'docs/stabilization/runs/guest-settings-local-003.json']
 - EXT-F-1003-T27 · admin: Partial. Admin identity and key-read/error recovery exercised; no assertions for creation time, receipt count, recent rows, filters, or a normal warm/reload display comparison.
   Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
-- EXT-F-1003-T28 · guest: Unverified. Resource-valid census fails before actions: active true,11 expected headings plus4 nested expanded controls. Source selector overbreadth repaired0c8ae904; hosted37842734890 passed. Native section behavior and full-extension repeat remain unverified.
-  Evidence / build / date recorded: 37840985992, ['.research/settings-census-native-20261008.json', '.research/parallel-replay-peer-20261008.json']
+- EXT-F-1003-T28 · guest: Partial. Independent review verifies44/44 checks across11sections warm/panel reload, preferences unchanged and original section state restored. Exact frozen414artifact11568846736; all3current resource journals valid. Full-extension reload repeat remains unverified.
+  Evidence / build / date recorded: 37843040511, ['.research/settings-sections-fixed-native-20261008.json']
 - EXT-F-1003-T30 · admin: Pass. Actual adminUI on0.2.51; full control criteria includingreload verified, System/Fast/groups restored; resourcehealthy.
   Evidence / build / date recorded: admin-settings-local-001, docs/stabilization/runs/admin-settings-local-001.json
 - EXT-F-1003-T31 · guest: Partial. Four on/off visible/stored checks pass across warm and panel-document reload. Downstream consumer behavior and full-extension-reload preference behavior unverified. T34 cleanup Settings reacquisition failed and restoration is not proven; this run does not independently expose final restored baseline values for the privacy batch. No Store/current-main/whole-feature health claim.

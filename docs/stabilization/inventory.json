@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T20:53:55.163104+00:00",
+  "updated_at": "2026-10-08T21:06:36.345686+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -6286,15 +6286,12 @@
           "dimensions": ["warm", "reload"],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "37840985992",
-              "evidence": [
-                ".research/settings-census-native-20261008.json",
-                ".research/parallel-replay-peer-20261008.json"
-              ],
+              "status": "partial",
+              "run_id": "37843040511",
+              "evidence": [".research/settings-sections-fixed-native-20261008.json"],
               "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
               "build_version": "0.2.414",
-              "detail": "Resource-valid census fails before actions: active true,11 expected headings plus4 nested expanded controls. Source selector overbreadth repaired0c8ae904; hosted37842734890 passed. Native section behavior and full-extension repeat remain unverified.",
+              "detail": "Independent review verifies44/44 checks across11sections warm/panel reload, preferences unchanged and original section state restored. Exact frozen414artifact11568846736; all3current resource journals valid. Full-extension reload repeat remains unverified.",
               "resource_valid": true,
               "scope": "Frozen artifact11568846736; overall run failed T28; other per-case observations retained. No current-main/Store/member/admin claim."
             }
@@ -6350,6 +6347,19 @@
               "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
               "build_version": "0.2.414",
               "detail": "Initial active/headings-length census failed before section actions; receipt omitted observed headings/active state. This is an undiagnosed acceptance boundary, not proven product failure. No section or post-extension-reload acceptance.",
+              "resource_valid": true,
+              "scope": "Frozen artifact11568846736; overall run failed T28; other per-case observations retained. No current-main/Store/member/admin claim."
+            },
+            {
+              "status": "unverified",
+              "run_id": "37840985992",
+              "evidence": [
+                ".research/settings-census-native-20261008.json",
+                ".research/parallel-replay-peer-20261008.json"
+              ],
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "build_version": "0.2.414",
+              "detail": "Resource-valid census fails before actions: active true,11 expected headings plus4 nested expanded controls. Source selector overbreadth repaired0c8ae904; hosted37842734890 passed. Native section behavior and full-extension repeat remain unverified.",
               "resource_valid": true,
               "scope": "Frozen artifact11568846736; overall run failed T28; other per-case observations retained. No current-main/Store/member/admin claim."
             }
