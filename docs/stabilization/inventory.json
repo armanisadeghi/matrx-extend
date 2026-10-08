@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T10:37:08.864244+00:00",
+  "updated_at": "2026-10-08T10:51:52.019728+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -32301,15 +32301,24 @@
           "results": {
             "guest": {
               "status": "fail",
-              "run_id": "37748038743",
-              "build_version": "0.2.205",
-              "build_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
-              "server_sha": "53aec906f047b524495ff0d93bae8e67eb55537f",
+              "run_id": "37764808590",
               "evidence": [
-                ".research/daily-guest-20261008.json",
-                ".research/daily-guest-409-peer-20261008.json"
+                ".research/guest409-live-retest-20261008.json",
+                ".research/guest409-live-retest-peer-20261008.json"
               ],
-              "detail": "Independent bounded failure on publicCRX unpacked: first and same-conversation turns returned grounded terminal answers. After panelreload, distinct newconversation initialHTTP200 and correct get_page_text result were followed by continuationHTTP409 and zero visibleassistantanswers for180seconds. All3resourcejournals valid; server stable. Refusalcode/rootcause unproven. Not actualStoreUIinstallation or wholeChat."
+              "detail": "Original public205 postreloadguestacceptancefails on stabledeployed5be despite initial409repair; continuationRuntimeError afterpage tool, noanswer. Resourcevalid and independentlyreviewed. First/followupremain boundedpasses only.",
+              "historical_result": {
+                "status": "fail",
+                "run_id": "37748038743",
+                "build_version": "0.2.205",
+                "build_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+                "server_sha": "53aec906f047b524495ff0d93bae8e67eb55537f",
+                "evidence": [
+                  ".research/daily-guest-20261008.json",
+                  ".research/daily-guest-409-peer-20261008.json"
+                ],
+                "detail": "Independent bounded failure on publicCRX unpacked: first and same-conversation turns returned grounded terminal answers. After panelreload, distinct newconversation initialHTTP200 and correct get_page_text result were followed by continuationHTTP409 and zero visibleassistantanswers for180seconds. All3resourcejournals valid; server stable. Refusalcode/rootcause unproven. Not actualStoreUIinstallation or wholeChat."
+              }
             }
           },
           "defect_verification": {
@@ -32409,6 +32418,23 @@
               },
               "superseded_at": "2026-10-08T08:25:35.145066+00:00",
               "reason": "Fresh resource-valid public guest reproduction fails after panelreload; preserve older bounded pass."
+            }
+          ],
+          "attempt_history": [
+            {
+              "at": "2026-10-08T10:51:52.019728+00:00",
+              "mode": "guest",
+              "run_id": "37764808590",
+              "status": "fail",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.205 publicCRX unpacked",
+              "deployed_sha": "5be7a37ba1e53ca311f3787bb041a402ec863052",
+              "evidence": [
+                ".research/guest409-live-retest-20261008.json",
+                ".research/guest409-live-retest-peer-20261008.json"
+              ],
+              "detail": "Immediate409 no longer reproduced, but same postreload userreproduction fails with ConversationResumeRuntimeError after completedpage tool; no completedassistantanswer. First/followup pass, no recovery."
             }
           ]
         },

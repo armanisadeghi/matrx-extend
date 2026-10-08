@@ -7,8 +7,8 @@
   "title": "Post-reload guest conversation receives continuation HTTP 409 after page tool, without assistant reply",
   "severity": "S1: public guest conversation cannot finish an otherwise accepted request",
   "priority": "P0",
-  "state": "fixed",
-  "owner": "root/guest409_authoritative_fix",
+  "state": "in-fix",
+  "owner": "root/guest_resume_runtimeerror",
   "preconditions": [
     "Public Store CRX0.2.205 loaded unpacked with matching public identity in isolated signed-out Chromium; tree08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8.",
     "Live aidream53aec906f047b524495ff0d93bae8e67eb55537f before/after/post; actual hosted run37748038743 with all three resource journals valid."
@@ -33,7 +33,9 @@
     ".research/guest409-authoritative-source-peer-20261008.json",
     ".research/guest409-deployment-observation-20261008.json",
     ".research/guest409-dispatch-guard-escalation-20261008.json",
-    ".research/guest409-dispatch-guard-peer-20261008.json"
+    ".research/guest409-dispatch-guard-peer-20261008.json",
+    ".research/guest409-live-retest-20261008.json",
+    ".research/guest409-live-retest-peer-20261008.json"
   ],
   "transition_history": [
     {
@@ -59,9 +61,21 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Source candidate54a1e1b978 and guard3b271b385a independently accepted in badb30a9/ca537ede. Fixed means source only: deployment and original public browser retest pending; guest case remains fail."
+    },
+    {
+      "at": "2026-10-08T10:51:52.019728+00:00",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Independent1661d1ff verifies resource-valid37764808590 exactpublic205/stabledeployed5be: first/followup pass, postreload completedget_page_text then continuation RuntimeError withnoanswer. Immediate409 resolved but originaluserreproduction still fails."
+    },
+    {
+      "at": "2026-10-08T10:51:52.019728+00:00",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Astra escalation owns correlated live RuntimeError and canonical checkpoint repair; source guard compares physical DB messageposition with logical rebuilt history including synthetic tool messages."
     }
   ],
-  "next_action": "Live repair inclusion confirmed. root/guest_live_retest owns one resource-valid published205 first/followup/reload guest acceptance on stable server, followed by independent review. Guest result remains fail and defect fixed until original reproduction and surrounding cases pass.",
+  "next_action": "Repair correlated checkpoint coordinate mismatch, meaningful rebuilt-history/tool-chain regression guard, fresh source peer, authorized deployment, then independent resource-valid original publicguest first/followup/reload retest. Do not close or promote guestfail.",
   "closure_requirement": "Original public guest reproduction and surrounding first/followup cases pass independently on real browser/live server with valid resources; actual Store installation remains separately unverified.",
   "source_candidate": {
     "repository": "aidream",
@@ -69,7 +83,16 @@
     "contract_review": "pass in source",
     "guard_review": "pass for exact callback propagation and mixed sibling findings; independent 8 guard tests pass; routing body stub remains explicit source-test limit",
     "deployment": "Observed live5be7a37ba1e53ca311f3787bb041a402ec863052 at2026-10-08T10:37:21.294736+00:00; release37762164523 completed/success; repair54a1 is ancestor.",
-    "runtime_retest": "pending",
+    "runtime_retest": "FAILED originalacceptance:37764808590 afterdeployed5be; newRuntimeError instead of immediate409, independent1661d1ff.",
     "guard_sha": "3b271b385a92fdc2778dd09aae1d06f3de2e2d5d"
+  },
+  "latest_retest": {
+    "run_id": "37764808590",
+    "mode": "guest",
+    "status": "fail",
+    "resource_valid": true,
+    "public_extension_version": "0.2.205",
+    "deployed_sha": "5be7a37ba1e53ca311f3787bb041a402ec863052",
+    "detail": "First/followupgroundedterminalpass. Afterreloadget_page_textcompleted; continuationopened and emitted8textchunks thenuser_request_failed/endReasonerror, noassistantreply. UIScreenshotConversationResumeRuntimeError. Causeunderrepair; no overallhealthclaim."
   }
 }

@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-08 10:37 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T10:37:08.864244+00:00. 205 features · 769 cases · 1351 controls · 172 linked defect records.
+Generated 2026-10-08 10:51 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T10:51:52.019728+00:00. 205 features · 769 cases · 1351 controls · 172 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -1643,7 +1643,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0074, EXT-D-0075, EXT-D-0096, EXT-D-0156, EXT-D-0172
 
-**Linked defects:** [EXT-D-0066](defects/EXT-D-0066.json) (retest-pass), [EXT-D-0074](defects/EXT-D-0074.json) (fixed), [EXT-D-0075](defects/EXT-D-0075.json) (triaged), [EXT-D-0088](defects/EXT-D-0088.json) (closed), [EXT-D-0096](defects/EXT-D-0096.json) (fixed), [EXT-D-0097](defects/EXT-D-0097.json) (retest-pass), [EXT-D-0112](defects/EXT-D-0112.json) (retest-pass), [EXT-D-0113](defects/EXT-D-0113.json) (closed), [EXT-D-0134](defects/EXT-D-0134.json) (closed), [EXT-D-0144](defects/EXT-D-0144.json) (closed), [EXT-D-0156](defects/EXT-D-0156.json) (fixed), [EXT-D-0172](defects/EXT-D-0172.json) (fixed)
+**Linked defects:** [EXT-D-0066](defects/EXT-D-0066.json) (retest-pass), [EXT-D-0074](defects/EXT-D-0074.json) (fixed), [EXT-D-0075](defects/EXT-D-0075.json) (triaged), [EXT-D-0088](defects/EXT-D-0088.json) (closed), [EXT-D-0096](defects/EXT-D-0096.json) (fixed), [EXT-D-0097](defects/EXT-D-0097.json) (retest-pass), [EXT-D-0112](defects/EXT-D-0112.json) (retest-pass), [EXT-D-0113](defects/EXT-D-0113.json) (closed), [EXT-D-0134](defects/EXT-D-0134.json) (closed), [EXT-D-0144](defects/EXT-D-0144.json) (closed), [EXT-D-0156](defects/EXT-D-0156.json) (fixed), [EXT-D-0172](defects/EXT-D-0172.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -1664,8 +1664,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 - EXT-F-2013-T02 · member: Partial. Hosted local-development-ZIP 0.2.205 nonadmin sign-in, saved organization presence and one real composer answer pass. Queue, interrupt, Stop, voice, keyboard variations and reload dimensions remain unverified; this does not pass the full case.
   Evidence / build / date recorded: 37182939504, .research/hosted-member205-final.json
-- EXT-F-2013-T10 · guest: Fail. Independent bounded failure on publicCRX unpacked: first and same-conversation turns returned grounded terminal answers. After panelreload, distinct newconversation initialHTTP200 and correct get_page_text result were followed by continuationHTTP409 and zero visibleassistantanswers for180seconds. All3resourcejournals valid; server stable. Refusalcode/rootcause unproven. Not actualStoreUIinstallation or wholeChat.
-  Evidence / build / date recorded: 37748038743, ['.research/daily-guest-20261008.json', '.research/daily-guest-409-peer-20261008.json']
+- EXT-F-2013-T10 · guest: Fail. Original public205 postreloadguestacceptancefails on stabledeployed5be despite initial409repair; continuationRuntimeError afterpage tool, noanswer. Resourcevalid and independentlyreviewed. First/followupremain boundedpasses only.
+  Evidence / build / date recorded: 37764808590, ['.research/guest409-live-retest-20261008.json', '.research/guest409-live-retest-peer-20261008.json']
 - EXT-F-2013-T12 · guest: Fail. Historical Store-installed176 failed genericerror/Retry at liveHTTP402. Exact205candidate passed fresh/returning exhaustedguest remedy/noRetry;205 is now published. Public205CRX fresh/reload answers passed37267858358 but this did not exercise allowance402 or actualStoreinstalledprofile; retain open installed-acceptance requirement.
   Evidence / build / date recorded: urgent-live-guest-20261004-01, .research/urgent-live-guest-20261004.json
 
