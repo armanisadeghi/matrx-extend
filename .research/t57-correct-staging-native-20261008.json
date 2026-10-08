@@ -64,6 +64,12 @@
       "product_request_duplicate": false,
       "product_loading_failed": false
     },
+    "owned_recipe_lifecycle": {
+      "creation": "observed_in_patterns",
+      "cleanup": "removed",
+      "cleanup_verified": true,
+      "recipe_name_in_summary": false
+    },
     "race_observations": {
       "old_response_paused_before_replay": false,
       "extension_capture_at_current_pause": false,
