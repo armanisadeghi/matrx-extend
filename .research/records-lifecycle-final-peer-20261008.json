@@ -1,0 +1,14 @@
+{
+  "reviewed_commits": [
+    "62e8f541b6c9d3a98549dbf4ad611a3c88500332",
+    "f74396680afad016f25f557c0735651e959c8453"
+  ],
+  "authorship": "Independent source review; reviewer previously authored adjacent Settings harness work and did not author these Records changes. No Records edits made.",
+  "verdict_A_behavior_and_spec": "Source behavior closes the crash-before-response gap: create_sent plus pending_write_unknown is durably journaled before POST dispatch. Recovery never repeats POST; an empty exact-name lookup with unknown write remains cleanup_unverified, and a late exact-owned table is archived then verified absent with no read credit. Existing native receipt is from an earlier source head and failed before fixture setup; no positive C04/C05 or new-source native acceptance is established.",
+  "verdict_B_quality_and_validity": "The short-CDP polling helper starts one browser fetch, polls a bounded page slot, aborts on deadline, and does not resend. Added tests assert one fetch across repeated evaluations, journal state at dispatch, empty-restart uncertainty, late archive-only recovery, and no POST on recovery. Reviewed statically; no tests rerun in this review.",
+  "limitations": [
+    "Native receipt .research/records-recovery-native-20261008.json is on an earlier source head and records a recovery-list GET request exception before fixture creation; its underlying transport cause is unknown.",
+    "No native acceptance promotion from this source review.",
+    "The crash-boundary test uses an injected request hook to snapshot durable journal contents at dispatch; hosted backend behavior still requires a new native run."
+  ]
+}
