@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0176",
+  "reviewed_commits": ["744b92e9", "8bf0d62e"],
+  "scope": "Fresh zero-authorship source and focused-test re-verification; no native run, build, release, or code edit.",
+  "addressed_findings": [
+    {
+      "prior_finding": "af91b965: opt-in pass could remain pass and earn native acceptance status",
+      "status": "ADDRESSED",
+      "evidence": "scripts/hosted-seo-route.mjs:23-36 now sends pass, partial, and unfamiliar statuses to diagnostic_only, retains fail/unverified, preserves diagnostic_source_status, and empties targets. The driver applies it at tests/browser/seo-guest-acceptance.mjs:1879-1883 before writing the uploaded receipt. scripts/record-stabilization-evidence.mjs:80-122 reads the written status; its summary cannot become pass from any of the classified outcomes."
+    },
+    {
+      "prior_finding": "af91b965: the matched-PID bracket cannot measure its short-lived ps census overhead",
+      "status": "ADDRESSED",
+      "evidence": ".research/seo-host-resource-diagnosis-20261008.json:36 now confines attribution to matched process CPU time and says ps self-overhead is inconclusive without independent measurement. scripts/startup-interval-attribution.mjs:51-64 confirms intersection of surviving PIDs; snapshot wall times cannot establish ps CPU bias."
+    }
+  ],
+  "verdict_a": {
+    "source_readiness": "PASS",
+    "native_outcome": "UNVERIFIED",
+    "evidence": [
+      ".github/workflows/hosted-guest-acceptance.yml:85 defaults the switch off; :292 and :364 pass it to preflight and the selected Chrome step; :365 enables the existing bracket only when opted in. scripts/hosted-guest-acceptance.mjs:603-608 and :625-630 validate guest-seo/full/Airbnb; :417-550 passes process.env to the SEO driver.",
+      "For a completed opt-in driver receipt, the classifier clears acceptance targets and prevents pass or partial summary status. If the resource watchdog kills the driver before its final write, there is no SEO receipt to credit. Ordinary default-off reports remain unchanged by identity; resource thresholds and stop logic were untouched.",
+      "No opted-in hosted diagnostic, native acceptance, or Airbnb comparison was run in this review; previous unsafe hosted run had no SEO receipt."
+    ],
+    "open_item": "Run the opted-in full/Airbnb hosted diagnostic against the frozen artifact and inspect its bracket and final journal; perform separate uninstrumented native acceptance for coverage."
+  },
+  "verdict_b": {
+    "quality": "PASS",
+    "evidence": [
+      "The two candidate commits change only the classifier, its focused test, and diagnostic reports; they reuse the existing bracket, writer, and evidence summary.",
+      "Independent old-red probe imported the pre-744b92e9 classifier and observed opted-in pass remain pass with zero targets. Fresh node --test scripts/hosted-seo-route.test.mjs scripts/test-startup-interval-attribution.mjs scripts/test-stabilization-resource-journal.mjs passed 22/22. The new test writes classified pass/partial/unverified/fail/future-success receipts and verifies summary statuses, plus default-off identity."
+    ],
+    "findings": []
+  }
+}
