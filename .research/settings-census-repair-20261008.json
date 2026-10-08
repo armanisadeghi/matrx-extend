@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "case": "EXT-F-1003-T28 guest",
+  "reported_run": "37837587382",
+  "finding": "The assertion reported only guest_settings_sections_missing and discarded the observed active flag and section roster. The report cannot establish whether the Settings pane was inactive or the roster differed; no product cause is proven.",
+  "repair": "Preserve a bounded census diagnostic on initial failure: active boolean, total heading count, labels only from the source-owned expected Settings section list, and count of unrecognized labels. The initial gate now verifies the exact ordered roster before section actions; all later section behavior assertions remain unchanged.",
+  "guard": "Added a focused integrated onFailure test forcing both an inactive empty census and same-count roster drift containing a synthetic private-looking label. The receipt must retain only safe diagnostic fields and no section actions or reload may occur.",
+  "verification": {
+    "format": "pnpm exec biome format --write tests/browser/settings-guest-scrape-controls.mjs tests/browser/settings-guest-scrape-controls.test.mjs completed with no formatting changes.",
+    "focused_test": "Not run locally under the bounded source-only assignment; pushed test changes are expected to trigger the hosted focused gate.",
+    "native": "Not run. The prior T28 native result remains unverified as product behavior; actual expand/collapse behavior and full-extension reload remain unproven."
+  },
+  "files": [
+    "tests/browser/settings-guest-scrape-controls.mjs",
+    "tests/browser/settings-guest-scrape-controls.test.mjs",
+    ".research/settings-census-repair-20261008.json"
+  ]
+}

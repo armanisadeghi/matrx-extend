@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "scope": "Read-only source review of Settings T28 census repair commits 4f298672, 30ba65be, and 2cd75588",
+  "authorship": "Zero authorship in the Settings implementation and tests. This is a reused review seat after owning a separate Records fixture helper repair, not a fresh independent agent.",
+  "verdict_A_bounded_behavior": "SOURCE PASS for the reported initial-census failure path: T28 now requires an active Settings pane and the exact ordered source-owned section roster before clicking sections. On that failure, the existing runCase catch records the bounded census in its failure receipt. This is not a native T28 pass; real expand/collapse, persistence, and reload behavior remain unverified in this review.",
+  "verdict_B_quality_and_validity": "SOURCE PASS for the bounded diagnostic: the helper emits active, count, allowlisted section labels, and unrecognized-label count. It never serializes an unrecognized heading. The integrated guard runs the actual runCase catch with two distinct inputs, including same-count drift carrying a synthetic private-looking heading, and asserts the receipt excludes that heading and performs no section action or reload.",
+  "limits": [
+    "The reviewer did not run a browser or native case and did not author or change the Settings files.",
+    "The focused hosted source gate is tracked by the owner; this review does not infer its result.",
+    "Exceptions before observeSection returns are outside this census diagnostic; this repair addresses the reported returned-census failure."
+  ],
+  "finding": "No blocking source defect found in these three bounded commits."
+}
