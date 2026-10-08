@@ -1977,19 +1977,55 @@ try {
           () => scrapeState(replacement.panel),
           (state) => state?.ready && state.empty && state.title === 'Harbor Dental referral hours',
         );
-        await resourceAction(() =>
-          click(replacement.panel, 'title', 'Capture the page exactly as it is right now'),
+        // Keep the next failed boundary attributable without exporting page or account data.
+        const captureBoundary = { pointer_phase: null, click_events: null, busy_observed: null };
+        report.post_reload_capture_boundary = captureBoundary;
+        await evaluate(
+          replacement.panel,
+          `(() => {
+            window.__scrapePostReloadCaptureClicks = 0;
+            document.addEventListener('click', (event) => {
+              const button = event.target?.closest?.('button');
+              if ((button?.getAttribute('title') ?? button?.getAttribute('data-matrx-title')) ===
+                  'Capture the page exactly as it is right now') {
+                window.__scrapePostReloadCaptureClicks += 1;
+              }
+            }, { capture: true });
+          })()`,
         );
-        await waitFor(
-          'scrape_post_reload_referrals_captured',
-          () => scrapeState(replacement.panel),
-          (state) =>
-            state?.selected === 'Article' &&
-            state.visible &&
-            state.title === 'Harbor Dental referral hours' &&
-            state.resultText?.includes('Referral coordinators answer weekday calls.'),
-          30000,
-        );
+        await armBusyObserver(replacement.panel, 'fast');
+        try {
+          await resourceAction(() =>
+            click(
+              replacement.panel,
+              'title',
+              'Capture the page exactly as it is right now',
+              (phase) => {
+                captureBoundary.pointer_phase = phase;
+              },
+            ),
+          );
+          await waitFor(
+            'scrape_post_reload_referrals_captured',
+            () => scrapeState(replacement.panel),
+            (state) =>
+              state?.selected === 'Article' &&
+              state.visible &&
+              state.title === 'Harbor Dental referral hours' &&
+              state.resultText?.includes('Referral coordinators answer weekday calls.'),
+            30000,
+          );
+        } finally {
+          try {
+            captureBoundary.click_events = await evaluate(
+              replacement.panel,
+              'window.__scrapePostReloadCaptureClicks ?? null',
+            );
+            captureBoundary.busy_observed = (await busyObservation(replacement.panel)).observed;
+          } catch {
+            // The original failure remains authoritative if the panel disappeared.
+          }
+        }
         const reloadEmptyPanes = await observeEmptyMediaPanes({
           panel: replacement.panel,
           phase: 'reload',

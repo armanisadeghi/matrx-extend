@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "source": "run 37764002686, development 0.2.407, frozen source 5d845f42, workflow head 6a39f1b9; saved native guest receipt and three resource-valid journals",
+  "observed": "Warm/reload pane selection and full available export invariance passed; post-reload referrals page was ready, correctly titled, empty, and Capture enabled. Trusted pointer helper returned; 30 seconds later the panel was still empty, enabled, and showed no error.",
+  "boundary": "The driver proves a stable hit-tested target and returned CDP press/release, but the receipt did not record a DOM click event or a capture busy transition. Product failure versus action-delivery failure is unresolved.",
+  "hypotheses": "No delivered click predicts zero matching DOM click events; a delivered click without capture invocation predicts one click and no busy state; a silent product outcome predicts one click, observed busy state, then empty/no-error. A page-identity change during capture is one possible silent path in use-scrape, not a proven cause.",
+  "sibling_check": "Warm referrals capture passed before reload through the same button and capture path; warm and reload populated panes and available export remained stable. The divergence is confined to the final post-reload empty-media recapture boundary.",
+  "instrumentation": "The native acceptance receipt now records only pointer phase, matching click-event count, and visible busy-state boolean around that exact final action; original capture assertion and timeout are unchanged. No page text, URL, account value, or raw authorization is added.",
+  "verification": "Biome, node syntax, diff check, and 18 relevant observer/coverage tests passed. No new native run, build, release, deploy, or product-defect classification.",
+  "remaining": "One authorized native observation of the instrumented action is required to determine the first failing boundary; until then T08 remains partial and post-reload empty panes unverified. No red-capable isolated native seam exists in the saved artifacts."
+}
