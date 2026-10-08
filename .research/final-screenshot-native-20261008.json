@@ -1,0 +1,196 @@
+{
+  "task_id": "final_screenshot_and_pilot_native",
+  "lane": "independent native verifier",
+  "status": "WAITING_MATCHING_PILOT_ARTIFACT",
+  "verdict_a": {
+    "screenshots": "PASS",
+    "pilot": "UNVERIFIED"
+  },
+  "verdict_b": {
+    "screenshots": "PASS bounded source review: shared full-page capture, existing blob reused in local viewer, canonical MediaSharePopover and owner-gated manager; no source edits by verifier",
+    "pilot": "UNVERIFIED"
+  },
+  "run_id": "final-screenshot-native-20261008",
+  "resource_decision": "valid",
+  "owned_jobs": "all terminal, native profile closed",
+  "native_report": {
+    "schema_version": 1,
+    "feature": "EXT-F-1009-T03",
+    "status": "partial",
+    "scope": "root and nested scrolling capture, persisted image, local viewer, reload, quick public-link clipboard, and canonical share manager",
+    "cases": {
+      "rootPersistence": "pass",
+      "nestedPersistence": "pass",
+      "localViewer": "pass",
+      "reloadPersistence": "pass",
+      "canonicalShare": "pass",
+      "quickPublicLink": "pass",
+      "unsupportedPage": "unverified",
+      "persistenceFailure": "unverified",
+      "tileCap": "unverified"
+    },
+    "build": {
+      "version": "0.2.397",
+      "treeSha256": "e27ae7d17f776970c61f6de1ae2596c5181d4df5024ca96210d94f1f07ab3ae3",
+      "schema_version": 1,
+      "kind": "ci_development_test",
+      "eligibleStore": false,
+      "publish_state": "not_published",
+      "repository": "armanisadeghi/matrx-extend",
+      "workflow": ".github/workflows/ci.yml",
+      "sourceSha": "11564fe786ca47bade2c33718710504ed145eb66",
+      "runId": 37731510284,
+      "runAttempt": 1,
+      "artifactId": 11530615740,
+      "githubArtifactDigest": "sha256:0df8088aca6bafc5b38644659538b4694cbc96eaf4b72b1211e0b145816ca5a3",
+      "source": {
+        "originMain": "3658c0bcd6d06703d7c9146a2938685d76d387c0",
+        "localHead": "3658c0bcd6d06703d7c9146a2938685d76d387c0",
+        "trackedDirty": true,
+        "untrackedRunnerInputs": [],
+        "claim": "exact_pushed_commit_only"
+      }
+    },
+    "organizationReadiness": {
+      "first": {
+        "globalActingAsLabelCount": 0,
+        "originalComboboxCount": 0,
+        "originalPickerMatchesApproved": false,
+        "originalPickerTextSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "organizationSectionPresent": true,
+        "organizationSectionExpanded": true,
+        "organizationLoadingVisible": true,
+        "organizationReadErrorVisible": false,
+        "organizationSignInRequired": false,
+        "organizationNoEligibleMemberships": false,
+        "organizationArchivedOnly": false,
+        "originalVisibleComboboxCount": 0,
+        "originalEnabledComboboxCount": 0,
+        "scopedActingAsLabelCount": 0,
+        "scopedComboboxCount": 0,
+        "scopedPickerMatchesApproved": false,
+        "persistedNameMatchesApproved": false,
+        "persistedEntryPresent": false,
+        "persistedNamePresent": false,
+        "persistedIdPresent": false,
+        "persistedIdMatchesApproved": false,
+        "persistedNameSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "persistedIdSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uiErrorCount": 0,
+        "uiErrorTextSha256": []
+      },
+      "last": {
+        "globalActingAsLabelCount": 1,
+        "originalComboboxCount": 1,
+        "originalPickerMatchesApproved": true,
+        "originalPickerTextSha256": "61e154af11cd32c0501d6c5754026e618b50a7b726adfd0c915cd3882a7dd64a",
+        "organizationSectionPresent": true,
+        "organizationSectionExpanded": true,
+        "organizationLoadingVisible": false,
+        "organizationReadErrorVisible": false,
+        "organizationSignInRequired": false,
+        "organizationNoEligibleMemberships": false,
+        "organizationArchivedOnly": false,
+        "originalVisibleComboboxCount": 1,
+        "originalEnabledComboboxCount": 1,
+        "scopedActingAsLabelCount": 1,
+        "scopedComboboxCount": 1,
+        "scopedPickerMatchesApproved": true,
+        "persistedNameMatchesApproved": false,
+        "persistedEntryPresent": false,
+        "persistedNamePresent": false,
+        "persistedIdPresent": false,
+        "persistedIdMatchesApproved": false,
+        "persistedNameSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "persistedIdSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uiErrorCount": 0,
+        "uiErrorTextSha256": []
+      }
+    },
+    "organizationSelection": {
+      "globalActingAsLabelCount": 1,
+      "originalComboboxCount": 1,
+      "originalPickerMatchesApproved": true,
+      "originalPickerTextSha256": "61e154af11cd32c0501d6c5754026e618b50a7b726adfd0c915cd3882a7dd64a",
+      "organizationSectionPresent": true,
+      "organizationSectionExpanded": true,
+      "organizationLoadingVisible": false,
+      "organizationReadErrorVisible": false,
+      "organizationSignInRequired": false,
+      "organizationNoEligibleMemberships": false,
+      "organizationArchivedOnly": false,
+      "originalVisibleComboboxCount": 1,
+      "originalEnabledComboboxCount": 1,
+      "scopedActingAsLabelCount": 1,
+      "scopedComboboxCount": 1,
+      "scopedPickerMatchesApproved": true,
+      "persistedNameMatchesApproved": false,
+      "persistedEntryPresent": false,
+      "persistedNamePresent": false,
+      "persistedIdPresent": false,
+      "persistedIdMatchesApproved": false,
+      "persistedNameSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "persistedIdSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uiErrorCount": 0,
+      "uiErrorTextSha256": []
+    },
+    "evidence": {
+      "nested": {
+        "realZeroRowBaseline": true,
+        "persistedOwnedRow": true,
+        "imageLoadedFromGallery": true,
+        "topMiddleBottomPixelsMatched": true,
+        "tallImage": true,
+        "originalScrollRestored": true
+      },
+      "root": {
+        "realZeroRowBaseline": true,
+        "persistedOwnedRow": true,
+        "imageLoadedFromGallery": true,
+        "topMiddleBottomPixelsMatched": true,
+        "tallImage": true,
+        "originalScrollRestored": true
+      },
+      "quickClipboard": {
+        "clipboardObservationStage": "read",
+        "clipboardObservationPermissionRestored": true,
+        "clipboardReadPermissionForObservation": true,
+        "originalClipboardRestored": true
+      },
+      "quickPublicLink": {
+        "actualClipboardOwnedGrantUrl": true,
+        "realCopyFeedback": true,
+        "canonicalBody": true,
+        "realOwnerGrant": true,
+        "anonymousImageLoaded": true,
+        "anonymousBytesMatchOwnedImage": true
+      },
+      "publicShare": {
+        "canonicalBody": true,
+        "realOwnerGrant": true,
+        "anonymousImageLoaded": true,
+        "anonymousBytesMatchOwnedImage": true
+      }
+    },
+    "cleanup": {
+      "nested": {
+        "exactOwnedRowAbsentAfterRealRead": true
+      },
+      "root": {
+        "exactOwnedRowAbsentAfterRealRead": true
+      }
+    },
+    "shareCleanup": "pass",
+    "shareCleanupByFlow": {
+      "quick": "pass",
+      "manager": "pass"
+    },
+    "profileOwned": true,
+    "targetedVerdict": "pass"
+  },
+  "limitations": [
+    "Development CI artifact, Store acceptance unverified",
+    "Unsupported page, persistence failure and tile cap outside assigned native scope",
+    "Pilot requires newer artifact containing 6bfe63d5"
+  ]
+}
