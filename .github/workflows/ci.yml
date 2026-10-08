@@ -74,6 +74,7 @@ jobs:
         run: |
           node --test tests/browser/audit-key-native-faults.test.mjs
           node --test tests/browser/settings-panel-driver.guest.test.mjs
+          node --test tests/browser/seo-guest-clipboard.test.mjs
 
       - name: Typecheck
         run: pnpm compile
