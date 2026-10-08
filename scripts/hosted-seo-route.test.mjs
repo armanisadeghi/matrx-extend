@@ -4,6 +4,7 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
+import ts from 'typescript';
 import {
   classifySeoResourceDiagnosticReport,
   hostedGuestSeoRoute,
@@ -124,6 +125,128 @@ test('headless SEO timeout observation survives native failure without acceptanc
     assert.equal(written.startup_endpoint_observations[1].elapsedMs, 300);
     assert.equal(Object.hasOwn(written.startup_endpoint_observations[1], 'privatePath'), false);
     assert.deepEqual(await seoStartupObservationOptions({}, false), {});
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('SEO reporter retains safe phase and completed targets after SIGTERM', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'seo-progress-'));
+  const writerUrl = new URL('./hosted-seo-route.mjs', import.meta.url).href;
+  const driverSource = await readFile(
+    new URL('../tests/browser/seo-guest-acceptance.mjs', import.meta.url),
+    'utf8',
+  );
+  const driverAst = ts.createSourceFile(
+    'seo-guest-acceptance.mjs',
+    driverSource,
+    ts.ScriptTarget.Latest,
+    true,
+  );
+  assert.equal(driverAst.parseDiagnostics.length, 0);
+  const driverFunctions = ['checkpoint', 'advance', 'target']
+    .map((name) => {
+      const declaration = driverAst.statements.find(
+        (statement) =>
+          ts.isVariableStatement(statement) &&
+          statement.declarationList.declarations.some(
+            (item) => ts.isIdentifier(item.name) && item.name.text === name,
+          ),
+      );
+      assert.ok(declaration, `native driver declares ${name}`);
+      return declaration.getText(driverAst);
+    })
+    .join('\n');
+  try {
+    for (const diagnostic of [false, true]) {
+      const path = join(directory, diagnostic ? 'diagnostic.json' : 'ordinary.json');
+      const child = spawnSync(
+        process.execPath,
+        [
+          '--input-type=module',
+          '-e',
+          `
+        import { writeSeoGuestProgress } from ${JSON.stringify(writerUrl)};
+        const path = process.argv[1];
+        const diagnostic = process.argv[2] === 'true';
+        const report = {
+          schema_version: 1, feature_id: 'EXT-F-1008', mode: 'guest',
+          status: 'partial', scope: 'public-page guest SEO actions',
+          case_selection: { scope: 'full' },
+          build: { before: { kind: 'ci_development_test', version: '0.2.407', treeSha256: 'a'.repeat(64) }, after: null },
+          last_safe_stage: 'before_owned_profile', last_safe_observable: null, current_operation: null,
+          targets: [],
+        };
+        const OUTPUT = path;
+        const SEO_RESOURCE_DIAGNOSTIC = diagnostic;
+        ${driverFunctions}
+        advance('owned_guest_panel_ready', { nativePanel: true });
+        advance('public_page_0_ready', { title: 'private page text' });
+        target('T09', 'page_0_title_and_headings', { title: 'private page text', sourceUrl: 'https://private.invalid/' });
+        report.current_operation = 'public_page_1_navigation';
+        process.kill(process.pid, 'SIGTERM');
+      `,
+          path,
+          String(diagnostic),
+        ],
+        { encoding: 'utf8' },
+      );
+      assert.equal(child.signal, 'SIGTERM', child.stderr);
+      const persisted = JSON.parse(await readFile(path, 'utf8'));
+      assert.equal(persisted.schema_version, 1);
+      assert.equal(persisted.mode, 'guest');
+      assert.equal(persisted.build.before.version, '0.2.407');
+      assert.equal(persisted.build.before.treeSha256, 'a'.repeat(64));
+      assert.equal(persisted.resource_diagnostic_enabled, diagnostic);
+      assert.equal(persisted.last_safe_stage, 'public_page_0_ready');
+      assert.equal(persisted.current_operation, null);
+      assert.equal(persisted.status, 'unverified');
+      assert.equal(persisted.receipt_state, 'in_progress');
+      assert.deepEqual(diagnostic ? persisted.diagnostic_targets : persisted.targets, [
+        { case_id: 'EXT-F-1008-T09', subtarget: 'page_0_title_and_headings', status: 'pass' },
+      ]);
+      if (diagnostic) {
+        assert.deepEqual(persisted.targets, []);
+        assert.equal(persisted.evidence_classification, 'DIAGNOSTIC_ONLY_NO_ACCEPTANCE_CREDIT');
+      }
+      assert.doesNotMatch(JSON.stringify(persisted), /private page text|private\.invalid/);
+    }
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('SEO final writer preserves success and failure report shape', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'seo-final-'));
+  try {
+    const path = join(directory, 'result.json');
+    const report = {
+      schema_version: 1,
+      mode: 'guest',
+      status: 'partial',
+      build: {
+        before: { version: '0.2.407', treeSha256: 'b'.repeat(64) },
+        after: { version: '0.2.407', treeSha256: 'b'.repeat(64) },
+      },
+      targets: [
+        {
+          case_id: 'EXT-F-1008-T09',
+          subtarget: 'rich_public_detail_groups',
+          status: 'pass',
+          evidence: { observed: true },
+        },
+      ],
+    };
+    await writeSeoGuestReport(path, report, false);
+    assert.deepEqual(JSON.parse(await readFile(path, 'utf8')), report);
+    await writeSeoGuestReport(
+      path,
+      { ...report, status: 'unverified', failure_stage: 'build_recheck' },
+      false,
+    );
+    const failed = JSON.parse(await readFile(path, 'utf8'));
+    assert.equal(failed.status, 'unverified');
+    assert.equal(failed.failure_stage, 'build_recheck');
   } finally {
     await rm(directory, { recursive: true, force: true });
   }

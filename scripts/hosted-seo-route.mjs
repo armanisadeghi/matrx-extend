@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { readFile, writeFile } from 'node:fs/promises';
+import { closeSync, fsyncSync, openSync, renameSync, unlinkSync, writeFileSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { safeStartupEndpointObservation } from './hosted-startup-interval-diagnostic.mjs';
 
@@ -19,8 +20,56 @@ export async function seoStartupObservationOptions(report, enabled) {
 
 export async function writeSeoGuestReport(path, report, diagnosticEnabled) {
   const finalReport = classifySeoResourceDiagnosticReport(report, diagnosticEnabled);
-  await writeFile(path, `${JSON.stringify(finalReport, null, 2)}\n`, { mode: 0o600 });
+  persistSeoReceipt(path, finalReport);
   return finalReport;
+}
+
+// The resource watchdog can terminate Node without running the driver's catch
+// or final writer. Persist only bounded, public-free progress at each completed
+// boundary. Rename keeps the previous receipt intact if termination hits a write.
+export function writeSeoGuestProgress(path, report, diagnosticEnabled) {
+  const progress = {
+    schema_version: report.schema_version,
+    feature_id: report.feature_id,
+    mode: report.mode,
+    status: 'unverified',
+    receipt_state: 'in_progress',
+    scope: report.scope,
+    case_selection: report.case_selection,
+    resource_diagnostic_enabled: diagnosticEnabled,
+    build: report.build,
+    last_safe_stage: report.last_safe_stage,
+    current_operation: report.current_operation,
+    targets: report.targets.map(({ case_id, subtarget, status }) => ({
+      case_id,
+      subtarget,
+      status,
+    })),
+  };
+  const classified = classifySeoResourceDiagnosticReport(progress, diagnosticEnabled);
+  persistSeoReceipt(path, classified);
+  return classified;
+}
+
+function persistSeoReceipt(path, report) {
+  const temporary = `${path}.progress-${process.pid}`;
+  let fd;
+  try {
+    fd = openSync(temporary, 'w', 0o600);
+    writeFileSync(fd, `${JSON.stringify(report, null, 2)}\n`);
+    fsyncSync(fd);
+    closeSync(fd);
+    fd = undefined;
+    renameSync(temporary, path);
+  } catch (error) {
+    if (fd !== undefined) closeSync(fd);
+    try {
+      unlinkSync(temporary);
+    } catch {
+      /* preserve the original failure */
+    }
+    throw error;
+  }
 }
 
 export function hostedSeoMetadataFixture(acceptanceCase, scope, fixture = 'none') {

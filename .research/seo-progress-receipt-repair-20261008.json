@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "task": "seo-progress-receipt-repair-20261008",
+  "source_run_ids": [37791330758, 37787701142],
+  "source_evidence": ".research/startup-bracket-native-20261008.json",
+  "confirmed_boundary": "The SEO driver held last_safe_stage and completed targets only in memory until normal or caught exit. Resource SIGTERM bypassed the final writer, so the hosted artifact lacked the SEO result report.",
+  "repair": "The existing SEO report path now receives atomic synchronous checkpoints after completed driver stages and targets. Checkpoints retain exact build, guest mode, selected scope, diagnostic flag, safe stage, and target IDs/statuses. They omit observed page text, URLs, and target evidence. The final writer uses the same atomic primitive and retains its existing full success/failure report shape.",
+  "acceptance_boundary": "A checkpoint is unverified and in_progress. Resource diagnostic checkpoints have diagnostic_targets only and zero acceptance targets. An invalid resource journal remains invalid independently of the SEO report.",
+  "verification": {
+    "focused_command": "node --test scripts/hosted-seo-route.test.mjs tests/browser/seo-driver-sequence.test.mjs",
+    "result": "12 passed",
+    "termination_case": "The test executes the actual driver's checkpoint, advance, and target declarations in a child process, sends SIGTERM before normal exit, and reads the persisted report for ordinary and diagnostic modes.",
+    "red_proof": "A scratch copy of the test removed checkpoint() from the actual driver target declaration. The SIGTERM test failed because the completed target was absent; the scratch copy was removed.",
+    "formatter": "pnpm exec biome check scripts/hosted-seo-route.mjs scripts/hosted-seo-route.test.mjs tests/browser/seo-guest-acceptance.mjs"
+  },
+  "limits": "This repairs receipt observability only. No native browser run, SEO product fix, or acceptance pass is claimed."
+}

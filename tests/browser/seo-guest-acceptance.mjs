@@ -12,6 +12,7 @@ import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifac
 import { verifyFrozenArtifactIdentity } from '../../scripts/frozen-artifact-identity.mjs';
 import {
   seoStartupObservationOptions,
+  writeSeoGuestProgress,
   writeSeoGuestReport,
 } from '../../scripts/hosted-seo-route.mjs';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
@@ -78,11 +79,14 @@ const report = {
   build: null,
   imported_artifact: null,
   case_selection: null,
+  resource_diagnostic_enabled: SEO_RESOURCE_DIAGNOSTIC,
 };
+const checkpoint = () => writeSeoGuestProgress(OUTPUT, report, SEO_RESOURCE_DIAGNOSTIC);
 const advance = (stage, observable = null) => {
   report.last_safe_stage = stage;
   report.last_safe_observable = observable;
   report.current_operation = null;
+  checkpoint();
 };
 const enter = (operation) => {
   report.current_operation = operation;
@@ -113,10 +117,14 @@ async function waitObserved(operation, read, accept, timeoutMs) {
   advance(`${operation}_accepted`, result);
   return result;
 }
-const target = (caseId, subtarget, evidence) =>
+const target = (caseId, subtarget, evidence) => {
   report.targets.push({ case_id: `EXT-F-1008-${caseId}`, subtarget, status: 'pass', evidence });
-const unverifiedTarget = (caseId, subtarget, reason) =>
+  checkpoint();
+};
+const unverifiedTarget = (caseId, subtarget, reason) => {
   report.targets.push({ case_id: `EXT-F-1008-${caseId}`, subtarget, status: 'unverified', reason });
+  checkpoint();
+};
 
 async function buildIdentity() {
   const [receipt, manifest, pkg] = await Promise.all([
@@ -392,6 +400,7 @@ async function copySocialTags({ panel, browserSession, panelTarget }, source, ph
       status,
       reason_code,
     });
+    checkpoint();
     report.copy_case_issues ??= [];
     report.copy_case_issues.push({ phase, status, reason_code });
     return { status, reason_code };
