@@ -278,18 +278,13 @@ base_tree() {  # sets BASE, BASE_TREE, PARENTS
         hard_stop "local commits conflict with $REMOTE/$BRANCH — resolve the conflict before release; no commits were discarded or pushed"
     fi
 }
-verify_installed_dependency_inputs() {
-    # Snapshots borrow this checkout's node_modules. A newer main or a push
-    # race may change dependency inputs after pnpm installed them on the runner.
-    # Stop before generation/check/build instead of validating mismatched bytes.
-    if ! git diff --quiet "$LOCAL_HEAD^{tree}" "$BASE_TREE" -- \
-        pnpm-lock.yaml pnpm-workspace.yaml .npmrc .pnpmfile.cjs patches; then
-        hard_stop "merged candidate changes dependency inputs since installation; refresh packages on the updated main and retry — nothing was pushed"
-    fi
+dependency_inputs_changed() {  # 0 when BASE_TREE's dependency inputs differ from LOCAL_HEAD's (what is installed)
+    git diff --quiet "$LOCAL_HEAD^{tree}" "$BASE_TREE" -- \
+        pnpm-lock.yaml pnpm-workspace.yaml .npmrc .pnpmfile.cjs patches || return 0
     # A prior push can bump only the package version, then fail during local ZIP
     # promotion. That version does not alter the installed graph. Compare every
     # other manifest field so a retry can still restore an interrupted release.
-    if ! node - "$LOCAL_HEAD:package.json" "$BASE_TREE:package.json" <<'NODE'
+    node - "$LOCAL_HEAD:package.json" "$BASE_TREE:package.json" <<'NODE' || return 0
 const { execFileSync } = require('node:child_process');
 const { isDeepStrictEqual } = require('node:util');
 function manifest(ref) {
@@ -299,9 +294,56 @@ function manifest(ref) {
 }
 process.exit(isDeepStrictEqual(manifest(process.argv[2]), manifest(process.argv[3])) ? 0 : 1);
 NODE
-    then
-        hard_stop "merged candidate changes dependency inputs since installation; refresh packages on the updated main and retry — nothing was pushed"
+    return 1
+}
+# Snapshots borrow this checkout's node_modules, so every gate and the build run
+# against what pnpm installed for LOCAL_HEAD. A release takes many minutes and
+# main moves meanwhile; when the merged candidate's dependency inputs differ
+# from that install, the candidate would be validated against mismatched bytes.
+# Until 2026-10-07 that STOPPED the release ("refresh packages on the updated
+# main and retry") — and since main moves during every ~17-minute run, every
+# ship-all run stopped the same way (2026-10-07_17-45-01, _18-03-21). Now the
+# release refreshes the install itself: merge origin into this checkout (the
+# same merge sync-main does; base_tree already proved it conflict-free),
+# install from the merged lockfile, and build the candidate again from
+# LOCAL_HEAD — so every gate, matrx-packages first, runs on that candidate
+# against the refreshed install. Bounded; a refresh that cannot complete stops.
+DEPENDENCY_REFRESH_ATTEMPTS=3
+DEPENDENCY_REFRESHES=0
+refresh_dependency_install() {
+    local paths=() p
+    (( DEPENDENCY_REFRESHES < DEPENDENCY_REFRESH_ATTEMPTS )) \
+        || hard_stop "dependency inputs on $REMOTE/$BRANCH moved again after $DEPENDENCY_REFRESH_ATTEMPTS install refreshes in one release — nothing was pushed"
+    DEPENDENCY_REFRESHES=$((DEPENDENCY_REFRESHES + 1))
+    log "merged candidate on ${BASE:0:9} changes dependency inputs — merging $REMOTE/$BRANCH and reinstalling (refresh $DEPENDENCY_REFRESHES of $DEPENDENCY_REFRESH_ATTEMPTS)"
+    # Never --abort: base_tree proved the commits merge cleanly, so the only
+    # refusal is uncommitted edits overlapping incoming files, which git refuses
+    # before touching anything.
+    quiet git merge --no-edit -m "Merge $REMOTE/$BRANCH (release dependency refresh)" "$REMOTE/$BRANCH" \
+        || hard_stop "could not merge $REMOTE/$BRANCH into this checkout to refresh dependencies (uncommitted edits overlap incoming files?) — nothing was pushed"
+    if ! ( cd "$REPO_ROOT" && bounded 900 pnpm install --frozen-lockfile ) >> "$RELEASE_LOG_FILE" 2>&1; then
+        # A merged lockfile can be textually clean yet out of step with the
+        # merged manifest; let pnpm settle it and commit what it wrote.
+        ( cd "$REPO_ROOT" && bounded 900 pnpm install ) >> "$RELEASE_LOG_FILE" 2>&1 \
+            || hard_stop "pnpm install on the merged candidate failed (see latest.log) — nothing was pushed"
+        for p in package.json pnpm-lock.yaml; do
+            git diff --quiet HEAD -- "$p" 2>/dev/null || paths+=("$p")
+        done
+        if [[ ${#paths[@]} -gt 0 ]]; then
+            quiet git commit --only -m "chore(deps): settle the merged lockfile during release" -- "${paths[@]}" \
+                || hard_stop "could not commit the settled ${paths[*]} — nothing was pushed"
+        fi
     fi
+    LOCAL_HEAD="$(git rev-parse HEAD)"
+    finding "WARNING" "Packages" "dependency inputs changed on $REMOTE/$BRANCH during release; reinstalled from the merged lockfile and revalidated" ""
+}
+verify_installed_dependency_inputs() {
+    dependency_inputs_changed || return 0
+    refresh_dependency_install
+    base_tree
+    dependency_inputs_changed \
+        && hard_stop "merged candidate still changes dependency inputs after an install refresh — nothing was pushed"
+    return 0
 }
 # ── Regenerate the committed artifacts ──────────────────────────────────────
 REGEN_INFO=""   # `git update-index --index-info` lines for the regenerated paths

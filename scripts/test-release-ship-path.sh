@@ -419,20 +419,25 @@ check "version-only retry succeeds after failed promotion" '[[ $VERSION_RETRY_ST
 check "version-only retry publishes validated tag" 'git ls-remote --tags origin | grep -q "refs/tags/v0.1.7$"'
 
 # A changed manifest field other than version invalidates the runner install.
-# The candidate must stop before any generation, check, or publication.
-PKG_CALLS_BEFORE_INPUT_CHANGE="$(wc -l < "$SANDBOX/pnpm-calls")"
+# Main moves during every ~17-minute release, so this is routine: the release
+# must merge origin, reinstall from the merged lockfile, and validate and ship
+# that candidate — never stop (ship-all 2026-10-07_17-45-01 and _18-03-21).
 ( cd "$SANDBOX/other" && git pull -q origin main \
   && python3 -c 'import json; from pathlib import Path; p=Path("package.json"); d=json.loads(p.read_text()); d["dependencies"]={"fixture-new-dependency":"1.0.0"}; p.write_text(json.dumps(d, indent=2)+"\n")' \
   && git add package.json && git -c user.name=t -c user.email=t@t commit -qm 'change dependency input' \
   && git push -q origin main )
 INPUT_CHANGE_BASE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
+INSTALLS_BEFORE="$(grep -c '^install --frozen-lockfile' "$SANDBOX/pnpm-calls" || true)"
 set +e
 PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/dependency-input-out" 2>&1
 INPUT_CHANGE_STATUS=$?
 set -e
-check "non-version manifest delta stops before validation" '[[ $INPUT_CHANGE_STATUS -ne 0 && "$(wc -l < "$SANDBOX/pnpm-calls")" == "$PKG_CALLS_BEFORE_INPUT_CHANGE" ]]'
-check "non-version manifest delta stays unpublished" '[[ "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" == "$INPUT_CHANGE_BASE" ]]'
-check "dependency refusal identifies retry" 'grep -q "merged candidate changes dependency inputs since installation" "$SANDBOX/dependency-input-out"'
+check "dependency input change refreshes the install"   '[[ $(( $(grep -c "^install --frozen-lockfile" "$SANDBOX/pnpm-calls") - INSTALLS_BEFORE )) -eq 1 ]]'
+check "dependency input change does not stop the release" '[[ $INPUT_CHANGE_STATUS -eq 0 ]] && grep -q "  pushed" "$SANDBOX/dependency-input-out" && ! grep -q "RELEASE STOPPED" "$SANDBOX/dependency-input-out"'
+check "the refreshed candidate is published"            '[[ "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" != "$INPUT_CHANGE_BASE" ]] && git --git-dir="$SANDBOX/origin.git" show main:package.json | grep -q fixture-new-dependency'
+check "the package gate ran after the refresh"          'tail -n +"$(grep -n "^install --frozen-lockfile" "$SANDBOX/pnpm-calls" | tail -1 | cut -d: -f1)" "$SANDBOX/pnpm-calls" | grep -q "check:matrx-packages"'
+check "the checkout now holds the merged main"          'git merge-base --is-ancestor "$INPUT_CHANGE_BASE" HEAD'
+check "the refresh is reported, never silent"           'grep -q "reinstalled from the merged lockfile" "$SANDBOX/dependency-input-out"'
 
 # A real content conflict must leave both commits and remote refs untouched.
 git_q clone "$SANDBOX/origin.git" "$SANDBOX/conflict"
