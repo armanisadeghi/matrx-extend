@@ -1,7 +1,7 @@
 {
   "authorship": "Reused the native review seat; zero authorship of the repair. No source edits, local tests, browser, build, API, or native run.",
   "hosted_evidence": {
-    "coverage": "Retained diagnosis evidence reports fixture lifecycle subtests 57, 59 and 60 passing; this reviewer did not independently fetch the run. Earlier runs 37835814703 and 37836070600 exposed two classification assertion failures and motivated the repair.",
+    "coverage": "Retained diagnosis evidence reports fixture lifecycle subtests 57, 59, 60 and 64 passing; this reviewer did not independently fetch the run. Earlier runs 37835814703 and 37836070600 exposed two classification assertion failures and motivated the repair.",
     "focused_run": 37836302781,
     "head": "9c4280da",
     "result": "passed"
