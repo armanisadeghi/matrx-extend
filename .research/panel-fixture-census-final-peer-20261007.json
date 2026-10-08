@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-07",
+  "defect": "EXT-D-0165",
+  "reviewed_commits": ["012955b8", "10c8a243"],
+  "verdict_a": {
+    "status": "PASS_FOR_FIXTURE_SCOPE",
+    "finding": "The authenticated Scrape setup's new Browser.getVersion and chrome.runtime.id reads are supplied by the extracting fixtures, so the original panel-visibility and recorder paths are reached again.",
+    "census": "Independent searches for scrape-guest-native-acceptance.mjs readers, exercisePanel extraction, and scrapeSource/setup slices found exactly four test files extracting this setup: native-sidepanel-qa-harness.test.mjs, panel-visibility-diagnostic.test.mjs, panel-visible-reopen-repair.test.mjs, and panel-transition-recorder.test.mjs. The latter extracts the prefix in two scenarios. Other Scrape test readers extract different branches or only inspect source text.",
+    "limit": "The 136-second parent harness and automatic full CI run 37724710921 were not repeated here; final CI result remains the builder's pending verification. No product fix is claimed."
+  },
+  "verdict_b": {
+    "status": "PASS",
+    "finding": "The commits add fixture dependencies only. Browser session doubles assert the exact Browser.getVersion method, VM contexts supply the runtime ID, and panel-transition-recorder now supplies its real evaluate transport. Existing visibility, refusal, mutation, interval, identity, and cleanup assertions remain intact.",
+    "targeted_check": "node --test tests/browser/panel-visible-reopen-repair.test.mjs tests/browser/panel-visibility-diagnostic.test.mjs tests/browser/panel-transition-recorder.test.mjs: 15 passed, 0 failed. Parent harness terminal green was reported in full CI 37724004067 before its two recorder failures surfaced; that long harness was not rerun.",
+    "open_findings": []
+  }
+}

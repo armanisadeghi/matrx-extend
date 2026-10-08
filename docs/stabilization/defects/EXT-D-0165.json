@@ -7,7 +7,7 @@
   "title": "Full CI panel-reopen regressions fail before development artifact build",
   "severity": "S2: full CI red prevents newer automatic development artifacts and current-build acceptance",
   "priority": "P1",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "root/full_ci_panel_reopen_repair",
   "preconditions": [
     "CI on main exacte5d76c11, Node22 hosted Linux, installed lockfile dependencies."
@@ -19,7 +19,12 @@
   ],
   "expected": "Regression harness exercises required panel lifecycle behavior with a complete boundary fixture; failed safety actions still cause meaningful assertion failures; full CI may build only after all required gates pass.",
   "actual": "Guest transport observer regression exits1 after6 test failures; TypeError Cannot read properties of undefined (reading send) masks expected assertion errors. Prior unit/type/lint gates passed but build skipped.",
-  "evidence": ["https://github.com/armanisadeghi/matrx-extend/actions/runs/37722979005"],
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37722979005",
+    ".research/full-ci-panel-reopen-repair-20261007.json",
+    ".research/panel-reopen-ci-peer-20261007.json",
+    ".research/panel-fixture-census-final-peer-20261007.json"
+  ],
   "transition_history": [
     {
       "at": "2026-10-08T03:37:34.195823+00:00",
@@ -38,10 +43,17 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "012955b8 adds the missing dependency in three fixtures. Narrow suites pass; fresh source peer and surviving full automaticCI pending. Local whole-command run cancelled before completion, no full localpass."
+    },
+    {
+      "at": "2026-10-08T03:55:37.454710+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Fixtureclass repairs012955b8/10c8a243 accepted by independentcensus peer cedcec02; 15targetedpass, exactfocusedCI37724710922success. FullCI including completefix not yet observed; originalparentharness passed37724004067."
     }
   ],
   "closure_requirement": "Reproduce root cause, causal regression and surrounding guard tests red\u2192green, fresh independent source review, successful full automatic CI including development artifact/provenance generation.",
-  "next_action": "Fresh source review and successful covering full automatic CI with artifact output; preserve separate driver/product provenance.",
+  "next_action": "Select surviving automatic fullCI that includes10c8a243; require allgates and developmentartifact/provenance before retest-pass/closed. Pending-run coalescing is not active-run cancellation.",
   "cause": "Test fixture drift introduced with fa05a939 diagnostic provenance read; browserSession absent in extracted setup fixtures.",
-  "candidate_fix": "012955b8"
+  "candidate_fix": "012955b8",
+  "fix_commits": ["012955b8", "10c8a243"]
 }
