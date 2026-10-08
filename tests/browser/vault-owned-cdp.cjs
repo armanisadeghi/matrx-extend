@@ -44,16 +44,23 @@ async function connectOwnedCdp({
   WebSocketCtor = globalThis.WebSocket,
   processInspector = defaultProcessInspector,
   timeoutMs = DEADLINE_MS,
+  startupDeadlineMs = timeoutMs,
 }) {
-  if (!preparedProfile?.profile || typeof chromeExecutable !== 'string' || !WebSocketCtor)
+  if (
+    !preparedProfile?.profile ||
+    typeof chromeExecutable !== 'string' ||
+    !WebSocketCtor ||
+    !Number.isSafeInteger(startupDeadlineMs) ||
+    startupDeadlineMs <= 0
+  )
     throw new Error('owned_cdp_configuration_refused');
   const profile = preparedProfile.profile;
-  const deadline = Date.now() + timeoutMs;
+  const deadline = performance.now() + startupDeadlineMs;
   const waitStartedAt = performance.now();
   let endpointPolls = 0;
   let longestReadMs = 0;
   let raw;
-  while (Date.now() < deadline) {
+  while (performance.now() < deadline) {
     const readStartedAt = performance.now();
     try {
       endpointPolls += 1;
@@ -64,7 +71,9 @@ async function connectOwnedCdp({
     } finally {
       longestReadMs = Math.max(longestReadMs, performance.now() - readStartedAt);
     }
-    await new Promise((resolve) => setTimeout(resolve, 25));
+    await new Promise((resolve) =>
+      setTimeout(resolve, Math.min(25, Math.max(0, deadline - performance.now()))),
+    );
   }
   if (typeof raw !== 'string') {
     const error = new Error('owned_cdp_endpoint_timeout');

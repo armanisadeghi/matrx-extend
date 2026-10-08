@@ -43,6 +43,23 @@ const WEB_ORIGIN = 'https://www.aimatrx.com';
 const WAIT_MS = 100;
 const ATTEMPTS = 150;
 
+export async function nativeCdpStartupDeadlineMs() {
+  const policy = JSON.parse(
+    await readFile(new URL('../../docs/stabilization/resource-policy.json', import.meta.url)),
+  );
+  const deadlineMs = policy.nativeCdpStartupDeadlineMs;
+  if (!Number.isSafeInteger(deadlineMs) || deadlineMs <= 0)
+    throw new Error('native_sidepanel_startup_policy_refused');
+  return deadlineMs;
+}
+
+export async function connectNativeStartupOwnedCdp(options) {
+  return connectOwnedCdp({
+    ...options,
+    startupDeadlineMs: await nativeCdpStartupDeadlineMs(),
+  });
+}
+
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function panelOpenReplyCategory(reply) {
@@ -1477,7 +1494,7 @@ export async function runNativeSidepanelQa({
 
     try {
       onStage('cdp_connect');
-      cdp = await connectOwnedCdp({ preparedProfile, chromeExecutable });
+      cdp = await connectNativeStartupOwnedCdp({ preparedProfile, chromeExecutable });
       if (launchError) throw launchError;
       if (onStartupEndpointObservation)
         await onStartupEndpointObservation({

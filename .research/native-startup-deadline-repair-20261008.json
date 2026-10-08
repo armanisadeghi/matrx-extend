@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "issue": "EXT-D-0107",
+  "scope": "Proven late-endpoint native startup class only; original admin endpoint refusal remains distinct",
+  "source_evidence": {
+    "run_id": 37785284577,
+    "receipt": ".research/seo-late-endpoint-native-20261008/raw/seo-guest-acceptance.raw.json",
+    "resource_valid": true,
+    "initial_timeout_ms": 5024,
+    "post_timeout_endpoint_present_after_ms": 1145,
+    "exit_observed": false,
+    "inspection_failed": false
+  },
+  "causal_ruling": "The native harness used the connector's 5000 ms default for endpoint creation. In this admitted run the owned Chrome process remained alive and its endpoint appeared approximately 1145 ms later. The cutoff caused this guest acceptance attempt to stop before browser work began. The observation does not establish why Chrome started late or explain the original 331 ms admin endpoint refusal.",
+  "repair": {
+    "policy_knob": "docs/stabilization/resource-policy.json:nativeCdpStartupDeadlineMs",
+    "agent_set_limit": "Set by Codex on 2026-10-08; 8000 ms, which gives the observed 6169 ms readiness about 1831 ms of margin while remaining bounded. Review due 2026-11-07.",
+    "scope": "First owned CDP endpoint wait in the shared native sidepanel harness, including ordinary nondiagnostic acceptance",
+    "unchanged": "The connector's socket open, command, detach, and process-inspection timeouts remain 5000 ms. Endpoint shape, process owner, and spawned profile validation remain mandatory. Resource admission, watch thresholds, and watchdog behavior are unchanged."
+  },
+  "focused_verification": {
+    "causal_guard": "node --test tests/browser/native-cdp-startup-deadline.test.mjs tests/browser/vault-owned-cdp-diagnostic.test.cjs: 5 pass; old 5000 ms path times out, policy-backed shared harness path connects to endpoint at 6100 ms with verified owner and unchanged 5000 ms socket timeout",
+    "connector_regression": "node tests/browser/vault-owned-cdp.test.cjs: pass",
+    "harness_regression": "node tests/browser/native-sidepanel-qa-harness.test.mjs: pass",
+    "resource_safety": "node --test scripts/test-stabilization-resource-safety.mjs: 5 pass",
+    "typecheck": "pnpm compile: blocked by unrelated current shared-checkout @ai-matrx/media/react useReadAloud, @ai-matrx/media/speech, and @ai-matrx/chat/host createMemoryNavigation export errors in SpeakerButton.tsx, speech-host.ts, and package-chat/host.ts",
+    "native_browser": "Not run in this bounded source repair lane"
+  },
+  "remaining": "An independent source check and guarded native acceptance rerun are needed before claiming end-to-end acceptance. The original admin refusal remains separately open."
+}

@@ -130,6 +130,7 @@ function validatePolicy() {
     ![
       'processSnapshotMaxBytes',
       'watchIntervalSeconds',
+      'nativeCdpStartupDeadlineMs',
       'swapWindowSeconds',
       'unsafeSamplesToStop',
       'healthySamplesToResume',

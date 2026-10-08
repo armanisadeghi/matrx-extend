@@ -4,6 +4,7 @@
     "/Volumes/Samsung2TB/code/.stabilization-scratch/matrx-release-temp-032"
   ],
   "watchIntervalSeconds": 15,
+  "nativeCdpStartupDeadlineMs": 8000,
   "swapWindowSeconds": 60,
   "unsafeSamplesToStop": 2,
   "healthySamplesToResume": 3,
