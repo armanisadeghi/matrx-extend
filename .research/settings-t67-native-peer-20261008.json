@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "at": "2026-10-08T22:19:00.163369+00:00",
+  "reviewer": "root, zero source/native authorship",
+  "run_id": 37851603306,
+  "verdict_a": {
+    "status": "partial",
+    "passed": "T04/T10/T28/T40/T67 full-extension-stage checks; T67 all five criteria include successful baseline UI/storage restoration",
+    "remaining": "Choices cycle with panel reload after extension restart. Nondefault-per-full-restart matrix and actual downstream capture remain unverified. Earlier cleanup cause remains unknown, not fixed by diagnostic instrumentation."
+  },
+  "verdict_b": {
+    "status": "pass",
+    "verification": "Original receipt hash851cc5d6464565e28fa995f678facd8ec2b3f84e013caa3c0fc24dc4d47b0151; exact414tree662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6. All three exact-run journals admitted/resourceInvalidfalse/exit0/valid.",
+    "limits": "Workflow success differs from receipt overallunverified and full-feature health. Failed preceding37850621932 imported no product artifact and earns zero behavior credit."
+  }
+}
