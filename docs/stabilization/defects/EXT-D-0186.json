@@ -7,7 +7,7 @@
   "title": "Repeated extension reload retains original panel target",
   "severity": "S2: test harness cannot verify choices through successive full extension restarts; product impact unproven",
   "priority": "P1: blocks required reload coverage",
-  "state": "fixed",
+  "state": "retest-fail",
   "reproduction": [
     "Use the actual owned extension reload callback twice in one session.",
     "First replacement changes panel target; original callback still passes initial panel ID to next reload and fails live-target precondition.",
@@ -21,7 +21,9 @@
     ".research/settings-per-choice-extension-root-review-20261008.json",
     ".research/settings-per-choice-extension-native-20261008.json",
     ".research/settings-callback-binding-repair-20261008.json",
-    ".research/settings-callback-binding-root-review-20261008.json"
+    ".research/settings-callback-binding-root-review-20261008.json",
+    ".research/settings-per-choice-binding-native-20261008.json",
+    ".research/settings-per-choice-binding-native-peer-20261008.json"
   ],
   "state_history": [
     {
@@ -58,7 +60,12 @@
       "state": "fixed",
       "recorded_at": "2026-10-08T22:44:53.103728+00:00",
       "basis": "4b14e0a6 binds harness callback; blocking14-entrypoint guard plus21tests independently pass. New native pending."
+    },
+    {
+      "state": "retest-fail",
+      "recorded_at": "2026-10-08T23:30:02.014642+00:00",
+      "basis": "Resource-valid37858551975 confirms initial and Dark-choice replacement but fails post-replacement observation/restoration; no new per-choice acceptance. Specific cause unproven; current target-chain success does not establish surrounding cases."
     }
   ],
-  "retest": "New per-choice native required after binding repair; prior failed run retained."
+  "retest": "Do not replay unchanged. Preserve precise safe boundary/last observation and diagnose post-replacement failure before next native."
 }

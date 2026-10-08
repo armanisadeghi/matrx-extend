@@ -1,14 +1,14 @@
 {
   "task": "EXT-F-1003-T40 automatic page-load scrape behavior preparation",
-  "status": "source_backed_observability_gap_no_executable_behavior_helper",
+  "status": "superseded_by_actual_preview_render_audit",
   "source_findings": {
     "setting_and_trigger": "src/hooks/use-auto-scrape.ts reads scrapeAutoOnLoad and invokes captureWithFallback for the active HTTP(S) page after a 600ms settle delay.",
-    "readback": "ContextRulesComposerChip builds a no-send preview through the same buildChatContextValues path as a turn. With manual capture absent, a unique marker on a fresh controlled page after enabling can establish the causal automatic capture effect. The v2 preview also represents page_full_content as a structured value when present; its complete rendered values can distinguish an absent content entry from a failed/incomplete preview.",
+    "readback": "Correction from subsequent package render audit: ContextRulesComposerChip builds values, but the actual table renders labels/counts; the optional exact-text loadView is not connected. Current rendered preview cannot prove the unique marker. See settings-auto-scrape-native-adapter-20261008.json and existing EXT-D-0075.",
     "default_context_shape": "src/lib/chat/context/shape-config.ts defaults to v2-bundled. That builder emits page_full_content for a trustworthy scrape; it does not emit scrape provenance. The legacy scrape_source key in v1-flat is unnecessary for the causal enabled check and should not be added to the retiring shape.",
-    "missing_trigger": "The existing Settings native runner has no adapter that opens the no-send context preview and reads the complete v2 values for a unique fresh-page ON check and an explicit absent-page_full_content OFF check over a bounded sample window. This is a harness coverage gap, not evidence of a product defect. Direct inFlight/current-store instrumentation is unnecessary for that route."
+    "missing_trigger": "The rendered-value route requires the existing canonical viewer integration (EXT-D-0075); a new test adapter alone cannot manufacture the absent text. A passive real capture-boundary observation would be a distinct, explicitly instrumented browser test, not rendered-value acceptance."
   },
   "gaps": [
-    "Add a native adapter that reads the complete ContextRules v2 preview, confirms fresh active document identity, checks the ON unique marker with manual capture absent, and checks page_full_content remains absent while OFF across a bounded observation window.",
+    "Resolve the existing exact-text viewer integration or implement a separately scoped passive observation of real SCRAPE_CAPTURE traffic; never infer marker content from counts or fabricate DOM values.",
     "A bounded OFF window only supports absence during the observed interval; it does not prove no later capture ever occurs.",
     "No helper tests or native acceptance are claimed in this preparation."
   ],

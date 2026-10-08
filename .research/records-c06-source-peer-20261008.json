@@ -1,0 +1,36 @@
+{
+  "status": "source_review_pass_native_failed_before_c06",
+  "reviewer": "root, zero code authorship; new peer seat failed ENOSPC",
+  "source_commits": ["fdda8f99", "040bd9df", "12674035"],
+  "checks": {
+    "command": "TMPDIR=/Volumes/Samsung2TB/tmp node --test tests/browser/records-c06-browser-approvals.test.mjs tests/browser/records-approval-lifecycle.test.mjs tests/browser/records-positive-fixture.test.mjs tests/browser/records-readonly-native-driver.test.mjs",
+    "passed": 68,
+    "failed": 0,
+    "native_binding_guard": "14 entrypoints passed before final row-ID correlation change"
+  },
+  "review_findings_repaired": [
+    "Use server-selected observed tool-test conversation, not generated identity",
+    "Reconcile known approval after archive when decision response lost; main receipt exposes unresolved flags",
+    "Match UI RPC returned row ID to authoritative approval and actual Tools readback"
+  ],
+  "scope": "One C06 create in owned fixture, actual frontend approval UI, exact readback and terminal cleanup. Source review passes; native37858968256 failed before C06 journaling. Followup47eb9cd6 is independently source-tested, awaiting native retest.",
+  "limits": [
+    "Different hosted outputs do not share approval journals; any unknown outcome requires explicit operator resolution before another positive attempt",
+    "Frontend actual login/DOM/decision behavior not yet independently observed",
+    "C07/C09 positive actions remain unverified"
+  ],
+  "native_review": {
+    "run": 37858968256,
+    "receipt_hash_verified": true,
+    "fixture_journal_hash_verified": true,
+    "three_current_resource_journals_reviewed": true,
+    "temporary_secret_names_independently_absent": true,
+    "result": "C02/C03/C04/C05/C08 and six malformed refusals have bounded evidence; C06 stopped before approval journal, remains unverified. Source diagnosis underway, no replay."
+  },
+  "followup_source_review": {
+    "commit": "47eb9cd6",
+    "verdict_a": "Native C06 unverified; source correction matches actual backend completion result envelope",
+    "verdict_b": "Reviewed narrow parser/test correction; independently ran all68 focused tests, zero failures/skips; backend aidream/services/ai_execution/tool_testing.py confirms nested result field",
+    "native_retry": "not launched in this unit"
+  }
+}
