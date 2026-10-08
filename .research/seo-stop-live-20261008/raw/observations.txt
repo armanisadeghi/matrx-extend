@@ -1,0 +1,27 @@
+Exact-source CI focused-job observation (captured from `gh run watch 37813115576`):
+
+* main CI · 37813115576
+Triggered via push
+
+checks (ID 113434973576)
+✓ Focused acceptance guards
+
+Focused acceptance guards summary:
+# tests 159
+# pass 159
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+
+The same status snapshot showed the overall `checks` job still running at Unit tests; the complete CI conclusion was not established by that snapshot.
+
+The gate workflow checkout was 43006024fadf38dd67f77439bd97ee6521e6ae81. `git merge-base --is-ancestor` confirmed reviewed source 5de616d941356c8ef62aad6a23bc82bc75f3c15e is an ancestor of the gate SHA.
+
+Read-only Actions status/list request at 2026-10-08T17:05:20Z returned:
+gh: API rate limit exceeded for user ID 132974515 (HTTP 403; request E4CD:130C43:3AC94C:4339EE:6AC7CD50).
+
+No workflow dispatch was attempted. The workflow page opened in Chrome showed `Sign in`; the browser session was not authenticated and no run control was available.
+
+Existing selected product artifact, cross-checked in `.research/seo-full-arm-414-native-20261008-1552.json`:
+CI run 37790643945, artifact 11556064167, artifact digest sha256:7a93776a9322c27973756ddb542fd2e8580d900c356d28a0ad1504928edf3964, product source e7b7dc1ecae946369cebb482915faf7ef792c692, version 0.2.414, tree SHA-256 550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046.

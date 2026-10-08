@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "5de616d9",
+  "reviewer_role": "independent_source_verifier",
+  "verdicts": {
+    "A_spec": {
+      "verdict": "PASS_WITH_NATIVE_EVIDENCE_PENDING",
+      "findings": [
+        "The explicit selector is constrained to lane B, guest-seo, controlled scope, no metadata fixture, and no resource diagnostic in both workflow admission and driver preflight.",
+        "The exact selected development artifact remains required by the existing hosted route; the opt-in is carried from workflow input through wrapper and route into SEO_GUEST_INTERRUPT_AFTER_TARGET for the real child.",
+        "The real target boundary checkpoints first and then sends SIGTERM to its own process. Progress uses the atomic rename writer and reports in_progress/unverified with no acceptance credit.",
+        "An unexpected final writer with the interruption marker empties acceptance targets and forces unverified status. With selector none, the route passes undefined and the existing report writer behavior is preserved."
+      ],
+      "limits": [
+        "No fresh hosted run was inspected, so source review does not establish that a browser-asserted T02 completion occurred before SIGTERM or that the hosted resource owner recorded and cleaned up the signaled child."
+      ]
+    },
+    "B_quality": {
+      "verdict": "PARTIAL_SOURCE_TESTS_PASS_NATIVE_BEHAVIOR_UNPROVEN",
+      "findings": [
+        "The focused suite passes 16/16 tests.",
+        "The focused child test executes the extracted production target() function and real atomic progress writer, checks SIGTERM and the persisted target, and checks selector-off continuation.",
+        "The test constructs its report and target call directly with synthetic evidence; it does not execute the actual SEO browser observation path. Therefore it proves checkpoint and classification mechanics, not real completed-target evidence.",
+        "The interrupted final-writer test proves no acceptance credit for a marked report claiming pass. The ordinary final-writer test proves default report compatibility."
+      ],
+      "verification": {
+        "command": "node --test scripts/hosted-seo-route.test.mjs scripts/test-hosted-acceptance-lanes.mjs",
+        "passed": 16,
+        "failed": 0
+      },
+      "native_evidence_required": [
+        "Hosted current-run journal shows childSignal SIGTERM.",
+        "Always-uploaded checkpoint is in_progress/unverified, retains the selected T02 target, and carries DIAGNOSTIC_ONLY_NO_ACCEPTANCE_CREDIT.",
+        "An independent neighboring normal success receipt confirms the default route still runs normally."
+      ]
+    }
+  },
+  "source_notes": {
+    "child_input_path": ".github/workflows/hosted-guest-acceptance.yml -> scripts/hosted-guest-acceptance.mjs -> scripts/hosted-seo-route.mjs -> tests/browser/seo-guest-acceptance.mjs",
+    "cleanup": "The wrapper waits for child exit and asserts code zero inside a try/finally that retains its owned temporary-file cleanup. Actual resource-owner cleanup after SIGTERM remains unverified without the hosted run.",
+    "shared_checkout": "Unrelated concurrent modification already present: docs/stabilization/reports/workspace-sync-guest-incident-20261003.json"
+  }
+}

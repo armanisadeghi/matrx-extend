@@ -2019,6 +2019,55 @@ try {
           warm: { invariance: warmCaptureInvariance, empty: warmEmptyPanes },
           reload: { invariance: reloadCaptureInvariance, empty: reloadEmptyPanes },
         });
+        report.stage = 'post_reload_deep_capture';
+        await requireResourceHealth();
+        await resourceAction(() => page.goto(`${origin}/intake`));
+        await waitFor(
+          'scrape_reload_deep_empty',
+          () => scrapeState(replacement.panel),
+          (state) => state?.ready && state.empty && state.title === article,
+        );
+        assert.equal(
+          await page.locator('#late p').count(),
+          0,
+          'reload_deep_lazy_must_start_absent',
+        );
+        await armBusyObserver(replacement.panel, 'deep');
+        await resourceAction(() =>
+          click(
+            replacement.panel,
+            'title',
+            'Scroll the page top→bottom to load lazy content (images, infinite-scroll items), then capture. Better for dynamic pages.',
+          ),
+        );
+        const reloadedDeep = await waitFor(
+          'scrape_reload_deep_result',
+          () => scrapeState(replacement.panel),
+          (state) =>
+            state?.selected === 'Article' &&
+            state.resultText?.includes(lazy) &&
+            state.deep.length === 1 &&
+            !state.deep[0].disabled,
+          45000,
+        );
+        await requireResourceHealth();
+        assert.equal(await page.locator('#late p').textContent(), lazy);
+        const reloadDeepBusy = await busyObservation(replacement.panel);
+        assert.equal(reloadDeepBusy.observed, true, 'reload_deep_busy_not_observed');
+        assert.match(reloadDeepBusy.text, /Scrolling/, 'reload_deep_progress_not_observed');
+        const deepCase = report.cases.find((c) => c.id === 'EXT-F-1007-T02');
+        deepCase.evidence.post_reload_deep = {
+          lazy_started_absent: true,
+          lazy_content_in_browser: true,
+          lazy_content_in_capture: reloadedDeep.resultText.includes(lazy),
+          progress_text: reloadDeepBusy.text,
+          screenshot: await screenshot(
+            replacement.panel,
+            artifacts,
+            'scrape-reload-deep-article.png',
+          ),
+        };
+        deepCase.remaining = ['Deep failure retry mode remains unverified.'];
       } finally {
         await replacement.panel.detach();
       }

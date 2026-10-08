@@ -25,7 +25,10 @@
     ".research/parallel-product-attempt-peer-20261008.json",
     ".research/seo-arm-414-native-20261008-1527.json",
     ".research/seo-arm-live-peer-20261008-1536.json",
-    ".research/seo-interruption-native-20261008.json"
+    ".research/seo-interruption-native-20261008.json",
+    ".research/seo-deterministic-interrupt-fix-20261008.json",
+    ".research/seo-deterministic-stop-peer-20261008.json",
+    ".research/seo-stop-live-20261008.json"
   ],
   "closure_requirement": "Durable phase/observation write proven by actual interrupted driver seam and freshreview, then independently inspected native interruption/surrounding successfulreceipt; no invalidrun promotion.",
   "transition_history": [
@@ -54,12 +57,13 @@
       "reason": "Source035caed8 passes fresh721cfa3a; real hosted/native requirement remains pending."
     }
   ],
-  "fix_commits": ["035caed8"],
+  "fix_commits": ["035caed8", "5de616d9"],
   "native_partial": "37795616638 retained an early failure receipt at build_identity_verified with zero targets. Child exited1 after CDP timeout while CPU_PENDING; no confirmed guard kill. Receipt lacks an interim/checkpoint marker and may be final error output. Original post-panel/completed-target interruption durability remains unverified; no closure.",
   "normal_completion_retest": "37800877872 preserves all18 selected targets on normal successful completion; peerf8425c5e verifies exact executed workflow driver and raw hashes. No intentional or resource interruption occurred. Original interrupted-target durability remains unverified.",
   "native_interruption_attempts": {
     "runs": ["37809984111", "37811146242"],
     "result": "Both cancelled after native child exit0/null signal; ordinary final receipts with18 controlled passes, no interruption credit. GitHub step status is too coarse for deterministic timing.",
-    "next_action": "Implement opt-in deterministic stop after persisted target checkpoint in existing native path; source owner seo_deterministic_interrupt_fix; native proof pending."
-  }
+    "next_action": "Source5de616d9 and independent peeraa6004b3 support controlled selector manual_button_returns_to_current_page. Native still pending: verify exact focused CI, dispatch laneB guest-seo controlled/no fixture/no resource diagnostic with exact CI development artifact, require childSignal SIGTERM + in_progress checkpoint + selected real target/no acceptance credit; compare normal18-target receipt. Focused16tests are source seam evidence only."
+  },
+  "dispatch_status": "No native run launched: repeated Actions API403. Exact source43006024 focused guard job37813115576 observed success159/159. Use already successful artifact414; do not require unrelated new artifact. Independent source review stands; actual interrupted checkpoint/cleanup unverified."
 }

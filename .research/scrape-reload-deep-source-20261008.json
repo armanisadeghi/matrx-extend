@@ -1,0 +1,18 @@
+{
+  "case_id": "EXT-F-1007-T02",
+  "status": "source-ready-native-unverified",
+  "owner": "root; direct bounded change after two agent-cap dispatch refusals",
+  "change": "Extend existing native driver after replacement-extension panel and empty-pane checks: navigate fresh intake, require empty result and zero lazy nodes, invoke deep capture, require native scrolling progress and exact lazy content in page DOM and displayed capture. Keep case partial for failure/retry.",
+  "files": ["tests/browser/scrape-guest-native-acceptance.mjs"],
+  "verification": [
+    "node --check driver passed",
+    "Biome format and git diff --check passed",
+    "Focused existing recapture/selection tests run separately; no new unit test substitutes for browser evidence."
+  ],
+  "remaining": [
+    "Independent source review",
+    "Exact focused CI and real hosted native run",
+    "Independent native adjudication",
+    "Deep failure/retry remains unverified"
+  ]
+}
