@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "reviewed_commit": "32d526ebb69bff3a1386f4b93e7ff30d5f4f2ce4",
+  "status": "DONE_WITH_NATIVE_LIMIT",
+  "finding_dispositions": [
+    {
+      "prior_finding": "target_outside_main_frame was unreachable",
+      "disposition": "ADDRESSED",
+      "evidence": "tests/browser/showcase-d47-public-race-preflight.mjs:268-278 retains a child-frame Network identity with null frame and loader membership; lines 302-323 classify a matching target pause as target_outside_main_frame. The new child-frame test passes and checks that the serialized facts omit the private frame and loader IDs."
+    },
+    {
+      "prior_finding": "non-target continuation failure inflated unmatched_target_count and lacked its own category",
+      "disposition": "ADDRESSED",
+      "evidence": "tests/browser/showcase-d47-public-race-preflight.mjs:292-298 records a fixed target or non_target continuation_rejections count; lines 320, 336, and 357 count each rejected target pause once before continuation. The new test covers both continuation branches, with unmatched_target_count 0 for non-target and 1 for target."
+    }
+  ],
+  "verdict_A_scoped_source_and_native_pending": {
+    "verdict": "SOURCE_PASS_NATIVE_PENDING",
+    "evidence": [
+      "A target response observed in a child frame is now distinct from one lacking Network identity, and the controller continues both unmatched pauses.",
+      "Target and non-target Fetch.continueRequest failures have separate fixed counters; a continuation failure no longer increments unmatched_target_count a second time.",
+      "No fresh native T57 race was run in this review lane. The earlier resource-valid receipt remains unclassified; current real-world pause, ordered release, and terminal acceptance are still pending native evidence."
+    ],
+    "findings": []
+  },
+  "verdict_B_doctrine_and_quality": {
+    "verdict": "PASS",
+    "evidence": [
+      "The diff changes only diagnostic recording and focused tests. Response-stage interception, passthrough, two-response release, cleanup, and assessPublicRacePreflight acceptance conditions are unchanged.",
+      "The report carries fixed integer counters. The rejected CDP error message and child frame identity stay outside JSON.stringify(report); the tests assert private values are absent.",
+      "Against the parent controller, both new focused tests fail at the intended counters (0 versus 1 for wrong frame; undefined continuation_rejections). Against 32d526eb, the full focused suite passes 13/13 and Biome checks both harness files."
+    ],
+    "findings": []
+  },
+  "checks": {
+    "red": "Parent controller with current tests, node --test --test-name-pattern='observed non-main-frame|continuation rejection counts': 2 failed, 0 passed at intended assertions.",
+    "green": "node --test tests/browser/showcase-d47-public-race-preflight.test.mjs: 13 passed, 0 failed",
+    "format": "pnpm exec biome check tests/browser/showcase-d47-public-race-preflight.mjs tests/browser/showcase-d47-public-race-preflight.test.mjs: passed",
+    "native": "Not run by this review lane"
+  }
+}
