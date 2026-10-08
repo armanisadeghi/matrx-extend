@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "scope": "Independent read-only adjudication of run 37793909272 against its retained raw evidence, frozen run 37791330758, and the harness source. No native or product run was started.",
+  "evidence_conformance": {
+    "verdict": "CONFORMS_WITH_CORRECTION",
+    "findings": [
+      "All eight SHA-256 digests in idle-headless-native-control-20261008.json match the retained raw files. All eight digests in startup-bracket-native-20261008.json also match.",
+      "The current attempt receipt names run 37793909272 attempt 1, macos-15-intel, runner X64, frozen successful development run 37754055905/artifact 11539827040/version 0.2.407, startup-resource-diagnostic, requested headless mode, and zero acceptance credit. The raw native report independently records requested and observed headless via Browser.getBrowserCommandLine.",
+      "The native report records CDP connected in 3196 ms, panel settled, screenshot stage, exercise_panel, panelReadyAt 14:43:24.525Z, and completedAt 14:44:18.540Z. The diagnostic source confines exercisePanel to resource-health checks and an idle hold; no SEO action or product assertion is run.",
+      "Current package, browser, and startup journals each finish RESOURCE_FINAL_DECISION valid. The startup journal has CPU_PENDING at 14:43:29.029Z, 14:43:45.217Z, and 14:44:01.469Z, CPU_RECOVERED at 14:44:17.597Z, RESOURCE_JOB_EXIT code 0 at 14:44:18.564Z, then final valid decision at 14:44:18.724Z. It has no WATCH_UNSAFE. The harness awaits owned Chromium child termination before completedAt; the later guard JOB_EXIT refers to the diagnostic Node child.",
+      "The prior frozen-artifact SEO run used the same Intel runner and the same frozen 0.2.407 artifact. Its package and browser journals finalized valid, but guest journal reached CPU_PENDING then WATCH_UNSAFE and finalized invalid. It emitted no SEO target result and earned zero acceptance credit."
+    ],
+    "limits": [
+      "The current screenshots have byte-identical hashes to the earlier SEO run's screenshots. They depict a common pre-exercise boundary, but their hashes alone cannot prove a newly captured image; timestamped native stages and the current journal provide the stronger run-specific evidence.",
+      "The startup bracket's matched-process CPU totals are ownedChromium 0, ownedOther 0.14, hostProvisioner 0.74, and otherHost 6.48 CPU seconds. Newly appeared Chromium processes have lifetime CPU omitted from matched deltas. Centisecond ps snapshots do not share the iostat interval bounds and miss exited, reparented, or reused PIDs, so these figures are not exact additive attribution or a causal proof.",
+      "One control run on a separate ephemeral VM cannot establish repeatability or a stable repair. The control stops after panel idle; it cannot give SEO product acceptance."
+    ]
+  },
+  "doctrine_quality": {
+    "verdict": "PASS_WITH_IMPORTANT_REPORT_CORRECTION",
+    "finding": {
+      "severity": "Important",
+      "location": ".research/idle-headless-native-control-20261008.json comparison.limits[2]",
+      "error": "The report calls run 37791330758 a headed SEO run.",
+      "evidence": "At that run's source SHA 3d4b73b, seo-guest-acceptance.mjs invokes runNativeSidepanelQa without headed; native-sidepanel-qa-harness.mjs defaults headed=false and adds --headless=new. The prior receipt names guest-seo and has no display-mode override.",
+      "impact": "The two runs should be compared as headless runs. Calling one headed falsely introduces display mode as a differentiator and weakens the workload-localization argument."
+    },
+    "corrected_comparison": "Both runs used frozen 0.2.407 on macos-15-intel with headless Chromium. The later run deliberately ended at an idle panel under the startup diagnostic; the earlier run entered the SEO exercise and its guard became unsafe. Different ephemeral hosts and changed instrumentation prevent a controlled causal comparison. Later SEO activity or host variability remains a hypothesis, not a cure.",
+    "acceptance_verdict": "ZERO_PRODUCT_ACCEPTANCE; DIAGNOSTIC_ONLY; NO_STABLE_CURE"
+  }
+}

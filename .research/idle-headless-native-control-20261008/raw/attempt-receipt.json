@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+  "run_id": 37793909272,
+  "attempt": 1,
+  "job_id": 113368237459,
+  "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37793909272",
+  "job_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37793909272/job/113368237459",
+  "current_workflow_source": {
+    "branch": "main",
+    "commit": "d714f254b915ad03a9ab80a82cf462a5a9dcf2cd",
+    "focused_ci_run_id": 37793634857,
+    "focused_ci_commit": "e6d83e7d0476ab91347a660bdea844d751d1aa72",
+    "focused_ci_conclusion": "success",
+    "independent_reviewed_commit": "5b551f2a83eb6d7c26ca14541061fc7e0c1ca26b"
+  },
+  "inputs": {
+    "runner_label": "macos-15-intel",
+    "acceptance_case": "startup-resource-diagnostic",
+    "startup_display_mode": "headless",
+    "development_run_id": 37754055905,
+    "development_artifact_id": 11539827040,
+    "acceptance_lane": "A"
+  },
+  "frozen_development_artifact": {
+    "run_id": 37754055905,
+    "run_conclusion": "success",
+    "run_source": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "artifact_id": 11539827040,
+    "artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1",
+    "expired_at_preflight": false,
+    "version": "0.2.407"
+  },
+  "run_result": {
+    "started_at": "2026-10-08T14:36:52Z",
+    "job_started_at": "2026-10-08T14:37:00Z",
+    "job_completed_at": "2026-10-08T14:44:40Z",
+    "status": "completed",
+    "conclusion": "success",
+    "uploaded_artifact_id": 11557858053,
+    "uploaded_artifact_name": "hosted-guest-37793909272-1",
+    "uploaded_artifact_expired": false,
+    "exercise_product_case": "skipped",
+    "diagnostic_step": "success",
+    "acceptance_credit": 0
+  },
+  "preflight": {
+    "current_relevant_source_matches_independently_reviewed_main": true,
+    "focused_ci_contains_independently_reviewed_commit": true,
+    "active_hosted_acceptance_runs_before_dispatch": 0,
+    "other_hosted_jobs_at_end": 0
+  }
+}
