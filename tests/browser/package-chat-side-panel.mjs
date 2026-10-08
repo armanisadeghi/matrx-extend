@@ -128,19 +128,51 @@ try {
     await page.screenshot({ path: join(SHOTS, '3-conversation.png') });
   }
   // Open a past conversation through the panel's own address (independent of the history rows).
-  const latest = await fetch(`${supabaseUrl}/rest/v1/message?select=conversation_id&role=eq.assistant&order=created_at.desc&limit=1`, {
-    headers: { apikey: publishableKey, Authorization: `Bearer ${session.access_token}`, 'Accept-Profile': 'chat' },
-  }).then((r) => (r.ok ? r.json() : [])).catch(() => []);
+  const latest = await fetch(
+    `${supabaseUrl}/rest/v1/message?select=conversation_id&role=eq.assistant&order=created_at.desc&limit=1`,
+    {
+      headers: {
+        apikey: publishableKey,
+        Authorization: `Bearer ${session.access_token}`,
+        'Accept-Profile': 'chat',
+      },
+    },
+  )
+    .then((r) => (r.ok ? r.json() : []))
+    .catch(() => []);
   const pastId = latest?.[0]?.conversation_id;
   if (pastId) {
-    await page.evaluate(async (id) => chrome.storage.session.set({ 'matrx-extend:chat-address': `/chat/${id}` }), pastId);
+    await page.evaluate(
+      async (id) => chrome.storage.session.set({ 'matrx-extend:chat-address': `/chat/${id}` }),
+      pastId,
+    );
     await page.reload();
-    await page.locator('[data-package-chat]').waitFor({ timeout: 45_000 }).catch(() => undefined);
+    await page
+      .locator('[data-package-chat]')
+      .waitFor({ timeout: 45_000 })
+      .catch(() => undefined);
     await page.waitForTimeout(8000);
-    const text = (await page.locator('[data-package-chat]').innerText().catch(() => '')).trim();
-    check('a past conversation opens by address', text.length > 200, `${text.length} chars rendered`);
-    const roomStandIns = await page.locator('[data-package-chat] [data-chat-slot-fallback]').evaluateAll((els) => [...new Set(els.map((e) => e.getAttribute('data-chat-slot-fallback')))]);
-    check('no host-slot stand-ins in the conversation', roomStandIns.length === 0, roomStandIns.join(', '));
+    const text = (
+      await page
+        .locator('[data-package-chat]')
+        .innerText()
+        .catch(() => '')
+    ).trim();
+    check(
+      'a past conversation opens by address',
+      text.length > 200,
+      `${text.length} chars rendered`,
+    );
+    const roomStandIns = await page
+      .locator('[data-package-chat] [data-chat-slot-fallback]')
+      .evaluateAll((els) => [
+        ...new Set(els.map((e) => e.getAttribute('data-chat-slot-fallback'))),
+      ]);
+    check(
+      'no host-slot stand-ins in the conversation',
+      roomStandIns.length === 0,
+      roomStandIns.join(', '),
+    );
     await page.screenshot({ path: join(SHOTS, '4-conversation-by-address.png') });
   } else {
     check('a past conversation exists to open', false);
