@@ -7,7 +7,7 @@
   "title": "Records checkpoint clicks before lazy Catalog is ready",
   "severity": "S2: test harness can fail before product request; native cause still conditional",
   "priority": "P1",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root/records_missing_row_rootcause",
   "preconditions": [
     "Frozen407 includes static Records catalog row; Tools view mounts lazily.",
@@ -24,7 +24,9 @@
     ".research/t57-records-counts-native-20261008.json",
     ".research/native-diagnostics-peer-20261008.json",
     ".research/records-missing-row-rootcause-20261008.json",
-    ".research/catalog-readiness-peer-20261008.json"
+    ".research/catalog-readiness-peer-20261008.json",
+    ".research/t57-correct-staging-native-20261008.json",
+    ".research/t57-native-final-adjudication-20261008.json"
   ],
   "transition_history": [
     {
@@ -50,8 +52,21 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Causal source guard and fresh independent source review passed; actual native original-reproduction retest remains pending."
+    },
+    {
+      "at": "2026-10-08T13:14:22.136864+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Resource-valid native37780192222 and fresh independent75195918 verify the bounded original prerequisite; temporary secret names independently absent. Full T57 remains unverified."
+    },
+    {
+      "at": "2026-10-08T13:14:22.136864+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Resource-valid native37780192222 and fresh independent75195918 verify the bounded original prerequisite; temporary secret names independently absent. Full T57 remains unverified."
     }
   ],
   "closure_requirement": "Independent source/causal guard review plus native observed Catalog readiness and actual Records activation without weakening real product GET/header/principal/finished-response acceptance.",
-  "fix_commits": ["a7340e6c"]
+  "fix_commits": ["a7340e6c"],
+  "next_action": "Bounded infrastructure defect closed; continue full T57 at public_race_old_response_missing without widening prerequisite acceptance."
 }

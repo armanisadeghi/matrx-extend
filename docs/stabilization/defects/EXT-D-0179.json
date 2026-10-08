@@ -7,7 +7,7 @@
   "title": "Secret staging uses literal hyphen instead of stdin JSON",
   "severity": "S2: test preflight cannot start; actual credentials independently valid",
   "priority": "P1",
-  "state": "in-fix",
+  "state": "closed",
   "owner": "root/t57_catalog_correct_staging_native",
   "preconditions": [
     "Locally validated private credential and organization JSON, uploaded with gh secret set NAME --body - < file."
@@ -20,7 +20,11 @@
   "expected": "Omit --body when supplying secret bytes through stdin, validate privately first, then verify hosted schema preflight without revealing values.",
   "actual": "Run37779573657 stopped with d87_auth_secret_invalid in21seconds; package/browser/product tests skipped.",
   "root_cause": "Operator command used a literal string flag where gh accepts stdin only if that flag is omitted.",
-  "evidence": [".research/t57-catalog-ready-native-20261008.json"],
+  "evidence": [
+    ".research/t57-catalog-ready-native-20261008.json",
+    ".research/t57-correct-staging-native-20261008.json",
+    ".research/t57-native-final-adjudication-20261008.json"
+  ],
   "transition_history": [
     {
       "at": "2026-10-08T12:54:14.027036+00:00",
@@ -39,7 +43,26 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Fresh operator owns corrected stdin upload and one subsequent hosted attempt; no credential rotation required."
+    },
+    {
+      "at": "2026-10-08T13:14:22.136864+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Resource-valid native37780192222 and fresh independent75195918 verify the bounded original prerequisite; temporary secret names independently absent. Full T57 remains unverified."
+    },
+    {
+      "at": "2026-10-08T13:14:22.136864+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Resource-valid native37780192222 and fresh independent75195918 verify the bounded original prerequisite; temporary secret names independently absent. Full T57 remains unverified."
+    },
+    {
+      "at": "2026-10-08T13:14:22.136864+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Resource-valid native37780192222 and fresh independent75195918 verify the bounded original prerequisite; temporary secret names independently absent. Full T57 remains unverified."
     }
   ],
-  "closure_requirement": "Correct stdin upload reaches successful actual hosted credential preflight; independent evidence review and terminal secret cleanup. No product acceptance follows merely from preflight."
+  "closure_requirement": "Correct stdin upload reaches successful actual hosted credential preflight; independent evidence review and terminal secret cleanup. No product acceptance follows merely from preflight.",
+  "next_action": "Bounded infrastructure defect closed; continue full T57 at public_race_old_response_missing without widening prerequisite acceptance."
 }

@@ -24,7 +24,9 @@
     ".research/scrape-optin-diagnostic-native-20261008.json",
     ".research/native-diagnostics-peer-20261008.json",
     ".research/scrape-postreload-visibility-fix-20261008.json",
-    ".research/scrape-confirmation-peer-20261008.json"
+    ".research/scrape-confirmation-peer-20261008.json",
+    ".research/scrape-failure-receipt-repair-20261008.json",
+    ".research/scrape-timeout-final-peer-20261008.json"
   ],
   "transition_history": [
     {
@@ -53,5 +55,6 @@
     }
   ],
   "closure_requirement": "Fresh independent source review and actual uninstrumented native recapture confirms only owned edits then shows newly captured fixture article; surrounding cancel/confirmation semantics retained.",
-  "fix_commits": ["17571839"]
+  "fix_commits": ["17571839"],
+  "next_action": "One uninstrumented resource-valid native run retaining actual owned edited state, discard confirmation branch and subsequent visible Article oracle; source peer570dbb4a passes both timeout paths and14 focused checks. No closure from source alone."
 }

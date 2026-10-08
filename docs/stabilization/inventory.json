@@ -7364,35 +7364,35 @@
               ],
               "remaining": "Default chat preference matches initial guest baseline; narrow source-backed oracle reconciliation in progress. D15 original no-workspace obstruction closed; do not infer retained data from matching default alone."
             },
-        {
-          "run_id": "37735318823",
-          "mode": "guest",
-          "build": "0.2.397",
-          "status": "unverified",
-          "resource_valid": false,
-          "report": ".research/settings-completion-native-20261008.json",
-          "case_ids": [
-            "EXT-F-1003-T04",
-            "EXT-F-1003-T10",
-            "EXT-F-1003-T13",
-            "EXT-F-1003-T16",
-            "EXT-F-1003-T19",
-            "EXT-F-1003-T22",
-            "EXT-F-1003-T31",
-            "EXT-F-1003-T34",
-            "EXT-F-1003-T37",
-            "EXT-F-1003-T46",
-            "EXT-F-1003-T63",
-            "EXT-F-1003-T64",
-            "EXT-F-1003-T70",
-            "EXT-F-1003-T73",
-            "EXT-F-1003-T76",
-            "EXT-F-1003-T92"
+            {
+              "run_id": "37735318823",
+              "mode": "guest",
+              "build": "0.2.397",
+              "status": "unverified",
+              "resource_valid": false,
+              "report": ".research/settings-completion-native-20261008.json",
+              "case_ids": [
+                "EXT-F-1003-T04",
+                "EXT-F-1003-T10",
+                "EXT-F-1003-T13",
+                "EXT-F-1003-T16",
+                "EXT-F-1003-T19",
+                "EXT-F-1003-T22",
+                "EXT-F-1003-T31",
+                "EXT-F-1003-T34",
+                "EXT-F-1003-T37",
+                "EXT-F-1003-T46",
+                "EXT-F-1003-T63",
+                "EXT-F-1003-T64",
+                "EXT-F-1003-T70",
+                "EXT-F-1003-T73",
+                "EXT-F-1003-T76",
+                "EXT-F-1003-T92"
+              ],
+              "proven": "Artifact identity imported; no Settings action executed.",
+              "limits": "Owned Chromium CDP startup timeout; guest resource-invalid. All16cases zero steps. D168 successful-child recovery not exercised; existing case results unchanged."
+            }
           ],
-          "proven": "Artifact identity imported; no Settings action executed.",
-          "limits": "Owned Chromium CDP startup timeout; guest resource-invalid. All16cases zero steps. D168 successful-child recovery not exercised; existing case results unchanged."
-        }
-      ],
           "results": {
             "admin": {
               "status": "pass",
@@ -9389,46 +9389,46 @@
       ],
       "cells": {
         "guest": {
-        "test_status": "unverified",
-        "defect_ids": [
-          "EXT-D-0001",
-          "EXT-D-0009",
-          "EXT-D-0012",
-          "EXT-D-0084",
-          "EXT-D-0086",
-          "EXT-D-0087",
-          "EXT-D-0155",
-          "EXT-D-0157"
-        ],
-        "run_ids": [
-          "guest-local-001",
-          "render-retest-001",
-          "guest-settings-002",
-          "guest-settings-004",
-          "guest-settings-005",
-          "guest-settings-006",
-          "settings-cleanup-001",
-          "guest-settings-007",
-          "guest-theme-001",
-          "admin-signin-001",
-          "guest-reset-001",
-          "guest-reset-002",
-          "guest-reset-003",
-          "guest-reset-004",
-          "guest-reset-005",
-          "guest-reset-006",
-          "guest-reset-007",
-          "guest-settings-local-005",
-          "guest-settings-local-006",
-          "guest-settings-dev089-001",
-          "hosted-settings-37115406435",
-          "desktop-settings-guest-20261003-independent01",
-          "37693743871",
-          "37722572578",
-          "settings-local397-native-20261008"
-        ],
-        "retest_status": "Partial surface. Frozen391 guest PrivacyT16/T19/T31/T34 UI/storage/panel-reload verified37722572578/fresh3db847dc; downstream consumers/full-extension reload unverified. Earlier bounded account/reset passes retain their own receipts. Valid local ARM frozen397 guest attempt (9 receipt pass, 7 unverified, 0 fail) independently reviewed; T34 consumer and full preference reload, T63 member denial, T70 branches and other unsampled dimensions remain open. No Store/current-main/whole-feature promotion."
-      },
+          "test_status": "unverified",
+          "defect_ids": [
+            "EXT-D-0001",
+            "EXT-D-0009",
+            "EXT-D-0012",
+            "EXT-D-0084",
+            "EXT-D-0086",
+            "EXT-D-0087",
+            "EXT-D-0155",
+            "EXT-D-0157"
+          ],
+          "run_ids": [
+            "guest-local-001",
+            "render-retest-001",
+            "guest-settings-002",
+            "guest-settings-004",
+            "guest-settings-005",
+            "guest-settings-006",
+            "settings-cleanup-001",
+            "guest-settings-007",
+            "guest-theme-001",
+            "admin-signin-001",
+            "guest-reset-001",
+            "guest-reset-002",
+            "guest-reset-003",
+            "guest-reset-004",
+            "guest-reset-005",
+            "guest-reset-006",
+            "guest-reset-007",
+            "guest-settings-local-005",
+            "guest-settings-local-006",
+            "guest-settings-dev089-001",
+            "hosted-settings-37115406435",
+            "desktop-settings-guest-20261003-independent01",
+            "37693743871",
+            "37722572578",
+            "settings-local397-native-20261008"
+          ],
+          "retest_status": "Partial surface. Frozen391 guest PrivacyT16/T19/T31/T34 UI/storage/panel-reload verified37722572578/fresh3db847dc; downstream consumers/full-extension reload unverified. Earlier bounded account/reset passes retain their own receipts. Valid local ARM frozen397 guest attempt (9 receipt pass, 7 unverified, 0 fail) independently reviewed; T34 consumer and full preference reload, T63 member denial, T70 branches and other unsampled dimensions remain open. No Store/current-main/whole-feature promotion."
+        },
         "member": {
           "test_status": "unverified",
           "defect_ids": ["EXT-D-0001", "EXT-D-0007", "EXT-D-0084", "EXT-D-0086", "EXT-D-0087"],
@@ -15629,27 +15629,16 @@
         {
           "id": "EXT-F-1007-T01",
           "title": "Fast capture",
-          "modes": [
-            "guest",
-            "member",
-            "admin"
-          ],
-          "control_ids": [
-            "EXT-F-1007-C01"
-          ],
+          "modes": ["guest", "member", "admin"],
+          "control_ids": ["EXT-F-1007-C01"],
           "preconditions": [
             "Open Scrape on a controlled page with extension access and record auth/org state."
           ],
-          "steps": [
-            "Click Capture; while running verify progress and then inspect result."
-          ],
+          "steps": ["Click Capture; while running verify progress and then inspect result."],
           "expected": [
             "Current active page is captured in fast mode; busy button disables, result tabs appear, and errors show recovery actions."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ],
+          "dimensions": ["warm", "reload"],
           "results": {
             "guest": {
               "status": "partial",
@@ -15811,27 +15800,16 @@
         {
           "id": "EXT-F-1007-T02",
           "title": "Deep capture",
-          "modes": [
-            "guest",
-            "member",
-            "admin"
-          ],
-          "control_ids": [
-            "EXT-F-1007-C02"
-          ],
+          "modes": ["guest", "member", "admin"],
+          "control_ids": ["EXT-F-1007-C02"],
           "preconditions": [
             "Open Scrape on a controlled page with extension access and record auth/org state."
           ],
-          "steps": [
-            "Click Scroll & capture on lazy-loaded page; inspect progress and result."
-          ],
+          "steps": ["Click Scroll & capture on lazy-loaded page; inspect progress and result."],
           "expected": [
             "Page scroll progress is visible and completed capture includes content loaded during scroll; failure preserves correct deep retry mode."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ],
+          "dimensions": ["warm", "reload"],
           "results": {
             "guest": {
               "status": "partial",
@@ -16053,30 +16031,15 @@
         {
           "id": "EXT-F-1007-T07",
           "title": "Article scroll sync",
-          "modes": [
-            "guest",
-            "member",
-            "admin"
-          ],
-          "control_ids": [
-            "EXT-F-1007-C07"
-          ],
+          "modes": ["guest", "member", "admin"],
+          "control_ids": ["EXT-F-1007-C07"],
           "preconditions": [
             "Open Scrape on a controlled page with extension access and record auth/org state."
           ],
-          "steps": [
-            "Toggle Sync scroll with live page while article pane scrolls."
-          ],
-          "expected": [
-            "On state follows live page scroll; toggle off stops synchronization."
-          ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ],
-          "linked_defects": [
-            "EXT-D-0163"
-          ],
+          "steps": ["Toggle Sync scroll with live page while article pane scrolls."],
+          "expected": ["On state follows live page scroll; toggle off stops synchronization."],
+          "dimensions": ["warm", "reload"],
+          "linked_defects": ["EXT-D-0163"],
           "results": {
             "guest": {
               "status": "pass",
@@ -16155,9 +16118,7 @@
               "superseded_at": "2026-10-08T05:08:04.308991+00:00"
             }
           ],
-          "defect_ids": [
-            "EXT-D-0166"
-          ],
+          "defect_ids": ["EXT-D-0166"],
           "attempt_history": [
             {
               "at": "2026-10-08T09:24:33Z",
@@ -16211,27 +16172,16 @@
         {
           "id": "EXT-F-1007-T08",
           "title": "Scrape result tabs",
-          "modes": [
-            "guest",
-            "member",
-            "admin"
-          ],
-          "control_ids": [
-            "EXT-F-1007-C08"
-          ],
+          "modes": ["guest", "member", "admin"],
+          "control_ids": ["EXT-F-1007-C08"],
           "preconditions": [
             "Open Scrape on a controlled page with extension access and record auth/org state."
           ],
-          "steps": [
-            "Select Article, Images, Video, Links, SEO and Schema."
-          ],
+          "steps": ["Select Article, Images, Video, Links, SEO and Schema."],
           "expected": [
             "Each selected tab renders its matching capture data and empty states without changing capture."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ],
+          "dimensions": ["warm", "reload"],
           "results": {
             "guest": {
               "status": "partial",
@@ -16404,9 +16354,7 @@
               "mode": "guest",
               "run_id": "37776576395",
               "resource_valid": true,
-              "evidence": [
-                ".research/scrape-optin-diagnostic-native-20261008.json"
-              ],
+              "evidence": [".research/scrape-optin-diagnostic-native-20261008.json"],
               "detail": "Opt-in diagnostic only: fixture click/send/callback/reply and worker ingress/open/resolved milestones persist; replacement panel finaltarget present although created-event false. Later post-reload capture ready/title match but article unselected/invisible/text absent. Instrumentation can perturb lifecycle; zero native product credit.",
               "at": "2026-10-08T12:35:51.331330+00:00",
               "status": "unverified",
@@ -16420,14 +16368,8 @@
         {
           "id": "EXT-F-1007-T09",
           "title": "Copy capture and section data",
-          "modes": [
-            "guest",
-            "member",
-            "admin"
-          ],
-          "control_ids": [
-            "EXT-F-1007-C09"
-          ],
+          "modes": ["guest", "member", "admin"],
+          "control_ids": ["EXT-F-1007-C09"],
           "preconditions": [
             "Open Scrape on a controlled page with extension access and record auth/org state."
           ],
@@ -16437,10 +16379,7 @@
           "expected": [
             "Each menu offers the documented representations and copies current capture content, not stale page data."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ],
+          "dimensions": ["warm", "reload"],
           "results": {
             "guest": {
               "status": "pass",
@@ -16491,9 +16430,7 @@
               }
             }
           },
-          "linked_defects": [
-            "EXT-D-0164"
-          ],
+          "linked_defects": ["EXT-D-0164"],
           "result_history": [
             {
               "mode": "guest",
@@ -16522,9 +16459,7 @@
               "superseded_at": "2026-10-08T05:08:05.445470+00:00"
             }
           ],
-          "defect_ids": [
-            "EXT-D-0166"
-          ],
+          "defect_ids": ["EXT-D-0166"],
           "attempt_history": [
             {
               "at": "2026-10-08T09:24:33Z",
@@ -16578,45 +16513,27 @@
         {
           "id": "EXT-F-1007-T10",
           "title": "Remove image",
-          "modes": [
-            "guest",
-            "member",
-            "admin"
-          ],
-          "control_ids": [
-            "EXT-F-1007-C10"
-          ],
+          "modes": ["guest", "member", "admin"],
+          "control_ids": ["EXT-F-1007-C10"],
           "preconditions": [
             "Open Scrape on a controlled page with extension access and record auth/org state."
           ],
-          "steps": [
-            "Remove large, medium and icon image entries."
-          ],
+          "steps": ["Remove large, medium and icon image entries."],
           "expected": [
             "Selected image disappears from in-memory capture and image count/toolbar updates."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ],
+          "dimensions": ["warm", "reload"],
           "supporting_evidence": [
             {
               "level": "source/component; guest auth is mocked, not native authentication",
               "report": ".research/scrape-media-controls-test.json",
               "independent_review": ".research/scrape-media-controls-peer.json",
-              "commits": [
-                "dfa74dc0",
-                "4540020c",
-                "e1539f56"
-              ],
+              "commits": ["dfa74dc0", "4540020c", "e1539f56"],
               "result": "7 scoped tests pass across real ScrapeView and real media store; selective removal/exact survivors/count, blank/valid/cancel forms, video link target and copy request; no actual tab or clipboard access claimed.",
               "limits": "Native guest/member/admin interactions and reload remain unverified. No mode cell promoted from component tests."
             }
           ],
-          "defect_ids": [
-            "EXT-D-0122",
-            "EXT-D-0123"
-          ],
+          "defect_ids": ["EXT-D-0122", "EXT-D-0123"],
           "results": {
             "guest": {
               "status": "pass",
@@ -16677,10 +16594,8 @@
                         "status": "partial",
                         "build": "development0.2.215/source3536b5cb",
                         "run_id": "37214124282",
-                        "evidence": [
-                          ".research/scrape-transition-native-diagnostic.json"
-                        ],
-                        "detail": "Warm native medium/icon/large removals verified with exact before/after identities, trusted pointer events, Images retained and count3→2→1→empty. Later control sequence failed with Article selected; earlier third-removal inference refuted. Fullreload and otherroles unverified."
+                        "evidence": [".research/scrape-transition-native-diagnostic.json"],
+                        "detail": "Warm native medium/icon/large removals verified with exact before/after identities, trusted pointer events, Images retained and count3\u21922\u21921\u2192empty. Later control sequence failed with Article selected; earlier third-removal inference refuted. Fullreload and otherroles unverified."
                       }
                     }
                   }
@@ -16769,14 +16684,8 @@
         {
           "id": "EXT-F-1007-T11",
           "title": "Add image URL validation",
-          "modes": [
-            "guest",
-            "member",
-            "admin"
-          ],
-          "control_ids": [
-            "EXT-F-1007-C11"
-          ],
+          "modes": ["guest", "member", "admin"],
+          "control_ids": ["EXT-F-1007-C11"],
           "preconditions": [
             "Open Scrape on a controlled page with extension access and record auth/org state."
           ],
@@ -16786,20 +16695,13 @@
           "expected": [
             "Blank src is rejected and retained for correction; valid image appears; Cancel closes and clears draft."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ],
+          "dimensions": ["warm", "reload"],
           "supporting_evidence": [
             {
               "level": "source/component; guest auth is mocked, not native authentication",
               "report": ".research/scrape-media-controls-test.json",
               "independent_review": ".research/scrape-media-controls-peer.json",
-              "commits": [
-                "dfa74dc0",
-                "4540020c",
-                "e1539f56"
-              ],
+              "commits": ["dfa74dc0", "4540020c", "e1539f56"],
               "result": "7 scoped tests pass across real ScrapeView and real media store; selective removal/exact survivors/count, blank/valid/cancel forms, video link target and copy request; no actual tab or clipboard access claimed.",
               "limits": "Native guest/member/admin interactions and reload remain unverified. No mode cell promoted from component tests."
             }
@@ -16953,37 +16855,22 @@
         {
           "id": "EXT-F-1007-T12",
           "title": "Video actions",
-          "modes": [
-            "guest",
-            "member",
-            "admin"
-          ],
-          "control_ids": [
-            "EXT-F-1007-C12"
-          ],
+          "modes": ["guest", "member", "admin"],
+          "control_ids": ["EXT-F-1007-C12"],
           "preconditions": [
             "Open Scrape on a controlled page with extension access and record auth/org state."
           ],
-          "steps": [
-            "Open video link, copy URL, remove row; add blank then valid video URL."
-          ],
+          "steps": ["Open video link, copy URL, remove row; add blank then valid video URL."],
           "expected": [
             "URL opens/copies; remove deletes item; blank source is rejected; valid URL creates row."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ],
+          "dimensions": ["warm", "reload"],
           "supporting_evidence": [
             {
               "level": "source/component; guest auth is mocked, not native authentication",
               "report": ".research/scrape-media-controls-test.json",
               "independent_review": ".research/scrape-media-controls-peer.json",
-              "commits": [
-                "dfa74dc0",
-                "4540020c",
-                "e1539f56"
-              ],
+              "commits": ["dfa74dc0", "4540020c", "e1539f56"],
               "result": "7 scoped tests pass across real ScrapeView and real media store; selective removal/exact survivors/count, blank/valid/cancel forms, video link target and copy request; no actual tab or clipboard access claimed.",
               "limits": "Native guest/member/admin interactions and reload remain unverified. No mode cell promoted from component tests."
             }
@@ -17156,37 +17043,22 @@
         {
           "id": "EXT-F-1007-T13",
           "title": "Link actions",
-          "modes": [
-            "guest",
-            "member",
-            "admin"
-          ],
-          "control_ids": [
-            "EXT-F-1007-C13"
-          ],
+          "modes": ["guest", "member", "admin"],
+          "control_ids": ["EXT-F-1007-C13"],
           "preconditions": [
             "Open Scrape on a controlled page with extension access and record auth/org state."
           ],
-          "steps": [
-            "Open link, copy URL, remove row; add blank href then valid href+text."
-          ],
+          "steps": ["Open link, copy URL, remove row; add blank href then valid href+text."],
           "expected": [
             "URL opens/copies; remove deletes item; blank href rejected; valid link appears."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ],
+          "dimensions": ["warm", "reload"],
           "supporting_evidence": [
             {
               "level": "source/component; unrelated runtime dependencies and clipboard boundary mocked",
               "report": ".research/scrape-links-controls-test.json",
               "independent_review": ".research/scrape-links-controls-final-peer.json",
-              "commits": [
-                "21af0218",
-                "0f1665b0",
-                "b604e8f6"
-              ],
+              "commits": ["21af0218", "0f1665b0", "b604e8f6"],
               "result": "Four real ScrapeView/store tests pass: selective removal with exact survivors/count; blank, valid and cancelled forms; link target attributes and copy-boundary delivery. Remove-all and constant-link mutants rejected.",
               "limits": "Guest/member/admin native, warm/reload, actual new-tab opening and OS clipboard remain unverified; no mode cell promoted."
             },
@@ -17194,10 +17066,7 @@
               "level": "native procedure source only; native execution pending",
               "report": ".research/scrape-links-native-implementation.json",
               "independent_review": ".research/scrape-links-native-peer.json",
-              "commits": [
-                "9515804d",
-                "b78b94f1"
-              ],
+              "commits": ["9515804d", "b78b94f1"],
               "result": "Prepared exact rendered href/text/count checks for open/copy/selective remove/blank and valid Add/Cancel, warm and populated after full reload. Fresh peer scope PARTIAL and source quality PASS;18focused checks and compile pass.",
               "limits": "No native launch after latest startup resource refusal. Capacity resolution required; all auth-mode results unchanged."
             }
@@ -17364,14 +17233,8 @@
         {
           "id": "EXT-F-1007-T14",
           "title": "Capture error recovery",
-          "modes": [
-            "guest",
-            "member",
-            "admin"
-          ],
-          "control_ids": [
-            "EXT-F-1007-C14"
-          ],
+          "modes": ["guest", "member", "admin"],
+          "control_ids": ["EXT-F-1007-C14"],
           "preconditions": [
             "Open Scrape on a controlled page with extension access and record auth/org state."
           ],
@@ -17381,10 +17244,7 @@
           "expected": [
             "Error details/actions match recovery classification; retry preserves last chosen mode; dismiss clears card."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ],
+          "dimensions": ["warm", "reload"],
           "results": {
             "guest": {
               "status": "partial",
@@ -17596,27 +17456,16 @@
         {
           "id": "EXT-F-1007-T20",
           "title": "No current capture empty state",
-          "modes": [
-            "guest",
-            "member",
-            "admin"
-          ],
-          "control_ids": [
-            "EXT-F-1007-C20"
-          ],
+          "modes": ["guest", "member", "admin"],
+          "control_ids": ["EXT-F-1007-C20"],
           "preconditions": [
             "Open Scrape on a controlled page with extension access and record auth/org state."
           ],
-          "steps": [
-            "Open Scrape before capturing, then navigate active tab to another URL."
-          ],
+          "steps": ["Open Scrape before capturing, then navigate active tab to another URL."],
           "expected": [
             "Empty state invites capture; previous page\u2019s content and Saved badge clear after navigation."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ],
+          "dimensions": ["warm", "reload"],
           "results": {
             "guest": {
               "status": "pass",
@@ -17722,9 +17571,7 @@
                   "run_id": "37185080238",
                   "evidence": ".research/guest-scrape-hosted-native.json",
                   "detail": "Release205 local development ZIP: signed-out token/profile absence and initial Scrape empty state observed. Navigation/reload were not reached. Exact Store ZIP rerun37186201850 failed at browser startup before any UI case; no Store pass.",
-                  "additional_evidence": [
-                    ".research/guest-scrape-store-native.json"
-                  ]
+                  "additional_evidence": [".research/guest-scrape-store-native.json"]
                 }
               }
             }
@@ -18541,10 +18388,7 @@
           "results": {
             "guest": {
               "status": "partial",
-              "passed_subtargets": [
-                "new_url_replaces_visible_title",
-                "reload_audits_current_url"
-              ],
+              "passed_subtargets": ["new_url_replaces_visible_title", "reload_audits_current_url"],
               "unverified_dimensions": [
                 "one audit per URL",
                 "slow old result cannot overwrite new page"
@@ -18636,10 +18480,7 @@
                   "new_url_replaces_visible_title",
                   "reload_audits_current_url"
                 ],
-                "unverified_dimensions": [
-                  "one audit per URL",
-                  "slow-old-result race"
-                ],
+                "unverified_dimensions": ["one audit per URL", "slow-old-result race"],
                 "run_id": "37702963336",
                 "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
                 "build_version": "0.2.391",
@@ -18655,27 +18496,16 @@
         {
           "id": "EXT-F-1008-T02",
           "title": "Manual audit/re-audit",
-          "modes": [
-            "guest",
-            "member",
-            "admin"
-          ],
-          "control_ids": [
-            "EXT-F-1008-C02"
-          ],
+          "modes": ["guest", "member", "admin"],
+          "control_ids": ["EXT-F-1008-C02"],
           "preconditions": [
             "Open SEO on a controlled HTTP(S) page with known title, headings, metadata and links; record active organization for saves/recommendations."
           ],
-          "steps": [
-            "Run Audit this page then Re-audit same URL."
-          ],
+          "steps": ["Run Audit this page then Re-audit same URL."],
           "expected": [
             "Live audit updates with current capture; running disables button; re-audit drops stale advice and reports failures."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ],
+          "dimensions": ["warm", "reload"],
           "results": {
             "guest": {
               "status": "partial",
@@ -18729,9 +18559,7 @@
               "run_id": "seo-guest-frozen-20261002T140308Z",
               "artifact_version": "0.2.173",
               "detail": "Trusted re-audit preserved current public title; stale advice/failure dimensions unverified.",
-              "evidence": [
-                "docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json"
-              ]
+              "evidence": ["docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json"]
             },
             {
               "mode": "guest",
@@ -18761,9 +18589,7 @@
               "mode": "guest",
               "result": {
                 "status": "partial",
-                "passed_subtargets": [
-                  "manual_button_returns_to_current_page"
-                ],
+                "passed_subtargets": ["manual_button_returns_to_current_page"],
                 "unverified_dimensions": [
                   "fresh capture",
                   "stale advice replacement after re-audit"
@@ -18782,9 +18608,7 @@
               "mode": "guest",
               "result": {
                 "status": "partial",
-                "passed_subtargets": [
-                  "manual_button_returns_to_current_page"
-                ],
+                "passed_subtargets": ["manual_button_returns_to_current_page"],
                 "unverified_dimensions": [
                   "fresh capture and updated audit",
                   "running button state",
@@ -18802,10 +18626,7 @@
               }
             }
           ],
-          "defect_ids": [
-            "EXT-D-0169",
-            "EXT-D-0170"
-          ],
+          "defect_ids": ["EXT-D-0169", "EXT-D-0170"],
           "attempt_history": [
             {
               "mode": "guest",
@@ -18813,9 +18634,7 @@
               "status": "unverified",
               "resource_valid": true,
               "detail": "New changed-metadata criterion not reached after prior social-copy failure; previous partial evidence remains intact.",
-              "evidence": [
-                ".research/seo-new-native-20261008.json"
-              ],
+              "evidence": [".research/seo-new-native-20261008.json"],
               "new_acceptance_credit": false
             },
             {
@@ -18841,9 +18660,7 @@
               "resource_valid": false,
               "acceptance_credit": false,
               "result": "Controlled T02/T14 observations precede later dynamic-page stability refusal; CPU-pending journal ends invalid. No acceptance or closure credit.",
-              "evidence": [
-                ".research/seo170-native-20261008.json"
-              ]
+              "evidence": [".research/seo170-native-20261008.json"]
             },
             {
               "run_id": "seo-local397-native-20261008",
@@ -19112,9 +18929,7 @@
               "run_id": "seo-guest-frozen-20261002T140308Z",
               "artifact_version": "0.2.173",
               "detail": "Guest menu offers text and AI and hides JSON before/after reload; actual clipboard payload and other modes unverified.",
-              "evidence": [
-                "docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json"
-              ]
+              "evidence": ["docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json"]
             },
             {
               "mode": "guest",
@@ -19535,9 +19350,7 @@
               "resource_valid": false,
               "acceptance_credit": false,
               "result": "Controlled T02/T14 observations precede later dynamic-page stability refusal; CPU-pending journal ends invalid. No acceptance or closure credit.",
-              "evidence": [
-                ".research/seo170-native-20261008.json"
-              ]
+              "evidence": [".research/seo170-native-20261008.json"]
             },
             {
               "run_id": "seo-local397-native-20261008",
@@ -19643,14 +19456,8 @@
         {
           "id": "EXT-F-1008-T14",
           "title": "Copy missing social meta tags",
-          "modes": [
-            "guest",
-            "member",
-            "admin"
-          ],
-          "control_ids": [
-            "EXT-F-1008-C14"
-          ],
+          "modes": ["guest", "member", "admin"],
+          "control_ids": ["EXT-F-1008-C14"],
           "preconditions": [
             "A live SEO audit has findings in the relevant section; for Fix all, at least two findings exist."
           ],
@@ -19660,14 +19467,8 @@
           "expected": [
             "Clipboard contains the suggested missing tags for the current page; button is absent when no snippet applies."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ],
-          "defect_ids": [
-            "EXT-D-0169",
-            "EXT-D-0170"
-          ],
+          "dimensions": ["warm", "reload"],
+          "defect_ids": ["EXT-D-0169", "EXT-D-0170"],
           "attempt_history": [
             {
               "mode": "guest",
@@ -19675,9 +19476,7 @@
               "status": "unverified",
               "resource_valid": true,
               "detail": "First social-copy feedback predicate failed; actual clipboard unobserved.",
-              "evidence": [
-                ".research/seo-new-native-20261008.json"
-              ],
+              "evidence": [".research/seo-new-native-20261008.json"],
               "new_acceptance_credit": false
             },
             {
@@ -19703,9 +19502,7 @@
               "resource_valid": false,
               "acceptance_credit": false,
               "result": "Controlled T02/T14 observations precede later dynamic-page stability refusal; CPU-pending journal ends invalid. No acceptance or closure credit.",
-              "evidence": [
-                ".research/seo170-native-20261008.json"
-              ]
+              "evidence": [".research/seo170-native-20261008.json"]
             },
             {
               "run_id": "seo-local397-native-20261008",
@@ -23689,15 +23486,8 @@
         {
           "id": "EXT-F-1012-T57",
           "title": "Network replay captures initial request and isolates document provenance",
-          "modes": [
-            "admin"
-          ],
-          "control_ids": [
-            "EXT-F-1012-C31",
-            "EXT-F-1012-C36",
-            "EXT-F-1012-C42",
-            "EXT-F-1012-C47"
-          ],
+          "modes": ["admin"],
+          "control_ids": ["EXT-F-1012-C31", "EXT-F-1012-C36", "EXT-F-1012-C42", "EXT-F-1012-C47"],
           "defect_ids": ["EXT-D-0047", "EXT-D-0049", "EXT-D-0173", "EXT-D-0177", "EXT-D-0179"],
           "preconditions": [
             "Fresh development build; verify receipt and reload the extension and page in Chrome. Use a real public website with a reproducible request during initial document load and an owned recipe. No localhost/test server. Guest/member denial uses EXT-F-1012-T38."
@@ -23711,12 +23501,7 @@
             "Initial requests are captured when possible; otherwise the UI states the limitation and provides a clear retrigger action rather than silently suggesting the full initial-load replay succeeded.",
             "Only a response proven to originate from the current replay document can supply its rows; tab identity alone is insufficient across navigation."
           ],
-          "dimensions": [
-            "warm",
-            "reload",
-            "navigation",
-            "service-error"
-          ],
+          "dimensions": ["warm", "reload", "navigation", "service-error"],
           "results": {
             "admin": {
               "status": "unverified",
@@ -23768,9 +23553,7 @@
               "remaining_criteria": [
                 "Receipt-bound installed development extension on a real public site: an owned initial-load Network recipe, matching prior response pending across navigation, old-then-current release, exact current-only terminal saved output or honest provenance refusal, positive current context/binding and lifecycle controls, independent review."
               ],
-              "defect_ids": [
-                "EXT-D-0173"
-              ]
+              "defect_ids": ["EXT-D-0173"]
             }
           },
           "proof_ruling": "2026-10-06 root technical ruling: see .research/d47-acceptance-architecture-ruling-20261006.json. A native architectural-exclusion trace with positively observed current binding/packet, exact contexts, old request lifecycle and terminal saved result may supplement delivered-stale-event causal guards. Neither cancellation alone nor current-only rows nor empty event arrays prove exclusion. Retain public-site same-artifact replay, both response orders, higher old sequence, stale-only refusal and cleanup; no existing result is promoted.",
@@ -23937,9 +23720,7 @@
               "mode": "admin",
               "run_id": "37776597696",
               "resource_valid": true,
-              "evidence": [
-                ".research/t57-records-counts-native-20261008.json"
-              ],
+              "evidence": [".research/t57-records-counts-native-20261008.json"],
               "detail": "Tools panel active, Records matched0/visible0; no product GET/header/principal/response proof. Actual new failure boundary supports missing-row diagnosis; no product defect or acceptance inferred. Both temporary secret names absent after terminal.",
               "at": "2026-10-08T12:35:51.331330+00:00",
               "status": "unverified",
@@ -23956,10 +23737,23 @@
               "new_acceptance_credit": false,
               "build_version": "0.2.407",
               "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
-              "evidence": [
-                ".research/t57-catalog-ready-native-20261008.json"
-              ],
+              "evidence": [".research/t57-catalog-ready-native-20261008.json"],
               "detail": "Credential preflight stopped before browser/resource setup: operator --body - uploaded literal hyphen instead of stdin JSON. Private local validation passed; invalid temporary secrets removed and absence verified. No product test or current resource journals. Corrected stdin transfer routed to separate one-attempt owner."
+            },
+            {
+              "at": "2026-10-08T13:13:56.842763+00:00",
+              "mode": "admin",
+              "run_id": "37780192222",
+              "status": "unverified",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/t57-correct-staging-native-20261008.json",
+                ".research/t57-native-final-adjudication-20261008.json"
+              ],
+              "detail": "Real admin, approved organization, Catalog readiness and finished product response with matching organization header/principal passed. Full Network race failed public_race_old_response_missing; no paused old response/current binding/saved result. Disposable recipe removed; resource-valid child failure. Infrastructure closure adjudicated separately."
             }
           ]
         },
@@ -25722,7 +25516,6 @@
             }
           },
           "defect_ids": ["EXT-D-0029"],
-          "control_ids": [],
           "mapping_provenance": {
             "proposal": ".research/remaining-control-links-20261008.json",
             "independent_review": ".research/remaining-control-links-peer-20261008.json",
@@ -30841,12 +30634,7 @@
             "mine/shared scopes performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state."
           ],
           "dimensions": ["warm", "reload"],
-          "control_ids": [
-            "EXT-F-2011-C01",
-            "EXT-F-2011-C03",
-            "EXT-F-2011-C04",
-            "EXT-F-2011-C05"
-          ],
+          "control_ids": ["EXT-F-2011-C01", "EXT-F-2011-C03", "EXT-F-2011-C04", "EXT-F-2011-C05"],
           "mapping_provenance": {
             "proposal": ".research/remaining-control-links-20261008.json",
             "independent_review": ".research/remaining-control-links-peer-20261008.json",
@@ -33178,13 +32966,8 @@
         {
           "id": "EXT-F-2013-T10",
           "title": "Public guest Chat first reply, same-conversation follow-up, and new conversation after reload",
-          "modes": [
-            "guest"
-          ],
-          "control_ids": [
-            "EXT-F-2013-C08",
-            "EXT-F-2013-C10"
-          ],
+          "modes": ["guest"],
+          "control_ids": ["EXT-F-2013-C08", "EXT-F-2013-C10"],
           "preconditions": [
             "Build under resource guard, record immutable receipt, load fresh isolated profile with exact unpacked build; verify no account token/profile/organization."
           ],
@@ -33201,12 +32984,7 @@
             "Each request independently completes successfully; a prior assistant response cannot satisfy a later assertion; guest IDs/auth values and raw request bodies never enter evidence.",
             "API-only health or reply evidence is distinguished from actual browser acceptance; development/unpacked evidence is not labeled Store-installed lifecycle."
           ],
-          "defect_ids": [
-            "EXT-D-0096",
-            "EXT-D-0097",
-            "EXT-D-0144",
-            "EXT-D-0172"
-          ],
+          "defect_ids": ["EXT-D-0096", "EXT-D-0097", "EXT-D-0144", "EXT-D-0172"],
           "results": {
             "guest": {
               "status": "pass",
@@ -33252,9 +33030,7 @@
               "result": {
                 "status": "fail",
                 "detail": "Published0.2.105 remains the failing Store baseline;0.2.130 pending review. Exact candidate0.2.173 independently passed fresh guest opening and post-panel-reload page-grounded answers on Oct1. Earlier candidate marker miss remains unexplained; live signout privacy remains unverified.",
-                "defect_ids": [
-                  "EXT-D-0066"
-                ],
+                "defect_ids": ["EXT-D-0066"],
                 "candidate_result": {
                   "version": "0.2.173",
                   "status": "pass",
@@ -33527,25 +33303,23 @@
         }
       ],
       "source_change_observations": [
-          {
-            "observed_main_sha": "b6d1e1f4",
-            "change": "Sidepanel Chat loader now imports PackageChatView instead of ChatView; background adds DEVICE_TOOL_INVOKE bridge.",
-            "source_refs": [
-              "src/entrypoints/sidepanel/App.tsx",
-              "src/features/package-chat/PackageChatView.tsx",
-              "src/features/package-chat/host.ts",
-              "src/features/package-chat/memory-navigation.tsx",
-              "src/lib/background/bootstrap.ts"
-            ],
-            "status": "unverified_current_main",
-            "required_followup": "Reconcile current Chat controls and guest/member/admin behavior on an exact current artifact. Preserve historical Store205/frozen397 evidence at original scopes; it does not verify this new default Chat surface. Systematic Chat remains deferred except public regressions."
-          },
+        {
+          "observed_main_sha": "b6d1e1f4",
+          "change": "Sidepanel Chat loader now imports PackageChatView instead of ChatView; background adds DEVICE_TOOL_INVOKE bridge.",
+          "source_refs": [
+            "src/entrypoints/sidepanel/App.tsx",
+            "src/features/package-chat/PackageChatView.tsx",
+            "src/features/package-chat/host.ts",
+            "src/features/package-chat/memory-navigation.tsx",
+            "src/lib/background/bootstrap.ts"
+          ],
+          "status": "unverified_current_main",
+          "required_followup": "Reconcile current Chat controls and guest/member/admin behavior on an exact current artifact. Preserve historical Store205/frozen397 evidence at original scopes; it does not verify this new default Chat surface. Systematic Chat remains deferred except public regressions."
+        },
         {
           "observed_main_sha": "09576b1ab13d929c7ceaf453dcc55ca6e1783b55",
           "change": "Current loader uses ChatView by default; PackageChatView is opt-in through sidepanel.html?chat=package. Earlier default replacement observation does not describe this newer source.",
-          "source_refs": [
-            "src/entrypoints/sidepanel/App.tsx"
-          ],
+          "source_refs": ["src/entrypoints/sidepanel/App.tsx"],
           "status": "unverified_current_main",
           "required_followup": "Verify actual current artifact default and opt-in surfaces separately; no historical result transfers to current source merely because a prior loader returned."
         }
@@ -34668,11 +34442,7 @@
             "No copied value contains data outside the fixture. Result copy is only applicable when a result block is rendered; if every scenario refuses, record this positive branch as unverified."
           ],
           "dimensions": ["warm", "reload"],
-          "control_ids": [
-            "EXT-F-2015-C24",
-            "EXT-F-2015-C25",
-            "EXT-F-2015-C26"
-          ],
+          "control_ids": ["EXT-F-2015-C24", "EXT-F-2015-C25", "EXT-F-2015-C26"],
           "mapping_provenance": {
             "proposal": ".research/remaining-control-links-20261008.json",
             "independent_review": ".research/remaining-control-links-peer-20261008.json",
@@ -34915,12 +34685,7 @@
             "If capture or upload refuses, the error/recovery UI must be visible; do not mark positive upload or persistence as passed."
           ],
           "dimensions": ["warm", "reload"],
-          "control_ids": [
-            "EXT-F-2016-C01",
-            "EXT-F-2016-C02",
-            "EXT-F-2016-C03",
-            "EXT-F-2016-C04"
-          ],
+          "control_ids": ["EXT-F-2016-C01", "EXT-F-2016-C02", "EXT-F-2016-C03", "EXT-F-2016-C04"],
           "mapping_provenance": {
             "proposal": ".research/remaining-control-links-20261008.json",
             "independent_review": ".research/remaining-control-links-peer-20261008.json",
@@ -53386,10 +53151,7 @@
             "EXT-F-4089-C08",
             "EXT-F-4089-C09"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
             "Complete shared receipt and private owned login fixture setup. Signed-in extension identity, owned assigned/focused tab, Vault browser-fill match, and a clean logged-out fixture state must be proven before a positive run. No fixture, matching item, or private staging receipt exists in this source-only task.",
@@ -53616,15 +53378,8 @@
         {
           "id": "EXT-F-4090-T01",
           "title": "Controlled manual execution: capture_prospect",
-          "control_ids": [
-            "EXT-F-4090-C01",
-            "EXT-F-4090-C02",
-            "EXT-F-4090-C03"
-          ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "control_ids": ["EXT-F-4090-C01", "EXT-F-4090-C02", "EXT-F-4090-C03"],
+          "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
             "Complete shared receipt and use only an owned disposable company domain with a known site association. Capture writes remotely; require a baseline and supported exact-ID cleanup path before clicking Run.",
@@ -53986,13 +53741,8 @@
         {
           "id": "EXT-F-4092-T01",
           "title": "Controlled manual execution: google_email_send",
-          "control_ids": [
-            "EXT-F-4092-C01"
-          ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "control_ids": ["EXT-F-4092-C01"],
+          "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
             "Complete shared receipt and use an owned disposable connected Google sender plus an owned recipient inbox. A real user reviewer must be present to read sender, recipient, CC, subject, and body and choose Send for exactly one test message; no proxy click, preapproval, or tool argument substitutes for that act.",
@@ -58968,23 +58718,18 @@
         }
       },
       "cases": [
-                {
+        {
           "id": "EXT-F-4121-T01",
           "title": "Controlled manual execution: user",
-          "control_ids": [
-            "EXT-F-4121-C01"
-          ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "control_ids": ["EXT-F-4121-C01"],
+          "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
             "Complete shared build/reload identity and role setup above. Select an existing disposable test conversation in the side panel before opening Tools so null-conversation ask cards can fall back to that selected conversation.",
             "Use only non-sensitive synthetic content. Do not use type=secret, enter secrets, or send a real notification. The handler's prompt/response can expose input in UI receipts. No backend fixture is needed for a simple question."
           ],
           "steps": [
-            "In the selected test conversation, while the Chat tab is mounted, open the ask-user card inbox and confirm there is no pre-existing card with this case’s synthetic text.",
+            "In the selected test conversation, while the Chat tab is mounted, open the ask-user card inbox and confirm there is no pre-existing card with this case\u2019s synthetic text.",
             "Switch to Tools and run {\"type\":\"choice\",\"question\":\"Procedure fixture: choose the marked option\",\"options\":[\"fixture-A\",\"fixture-B\"],\"context\":\"owned manual tool procedure\",\"timeout_seconds\":60}. The handler broadcasts the ask request and waits for a response.",
             "Switch back to Chat. Confirm the card appears in the selected conversation with the exact synthetic question/options. Choose fixture-B and submit; observe the card closes/disappears. Do not return to Tools to inspect a result: switching tabs unmounts ToolsView and its local result state is not a durable result surface.",
             "Repeat with the cancellation-control input {\"type\":\"choice\",\"question\":\"Procedure fixture: cancellation control\",\"options\":[\"fixture-A\",\"fixture-B\"],\"timeout_seconds\":60}; cancel the visible card and observe it closes. The resulting handler envelope is not observable on a durable surface in this route.",
@@ -59158,23 +58903,18 @@
         }
       },
       "cases": [
-                {
+        {
           "id": "EXT-F-4122-T01",
           "title": "Controlled manual execution: request_user_takeover",
-          "control_ids": [
-            "EXT-F-4122-C01"
-          ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "control_ids": ["EXT-F-4122-C01"],
+          "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
             "Complete shared build/reload identity and role setup above. Select an existing disposable test conversation so the inbox can associate the null-conversation manual request with the selected chat.",
             "Omit tab_id: this avoids focusing another tab and isolates the takeover request/card behavior. Use synthetic reason/instructions only; do not claim browser control was transferred based on the card alone."
           ],
           "steps": [
-            "In the selected test conversation, while Chat is mounted, verify no existing ask card contains this case’s synthetic reason.",
+            "In the selected test conversation, while Chat is mounted, verify no existing ask card contains this case\u2019s synthetic reason.",
             "Switch to Tools and run {\"reason\":\"Owned manual takeover procedure\",\"instructions\":\"Read the visible fixture page and report its heading in this card\",\"expected_action\":\"Reply with the word fixture-complete\",\"timeout_seconds\":60}. Omit tab_id to avoid tab activation.",
             "Switch back to Chat. Confirm the card displays the reason plus both instructions and expected action. Reply with fixture-complete and observe that the card closes/disappears. Do not return to Tools to inspect the handler result; ToolsView unmounts on tab switch and its local result is lost.",
             "While Tools is mounted, run {\"reason\":\"invalid control\",\"timeout_seconds\":0}. Observe local schema validation error and confirm no ask card appears.",
@@ -59367,16 +59107,11 @@
         }
       },
       "cases": [
-                {
+        {
           "id": "EXT-F-4123-T01",
           "title": "Controlled manual execution: update_plan",
-          "control_ids": [
-            "EXT-F-4123-C01"
-          ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "control_ids": ["EXT-F-4123-C01"],
+          "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
             "Complete shared build/reload identity and role setup above. Select an existing disposable test conversation and open its plan/tasks panel before running.",
@@ -59386,7 +59121,7 @@
             "In Chat, select the disposable test conversation and open its plan/tasks panel. Record the visible baseline: whether a plan exists, its title/status if present, and existing task count/titles (synthetic/non-sensitive only). This is the before-state for the negative persistence observation.",
             "Switch to Tools and run {\"title\":\"Owned plan procedure\",\"steps\":[\"Inspect the owned test conversation\",\"Record the visible result\"],\"reasoning\":\"Synthetic manual procedure\",\"estimated_minutes\":2,\"timeout_seconds\":60}.",
             "Switch back to Chat. Confirm the approval card displays title, reasoning, ordered steps and estimate. Select Reject and observe the card closes/disappears. Do not return to Tools to inspect the result; ToolsView local result state is lost on unmount.",
-            "Reopen the same conversation’s plan/tasks panel and compare against the captured baseline. Because manual Tools supplies conversationId=null, no plan save/status update/task population is expected; record only whether the panel matches its before-state. This does not prove the agent persistence path.",
+            "Reopen the same conversation\u2019s plan/tasks panel and compare against the captured baseline. Because manual Tools supplies conversationId=null, no plan save/status update/task population is expected; record only whether the panel matches its before-state. This does not prove the agent persistence path.",
             "Switch to Tools and run {\"steps\":[],\"timeout_seconds\":60}. Observe local validation error and no card. Since no handler runs, the panel should remain at the captured baseline.",
             "Finish with no pending card. After extension reload, reopen the same conversation and verify the plan panel still matches the captured baseline; this is only an absence check for the manual route, not persistence acceptance."
           ],
@@ -59621,10 +59356,7 @@
             "EXT-F-4124-C06",
             "EXT-F-4124-C07"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
             "Follow docs/stabilization/PLAN.md build/reload identity contract and retain the full resource permit/build receipt before any eventual execution.",
@@ -59684,7 +59416,7 @@
             "clear_done is permitted only in the separate disposable conversation after an immediate list baseline proves zero completed rows, followed by exactly one case-owned completed row. Stop on any unrelated or unknown completed row. No runtime, member/admin gate, event, persisted message, or reload result is claimed."
           ],
           "future_fixture_requirements": [
-            "Required before this case can be executable: provide an owned member and admin browser profile and an actual UI-created conversation on a surface with a live agent/mandate that can issue the current registered user_todos binding. Confirm the agent call is routed by aidream and carries that conversation’s real ID. No such fixture or invocation path is supplied here.",
+            "Required before this case can be executable: provide an owned member and admin browser profile and an actual UI-created conversation on a surface with a live agent/mandate that can issue the current registered user_todos binding. Confirm the agent call is routed by aidream and carries that conversation\u2019s real ID. No such fixture or invocation path is supplied here.",
             "If that fixture becomes available, record the selected conversation and baseline todos in TaskPanel; prompt the live agent to add a unique synthetic todo with silent=true; observe the rendered tool call/message and resulting owned todo in TaskPanel. Continue with list, update, mark_done true then false, remove, and clear_done using only case-owned todo IDs. For clear_done, add a second case-owned todo and mark it done; verify unrelated baseline todos remain. Repeat readback after extension reload.",
             "Capture real agent tool-call/result evidence and visible conversation-local TaskPanel state separately. The current component contract can show the tool row and list panel, but no source-only procedure can claim their runtime output without the missing live fixture. Include schema-negative input and unknown owned ID only after a real tool invocation route exists.",
             "For clear_done use a separate newly created disposable conversation; immediately before the call verify the baseline has zero completed rows. Stop without calling clear_done if any unrelated or unknown completed row exists.",
@@ -60127,13 +59859,8 @@
         {
           "id": "EXT-F-4127-T01",
           "title": "Controlled manual execution: desktop_run_command",
-          "control_ids": [
-            "EXT-F-4127-C01"
-          ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "control_ids": ["EXT-F-4127-C01"],
+          "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
             "Follow docs/stabilization/PLAN.md build/reload identity contract and retain the full resource permit/build receipt before any eventual execution.",
@@ -60148,15 +59875,10 @@
             "Reload extension, reopen Tools, verify the same paired owned engine/transport, and repeat the health request."
           ],
           "expected": [
-            "With a connected owned engine, health returns the bridge's explicit success/data response. Without a connected engine, handler returns {ok:false,reason:\"desktop bridge unavailable — matrx-local is not running\"}; this is an honest unavailable result, not a health pass. Empty command is rejected by the local min-length schema.",
+            "With a connected owned engine, health returns the bridge's explicit success/data response. Without a connected engine, handler returns {ok:false,reason:\"desktop bridge unavailable \u2014 matrx-local is not running\"}; this is an honest unavailable result, not a health pass. Empty command is rejected by the local min-length schema.",
             "No live paired engine/profile receipt is present in this source-only task, so the health result and permission behavior remain unverified. Manual Run bypasses dispatch confirmation even though the handler tier is privileged."
           ],
-          "dimensions": [
-            "valid-input",
-            "invalid-input",
-            "permissions",
-            "reload"
-          ],
+          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
           "cleanup": "No persistent fixture data is created by health. Disconnect/close the disposable engine only after recording the receipt; no other command should be run.",
           "procedure_readiness": "NOT_EXECUTABLE_CURRENT_DESKTOP_FIXTURE_UNCONFIRMED",
           "procedure_limits": [
@@ -60319,12 +60041,8 @@
         {
           "id": "EXT-F-4128-T01",
           "title": "Controlled manual execution: parallel_for_each_tab",
-          "control_ids": [
-            "EXT-F-4128-C01"
-          ],
-          "modes": [
-            "admin"
-          ],
+          "control_ids": ["EXT-F-4128-C01"],
+          "modes": ["admin"],
           "design_status": "needed",
           "preconditions": [
             "Follow docs/stabilization/PLAN.md build/reload identity contract and retain the full resource permit/build receipt before any eventual execution.",
@@ -60344,12 +60062,7 @@
             "Each child starts one authenticated sub-run pinned to its supplied tab. The required positive evidence is the actual read_page tool call plus the exact distinct fixture heading read from each page, returned under the matching tab ID; page_title/current_url metadata alone is insufficient. The Tasks panel exposes parallel child-run lifecycle. Empty tab_ids fails local schema validation with no child runs.",
             "The source builds child requests with empty context, metadata-only browser-dom state and server-driven tool discovery; read_page is registered locally as a read handler but its availability in a particular child surface must be demonstrated in that child trace. No admin profile, fixture tabs, backend session, or default mandate receipt exists here. The calls spend model work and manual Tools bypasses dispatch authorization."
           ],
-          "dimensions": [
-            "valid-input",
-            "invalid-input",
-            "permissions",
-            "reload"
-          ],
+          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
           "cleanup": "No page mutation is requested. Close only the two tabs created for this case after all sub-runs finish; verify session completion before closing.",
           "procedure_readiness": "NOT_EXECUTABLE_CURRENT_AGENT_AND_TAB_FIXTURE_ABSENT",
           "procedure_limits": [
@@ -61280,10 +60993,7 @@
             "EXT-F-4130-C24",
             "EXT-F-4130-C25"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
             "Resource permit and current build receipt",
@@ -61349,16 +61059,8 @@
             "EXT-F-4130-C24: Response token/id equal preverified owned standard row and separates columns/custom_fields/written_by. Negative: Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass. Cleanup: none",
             "EXT-F-4130-C25: Applied receipt changes only owned custom field; held approval is explicitly not applied. Negative: Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass. Cleanup: Restore captured original custom value on same row; cannot proceed without owned standard row, writable field and approval cleanup"
           ],
-          "dimensions": [
-            "valid-input",
-            "invalid-input",
-            "permissions",
-            "reload"
-          ],
-          "defect_ids": [
-            "EXT-D-0089",
-            "EXT-D-0091"
-          ],
+          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
+          "defect_ids": ["EXT-D-0089", "EXT-D-0091"],
           "control_procedures": {
             "EXT-F-4130-C01": {
               "action": "guide",
@@ -61482,9 +61184,7 @@
                   "record_id": "$C06.record_id"
                 }
               },
-              "required_id_lineage": [
-                "C06.record_id"
-              ],
+              "required_id_lineage": ["C06.record_id"],
               "expected_observable": "Result record id equals C06 and name equals synthetic value; capture triples/withheld honestly.",
               "negative_input": {
                 "action": "record_read",
@@ -61549,10 +61249,7 @@
                   }
                 }
               },
-              "required_id_lineage": [
-                "C11.table_id",
-                "C06.record_id"
-              ],
+              "required_id_lineage": ["C11.table_id", "C06.record_id"],
               "expected_observable": "Count reflects the case-owned row before C07; no client-side summing or page count.",
               "negative_input": {
                 "action": "record_aggregate",
@@ -61601,13 +61298,7 @@
                 "bucket": {
                   "type": "string",
                   "required": false,
-                  "enum": [
-                    "day",
-                    "week",
-                    "month",
-                    "quarter",
-                    "year"
-                  ]
+                  "enum": ["day", "week", "month", "quarter", "year"]
                 },
                 "related_to": {
                   "type": "array",
@@ -61617,11 +61308,7 @@
                 "order": {
                   "type": "string",
                   "required": false,
-                  "enum": [
-                    "count_desc",
-                    "measure_desc",
-                    "measure_asc"
-                  ]
+                  "enum": ["count_desc", "measure_desc", "measure_asc"]
                 },
                 "limit": {
                   "type": "integer",
@@ -61652,9 +61339,7 @@
                   }
                 }
               },
-              "required_id_lineage": [
-                "C11.table_id"
-              ],
+              "required_id_lineage": ["C11.table_id"],
               "expected_observable": "Applied result supplies a case-owned record id and version; a held result is NOT a write and needs approval resolution.",
               "negative_input": {
                 "action": "record_write",
@@ -61708,10 +61393,7 @@
                   "record_id": "$C06.record_id"
                 }
               },
-              "required_id_lineage": [
-                "C06.record_id",
-                "C09 complete"
-              ],
+              "required_id_lineage": ["C06.record_id", "C09 complete"],
               "expected_observable": "Soft delete receipt identifies C06; record_read no longer presents it; undo=true restores same id when tested.",
               "negative_input": {
                 "action": "record_delete",
@@ -61747,9 +61429,7 @@
                   "record_id": "$C06.record_id"
                 }
               },
-              "required_id_lineage": [
-                "C06.record_id"
-              ],
+              "required_id_lineage": ["C06.record_id"],
               "expected_observable": "History identifies case-owned row, numbered versions and author/time; capture an actual version for C09.",
               "negative_input": {
                 "action": "record_history",
@@ -61854,9 +61534,7 @@
                   "field_type": "text"
                 }
               },
-              "required_id_lineage": [
-                "C11.table_id"
-              ],
+              "required_id_lineage": ["C11.table_id"],
               "expected_observable": "Applied receipt names a new case field key/id on C11; held response is explicitly not applied.",
               "negative_input": {
                 "action": "field_propose",
@@ -62020,9 +61698,7 @@
                   "notify": false
                 }
               },
-              "required_id_lineage": [
-                "C11.table_id"
-              ],
+              "required_id_lineage": ["C11.table_id"],
               "expected_observable": "Applied receipt identifies case form and publish state; no public link use or notification.",
               "negative_input": {
                 "action": "form_propose",
@@ -62133,9 +61809,7 @@
                   "notify": false
                 }
               },
-              "required_id_lineage": [
-                "C11.table_id"
-              ],
+              "required_id_lineage": ["C11.table_id"],
               "expected_observable": "Applied receipt identifies case booking and unpublished state; no slot booked.",
               "negative_input": {
                 "action": "booking_propose",
@@ -62240,9 +61914,7 @@
                   "dedupe_key": "name"
                 }
               },
-              "required_id_lineage": [
-                "C11.table_id"
-              ],
+              "required_id_lineage": ["C11.table_id"],
               "expected_observable": "Receipt reports one accepted case-owned row or exact refused/approval rows; capture each returned row id.",
               "negative_input": {
                 "action": "import_propose",
@@ -62340,9 +62012,7 @@
                   ]
                 }
               },
-              "required_id_lineage": [
-                "C11.table_id"
-              ],
+              "required_id_lineage": ["C11.table_id"],
               "expected_observable": "Receipt identifies saved dashboard and numeric case count; compare to C05 for same table/snapshot.",
               "negative_input": {
                 "action": "dashboard_propose",
@@ -62415,10 +62085,7 @@
                   "stage_field": {
                     "key": "case_stage",
                     "label": "Case stage",
-                    "options": [
-                      "New",
-                      "Done"
-                    ]
+                    "options": ["New", "Done"]
                   },
                   "transitions": [
                     {
@@ -62428,9 +62095,7 @@
                   ]
                 }
               },
-              "required_id_lineage": [
-                "C11.table_id"
-              ],
+              "required_id_lineage": ["C11.table_id"],
               "expected_observable": "Receipt names stage field, ordered options, saved board and rule; no existing unrelated row is changed.",
               "negative_input": {
                 "action": "pipeline_propose",
@@ -62524,10 +62189,7 @@
                   "body": "Case row: {{field:name}}."
                 }
               },
-              "required_id_lineage": [
-                "C11.table_id",
-                "C06.record_id"
-              ],
+              "required_id_lineage": ["C11.table_id", "C06.record_id"],
               "expected_observable": "Receipt identifies template/render id and the case row; inspect rendered value without external delivery.",
               "negative_input": {
                 "action": "document_propose",
@@ -62611,9 +62273,7 @@
                   ]
                 }
               },
-              "required_id_lineage": [
-                "C11.table_id"
-              ],
+              "required_id_lineage": ["C11.table_id"],
               "expected_observable": "Receipt identifies case checklist; no start_for and no assigned external work.",
               "negative_input": {
                 "action": "checklist_propose",
@@ -62704,9 +62364,7 @@
                   "open_to_crew": false
                 }
               },
-              "required_id_lineage": [
-                "C11.table_id"
-              ],
+              "required_id_lineage": ["C11.table_id"],
               "expected_observable": "Receipt identifies case capture surface; no crew response or public use.",
               "negative_input": {
                 "action": "capture_propose",
@@ -62791,9 +62449,7 @@
                       "name": "case summary",
                       "instruction": "Summarize the synthetic case name in three words",
                       "type": "text",
-                      "inputs": [
-                        "name"
-                      ]
+                      "inputs": ["name"]
                     }
                   ],
                   "run": false,
@@ -62801,9 +62457,7 @@
                   "preview_only": true
                 }
               },
-              "required_id_lineage": [
-                "C11.table_id"
-              ],
+              "required_id_lineage": ["C11.table_id"],
               "expected_observable": "run=false prevents the enrichment model run and value writes, but field_propose may persist a new column and enrich_declare persists its disabled configuration even with preview_only=true. Capture applied field_id and enrichment identifiers; a held field proposal is pending, not created.",
               "negative_input": {
                 "action": "enrich_propose",
@@ -62882,9 +62536,7 @@
                   "invite": []
                 }
               },
-              "required_id_lineage": [
-                "C11.table_id"
-              ],
+              "required_id_lineage": ["C11.table_id"],
               "expected_observable": "Receipt identifies portal and relation; no invitation recipient.",
               "negative_input": {
                 "action": "portal_propose",
@@ -63027,10 +62679,7 @@
                   ]
                 }
               },
-              "required_id_lineage": [
-                "C11.table_id",
-                "owned notification destination"
-              ],
+              "required_id_lineage": ["C11.table_id", "owned notification destination"],
               "expected_observable": "Receipt identifies view/subscription and delivery policy; no notification may be sent.",
               "negative_input": {
                 "action": "subscription_propose",
@@ -63083,9 +62732,7 @@
                   "record_id": "$owned_standard_entity.record_id"
                 }
               },
-              "required_id_lineage": [
-                "preverified owned standard entity token/id"
-              ],
+              "required_id_lineage": ["preverified owned standard entity token/id"],
               "expected_observable": "Response token/id equal preverified owned standard row and separates columns/custom_fields/written_by.",
               "negative_input": {
                 "action": "entity_read",
@@ -63333,13 +62980,8 @@
         {
           "id": "EXT-F-4131-T01",
           "title": "Controlled manual execution: chrome_record_tab_video",
-          "control_ids": [
-            "EXT-F-4131-C01"
-          ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "control_ids": ["EXT-F-4131-C01"],
+          "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
             "Complete shared build/resource receipt and role setup. Run member and admin separately.",
@@ -63357,12 +62999,7 @@
             "duration_ms:0 is rejected by the local Zod runner before handler invocation and yields no file_id/upload result. The manual path cannot exercise or prove missing-tabCapture denial; permission dimension remains unresolved.",
             "Any uploaded file remains a remote user-owned artifact. No remote deletion is specified or claimed."
           ],
-          "dimensions": [
-            "valid-input",
-            "invalid-input",
-            "permissions",
-            "reload"
-          ],
+          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
           "source_evidence": [
             "src/lib/tools/handlers/video.ts:29-146",
             "src/lib/video/video-sw.ts:47-112",
@@ -63578,19 +63215,14 @@
         {
           "id": "EXT-F-4132-T01",
           "title": "Controlled manual execution: record_demo",
-          "control_ids": [
-            "EXT-F-4132-C01"
-          ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "control_ids": ["EXT-F-4132-C01"],
+          "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
             "Complete shared receipt and provide an owned harmless demo page with stable controls. The manual Tools path is presently unavailable for recording due to recorder state being split across the side panel and service worker."
           ],
           "steps": [
-            "Do not run record_demo from Tools → Catalog as a positive recording test until the event/state boundary is repaired and independently reviewed. Source shows the side panel invokes startRecording in its module instance while background/bootstrap receives DEMO_EVENT through its separate recorder instance.",
+            "Do not run record_demo from Tools \u2192 Catalog as a positive recording test until the event/state boundary is repaired and independently reviewed. Source shows the side panel invokes startRecording in its module instance while background/bootstrap receives DEMO_EVENT through its separate recorder instance.",
             "After a separately reviewed repair, use a fresh owned page and baseline list_demos. Start with {\"action\":\"start\",\"tab_id\":<owned tab id>}; perform only a harmless visible click and type into a local fixture field; query {\"action\":\"status\"} and require steps_captured to increase. Stop with {\"action\":\"stop\",\"name\":\"Owned fixture <run id>\",\"description\":\"Harmless local demo fixture\"}; record returned exact demo_id and verify list_demos plus describe_demo show the visible steps and no secret values.",
             "Use valid JSON {\"action\":\"start\",\"tab_id\":\"wrong\"} as a schema negative; require Schema mismatch and no recording start. Then use status to confirm the preexisting recording state is unchanged. If another recording is already active, do not stop or discard it; leave this case unavailable.",
             "After the proposed successful run, delete only the exact newly created demo_id. Verify local cleanup using list_demos plus absence of the exact matrx.demos.<id> body key; preserve all baseline demos and retain the ID until remote tombstone state is independently proven. An immediate describe_demo is only a resurrection regression probe: expect no restoration, report restoration as failure, and do not treat an absent result as proof cleanup completed. Cloud mirror/tombstone completion is separate."
@@ -63598,12 +63230,7 @@
           "expected": [
             "Current manual route cannot establish captured steps or a saved body; any start success alone is not a pass. The conditional future oracle is the exact owned demo visible in list_demos/describe_demo with harmless captured steps, followed by exact-ID local cleanup."
           ],
-          "dimensions": [
-            "valid-input",
-            "invalid-input",
-            "permissions",
-            "reload"
-          ],
+          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
           "source_evidence": [
             "src/features/tools/ToolsView.tsx:453-462",
             "src/lib/tools/handlers/demos.ts:112-195",
@@ -63741,13 +63368,8 @@
         {
           "id": "EXT-F-4133-T01",
           "title": "Controlled manual execution: list_demos",
-          "control_ids": [
-            "EXT-F-4133-C01"
-          ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "control_ids": ["EXT-F-4133-C01"],
+          "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
             "Complete shared receipt and have an exact owned demo fixture created through a validated recording path. Keep unrelated baseline demos untouched."
@@ -63761,12 +63383,7 @@
           "expected": [
             "The result is {ok:true,demos:[...]}; list comes from chrome.storage.local summary index. The owned summary is visible in the JSON result before and after reload. No content/body read or cloud sync is implied by a summary. Null is rejected before handler invocation."
           ],
-          "dimensions": [
-            "valid-input",
-            "invalid-input",
-            "permissions",
-            "reload"
-          ],
+          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
           "source_evidence": [
             "src/lib/tools/handlers/demos.ts:197-208",
             "src/lib/demos/storage.ts:12-26",
@@ -63907,13 +63524,8 @@
         {
           "id": "EXT-F-4134-T01",
           "title": "Controlled manual execution: describe_demo",
-          "control_ids": [
-            "EXT-F-4134-C01"
-          ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "control_ids": ["EXT-F-4134-C01"],
+          "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
             "Complete shared receipt and use only the exact demo_id of a controlled owned fixture; fixture must contain harmless steps and no credentials."
@@ -63928,12 +63540,7 @@
           "expected": [
             "A found demo returns {ok:true,demo:{...steps:[...]}} with safe step content; sensitive input_text is redacted. Empty demo_id is rejected by Zod before handler invocation. A provably absent fresh ID yields demo_not_found only after independent local, guidance, and exact-ID cloud absence checks. A cloud read failure or known reference with unavailable body remains a read failure/demo_body_unavailable, never not-found. The output itself, not only ok:true, is the content oracle."
           ],
-          "dimensions": [
-            "valid-input",
-            "invalid-input",
-            "permissions",
-            "reload"
-          ],
+          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
           "source_evidence": [
             "src/lib/tools/handlers/demos.ts:211-230",
             "src/lib/demos/cloud-sync.ts:159-183",
@@ -64118,19 +63725,14 @@
         {
           "id": "EXT-F-4135-T01",
           "title": "Controlled manual execution: replay_demo",
-          "control_ids": [
-            "EXT-F-4135-C01"
-          ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "control_ids": ["EXT-F-4135-C01"],
+          "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
             "Complete shared receipt and provide the exact owned harmless demo and a fresh dedicated target tab on the demo's controlled start URL. Every recorded start_url, navigation_url and other navigated URL must stay within the owned fixture origin; every scroll step must target only the owned fixture page and stay within its harmless content. No external host, real account, external action, or personal data may appear in the workflow."
           ],
           "steps": [
-            "Do not invoke replay_demo without dry_run:true through Tools → Catalog: this direct runner bypasses the privileged confirmation gate. For a future controlled selector-resolution diagnostic, focus a fresh owned target and run {\"demo_id\":\"<exact owned demo_id>\",\"tab_id\":<owned target tab id>,\"dry_run\":true}.",
+            "Do not invoke replay_demo without dry_run:true through Tools \u2192 Catalog: this direct runner bypasses the privileged confirmation gate. For a future controlled selector-resolution diagnostic, focus a fresh owned target and run {\"demo_id\":\"<exact owned demo_id>\",\"tab_id\":<owned target tab id>,\"dry_run\":true}.",
             "Expect the owned tab to navigate/reload to demo.start_url even in dry-run mode. Before running, inspect the owned demo body and confirm every recorded navigation remains within the fixture origin and every scroll is bounded to the harmless owned page. Dry run still navigates and executes scroll steps; it is not side-effect-free. Inspect the actual visible page after navigation/scroll and the result's steps_attempted, steps_succeeded, failed_at_index and per-step resolved_via values. Selector-driven click/type/select/check/submit/key actions are skipped, so this is not a full workflow replay.",
             "Run valid JSON {\"demo_id\":\"<exact owned demo_id>\",\"tab_id\":\"wrong\",\"dry_run\":true}; require Schema mismatch and no navigation. Re-run the valid owned dry-run after the negative; verify the target remains within the owned fixture origin and displays the expected fixture content; allow recorded navigation and scroll changes, and verify selector-driven DOM actions did not run.",
             "After extension Reload, use a newly created owned target tab and rerun dry_run:true. Close only that exact target tab after checking visible content. Do not run dry_run:false here; a native agent/dispatcher path with its real user confirmation is required before any side-effecting replay can be tested."
@@ -64138,12 +63740,7 @@
           "expected": [
             "A dry-run result can prove saved body lookup and selector resolution on the owned fixture, but it still navigates/reloads start_url and executes recorded scroll steps within that fixture. It is not side-effect-free and cannot prove ordinary confirmation enforcement or full replay. The schema-negative does not navigate; the subsequent positive dry-run is the preservation check."
           ],
-          "dimensions": [
-            "valid-input",
-            "invalid-input",
-            "permissions",
-            "reload"
-          ],
+          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
           "source_evidence": [
             "src/lib/tools/handlers/demos.ts:232-258",
             "src/lib/demos/replayer.ts:39-155,194-285",
@@ -64317,13 +63914,8 @@
         {
           "id": "EXT-F-4136-T01",
           "title": "Controlled manual execution: delete_demo",
-          "control_ids": [
-            "EXT-F-4136-C01"
-          ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "control_ids": ["EXT-F-4136-C01"],
+          "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
             "Complete shared receipt and use one fresh demo created solely for this run through a validated path. Preserve a pre-run list_demos baseline and exact returned demo_id; this delete is irreversible locally. Keep the ID until local absence and remote tombstone state are both proven."
@@ -64339,12 +63931,7 @@
           "expected": [
             "The first exact-ID delete returns deleted:true. The local cleanup oracle is independent: the owned ID is absent from list_demos and its exact local body key is absent, with baseline rows preserved. Immediate describe is a regression probe that expects the deleted record not to be restored; if it returns the body or causes local reappearance, report failure and retain the ID. This describe result is not proof cleanup completed. Remote tombstone completion requires separate authorized evidence for the same ID; until both local absence and remote tombstone are proven, cleanup remains incomplete. The source-supported resurrection race remains runtime-unverified, not a reproduced bug or closed defect."
           ],
-          "dimensions": [
-            "valid-input",
-            "invalid-input",
-            "permissions",
-            "reload"
-          ],
+          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
           "source_evidence": [
             "src/lib/tools/handlers/demos.ts:215-230,261-275",
             "src/lib/demos/storage.ts:63-83",
@@ -65995,13 +65582,8 @@
         {
           "id": "EXT-F-4145-T01",
           "title": "Controlled manual execution: chrome_tab_audio_inspect",
-          "control_ids": [
-            "EXT-F-4145-C01"
-          ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "control_ids": ["EXT-F-4145-C01"],
+          "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
             "No owned browser fixture or resource permit is identified. Before running, provision an owned local test page with a short, clearly audible looped tone and one owned silent page in the same profile; do not use external streaming/audio sites. Ensure the tone page is disposable and can be closed, and record both tab IDs and titles.",
@@ -66020,12 +65602,7 @@
             "Array input is rejected locally by the empty object schema. Unknown object keys are stripped by the non-strict Zod schema and do not cause rejection.",
             "No permission conclusion follows from the manual handler path; dispatcher gating and role outcomes remain unverified until tested through dispatch."
           ],
-          "dimensions": [
-            "valid-input",
-            "invalid-input",
-            "permissions",
-            "reload"
-          ],
+          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
           "cleanup": "Stop the fixture tone, close only the two recorded owned fixture tabs, and verify no fixture audio remains. Do not alter unrelated tabs or mute state.",
           "source_refs": [
             "docs/stabilization/inventory.json: EXT-F-4145-T01 and EXT-F-4145-C01",
@@ -66043,9 +65620,7 @@
             "cold worker restart"
           ],
           "permission_dimension_status": "unverified: direct Tools execution bypasses dispatcher permission enforcement; test the dispatcher separately before closing this dimension.",
-          "not_executable_reasons": [
-            "owned audible fixture absent"
-          ],
+          "not_executable_reasons": ["owned audible fixture absent"],
           "procedure_readiness": "NOT_EXECUTABLE: owned audible fixture absent; source-backed conditional procedure only, runtime and role outcomes unverified."
         }
       ],
@@ -66663,10 +66238,7 @@
             "EXT-F-4148-C06",
             "EXT-F-4148-C07"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
             "No owned page/data-pattern fixture, exact disposable pattern IDs, or cleanup receipt is identified. Provision an owned local page with stable synthetic product rows (name and price), and one owned manual_css pattern with list_root_selector set to the fixture product-card selector for multi-row replay. Record its exact UUID and confirm it is disposable. Do not use a production site or real personal data.",
@@ -66688,12 +66260,7 @@
             "The manual saved-run route returns the full extracted row set because openSavedPatternOperation omits rows_limit and marks localInvocation; run-health fields remain unchanged. The separately provisioned list-root pattern should yield its fixture product rows. The Tools save branch stores list_root_selector=null and should yield at most one document-root row, using the first matching scalar fields. Save returns an ID used for describe/run/delete; delete is verified by subsequent list/describe absence only where permitted. The bounded rows_limit behavior remains unverified on normal agent dispatch and must not be marked passed from this Tools route.",
             "Array and missing/invalid required input are rejected by ToolsView's local schema validation; unknown keys on otherwise valid object inputs are stripped. Direct manual execution does not demonstrate dispatcher action approval, server tool lifecycle or role permission enforcement."
           ],
-          "dimensions": [
-            "valid-input",
-            "invalid-input",
-            "permissions",
-            "reload"
-          ],
+          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
           "cleanup": "Delete only the unique disposable pattern UUID created by this procedure and only under its recorded permit. Restore no production data; verify the owned fixture patterns match their recorded baseline. If exact ID cleanup cannot be confirmed, stop before save/delete and keep the case NOT_EXECUTABLE.",
           "source_refs": [
             "docs/stabilization/inventory.json: EXT-F-4148-T01 and controls C01-C07",
@@ -66873,13 +66440,8 @@
         {
           "id": "EXT-F-4149-T01",
           "title": "Controlled manual execution: fetch_url_as_markdown",
-          "control_ids": [
-            "EXT-F-4149-C01"
-          ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "control_ids": ["EXT-F-4149-C01"],
+          "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
             "Current source has no executable handler or generated client catalog row. No current-build manual execution is possible, and no owned HTTP fixture is provided.",
@@ -66895,12 +66457,7 @@
             "Current build: no handler is exposed in registry/catalog, so no result can be expected or claimed.",
             "Future conditional route: only a restored current catalog definition, executable handler and owned HTTP fixture can support result assertions. Historical schema alone is not a testable current contract."
           ],
-          "dimensions": [
-            "valid-input",
-            "invalid-input",
-            "permissions",
-            "reload"
-          ],
+          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
           "cleanup": "No current-build action or external request is made. In any future fixture run, stop the local fixture server and remove only its owned temporary files after recording the response.",
           "source_refs": [
             "docs/stabilization/inventory.json: EXT-F-4149-T01 and source_reconciliation for C01",
@@ -66918,10 +66475,7 @@
             "no runtime or role result"
           ],
           "permission_dimension_status": "unverified: direct Tools execution bypasses dispatcher permission enforcement; test the dispatcher separately before closing this dimension.",
-          "not_executable_reasons": [
-            "current route absent",
-            "no owned HTTP fixture"
-          ],
+          "not_executable_reasons": ["current route absent", "no owned HTTP fixture"],
           "procedure_readiness": "NOT_EXECUTABLE: current route absent; no owned HTTP fixture; source-backed conditional procedure only, runtime and role outcomes unverified."
         }
       ],
@@ -67185,10 +66739,7 @@
             "EXT-F-4150-C13",
             "EXT-F-4150-C14"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
             "Follow docs/stabilization/PLAN.md build/reload identity contract and retain the full resource permit/build receipt before any eventual execution.",
@@ -67208,12 +66759,7 @@
             "The exact positive assertions are the local visible event/state changes described per control; focus requires a real focusable input and focus/blur event evidence. Invalid nonnumeric tab_id returns Invalid tab_id; current numeric but nonexistent ID reaches chrome.tabs.get and returns Tab <id> not found; missing tab_id is rejected by schema.",
             "Screenshot has persistent cloud/index side effects and its output is a file reference. The current supported gallery deletion leaves the cloud file, and no extension file-delete API was found. Therefore screenshot control C10 and this full-control suite remain blocked until a supported owned-asset cleanup route exists. No current owned fixture/tab ID or cloud-cleanup permission is supplied."
           ],
-          "dimensions": [
-            "valid-input",
-            "invalid-input",
-            "permissions",
-            "reload"
-          ],
+          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
           "cleanup": "Reset local fixture counters/input and close only its tab. Do not run computer screenshot under the current contract: it persists a cloud file and index row, while the available screenshot delete path removes only the index row. Never claim cleanup by deleting the index while leaving the file. Require a supported delete for both owned artifacts before enabling C10.",
           "procedure_readiness": "NOT_EXECUTABLE_FULL_SUITE_SCREENSHOT_FILE_CANNOT_BE_CLEANED",
           "procedure_limits": [
@@ -69240,10 +68786,7 @@
             "EXT-F-4160-C09",
             "EXT-F-4160-C10"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "design_status": "needed",
           "preconditions": [
             "Follow docs/stabilization/PLAN.md build/reload identity contract and retain the full resource permit/build receipt before any eventual execution.",
@@ -69263,12 +68806,7 @@
             "Availability returns the capability report (available/unavailable/downloadable states). When an API is unavailable, handlers explicitly return unavailable/error metadata; that is not a capability pass. When available, summarize returns a summary, classify returns a label from the supplied two labels, extract_json returns the requested object, translate includes source/target languages and result, detect_language returns candidates, proofread returns correction fields, and injection check returns suspicious/severity/reason. Model wording is not exact-match acceptance.",
             "The missing target_lang case returns a required-argument error; unknown action fails local enum validation. Image description is not executable until an owned image fixture is available. This task performed no runtime call, so browser API availability and all result values remain unverified."
           ],
-          "dimensions": [
-            "valid-input",
-            "invalid-input",
-            "permissions",
-            "reload"
-          ],
+          "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
           "cleanup": "No persistent state or external service writes are expected. Do not provide private text/images. Close/reload only the case's owned extension page as needed.",
           "procedure_readiness": "PROCEDURE_PROPOSED_RUNTIME_UNVERIFIED",
           "procedure_limits": [
