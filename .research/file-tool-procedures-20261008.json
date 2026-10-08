@@ -1,0 +1,207 @@
+{
+  "schema_version": 1,
+  "artifact_type": "inventory-case-procedure-patch",
+  "task_id": "file-tool-procedures-20261008",
+  "patch_id": "file-tool-source-backed-procedures-20261008",
+  "source": {
+    "source_inventory": "docs/stabilization/inventory.json",
+    "scope": "Procedure proposals for existing EXT-F-4070-T01, EXT-F-4157-T01, EXT-F-4158-T01, and EXT-F-4159-T01 only. No inventory/status/runtime changes or runtime execution.",
+    "source_files_reviewed": [
+      "docs/stabilization/PLAN.md",
+      "docs/stabilization/inventory.json",
+      "src/features/tools/ToolsView.tsx",
+      "src/config/sidepanel-visibility.ts",
+      "src/lib/tools/registry.ts",
+      "src/lib/tools/handlers/forms.ts",
+      "src/lib/tools/handlers/canonical.ts",
+      "src/lib/tools/handlers/_active-tab.ts",
+      "src/lib/api/routes/files.ts",
+      "src/lib/api/routes/pdf.ts",
+      "docs/TOOLS.generated.md",
+      "tests/browser/fixtures/form-controls.html"
+    ],
+    "manual_execution_route": "Tools → Catalog → expand tool → replace JSON → Run. ToolsView validates local handler argsSchema, then calls handler.run directly with conversationId=null, runId=manual-test, permissionMode=act, assignedTabId=null and displays inline output. This does not pass through the normal dispatcher permission gate. For file_upload, null assignedTabId resolves to the focused tab; upload_file/drop_file take explicit tab_id and activate that tab. Results cover the manual handler path only, not dispatcher Ask/Act gating or advertised agent invocation.",
+    "build_reload_identity": "Every eventual run must begin with the resource permit and receipt in docs/stabilization/PLAN.md § Build and reload contract: source SHA and dirty-source hash, lockfile/output hashes, WXT mode, runtime extension ID, Chrome version, profile and actual role/org state, permissions, backend identity, fixture IDs, and timestamp. Confirm the loaded unpacked development directory, manifest, runtime ID, and build fingerprint. After any artifact/config/permission change, reload the extension, reopen the side panel, reload the controlled fixture tab, and verify the replacement runtime before rerunning; HMR alone is not acceptance evidence.",
+    "shared_role_setup": "Run separately in existing signed-in member and admin profiles; Tools is signed-in only. Guest is inapplicable here and its denial belongs to the Tools UI case. Keep member/admin observations separate. Use only the currently focused owned fixture tab for file_upload and the exact fixture tab IDs for canonical tools. Never infer dispatcher or agent permission behavior from this manual runner."
+  },
+  "case_updates": {
+    "EXT-F-4070-T01": {
+      "feature_id": "EXT-F-4070",
+      "control_ids": ["EXT-F-4070-C01"],
+      "title": "Controlled manual execution: file_upload",
+      "modes": ["member", "admin"],
+      "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
+      "execution_status": "not_executable",
+      "not_executable_reasons": [
+        "The repository's only existing browser form fixture, tests/browser/fixtures/form-controls.html, contains no input[type=file]. No existing owned page supplies a file input plus a visible/readable change observation and reset behavior. The handler's success result alone reports the injected file names/count and does not prove the page received them.",
+        "No runtime/build/browser execution or new fixture creation is in scope. Do not use a real upload form or click a native picker. A future run needs a controlled owned fixture with an input[type=file], a harmless observable change listener, and reload/reset cleanup."
+      ],
+      "preconditions_fixtures": [
+        "Complete shared build/reload identity and role setup above. The owned target page must be focused when Run is selected because ToolsView supplies assignedTabId=null and _active-tab.ts resolves the focused tab.",
+        "Provide a disposable fixture page whose stable CSS selector points to an actual input[type=file] and whose page visibly records input/change count, selected file name, MIME type, and byte length without submitting or uploading. Confirm the fixture has no network submit path. The existing form-controls.html does not meet this requirement.",
+        "Use an inert synthetic payload with known bytes: file name matrx-owned-file-upload-fixture.txt, MIME text/plain, base64 TWF0cnggZmlsZSB1cGxvYWQgZml4dHVyZQo= (decodes to 'Matrx file upload fixture\\n'). Do not substitute a real person's document."
+      ],
+      "steps": [
+        "In each member/admin profile, verify the receipt-bound extension identity and open the owned file-input fixture in Chrome. Confirm the page is focused and its input/change counters start at zero; record only the fixture URL/ID and baseline counters.",
+        "In Tools → Catalog search file_upload, expand the handler, and run {\"selector\":\"<the fixture's exact file-input selector>\",\"files\":[{\"name\":\"matrx-owned-file-upload-fixture.txt\",\"mime\":\"text/plain\",\"base64\":\"TWF0cnggZmlsZSB1cGxvYWQgZml4dHVyZQo=\"}]}. Replace the selector only with the literal selector present in the owned fixture; do not guess a selector or use a ref from another tab.",
+        "Inspect the inline handler result and fixture's visible listener state. Then run {\"selector\":\"<the fixture's exact file-input selector>\",\"files\":[{\"name\":\"matrx-owned-file-upload-fixture.txt\",\"mime\":\"text/plain\",\"base64\":\"TWF0cnggZmlsZSB1cGxvYWQgZml4dHVyZQo=\"}]} again after using the fixture's reset control; verify counters restart and increment once for input and once for change.",
+        "Run {\"selector\":\"<the fixture's exact non-file control selector>\",\"files\":[{\"name\":\"matrx-owned-file-upload-fixture.txt\",\"mime\":\"text/plain\",\"base64\":\"TWF0cnggZmlsZSB1cGxvYWQgZml4dHVyZQo=\"}]} to exercise the handler's wrong-target refusal. Separately enter {} and run to confirm ToolsView rejects schema input before calling the handler.",
+        "Reload the receipt-bound extension, reopen Tools and the same owned fixture tab, verify its new runtime/receipt identity and reset state, then repeat the positive and wrong-target branches. Do this independently in member and admin profiles."
+      ],
+      "expected": [
+        "Positive call returns {ok:true,file_count:1,names:[\"matrx-owned-file-upload-fixture.txt\"]}; the fixture observes exactly one bubbled input and one bubbled change event, with the exact filename, MIME type, byte length 26, and known payload bytes. No network request or submit occurs.",
+        "A real non-file element returns {ok:false,reason:\"Not a file input at <selector>\"}; no fixture file state or counters change. Empty {} is rejected by the runner's schema validation and the handler is not invoked.",
+        "Member and admin are separate observations. The manual call does not verify dispatcher permissions, Ask/Act behavior, or agent invocation. After extension reload the positive and refusal behavior is the same on the reloaded owned page."
+      ],
+      "cleanup": "Use the fixture's own reset control, verify the input has no selected file and counters are reset, then close only the owned fixture tab. Do not submit or upload the synthetic file. If the fixture cannot reset selected files, reload it and verify empty state before closing.",
+      "source_refs": [
+        "docs/stabilization/inventory.json: EXT-F-4070 and EXT-F-4070-T01 (case ID, modes, original dimensions, permission metadata)",
+        "docs/stabilization/PLAN.md:24-32 (required receipt, identity, reload, runtime confirmation)",
+        "src/config/sidepanel-visibility.ts:16-41 (Tools is signed-in audience)",
+        "src/features/tools/ToolsView.tsx:352-429,453-463 (local schema validation and inline result)",
+        "src/features/tools/ToolsView.tsx:453-462 (direct handler invocation context; permission gate bypass)",
+        "src/lib/tools/handlers/_active-tab.ts:14-16,24-39 (null assignment resolves focused tab)",
+        "src/lib/tools/handlers/forms.ts:408-470 (schema, target validation, file construction, events/result)",
+        "tests/browser/fixtures/form-controls.html (existing fixture has no file input; fixture limitation checked directly)"
+      ],
+      "limits": [
+        "Source-derived proposal only; no browser run, runtime status, permission outcome, or role result is claimed."
+      ]
+    },
+    "EXT-F-4157-T01": {
+      "feature_id": "EXT-F-4157",
+      "control_ids": ["EXT-F-4157-C01"],
+      "title": "Controlled manual execution: upload_file",
+      "modes": ["member", "admin"],
+      "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
+      "execution_status": "not_executable",
+      "not_executable_reasons": [
+        "No owned fixture with a data-matrx-ref file input and visible change observer exists in the repository. The existing form fixture has no file input or refs.",
+        "upload_file requires an exact existing file_id and creates no fixture file itself. The source exposes screenshot persistence as one way to mint a MediaRef, but that is a separate cloud write and there is no verified exact-ID cleanup route in this scope. Do not create a new MediaRef for this procedure until a fixture and exact cleanup path are available."
+      ],
+      "preconditions_fixtures": [
+        "Complete shared build/reload identity and role setup above. Prepare one disposable owned page containing an input[type=file] marked with a stable data-matrx-ref, a visible observer for change and selected file name/type/size, and no submission/network path. The current repository fixtures do not provide this.",
+        "Obtain a known, already-owned MediaRef file_id for an inert synthetic text fixture, verify its exact filename, bytes, and organization privately, and confirm an authorized cleanup path for only that exact artifact before running. Never guess an ID or reuse another user's file.",
+        "Record the exact numeric tab_id of the controlled page. The explicit tab_id is activated by the handler."
+      ],
+      "steps": [
+        "In each member/admin profile, verify the receipt-bound extension runtime and open the controlled owned page. Confirm the exact tab ID, data-matrx-ref value, empty input, zero observer count, and no network submit behavior.",
+        "In Tools → Catalog run upload_file with {\"tab_id\":\"<observed numeric tab id>\",\"ref\":\"<exact ref value from the controlled page>\",\"file_ids\":[\"<exact owned MediaRef file_id>\"]}. Use only values observed from this run's owned fixture; do not use guessed IDs or a selector in place of ref.",
+        "Inspect the inline result and page observer. Run the same operation once more after resetting the fixture observer/input to prove repeatability, then test a missing ref on the same owned page using the same owned file_id.",
+        "Run {} to verify runner schema rejection before handler execution. Reload the extension and fixture tab, re-observe tab ID/ref/state and receipt identity, then repeat the positive and missing-ref calls.",
+        "Repeat the sequence independently in the other applicable role profile. Do not infer dispatcher/agent behavior from the direct manual call."
+      ],
+      "expected": [
+        "Positive result is {ok:true,file_count:1}; the page observer receives one change event and shows the exact stored fixture filename, MIME type and byte size matching the owned MediaRef. No submit/network request occurs.",
+        "Missing ref returns {ok:false,reason:\"Target is not an <input type=\\\"file\\\">\"} (or the handler's exact current target error); no observer state changes. Empty {} is rejected by the runner's schema validation before handler invocation.",
+        "The test must distinguish file download/materialization from page assignment: a success-shaped handler result without the page observer matching the owned file is not a pass. Member/admin and warm/reloaded runs remain separate evidence."
+      ],
+      "cleanup": "Reset the owned page's input/observer and close only its fixture tab. Delete the exact MediaRef only through the preconfirmed owner-scoped cleanup path; verify exact-ID absence. If cleanup cannot be completed or confirmed, leave its exact fixture ID in the run's open cleanup record and do not claim a clean pass.",
+      "source_refs": [
+        "docs/stabilization/inventory.json: EXT-F-4157 and EXT-F-4157-T01 (case ID, modes, original dimensions)",
+        "docs/stabilization/PLAN.md:24-32 (receipt, runtime identity and reload)",
+        "src/config/sidepanel-visibility.ts:16-41 (Tools is signed-in audience)",
+        "src/features/tools/ToolsView.tsx:352-429,453-463 (manual schema validation, direct handler route and inline result)",
+        "src/lib/tools/handlers/canonical.ts:812-867 (required tab_id/ref/file_ids, activation, MediaRef byte download, file input assignment and result)",
+        "src/lib/api/routes/files.ts:169-178 (downloadFileBytes consumes a file_id)",
+        "tests/browser/fixtures/form-controls.html (existing fixture lacks file input/data-matrx-ref observer)"
+      ],
+      "limits": [
+        "The execution path would cover the local handler and file-download service, not dispatcher permissions or agent routing; runtime remains unverified."
+      ]
+    },
+    "EXT-F-4158-T01": {
+      "feature_id": "EXT-F-4158",
+      "control_ids": ["EXT-F-4158-C01"],
+      "title": "Controlled manual execution: drop_file",
+      "modes": ["member", "admin"],
+      "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
+      "execution_status": "not_executable",
+      "not_executable_reasons": [
+        "No owned drop-zone fixture exists in the repository to capture and display dragenter/dragover/drop events and the synthetic File. drop_file returns {ok:true} after dispatch even when a page has no accepting listener, so result alone is not a forcing observation.",
+        "No known owned MediaRef is established for this case, and minting one via screenshot persistence adds a cloud artifact without a verified exact cleanup route in this task."
+      ],
+      "preconditions_fixtures": [
+        "Complete shared build/reload identity and role setup above. Prepare a disposable owned page with a stable data-matrx-ref drop target that records the event sequence, file name/type/size, and drop coordinates in visible state; it must not upload or submit the file. The current repository fixtures do not include a drop zone.",
+        "Obtain an exact already-owned MediaRef for a known inert synthetic file and confirm exact-ID cleanup before execution. Do not guess or borrow a file_id.",
+        "Record the controlled page's numeric tab_id and either its exact data-matrx-ref target or exact on-screen coordinate; choose one based on the fixture's actual control."
+      ],
+      "steps": [
+        "In each member/admin profile, verify the loaded build/role receipt, open the owned drop-zone fixture and record its exact tab_id, stable ref or coordinate, initial event log, and empty file state.",
+        "Run drop_file with {\"tab_id\":\"<observed numeric tab id>\",\"file_id\":\"<exact owned MediaRef file_id>\",\"ref\":\"<exact fixture ref>\"}. When the fixture uses coordinate targeting instead, supply its observed pair as \"coordinate\":[x,y] and omit ref; never invent coordinates.",
+        "Inspect both the inline result and fixture log. Require the ordered dragenter, dragover, drop events and the exact MediaRef filename/type/size. Reset the fixture log and repeat once. Then use a real non-target fixture ref to check the handler's no-drop-target branch with the same owned MediaRef.",
+        "Run {} to verify schema rejection before handler invocation. Reload extension and the controlled fixture page; verify new runtime identity and reset state, then repeat positive and no-target branches.",
+        "Repeat independently in member and admin profiles; keep every result tied to its own receipt, target tab, and observed fixture state."
+      ],
+      "expected": [
+        "Positive call returns {ok:true} and the owned fixture visibly records dragenter then dragover then drop, with the exact file metadata from the MediaRef and expected center coordinates when ref targeting is used. No network or form submission occurs.",
+        "The chosen missing ref returns {ok:false,reason:\"No drop target\"}; no event is recorded. Empty {} is rejected by ToolsView schema validation before the handler runs.",
+        "A handler {ok:true} without the matching fixture event/file record is not a pass. Manual-run evidence does not establish dispatcher permission or agent behavior."
+      ],
+      "cleanup": "Reset the fixture's event log, close only the owned drop-zone tab, and remove the exact MediaRef only through its preconfirmed cleanup path; verify exact-ID absence. If the row cannot be safely deleted or absence verified, leave an explicit cleanup item and do not claim clean completion.",
+      "source_refs": [
+        "docs/stabilization/inventory.json: EXT-F-4158 and EXT-F-4158-T01 (case ID, modes, original dimensions)",
+        "docs/stabilization/PLAN.md:24-32 (receipt, runtime identity, reload contract)",
+        "src/config/sidepanel-visibility.ts:16-41 (Tools is signed-in audience)",
+        "src/features/tools/ToolsView.tsx:352-429,453-463 (manual validation and direct handler execution)",
+        "src/lib/tools/handlers/canonical.ts:874-956 (schema/ref-or-coordinate, MediaRef download, event dispatch, return values)",
+        "src/lib/api/routes/files.ts:169-178 (MediaRef byte retrieval)",
+        "tests/browser/fixtures/form-controls.html (no owned drop-zone event observer exists)"
+      ],
+      "limits": [
+        "The handler only dispatches synthetic page events; acceptance needs an independent fixture event observation. No dispatcher permission or agent-call claim follows."
+      ]
+    },
+    "EXT-F-4159-T01": {
+      "feature_id": "EXT-F-4159",
+      "control_ids": ["EXT-F-4159-C01"],
+      "title": "Controlled manual execution: read_pdf",
+      "modes": ["member", "admin"],
+      "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
+      "execution_status": "not_executable",
+      "not_executable_reasons": [
+        "No committed, owned multi-page PDF fixture with known per-page text and exact cleanup path is present in reviewed fixtures. A random or user document cannot supply the content oracle.",
+        "The tab_id branch fetches bytes from the tab URL and uploads them through the authenticated file service before extraction; a current native run requires a controlled PDF URL that the extension can fetch. No such owned fixture/service route was found in the reviewed sources."
+      ],
+      "preconditions_fixtures": [
+        "Complete shared build/reload identity and role setup above. Provide a harmless, owned, multi-page PDF fixture with known distinct text on each page (including a known last page) and a documented cleanup path. Do not use personal/business PDFs or guess a file_id.",
+        "For the tab_id branch, serve/open that exact PDF at a controlled URL ending in .pdf and record its observed numeric Chrome tab_id. Confirm the URL fetch is available to the extension and that its upload path can be cleaned up by exact ownership.",
+        "Use fixture text chosen before the run as the independent oracle; never derive expected page text from the tool's output."
+      ],
+      "steps": [
+        "In each member/admin profile, verify build receipt/runtime identity and open the owned multi-page PDF in its controlled tab. Record exact tab_id and independently known page count/text markers.",
+        "In Tools → Catalog run read_pdf with {\"tab_id\":\"<observed numeric tab id>\"}. Compare returned text and total_pages with the known full-document fixture. Then run {\"tab_id\":\"<same observed numeric tab id>\",\"page_start\":2,\"page_end\":3} and compare only the fixture's known pages 2 and 3.",
+        "Run {\"tab_id\":\"<same observed numeric tab id>\",\"page_start\":<known total pages plus one>} to exercise past-last-page handling. Run {} to verify schema rejection because neither tab_id nor file_id is supplied.",
+        "Reload extension and controlled PDF tab, verify runtime identity and same fixture content, then repeat full-document and page-range reads. Repeat independently in the other applicable role profile.",
+        "If the full-document call returns an exact file_id, retain it only for exact artifact cleanup; do not expose IDs in shared summaries."
+      ],
+      "expected": [
+        "Whole-document result is {ok:true} with total_pages matching the known PDF, page_count equal to total_pages, and all known page markers/text in order. Page slice 2–3 returns page_count 2, page_start 2, page_end 3, and only the known text for those pages.",
+        "A request past the known last page returns the server's explicit range refusal/error and never an empty successful extraction. Empty {} is rejected by handler schema validation before API invocation.",
+        "The handler clamps output at max_chars (default 50,000); keep the fixture below that cap for these assertions. The tab_id path writes the PDF to the authenticated file service, so record upload/cleanup outcome separately from extraction success.",
+        "Member/admin and post-reload results are separate. This direct local handler run does not test dispatcher permission gates, server-role differences, or agent advertisement."
+      ],
+      "cleanup": "Close only the controlled PDF tab. The tab_id path creates a cloud file through uploadFile; delete that exact returned file_id only through a confirmed owner-scoped cleanup path and verify exact-ID absence. If no exact cleanup mechanism is available, do not run the tab_id branch; retain the artifact as an explicitly open cleanup blocker rather than treating it as clean.",
+      "source_refs": [
+        "docs/stabilization/inventory.json: EXT-F-4159 and EXT-F-4159-T01 (case ID, modes, original dimensions)",
+        "docs/stabilization/PLAN.md:24-32 (build receipt, runtime identity, reload)",
+        "src/config/sidepanel-visibility.ts:16-41 (Tools is signed-in audience)",
+        "src/features/tools/ToolsView.tsx:352-429,453-463 (schema validation, direct handler invocation and inline output)",
+        "src/lib/tools/handlers/canonical.ts:964-1029 (required source, PDF URL validation, fetch/upload, page range, truncation/result)",
+        "src/lib/api/routes/files.ts:109-167 (authenticated organization-scoped file upload and returned file_id)",
+        "src/lib/api/routes/pdf.ts:1-10,81-90 (extraction endpoint and inclusive 1-based page range)",
+        "docs/TOOLS.generated.md:664-671 (documented supported input/result contract)",
+        "tests/browser/fixtures (reviewed file listing; no PDF fixture present)"
+      ],
+      "limits": [
+        "Source-derived procedure only. The source says page ranges are 1-based inclusive; out-of-range expectation is supported by docs/feature-tests.md:606-610 and server PDF test references but has not been executed in this environment.",
+        "No extraction result, live server behavior, uploaded artifact cleanup, or role result is claimed."
+      ]
+    }
+  },
+  "review_notes": [
+    "Existing case IDs, control IDs, modes, and dimensions are preserved. execution_status is source-based readiness only and does not change inventory cells or test status.",
+    "The procedures separate ToolsView's direct manual handler path from normal dispatcher permission enforcement. Member/admin case dimensions remain applicable; guest is not applicable to the signed-in Tools UI.",
+    "Fresh peer should verify the exact source references and reconsider executability only if a controlled fixture and safe exact cleanup path become available. No runtime promotion is authorized by this artifact."
+  ]
+}

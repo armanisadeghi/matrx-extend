@@ -8,7 +8,7 @@
   "severity": "S3: repeated invalid test attempts, no established product failure",
   "priority": "P1",
   "state": "fixed",
-  "owner": "root/settings_completion_native",
+  "owner": "root",
   "preconditions": [
     "Exact Settings ARM run37732615934: package/browser valid; guest admitted; resource policy requires three healthy recovery samples."
   ],
@@ -25,7 +25,9 @@
     ".research/settings397-arm-resource-peer-20261007.json",
     ".research/resource-completion-repair-20261008.json",
     ".research/resource-completion-peer-20261008.json",
-    ".research/resource-completion-final-peer-20261008.json"
+    ".research/resource-completion-final-peer-20261008.json",
+    ".research/settings-completion-native-20261008.json",
+    ".research/settings-completion-native-peer-20261008.json"
   ],
   "transition_history": [
     {
@@ -54,6 +56,14 @@
     }
   ],
   "closure_requirement": "Causal original-behavior failure; corrected recovery success plus second-bad/timeout/child-error/lease semantics; fresh independent source review and exact resource-valid original Settings native retest.",
-  "next_action": "One reviewed exact-artifact ARM Settings run owned by settings_completion_native; final resource validity and original-boundary observations require independent review before closure.",
-  "fix_commit": "7e72f04a0cce79cd3bd0f2cf0c5c8a5879020f03"
+  "next_action": "Use existing guarded local ARM Settings driver with exact CI397 artifact11527132614 after capacity and import verification; no rebuild, guard relaxation or deadline increase. Changedhost strategy peer4950cf00. Native path still untested here.",
+  "fix_commit": "7e72f04a0cce79cd3bd0f2cf0c5c8a5879020f03",
+  "latest_native_attempt": {
+    "run_id": "37735318823",
+    "result": "resource_invalid_setup_failure",
+    "case_steps": 0,
+    "acceptance_credit": false,
+    "detail": "Owned Chromium CDP timeout during CPUbusy startup; child1 wrapper3. All16cases zero steps. Successful-child recovery not exercised.",
+    "peer": "4950cf00"
+  }
 }
