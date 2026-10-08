@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "review": "e170d9ee plus hosted resource diagnosis",
+  "verdict_a": {
+    "result": "READY_FOR_ONE_DIAGNOSTIC_RERUN_WITH_CADENCE_CAVEAT",
+    "basis": "Only settings-controls receives MATRX_STARTUP_INTERVAL_DIAGNOSTIC=1; actual guard sample writes a bracket adjacent to RESOURCE_CPU_PENDING in the current-run journal.",
+    "discriminant": "Same-PID, same-executable CPU-time deltas classify owned Chromium separately and retain named other-host deltas, so persistent MTLCompilerServi or provjobd work can be distinguished from owned Chromium; process creation, exit, reparenting, and centisecond resolution remain limitations.",
+    "acceptance": "The rerun is diagnostic only. Any resourceInvalid result remains invalid and earns no native acceptance credit."
+  },
+  "verdict_b": {
+    "result": "CONCERN",
+    "guard_preserving": "Thresholds, CPU classification, pending/recovery counts, journal verdict, and native action boundaries are unchanged. Process records are bounded to PID, executable basename, category, delta and timestamps; no process arguments are captured.",
+    "finding": "The claim that sampling cadence is unchanged is not supported: sample() adds before/after ps calls, each with a 5-second command timeout, and the watch loop sleeps only after sample() completes. Diagnostic mode can therefore lengthen watch intervals and delay unsafe confirmation.",
+    "evidence": "scripts/stabilization-resource.mjs: output timeout, sample()/cpuOutput, and watch loop; scripts/startup-interval-attribution.mjs; scripts/stabilization-resource-journal.mjs sanitizer."
+  },
+  "scope": "Source and existing journal review only; no rerun, browser, build, or tests performed."
+}
