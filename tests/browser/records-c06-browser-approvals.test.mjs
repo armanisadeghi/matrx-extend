@@ -111,7 +111,12 @@ test('signed-in first-party page scopes approval read and confirms exact UI row 
     decision: 'Approve',
     tableName: 'Harbor Dental',
   });
-  assert.deepEqual(result, { surface: '/approvals', rowMatched: true, confirmed: true });
+  assert.deepEqual(result, {
+    surface: '/approvals',
+    rowMatched: true,
+    confirmed: true,
+    appliedRecordId: '483f8d2c-bdc0-4b8c-85d5-5b7837e575f7',
+  });
   assert.ok(b.calls.indexOf('row_click_Approve') < b.calls.indexOf('confirm_Approve 1'));
   assert.ok(b.calls.includes('decision_rpc_observed'));
   await approvals.close();

@@ -171,15 +171,17 @@ export async function runOwnedApprovalCreate({
       tableId: state.table_id,
     });
     assert.deepEqual(
-      click,
+      { surface: click?.surface, rowMatched: click?.rowMatched, confirmed: click?.confirmed },
       { surface: '/approvals', rowMatched: true, confirmed: true },
       'records_approval_ui_not_confirmed',
     );
+    assert.match(click.appliedRecordId ?? '', UUID, 'records_approval_ui_row_id_missing');
     const after = approvalMatches(
       await readApproval(state.approval_id, state.organization_id),
       state,
     );
     const rowId = appliedRow(after, state);
+    assert.equal(click.appliedRecordId, rowId, 'records_approval_ui_row_id_mismatch');
     state.approval_decision_unknown = false;
     state.phase = 'approved';
     await save(journalPath, state);
