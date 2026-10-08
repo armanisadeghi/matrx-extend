@@ -27,7 +27,8 @@
     ".research/seo-arm-live-peer-20261008-1536.json",
     ".research/seo-interruption-native-20261008.json",
     ".research/seo-deterministic-interrupt-fix-20261008.json",
-    ".research/seo-deterministic-stop-peer-20261008.json"
+    ".research/seo-deterministic-stop-peer-20261008.json",
+    ".research/seo-stop-live-20261008.json"
   ],
   "closure_requirement": "Durable phase/observation write proven by actual interrupted driver seam and freshreview, then independently inspected native interruption/surrounding successfulreceipt; no invalidrun promotion.",
   "transition_history": [
@@ -63,5 +64,6 @@
     "runs": ["37809984111", "37811146242"],
     "result": "Both cancelled after native child exit0/null signal; ordinary final receipts with18 controlled passes, no interruption credit. GitHub step status is too coarse for deterministic timing.",
     "next_action": "Source5de616d9 and independent peeraa6004b3 support controlled selector manual_button_returns_to_current_page. Native still pending: verify exact focused CI, dispatch laneB guest-seo controlled/no fixture/no resource diagnostic with exact CI development artifact, require childSignal SIGTERM + in_progress checkpoint + selected real target/no acceptance credit; compare normal18-target receipt. Focused16tests are source seam evidence only."
-  }
+  },
+  "dispatch_status": "No native run launched: repeated Actions API403. Exact source43006024 focused guard job37813115576 observed success159/159. Use already successful artifact414; do not require unrelated new artifact. Independent source review stands; actual interrupted checkpoint/cleanup unverified."
 }

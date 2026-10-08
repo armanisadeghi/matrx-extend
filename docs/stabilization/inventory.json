@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T16:56:53.873221+00:00",
+  "updated_at": "2026-10-08T17:09:38.702058+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -16007,7 +16007,18 @@
               },
               "superseded_at": "2026-10-08T15:48:53.830295+00:00"
             }
-          ]
+          ],
+          "native_preparation": {
+            "source_commit": "30f5c006",
+            "independent_review": "e43d1746",
+            "evidence": [
+              ".research/scrape-reload-deep-source-20261008.json",
+              ".research/scrape-reload-deep-peer-20261008.json"
+            ],
+            "status": "source-ready-native-pending",
+            "scope": "After full extension reload: fresh intake empty result, zero lazy nodes, deep capture, observed Scrolling, exact lazy text in actual page and displayed Article. Existing guest result stays partial; deep failure/retry remains unverified.",
+            "next_action": "After exact focused gate and API recovery, run existing guest-scrape-development on lane B with verified exact artifact; inspect actual new post_reload_deep evidence and neighboring cases before coverage update."
+          }
         },
         {
           "id": "EXT-F-1007-T03",
