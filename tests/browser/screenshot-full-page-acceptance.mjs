@@ -13,7 +13,7 @@ import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { matchesFullPageAspect } from './full-page-aspect.mjs';
 import { nativeRuntimeFailureCode } from './native-runtime-failure.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
-import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
+import { click as driverClick, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const EXTENSION_DIR = resolve(
@@ -56,6 +56,85 @@ const report = {
 };
 let stage = 'build_identity';
 let capturePhase = null;
+let pointerTarget = null;
+let viewerStep = null;
+const PUBLIC_TARGETS = new Set([
+  'Settings',
+  'Screenshots',
+  'View screenshot',
+  'Share',
+  'Delete',
+  'Close',
+  'Refresh',
+  'Full page',
+  'Sign in',
+  'Account',
+  'Acting as',
+  'Revoke',
+]);
+async function click(panel, kind, label, onPhase) {
+  pointerTarget = {
+    kind,
+    target: PUBLIC_TARGETS.has(label) ? label : 'private_label',
+    ...(PUBLIC_TARGETS.has(label)
+      ? {}
+      : {
+          targetSha256: createHash('sha256').update(label).digest('hex'),
+        }),
+    phase: 'resolving',
+  };
+  return driverClick(panel, kind, label, (phase) => {
+    pointerTarget.phase = phase;
+    onPhase?.(phase);
+  });
+}
+async function capturePointerBoundary(panel, error, boundary) {
+  if (!error?.driverFailure) return;
+  report.pointerBoundaries ??= [];
+  const receipt = { boundary, stage, viewerStep, diagnostic: safeFailure(error) };
+  report.pointerBoundaries.push(receipt);
+  try {
+    receipt.observation = await evaluate(
+      panel,
+      `(() => {
+      const active=document.querySelector('button[role="tab"][title="Screenshots"][data-state="active"]');
+      const pane=active&&document.getElementById(active.getAttribute('aria-controls'));
+      const title=${JSON.stringify(pointerTarget?.target ?? 'private_label')};
+      const nodes=[...document.querySelectorAll('button')].filter(el =>
+        el.getAttribute('title')===title || el.getAttribute('data-matrx-title')===title ||
+        el.getAttribute('aria-label')===title);
+      return { activeScreenshotPane:!!pane, dialogCount:document.querySelectorAll('[role="dialog"]').length,
+        controls:nodes.map(el=>{
+          const rect=el.getBoundingClientRect(), style=getComputedStyle(el);
+          const hit=document.elementFromPoint(rect.x+rect.width/2,rect.y+rect.height/2);
+          return { inActivePane:!!pane?.contains(el), nativeTitle:el.getAttribute('title')===title,
+            preservedTitle:el.getAttribute('data-matrx-title')===title, ariaLabel:el.getAttribute('aria-label')===title,
+            visible:rect.width>0&&rect.height>0&&style.visibility!=='hidden'&&style.display!=='none'&&!el.closest('[inert]'),
+            rect:{x:rect.x,y:rect.y,width:rect.width,height:rect.height},
+            centerHit:hit===el||!!hit&&el.contains(hit), centerHitTag:hit?.tagName==='IMG'?'image':hit?.tagName==='BUTTON'?'button':hit?'other':'none',
+            decodedImage:!!el.querySelector('img')?.complete };
+        }) };
+    })()`,
+    );
+  } catch {
+    receipt.observationUnavailable = true;
+  }
+  try {
+    const { data } = await panel.send('Page.captureScreenshot', { format: 'png' });
+    const bytes = Buffer.from(data, 'base64');
+    await writeFile(OUTPUT.replace(/\.json$/, `.${boundary}.private-pointer.png`), bytes, {
+      mode: 0o600,
+      flag: 'wx',
+    });
+    receipt.privateScreenshot = {
+      sha256: createHash('sha256').update(bytes).digest('hex'),
+      byteCount: bytes.length,
+    };
+  } catch {
+    receipt.privateScreenshotUnavailable = true;
+  }
+}
+
 function fail(code) {
   report.failure = { stage, code };
   throw new Error(code);
@@ -69,6 +148,35 @@ function safeFailure(error) {
     runtimeCode: nativeRuntimeFailureCode(error),
     timeout: error?.name === 'TimeoutError',
     assertion: error?.code === 'ERR_ASSERTION',
+    viewerStep,
+    pointerTarget: pointerTarget ? { ...pointerTarget } : null,
+    pointerDiagnostic: error?.driverFailure
+      ? Object.fromEntries(
+          [
+            'code',
+            'sampleStage',
+            'matchedTargetCount',
+            'visibleMatchCount',
+            'uniqueVisibleTarget',
+            'hitTarget',
+            'animating',
+            'stableSamples',
+            'positionStable',
+            'targetHasArea',
+            'clippedTargetHasArea',
+            'selectedPointAvailable',
+            'centerHitCategory',
+            'targetDisabled',
+            'pointerEventsNone',
+            'clippingAncestorCount',
+            'testedPointCount',
+            'interiorHitKinds',
+            'targetRectangle',
+            'centerOccluder',
+            'firstInteriorOccluder',
+          ].map((key) => [key, error.driverFailure[key] ?? null]),
+        )
+      : null,
     pointerCode: /^pointer_[a-z_]+$/.test(error?.driverFailure?.code ?? '')
       ? error.driverFailure.code
       : null,
@@ -271,8 +379,9 @@ async function cardState(panel) {
   );
 }
 // A thumbnail click must expose the already downloaded image, including its pixels.
-async function verifyLocalViewer(panel, expected) {
+async function verifyLocalViewer(panel, expected, phase) {
   stage = 'local_image_viewer';
+  viewerStep = `${phase}:read_thumbnail`;
   const loadedSource = await evaluate(
     panel,
     `document.querySelector('button[aria-label="View screenshot"] img')?.src`,
@@ -285,7 +394,9 @@ async function verifyLocalViewer(panel, expected) {
       downloads++;
   });
   try {
+    viewerStep = `${phase}:open_viewer`;
     await click(panel, 'title', 'View screenshot');
+    viewerStep = `${phase}:verify_pixels`;
     await waitFor(
       'loaded_local_viewer',
       () =>
@@ -312,7 +423,9 @@ async function verifyLocalViewer(panel, expected) {
   } finally {
     offDownload();
   }
+  viewerStep = `${phase}:close_viewer`;
   await click(panel, 'button-text', 'Close');
+  viewerStep = `${phase}:verify_closed`;
   await waitFor(
     'viewer_closed',
     () => evaluate(panel, `document.querySelectorAll('[role="dialog"]').length`),
@@ -789,7 +902,7 @@ async function exerciseCase({ page, panel }, mode) {
       tallImage: true,
       originalScrollRestored: true,
     };
-    await verifyLocalViewer(panel, image);
+    await verifyLocalViewer(panel, image, 'initial');
     report.cases.localViewer = 'pass';
     const reloadMarker = journal.marker();
     await panel.send('Page.reload');
@@ -809,7 +922,7 @@ async function exerciseCase({ page, panel }, mode) {
         !state.warning,
       45_000,
     );
-    await verifyLocalViewer(panel, image);
+    await verifyLocalViewer(panel, image, 'after_reload');
     report.cases.reloadPersistence = 'pass';
     if (mode === 'root') {
       await verifyCanonicalShare(page, panel, ownedRow, RECOVERY);
@@ -829,6 +942,7 @@ async function exerciseCase({ page, panel }, mode) {
           : 'full_page_stage_failed',
     };
     report.failure.diagnostic = safeFailure(error);
+    await capturePointerBoundary(panel, error, 'primary');
     if (!ownedRow && captureClicked) {
       // The capture may have saved even when its automatic gallery read failed.
       // Ask the real gallery for this run's unique URL before conceding cleanup.
@@ -874,8 +988,12 @@ async function exerciseCase({ page, panel }, mode) {
     if (ownedRow && !cleaned) {
       try {
         cleaned = await cleanup(panel, journal, ownedRow, fixtureUrl, fixtureCanonical, page);
-      } catch {
-        report.cleanup = { exactOwnedRowAbsentAfterRealRead: false };
+      } catch (cleanupError) {
+        await capturePointerBoundary(panel, cleanupError, 'cleanup');
+        report.cleanup = {
+          exactOwnedRowAbsentAfterRealRead: false,
+          diagnostic: safeFailure(cleanupError),
+        };
       }
     }
     if (cleaned) report.cleanup = { exactOwnedRowAbsentAfterRealRead: true };
@@ -887,10 +1005,116 @@ async function exerciseCase({ page, panel }, mode) {
     if (server) await new Promise((resolveClose) => server.close(resolveClose));
   }
 }
+async function recoverOwnedFixture({ page, panel }, recoveryPath) {
+  const stat = await lstat(recoveryPath);
+  if (!stat.isFile() || (stat.mode & 0o777) !== 0o600) fail('recovery_config_not_private');
+  const recovery = JSON.parse(await readFile(recoveryPath, 'utf8'));
+  const url = new URL(recovery.fixtureUrl);
+  if (
+    url.hostname !== '127.0.0.1' ||
+    url.protocol !== 'http:' ||
+    !url.port ||
+    !/^\/harbor-dental\/appointment-guide\/(nested|root)\/[a-f0-9-]+$/.test(url.pathname) ||
+    canonical(url.href) !== recovery.fixtureCanonical ||
+    !recovery.screenshotId ||
+    !recovery.fileId ||
+    recovery.shareLinkId
+  )
+    fail('recovery_owned_fixture_contract_failed');
+  const mode = url.pathname.includes('/nested/') ? 'nested' : 'root';
+  const server = createServer((_request, response) =>
+    response
+      .writeHead(200, { 'content-type': 'text/html; charset=utf-8' })
+      .end(
+        mode === 'nested'
+          ? `${HTML.replace(
+              '<section>',
+              '<style>html,body{height:100%;overflow:hidden}main{height:100vh;overflow-y:auto}</style><main id="appointment-pane"><section>',
+            )}</main>`
+          : HTML,
+      ),
+  );
+  let journal;
+  let ownedRow;
+  let cleaned = false;
+  try {
+    await new Promise((done, reject) => {
+      server.once('error', reject);
+      server.listen(Number(url.port), '127.0.0.1', done);
+    });
+    await page.goto(url.href, { waitUntil: 'domcontentloaded' });
+    if (page.url() !== url.href) fail('recovery_page_identity_lost');
+    await panel.send('Network.enable');
+    journal = watchRows(panel, recovery.fixtureCanonical);
+    const marker = journal.marker();
+    await click(panel, 'title', 'Screenshots');
+    const rows = await nextRead(journal, marker, 1);
+    if (rows[0].id !== recovery.screenshotId || rows[0].file_id !== recovery.fileId)
+      fail('recovery_exact_owned_row_mismatch');
+    ownedRow = rows[0];
+    const image = await waitFor(
+      'recovery_owned_image',
+      () => cardState(panel),
+      (state) => state.decoded && state.first && state.middle && state.last && !state.warning,
+      45000,
+    );
+    report.recovery = { exactOwnedRowRead: true, ownedRowCount: 1 };
+    await verifyLocalViewer(panel, image, 'recovery_initial');
+    const reloadMarker = journal.marker();
+    await panel.send('Page.reload');
+    await click(panel, 'title', 'Screenshots');
+    const reloaded = await nextRead(journal, reloadMarker, 1);
+    if (reloaded[0].id !== ownedRow.id || reloaded[0].file_id !== ownedRow.file_id)
+      fail('recovery_reload_identity_mismatch');
+    await waitFor(
+      'recovery_reloaded_image',
+      () => cardState(panel),
+      (state) => state.decoded,
+      45000,
+    );
+    await verifyLocalViewer(panel, image, 'recovery_after_reload');
+    report.recovery.viewerBeforeAndAfterReload = 'pass';
+  } catch (error) {
+    report.failure ??= { stage, code: 'recovery_boundary_failed', diagnostic: safeFailure(error) };
+    await capturePointerBoundary(panel, error, 'recovery_primary');
+    throw error;
+  } finally {
+    if (ownedRow) {
+      try {
+        cleaned = await cleanup(
+          panel,
+          journal,
+          ownedRow,
+          url.href,
+          recovery.fixtureCanonical,
+          page,
+        );
+      } catch (error) {
+        await capturePointerBoundary(panel, error, 'recovery_cleanup');
+        report.cleanup = {
+          exactOwnedRowAbsentAfterRealRead: false,
+          diagnostic: safeFailure(error),
+        };
+      }
+    }
+    if (cleaned) {
+      report.cleanup = { exactOwnedRowAbsentAfterRealRead: true };
+      await rm(recoveryPath);
+    }
+    journal?.stop();
+    await new Promise((done) => server.close(done));
+  }
+  if (!cleaned) fail('recovery_cleanup_unverified');
+  report.status = 'partial';
+}
 async function exercise(context) {
   const approved = await approvedOrganization();
   await signIn(context.page, context.panel);
   await selectOrganization(context.panel, approved);
+  if (process.env.SCREENSHOT_CAPTURE_RECOVERY) {
+    await recoverOwnedFixture(context, resolve(REPO, process.env.SCREENSHOT_CAPTURE_RECOVERY));
+    return;
+  }
   for (const mode of ['nested', 'root']) await exerciseCase(context, mode);
 }
 try {
