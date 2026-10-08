@@ -14,7 +14,7 @@ Use two isolated hosted lanes plus one fixer, rotating independent review throug
 
 ## Current ownership
 
-No owned worker or native job remains active. Root owns next assignment and integration. Preserve prior evidence in inventory history; never repeat accepted subtargets as new progress. D166 lifecycle and D107 pre-CDP startup remain separate. D183 receipt loss and D178 confirmation have bounded closed evidence. Deeper Chat/Pilot remains deferred except urgent public guest failures.
+Current source repair workers: records_native_recover_2010 owns canonical Records cleanup ownership resolution; settings_behavior_review owns T67 restoration diagnosis and bounded diagnostics. Fresh Sol creation failed ENOSPC, so existing seats are reused for implementation only. No native job launched. Root owns independent review and integration. Preserve prior evidence in inventory history; never repeat accepted subtargets as new progress. D166 lifecycle and D107 pre-CDP startup remain separate. D183 receipt loss and D178 confirmation have bounded closed evidence. Deeper Chat/Pilot remains deferred except urgent public guest failures.
 
 Credentials use private named-key non-evaluating parsing only: never source/eval env files. An earlier setup attempt violated this and emitted a parser source fragment; no native run launched from it, staging was removed, and the actual Records run used corrected parsing. Existing authorized point-of-use sources remain repo .env.production, sibling aidream/.env and gitignored test-results/admin-profile-approved-organization-private.json. Never record values. Shared credential staging belongs exclusively to lane A; remove temporary secrets after terminal and independently verify names absent.
 
