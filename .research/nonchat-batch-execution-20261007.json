@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "lane": "nonchat-batch-execution",
+  "status": "source_candidate_ready_native_unverified",
+  "feature_id": "EXT-F-1003",
+  "driver": "tests/browser/settings-local-controls-acceptance.mjs",
+  "dispatch": "settings-controls",
+  "auth_mode": "guest",
+  "case_targets": [
+    {
+      "case_id": "EXT-F-1003-T04",
+      "bounded_acceptance": "Trusted selection of Dark, Light and System; each displayed and persisted after panel reload; applied root class matches the explicit theme or current OS preference.",
+      "not_proved": "A separate Chrome restart is not included."
+    },
+    {
+      "case_id": "EXT-F-1003-T10",
+      "bounded_acceptance": "Trusted selection of Act without asking and Ask before acting; each displayed and persisted after panel reload.",
+      "not_proved": "A new Chat inherits the choice, so the full inventory case remains unverified."
+    },
+    {
+      "case_id": "EXT-F-1003-T13",
+      "bounded_acceptance": "Trusted selection of Thinking and Fast; each displayed and persisted after panel reload.",
+      "not_proved": "No deeper Chat behavior is claimed."
+    }
+  ],
+  "negative_controls": [
+    "Reject an inactive Settings panel or duplicate control.",
+    "Reject a mismatched visible label or persisted value.",
+    "Reject a Dark or Light selection whose applied root class disagrees."
+  ],
+  "verification": {
+    "local_source_check": "node --test tests/browser/settings-guest-preference-batch.test.mjs; node --check both changed runners: passed",
+    "automatic_focused_ci": "package.json test:focused-acceptance includes the new self-check; exact pushed CI result pending",
+    "native": "Not run by this lane; requires frozen artifact and hosted fixture coordination."
+  },
+  "verdict_limit": "This is a source-reviewed executable candidate. No case or feature inventory verdict changes until resource-valid native evidence and independent review."
+}
