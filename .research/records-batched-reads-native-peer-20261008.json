@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "at": "2026-10-08T22:38:56.544495+00:00",
+  "reviewer": "root; independent source and native adjudication, no code authorship",
+  "run_id": 37853642155,
+  "verdict_a": {
+    "status": "pass",
+    "scope": "Five owned Records actions C02/C03/C04/C05/C08 finish visible matching HTTP200; new created-table visibility, structural search plus row exclusion and original history version/author/time. Full25-action case remains partial."
+  },
+  "verdict_b": {
+    "status": "pass",
+    "verification": "Verified original receipt hash ebdcede7b0753cd6223b4d035d3719ad40bb7f68b3ad67774ffced7e6673f310, journal hash and exact frozen414 artifact identity. Three exact-current resource journals hash-match and end valid/admitted/exit0/resourceInvalidfalse. Fixture archived_verified/pending_write_unknownfalse, same-principal invisible receipt. Root independently confirms temporary secret names absent."
+  },
+  "limitations": "Post-run server980226cf only sampled, not continuous deploy identity. Admin frozen build only; nonadmin/Store/currentmain and remaining action dimensions unverified."
+}

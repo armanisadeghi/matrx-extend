@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "task": "One Settings-controls guest lane B native run for EXT-D-0186 per-choice extension restart verification",
+  "authorship": "Operator authored the harness under review. This native run used the approved source; no credentials or environment files were accessed.",
+  "workflow": {
+    "run_id": 37854142497,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37854142497",
+    "job_id": 113574150710,
+    "job_status": "completed",
+    "job_conclusion": "failure",
+    "attempt": 1,
+    "lane": "B guest Settings-controls",
+    "runner": "macos-15",
+    "head_sha": "f765ac3ca2a53df28a8040c6a76bd22aa0c853e6",
+    "started_at": "2026-10-08T22:32:53Z",
+    "completed_at": "2026-10-08T22:40:18Z",
+    "no_retry": true,
+    "step_durations_seconds": {
+      "package_readiness": 33,
+      "browser_driver_preparation": 83,
+      "browser_readiness": 33,
+      "chromium_preparation": 83,
+      "acceptance_readiness": 33,
+      "settings_acceptance_step": 164
+    }
+  },
+  "preflight": {
+    "focused_gate_run_id": 37854001881,
+    "focused_gate_head": "f24e494e1804a1bc6b0d78ca536ec291e71e2fa9",
+    "focused_gate_conclusion": "success",
+    "relevant_source_blobs_match_reviewed_commit": true,
+    "frozen_ci_run_id": 37818621428,
+    "frozen_artifact_id": 11568846736,
+    "frozen_source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+    "frozen_version": "0.2.414",
+    "frozen_tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+    "frozen_artifact_expired": false,
+    "lane_b_idle_before_dispatch": true,
+    "records_lane_a_run_37853642155_was_separate": true,
+    "local_resource_preflight": "External work volume had 1.6 TiB free; system volume had 114 MiB free. Download temporary directory was placed on the external volume."
+  },
+  "result_artifact": {
+    "artifact_id": 11583611884,
+    "name": "hosted-guest-37854142497-1",
+    "size_bytes": 69895,
+    "digest": "sha256:b3e85b700082a94639cd1239fb89584cd41ed7a7a84dc13c44a4d9a33ab02266",
+    "expired": false,
+    "raw_directory": ".research/settings-per-choice-extension-native-20261008/raw",
+    "retained_files": [
+      {
+        "path": "settings-local-controls-acceptance.json",
+        "sha256": "5063c0b210e43e52fcc354bfa016fb9138eb09618647af8db19e994c46b1fb91"
+      },
+      {
+        "path": "resource-journals/hosted-package-37854142497-1.jsonl",
+        "sha256": "f2c91e0e0a57119ba9016b7f94cedccec16fb2713069dc868cfe5a84b1425d7f"
+      },
+      {
+        "path": "resource-journals/hosted-browser-37854142497-1.jsonl",
+        "sha256": "f4493643cd7926e2a4a9d82d0b7648ac34f729e08a32af7b71687609c526245b"
+      },
+      {
+        "path": "resource-journals/hosted-guest-37854142497-1.jsonl",
+        "sha256": "c16f1cebeb692c4270a39f8cca5ca352e7c8ed94ec2bacece27dcbd11c6835f3"
+      }
+    ],
+    "artifact_selection": "Downloaded the run-named artifact; retained only receipt and journals bearing this run ID, excluding nested stale journals from older runs."
+  },
+  "resource_admission": {
+    "package": "valid; admitted; child exit 0",
+    "browser": "valid; admitted; child exit 0",
+    "guest": "admitted; RESOURCE_CPU_PENDING was observed, followed by RESOURCE_CPU_RECOVERED and RESOURCE_WATCH_HEALTHY; child exit 1; final decision child_failed; resourceInvalid false"
+  },
+  "native_outcome": {
+    "receipt_status": "fail",
+    "guest_stage_failed": "reload_observation",
+    "initial_extension_reload": {
+      "management_reload_clicked": true,
+      "old_targets_retired": true,
+      "worker_replaced": true,
+      "panel_replaced": true
+    },
+    "replacement_panel_settings_opened": true,
+    "per_choice_full_extension_rechecks_started": false,
+    "failure_classification": "The receipt records only reload_observation and does not preserve a more specific cause. No product or harness cause is inferred."
+  },
+  "case_results": {
+    "T04_theme": "warm and panel-document reload criteria passed; full-extension per-choice recheck remained missing and the required guard marked the case fail. Dark, Light, and System were not validated through separate full extension restarts in this run.",
+    "T10_default_mode": "warm, panel-document reload, and new-chat consumer criteria passed; full-extension per-choice recheck remained missing and the required guard marked the case fail. Act and Ask were not validated through separate full extension restarts in this run.",
+    "T28_sections": "warm and panel-document checks passed; full-extension recheck remained missing and the required guard marked the case fail.",
+    "T40_auto_scrape": "warm setting check was present; full-extension recheck remained missing and the required guard marked the case fail. Downstream capture remains unverified.",
+    "T67_capture_mode": "warm and panel-document reload checks passed; full-extension recheck remained missing and the required guard marked the case fail. Capture and Scroll & capture were not validated through separate full extension restarts. Downstream capture remains unverified."
+  },
+  "limitations": [
+    "The first extension replacement and Settings opening were confirmed, but the full-reload observation phase failed before the tested per-choice orchestration ran.",
+    "No per-choice full-extension persistence or restoration claim is supported by this run.",
+    "T40 and T67 downstream capture remain unverified.",
+    "This was the single authorized attempt; no retry was made."
+  ]
+}

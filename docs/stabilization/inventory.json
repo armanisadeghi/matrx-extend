@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T22:32:30.447806+00:00",
+  "updated_at": "2026-10-08T22:38:56.544495+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -65314,12 +65314,12 @@
           "results": {
             "admin": {
               "status": "partial",
-              "run_id": "37850891584",
+              "run_id": "37853642155",
               "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
               "build_version": "0.2.414",
               "evidence": [
-                ".research/records-detail-cleanup-native-20261008.json",
-                ".research/records-detail-cleanup-native-peer-20261008.json"
+                ".research/records-batched-reads-native-20261008.json",
+                ".research/records-batched-reads-native-peer-20261008.json"
               ],
               "passed_subtargets": [
                 "C02 current include_platform_tables contract and correlated successful table_list",
@@ -65328,14 +65328,16 @@
                 "C03 metadata_search query from returned table name yields same table ID/name/approved org in correlated completed visible output",
                 "C03/C04/C05 malformed arguments visibly refused",
                 "C04 record_read and C05 record_aggregate complete visibly with HTTP200 and exact owned fixture matches",
-                "Owned fixture archived and confirmed invisible by same principal"
+                "Owned fixture archived and confirmed invisible by same principal",
+                "C02 exact owned-created-table ID/name/org visible",
+                "C03 exact structural table match and row-text exclusion",
+                "C08 exact returned record original version, author/time and synthetic change; malformed record_id refused"
               ],
               "unverified_dimensions": [
                 "Remaining Records controls and per-action reload/error dimensions",
-                "C02 owned-created-table visibility and controlled C03 created-table search",
                 "Non-admin modes"
               ],
-              "release_scope": "Frozen unpublished414artifact11556064167 only. Full Records and current-main/Store remain unverified."
+              "release_scope": "Frozen414artifact11556064167; full25-action case remains partial. No Store/current-main acceptance."
             }
           },
           "result_history": [
@@ -65410,6 +65412,36 @@
                 "release_scope": "Frozen unpublished artifact11556064167/sourcee7b7dc1e; workflowb0344e84. Zero-author source reviewer/native executor separate from implementation. Three currentjournals valid. Backend40750ce2 sampled before/after only. No full feature, Store or currentmain claim."
               },
               "reason": "Retain preceding bounded Records evidence."
+            },
+            {
+              "at": "2026-10-08T22:38:56.544495+00:00",
+              "mode": "admin",
+              "result": {
+                "status": "partial",
+                "run_id": "37850891584",
+                "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+                "build_version": "0.2.414",
+                "evidence": [
+                  ".research/records-detail-cleanup-native-20261008.json",
+                  ".research/records-detail-cleanup-native-peer-20261008.json"
+                ],
+                "passed_subtargets": [
+                  "C02 current include_platform_tables contract and correlated successful table_list",
+                  "C02 malformed limit produces correlated visible invalid_arguments refusal naming limit",
+                  "Full panel Page.reload restores admin/org and subsequent correlated successful table_list",
+                  "C03 metadata_search query from returned table name yields same table ID/name/approved org in correlated completed visible output",
+                  "C03/C04/C05 malformed arguments visibly refused",
+                  "C04 record_read and C05 record_aggregate complete visibly with HTTP200 and exact owned fixture matches",
+                  "Owned fixture archived and confirmed invisible by same principal"
+                ],
+                "unverified_dimensions": [
+                  "Remaining Records controls and per-action reload/error dimensions",
+                  "C02 owned-created-table visibility and controlled C03 created-table search",
+                  "Non-admin modes"
+                ],
+                "release_scope": "Frozen unpublished414artifact11556064167 only. Full Records and current-main/Store remain unverified."
+              },
+              "reason": "Retain preceding bounded action coverage."
             }
           ],
           "native_preparation": {
@@ -65533,7 +65565,7 @@
         "admin": {
           "test_status": "partial",
           "defect_ids": ["EXT-D-0071", "EXT-D-0091", "EXT-D-0185"],
-          "run_ids": ["37799435980", "37850891584"],
+          "run_ids": ["37799435980", "37850891584", "37853642155"],
           "retest_status": "partial"
         }
       }
