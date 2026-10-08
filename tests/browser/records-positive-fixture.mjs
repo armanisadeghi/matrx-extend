@@ -396,6 +396,24 @@ export async function withRecordsPositiveFixture({
     assert.equal(archived.org_matches, true, 'records_fixture_archive_wrong_org');
     assert.equal(archived.id, tableId, 'records_fixture_archive_wrong_table');
   };
+  const cleanupOwnedTable = async (tableId) => {
+    assert.equal(tableId, state.table_id, 'records_fixture_cleanup_id_changed');
+    const before = await list();
+    assert.equal(before.status, 200, 'records_fixture_cleanup_list_failed');
+    assert.equal(before.list_complete, true, 'records_fixture_cleanup_list_incomplete');
+    assert.equal(before.tables.length, 1, 'records_fixture_cleanup_ownership_ambiguous');
+    assert.equal(before.tables[0].id, tableId, 'records_fixture_cleanup_id_changed');
+    state.phase = 'archive_sent';
+    await journal(journalPath, state);
+    await archiveOwned(tableId);
+    const after = await list();
+    assert.equal(after.status, 200, 'records_fixture_verify_list_failed');
+    assert.equal(after.list_complete, true, 'records_fixture_verify_list_incomplete');
+    assert.equal(after.tables.length, 0, 'records_fixture_still_visible');
+    state.phase = 'archived_verified';
+    await journal(journalPath, state);
+    return { archived_verified: true, same_principal: true, table_invisible: true };
+  };
   let bodyError;
   let cleanupError;
   try {
@@ -488,6 +506,7 @@ export async function withRecordsPositiveFixture({
       rowId: state.row_id,
       rowName,
       rowVersion: row.row_version,
+      cleanupOwnedTable,
     });
   } catch (error) {
     bodyError = error;

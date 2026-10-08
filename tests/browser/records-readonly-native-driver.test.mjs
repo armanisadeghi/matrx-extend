@@ -179,6 +179,9 @@ const fixtureTableId = '3b80fd38-4db8-4cc9-8629-f8b751d5b337';
 const fixtureRowId = '6cf44320-25a4-4fa9-9107-254cf18d6f88';
 const fixtureTableName = 'EXT-F-4130-owned';
 const fixtureRowName = `${fixtureTableName}-row`;
+const c06RowId = '483f8d2c-bdc0-4b8c-85d5-5b7837e575f7';
+const c06ApprovalId = 'daef0892-4337-44b7-a793-829d12d94cab';
+const testConversationId = 'ac0b1e84-eddb-41f8-ab66-9d99d82d747e';
 const positiveInputs = [
   {
     action: 'table_list',
@@ -201,6 +204,11 @@ const positiveInputs = [
     action: 'record_history',
     args: { record_id: fixtureRowId, organization_id: organizationId, limit: 50 },
   },
+  {
+    action: 'record_write',
+    args: { table_id: fixtureTableId, records: [{ name: `${fixtureTableName}-approval-row` }] },
+  },
+  { action: 'record_read', args: { record_id: c06RowId } },
 ];
 const allInputs = [input, invalid, input, metadataInput, ...negativeInputs, ...positiveInputs];
 const firstPositiveIndex = 4 + negativeInputs.length;
@@ -291,6 +299,28 @@ const defaultCompletions = [
   positiveRead(),
   positiveAggregate(),
   positiveHistory(),
+  {
+    success: true,
+    output: {
+      action: 'record_write',
+      applied: false,
+      awaiting_approval: true,
+      approval_id: c06ApprovalId,
+      table_id: fixtureTableId,
+    },
+  },
+  {
+    success: true,
+    output: {
+      action: 'record_read',
+      record: {
+        id: c06RowId,
+        table_id: fixtureTableId,
+        organization_id: organizationId,
+        values: { name: `${fixtureTableName}-approval-row` },
+      },
+    },
+  },
 ];
 const tableListSchema = (visibilityField = 'include_platform_tables') => ({
   action: {
@@ -326,6 +356,7 @@ function runDriver({
   changedVisible = false,
   visibleMode = 'normal',
   responseMode = 'normal',
+  conversationId = testConversationId,
   httpStatus = 200,
   reloadedProfile = 'admin-id',
   driverSource = callback,
@@ -343,6 +374,11 @@ function runDriver({
         rowId: fixtureRowId,
         rowName: fixtureRowName,
         rowVersion: 1,
+        cleanupOwnedTable: async () => ({
+          archived_verified: true,
+          same_principal: true,
+          table_invisible: true,
+        }),
       });
     } finally {
       onStage('records_fixture_cleanup');
@@ -361,6 +397,7 @@ function runDriver({
     negative_reads: [],
     negative_mutations: [],
     positive_reads: [],
+    positive_mutations: [],
     fixture_cleanup: null,
     fixture_diagnostics: [],
     invalid_input: null,
@@ -413,7 +450,7 @@ function runDriver({
         assert.ok(index >= 0 && index < runs, 'response must belong to a sent request');
         if (responseMode === 'malformed') return { body: 'not-json\n' };
         return {
-          body: `${JSON.stringify({ event: 'completion', data: { operation: 'tool_execution', result: { full_result: completions[index] } } })}\n`,
+          body: `${JSON.stringify({ event: 'completion', data: { operation: 'tool_execution', conversation_id: conversationId, result: { full_result: completions[index] } } })}\n`,
         };
       }
       throw new Error(`unexpected CDP command ${name}`);
@@ -525,6 +562,46 @@ function runDriver({
     assertRecordsVisibleCompletion,
     enterRecordsInput: inputHelper,
     withRecordsPositiveFixture: fixtureHelper,
+    openRecordsC06Approvals: async ({ principalId, expectedEmail }) => {
+      assert.equal(principalId, 'admin-id');
+      assert.equal(expectedEmail, 'admin@admin.com');
+      return {
+        readApproval: async () => ({}),
+        decideInUi: async () => ({ surface: '/approvals', rowMatched: true, confirmed: true }),
+        close: async () => {},
+      };
+    },
+    runOwnedApprovalCreate: async ({
+      conversationId,
+      dispatchCreate,
+      readRecord,
+      cleanupTable,
+      owner,
+      approveInUi,
+    }) => {
+      assert.equal(conversationId, testConversationId);
+      const held = await dispatchCreate({
+        tableId: owner.tableId,
+        rowName: owner.rowName,
+        conversationId,
+      });
+      assert.equal(held.approval_id, c06ApprovalId, 'records_c06_approval_id_mismatch');
+      const click = await approveInUi({
+        approvalId: c06ApprovalId,
+        organizationId,
+        tableId: owner.tableId,
+      });
+      assert.equal(click.confirmed, true);
+      const read = await readRecord(c06RowId, organizationId);
+      assert.equal(read.id, c06RowId, 'records_c06_readback_id_mismatch');
+      const cleaned = await cleanupTable({
+        tableId: owner.tableId,
+        organizationId,
+        principalId: 'admin-id',
+      });
+      assert.equal(cleaned.archived_verified, true);
+      return { approved_and_read_back: true };
+    },
     output: '/tmp/records-driver-test-report.json',
     assert,
   };
@@ -533,7 +610,12 @@ function runDriver({
   );
   return {
     run: () =>
-      driver({ page: {}, panel, resourceAction: (action) => action(), transportFailureClass }),
+      driver({
+        page: { context: () => ({}) },
+        panel,
+        resourceAction: (action) => action(),
+        transportFailureClass,
+      }),
     report,
     stages,
     active,
@@ -1026,10 +1108,52 @@ test('successful callback retains all exact completion guards and safe shapes', 
       null,
       null,
       null,
+      null,
+      null,
     ],
   );
   assert.equal(saved.completion_diagnostics[0].completion.tables_count, 1);
   assert.equal(saved.completion_diagnostics[3].completion.matches_count, 1);
+});
+
+test('C06 cannot dispatch without the observed tool-test conversation', async () => {
+  const scenario = runDriver({ conversationId: null });
+  await assert.rejects(scenario.run(), /records_c06_conversation_unobserved/);
+  assert.equal(scenario.runs, defaultCompletions.length - 2);
+  assert.deepEqual(scenario.report.positive_mutations, []);
+});
+
+test('C06 refuses a different held approval or a different returned readback row', async () => {
+  for (const [index, replacement, expected] of [
+    [
+      defaultCompletions.length - 2,
+      {
+        ...defaultCompletions.at(-2),
+        output: {
+          ...defaultCompletions.at(-2).output,
+          approval_id: fixtureRowId,
+        },
+      },
+      /records_c06_approval_id_mismatch/,
+    ],
+    [
+      defaultCompletions.length - 1,
+      {
+        ...defaultCompletions.at(-1),
+        output: {
+          ...defaultCompletions.at(-1).output,
+          record: { ...defaultCompletions.at(-1).output.record, id: fixtureRowId },
+        },
+      },
+      /records_c06_readback_id_mismatch/,
+    ],
+  ]) {
+    const completions = [...defaultCompletions];
+    completions[index] = replacement;
+    const scenario = runDriver({ completions });
+    await assert.rejects(scenario.run(), expected);
+    assert.deepEqual(scenario.report.positive_mutations, []);
+  }
 });
 
 test('positive Records reads reject a different owned value or aggregate count', async () => {

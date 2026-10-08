@@ -113,6 +113,15 @@ test('held create is journaled before dispatch, approved through UI, read back, 
   assert.equal((await s.journal()).pending_write_unknown, false);
 });
 
+test('missing observed conversation refuses before the write can dispatch', async () => {
+  const s = await scenario({ conversationId: undefined });
+  await assert.rejects(
+    runOwnedApprovalCreate(s.adapters),
+    /records_approval_conversation_id_invalid/,
+  );
+  assert.equal(s.events.includes('dispatch'), false);
+});
+
 test('wrong held ownership, false applied, or no approval ID cannot earn credit', async () => {
   for (const [result, failure] of [
     [{ ...held(), table_id: rowId }, /result_wrong_table/],

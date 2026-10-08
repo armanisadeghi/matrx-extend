@@ -64,6 +64,7 @@ export async function enterRecordsInput(
 export function observeRecordsExecution(panel, organizationId, expectedBearerHash) {
   const requests = new Map();
   const removers = [];
+  let observedConversationId = null;
   const listen = (event, callback) => removers.push(panel.on(event, callback));
   const header = (headers, name) =>
     Object.entries(headers ?? {}).find(([key]) => key.toLowerCase() === name)?.[1] ?? null;
@@ -134,6 +135,7 @@ export function observeRecordsExecution(panel, organizationId, expectedBearerHas
   return {
     start: () => panel.send('Network.enable'),
     entries: () => [...requests.values()],
+    conversationId: () => observedConversationId,
     stop,
     completion: async (entry) => {
       assert.equal(entry?.finished, true, 'records_execute_not_finished');
@@ -155,6 +157,10 @@ export function observeRecordsExecution(panel, organizationId, expectedBearerHas
         throw new Error('records_execute_completion_invalid');
       }
       assert.equal(completions.length, 1, 'records_execute_completion_count');
+      observedConversationId =
+        typeof completions[0].data?.conversation_id === 'string'
+          ? completions[0].data.conversation_id
+          : null;
       const full = completions[0].data?.result?.full_result;
       assert.ok(
         full && typeof full === 'object' && !Array.isArray(full),

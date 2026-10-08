@@ -1,6 +1,5 @@
 /** Durable, source-only lifecycle for one disposable Records create and its approval. */
 import assert from 'node:assert/strict';
-import { randomUUID } from 'node:crypto';
 import { open, readFile, rename } from 'node:fs/promises';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -26,7 +25,7 @@ function ownerMatches(state, owner) {
   assert.match(owner.organizationId, UUID, 'records_approval_org_id_invalid');
   assert.match(owner.principalId, UUID, 'records_approval_principal_id_invalid');
   assert.ok(
-    /^EXT-F-4130-[0-9a-f-]+-row$/i.test(owner.rowName),
+    /^EXT-F-4130-[0-9a-f-]+-(?:row|approval-row)$/i.test(owner.rowName),
     'records_approval_row_name_invalid',
   );
   assert.equal(state.table_id, owner.tableId, 'records_approval_foreign_table');
@@ -118,7 +117,7 @@ export async function runOwnedApprovalCreate({
   declineInUi,
   readRecord,
   cleanupTable,
-  conversationId = randomUUID(),
+  conversationId,
 }) {
   assert.match(conversationId, UUID, 'records_approval_conversation_id_invalid');
   const state = {
