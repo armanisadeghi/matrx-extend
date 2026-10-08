@@ -17204,6 +17204,12 @@
               "detail": "Existing real referrals page has no links; warm/postreload empty Links checks now require zero count/rows, Add link, and unchanged full capture export. Source8 tests pass; independent review and native pending. Other empty-pane applicability requires source-backed review; no acceptance promotion.",
               "independent_review": "54863312",
               "review_evidence": ".research/scrape-empty-panels-peer-20261008.json"
+            },
+            {
+              "source_commit": "1e2b9b24",
+              "evidence": ".research/scrape-empty-article-preparation-20261008.json",
+              "status": "source-ready-independent-review-and-native-pending",
+              "detail": "Real blank-page pipeline and populated comparator focused test pass; native warm/reload fallback and captureinvariance assertions prepared. Hostedfocused37825726316 passes. Current laneB37825316724 uses earlier source and cannot prove this new Article dimension."
             }
           ]
         },
