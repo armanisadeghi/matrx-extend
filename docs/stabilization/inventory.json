@@ -22526,9 +22526,19 @@
         {
           "id": "EXT-F-1012-T57",
           "title": "Network replay captures initial request and isolates document provenance",
-          "modes": ["admin"],
-          "control_ids": ["EXT-F-1012-C31", "EXT-F-1012-C36", "EXT-F-1012-C42", "EXT-F-1012-C47"],
-          "defect_ids": ["EXT-D-0047", "EXT-D-0049"],
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1012-C31",
+            "EXT-F-1012-C36",
+            "EXT-F-1012-C42",
+            "EXT-F-1012-C47"
+          ],
+          "defect_ids": [
+            "EXT-D-0047",
+            "EXT-D-0049"
+          ],
           "preconditions": [
             "Fresh development build; verify receipt and reload the extension and page in Chrome. Use a real public website with a reproducible request during initial document load and an owned recipe. No localhost/test server. Guest/member denial uses EXT-F-1012-T38."
           ],
@@ -22541,7 +22551,12 @@
             "Initial requests are captured when possible; otherwise the UI states the limitation and provides a clear retrigger action rather than silently suggesting the full initial-load replay succeeded.",
             "Only a response proven to originate from the current replay document can supply its rows; tab identity alone is insufficient across navigation."
           ],
-          "dimensions": ["warm", "reload", "navigation", "service-error"],
+          "dimensions": [
+            "warm",
+            "reload",
+            "navigation",
+            "service-error"
+          ],
           "results": {
             "admin": {
               "status": "unverified",
@@ -22629,7 +22644,24 @@
               "peer": ".research/t57-prior-sequence-independent-peer-20261007.json",
               "native": "unverified"
             }
-          }
+          },
+          "attempt_history": [
+            {
+              "at": "2026-10-08T08:34:43.135817+00:00",
+              "mode": "admin",
+              "run_id": "37748442466",
+              "status": "unverified",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.405",
+              "source_sha": "befaf2142f77cbf91af697a0e902584161442e66",
+              "evidence": [
+                ".research/t57-native-20261008.json",
+                ".research/t57-native-peer-20261008.json"
+              ],
+              "detail": "Sign-in stopped at d87_rendered_identity_not_observed before T57 capture/recipe/prior/current response. One unsafeCPU sample then only twohealthy samples before childfailure left recovery incomplete; resourcefinalinvalid. No product verdict. Actual temporary admin/org secret names independently absent; no retry. Resolve sign-in observation before another attempt."
+            }
+          ]
         },
         {
           "id": "EXT-F-1012-T58",
