@@ -11,6 +11,7 @@ import { fileURLToPath } from 'node:url';
 import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifact.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { matchesFullPageAspect } from './full-page-aspect.mjs';
+import { nativeRuntimeFailureCode } from './native-runtime-failure.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
@@ -65,6 +66,7 @@ function canonical(url) {
 }
 function safeFailure(error) {
   return {
+    runtimeCode: nativeRuntimeFailureCode(error),
     timeout: error?.name === 'TimeoutError',
     assertion: error?.code === 'ERR_ASSERTION',
     pointerCode: /^pointer_[a-z_]+$/.test(error?.driverFailure?.code ?? '')
@@ -899,6 +901,9 @@ try {
     extensionDir: EXTENSION_DIR,
     expectedRelease: before,
     localDevReceiptPath: RECEIPT,
+    onStage: (value) => {
+      stage = `native_${value}`;
+    },
     exercisePanel: exercise,
   });
   assert.equal(run.verified, true);
@@ -910,7 +915,10 @@ try {
   report.targetedVerdict = 'pass';
 } catch (error) {
   report.status = 'unverified';
-  report.failure ??= { stage, code: 'owned_harness_or_ui_stage_failed' };
+  report.failure ??= {
+    stage,
+    code: nativeRuntimeFailureCode(error) ?? 'owned_harness_or_ui_stage_failed',
+  };
   report.failure.diagnostic ??= safeFailure(error);
 }
 await mkdir(dirname(OUTPUT), { recursive: true });
