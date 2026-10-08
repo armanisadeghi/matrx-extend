@@ -38,10 +38,9 @@ const BOOL_KEYS = [
 
 function captureOpenPanelFixture(value) {
   if (!value || typeof value !== 'object') return null;
+  if (value.availability !== 'ready') return { availability: 'unavailable' };
   return {
-    availability: ['ready', 'unavailable'].includes(value.availability)
-      ? value.availability
-      : 'unavailable',
+    availability: 'ready',
     click_received: value.click_received === true,
     send_invoked: value.send_invoked === true,
     send_returned: value.send_returned === true,

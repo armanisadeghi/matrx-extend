@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0166",
+  "source_run": {
+    "hosted_run_id": 37825316724,
+    "workflow_head": "b0344e84ca1891ce70029aea95d83adeaaf6fc2e",
+    "native_receipt": ".research/scrape-empty-links-native-20261008/raw/scrape-guest-native-report.json",
+    "result": "Warm empty Links passed; extension_reload failed with native_extension_replacement_panel_unverified. Old worker and panel retired, one replacement worker was activated/running when the trusted Open panel click began, and no replacement panel target was observed. The callback reply was not observed."
+  },
+  "diagnosis": {
+    "source_cause_of_misleading_fixture_fields": "The b0344e84 ordinary testPage branch omitted #open-trace because scrape_reload_open_diagnostic=false. beginReloadPanelReplyObservation.close therefore caught the missing-locator read and returned fixture.availability=unavailable. captureOpenPanelFixture coerced absent click/send/callback fields to false. These false fields were unknown observations, not proof that the click handler or sendMessage did not run.",
+    "observed_limits": "The Playwright click call resolved, but that does not prove page script entry. reply_not_observed means #result was not read as a settled reply during the bounded target path; it does not identify whether the page click handler, sendMessage, worker listener, sidePanel.open, or callback failed. The opt-in CDP worker diagnostic was disabled, so ingress and open settlement were not measured."
+  },
+  "change": "The owned root fixture always writes a passive, fixed-boolean page-local Open panel trace. The intrusive CDP worker attachment and synchronous open wrapper remain opt-in. The lifecycle serializer now retains only availability=unavailable when the trace cannot be read, instead of serializing unknown milestones as observed false. The trusted FRONTEND_RPC request and replacement target/context acceptance predicates remain unchanged.",
+  "verification": {
+    "focused_command": "node --test tests/browser/native-panel-open-reply.test.mjs tests/browser/profile-reload-capture.test.mjs tests/browser/native-reload-reply-seam.test.mjs",
+    "result": "13 passed. The ordinary testPage script itself is evaluated and checked before and after its callback; the serializer test distinguishes unavailable from ready false fields.",
+    "fail_capable": "An in-memory plant of click_received=false in the actual fixture script made the focused ordinary-fixture test fail; plant.py restored the harness source identically. The prior ordinary branch also fails the new trace-present assertion by construction."
+  },
+  "next_step": "Independent review should check the passive trace and unknown-field semantics. A later separately authorized native run can distinguish page click received, send invoked/returned, callback entered, and replacement target appearance without the perturbing worker wrapper. If send returned but callback and panel remain absent, worker ingress/open settlement is the next missing measurement; this receipt alone does not prove a product cause.",
+  "limits": "No native run, browser launch, build, release, product behavior change, or defect closure is claimed."
+}
