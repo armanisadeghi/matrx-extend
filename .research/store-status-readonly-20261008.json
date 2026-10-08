@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-08T19:41:10Z",
+  "item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+  "scope": "Read-only status check; no build, upload, submission, dashboard mutation, or browser/profile creation.",
+  "authenticated_dashboard": {
+    "status": "not_rechecked_existing_browser_unavailable",
+    "current_published_version": null,
+    "current_draft_version": null,
+    "current_pending_version": null,
+    "current_review_status": null,
+    "current_reviewer_feedback": null,
+    "limitation": "The existing CUA browser inventory had no tabs in Codex MCP Apps or the Codex in-app browser. The Chrome application was not running, and the Chrome browser provider was unavailable. Per task scope, no Chrome process, browser, profile, or test session was started. Therefore the authenticated dashboard and reviewer feedback could not be read.",
+    "last_authenticated_observation": {
+      "observed_at": "2026-10-07T16:23:30Z",
+      "published_version": "0.2.205",
+      "draft_version": "0.2.205",
+      "status": "Published - public",
+      "pending_review": false,
+      "reviewer_action_observed": false,
+      "source": ".research/daily-store-20261007.json",
+      "scope": "Historical dashboard observation only; not a fresh October 8 result. Google email was not inspected."
+    }
+  },
+  "public_listing": {
+    "url": "https://chromewebstore.google.com/detail/matrx-extend/hnfolienncfklkgmdjjmhhegglimlamg",
+    "retrieved_at": "2026-10-08T19:40Z",
+    "page_crawl_recency": "crawled last week",
+    "page_version_text": "0.2.105",
+    "page_updated_text": "September 29, 2026",
+    "public_reviews_text": "0 out of 5; No ratings",
+    "interpretation": "Public page evidence only. It does not establish the current authenticated dashboard package, draft, pending review, or reviewer feedback. The publicly rendered version differs from the October 7 authenticated dashboard record; no resolution is inferred."
+  },
+  "canonical_record": {
+    "path": "/Users/armanisadeghi/code/common-docs/systems/apps/extension/CHROME-WEB-STORE.md",
+    "last_dashboard_recorded": "0.2.205 Published - public, observed October 7 at 16:23 UTC; October 8 dashboard check explicitly not rechecked."
+  },
+  "verification": {
+    "exact_item_id_from_canonical_record": true,
+    "authenticated_dashboard_read_this_run": false,
+    "public_listing_read": true,
+    "dashboard_mutations": "none",
+    "release_actions": { "build": false, "upload": false, "submission": false, "publish": false },
+    "credentials_or_codes_recorded": false
+  }
+}
