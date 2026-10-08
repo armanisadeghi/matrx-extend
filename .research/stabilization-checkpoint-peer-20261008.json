@@ -62,7 +62,7 @@
   },
   "quality_review": {
     "verdict": "BOUNDED_SOURCE_EVIDENCE; NATIVE ACCEPTANCE OPEN",
-    "evidence": "D170 source sequencing is covered by the actual native driver guard and focused CI run 37739262023. Independent review confirms the current order and accepts the guard with an explicit limitation.",
+    "evidence": "D170 source sequencing is covered by the actual native driver guard and focused CI run 37739262023. The independent source peer returned IMPORTANT because the guard has a reachability limitation; the coordinator adjudicated that bounded guard acceptable for launching the native retest, not as a source-review pass.",
     "known_limit": "The guard is not a general JavaScript reachability proof: nested try/finally and truthy-condition early exits can evade it. Current driver mutations for the observed direct-return, callback-return, swap, omission, and recapture-return cases are rejected; no such bypass was found in current source. The review explicitly requires native execution to reach controlled T02/T14 before closure.",
     "native_state_at_review": "The checkpoint records one guarded hosted retest owned by root/seo170_native. Its result was not available in the reviewed local evidence at review time; no native pass is inferred.",
     "support": [
