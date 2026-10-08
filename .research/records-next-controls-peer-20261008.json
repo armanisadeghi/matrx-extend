@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "candidate": "b6060f6e47b46ded533472d9bdda0cb7bb59e638",
+  "scope": "Independent source-only review of the Records native malformed-input controls. No native browser, local service, or backend execution was performed.",
+  "verdict_A_behavior_and_spec": {
+    "result": "PASS_FOR_SOURCE_PREPARATION; NATIVE_PENDING",
+    "evidence": [
+      "The native callback checks that the currently rendered Records contract advertises metadata_search.query, record_read.record_id, and record_aggregate.table_id before issuing these calls.",
+      "Each call goes through the visible textarea and Run button. The observer requires one finished POST to /tools/test/execute with the exact records arguments, approved organization header, and signed-in bearer hash; then it reads one completion from that request and requires visible output to equal it.",
+      "Each result must be success=false, error_type=invalid_arguments, and its message must name query, record_id, or table_id respectively. Positive read credit remains false for C04/C05, and C03's malformed-input case is distinct from its prior positive metadata_search observation.",
+      "Current aidream RecordsArgs source supports these expectations: MetadataSearchWire requires query: str; RecordsWire rejects malformed nonempty *_id values; registered ToolExecutor prevalidation emits invalid_arguments. The direct RecordsArgs error path is not used as the oracle."
+    ],
+    "runtime_limit": "The harness has not been run against an authenticated live extension/backend in this candidate. Its driver tests synthesize network events, completion bodies, and card schema, so they establish callback behavior only. Do not claim these controls tested natively until the hosted acceptance produces a correlated receipt."
+  },
+  "verdict_B_quality_and_security": {
+    "result": "PASS_WITH_MINOR_TEST_GAP",
+    "evidence": [
+      "The focused source tests execute the actual acceptance callback and reject false success, wrong error class, unrelated field text, missing advertised action/field, wrong principal, mismatched visible completion, and incomplete transport.",
+      "The receipt stores fixed labels, status and booleans, not raw args, organization, bearer, response body, or error message. Assertions precede the corresponding success receipt entries, and malformed reads cannot set positive_read_verified true in the current callback."
+    ],
+    "finding": "The success-path test projects negative_reads down to inventory_case, action, error_class, and positive_read_verified. It does not assert finished, status, completion_observed, visible, refused, or field_named in the persisted receipt. The callback currently sets these only after the transport and result assertions, but a future regression that writes false receipt flags would remain green. Assert the complete safe per-case receipt shape in the driver test.",
+    "severity": "minor"
+  },
+  "verification": {
+    "command": "node --test tests/browser/records-readonly-native-driver.test.mjs tests/browser/records-readonly-native-proof.test.mjs",
+    "result": "16 passed, 0 failed",
+    "source_contracts": [
+      "/Users/armanisadeghi/code/aidream/packages/matrx-records/matrx_records/agent/args.py: RecordsWire, MetadataSearchWire, RecordsArgs",
+      "/Users/armanisadeghi/code/aidream/packages/matrx-ai/matrx_ai/tools/executor.py: ToolExecutor._reject_invalid_arguments"
+    ]
+  }
+}
