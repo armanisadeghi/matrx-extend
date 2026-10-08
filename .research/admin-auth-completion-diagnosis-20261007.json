@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "run_id": 37707441895,
+  "status": "diagnostic_ready_product_cause_unknown",
+  "observed": {
+    "last_stage": "admin_extension_auth_completion",
+    "web_signin": "reached_extension_stage",
+    "panel": "guest_banner_and_sign_in_still_visible",
+    "picker_reached": false,
+    "http_status": null,
+    "wait_exception_kind": null
+  },
+  "confirmed_evidence_loss": {
+    "source": "signInSettings constructed a local diagnostic report for signInAdminSettings, but did not forward its signin_observations to the picker receipt on failure",
+    "effect": "The native receipt retained auth_stage only, hiding already-collected safe panel state after the failed completion wait",
+    "scope": "test driver only; no product cause established"
+  },
+  "comparison": {
+    "successful_run": 37706132089,
+    "successful_case": "audit key native acceptance at original v0.2.391 artifact",
+    "shared_path": "signInSettings to signInAdminSettings",
+    "failed_picker_artifact": "v0.2.393 from source 67e7986a; picker product files matched v0.2.391, other runtime equivalence unproven"
+  },
+  "change": "Forward only fixed categorical auth observations to the picker receipt when shared admin sign-in fails, including phase, rendered identity flags, storage presence flags, organization selector presence, and an explicit unobserved HTTP category. No raw exception, URL, body, token, identity or page content is serialized.",
+  "limits": {
+    "native_rerun": "not performed",
+    "local_test": "not performed because system volume was below the 20 GiB resource guard threshold",
+    "product_auth_cause": "unknown; next native failure receipt should distinguish panel state and storage state, but HTTP rejection versus hidden OAuth flow remains unmeasured",
+    "picker_result": "unmeasured"
+  }
+}

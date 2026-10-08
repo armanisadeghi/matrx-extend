@@ -385,6 +385,7 @@ export async function signInSettings({
   adminCredentialsFile,
   memberLinkFile,
   onStage,
+  onAuthDiagnostic,
   onTrace,
   observeBoundary = async () => {},
 }) {
@@ -395,17 +396,49 @@ export async function signInSettings({
       diagnostic.stage = value;
       onStage(value);
     };
-    const identity = await signInAdminSettings({
-      page,
-      panel,
-      report: diagnostic,
-      stage,
-      captureIdentity: true,
-      readCredentials: async () => {
-        const secret = await privateJson(adminCredentialsFile, 'd87_admin_credentials');
-        return requireSettingsCredential('admin', JSON.stringify(secret));
-      },
-    });
+    let identity;
+    try {
+      identity = await signInAdminSettings({
+        page,
+        panel,
+        report: diagnostic,
+        stage,
+        captureIdentity: true,
+        readCredentials: async () => {
+          const secret = await privateJson(adminCredentialsFile, 'd87_admin_credentials');
+          return requireSettingsCredential('admin', JSON.stringify(secret));
+        },
+      });
+    } catch (error) {
+      const observed = diagnostic.signin_observations;
+      const last = observed.extension_failure ?? observed.extension_last ?? null;
+      const storage = await panelIdentity(panel).catch(() => null);
+      const account = await accountIdentity(panel, 'admin@admin.com').catch(() => null);
+      onAuthDiagnostic?.({
+        phase: diagnostic.stage,
+        outcome:
+          error?.message === 'admin_extension_auth_completion_failed'
+            ? 'extension_completion_unobserved'
+            : 'other_admin_auth_failure',
+        web_dashboard_reached: observed.web_dashboard_reached === true,
+        extension_click_failure_code: observed.extension_click_failure?.code ?? null,
+        settings_panel_active: last?.settings_panel_active ?? null,
+        account_expanded: last?.account_expanded ?? null,
+        sign_in_present: last ? last.sign_in_count > 0 : null,
+        sign_out_present: last?.sign_out_present ?? null,
+        auth_error_present: last?.auth_error_present ?? null,
+        auth_retry_present: last?.auth_retry_present ?? null,
+        loading_present: last?.loading_present ?? null,
+        rendered_admin_email: last?.expected_admin_email ?? null,
+        rendered_admin_role: last?.admin_role ?? null,
+        organization_selector_present: account?.organizationPickerAvailable ?? null,
+        storage_access_token_present: storage?.accessTokenPresent ?? null,
+        storage_profile_present: storage ? storage.profileId !== null : null,
+        storage_admin_flag: storage?.isAdmin ?? null,
+        http_category: 'unobserved',
+      });
+      throw error;
+    }
     const stored = await panelIdentity(panel);
     assert.equal(stored.profileId, identity.userId, 'd87_admin_profile_mismatch');
     assert.equal(stored.isAdmin, true, 'd87_admin_role_unverified');

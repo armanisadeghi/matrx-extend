@@ -85,6 +85,7 @@ const report = {
     'nonadmin role gating',
   ],
   failure_code: null,
+  auth_diagnostic: null,
   organization_diagnostic: null,
   selection_diagnostic: null,
   stale_diagnostic: null,
@@ -1037,6 +1038,9 @@ try {
           adminCredentialsFile: process.env.MATRX_PREPARE_ADMIN_CREDENTIALS_FILE,
           onStage: (value) => {
             report.auth_stage = value;
+          },
+          onAuthDiagnostic: (value) => {
+            report.auth_diagnostic = value;
           },
         }),
       );

@@ -1,7 +1,111 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { Window } from 'happy-dom';
 import { guestSettingsChecks, guestSettingsState } from './settings-panel-driver.mjs';
+
+test('admin completion failure reaches the acceptance receipt as safe categories', async () => {
+  let authenticatedState = false;
+  const source = await readFile(
+    new URL('./settings-native-auth-driver.mjs', import.meta.url),
+    'utf8',
+  );
+  const implementation = source
+    .slice(source.indexOf('export async function signInSettings('))
+    .replace('export async function', 'async function');
+  const signInSettings = new Function(
+    'assert',
+    'signInAdminSettings',
+    'panelIdentity',
+    'accountIdentity',
+    `${implementation}; return signInSettings;`,
+  )(
+    assert,
+    async ({ report, stage }) => {
+      stage('admin_extension_auth_completion');
+      report.signin_observations.web_dashboard_reached = true;
+      report.signin_observations.extension_failure = {
+        settings_panel_active: true,
+        account_expanded: true,
+        sign_in_count: authenticatedState ? 0 : 1,
+        sign_out_present: authenticatedState,
+        auth_error_present: !authenticatedState,
+        auth_retry_present: false,
+        loading_present: false,
+        expected_admin_email: authenticatedState,
+        admin_role: authenticatedState,
+        secret: 'private-token',
+      };
+      throw new Error('admin_extension_auth_completion_failed');
+    },
+    async () => ({
+      accessTokenPresent: authenticatedState,
+      profileId: authenticatedState ? 'private-id' : null,
+      isAdmin: authenticatedState ? true : null,
+    }),
+    async () => ({
+      organizationPickerAvailable: authenticatedState,
+      organizationLabel: 'private-org',
+    }),
+  );
+  let diagnostic;
+  await assert.rejects(
+    () =>
+      signInSettings({
+        mode: 'admin',
+        page: {},
+        panel: {},
+        onStage: () => {},
+        onAuthDiagnostic: (value) => {
+          diagnostic = value;
+        },
+      }),
+    /admin_extension_auth_completion_failed/,
+  );
+  assert.deepEqual(diagnostic, {
+    phase: 'admin_extension_auth_completion',
+    outcome: 'extension_completion_unobserved',
+    web_dashboard_reached: true,
+    extension_click_failure_code: null,
+    settings_panel_active: true,
+    account_expanded: true,
+    sign_in_present: true,
+    sign_out_present: false,
+    auth_error_present: true,
+    auth_retry_present: false,
+    loading_present: false,
+    rendered_admin_email: false,
+    rendered_admin_role: false,
+    organization_selector_present: false,
+    storage_access_token_present: false,
+    storage_profile_present: false,
+    storage_admin_flag: null,
+    http_category: 'unobserved',
+  });
+  assert.equal(JSON.stringify(diagnostic).includes('private-'), false);
+  authenticatedState = true;
+  await assert.rejects(
+    () =>
+      signInSettings({
+        mode: 'admin',
+        page: {},
+        panel: {},
+        onStage: () => {},
+        onAuthDiagnostic: (value) => {
+          diagnostic = value;
+        },
+      }),
+    /admin_extension_auth_completion_failed/,
+  );
+  assert.equal(diagnostic.sign_in_present, false);
+  assert.equal(diagnostic.sign_out_present, true);
+  assert.equal(diagnostic.rendered_admin_email, true);
+  assert.equal(diagnostic.storage_access_token_present, true);
+  assert.equal(diagnostic.storage_profile_present, true);
+  assert.equal(diagnostic.storage_admin_flag, true);
+  assert.equal(diagnostic.organization_selector_present, true);
+  assert.equal(JSON.stringify(diagnostic).includes('private-'), false);
+});
 
 // A signed-out operator opens Settings to inspect the device account and
 // organization controls. These counts match the source-rendered guest view.
