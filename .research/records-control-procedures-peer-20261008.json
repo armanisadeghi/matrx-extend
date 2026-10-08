@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "reviewed_at_utc": "2026-10-08T09:05:00Z",
+  "reviewed_at_utc": "2026-10-08T09:20:00Z",
   "case_id": "EXT-F-4130-T01",
   "review_role": "independent source-only peer",
   "target": {
@@ -54,5 +54,33 @@
   "limits": [
     "No tests, live API calls, browser, database, runtime, or product/inventory edits were performed.",
     "The live schema and live guide remain unobserved; source compatibility does not establish deployment compatibility."
-  ]
+  ],
+  "candidate_re_review": {
+    "candidate_sha": "99a1bb8c60bb6cde4e261bf95474b93ad60b8904",
+    "candidate_scope": "git show confirms only .research/records-control-procedures-20261008.json changed.",
+    "verdict": "The three prior positive-path findings are corrected; do not authorize integration of the 25-control set. C01 and C02 retain unsupported/disjunctive negative expectations, and all controls remain runtime-unexecuted.",
+    "corrected_findings": {
+      "C09": "PASS_SOURCE_CORRECTION: explicit intervening record_write uses C06.record_id and expected_version; the test verifies changed value/version, restores the captured original version before delete, and verifies the revert.",
+      "C20": "PASS_SOURCE_CORRECTION: now states run=false prevents model run/value writes while field_propose/enrich_declare can persist; cleanup gap is explicit and NOT_EXECUTABLE.",
+      "C22": "PASS_SOURCE_CORRECTION: invalid positive fixture removed; source-required signature-format field and render/template lineage plus revocation gap are explicit; NOT_EXECUTABLE.",
+      "approval_and_cleanup": "PASS_SCOPE_CORRECTION: routine owned-fixture tests are recognized as already authorized; actual organization-specific product approval behavior is retained, pending is not treated as applied, and cancellation/cleanup holds remain for writes that can be held."
+    },
+    "remaining_source_criteria": [
+      {
+        "control": "EXT-F-4130-C01",
+        "finding": "negative_input uses args.topic although guide_argument_contract is empty (topic is the guide argument shown by source contract); expected result mixes a read-only refusal/empty result with the supported-actions response. It does not define one source-grounded oracle for the given input."
+      },
+      {
+        "control": "EXT-F-4130-C02",
+        "finding": "negative_expected is copied from guide behavior: “Unknown guide topic must return supported actions,” which is unrelated to table_list limit=\"not-an-integer\". The alternative “empty authorized result” also permits success without proving the invalid limit was rejected. No source-supported negative oracle is established."
+      }
+    ],
+    "authorization_and_cleanup": "No blanket case-specific user-approval gate is added. Product approval remains organization-specific; pending receipts remain pending. Existing verified-cleanup/cancellation stop conditions are retained.",
+    "runtime_credit": 0,
+    "integration_readiness": "NOT_READY_FOR_FULL_25_CONTROL_INTEGRATION: C01/C02 negative oracles remain unresolved; other controls retain their own conditional/NOT_EXECUTABLE source and cleanup gates.",
+    "limits": [
+      "Source review only; no live schema/guide/API, tests, browser, database, or runtime execution.",
+      "No global health or deployment status is inferred."
+    ]
+  }
 }
