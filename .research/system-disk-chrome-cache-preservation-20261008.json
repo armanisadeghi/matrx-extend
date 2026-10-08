@@ -19,5 +19,12 @@
   ],
   "free_before": 118759424,
   "free_after": 1530658816,
-  "limitation": "Still below20GiB local-heavy-test threshold."
+  "limitation": "Still below20GiB local-heavy-test threshold.",
+  "later_readonly_observation": {
+    "at": "2026-10-08T20:18:36.621843+00:00",
+    "codex_directory": "7.3GiB unchanged from earlier",
+    "cloudkit_cache": "35GiB, earlier32GiB",
+    "system_free_later": "461MiB sampled after preservation; fluctuating",
+    "scope": "No CloudKit data inspected or deleted; growth is observed, producer/purpose unknown."
+  }
 }

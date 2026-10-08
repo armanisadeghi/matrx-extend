@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T20:05:20.139763+00:00",
+  "updated_at": "2026-10-08T20:29:18.629833+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -6286,10 +6286,14 @@
           "dimensions": ["warm", "reload"],
           "results": {
             "guest": {
-              "status": "pass",
-              "scope": "Visible state or preference persistence only; not full integration behavior",
-              "run_id": "guest-settings-002",
-              "evidence": "docs/stabilization/runs/guest-settings-002.json"
+              "status": "unverified",
+              "run_id": "37837587382",
+              "evidence": [".research/settings-sections-scrape-native-20261008.json"],
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "build_version": "0.2.414",
+              "detail": "Initial active/headings-length census failed before section actions; receipt omitted observed headings/active state. This is an undiagnosed acceptance boundary, not proven product failure. No section or post-extension-reload acceptance.",
+              "resource_valid": true,
+              "scope": "Frozen artifact11568846736; overall run failed T28; other per-case observations retained. No current-main/Store/member/admin claim."
             }
           },
           "preparation_history": [
@@ -6322,6 +6326,19 @@
                 ".research/settings-remaining-controls-preparation-20261008.json",
                 ".research/settings-controls-restoration-peer-20261008.json"
               ]
+            }
+          ],
+          "result_history": [
+            {
+              "at": "2026-10-08T20:22:52.606857+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "scope": "Visible state or preference persistence only; not full integration behavior",
+                "run_id": "guest-settings-002",
+                "evidence": "docs/stabilization/runs/guest-settings-002.json"
+              },
+              "reason": "Preserve earlier-artifact evidence separately from current414 run; not current-main or full reload proof."
             }
           ]
         },
@@ -6970,24 +6987,13 @@
           "results": {
             "guest": {
               "status": "partial",
-              "scope": "Actual guest preference persistence on CI 6aec7dd3 version 0.2.175; not full scrape integration",
-              "run_id": "guest-autoscrape-native-20261002-01",
-              "evidence": "docs/stabilization/reports/guest-autoscrape-native-20261002.json",
-              "historical_result": {
-                "status": "unverified",
-                "run_id": "render-retest-001",
-                "evidence": "docs/stabilization/runs/render-retest-001.json",
-                "verified_substeps": [
-                  "Auto-scrape preference persisted after extension reload, then original Off value was restored."
-                ],
-                "remaining_criteria": [
-                  "Verify the preference actually controls background scrape on page load; only the setting and persistence were tested."
-                ]
-              },
-              "detail": "Actual profile and Loaded from path verified before and after reload. Auto-scrape On persisted; no-send context preview displayed Page content/count only. Restored Off and Capture.",
-              "remaining_criteria": [
-                "Confirm actual captured page text/unique marker and disabled behavior on a fresh document; counts alone do not prove capture integration."
-              ]
+              "run_id": "37837587382",
+              "evidence": [".research/settings-sections-scrape-native-20261008.json"],
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "build_version": "0.2.414",
+              "detail": "Toggle UI and stored scrapeAutoOnLoad matched warm/panel reload; baseline restored. Actual background capture/disabled behavior on fresh document and full-extension-reload preference recheck remain unverified.",
+              "resource_valid": true,
+              "scope": "Frozen artifact11568846736; overall run failed T28; other per-case observations retained. No current-main/Store/member/admin claim."
             }
           },
           "linked_defects": ["EXT-D-0087"],
@@ -7021,6 +7027,34 @@
                 ".research/settings-remaining-controls-preparation-20261008.json",
                 ".research/settings-controls-restoration-peer-20261008.json"
               ]
+            }
+          ],
+          "result_history": [
+            {
+              "at": "2026-10-08T20:22:52.606857+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "scope": "Actual guest preference persistence on CI 6aec7dd3 version 0.2.175; not full scrape integration",
+                "run_id": "guest-autoscrape-native-20261002-01",
+                "evidence": "docs/stabilization/reports/guest-autoscrape-native-20261002.json",
+                "historical_result": {
+                  "status": "unverified",
+                  "run_id": "render-retest-001",
+                  "evidence": "docs/stabilization/runs/render-retest-001.json",
+                  "verified_substeps": [
+                    "Auto-scrape preference persisted after extension reload, then original Off value was restored."
+                  ],
+                  "remaining_criteria": [
+                    "Verify the preference actually controls background scrape on page load; only the setting and persistence were tested."
+                  ]
+                },
+                "detail": "Actual profile and Loaded from path verified before and after reload. Auto-scrape On persisted; no-send context preview displayed Page content/count only. Restored Off and Capture.",
+                "remaining_criteria": [
+                  "Confirm actual captured page text/unique marker and disabled behavior on a fresh document; counts alone do not prove capture integration."
+                ]
+              },
+              "reason": "Preserve earlier-artifact evidence separately from current414 run; not current-main or full reload proof."
             }
           ]
         },
@@ -8716,17 +8750,14 @@
           "dimensions": ["warm", "reload"],
           "results": {
             "guest": {
-              "status": "pass",
-              "scope": "Actual guest preference persistence on CI 6aec7dd3 version 0.2.175; not full scrape integration",
-              "run_id": "guest-autoscrape-native-20261002-01",
-              "evidence": "docs/stabilization/reports/guest-autoscrape-native-20261002.json",
-              "historical_result": {
-                "status": "pass",
-                "scope": "Visible state or preference persistence only; not full integration behavior",
-                "run_id": "guest-settings-002",
-                "evidence": "docs/stabilization/runs/guest-settings-002.json"
-              },
-              "detail": "Capture and Scroll & capture each persisted after full extension Reload. Restored Capture and verified after final reload."
+              "status": "partial",
+              "run_id": "37837587382",
+              "evidence": [".research/settings-sections-scrape-native-20261008.json"],
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "build_version": "0.2.414",
+              "detail": "Capture and Scroll & capture UI/stored modes matched across panel reload and baseline restoration. No preference recheck after full extension reload; prior175 full-reload evidence remains historical.",
+              "resource_valid": true,
+              "scope": "Frozen artifact11568846736; overall run failed T28; other per-case observations retained. No current-main/Store/member/admin claim."
             }
           },
           "linked_defects": ["EXT-D-0087"],
@@ -8760,6 +8791,26 @@
                 ".research/settings-remaining-controls-preparation-20261008.json",
                 ".research/settings-controls-restoration-peer-20261008.json"
               ]
+            }
+          ],
+          "result_history": [
+            {
+              "at": "2026-10-08T20:22:52.606857+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "scope": "Actual guest preference persistence on CI 6aec7dd3 version 0.2.175; not full scrape integration",
+                "run_id": "guest-autoscrape-native-20261002-01",
+                "evidence": "docs/stabilization/reports/guest-autoscrape-native-20261002.json",
+                "historical_result": {
+                  "status": "pass",
+                  "scope": "Visible state or preference persistence only; not full integration behavior",
+                  "run_id": "guest-settings-002",
+                  "evidence": "docs/stabilization/runs/guest-settings-002.json"
+                },
+                "detail": "Capture and Scroll & capture each persisted after full extension Reload. Restored Capture and verified after final reload."
+              },
+              "reason": "Preserve earlier-artifact evidence separately from current414 run; not current-main or full reload proof."
             }
           ]
         },
@@ -65015,6 +65066,15 @@
               "resource_valid": null,
               "evidence": [".research/records-positive-diagnostic-retest-20261008.json"],
               "detail": "No browser/fixture/native execution: authentication preflight failed because delegated staging used gh --body - literal hyphen. Secrets removed. Uploaded journals stale, not current admission proof. Correctedstdin protocol assigned to new Sol owner; no product defect/pass attribution."
+            },
+            {
+              "run_id": "37837671077",
+              "mode": "admin",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "resource_valid": true,
+              "evidence": [".research/records-positive-corrected-native-20261008.json"],
+              "detail": "Corrected credential preflight passed; native C02/C03 and malformed inputs passed. Fixture recovery list failed with unexpected_error, no retained method/status; C04/C05 positive reads unverified. Planned journal before create and separate complete authenticated list with zero owned live fixtures; temporary secrets deleted and root independently verified names absent. Diagnose callback-to-receipt exception before retry."
             }
           ],
           "results": {

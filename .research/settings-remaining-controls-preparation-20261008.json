@@ -31,5 +31,6 @@
     "tests/browser/settings-local-controls-acceptance.mjs",
     "tests/browser/settings-guest-scrape-controls.mjs",
     "tests/browser/settings-guest-scrape-controls.test.mjs"
-  ]
+  ],
+  "scope_correction": "These cases had historical inventory evidence (T28/T67 guest pass on earlier builds, T40 partial). Their414 exercise is artifact-scoped revalidation and stronger checks, not discovery of entirely never-tested behaviors. CurrentT28 census unverified; T40/T67 bounded panel preference observations retained; native37837587382."
 }
