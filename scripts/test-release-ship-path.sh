@@ -131,7 +131,12 @@ case " \$* " in
     # install-lag: the committed lockfile was already current and only the
     # install lagged it, so the update moves node_modules and not the lockfile.
     [ -f "$SANDBOX/install-lag" ] || echo "  /@ai-matrx/fixture@\$to:" >> pnpm-lock.yaml
-    [ -f "$SANDBOX/stale-forever" ] || rm -f "$SANDBOX/stale-packages" ;;
+    if [ -f "$SANDBOX/stale-for" ]; then
+      left=\$(( \$(cat "$SANDBOX/stale-for") - 1 )); echo "\$left" > "$SANDBOX/stale-for"
+      [ "\$left" -gt 0 ] || rm -f "$SANDBOX/stale-packages"
+    else
+      [ -f "$SANDBOX/stale-forever" ] || rm -f "$SANDBOX/stale-packages"
+    fi ;;
   *" lint "*) [ -f "$SANDBOX/fail-lint" ] && exit 1 ;;
   *" exec vitest run --maxWorkers=4 "*)
     git rev-parse HEAD >> "$SANDBOX/checked-shas"
@@ -172,6 +177,13 @@ esac
 exit 0
 STUB
 chmod +x "$SANDBOX/bin/node" "$SANDBOX/bin/pnpm"
+# aidream's GitHub Actions, as the catch-up's publish-train wait reads them: nothing in flight.
+cat > "$SANDBOX/bin/gh" <<STUB
+#!/usr/bin/env bash
+echo "\$*" >> "$SANDBOX/gh-calls"
+echo "[]"
+STUB
+chmod +x "$SANDBOX/bin/gh"
 # Every kill_tree call starts with `pgrep -P <pid>`: log it, so a run whose
 # background jobs had all FINISHED can be seen signalling recycled PIDs.
 REAL_PGREP="$(command -v pgrep)"
@@ -497,9 +509,21 @@ cd "$SANDBOX/checkout"
 git_q clone "$SANDBOX/origin.git" "$SANDBOX/catchup"
 cd "$SANDBOX/catchup"
 git config user.name test; git config user.email test@test; git config core.hooksPath /dev/null
-mkdir -p scripts; cp "$HARNESS_ROOT/scripts/release-matrx-catchup.mjs" "$HARNESS_ROOT/scripts/await-matrx-latest.mjs" scripts/
+mkdir -p scripts; cp "$HARNESS_ROOT/scripts/release-matrx-catchup.mjs" "$HARNESS_ROOT/scripts/await-matrx-latest.mjs" "$HARNESS_ROOT/scripts/sync-main.py" scripts/
+# Stand-in for check-matrx-imports: with break-imports set, any lockfile the update moved
+# drops an export this repo imports.
+cat > scripts/check-matrx-imports.mjs <<STUB
+import { execFileSync } from 'node:child_process';
+import { existsSync } from 'node:fs';
+let moved = false;
+try { execFileSync('git', ['diff', '--quiet', 'HEAD', '--', 'pnpm-lock.yaml']); } catch { moved = true; }
+if (existsSync('$SANDBOX/break-imports') && moved) {
+  console.log('  - src/x.ts imports helperGone from @ai-matrx/fixture, which the installed version does not export');
+  process.exit(1);
+}
+STUB
 printf 'lockfileVersion: 9.0\n' > pnpm-lock.yaml
-git_q add pnpm-lock.yaml scripts/release-matrx-catchup.mjs scripts/await-matrx-latest.mjs; git_q commit -m "lockfile"
+git_q add pnpm-lock.yaml scripts/release-matrx-catchup.mjs scripts/await-matrx-latest.mjs scripts/sync-main.py scripts/check-matrx-imports.mjs; git_q commit -m "lockfile"
 run_release() { set +e; MATRX_AWAIT_REGISTRY="$FIXTURE_REGISTRY" PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/$1" 2>&1; local rc=$?; set -e; return $rc; }
 updates() { grep -c '^update -r.*--latest' "$SANDBOX/pnpm-calls" || true; }
 echo "release — @ai-matrx catch-up"
@@ -514,11 +538,29 @@ rm -f "$SANDBOX/changelog-action"
 check "a declared Consumer action stops the release"   '[[ $ACTION_STATUS -ne 0 && "$CATCHUP_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]]'
 check "the Consumer action is named"                   'grep -q "@ai-matrx/fixture@1.0.1 Consumer action: delete your local copy" "$SANDBOX/catchup-action-out"'
 git checkout -q -- pnpm-lock.yaml
-touch "$SANDBOX/stale-packages" "$SANDBOX/stale-forever"; UPDATES_BEFORE="$(updates)"
+# An update that drops an export this repo imports is never adopted: rolled back, named, stopped.
+touch "$SANDBOX/stale-packages" "$SANDBOX/break-imports"
+BREAK_STATUS=0; run_release catchup-break-out || BREAK_STATUS=$?
+rm -f "$SANDBOX/break-imports" "$SANDBOX/stale-packages"
+check "a breaking update stops the release"            '[[ $BREAK_STATUS -ne 0 && "$CATCHUP_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]]'
+check "a breaking update is rolled back and named"     'git diff --quiet HEAD -- pnpm-lock.yaml && grep -q "rolled back" "$SANDBOX/catchup-break-out" && grep -q "helperGone" "$SANDBOX/catchup-break-out" && grep -q "install --frozen-lockfile" "$SANDBOX/pnpm-calls"'
+# aidream keeps publishing: four catch-ups in a row each adopt a newer version. That is progress,
+# never a stop (the release used to stop after three). Each one waits for the publish runs in flight.
+touch "$SANDBOX/stale-packages" "$SANDBOX/stale-forever"; UPDATES_BEFORE="$(updates)"; : > "$SANDBOX/gh-calls"
+echo 4 > "$SANDBOX/stale-for"
+CHURN_STATUS=0; run_release catchup-churn-out || CHURN_STATUS=$?
+rm -f "$SANDBOX/stale-forever" "$SANDBOX/stale-packages" "$SANDBOX/stale-for"
+git fetch -q origin 2>/dev/null || true
+check "publish churn is caught up, never a stop"       '[[ $CHURN_STATUS -eq 0 && $(( $(updates) - UPDATES_BEFORE )) -eq 4 ]] && grep -q "  pushed" "$SANDBOX/catchup-churn-out"'
+check "each catch-up waits for the publish train"      '[[ $(grep -c "run list -R AI-Matrix-Engine/aidream" "$SANDBOX/gh-calls") -ge 4 ]]'
+git_q reset -q --hard origin/main
+# Endless churn still ends at the release's own race budget (shortened here), named.
+touch "$SANDBOX/stale-packages" "$SANDBOX/stale-forever"
+perl -pi -e 's/^SHIP_RACE_BUDGET_SECS=\d+/SHIP_RACE_BUDGET_SECS=8/' release.sh
 FOREVER_STATUS=0; run_release catchup-forever-out || FOREVER_STATUS=$?
+git checkout -q -- release.sh
 rm -f "$SANDBOX/stale-forever" "$SANDBOX/stale-packages"
-check "catch-up is bounded to three"                   '[[ $FOREVER_STATUS -ne 0 && $(( $(updates) - UPDATES_BEFORE )) -eq 3 && "$CATCHUP_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]]'
-check "the bound is named"                             'grep -q "moved again after 3 catch-ups" "$SANDBOX/catchup-forever-out"'
+check "endless churn stops at the race budget"         '[[ $FOREVER_STATUS -ne 0 ]] && grep -q "still publishing after" "$SANDBOX/catchup-forever-out"'
 git_q reset -q --hard origin/main
 cp "$HARNESS_ROOT/scripts/release-matrx-catchup.mjs" "$HARNESS_ROOT/scripts/await-matrx-latest.mjs" scripts/; printf 'lockfileVersion: 9.0\n' > pnpm-lock.yaml
 git_q add pnpm-lock.yaml scripts/release-matrx-catchup.mjs scripts/await-matrx-latest.mjs; git_q commit -m "lockfile again"

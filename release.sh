@@ -751,20 +751,50 @@ NODE
 # install, update, read every new CHANGELOG entry, commit the lockfile and build
 # a fresh candidate — the gate itself is unchanged and re-runs on that candidate.
 # PIN / DUPLICATE / AHEAD / upstream pin / unverifiable, a declared Consumer
-# action, or MATRX_CATCHUP_ATTEMPTS exhausted: the release stops exactly as before.
-MATRX_CATCHUP_ATTEMPTS=3
+# action, or an update that breaks an @ai-matrx import: the release stops.
+#
+# CORRECTNESS BY CONSTRUCTION, NOT A RACE (2026-10-07). This used to stop after
+# three catch-ups ("@ai-matrx moved again after 3 catch-ups"): each catch-up read
+# npm in the middle of aidream's publish train and adopted one package of it,
+# while the rest of the train landed during the re-check. Now each catch-up
+# first waits for the npm publish runs already in flight (sync-main.py
+# --wait-for-publish-train, max 6 min), so it adopts the whole train at once.
+# A catch-up that adopts newer versions is progress and never stops the release;
+# only one that moves nothing (handled below) or the release's own race budget
+# (SHIP_RACE_BUDGET_SECS, shared with every other race) does. An update that adds
+# a check-matrx-imports failure is rolled back (lockfile to HEAD + frozen
+# reinstall) and named — the same rule sync-main applies.
 MATRX_CATCHUPS=0
+matrx_imports_ok() {  # 0 when every @ai-matrx import resolves in the installed packages (or no check)
+    [[ -f "$REPO_ROOT/scripts/check-matrx-imports.mjs" ]] || return 0
+    ( cd "$REPO_ROOT" && bounded 300 node scripts/check-matrx-imports.mjs ) >> "$RELEASE_LOG_FILE" 2>&1
+}
 catch_up_matrx_packages() {
-    local stale review paths=() p
+    local stale review paths=() p imports_before=0 train
     stale="$(node "$REPO_ROOT/scripts/release-matrx-catchup.mjs" stale-only "$JOBS/check-matrx-packages.out")" || return 1
-    (( MATRX_CATCHUPS < MATRX_CATCHUP_ATTEMPTS )) || {
-        finding "ERROR" "Packages" "@ai-matrx moved again after $MATRX_CATCHUP_ATTEMPTS catch-ups in one release; stopping" "./ship.sh"
+    (( SECONDS - SHIP_START < SHIP_RACE_BUDGET_SECS )) || {
+        finding "ERROR" "Packages" "@ai-matrx was still publishing after $MATRX_CATCHUPS catch-ups and $((SECONDS - SHIP_START))s (the release's race budget); stopping" "./ship.sh"
         return 1
     }
     MATRX_CATCHUPS=$((MATRX_CATCHUPS + 1))
-    log "matrx-packages STALE only ($(tr '\n' ' ' <<< "$stale")) — catch-up $MATRX_CATCHUPS of $MATRX_CATCHUP_ATTEMPTS"
+    log "matrx-packages STALE only ($(tr '\n' ' ' <<< "$stale")) — catch-up $MATRX_CATCHUPS"
+    if [[ -f "$REPO_ROOT/scripts/sync-main.py" ]]; then
+        train="$(cd "$REPO_ROOT" && bounded 420 python3 scripts/sync-main.py --wait-for-publish-train 2>&1 | tail -1)"
+        log "catch-up $MATRX_CATCHUPS: $train"
+    fi
+    matrx_imports_ok || imports_before=1
     if ! ( cd "$REPO_ROOT" && bounded 900 node scripts/await-matrx-latest.mjs && bounded 600 pnpm update -r "@ai-matrx/*" --latest && bounded 600 pnpm update -r "@ai-matrx/*" --depth Infinity ) >> "$RELEASE_LOG_FILE" 2>&1; then
         finding "ERROR" "Packages" "pnpm update of the stale @ai-matrx packages failed during catch-up" "pnpm sync:matrx-packages"
+        return 1
+    fi
+    if (( imports_before == 0 )) && ! matrx_imports_ok; then
+        ( cd "$REPO_ROOT" && node scripts/check-matrx-imports.mjs 2>&1 | grep -v '^MATRX-ITEM' | tail -8 ) > "$JOBS/catchup-broke.txt" 2>/dev/null
+        for p in package.json pnpm-lock.yaml; do
+            git diff --quiet HEAD -- "$p" 2>/dev/null || quiet git checkout HEAD -- "$p"
+        done
+        ( cd "$REPO_ROOT" && bounded 900 pnpm install --frozen-lockfile ) >> "$RELEASE_LOG_FILE" 2>&1 \
+            || finding "ERROR" "Packages" "reinstall after the rolled-back catch-up failed" "pnpm install --frozen-lockfile"
+        finding "ERROR" "Packages" "the @ai-matrx update breaks an import this repo uses, so it was rolled back (lockfile at HEAD): $(tr '\n' ' ' < "$JOBS/catchup-broke.txt" | cut -c1-400)" "fix the importers (or restore the export in the package), then ./ship.sh"
         return 1
     fi
     # shellcheck disable=SC2086  # one name@version per word
