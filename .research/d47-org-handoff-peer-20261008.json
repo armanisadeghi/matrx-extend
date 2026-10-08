@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-08",
+  "defect_id": "EXT-D-0173",
+  "candidate": "0eebbca39c95d62f401f3866123177ce92c4d51a",
+  "verdict_a": {
+    "source": "PASS: both D47 production entrypoints import approvedShowcaseOrganization from the canonical private-fixture reader and pass its name and UUID to the unchanged strict checkpoint",
+    "native_t57": "PENDING: no native run, product request, header, or successful response was observed in this review"
+  },
+  "verdict_b": {
+    "result": "PARTIAL",
+    "positive": "The AST census rejects a missing or swapped UUID at each real checkpoint call; the extracted caller expressions carried two distinct synthetic private identities in the focused test. The checkpoint still requires a UUID, matching product X-Organization-Id and authenticated bearer, and a completed HTTP 200 response.",
+    "important_limit": "tests/browser/showcase-d47-organization-handoff.test.mjs:103-123 executes extracted expressions with approvedShowcaseOrganization injected by the test. It does not execute either production module or assert the helper's import source, so this guard alone cannot prove the runtime binding. Current imports were checked directly and are correct; the limitation is in regression coverage, not an observed production misbinding.",
+    "privacy": "No private fixture values, bearer tokens, or credentials were read or recorded; test identities are synthetic."
+  },
+  "checks": [
+    "node --test tests/browser/showcase-d47-organization-handoff.test.mjs tests/browser/showcase-organization-diagnostic.test.mjs: 10/10 pass",
+    "node --check on both D47 entrypoints: pass",
+    "pnpm exec biome check on the three changed browser files: pass",
+    "git diff --check 0eebbca3^ 0eebbca3: pass"
+  ],
+  "scope_limit": "Source and focused checks only, as requested; no native, build, install, deploy, or secret access."
+}
