@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T16:01:34.134274+00:00",
+  "updated_at": "2026-10-08T16:11:50.063236+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -24347,7 +24347,14 @@
           "title": "Network replay captures initial request and isolates document provenance",
           "modes": ["admin"],
           "control_ids": ["EXT-F-1012-C31", "EXT-F-1012-C36", "EXT-F-1012-C42", "EXT-F-1012-C47"],
-          "defect_ids": ["EXT-D-0047", "EXT-D-0049", "EXT-D-0173", "EXT-D-0177", "EXT-D-0179"],
+          "defect_ids": [
+            "EXT-D-0047",
+            "EXT-D-0049",
+            "EXT-D-0173",
+            "EXT-D-0177",
+            "EXT-D-0179",
+            "EXT-D-0184"
+          ],
           "preconditions": [
             "Fresh development build; verify receipt and reload the extension and page in Chrome. Use a real public website with a reproducible request during initial document load and an owned recipe. No localhost/test server. Guest/member denial uses EXT-F-1012-T38."
           ],
@@ -24613,6 +24620,20 @@
                 ".research/t57-native-final-adjudication-20261008.json"
               ],
               "detail": "Real admin, approved organization, Catalog readiness and finished product response with matching organization header/principal passed. Full Network race failed public_race_old_response_missing; no paused old response/current binding/saved result. Disposable recipe removed; resource-valid child failure. Infrastructure closure adjudicated separately."
+            },
+            {
+              "at": "2026-10-08T16:11:50.063236+00:00",
+              "run_id": "37804469749",
+              "mode": "admin",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "resource_valid": true,
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/t57-arm-414-native-20261008-1552.json",
+                ".research/t57-binding-diagnosis-20261008-1608.json"
+              ],
+              "detail": "Actual response pauses reached; driver selectedtwo oldloaderresponses. Guest terminalchild_failed while resourceInvalid=false; no resourceexhaustionclaim. Currentbinding/savedoutput absent. Ownedfixturezero rows and temporarysecretsabsent verified."
             }
           ]
         },
@@ -24750,7 +24771,8 @@
             "EXT-D-0142",
             "EXT-D-0143",
             "EXT-D-0158",
-            "EXT-D-0160"
+            "EXT-D-0160",
+            "EXT-D-0184"
           ],
           "run_ids": [
             "showcase-live-discovery-001",

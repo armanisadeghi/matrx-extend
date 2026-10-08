@@ -14,7 +14,8 @@
   "actual": "During member test setup, native app re-selection automatically emitted an accessibility tree containing unmasked Store reviewer credentials before redaction could run. The login attempt was rejected and no member identity or Notes operation was confirmed.",
   "evidence": [
     "docs/stabilization/reports/notes-member-native-20261002.json",
-    "docs/stabilization/reports/reviewer-credential-containment-20261002.json"
+    "docs/stabilization/reports/reviewer-credential-containment-20261002.json",
+    ".research/t57-arm-414-native-20261008-1552.json"
   ],
   "severity": "S1: native test tooling exposed an unmasked Store reviewer credential in accessibility output",
   "priority": "P0: credential remediation and safe native capture repair are urgent",
@@ -42,5 +43,6 @@
       "to": "in-fix",
       "reason": "Parent owns pending credential remediation; test process requires safe capture repair and synthetic/disposable-only retest."
     }
-  ]
+  ],
+  "separate_credential_loading_incident": "2026-10-08: a worker evaluated a dotenv file as shell and emitted an unclassified fragment into local task tool output, not confirmed to be an authentication value. Failed parse staged/persisted no secret; parsing replaced by selecting named variables with a dotenv parser. No fragment retained in shared evidence, no tool-history erasure claimed, no isolated credential rotation. This is separate from original accessibility-tree failure and does not close or reproduce that exact gate."
 }
