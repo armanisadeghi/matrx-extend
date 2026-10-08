@@ -1,0 +1,20 @@
+{
+  "scope": "Records read-only native acceptance driver call-site guard",
+  "source_review": ".research/records-repair-final-peer-20261008.json",
+  "test": "tests/browser/records-readonly-native-driver.test.mjs",
+  "sut": "The exercisePanel callback passed by records-readonly-native-acceptance.mjs to runNativeSidepanelQa",
+  "seam": "TypeScript parser locates the actual callback; controlled CDP, auth, and panel dependencies let the callback execute without starting Chrome or calling the server",
+  "red_green": {
+    "baseline": "The real callback accepts a correlated admin Records execution and records a bounded receipt; 4 driver tests pass",
+    "missing_on_stage": "An in-memory removal of the sign-in onStage argument rejects with records_auth_stage_callback_required",
+    "missing_bearer_assertion": "An in-memory removal of the driver bearer assertion lets an execute request from another token produce a passed result; the unmodified driver rejects records_execute_principal_mismatch",
+    "missing_completion_assertion": "An in-memory replacement of the driver's final visible/completion assertion lets a visible result changed after the wait produce a passed result; the unmodified driver rejects records_output_completion_mismatch",
+    "constant_return": "A callback that writes the expected receipt without running the driver accepts the wrong-principal scenario; the unmodified driver rejects it"
+  },
+  "lifecycle_and_privacy": "Success and both rejection scenarios leave zero registered CDP listeners; bounded report assertions exclude bearer text and table content",
+  "commands": [
+    "node --test tests/browser/records-readonly-native-driver.test.mjs tests/browser/records-readonly-native-proof.test.mjs: 7 passed",
+    "pnpm exec biome check tests/browser/records-readonly-native-driver.test.mjs: passed"
+  ],
+  "limits": "Controlled driver test only. No native Chrome execution or live Records request occurred; D91 / EXT-F-4130-C02 remains open."
+}
