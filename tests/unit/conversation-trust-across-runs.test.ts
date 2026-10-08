@@ -1,3 +1,5 @@
+import type { ApiResult } from '@/lib/api/client';
+import type { ClientToolResultBody, ToolResultsResponse } from '@/lib/api/routes/tool-results';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 
@@ -87,7 +89,20 @@ beforeEach(() => {
   h.handlers.clear();
   h.broadcasts.mockClear();
   h.run.mockReset().mockResolvedValue({ ok: true });
-  h.post.mockReset().mockResolvedValue({ ok: true });
+  h.post.mockReset().mockImplementation(
+    async (conversationId: string, results: ClientToolResultBody[]) =>
+      ({
+        ok: true,
+        data: {
+          resolved: results.map((result) => result.call_id),
+          already_resolved: [],
+          not_found: [],
+          continuation_needed: false,
+          user_request_id: null,
+          conversation_id: conversationId,
+        },
+      }) satisfies ApiResult<ToolResultsResponse>,
+  );
   h.trustWrite.mockReset().mockResolvedValue(undefined);
   let store: Record<string, unknown> = {};
   Object.assign(chrome.storage, {
