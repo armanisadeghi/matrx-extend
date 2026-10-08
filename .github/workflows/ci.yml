@@ -151,7 +151,7 @@ jobs:
         run: uvx --from matrx-mandate-scan@latest matrx-mandate-scan check
 
       - name: Lint
-        run: pnpm lint --diagnostic-level=error --max-diagnostics=none
+        run: pnpm lint --diagnostic-level=error
 
       - name: Unit tests
         run: pnpm test
