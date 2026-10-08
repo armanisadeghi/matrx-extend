@@ -563,6 +563,19 @@ function registerHandlers(): void {
     return { ack: true };
   });
 
+  // The side panel's package chat delegates a cloud agent's browser tool here
+  // (`deviceTools` port). Only extension pages reach this (no tab sender).
+  on<
+    { callId: string; toolName: string; args: unknown },
+    { ok: boolean; result?: unknown; error?: string }
+  >(CHANNELS.DEVICE_TOOL_INVOKE, async (payload, sender) => {
+    if (sender.tab || sender.id !== chrome.runtime.id) {
+      return { ok: false, error: 'device tool: extension pages only' };
+    }
+    const mode = await readDefaultPermissionMode();
+    return handleWebmcpCall(payload, { permissionMode: mode, initiator: 'agent' });
+  });
+
   // WebMCP: pages on the allowlist (see src/lib/origin-allowlist.ts) can
   // execute our registered tools through `document.modelContext.executeTool`.
   // The webmcp-bridge content script forwards each call here; we resolve

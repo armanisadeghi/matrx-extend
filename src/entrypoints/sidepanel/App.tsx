@@ -72,7 +72,8 @@ import { type ComponentType, Suspense, lazy, useEffect, useRef, useState } from 
 // which contextual typing widens to `{ default: () => JSX.Element } | { default: ComponentType }`.
 // `lazy()` can't pick a component type out of that union (TS7 rejects it).
 const VIEW_LOADERS: Record<SidepanelTab, () => Promise<{ default: ComponentType }>> = {
-  chat: () => import('@/features/chat/ChatView').then((m) => ({ default: m.ChatView })),
+  chat: () =>
+    import('@/features/package-chat/PackageChatView').then((m) => ({ default: m.PackageChatView })),
   pilot: () => import('@/features/chat/PilotView').then((m) => ({ default: m.PilotView })),
   tasks: () => import('@/features/tasks/TasksView').then((m) => ({ default: m.TasksView })),
   lists: () => import('@/features/lists/ListsHubView').then((m) => ({ default: m.ListsHubView })),

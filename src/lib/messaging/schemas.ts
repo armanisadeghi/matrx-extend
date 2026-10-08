@@ -181,6 +181,11 @@ export const CHANNELS = {
   // here; the dispatcher runs the handler and replies with the result.
   WEBMCP_CALL: 'webmcp:call',
 
+  // Side panel (the package chat's `deviceTools` port) → SW: a cloud agent
+  // delegated one of this browser's tools; the dispatcher runs it and replies
+  // `{ ok, result?, error? }` (same answer as WEBMCP_CALL).
+  DEVICE_TOOL_INVOKE: 'tool:device-invoke',
+
   // Frontend bridge (Phase 2 C1) — matrx-frontend admin app sends RPC
   // envelopes via chrome.runtime.sendMessage(extId, …) (externally_connectable)
   // or via Supabase Broadcast. This channel constant is for cross-context
