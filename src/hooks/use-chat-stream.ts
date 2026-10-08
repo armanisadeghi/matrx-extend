@@ -11,10 +11,13 @@ import {
   streamErrorMessage,
 } from '@/lib/api/stream';
 import { resolveActiveTab } from '@/lib/chat/active-tab';
+import {
+  resolveAttachedGoogleFileIds,
+  resolveAttachedHighlights,
+} from '@/lib/chat/attached-context';
 import { buildBrowserDomState } from '@/lib/chat/build-browser-dom-state';
 import { type ChatRequestContext, buildChatContext } from '@/lib/chat/build-context';
 import { contextRequestFields, rowsWithoutValues } from '@/lib/chat/context/request-context';
-import { resolveAttachedGoogleFileIds, resolveAttachedHighlights } from '@/lib/chat/attached-context';
 import { decisionRenderBlock, isDecisionAnswers } from '@/lib/chat/decision-answers';
 import { refreshPageContextBeforeSend } from '@/lib/chat/refresh-page-context';
 import { presentChatStreamError } from '@/lib/chat/stream-error';

@@ -49,7 +49,12 @@ describe('device tool hand-off', () => {
     expect(started).toHaveBeenCalledTimes(1);
     expect(d.deliver).toHaveBeenCalledWith(
       'conv-1',
-      expect.objectContaining({ call_id: 'call-1', tool_name: 'click_element', output: { clicked: true }, is_error: false }),
+      expect.objectContaining({
+        call_id: 'call-1',
+        tool_name: 'click_element',
+        output: { clicked: true },
+        is_error: false,
+      }),
     );
     expect(out.delivered).toEqual(['call-1']);
   });
@@ -100,6 +105,9 @@ describe('device tool hand-off', () => {
       })),
     });
     await handOffDeviceCalls([CALL], d);
-    expect(d.continueRun).toHaveBeenCalledWith({ conversationId: 'conv-1', userRequestId: 'req-1' });
+    expect(d.continueRun).toHaveBeenCalledWith({
+      conversationId: 'conv-1',
+      userRequestId: 'req-1',
+    });
   });
 });

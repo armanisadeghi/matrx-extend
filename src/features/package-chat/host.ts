@@ -10,6 +10,7 @@ import { STORAGE_KEYS } from '@/config/env';
 import { SpeakerButton } from '@/features/chat/SpeakerButton';
 import { buildHeaders, getApiBaseUrl } from '@/lib/api/client';
 import { requestMicrophoneGrant } from '@/lib/audio/mic-grant';
+import { DEFAULT_CHAT_MANDATE_KEY } from '@/lib/mandates';
 import { send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import {
@@ -17,7 +18,6 @@ import {
   listMemberOrganizations,
   requireActiveOrganizationId,
 } from '@/lib/org/active-org';
-import { DEFAULT_CHAT_MANDATE_KEY } from '@/lib/mandates';
 import { getSupabase } from '@/lib/supabase/client';
 import type {
   ChatDeviceToolInvocation,

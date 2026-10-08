@@ -1,5 +1,6 @@
 import { CopyButton } from '@/components/CopyMenu';
 import { OpenUrl } from '@/components/OpenUrl';
+import { putTextInChatDraft } from '@/lib/chat-target';
 import type { SeoAudit } from '@/lib/seo/audit';
 import {
   SECTION_LABELS,
@@ -9,7 +10,6 @@ import {
   missingSocialTagsSnippet,
 } from '@/lib/seo/evaluators/from-audit';
 import { cn } from '@/lib/utils';
-import { putTextInChatDraft } from '@/lib/chat-target';
 import { Button } from '@ai-matrx/design-system';
 import { Bot, CheckCircle } from 'lucide-react';
 import { AuditIssueList } from './AuditIssueList';
@@ -43,7 +43,6 @@ export function SeoVerdict({
   audit: SeoAudit;
   evaluation: SeoEvaluation;
 }) {
-
   const sendToAgent = (body: string) => {
     const payload = [
       body,

@@ -20,8 +20,8 @@
  */
 
 import type { RequestInitiation } from '@/lib/api/routes/ai';
-import { log } from '@/lib/debug/log';
 import { isPackageChatMode, sendThroughPackageChat } from '@/lib/chat-target';
+import { log } from '@/lib/debug/log';
 import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/mandates';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';

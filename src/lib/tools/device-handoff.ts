@@ -39,7 +39,10 @@ export interface DeviceHandOffDeps {
   deliver: (
     conversationId: string,
     result: ClientToolResultBody,
-  ) => Promise<{ delivered: boolean; continuation: { conversationId: string; userRequestId: string | null } | null }>;
+  ) => Promise<{
+    delivered: boolean;
+    continuation: { conversationId: string; userRequestId: string | null } | null;
+  }>;
   /** The result could not be delivered and may be replayed later. */
   enqueue: (input: { conversationId: string; result: ClientToolResultBody }) => Promise<void>;
   continueRun: (signal: { conversationId: string; userRequestId: string | null }) => void;
@@ -69,7 +72,11 @@ export function runDeviceToolOnce(
   return started;
 }
 
-function resultBody(call: DeviceHandOffCall, answer: DeviceToolRunAnswer, durationMs: number): ClientToolResultBody {
+function resultBody(
+  call: DeviceHandOffCall,
+  answer: DeviceToolRunAnswer,
+  durationMs: number,
+): ClientToolResultBody {
   if (!answer.ok) {
     const message = answer.error ?? 'tool failed';
     return {
@@ -113,13 +120,20 @@ export async function handOffDeviceCalls(
       try {
         answer = await runDeviceToolOnce(call, deps.run);
       } catch (error) {
-        answer = { ok: false, error: `Tool dispatch crashed: ${error instanceof Error ? error.message : String(error)}` };
+        answer = {
+          ok: false,
+          error: `Tool dispatch crashed: ${error instanceof Error ? error.message : String(error)}`,
+        };
       }
       const body = resultBody(call, answer, Date.now() - startedAt);
       try {
         const delivery = await deps.deliver(call.conversationId, body);
         if (delivery.delivered) out.delivered.push(call.callId);
-        else deps.report(`hand-off result for ${call.toolName} was not accepted by the server`, call.callId);
+        else
+          deps.report(
+            `hand-off result for ${call.toolName} was not accepted by the server`,
+            call.callId,
+          );
         if (delivery.continuation) deps.continueRun(delivery.continuation);
       } catch (error) {
         deps.report(`hand-off delivery for ${call.toolName} failed; queued for replay`, error);

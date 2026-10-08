@@ -7,8 +7,8 @@
  * the feature did before (the old chat store), and the package is never even loaded.
  */
 
-import { useSidepanelTabStore } from '@/state/sidepanel-tab';
 import { useChatStore } from '@/state/chat';
+import { useSidepanelTabStore } from '@/state/sidepanel-tab';
 import { useEffect, useState } from 'react';
 
 /** True when the panel was opened on the package chat. */
@@ -77,7 +77,9 @@ export function useChatConversationId(): string | null {
     if (!packageMode) return;
     let live = true;
     const read = () =>
-      void currentChatConversationId().then((id) => live && setPackaged((p) => (p === id ? p : id)));
+      void currentChatConversationId().then(
+        (id) => live && setPackaged((p) => (p === id ? p : id)),
+      );
     read();
     const timer = setInterval(read, 500);
     return () => {
