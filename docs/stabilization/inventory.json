@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T03:08:32.579245+00:00",
+  "updated_at": "2026-10-08T03:27:23.881881+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -14903,7 +14903,18 @@
           "steps": ["Toggle Sync scroll with live page while article pane scrolls."],
           "expected": ["On state follows live page scroll; toggle off stops synchronization."],
           "dimensions": ["warm", "reload"],
-          "linked_defects": ["EXT-D-0163"]
+          "linked_defects": ["EXT-D-0163"],
+          "results": {
+            "guest": {
+              "status": "partial",
+              "run_id": "37721838779",
+              "build_variant": "development0.2.391/source52487361/CI37698216289/artifact11516342905",
+              "evidence": ".research/scrape-scroll-native-retest-20261007.json",
+              "independent_review": ".research/scrape-warm-native-peer-20261007.json",
+              "verified_at": "2026-10-08T03:27:23.881881+00:00",
+              "detail": "Guest warm on/off native scroll proof passes; measured Article310 remains310 after Stop and reverse page650\u21920. Full extension reload not reached, member/admin unverified."
+            }
+          }
         },
         {
           "id": "EXT-F-1007-T08",
@@ -15007,7 +15018,19 @@
           "expected": [
             "Each menu offers the documented representations and copies current capture content, not stale page data."
           ],
-          "dimensions": ["warm", "reload"]
+          "dimensions": ["warm", "reload"],
+          "results": {
+            "guest": {
+              "status": "partial",
+              "run_id": "37721838779",
+              "build_variant": "development0.2.391/source52487361/CI37698216289/artifact11516342905",
+              "evidence": ".research/scrape-scroll-native-retest-20261007.json",
+              "independent_review": ".research/scrape-warm-native-peer-20261007.json",
+              "verified_at": "2026-10-08T03:27:23.881881+00:00",
+              "detail": "Guest intake warm22 CopyMenu options pass current-fixture sentinel/format predicates. After referrals navigation first Copy capture target missing; no referrals option or reload proof. Clipboard values intentionally not retained; predicates independently source-reviewed."
+            }
+          },
+          "linked_defects": ["EXT-D-0164"]
         },
         {
           "id": "EXT-F-1007-T10",
@@ -16011,7 +16034,9 @@
             "EXT-D-0135",
             "EXT-D-0138",
             "EXT-D-0139",
-            "EXT-D-0154"
+            "EXT-D-0154",
+            "EXT-D-0163",
+            "EXT-D-0164"
           ],
           "run_ids": [
             "guest-local-001",
@@ -16025,9 +16050,10 @@
             "37222954472",
             "37225191131",
             "37251782627",
-            "37693691959"
+            "37693691959",
+            "37721838779"
           ],
-          "retest_status": "Partial surface coverage. Latest independently reviewed 0.2.385 guest run37693691959 verifies only the named case criteria; other cases/modes remain explicitly incomplete."
+          "retest_status": "Partial surface coverage. Native37721838779/freshpeer cf9c773e verify frozen391 guest warm T07 and22 first-fixture T09 copy options; navigation failure D164 and reload/modes remain unverified."
         },
         "member": {
           "test_status": "partial",

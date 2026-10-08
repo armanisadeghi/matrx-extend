@@ -25,7 +25,9 @@
     ".research/scrape-guest-new-native-20261007.json",
     ".research/scrape-first-native-peer-20261007.json",
     ".research/scrape-scroll-native-diagnosis-20261007.json",
-    ".research/scrape-scroll-repair-peer-20261007.json"
+    ".research/scrape-scroll-repair-peer-20261007.json",
+    ".research/scrape-scroll-native-retest-20261007.json",
+    ".research/scrape-warm-native-peer-20261007.json"
   ],
   "resource_verdict": "All three current journals valid; acceptance child1/resourceInvalidfalse. Not resource exhaustion.",
   "transition_history": [
@@ -55,5 +57,12 @@
     }
   ],
   "closure_requirement": "Establish cause without weakening T07; causal source guard, independent review, then resource-valid original warm and reload native on/off proof plus surrounding independent Scrape copy checks.",
-  "next_action": "One guarded original391 guest native run using reviewed current driver, then fresh independent evidence review. Product T07/T09 remain unverified."
+  "next_action": "Preserve warm proof; complete original full-reload on/off proof after D164 navigation interruption resolved. D163 remains fixed, not closed.",
+  "retest": {
+    "run_id": "37721838779",
+    "warm": "pass",
+    "reload": "unverified_not_reached",
+    "independent_review": "cf9c773e",
+    "closure": "not_satisfied_reload_outstanding"
+  }
 }
