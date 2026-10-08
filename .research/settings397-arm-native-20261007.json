@@ -1,0 +1,216 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "task_id": "settings397-arm-native-B",
+  "lane": "B",
+  "status": "resource_invalid_no_native_acceptance",
+  "feature_id": "EXT-F-1003",
+  "defect_id": "EXT-D-0167",
+  "workflow": {
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37732615934",
+    "run_id": 37732615934,
+    "job_id": 113164969029,
+    "artifact_id": 11529954857,
+    "artifact_name": "hosted-guest-37732615934-1",
+    "artifact_digest": "sha256:164439439017b11b33943fb86d810ef31e44bcfe84769159cd0230607e48db7b",
+    "head_sha": "710997735cc220d09bd3cc2e54f951a77584265d",
+    "runner_label": "macos-15",
+    "runner_arch": "ARM64",
+    "acceptance_case": "settings-controls",
+    "started_at": "2026-10-08T05:29:29Z",
+    "completed_at": "2026-10-08T05:36:23Z",
+    "conclusion": "failure",
+    "dispatch_count": 1
+  },
+  "frozen_product": {
+    "development_run_id": 37724859892,
+    "development_artifact_id": 11527132614,
+    "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+    "version": "0.2.397",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "1035cd28ce5a63ac6233626f35102f016f7c7e7e0ef0717d259a3ec40fc856ed",
+    "kind": "local_dev_unpacked",
+    "publish_state": "not_published"
+  },
+  "driver_review": {
+    "reviewed_sha": "d46aa7227f605a5efa564fa2808091f75e9ff240",
+    "peer_receipt": ".research/settings-reacquire-final-peer-20261007.json",
+    "focused_ci_run_id": 37731217427,
+    "focused_ci_verdict": "success_66_tests",
+    "current_main_relevant_paths_diff_from_reviewed_sha": "empty",
+    "workflow_sha256": "7d53dcc41676c898b21eb504f0a4d4623c18edced97c375cb9980aed6a7573f3",
+    "driver_sha256": "f5761b1d2efad5893bbe67903a1f1a1e019b1bc10865161f037236a846772772"
+  },
+  "resource_verdict": {
+    "package": "valid",
+    "browser": "valid",
+    "guest": "invalid",
+    "guest_admitted": true,
+    "guest_child_exit_code": 0,
+    "guest_final_resource_invalid": true,
+    "guest_final_exit_code": 3,
+    "guest_final_decision": "invalid",
+    "samples": [
+      {
+        "at": "2026-10-08T05:35:14.033Z",
+        "code": "RESOURCE_ADMITTED",
+        "reasons": [],
+        "one_minute_load": 1.16,
+        "logical_cpus": 3,
+        "cpu_busy_fraction": 0.06571428571428571,
+        "available_memory_gib": 5.81
+      },
+      {
+        "at": "2026-10-08T05:35:30.275Z",
+        "code": "RESOURCE_CPU_PENDING",
+        "reasons": ["RESOURCE_CPU_HIGH_LOAD_BUSY"],
+        "one_minute_load": 2.67,
+        "logical_cpus": 3,
+        "cpu_busy_fraction": 0.69,
+        "available_memory_gib": 5.81
+      },
+      {
+        "at": "2026-10-08T05:35:46.422Z",
+        "code": "RESOURCE_CPU_PENDING",
+        "reasons": [],
+        "one_minute_load": 2.57,
+        "logical_cpus": 3,
+        "cpu_busy_fraction": 0.24,
+        "available_memory_gib": 5.74
+      },
+      {
+        "at": "2026-10-08T05:36:02.515Z",
+        "code": "RESOURCE_CPU_PENDING",
+        "reasons": [],
+        "one_minute_load": 3.18,
+        "logical_cpus": 3,
+        "cpu_busy_fraction": 0.2,
+        "available_memory_gib": 5.74
+      }
+    ],
+    "interpretation": "Final invalid decision overrides successful child execution; the run has zero native Settings acceptance credit."
+  },
+  "native_observations_no_acceptance_credit": {
+    "receipt_status": "unverified",
+    "guest_full_extension_reload": {
+      "managementReloadClicked": true,
+      "oldTargetsRetired": true,
+      "workerReplaced": true,
+      "panelReplaced": true
+    },
+    "guest_reload_boundary": {
+      "status": "settings_opened",
+      "panel": {
+        "sampled": true,
+        "runtimeIdMatches": true,
+        "documentReady": true,
+        "visible": true,
+        "settingsTabCount": 1,
+        "settingsActiveCount": 1,
+        "guestBannerPresent": false,
+        "guestOrganizationGuidancePresent": true
+      }
+    },
+    "T34": {
+      "receipt_status": "unverified",
+      "observed_steps": 4,
+      "criteria_statuses": ["pass", "pass", "pass", "pass", "unverified"],
+      "observed": "Four switch UI/storage checks and panel reloads recorded, ending off/quiet; no reacquisition exception or failure identity recorded.",
+      "restoration": "Driver control flow returned without error and asserts restoration internally; original-state and restored values are not separately recorded in receipt. Do not claim independent baseline restoration.",
+      "downstream_consumer": "unverified"
+    },
+    "T64": {
+      "receipt_status": "pass",
+      "observed_steps": 5,
+      "criteria_statuses": ["pass", "pass", "pass", "pass", "pass"],
+      "observed": "Five signed-out guest Ask again UI/storage steps recorded; no fixture-precondition failure in this child receipt.",
+      "auth_defect": "none inferred; prior zero-step fixture failure remains distinct."
+    },
+    "privacy_downstream_consumers": "unverified",
+    "full_extension_reload": "observed in invalid run; no acceptance credit"
+  },
+  "evidence": {
+    "selection": "Complete downloaded artifact tree retained byte for byte. Three current-run journals, receipt, two screenshots are distinguished from six bundled stale journals; stale journals have no current-run credit.",
+    "original_files": [
+      {
+        "path": ".research/settings397-arm-native-20261007-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37105304739-1.jsonl",
+        "sha256": "6c45eac59dd17d7194ac61d92a8571331e9db92593361e9a622a461786b58dea",
+        "size_bytes": 1532,
+        "current_run": false
+      },
+      {
+        "path": ".research/settings397-arm-native-20261007-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37724762467-1.jsonl",
+        "sha256": "70dd9b6fb4de6e5f119e939acd296782dfb56cf5cdd091c056f09d73c18a0344",
+        "size_bytes": 991,
+        "current_run": false
+      },
+      {
+        "path": ".research/settings397-arm-native-20261007-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37732615934-1.jsonl",
+        "sha256": "61668eea827ee1012b9faad8ca9252399e270479f0a0849066e0c80fef0c1bc5",
+        "size_bytes": 1003,
+        "current_run": true
+      },
+      {
+        "path": ".research/settings397-arm-native-20261007-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37105304739-1.jsonl",
+        "sha256": "1a2654d74ad70721a101c9710333ced8d23da567266d2f5653db2849e8ea51d2",
+        "size_bytes": 1530,
+        "current_run": false
+      },
+      {
+        "path": ".research/settings397-arm-native-20261007-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37724762467-1.jsonl",
+        "sha256": "c36252c0fe502603e65d7fb7a4435642035ebacadc52757c1930fffe04e33d3a",
+        "size_bytes": 6443,
+        "current_run": false
+      },
+      {
+        "path": ".research/settings397-arm-native-20261007-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37732615934-1.jsonl",
+        "sha256": "cccf2b2088b917a68232a6ceebf51623ba218ed71c37e4d5253b7ad813f90dae",
+        "size_bytes": 4595,
+        "current_run": true
+      },
+      {
+        "path": ".research/settings397-arm-native-20261007-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37105304739-1.jsonl",
+        "sha256": "15fbd74ef4739e033a278c80463ff29b182947b96eb802f93473d88c6e978692",
+        "size_bytes": 1057,
+        "current_run": false
+      },
+      {
+        "path": ".research/settings397-arm-native-20261007-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37724762467-1.jsonl",
+        "sha256": "3410f7e6f9442f56e34a9bd6f9c381de721bff440e31487f370e0d094733e3a0",
+        "size_bytes": 986,
+        "current_run": false
+      },
+      {
+        "path": ".research/settings397-arm-native-20261007-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37732615934-1.jsonl",
+        "sha256": "4281455f46243eda2ccaf9e1110e4fa8a37c047b519d16238e765d38c7cbef80",
+        "size_bytes": 992,
+        "current_run": true
+      },
+      {
+        "path": ".research/settings397-arm-native-20261007-originals/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-0SobIf/native-side-panel.png",
+        "sha256": "7014b991b2908b07a38bb4189bff80a010f94ac1615c42aad08cc55b60de4276",
+        "size_bytes": 26224,
+        "current_run": true
+      },
+      {
+        "path": ".research/settings397-arm-native-20261007-originals/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-0SobIf/normal-target-after-open.png",
+        "sha256": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89",
+        "size_bytes": 25156,
+        "current_run": true
+      },
+      {
+        "path": ".research/settings397-arm-native-20261007-originals/matrx-extend/matrx-extend/test-results/settings-local-controls-acceptance.json",
+        "sha256": "17575c226d56185d405bde664c7095b1c8dd42b5fb97228936c6e14b979646f0",
+        "size_bytes": 70500,
+        "current_run": true
+      }
+    ]
+  },
+  "limitations": [
+    "ARM resource-invalid attempt ends this bounded experiment; no further host strategy without a changed hypothesis.",
+    "Final guard decision controls validity even though receipt contains product observations and childExitCode 0.",
+    "T34 downstream consumer and independent baseline restoration remain unverified; T64 prior fixture failure is not a product-auth diagnosis.",
+    "No source, inventory, threshold, retry, local build, release, or deployment change."
+  ],
+  "next_action": "Root retains EXT-D-0167 native acceptance pending and considers a changed resource strategy based on measured ARM invalid result; no immediate rerun."
+}
