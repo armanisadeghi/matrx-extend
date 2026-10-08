@@ -2102,7 +2102,7 @@ Every entry follows this shape:
   1. Ask the agent to open two different pages on the same site, one after another.
   2. On the first "Approve navigate" card, tick the checkbox and click Allow.
 - **Expected:** The second navigate on that site runs with no card. A different tool, or the same tool on another site, still asks.
-- **Edge cases worth poking:** Start a new chat → it asks again. Privileged tools never show the checkbox. Approve two cards on different sites together with both checkboxes selected; later runs on both sites retain the choices. With a delayed storage write, a remembered approval finishes saving before its tool result can start a continuation. Repeat after a service-worker restart.
+- **Edge cases worth poking:** Start a new chat → it asks again. Privileged tools never show the checkbox. Approve two cards on different sites together with both checkboxes selected; later runs on both sites retain the choices. With a delayed storage write, a remembered approval finishes saving before its tool result can start a continuation. Repeat after a service-worker restart, a full extension reload, and a browser restart: reopen the exact saved chat and confirm the same tool/site stays approved. Open another chat or sign in as another person: that choice does not carry over. Switch back to the original person and reopen the original chat: their saved choice remains.
 
 ### Settings preference save and retry
 - **What it does:** Settings reports a rejected preference save and offers Retry save. Overlapping changes are written in choice order so the latest selection survives reload.

@@ -15,12 +15,16 @@
  *      sidepanel, but the in-memory Promise + listener were gone — clicking
  *      Allow did nothing and the run was stuck.
  *
- * `chrome.storage.session` has exactly the right lifetime: survives SW
- * restarts, cleared when the browser exits. Everything here is best-effort —
+ * Run metadata and pending confirmations use `chrome.storage.session`: they
+ * survive SW restarts but end with the browser session. Remembered approvals
+ * use actor/conversation-scoped `chrome.storage.local`, because the saved chat
+ * outlives browser and extension reloads. Everything here is best-effort —
  * a storage failure degrades to the old in-memory-only behaviour, never
  * blocks dispatch.
  */
 
+import { getCurrentUser } from '@/lib/auth/flow';
+import { getOrCreateGuestSignature } from '@/lib/auth/guest-signature';
 import { log } from '@/lib/debug/log';
 import type { ConfirmInitiator, NetworkCaptureApprovalPreview, ToolTier } from '@/lib/tools/types';
 
@@ -146,8 +150,19 @@ function pruneRuns(all: Record<string, PersistedRunMeta>): void {
 /* ── Conversation trust ("allow for the rest of this chat") ───────── */
 
 const TRUST_KEY = 'matrx.dispatch.conversationTrust';
-/** Hard cap on conversations remembered (oldest evicted first). */
-const TRUST_MAX_CONVERSATIONS = 100;
+function trustStore(): chrome.storage.StorageArea | null {
+  try {
+    return chrome?.storage?.local ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function conversationTrustKey(conversationId: string): Promise<string> {
+  const user = await getCurrentUser();
+  const actor = user ? `user:${user.id}` : `guest:${await getOrCreateGuestSignature()}`;
+  return JSON.stringify([actor, conversationId]);
+}
 
 /** One remembered approval: this tool on this host. */
 export function trustEntry(toolName: string, host: string): string {
@@ -157,13 +172,16 @@ export function trustEntry(toolName: string, host: string): string {
 /**
  * The approvals a person ticked "for the rest of this chat". Keyed by
  * conversation, not run: every continuation after a tool result is a NEW run,
- * so a run-scoped set forgot the choice on the very next tool call.
+ * so a run-scoped set forgot the choice on the very next tool call. The actor
+ * scope keeps a shared saved chat from borrowing another person's choice.
  */
 export async function loadConversationTrust(conversationId: string): Promise<string[]> {
-  const store = sessionStore();
+  await trustMutation;
+  const store = trustStore();
   if (!store) return [];
   try {
-    return (await readTrust(store))[conversationId]?.entries ?? [];
+    const key = await conversationTrustKey(conversationId);
+    return (await readTrust(store))[key]?.entries ?? [];
   } catch {
     return [];
   }
@@ -173,7 +191,16 @@ export async function loadConversationTrust(conversationId: string): Promise<str
 // read/modify/write so simultaneous approval clicks cannot replace each other.
 let trustMutation: Promise<void> = Promise.resolve();
 export function addConversationTrust(conversationId: string, entry: string): Promise<void> {
-  const write = () => addConversationTrustUnlocked(conversationId, entry);
+  // Capture who clicked before this write joins the queue; an account switch
+  // while another write is finishing must not attribute their choice anew.
+  const key = conversationTrustKey(conversationId);
+  const write = async () => {
+    try {
+      await addConversationTrustUnlocked(await key, entry);
+    } catch (err) {
+      log.warn('sw', 'addConversationTrust identity unavailable', (err as Error)?.message);
+    }
+  };
   const result = trustMutation.then(write, write);
   trustMutation = result.then(
     () => undefined,
@@ -182,26 +209,19 @@ export function addConversationTrust(conversationId: string, entry: string): Pro
   return result;
 }
 
-async function addConversationTrustUnlocked(conversationId: string, entry: string): Promise<void> {
-  const store = sessionStore();
+async function addConversationTrustUnlocked(key: string, entry: string): Promise<void> {
+  const store = trustStore();
   if (!store) return;
   try {
     const all = await readTrust(store);
-    const prev = all[conversationId]?.entries ?? [];
-    all[conversationId] = {
+    const prev = all[key]?.entries ?? [];
+    all[key] = {
       entries: prev.includes(entry) ? prev : [...prev, entry],
       updatedAt: Date.now(),
     };
-    const ids = Object.keys(all);
-    if (ids.length > TRUST_MAX_CONVERSATIONS) {
-      ids
-        .sort((a, b) => (all[a]?.updatedAt ?? 0) - (all[b]?.updatedAt ?? 0))
-        .slice(0, ids.length - TRUST_MAX_CONVERSATIONS)
-        .forEach((id) => delete all[id]);
-    }
     await store.set({ [TRUST_KEY]: all });
   } catch (err) {
-    log.warn('sw', `addConversationTrust failed for ${conversationId}`, (err as Error)?.message);
+    log.warn('sw', 'addConversationTrust failed', (err as Error)?.message);
   }
 }
 

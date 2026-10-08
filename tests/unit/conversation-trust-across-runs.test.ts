@@ -1,7 +1,15 @@
+import { STORAGE_KEYS } from '@/config/env';
 import type { ApiResult } from '@/lib/api/client';
 import type { ClientToolResultBody, ToolResultsResponse } from '@/lib/api/routes/tool-results';
+import type { UserProfile } from '@/lib/auth/types';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { z } from 'zod';
+
+const manager = { id: 'bde0bf98-6599-47b2-aab4-82e76dc9eab4', email: null } satisfies UserProfile;
+const receptionist = {
+  id: '8b2e65e1-f7a9-4fca-b9c6-7823b6e74a3e',
+  email: null,
+} satisfies UserProfile;
 
 // "Allow this tool on <host> for the rest of this chat" must survive the next
 // run of the same chat: every continuation after a tool result is a new run.
@@ -84,7 +92,7 @@ async function delegate(runId: string, callId: string, url: string) {
   });
 }
 
-beforeEach(() => {
+beforeEach(async () => {
   vi.resetModules();
   h.handlers.clear();
   h.broadcasts.mockClear();
@@ -104,17 +112,24 @@ beforeEach(() => {
       }) satisfies ApiResult<ToolResultsResponse>,
   );
   h.trustWrite.mockReset().mockResolvedValue(undefined);
-  let store: Record<string, unknown> = {};
-  Object.assign(chrome.storage, {
-    session: {
+  const makeArea = () => {
+    let store: Record<string, unknown> = {};
+    return {
       get: async () => structuredClone(store),
       set: async (value: object) => {
         if ('matrx.dispatch.conversationTrust' in value) await h.trustWrite();
         store = { ...store, ...structuredClone(value) };
       },
-      remove: async () => {},
-    },
-  });
+      remove: async (keys: string | string[]) => {
+        for (const key of Array.isArray(keys) ? keys : [keys]) delete store[key];
+      },
+      clear: async () => {
+        store = {};
+      },
+    };
+  };
+  Object.assign(chrome.storage, { local: makeArea(), session: makeArea() });
+  await chrome.storage.local.set({ [STORAGE_KEYS.USER_PROFILE]: manager });
 });
 
 it('a remembered approval auto-allows the same tool + host on the next run of the chat', async () => {
@@ -197,7 +212,7 @@ it('waits for remembered choices to persist before either tool can continue', as
   expect(confirmRequests()).toHaveLength(2);
 });
 
-it('retains concurrent remembered hosts in the real session-storage map', async () => {
+it('retains concurrent remembered hosts in the real storage map', async () => {
   const { addConversationTrust, loadConversationTrust } = await import(
     '@/lib/tools/dispatch-persist'
   );
@@ -222,4 +237,82 @@ it('retains concurrent remembered hosts in the real session-storage map', async 
     'navigate@calendar.google.com',
   ]);
   expect(await loadConversationTrust('inspection-chat')).toEqual(['navigate@app.notion.com']);
+});
+
+// The native repro reopens the SAME saved chat after a full extension reload.
+// Chrome retains local storage but clears session storage and all JS realms.
+it('retains remembered approvals after a full extension reload of the same chat', async () => {
+  const dispatch = await import('@/lib/tools/dispatch');
+  dispatch.startToolDispatcher({ defaultPermissionMode: () => 'ask' });
+  await delegate('intake-first', 'intake-approval', 'https://app.notion.com/intake');
+  await vi.waitFor(() => expect(confirmRequests()).toHaveLength(1));
+  await emit(CHANNELS.TOOL_CONFIRM_RESPONSE, {
+    callId: 'intake-approval',
+    decision: 'allow',
+    rememberFor: 'conversation',
+  });
+  await vi.waitFor(() => expect(h.post).toHaveBeenCalledTimes(1));
+  await chrome.storage.session.clear();
+  h.handlers.clear();
+  vi.resetModules();
+  const reopened = await import('@/lib/tools/dispatch');
+  reopened.startToolDispatcher({ defaultPermissionMode: () => 'ask' });
+  await delegate('intake-reopened', 'intake-next', 'https://app.notion.com/intake-next');
+  await vi.waitFor(() => expect(h.run).toHaveBeenCalledTimes(2));
+  expect(confirmRequests()).toHaveLength(1);
+  await delegate('intake-other-site', 'calendar-next', 'https://calendar.google.com/intake');
+  await vi.waitFor(() => expect(confirmRequests()).toHaveLength(2));
+  expect(h.run).toHaveBeenCalledTimes(2);
+});
+
+it('keeps remembered choices with their approving actor and conversation', async () => {
+  const trust = await import('@/lib/tools/dispatch-persist');
+  await trust.addConversationTrust('intake-chat', 'navigate@app.notion.com');
+  await chrome.storage.session.clear();
+  vi.resetModules();
+  const reopened = await import('@/lib/tools/dispatch-persist');
+  expect(await reopened.loadConversationTrust('intake-chat')).toEqual(['navigate@app.notion.com']);
+  expect(await reopened.loadConversationTrust('billing-chat')).toEqual([]);
+  await chrome.storage.local.set({
+    [STORAGE_KEYS.USER_PROFILE]: receptionist,
+  });
+  expect(await reopened.loadConversationTrust('intake-chat')).toEqual([]);
+  await reopened.addConversationTrust('intake-chat', 'navigate@calendar.google.com');
+  expect(await reopened.loadConversationTrust('intake-chat')).toEqual([
+    'navigate@calendar.google.com',
+  ]);
+  await chrome.storage.local.set({ [STORAGE_KEYS.USER_PROFILE]: manager });
+  expect(await reopened.loadConversationTrust('intake-chat')).toEqual(['navigate@app.notion.com']);
+});
+
+it('restores the same guest approval without sharing it with a signed-in actor', async () => {
+  await chrome.storage.local.remove(STORAGE_KEYS.USER_PROFILE);
+  await chrome.storage.local.set({ [STORAGE_KEYS.GUEST_SIGNATURE]: 'a'.repeat(64) });
+  const trust = await import('@/lib/tools/dispatch-persist');
+  await trust.addConversationTrust('guest-intake-chat', 'navigate@app.notion.com');
+  await chrome.storage.session.clear();
+  vi.resetModules();
+  const reopened = await import('@/lib/tools/dispatch-persist');
+  expect(await reopened.loadConversationTrust('guest-intake-chat')).toEqual([
+    'navigate@app.notion.com',
+  ]);
+  await chrome.storage.local.set({ [STORAGE_KEYS.USER_PROFILE]: manager });
+  expect(await reopened.loadConversationTrust('guest-intake-chat')).toEqual([]);
+});
+
+it('a lookup issued with the approval observes its queued durable write', async () => {
+  const trust = await import('@/lib/tools/dispatch-persist');
+  let releaseWrite!: () => void;
+  h.trustWrite.mockImplementation(
+    () =>
+      new Promise<void>((resolve) => {
+        releaseWrite = resolve;
+      }),
+  );
+  const write = trust.addConversationTrust('intake-chat', 'navigate@app.notion.com');
+  const lookup = trust.loadConversationTrust('intake-chat');
+  await vi.waitFor(() => expect(h.trustWrite).toHaveBeenCalled());
+  releaseWrite();
+  await write;
+  expect(await lookup).toEqual(['navigate@app.notion.com']);
 });
