@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
 import {
+  maybeStartScrapeReloadOpenDiagnostic,
   refuseDiagnosticAcceptance,
   reloadOpenEvidenceClass,
   startScrapeReloadOpenDiagnostic,
@@ -19,6 +20,19 @@ test('worker probe is opt-in and its receipt cannot earn acceptance credit', () 
     status: 'unverified',
     failure: { stage: 'extension_reload', code: 'diagnostic_only_perturbed_worker' },
   });
+});
+
+test('default worker probe makes no CDP attachment', async () => {
+  const probe = await maybeStartScrapeReloadOpenDiagnostic(
+    {
+      send: () => {
+        throw new Error('default path attached CDP');
+      },
+    },
+    'replacement-worker',
+    false,
+  );
+  assert.equal(probe, null);
 });
 
 function cdptarget(open) {

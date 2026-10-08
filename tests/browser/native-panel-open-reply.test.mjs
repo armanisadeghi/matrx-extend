@@ -63,7 +63,7 @@ test('reply read failure stays bounded, and no callback remains unobserved', asy
 });
 
 test('real fixture click records send and callback milestones without retaining reply text', () => {
-  const html = testPage('cihdmkcdjjckfhjpgoedmgfpoljebaml');
+  const html = testPage('cihdmkcdjjckfhjpgoedmgfpoljebaml', true);
   const script = html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
   assert.ok(script);
   const elements = new Map([
@@ -109,4 +109,10 @@ test('real fixture click records send and callback milestones without retaining 
   assert.equal(JSON.parse(trace).callback_last_error, true);
   assert.equal(JSON.parse(trace).callback_has_reply, false);
   assert.doesNotMatch(trace, /private|token/);
+});
+
+test('default owned fixture keeps its original direct send path', () => {
+  const html = testPage('cihdmkcdjjckfhjpgoedmgfpoljebaml');
+  assert.doesNotMatch(html, /open-trace|send_invoked|callback_entered/);
+  assert.match(html, /chrome\.runtime\.sendMessage/);
 });

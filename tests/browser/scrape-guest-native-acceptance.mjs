@@ -972,6 +972,7 @@ try {
   };
   await runNativeSidepanelQa({
     headed: true,
+    reloadOpenDiagnostic: RELOAD_OPEN_DIAGNOSTIC,
     extensionDir: EXTENSION_DIR,
     ...(ARTIFACT_CHANNEL === 'development'
       ? { localDevReceiptPath: RECEIPT }
@@ -1664,7 +1665,7 @@ try {
       t20.evidence.previous_content_cleared_before_reload = true;
       const replacement = await resourceAction(() => {
         recordReloadMilestone(report, 'reload_extension');
-        return reloadExtension({ scrapeOpenDiagnostic: RELOAD_OPEN_DIAGNOSTIC });
+        return reloadExtension();
       });
       report.reload_lifecycle = {
         observed_at: new Date().toISOString(),

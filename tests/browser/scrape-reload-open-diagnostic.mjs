@@ -133,3 +133,7 @@ export async function startScrapeReloadOpenDiagnostic(cdp, targetId) {
     },
   };
 }
+
+export async function maybeStartScrapeReloadOpenDiagnostic(cdp, targetId, enabled) {
+  return enabled ? startScrapeReloadOpenDiagnostic(cdp, targetId) : null;
+}

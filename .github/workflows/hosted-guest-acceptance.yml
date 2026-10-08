@@ -110,6 +110,11 @@ on:
         description: Optional owned intake-page CPU diagnostic rate for guest-scrape or guest-scrape-development (for example 4)
         required: false
         type: string
+      scrape_reload_open_diagnostic:
+        description: Probe replacement-worker panel open in guest-scrape-development; diagnostic-only, never acceptance credit
+        required: false
+        default: false
+        type: boolean
       scrape_auth_mode:
         description: Scrape identity to verify through real sign-in
         required: false
@@ -282,6 +287,7 @@ jobs:
           MATRX_HOSTED_DESKTOP_SETTINGS_CASE: ${{ inputs.desktop_settings_case }}
           MATRX_HOSTED_PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx == true && '0.2.205' || '' }}
           MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE: ${{ inputs.scrape_diagnostic_cpu_rate }}
+          MATRX_SCRAPE_RELOAD_OPEN_DIAGNOSTIC: ${{ inputs.scrape_reload_open_diagnostic == true && '1' || '0' }}
           MATRX_SCRAPE_AUTH_MODE: ${{ inputs.scrape_auth_mode }}
           MATRX_SCRAPE_WIDTH_MODE: ${{ inputs.scrape_width_mode }}
           MATRX_SCRAPE_MIN_PANEL_WIDTH_PX: ${{ inputs.scrape_normal_width_px }}
@@ -351,6 +357,7 @@ jobs:
           MATRX_HOSTED_SEO_METADATA_FIXTURE: ${{ inputs.seo_metadata_fixture || 'none' }}
           MATRX_D47_PUBLIC_RACE_PREFLIGHT: ${{ inputs.d47_public_race_preflight == true && '1' || '0' }}
           MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE: ${{ inputs.scrape_diagnostic_cpu_rate }}
+          MATRX_SCRAPE_RELOAD_OPEN_DIAGNOSTIC: ${{ inputs.scrape_reload_open_diagnostic == true && '1' || '0' }}
           MATRX_SCRAPE_AUTH_MODE: ${{ inputs.scrape_auth_mode }}
           MATRX_SCRAPE_WIDTH_MODE: ${{ inputs.scrape_width_mode }}
           MATRX_SCRAPE_MIN_PANEL_WIDTH_PX: ${{ inputs.scrape_normal_width_px }}

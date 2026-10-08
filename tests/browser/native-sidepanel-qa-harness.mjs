@@ -29,7 +29,7 @@ import { resolveBrowserRuntime } from './browser-runtime.mjs';
 import { awaitNativeResourceHealth, runNativeResourceAction } from './native-resource-boundary.mjs';
 import { serveOwnedFixture } from './owned-fixture-server.mjs';
 import { startReloadLifetimeDiagnostic } from './reload-lifetime-diagnostic.mjs';
-import { startScrapeReloadOpenDiagnostic } from './scrape-reload-open-diagnostic.mjs';
+import { maybeStartScrapeReloadOpenDiagnostic } from './scrape-reload-open-diagnostic.mjs';
 
 const require = createRequire(import.meta.url);
 const { prepareOwnedProfile, connectOwnedCdp } = require('./vault-owned-cdp.cjs');
@@ -804,8 +804,11 @@ async function reloadOwnedExtension({
     await page.bringToFront();
     // Diagnostic-only CDP attachment can perturb worker lifetime and the
     // gesture route. The receipt labels it; it never changes acceptance.
-    if (scrapeOpenDiagnostic)
-      openDiagnostic = await startScrapeReloadOpenDiagnostic(cdp, replacementWorker.targetId);
+    openDiagnostic = await maybeStartScrapeReloadOpenDiagnostic(
+      cdp,
+      replacementWorker.targetId,
+      scrapeOpenDiagnostic,
+    );
     try {
       replyObservation = await beginReloadPanelReplyObservation(page, () => {
         retirementEvidence.open_panel_request = {
@@ -1195,7 +1198,23 @@ function stopOwnedChild(child) {
   });
 }
 
-function testPage(extensionId) {
+function testPage(extensionId, reloadOpenDiagnostic = false) {
+  if (!reloadOpenDiagnostic)
+    return `<!doctype html><meta charset="utf-8"><title>Research brief: product discovery</title>
+    <main><article><h1>Research brief: product discovery</h1><p>A short demo article for a real guest Scrape capture.</p><p>Capture the page, review its structure, and identify SEO improvements before sharing the result.</p></article></main>
+    <button id="open-panel">Open panel</button><pre id="result"></pre>
+    <script>
+      document.querySelector('#open-panel').addEventListener('click', () => {
+        chrome.runtime.sendMessage(${JSON.stringify(extensionId)}, {
+          channel: 'FRONTEND_RPC', action: 'openPanel', payload: { panelId: 'chat' },
+          requestId: 'native-sidepanel-qa',
+        }, (reply) => {
+          document.querySelector('#result').textContent = JSON.stringify(
+            reply ?? { error: chrome.runtime.lastError?.message ?? 'no reply' },
+          );
+        });
+      });
+    </script>`;
   return `<!doctype html><meta charset="utf-8"><title>Research brief: product discovery</title>
     <main><article><h1>Research brief: product discovery</h1><p>A short demo article for a real guest Scrape capture.</p><p>Capture the page, review its structure, and identify SEO improvements before sharing the result.</p></article></main>
     <button id="open-panel">Open panel</button><pre id="result"></pre><pre id="open-trace"></pre>
@@ -1381,6 +1400,7 @@ export async function runNativeSidepanelQa({
   onBrowserLaunchObservation,
   onStartupEndpointObservation,
   startupEndpointObservationMs = 0,
+  reloadOpenDiagnostic = false,
 } = {}) {
   onStage('receipt');
   let receipt;
@@ -1545,7 +1565,7 @@ export async function runNativeSidepanelQa({
       serveOwnedFixture(request, response, {
         ownedPages,
         ownedAssets,
-        rootPage: testPage(expectedExtensionId),
+        rootPage: testPage(expectedExtensionId, reloadOpenDiagnostic),
       });
     });
     await new Promise((resolve, reject) =>
@@ -1684,7 +1704,7 @@ export async function runNativeSidepanelQa({
                 throw new Error('native_sidepanel_offscreen_target_missing');
               return attachTargetSession(cdp, targets[0].targetId);
             },
-            reloadExtension: (options = {}) =>
+            reloadExtension: () =>
               reloadOwnedExtension({
                 cdp,
                 browser: playwrightBrowser,
@@ -1692,7 +1712,7 @@ export async function runNativeSidepanelQa({
                 page,
                 extensionId: expectedExtensionId,
                 oldPanelId: panelTarget.targetId,
-                scrapeOpenDiagnostic: options.scrapeOpenDiagnostic === true,
+                scrapeOpenDiagnostic: reloadOpenDiagnostic,
               }),
             acquireLivePanel: () =>
               acquireLiveExtensionPanel({ cdp, page, extensionId: expectedExtensionId }),

@@ -10,7 +10,8 @@
   "implementation": {
     "fixture": "The actual owned test page records fixed booleans for trusted click entry, sendMessage invocation/return/throw, callback entry, reply presence and runtime.lastError presence. The existing #result reply path remains intact; the receipt reads the fixed fields without retaining error text.",
     "worker": "Only an explicit Scrape reload run with MATRX_SCRAPE_RELOAD_OPEN_DIAGNOSTIC=1 attaches a CDP diagnostic observer to the replacement worker before the trusted click. A second onMessageExternal listener marks matching FRONTEND_RPC/openPanel request ingress; a synchronous wrapper records sidePanel.open invocation and promise settlement, returning the original promise. The listener and wrapper are removed and CDP detached on success and failure.",
-    "acceptance_classification": "Default Scrape runs retain the original uninstrumented acceptance path. An opted-in diagnostic receipt says diagnostic_only, ends unverified with nonzero exit even when all cases pass, and cannot be counted as a native acceptance pass.",
+    "acceptance_classification": "Default Scrape runs retain the original direct-send fixture and no worker CDP attachment. An opted-in diagnostic receipt says diagnostic_only, ends unverified with nonzero exit even when all cases pass, and cannot be counted as a native acceptance pass.",
+    "hosted_route": "The hosted workflow exposes a false-default boolean input only for guest-scrape-development, passes it through credential preflight and acceptance, and the hosted runner forwards the normalized 0/1 value to the native driver. Wrong-case and malformed opt-ins refuse before browser setup.",
     "target": "The existing Target.targetCreated listener now records whether a replacement side-panel target creation event was seen separately from the target poll.",
     "reply": "The existing result observer still classifies the callback reply, and the new fixture fields distinguish absent callback, no reply and runtime.lastError without copying raw text.",
     "send_response": "Unobservable inside the frozen extension through passive CDP. The diagnostic emits unobservable_without_instrumented_build; a separate instrumented CI artifact would be required to prove sendResponse itself. The reply callback and worker-open milestones narrow that gap but do not prove it."
@@ -21,7 +22,7 @@
     "No native run was executed in this lane. The parent owns exact native verification after peer review."
   ],
   "verification": {
-    "focused": "node --test tests/browser/native-panel-open-reply.test.mjs tests/browser/scrape-reload-open-diagnostic.test.mjs tests/browser/reload-lifetime-diagnostic.test.mjs: 12 pass, 0 fail",
+    "focused": "node --test scripts/hosted-scrape-reload-diagnostic.test.mjs tests/browser/native-panel-open-reply.test.mjs tests/browser/scrape-reload-open-diagnostic.test.mjs tests/browser/reload-lifetime-diagnostic.test.mjs: 17 pass, 0 fail; includes default direct-send/no-CDP path, opt-in-only diagnostic classification, and hosted preflight wrong-case refusal.",
     "mutation_red": "In-memory removal of the diagnostic onMessageExternal listener produced RED: request ingress vanished when listener registration was removed; the source tree was not mutated.",
     "format": "pnpm exec biome check on touched source and test files passed after formatting",
     "types": "pnpm -s compile blocked by pre-existing @ai-matrx/media/react useReadAloud and @ai-matrx/chat/host createMemoryNavigation package export drift plus related implicit-any errors; no touched TypeScript files."

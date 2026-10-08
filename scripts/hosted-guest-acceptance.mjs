@@ -25,6 +25,7 @@ import {
   stageProfileOrganizationConfig,
 } from './hosted-profile-route.mjs';
 import { prepareHostedReleaseArtifact } from './hosted-release-artifact.mjs';
+import { hostedScrapeReloadDiagnostic } from './hosted-scrape-reload-diagnostic.mjs';
 import { requireHostedScrapeRoute } from './hosted-scrape-route.mjs';
 import { hostedGuestSeoRoute, hostedSeoMetadataFixture } from './hosted-seo-route.mjs';
 import { hostedShowcaseRoute } from './hosted-showcase-route.mjs';
@@ -273,6 +274,10 @@ async function preparePublishedStoreCrx(outputDir) {
 async function run(prepared, artifactMode) {
   const { extensionDir, relocatedReceipt, kind } = prepared;
   const acceptanceCase = process.env.MATRX_HOSTED_ACCEPTANCE_CASE ?? 'guest-chat';
+  const scrapeReloadDiagnostic = hostedScrapeReloadDiagnostic(
+    acceptanceCase,
+    process.env.MATRX_SCRAPE_RELOAD_OPEN_DIAGNOSTIC ?? '0',
+  );
   const desktopCase = hostedDesktopSettingsCase(
     acceptanceCase,
     process.env.MATRX_HOSTED_DESKTOP_SETTINGS_CASE,
@@ -418,6 +423,7 @@ async function run(prepared, artifactMode) {
     MATRX_SCRAPE_ARTIFACT_CHANNEL: scrapeRoute?.channel,
     MATRX_SCRAPE_AUTH_MODE: scrapeSelection?.mode,
     MATRX_SCRAPE_WIDTH_MODE: scrapeSelection?.widthMode,
+    MATRX_SCRAPE_RELOAD_OPEN_DIAGNOSTIC: scrapeReloadDiagnostic,
     ...(seoRoute?.env ?? {}),
     ...(needsApprovedAdminOrganization
       ? { MATRX_APPROVED_ADMIN_ORGANIZATION_FILE: approvedAdminOrganizationPath }
@@ -581,6 +587,10 @@ if (process.env.MATRX_HOSTED_ACCEPTANCE_CASE?.startsWith('profile-'))
   throw new Error('hosted_profile_durable_recovery_unavailable');
 if (phase === 'preflight') {
   assert.equal(process.env.GITHUB_ACTIONS, 'true', 'hosted_preflight_runner_required');
+  hostedScrapeReloadDiagnostic(
+    process.env.MATRX_HOSTED_ACCEPTANCE_CASE,
+    process.env.MATRX_SCRAPE_RELOAD_OPEN_DIAGNOSTIC ?? '0',
+  );
   hostedSeoMetadataFixture(
     process.env.MATRX_HOSTED_ACCEPTANCE_CASE,
     process.env.MATRX_HOSTED_SEO_CASE_SCOPE ?? 'full',
