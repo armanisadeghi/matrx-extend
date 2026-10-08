@@ -13,6 +13,11 @@ import {
 } from './panel-transition-recorder.mjs';
 import { captureLifecycleEvidence } from './profile-reload-capture.mjs';
 import { armBusyExpression, readBusyExpression } from './scrape-busy-observer.mjs';
+import {
+  runGuestCopyAfterNavigation,
+  runGuestCopyMenus,
+  runGuestScrollSync,
+} from './scrape-guest-behavior-batch.mjs';
 import { scrapeLayoutFailure } from './scrape-layout-guard.mjs';
 import { assertImageGroups, assertLinkPane } from './scrape-media-assertions.mjs';
 import { intakeImage } from './scrape-media-fixture.mjs';
@@ -49,6 +54,11 @@ const OUTPUT = RECEIPT_SELF_TEST
   : join(REPO, 'test-results', `scrape-guest-native-${randomUUID()}.json`);
 const article = 'Harbor Dental intake guide';
 const lazy = 'After the patient scrolls, the appointment preparation checklist appears.';
+const scrollableGuide = Array.from(
+  { length: 24 },
+  (_, index) =>
+    `<p>Intake step ${index + 1}: confirm the appointment time and bring the forms to the clinic.</p>`,
+).join('');
 const walkthroughVideo = await readFile(
   join(REPO, 'tests/browser/fixtures/clinic-walkthrough.mp4'),
 );
@@ -61,6 +71,7 @@ const firstPage = `<!doctype html><html><head><title>${article}</title>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Dentist","name":"Harbor Dental"}</script></head>
 <body><main><article><h1>${article}</h1>
 <p>New patients can review appointment timing, forms, and arrival instructions before visiting our clinic.</p>
+${scrollableGuide}
 <img src="/intake.svg" alt="New patient intake desk" width="640" height="480">
 <img src="/appointment-card.svg" alt="Appointment card" width="96" height="96">
 <img src="/clinic-icon.svg" alt="Clinic icon" width="32" height="32">
@@ -1425,6 +1436,30 @@ try {
         },
         ['Deep failure retry mode and post-reload deep capture remain unverified.'],
       );
+      if (selection.mode === 'guest') {
+        report.stage = 'guest_scroll_sync';
+        await requireResourceHealth();
+        mark('EXT-F-1007-T07', 'unverified', {}, ['Native scroll exercise incomplete.']);
+        const scroll = await runGuestScrollSync({ panel, page, resourceAction });
+        const scrollCase = report.cases.find((c) => c.id === 'EXT-F-1007-T07');
+        scrollCase.status = scroll.passed ? 'partial' : 'failed';
+        scrollCase.evidence.warm = scroll;
+        scrollCase.remaining = ['Repeat after full extension reload.'];
+        if (!scroll.passed) throw new Error('scrape_guest_scroll_sync_mismatch');
+        report.stage = 'guest_copy_menus';
+        mark('EXT-F-1007-T09', 'unverified', {}, ['Native copy exercise incomplete.']);
+        const copies = await runGuestCopyMenus({
+          panel,
+          browserSession,
+          panelUrl: panelTarget.url,
+          origin,
+          resourceAction,
+        });
+        const copyCase = report.cases.find((c) => c.id === 'EXT-F-1007-T09');
+        copyCase.status = 'partial';
+        copyCase.evidence.warm = copies;
+        copyCase.remaining = ['Repeat after full extension reload.'];
+      }
 
       report.stage = 'navigation_empty';
       await requireResourceHealth();
@@ -1451,6 +1486,18 @@ try {
           s.resultText?.includes('Referral coordinators answer weekday calls.'),
         30000,
       );
+      if (selection.mode === 'guest') {
+        report.stage = 'guest_copy_after_navigation';
+        await requireResourceHealth();
+        report.cases.find((c) => c.id === 'EXT-F-1007-T09').evidence.after_navigation =
+          await runGuestCopyAfterNavigation({
+            panel,
+            browserSession,
+            panelUrl: panelTarget.url,
+            origin,
+            resourceAction,
+          });
+      }
       for (const label of ['Images', 'Video']) {
         await requireResourceHealth();
         await resourceAction(() => click(panel, 'scrape-result-tab', label));
@@ -1655,6 +1702,31 @@ try {
           recaptured.tabs.map((t) => t.label),
           expectedTabs,
         );
+        if (selection.mode === 'guest') {
+          report.stage = 'guest_behavior_after_reload';
+          await requireResourceHealth();
+          const scroll = await runGuestScrollSync({
+            panel: replacement.panel,
+            page,
+            resourceAction,
+          });
+          const scrollCase = report.cases.find((c) => c.id === 'EXT-F-1007-T07');
+          scrollCase.evidence.reload = scroll;
+          if (!scroll.passed) throw new Error('scrape_guest_reload_scroll_sync_mismatch');
+          scrollCase.status = 'passed';
+          scrollCase.remaining = [];
+          const copies = await runGuestCopyMenus({
+            panel: replacement.panel,
+            browserSession,
+            panelUrl: replacement.panelTarget?.url ?? panelTarget.url,
+            origin,
+            resourceAction,
+          });
+          const copyCase = report.cases.find((c) => c.id === 'EXT-F-1007-T09');
+          copyCase.evidence.reload = copies;
+          copyCase.status = 'passed';
+          copyCase.remaining = [];
+        }
         const t01 = report.cases.find((c) => c.id === 'EXT-F-1007-T01');
         t01.evidence.full_extension_reload_and_post_reload_fast_capture = true;
         t01.remaining = [

@@ -1,0 +1,29 @@
+{
+  "status": "SOURCE_VERIFIED_NATIVE_PENDING",
+  "case_ids": ["EXT-F-1007-T07", "EXT-F-1007-T09"],
+  "actual_new_native_results": [],
+  "source_verified_against": {
+    "frozen_391_source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "finding": "ScrapeView control titles and copy-options labels match the source used by the previous development 0.2.391 artifact. This code change and expanded owned fixture require a new CI development artifact; an older frozen artifact cannot prove this batch."
+  },
+  "change": "The existing guarded guest Scrape native route now exercises T07 live page scroll following and off-state hold, and T09 all guest copy menu formats, second-page stale-content rejection, and full-extension-reload repetition. Uses trusted native pointer actions, the owned local intake/referrals pages, bounded clipboard booleans and permission restoration. Existing deep capture runs before the scroll exercise so the lazy-content fixture remains causal.",
+  "focused_ci": "pnpm test:focused-acceptance, which is run by ci.yml and focused-acceptance.yml; 40 passed locally",
+  "verification": [
+    "node --test tests/browser/scrape-guest-behavior-batch.test.mjs: 2 passed, including stale clipboard, missing content, menu roster, off-state and non-scrollable negative controls",
+    "pnpm test:focused-acceptance: 40 passed",
+    "pnpm compile: passed",
+    "pnpm exec biome check on touched source files: passed",
+    "git diff --check: passed",
+    "Native UI and case verdicts: pending independent review and guarded run on a new frozen CI development artifact"
+  ],
+  "files": [
+    "tests/browser/scrape-guest-behavior-batch.mjs",
+    "tests/browser/scrape-guest-behavior-batch.test.mjs",
+    "tests/browser/scrape-guest-native-acceptance.mjs",
+    "tests/browser/settings-panel-driver.mjs",
+    "package.json",
+    ".research/next-guest-behavior-batch-20261007.json"
+  ],
+  "shared_driver_ownership": "Only the additive scrape-copy-option trusted pointer target was changed in settings-panel-driver.mjs; Settings and reload branches were not edited.",
+  "questions": []
+}
