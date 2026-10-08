@@ -53,6 +53,7 @@ const report = {
   result: null,
   metadata_search: null,
   negative_reads: [],
+  negative_mutations: [],
   positive_reads: [],
   fixture_cleanup: null,
   fixture_diagnostics: [],
@@ -529,9 +530,9 @@ try {
         count: searchResult.output.count,
       };
 
-      // These cases exercise only the malformed-input boundary. Positive
-      // record reads need disposable row/table IDs and are not credited here.
-      stage('records_negative_read_contract');
+      // These cases exercise only the malformed-input boundary. A mutation
+      // refusal is not an applied write or a substitute for owned-row cleanup.
+      stage('records_negative_wire_contract');
       const negativeContract = await evaluate(
         panel,
         `(() => {
@@ -547,6 +548,8 @@ try {
               ['record_read', 'record_id'],
               ['record_aggregate', 'table_id'],
               ['record_history', 'record_id'],
+              ['record_delete', 'record_id'],
+              ['record_restore_version', 'version'],
             ].map(([action, field]) => ({
               action_available: schema.action?.enum?.includes(action) === true,
               field_available: Object.hasOwn(schema.$variants?.[action] ?? {}, field),
@@ -556,8 +559,8 @@ try {
       );
       assert.deepEqual(
         negativeContract,
-        Array.from({ length: 4 }, () => ({ action_available: true, field_available: true })),
-        'records_negative_read_contract_drift',
+        Array.from({ length: 6 }, () => ({ action_available: true, field_available: true })),
+        'records_negative_wire_contract_drift',
       );
       for (const { caseId, action, args, field } of [
         {
@@ -584,6 +587,18 @@ try {
           args: { record_id: 'not-a-uuid' },
           field: 'record_id',
         },
+        {
+          caseId: 'EXT-F-4130-C07',
+          action: 'record_delete',
+          args: { record_id: 'not-a-uuid' },
+          field: 'record_id',
+        },
+        {
+          caseId: 'EXT-F-4130-C09',
+          action: 'record_restore_version',
+          args: { record_id: '00000000-0000-4000-8000-000000000001', version: 'not-an-integer' },
+          field: 'version',
+        },
       ]) {
         const invalidRead = { action, args };
         await enterRecordsInput(panel, evaluate, stage, invalidRead, process.platform);
@@ -596,7 +611,7 @@ try {
           new RegExp(field, 'i'),
           `${label}_field_missing`,
         );
-        report.negative_reads.push({
+        const negativeReceipt = {
           inventory_case: caseId,
           action,
           finished: true,
@@ -607,7 +622,11 @@ try {
           field_named: true,
           error_class: refused.error.error_type,
           positive_read_verified: false,
-        });
+        };
+        (action === 'record_delete' || action === 'record_restore_version'
+          ? report.negative_mutations
+          : report.negative_reads
+        ).push(negativeReceipt);
       }
       stage('records_positive_fixture');
       const fixture = await withRecordsPositiveFixture({

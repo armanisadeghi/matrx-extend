@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T22:48:06.593299+00:00",
+  "updated_at": "2026-10-08T23:04:33.457617+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -7199,6 +7199,13 @@
                 ".research/settings-remaining-controls-preparation-20261008.json",
                 ".research/settings-controls-restoration-peer-20261008.json"
               ]
+            },
+            {
+              "at": "2026-10-08T23:04:33.457617+00:00",
+              "status": "native-adapter-gap-no-new-acceptance",
+              "source_commit": "f36e0832",
+              "evidence": [".research/settings-auto-scrape-behavior-preparation-20261008.json"],
+              "scope": "Unsupported model-only helper removed. Next route uses real complete rendered v2 context preview, unique fresh-page ON content and bounded OFF absence; existing results unchanged."
             }
           ],
           "result_history": [
@@ -65561,6 +65568,18 @@
               "status": "hosted-gate-passed-independent-coordination-review-pending",
               "focused_ci": "37832596142",
               "scope": "Prior recovery peer missed thirdgroup mutex regression. Failed hosted37831968672 caught it; corrected source restores canonical two lanes and requires RecordsA before fixture writes. Fresh and reused zero-author reviewer launches failed ENOSPC. No positive native writes until final review."
+            },
+            {
+              "at": "2026-10-08T23:04:33.457617+00:00",
+              "status": "approval-lifecycle-source-reviewed-native-unwired",
+              "control_ids": ["EXT-F-4130-C06"],
+              "source_commit": "205beb7f",
+              "evidence": [
+                ".research/records-approval-path-20261008.json",
+                ".research/records-approval-journal-preparation-20261008.json",
+                ".research/approval-and-autoscrape-review-20261008.json"
+              ],
+              "scope": "12 root-independent Node checks pass for private approval journal/recovery; real UI/discovery/read/cleanup adapters remain unwired. No positive mutation acceptance."
             }
           ],
           "revalidation_history": [
