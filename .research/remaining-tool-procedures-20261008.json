@@ -26,7 +26,16 @@
       "src/lib/desktop/bridge.ts",
       "src/lib/desktop/types.ts",
       "src/lib/records/store.ts",
-      "src/lib/records/tables.ts"
+      "src/lib/records/tables.ts",
+      "src/lib/tools/handlers/parallel-start-contract.ts",
+      "src/lib/tools/handlers/page-refs.ts",
+      "src/features/tasks/TasksView.tsx",
+      "src/lib/tools/handlers/action.ts",
+      "src/lib/tools/handlers/keyboard.ts",
+      "src/lib/screenshot/persist.ts",
+      "src/features/screenshots/ScreenshotsView.tsx",
+      "src/lib/destructive/operations.ts",
+      "src/lib/tools/handlers/_active-tab.ts"
     ]
   },
   "case_updates": {
@@ -52,20 +61,21 @@
       ],
       "execution_status": "NOT_EXECUTABLE_FOR_ACTION_CONTROLS",
       "steps": [
-        "Complete shared build/reload identity and role setup. In Tools > Catalog select All and run {\"action\":\"list\"}. This is schema-valid but ToolsView passes conversationId=null; record the explicit {ok:false,reason:\"No active conversation\"} response as a route limitation, not a successful list operation. No todo should be created.",
-        "Run {\"action\":\"bogus\"} in the same local runner. Confirm local Zod validation rejects it before handler invocation and no todo/card appears.",
-        "For the intended positive suite, use only an actual UI-created disposable Chat/Pilot conversation and real live agent invocation of the current user_todos binding. Capture conversation ID from the actual UI/server lifecycle, baseline TaskPanel todos, and tool-call/result evidence. Never inject an ID or fabricate a tool event.",
-        "When that fixture exists, use action=add with title=\"Owned procedure todo <unique run suffix>\", silent=true, context=\"synthetic test fixture\"; then list and capture the returned ID. Update title/context, mark_done true then false, list after each, remove that returned ID, and clear_done only after adding a second case-owned todo and marking it done. Include unknown-id update/remove as explicit error controls. Reopen/reload the same conversation and verify its baseline is restored."
+        "Complete the shared build/reload identity and role setup. In Tools > Catalog > All, run {\"action\":\"list\"}. The direct route sets conversationId=null, so record {ok:false,reason:\"No active conversation\"} as the route limitation; do not call it a successful list. Run {\"action\":\"bogus\"} and confirm local schema rejection with no todo change.",
+        "The positive controls remain blocked until an authorized live agent/mandate is known to issue the registered user_todos calls through the actual Chat/Pilot aidream route. Use a real UI-created conversation, not manual Tools. In each separate chat turn, ask that agent to make exactly one requested user_todos action and use the visible actual tool-call args/result as evidence. If the exact action/ID is not emitted, stop that control as unexecuted; do not inject calls or synthesize events.",
+        "For add/list/update/mark_done/remove, use a fresh disposable conversation with no prior case data. In separate chat turns instruct the known agent to call user_todos exactly once with, in order: {\"action\":\"add\",\"title\":\"Owned procedure todo <unique suffix>\",\"context\":\"synthetic test fixture\",\"silent\":true}; {\"action\":\"list\"}; {\"action\":\"update\",\"id\":\"<actual add result ID>\",\"title\":\"Owned procedure todo revised <suffix>\",\"context\":\"synthetic test fixture updated\"}; {\"action\":\"mark_done\",\"id\":\"<actual add result ID>\",\"done\":true}; the same mark_done payload with done=false; then {\"action\":\"remove\",\"id\":\"<actual add result ID>\"}. Capture the actual tool call and result on every turn and verify the matching TaskPanel change before proceeding. If the agent does not emit those exact arguments, stop that control as unexecuted.",
+        "Test clear_done only in a second, separately UI-created disposable conversation. Immediately before the call, request {\"action\":\"list\"}, record the baseline, and require zero completed rows. Then add one unique case-owned todo with silent=true, capture its returned ID, mark that ID done, and list again; require exactly that case-owned completed row and zero unrelated completed rows. Only then instruct the live agent to call exactly {\"action\":\"clear_done\"}. Verify its tool result reports removal of the case-owned row, the following list has no done row, and the pre-call baseline is unchanged. If any unrelated or unknown completed row appears, do not call clear_done.",
+        "After extension reload, reopen each test conversation and compare its TaskPanel/list state with the captured after-state. Do not claim persistence based only on a tool row."
       ],
       "expected": [
-        "The currently executable direct-runner positive input returns the explicit No active conversation error because lists.ts guards before all six branches. The invalid action fails schema validation and performs no write. These are route/validation observations, not feature passes.",
-        "With the missing live conversation fixture, a real positive suite should show only case-owned todos in the selected conversation panel; returned IDs should drive update/mark/remove, and clear_done should remove the completed case-owned row while preserving the recorded baseline. Reload should preserve the remaining conversation-local rows. No such runtime result is claimed here."
+        "Direct Tools Run returns the explicit No active conversation error before the six action branches; invalid action is rejected locally. These observations are not product passes.",
+        "In a future real-agent run, require the tool call name, exact action/arguments, returned case-owned ID, inline tool result and visible conversation-local TaskPanel state to agree. clear_done is safe only when the separate disposable conversation has zero unrelated completed rows immediately before invocation; then only the known case-owned completed row may disappear. No such agent fixture or runtime output is available in this proposal."
       ],
       "preconditions_fixtures": [
-        "No live agent-dispatched member/admin conversation fixture or known mandate issuing user_todos is supplied. Current Tools manual route is not a substitute: user_todos requires ctx.conversationId, and ToolsView sets it to null.",
-        "Future positive suite requires owned member and admin profiles, real UI-created conversation(s), agent/mandate that issues the registered binding through aidream, visible TaskPanel, and baseline synthetic todos only."
+        "No known live agent/mandate and member/admin profile fixture that can be instructed to issue exact registered user_todos calls is supplied. Tools manual execution sets conversationId=null and cannot exercise the action branches.",
+        "Future positive run requires owned member/admin profiles, real UI-created conversations on a live Chat/Pilot route, verified agent-dispatched user_todos call evidence, TaskPanel visibility, and the separate empty disposable conversation for clear_done. Baseline that conversation immediately before clear_done and require zero completed rows."
       ],
-      "cleanup": "The two direct-runner inputs create no persistent rows. In the future live fixture, remove every row by its returned case-owned ID and confirm the baseline; do not call clear_done against unrelated rows.",
+      "cleanup": "Remove only case-created todo IDs captured from actual tool results, one by one, and verify each conversation baseline. Never run clear_done on a conversation containing any unknown or unrelated completed row.",
       "source_refs": [
         "docs/stabilization/PLAN.md: build/reload contract",
         "docs/stabilization/inventory.json: EXT-F-4124",
@@ -114,18 +124,19 @@
       "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
       "execution_status": "NOT_EXECUTABLE_CURRENT_AGENT_AND_TAB_FIXTURE_ABSENT",
       "steps": [
-        "Complete shared build/reload identity and admin setup. Use two tabs created by the tester that each show the same harmless static local fixture page with a distinct visible fixture label; obtain both current numeric IDs from the registered list_open_tabs handler. Do not use existing/personal tabs.",
-        "Run {\"tab_ids\":[<first-current-id>,<second-current-id>],\"sub_prompt\":\"Read the visible page title and TEST FIXTURE label only. Return both as plain text; do not click, navigate, write, or call other tools.\",\"merge_strategy\":\"per_tab\",\"timeout_ms\":60000}. Omit agent_id so runtime resolves the configured default agent/mandate; never hardcode an agent UUID.",
-        "Inspect inline per-tab outcomes and the parallel-runs panel. Require one outcome per supplied tab, each associated with its current tab ID; compare title/fixture label with each owned page.",
-        "Run {\"tab_ids\":[],\"sub_prompt\":\"invalid control\"}. Confirm local schema rejects minItems before any child run starts.",
-        "Reload the extension and both owned fixture tabs, reacquire IDs from list_open_tabs, then repeat the positive once."
+        "Complete shared build/reload identity and admin setup. Create two tester-owned local static fixture tabs with distinct visible headings exactly \"TEST FIXTURE ALPHA 7Q\" and \"TEST FIXTURE BRAVO 4M\"; use no personal/external pages. Obtain the current numeric tab IDs from list_open_tabs.",
+        "Run {\"tab_ids\":[<alpha-current-id>,<bravo-current-id>],\"sub_prompt\":\"Use the read_page tool on your assigned tab to inspect the visible page. Return the exact TEST FIXTURE heading you actually read and the page title. Do not infer the label from tab metadata. Do not click, navigate, write, or call any other tool.\",\"merge_strategy\":\"per_tab\",\"timeout_ms\":60000}. Omit agent_id so runtime resolves the configured default agent/mandate.",
+        "Inspect the Tools inline result and verify exactly one outcome per supplied tab. Require the child tool trace to show read_page was actually available and called on each assigned tab; each outcome must contain its page title and the correct distinct heading, with Alpha only for the Alpha ID and Bravo only for the Bravo ID. If read_page is not advertised, fails, or the result could be metadata-only, mark the positive control unverified.",
+        "Switch to the Tasks panel and inspect ParallelRunsPanel. Match the session and two child runs to the parent call and IDs; observe completed/error state. Run {\"tab_ids\":[],\"sub_prompt\":\"invalid control\"} and confirm local minItems validation rejects before any child run starts.",
+        "Reload the extension and both owned fixture tabs; reacquire their IDs with list_open_tabs, repeat the positive once, inspect Tools inline result, then inspect Tasks panel again."
       ],
       "expected": [
-        "A valid run starts one child agent stream per supplied tab, completes/returns separate per-tab outcomes, and publishes session lifecycle events; any child failure is isolated in its own outcome. The empty list fails local validation without spawning work.",
-        "This action makes authenticated backend calls and spends model work. No owned static tabs, admin profile receipt, or live default agent/mandate fixture was supplied. The case is not executable in this task; no cost, agent result, or role gate is claimed. Manual Run bypasses dispatch authorization."
+        "Each child starts one authenticated sub-run pinned to its supplied tab. The required positive evidence is the actual read_page tool call plus the exact distinct fixture heading read from each page, returned under the matching tab ID; page_title/current_url metadata alone is insufficient. The Tasks panel exposes parallel child-run lifecycle. Empty tab_ids fails local schema validation with no child runs.",
+        "The source builds child requests with empty context, metadata-only browser-dom state and server-driven tool discovery; read_page is registered locally as a read handler but its availability in a particular child surface must be demonstrated in that child trace. No admin profile, fixture tabs, backend session, or default mandate receipt exists here. The calls spend model work and manual Tools bypasses dispatch authorization."
       ],
       "preconditions_fixtures": [
-        "Requires an admin profile, two case-owned local fixture tabs, signed-in access token and current organization, configured default agent/mandate, offscreen stream support and backend availability. No agent ID is to be invented; omit it so existing runtime resolution applies."
+        "Requires a tester-owned admin profile, two local fixture tabs with the exact distinct visible headings, current IDs, signed-in backend token/current organization, offscreen support and configured runtime default agent/mandate. No fixture or agent ID is supplied; omit agent_id.",
+        "Each child must actually receive read_page through server-side tool discovery. If the child roster/trace does not prove this, the procedure is not executable for a positive read. ParallelRunsPanel is in the Tasks view; Tools shows the parent manual inline result."
       ],
       "cleanup": "No page mutation is requested. Close only the two tabs created for this case after all sub-runs finish; verify session completion before closing.",
       "source_refs": [
@@ -133,7 +144,10 @@
         "docs/stabilization/inventory.json: EXT-F-4128",
         "types/tool-catalog.json: current parallel schema and admin_only metadata",
         "src/lib/tools/handlers/parallel.ts: validation, admin_only, tab checks, auth/org requirements, default mandate resolution, per-tab aggregation",
-        "src/features/tools/ToolsView.tsx: local direct invocation"
+        "src/features/tools/ToolsView.tsx: local direct invocation",
+        "src/lib/tools/handlers/parallel-start-contract.ts: child conversation contract",
+        "src/lib/tools/handlers/page-refs.ts: read_page registered read handler",
+        "src/features/tasks/TasksView.tsx: ParallelRunsPanel in Tasks"
       ]
     },
     "EXT-F-4130-T01": {
@@ -175,22 +189,22 @@
         "organization-scope",
         "read-write"
       ],
-      "execution_status": "NOT_EXECUTABLE_CURRENT_RECORDS_SCHEMA_AND_OWNED_FIXTURES_NOT_CAPTURED",
+      "execution_status": "NOT_EXECUTABLE_PER_CONTROL_LIVE_GUIDE_AND_OWNED_FIXTURE_MISSING",
       "steps": [
-        "Complete shared build/reload identity and role setup. In Tools > Catalog select All, expand records, wait for its live /tools/test/list schema to load, and retain the exact server-provided schema/sample in the private run receipt. The canonical catalog record is not the executable Records contract.",
-        "Run the safe guide request {\"action\":\"guide\",\"args\":{}}. Read the returned current action contract and use its exact payload shapes for the remaining controls; do not infer fields from types/tool-catalog.json or the inventory labels.",
-        "Before any write test, require an organization explicitly authorized to this profile and a dedicated case-owned Records table/rows with recorded baseline. Use only guide-confirmed operations and IDs created by this run. Exercise table_list, metadata_search, record_read, record_aggregate, record_history, entity_read against that owned fixture first.",
-        "Only after the current guide confirms exact payloads and the fixture is disposable, create one synthetic row through record_write, read it back, update only its returned ID, test record_delete only on that ID, and use record_restore_version only on a version created by this case. Proposal controls field/table/form/booking/import/dashboard/pipeline/document/checklist/capture/enrich/portal/signature/subscription must be treated according to the live guide: create proposals only if the feature exposes an owned test/draft path and no external recipient, billing, import, signature, or publish action is triggered. entity_write likewise requires guide-confirmed owned target and payload.",
-        "Run {\"action\":\"__invalid_action__\",\"args\":{}} as the rejected-input case. Confirm the server returns a visible tool error and no state change. Reload side panel, refetch current schema and repeat table_list/readback for the fixture; do not reuse stale schema after reload."
+        "Complete shared build/reload identity and role setup. In Tools > Catalog select All, expand records, wait for /tools/test/list to return the live server schema and sample, and run the exact read-only request {\"action\":\"guide\",\"args\":{}}. Retain the guide/schema and its action contract in the private receipt; the generated inventory/catalog is not the current executable contract.",
+        "Do not execute any of the remaining controls until, for each, the live guide/schema supplies an exact input and observable response, the authorized disposable organization fixture and target IDs are known, and a supported cleanup path for every created row/proposal/artifact is established. Record those details per control in the unresolved map below before execution.",
+        "When and only when guide and fixture are available, run read-only controls first. For write/version controls, create a uniquely named case row, capture returned row/version IDs, read/history/restore while the target still exists, restore a case-created version and verify state, then delete the case-created row last. Proposal actions remain blocked unless guide proves an inert draft-only path and a supported way to remove that exact case-created proposal.",
+        "Use {\"action\":\"__invalid_action__\",\"args\":{}} as a rejected-input candidate only after confirming the current endpoint accepts that envelope; capture the server error and verify no state change. On extension reload, refetch live schema/guide, then rerun only safe reads against the same still-valid fixture."
       ],
       "expected": [
-        "The current Tools implementation has a genuine server-owned Records route: it fetches current parameters from /tools/test/list and executes through authenticated /tools/test/execute with the active organization header. Guide should return the server's current contract; table_list/read operations should reflect only authorized records. Invalid action should return a server error surfaced inline.",
-        "No current server guide response, owned table/row IDs, or authorized member/admin Records fixture was supplied to this task. The 25 controls cannot receive exact mutation payloads from extension source or stale catalog assumptions. This is a source-grounded procedure proposal, not evidence that any action or policy passed. Manual server door is user-initiated and does not prove live agent binding/dispatch."
+        "The source proves Records is executed through authenticated /tools/test/list and /tools/test/execute with the active organization header. No server guide/schema response or authorized owned fixture was collected, so only the exact guide request is currently specified; no per-action payload, response, or product pass is claimed.",
+        "Every C02–C25 control below remains individually unresolved. Do not substitute catalog-derived inputs or generic success assertions. record_restore_version must target a case-created version while its case-created row remains present; record_delete is the final row operation. Stop before any proposal that can publish, send, charge, import, sign, or otherwise affect an external party."
       ],
       "preconditions_fixtures": [
-        "An authenticated member and admin profile, valid active organization, current server-returned Records schema/guide, and case-owned disposable test table with baseline/IDs are required. Current source only shows the client/server door; no private schema result or live records fixture was inspected."
+        "Requires current live Records guide and /tools/test/list schema, authenticated member/admin profiles with a valid active organization, and an authorized disposable records table/rows with captured baseline and known cleanup. None was accessed or supplied for this source-only task.",
+        "Each of the 25 control IDs has an explicit unresolved entry in control_gaps. Their exact payloads are intentionally not guessed from types/tool-catalog.json or inventory labels."
       ],
-      "cleanup": "Delete only synthetic rows/versions created by this case using the live guide and returned IDs. Remove or archive only case-created drafts where supported. Do not delete tables or touch unrelated data. If a proposal could contact people, charge money, import data, sign, or publish, stop before invoking it and mark that control unexecutable pending a dedicated inert fixture.",
+      "cleanup": "No Records action was invoked. Future read-only runs need no cleanup. Future writes may clean only objects created by their returned case-owned IDs using guide-supported deletion. Restore a case-created version before deleting its still-existing case row; delete that row last. Do not remove unrelated baseline rows. Every proposal remains blocked until its specific object and supported cancellation/deletion route are confirmed.",
       "source_refs": [
         "docs/stabilization/PLAN.md: build/reload contract",
         "docs/stabilization/inventory.json: EXT-F-4130 controls",
@@ -198,8 +212,262 @@
         "src/features/tools/ToolsView.tsx: dynamic server schema and Records Run path",
         "src/lib/tools/manual-server.ts: /tools/test/list, authenticated /tools/test/execute and org header",
         "src/lib/records/store.ts: Records client/organization requirements",
-        "src/lib/records/tables.ts: extension-side store ownership context"
-      ]
+        "src/lib/records/tables.ts: extension-side store ownership context",
+        "src/features/tools/ToolsView.tsx: live server schema loading and result path",
+        "src/lib/tools/manual-server.ts: authenticated Records test door and organization header"
+      ],
+      "control_gaps": {
+        "EXT-F-4130-C01": {
+          "action": "invoke records",
+          "status": "UNRESOLVED_LIVE_GUIDE_REQUIRED",
+          "missing_before_execution": [
+            "exact current server schema/input from guide",
+            "fixture-specific observable result and authorized target",
+            "case-owned ID/version lineage when mutating",
+            "supported cleanup for each case-created object"
+          ]
+        },
+        "EXT-F-4130-C02": {
+          "action": "table_list",
+          "status": "UNRESOLVED_LIVE_GUIDE_REQUIRED",
+          "missing_before_execution": [
+            "exact current server schema/input from guide",
+            "fixture-specific observable result and authorized target",
+            "case-owned ID/version lineage when mutating",
+            "supported cleanup for each case-created object"
+          ]
+        },
+        "EXT-F-4130-C03": {
+          "action": "metadata_search",
+          "status": "UNRESOLVED_LIVE_GUIDE_REQUIRED",
+          "missing_before_execution": [
+            "exact current server schema/input from guide",
+            "fixture-specific observable result and authorized target",
+            "case-owned ID/version lineage when mutating",
+            "supported cleanup for each case-created object"
+          ]
+        },
+        "EXT-F-4130-C04": {
+          "action": "record_read",
+          "status": "UNRESOLVED_LIVE_GUIDE_REQUIRED",
+          "missing_before_execution": [
+            "exact current server schema/input from guide",
+            "fixture-specific observable result and authorized target",
+            "case-owned ID/version lineage when mutating",
+            "supported cleanup for each case-created object"
+          ]
+        },
+        "EXT-F-4130-C05": {
+          "action": "record_aggregate",
+          "status": "UNRESOLVED_LIVE_GUIDE_REQUIRED",
+          "missing_before_execution": [
+            "exact current server schema/input from guide",
+            "fixture-specific observable result and authorized target",
+            "case-owned ID/version lineage when mutating",
+            "supported cleanup for each case-created object"
+          ]
+        },
+        "EXT-F-4130-C06": {
+          "action": "record_write",
+          "status": "UNRESOLVED_LIVE_GUIDE_REQUIRED",
+          "missing_before_execution": [
+            "exact current server schema/input from guide",
+            "fixture-specific observable result and authorized target",
+            "case-owned ID/version lineage when mutating",
+            "supported cleanup for each case-created object"
+          ]
+        },
+        "EXT-F-4130-C07": {
+          "action": "record_delete",
+          "status": "UNRESOLVED_LIVE_GUIDE_REQUIRED",
+          "missing_before_execution": [
+            "exact current server schema/input from guide",
+            "fixture-specific observable result and authorized target",
+            "case-owned ID/version lineage when mutating",
+            "supported cleanup for each case-created object"
+          ]
+        },
+        "EXT-F-4130-C08": {
+          "action": "record_history",
+          "status": "UNRESOLVED_LIVE_GUIDE_REQUIRED",
+          "missing_before_execution": [
+            "exact current server schema/input from guide",
+            "fixture-specific observable result and authorized target",
+            "case-owned ID/version lineage when mutating",
+            "supported cleanup for each case-created object"
+          ]
+        },
+        "EXT-F-4130-C09": {
+          "action": "record_restore_version",
+          "status": "UNRESOLVED_LIVE_GUIDE_REQUIRED",
+          "missing_before_execution": [
+            "exact current server schema/input from guide",
+            "fixture-specific observable result and authorized target",
+            "case-owned ID/version lineage when mutating",
+            "supported cleanup for each case-created object"
+          ]
+        },
+        "EXT-F-4130-C10": {
+          "action": "field_propose",
+          "status": "UNRESOLVED_LIVE_GUIDE_REQUIRED",
+          "missing_before_execution": [
+            "exact current server schema/input from guide",
+            "fixture-specific observable result and authorized target",
+            "case-owned ID/version lineage when mutating",
+            "supported cleanup for each case-created object"
+          ]
+        },
+        "EXT-F-4130-C11": {
+          "action": "table_propose",
+          "status": "UNRESOLVED_LIVE_GUIDE_REQUIRED",
+          "missing_before_execution": [
+            "exact current server schema/input from guide",
+            "fixture-specific observable result and authorized target",
+            "case-owned ID/version lineage when mutating",
+            "supported cleanup for each case-created object"
+          ]
+        },
+        "EXT-F-4130-C12": {
+          "action": "form_propose",
+          "status": "UNRESOLVED_LIVE_GUIDE_REQUIRED",
+          "missing_before_execution": [
+            "exact current server schema/input from guide",
+            "fixture-specific observable result and authorized target",
+            "case-owned ID/version lineage when mutating",
+            "supported cleanup for each case-created object"
+          ]
+        },
+        "EXT-F-4130-C13": {
+          "action": "booking_propose",
+          "status": "UNRESOLVED_LIVE_GUIDE_REQUIRED",
+          "missing_before_execution": [
+            "exact current server schema/input from guide",
+            "fixture-specific observable result and authorized target",
+            "case-owned ID/version lineage when mutating",
+            "supported cleanup for each case-created object"
+          ]
+        },
+        "EXT-F-4130-C14": {
+          "action": "import_propose",
+          "status": "UNRESOLVED_LIVE_GUIDE_REQUIRED",
+          "missing_before_execution": [
+            "exact current server schema/input from guide",
+            "fixture-specific observable result and authorized target",
+            "case-owned ID/version lineage when mutating",
+            "supported cleanup for each case-created object"
+          ]
+        },
+        "EXT-F-4130-C15": {
+          "action": "dashboard_propose",
+          "status": "UNRESOLVED_LIVE_GUIDE_REQUIRED",
+          "missing_before_execution": [
+            "exact current server schema/input from guide",
+            "fixture-specific observable result and authorized target",
+            "case-owned ID/version lineage when mutating",
+            "supported cleanup for each case-created object"
+          ]
+        },
+        "EXT-F-4130-C16": {
+          "action": "pipeline_propose",
+          "status": "UNRESOLVED_LIVE_GUIDE_REQUIRED",
+          "missing_before_execution": [
+            "exact current server schema/input from guide",
+            "fixture-specific observable result and authorized target",
+            "case-owned ID/version lineage when mutating",
+            "supported cleanup for each case-created object"
+          ]
+        },
+        "EXT-F-4130-C17": {
+          "action": "document_propose",
+          "status": "UNRESOLVED_LIVE_GUIDE_REQUIRED",
+          "missing_before_execution": [
+            "exact current server schema/input from guide",
+            "fixture-specific observable result and authorized target",
+            "case-owned ID/version lineage when mutating",
+            "supported cleanup for each case-created object"
+          ]
+        },
+        "EXT-F-4130-C18": {
+          "action": "checklist_propose",
+          "status": "UNRESOLVED_LIVE_GUIDE_REQUIRED",
+          "missing_before_execution": [
+            "exact current server schema/input from guide",
+            "fixture-specific observable result and authorized target",
+            "case-owned ID/version lineage when mutating",
+            "supported cleanup for each case-created object"
+          ]
+        },
+        "EXT-F-4130-C19": {
+          "action": "capture_propose",
+          "status": "UNRESOLVED_LIVE_GUIDE_REQUIRED",
+          "missing_before_execution": [
+            "exact current server schema/input from guide",
+            "fixture-specific observable result and authorized target",
+            "case-owned ID/version lineage when mutating",
+            "supported cleanup for each case-created object"
+          ]
+        },
+        "EXT-F-4130-C20": {
+          "action": "enrich_propose",
+          "status": "UNRESOLVED_LIVE_GUIDE_REQUIRED",
+          "missing_before_execution": [
+            "exact current server schema/input from guide",
+            "fixture-specific observable result and authorized target",
+            "case-owned ID/version lineage when mutating",
+            "supported cleanup for each case-created object"
+          ]
+        },
+        "EXT-F-4130-C21": {
+          "action": "portal_propose",
+          "status": "UNRESOLVED_LIVE_GUIDE_REQUIRED",
+          "missing_before_execution": [
+            "exact current server schema/input from guide",
+            "fixture-specific observable result and authorized target",
+            "case-owned ID/version lineage when mutating",
+            "supported cleanup for each case-created object"
+          ]
+        },
+        "EXT-F-4130-C22": {
+          "action": "signature_request",
+          "status": "UNRESOLVED_LIVE_GUIDE_REQUIRED",
+          "missing_before_execution": [
+            "exact current server schema/input from guide",
+            "fixture-specific observable result and authorized target",
+            "case-owned ID/version lineage when mutating",
+            "supported cleanup for each case-created object"
+          ]
+        },
+        "EXT-F-4130-C23": {
+          "action": "subscription_propose",
+          "status": "UNRESOLVED_LIVE_GUIDE_REQUIRED",
+          "missing_before_execution": [
+            "exact current server schema/input from guide",
+            "fixture-specific observable result and authorized target",
+            "case-owned ID/version lineage when mutating",
+            "supported cleanup for each case-created object"
+          ]
+        },
+        "EXT-F-4130-C24": {
+          "action": "entity_read",
+          "status": "UNRESOLVED_LIVE_GUIDE_REQUIRED",
+          "missing_before_execution": [
+            "exact current server schema/input from guide",
+            "fixture-specific observable result and authorized target",
+            "case-owned ID/version lineage when mutating",
+            "supported cleanup for each case-created object"
+          ]
+        },
+        "EXT-F-4130-C25": {
+          "action": "entity_write",
+          "status": "UNRESOLVED_LIVE_GUIDE_REQUIRED",
+          "missing_before_execution": [
+            "exact current server schema/input from guide",
+            "fixture-specific observable result and authorized target",
+            "case-owned ID/version lineage when mutating",
+            "supported cleanup for each case-created object"
+          ]
+        }
+      }
     },
     "EXT-F-4150-T01": {
       "feature_id": "EXT-F-4150",
@@ -229,28 +497,38 @@
         "read-only",
         "owned-page-actions"
       ],
-      "execution_status": "NOT_EXECUTABLE_CURRENT_OWNED_TAB_FIXTURE_ABSENT",
+      "execution_status": "NOT_EXECUTABLE_FULL_SUITE_SCREENSHOT_FILE_CANNOT_BE_CLEANED",
       "steps": [
-        "Complete shared build/reload identity and role setup. Create one disposable local static page owned by the tester with an inert text field, one case-owned button that changes only a visible local counter, and a noninteractive heading; capture its current tab ID and fresh page refs. No network requests, account forms, downloads or external actions.",
-        "Run the nonmutating positive first: {\"tab_id\":\"<current tab ID as decimal string>\",\"action\":\"screenshot\"}. Confirm an inline image/result is returned. For the interactive controls, use fresh refs/coordinates from that same owned page: left_click the counter button once; right_click/double_click/triple_click only the inert heading; type synthetic text into the fixture input; key press a harmless navigation key only while the fixture input is focused; scroll/scroll_to the local page; hover/focus/blur the heading; left_click_drag only across blank space. Record before/after counter, input value and scroll position for each action.",
-        "For a rejected-input control run {\"tab_id\":\"not-a-current-tab\",\"action\":\"screenshot\"}; confirm the handler returns an explicit tab lookup error and changes nothing. Also confirm an omitted required tab_id is locally schema-rejected.",
-        "After extension reload and target-page reload, reacquire tab ID and refs, repeat screenshot and one reversible local click/type action; compare only the owned fixture state."
+        "Complete shared build/reload identity. Prepare a disposable tester-owned local page containing a click counter button, an input with visible focus/blur event counters, a hover target, scroll marker/long page, and two local boxes with mouseup counters that update visible local counters. No network, accounts, files, or external action. Obtain its current numeric tab ID; use read_page for fresh refs after every reload.",
+        "C02: run {\"tab_id\":\"<current numeric ID>\",\"action\":\"left_click\",\"ref\":\"<fresh counter-button ref>\"}; require counter +1. C03: run the same shape with action=right_click and ref=<inert-heading-ref>; require contextmenu +1. C04: use action=double_click with that heading ref; require click detail=2 and dblclick +1. C05: use action=triple_click; require click detail=3 and dblclick +1. C06: run {\"tab_id\":\"<ID>\",\"action\":\"type\",\"ref\":\"<input ref>\",\"text\":\"fixture typed 7Q\"}; require value and input/change counters to update. C07: focus that input, then run {\"tab_id\":\"<ID>\",\"action\":\"key\",\"text\":\"ArrowDown\"}; require keydown counter +1 without navigation/submission. C08: run {\"tab_id\":\"<ID>\",\"action\":\"scroll\",\"scroll_direction\":\"down\",\"scroll_amount\":1}; require visible scroll marker change. C09: run {\"tab_id\":\"<ID>\",\"action\":\"hover\",\"ref\":\"<hover-target ref>\"}; require mouseenter counter +1. C12: run {\"tab_id\":\"<ID>\",\"action\":\"scroll_to\",\"ref\":\"<lower-marker ref>\"}; require lower marker visible.",
+        "C11: run {\"tab_id\":\"<ID>\",\"action\":\"left_click_drag\",\"start_coordinate\":[<x1>,<y1>],\"coordinate\":[<x2>,<y2>]} using the measured centers of the case-owned source/destination boxes; require destination mouseup counter +1. C13: run {\"tab_id\":\"<ID>\",\"action\":\"focus\",\"ref\":\"<focusable-input ref>\"}; require focused=true plus visible focus counter +1. C14: run {\"tab_id\":\"<ID>\",\"action\":\"blur\",\"ref\":\"<same fresh input ref>\"}; require visible blur counter +1 and focus marker clear. Do not count focus_element ok:true alone as proof.",
+        "C11 left_click_drag: pass start_coordinate and coordinate at the centers of the two case-owned drag/drop boxes; require the destination mouseup counter to increment. C13 focus: use the focusable input ref; require focus_element result focused=true and visible focus counter increment. C14 blur: use that same fresh input ref; require the visible blur counter increment and focus marker clear. Do not count focus_element ok:true alone as proof.",
+        "C10 screenshot is deliberately blocked: computer always delegates to take_screenshot with persist=true; success may upload to cld_files and write extend.wbx_screenshot, and the wrapper returns a file reference rather than inline pixels. The supported Screenshots UI delete removes only the index row; source explicitly says the cloud file remains. Do not invoke it until a supported cleanup path for both this case-created file and index record is proven. If later approved fixture supplies one, record returned file_id, screenshot_id (wrapper may not expose it; obtain exact row from owned Screenshots gallery), inspect the file reference and gallery row, and confirm persistence or explicit fallback before cleanup.",
+        "For errors, pass {\"tab_id\":\"not-a-current-tab\",\"action\":\"screenshot\"} and expect Invalid tab_id from parsing. Separately choose a numeric tab ID not present in current list_open_tabs and verify the handler returns Tab <id> not found; do not conflate the two. Omit required tab_id in another invocation and verify local schema rejection. Reload extension and fixture page, reacquire ID/refs, and repeat one safe local interaction only if screenshot remains uninvoked."
       ],
       "expected": [
-        "Screenshot returns the current owned page capture. Each action targets only the described inert local fixture; only the counter click and synthetic input change their local state. The unknown tab produces an explicit error; missing tab_id fails schema parsing. Computer source activates the requested tab, and some delegated actions depend on fresh page refs.",
-        "No owned local interaction page or current tab ID is available in this task. The inventory/catalog schema is source evidence, not a fixture. Because 13 of 14 controls can manipulate a page, none should be run on an unrelated active tab; the full case remains unexecutable until the owned fixture is prepared. Direct manual runs bypass dispatcher approval/tier gates."
+        "The exact positive assertions are the local visible event/state changes described per control; focus requires a real focusable input and focus/blur event evidence. Invalid nonnumeric tab_id returns Invalid tab_id; current numeric but nonexistent ID reaches chrome.tabs.get and returns Tab <id> not found; missing tab_id is rejected by schema.",
+        "Screenshot has persistent cloud/index side effects and its output is a file reference. The current supported gallery deletion leaves the cloud file, and no extension file-delete API was found. Therefore screenshot control C10 and this full-control suite remain blocked until a supported owned-asset cleanup route exists. No current owned fixture/tab ID or cloud-cleanup permission is supplied."
       ],
       "preconditions_fixtures": [
-        "Disposable tester-owned local page with the specified inert controls and no network/external effects; current profile/tab ID; fresh refs after each page load. No such page or active tab evidence is present here."
+        "Requires a tester-owned local fixture page with the named elements, visible event counters, scroll and drag state, plus current numeric tab ID and fresh page refs. No such active page/fixture is present here.",
+        "Screenshot additionally requires an owned organization/storage fixture, artifact access and proven cleanup for both the cld_files object and screenshot index. Current product UI deletes the index only; the source leaves cloud bytes behind, so C10 must remain unexecutable."
       ],
-      "cleanup": "Close only the fixture tab created for this case. No network or persistent storage should be written; reset its counter/input before reload comparison.",
+      "cleanup": "Reset local fixture counters/input and close only its tab. Do not run computer screenshot under the current contract: it persists a cloud file and index row, while the available screenshot delete path removes only the index row. Never claim cleanup by deleting the index while leaving the file. Require a supported delete for both owned artifacts before enabling C10.",
       "source_refs": [
         "docs/stabilization/PLAN.md: build/reload contract",
         "docs/stabilization/inventory.json: EXT-F-4150 controls",
         "types/tool-catalog.json: computer schema",
         "src/lib/tools/handlers/canonical.ts: ComputerArgs, active-tab resolution and action branches",
         "src/lib/tools/handlers/canonical.ts: screenshot and delegated page action handlers",
-        "src/features/tools/ToolsView.tsx: manual context and permission-gate bypass"
+        "src/features/tools/ToolsView.tsx: manual context and permission-gate bypass",
+        "src/lib/tools/handlers/read.ts:331-445: screenshot persistence and file reference result",
+        "src/lib/tools/handlers/canonical.ts:318-373: computer screenshot hardcodes persist=true and returns file reference",
+        "src/lib/screenshot/persist.ts: cld_files plus screenshot index",
+        "src/features/screenshots/ScreenshotsView.tsx: delete consequence retains cloud file",
+        "src/lib/destructive/operations.ts: deleteScreenshot leaves file in cloud storage",
+        "src/lib/tools/handlers/_active-tab.ts:49-60: numeric tab parsing",
+        "src/lib/tools/handlers/keyboard.ts:249-308: focus/blur behavior"
       ]
     },
     "EXT-F-4160-T01": {
@@ -307,6 +585,8 @@
   "limitations": [
     "All entries are proposed procedures only. No product runtime passes or inventory cell changes are claimed.",
     "Current server Records parameters/results were not fetched; no database/network call was made. Use the live Records guide/schema before any action payload beyond the exact read-only guide request.",
-    "No Chrome browser, build, native desktop dispatch, server tool dispatch, or app fixture execution was performed."
+    "No Chrome browser, build, native desktop dispatch, server tool dispatch, or app fixture execution was performed.",
+    "Peer findings RTP-01 through RTP-05 were applied as proposal corrections only. Computer screenshot and full computer case remain blocked because the available product deletion removes the screenshot index row but retains the uploaded cld_files object.",
+    "The Records case now has an unresolved status per each of its 25 control IDs. Exact payloads and cleanup remain unavailable until a current live guide/schema and authorized owned fixture are provided."
   ]
 }
