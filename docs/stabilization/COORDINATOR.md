@@ -36,6 +36,6 @@ D183 is closed after independent real interrupted-checkpoint proofe67a0ece and n
 
 ## Handoff discipline
 
-Verified remote checkpoint: `1e2889a1`, 2026-10-08T11:08:13.459393-07:00. Next synchronization deadline while active: 2026-10-08T12:08:13.459393-07:00. The latest ten-repository snapshot is [the workspace ledger](reports/workspace-sync-guest-incident-20261003.json); refresh remotes at every task boundary and before each push.
+Verified remote checkpoint: `c631d36e`, 2026-10-08T11:32:19.418483-07:00. Next synchronization deadline while active: 2026-10-08T12:32:19.418483-07:00. The latest ten-repository snapshot is [the workspace ledger](reports/workspace-sync-guest-incident-20261003.json); refresh remotes at every task boundary and before each push.
 
 At each task boundary fetch and reconcile `origin/main`, inspect active worker/job/secret ownership, and read the linked receipt before repeating work. Commit and push only owned exact paths; preserve the concurrent workspace-sync ledger and other dirty paths. Independently verify source and live behavior at the same artifact/commit boundary. Record a deployed SHA and observed endpoint before calling a server repair live; record an installed Store build separately from an unpacked Store package. Do not infer product health from an automation schedule, source pass, procedure count, or a closed defect. Keep every unresolved cell in the canonical inventory and the next concrete action in this checkpoint.
