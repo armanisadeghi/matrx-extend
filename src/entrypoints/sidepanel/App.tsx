@@ -72,8 +72,15 @@ import { type ComponentType, Suspense, lazy, useEffect, useRef, useState } from 
 // which contextual typing widens to `{ default: () => JSX.Element } | { default: ComponentType }`.
 // `lazy()` can't pick a component type out of that union (TS7 rejects it).
 const VIEW_LOADERS: Record<SidepanelTab, () => Promise<{ default: ComponentType }>> = {
+  // W2 in progress: `sidepanel.html?chat=package` mounts the shared @ai-matrx/chat; the
+  // extension's own chat stays the default until the package renders every piece it needs
+  // in this host (no stand-ins), then this switch and ChatView are deleted together.
   chat: () =>
-    import('@/features/package-chat/PackageChatView').then((m) => ({ default: m.PackageChatView })),
+    new URLSearchParams(location.search).get('chat') === 'package'
+      ? import('@/features/package-chat/PackageChatView').then((m) => ({
+          default: m.PackageChatView,
+        }))
+      : import('@/features/chat/ChatView').then((m) => ({ default: m.ChatView })),
   pilot: () => import('@/features/chat/PilotView').then((m) => ({ default: m.PilotView })),
   tasks: () => import('@/features/tasks/TasksView').then((m) => ({ default: m.TasksView })),
   lists: () => import('@/features/lists/ListsHubView').then((m) => ({ default: m.ListsHubView })),

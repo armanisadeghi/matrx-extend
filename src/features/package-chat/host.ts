@@ -6,6 +6,7 @@
  * `deviceTools` port (run by the service worker's dispatcher).
  */
 
+import { STORAGE_KEYS } from '@/config/env';
 import { buildHeaders, getApiBaseUrl } from '@/lib/api/client';
 import { send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -14,7 +15,6 @@ import {
   listMemberOrganizations,
   requireActiveOrganizationId,
 } from '@/lib/org/active-org';
-import { STORAGE_KEYS } from '@/config/env';
 import { getSupabase } from '@/lib/supabase/client';
 import type {
   ChatDeviceToolInvocation,
