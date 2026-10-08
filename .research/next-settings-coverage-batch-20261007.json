@@ -25,12 +25,14 @@
     "artifact_requirements": "Pass exact successful development_run_id and development_artifact_id under host resource guard; no frozen391 result transfers to a newer artifact."
   },
   "self_verification": [
+    "pnpm test:focused-acceptance",
     "node --test tests/browser/settings-guest-privacy-batch.test.mjs",
     "node --check tests/browser/settings-local-controls-acceptance.mjs",
     "node --check tests/browser/settings-guest-privacy-batch.mjs",
     "pnpm exec biome check tests/browser/settings-local-controls-acceptance.mjs tests/browser/settings-guest-privacy-batch.mjs tests/browser/settings-guest-privacy-batch.test.mjs"
   ],
   "source_files": [
+    "package.json",
     "tests/browser/settings-local-controls-acceptance.mjs",
     "tests/browser/settings-guest-privacy-batch.mjs",
     "tests/browser/settings-guest-privacy-batch.test.mjs"
