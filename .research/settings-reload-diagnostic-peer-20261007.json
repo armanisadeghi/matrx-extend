@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "scope": "Independent source review of exact commit a5d303193f8684c46512136f0d6ff30db040676d against original native run 37712686956 and new T63/T64 source 831cd1d5. No native rerun or product-cause claim.",
+  "verdict_a_diagnostic_readiness": {
+    "result": "PARTIAL",
+    "evidence": "Original native receipt has all extension replacement flags true and guestStageFailed=reload_settings, with no first substep. The change records before_click versus guest_wait_started, a bounded pointer category, and a replacement-panel probe. This would identify a failed trusted click or a guest wait that returns false; it does not establish the original product cause.",
+    "important_gap": "A transport failure during guest wait is swallowed by settings-panel-driver.waitFor (lines 18-27) into {transient: raw message}, then thrown as guest_settings_not_observed:<last>. The classifier (settings-reload-boundary.mjs lines 32-37) checks that prefix before transport, so a closed replacement panel can be labeled guest_state_not_observed. The stated click/wait/transport distinction is therefore not dependable for the original boundary.",
+    "readiness": "Do not use this source alone to declare EXT-D-0161 diagnosed or promote T63/T73/T76/T92. One guarded native rerun may still yield useful click and probe evidence, but the transport distinction needs repair before its category is trusted. T64 has no native execution evidence."
+  },
+  "verdict_b_privacy_control_quality": {
+    "result": "PARTIAL",
+    "positive": "The classifier emits fixed step/category names and selected pointer counts/booleans; it does not copy raw error messages or pointer geometry/content. The page expression computes booleans and counts, compares runtime ID locally, and does not deliberately return credentials, URLs, identities or page text. The failure is still marked unverified in the existing catch.",
+    "important_gap": "observeReloadSettingsPanel returns {sampled:true,...sample} from CDP without a host-side key/type allowlist (settings-reload-boundary.mjs lines 71-72). The current fixed expression is safe, but the receipt boundary itself does not enforce the claimed no-credential/no-URL/no-identity invariant if a returned value changes. The tests exercise classifier cases only; no negative control feeds a contaminated or malformed panel sample through the real report path, and no test covers waitFor masking a transport failure.",
+    "control_limit": "The two classifier tests are useful source checks, not forcing proof of the full native reload path. Claimed focused CI run 37713797315 at a5d30319 is not native acceptance and was not independently rerun by this peer."
+  },
+  "requested_remedy": "Preserve transport as a separate fixed category across the wait boundary, explicitly select and type-check every probe field before receipt serialization, and add negative controls for transport masking and extra panel response fields. Then review the exact change and run the guarded frozen-artifact reload once without promoting unobserved cases.",
+  "not_done": [
+    "No native/browser execution, test run, build, release, secret access, or inventory edit.",
+    "No conclusion about the original panel/product failure cause."
+  ]
+}
