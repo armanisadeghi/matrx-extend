@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "reviewed_at_utc": "2026-10-08T08:46:50Z",
+  "role": "fresh zero-authorship source reviewer",
+  "incident": "EXT-D-0172",
+  "target": {
+    "repository": "aidream",
+    "exact_commit": "ffba17ba25c98599d78566bc8a74fce1c3dbe91e",
+    "scope": "The commit's four owned files, its parent, the published guest failure evidence, and narrow persistence/rebuild call sites; not moving HEAD."
+  },
+  "verdict_a_contract": {
+    "status": "PARTIAL_SOURCE; LIVE_UNVERIFIED",
+    "observed_red": "Hosted public Store 0.2.205 guest run 37748038743 on server 53aec906 completed get_page_text after a reload, then /resume returned resume_context_not_ready 409 with no assistant answer. The failed turn's assistant row was pending with empty content while the tool row was completed. This candidate was not deployed or run in the native public browser.",
+    "supported": [
+      "For a stored turn whose live client-tool predicate matches, executor.py:6526-6572 now flushes, finalizes, reads back, repairs only a same-conversation/same-position pending empty assistant reservation, and re-reads before tool dispatch. committed_position advances after this proof.",
+      "tools/executor.py:2935-2975 refuses tool_delegated unless the referenced assistant row is active and contains the current call_id. This prevents a completed client tool row from being published against the observed pending/content[] reservation.",
+      "_conversation_rebuild_impl.py:273 onward can pair the active assistant tool_call with the completed tool row; continue_conversation.py:1269 requires that paired tool result as the resumed tail."
+    ],
+    "important_gap": {
+      "location": "packages/matrx-ai/matrx_ai/orchestrator/executor.py:6526 and packages/matrx-ai/matrx_ai/tools/executor.py:2935",
+      "finding": "The repair is still selected by _response_has_live_client_delegated_call before dispatch. If that predicate missed the incident's delegated call, iteration_message_id remains None and the new tool guard raises instead of producing the normal public guest answer. The incident trace did not distinguish a missed predicate from a failed or zero-row assistant update, so source alone cannot say the failing path now reaches repair.",
+      "severity": "Important until deployed native acceptance passes"
+    },
+    "stored_unstored_guest_member": "The stored checkpoint has no guest/member branch; both use the same assistant proof. _flush_assistant_message_mid_loop returns None for store=False, while _execute_delegated now unconditionally requires a message_id. This means an ephemeral run with a client-delegated tool fails before publication; whether that combination is supported needs an explicit contract or targeted check. No native guest/member comparison was run."
+  },
+  "verdict_b_doctrine_quality": {
+    "status": "FAIL_IMPORTANT_GUARD_GAP",
+    "supported": [
+      "The patch preserves existing occupied content: it repairs only status=pending/content=[] on the same conversation and position and refuses conflicts, rather than writing from request_snapshot during resume.",
+      "The assistant readback precedes dispatch, and the tool readback precedes tool_delegated. Missing assistant checkpoint captures safe status/count metadata and raises on unresolved conflict or failed repair.",
+      "The two checks serve distinct call sites, but call-id extraction and row validation are duplicated rather than one shared readiness primitive; this is a maintenance concern, not evidence of this incident failing."
+    ],
+    "important_finding": {
+      "location": "packages/matrx-ai/tests/test_guest_delegation_checkpoint.py:17-118",
+      "finding": "The new test invokes _ensure_assistant_tool_use_on_disk and _execute_delegated separately, with monkeypatched message reads, queue update, coordinator finalize, and tool ledger. It does not execute the orchestrator predicate, real queued flush, or authoritative end-to-end continuation. Therefore it cannot fail on the missed-predicate or zero-row write class implicated by the incident. No unit RED-before-GREEN was demonstrated; the live pre-fix 409 is the independent RED.",
+      "severity": "Important"
+    },
+    "limits": "The test does check an occupied/foreign reservation and rebuild pairing, but no test injects a repair finalize failure or checks no event after that failure. No migration, dependency, or new access path was added."
+  },
+  "independent_checks": {
+    "diff": "git show --stat -U10 ffba17ba25 on the exact four owned files",
+    "test_command": "uv run --no-sync pytest -q packages/matrx-ai/tests/test_guest_delegation_checkpoint.py packages/matrx-ai/tests/test_conversation_rebuild_hydration.py packages/matrx-ai/tests/test_executor_user_message_reservation.py",
+    "test_result": "16 passed in 0.23s; three coroutine warnings from existing reservation tests. This is source-level evidence only.",
+    "native_deployment": "Not performed in this read-only lane. Exact server deployment and fresh published public guest run remain pending."
+  },
+  "overall": "REOPEN source guard quality; do not claim the public guest reply restored until the exact deployed server passes post-reload new-conversation acceptance."
+}
