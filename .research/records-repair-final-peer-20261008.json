@@ -1,0 +1,27 @@
+{
+  "reviewed_commits": ["e4ed23d3", "8bfc4d77"],
+  "scope": "Fresh independent source review of Records read-only native proof repair and EXT-D-0181 Scrape launch regression; no hosted native execution or private fixture access",
+  "records_findings_reverified": {
+    "sign_in_callback": "ADDRESSED in source: the actual acceptance driver passes onStage to signInRecordsAdmin, which requires a function and forwards it to signInSettings; its admin branch invokes that callback.",
+    "execute_principal": "ADDRESSED in source: panelBearerHash reads the current panel token hash; the execute observer hashes the Bearer header for the exact /tools/test/execute request and the driver requires equality before accepting completion.",
+    "request_result_correlation": "ADDRESSED in source: the observer requires one finished 200 execute POST, reads its body by that CDP requestId, requires one tool_execution completion/full_result, and compares the visible Records output to that completion before validating table_list coverage.",
+    "listener_cleanup": "ADDRESSED for normal execution: stop removes all four listeners and throws a bounded cleanup error on removal failure; the acceptance driver invokes stop in finally. A registration-error cleanup failure remains secondary to the original registration error."
+  },
+  "verdict_a_source_and_native": "SOURCE PASS for the four prior findings; NATIVE PENDING. Hosted routing requires an exact CI development artifact, prepared admin credential and approved-organization fixture, resource admission, and a private receipt path. No passing hosted native Records action receipt was inspected or produced here. D91 / EXT-F-4130-C02 remains open.",
+  "verdict_b_quality": "PARTIAL: focused guards reject wrong principal, stale visible body, and missing callback at the extracted proof-helper seam, and route/syntax checks pass. They do not execute or mutate the actual acceptance driver's call sites; removing onStage, bearer comparison, or completion comparison there would leave the current focused unit suite green. Add a driver-seam mutation/red-green guard or prove the current driver in hosted native Chrome before treating test coverage as closed.",
+  "records_evidence": [
+    "node --test tests/browser/records-readonly-native-proof.test.mjs scripts/hosted-showcase-route.test.mjs: 18 passed",
+    "node --check tests/browser/records-readonly-native-acceptance.mjs: passed",
+    "src/lib/api/stream.ts documents NDJSON standard events; the proof reader selects the tool_execution completion from the observed request body",
+    "The acceptance receipt retains bounded stage, request flags, count and organization coverage; bearer hash, response body, table names and row contents are not written"
+  ],
+  "scrape_ext_d_0181": {
+    "verdict": "PASS for the targeted source regression; hosted headed Scrape behavior remains separately unverified here",
+    "evidence": [
+      "node --test tests/browser/scrape-headed-launch.test.mjs: 3 passed",
+      "The old extracted real caller throws ReferenceError: RELOAD_OPEN_DIAGNOSTIC is not defined with diagnostic false and true; the repaired extraction binds the flag and observes headed=true with both flag values",
+      "The existing headed-negative assertion and the owned CDP display-mode mismatch assertions still pass"
+    ]
+  },
+  "remaining": "Run records-readonly-admin on the exact current CI development artifact with the approved live organization and inspect its private receipt. Keep D91 open pending that result and the remaining Records controls."
+}
