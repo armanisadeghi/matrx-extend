@@ -1,0 +1,44 @@
+{
+  "id": "EXT-D-0183",
+  "feature_id": "EXT-F-1008",
+  "case_ids": ["EXT-F-1008-T09", "EXT-F-0002-T08"],
+  "surface": "SEO native acceptance receipt",
+  "auth_mode": "guest",
+  "title": "Guard-terminated SEO run loses last stage and completed observations",
+  "severity": "S2: test failure cannot be localized; product SEO impact not established",
+  "priority": "P1",
+  "state": "in-fix",
+  "owner": "seo_progress_receipt_repair",
+  "reproduction": [
+    "Run existing guest-seo full/Airbnb diagnostic on frozen407 as hosted37791330758.",
+    "Owned panel opens and SEO exercise begins; guest resource watchdog CPU_PENDING then WATCH_UNSAFE sends safe-boundary SIGTERM.",
+    "Inspect uploaded current-run artifact: exactguardjournals and initialscreenshots retained, no structuredSEOreceipt/targets. Repeat37787701142 also lacksSEOtargetreceipt."
+  ],
+  "expected": "Last safe phase and completed bounded observations survive interruption, with exactmode/artifact and zero acceptance when diagnostic or resource-invalid.",
+  "actual": "Final-only receipt is lost under termination; laterChromeCPU cannot be correlated to idle startup versus publicpagework.",
+  "evidence": [
+    ".research/startup-bracket-native-20261008.json",
+    ".research/seo-startup-repair-acceptance-20261008.json"
+  ],
+  "closure_requirement": "Durable phase/observation write proven by actual interrupted driver seam and freshreview, then independently inspected native interruption/surrounding successfulreceipt; no invalidrun promotion.",
+  "transition_history": [
+    {
+      "at": "2026-10-08T14:31:54.044492+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Repeated exactrun missing structuredSEOprogress after guard stop."
+    },
+    {
+      "at": "2026-10-08T14:31:54.044492+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Native startup and laterCPU phases cannot be separated without reporterprogress."
+    },
+    {
+      "at": "2026-10-08T14:31:54.044492+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Scoped implementation dispatched to preserve bounded receipt at meaningful existing driverboundaries."
+    }
+  ]
+}

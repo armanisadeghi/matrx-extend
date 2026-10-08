@@ -35,7 +35,8 @@
     ".research/scrape-startup-repair-acceptance-20261008.json",
     ".research/native-host-pressure-escalation-20261008.json",
     ".research/startup-interval-independent-peer-20261008.json",
-    ".research/startup-interval-final-peer-20261008.json"
+    ".research/startup-interval-final-peer-20261008.json",
+    ".research/startup-bracket-native-20261008.json"
   ],
   "transition_history": [
     {
@@ -58,7 +59,7 @@
     }
   ],
   "closure_requirement": "Prove and repair demonstrated startup class with actual helper red/green and independent review; native admin original scenario and surrounding ownership rejection must pass.",
-  "next_action": "One diagnostic-only hosted SEO/Airbnb attempt using reviewed e7b7dc1e-or-descendant source and frozen407 artifact; focused CI37790643910 and fresh875f8ebb pass. Capture immediate startup CPU bracket to distinguish host/stable deltas and newly appeared owned Chrome lifetime CPU. Keep thresholds unchanged, zero diagnostic acceptance, no blind retry. Original admin refusal remains unresolved.",
+  "next_action": "Source-reviewed explicit headless idle-panel control, then one guarded hosted attempt on same Intel/frozen407 artifact: isolate public-page workload while preserving Chrome/display/extension. Current diagnostic37791330758 connects~5.95s; startup host CPU dominant but later ownedChrome CPU dominates, and missing SEO phase makes causal attribution unresolved. No warm-up, threshold reduction, or blind retry. D183 preserves future SEOprogress.",
   "confirmed_late_start_variant": {
     "run_id": "37785284577",
     "resource_valid": true,

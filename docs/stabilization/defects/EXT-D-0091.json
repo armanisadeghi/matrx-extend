@@ -28,7 +28,11 @@
     ".research/release176-artifact.json",
     ".research/records-canonical-independent-check.json",
     ".research/records-manual-contract.json",
-    ".research/records-canonical-escalation.json"
+    ".research/records-canonical-escalation.json",
+    ".research/records-native-review-repair-20261008.json",
+    ".research/records-repair-final-peer-20261008.json",
+    ".research/records-driver-guard-20261008.json",
+    ".research/records-ci-diagnostics-peer-20261008.json"
   ],
   "transition_history": [
     {
@@ -67,5 +71,6 @@
     "entity_read",
     "entity_write"
   ],
-  "current_work": "Release 0.2.176 (source 3fe608d949a06aa10bfea57b43c9b05638386bc1) includes extension commit 41670d8d; aidream source c971bc6314 supplies the canonical server contract. The release artifact records strict release gates exiting 0, and source review confirms the executor retirement, retained discovery/manual UI, and complete contract gate. This supersedes the stale claim that source review and the strict gate are still pending. D91 remains in-fix: the retained independent live check predates server deployment, no post-deployment Records user result is recorded, and the focused native Manual Tools Records read-only case is still not executed. Do not infer all-action acceptance from the strict gate or unrelated guest/member Chat runs."
+  "current_work": "Release 0.2.176 (source 3fe608d949a06aa10bfea57b43c9b05638386bc1) includes extension commit 41670d8d; aidream source c971bc6314 supplies the canonical server contract. The release artifact records strict release gates exiting 0, and source review confirms the executor retirement, retained discovery/manual UI, and complete contract gate. This supersedes the stale claim that source review and the strict gate are still pending. D91 remains in-fix: the retained independent live check predates server deployment, no post-deployment Records user result is recorded, and the focused native Manual Tools Records read-only case is still not executed. Do not infer all-action acceptance from the strict gate or unrelated guest/member Chat runs.",
+  "native_acceptance_preparation": "records-readonly-admin routed to authenticatedlaneA. Sourcee4ed23d3 fixes four independent findings; guardd65ac528 passes fresh667c2574 at actualcallback seam, including missingstage/wrongprincipal/stalevisiblebody and cleanup. No native Records action run yet. Next exactcandidate browser test must prove actual signed-in table_list include_app_tables, matching org/principal and finishedrequest correlated visible result; allother Records actions remain unverified."
 }

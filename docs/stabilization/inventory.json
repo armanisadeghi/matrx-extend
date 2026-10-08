@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T14:21:11.152144+00:00",
+  "updated_at": "2026-10-08T14:31:54.044492+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -938,7 +938,8 @@
             "EXT-D-0107",
             "EXT-D-0117",
             "EXT-D-0122",
-            "EXT-D-0181"
+            "EXT-D-0181",
+            "EXT-D-0183"
           ],
           "results": {
             "admin": {
@@ -19364,7 +19365,7 @@
               }
             }
           ],
-          "defect_ids": ["EXT-D-0170", "EXT-D-0174", "EXT-D-0176"],
+          "defect_ids": ["EXT-D-0170", "EXT-D-0174", "EXT-D-0176", "EXT-D-0183"],
           "attempt_history": [
             {
               "at": "2026-10-08T06:31:41.651988+00:00",
@@ -19456,6 +19457,18 @@
               "workflow_checkout_sha": "64b756a5332073c4e9d2d594507f0a4430d6af81",
               "evidence": [".research/seo-startup-repair-acceptance-20261008.json"],
               "detail": "Expected guest panel context reached, then CPU84/81 watchdog invalidated run before SEO targets. Zero acceptance; prior bounded results preserved; startup process attribution escalated."
+            },
+            {
+              "at": "2026-10-08T14:31:54.044492+00:00",
+              "run_id": "37791330758",
+              "mode": "guest",
+              "status": "unverified",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [".research/startup-bracket-native-20261008.json"],
+              "detail": "Diagnostic-only startup bracket connects~5.95s; hostdominantstartup then laterownChromiumpressure. Guestjournalinvalid/exit3; noSEOreceipt. Zeroacceptance; workloadphaseunknown. Idlepanel sameheadlessmode control and durableprogressrepair are next."
             }
           ]
         },

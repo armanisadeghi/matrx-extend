@@ -19,7 +19,9 @@
   "evidence": [
     ".research/ci-guard-timeout-triage-20261008.json",
     ".research/ci-scenario-timing-20261008.json",
-    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37789659379"
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37789659379",
+    ".research/records-ci-diagnostics-peer-20261008.json",
+    ".research/ci-timing-privacy-final-peer-20261008.json"
   ],
   "root_cause": "Unresolved: narrow aggregate timing margin demonstrated; active scenario absent from original logs.",
   "closure_requirement": "Actual automatic CI scenario timing identifies cause; repair preserving refusal/recovery/cleanup assertions passes independent source and automatic original-group/surrounding checks. No threshold reduction or blind timeout hike.",
@@ -42,5 +44,6 @@
       "to": "in-fix",
       "reason": "e87d1d29 adds per-scenario diagnostics; fresh review and automaticCI evidence pending, no cause fix yet."
     }
-  ]
+  ],
+  "diagnostic_review": "Per-scenario instrumentatione87d1d29 privacy finding repaired54607f44 and independently passes3cd07423, including actualrawreason red/green. Exactlater automaticCI observation pending. CI37790643945/e7b7dc1e passed originalsource test but intermittentfailure notclosed."
 }
