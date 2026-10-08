@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T10:20:23.473222+00:00",
+  "updated_at": "2026-10-08T10:37:08.864244+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -23277,6 +23277,21 @@
                 ".research/t57-diagnostic-retry-peer-20261008.json"
               ],
               "detail": "Admin sign-in/rendered identity passed; organization storage checkpoint failed before Network capture or recipe. Requires approved UUID/current membership and actual product header proof. No product org defect inferred; temporary secrets independently absent."
+            },
+            {
+              "at": "2026-10-08T10:37:08.864244+00:00",
+              "mode": "admin",
+              "run_id": "37763007487",
+              "status": "unverified",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/t57-org-checkpoint-native-20261008.json",
+                ".research/t57-org-checkpoint-native-peer-20261008.json"
+              ],
+              "detail": "Upstream rendered identity stopped on organization-to-device-storage mismatch; approved UUID/request checkpoint and Network race never reached. Guest final resourceInvalid=true exit3 after CPU event; no product verdict. Both staged secret names independently absent. Shared principal readiness class repair required before another attempt."
             }
           ]
         },
