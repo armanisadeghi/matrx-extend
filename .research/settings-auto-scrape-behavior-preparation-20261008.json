@@ -1,0 +1,25 @@
+{
+  "task": "EXT-F-1003-T40 automatic page-load scrape behavior preparation",
+  "status": "source_prepared_unwired_no_live_acceptance_credit",
+  "source_findings": {
+    "setting_and_trigger": "src/hooks/use-auto-scrape.ts reads scrapeAutoOnLoad and invokes captureWithFallback for the active HTTP(S) page after its settle delay.",
+    "readback": "The auto-scrape store feeds chat context; ContextRulesComposerChip provides a no-send preview with Page content, and the context builder labels background content auto-background.",
+    "controlled_check": "The new helper requires a fresh controlled HTTP(S) document, a unique marker in Page content, and auto-background provenance while enabled; it requires no marker/provenance capture for a separate fresh page while disabled and restores the original visible+stored setting."
+  },
+  "forcing_tests": {
+    "file": "tests/browser/settings-auto-scrape-behavior.test.mjs",
+    "command": "TMPDIR=/Volumes/Samsung2TB/tmp node --test tests/browser/settings-auto-scrape-behavior.test.mjs",
+    "result": "4 passed; includes enabled-missing-capture rejection, disabled-captured-page rejection, baseline storage-drift rejection, and successful ON/OFF/restoration assertions.",
+    "limitation": "Tests exercise the helper through an adapter model; no native browser adapter currently invokes real Settings UI, controlled navigation, or ContextRulesComposerChip preview."
+  },
+  "gaps": [
+    "Wire this helper into the existing Settings controls native runner using the actual setting UI, controlled fresh pages, and no-send Page content preview.",
+    "Run the focused acceptance gate and a hosted guest run before crediting T40.",
+    "No downstream capture acceptance, full-extension reload acceptance, or live product behavior is claimed here."
+  ],
+  "owned_files": [
+    "tests/browser/settings-auto-scrape-behavior.mjs",
+    "tests/browser/settings-auto-scrape-behavior.test.mjs",
+    ".research/settings-auto-scrape-behavior-preparation-20261008.json"
+  ]
+}
