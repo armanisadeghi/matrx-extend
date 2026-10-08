@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "scope": "Read-only diagnosis of two terminal hosted guest SEO resource admission failures; no job dispatch, source, guard, policy, inventory, build, or release change.",
+  "verdict": "HOST_LOAD_BLOCKED_BOTH_ATTEMPTS_BEFORE_PRODUCT_EXECUTION; HOST_PROCESS_CAUSE_UNPROVEN",
+  "failures": [
+    {
+      "run_id": 37799458419,
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37799458419",
+      "runner": "macos-15-intel / X64 / x86_64",
+      "boundary": "Package readiness passed with three consecutive healthy samples at 15:18:25Z. The independent 60-second package permit then refused at 15:19:33Z, before package installation, Chromium setup, or SEO execution.",
+      "measurements": {
+        "readiness_busy": [0.18, 0.07, 0.04],
+        "permit_cpu_busy_samples": [0.46, 1.0, 0.57, 0.98, 0.81, 0.64, 0.51],
+        "permit_mean_busy": 0.71,
+        "permit_peak_one_minute_load": 12.11,
+        "logical_cpus": 4,
+        "normalized_peak_load": 3.0275,
+        "available_memory_gib": 12.6,
+        "swap_used_mib": 0,
+        "reason": "RESOURCE_CPU_HIGH_LOAD_BUSY",
+        "decision": "refused; admitted=false; resourceInvalid=false; exitCode=2"
+      },
+      "causal_limit": "The readiness-to-permit load increase is observed. The log contains no interval process CPU attribution, so the contributing host process and why load rose are unknown."
+    },
+    {
+      "run_id": 37799999548,
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37799999548",
+      "runner": "macos-15-intel / X64 / x86_64",
+      "boundary": "Package readiness expired at 15:23:15Z after its fixed seven samples; package permit, browser setup, and SEO execution never began.",
+      "measurements": {
+        "cpu_busy_samples": [0.69, 0.59, 0.6, 0.91, 0.74, 0.43, 0.87],
+        "normalized_load_samples": [7.58, 5.7675, 4.5275, 3.965, 3.25, 2.59, 2.1725],
+        "consecutive_healthy_counts": [0, 1, 0, 0, 0, 1, 0],
+        "required_consecutive_healthy": 3,
+        "failure_code": "RESOURCE_READINESS_EXPIRED"
+      },
+      "causal_limit": "CPU busy repeatedly exceeded the high-load readiness condition. Load was falling but readiness never reached three consecutive qualifying samples. No package permit journal or process attribution exists for this run."
+    }
+  ],
+  "architecture_and_comparison": {
+    "workflow": "The selected GitHub runner label is checked against actual machine architecture. Lane B is a separate workflow concurrency group from lane A; each job runs on its own hosted VM. Package, browser, and selected guest phases each require new measured readiness and a fresh owned resource permit. The permit samples a full 60-second window before launching its child.",
+    "policy": "Readiness allows high one-minute load only when measured CPU busy is below 0.60; it requires three consecutive healthy samples within seven samples at 15-second spacing. The package permit refuses mean CPU busy at least 0.60 when normalized load is at least 0.75. Both mechanisms applied their existing limits; there is no evidence of a sampler error or policy misclassification.",
+    "arm_neighbor": "Run 37799435980 started at 15:17:07Z on macos-15 / ARM64 / arm64, concurrently with the first Intel SEO run. Its package permit admitted at 15:19:01Z with seven-sample mean busy 0.17 and no reason, then browser and selected Records permits also admitted and the job completed successfully. Its logical CPU count was 3, so its load numbers must not be compared without CPU-busy context.",
+    "arm_seo_precedent": "Controlled guest SEO run 37746166364 used macos-15 and lane A, passed package/browser/guest resource permits and reached real controlled T14/T02/T14 observations. Its older product artifact and lane A do not establish development414 acceptance on lane B, but demonstrate this workflow's SEO route is executable on Arm.",
+    "limit": "Different disposable VMs and different timestamps prevent attribution to Intel architecture, GitHub runner provisioning, another process, or workflow checkout. The two failed runs contain no same-interval process census. The successful neighbor supports a safer executable runner choice, not a proven hardware root cause."
+  },
+  "next_safe_action": "For the next already-authorized controlled guest SEO attempt, dispatch lane B using the workflow's supported macos-15 (ARM64) runner label, the same development414 run 37790643945/artifact 11556064167, controlled scope, and unchanged resource readiness/permit/watchdog. Check that the prior lane B jobs are terminal and maintain one heavy job per hosted machine. Treat another readiness/refusal as environment-only evidence; inspect the exact journal before any further dispatch. If Arm also repeatedly fails before product work, add a bounded, privacy-safe process CPU-time attribution around pre-admission samples to distinguish host provisioning from owned setup before changing runner policy. Do not widen thresholds or readiness duration on these records.",
+  "verification": [
+    "Read exact GitHub step logs and job metadata for runs 37799458419, 37799999548, and 37799435980.",
+    "Matched observations to .github/workflows/hosted-guest-acceptance.yml, scripts/hosted-resource-readiness.mjs, scripts/stabilization-resource.mjs, and docs/stabilization/resource-policy.json.",
+    "Compared retained controlled Arm SEO receipt .research/seo-controlled-native-20261008.json; no product credit inferred."
+  ]
+}
