@@ -23384,7 +23384,7 @@
             "EXT-F-1012-C42",
             "EXT-F-1012-C47"
           ],
-          "defect_ids": ["EXT-D-0047", "EXT-D-0049", "EXT-D-0173", "EXT-D-0177"],
+          "defect_ids": ["EXT-D-0047", "EXT-D-0049", "EXT-D-0173", "EXT-D-0177", "EXT-D-0179"],
           "preconditions": [
             "Fresh development build; verify receipt and reload the extension and page in Chrome. Use a real public website with a reproducible request during initial document load and an owned recipe. No localhost/test server. Guest/member denial uses EXT-F-1012-T38."
           ],
@@ -23632,6 +23632,20 @@
               "new_acceptance_credit": false,
               "build_version": "0.2.407",
               "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114"
+            },
+            {
+              "at": "2026-10-08T12:57:04.451196+00:00",
+              "mode": "admin",
+              "run_id": "37779573657",
+              "status": "unverified",
+              "resource_valid": null,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/t57-catalog-ready-native-20261008.json"
+              ],
+              "detail": "Credential preflight stopped before browser/resource setup: operator --body - uploaded literal hyphen instead of stdin JSON. Private local validation passed; invalid temporary secrets removed and absence verified. No product test or current resource journals. Corrected stdin transfer routed to separate one-attempt owner."
             }
           ]
         },
