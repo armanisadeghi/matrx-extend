@@ -8,7 +8,7 @@
   "severity": "S3: lost independent test coverage, product fault unconfirmed",
   "priority": "P1",
   "state": "fixed",
-  "owner": "root",
+  "owner": "root/seo_controlled_native",
   "preconditions": [
     "Frozen development397/sourcecedcec02/CI37724859892/artifact11527132614; native driver9295e037 includes reviewed3dcf2903; hosted ARM laneA."
   ],
@@ -32,7 +32,9 @@
     ".research/seo170-native-20261008.json",
     ".research/seo170-native-peer-20261008.json",
     ".research/seo-local397-native-20261008.json",
-    ".research/seo-local397-peer-20261008.json"
+    ".research/seo-local397-peer-20261008.json",
+    ".research/seo-controlled-batch-20261008.json",
+    ".research/seo-controlled-batch-peer-20261008.json"
   ],
   "transition_history": [
     {
@@ -60,9 +62,9 @@
       "reason": "Actual driver reordered and original direct-return/swap/omission guard findings addressed; fresh source review confirms current structural order. Exact focused CI success. Native retest outstanding."
     }
   ],
-  "next_action": "Native acceptance remains open. Configure proven runtime paths, verify real resource admission, then retest; current local disk floor and hosted API availability prevent launch. Independent procedure work continues. No threshold weakening or closure from setup evidence.",
+  "next_action": "Independent source peer accepted explicit controlled batch partition with default full scope preserved; one guarded hosted controlled native retest is owned. T09 remains separately tracked, not waived. No native closure before valid resource/build/target proof.",
   "closure_requirement": "Independent source review plus resource-valid native execution reaching controlledT02/T14; unstablepublicfixture still accurately reported. No producthealthpromotion from sourceordering alone.",
-  "source_candidate": "510538cc",
+  "source_candidate": "ad3a7c3a394a07bf5ea2518d89073719e3b37b60",
   "review_rounds": [
     {
       "source": "510538cc",
@@ -75,12 +77,12 @@
       "finding": "Guard catches swapped/omittedcall but permits earlyreturn beforesequence or incontrolledcallback; CIregistration fixed9e7a9856."
     }
   ],
-  "guard_candidate": "eaa4fbe6",
+  "guard_candidate": "b6b4eb0e + 8b796abd",
   "focused_ci": {
-    "run_id": 37739262023,
-    "source_sha": "759b5f2de5c092e01c3c723f005168159a3ea9bd",
+    "run_id": 37745523179,
+    "source_sha": "e69745283b59426ed5fc6532871f4c1609c10fda",
     "conclusion": "success",
-    "scope": "Focused acceptance including actual-driver guard; relevant driver/test/package command unchanged from eaa4fbe6."
+    "scope": "102/102 focused checks including actual YAML admission, route and controlled sequence guards."
   },
   "review_ruling": {
     "finding": "CONFIRMED: nested try/finally and constant-condition returns evade source guard.",
