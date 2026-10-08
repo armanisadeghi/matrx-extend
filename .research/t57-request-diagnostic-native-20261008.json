@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-08",
+  "case_id": "EXT-F-1012-T57",
+  "lane": "A",
+  "scope": "One hosted native diagnostic after independently reviewed organization request boundary instrumentation; exact frozen 0.2.407 artifact and unchanged public T57 acceptance.",
+  "run": {
+    "id": 37773402208,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37773402208",
+    "status": "completed",
+    "conclusion": "failure",
+    "checkout_sha": "b782cd67f2ca7500e54a303675cbb4ef83952f08",
+    "checkout_includes_diagnostic_sha": "f6197c1a92113bcf40b5f5c34ee91221d0d64171",
+    "checkout_includes_peer_sha": "d74ca5fd",
+    "acceptance_case": "showcase-d47-public-admin",
+    "d47_public_race_preflight": true,
+    "runner_label": "macos-15",
+    "attempt_count": 1
+  },
+  "frozen_artifact": {
+    "ci_run_id": 37754055905,
+    "artifact_id": 11539827040,
+    "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "tree_sha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+    "version": "0.2.407",
+    "exact_import_observed_in_hosted_log": true
+  },
+  "native_receipt": {
+    "stage": "organization",
+    "auth_stage": "admin_rendered_identity",
+    "organization_substage": "organization_records_click",
+    "organization_observations": {
+      "admin_role_verified": true,
+      "picker_available": true,
+      "picker_has_selection": true,
+      "selection_required": false,
+      "storage_has_uuid": false,
+      "storage_name_matches": false,
+      "rendered_email_matches": true,
+      "rendered_role_matches": true,
+      "rendered_profile_matches": true,
+      "rendered_organization_matches": true,
+      "product_request_observed": false,
+      "product_request_duplicate": false,
+      "product_response_observed": false,
+      "product_response_finished": false,
+      "product_loading_failed": false,
+      "product_response_success": false,
+      "product_header_matches": false,
+      "product_principal_matches": false,
+      "observer_cleanup_success": true
+    },
+    "organization_failure_code": "pointer_target_not_unique",
+    "failure_name": "Error",
+    "failure_message_code": "showcase_organization_pointer_failed",
+    "capture": null,
+    "saved_result": null
+  },
+  "resource_journals": {
+    "package": {
+      "run_id": "hosted-package-37773402208-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "run_id": "hosted-browser-37773402208-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "run_id": "hosted-guest-37773402208-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    }
+  },
+  "first_boundary": "Admin sign-in and approved rendered organization checks passed. The CDP observer advanced through registration/enable and Tools navigation, then the native pointer for the Tools records row failed with pointer_target_not_unique at organization_records_click. The receipt does not say whether zero or multiple matching rows caused the nonunique target. Observer cleanup succeeded. No GET /tools/test/list request or response was observed, so no product X-Organization-Id or bearer-principal comparison occurred.",
+  "claim_limit": "Resource-valid child failure in the test UI action before product request; no T57 public Network race, capture, saved replay, product organization defect, or acceptance proof. No retry launched.",
+  "credential_lifecycle": {
+    "canonical_private_preflight": "passed before staging",
+    "temporary_secret_names": [
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "both_deleted_immediately_after_terminal": true,
+    "independent_name_listing_absent": true,
+    "approved_fixture_mode": "0600",
+    "credential_values_retained": false
+  },
+  "originals": {
+    "hosted_artifact_id": 11549081595,
+    "hosted_artifact_digest": "sha256:819abece9d2ccabb245f82e8a2101ae09b823e1a238d1a079df19e18b58f496b",
+    "private_recursive_download": "/Volumes/Samsung2TB/.stabilization-scratch/t57-request-diagnostic-37773402208",
+    "tracked_raw_directory": ".research/t57-request-diagnostic-native-20261008-originals/raw",
+    "raw_sha256": {
+      "receipt.raw.json.txt": "2dd098705072f88b97de5031a61b074139c78c2b67f5e5595e499bc676ba592a",
+      "hosted-package-37773402208-1.jsonl": "c0b1f346bb9e34f9b77570c7bc82cfba09f8fae8fba8a958bc62d312669d8bfd",
+      "hosted-browser-37773402208-1.jsonl": "796c494f5a619ceecc9727f0813cbe0dc40283b9ccca9f9987d224e259b0f211",
+      "hosted-guest-37773402208-1.jsonl": "3bcc80351119e54202227d6095c5c6839029647d577340a30c8e282989c2abb2",
+      "run.raw.json": "7a72ebf3b14310d7fa2aa224aa2c449bc97df5b3be88a4f93e0f4221338da282",
+      "artifacts.raw.json": "23840997c62db15acd4d11cc8d284cffea25f69bf89e80a828f40ff1ecb2ffa0"
+    },
+    "private_failed_step_log_sha256": "9b89524bf1f33f5bd5af48f51e49411e0679980d2d78f8c6143ca0eb85344218"
+  },
+  "next_action": "Diagnose actual visible Tools records-row target count and selector against the frozen installed UI, then repair the pointer targeting with a meaningful old-red/new-green guard and independent review before another authorized native attempt. Keep the real product header/principal/HTTP completion gate intact."
+}
