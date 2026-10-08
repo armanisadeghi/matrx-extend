@@ -1374,9 +1374,11 @@ async function recoverOwnedGrant({ panel }, recoveryPath) {
       'X-Organization-Id':owned.organizationId,'Content-Type':'application/json'};
     const identity=await fetch(new URL('/auth/v1/user',config.WXT_SUPABASE_URL),{headers});
     if(!identity.ok||(await identity.json()).id!==owned.actorId)return {failure:'real_actor_mismatch'};
+    // These owner-gated RPCs live in public; match the canonical SDK's explicit schema routing.
+    const rpcHeaders={...headers,'Content-Profile':'public','Accept-Profile':'public'};
     const rpc=async(name,args)=>{
       const response=await fetch(new URL('/rest/v1/rpc/'+name,config.WXT_SUPABASE_URL),
-        {method:'POST',headers,body:JSON.stringify(args)});
+        {method:'POST',headers:rpcHeaders,body:JSON.stringify(args)});
       let body=null;
       try { body=await response.json(); } catch { /* Shape is reported below without response text. */ }
       const errorCode=typeof body?.code==='string'&&/^[A-Z0-9_]{1,40}$/.test(body.code)?body.code:null;

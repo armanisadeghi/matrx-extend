@@ -1,0 +1,18 @@
+{
+  "task_id": "share_recovery_profile_header_fix",
+  "status": "SOURCE_VERIFIED_NATIVE_PENDING",
+  "scope": "retained exact owned screenshot grant recovery harness",
+  "cause": "Raw authenticated RPC POST omitted public schema profile; observed HTTP 404 PGRST202 before revoke while canonical public functions exist.",
+  "changed_files": ["tests/browser/screenshot-full-page-acceptance.mjs"],
+  "sibling_census": "One raw RPC helper covers both list_share_links reads and revoke_share_link; auth user GET remains unchanged, image blob fetch is unrelated.",
+  "repair": "Dedicated RPC headers include Content-Profile public and Accept-Profile public, retaining authentication and organization headers.",
+  "checks": [
+    "node --check: pass",
+    "single-file biome check: pass",
+    "git diff --check: pass",
+    "SDK source confirms POST sets Content-Profile and read sets Accept-Profile"
+  ],
+  "native_verification": "pending fresh independent exact retained-grant cleanup; no native run or mutation performed",
+  "owned_jobs": [],
+  "next_action": "Root independent verifier uses corrected driver to prove exact grant inactive after canonical owner-authenticated revoke."
+}
