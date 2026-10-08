@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2013-T10",
+  "defect_id": "EXT-D-0172",
+  "adjudicated_run_id": 37770686993,
+  "adjudicated_checkout_sha": "f224976a0c63df367568013f4130f90fe2f70478",
+  "source_record": ".research/guest-position-fix-live-retest-20261008.json",
+  "raw_receipt": ".research/guest-position-fix-live-retest-20261008-run37770686993/raw/guest-chat.receipt.original.json",
+  "peer_record": ".research/guest-position-fix-live-peer-20261008.json",
+  "verdicts": {
+    "A_original_runtime_reproduction": {
+      "verdict": "bounded_pass",
+      "reason": "The three real guest sends received HTTP 200 and distinct terminal assistant answers. Opening and same-conversation follow-up share conversation fingerprint 1d62a2ed0590c1b9 (is_new true then false); after full panel document reload the new conversation uses fingerprint 0a5f0edbffea27fb (is_new true). Each turn had a fixture-matching completed page tool, a terminal_answer timeline, and its own grounded-answer assertion before the next step. The post-reload tool continuation ended complete/success with 23 text chunks and one visible assistant reply.",
+      "per_turn_grounding": [
+        {
+          "turn": "opening",
+          "actual_prompt": "Read the unique opening check code from the article on my current tab. What are the three workflow stages in order? Include the exact code.",
+          "prompt_sha256_prefix": "8b0041e45eb47431",
+          "required_answer": "Unpredictable opening code and Capture, Understand, Use in order.",
+          "observed": "receipt.chat.answer_contains_unpredictable_page_code, answer_names_page_stages, and answer_stages_in_order are true; opening_turn_timeline ends terminal_answer with one reply; get_page_text completed against the fixture. The opening screenshot shows a scrolled part of the assistant answer containing Understand and Use. Its full wording is not preserved in the screenshot.",
+          "basis": "The checked driver asserts the opening nonce and stage names/order before setting chat fields and capturing guest-chat-real-answer.png."
+        },
+        {
+          "turn": "same_conversation_followup",
+          "actual_prompt": "Read the unique follow-up check code from the article on my current tab and name the heading directly above the check codes. Include the exact code.",
+          "prompt_sha256_prefix": "be2d5336e111bd21",
+          "required_answer": "Unpredictable follow-up code and fixture heading in an additional reply in the same conversation.",
+          "observed": "receipt.chat.same_conversation_followup_contains_page_code and same_conversation_identity_verified are true; reply count rose from one to three; read_page completed against the fixture; its screenshot shows the fixture heading and a statement that both codes sit under it. The screenshot is scrolled and does not show the full code.",
+          "basis": "The checked driver asserts the follow-up nonce, heading, higher reply count, and guest state before capturing guest-chat-same-conversation-followup.png."
+        },
+        {
+          "turn": "post_reload_new_conversation",
+          "actual_prompt": "Read the unique follow-up check code from the article on my current tab and name the heading directly above the check codes. Include the exact code.",
+          "prompt_sha256_prefix": "be2d5336e111bd21",
+          "required_answer": "Unpredictable follow-up code and fixture heading in a fresh conversation after panel reload.",
+          "observed": "receipt.chat.followup_contains_unpredictable_page_code and followup_names_fixture_heading are true; failure_observation is the final-turn diagnostic and shows one completed reply containing the redacted follow-up code and heading. The screenshot shows the same assistant reply and opening code for comparison. get_page_text completed on the fixture; continuation ended complete/success.",
+          "basis": "The checked driver asserts the follow-up nonce and heading before capturing guest-chat-real-followup-answer.png."
+        }
+      ],
+      "peer_objection_resolution": "Refuted as a cross-turn comparison. The driver writes report.failure_observation after the opening, overwrites it after the same-conversation follow-up, and overwrites it again after the post-reload turn. At run completion it describes the post-reload reply. Its answerMatchesPublicStages=false and answerStagesInOrder=false are computed against Capture/Understand/Use even though that turn asks for a code and heading. receipt.chat.answer_names_page_stages=true and answer_stages_in_order=true describe the separately checked opening turn. The final diagnostic's latestAssistantReply names the codes and heading, and mentions the workflow stages only as location context; no stage-order answer was required for that prompt.",
+      "limits": [
+        "The screenshots are narrow and scrolled; the full opening and same-conversation reply text is not independently visible. Their complete content is established by the run's per-turn assertions and recorded booleans, not by a verbatim transcript.",
+        "One valid native run proves this bounded original reproduction; it does not establish recurrence rate or broad service health."
+      ]
+    },
+    "B_provenance_guards_evidence_quality": {
+      "verdict": "pass_with_limits",
+      "evidence": [
+        "The receipt identifies published Store CRX v0.2.205, extension ID hnfolienncfklkgmdjjmhhegglimlamg, pinned CRX SHA-256 7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23, and unpacked tree SHA-256 08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8; it reports the same tree as the original failing run and no artifact change during acceptance.",
+        "Live server SHA 32f3a398789e0a56b590089ff47b90aff6abe159 was stable before and after the run, with a later spot check recorded in the retest summary.",
+        "The receipt SHA-256 and all five screenshot SHA-256 values independently match the peer's recorded hashes. Current-run package, browser, and guest journal hashes also match. All three journals report admission, child exit 0, resourceInvalid=false, and final decision valid; the guest's temporary CPU pressure recovered before final decision.",
+        "The original receipt has status pass, failure_stage null, and no recorded owner-table GET. Three offscreen requests are recorded and conversation identity is checked. Inspection of all five screenshots found the synthetic public page and guest panel without private account content or credentials."
+      ],
+      "limits": [
+        "This is the public CRX loaded as an adapted unpacked extension, not a Chrome Web Store UI installation.",
+        "The evidence bundle does not contain the CRX bytes for an independent CRX or tree hash recomputation; those provenance details remain receipt assertions.",
+        "The CDP request observer attached after panel load, so it cannot establish requests before attachment."
+      ]
+    }
+  },
+  "conclusion": "The peer's only A blocker was an interpretation error: it compared final-turn diagnostic stage flags to opening-turn criteria. The unchanged raw evidence supports a bounded pass for the original guest failure reproduction and a provenance/guard pass with the limits above. No new run or raw receipt edit was needed."
+}
