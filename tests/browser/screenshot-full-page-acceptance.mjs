@@ -57,6 +57,7 @@ const report = {
   },
 };
 let stage = 'build_identity';
+let selectedApprovedOrganization = null;
 let capturePhase = null;
 let pointerTarget = null;
 let viewerStep = null;
@@ -280,6 +281,7 @@ async function organizationObservation(panel, approved) {
       scopedComboboxCount:scopedButtons.length,
       scopedPickerMatchesApproved:scopedButtons[0]?.textContent.trim()===${JSON.stringify(approved.name)},
       persistedNameMatchesApproved:active?.name===${JSON.stringify(approved.name)},
+      persistedEntryPresent:active!==undefined&&active!==null,
       persistedNamePresent:typeof active?.name==='string', persistedIdPresent:typeof active?.id==='string',
       persistedIdMatchesApproved:active?.id===${JSON.stringify(approved.id)},
       persistedNameSha256:await hash(active?.name), persistedIdSha256:await hash(active?.id),
@@ -319,22 +321,17 @@ async function selectOrganization(panel, approvedIdentity) {
   if (choices !== 1) fail('approved_option_not_unique');
   await click(panel, 'option', approved);
   try {
-    await waitFor(
+    const selected = await waitFor(
       'approved_organization_selected',
-      () =>
-        evaluate(
-          panel,
-          `(async () => {
-    const row=[...document.querySelectorAll('span')].find(el => el.textContent.trim()==='Acting as');
-    const buttons=[...(row?.parentElement?.parentElement?.querySelectorAll('button[role="combobox"]')??[])];
-    const active=(await chrome.storage.local.get('matrx.org.active'))['matrx.org.active'];
-    return buttons.length===1 && buttons[0].textContent.trim()===${JSON.stringify(approved)} &&
-      active?.name===${JSON.stringify(approved)} && typeof active?.id==='string';
-  })()`,
-        ),
-      (value) => value === true,
+      () => organizationObservation(panel, approvedIdentity),
+      (value) =>
+        value?.originalComboboxCount === 1 &&
+        value.originalPickerMatchesApproved &&
+        (!value.persistedEntryPresent || value.persistedIdMatchesApproved),
       30_000,
     );
+    report.organizationSelection = selected;
+    selectedApprovedOrganization = approvedIdentity;
   } catch (error) {
     report.organizationSelection = await organizationObservation(panel, approvedIdentity).catch(
       () => ({ observationUnavailable: true }),
@@ -660,10 +657,7 @@ async function openShareManager(panel) {
 async function verifyCanonicalShare(context, row, recovery, flow) {
   const { page, panel } = context;
   stage = flow === 'quick' ? 'canonical_quick_public_link' : 'canonical_public_share';
-  const expectedOrganization = await evaluate(
-    panel,
-    `(async () => (await chrome.storage.local.get('matrx.org.active'))['matrx.org.active']?.id)()`,
-  );
+  const expectedOrganization = selectedApprovedOrganization?.id;
   if (typeof expectedOrganization !== 'string') fail('share_active_organization_unverified');
   const originalImageSha = await evaluate(
     panel,
@@ -1337,7 +1331,9 @@ async function recoverOwnedGrant({ panel }, recoveryPath) {
     `(async()=>{
     const owned=${JSON.stringify(owned)}, config=${JSON.stringify(config)};
     const stored=await chrome.storage.local.get(['matrx.auth.accessToken','matrx.user.profile','matrx.org.active']);
-    if(stored['matrx.user.profile']?.id!==owned.actorId||stored['matrx.org.active']?.id!==owned.organizationId)
+    const selected=${JSON.stringify(selectedApprovedOrganization)};
+    if(stored['matrx.user.profile']?.id!==owned.actorId||selected?.id!==owned.organizationId||
+      (stored['matrx.org.active']!=null && stored['matrx.org.active'].id!==owned.organizationId))
       return {failure:'actor_or_organization_mismatch'};
     const token=stored['matrx.auth.accessToken'];
     if(typeof token!=='string'||!token)return {failure:'authenticated_session_missing'};
