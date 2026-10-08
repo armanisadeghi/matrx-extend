@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "artifact_type": "canonical-inventory-integration",
+  "at": "2026-10-08T06:30:08.992059+00:00",
+  "source_procedure_commit": "c25190e6",
+  "procedure_review": ".research/file-procedure-final-peer-20261008.json",
+  "procedure_case_ids": [
+    "EXT-F-4070-T01",
+    "EXT-F-4157-T01",
+    "EXT-F-4158-T01",
+    "EXT-F-4159-T01"
+  ],
+  "procedure_execution_status": "NOT_EXECUTABLE; design_status needed retained; no runtime proof",
+  "settings_curator_commit": "a248737f",
+  "settings_evidence": ".research/settings-local397-native-20261008.json",
+  "settings_peer": ".research/settings-local397-peer-20261008.json",
+  "settings_guest_case_ids": [
+    "EXT-F-1003-T04",
+    "EXT-F-1003-T10",
+    "EXT-F-1003-T13",
+    "EXT-F-1003-T16",
+    "EXT-F-1003-T19",
+    "EXT-F-1003-T22",
+    "EXT-F-1003-T31",
+    "EXT-F-1003-T34",
+    "EXT-F-1003-T37",
+    "EXT-F-1003-T46",
+    "EXT-F-1003-T63",
+    "EXT-F-1003-T64",
+    "EXT-F-1003-T70",
+    "EXT-F-1003-T73",
+    "EXT-F-1003-T76",
+    "EXT-F-1003-T92"
+  ],
+  "receipt_counts": {
+    "pass": 9,
+    "unverified": 7,
+    "fail": 0
+  },
+  "current_result_updates": [
+    "EXT-F-1003-T34 guest remains partial",
+    "EXT-F-1003-T64 guest pass refreshed"
+  ],
+  "feature_cell": "EXT-F-1003 guest remains unverified; run ID and bounded retest note appended",
+  "limits": [
+    "File procedures remain source-only and blocked by owned fixtures or exact cleanup proof.",
+    "Settings is a frozen unpublished guest artifact; panel vs full extension reload boundaries are explicit.",
+    "T34 downstream consumer and raw baseline/final restoration sample unverified; T63 ordinary-member denial independent of guest pass.",
+    "No member/admin, Store/current-main or whole-feature promotion.",
+    "No browser/build/runtime execution performed by inventory integrator.",
+    "SEO T09/T02/T14 retain prior case results; D170 links and this failed-at-source-stability attempt add no product coverage."
+  ],
+  "seo_retest": {
+    "case_ids": [
+      "EXT-F-1008-T09",
+      "EXT-F-1008-T02",
+      "EXT-F-1008-T14"
+    ],
+    "defect_id": "EXT-D-0170",
+    "run_id": "37736744238",
+    "source_report": ".research/seo169-native-retest-20261008.json",
+    "peer_review": ".research/seo169-native-peer-20261008.json",
+    "finding": "Resource-valid driver refusal at live Wikipedia internal-link instability 1783 to 1784. T02 fresh recapture and T14 social copy unreached; 15 repeated subtarget passes grant zero new acceptance credit. Existing results/history unchanged."
+  }
+}
