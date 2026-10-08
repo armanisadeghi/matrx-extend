@@ -6,6 +6,7 @@ import { guestSettingsChecks, guestSettingsState } from './settings-panel-driver
 
 test('admin completion failure reaches the acceptance receipt as safe categories', async () => {
   let authenticatedState = false;
+  let poisoned = false;
   const source = await readFile(
     new URL('./settings-native-auth-driver.mjs', import.meta.url),
     'utf8',
@@ -22,30 +23,45 @@ test('admin completion failure reaches the acceptance receipt as safe categories
   )(
     assert,
     async ({ report, stage }) => {
-      stage('admin_extension_auth_completion');
-      report.signin_observations.web_dashboard_reached = true;
+      stage(
+        poisoned ? 'https://private.invalid/?token=raw-url' : 'admin_extension_auth_completion',
+      );
+      report.signin_observations.web_dashboard_reached = poisoned ? 'raw-data' : true;
+      report.signin_observations.extension_click_failure = {
+        code: 'https://private.invalid/?token=raw-url',
+        raw_error: 'raw-error',
+      };
+      report.signin_observations.raw_error = 'raw-error';
+      report.signin_observations.url = 'https://private.invalid/?token=raw-url';
+      report.signin_observations.body = 'raw-body';
+      report.signin_observations.data = { token: 'raw-data' };
       report.signin_observations.extension_failure = {
-        settings_panel_active: true,
-        account_expanded: true,
-        sign_in_count: authenticatedState ? 0 : 1,
-        sign_out_present: authenticatedState,
-        auth_error_present: !authenticatedState,
+        settings_panel_active: poisoned ? 'raw-body' : true,
+        account_expanded: poisoned ? { token: 'raw-data' } : true,
+        sign_in_count: poisoned ? { token: 'raw-data' } : authenticatedState ? 0 : 1,
+        sign_out_present: poisoned ? 'raw-error' : authenticatedState,
+        auth_error_present: poisoned ? { token: 'raw-data' } : !authenticatedState,
         auth_retry_present: false,
         loading_present: false,
-        expected_admin_email: authenticatedState,
-        admin_role: authenticatedState,
+        expected_admin_email: poisoned ? 'raw-body' : authenticatedState,
+        admin_role: poisoned ? { token: 'raw-data' } : authenticatedState,
         secret: 'private-token',
+        url: 'https://private.invalid/?token=raw-url',
+        body: 'raw-body',
+        data: { token: 'raw-data' },
       };
-      throw new Error('admin_extension_auth_completion_failed');
+      throw new Error(poisoned ? 'raw-error' : 'admin_extension_auth_completion_failed');
     },
     async () => ({
-      accessTokenPresent: authenticatedState,
-      profileId: authenticatedState ? 'private-id' : null,
-      isAdmin: authenticatedState ? true : null,
+      accessTokenPresent: poisoned ? 'raw-body' : authenticatedState,
+      profileId: poisoned ? { token: 'raw-data' } : authenticatedState ? 'private-id' : null,
+      isAdmin: poisoned ? 'raw-error' : authenticatedState ? true : null,
+      raw_error: 'raw-error',
     }),
     async () => ({
-      organizationPickerAvailable: authenticatedState,
+      organizationPickerAvailable: poisoned ? 'raw-body' : authenticatedState,
       organizationLabel: 'private-org',
+      body: 'raw-body',
     }),
   );
   let diagnostic;
@@ -105,6 +121,46 @@ test('admin completion failure reaches the acceptance receipt as safe categories
   assert.equal(diagnostic.storage_admin_flag, true);
   assert.equal(diagnostic.organization_selector_present, true);
   assert.equal(JSON.stringify(diagnostic).includes('private-'), false);
+  poisoned = true;
+  const receipt = { auth_diagnostic: null };
+  await assert.rejects(
+    () =>
+      signInSettings({
+        mode: 'admin',
+        page: {},
+        panel: {},
+        onStage: () => {},
+        onAuthDiagnostic: (value) => {
+          diagnostic = value;
+          receipt.auth_diagnostic = value;
+        },
+      }),
+    /raw-error/,
+  );
+  assert.deepEqual(diagnostic, {
+    phase: 'unknown_admin_phase',
+    outcome: 'other_admin_auth_failure',
+    web_dashboard_reached: false,
+    extension_click_failure_code: null,
+    settings_panel_active: null,
+    account_expanded: null,
+    sign_in_present: null,
+    sign_out_present: null,
+    auth_error_present: null,
+    auth_retry_present: false,
+    loading_present: false,
+    rendered_admin_email: null,
+    rendered_admin_role: null,
+    organization_selector_present: null,
+    storage_access_token_present: null,
+    storage_profile_present: null,
+    storage_admin_flag: null,
+    http_category: 'unobserved',
+  });
+  for (const marker of ['private-', 'raw-error', 'raw-url', 'raw-body', 'raw-data']) {
+    assert.equal(JSON.stringify(diagnostic).includes(marker), false);
+    assert.equal(JSON.stringify(receipt).includes(marker), false);
+  }
 });
 
 // A signed-out operator opens Settings to inspect the device account and

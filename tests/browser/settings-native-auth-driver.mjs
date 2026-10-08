@@ -414,27 +414,61 @@ export async function signInSettings({
       const last = observed.extension_failure ?? observed.extension_last ?? null;
       const storage = await panelIdentity(panel).catch(() => null);
       const account = await accountIdentity(panel, 'admin@admin.com').catch(() => null);
+      const booleanOrNull = (value) => (typeof value === 'boolean' ? value : null);
+      const phases = new Set([
+        'admin_credentials',
+        'admin_web_navigation',
+        'admin_web_route',
+        'admin_credentials_read',
+        'admin_web_form_fill',
+        'admin_web_submit',
+        'admin_extension_settings_click',
+        'admin_extension_account_open',
+        'admin_extension_signin_ready',
+        'admin_extension_click',
+        'admin_extension_auth_completion',
+      ]);
+      const clickCodes = new Set([
+        'pointer_initial_evaluation_failed',
+        'pointer_page_sample_failed',
+        'pointer_target_not_unique',
+        'pointer_followup_evaluation_failed',
+        'pointer_stable_hit_not_observed',
+        'pointer_press_dispatch_failed',
+        'pointer_release_dispatch_failed',
+        'other',
+      ]);
       onAuthDiagnostic?.({
-        phase: diagnostic.stage,
+        phase: phases.has(diagnostic.stage) ? diagnostic.stage : 'unknown_admin_phase',
         outcome:
           error?.message === 'admin_extension_auth_completion_failed'
             ? 'extension_completion_unobserved'
             : 'other_admin_auth_failure',
         web_dashboard_reached: observed.web_dashboard_reached === true,
-        extension_click_failure_code: observed.extension_click_failure?.code ?? null,
-        settings_panel_active: last?.settings_panel_active ?? null,
-        account_expanded: last?.account_expanded ?? null,
-        sign_in_present: last ? last.sign_in_count > 0 : null,
-        sign_out_present: last?.sign_out_present ?? null,
-        auth_error_present: last?.auth_error_present ?? null,
-        auth_retry_present: last?.auth_retry_present ?? null,
-        loading_present: last?.loading_present ?? null,
-        rendered_admin_email: last?.expected_admin_email ?? null,
-        rendered_admin_role: last?.admin_role ?? null,
-        organization_selector_present: account?.organizationPickerAvailable ?? null,
-        storage_access_token_present: storage?.accessTokenPresent ?? null,
-        storage_profile_present: storage ? storage.profileId !== null : null,
-        storage_admin_flag: storage?.isAdmin ?? null,
+        extension_click_failure_code: clickCodes.has(observed.extension_click_failure?.code)
+          ? observed.extension_click_failure.code
+          : null,
+        settings_panel_active: booleanOrNull(last?.settings_panel_active),
+        account_expanded: booleanOrNull(last?.account_expanded),
+        sign_in_present:
+          Number.isInteger(last?.sign_in_count) && last.sign_in_count >= 0
+            ? last.sign_in_count > 0
+            : null,
+        sign_out_present: booleanOrNull(last?.sign_out_present),
+        auth_error_present: booleanOrNull(last?.auth_error_present),
+        auth_retry_present: booleanOrNull(last?.auth_retry_present),
+        loading_present: booleanOrNull(last?.loading_present),
+        rendered_admin_email: booleanOrNull(last?.expected_admin_email),
+        rendered_admin_role: booleanOrNull(last?.admin_role),
+        organization_selector_present: booleanOrNull(account?.organizationPickerAvailable),
+        storage_access_token_present: booleanOrNull(storage?.accessTokenPresent),
+        storage_profile_present:
+          storage?.profileId === null
+            ? false
+            : typeof storage?.profileId === 'string'
+              ? true
+              : null,
+        storage_admin_flag: booleanOrNull(storage?.isAdmin),
         http_category: 'unobserved',
       });
       throw error;
