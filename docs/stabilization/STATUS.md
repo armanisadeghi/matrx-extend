@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-08 15:30 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T15:30:34.527664+00:00. 205 features · 769 cases · 1358 controls · 183 linked defect records.
+Generated 2026-10-08 15:40 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T15:40:58.052500+00:00. 205 features · 769 cases · 1358 controls · 183 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -950,17 +950,17 @@ These current-build checks supplement the inventory matrix; they do not promote 
 **Recorded case details and evidence:**
 
 - EXT-F-1008-T01 · guest: Partial.
-  Evidence / build / date recorded: 37731560399, ['.research/seo397-guest-native-20261007.json', '.research/seo397-native-peer-20261007.json']
-- EXT-F-1008-T02 · guest: Partial. Changed page title/description with old audit still visible before click; native audit title refreshed after trusted Re-audit. Description refresh has indirect subsequent clipboard evidence, not direct description-display proof.
-  Evidence / build / date recorded: 37746166364, ['.research/seo-controlled-native-20261008.json', '.research/seo-controlled-native-peer-20261008.json']
+  Evidence / build / date recorded: 37800877872, ['.research/seo-arm-414-native-20261008-1527.json', '.research/seo-arm-live-peer-20261008-1536.json']
+- EXT-F-1008-T02 · guest: Partial.
+  Evidence / build / date recorded: 37800877872, ['.research/seo-arm-414-native-20261008-1527.json', '.research/seo-arm-live-peer-20261008-1536.json']
 - EXT-F-1008-T03 · guest: Partial.
-  Evidence / build / date recorded: 37731560399, ['.research/seo397-guest-native-20261007.json', '.research/seo397-native-peer-20261007.json']
+  Evidence / build / date recorded: 37800877872, ['.research/seo-arm-414-native-20261008-1527.json', '.research/seo-arm-live-peer-20261008-1536.json']
 - EXT-F-1008-T07 · guest: Partial.
-  Evidence / build / date recorded: 37708611887, ['.research/seo-intel-native-20261007.json', '.research/auth-repair-intel-native-peer-20261007.json']
+  Evidence / build / date recorded: 37800877872, ['.research/seo-arm-414-native-20261008-1527.json', '.research/seo-arm-live-peer-20261008-1536.json']
 - EXT-F-1008-T09 · guest: Partial.
-  Evidence / build / date recorded: 37731560399, ['.research/seo397-guest-native-20261007.json', '.research/seo397-native-peer-20261007.json']
-- EXT-F-1008-T14 · guest: Partial. Actual clipboard matched five then six independently expected tags; feedback observed before and after changed-page Re-audit.
-  Evidence / build / date recorded: 37746166364, ['.research/seo-controlled-native-20261008.json', '.research/seo-controlled-native-peer-20261008.json']
+  Evidence / build / date recorded: 37800877872, ['.research/seo-arm-414-native-20261008-1527.json', '.research/seo-arm-live-peer-20261008-1536.json']
+- EXT-F-1008-T14 · guest: Partial.
+  Evidence / build / date recorded: 37800877872, ['.research/seo-arm-414-native-20261008-1527.json', '.research/seo-arm-live-peer-20261008-1536.json']
 
 
 ## Screenshots

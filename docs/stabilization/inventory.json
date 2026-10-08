@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T15:30:34.527664+00:00",
+  "updated_at": "2026-10-08T15:40:58.052500+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -18443,14 +18443,15 @@
                 "one audit per URL",
                 "slow old result cannot overwrite new page"
               ],
-              "run_id": "37731560399",
-              "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
-              "build_version": "0.2.397",
+              "run_id": "37800877872",
+              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+              "driver_source_sha": "f653eb56e4d1a1d10c1d68fc53d4f15c6cc87df3",
+              "build_version": "0.2.414",
               "evidence": [
-                ".research/seo397-guest-native-20261007.json",
-                ".research/seo397-native-peer-20261007.json"
+                ".research/seo-arm-414-native-20261008-1527.json",
+                ".research/seo-arm-live-peer-20261008-1536.json"
               ],
-              "release_scope": "Bounded guest native acceptance on exact frozen CI development artifact; no full case, current-main, or Store verdict. Member/admin remain separate unverified modes."
+              "release_scope": "Bounded real guest acceptance on frozen unpublished development414; controlled scope; all three resource journals valid. No full-case, member/admin, latest-main or Store acceptance."
             }
           },
           "result_history": [
@@ -18540,6 +18541,67 @@
                 ],
                 "release_scope": "Exact frozen guest development artifact; broaderdimensions/member/admin/Store unverified."
               }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "passed_subtargets": [
+                  "new_url_replaces_visible_title",
+                  "reload_audits_current_url"
+                ],
+                "unverified_dimensions": [
+                  "one audit per URL",
+                  "slow old result cannot overwrite new page"
+                ],
+                "run_id": "37731560399",
+                "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+                "build_version": "0.2.397",
+                "evidence": [
+                  ".research/seo397-guest-native-20261007.json",
+                  ".research/seo397-native-peer-20261007.json"
+                ],
+                "release_scope": "Bounded guest native acceptance on exact frozen CI development artifact; no full case, current-main, or Store verdict. Member/admin remain separate unverified modes."
+              },
+              "superseded_at": "2026-10-08T15:40:58.052500+00:00"
+            }
+          ],
+          "attempt_history": [
+            {
+              "at": "2026-10-08T15:40:58.052500+00:00",
+              "run_id": "37799458419",
+              "mode": "guest",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "resource_valid": false,
+              "build_version": "0.2.414",
+              "evidence": [".research/seo-414-native-20261008.json"],
+              "detail": "Intel package permit refused CPU/load before product"
+            },
+            {
+              "at": "2026-10-08T15:40:58.052500+00:00",
+              "run_id": "37799999548",
+              "mode": "guest",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "resource_valid": false,
+              "build_version": "0.2.414",
+              "evidence": [".research/seo-414-native-20261008.json"],
+              "detail": "Intel fresh-host readiness expired before product"
+            },
+            {
+              "at": "2026-10-08T15:40:58.052500+00:00",
+              "run_id": "37800877872",
+              "mode": "guest",
+              "status": "partial",
+              "new_acceptance_credit": true,
+              "resource_valid": true,
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/seo-arm-414-native-20261008-1527.json",
+                ".research/seo-arm-live-peer-20261008-1536.json"
+              ],
+              "detail": "Supported ARM runner completed all selected native targets. Architecture cause for other host failures is unproven. Only explicitly reviewed subtargets receive credit."
             }
           ]
         },
@@ -18559,26 +18621,27 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37746166364",
-              "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
-              "build_version": "0.2.397",
-              "evidence": [
-                ".research/seo-controlled-native-20261008.json",
-                ".research/seo-controlled-native-peer-20261008.json"
-              ],
-              "release_scope": "Frozen unpacked development artifact only; no current-main, Store or member/admin acceptance.",
               "passed_subtargets": [
                 "manual_button_returns_to_current_page",
-                "changed_public_title_recaptured_after_trusted_reaudit"
+                "native_title_recaptured_after_trusted_reaudit"
               ],
               "unverified_dimensions": [
-                "displayed description directly matches changed page",
                 "running button state",
-                "stale advice cleared",
+                "stale advice replacement",
                 "failure report",
+                "displayed description directly matches changed public page",
                 "reload"
               ],
-              "detail": "Changed page title/description with old audit still visible before click; native audit title refreshed after trusted Re-audit. Description refresh has indirect subsequent clipboard evidence, not direct description-display proof."
+              "run_id": "37800877872",
+              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+              "driver_source_sha": "f653eb56e4d1a1d10c1d68fc53d4f15c6cc87df3",
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/seo-arm-414-native-20261008-1527.json",
+                ".research/seo-arm-live-peer-20261008-1536.json"
+              ],
+              "release_scope": "Bounded real guest acceptance on frozen unpublished development414; controlled scope; all three resource journals valid. No full-case, member/admin, latest-main or Store acceptance.",
+              "qualification": "The receipt target is named guest_reaudit_captures_changed_page_metadata, but its direct native-view assertion is title-only. It proves the public title and description changed, old title remained before click, then native title matched the new public title. T14 later clipboard evidence indirectly includes updated social tags; do not credit direct SEO description-display refresh."
             }
           },
           "result_history": [
@@ -18674,6 +18737,33 @@
                 ],
                 "release_scope": "Bounded guest native acceptance on exact frozen CI development artifact; no full case, current-main, or Store verdict. Member/admin remain separate unverified modes."
               }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37746166364",
+                "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+                "build_version": "0.2.397",
+                "evidence": [
+                  ".research/seo-controlled-native-20261008.json",
+                  ".research/seo-controlled-native-peer-20261008.json"
+                ],
+                "release_scope": "Frozen unpacked development artifact only; no current-main, Store or member/admin acceptance.",
+                "passed_subtargets": [
+                  "manual_button_returns_to_current_page",
+                  "changed_public_title_recaptured_after_trusted_reaudit"
+                ],
+                "unverified_dimensions": [
+                  "displayed description directly matches changed page",
+                  "running button state",
+                  "stale advice cleared",
+                  "failure report",
+                  "reload"
+                ],
+                "detail": "Changed page title/description with old audit still visible before click; native audit title refreshed after trusted Re-audit. Description refresh has indirect subsequent clipboard evidence, not direct description-display proof."
+              },
+              "superseded_at": "2026-10-08T15:40:58.052500+00:00"
             }
           ],
           "defect_ids": ["EXT-D-0169", "EXT-D-0170"],
@@ -18735,6 +18825,42 @@
                 ".research/seo-controlled-native-peer-20261008.json"
               ],
               "detail": "Changed page title/description with old audit still visible before click; native audit title refreshed after trusted Re-audit. Description refresh has indirect subsequent clipboard evidence, not direct description-display proof."
+            },
+            {
+              "at": "2026-10-08T15:40:58.052500+00:00",
+              "run_id": "37799458419",
+              "mode": "guest",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "resource_valid": false,
+              "build_version": "0.2.414",
+              "evidence": [".research/seo-414-native-20261008.json"],
+              "detail": "Intel package permit refused CPU/load before product"
+            },
+            {
+              "at": "2026-10-08T15:40:58.052500+00:00",
+              "run_id": "37799999548",
+              "mode": "guest",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "resource_valid": false,
+              "build_version": "0.2.414",
+              "evidence": [".research/seo-414-native-20261008.json"],
+              "detail": "Intel fresh-host readiness expired before product"
+            },
+            {
+              "at": "2026-10-08T15:40:58.052500+00:00",
+              "run_id": "37800877872",
+              "mode": "guest",
+              "status": "partial",
+              "new_acceptance_credit": true,
+              "resource_valid": true,
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/seo-arm-414-native-20261008-1527.json",
+                ".research/seo-arm-live-peer-20261008-1536.json"
+              ],
+              "detail": "Supported ARM runner completed all selected native targets. Architecture cause for other host failures is unproven. Only explicitly reviewed subtargets receive credit."
             }
           ]
         },
@@ -18763,14 +18889,15 @@
                 "other restricted schemes",
                 "reload behavior"
               ],
-              "run_id": "37731560399",
-              "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
-              "build_version": "0.2.397",
+              "run_id": "37800877872",
+              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+              "driver_source_sha": "f653eb56e4d1a1d10c1d68fc53d4f15c6cc87df3",
+              "build_version": "0.2.414",
               "evidence": [
-                ".research/seo397-guest-native-20261007.json",
-                ".research/seo397-native-peer-20261007.json"
+                ".research/seo-arm-414-native-20261008-1527.json",
+                ".research/seo-arm-live-peer-20261008-1536.json"
               ],
-              "release_scope": "Bounded guest native acceptance on exact frozen CI development artifact; no full case, current-main, or Store verdict. Member/admin remain separate unverified modes."
+              "release_scope": "Bounded real guest acceptance on frozen unpublished development414; controlled scope; all three resource journals valid. No full-case, member/admin, latest-main or Store acceptance."
             }
           },
           "result_history": [
@@ -18867,6 +18994,68 @@
                 ],
                 "release_scope": "Exact frozen guest development artifact; broaderdimensions/member/admin/Store unverified."
               }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "passed_subtargets": [
+                  "about_blank_clear_error_without_stale_audit",
+                  "public_page_recovers_after_restricted_url"
+                ],
+                "unverified_dimensions": [
+                  "unreachable HTTP(S)",
+                  "other restricted schemes",
+                  "reload behavior"
+                ],
+                "run_id": "37731560399",
+                "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+                "build_version": "0.2.397",
+                "evidence": [
+                  ".research/seo397-guest-native-20261007.json",
+                  ".research/seo397-native-peer-20261007.json"
+                ],
+                "release_scope": "Bounded guest native acceptance on exact frozen CI development artifact; no full case, current-main, or Store verdict. Member/admin remain separate unverified modes."
+              },
+              "superseded_at": "2026-10-08T15:40:58.052500+00:00"
+            }
+          ],
+          "attempt_history": [
+            {
+              "at": "2026-10-08T15:40:58.052500+00:00",
+              "run_id": "37799458419",
+              "mode": "guest",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "resource_valid": false,
+              "build_version": "0.2.414",
+              "evidence": [".research/seo-414-native-20261008.json"],
+              "detail": "Intel package permit refused CPU/load before product"
+            },
+            {
+              "at": "2026-10-08T15:40:58.052500+00:00",
+              "run_id": "37799999548",
+              "mode": "guest",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "resource_valid": false,
+              "build_version": "0.2.414",
+              "evidence": [".research/seo-414-native-20261008.json"],
+              "detail": "Intel fresh-host readiness expired before product"
+            },
+            {
+              "at": "2026-10-08T15:40:58.052500+00:00",
+              "run_id": "37800877872",
+              "mode": "guest",
+              "status": "partial",
+              "new_acceptance_credit": true,
+              "resource_valid": true,
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/seo-arm-414-native-20261008-1527.json",
+                ".research/seo-arm-live-peer-20261008-1536.json"
+              ],
+              "detail": "Supported ARM runner completed all selected native targets. Architecture cause for other host failures is unproven. Only explicitly reviewed subtargets receive credit."
             }
           ]
         },
@@ -18928,23 +19117,26 @@
               "status": "partial",
               "passed_subtargets": [
                 "guest_menu_offers_text_and_ai_but_hides_json",
+                "guest_actual_clipboard_text_and_ai_page_0",
+                "guest_actual_clipboard_text_and_ai_page_1",
                 "guest_role_gate_after_reload",
-                "actual_text_clipboard_readback_two_pages_and_reload",
-                "actual_ai_clipboard_readback_two_pages_and_reload",
-                "key_public_facts_present_and_exact_ai_wrapping",
-                "clipboard_permission_restored"
+                "guest_actual_clipboard_text_and_ai_reload"
               ],
               "unverified_dimensions": [
-                "complete displayed audit field parity with clipboard payload"
+                "member/admin role gates",
+                "admin JSON contents",
+                "complete displayed audit field parity"
               ],
-              "run_id": "37708611887",
-              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
-              "build_version": "0.2.391",
+              "run_id": "37800877872",
+              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+              "driver_source_sha": "f653eb56e4d1a1d10c1d68fc53d4f15c6cc87df3",
+              "build_version": "0.2.414",
               "evidence": [
-                ".research/seo-intel-native-20261007.json",
-                ".research/auth-repair-intel-native-peer-20261007.json"
+                ".research/seo-arm-414-native-20261008-1527.json",
+                ".research/seo-arm-live-peer-20261008-1536.json"
               ],
-              "release_scope": "Resource-valid bounded guest evidence on exact frozen development artifact. Full field parity remains unverified; member/admin gates and JSON content belong to their separate mode slots. No current-main or Store claim."
+              "release_scope": "Bounded real guest acceptance on frozen unpublished development414; controlled scope; all three resource journals valid. No full-case, member/admin, latest-main or Store acceptance.",
+              "qualification": "Real trusted copy actions and clipboard readback were asserted. Text checks URL, title, a description line, page stats and an available heading; AI output must wrap the exact summary. This is not complete parity between every displayed audit field and clipboard content."
             }
           },
           "result_history": [
@@ -19065,6 +19257,70 @@
                 ],
                 "release_scope": "Bounded guest native acceptance on exact frozen CI development artifact; no full case, current-main, or Store verdict. Member/admin remain separate unverified modes. Guest Text/AI clipboard readback and menu gates only; admin JSON and other roles were not exercised."
               }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "passed_subtargets": [
+                  "guest_menu_offers_text_and_ai_but_hides_json",
+                  "guest_role_gate_after_reload",
+                  "actual_text_clipboard_readback_two_pages_and_reload",
+                  "actual_ai_clipboard_readback_two_pages_and_reload",
+                  "key_public_facts_present_and_exact_ai_wrapping",
+                  "clipboard_permission_restored"
+                ],
+                "unverified_dimensions": [
+                  "complete displayed audit field parity with clipboard payload"
+                ],
+                "run_id": "37708611887",
+                "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+                "build_version": "0.2.391",
+                "evidence": [
+                  ".research/seo-intel-native-20261007.json",
+                  ".research/auth-repair-intel-native-peer-20261007.json"
+                ],
+                "release_scope": "Resource-valid bounded guest evidence on exact frozen development artifact. Full field parity remains unverified; member/admin gates and JSON content belong to their separate mode slots. No current-main or Store claim."
+              },
+              "superseded_at": "2026-10-08T15:40:58.052500+00:00"
+            }
+          ],
+          "attempt_history": [
+            {
+              "at": "2026-10-08T15:40:58.052500+00:00",
+              "run_id": "37799458419",
+              "mode": "guest",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "resource_valid": false,
+              "build_version": "0.2.414",
+              "evidence": [".research/seo-414-native-20261008.json"],
+              "detail": "Intel package permit refused CPU/load before product"
+            },
+            {
+              "at": "2026-10-08T15:40:58.052500+00:00",
+              "run_id": "37799999548",
+              "mode": "guest",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "resource_valid": false,
+              "build_version": "0.2.414",
+              "evidence": [".research/seo-414-native-20261008.json"],
+              "detail": "Intel fresh-host readiness expired before product"
+            },
+            {
+              "at": "2026-10-08T15:40:58.052500+00:00",
+              "run_id": "37800877872",
+              "mode": "guest",
+              "status": "partial",
+              "new_acceptance_credit": true,
+              "resource_valid": true,
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/seo-arm-414-native-20261008-1527.json",
+                ".research/seo-arm-live-peer-20261008-1536.json"
+              ],
+              "detail": "Supported ARM runner completed all selected native targets. Architecture cause for other host failures is unproven. Only explicitly reviewed subtargets receive credit."
             }
           ]
         },
@@ -19105,32 +19361,24 @@
                 "page_1_title_and_headings",
                 "sparse_public_detail_groups",
                 "rich_public_detail_groups_and_canonical_door",
-                "canonical_outbound_opens_expected_public_tab",
-                "guest_manual_link_counts_match_live_dom",
-                "guest_manual_image_alt_counts_match_live_dom",
-                "guest_manual_readability_display_is_populated_and_explained",
-                "guest_manual_performance_reflects_current_navigation"
+                "canonical_outbound_opens_expected_public_tab"
               ],
               "unverified_dimensions": [
-                "hreflang and schema outbound activation",
-                "readability value correctness",
+                "volatile public-detail batch and optional metadata fixture excluded by controlled scope",
                 "broken social preview image",
-                "other detail controls"
+                "other detail controls",
+                "optional hreflang/schema doors when their live source data is absent",
+                "readability value correctness"
               ],
-              "run_id": "37731560399",
-              "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
-              "build_version": "0.2.397",
+              "run_id": "37800877872",
+              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+              "driver_source_sha": "f653eb56e4d1a1d10c1d68fc53d4f15c6cc87df3",
+              "build_version": "0.2.414",
               "evidence": [
-                ".research/seo397-guest-native-20261007.json",
-                ".research/seo397-native-peer-20261007.json"
+                ".research/seo-arm-414-native-20261008-1527.json",
+                ".research/seo-arm-live-peer-20261008-1536.json"
               ],
-              "release_scope": "Bounded guest native acceptance on exact frozen CI development artifact; no full case, current-main, or Store verdict. Member/admin remain separate unverified modes. The optional Airbnb continuation was not run; automatic Wikipedia exact-data and readability metric correctness remain unverified.",
-              "unverified_subtargets": [
-                {
-                  "name": "guest_manual_hreflang_and_schema_doors_match_page",
-                  "reason": "The live Wikipedia DOM exposed no unique hreflang and openable schema door pair."
-                }
-              ]
+              "release_scope": "Bounded real guest acceptance on frozen unpublished development414; controlled scope; all three resource journals valid. No full-case, member/admin, latest-main or Store acceptance."
             }
           },
           "result_history": [
@@ -19373,6 +19621,44 @@
                 ],
                 "release_scope": "Exact frozen guest development artifact; broaderdimensions/member/admin/Store unverified."
               }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "passed_subtargets": [
+                  "page_0_title_and_headings",
+                  "page_1_title_and_headings",
+                  "sparse_public_detail_groups",
+                  "rich_public_detail_groups_and_canonical_door",
+                  "canonical_outbound_opens_expected_public_tab",
+                  "guest_manual_link_counts_match_live_dom",
+                  "guest_manual_image_alt_counts_match_live_dom",
+                  "guest_manual_readability_display_is_populated_and_explained",
+                  "guest_manual_performance_reflects_current_navigation"
+                ],
+                "unverified_dimensions": [
+                  "hreflang and schema outbound activation",
+                  "readability value correctness",
+                  "broken social preview image",
+                  "other detail controls"
+                ],
+                "run_id": "37731560399",
+                "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+                "build_version": "0.2.397",
+                "evidence": [
+                  ".research/seo397-guest-native-20261007.json",
+                  ".research/seo397-native-peer-20261007.json"
+                ],
+                "release_scope": "Bounded guest native acceptance on exact frozen CI development artifact; no full case, current-main, or Store verdict. Member/admin remain separate unverified modes. The optional Airbnb continuation was not run; automatic Wikipedia exact-data and readability metric correctness remain unverified.",
+                "unverified_subtargets": [
+                  {
+                    "name": "guest_manual_hreflang_and_schema_doors_match_page",
+                    "reason": "The live Wikipedia DOM exposed no unique hreflang and openable schema door pair."
+                  }
+                ]
+              },
+              "superseded_at": "2026-10-08T15:40:58.052500+00:00"
             }
           ],
           "defect_ids": ["EXT-D-0170", "EXT-D-0174", "EXT-D-0176", "EXT-D-0183"],
@@ -19491,6 +19777,42 @@
               "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
               "evidence": [".research/seo-controlled-native-lane-b-20261008.json"],
               "detail": "Controlled scope excludes T09 volatilepublicdetail/metadata; startup endpoint timeout8s with CPU_PENDING then childexit1, no confirmed guardkill and no productactions. Durable receipt exists atbuild_identity_verified withzero targets. Invalidstartup falsifies publicpagework as solecause; no T09 orwholeSEOcredit."
+            },
+            {
+              "at": "2026-10-08T15:40:58.052500+00:00",
+              "run_id": "37799458419",
+              "mode": "guest",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "resource_valid": false,
+              "build_version": "0.2.414",
+              "evidence": [".research/seo-414-native-20261008.json"],
+              "detail": "Intel package permit refused CPU/load before product"
+            },
+            {
+              "at": "2026-10-08T15:40:58.052500+00:00",
+              "run_id": "37799999548",
+              "mode": "guest",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "resource_valid": false,
+              "build_version": "0.2.414",
+              "evidence": [".research/seo-414-native-20261008.json"],
+              "detail": "Intel fresh-host readiness expired before product"
+            },
+            {
+              "at": "2026-10-08T15:40:58.052500+00:00",
+              "run_id": "37800877872",
+              "mode": "guest",
+              "status": "partial",
+              "new_acceptance_credit": true,
+              "resource_valid": true,
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/seo-arm-414-native-20261008-1527.json",
+                ".research/seo-arm-live-peer-20261008-1536.json"
+              ],
+              "detail": "Supported ARM runner completed all selected native targets. Architecture cause for other host failures is unproven. Only explicitly reviewed subtargets receive credit."
             }
           ]
         },
@@ -19626,32 +19948,96 @@
                 ".research/seo-controlled-native-peer-20261008.json"
               ],
               "detail": "Actual clipboard matched five then six independently expected tags; feedback observed before and after changed-page Re-audit."
+            },
+            {
+              "at": "2026-10-08T15:40:58.052500+00:00",
+              "run_id": "37799458419",
+              "mode": "guest",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "resource_valid": false,
+              "build_version": "0.2.414",
+              "evidence": [".research/seo-414-native-20261008.json"],
+              "detail": "Intel package permit refused CPU/load before product"
+            },
+            {
+              "at": "2026-10-08T15:40:58.052500+00:00",
+              "run_id": "37799999548",
+              "mode": "guest",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "resource_valid": false,
+              "build_version": "0.2.414",
+              "evidence": [".research/seo-414-native-20261008.json"],
+              "detail": "Intel fresh-host readiness expired before product"
+            },
+            {
+              "at": "2026-10-08T15:40:58.052500+00:00",
+              "run_id": "37800877872",
+              "mode": "guest",
+              "status": "partial",
+              "new_acceptance_credit": true,
+              "resource_valid": true,
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/seo-arm-414-native-20261008-1527.json",
+                ".research/seo-arm-live-peer-20261008-1536.json"
+              ],
+              "detail": "Supported ARM runner completed all selected native targets. Architecture cause for other host failures is unproven. Only explicitly reviewed subtargets receive credit."
             }
           ],
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37746166364",
-              "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
-              "build_version": "0.2.397",
-              "evidence": [
-                ".research/seo-controlled-native-20261008.json",
-                ".research/seo-controlled-native-peer-20261008.json"
-              ],
-              "release_scope": "Frozen unpacked development artifact only; no current-main, Store or member/admin acceptance.",
               "passed_subtargets": [
-                "exact_clipboard_matches_current_missing_tags_before_reaudit",
-                "exact_clipboard_matches_current_missing_tags_after_reaudit",
-                "copy_feedback_observed"
+                "guest_social_missing_tags_clipboard_before_reaudit",
+                "guest_social_missing_tags_clipboard_after_reaudit"
               ],
               "unverified_dimensions": [
                 "button absent when no snippet applies",
                 "other social page states",
-                "reload"
+                "reload",
+                "member/admin"
               ],
-              "detail": "Actual clipboard matched five then six independently expected tags; feedback observed before and after changed-page Re-audit."
+              "run_id": "37800877872",
+              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+              "driver_source_sha": "f653eb56e4d1a1d10c1d68fc53d4f15c6cc87df3",
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/seo-arm-414-native-20261008-1527.json",
+                ".research/seo-arm-live-peer-20261008-1536.json"
+              ],
+              "release_scope": "Bounded real guest acceptance on frozen unpublished development414; controlled scope; all three resource journals valid. No full-case, member/admin, latest-main or Store acceptance."
             }
-          }
+          },
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37746166364",
+                "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+                "build_version": "0.2.397",
+                "evidence": [
+                  ".research/seo-controlled-native-20261008.json",
+                  ".research/seo-controlled-native-peer-20261008.json"
+                ],
+                "release_scope": "Frozen unpacked development artifact only; no current-main, Store or member/admin acceptance.",
+                "passed_subtargets": [
+                  "exact_clipboard_matches_current_missing_tags_before_reaudit",
+                  "exact_clipboard_matches_current_missing_tags_after_reaudit",
+                  "copy_feedback_observed"
+                ],
+                "unverified_dimensions": [
+                  "button absent when no snippet applies",
+                  "other social page states",
+                  "reload"
+                ],
+                "detail": "Actual clipboard matched five then six independently expected tags; feedback observed before and after changed-page Re-audit."
+              },
+              "superseded_at": "2026-10-08T15:40:58.052500+00:00"
+            }
+          ]
         }
       ],
       "cells": {
@@ -19681,9 +20067,10 @@
             "seo-guest-frozen-20261002T140308Z",
             "seo-boundary-20261002T142200Z",
             "seo-current-ci-20261002-02",
-            "37731560399"
+            "37731560399",
+            "37800877872"
           ],
-          "retest_status": "D76 guest spinner retest-pass/closed; full feature partial; frozen 0.2.397 bounded guest native receipt accepted"
+          "retest_status": "partial"
         },
         "member": {
           "test_status": "unverified",
