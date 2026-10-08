@@ -8,7 +8,8 @@
     "http_status": 200,
     "git_sha": "53aec906f047b524495ff0d93bae8e67eb55537f",
     "built_at": "2026-10-08T07:42:57Z",
-    "evidence": "scripts/browser/guest-chat-store-acceptance.mjs uses this same endpoint. aidream db/schema_analysis/check_deployed_schema.py documents that urllib requires the explicit user agent because the edge returns 403 to its default user agent."
+    "evidence": "scripts/browser/guest-chat-store-acceptance.mjs uses this same endpoint. aidream db/schema_analysis/check_deployed_schema.py documents that urllib requires the explicit user agent because the edge returns 403 to its default user agent.",
+    "last_read_at_utc": "2026-10-08T08:57:02Z"
   },
   "candidate": {
     "sha": "ffba17ba25c98599d78566bc8a74fce1c3dbe91e",
@@ -17,10 +18,35 @@
     "proof": "Live git_sha differs; local Git confirms deployed 53aec is an ancestor of ffba, and ffba is not an ancestor of deployed 53aec."
   },
   "automatic_deployment": {
-    "main_push_triggers_deploy": false,
-    "path": "aidream .github/workflows/deploy.yml declares only workflow_dispatch. aidream scripts/release.sh pushes an immutable release tag and then runs gh workflow run deploy.yml with release_ref=<tag>.",
-    "status": "No deployment run for ffba was visible through the authenticated GitHub Actions API query (reported total_count 0). The production health identity independently confirms that ffba is not deployed.",
-    "authorized_next_step": "Use the existing authorized release/integration dispatcher to complete the follow-up, create the immutable release tag, and dispatch deploy.yml for that tag; then verify /health/version before native guest acceptance. This observer did not dispatch anything."
+    "repository_identity": {
+      "origin": "https://github.com/AI-Matrix-Engine/aidream.git",
+      "verified_github_repo": "AI-Matrix-Engine/aidream",
+      "default_branch": "main",
+      "archived": false
+    },
+    "half_hour_test_train": {
+      "workflow": "aidream .github/workflows/test.yml",
+      "canonical_state": "operations/release-automation-on-off-register.md marks test.yml ON as the every-30-minute release train.",
+      "configured_cron": "7,37 * * * *",
+      "meaning": "Test-only schedule. Workflow source says it is deliberately decoupled from push; source near the live-judge gate says it never blocks a release and deploy.yml consults no test result. It does not itself dispatch deployment.",
+      "next_nominal_tick_utc": "2026-10-08T09:07:00Z",
+      "last_or_next_run_status": "Not verified: correct-owner GitHub Actions API requests returned HTTP 403 rate limit exceeded. A configured cron tick does not prove it executed."
+    },
+    "half_hour_aidream_release_task": {
+      "canonical_state": "The aidream-release entry is under Proposed in scheduled-tasks.md; its prompt explicitly says DRAFT, not approved, not running, and no cron/Codex/Claude/schedule_claim job exists.",
+      "local_codex_config": "No aidream-release automation.toml exists in the inspected local automation directory.",
+      "interpretation": "Do not rely on this proposed task to release the pushed candidate."
+    },
+    "automatic_deployment_watcher": {
+      "workflow": "aidream .github/workflows/deploy-cadence-watch.yml",
+      "canonical_state": "Release automation register marks Deploy cadence watch ON (GitHub only).",
+      "configured_cron": "*/10 * * * *",
+      "configured_behavior": "When no deploy.yml run has started in over 45 minutes while main has a newer runtime-bearing commit, and no deploy is active, the watcher dispatches deploy.yml for that immutable commit.",
+      "next_nominal_tick_utc": "2026-10-08T09:00:00Z",
+      "last_or_next_run_status": "Not verified: correct-owner GitHub Actions API requests returned HTTP 403 rate limit exceeded. Current configuration supports automatic recovery, but no actual watcher run or pending deploy was established."
+    },
+    "api_correction": "The earlier Actions query used armanisadeghi/aidream, which is not the repository owner. The actual remote is AI-Matrix-Engine/aidream. Correct-owner run queries then hit GitHub API rate limits; earlier total_count=0 is invalid as execution evidence.",
+    "next_handle": "Automatic deployment handle is deploy-cadence-watch, not the test train or proposed aidream-release task. Observe a deploy.yml run for ffba or a descendant, then re-read /health/version. No exact execution time can be promised from the configured schedules."
   },
   "upcoming_followup": {
     "status": "No committed SHA yet at observation time.",
@@ -30,5 +56,24 @@
   "limits": [
     "The observed health response is a point-in-time identity and does not prove guest behavior.",
     "No build, release, deployment, browser, or workflow mutation was performed."
-  ]
+  ],
+  "integration_schedule_observation": {
+    "observed_at_utc": "2026-10-08T08:57:02Z",
+    "canonical_approval_and_status": {
+      "aidream_release_task": "Canonical scheduled-tasks.md puts aidream-release every 30 minutes under Proposed, noting no job exists. Its prompt explicitly labels it DRAFT, not approved, not running, and says no cron, Codex automation, Claude schedule, or schedule_claim registration exists.",
+      "ship_all_codex": "Canonical scheduled-tasks.md lists ship-all-codex every 30 minutes at :43 on the main workstation; matrx-ship SCHEDULES.md says this schedule is host runtime state and not copied in files. This is repository synchronization duty, not the aidream release task.",
+      "local_codex_automation_inventory": "No aidream-release automation.toml exists among the local Codex automation configs inspected. This alone does not establish whether a host-bound schedule exists in app runtime state."
+    },
+    "actual_automatic_deployment_safety_net": "deploy-cadence-watch.yml is ON every 10 minutes. If its >45-minute/no-active-deploy condition is met, it self-dispatches deploy.yml for the latest immutable runtime commit on main. Current run/queue status is unavailable: the earlier API request used the wrong repository owner, and corrected AI-Matrix-Engine/aidream run queries returned HTTP 403 rate limit exceeded. The 30-minute test.yml train is separately ON, but its source explicitly says deployment does not consult test results.",
+    "tests_workflow_distinction": "The aidream test.yml 7,37 * * * * schedule is a 30-minute test train; its workflow source describes it as decoupled from push. It is not a deploy dispatch.",
+    "readiness": "Automatic deployment is configured through the cadence watcher, but its last execution and any pending dispatch cannot be confirmed. The proposed 30-minute aidream-release task is not active. Current production still returned 53aec906f047b524495ff0d93bae8e67eb55537f at 2026-10-08T08:57:02Z; candidate ffba is not deployed. Verify a deploy.yml run for ffba or descendant and then re-read health/version.",
+    "sources": [
+      "/Users/armanisadeghi/code/common-docs/operations/scheduled-tasks.md (Proposed aidream-release row; ship-all-codex row)",
+      "/Users/armanisadeghi/code/common-docs/operations/scheduled-tasks/aidream-release.md (explicit DRAFT/not running/no job exists)",
+      "/Users/armanisadeghi/code/common-docs/operations/release-automation-on-off-register.md (test.yml ON and Deploy cadence watch ON)",
+      "/Users/armanisadeghi/code/matrx-ship/scripts/machine-profile/SCHEDULES.md (host-bound ship-all-codex schedule)",
+      "/Users/armanisadeghi/code/aidream/.github/workflows/test.yml and deploy-cadence-watch.yml",
+      "aidream Git remote and GitHub repo metadata: origin is https://github.com/AI-Matrix-Engine/aidream.git; verified AI-Matrix-Engine/aidream, main, not archived."
+    ]
+  }
 }
