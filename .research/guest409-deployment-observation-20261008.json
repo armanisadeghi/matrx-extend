@@ -102,8 +102,7 @@
     "scope": "Read-only update; no repeated Actions API polling."
   },
   "actions_access_revalidated": {
-    "observed_at_utc": "2026-10-08T09:17:00Z",
-    "source": "Authenticated exact-repository Actions queries after observed core reset09:15:21Z; timestamps in run data are authoritative, observation minute approximate.",
+    "source": "Authenticated exact-repository Actions queries after observed core reset09:15:21Z. This timestamp records the evidence; exact query time was not retained. Run timestamps are from the Actions response.",
     "repository": "AI-Matrix-Engine/aidream",
     "latest_deploy": {
       "run_id": 37751070054,
@@ -118,7 +117,8 @@
       "status": "completed",
       "conclusion": "success"
     },
-    "limit": "No active deployment for the guest repair was observed. Configured watcher cadence does not prove execution or guarantee next deployment time."
+    "limit": "No active deployment for the guest repair was observed. Configured watcher cadence does not prove execution or guarantee next deployment time.",
+    "recorded_at_utc": "2026-10-08T09:26:20.922312+00:00"
   },
   "latest_production_observation": {
     "at": "2026-10-08T09:23:11.564544+00:00",
