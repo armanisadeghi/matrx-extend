@@ -988,6 +988,8 @@ try {
       resourceAction,
     }) => {
       await requireResourceHealth();
+      report.browser_version = (await browserSession.send('Browser.getVersion')).product;
+      report.extension_runtime_id = await evaluate(panel, 'chrome.runtime.id');
       if (selection.mode !== 'guest') {
         await observePanelVisibility('before_authentication');
         const transition = await startPanelTransitionRecorder(panel, {
@@ -1441,7 +1443,26 @@ try {
         scrollCase.status = scroll.passed ? 'partial' : 'failed';
         scrollCase.evidence.warm = scroll;
         scrollCase.remaining = ['Repeat after full extension reload.'];
-        if (!scroll.passed) throw new Error('scrape_guest_scroll_sync_mismatch');
+        if (!scroll.passed)
+          scrollCase.evidence.warm_screenshot = await screenshot(
+            panel,
+            artifacts,
+            'scrape-warm-scroll-mismatch.png',
+          );
+        // T09 is independent of T07. Continue only when the failed scroll
+        // exercise left the owned intake capture and disabled control intact.
+        if (!scroll.passed) {
+          const restored = await scrapeState(panel);
+          assert.ok(
+            scroll.stopped?.off === true &&
+              scroll.stopped?.on === false &&
+              scroll.stopped.pageY === 0 &&
+              page.url() === `${origin}/intake` &&
+              restored?.selected === 'Article' &&
+              restored?.resultText?.includes(lazy),
+            'scrape_guest_scroll_recovery_not_proven',
+          );
+        }
         report.stage = 'guest_copy_menus';
         mark('EXT-F-1007-T09', 'unverified', {}, ['Native copy exercise incomplete.']);
         const copies = await runGuestCopyMenus({
@@ -1710,9 +1731,28 @@ try {
           });
           const scrollCase = report.cases.find((c) => c.id === 'EXT-F-1007-T07');
           scrollCase.evidence.reload = scroll;
-          if (!scroll.passed) throw new Error('scrape_guest_reload_scroll_sync_mismatch');
-          scrollCase.status = 'passed';
-          scrollCase.remaining = [];
+          if (!scroll.passed)
+            scrollCase.evidence.reload_screenshot = await screenshot(
+              replacement.panel,
+              artifacts,
+              'scrape-reload-scroll-mismatch.png',
+            );
+          if (!scroll.passed) {
+            const restored = await scrapeState(replacement.panel);
+            assert.ok(
+              scroll.stopped?.off === true &&
+                scroll.stopped?.on === false &&
+                scroll.stopped.pageY === 0 &&
+                page.url() === `${origin}/intake` &&
+                restored?.selected === 'Article' &&
+                restored?.resultText?.includes(article),
+              'scrape_guest_reload_scroll_recovery_not_proven',
+            );
+            scrollCase.status = 'failed';
+          } else if (scrollCase.status !== 'failed') {
+            scrollCase.status = 'passed';
+            scrollCase.remaining = [];
+          }
           const copies = await runGuestCopyMenus({
             panel: replacement.panel,
             browserSession,
@@ -1843,6 +1883,9 @@ try {
   if (report.original_busy_failure) {
     report.failure = { stage: 'fast_capture', code: report.original_busy_failure };
     process.exitCode = 1;
+  }
+  if (report.cases.some((c) => c.id === 'EXT-F-1007-T07' && c.status === 'failed')) {
+    report.failure = { stage: 'guest_scroll_sync', code: 'scrape_guest_scroll_sync_mismatch' };
   }
   if (report.status === 'failed') process.exitCode = 1;
 } catch (error) {

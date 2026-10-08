@@ -1,0 +1,52 @@
+{
+  "id": "EXT-D-0163",
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T07"],
+  "surface": "Scrape / Article scroll synchronization",
+  "auth_mode": "guest",
+  "title": "Scrape native acceptance compares against a pre-click scroll baseline and misses tooltip-managed controls",
+  "severity": "S2: acceptance driver false failure prevents trustworthy scroll proof and obstructs independent copy coverage; no product defect established",
+  "priority": "P1",
+  "state": "in-fix",
+  "owner": "root/scrape_scroll_repair_peer",
+  "preconditions": [
+    "Use original frozen development CI37698216289/artifact11516342905/source52487361/version0.2.391 with current reviewed guest Scrape driver.",
+    "Owned disposable guest profile, narrow360px panel, ARM macos-15, valid resource permits and owned intake/referrals fixture."
+  ],
+  "reproduction": [
+    "Run hosted guest-scrape-development, laneA, guest, with the stated development run/artifact IDs; original workflow checkoutf79fbe75/run37720057690.",
+    "Open Article and enable Sync scroll with live page; trusted page wheel yields pageY650 and article scrollTop310.",
+    "Disable synchronization through the native control, then reverse page wheel.",
+    "Observe pageY0 and article scrollTop0 with neither sync control found; driver fails scrape_guest_scroll_sync_mismatch before T09 starts."
+  ],
+  "expected": "After synchronization is disabled, page scroll changes do not move the article pane; controls and actual Scrape context remain available.",
+  "actual": "Article position changed to0 and both control queries were absent after the off/reverse sequence. Underlying product versus driver/context cause is unknown.",
+  "evidence": [
+    ".research/scrape-guest-new-native-20261007.json",
+    ".research/scrape-first-native-peer-20261007.json",
+    ".research/scrape-scroll-native-diagnosis-20261007.json"
+  ],
+  "resource_verdict": "All three current journals valid; acceptance child1/resourceInvalidfalse. Not resource exhaustion.",
+  "transition_history": [
+    {
+      "at": "2026-10-08T03:08:32.579245+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "New native warm T07 mismatch; independent evidence review and causal diagnosis assigned."
+    },
+    {
+      "at": "2026-10-08T03:13:26.067459+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Independent native peer cf301002 confirms warm assertion failure only. Source diagnosis identifies trusted Stop click scrollIntoView invalidating the pre-click position baseline and title-only probes missing tooltip-managed controls; no product defect established."
+    },
+    {
+      "at": "2026-10-08T03:13:26.067459+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Candidate driver repair fa05a939 has exact successful focused CI37721518128. Fresh source peer assigned before guarded native retest."
+    }
+  ],
+  "closure_requirement": "Establish cause without weakening T07; causal source guard, independent review, then resource-valid original warm and reload native on/off proof plus surrounding independent Scrape copy checks.",
+  "next_action": "Independent source review of fa05a939, then guarded native T07 warm/reload and T09 intake/referrals/reload. Original failure remains evidence; product cases remain unverified until corrected native proof."
+}
