@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-D-0183 deterministic guest SEO interruption",
+  "status": "NATIVE_PENDING_NOT_DISPATCHED",
+  "acceptance_credit": "none; no hosted product run occurred",
+  "source_gate": {
+    "workflow": "CI",
+    "run_id": 37813115576,
+    "workflow_checkout_sha": "43006024fadf38dd67f77439bd97ee6521e6ae81",
+    "focused_job": "Focused acceptance guards",
+    "focused_job_result": "success",
+    "focused_suite": {
+      "tests": 159,
+      "passed": 159,
+      "failed": 0,
+      "skipped": 0
+    },
+    "reviewed_source_sha": "5de616d941356c8ef62aad6a23bc82bc75f3c15e",
+    "reviewed_source_is_ancestor_of_gate_sha": true,
+    "evidence_source": "raw/observations.txt",
+    "scope_limit": "The complete CI run was still active in the captured status; only the exact-source focused job is asserted successful."
+  },
+  "selected_product_artifact": {
+    "ci_run_id": 37790643945,
+    "ci_conclusion": "success",
+    "artifact_id": 11556064167,
+    "artifact_digest": "sha256:7a93776a9322c27973756ddb542fd2e8580d900c356d28a0ad1504928edf3964",
+    "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+    "version": "0.2.414",
+    "tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046",
+    "prior_exact_import_and_native_use": ".research/seo-full-arm-414-native-20261008-1552.json",
+    "source_is_separate_from_workflow_checkout": true
+  },
+  "intended_dispatch": {
+    "acceptance_lane": "B",
+    "runner_label": "macos-15",
+    "acceptance_case": "guest-seo",
+    "seo_case_scope": "controlled",
+    "seo_metadata_fixture": "none",
+    "seo_resource_diagnostic": false,
+    "seo_interrupt_after_target": "manual_button_returns_to_current_page",
+    "development_run_id": 37790643945,
+    "development_artifact_id": 11556064167,
+    "dispatched": false
+  },
+  "blocker": {
+    "observed_at": "2026-10-08T17:05:20Z",
+    "operation": "read-only exact-source CI status and active-run listing",
+    "result": "GitHub Actions REST returned HTTP 403 rate limit exceeded",
+    "workflow_ui": "Authenticated browser was logged out; workflow page showed no dispatch control.",
+    "dispatch_attempted": false,
+    "native_run_id": null
+  },
+  "native_evidence": {
+    "child_signal": "not_observed",
+    "selected_target_checkpoint": "not_observed",
+    "checkpoint_status": "not_observed",
+    "acceptance_credit_marker": "not_observed",
+    "resource_owner_cleanup": "not_observed",
+    "reason": "No hosted run was dispatched, so interruption behavior and cleanup remain pending."
+  },
+  "neighboring_normal_run": {
+    "used_for_default_route_comparison": false,
+    "reason": "No current interruption run exists to compare; prior normal evidence is not promoted here."
+  },
+  "raw_evidence": {
+    "directory": ".research/seo-stop-live-20261008/raw/",
+    "manifest": "sha256-manifest.txt",
+    "capture_note": "Observations transcribed from the tool output available to this task; no raw API response body was retained because status endpoints returned 403."
+  },
+  "scope_limits": {
+    "product_failure": false,
+    "no_product_behavior_claim": true,
+    "no_inventory_change": true,
+    "no_source_change": true
+  }
+}
