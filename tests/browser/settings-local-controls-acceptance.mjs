@@ -9,6 +9,10 @@ import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { GUEST_PREFERENCES, runGuestPreferenceCase } from './settings-guest-preference-batch.mjs';
+import {
+  GUEST_PRIVACY_SWITCHES,
+  runGuestPrivacySwitchCase,
+} from './settings-guest-privacy-batch.mjs';
 import { runGuestAskAgainCase } from './settings-guest-unrecorded-cases.mjs';
 import {
   activeTabPanelExpression,
@@ -39,7 +43,11 @@ const IDS = [
   'T04',
   'T10',
   'T13',
+  'T16',
+  'T19',
   'T22',
+  'T31',
+  'T34',
   'T37',
   'T46',
   'T63',
@@ -551,6 +559,26 @@ try {
               'unverified',
               'Chat creation is outside this non-Chat batch.',
             );
+        });
+      }
+      for (const preference of GUEST_PRIVACY_SWITCHES) {
+        await runCase(byId(preference.caseId), async () => {
+          const c = byId(preference.caseId);
+          await runGuestPrivacySwitchCase(
+            panel,
+            reloadSettings,
+            preference,
+            (phase, name, observation, status) => {
+              c.steps.push({ phase, action: name, observation });
+              criterion(c, name, status, observation);
+            },
+          );
+          criterion(
+            c,
+            'preference changes its downstream browser behavior',
+            'unverified',
+            'This bounded batch checks the real Settings switch and persistence; the site or agent consumer is not exercised.',
+          );
         });
       }
       await runCase(byId('T64'), async () => {

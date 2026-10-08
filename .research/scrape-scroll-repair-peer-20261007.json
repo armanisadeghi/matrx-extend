@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "scrape-scroll-repair-peer-20261007",
+  "lane": "independent_source_review",
+  "status": "source_ready_native_unverified",
+  "reviewed_commit": "fa05a939149a9a381db45061c53c50d298365d86",
+  "verdict_a_behavior_scope": {
+    "status": "partial",
+    "source_readiness": "pass_for_diagnostic_native_run",
+    "native_acceptance": "unverified",
+    "finding": "The changed driver measures a new nonzero Article position after the trusted Stop click, then requires reverse live-page scroll to leave that position unchanged. This correctly avoids comparing against the pre-click position that the trusted driver's scrollIntoView may alter. Warm and reload paths retain failed T07, while allowing independent T09 only after current intake URL, selected Article, current captured content, page reset, and disabled control are proven.",
+    "evidence": [
+      "tests/browser/settings-panel-driver.mjs:395 uses scrollIntoView before a trusted pointer action; src/features/scrape/ScrapeView.tsx:453,474-495 places the Stop control inside the Article scroller",
+      "tests/browser/scrape-guest-behavior-batch.mjs:162-190 samples tooltip-managed controls and compares stopped.top to armed.top; :194-247 re-arms after trusted Stop and uses actual page wheel actions",
+      "tests/browser/scrape-guest-native-acceptance.mjs:1440-1478,1727-1767 preserves T07 failure and gates T09 by recovered capture; :1877-1890 sets overall failure/exit code for failed T07",
+      "docs/stabilization/defects/EXT-D-0163.json remains open and requires resource-valid warm/reload native proof plus copy checks"
+    ],
+    "limits": [
+      "Original run 37720057690 establishes an old-oracle mismatch, not the actual off-state behavior after the repaired baseline. No native run of fa05a939 was reviewed.",
+      "The programmatic re-arm proves a scrollable DOM article at a known post-click position; it does not alone prove manual user scrolling or final product behavior."
+    ]
+  },
+  "verdict_b_code_test_quality": {
+    "status": "pass_with_native_limit",
+    "finding": "The repair stays in the existing Scrape acceptance driver. The source tests exercise the driver's positive and failed stop-click decisions, while the native path retains trusted pointer and page-wheel actions. Failed warm T07 is not replaced by a reload success; failed T07 produces a failed overall report and nonzero process exit.",
+    "evidence": [
+      "tests/browser/scrape-guest-behavior-batch.test.mjs:201-273 tests followed/armed/stopped deltas and a simulated trusted click that resets Article, including an ignored Stop click that must fail",
+      "CI run 37721518128 completed success on exact fa05a939; focused acceptance job reports 43 passed, 0 failed",
+      ".research/scrape-scroll-native-diagnosis-20261007.json records compile and local focused checks, but these are builder-reported and not independent native evidence"
+    ],
+    "limit": "The unit exercise injects click/evaluate/arm adapters and models sync state. It guards the driver's oracle, not the real hook, tooltip DOM, or clipboard flow; only a resource-valid native run can close T07/T09."
+  },
+  "refuted_suspicion": "A first reading suggested the scroll-hook cleanup was returned from its async setup. Rechecking src/hooks/use-page-scroll-sync.ts:59-94 shows the async IIFE closes at :70 and cleanup is returned directly from useEffect at :83. No product defect is asserted from that path.",
+  "next_action": "Use driver fa05a939 against the provenance-verified original development391 artifact. Require warm and reload T07 plus T09 intake/referrals/reload receipts; keep EXT-D-0163 open until native proof and independent acceptance review."
+}

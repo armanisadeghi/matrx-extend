@@ -7,8 +7,8 @@
   "title": "Scrape native acceptance compares against a pre-click scroll baseline and misses tooltip-managed controls",
   "severity": "S2: acceptance driver false failure prevents trustworthy scroll proof and obstructs independent copy coverage; no product defect established",
   "priority": "P1",
-  "state": "in-fix",
-  "owner": "root/scrape_scroll_repair_peer",
+  "state": "fixed",
+  "owner": "root/scrape_scroll_native_retest",
   "preconditions": [
     "Use original frozen development CI37698216289/artifact11516342905/source52487361/version0.2.391 with current reviewed guest Scrape driver.",
     "Owned disposable guest profile, narrow360px panel, ARM macos-15, valid resource permits and owned intake/referrals fixture."
@@ -24,7 +24,8 @@
   "evidence": [
     ".research/scrape-guest-new-native-20261007.json",
     ".research/scrape-first-native-peer-20261007.json",
-    ".research/scrape-scroll-native-diagnosis-20261007.json"
+    ".research/scrape-scroll-native-diagnosis-20261007.json",
+    ".research/scrape-scroll-repair-peer-20261007.json"
   ],
   "resource_verdict": "All three current journals valid; acceptance child1/resourceInvalidfalse. Not resource exhaustion.",
   "transition_history": [
@@ -45,8 +46,14 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Candidate driver repair fa05a939 has exact successful focused CI37721518128. Fresh source peer assigned before guarded native retest."
+    },
+    {
+      "at": "2026-10-08T03:15:20.217397+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "fa05a939 exact focused CI37721518128 passed; independent source peer d8ff02ed accepts repaired baseline/control probes and T09 isolation. Native original warm/reload retest pending."
     }
   ],
   "closure_requirement": "Establish cause without weakening T07; causal source guard, independent review, then resource-valid original warm and reload native on/off proof plus surrounding independent Scrape copy checks.",
-  "next_action": "Independent source review of fa05a939, then guarded native T07 warm/reload and T09 intake/referrals/reload. Original failure remains evidence; product cases remain unverified until corrected native proof."
+  "next_action": "One guarded original391 guest native run using reviewed current driver, then fresh independent evidence review. Product T07/T09 remain unverified."
 }
