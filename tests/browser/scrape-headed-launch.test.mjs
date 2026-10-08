@@ -11,13 +11,19 @@ const start = source.indexOf('await runNativeSidepanelQa({');
 const end = source.indexOf('    extensionDir:', start);
 assert.ok(start >= 0 && end > start, 'Scrape launch call missing');
 const callerPrefix = source.slice(start, end);
-const evaluateCaller = (prefix) =>
-  new Function('runNativeSidepanelQa', `return (async () => { return ${prefix} }); })();`)(
-    (options) => options,
-  );
+const evaluateCaller = (prefix, reloadOpenDiagnostic = false) =>
+  new Function(
+    'runNativeSidepanelQa',
+    'RELOAD_OPEN_DIAGNOSTIC',
+    `return (async () => { return ${prefix} }); })();`,
+  )((options) => options, reloadOpenDiagnostic);
 
 test('Scrape real caller requests headed mode; omitting it fails the foreground contract', async () => {
-  assert.equal((await evaluateCaller(callerPrefix)).headed, true);
+  for (const diagnostic of [false, true]) {
+    const options = await evaluateCaller(callerPrefix, diagnostic);
+    assert.equal(options.headed, true);
+    assert.equal(options.reloadOpenDiagnostic, diagnostic);
+  }
   const omittedHeaded = callerPrefix.replace(/\bheaded:\s*true,?\s*/, '');
   assert.notEqual(omittedHeaded, callerPrefix, 'mutation must reach the actual caller');
   assert.notEqual((await evaluateCaller(omittedHeaded)).headed, true);
