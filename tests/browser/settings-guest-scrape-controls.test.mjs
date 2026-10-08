@@ -99,6 +99,8 @@ test('T28 case runner observes rendered content and restores every section acros
 
 test('T28 case runner rejects an open section without rendered content and verifies cleanup', async () => {
   const { state, driver, reload } = simulatedPanel();
+  state.sections.Account = false;
+  const baselineSections = { ...state.sections };
   const originalEvaluate = driver.evaluate;
   let accountReads = 0;
   driver.evaluate = async (...args) => {
@@ -113,7 +115,14 @@ test('T28 case runner rejects an open section without rendered content and verif
     runGuestSectionsCase(null, reload, () => {}, driver),
     /Account_section_open_not_observed/,
   );
-  assert.equal(state.sections.Account, true);
+  assert.deepEqual(state.sections, baselineSections);
+  assert.deepEqual(
+    state.clicks.filter(([kind]) => kind === 'section'),
+    [
+      ['section', 'Account'],
+      ['section', 'Account'],
+    ],
+  );
   assert.equal(state.reloads, 0);
 });
 
