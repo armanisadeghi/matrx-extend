@@ -51,6 +51,7 @@ const report = {
   request: null,
   result: null,
   metadata_search: null,
+  negative_reads: [],
   invalid_input: null,
   reload: null,
   failure_code: null,
@@ -311,7 +312,7 @@ try {
           if (!diagnostic.visible.equals_completion) diagnostic.failure = 'visible_output_mismatch';
           const result = assertRecordsVisibleCompletion(visible, completion);
           diagnostic.phase = 'complete';
-          if (label === 'records_invalid_limit') {
+          if (label.startsWith('records_invalid_')) {
             if (result.success !== false) diagnostic.failure = 'tool_result_invalid';
           } else if (result.success === false) diagnostic.failure = 'tool_refusal';
           else if (result.success !== true) diagnostic.failure = 'tool_result_invalid';
@@ -523,6 +524,80 @@ try {
         independent_table_identity_matched: true,
         count: searchResult.output.count,
       };
+
+      // These cases exercise only the malformed-input boundary. Positive
+      // record reads need disposable row/table IDs and are not credited here.
+      stage('records_negative_read_contract');
+      const negativeContract = await evaluate(
+        panel,
+        `(() => {
+          const row = [...document.querySelectorAll('button')].find(el => el.querySelector('span.font-mono')?.textContent.trim() === 'records');
+          const card = row?.parentElement;
+          const label = [...(card?.querySelectorAll('div') ?? [])].find(el => el.textContent.trim() === 'server action contract' && el.children.length === 0);
+          const pre = label?.parentElement?.parentElement?.querySelector('pre');
+          if (!pre?.getClientRects().length) return null;
+          try {
+            const schema = JSON.parse(pre.textContent);
+            return [
+              ['metadata_search', 'query'],
+              ['record_read', 'record_id'],
+              ['record_aggregate', 'table_id'],
+            ].map(([action, field]) => ({
+              action_available: schema.action?.enum?.includes(action) === true,
+              field_available: Object.hasOwn(schema.$variants?.[action] ?? {}, field),
+            }));
+          } catch { return null; }
+        })()`,
+      );
+      assert.deepEqual(
+        negativeContract,
+        Array.from({ length: 3 }, () => ({ action_available: true, field_available: true })),
+        'records_negative_read_contract_drift',
+      );
+      for (const { caseId, action, args, field } of [
+        {
+          caseId: 'EXT-F-4130-C03',
+          action: 'metadata_search',
+          args: { organization_id: approved.id, query: null },
+          field: 'query',
+        },
+        {
+          caseId: 'EXT-F-4130-C04',
+          action: 'record_read',
+          args: { record_id: 'not-a-uuid' },
+          field: 'record_id',
+        },
+        {
+          caseId: 'EXT-F-4130-C05',
+          action: 'record_aggregate',
+          args: { table_id: 'not-a-uuid', measure: 'count' },
+          field: 'table_id',
+        },
+      ]) {
+        const invalidRead = { action, args };
+        await enterRecordsInput(panel, evaluate, stage, invalidRead, process.platform);
+        const label = `records_invalid_${action}`;
+        const refused = await execute(invalidRead, reloadBearerHash, label);
+        assert.equal(refused.success, false, `${label}_false_success`);
+        assert.equal(refused.error?.error_type, 'invalid_arguments', `${label}_wrong_error_class`);
+        assert.match(
+          refused.error?.message ?? '',
+          new RegExp(field, 'i'),
+          `${label}_field_missing`,
+        );
+        report.negative_reads.push({
+          inventory_case: caseId,
+          action,
+          finished: true,
+          status: 200,
+          completion_observed: true,
+          visible: true,
+          refused: true,
+          field_named: true,
+          error_class: refused.error.error_type,
+          positive_read_verified: false,
+        });
+      }
     },
   });
   report.status = 'passed';
