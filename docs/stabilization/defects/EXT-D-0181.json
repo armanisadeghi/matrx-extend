@@ -7,7 +7,7 @@
   "title": "Extracted headed-launch caller lacks reload diagnostic binding",
   "severity": "S2: required CI regression stops before build; production caller has valid binding",
   "priority": "P1",
-  "state": "fixed",
+  "state": "closed",
   "owner": "extend-stabilization",
   "reproduction": [
     "Run node --test tests/browser/scrape-headed-launch.test.mjs against64b756a5.",
@@ -16,7 +16,10 @@
   ],
   "expected": "Regression exercises actual headed caller with diagnostic flag off and on and retains missing-headed refusal.",
   "actual": "CI Guest transport observer regression fails with RELOAD_OPEN_DIAGNOSTIC is not defined; source caller itself defines the flag.",
-  "evidence": ["https://github.com/armanisadeghi/matrx-extend/actions/runs/37787448900"],
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37787448900",
+    ".research/records-repair-final-peer-20261008.json"
+  ],
   "transition_history": [
     {
       "at": "2026-10-08T13:59:34.078692+00:00",
@@ -41,7 +44,21 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Three focused tests pass; independent review pending."
+    },
+    {
+      "at": "2026-10-08T14:07:42.687971+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Fresh e1856b97 reproduces old ReferenceError, passes all3 current tests in both diagnostic modes and surrounding headed/owned-display refusals."
+    },
+    {
+      "at": "2026-10-08T14:07:42.687971+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Targeted source guard defect independently verified. No hosted product acceptance or full CI success inferred."
     }
   ],
-  "closure_requirement": "Independent actual guard rerun passes both diagnostic values and omission/display-mode negative assertions; full CI status tracked separately."
+  "closure_requirement": "Independent actual guard rerun passes both diagnostic values and omission/display-mode negative assertions; full CI status tracked separately.",
+  "fix_commits": ["8bfc4d77"],
+  "reviewer": "independent records_repair_final_peer"
 }

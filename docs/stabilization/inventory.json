@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T13:06:16.462844+00:00",
+  "updated_at": "2026-10-08T14:07:42.687971+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -937,7 +937,8 @@
             "EXT-D-0103",
             "EXT-D-0107",
             "EXT-D-0117",
-            "EXT-D-0122"
+            "EXT-D-0122",
+            "EXT-D-0181"
           ],
           "results": {
             "admin": {
@@ -16381,6 +16382,19 @@
               "new_acceptance_credit": false,
               "evidence": [".research/indexing-peer-scrape-retest-20261008.json"],
               "detail": "Indexing repair independently source/native verified; guarded package/browser preparation valid. Guest Chromium endpoint timed out before panel/actions, guest journal resourceInvalid=true. No D178 branch observed and prior acceptance unchanged."
+            },
+            {
+              "at": "2026-10-08T14:07:42.687971+00:00",
+              "run_id": "37787769611",
+              "mode": "guest",
+              "status": "unverified",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "workflow_checkout_sha": "64b756a5332073c4e9d2d594507f0a4430d6af81",
+              "evidence": [".research/scrape-startup-repair-acceptance-20261008.json"],
+              "detail": "Owned CDP endpoint timed out after8018ms; guest journal resource-invalid before any Scrape target or D178 confirmation branch. Zero acceptance; prior bounded results preserved; startup process attribution escalated."
             }
           ],
           "defect_ids": ["EXT-D-0175", "EXT-D-0178", "EXT-D-0180"]
@@ -19429,6 +19443,19 @@
               "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
               "evidence": [".research/seo-uninstrumented-acceptance-20261008.json"],
               "detail": "Uninstrumented full SEO/Airbnb attempt timed out at owned CDP endpoint before any SEO action, alongside host CPU_PENDING/highload; current guest journal final resourceInvalid=true. Zero targets; no case result replaced. Source startup investigation required before retry."
+            },
+            {
+              "at": "2026-10-08T14:07:42.687971+00:00",
+              "run_id": "37787701142",
+              "mode": "guest",
+              "status": "unverified",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "workflow_checkout_sha": "64b756a5332073c4e9d2d594507f0a4430d6af81",
+              "evidence": [".research/seo-startup-repair-acceptance-20261008.json"],
+              "detail": "Expected guest panel context reached, then CPU84/81 watchdog invalidated run before SEO targets. Zero acceptance; prior bounded results preserved; startup process attribution escalated."
             }
           ]
         },

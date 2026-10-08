@@ -30,7 +30,9 @@
     ".research/seo-startup-observation-wiring-20261008.json",
     ".research/seo-startup-observation-peer-20261008.json",
     ".research/native-startup-deadline-repair-20261008.json",
-    ".research/native-deadline-final-peer-20261008.json"
+    ".research/native-deadline-final-peer-20261008.json",
+    ".research/seo-startup-repair-acceptance-20261008.json",
+    ".research/scrape-startup-repair-acceptance-20261008.json"
   ],
   "transition_history": [
     {
@@ -53,7 +55,7 @@
     }
   ],
   "closure_requirement": "Prove and repair demonstrated startup class with actual helper red/green and independent review; native admin original scenario and surrounding ownership rejection must pass.",
-  "next_action": "One resource-admitted uninstrumented SEO/Scrape batch on reviewed37ca7d88-or-descendant relevant source with native policy8s. Keep original admin refusal and ownership surrounding-case closure requirement; do not close D107 from late-start variant alone.",
+  "next_action": "Do not repeat unchanged native launches. Escalated startup process attribution must bracket actual spawn through endpoint readiness/failure; source review then one diagnostic run distinguishes owned Chromium from OS host activity without reducing resource thresholds. Original admin refusal still needs independent native closure.",
   "confirmed_late_start_variant": {
     "run_id": "37785284577",
     "resource_valid": true,
@@ -63,6 +65,7 @@
     "source_repair": "37ca7d88",
     "policy": "nativeCdpStartupDeadlineMs=8000; independent socket/command timeout and ownership checks preserved",
     "verification": "Fresh19049513 source/evidence review passes real-file timing, connector, harness, and resource-safety checks. Native uninstrumented acceptance pending; exact8s source policy verified; test intentionally proves late-endpoint behavior rather than freezing a configurable number.",
-    "scope_limit": "Does not establish equivalence to original331ms admin endpoint refusal or full D107 closure."
+    "scope_limit": "Does not establish equivalence to original331ms admin endpoint refusal or full D107 closure.",
+    "native_followup": "SEO37787701142 reached expected guest panel context but CPU watchdog invalidated before SEO; Scrape37787769611 timed out at8s and resource-invalid. Neither closes D107; both retain zero product credit."
   }
 }
