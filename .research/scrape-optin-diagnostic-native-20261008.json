@@ -1,0 +1,134 @@
+{
+  "task_id": "scrape-optin-diagnostic-native-20261008",
+  "lane": "B",
+  "model": "GPT-6",
+  "status": "diagnostic_only_unverified",
+  "defect_id": "EXT-D-0175",
+  "scope": "One hosted opt-in Scrape reload diagnostic against the frozen development artifact. This run is not native product acceptance and earns zero acceptance credit.",
+  "dispatch": {
+    "run_id": 37776576395,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37776576395",
+    "event": "workflow_dispatch",
+    "attempt": 1,
+    "workflow_head_sha": "24ee7e35bc790f1ca208fb103c72efac44827b25",
+    "requested_inputs": {
+      "acceptance_lane": "B",
+      "acceptance_case": "guest-scrape-development",
+      "development_run_id": 37754055905,
+      "development_artifact_id": 11539827040,
+      "scrape_reload_open_diagnostic": true,
+      "scrape_width_mode": "normal",
+      "scrape_normal_width_px": 600,
+      "runner_label": "macos-15-intel"
+    },
+    "run_api_input_visibility": "GitHub run/job API does not return workflow_dispatch inputs or computed concurrency group. The dispatch command supplied lane B; workflow admission passed; source maps lane B to hosted-guest-side-panel-B.",
+    "runner": "GitHub Actions 1000098332 (macos-15-intel)",
+    "started_at": "2026-10-08T12:24:07Z",
+    "completed_at": "2026-10-08T12:32:45Z",
+    "conclusion": "failure"
+  },
+  "build": {
+    "channel": "development",
+    "version": "0.2.407",
+    "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "ci_run_id": 37754055905,
+    "artifact_id": 11539827040,
+    "artifact_available_before_dispatch": true,
+    "artifact_tree_sha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+    "receipt_identity_match": true,
+    "focused_source_gate": {
+      "run_id": 37775614145,
+      "source_sha": "8c4db8238f819e256f0c2af676bacedc627aa418",
+      "conclusion": "success"
+    },
+    "full_ci": {
+      "run_id": 37775614148,
+      "source_sha": "8c4db8238f819e256f0c2af676bacedc627aa418",
+      "conclusion": "cancelled"
+    }
+  },
+  "resource_admission": {
+    "package": {
+      "journal": "scrape-optin-diagnostic-native-20261008-evidence/run37776576395/hosted-package-37776576395-1.jsonl",
+      "decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    "browser": {
+      "journal": "scrape-optin-diagnostic-native-20261008-evidence/run37776576395/hosted-browser-37776576395-1.jsonl",
+      "decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    "acceptance": {
+      "journal": "scrape-optin-diagnostic-native-20261008-evidence/run37776576395/hosted-guest-37776576395-1.jsonl",
+      "decision": "child_failed",
+      "resource_invalid": false,
+      "exit_code": 1
+    },
+    "interpretation": "The guest resource guard admitted the case and remained healthy. Exit 1 is the intentional unverified/nonzero outcome for an opted-in diagnostic, not a resource-invalid result."
+  },
+  "diagnostic_result": {
+    "evidence_class": "diagnostic_only",
+    "receipt_status": "unverified",
+    "native_stage": "exercise_panel",
+    "failed_later_stage": "post_reload_empty_media_capture",
+    "failure_code": "scrape_post_reload_referrals_captured_not_observed",
+    "failure_observation": {
+      "ready": true,
+      "fixture_title_matches": true,
+      "article_selected": false,
+      "visible": false,
+      "fixture_text_present": false
+    },
+    "reload_milestones": [
+      "reload_extension",
+      "open_scrape_in_replacement_panel",
+      "observe_replacement_scrape",
+      "replacement_scrape_observed"
+    ],
+    "reload_lifecycle": {
+      "management_reload_clicked": true,
+      "old_targets_retired": true,
+      "old_worker_destroyed_and_absent": true,
+      "old_panel_absent": true,
+      "replacement_worker_created_and_present": true,
+      "replacement_worker_activated": true,
+      "replacement_panel_created_event": false,
+      "replacement_panel_target_present_and_attached": true,
+      "final_target_predicate": true,
+      "fixture_click_received": true,
+      "send_invoked": true,
+      "send_returned": true,
+      "callback_entered": true,
+      "callback_reply_present": true,
+      "callback_last_error": false,
+      "send_threw": false,
+      "worker_message_ingress_observed": true,
+      "side_panel_open_invoked": true,
+      "side_panel_open_settlement": "resolved",
+      "send_response": "unobservable_without_instrumented_build",
+      "diagnostic_perturbation": "cdp_worker_attach_and_synchronous_open_wrapper"
+    },
+    "viewport_px": { "warm": 600, "reload": 600 },
+    "terminal_behavior": "The hosted wrapper observed child exit 1 and the native receipt remained unverified. No retry was made."
+  },
+  "evidence": {
+    "receipt": "scrape-optin-diagnostic-native-20261008-evidence/run37776576395/scrape-guest-native-receipt.json",
+    "resource_journals": [
+      "scrape-optin-diagnostic-native-20261008-evidence/run37776576395/hosted-package-37776576395-1.jsonl",
+      "scrape-optin-diagnostic-native-20261008-evidence/run37776576395/hosted-browser-37776576395-1.jsonl",
+      "scrape-optin-diagnostic-native-20261008-evidence/run37776576395/hosted-guest-37776576395-1.jsonl"
+    ],
+    "hosted_artifact_id": 11550720904,
+    "hosted_artifact_name": "hosted-guest-37776576395-1"
+  },
+  "limitations": [
+    "CDP attachment and the synchronous sidePanel.open wrapper can perturb service-worker lifetime and gesture timing.",
+    "sendResponse is not observable in the frozen extension; the callback reply and open milestones narrow but do not close that gap.",
+    "replacement_panel_created_event remained false even though the final replacement panel target was present and attached.",
+    "The later post-reload capture was ready and matched the fixture title but was not visibly selected; no acceptance pass is claimed.",
+    "The diagnostic source gate passed; full CI for that source commit was cancelled."
+  ],
+  "next_action": "No retry of this instrumented case. Parent coordinator should retain EXT-D-0175 as unverified and decide whether a new, separately reviewed diagnostic is warranted for the observed panel-target event gap and post-reload visibility failure."
+}
