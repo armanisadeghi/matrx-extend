@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "artifact_type": "audience_control_mapping_peer_review",
+  "reviewed_artifact": ".research/remaining-control-link-check-20261008.json",
+  "reviewed_inventory": "docs/stabilization/inventory.json",
+  "source_commit": "d5e41134937bdfe31bcadd856322221377f3675a",
+  "scope": "Independent source and inventory review of five guest audience cases. Proposal only; no canonical inventory, runtime behavior, or execution credit changed.",
+  "A_source_and_traceability": {
+    "shared_boundary": {
+      "finding": "Vault and Tools already have signed-in audiences. App uses the same predicate for navigation triggers, content mounting, stale selected-tab recovery, and lazy preload. Tools Smart tests and Recorder exist only under ToolsView; PasswordGenerator exists only under VaultView in the current side panel.",
+      "anchors": [
+        "src/config/sidepanel-visibility.ts:16-52",
+        "src/entrypoints/sidepanel/App.tsx:149-161",
+        "src/entrypoints/sidepanel/App.tsx:229-234",
+        "src/entrypoints/sidepanel/App.tsx:275-277",
+        "src/entrypoints/sidepanel/App.tsx:486-495",
+        "src/entrypoints/sidepanel/App.tsx:676-689",
+        "src/features/tools/ToolsView.tsx:87-102",
+        "src/features/vault/VaultView.tsx:248"
+      ],
+      "boundary_note": "This is an existing side-panel render boundary, not a proposed new gate or a claim that all underlying tools and routes deny guests.",
+      "alternate_selection": "src/entrypoints/sidepanel/App.tsx:532-540 can select Vault from an assistance button; setTab itself has no authorization logic (src/state/sidepanel-tab.ts:37-40), but the App content condition still prevents VaultView mounting for a guest. The stale-tab effect returns to a public tab. No current URL deep-link parser or persisted tab state was found in that store, so the two 'saved deep link' case steps should be exercised as stale/programmatic selection only if a test can actually create it."
+    },
+    "cases": [
+      {
+        "case_id": "EXT-F-2011-T05",
+        "actual_current_control_ids": [],
+        "case_criteria": "Guest cannot open Vault; signed-in tab/content absent or denied with an honest sign-in path.",
+        "anchors": ["docs/stabilization/inventory.json:30817", "src/config/sidepanel-visibility.ts:34-52", "src/entrypoints/sidepanel/App.tsx:486-489", "src/entrypoints/sidepanel/App.tsx:676-681", "src/features/vault/VaultView.tsx:176-184", "src/features/vault/VaultView.tsx:368-389"],
+        "traceability_verdict": "accept_dedicated_existing_boundary_control"
+      },
+      {
+        "case_id": "EXT-F-2012-T03",
+        "actual_current_control_ids": [],
+        "case_criteria": "Guest cannot open Tools; signed-in tab/content absent or denied with an honest sign-in path.",
+        "anchors": ["docs/stabilization/inventory.json:31439", "src/config/sidepanel-visibility.ts:35-52", "src/entrypoints/sidepanel/App.tsx:491-495", "src/entrypoints/sidepanel/App.tsx:683-688", "src/features/settings/SettingsView.tsx:768-769"],
+        "traceability_verdict": "accept_dedicated_existing_boundary_control"
+      },
+      {
+        "case_id": "EXT-F-2015-T05",
+        "actual_current_control_ids": [],
+        "case_criteria": "Guest cannot reach Tools Smart tests or its Run control through visible navigation.",
+        "anchors": ["docs/stabilization/inventory.json:34491", "src/config/sidepanel-visibility.ts:35-52", "src/entrypoints/sidepanel/App.tsx:683-688", "src/features/tools/ToolsView.tsx:87-98"],
+        "traceability_verdict": "accept_dedicated_existing_parent_boundary_control"
+      },
+      {
+        "case_id": "EXT-F-2016-T04",
+        "actual_current_control_ids": [],
+        "case_criteria": "Guest cannot reach Tools Recorder, Record, or list management through visible navigation.",
+        "anchors": ["docs/stabilization/inventory.json:34803", "src/config/sidepanel-visibility.ts:35-52", "src/entrypoints/sidepanel/App.tsx:683-688", "src/features/tools/ToolsView.tsx:87-102"],
+        "traceability_verdict": "accept_dedicated_existing_parent_boundary_control"
+      },
+      {
+        "case_id": "EXT-F-2017-T04",
+        "actual_current_control_ids": [],
+        "case_criteria": "Guest cannot reach Vault password generator; signed-in Vault becomes reachable.",
+        "anchors": ["docs/stabilization/inventory.json:35179", "src/config/sidepanel-visibility.ts:34-52", "src/entrypoints/sidepanel/App.tsx:676-681", "src/features/vault/VaultView.tsx:176-184", "src/features/vault/VaultView.tsx:248"],
+        "traceability_verdict": "accept_dedicated_existing_parent_boundary_control",
+        "inventory_correction": "Feature 2017 entry_points says 'Tools tab → Vault password generator'; current source mounts PasswordGenerator in VaultView under the Vault tab. Correct this before or alongside mapping."
+      }
+    ]
+  },
+  "B_quality_and_proposal": {
+    "decision": "accept_five_new_inventory_controls_for_existing_guest_audience_boundary",
+    "implementation_constraint": "Document the current parent-tab visibility and content gate. Do not add a runtime audience gate, imply direct guest access to child components, or treat this source review as native guest verification.",
+    "proposals": [
+      {
+        "case_id": "EXT-F-2011-T05",
+        "new_control": {"id": "EXT-F-2011-C55", "label": "Guest cannot open Vault tab", "action": "In a signed-out side panel, verify Vault navigation and content are unavailable, including a stale/programmatic Vault selection; an available sign-in path remains. Confirm a signed-in user can open Vault.", "source_anchor": "src/config/sidepanel-visibility.ts:34; src/entrypoints/sidepanel/App.tsx:229-234,486-489,676-681", "modes": ["guest"]},
+        "expected_current_case_control_ids_after_mapping": ["EXT-F-2011-C55"],
+        "rejected_existing_control_ids": ["EXT-F-2011-C05"],
+        "rejection_reason": "C05 is the guest Sign in action inside VaultView; it does not establish whether App hides or blocks the Vault tab/content."
+      },
+      {
+        "case_id": "EXT-F-2012-T03",
+        "new_control": {"id": "EXT-F-2012-C37", "label": "Guest cannot open Tools tab", "action": "In a signed-out side panel, verify Tools navigation and content are unavailable, including a stale/programmatic Tools selection; an available sign-in path remains. Confirm a signed-in user can open Tools.", "source_anchor": "src/config/sidepanel-visibility.ts:35; src/entrypoints/sidepanel/App.tsx:229-234,491-495,683-688", "modes": ["guest"]},
+        "expected_current_case_control_ids_after_mapping": ["EXT-F-2012-C37"],
+        "rejected_existing_control_ids": ["EXT-F-2012-C12", "EXT-F-2012-C13", "EXT-F-2012-C14"],
+        "rejection_reason": "Catalog, Smart tests, and Recorder tab-open controls describe signed-in child navigation, not the guest Tools audience boundary."
+      },
+      {
+        "case_id": "EXT-F-2015-T05",
+        "new_control": {"id": "EXT-F-2015-C27", "label": "Guest cannot open Tools Smart tests", "action": "In a signed-out side panel, verify the Tools parent tab is unavailable, so Smart tests and its Run controls cannot be reached through visible navigation; an available sign-in path remains. Confirm signed-in navigation reaches Smart tests.", "source_anchor": "src/config/sidepanel-visibility.ts:35; src/entrypoints/sidepanel/App.tsx:491-495,683-688; src/features/tools/ToolsView.tsx:87-98", "modes": ["guest"]},
+        "expected_current_case_control_ids_after_mapping": ["EXT-F-2015-C27"],
+        "rejected_existing_control_ids": ["EXT-F-2015-C01", "EXT-F-2015-C05"],
+        "rejection_reason": "Expand and Run Summarize controls describe signed-in scenario interactions, not the guest parent-tab boundary."
+      },
+      {
+        "case_id": "EXT-F-2016-T04",
+        "new_control": {"id": "EXT-F-2016-C19", "label": "Guest cannot open Tools Recorder", "action": "In a signed-out side panel, verify the Tools parent tab is unavailable, so Recorder, Record, and list management cannot be reached through visible navigation; an available sign-in path remains. Confirm signed-in navigation reaches Recorder.", "source_anchor": "src/config/sidepanel-visibility.ts:35; src/entrypoints/sidepanel/App.tsx:491-495,683-688; src/features/tools/ToolsView.tsx:87-102", "modes": ["guest"]},
+        "expected_current_case_control_ids_after_mapping": ["EXT-F-2016-C19"],
+        "rejected_existing_control_ids": ["EXT-F-2016-C03", "EXT-F-2016-C05"],
+        "rejection_reason": "Start recording and dismiss-error controls describe signed-in Recorder actions, not guest exclusion."
+      },
+      {
+        "case_id": "EXT-F-2017-T04",
+        "new_control": {"id": "EXT-F-2017-C23", "label": "Guest cannot open Vault password generator", "action": "In a signed-out side panel, verify Vault is unavailable, so generator controls are unreachable; an available sign-in path remains. After sign-in, confirm Vault and its generator can be reached.", "source_anchor": "src/config/sidepanel-visibility.ts:34; src/entrypoints/sidepanel/App.tsx:486-489,676-681; src/features/vault/VaultView.tsx:248", "modes": ["guest"]},
+        "expected_current_case_control_ids_after_mapping": ["EXT-F-2017-C23"],
+        "rejected_existing_control_ids": ["EXT-F-2017-C01", "EXT-F-2017-C22"],
+        "rejection_reason": "Expand generator and Use generated value are signed-in interactions, not guest audience coverage."
+      }
+    ],
+    "limits": ["This is a current-source and inventory mapping review only; no native side-panel execution, artifact receipt, or coverage credit is claimed.", "The case wording 'saved deep link' in 2011-T05 and 2012-T03 is stronger than the current in-memory tab store supports; actual URL/persistence path should be established before claiming that test branch.", "Each child feature gets its own traceable inventory control even though the implementation is the same parent tab gate; this is inventory duplication, not a request for duplicate code."]
+  }
+}
