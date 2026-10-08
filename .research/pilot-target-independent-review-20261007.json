@@ -1,6 +1,6 @@
 {
   "task_id": "pilot-target-independent-review",
-  "status": "SOURCE_ALIGNMENT_PASS_FORCING_PROOF_PENDING",
+  "status": "SOURCE_REVIEW_PASS_NATIVE_PENDING",
   "commit_reviewed": "6bfe63d5a7d407dfe4bc2ae05e2023dcf619a6cb",
   "zero_authorship": true,
   "verdict_a": {
@@ -10,14 +10,21 @@
   },
   "verdict_b": {
     "source_quality": "pass",
-    "forcing_proof": "pending executed constant-gut and restored green evidence",
+    "forcing_proof": "pass: baseline actual hook fails both mandates while UUIDs pass; constant first mandate endpoint fails second mandate and both UUID targets; all resource journals terminal and admitted",
     "canonical_reuse": "Existing agentTargetExecutePath is reused without a second router.",
     "guard_boundary": "Real Pilot hook constructs transport envelope. Doubles replace external transport, context and permissions dependencies. Two mandate targets and two UUID targets have distinct externally stated endpoints.",
     "sibling_census": "Assistant/text/parallel starts already use the target router; extractor/data-pattern callers distinguish explicit mandate keys and concrete IDs. Pilot resumes and rejoins use conversation routes."
   },
   "owned_jobs": [],
   "limitations": [
-    "Source-only review; no live Pilot acceptance performed.",
-    "Builder constant-gut evidence not yet available at this checkpoint."
-  ]
+    "Source-only review; real Pilot HTTP start and tool effects remain unverified on a corrected artifact."
+  ],
+  "verification": {
+    "baseline_red": "pilot-target-baseline-red-20261007",
+    "focused_green": "pilot-target-green-20261007: 10 tests / 3 files",
+    "constant_gut": "pilot-target-constant-gut-20261007: 3 semantic failures / 4 cases",
+    "compile": "pilot-target-current-types-20261007: pass",
+    "restored_sha256": "51835ff8e74bc489a2b48295895cb2186d0b370aeb7c286de8f178ae9236557d",
+    "exact_commit_bytes_match": true
+  }
 }
