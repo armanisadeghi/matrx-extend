@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T12:30:43.349164+00:00",
+  "updated_at": "2026-10-08T12:35:51.331330+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -16279,6 +16279,20 @@
                 "https://github.com/armanisadeghi/matrx-extend/actions/runs/37767763301"
               ],
               "detail": "Frozen 0.2.407 guest 600px attempt: warm observations remain partial. The replacement worker activated, but the open-panel request received no reply, so extension reload/panel readiness remained unverified. The post-reload capture probe was not exercised. Resource journals were valid; no new pass or acceptance credit."
+            },
+            {
+              "mode": "guest",
+              "run_id": "37776576395",
+              "resource_valid": true,
+              "evidence": [
+                ".research/scrape-optin-diagnostic-native-20261008.json"
+              ],
+              "detail": "Opt-in diagnostic only: fixture click/send/callback/reply and worker ingress/open/resolved milestones persist; replacement panel finaltarget present although created-event false. Later post-reload capture ready/title match but article unselected/invisible/text absent. Instrumentation can perturb lifecycle; zero native product credit.",
+              "at": "2026-10-08T12:35:51.331330+00:00",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114"
             }
           ],
           "defect_ids": ["EXT-D-0175"]
@@ -23593,6 +23607,20 @@
                 ".research/parallel-native-boundary-peer-20261008.json"
               ],
               "detail": "Admin and approved rendered organization passed; observer initialized and Tools navigation completed. Records pointer failed pointer_target_not_unique before any product request; zero versus multiple targets unknown. Resource-valid failure; cleanup succeeded, temporary secret names absent. Source diagnostic f1e5052c now preserves counts; independent5aea98c7 accepted source diagnostic. No product defect or acceptance inferred."
+            },
+            {
+              "mode": "admin",
+              "run_id": "37776597696",
+              "resource_valid": true,
+              "evidence": [
+                ".research/t57-records-counts-native-20261008.json"
+              ],
+              "detail": "Tools panel active, Records matched0/visible0; no product GET/header/principal/response proof. Actual new failure boundary supports missing-row diagnosis; no product defect or acceptance inferred. Both temporary secret names absent after terminal.",
+              "at": "2026-10-08T12:35:51.331330+00:00",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114"
             }
           ]
         },

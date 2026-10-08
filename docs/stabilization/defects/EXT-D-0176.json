@@ -7,7 +7,7 @@
   "title": "Opt-in diagnostic can retain passing acceptance status",
   "severity": "S2: test infrastructure could misclassify instrumented evidence; no product defect",
   "priority": "P1",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "root/seo_diagnostic_classification_fix",
   "preconditions": [
     "Source5c0c03d1 opt-in SEO CPU diagnostic classifier before independent finding af91b965."
@@ -18,7 +18,11 @@
   ],
   "expected": "Every opt-in instrumented outcome is excluded from native acceptance, including pass; default non-diagnostic outcomes retain their own semantics.",
   "actual": "Only partial status is changed to diagnostic_only. A pass remains pass and can be accepted by the evidence summarizer even with empty targets.",
-  "evidence": [".research/seo-resource-diagnostic-peer-20261008.json"],
+  "evidence": [
+    ".research/seo-resource-diagnostic-peer-20261008.json",
+    ".research/seo-diagnostic-classification-fix-20261008.json",
+    ".research/seo-classifier-final-peer-20261008.json"
+  ],
   "root_cause": "Classifier switches only one successful status rather than enforcing the diagnostic evidence class independently of outcome.",
   "transition_history": [
     {
@@ -38,7 +42,14 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Fresh implementation lane owns classification and causal guard repair."
+    },
+    {
+      "at": "2026-10-08T12:35:51.331330+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Fresh independent peer reproduced prior pass defect and verified actual classifier-to-summary guard22/22. Native diagnostic delivery pending."
     }
   ],
-  "closure_requirement": "Actual classifier/writer and consumer exclude all diagnostic outcomes, with causal old-red/new-green guard and fresh independent review. Native SEO health stays unverified."
+  "closure_requirement": "Actual classifier/writer and consumer exclude all diagnostic outcomes, with causal old-red/new-green guard and fresh independent review. Native SEO health stays unverified.",
+  "fix_commits": ["744b92e9"]
 }
