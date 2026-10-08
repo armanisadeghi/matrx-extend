@@ -1,0 +1,41 @@
+{
+  "scope": "Independent hosted-CI acceptance adjudication for EXT-D-0182's repaired resource CPU integration group.",
+  "source_conformance": {
+    "run_id": "37793728272",
+    "job_id": "113367775171",
+    "job": "resource-guard-integration",
+    "head": "d714f254b915ad03a9ab80a82cf462a5a9dcf2cd",
+    "job_conclusion": "success",
+    "ancestry_contains": ["8f908184", "e6d83e7d", "54607f44"],
+    "evidence": "Run checkout is the recorded head; its history contains the seven-scenario split, independent literal-name oracle, and privacy diagnostic redaction."
+  },
+  "hosted_evidence_quality": {
+    "cpu_step": "CPU confirmation and native action boundary",
+    "required_scenarios": [
+      {"name": "recovered", "duration_ms": 4172, "final_event": "RESOURCE_FINAL_DECISION", "child_closed": true, "cleanup": "done", "test": "passed"},
+      {"name": "confirmed", "duration_ms": 2776, "final_event": "RESOURCE_FINAL_DECISION", "child_closed": true, "cleanup": "done", "test": "passed"},
+      {"name": "pending-exit", "duration_ms": 2779, "final_event": "RESOURCE_FINAL_DECISION", "child_closed": true, "cleanup": "done", "test": "passed"},
+      {"name": "completion-recovered", "duration_ms": 3777, "final_event": "RESOURCE_FINAL_DECISION", "child_closed": true, "cleanup": "done", "test": "passed"},
+      {"name": "completion-unsafe", "duration_ms": 4315, "final_event": "RESOURCE_FINAL_DECISION", "child_closed": true, "cleanup": "done", "test": "passed"},
+      {"name": "completion-expired", "duration_ms": 6802, "final_event": "RESOURCE_FINAL_DECISION", "child_closed": true, "cleanup": "done", "test": "passed"},
+      {"name": "completion-memory-unsafe", "duration_ms": 3779, "final_event": "RESOURCE_FINAL_DECISION", "child_closed": true, "cleanup": "done", "test": "passed"}
+    ],
+    "remaining_cpu_groups": [
+      {"name": "pending-failed-child", "duration_ms": 2668, "final_event": "RESOURCE_FINAL_DECISION", "child_closed": true, "cleanup": "done"},
+      {"name": "pending-child-error", "duration_ms": 2647, "final_event": "RESOURCE_FINAL_DECISION", "child_closed": true, "cleanup": "done"},
+      {"name": "completion-stop", "duration_ms": 3733, "final_event": "RESOURCE_FINAL_DECISION", "child_closed": true, "cleanup": "done"},
+      {"name": "startup-owner-rewrite boundary group", "scenario_durations_ms": [4162, 2743, 2749], "child_closed": true, "cleanup": "done", "test": "passed"}
+    ],
+    "cpu_test_totals": {"tests": 9, "passed": 9, "failed": 0, "skipped": 0, "duration_ms": 47177.511083},
+    "neighboring_job_steps": {
+      "Safety marker failure retains guard ownership": "success",
+      "Disk admission and watchdog guard decisions": "success",
+      "Bounded hosted acceptance lanes": "success"
+    },
+    "assessment": "All seven required named tests and both neighboring CPU groups ran and passed. End diagnostics show RESOURCE_FINAL_DECISION, child closure, and completed scratch cleanup for each scenario. No skip concealed a required case.",
+    "sanitized_excerpt": "CPU TAP summary: # tests 9; # pass 9; # fail 0; # skipped 0. Each required scenario emitted a named passing subtest and end record with cleanup=done."
+  },
+  "limits": "This establishes source conformance and successful hosted integration evidence for the target job only. It is not a product pass or a claim that the full trunk is green; other run jobs and release state are outside this adjudication.",
+  "source_reviews": [".research/ci-scenario-budget-repair-20261008.json", ".research/seo-receipt-oracle-peer-20261008.json"],
+  "hosted_job_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37793728272/job/113367775171"
+}
