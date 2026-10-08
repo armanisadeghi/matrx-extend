@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "run": { "id": 37858968256, "head_sha": "12674035f0fce890a9dfd89e8752d462670ba297", "status": "completed", "conclusion": "failure", "case": "records-readonly-admin", "runner": "macos-15", "focused_gate": 37858770071 },
+  "frozen_product": { "ci_run_id": 37790643945, "artifact_id": 11556064167, "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692", "version": "0.2.414" },
+  "hosted_artifact": { "id": 11585881112, "digest": "sha256:c7359bb39a19abe5a98f7019814729d908231dafe4397a7e04ad587533caff13", "receipt_sha256": "18665d48306c1679b931bb851f461b8049fce73c94770b0f63956714ef08a4c2", "fixture_journal_sha256": "d44dd6a9460c385231906cebda186e0deef54f69fcbce9b8fb9df104c99f495e" },
+  "resource": "Current package and browser journals ended valid. Current guest journal ended admitted=true, resourceInvalid=false, exitCode=1, decision=child_failed; native case was attempted.",
+  "positive_read_evidence": "C02/C03/C04/C05/C08 each finished HTTP 200 with visible exact owned result; C03 excluded row text and C08 verified original version, author, time and change.",
+  "negative_evidence": "C03/C04/C05/C08 and malformed C07/C09 each returned visible invalid_arguments refusals. No positive mutation was recorded.",
+  "first_failure": { "receipt_status": "unverified", "failure_code": "records_fixture_cleanup_failed", "body_phase": "records_fixture_positive_reads", "body_class": "records_fixture_unexpected_error", "native_stage": "admin_rendered_identity", "boundary": "After C08 positive read and before C06 lifecycle journal creation; underlying exception is not retained in the safe receipt." },
+  "approval": "No C06 approval journal or positive mutation receipt was uploaded; the lifecycle journals before dispatch, so this artifact provides no evidence of a C06 write or decision. C06 acceptance remains unverified.",
+  "cleanup": { "fixture_journal_phase": "archived_verified", "pending_write_unknown": false, "approval_journal_present": false, "temporary_secret_names_deleted_and_verified_absent": true, "private_staging_files_removed": true },
+  "backend_post_run_sample": { "git_sha": "b4400cb74030856c53c9373074a77e7231c832db", "built_at": "2026-10-08T23:04:53Z", "sha256": "7ae55e6d84492e80cee2ca717facd0a17fdcd2a10ec4f4a00ae3151754e67ba2", "limit": "Sampled after the run; this does not prove the backend SHA stayed constant during the case." },
+  "next_action": "Diagnose the pre-journal C06 setup failure from source and a bounded safe diagnostic before authorizing another native attempt; do not infer C06 product behavior from this run.",
+  "raw_evidence": ".research/records-c06-native-20261008/raw contains byte-exact hosted receipt, fixture and resource journals, screenshots, GitHub metadata, and backend sample."
+}
