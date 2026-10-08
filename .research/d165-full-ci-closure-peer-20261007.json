@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-07",
+  "defect": "EXT-D-0165",
+  "scope": "Independent final CI blocker and artifact identity check; no source edits, local build, browser import, or native browser use.",
+  "source": {
+    "reviewed_commits": ["012955b8", "10c8a243"],
+    "ci_head": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+    "ci_head_contains_both_fixes": true,
+    "source_diff_since_ci_parent": [".research/panel-fixture-census-final-peer-20261007.json"],
+    "fixture_fix_scope": [
+      "tests/browser/native-sidepanel-qa-harness.test.mjs",
+      "tests/browser/panel-visibility-diagnostic.test.mjs",
+      "tests/browser/panel-visible-reopen-repair.test.mjs",
+      "tests/browser/panel-transition-recorder.test.mjs"
+    ],
+    "production_behavior_changed": false
+  },
+  "verdict_a": {
+    "status": "PASS",
+    "run_id": 37724859892,
+    "workflow": "CI",
+    "event": "push",
+    "branch": "main",
+    "head_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+    "conclusion": "success",
+    "checks_job": "success",
+    "resource_guard_integration_job": "success",
+    "evidence": "GitHub run details show all blocking checks and jobs successful. Unit suite reports 2177 passed, 6 skipped. The Guest transport observer regression includes the repaired native-sidepanel harness and panel-transition recorder; the overall step succeeded. The keyed development build, provenance recording, and artifact upload steps succeeded.",
+    "limit": "CI closes the fixture regression. It does not establish native browser behavior or whole-product health."
+  },
+  "verdict_b": {
+    "status": "PASS",
+    "artifact_id": 11527132614,
+    "artifact_name": "matrx-extend-development-test-cedcec02a3fb4e52a3f63ebfda8728809eff418a-37724859892-1",
+    "artifact_expired": false,
+    "artifact_digest": "sha256:5a9092de49bc5fa47a0ca907e86104519397d9977c3344a482173fc61f2e004f",
+    "downloaded_zip_sha256": "5a9092de49bc5fa47a0ca907e86104519397d9977c3344a482173fc61f2e004f",
+    "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+    "run_id": 37724859892,
+    "version": "0.2.397",
+    "receipt_tree_sha256": "1035cd28ce5a63ac6233626f35102f016f7c7e7e0ef0717d259a3ec40fc856ed",
+    "computed_tree_sha256": "1035cd28ce5a63ac6233626f35102f016f7c7e7e0ef0717d259a3ec40fc856ed",
+    "manifest_version_matches_receipt": true,
+    "provenance_kind": "ci_development_test",
+    "eligible_store": false,
+    "publish_state": "not_published",
+    "store_claim": false
+  }
+}

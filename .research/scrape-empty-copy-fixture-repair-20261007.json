@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "scrape-empty-copy-fixture-repair-20261007",
+  "defect": "EXT-D-0164",
+  "cause": {
+    "native_receipt": ".research/scrape-action-receipt-native-20261007.json",
+    "observed": "Resource-valid original 0.2.391 run 37724762467 completed all 22 intake copy options and seven referrals options (Copy capture four, Copy article three). It then failed opening Copy images Markdown. The active Scrape panel had a visible capture and one Copy capture control; Copy images had zero title, data-title, or aria-label matches.",
+    "fixture": "The owned referrals page and COPY_FIXTURES.referrals have no images, videos, or links.",
+    "product_contract": "ScrapeView.tsx renders each Images, Video, and Links copy toolbar only when its section has at least one item. The empty tabs retain Add controls.",
+    "ruling": "The batch requested a control the controlled empty fixture intentionally cannot render. The observed failure is a batch expectation error, not evidence of a product copy defect."
+  },
+  "repair": {
+    "scope": "tests/browser/scrape-guest-behavior-batch.mjs and focused guards; no product code changed",
+    "empty_sections": "The batch selects each fixture-declared empty section and requires the active current capture, matching title, visible selected pane, no tab count, no rendered anchor/image item, no section copy control, and its Add control before recording an explicit empty-section entry.",
+    "populated_sections": "All offered menu options retain their sentinel, exact menu order, clipboard readback, format, page freshness, and permission restoration checks. Missing copy control on populated intake remains a failure in the native receipt guard.",
+    "referrals_expected": "13 offered copy options (capture four, article three, SEO three, schema three) and three empty-section checks. Intake remains 22 offered copy options."
+  },
+  "verification": {
+    "local_focused_acceptance": "pnpm test:focused-acceptance: 53 passed, 0 failed",
+    "guard_cases": "Each empty section succeeds only with current capture and no stale item, tab count, or copy toolbar; each mutation fails. Copy images missing control for populated intake still fails and retains the failed action and completed progress.",
+    "native": "Not run in this lane; root owns source review and native proof."
+  },
+  "limitations": [
+    "The 0.2.391 native receipt establishes the failed action and DOM context, while source establishes the intentional empty-section UI. Fresh native navigation and reload proof remains for root.",
+    "The DOM observer records bounded booleans and counts; it does not serialize page content or clipboard values."
+  ]
+}

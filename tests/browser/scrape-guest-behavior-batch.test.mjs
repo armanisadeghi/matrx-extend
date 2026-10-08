@@ -6,6 +6,7 @@ import {
   GUEST_COPY_MENUS,
   copyOracle,
   copyResultMatches,
+  emptySectionMatches,
   menuMatches,
   retainCopyTargetContext,
   runGuestCopyMenus,
@@ -63,6 +64,68 @@ test('copy verdict rejects unchanged clipboard and wrong selected representation
   assert.equal(menuMatches(labels, labels), true);
   assert.equal(menuMatches(labels.slice(1), labels), false);
   assert.equal(menuMatches([...labels, 'Full capture (JSON)'], labels), false);
+});
+
+test('empty referrals section verifies current capture and no stale items or copy toolbar', async () => {
+  const fixture = COPY_FIXTURES.referrals;
+  for (const [title, tab, addLabel] of [
+    ['Copy images', 'Images', 'Add image URL'],
+    ['Copy videos', 'Video', 'Add video URL'],
+    ['Copy links', 'Links', 'Add link'],
+  ])
+    for (const mutation of [
+      'clean',
+      'stale-item',
+      'unexpected-copy',
+      'stale-count',
+      'old-capture',
+    ]) {
+      const window = new Window();
+      window.document.body.innerHTML = `<button role="tab" title="Scrape" data-state="active" aria-controls="scrape-pane">Scrape</button>
+      <section id="scrape-pane" role="tabpanel" data-state="active">
+        <div>${fixture.title}</div>
+        ${mutation === 'old-capture' ? '' : '<button title="Copy capture">Copy</button>'}
+        <div role="tablist"><button role="tab" aria-selected="true" aria-controls="empty-pane">${tab}${mutation === 'stale-count' ? '<span>1</span>' : ''}</button></div>
+        <section id="empty-pane" data-state="active">
+          ${mutation === 'unexpected-copy' ? `<button title="${title}">Copy</button>` : ''}
+          ${mutation === 'stale-item' ? '<a href="/intake.svg">Old image</a>' : ''}
+          <button>${addLabel}</button>
+        </section>
+      </section>`;
+      window.document.getElementById('empty-pane').getBoundingClientRect = () => ({ height: 40 });
+      let selectedTabs = 0;
+      const exercise = runGuestCopyMenus({
+        panel: {},
+        browserSession: {},
+        panelUrl: 'chrome-extension://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/panel.html',
+        origin: 'http://127.0.0.1:65000',
+        fixtureKey: 'referrals',
+        resourceAction: (action) => action(),
+        menus: [[title, tab, ['Markdown', 'URLs (one per line)', 'For AI agent']]],
+        adapters: {
+          click: async (_panel, kind) => {
+            assert.equal(kind, 'scrape-result-tab');
+            selectedTabs++;
+          },
+          evaluate: async (_panel, expression) => window.eval(expression),
+        },
+      });
+      if (mutation === 'clean') {
+        assert.deepEqual(await exercise, [{ title, state: 'empty', sectionCorrect: true }]);
+      } else {
+        await assert.rejects(exercise, (error) => {
+          assert.equal(error.message, `scrape_copy_empty_section_mismatch:${title}`);
+          assert.deepEqual(error.copyBatchFailure.action, {
+            stage: 'observe_empty_section',
+            title,
+            tab,
+          });
+          return true;
+        });
+      }
+      assert.equal(selectedTabs, 1);
+    }
+  assert.equal(emptySectionMatches({}), false);
 });
 
 test('Copy capture failure observes real DOM states and forwards only bounded receipt data', async () => {

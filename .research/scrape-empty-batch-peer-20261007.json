@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "scrape-empty-batch-peer-20261007",
+  "scope": "Independent source review of EXT-D-0164 fixture repair at 2125df6a67ddf39acb3a538ff4b169427bf4bd78; no product edits, build, or native browser run.",
+  "verdict_a": {
+    "status": "SOURCE_READY_NATIVE_PENDING",
+    "reason": "The original resource-valid 0.2.391 receipt completed seven referrals copies before requesting absent Copy images. The referrals fixture has no images, videos, or links, and ScrapeView renders those copy toolbars only for nonempty sections. The repair observes all three empty panes under the active current capture, then keeps the 13 offered referrals copies, 22 intake copies, and existing navigation and reload flow. Fresh native execution is still needed for final user-visible acceptance.",
+    "source_evidence": [
+      "tests/browser/scrape-guest-behavior-batch.mjs:27-39,269-322,366-440",
+      "src/features/scrape/ScrapeView.tsx:98-102,326,439-447,531-670",
+      "tests/browser/scrape-guest-native-acceptance.mjs:80-90,1495-1555",
+      ".research/scrape-action-receipt-native-20261007.json"
+    ]
+  },
+  "verdict_b": {
+    "status": "PASS",
+    "reason": "The fixture-declared empty path requires a visible selected pane, current capture control and title, absent previous-page banner, tab count, items and copy control, plus the correct Add control. Each empty section has negative mutations for stale items, unexpected copy, stale count and old capture. Populated intake never enters the empty branch; the Copy images missing-control receipt guard still fails with completed progress retained. No product code changed in the repair.",
+    "verification": "pnpm test:focused-acceptance locally: 53 passed, 0 failed; exact-head CI run 37725833684 at 2125df6a: success, 53 passed, 0 failed."
+  },
+  "frozen_target": {
+    "recommendation": "Use the independently provenance-verified 0.2.397 development-test artifact 11527132614 from CI 37724859892 for the next native acceptance. Preserve the 0.2.391 run 37724762467 and its receipt as the original driver failure reproduction.",
+    "compatibility": "ScrapeView.tsx is byte-identical at product source 52487361 (0.2.391) and cedcec02 (0.2.397), and no Scrape production path changed between those commits. The newer lockfile advances @ai-matrx/design-system 0.78.1 to 0.80.5, which supplies the Tabs primitives used here; native execution on 0.2.397 must confirm the rendered contract.",
+    "provenance": ".research/d165-full-ci-closure-peer-20261007.json"
+  },
+  "limits": [
+    "This was a source and guard review, not fresh native proof of the repaired batch or 0.2.397 rendering.",
+    "The original native run stopped before referrals SEO/schema and reload; those outcomes remain to be observed in the next native run."
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "task_id": "native-driver-repair",
+  "lane": "implementer",
+  "status": "source-ready-native-pending",
+  "defect_ids": ["EXT-D-0145", "EXT-D-0146"],
+  "owned_files": [
+    "tests/browser/screenshot-full-page-acceptance.mjs",
+    ".stabilization-scratch/native-driver-repair.json"
+  ],
+  "source_verdict": "syntax, Biome, imported artifact verification and three explicit selection mismatch probes pass",
+  "native_verdict": "unverified; browser execution reserved for parent under resource lease",
+  "artifact": {
+    "sourceSha": "61a9b1cae81c1a748233600156162f5ec3774caf",
+    "runId": 37694579646,
+    "artifactId": 11515715192,
+    "treeSha256": "872178b117305b9d60ac9f27f871a5f401e0a57f70c525c16cf359e046a6d110",
+    "eligibleStore": false
+  },
+  "environment": {
+    "SCREENSHOT_CAPTURE_EXTENSION_DIR": "test-results/ci-artifacts/61a9b1cae81c1a748233600156162f5ec3774caf/37694579646-1/chrome-mv3",
+    "SCREENSHOT_CAPTURE_DEV_BUILD_RECEIPT": "test-results/ci-artifacts/61a9b1cae81c1a748233600156162f5ec3774caf/37694579646-1/local-dev-receipt.json",
+    "SCREENSHOT_CAPTURE_SOURCE_SHA": "61a9b1cae81c1a748233600156162f5ec3774caf",
+    "SCREENSHOT_CAPTURE_RUN_ID": "37694579646",
+    "SCREENSHOT_CAPTURE_ARTIFACT_ID": "11515715192"
+  },
+  "acceptance": [
+    "nested then root captures, persisted real row, top/middle/bottom pixels and scroll restoration",
+    "same downloaded blob image in local viewer; no second files/assets GET",
+    "panel reload repeats persistence/pixels/local viewer",
+    "canonical media share body, real owner grant, exact org header, anonymous public image bytes equal gallery image, real revoke then inactive grant list",
+    "lost create response triggers real list recovery; unresolved grant preserves private recovery even after screenshot deletion"
+  ],
+  "limitations": [
+    "No heavy test, native browser, manual build, release, auth injection or mocked service proof executed by this lane.",
+    "Unsupported pages, persistence failure and tile cap remain separately unverified; targeted success does not claim full feature closure.",
+    "Independent native/code review owned by parent."
+  ],
+  "owned_processes": [],
+  "next_action": "Independent review then parent admitted node tests/browser/screenshot-full-page-acceptance.mjs on exact selected artifact"
+}

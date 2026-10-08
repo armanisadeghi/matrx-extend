@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "role": "independent evidence verifier",
+  "reviewed_curator_commits": [
+    "e18ff6eaa762542d756473f7c29e122f4f7240b3",
+    "e4afb4f9"
+  ],
+  "source": {
+    "workflow_run_id": 37724762467,
+    "workflow_artifact_id": 11527457146,
+    "workflow_artifact_name": "hosted-guest-37724762467-1",
+    "workflow_checkout_sha": "10c8a2433167a369420689c971056ee188bd3910",
+    "driver_source_commit": "503eec1f3443e897a20ae69c81b6aa0f1e81a308",
+    "driver_commit_is_ancestor_of_workflow_checkout": true,
+    "product_development_artifact_id": 11516342905,
+    "product_source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "product_version": "0.2.391",
+    "raw_receipt_sha256": "a1ade2430349888aac0dcff0aa17a62dff5b34687dd336e0d5f7932fc5df224e",
+    "originals_directory": ".research/scrape-action-receipt-native-20261007-run37724762467-originals",
+    "originals_provenance": ".research/scrape-action-receipt-native-20261007-run37724762467-originals/provenance.json"
+  },
+  "verdict_A_behavior_evidence": {
+    "status": "PARTIAL",
+    "finding": "The fresh native receipt identifies the referrals failure at open_menu / Copy images / Markdown after seven completed referrals options. T07 warm scroll and all 22 intake copy options passed. The referrals image target had zero title, data-title, and aria-label matches while the Scrape panel and capture content remained visible. The workflow failed before T07 or T09 reload; neither reload predicate is verified.",
+    "scope_limit": "This is one guarded run of the frozen development product. The evidence does not establish a product bug or source-level cause; the fixture may intentionally have no images. No earlier run is credited for this run's completed behavior."
+  },
+  "verdict_B_provenance_resources_privacy": {
+    "status": "PASS",
+    "finding": "The uploaded artifact was recursively inspected. It includes the raw receipt, four screenshots, and three current-run resource journals under nested paths. The curated record's initial claim that journals were absent was incorrect and was corrected in commit e4afb4f9. Preserved originals match the uploaded bytes. Package and browser journals ended valid; the guest journal was admitted and ended child_failed with exit code 1, rather than resource_invalid.",
+    "current_journal_sha256": {
+      "hosted-package-37724762467-1.jsonl": "3410f7e6f9442f56e34a9bd6f9c381de721bff440e31487f370e0d094733e3a0",
+      "hosted-browser-37724762467-1.jsonl": "70dd9b6fb4de6e5f119e939acd296782dfb56cf5cdd091c056f09d73c18a0344",
+      "hosted-guest-37724762467-1.jsonl": "c36252c0fe502603e65d7fb7a4435642035ebacadc52757c1930fffe04e33d3a"
+    },
+    "privacy_check": "The curated report carries booleans, counts, option names, and local fixture observations; it omits clipboard text, credential values, and raw errors. The preserved screenshots show the controlled guest fixture. A keyword scan of the preserved JSON and journals found no credential values."
+  },
+  "verification": [
+    "GitHub Actions run 37724762467 completed failure at checkout 10c8a243; commit 503eec1f is an ancestor.",
+    "Downloaded uploaded artifact 11527457146 and listed every nested file before comparing SHA-256 values.",
+    "Read raw receipt copy_batch_failure, copy_target_context, T07/T09 warm evidence, and empty reload_milestones.",
+    "Compared the three original journal hashes with the curated originals and inspected journal final decisions."
+  ]
+}

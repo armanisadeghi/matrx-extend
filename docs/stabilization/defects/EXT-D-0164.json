@@ -4,11 +4,11 @@
   "case_ids": ["EXT-F-1007-T09"],
   "surface": "Scrape / copy after page navigation",
   "auth_mode": "guest",
-  "title": "Native Scrape navigation copy batch fails without retaining failed action or progress",
-  "severity": "S2: navigation copy procedure cannot continue; product versus driver cause unverified",
+  "title": "Scrape copy acceptance incorrectly requires copy controls for empty fixture sections",
+  "severity": "S2: faulty acceptance expectation interrupts navigation and reload coverage; product defect not established",
   "priority": "P1",
-  "state": "open",
-  "owner": "root/scrape_d164_escalated_diagnosis",
+  "state": "fixed",
+  "owner": "root/scrape397_final_native",
   "preconditions": [
     "Frozen development0.2.391 CI37698216289/artifact11516342905/source52487361; repaired driver fa05a939; isolated guest narrow360px ARM Chrome141.0.7390.37 with all current resource journals valid."
   ],
@@ -22,7 +22,13 @@
   "actual": "Zero-target pointer failure within referrals copy batch. Warm22 intake options pass; referrals completed count and exact failed action unknown because partial progress is saved only after whole batch success. Reload not reached.",
   "evidence": [
     ".research/scrape-scroll-native-retest-20261007.json",
-    ".research/scrape-copy-context-native-20261007.json"
+    ".research/scrape-copy-context-native-20261007.json",
+    ".research/scrape-action-receipt-native-20261007.json",
+    ".research/scrape-action-native-peer-20261007.json",
+    ".research/scrape-d164-escalated-diagnosis-20261007.json",
+    ".research/scrape-receipt-pipeline-peer-20261007.json",
+    ".research/scrape-empty-copy-fixture-repair-20261007.json",
+    ".research/scrape-empty-batch-peer-20261007.json"
   ],
   "resource_verdict": "All3 current-run journals admitted/resourceInvalidfalse; guest child1 is assertion failure.",
   "transition_history": [
@@ -31,9 +37,29 @@
       "from": null,
       "to": "open",
       "reason": "New native navigation boundary failure after22 successful warm copy options; causal diagnosis assigned, independent evidence review pending."
+    },
+    {
+      "at": "2026-10-08T04:09:42.945917+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Native37724762467/freshpeer9a2b9202 identifies Copyimages Markdown after7referrals copies; controlledfixture intentionally has zeroimages/video/links and source correctly hides emptytoolbars. Original case demanded a nonexistent emptysection control."
+    },
+    {
+      "at": "2026-10-08T04:09:42.945917+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "2125df6a adds strict fixture-specific emptysection proof and retains alloffered option and populatedmissingcontrol checks. 503eec1f separately preserves exactfailureaction and partialprogress."
+    },
+    {
+      "at": "2026-10-08T04:09:42.945917+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Freshsourcepeer1f15987e accepts correction and causalguards; exactfocusedCI37725833684 passes53. Native397 selected for fullwarm/navigation/reload retest; no currentproductpass yet."
     }
   ],
   "closure_requirement": "Confirm cause; smallest repair with meaningful causal guard and fresh source review; resource-valid current-capture navigation and reload native proof with surrounding copy options; independent retest review.",
-  "next_action": "Escalated Astra diagnosis repairs whole-batch action/progress capture before further native run; do not infer first Copy capture failure or zero completed referrals actions from missing array.",
-  "evidence_correction": "Frozen driver assigns after_navigation only after all menu options finish. On rejection, completed progress is lost; an empty/missing array does not prove zero actions or identify the first Copy capture control. The exact failed menu/action is unknown. Original receipts remain unchanged."
+  "next_action": "One resource-valid guestnative397 run for22intake copies,13referrals offeredoptions+3emptysections,22reloadcopies andT07warm/reload; independentretetst beforeclosure. Original391 retained; 397Scrape source identical butTabs dependency changed.",
+  "evidence_correction": "Frozen driver assigns after_navigation only after all menu options finish. On rejection, completed progress is lost; an empty/missing array does not prove zero actions or identify the first Copy capture control. The exact failed menu/action is unknown. Original receipts remain unchanged.",
+  "cause": "Referrals fixture has empty images/video/links. Test iterated every populated-fixture CopyMenu without asserting the intentional emptysection alternative. Product hides these toolbars as implemented; no productbug established.",
+  "fix_commits": ["503eec1f", "2125df6a"]
 }
