@@ -126,6 +126,32 @@ test('T28 case runner rejects an open section without rendered content and verif
   assert.equal(state.reloads, 0);
 });
 
+test('T28 failed initial census records only active state and safe heading labels', async () => {
+  const { state, driver, reload } = simulatedPanel();
+  const originalEvaluate = driver.evaluate;
+  driver.evaluate = async (...args) => {
+    const observed = await originalEvaluate(...args);
+    if (observed.headings) {
+      observed.active = false;
+      observed.headings = [];
+    }
+    return observed;
+  };
+
+  await assert.rejects(
+    runGuestSectionsCase(null, reload, () => {}, driver),
+    (error) => {
+      assert.match(
+        error.message,
+        /guest_settings_sections_missing:\{"active":false,"count":0,"headings":\[\],"unrecognizedHeadingCount":0\}/,
+      );
+      return true;
+    },
+  );
+  assert.deepEqual(state.clicks, []);
+  assert.equal(state.reloads, 0);
+});
+
 test('T40 case runner repairs UI-baseline/storage-drift through clicks and verifies after reload', async () => {
   const { state, driver, reload } = simulatedPanel();
   await assert.rejects(

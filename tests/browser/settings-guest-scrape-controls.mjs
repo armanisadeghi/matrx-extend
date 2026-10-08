@@ -263,12 +263,23 @@ export function sectionMatches(state, label, expanded, baselineDigest) {
   );
 }
 
+function sectionCensusDiagnostic(state) {
+  const headings = Array.isArray(state?.headings) ? state.headings : [];
+  const knownHeadings = headings.filter((heading) => SECTIONS.includes(heading));
+  return JSON.stringify({
+    active: state?.active === true,
+    count: headings.length,
+    headings: knownHeadings,
+    unrecognizedHeadingCount: headings.length - knownHeadings.length,
+  });
+}
+
 export async function runGuestSectionsCase(panel, reloadSettings, record, driver = nativeDriver) {
   const baseline = await observeSection(panel, 'Account', driver);
   assert.equal(
     baseline.active && baseline.headings.length === SECTIONS.length,
     true,
-    'guest_settings_sections_missing',
+    `guest_settings_sections_missing:${sectionCensusDiagnostic(baseline)}`,
   );
   for (const label of SECTIONS) {
     const initial = await observeSection(panel, label, driver);
