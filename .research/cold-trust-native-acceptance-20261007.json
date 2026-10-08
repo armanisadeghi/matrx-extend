@@ -1,0 +1,913 @@
+{
+  "schema_version": 1,
+  "task_id": "cold-trust-native-acceptance",
+  "status": "HANDOFF",
+  "zero_authorship": true,
+  "observed_at": "2026-10-08T05:32:54.234304+00:00",
+  "reviewed_repair_commit": "7601248b8886208048f8b52e163c057193290b20",
+  "verdict_a": {
+    "ordinary_chat_and_remembered_approval": "pass",
+    "pilot_opposing_mode": "unverified_backend_start_422",
+    "overall": "partial",
+    "six_actual_chat_cases": [
+      {
+        "transport": {
+          "start_count": 1,
+          "organization_header_fingerprint": "8c4b25f5099470bf",
+          "organization_header_matches_approved": true,
+          "actual_permission_mode": "act",
+          "mode_matches": true,
+          "conversation_fingerprint": "00f90a9a1d238c6f",
+          "response_matches_request_conversation": true,
+          "backend_request_fingerprint": "eb4140f9d3c47931",
+          "start_http_status": 200,
+          "successful_create_tab_result_posted": true,
+          "result_http_status": 200,
+          "result_post_count": 1,
+          "create_tab_result_count": 1,
+          "create_tab_error_count": 0,
+          "call_fingerprint": "0b6cc4c5c6aae93d"
+        },
+        "case_id": "act_first",
+        "surface": "Chat",
+        "verdict": "pass",
+        "expected_approval": "none",
+        "approval_samples": 0,
+        "pending_before_effect": false,
+        "real_browser_tab_opened": true,
+        "fixture_received_request": true,
+        "completed_reply": true,
+        "screenshot": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-pt2Ck0/act_first-result.png"
+      },
+      {
+        "transport": {
+          "start_count": 1,
+          "organization_header_fingerprint": "8c4b25f5099470bf",
+          "organization_header_matches_approved": true,
+          "actual_permission_mode": "act",
+          "mode_matches": true,
+          "conversation_fingerprint": "00f90a9a1d238c6f",
+          "response_matches_request_conversation": true,
+          "backend_request_fingerprint": "b046034b7a3238c3",
+          "start_http_status": 200,
+          "successful_create_tab_result_posted": true,
+          "result_http_status": 200,
+          "result_post_count": 1,
+          "create_tab_result_count": 1,
+          "create_tab_error_count": 0,
+          "call_fingerprint": "61b370fa0a8cc9bc"
+        },
+        "case_id": "act_second",
+        "surface": "Chat",
+        "verdict": "pass",
+        "expected_approval": "none",
+        "approval_samples": 0,
+        "pending_before_effect": false,
+        "real_browser_tab_opened": true,
+        "fixture_received_request": true,
+        "completed_reply": true,
+        "screenshot": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-pt2Ck0/act_second-result.png"
+      },
+      {
+        "transport": {
+          "start_count": 1,
+          "organization_header_fingerprint": "8c4b25f5099470bf",
+          "organization_header_matches_approved": true,
+          "actual_permission_mode": "ask",
+          "mode_matches": true,
+          "conversation_fingerprint": "00f90a9a1d238c6f",
+          "response_matches_request_conversation": true,
+          "backend_request_fingerprint": "84cb342ab88c57b1",
+          "start_http_status": 200,
+          "successful_create_tab_result_posted": true,
+          "result_http_status": 200,
+          "result_post_count": 1,
+          "create_tab_result_count": 1,
+          "create_tab_error_count": 0,
+          "call_fingerprint": "c7e22f39ff4e01c6"
+        },
+        "case_id": "ask_remember",
+        "surface": "Chat",
+        "verdict": "pass",
+        "expected_approval": "remember",
+        "approval_samples": 1,
+        "pending_before_effect": true,
+        "real_browser_tab_opened": true,
+        "fixture_received_request": true,
+        "completed_reply": true,
+        "screenshot": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-pt2Ck0/ask_remember-result.png"
+      },
+      {
+        "transport": {
+          "start_count": 1,
+          "organization_header_fingerprint": "8c4b25f5099470bf",
+          "organization_header_matches_approved": true,
+          "actual_permission_mode": "ask",
+          "mode_matches": true,
+          "conversation_fingerprint": "00f90a9a1d238c6f",
+          "response_matches_request_conversation": true,
+          "backend_request_fingerprint": "a93e737810fa1134",
+          "start_http_status": 200,
+          "successful_create_tab_result_posted": true,
+          "result_http_status": 200,
+          "result_post_count": 1,
+          "create_tab_result_count": 1,
+          "create_tab_error_count": 0,
+          "call_fingerprint": "f898649176ba12e4"
+        },
+        "case_id": "ask_remember_repeat",
+        "surface": "Chat",
+        "verdict": "pass",
+        "expected_approval": "none",
+        "approval_samples": 0,
+        "pending_before_effect": false,
+        "real_browser_tab_opened": true,
+        "fixture_received_request": true,
+        "completed_reply": true,
+        "screenshot": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-pt2Ck0/ask_remember_repeat-result.png"
+      },
+      {
+        "transport": {
+          "start_count": 1,
+          "organization_header_fingerprint": "8c4b25f5099470bf",
+          "organization_header_matches_approved": true,
+          "actual_permission_mode": "ask",
+          "mode_matches": true,
+          "conversation_fingerprint": "00f90a9a1d238c6f",
+          "response_matches_request_conversation": true,
+          "backend_request_fingerprint": "ee8150407434ca6f",
+          "start_http_status": 200,
+          "successful_create_tab_result_posted": true,
+          "result_http_status": 200,
+          "result_post_count": 1,
+          "create_tab_result_count": 1,
+          "create_tab_error_count": 0,
+          "call_fingerprint": "372bbe92fac16e53"
+        },
+        "case_id": "ask_remember_warm_reload",
+        "surface": "Chat",
+        "verdict": "pass",
+        "expected_approval": "none",
+        "approval_samples": 0,
+        "pending_before_effect": false,
+        "real_browser_tab_opened": true,
+        "fixture_received_request": true,
+        "completed_reply": true,
+        "screenshot": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-pt2Ck0/ask_remember_warm_reload-result.png"
+      },
+      {
+        "transport": {
+          "start_count": 1,
+          "organization_header_fingerprint": "8c4b25f5099470bf",
+          "organization_header_matches_approved": true,
+          "actual_permission_mode": "ask",
+          "mode_matches": true,
+          "conversation_fingerprint": "00f90a9a1d238c6f",
+          "response_matches_request_conversation": true,
+          "backend_request_fingerprint": "448d23fd16719ef7",
+          "start_http_status": 200,
+          "successful_create_tab_result_posted": true,
+          "result_http_status": 200,
+          "result_post_count": 1,
+          "create_tab_result_count": 1,
+          "create_tab_error_count": 0,
+          "call_fingerprint": "125bb4bb74d888ca"
+        },
+        "case_id": "ask_remember_full_reload",
+        "surface": "Chat",
+        "verdict": "pass",
+        "expected_approval": "none",
+        "approval_samples": 0,
+        "pending_before_effect": false,
+        "real_browser_tab_opened": true,
+        "fixture_received_request": true,
+        "completed_reply": true,
+        "screenshot": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-pt2Ck0/ask_remember_full_reload-result.png"
+      }
+    ],
+    "same_chat_identity_verified": true,
+    "full_extension_reload": {
+      "management_before": {
+        "state": "ENABLED",
+        "unsupported_developer_extension": false,
+        "runtime_error_count": 0,
+        "manifest_error_count": 0,
+        "developer_mode": true
+      },
+      "management_after": {
+        "state": "ENABLED",
+        "unsupported_developer_extension": false,
+        "runtime_error_count": 0,
+        "manifest_error_count": 0,
+        "developer_mode": true
+      },
+      "worker_replaced": true,
+      "panel_replaced": true,
+      "old_targets_retired": true,
+      "retirement_evidence": {
+        "old_worker_destroyed_event": true,
+        "old_worker_execution_retired": true,
+        "old_worker_absent": true,
+        "old_panel_absent": true,
+        "replacement_worker_present": true,
+        "replacement_worker_created_event": true,
+        "observed_worker_count": 1,
+        "timeline": {
+          "old_worker_id": "B973A12725DA1B65E6843ADA33190511",
+          "old_panel_id": "18CB0CC3D50816B0F82C84FBFEFA0506",
+          "replacement_worker_id": "A5D9C09D91C6AAD30A0CBADBA3D447F3",
+          "pre_click_old_worker_present": true,
+          "entries": [
+            {
+              "at": "2026-10-08T05:28:48.890Z",
+              "phase": "discovery_enabled"
+            },
+            {
+              "at": "2026-10-08T05:28:48.891Z",
+              "phase": "initial_snapshot",
+              "targets": [
+                {
+                  "target_id": "B973A12725DA1B65E6843ADA33190511",
+                  "type": "service_worker",
+                  "kind": "worker",
+                  "attached": true
+                },
+                {
+                  "target_id": "18CB0CC3D50816B0F82C84FBFEFA0506",
+                  "type": "page",
+                  "kind": "panel",
+                  "attached": true
+                },
+                {
+                  "target_id": "2E6CAF2D2862A8AECA199DCC73CF84EE",
+                  "type": "background_page",
+                  "kind": "extension_other",
+                  "attached": false
+                }
+              ]
+            },
+            {
+              "at": "2026-10-08T05:28:48.891Z",
+              "phase": "listeners_registered"
+            },
+            {
+              "at": "2026-10-08T05:28:48.891Z",
+              "phase": "pre_click_snapshot",
+              "targets": [
+                {
+                  "target_id": "B973A12725DA1B65E6843ADA33190511",
+                  "type": "service_worker",
+                  "kind": "worker",
+                  "attached": true
+                },
+                {
+                  "target_id": "18CB0CC3D50816B0F82C84FBFEFA0506",
+                  "type": "page",
+                  "kind": "panel",
+                  "attached": true
+                },
+                {
+                  "target_id": "2E6CAF2D2862A8AECA199DCC73CF84EE",
+                  "type": "background_page",
+                  "kind": "extension_other",
+                  "attached": false
+                }
+              ]
+            },
+            {
+              "at": "2026-10-08T05:28:48.891Z",
+              "phase": "click_started"
+            },
+            {
+              "at": "2026-10-08T05:28:49.282Z",
+              "phase": "target_info_changed",
+              "target": {
+                "target_id": "18CB0CC3D50816B0F82C84FBFEFA0506",
+                "type": "page",
+                "kind": "panel",
+                "attached": false
+              }
+            },
+            {
+              "at": "2026-10-08T05:28:49.282Z",
+              "phase": "target_destroyed",
+              "target": {
+                "target_id": "18CB0CC3D50816B0F82C84FBFEFA0506",
+                "type": "page",
+                "kind": "panel",
+                "attached": false
+              }
+            },
+            {
+              "at": "2026-10-08T05:28:49.284Z",
+              "phase": "target_destroyed",
+              "target": {
+                "target_id": "2E6CAF2D2862A8AECA199DCC73CF84EE",
+                "type": "background_page",
+                "kind": "extension_other",
+                "attached": false
+              }
+            },
+            {
+              "at": "2026-10-08T05:28:49.290Z",
+              "phase": "target_info_changed",
+              "target": {
+                "target_id": "B973A12725DA1B65E6843ADA33190511",
+                "type": "service_worker",
+                "kind": "worker",
+                "attached": false
+              }
+            },
+            {
+              "at": "2026-10-08T05:28:49.295Z",
+              "phase": "click_resolved"
+            },
+            {
+              "at": "2026-10-08T05:28:49.295Z",
+              "phase": "poll_transition",
+              "targets": []
+            },
+            {
+              "at": "2026-10-08T05:28:49.308Z",
+              "phase": "target_created",
+              "target": {
+                "target_id": "A5D9C09D91C6AAD30A0CBADBA3D447F3",
+                "type": "service_worker",
+                "kind": "worker",
+                "attached": false
+              }
+            },
+            {
+              "at": "2026-10-08T05:28:49.308Z",
+              "phase": "target_info_changed",
+              "target": {
+                "target_id": "A5D9C09D91C6AAD30A0CBADBA3D447F3",
+                "type": "service_worker",
+                "kind": "worker",
+                "attached": true
+              }
+            },
+            {
+              "at": "2026-10-08T05:28:49.358Z",
+              "phase": "target_destroyed",
+              "target": {
+                "target_id": "B973A12725DA1B65E6843ADA33190511",
+                "type": "service_worker",
+                "kind": "worker",
+                "attached": false
+              }
+            },
+            {
+              "at": "2026-10-08T05:28:49.399Z",
+              "phase": "poll_transition",
+              "targets": [
+                {
+                  "target_id": "A5D9C09D91C6AAD30A0CBADBA3D447F3",
+                  "type": "service_worker",
+                  "kind": "worker",
+                  "attached": true
+                }
+              ]
+            },
+            {
+              "at": "2026-10-08T05:28:49.685Z",
+              "phase": "poll_transition",
+              "targets": [
+                {
+                  "target_id": "A5D9C09D91C6AAD30A0CBADBA3D447F3",
+                  "type": "service_worker",
+                  "kind": "worker",
+                  "attached": true
+                },
+                {
+                  "target_id": "CCC0EB30A8C8C4EC3165921B8F9DA677",
+                  "type": "page",
+                  "kind": "panel",
+                  "attached": true
+                }
+              ]
+            },
+            {
+              "at": "2026-10-08T05:28:49.686Z",
+              "phase": "target_info_changed",
+              "target": {
+                "target_id": "CCC0EB30A8C8C4EC3165921B8F9DA677",
+                "type": "page",
+                "kind": "panel",
+                "attached": false
+              }
+            },
+            {
+              "at": "2026-10-08T05:28:49.688Z",
+              "phase": "target_info_changed",
+              "target": {
+                "target_id": "CCC0EB30A8C8C4EC3165921B8F9DA677",
+                "type": "page",
+                "kind": "panel",
+                "attached": false
+              }
+            },
+            {
+              "at": "2026-10-08T05:28:49.702Z",
+              "phase": "target_info_changed",
+              "target": {
+                "target_id": "CCC0EB30A8C8C4EC3165921B8F9DA677",
+                "type": "page",
+                "kind": "panel",
+                "attached": true
+              }
+            }
+          ],
+          "dropped_entries": 0,
+          "final_snapshot": [
+            {
+              "target_id": "A5D9C09D91C6AAD30A0CBADBA3D447F3",
+              "type": "service_worker",
+              "kind": "worker",
+              "attached": true
+            },
+            {
+              "target_id": "CCC0EB30A8C8C4EC3165921B8F9DA677",
+              "type": "page",
+              "kind": "panel",
+              "attached": true
+            }
+          ],
+          "final_predicate": true
+        },
+        "open_panel_request": {
+          "click_monotonic_ms": 64361,
+          "worker_at_click": {
+            "status": "activated",
+            "running_status": "running"
+          },
+          "received": true,
+          "ok": true,
+          "opened": true,
+          "category": "opened"
+        },
+        "reload_lifetime": {
+          "availability": "ready",
+          "browser_version": {
+            "protocol_version": "1.3",
+            "product": "Chrome/149.0.7827.55",
+            "revision": "@3188f8a607ae7e067593be8aab7f02d2451fec07"
+          },
+          "independent_targets": [
+            {
+              "at": "2026-10-08T05:28:48.888Z",
+              "phase": "created",
+              "target": {
+                "target_id": "18CB0CC3D50816B0F82C84FBFEFA0506",
+                "type": "page",
+                "kind": "panel",
+                "attached": true
+              }
+            },
+            {
+              "at": "2026-10-08T05:28:48.888Z",
+              "phase": "created",
+              "target": {
+                "target_id": "2E6CAF2D2862A8AECA199DCC73CF84EE",
+                "type": "other",
+                "kind": "extension_other",
+                "attached": false
+              }
+            },
+            {
+              "at": "2026-10-08T05:28:48.889Z",
+              "phase": "created",
+              "target": {
+                "target_id": "B973A12725DA1B65E6843ADA33190511",
+                "type": "service_worker",
+                "kind": "worker",
+                "attached": true
+              }
+            },
+            {
+              "at": "2026-10-08T05:28:48.889Z",
+              "phase": "initial",
+              "target": {
+                "target_id": "B973A12725DA1B65E6843ADA33190511",
+                "type": "service_worker",
+                "kind": "worker",
+                "attached": true
+              }
+            },
+            {
+              "at": "2026-10-08T05:28:48.889Z",
+              "phase": "initial",
+              "target": {
+                "target_id": "18CB0CC3D50816B0F82C84FBFEFA0506",
+                "type": "page",
+                "kind": "panel",
+                "attached": true
+              }
+            },
+            {
+              "at": "2026-10-08T05:28:48.889Z",
+              "phase": "initial",
+              "target": {
+                "target_id": "2E6CAF2D2862A8AECA199DCC73CF84EE",
+                "type": "other",
+                "kind": "extension_other",
+                "attached": false
+              }
+            },
+            {
+              "at": "2026-10-08T05:28:49.282Z",
+              "phase": "changed",
+              "target": {
+                "target_id": "18CB0CC3D50816B0F82C84FBFEFA0506",
+                "type": "page",
+                "kind": "panel",
+                "attached": false
+              }
+            },
+            {
+              "at": "2026-10-08T05:28:49.282Z",
+              "phase": "destroyed",
+              "target": {
+                "target_id": "18CB0CC3D50816B0F82C84FBFEFA0506",
+                "type": "other",
+                "kind": "panel",
+                "attached": null
+              }
+            },
+            {
+              "at": "2026-10-08T05:28:49.284Z",
+              "phase": "destroyed",
+              "target": {
+                "target_id": "2E6CAF2D2862A8AECA199DCC73CF84EE",
+                "type": "other",
+                "kind": "extension_other",
+                "attached": null
+              }
+            },
+            {
+              "at": "2026-10-08T05:28:49.291Z",
+              "phase": "changed",
+              "target": {
+                "target_id": "B973A12725DA1B65E6843ADA33190511",
+                "type": "service_worker",
+                "kind": "worker",
+                "attached": false
+              }
+            },
+            {
+              "at": "2026-10-08T05:28:49.308Z",
+              "phase": "created",
+              "target": {
+                "target_id": "A5D9C09D91C6AAD30A0CBADBA3D447F3",
+                "type": "service_worker",
+                "kind": "worker",
+                "attached": false
+              }
+            },
+            {
+              "at": "2026-10-08T05:28:49.308Z",
+              "phase": "changed",
+              "target": {
+                "target_id": "A5D9C09D91C6AAD30A0CBADBA3D447F3",
+                "type": "service_worker",
+                "kind": "worker",
+                "attached": true
+              }
+            },
+            {
+              "at": "2026-10-08T05:28:49.358Z",
+              "phase": "destroyed",
+              "target": {
+                "target_id": "B973A12725DA1B65E6843ADA33190511",
+                "type": "other",
+                "kind": "worker",
+                "attached": null
+              }
+            },
+            {
+              "at": "2026-10-08T05:28:49.686Z",
+              "phase": "changed",
+              "target": {
+                "target_id": "CCC0EB30A8C8C4EC3165921B8F9DA677",
+                "type": "page",
+                "kind": "panel",
+                "attached": false
+              }
+            },
+            {
+              "at": "2026-10-08T05:28:49.689Z",
+              "phase": "changed",
+              "target": {
+                "target_id": "CCC0EB30A8C8C4EC3165921B8F9DA677",
+                "type": "page",
+                "kind": "panel",
+                "attached": false
+              }
+            },
+            {
+              "at": "2026-10-08T05:28:49.702Z",
+              "phase": "changed",
+              "target": {
+                "target_id": "CCC0EB30A8C8C4EC3165921B8F9DA677",
+                "type": "page",
+                "kind": "panel",
+                "attached": true
+              }
+            }
+          ],
+          "versions": [
+            {
+              "at": "2026-10-08T05:28:48.890Z",
+              "version_id": "1",
+              "registration_id": "1",
+              "target_id": "B973A12725DA1B65E6843ADA33190511",
+              "running_status": "running",
+              "status": "activated"
+            },
+            {
+              "at": "2026-10-08T05:28:49.290Z",
+              "version_id": "1",
+              "registration_id": "1",
+              "target_id": "B973A12725DA1B65E6843ADA33190511",
+              "running_status": "stopping",
+              "status": "activated"
+            },
+            {
+              "at": "2026-10-08T05:28:49.291Z",
+              "version_id": "1",
+              "registration_id": "1",
+              "target_id": null,
+              "running_status": "stopping",
+              "status": "redundant"
+            },
+            {
+              "at": "2026-10-08T05:28:49.294Z",
+              "version_id": "1",
+              "registration_id": "1",
+              "target_id": null,
+              "running_status": "stopping",
+              "status": "redundant"
+            },
+            {
+              "at": "2026-10-08T05:28:49.294Z",
+              "version_id": "1",
+              "registration_id": "1",
+              "target_id": null,
+              "running_status": "stopping",
+              "status": "redundant"
+            },
+            {
+              "at": "2026-10-08T05:28:49.295Z",
+              "version_id": "1",
+              "registration_id": "1",
+              "target_id": null,
+              "running_status": "stopped",
+              "status": "redundant"
+            },
+            {
+              "at": "2026-10-08T05:28:49.310Z",
+              "version_id": "2",
+              "registration_id": "2",
+              "target_id": null,
+              "running_status": "stopped",
+              "status": "new"
+            },
+            {
+              "at": "2026-10-08T05:28:49.312Z",
+              "version_id": "2",
+              "registration_id": "2",
+              "target_id": null,
+              "running_status": "stopped",
+              "status": "new"
+            },
+            {
+              "at": "2026-10-08T05:28:49.312Z",
+              "version_id": "2",
+              "registration_id": "2",
+              "target_id": null,
+              "running_status": "starting",
+              "status": "new"
+            },
+            {
+              "at": "2026-10-08T05:28:49.312Z",
+              "version_id": "2",
+              "registration_id": "2",
+              "target_id": "A5D9C09D91C6AAD30A0CBADBA3D447F3",
+              "running_status": "starting",
+              "status": "new"
+            },
+            {
+              "at": "2026-10-08T05:28:49.529Z",
+              "version_id": "2",
+              "registration_id": "2",
+              "target_id": "A5D9C09D91C6AAD30A0CBADBA3D447F3",
+              "running_status": "starting",
+              "status": "installing"
+            },
+            {
+              "at": "2026-10-08T05:28:49.529Z",
+              "version_id": "2",
+              "registration_id": "2",
+              "target_id": "A5D9C09D91C6AAD30A0CBADBA3D447F3",
+              "running_status": "running",
+              "status": "installing"
+            },
+            {
+              "at": "2026-10-08T05:28:49.541Z",
+              "version_id": "2",
+              "registration_id": "2",
+              "target_id": "A5D9C09D91C6AAD30A0CBADBA3D447F3",
+              "running_status": "running",
+              "status": "installed"
+            },
+            {
+              "at": "2026-10-08T05:28:49.541Z",
+              "version_id": "2",
+              "registration_id": "2",
+              "target_id": "A5D9C09D91C6AAD30A0CBADBA3D447F3",
+              "running_status": "running",
+              "status": "activating"
+            },
+            {
+              "at": "2026-10-08T05:28:49.541Z",
+              "version_id": "2",
+              "registration_id": "2",
+              "target_id": "A5D9C09D91C6AAD30A0CBADBA3D447F3",
+              "running_status": "running",
+              "status": "activated"
+            },
+            {
+              "at": "2026-10-08T05:28:49.685Z",
+              "version_id": "2",
+              "registration_id": "2",
+              "target_id": "A5D9C09D91C6AAD30A0CBADBA3D447F3",
+              "running_status": "running",
+              "status": "activated"
+            }
+          ],
+          "registrations": [
+            {
+              "at": "2026-10-08T05:28:48.890Z",
+              "registration_id": "1",
+              "is_deleted": false
+            },
+            {
+              "at": "2026-10-08T05:28:49.291Z",
+              "registration_id": "1",
+              "is_deleted": true
+            },
+            {
+              "at": "2026-10-08T05:28:49.310Z",
+              "registration_id": "2",
+              "is_deleted": false
+            },
+            {
+              "at": "2026-10-08T05:28:49.529Z",
+              "registration_id": "2",
+              "is_deleted": false
+            }
+          ],
+          "old_version_id": "1",
+          "old_version_mapping": "correlated",
+          "version_observation": "visible",
+          "pre_click_version_count": 1,
+          "version_events_dropped": 0,
+          "old_host_probe": null,
+          "replacement_host_probe": null
+        }
+      },
+      "context_boundary": {
+        "first": {
+          "side_panel_count": 1,
+          "exact_expected_count": 1,
+          "elapsed_ms": 8
+        },
+        "last": {
+          "side_panel_count": 1,
+          "exact_expected_count": 1,
+          "elapsed_ms": 8
+        },
+        "attempts": 1,
+        "exact_expected_appeared": true
+      },
+      "management_reload_clicked": true
+    },
+    "pilot_boundary": {
+      "case_id": "pilot_ask_opposes_chat_act",
+      "observation": {
+        "ready": true,
+        "streaming": false,
+        "replies": 1,
+        "mode": "Ask before acting",
+        "approvals": 0,
+        "ordinaryCreateTabApproval": false,
+        "rememberOffered": false,
+        "rememberChecked": false
+      },
+      "approval_samples": 0,
+      "approved": false,
+      "marker_tab_count": 0,
+      "fixture_received_request": false,
+      "reply_count_increased": true,
+      "screenshot": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-pt2Ck0/pilot_ask_opposes_chat_act-completion-failure.png"
+    },
+    "pilot_transport": {
+      "case_id": "pilot_ask_opposes_chat_act",
+      "start_count": 1,
+      "organization_header_fingerprint": "8c4b25f5099470bf",
+      "organization_header_matches_approved": true,
+      "actual_permission_mode": "ask",
+      "mode_matches": true,
+      "conversation_fingerprint": "0c9cfd76c35d28e7",
+      "response_matches_request_conversation": false,
+      "backend_request_fingerprint": null,
+      "start_http_status": 422,
+      "successful_create_tab_result_posted": false,
+      "result_http_status": null,
+      "result_post_count": 0,
+      "create_tab_result_count": 0,
+      "create_tab_error_count": 0,
+      "call_fingerprint": null
+    }
+  },
+  "verdict_b": {
+    "source_quality": "pass",
+    "basis": "Fresh own-commit diff inspection, caller and canonical identity reader review, meaningful builder RED/GREEN/constant-gut evidence, no policy clone or approval boundary changes. Native cold reload now confirms persistence lifetime matches the saved chat.",
+    "guard_proof": ".research/cold-reload-conversation-trust-repair-20261007.json",
+    "findings": []
+  },
+  "artifact": {
+    "schema_version": 1,
+    "kind": "ci_development_test",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/ci.yml",
+    "sourceSha": "11564fe786ca47bade2c33718710504ed145eb66",
+    "runId": 37731510284,
+    "runAttempt": 1,
+    "artifactId": 11530615740,
+    "githubArtifactDigest": "sha256:0df8088aca6bafc5b38644659538b4694cbc96eaf4b72b1211e0b145816ca5a3",
+    "treeSha256": "e27ae7d17f776970c61f6de1ae2596c5181d4df5024ca96210d94f1f07ab3ae3",
+    "source": {
+      "originMain": "38b991200023aef3bcf4c5d8f0df6aff7a3b2eb5",
+      "localHead": "38b991200023aef3bcf4c5d8f0df6aff7a3b2eb5",
+      "trackedDirty": false,
+      "untrackedRunnerInputs": [],
+      "claim": "exact_pushed_commit_only"
+    }
+  },
+  "build": {
+    "version": "0.2.397",
+    "tree_sha256": "e27ae7d17f776970c61f6de1ae2596c5181d4df5024ca96210d94f1f07ab3ae3",
+    "receipt_kind": "local_dev_unpacked"
+  },
+  "native_context_identity": "Harness independently validates exact expected extension sidepanel and worker; development ID cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "account": {
+    "reviewer_fingerprint": "5edfa2692bdacc5e",
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "observed_role_category": "admin",
+    "canonical_extension_admin_check": {
+      "matched_current_extension_user": true,
+      "http_status": 200,
+      "current_user_assigned": true
+    },
+    "sign_out_visible": true,
+    "default_organization_selected": true,
+    "organization_picker_available": true,
+    "storage_shape": {
+      "accessTokenPresent": true,
+      "profilePresent": true,
+      "activeOrganizationPresent": false
+    },
+    "approved_organization_selection": {
+      "option_count": 57,
+      "eligible_count": 57,
+      "matched_count": 1,
+      "pointer_target_verified": true,
+      "approved_name_fingerprint": "61e154af11cd32c0",
+      "actingAsPickerCount": 1,
+      "pickerMatchesApproved": true,
+      "deviceOverridePresent": false,
+      "deviceOverrideMatchesApproved": false,
+      "name_fingerprint": "61e154af11cd32c0",
+      "id_fingerprint": "8c4b25f5099470bf"
+    }
+  },
+  "authentication_method": "password_login",
+  "resource": {
+    "run_id": "cold-trust-native-acceptance-20261007",
+    "valid": true,
+    "child_exit_code": 1,
+    "journal": "docs/stabilization/resource-journals/cold-trust-native-acceptance-20261007.jsonl",
+    "owned_jobs": "all terminal; owned Chrome profile closed"
+  },
+  "limitations": [
+    "Pilot could not start actual backend request (HTTP422); no prompt/effect occurred, so this is not evidence of incorrect approval policy.",
+    "Return-to-Chat Act after Pilot was not reached.",
+    "Simultaneous/parallel surface isolation not exercised by serial driver.",
+    "Artifact is a CI development build, not Store published or installed."
+  ],
+  "next_action": "Diagnose real Pilot start HTTP422, then independent Pilot and return-to-Chat retest; preserve six Chat passes as bounded exact-artifact evidence."
+}
