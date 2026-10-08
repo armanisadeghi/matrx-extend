@@ -5,9 +5,20 @@
   "independent_review": ".research/user-tool-procedures-final-peer-20261008.json",
   "review_verdicts": ["PASS_FOR_PROPOSED_MANUAL_SCOPE", "PASS"],
   "changed_cases": ["EXT-F-4121-T01", "EXT-F-4122-T01", "EXT-F-4123-T01", "EXT-F-4124-T01"],
-  "procedure_gap_counts": {"before": {"missing_steps": 21, "missing_expected": 21, "missing_control_links": 27}, "after": {"missing_steps": 18, "missing_expected": 18, "missing_control_links": 27}},
+  "procedure_gap_counts": {
+    "before": { "missing_steps": 21, "missing_expected": 21, "missing_control_links": 27 },
+    "after": { "missing_steps": 18, "missing_expected": 18, "missing_control_links": 27 }
+  },
   "runtime_statuses_changed": false,
   "dimensions_updated_from_reviewed_proposals": true,
-  "limitations": ["Manual Tools runs bypass dispatcher permissions; permission outcomes remain unverified.", "Chat card lifecycle observations do not expose the unmounted Tools result envelope.", "user_todos remains NOT_EXECUTABLE: no real agent-dispatched conversation fixture/invocation route was supplied; all seven controls remain untested."],
-  "validation": ["JSON parse and semantic comparison confirm exactly four cases changed.", "IDs, controls, modes, design status, results, and runtime status cells preserved.", "Generated STATUS.md, STATUS.html, CHECKLIST.md with scripts/generate-stabilization-tracker.py."]
+  "limitations": [
+    "Manual Tools runs bypass dispatcher permissions; permission outcomes remain unverified.",
+    "Chat card lifecycle observations do not expose the unmounted Tools result envelope.",
+    "user_todos remains NOT_EXECUTABLE: no real agent-dispatched conversation fixture/invocation route was supplied; all seven controls remain untested."
+  ],
+  "validation": [
+    "JSON parse and semantic comparison confirm exactly four cases changed.",
+    "IDs, controls, modes, design status, results, and runtime status cells preserved.",
+    "Generated STATUS.md, STATUS.html, CHECKLIST.md with scripts/generate-stabilization-tracker.py."
+  ]
 }

@@ -31,21 +31,10 @@
   "case_updates": {
     "EXT-F-4121-T01": {
       "feature_id": "EXT-F-4121",
-      "control_ids": [
-        "EXT-F-4121-C01"
-      ],
+      "control_ids": ["EXT-F-4121-C01"],
       "title": "Controlled manual execution: user",
-      "modes": [
-        "member",
-        "admin"
-      ],
-      "dimensions": [
-        "valid-input",
-        "invalid-input",
-        "permissions",
-        "reload",
-        "manual-ask-card"
-      ],
+      "modes": ["member", "admin"],
+      "dimensions": ["valid-input", "invalid-input", "permissions", "reload", "manual-ask-card"],
       "execution_status": "procedure_proposed_runtime_unverified",
       "preconditions_fixtures": [
         "Complete shared build/reload identity and role setup above. Select an existing disposable test conversation in the side panel before opening Tools so null-conversation ask cards can fall back to that selected conversation.",
@@ -86,21 +75,10 @@
     },
     "EXT-F-4122-T01": {
       "feature_id": "EXT-F-4122",
-      "control_ids": [
-        "EXT-F-4122-C01"
-      ],
+      "control_ids": ["EXT-F-4122-C01"],
       "title": "Controlled manual execution: request_user_takeover",
-      "modes": [
-        "member",
-        "admin"
-      ],
-      "dimensions": [
-        "valid-input",
-        "invalid-input",
-        "permissions",
-        "reload",
-        "manual-ask-card"
-      ],
+      "modes": ["member", "admin"],
+      "dimensions": ["valid-input", "invalid-input", "permissions", "reload", "manual-ask-card"],
       "execution_status": "procedure_proposed_runtime_unverified",
       "preconditions_fixtures": [
         "Complete shared build/reload identity and role setup above. Select an existing disposable test conversation so the inbox can associate the null-conversation manual request with the selected chat.",
@@ -139,21 +117,10 @@
     },
     "EXT-F-4123-T01": {
       "feature_id": "EXT-F-4123",
-      "control_ids": [
-        "EXT-F-4123-C01"
-      ],
+      "control_ids": ["EXT-F-4123-C01"],
       "title": "Controlled manual execution: update_plan",
-      "modes": [
-        "member",
-        "admin"
-      ],
-      "dimensions": [
-        "valid-input",
-        "invalid-input",
-        "permissions",
-        "reload",
-        "manual-ask-card"
-      ],
+      "modes": ["member", "admin"],
+      "dimensions": ["valid-input", "invalid-input", "permissions", "reload", "manual-ask-card"],
       "execution_status": "procedure_proposed_runtime_unverified",
       "preconditions_fixtures": [
         "Complete shared build/reload identity and role setup above. Select an existing disposable test conversation and open its plan/tasks panel before running.",
@@ -204,10 +171,7 @@
         "EXT-F-4124-C07"
       ],
       "title": "Controlled manual execution: user_todos",
-      "modes": [
-        "member",
-        "admin"
-      ],
+      "modes": ["member", "admin"],
       "dimensions": [
         "valid-input",
         "invalid-input",
