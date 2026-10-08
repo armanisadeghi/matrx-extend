@@ -1,0 +1,187 @@
+{
+  "schema_version": 1,
+  "task_id": "scrape-scroll-native-retest-20261007",
+  "status": "terminal_behavior_failure_with_valid_resources",
+  "summary": "One guarded hosted guest-scrape-development run exercised the repaired driver against the frozen 0.2.391 artifact. Warm T07 passed. Intake T09 copy options passed 22/22, then the referrals-phase Copy capture target could not be uniquely resolved. Reload T07 and T09 remain unverified. Resource admission was valid; no product defect is inferred from this driver interaction failure.",
+  "workflow": {
+    "run_id": 37721838779,
+    "attempt": 1,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37721838779",
+    "workflow_name": "Hosted guest side-panel acceptance",
+    "workflow_path": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_blob": "a98c023927a876c04d56dc44064b7d69bc529aa0",
+    "workflow_sha256": "7d53dcc41676c898b21eb504f0a4d4623c18edced97c375cb9980aed6a7573f3",
+    "event": "workflow_dispatch",
+    "checkout_ref": "main",
+    "checkout_sha": "d8ff02edbac92cc7e5eae99455b2dd43924098fa",
+    "inputs": {
+      "acceptance_lane": "A",
+      "runner_label": "macos-15",
+      "acceptance_case": "guest-scrape-development",
+      "development_run_id": 37698216289,
+      "development_artifact_id": 11516342905,
+      "scrape_auth_mode": "guest",
+      "scrape_width_mode": "narrow"
+    },
+    "runner_arch": "ARM64",
+    "runner_machine": "arm64",
+    "runner_name": "GitHub Actions 1000097262",
+    "job_id": 113131028347,
+    "job_started_at": "2026-10-08T03:15:21Z",
+    "job_completed_at": "2026-10-08T03:22:14Z",
+    "workflow_conclusion": "failure",
+    "failed_step": "Exercise the selected Chrome side-panel case",
+    "setup_and_resource_readiness_steps": "passed",
+    "artifact_upload_step": "passed"
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.391",
+    "ci_run_id": 37698216289,
+    "artifact_id": 11516342905,
+    "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+    "artifact_verified_by_workflow_import": true
+  },
+  "driver_identity": {
+    "driver_commit": "fa05a939149a9a381db45061c53c50d298365d86",
+    "focused_ci_run_id": 37721518128,
+    "focused_ci_conclusion": "success",
+    "native_driver_path": "tests/browser/scrape-guest-native-acceptance.mjs",
+    "native_driver_sha256": "4e4388ecf2cfbb283b36b6dbc21befd945ae4491e86e586ff865cc13eca47fbc",
+    "behavior_oracle_path": "tests/browser/scrape-guest-behavior-batch.mjs",
+    "behavior_oracle_sha256": "1bcc2728cc5c64048dbf97508667320e9a3f39674d0a15fc950a3981f42fcf07",
+    "independent_source_review": ".research/scrape-scroll-repair-peer-20261007.json",
+    "peer_commit": "d8ff02edbac92cc7e5eae99455b2dd43924098fa"
+  },
+  "runtime": {
+    "browser_launch_mode": "headed",
+    "browser_version": "Chrome/141.0.7390.37",
+    "extension_runtime_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "auth_mode": "guest",
+    "guest_account_observed": true,
+    "guest_auth_storage_empty": true,
+    "width_mode": "narrow",
+    "observed_panel_width_px": 360
+  },
+  "resource_admission": {
+    "valid": true,
+    "resource_invalid": false,
+    "journals": [
+      {
+        "path": ".research/scrape-scroll-native-retest-20261007-run37721838779-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37721838779-1.jsonl",
+        "decision": "valid",
+        "admitted": true,
+        "resource_invalid": false,
+        "child_exit_code": 0
+      },
+      {
+        "path": ".research/scrape-scroll-native-retest-20261007-run37721838779-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37721838779-1.jsonl",
+        "decision": "valid",
+        "admitted": true,
+        "resource_invalid": false,
+        "child_exit_code": 0
+      },
+      {
+        "path": ".research/scrape-scroll-native-retest-20261007-run37721838779-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37721838779-1.jsonl",
+        "decision": "child_failed",
+        "admitted": true,
+        "resource_invalid": false,
+        "child_exit_code": 1
+      }
+    ],
+    "interpretation": "The guest child exit reflects the acceptance-driver assertion at guest_copy_after_navigation. Each run's final journal decision retained admission and resource validity."
+  },
+  "verification": [
+    {
+      "case_id": "EXT-F-1007-T07",
+      "run_id": 37721838779,
+      "warm_verdict": "passed",
+      "reload_verdict": "unverified_not_reached",
+      "evidence": {
+        "start": {
+          "article_top": 0,
+          "page_y": 0,
+          "follow_on": false,
+          "follow_off": true
+        },
+        "following": {
+          "article_top": 310,
+          "page_y": 650,
+          "follow_on": true,
+          "follow_off": false
+        },
+        "armed_after_trusted_stop": {
+          "article_top": 310,
+          "page_y": 650,
+          "follow_on": false,
+          "follow_off": true
+        },
+        "stopped_after_reverse_page_scroll": {
+          "article_top": 310,
+          "page_y": 0,
+          "follow_on": false,
+          "follow_off": true
+        },
+        "driver_passed": true
+      },
+      "limitation": "The driver stopped before extension reload; no reload T07 result was recorded."
+    },
+    {
+      "case_id": "EXT-F-1007-T09",
+      "run_id": 37721838779,
+      "status": "partial",
+      "intake_warm": {
+        "option_count": 22,
+        "options": [
+          {
+            "menu": "Copy capture",
+            "choices": ["Markdown", "Plain text", "Page URL", "For AI agent"]
+          },
+          { "menu": "Copy article", "choices": ["Markdown", "Plain text", "For AI agent"] },
+          { "menu": "Copy images", "choices": ["Markdown", "URLs (one per line)", "For AI agent"] },
+          { "menu": "Copy videos", "choices": ["Markdown", "URLs (one per line)", "For AI agent"] },
+          { "menu": "Copy links", "choices": ["Markdown", "URLs (one per line)", "For AI agent"] },
+          { "menu": "Copy SEO audit", "choices": ["Markdown", "Plain text", "For AI agent"] },
+          { "menu": "Copy schema", "choices": ["Markdown", "JSON", "For AI agent"] }
+        ],
+        "each_option": {
+          "menu_correct": true,
+          "clipboard_read_succeeded": true,
+          "sentinel_replaced": true,
+          "format_correct": true,
+          "read_permission_restored": true
+        },
+        "clipboard_contents_recorded": false
+      },
+      "referrals_warm": {
+        "driver_stage": "guest_copy_after_navigation",
+        "attempted_action": "Resolve and click the Copy capture title in the referrals copy-menu pass",
+        "verdict": "failed_before_a_referrals_copy_option_was_completed_or_recorded",
+        "failure_code": "pointer_target_not_unique",
+        "matched_target_count": 0,
+        "visible_match_count": 0
+      },
+      "reload_verdict": "unverified_not_reached",
+      "limitation": "No referrals menu option result or post-reload copy result was recorded. Raw clipboard values are omitted."
+    },
+    {
+      "other_cases": {
+        "EXT-F-1007-T20": "partial",
+        "EXT-F-1007-T01": "partial",
+        "EXT-F-1007-T08": "partial",
+        "EXT-F-1007-T10": "partial",
+        "EXT-F-1007-T11": "partial",
+        "EXT-F-1007-T12": "partial",
+        "EXT-F-1007-T13": "partial",
+        "EXT-F-1007-T02": "partial"
+      },
+      "scope": "These statuses and observations are transcribed from the current run receipt only; no completion verdict is inferred."
+    }
+  ],
+  "originals_directory": ".research/scrape-scroll-native-retest-20261007-run37721838779-originals",
+  "originals_note": "Contains the unmodified downloaded artifact, including all three current-run resource journals, receipt, and screenshots. The artifact also included prior run 37105304739 journals; they are retained here and excluded from current-run admission. The run receipt records clipboard result booleans only; this curated report contains no clipboard or credential values.",
+  "no_retry": true,
+  "next_action": "Root owns the native interaction failure and any defect triage. Keep EXT-D-0163 open; warm T07 passed, while reload T07, referrals T09, and reload T09 remain unverified."
+}
