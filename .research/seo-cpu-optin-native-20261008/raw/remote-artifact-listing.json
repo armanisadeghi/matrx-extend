@@ -1,0 +1,18 @@
+{
+  "artifacts": [
+    {
+      "created_at": "2026-10-08T12:43:21Z",
+      "expired": false,
+      "id": 11551077906,
+      "name": "hosted-guest-37777965952-1",
+      "size_in_bytes": 64899,
+      "workflow_run": {
+        "head_branch": "main",
+        "head_repository_id": 1225111202,
+        "head_sha": "a3c12998334b8bdf89e3d379ef80faa148bccdd7",
+        "id": 37777965952,
+        "repository_id": 1225111202
+      }
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "artifact_id": 11551077906,
+  "artifact_name": "hosted-guest-37777965952-1",
+  "files": [
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37105304739-1.jsonl",
+      "size_bytes": 1532,
+      "sha256": "6c45eac59dd17d7194ac61d92a8571331e9db92593361e9a622a461786b58dea"
+    },
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37724762467-1.jsonl",
+      "size_bytes": 991,
+      "sha256": "70dd9b6fb4de6e5f119e939acd296782dfb56cf5cdd091c056f09d73c18a0344"
+    },
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37777965952-1.jsonl",
+      "size_bytes": 988,
+      "sha256": "e07354f7e6ff83e9fa07ffb2b413f47acf9f42afa8282922865692d5749b6a7a"
+    },
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37105304739-1.jsonl",
+      "size_bytes": 1530,
+      "sha256": "1a2654d74ad70721a101c9710333ced8d23da567266d2f5653db2849e8ea51d2"
+    },
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37724762467-1.jsonl",
+      "size_bytes": 6443,
+      "sha256": "c36252c0fe502603e65d7fb7a4435642035ebacadc52757c1930fffe04e33d3a"
+    },
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37777965952-1.jsonl",
+      "size_bytes": 18217,
+      "sha256": "651c51216765a046dd349f3dea8987600acba5331512e05f172061636558b3ff"
+    },
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37105304739-1.jsonl",
+      "size_bytes": 1057,
+      "sha256": "15fbd74ef4739e033a278c80463ff29b182947b96eb802f93473d88c6e978692"
+    },
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37724762467-1.jsonl",
+      "size_bytes": 986,
+      "sha256": "3410f7e6f9442f56e34a9bd6f9c381de721bff440e31487f370e0d094733e3a0"
+    },
+    {
+      "path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37777965952-1.jsonl",
+      "size_bytes": 984,
+      "sha256": "0aa976a9188b313c3ceddb57ad70e9c264d1e009b2a879949f592717bb15b230"
+    },
+    {
+      "path": "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-wOVJyw/native-side-panel.png",
+      "size_bytes": 26403,
+      "sha256": "1d63139057f53ee3ac982ae29568b45d67ea403a3e151bad798d84a8c3d27f1a"
+    },
+    {
+      "path": "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-wOVJyw/normal-target-after-open.png",
+      "size_bytes": 25178,
+      "sha256": "60d95c01c8bf5fa8f0807e1aed08d2adb43b4a5532190ae0eadd54c5e3aef79c"
+    },
+    {
+      "path": "matrx-extend/matrx-extend/test-results/seo-guest-acceptance.json",
+      "size_bytes": 33286,
+      "sha256": "3e8e971e8477f555fd639466ce9827d8a7d529c07b16f58d68910f8a768d0eae"
+    }
+  ]
+}

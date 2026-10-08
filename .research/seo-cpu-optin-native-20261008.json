@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "task_id": "seo-cpu-optin-native-20261008",
+  "status": "COMPLETED_DIAGNOSTIC_ONLY_NO_ACCEPTANCE_CREDIT",
+  "lane": "A hosted guest SEO CPU diagnostic",
+  "workflow": {
+    "run_id": 37777965952,
+    "job_id": 113313525640,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37777965952",
+    "head_sha": "a3c12998334b8bdf89e3d379ef80faa148bccdd7",
+    "conclusion": "success",
+    "started_at": "2026-10-08T12:35:32Z",
+    "completed_at": "2026-10-08T12:43:25Z",
+    "dispatch_inputs": {
+      "acceptance_lane": "A",
+      "acceptance_case": "guest-seo",
+      "seo_case_scope": "full",
+      "seo_metadata_fixture": "airbnb",
+      "seo_resource_diagnostic": true,
+      "development_run_id": 37754055905,
+      "development_artifact_id": 11539827040
+    },
+    "resource_permits": {
+      "package": "valid",
+      "browser": "valid",
+      "guest_acceptance": "valid"
+    },
+    "secrets": "none touched; guest lane"
+  },
+  "frozen_product": {
+    "development_run_id": 37754055905,
+    "development_artifact_id": 11539827040,
+    "artifact_digest": "sha256:1b883fc212351a6ef30e3b6cc43f9cb1a03c8584affaf3ffecdf679c59087893",
+    "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "tree_sha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+    "extension_version": "0.2.407",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "before_after_tree_match": true
+  },
+  "receipt": {
+    "status": "diagnostic_only",
+    "evidence_classification": "DIAGNOSTIC_ONLY_NO_ACCEPTANCE_CREDIT",
+    "diagnostic_source_status": "partial",
+    "acceptance_targets": 0,
+    "diagnostic_targets": 24,
+    "last_safe_stage": "metadata_fixture_bounded_observation_complete",
+    "last_safe_observable": {
+      "source_url": "https://www.airbnb.com/",
+      "alternate_count": 96,
+      "schema_type_count": 2,
+      "door_status": "pass"
+    },
+    "airbnb_t09_diagnostic": {
+      "status": "pass",
+      "alternate_lang": "es-US",
+      "alternate_host": "es.airbnb.com",
+      "schema_type": "WebSite",
+      "schema_host": "schema.org"
+    },
+    "acceptance_credit": "none; the receipt is diagnostic-only"
+  },
+  "resource_observation": {
+    "unsafe_watch": false,
+    "final_decision": "valid",
+    "high_cpu_pending_interval": {
+      "watch_at": "2026-10-08T12:42:17.216Z",
+      "iostat_start": "2026-10-08T12:42:16.021Z",
+      "iostat_complete": "2026-10-08T12:42:17.178Z",
+      "cpu_busy_fraction": 0.91,
+      "one_minute_load": 2.03,
+      "matched_cpu_seconds": {
+        "ownedChromium": 2.71,
+        "ownedOther": 0.29,
+        "hostProvisioner": 0.48,
+        "otherHost": 0.09
+      },
+      "owned_pid_counts": {
+        "start": 18,
+        "end": 17,
+        "unmatched_or_exited": 3,
+        "appeared": 2
+      },
+      "interpretation": "Chromium accounts for most matched process CPU time in this high-busy pending interval, making browser/driver profiling at this stage the lead. The resource guard later recovered; this was not a sustained unsafe episode."
+    },
+    "later_pending_state_samples": [
+      {
+        "watch_at": "2026-10-08T12:42:46.107Z",
+        "cpu_busy_fraction": 0.01,
+        "iostat_start": "2026-10-08T12:42:45.051Z",
+        "iostat_complete": "2026-10-08T12:42:46.084Z",
+        "matched_cpu_seconds": {
+          "ownedChromium": 0,
+          "ownedOther": 0,
+          "hostProvisioner": 0.01,
+          "otherHost": 0.01
+        },
+        "owned_pid_counts": {
+          "start": 0,
+          "end": 0,
+          "unmatched_or_exited": 1,
+          "appeared": 1
+        }
+      },
+      {
+        "watch_at": "2026-10-08T12:43:02.205Z",
+        "cpu_busy_fraction": 0.37,
+        "iostat_start": "2026-10-08T12:43:01.159Z",
+        "iostat_complete": "2026-10-08T12:43:02.168Z",
+        "matched_cpu_seconds": {
+          "ownedChromium": 0,
+          "ownedOther": 0,
+          "hostProvisioner": 0.53,
+          "otherHost": 0.18
+        },
+        "owned_pid_counts": {
+          "start": 0,
+          "end": 0,
+          "unmatched_or_exited": 1,
+          "appeared": 2
+        }
+      }
+    ],
+    "limitations": [
+      "No RESOURCE_WATCH_UNSAFE event occurred, so there is no unsafe interval to attribute.",
+      "The bracket intersects PIDs present in both snapshots. Exited, new, reparented, or reused PIDs remain unmatched and can make an interval inconclusive.",
+      "ps CPU-time values have centisecond resolution; snapshot brackets do not equal the full iostat interval.",
+      "Short-lived ps census CPU overhead was not measured, and these brackets cannot estimate its CPU bias."
+    ],
+    "resource_guard_changes": "none"
+  },
+  "retained_evidence": {
+    "raw_directory": ".research/seo-cpu-optin-native-20261008/raw/",
+    "receipt": ".research/seo-cpu-optin-native-20261008/raw/seo-guest-acceptance.json",
+    "resource_journals": [
+      "hosted-package-37777965952-1.jsonl",
+      "hosted-browser-37777965952-1.jsonl",
+      "hosted-guest-37777965952-1.jsonl"
+    ],
+    "bracket_event_extract": "bracket-event-lines.txt",
+    "bracket_summary": "resource-event-summary.json",
+    "remote_run_metadata": "hosted-run-metadata.json",
+    "remote_artifact_listing": "remote-artifact-listing.json",
+    "uploaded_artifact_manifest": "uploaded-artifact-file-manifest.json",
+    "frozen_artifact_import_observation": "imported-artifact-observation.json",
+    "uploaded_receipt_sha256": "3e8e971e8477f555fd639466ce9827d8a7d529c07b16f58d68910f8a768d0eae",
+    "native_artifact_id": 11551077906
+  },
+  "scope_limits": [
+    "One hosted opt-in diagnostic attempt was made; no retry was dispatched.",
+    "The diagnostic receipt and all 24 diagnostic targets earn zero acceptance credit.",
+    "No build, release, deployment, source change, inventory change, or secret access occurred."
+  ],
+  "next_action": "Use the owned-Chromium CPU-time lead to profile this guest SEO stage in a separate engineering task. Keep native guest SEO acceptance unverified until a separate uninstrumented run produces an acceptance receipt."
+}

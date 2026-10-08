@@ -1,0 +1,575 @@
+[
+  {
+    "event": "RESOURCE_WATCH_HEALTHY",
+    "at": "2026-10-08T12:41:44.447Z",
+    "busy": 0.42,
+    "load": 1.08,
+    "reasons": []
+  },
+  {
+    "event": "bracket",
+    "at": "2026-10-08T12:41:44.514Z",
+    "iostatStartedAt": "2026-10-08T12:41:43.395Z",
+    "iostatCompletedAt": "2026-10-08T12:41:44.412Z",
+    "categories": {
+      "ownedChromium": 0,
+      "ownedOther": 1.09,
+      "hostProvisioner": 0.01,
+      "otherHost": 0.36
+    },
+    "ownedAtStartCount": 2,
+    "ownedAtEndCount": 2,
+    "unmatchedCount": 1,
+    "appearedCount": 1,
+    "observed": [
+      {
+        "exe": "fseventsd",
+        "category": "otherHost",
+        "delta": 0.1
+      },
+      {
+        "exe": "mds",
+        "category": "otherHost",
+        "delta": 0.23
+      },
+      {
+        "exe": "Finder",
+        "category": "otherHost",
+        "delta": 0.02
+      },
+      {
+        "exe": "provjobd28789935",
+        "category": "hostProvisioner",
+        "delta": 0.01
+      },
+      {
+        "exe": "node",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "node",
+        "category": "ownedOther",
+        "delta": 0
+      },
+      {
+        "exe": "node",
+        "category": "ownedOther",
+        "delta": 1.09
+      }
+    ]
+  },
+  {
+    "event": "RESOURCE_WATCH_HEALTHY",
+    "at": "2026-10-08T12:42:00.634Z",
+    "busy": 0.48,
+    "load": 1.42,
+    "reasons": []
+  },
+  {
+    "event": "bracket",
+    "at": "2026-10-08T12:42:00.638Z",
+    "iostatStartedAt": "2026-10-08T12:41:59.582Z",
+    "iostatCompletedAt": "2026-10-08T12:42:00.594Z",
+    "categories": {
+      "ownedChromium": 0.7,
+      "ownedOther": 0.1,
+      "hostProvisioner": 0.09,
+      "otherHost": 0.52
+    },
+    "ownedAtStartCount": 12,
+    "ownedAtEndCount": 13,
+    "unmatchedCount": 1,
+    "appearedCount": 4,
+    "observed": [
+      {
+        "exe": "launchd",
+        "category": "otherHost",
+        "delta": 0.02
+      },
+      {
+        "exe": "logd",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "fseventsd",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "powerd",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "opendirectoryd",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "usermanagerd",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "runningboardd",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "WindowServer",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "lsd",
+        "category": "otherHost",
+        "delta": 0.05
+      },
+      {
+        "exe": "trustd",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "mobileassetd",
+        "category": "otherHost",
+        "delta": 0.07
+      },
+      {
+        "exe": "nehelper",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "syspolicyd",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "nsurlsessiond",
+        "category": "otherHost",
+        "delta": 0.05
+      },
+      {
+        "exe": "UserEventAgent",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "WindowManager",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "Finder",
+        "category": "otherHost",
+        "delta": 0.02
+      },
+      {
+        "exe": "lsd",
+        "category": "otherHost",
+        "delta": 0.06
+      },
+      {
+        "exe": "axassetsd",
+        "category": "otherHost",
+        "delta": 0.03
+      },
+      {
+        "exe": "pbs",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "fontd",
+        "category": "otherHost",
+        "delta": 0.02
+      },
+      {
+        "exe": "mdbulkimport",
+        "category": "otherHost",
+        "delta": 0.06
+      },
+      {
+        "exe": "AssetCacheLocato",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "provjobd28789935",
+        "category": "hostProvisioner",
+        "delta": 0.09
+      },
+      {
+        "exe": "node",
+        "category": "ownedOther",
+        "delta": 0
+      },
+      {
+        "exe": "node",
+        "category": "ownedOther",
+        "delta": 0.1
+      },
+      {
+        "exe": "Chromium",
+        "category": "ownedChromium",
+        "delta": 0.18
+      },
+      {
+        "exe": "Chromium Helper",
+        "category": "ownedChromium",
+        "delta": 0.05
+      },
+      {
+        "exe": "Chromium Helper",
+        "category": "ownedChromium",
+        "delta": 0.01
+      },
+      {
+        "exe": "Chromium Helper",
+        "category": "ownedChromium",
+        "delta": 0
+      },
+      {
+        "exe": "Chromium Helper",
+        "category": "ownedChromium",
+        "delta": 0.01
+      },
+      {
+        "exe": "Chromium Helper",
+        "category": "ownedChromium",
+        "delta": 0
+      },
+      {
+        "exe": "Chromium Helper",
+        "category": "ownedChromium",
+        "delta": 0.18
+      },
+      {
+        "exe": "Chromium Helper",
+        "category": "ownedChromium",
+        "delta": 0
+      },
+      {
+        "exe": "Chromium Helper",
+        "category": "ownedChromium",
+        "delta": 0.03
+      },
+      {
+        "exe": "Chromium Helper",
+        "category": "ownedChromium",
+        "delta": 0.24
+      }
+    ]
+  },
+  {
+    "event": "RESOURCE_CPU_PENDING",
+    "at": "2026-10-08T12:42:17.216Z",
+    "busy": 0.91,
+    "load": 2.03,
+    "reasons": ["RESOURCE_CPU_BUSY"]
+  },
+  {
+    "event": "bracket",
+    "at": "2026-10-08T12:42:17.225Z",
+    "iostatStartedAt": "2026-10-08T12:42:16.021Z",
+    "iostatCompletedAt": "2026-10-08T12:42:17.178Z",
+    "categories": {
+      "ownedChromium": 2.71,
+      "ownedOther": 0.29,
+      "hostProvisioner": 0.48,
+      "otherHost": 0.09
+    },
+    "ownedAtStartCount": 18,
+    "ownedAtEndCount": 17,
+    "unmatchedCount": 3,
+    "appearedCount": 2,
+    "observed": [
+      {
+        "exe": "launchd",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "logd",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "mds",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "airportd",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "mDNSResponder",
+        "category": "otherHost",
+        "delta": 0.02
+      },
+      {
+        "exe": "UserEventAgent",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "provjobd28789935",
+        "category": "hostProvisioner",
+        "delta": 0.48
+      },
+      {
+        "exe": "Runner.Worker",
+        "category": "otherHost",
+        "delta": 0.02
+      },
+      {
+        "exe": "node",
+        "category": "ownedOther",
+        "delta": 0
+      },
+      {
+        "exe": "node",
+        "category": "ownedOther",
+        "delta": 0.29
+      },
+      {
+        "exe": "Chromium",
+        "category": "ownedChromium",
+        "delta": 0.46
+      },
+      {
+        "exe": "Chromium Helper",
+        "category": "ownedChromium",
+        "delta": 0.26
+      },
+      {
+        "exe": "Chromium Helper",
+        "category": "ownedChromium",
+        "delta": 0.31
+      },
+      {
+        "exe": "Chromium Helper",
+        "category": "ownedChromium",
+        "delta": 0.01
+      },
+      {
+        "exe": "Chromium Helper",
+        "category": "ownedChromium",
+        "delta": 0.01
+      },
+      {
+        "exe": "Chromium Helper",
+        "category": "ownedChromium",
+        "delta": 0.09
+      },
+      {
+        "exe": "Chromium Helper",
+        "category": "ownedChromium",
+        "delta": 0
+      },
+      {
+        "exe": "Chromium Helper",
+        "category": "ownedChromium",
+        "delta": 0
+      },
+      {
+        "exe": "Chromium Helper",
+        "category": "ownedChromium",
+        "delta": 0
+      },
+      {
+        "exe": "Chromium Helper",
+        "category": "ownedChromium",
+        "delta": 0
+      },
+      {
+        "exe": "Chromium Helper",
+        "category": "ownedChromium",
+        "delta": 0
+      },
+      {
+        "exe": "Chromium Helper",
+        "category": "ownedChromium",
+        "delta": 0.01
+      },
+      {
+        "exe": "Chromium Helper",
+        "category": "ownedChromium",
+        "delta": 0.11
+      },
+      {
+        "exe": "Chromium Helper",
+        "category": "ownedChromium",
+        "delta": 1.45
+      },
+      {
+        "exe": "Chromium Helper",
+        "category": "ownedChromium",
+        "delta": 0
+      }
+    ]
+  },
+  {
+    "event": "RESOURCE_CPU_PENDING",
+    "at": "2026-10-08T12:42:46.107Z",
+    "busy": 0.01,
+    "load": 1.64,
+    "reasons": []
+  },
+  {
+    "event": "bracket",
+    "at": "2026-10-08T12:42:46.119Z",
+    "iostatStartedAt": "2026-10-08T12:42:45.051Z",
+    "iostatCompletedAt": "2026-10-08T12:42:46.084Z",
+    "categories": {
+      "ownedChromium": 0,
+      "ownedOther": 0,
+      "hostProvisioner": 0.01,
+      "otherHost": 0.01
+    },
+    "ownedAtStartCount": 0,
+    "ownedAtEndCount": 0,
+    "unmatchedCount": 1,
+    "appearedCount": 1,
+    "observed": [
+      {
+        "exe": "runningboardd",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "provjobd28789935",
+        "category": "hostProvisioner",
+        "delta": 0.01
+      }
+    ]
+  },
+  {
+    "event": "RESOURCE_CPU_PENDING",
+    "at": "2026-10-08T12:43:02.205Z",
+    "busy": 0.37,
+    "load": 1.66,
+    "reasons": []
+  },
+  {
+    "event": "bracket",
+    "at": "2026-10-08T12:43:02.228Z",
+    "iostatStartedAt": "2026-10-08T12:43:01.159Z",
+    "iostatCompletedAt": "2026-10-08T12:43:02.168Z",
+    "categories": {
+      "ownedChromium": 0,
+      "ownedOther": 0,
+      "hostProvisioner": 0.53,
+      "otherHost": 0.18
+    },
+    "ownedAtStartCount": 0,
+    "ownedAtEndCount": 0,
+    "unmatchedCount": 1,
+    "appearedCount": 2,
+    "observed": [
+      {
+        "exe": "launchd",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "airportd",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "mobileassetd",
+        "category": "otherHost",
+        "delta": 0.03
+      },
+      {
+        "exe": "UserEventAgent",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "pkd",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "axassetsd",
+        "category": "otherHost",
+        "delta": 0.09
+      },
+      {
+        "exe": "provjobd28789935",
+        "category": "hostProvisioner",
+        "delta": 0.53
+      },
+      {
+        "exe": "Runner.Worker",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "node",
+        "category": "otherHost",
+        "delta": 0.01
+      }
+    ]
+  },
+  {
+    "event": "bracket",
+    "at": "2026-10-08T12:43:18.395Z",
+    "iostatStartedAt": "2026-10-08T12:43:17.278Z",
+    "iostatCompletedAt": "2026-10-08T12:43:18.360Z",
+    "categories": {
+      "ownedChromium": 0,
+      "ownedOther": 0,
+      "hostProvisioner": 0.02,
+      "otherHost": 0.06
+    },
+    "ownedAtStartCount": 0,
+    "ownedAtEndCount": 0,
+    "unmatchedCount": 1,
+    "appearedCount": 3,
+    "observed": [
+      {
+        "exe": "launchd",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "logd",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "opendirectoryd",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "notifyd",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "provjobd28789935",
+        "category": "hostProvisioner",
+        "delta": 0.02
+      },
+      {
+        "exe": "Runner.Worker",
+        "category": "otherHost",
+        "delta": 0.01
+      },
+      {
+        "exe": "node",
+        "category": "otherHost",
+        "delta": 0.01
+      }
+    ]
+  }
+]
