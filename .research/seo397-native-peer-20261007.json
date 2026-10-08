@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "review_type": "fresh_independent_native_evidence_peer",
+  "status": "DONE_WITH_CONCERNS",
+  "reviewed_commit": "34d628239923b75766476f9d5c856ca2f36f7d0c",
+  "reviewed_run": 37731560399,
+  "verdict_a_case_scope": {
+    "result": "ACCEPT_BOUNDED_PARTIAL",
+    "feature_id": "EXT-F-1008",
+    "inventory_correction": "EXT-F-1009 is screenshot capture, not SEO; the SEO inventory controls and cases are EXT-F-1008-C01 through C14 and T01 through T14.",
+    "observed_case_mapping": {
+      "EXT-F-1008-T01": {
+        "control": "EXT-F-1008-C01",
+        "passed_subtargets": 2,
+        "case_status": "partial",
+        "remaining": [
+          "one audit per URL",
+          "slow old result cannot overwrite new page"
+        ]
+      },
+      "EXT-F-1008-T02": {
+        "control": "EXT-F-1008-C02",
+        "passed_subtargets": 1,
+        "case_status": "partial",
+        "remaining": [
+          "fresh capture and updated audit",
+          "running button state",
+          "stale advice cleared",
+          "failure report"
+        ]
+      },
+      "EXT-F-1008-T03": {
+        "control": "EXT-F-1008-C03",
+        "passed_subtargets": 2,
+        "case_status": "partial",
+        "remaining": [
+          "unreachable HTTP(S)",
+          "other restricted schemes",
+          "reload behavior"
+        ]
+      },
+      "EXT-F-1008-T07": {
+        "control": "EXT-F-1008-C07",
+        "passed_subtargets": 5,
+        "case_status": "partial",
+        "remaining": [
+          "member and admin role gates",
+          "admin JSON content"
+        ]
+      },
+      "EXT-F-1008-T09": {
+        "control": "EXT-F-1008-C09",
+        "passed_subtargets": 9,
+        "unverified_subtargets": 1,
+        "case_status": "partial",
+        "remaining": [
+          "hreflang and schema outbound activation",
+          "readability value correctness",
+          "broken social preview image",
+          "other detail controls"
+        ]
+      }
+    },
+    "unobserved_cases": [
+      "EXT-F-1008-T04",
+      "EXT-F-1008-T05",
+      "EXT-F-1008-T06",
+      "EXT-F-1008-T08",
+      "EXT-F-1008-T10",
+      "EXT-F-1008-T11",
+      "EXT-F-1008-T12",
+      "EXT-F-1008-T13",
+      "EXT-F-1008-T14"
+    ],
+    "dimensions": {
+      "warm_owned_panel": "observed on public pages",
+      "panel_document_reload": "observed: Page.reload and fresh document time origin, with SEO reselected before current-page and guest-copy checks",
+      "full_extension_reload": "unverified",
+      "consumer": "guest on CI development artifact 0.2.397 only; member, admin, published Store and current-main behavior unverified"
+    },
+    "metadata_door_boundary": "Wikipedia manual DOM showed zero hreflang alternates and three schema types, but no unique hreflang plus openable schema candidate pair. The door activation subtarget is correctly unverified. The optional Airbnb continuation is conditional on SEO_GUEST_METADATA_FIXTURE=airbnb; the hosted guest-seo route supplies no such input, and this receipt has no Airbnb target."
+  },
+  "verdict_b_evidence_quality": {
+    "result": "ACCEPT_WITH_LIMITS",
+    "native_run": "Guest job and native case step succeeded on macos-15 ARM64; the three original package/browser/guest resource journals each show admission, child exit 0 and final valid. These are run-health evidence, not proof of every case expectation.",
+    "identity": "The imported CI development product source is cedcec02a3fb4e52a3f63ebfda8728809eff418a, run 37724859892 artifact 11527132614. The hosted driver checkout is 11564fe786ca47bade2c33718710504ed145eb66. The original receipt records the same 0.2.397 tree SHA-256 before and after; the driver checkout is not the product source or a Store artifact.",
+    "originals": "All six curated originals match the byte sizes and SHA-256 values in the reviewed report. The original receipt has exactly 19 pass and one unverified subtarget, mapped to five SEO cases. The two screenshots show a native guest panel/target context but do not themselves prove the SEO predicates. The workflow artifact digest and CI imported bytes were not independently downloaded or recomputed in this peer review.",
+    "trusted_control": "The driver uses scoped click actions for Re-audit and copy choices, checks a copied-state icon, then reads actual navigator.clipboard text under a temporary browser clipboard-read permission that is restored in finally. It verifies text against public title, URL and heading and checks the AI wrapper against the exact summary. This supports guest Text/AI clipboard subtargets, not JSON or other roles. Canonical outbound activation uses mouse press/release and verifies a new tab at the public DOM destination.",
+    "data_oracle_limit": "The receipt explicitly marks the automatic Wikipedia snapshot's exact data unverified: its 1,784 internal links and 28 images differ from the later stable public DOM's 1,785 and 29. The driver compares the manual re-audit only after before/after public DOM samples agree. Readability is checked for populated numeric/display fields, not independent metric correctness; performance is checked against the current navigation entry and HTTP status.",
+    "scope_limit": "This was a read-only artifact and source review. No native rerun, browser test, build, release, source change or inventory change was performed."
+  },
+  "sources": [
+    ".research/seo397-guest-native-20261007.json",
+    ".research/seo397-guest-native-20261007-originals/",
+    "docs/stabilization/inventory.json",
+    "tests/browser/seo-guest-acceptance.mjs",
+    "tests/browser/seo-guest-clipboard.mjs",
+    "tests/browser/clipboard-observation.mjs",
+    "scripts/hosted-seo-route.mjs",
+    ".github/workflows/hosted-guest-acceptance.yml"
+  ]
+}
