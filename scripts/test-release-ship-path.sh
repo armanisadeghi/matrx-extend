@@ -128,7 +128,9 @@ case " \$* " in
     printf '{"name":"@ai-matrx/fixture","version":"%s"}\n' "\$to" > node_modules/@ai-matrx/fixture/package.json
     if [ -f "$SANDBOX/changelog-action" ]; then note='**Consumer action:** delete your local copy of the helper.'; else note='No consumer action.'; fi
     printf '# Changelog\n\n## %s\n\n%s\n' "\$to" "\$note" > node_modules/@ai-matrx/fixture/CHANGELOG.md
-    echo "  /@ai-matrx/fixture@\$to:" >> pnpm-lock.yaml
+    # install-lag: the committed lockfile was already current and only the
+    # install lagged it, so the update moves node_modules and not the lockfile.
+    [ -f "$SANDBOX/install-lag" ] || echo "  /@ai-matrx/fixture@\$to:" >> pnpm-lock.yaml
     [ -f "$SANDBOX/stale-forever" ] || rm -f "$SANDBOX/stale-packages" ;;
   *" lint "*) [ -f "$SANDBOX/fail-lint" ] && exit 1 ;;
   *" exec vitest run --maxWorkers=4 "*)
@@ -530,6 +532,14 @@ check "the caught-up lockfile is in the release"       'git show origin/main:pnp
 check "the catch-up commit is in main"                 '[[ -n "$(git log --format=%s --grep="catch up @ai-matrx packages" origin/main)" ]]'
 check "the package gate ran again on the new candidate" '[[ $(( $(grep -c "check:matrx-packages" "$SANDBOX/pnpm-calls") - PKG_CHECKS_BEFORE )) -eq 2 ]]'
 check "the replaced candidate leaves no ERROR"         '! grep -q "^ERROR .*matrx-packages failed" "$SANDBOX/catchup-out"'
+# An install that lags a lockfile which is already current is not a stop: the
+# update fixes the install and the same candidate is checked again in full.
+touch "$SANDBOX/stale-packages" "$SANDBOX/install-lag"; PKG_CHECKS_BEFORE="$(grep -c 'check:matrx-packages' "$SANDBOX/pnpm-calls")"
+LAG_STATUS=0; run_release install-lag-out || LAG_STATUS=$?
+rm -f "$SANDBOX/install-lag" "$SANDBOX/stale-packages"
+check "an install lagging a current lockfile ships"    '[[ $LAG_STATUS -eq 0 ]] && grep -q "  pushed" "$SANDBOX/install-lag-out"'
+check "the lagging install was rechecked in full"      '[[ $(( $(grep -c "check:matrx-packages" "$SANDBOX/pnpm-calls") - PKG_CHECKS_BEFORE )) -ge 3 ]] && grep -q "the install lagged it" tmp/release-logs/latest.log'
+git fetch -q origin 2>/dev/null || true
 
 # Other agents push main every minute or two; one candidate takes minutes to
 # check. A push that lands WHILE the checks run must be seen then (2026-10-06:
