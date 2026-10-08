@@ -33,6 +33,43 @@ const PHASES = new Set([
   'ownership_unverified',
   'no_owned_fixture_found',
 ]);
+const FIXTURE_ASSERTIONS = new Set([
+  'records_fixture_archive_failed',
+  'records_fixture_archive_id_invalid',
+  'records_fixture_archive_not_confirmed',
+  'records_fixture_archive_not_done',
+  'records_fixture_archive_wrong_org',
+  'records_fixture_archive_wrong_table',
+  'records_fixture_cleanup_id_changed',
+  'records_fixture_cleanup_list_failed',
+  'records_fixture_cleanup_list_incomplete',
+  'records_fixture_cleanup_ownership_ambiguous',
+  'records_fixture_name_not_unique',
+  'records_fixture_preflight_failed',
+  'records_fixture_preflight_incomplete',
+  'records_fixture_principal_mismatch',
+  'records_fixture_prior_still_visible',
+  'records_fixture_recovery_id_invalid',
+  'records_fixture_recovery_list_failed',
+  'records_fixture_recovery_list_incomplete',
+  'records_fixture_recovery_name_invalid',
+  'records_fixture_recovery_shape_invalid',
+  'records_fixture_recovery_verify_failed',
+  'records_fixture_recovery_verify_incomplete',
+  'records_fixture_row_create_failed',
+  'records_fixture_row_id_missing',
+  'records_fixture_row_not_done',
+  'records_fixture_row_value_mismatch',
+  'records_fixture_still_visible',
+  'records_fixture_table_create_failed',
+  'records_fixture_table_id_missing',
+  'records_fixture_table_not_created',
+  'records_fixture_table_not_done',
+  'records_fixture_table_wrong_org',
+  'records_fixture_transport_failed',
+  'records_fixture_verify_list_failed',
+  'records_fixture_verify_list_incomplete',
+]);
 
 // The token and raw REST response remain in the extension context. Only a
 // case-owned synthetic identity and fixed-shape observations cross to Node.
@@ -117,8 +154,7 @@ export async function withRecordsPositiveFixture({
     onStage(value);
   };
   const reportFailure = (boundary, error) => {
-    const fixedAssertion =
-      error instanceof assert.AssertionError && /^records_fixture_[a-z0-9_]+$/.test(error.message);
+    const fixedAssertion = error?.code === 'ERR_ASSERTION' && FIXTURE_ASSERTIONS.has(error.message);
     onFailure({
       boundary,
       phase,
