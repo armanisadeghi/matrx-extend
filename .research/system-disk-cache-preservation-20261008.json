@@ -1,0 +1,12 @@
+{
+  "at": "2026-10-08T19:48:39.553940+00:00",
+  "action": "Preserved inactive pnpm dlx generated cache on external volume, verified every file SHA256/symlink, then removed exact source cache only. No user/application/session/browser data removed.",
+  "source": "/Users/armanisadeghi/Library/Caches/pnpm/dlx",
+  "preserved_copy": "/Volumes/Samsung2TB/code/.stabilization-scratch/pnpm-dlx-preserved-20261008",
+  "verified_entries": 11454,
+  "bytes_preserved": 87479910,
+  "system_free_before": 121335808,
+  "system_free_after": 243298304,
+  "source_absent": true,
+  "limitation": "Disk usage can change concurrently; still below local heavy test floor."
+}

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T19:21:29.499258+00:00",
+  "updated_at": "2026-10-08T19:54:05.008887+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -5070,6 +5070,21 @@
               "independent_review": "4a5a8e98",
               "detail": "Original missing dimensions remain; T04 theme-specific full reload not inferred from general guest reload. See report and prior case result.",
               "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
+            },
+            {
+              "at": "2026-10-08T19:54:05.008887+00:00",
+              "mode": "guest",
+              "run_id": "37833297355",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": true,
+              "evidence": [".research/settings-theme-mode-native-20261008.json"],
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "build_version": "0.2.414",
+              "passed_subtargets": [
+                "Visible rendered theme/background with selected/stored theme across panel reload"
+              ],
+              "unverified": "Full-extension-reload preference recheck; first server action for T10; other role modes. Driver subtarget pass is not full canonical case pass."
             }
           ],
           "preparation_history": [
@@ -5368,6 +5383,21 @@
               "independent_review": "4a5a8e98",
               "detail": "Original missing dimensions remain; T04 theme-specific full reload not inferred from general guest reload. See report and prior case result.",
               "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
+            },
+            {
+              "at": "2026-10-08T19:54:05.008887+00:00",
+              "mode": "guest",
+              "run_id": "37833297355",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": true,
+              "evidence": [".research/settings-theme-mode-native-20261008.json"],
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "build_version": "0.2.414",
+              "passed_subtargets": [
+                "Selected/stored Ask/Act default inherited by real newly created Chat after panel reload"
+              ],
+              "unverified": "Full-extension-reload preference recheck; first server action for T10; other role modes. Driver subtarget pass is not full canonical case pass."
             }
           ],
           "preparation_history": [
@@ -6261,7 +6291,20 @@
               "run_id": "guest-settings-002",
               "evidence": "docs/stabilization/runs/guest-settings-002.json"
             }
-          }
+          },
+          "preparation_history": [
+            {
+              "source_commit": "dbfbb0dc",
+              "focused_ci": "37834349284",
+              "independent_review": "97226f3f",
+              "status": "source-review-findings-repairing-native-pending",
+              "evidence": [
+                ".research/settings-remaining-controls-preparation-20261008.json",
+                ".research/settings-remaining-controls-peer-20261008.json"
+              ],
+              "scope": "T28 visibility/section restoration, T40/T67 toggle+picker storage restoration and real driver guard gaps identified. Source179tests green not sufficient; no native credit."
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T29",
@@ -6928,7 +6971,20 @@
               ]
             }
           },
-          "linked_defects": ["EXT-D-0087"]
+          "linked_defects": ["EXT-D-0087"],
+          "preparation_history": [
+            {
+              "source_commit": "dbfbb0dc",
+              "focused_ci": "37834349284",
+              "independent_review": "97226f3f",
+              "status": "source-review-findings-repairing-native-pending",
+              "evidence": [
+                ".research/settings-remaining-controls-preparation-20261008.json",
+                ".research/settings-remaining-controls-peer-20261008.json"
+              ],
+              "scope": "T28 visibility/section restoration, T40/T67 toggle+picker storage restoration and real driver guard gaps identified. Source179tests green not sufficient; no native credit."
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T41",
@@ -8635,7 +8691,20 @@
               "detail": "Capture and Scroll & capture each persisted after full extension Reload. Restored Capture and verified after final reload."
             }
           },
-          "linked_defects": ["EXT-D-0087"]
+          "linked_defects": ["EXT-D-0087"],
+          "preparation_history": [
+            {
+              "source_commit": "dbfbb0dc",
+              "focused_ci": "37834349284",
+              "independent_review": "97226f3f",
+              "status": "source-review-findings-repairing-native-pending",
+              "evidence": [
+                ".research/settings-remaining-controls-preparation-20261008.json",
+                ".research/settings-remaining-controls-peer-20261008.json"
+              ],
+              "scope": "T28 visibility/section restoration, T40/T67 toggle+picker storage restoration and real driver guard gaps identified. Source179tests green not sufficient; no native credit."
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T68",
