@@ -70,6 +70,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Focused Settings acceptance guards
+        run: |
+          node --test tests/browser/audit-key-native-faults.test.mjs
+          node --test tests/browser/settings-panel-driver.guest.test.mjs
+
       - name: Typecheck
         run: pnpm compile
 
@@ -159,8 +164,6 @@ jobs:
           node --test tests/browser/guest-chat-completion-oracle.test.mjs tests/browser/guest-chat-transport-observer.test.mjs tests/browser/guest-chat-store-sequence.test.mjs
           node --test tests/browser/native-sidepanel-qa-harness.test.mjs
           node --test tests/browser/scrape-headed-launch.test.mjs
-          node --test tests/browser/audit-key-native-faults.test.mjs
-          node --test tests/browser/settings-panel-driver.guest.test.mjs
           node --test tests/browser/authenticated-panel-host.test.mjs tests/browser/settings-native-auth-driver.test.mjs tests/browser/showcase-organization-diagnostic.test.mjs tests/browser/showcase-card-driver.test.mjs tests/browser/showcase-selection-diagnostic.test.mjs tests/browser/showcase-completion-diagnostic.test.mjs tests/browser/showcase-stale-runtime-boundary.test.mjs tests/browser/panel-transition-recorder.test.mjs
           node --test scripts/hosted-profile-route.test.mjs scripts/hosted-scrape-route.test.mjs scripts/hosted-showcase-route.test.mjs
           node --test tests/browser/showcase-d47-driver-evidence.test.mjs
