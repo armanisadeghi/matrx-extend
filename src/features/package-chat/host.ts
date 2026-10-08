@@ -7,6 +7,7 @@
  */
 
 import { STORAGE_KEYS } from '@/config/env';
+import { SpeakerButton } from '@/features/chat/SpeakerButton';
 import { buildHeaders, getApiBaseUrl } from '@/lib/api/client';
 import { send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -22,6 +23,7 @@ import type {
   ChatOrgPort,
   ChatOrganization,
 } from '@ai-matrx/chat/host';
+import { registerChatUi } from '@ai-matrx/chat/host/ui-slots';
 import { memoryNavigation, restoreChatAddress } from './memory-navigation';
 import { registerExtensionToolRenderers } from './tool-renderers';
 
@@ -86,6 +88,8 @@ async function invokeDeviceTool(
 /** Build the host once the backend address and organization are known. */
 export async function createExtensionChatHost(): Promise<ChatHost> {
   registerExtensionToolRenderers();
+  // Read-aloud in the package chat: the extension's Cartesia speaker behind media's ReadAloudButton.
+  registerChatUi({ SpeakerButton });
   const [baseUrl, org] = await Promise.all([getApiBaseUrl(), Promise.resolve(createPanelOrg())]);
   await Promise.all([org.refresh(), restoreChatAddress()]);
   return {
