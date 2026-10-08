@@ -31,7 +31,7 @@
   ],
   "verification": {
     "local_source_check": "node --test tests/browser/settings-guest-preference-batch.test.mjs; node --check both changed runners: passed",
-    "automatic_focused_ci": "package.json test:focused-acceptance includes the new self-check; exact pushed CI result pending",
+    "automatic_focused_ci": "Run 37712443593 succeeded for exact source 601590d580dcaae168eb251dda719075dd47585e; source self-check only, not native acceptance.",
     "native": "Not run by this lane; requires frozen artifact and hosted fixture coordination."
   },
   "verdict_limit": "This is a source-reviewed executable candidate. No case or feature inventory verdict changes until resource-valid native evidence and independent review."
