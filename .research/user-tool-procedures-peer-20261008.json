@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent-procedure-review",
+  "reviewed_commit": "6aa2b7863a1663f294887073551721361073494d",
+  "reviewed_path": ".research/user-tool-procedures-20261008.json",
+  "scope": "Static source review of four proposed inventory procedures; no Chrome run, role login, backend call, or canonical inventory edit.",
+  "verdicts": {
+    "EXT-F-4121-T01": {
+      "A_procedure_usability": "PARTIAL",
+      "B_source_quality": "PARTIAL",
+      "finding": "The choice, cancellation and invalid-options inputs match the handler and card. But the card is in Chat while Run and result state live in Tools. Switching to Chat to answer unmounts Tools, so the proposed inline result inspection after answering is not reproducible in this side panel. Record the card response separately or provide a durable result surface before treating the output assertion as observed. Permission denial and agent message persistence correctly remain unverified.",
+      "severity": "Important",
+      "evidence": [
+        "src/entrypoints/sidepanel/App.tsx:684-688 (Tools tab lacks forceMount; chat has forceMount at 552-560)",
+        "src/features/tools/ToolsView.tsx:386,453-490 (result and running are local state; handler is awaited)",
+        "src/features/chat/ChatView.tsx:664-666 (ask card only in Chat)",
+        "src/lib/tools/handlers/user.ts:130-150,289-325 (validation and response envelope)"
+      ]
+    },
+    "EXT-F-4122-T01": {
+      "A_procedure_usability": "PARTIAL",
+      "B_source_quality": "PARTIAL",
+      "finding": "Valid and invalid input, concatenated prompt, omitted tab_id and text reply are supported. The instruction to inspect the inline runner result after replying has the same Tools-unmount gap. The card verifies a prompt/response only; the proposal correctly leaves agent pause/resume, dispatcher and message persistence unverified.",
+      "severity": "Important",
+      "evidence": [
+        "src/lib/tools/handlers/user.ts:360-402 (schema, prompt, optional tab activation and result)",
+        "src/entrypoints/sidepanel/App.tsx:684-688 (Tools tab unmounts on switch)",
+        "src/features/tools/ToolsView.tsx:386,453-490 (local inline result)",
+        "src/features/chat/ChatView.tsx:664-666 (reply card in Chat)"
+      ]
+    },
+    "EXT-F-4123-T01": {
+      "A_procedure_usability": "PARTIAL",
+      "B_source_quality": "PARTIAL",
+      "finding": "Plan-card fields, invalid empty steps, and the null-conversation persistence guard match source. The Reject response cannot be inspected in the Tools runner after switching to Chat because Tools unmounts. The negative panel assertion also needs a captured before-state to distinguish absence of a new plan from an existing plan. The proposal correctly avoids claiming plan or task persistence from manual execution.",
+      "severity": "Important",
+      "evidence": [
+        "src/lib/tools/handlers/user.ts:407-500 (validation, card, null-conversation storage guards and result)",
+        "src/entrypoints/sidepanel/App.tsx:684-688 (Tools tab unmounts on switch)",
+        "src/features/tools/ToolsView.tsx:386,453-490 (local inline result)",
+        "src/features/lists/TaskPanel.tsx:65-110 (selected conversation plan view)"
+      ]
+    },
+    "EXT-F-4124-T01": {
+      "A_procedure_usability": "PARTIAL",
+      "B_source_quality": "PASS",
+      "finding": "The manual route cannot execute any of the seven controls: it supplies conversationId=null and the handler returns No active conversation before all action branches. The NOT_EXECUTABLE diagnosis and future real-conversation fixture outline are source-backed. This is still an unfilled executable procedure for the inventory case until an agent-dispatched fixture and concrete agent-call steps are supplied. Future checks appropriately separate storage from tool-event/message evidence.",
+      "severity": "Important",
+      "evidence": [
+        "src/features/tools/ToolsView.tsx:453-461 (manual context has null conversation)",
+        "src/lib/tools/handlers/lists.ts:87-95 (guard precedes all actions)",
+        "src/lib/lists/storage.ts:316-401 (conversation-keyed todos)",
+        "docs/stabilization/inventory.json:57224-57263 (seven controls)"
+      ]
+    }
+  },
+  "cross_case_observations": [
+    "ToolsView directly invokes handlers after local safeParse and emits timeline broadcasts without conversationId; use-tool-inbox ignores such decorative timeline events. This does not prove dispatcher gating, server tool_event, or persisted role=tool messages.",
+    "ChatView stays mounted and subscribes to ask requests; a null request conversation falls back to the selected chat. This supports card visibility, but does not preserve ToolsView local result state after navigation.",
+    "The proposal keeps member/admin observations separate, guest not applicable per inventory, and all runtime outcomes unverified. No role behavior or permission result was inferred from binding metadata."
+  ],
+  "overall": {
+    "A_procedure_usability": "PARTIAL",
+    "B_source_quality": "PARTIAL",
+    "required_follow_up": "Revise 4121-4123 to use an observable result surface or remove the post-reply inline-output assertion; capture a before-state for the 4123 panel check. Keep 4124 explicitly unexecutable on Tools until a real agent fixture and steps exist. Do not promote any runtime status from this source review."
+  }
+}
