@@ -68,6 +68,7 @@ const FIXTURE_ASSERTIONS = new Set([
   'records_fixture_cleanup_list_failed',
   'records_fixture_cleanup_list_incomplete',
   'records_fixture_cleanup_ownership_ambiguous',
+  'records_fixture_cleanup_unverified',
   'records_fixture_name_not_unique',
   'records_fixture_preflight_failed',
   'records_fixture_preflight_incomplete',
@@ -100,11 +101,29 @@ const FIXTURE_ASSERTIONS = new Set([
 export async function recordsFixtureRequest(
   panel,
   evaluate,
-  { method, path, body, orgId, bearerHash, name, marker },
+  { method, path, body, orgId, bearerHash, name, marker, requestTimeoutMs, pollIntervalMs },
 ) {
-  return evaluate(
+  const lifetime = Number(
+    requestTimeoutMs ?? process.env.MATRX_RECORDS_FIXTURE_REQUEST_TIMEOUT_MS ?? 30_000,
+  );
+  const interval = Number(
+    pollIntervalMs ?? process.env.MATRX_RECORDS_FIXTURE_POLL_INTERVAL_MS ?? 200,
+  );
+  assert.ok(
+    Number.isSafeInteger(lifetime) && lifetime > 0,
+    'records_fixture_request_lifetime_invalid',
+  );
+  assert.ok(
+    Number.isSafeInteger(interval) && interval > 0,
+    'records_fixture_poll_interval_invalid',
+  );
+  const slot = `__matrxRecordsFixtureRequest_${randomUUID().replaceAll('-', '')}`;
+  const started = await evaluate(
     panel,
-    `(async () => {
+    `(() => {
+    const state = { done: false, result: null, controller: new AbortController() };
+    globalThis[${JSON.stringify(slot)}] = state;
+    void (async () => {
     let token;
     try { token = (await chrome.storage.local.get('matrx.auth.accessToken'))['matrx.auth.accessToken']; }
     catch { return { token_matches: false, preflight_error_stage: 'token_read' }; }
@@ -117,6 +136,7 @@ export async function recordsFixtureRequest(
     try {
       const response = await fetch(${JSON.stringify(`https://server.app.matrxserver.com/api/v1/tables${path}`)}, {
         method: ${JSON.stringify(method)},
+        signal: state.controller.signal,
         headers: { Authorization: 'Bearer ' + token, 'X-Organization-Id': ${JSON.stringify(orgId)},
           ...(${JSON.stringify(body !== undefined)} ? { 'Content-Type': 'application/json' } : {}) },
         ...(${JSON.stringify(body !== undefined)} ? { body: JSON.stringify(${JSON.stringify(body ?? null)}) } : {}),
@@ -141,8 +161,48 @@ export async function recordsFixtureRequest(
         list_complete: Array.isArray(data?.not_listed) && data.not_listed.length === 0,
       };
     } catch { return { token_matches: true, transport_failed: true }; }
+    })().then(
+      (result) => { state.result = result; state.done = true; },
+      () => { state.result = { transport_failed: true }; state.done = true; },
+    );
+    return { started: true };
   })()`,
   );
+  assert.equal(started?.started, true, 'records_fixture_request_start_failed');
+  const deadline = performance.now() + lifetime;
+  for (;;) {
+    const observation = await evaluate(
+      panel,
+      `(() => {
+        const state = globalThis[${JSON.stringify(slot)}];
+        if (!state) return { lost: true };
+        if (!state.done) return { pending: true };
+        delete globalThis[${JSON.stringify(slot)}];
+        return { result: state.result };
+      })()`,
+    );
+    if (observation?.lost) throw new Error('records_fixture_request_state_lost');
+    if (!observation?.pending) return observation?.result;
+    if (performance.now() >= deadline) {
+      const terminal = await evaluate(
+        panel,
+        `(() => {
+        const state = globalThis[${JSON.stringify(slot)}];
+        if (state?.done) {
+          delete globalThis[${JSON.stringify(slot)}];
+          return { completed: true, result: state.result };
+        }
+        if (state) { state.controller.abort(); delete globalThis[${JSON.stringify(slot)}]; }
+        return { cancelled: true };
+      })()`,
+      ).catch(() => null);
+      if (terminal?.completed) return terminal.result;
+      return { request_timeout: true };
+    }
+    await new Promise((resolve) =>
+      setTimeout(resolve, Math.min(interval, deadline - performance.now())),
+    );
+  }
 }
 
 async function journal(path, state) {
@@ -195,13 +255,18 @@ export async function withRecordsPositiveFixture({
     const browserPreflight = lastRequest?.browserErrorStage
       ? 'records_fixture_browser_preflight_failed'
       : null;
+    const requestTimeout = lastRequest?.timedOut ? 'records_fixture_request_timeout' : null;
     onFailure({
       boundary,
       phase,
       classification:
         fixedAssertion ??
         browserPreflight ??
+        requestTimeout ??
         requestException ??
+        (error?.message === 'records_fixture_cleanup_unverified'
+          ? 'records_fixture_cleanup_unverified'
+          : null) ??
         (error?.message === 'records_fixture_recovery_cleanup_only'
           ? 'records_fixture_recovery_cleanup_only'
           : 'records_fixture_unexpected_error'),
@@ -221,6 +286,11 @@ export async function withRecordsPositiveFixture({
     assert.equal(state.schema_version, 1, 'records_fixture_journal_invalid');
     assert.match(state.name, OWNED_NAME);
     assert.equal(PHASES.has(state.phase), true, 'records_fixture_journal_phase_invalid');
+    assert.equal(
+      state.pending_write_unknown === undefined || typeof state.pending_write_unknown === 'boolean',
+      true,
+      'records_fixture_journal_pending_write_invalid',
+    );
     if (state.table_id !== null) assert.match(state.table_id ?? '', UUID);
     if (state.row_id !== null) assert.match(state.row_id ?? '', UUID);
     if (state.phase === 'planned') {
@@ -242,6 +312,12 @@ export async function withRecordsPositiveFixture({
   }
   const call = async (method, path, body) => {
     lastRequest = { method, status: null, threw: false };
+    const preserveUnknownWrite = async () => {
+      if (method === 'GET') return;
+      state.phase = 'ownership_unverified';
+      state.pending_write_unknown = true;
+      await journal(journalPath, state);
+    };
     let answer;
     try {
       answer = await request(panel, evaluate, {
@@ -257,8 +333,15 @@ export async function withRecordsPositiveFixture({
       lastRequest.threw = true;
       // Capture before cleanup can change the shared CDP failure category.
       lastRequest.transportFailureClass = boundedTransportFailureClass(transportFailureClass);
+      await preserveUnknownWrite();
       throw error;
     }
+    if (answer?.request_timeout === true) {
+      lastRequest.timedOut = true;
+      await preserveUnknownWrite();
+      throw new Error('records_fixture_request_timeout');
+    }
+    if (answer?.transport_failed === true) await preserveUnknownWrite();
     lastRequest.status =
       Number.isInteger(answer?.status) && answer.status >= 100 && answer.status <= 599
         ? answer.status
@@ -383,6 +466,8 @@ export async function withRecordsPositiveFixture({
         const found = await list();
         assert.equal(found.status, 200, 'records_fixture_cleanup_list_failed');
         assert.equal(found.list_complete, true, 'records_fixture_cleanup_list_incomplete');
+        if (found.tables.length === 0 && state.pending_write_unknown === true)
+          throw new Error('records_fixture_cleanup_unverified');
         if (
           found.tables.length === 0 &&
           ['create_sent', 'no_fixture_created'].includes(state.phase)
@@ -396,6 +481,7 @@ export async function withRecordsPositiveFixture({
           // The previous process may have stopped after the archive committed.
           // This confirms absence, but the recovered run still earns no read credit.
           state.phase = 'archived_verified';
+          state.pending_write_unknown = false;
           await journal(journalPath, state);
         } else if (
           found.tables.length === 0 &&

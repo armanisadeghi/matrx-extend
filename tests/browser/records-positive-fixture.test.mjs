@@ -581,6 +581,159 @@ test('real page request uses the signed-in principal and returns only safe recei
   assert.doesNotMatch(JSON.stringify(result), /unit-test-token|must never leave page|f9d83857/);
 });
 
+test('slow page fetch completes through short CDP commands without resending the request', async () => {
+  const token = 'unit-test-token';
+  let fetches = 0;
+  let evaluations = 0;
+  const evaluate = async (_panel, expression) => {
+    evaluations++;
+    return Promise.race([
+      new Function('chrome', 'crypto', 'fetch', `return ${expression};`)(
+        { storage: { local: { get: async () => ({ 'matrx.auth.accessToken': token }) } } },
+        webcrypto,
+        async () => {
+          fetches++;
+          await new Promise((resolve) => setTimeout(resolve, 65));
+          return {
+            status: 200,
+            json: async () => ({ done: true, created: true, id: tableId, organization_id: orgId }),
+          };
+        },
+      ),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('owned_cdp_transport_failed')), 20),
+      ),
+    ]);
+  };
+  const result = await recordsFixtureRequest({}, evaluate, {
+    method: 'POST',
+    path: '',
+    body: { name: 'owned' },
+    orgId,
+    bearerHash: createHash('sha256').update(token).digest('hex'),
+    name: 'owned',
+    marker: recordsFixtureMarker(principalId, orgId),
+    requestTimeoutMs: 500,
+    pollIntervalMs: 5,
+  });
+  assert.equal(result.status, 200);
+  assert.equal(result.id, tableId);
+  assert.equal(fetches, 1);
+  assert.ok(evaluations > 1);
+});
+
+test('timed-out create aborts once and leaves a durable ambiguous-write journal', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'records-fixture-timeout-'));
+  const journalPath = join(directory, 'journal.json');
+  const token = 'unit-test-token';
+  const requests = [];
+  const diagnostics = [];
+  const evaluate = async (_panel, expression) =>
+    new Function('chrome', 'crypto', 'fetch', `return ${expression};`)(
+      { storage: { local: { get: async () => ({ 'matrx.auth.accessToken': token }) } } },
+      webcrypto,
+      async (_url, options) => {
+        requests.push(options.method);
+        if (options.method === 'GET')
+          return { status: 200, json: async () => ({ tables: [], not_listed: [] }) };
+        assert.equal(options.method, 'POST');
+        return new Promise((_, reject) =>
+          options.signal.addEventListener('abort', () => reject(new Error('aborted')), {
+            once: true,
+          }),
+        );
+      },
+    );
+  try {
+    await assert.rejects(
+      withRecordsPositiveFixture({
+        panel: {},
+        evaluate,
+        orgId,
+        principalId,
+        bearerHash: createHash('sha256').update(token).digest('hex'),
+        journalPath,
+        exercise: async () => assert.fail('positive reads must not run'),
+        onFailure: (diagnostic) => diagnostics.push(diagnostic),
+        request: (panel, evaluator, input) =>
+          recordsFixtureRequest(panel, evaluator, {
+            ...input,
+            requestTimeoutMs: 45,
+            pollIntervalMs: 5,
+          }),
+        id: () => runId,
+        environment: {
+          GITHUB_ACTIONS: 'true',
+          RUNNER_ENVIRONMENT: 'github-hosted',
+          MATRX_HOSTED_ACCEPTANCE_CASE: 'records-readonly-admin',
+          MATRX_HOSTED_ACCEPTANCE_LANE: 'A',
+        },
+      }),
+      /records_fixture_cleanup_unverified/,
+    );
+    assert.deepEqual(requests, ['GET', 'GET', 'POST', 'GET']);
+    assert.deepEqual(
+      diagnostics.map(({ boundary, phase, classification, request_method }) => ({
+        boundary,
+        phase,
+        classification,
+        request_method,
+      })),
+      [
+        {
+          boundary: 'body',
+          phase: 'records_fixture_table_create',
+          classification: 'records_fixture_request_timeout',
+          request_method: 'POST',
+        },
+        {
+          boundary: 'cleanup',
+          phase: 'records_fixture_cleanup',
+          classification: 'records_fixture_cleanup_unverified',
+          request_method: 'GET',
+        },
+      ],
+    );
+    const saved = JSON.parse(await readFile(journalPath, 'utf8'));
+    assert.equal(saved.phase, 'ownership_unverified');
+    assert.equal(saved.pending_write_unknown, true);
+    assert.equal(saved.table_id, null);
+    const recoveryMethods = [];
+    await assert.rejects(
+      withRecordsPositiveFixture({
+        panel: {},
+        evaluate,
+        orgId,
+        principalId,
+        bearerHash: createHash('sha256').update(token).digest('hex'),
+        journalPath,
+        exercise: async () => assert.fail('recovered run must not earn read credit'),
+        request: async (_panel, _evaluate, input) => {
+          recoveryMethods.push(input.method);
+          return {
+            token_matches: true,
+            status: 200,
+            list_complete: true,
+            tables: [],
+            owned_tables: [],
+          };
+        },
+        environment: {
+          GITHUB_ACTIONS: 'true',
+          RUNNER_ENVIRONMENT: 'github-hosted',
+          MATRX_HOSTED_ACCEPTANCE_CASE: 'records-readonly-admin',
+          MATRX_HOSTED_ACCEPTANCE_LANE: 'A',
+        },
+      }),
+      /records_fixture_cleanup_unverified/,
+    );
+    assert.deepEqual(recoveryMethods, ['GET', 'GET', 'GET']);
+    assert.equal(JSON.parse(await readFile(journalPath, 'utf8')).pending_write_unknown, true);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
 test('page-local recovery scan selects only exact marked synthetic tables in the same organization', async () => {
   const token = 'unit-test-token';
   const name = `EXT-F-4130-${runId}`;
