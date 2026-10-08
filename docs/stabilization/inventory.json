@@ -16322,7 +16322,15 @@
             "status": "bounded-native-post-reload-deep-pass; full case partial",
             "scope": "After full extension reload: fresh intake empty result, zero lazy nodes, deep capture, observed Scrolling, exact lazy text in actual page and displayed Article. Existing guest result stays partial; deep failure/retry remains unverified.",
             "next_action": "Exercise genuine deep failure/retry with mode preservation; do not repeat already passed post-reload deep check alone."
-          }
+          },
+          "preparation_history": [
+            {
+              "source_commit": "da948228",
+              "evidence": ".research/scrape-deep-retry-preparation-20261008.json",
+              "status": "native-unverified",
+              "detail": "No verified real recoverable deep failure trigger found; scroll errors caught, receiver errors retried, stale identity cancels. Keep failure/retry unverified; no artificial outcome credited."
+            }
+          ]
         },
         {
           "id": "EXT-F-1007-T03",
@@ -16883,7 +16891,15 @@
               "detail": "All six tabs, populated content, capture invariance, and empty Images/Video panes are evidenced. The earlier peer identified empty Article, Links, SEO, and Schema pane states as outstanding where supported; this receipt records those panes as populated, not empty. Member/admin omissions do not determine this guest verdict."
             }
           ],
-          "defect_ids": ["EXT-D-0175", "EXT-D-0178", "EXT-D-0180"]
+          "defect_ids": ["EXT-D-0175", "EXT-D-0178", "EXT-D-0180"],
+          "preparation_history": [
+            {
+              "source_commit": "6dbc360d",
+              "evidence": ".research/scrape-empty-panels-preparation-20261008.json",
+              "status": "native-unverified",
+              "detail": "Existing real referrals page has no links; warm/postreload empty Links checks now require zero count/rows, Add link, and unchanged full capture export. Source8 tests pass; independent review and native pending. Other empty-pane applicability requires source-backed review; no acceptance promotion."
+            }
+          ]
         },
         {
           "id": "EXT-F-1007-T09",
