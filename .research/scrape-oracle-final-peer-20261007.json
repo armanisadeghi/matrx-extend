@@ -1,0 +1,33 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "reviewed_commit": "6b6fb20ff7ad8852675d06b2e35fda97019f3798",
+  "scope": "Fresh zero-authorship source re-review of the guest Scrape T07/T09 driver and focused tests. No native, heavy test, build, release, or credential run; no product pass claimed.",
+  "prior_finding": {
+    "status": "NOT ADDRESSED",
+    "resolved_parts": "Every one of the 21 copy actions in each run seeds a distinct per-fixture/menu/option sentinel immediately before the trusted menu click. The same seven menus run on intake, referrals after navigation, and intake after extension reload. The driver checks selected option structure, fixture-specific content, stale-page text, and permission restoration. T07 now records source-page scrollY at start, on, and off, alongside panel scroller position and toggle state.",
+    "remaining_blocker": "The representation oracle rejects a correct Copy schema / For AI agent result: copyOracle requires a ```markdown fence for every AI option, while schemaCopyOptions calls wrapJsonForAgent, which emits ```json. A source-realistic JSON-fenced value with pretty-printed metadata/title and Dentist schema returned false; replacing only the fence with markdown returned true. This would make a healthy native T09 run fail.",
+    "negative_path_limit": "The three focused unit tests invoke copyOracle, copyResultMatches, menuMatches, and scrollSyncMatches directly. They do not invoke runGuestCopyMenus or the trusted click/clipboard read path, so no-op and wrong-format mutations are not demonstrated through the real verification path. The native run remains the needed integration proof after the oracle is corrected."
+  },
+  "verdict_A_native_readiness": {
+    "status": "PARTIAL",
+    "T07": "Source-ready: warm and full-reload runs use native page wheel input, observe page scrollY movement, panel Article scroller movement while on, and panel hold while off. Native outcome pending.",
+    "T09": "Blocked by the schema AI oracle false negative. All seven menu rosters and 21 selected options are traversed on both owned pages, with intake repeated after full extension reload; a passing native result cannot be produced for a correct schema AI copy until the oracle accepts its JSON fence.",
+    "artifact": "The prior peer established frozen 0.2.391 as a technically selectable bounded target for the newer driver, with its own source identity verified by the importer; exact current-source provenance needs a newer artifact. Neither target has a new native outcome in this review."
+  },
+  "verdict_B_quality": {
+    "status": "FAIL",
+    "finding": "Independent fixture-specific assertions improve the oracle, but its universal Markdown-fence check conflicts with the real JSON wrapper in the schema path. Focused tests omit that valid branch and test only helper predicates, leaving the real copy path without a demonstrated forcing negative.",
+    "preserved": "The copy option still uses the shared driver's visible, hit-tested CDP pointer action. Clipboard read permission is temporary and restored. T07 source-page movement and panel off-state proof are retained."
+  },
+  "evidence": [
+    "tests/browser/scrape-guest-behavior-batch.mjs:4-12,43-66,157-193,213-275",
+    "tests/browser/scrape-guest-native-acceptance.mjs:1435-1497,1703-1727",
+    "tests/browser/scrape-guest-behavior-batch.test.mjs:1-127",
+    "src/lib/scrape/copy-options.ts:228-250",
+    "src/lib/clipboard/copy.ts:65-112",
+    "tests/browser/settings-panel-driver.mjs:298-299,400-430",
+    "A read-only node oracle probe returned JSON-fenced correct schema AI=false and identical Markdown-fenced value=true."
+  ],
+  "ci": "Root confirmed exact focused CI 37719216739 succeeded at repaired 6b6fb20f; CI green is separate from this source finding.",
+  "next": "Fix the schema AI fence rule, add a valid JSON-fenced schema AI case and a negative that exercises the complete copy verification path, then perform a fresh scoped re-review before the native run."
+}
