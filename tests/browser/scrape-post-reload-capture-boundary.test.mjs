@@ -203,3 +203,80 @@ test('click listener is disposed when arming busy observation throws', async () 
   assert.equal(f.clickListenerCount(), 0, 'capture click listener must be removed');
   assert.equal(f.window.eval('globalThis.__scrapeBusyObserver'), undefined);
 });
+
+test('post reload capture confirms the visible unsaved-edits dialog before accepting article content', async () => {
+  const f = fixture();
+  const actions = [];
+  const dialog = f.window.document.createElement('div');
+  dialog.setAttribute('role', 'alertdialog');
+  dialog.innerHTML =
+    '<h2 data-slot="alert-dialog-title">Discard unsaved edits?</h2><button data-slot="alert-dialog-action">Re-capture</button>';
+  const click = async (_panel, kind, label, onPhase) => {
+    actions.push(`${kind}:${label}`);
+    onPhase?.('release_returned');
+    if (kind === 'title') {
+      f.button.click();
+      f.window.document.body.append(dialog);
+    } else if (kind === 'scrape-recapture-dialog') {
+      assert.equal(label, 'Re-capture');
+      dialog.querySelector('button').click();
+      dialog.remove();
+      f.article.dataset.selected = 'Article';
+      f.article.dataset.visible = 'true';
+      f.article.dataset.title = 'Harbor Dental referral hours';
+      f.article.textContent = 'Referral coordinators answer weekday calls.';
+    }
+  };
+  await runPostReloadCaptureBoundary({
+    panel: {},
+    evaluate: f.evaluate,
+    click,
+    resourceAction: (action) => action(),
+    waitFor: (label, read, accept, _timeout, diagnostic) =>
+      waitFor(label, read, accept, 0, diagnostic),
+    scrapeState: async () => ({
+      ...(await f.scrapeState()),
+      empty: f.article.dataset.visible !== 'true',
+      title: 'Harbor Dental referral hours',
+    }),
+    boundary: f.boundary,
+  });
+  assert.deepEqual(actions, [`title:${title}`, 'scrape-recapture-dialog:Re-capture']);
+  assert.equal(f.boundary.click_events, 1);
+  assert.equal(f.clickListenerCount(), 0);
+});
+
+test('post reload capture does not confirm a dialog for another page', async () => {
+  const f = fixture();
+  const dialog = f.window.document.createElement('div');
+  dialog.setAttribute('role', 'alertdialog');
+  dialog.innerHTML =
+    '<h2 data-slot="alert-dialog-title">Discard unsaved edits?</h2><button data-slot="alert-dialog-action">Re-capture</button>';
+  const actions = [];
+  await assert.rejects(
+    () =>
+      runPostReloadCaptureBoundary({
+        panel: {},
+        evaluate: f.evaluate,
+        click: async (_panel, kind) => {
+          actions.push(kind);
+          if (kind === 'title') {
+            f.button.click();
+            f.window.document.body.append(dialog);
+          }
+        },
+        resourceAction: (action) => action(),
+        waitFor: (label, read, accept, _timeout, diagnostic) =>
+          waitFor(label, read, accept, 0, diagnostic),
+        scrapeState: async () => ({
+          ...(await f.scrapeState()),
+          empty: true,
+          title: 'Another page',
+        }),
+        boundary: f.boundary,
+      }),
+    /scrape_post_reload_referrals_captured_not_observed/,
+  );
+  assert.deepEqual(actions, ['title']);
+  assert.equal(f.clickListenerCount(), 0);
+});

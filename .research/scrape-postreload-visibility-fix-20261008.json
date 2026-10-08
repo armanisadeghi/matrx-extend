@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "status": "source_repair_verified_native_pending",
+  "defect_id": "EXT-D-0178",
+  "case_id": "EXT-F-1007-T08",
+  "frozen_artifact": "Development 0.2.407, source 5d845f42, hosted diagnostic 37776576395",
+  "observation": "The final referrals page was ready, correctly titled and empty. The trusted Capture pointer returned and one matching DOM click occurred, but no busy state or article result appeared in 30 seconds. The same final stage failed before instrumentation in 37764002686.",
+  "cause": "The native acceptance script edited image, video and link results after its last successful capture, leaving the Scrape store's edited flag true. ScrapeView.guardedCapture routes a later Capture click to the visible Discard unsaved edits? confirmation while edited is true. Navigation hides the old capture but does not clear the edited flag. The script clicked Capture and waited for content without handling that dialog. The existing deep recapture path already handles this same confirmation.",
+  "repair": "The post-reload boundary now observes either the real captured article or the exact visible recapture confirmation on the owned ready, empty Harbor Dental referrals fixture. Only then does it use the existing trusted pointer driver to choose Re-capture. It still requires the real Article pane and referral sentence. A dialog on another page is refused. No application state, capture data, or pointer input is synthesized in native acceptance.",
+  "red_green": "node --test tests/browser/scrape-post-reload-capture-boundary.test.mjs: 6 passed, 1 failed before repair at scrape_post_reload_referrals_captured_not_observed. Focused tests passed after repair, including the expected dialog and a dialog on another page that must not be confirmed.",
+  "sibling_census": "Earlier deep recapture already confirms the dialog through the trusted driver. Warm and post-reload populated captures occur before or without the later media edits. The final empty-media path was the only direct Capture click after media controls in this acceptance flow.",
+  "limits": "The saved receipts do not record the dialog, so they support the cause through the delivered-click/no-busy boundary and the exact source path, not direct native dialog observation. No fresh native run, build or release was authorized in this slice. This is a harness source repair; native Scrape acceptance remains unverified until a fresh, resource-admitted run against a new frozen artifact.",
+  "next_action": "Root coordinator owns the canonical EXT-D-0178 record and should arrange fresh native acceptance and independent review through the existing resource gate. Preserve the Article content oracle and actual capture response in the retest."
+}

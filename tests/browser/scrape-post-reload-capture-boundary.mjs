@@ -29,6 +29,24 @@ const disposeBusyExpression = `(() => {
   delete globalThis.__scrapeBusyObserver;
 })()`;
 
+const recaptureDialogExpression = `(() => [...document.querySelectorAll('[role="alertdialog"]')]
+  .some(dialog => dialog.querySelector('[data-slot="alert-dialog-title"]')?.textContent?.trim() ===
+    'Discard unsaved edits?' &&
+    dialog.querySelector('button[data-slot="alert-dialog-action"]')?.textContent?.trim() ===
+    'Re-capture'))()`;
+
+const capturedReferrals = (state) =>
+  state?.selected === 'Article' &&
+  state.visible &&
+  state.title === 'Harbor Dental referral hours' &&
+  state.resultText?.includes('Referral coordinators answer weekday calls.');
+
+const ownedRecaptureDialog = (state) =>
+  state?.ready === true &&
+  state.empty === true &&
+  state.title === 'Harbor Dental referral hours' &&
+  state.recaptureDialog === true;
+
 // Only these fixed fields can reach the native failure receipt.
 export function captureTimeoutDiagnostic(state) {
   return {
@@ -64,17 +82,26 @@ export async function runPostReloadCaptureBoundary({
         boundary.pointer_phase = phase;
       }),
     );
-    await waitFor(
+    const outcome = await waitFor(
       'scrape_post_reload_referrals_captured',
-      () => scrapeState(panel),
-      (state) =>
-        state?.selected === 'Article' &&
-        state.visible &&
-        state.title === 'Harbor Dental referral hours' &&
-        state.resultText?.includes('Referral coordinators answer weekday calls.'),
+      async () => ({
+        ...(await scrapeState(panel)),
+        recaptureDialog: await evaluate(panel, recaptureDialogExpression),
+      }),
+      (state) => capturedReferrals(state) || ownedRecaptureDialog(state),
       30000,
       captureTimeoutDiagnostic,
     );
+    if (ownedRecaptureDialog(outcome) && !capturedReferrals(outcome)) {
+      await resourceAction(() => click(panel, 'scrape-recapture-dialog', 'Re-capture'));
+      await waitFor(
+        'scrape_post_reload_referrals_captured',
+        () => scrapeState(panel),
+        capturedReferrals,
+        30000,
+        captureTimeoutDiagnostic,
+      );
+    }
   } finally {
     if (clickArmAttempted) {
       try {
