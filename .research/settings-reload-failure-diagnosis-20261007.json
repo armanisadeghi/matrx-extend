@@ -26,8 +26,8 @@
   ],
   "change": "Instrument only the existing post-extension-reload Settings opening boundary with fixed stage, allowlisted error category, and fixed replacement-panel booleans. No retry, timeout change, product change or native verdict promotion.",
   "verification": {
-    "local_source_check": "Pending final quick checks.",
-    "automatic_focused_ci": "Pending exact-head push.",
+    "local_source_check": "Targeted node checks 6/6 passed; syntax and diff checks passed. Supporting source evidence only.",
+    "automatic_focused_ci": "Run 37713797315 succeeded at exact source a5d303193f8684c46512136f0d6ff30db040676d. This does not reproduce the native failure.",
     "native": "No retry before independent review; original artifact cannot exercise this new diagnostic."
   },
   "next_action": "Obtain independent source/native review, then coordinate one guarded frozen-artifact run only after the original failure is classified. T63 and existing guest full-reload cells remain unverified."
