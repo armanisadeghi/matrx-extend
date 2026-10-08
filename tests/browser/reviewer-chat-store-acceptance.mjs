@@ -6,7 +6,7 @@
  */
 import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
-import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
+import { lstat, mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
@@ -53,6 +53,7 @@ const REVIEWER_FINGERPRINT = '3d6137db6c081c07';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 let stage = 'not_started';
+let approvedOrganization = null;
 const report = {
   schema_version: 1,
   scope: UNINTERRUPTED
@@ -71,6 +72,38 @@ const report = {
 
 function hash(value) {
   return createHash('sha256').update(value).digest('hex').slice(0, 16);
+}
+
+/** The admin lane uses only the previously approved private Files QA fixture. */
+async function approvedOrganizationConfig() {
+  const path = join(REPO, 'test-results', 'files-saved-private-config.json');
+  const metadata = await lstat(path);
+  if (!metadata.isFile() || (metadata.mode & 0o777) !== 0o600)
+    throw new Error('reviewer_approved_organization_config_not_private');
+  const value = JSON.parse(await readFile(path, 'utf8'));
+  if (
+    typeof value.approved_organization_name !== 'string' ||
+    !value.approved_organization_name.trim() ||
+    !UUID.test(value.approved_organization_id ?? '')
+  )
+    throw new Error('reviewer_approved_organization_identity_missing');
+  return { name: value.approved_organization_name.trim(), id: value.approved_organization_id };
+}
+
+async function approvedOrganizationObservation(panel) {
+  return evaluate(
+    panel,
+    `(() => chrome.storage.local.get('matrx.org.active').then((stored) => {
+      const organization = [...document.querySelectorAll('button[aria-expanded]')]
+        .find((button) => button.textContent.trim() === 'Organization');
+      const picker = organization?.parentElement?.nextElementSibling?.querySelector('button[role="combobox"]');
+      const active = stored['matrx.org.active'];
+      return {
+        pickerMatchesApproved: picker?.textContent?.trim() === ${JSON.stringify(approvedOrganization.name)},
+        persistedIdMatchesApproved: active?.id === ${JSON.stringify(approvedOrganization.id)},
+      };
+    }))()`,
+  );
 }
 
 function safeLocation(raw) {
@@ -224,22 +257,32 @@ async function storedSessionShape(panel) {
 }
 
 async function selectReviewerOrganization(panel) {
+  const expectedName = UNINTERRUPTED ? approvedOrganization.name : "Matrx's Org";
   await click(panel, 'organization', '');
   const target = await evaluate(
     panel,
     `(() => {
       const visible = (el) => { const r = el.getBoundingClientRect(); const s = getComputedStyle(el); return r.width > 0 && r.height > 0 && s.display !== 'none' && s.visibility !== 'hidden'; };
       const options = [...document.querySelectorAll('[role="option"]')].filter(visible);
-      const labels = options.map((option) => option.textContent.trim());
-      const matches = options.filter((option) => option.textContent.trim() === "Matrx's Org");
-      if (matches.length !== 1) return { labels, matchedCount: matches.length, target: null };
+      const labels = ${UNINTERRUPTED ? 'null' : 'options.map((option) => option.textContent.trim())'};
+      const eligible = options.filter((option) => option.getAttribute('aria-disabled') !== 'true' && !option.disabled && !option.hasAttribute('data-disabled'));
+      const matches = eligible.filter((option) => option.textContent.trim() === ${JSON.stringify(expectedName)});
+      if (matches.length !== 1) return { labels, optionCount: options.length, eligibleCount: eligible.length, matchedCount: matches.length, target: null };
       const option = matches[0], rect = option.getBoundingClientRect(), hit = document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
-      return { labels, matchedCount: 1, target: hit === option || option.contains(hit), x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
+      return { labels, optionCount: options.length, eligibleCount: eligible.length, matchedCount: 1, target: hit === option || option.contains(hit), x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
     })()`,
   );
+  const diagnostics = {
+    option_count: target?.optionCount ?? 0,
+    eligible_count: target?.eligibleCount ?? 0,
+    matched_count: target?.matchedCount ?? 0,
+    pointer_target_verified: target?.target === true,
+    approved_name_fingerprint: hash(expectedName),
+  };
   if (target?.matchedCount !== 1 || target.target !== true) {
     const error = new Error('reviewer_organization_option_unavailable');
     error.safeOptions = target?.labels ?? [];
+    error.safeSelection = diagnostics;
     throw error;
   }
   await panel.send('Input.dispatchMouseEvent', {
@@ -256,6 +299,7 @@ async function selectReviewerOrganization(panel) {
     button: 'left',
     clickCount: 1,
   });
+  return diagnostics;
 }
 
 /** Approve only the owned extension OAuth consent page; no URL query or body leaves the browser. */
@@ -493,8 +537,15 @@ async function observeActionTransport(native, expectedUrl, mode) {
         responseConversation: null,
         backendRequest: null,
         requestMode: null,
+        organizationHeader: null,
         calls: [],
       };
+      const organizationHeader = Object.entries(request.headers ?? {}).find(
+        ([name]) => name.toLowerCase() === 'x-organization-id',
+      )?.[1];
+      entry.organizationHeader = UUID.test(organizationHeader ?? '')
+        ? hash(organizationHeader)
+        : null;
       rows.set(`${sessionId}:${requestId}`, entry);
       if (request.postData) summarize(entry, request.postData);
       else {
@@ -547,6 +598,10 @@ async function observeActionTransport(native, expectedUrl, mode) {
         : null;
       return {
         start_count: starts.length,
+        organization_header_fingerprint: start?.organizationHeader ?? null,
+        organization_header_matches_approved: Boolean(
+          approvedOrganization && start?.organizationHeader === hash(approvedOrganization.id),
+        ),
         actual_permission_mode: ['ask', 'act'].includes(start?.requestMode)
           ? start.requestMode
           : null,
@@ -710,6 +765,11 @@ async function exerciseApproval(native) {
       const network = transport.snapshot();
       assert.equal(network.start_count, 1, 'one actual backend start required');
       assert.equal(
+        network.organization_header_matches_approved,
+        true,
+        'actual backend start must carry the approved UI-selected organization',
+      );
+      assert.equal(
         network.mode_matches,
         true,
         'actual browser-dom request must carry selected mode',
@@ -855,6 +915,10 @@ async function exerciseApproval(native) {
 }
 
 try {
+  if (UNINTERRUPTED) {
+    stage = 'approved_organization_config';
+    approvedOrganization = await approvedOrganizationConfig();
+  }
   const receipt = JSON.parse(await readFile(RECEIPT, 'utf8'));
   if (UNINTERRUPTED)
     report.imported_artifact = await verifyImportedNativeEvidence(EXTENSION_DIR, RECEIPT);
@@ -1002,10 +1066,11 @@ try {
           (state) => state?.organizationSelected || state?.organizationPickerAvailable,
           30_000,
         );
-        if (!account.organizationSelected) {
+        let selectionDiagnostics = null;
+        if (UNINTERRUPTED || !account.organizationSelected) {
           stage = 'select_reviewer_default_organization';
           try {
-            await selectReviewerOrganization(panel);
+            selectionDiagnostics = await selectReviewerOrganization(panel);
           } catch (error) {
             report.account = {
               reviewer_fingerprint: hash(email),
@@ -1013,12 +1078,19 @@ try {
               observed_role_category: account.observedRoleCategory,
               sign_out_visible: account.signOutVisible,
               organization_picker_available: account.organizationPickerAvailable,
-              organization_options: error.safeOptions ?? [],
+              ...(UNINTERRUPTED
+                ? { approved_organization_selection: error.safeSelection ?? null }
+                : { organization_options: error.safeOptions ?? [] }),
               storage_shape: await storedSessionShape(panel),
             };
-            report.screenshots = {
-              organization_picker: await capture(panel, artifacts, 'reviewer-organization-picker'),
-            };
+            if (!UNINTERRUPTED)
+              report.screenshots = {
+                organization_picker: await capture(
+                  panel,
+                  artifacts,
+                  'reviewer-organization-picker',
+                ),
+              };
             throw error;
           }
           stage = 'reviewer_default_organization_wait';
@@ -1026,6 +1098,16 @@ try {
             'reviewer_default_organization_selected',
             () => accountObservation(panel, email),
             (state) => state?.organizationSelected === true,
+            30_000,
+          );
+        }
+        let approvedSelection = null;
+        if (UNINTERRUPTED) {
+          stage = 'approved_organization_selected';
+          approvedSelection = await waitFor(
+            'reviewer_approved_organization_selected',
+            () => approvedOrganizationObservation(panel),
+            (value) => value?.pickerMatchesApproved && value?.persistedIdMatchesApproved,
             30_000,
           );
         }
@@ -1040,6 +1122,14 @@ try {
           default_organization_selected: account.organizationSelected,
           organization_picker_available: account.organizationPickerAvailable,
           storage_shape: storageShape,
+          ...(UNINTERRUPTED && {
+            approved_organization_selection: {
+              ...selectionDiagnostics,
+              ...approvedSelection,
+              name_fingerprint: hash(approvedOrganization.name),
+              id_fingerprint: hash(approvedOrganization.id),
+            },
+          }),
         };
         assert.equal(
           storageShape.activeOrganizationPresent,
