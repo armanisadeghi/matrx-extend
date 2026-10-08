@@ -16361,9 +16361,19 @@
               "new_acceptance_credit": false,
               "build_version": "0.2.407",
               "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114"
+            },
+            {
+              "at": "2026-10-08T13:24:28.261994+00:00",
+              "run_id": "37783167613",
+              "mode": "guest",
+              "status": "unverified",
+              "resource_valid": null,
+              "new_acceptance_credit": false,
+              "evidence": [".research/scrape-confirmation-native-proof-20261008.json"],
+              "detail": "Workflow stopped on irrelevant Preboot indexing before browser/resource admission. Six historical journals in uploaded artifact do not belong to this attempt and confer no credit; D178 native branch remains pending."
             }
           ],
-          "defect_ids": ["EXT-D-0175", "EXT-D-0178"]
+          "defect_ids": ["EXT-D-0175", "EXT-D-0178", "EXT-D-0180"]
         },
         {
           "id": "EXT-F-1007-T09",
@@ -18036,7 +18046,9 @@
             "EXT-D-0154",
             "EXT-D-0163",
             "EXT-D-0164",
-            "EXT-D-0175"
+            "EXT-D-0175",
+            "EXT-D-0178",
+            "EXT-D-0180"
           ],
           "run_ids": [
             "guest-local-001",
@@ -18051,9 +18063,11 @@
             "37225191131",
             "37251782627",
             "37693691959",
-            "37721838779"
+            "37721838779",
+            "37778965029",
+            "37783167613"
           ],
-          "retest_status": "Partial surface coverage. Native37721838779/freshpeer cf9c773e verify frozen391 guest warm T07 and22 first-fixture T09 copy options; navigation failure D164 and reload/modes remain unverified."
+          "retest_status": "Partial surface coverage. Frozen407 native37778965029 independently revalidates guest T07/T09/T10/T11/T12/T13/T20 and adds post-reload empty Images/Video evidence; exact conditional-confirmation branch D178 and remaining guest/member/admin cases unverified. Subsequent37783167613 failed runner setup D180 before browser, with zero acceptance credit."
         },
         "member": {
           "test_status": "partial",
@@ -19392,6 +19406,18 @@
                 ".research/seo-native-diagnostic-peer-20261008.json"
               ],
               "detail": "Resource-valid diagnostic-only receipt: zero acceptance targets,24 diagnostic observations including real Airbnb hreflang/schema branch. Independent57ab64db accepts D174 route and D176 classification infrastructure closure only. CPU pending recovered; matched high interval dominated by owned Chromium, not complete cause proof. Separate uninstrumented T09 remains required."
+            },
+            {
+              "at": "2026-10-08T13:26:22.591594+00:00",
+              "run_id": "37783095637",
+              "mode": "guest",
+              "status": "unverified",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [".research/seo-uninstrumented-acceptance-20261008.json"],
+              "detail": "Uninstrumented full SEO/Airbnb attempt timed out at owned CDP endpoint before any SEO action, alongside host CPU_PENDING/highload; current guest journal final resourceInvalid=true. Zero targets; no case result replaced. Source startup investigation required before retry."
             }
           ]
         },
