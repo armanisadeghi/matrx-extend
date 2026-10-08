@@ -7,7 +7,7 @@
   "title": "Guard-terminated SEO run loses last stage and completed observations",
   "severity": "S2: test failure cannot be localized; product SEO impact not established",
   "priority": "P1",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "seo_progress_receipt_repair",
   "reproduction": [
     "Run existing guest-seo full/Airbnb diagnostic on frozen407 as hosted37791330758.",
@@ -18,7 +18,9 @@
   "actual": "Final-only receipt is lost under termination; laterChromeCPU cannot be correlated to idle startup versus publicpagework.",
   "evidence": [
     ".research/startup-bracket-native-20261008.json",
-    ".research/seo-startup-repair-acceptance-20261008.json"
+    ".research/seo-startup-repair-acceptance-20261008.json",
+    ".research/seo-progress-receipt-repair-20261008.json",
+    ".research/seo-receipt-oracle-peer-20261008.json"
   ],
   "closure_requirement": "Durable phase/observation write proven by actual interrupted driver seam and freshreview, then independently inspected native interruption/surrounding successfulreceipt; no invalidrun promotion.",
   "transition_history": [
@@ -39,6 +41,13 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Scoped implementation dispatched to preserve bounded receipt at meaningful existing driverboundaries."
+    },
+    {
+      "at": "2026-10-08T14:38:11.513100+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source035caed8 passes fresh721cfa3a; real hosted/native requirement remains pending."
     }
-  ]
+  ],
+  "fix_commits": ["035caed8"]
 }

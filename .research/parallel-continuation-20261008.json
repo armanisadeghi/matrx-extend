@@ -5,7 +5,10 @@
     "id": "37791330758",
     "owner": "startup_bracket_native",
     "purpose": "one diagnostic-only startup causal observation",
-    "acceptance_credit": false
+    "acceptance_credit": false,
+    "terminal": "failure",
+    "resource_valid": false,
+    "evidence": ".research/startup-bracket-native-20261008.json"
   },
   "local_preflight": {
     "journal": "docs/stabilization/resource-journals/continuation-preflight-20261008-1417.jsonl",
@@ -41,7 +44,14 @@
   "ci_diagnostics": {
     "source": "e87d1d29",
     "peer": "667c2574",
-    "verdict": "privacy finding confirmed; repair pending",
-    "defect": "EXT-D-0182"
+    "verdict": "safe source pass; per-scenario budget repair8f908184/e6d83e7d fresh721cfa3a; actual repaired hostedCI pending",
+    "defect": "EXT-D-0182",
+    "repair": "54607f44",
+    "review": "3cd07423"
+  },
+  "seo_receipt": {
+    "source": "035caed8",
+    "peer": "721cfa3a",
+    "state": "fixed; native interruption still pending"
   }
 }

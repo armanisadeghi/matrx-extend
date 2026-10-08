@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-08 14:31 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T14:31:54.044492+00:00. 205 features · 769 cases · 1356 controls · 183 linked defect records.
+Generated 2026-10-08 14:38 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T14:31:54.044492+00:00. 205 features · 769 cases · 1356 controls · 183 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -116,7 +116,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0073, EXT-D-0079, EXT-D-0083, EXT-D-0101, EXT-D-0107, EXT-D-0149, EXT-D-0151, EXT-D-0182, EXT-D-0183
 
-**Linked defects:** [EXT-D-0025](defects/EXT-D-0025.json) (closed), [EXT-D-0051](defects/EXT-D-0051.json) (closed), [EXT-D-0056](defects/EXT-D-0056.json) (closed), [EXT-D-0060](defects/EXT-D-0060.json) (closed), [EXT-D-0072](defects/EXT-D-0072.json) (closed), [EXT-D-0073](defects/EXT-D-0073.json) (fixed), [EXT-D-0079](defects/EXT-D-0079.json) (in-fix), [EXT-D-0083](defects/EXT-D-0083.json) (fixed), [EXT-D-0098](defects/EXT-D-0098.json) (closed), [EXT-D-0101](defects/EXT-D-0101.json) (fixed), [EXT-D-0102](defects/EXT-D-0102.json) (closed), [EXT-D-0103](defects/EXT-D-0103.json) (closed), [EXT-D-0107](defects/EXT-D-0107.json) (in-fix), [EXT-D-0117](defects/EXT-D-0117.json) (closed), [EXT-D-0119](defects/EXT-D-0119.json) (closed), [EXT-D-0122](defects/EXT-D-0122.json) (closed), [EXT-D-0136](defects/EXT-D-0136.json) (closed), [EXT-D-0149](defects/EXT-D-0149.json) (fixed), [EXT-D-0151](defects/EXT-D-0151.json) (fixed), [EXT-D-0152](defects/EXT-D-0152.json) (closed), [EXT-D-0153](defects/EXT-D-0153.json) (closed), [EXT-D-0168](defects/EXT-D-0168.json) (closed), [EXT-D-0181](defects/EXT-D-0181.json) (closed), [EXT-D-0182](defects/EXT-D-0182.json) (in-fix), [EXT-D-0183](defects/EXT-D-0183.json) (in-fix)
+**Linked defects:** [EXT-D-0025](defects/EXT-D-0025.json) (closed), [EXT-D-0051](defects/EXT-D-0051.json) (closed), [EXT-D-0056](defects/EXT-D-0056.json) (closed), [EXT-D-0060](defects/EXT-D-0060.json) (closed), [EXT-D-0072](defects/EXT-D-0072.json) (closed), [EXT-D-0073](defects/EXT-D-0073.json) (fixed), [EXT-D-0079](defects/EXT-D-0079.json) (in-fix), [EXT-D-0083](defects/EXT-D-0083.json) (fixed), [EXT-D-0098](defects/EXT-D-0098.json) (closed), [EXT-D-0101](defects/EXT-D-0101.json) (fixed), [EXT-D-0102](defects/EXT-D-0102.json) (closed), [EXT-D-0103](defects/EXT-D-0103.json) (closed), [EXT-D-0107](defects/EXT-D-0107.json) (in-fix), [EXT-D-0117](defects/EXT-D-0117.json) (closed), [EXT-D-0119](defects/EXT-D-0119.json) (closed), [EXT-D-0122](defects/EXT-D-0122.json) (closed), [EXT-D-0136](defects/EXT-D-0136.json) (closed), [EXT-D-0149](defects/EXT-D-0149.json) (fixed), [EXT-D-0151](defects/EXT-D-0151.json) (fixed), [EXT-D-0152](defects/EXT-D-0152.json) (closed), [EXT-D-0153](defects/EXT-D-0153.json) (closed), [EXT-D-0168](defects/EXT-D-0168.json) (closed), [EXT-D-0181](defects/EXT-D-0181.json) (closed), [EXT-D-0182](defects/EXT-D-0182.json) (fixed), [EXT-D-0183](defects/EXT-D-0183.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -928,7 +928,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0183
 
-**Linked defects:** [EXT-D-0021](defects/EXT-D-0021.json) (closed), [EXT-D-0076](defects/EXT-D-0076.json) (closed), [EXT-D-0169](defects/EXT-D-0169.json) (retest-pass), [EXT-D-0170](defects/EXT-D-0170.json) (closed), [EXT-D-0174](defects/EXT-D-0174.json) (closed), [EXT-D-0176](defects/EXT-D-0176.json) (closed), [EXT-D-0183](defects/EXT-D-0183.json) (in-fix)
+**Linked defects:** [EXT-D-0021](defects/EXT-D-0021.json) (closed), [EXT-D-0076](defects/EXT-D-0076.json) (closed), [EXT-D-0169](defects/EXT-D-0169.json) (retest-pass), [EXT-D-0170](defects/EXT-D-0170.json) (closed), [EXT-D-0174](defects/EXT-D-0174.json) (closed), [EXT-D-0176](defects/EXT-D-0176.json) (closed), [EXT-D-0183](defects/EXT-D-0183.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |

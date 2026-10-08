@@ -7,7 +7,7 @@
   "title": "Serial resource scenarios exhaust aggregate CI test timeout without identifying active boundary",
   "severity": "S2: required CI gate intermittently fails; production guard regression not established",
   "priority": "P1",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "extend-stabilization",
   "reproduction": [
     "Use automatic CI run37789659379/source99cb09b6; inspect resource-guard-integration CPU confirmation and native action boundary log.",
@@ -21,7 +21,10 @@
     ".research/ci-scenario-timing-20261008.json",
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/37789659379",
     ".research/records-ci-diagnostics-peer-20261008.json",
-    ".research/ci-timing-privacy-final-peer-20261008.json"
+    ".research/ci-timing-privacy-final-peer-20261008.json",
+    ".research/ci-scenario-budget-repair-20261008.json",
+    ".research/ci-budget-final-peer-20261008.json",
+    ".research/seo-receipt-oracle-peer-20261008.json"
   ],
   "root_cause": "Unresolved: narrow aggregate timing margin demonstrated; active scenario absent from original logs.",
   "closure_requirement": "Actual automatic CI scenario timing identifies cause; repair preserving refusal/recovery/cleanup assertions passes independent source and automatic original-group/surrounding checks. No threshold reduction or blind timeout hike.",
@@ -43,7 +46,14 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "e87d1d29 adds per-scenario diagnostics; fresh review and automaticCI evidence pending, no cause fix yet."
+    },
+    {
+      "at": "2026-10-08T14:38:11.513100+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source8f908184 + e6d83e7d passes fresh721cfa3a; real hosted/native requirement remains pending."
     }
   ],
-  "diagnostic_review": "Per-scenario instrumentatione87d1d29 privacy finding repaired54607f44 and independently passes3cd07423, including actualrawreason red/green. Exactlater automaticCI observation pending. CI37790643945/e7b7dc1e passed originalsource test but intermittentfailure notclosed."
+  "diagnostic_review": "Per-scenario instrumentatione87d1d29 privacy finding repaired54607f44 and independently passes3cd07423, including actualrawreason red/green. Exactlater automaticCI observation pending. CI37790643945/e7b7dc1e passed originalsource test but intermittentfailure notclosed.",
+  "fix_commits": ["8f908184", "e6d83e7d"]
 }
