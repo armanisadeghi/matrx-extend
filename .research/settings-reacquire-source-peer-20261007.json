@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "role": "fresh independent source peer; zero authorship",
+  "scope": "Exact da3645dea57d4f71f2688be22c6d61acb317735a diagnostic repair against fd617dd8 predecessor. Source review and automatic focused CI observation only; no native run or product-cause finding.",
+  "verdict_a_source_readiness": {
+    "result": "PARTIAL",
+    "evidence": [
+      "The real reloadSettings catch attaches a typed reacquireDiagnostic and rethrows the original error; runCase copies it into the serialized case receipt. tests/browser/settings-local-controls-acceptance.mjs:131-157,494-506.",
+      "The collector records same-target equality, exact expected URL booleans for target/frame/document, frame navigation-error presence, renderer readiness/visibility/runtime identity, app-root and Settings-tab counts, and exact SIDE_PANEL context count. It returns no raw IDs, URLs, body text, context entries, or CDP error messages. tests/browser/settings-reload-boundary.mjs:130-214.",
+      "Existing Settings readiness predicate and its 10000 ms wait argument, case status calculation, and T34 cleanup path are unchanged. The focused seam drives actual extracted reloadSettings and runCase functions through the real readiness waiter and tests serialized output. tests/browser/settings-reload-boundary.test.mjs:125-254."
+    ],
+    "finding": {
+      "severity": "Important",
+      "location": "tests/browser/settings-local-controls-acceptance.mjs:132-135",
+      "detail": "The target-identity probe runs before Page.reload on every successful reload. Its swallowed rejection is not inert: the owned CDP client's 5000 ms command timeout marks the shared transport fatal. A slow or unanswered Target.getTargetInfo can therefore prevent an otherwise healthy Page.reload and change success-path behavior. tests/browser/vault-owned-cdp.cjs:265-276. Move the identity sample outside the success-critical path or prove the preflight cannot induce a new failure in the owned transport."
+    },
+    "readiness": "Useful source diagnostic, but not clean for one guarded native retest until the success-path probe hazard is resolved and checked."
+  },
+  "verdict_b_quality": {
+    "result": "FAIL_IMPORTANT",
+    "evidence": [
+      "The new diagnostic uses allowlisted typed fields and catches individual collector failures; transport commands have a 5000 ms bound, so indefinite collector stall is not substantiated. tests/browser/vault-owned-cdp.cjs:40,265-276.",
+      "A dropped receipt field has an explicit negative-control seam and the focused test asserts the real serialized receipt, including the original failure category and no raw target, title, or panel URL. tests/browser/settings-reload-boundary.test.mjs:174-226.",
+      "Automatic focused acceptance on successor main SHA a8387df5d599eef76891287d9842e65454a301e1 passed at run 37730934634, including the new test. The exact da3645de automatic run 37730910877 was cancelled by concurrency; no manual dispatch was made."
+    ],
+    "finding": {
+      "severity": "Important",
+      "location": "tests/browser/settings-reload-boundary.test.mjs:125-254",
+      "detail": "The focused guard exercises only a responsive Target.getTargetInfo and a readiness failure. It does not catch the newly introduced pre-reload target-query timeout/transport-fatal branch, nor establish that a successful reload follows the same route. The CDP client makes that branch behaviorally material; a failure-seam test alone cannot prove the success path stayed unchanged."
+    },
+    "test_limit": "The documented negative control removes receipt propagation, but the record does not show an executed return-expected gut check or per-rule mutation proof. CI success is a guard observation, not native acceptance."
+  },
+  "unverified": [
+    "Underlying cause of the same-panel T34 Settings-tab readiness failure",
+    "T34 baseline restoration and downstream password-suggestion consumer",
+    "T64 signed-out guest precondition and Ask again action",
+    "Native behavior of the new diagnostic on a resource-admitted hosted run"
+  ]
+}
