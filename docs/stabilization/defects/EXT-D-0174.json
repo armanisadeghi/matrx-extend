@@ -1,0 +1,54 @@
+{
+  "id": "EXT-D-0174",
+  "feature_id": "EXT-F-1008",
+  "case_ids": ["EXT-F-1008-T09"],
+  "surface": "Hosted guest SEO acceptance infrastructure",
+  "auth_mode": "guest",
+  "title": "Hosted workflow cannot select the existing real-page metadata acceptance fixture",
+  "severity": "S2: test infrastructure prevents required coverage; no product SEO failure established",
+  "priority": "P1",
+  "state": "in-fix",
+  "owner": "root/seo_fixture_route_wiring",
+  "preconditions": [
+    "Existing guest-seo hosted TEST route and tests/browser/seo-guest-acceptance.mjs; before source5d5b985f",
+    "Development407 frozen CI37754055905/artifact11539827040 available; resource admission required for any native launch"
+  ],
+  "reproduction": [
+    "Inspect EXT-F-1008-T09 open guest_manual_hreflang_and_schema_doors_match_page criterion.",
+    "The real-page branch runs only when SEO_GUEST_METADATA_FIXTURE=airbnb; workflow_dispatch guest-seo exposes no matching input before5d5b985f.",
+    "Select guest-seo/full through the hosted workflow: the native driver receives no fixture selector and cannot execute that branch; prior native evidence records it unverified."
+  ],
+  "expected": "An explicit allowed hosted input reaches the existing real-page driver branch and is bound in the receipt, without changing default or other cases.",
+  "actual": "No input/environment handoff exists; repeated default runs cannot exercise the open metadata criterion.",
+  "evidence": [
+    ".research/nonchat-guest-coverage-native-20261008.json",
+    ".research/seo-fixture-route-wiring-20261008.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-08T12:03:55.350854+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Structured tester identified an unreachable existing native criterion instead of launching duplicate coverage."
+    },
+    {
+      "at": "2026-10-08T12:03:55.350854+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Source confirms fixture environment gate without workflow selection/handoff."
+    },
+    {
+      "at": "2026-10-08T12:03:55.350854+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Candidate5d5b985f wires explicit none/airbnb selector with causal guards; fresh independent peer is active."
+    }
+  ],
+  "source_candidate": {
+    "sha": "5d5b985f",
+    "independent_review": "pending",
+    "native_retest": "pending"
+  },
+  "closure_requirement": "Independent source/guard review and a resource-valid hosted execution proves the selected real fixture reaches its actual metadata criterion. Product T09 pass requires actual DOM-versus-UI agreement, not fixture selection alone.",
+  "next_action": "Complete independent source review, run one admitted guest SEO metadata attempt on isolated laneB, then independently review actual criterion and resources. Never infer a product pass from route tests."
+}
