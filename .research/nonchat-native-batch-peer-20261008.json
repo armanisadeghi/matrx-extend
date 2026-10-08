@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "reviewed_at_utc": "2026-10-08T09:29:18Z",
+  "review_role": "independent byte-exact evidence and resource review",
+  "batch_report": ".research/nonchat-native-batch-20261008.json",
+  "native_run_id": 37755458660,
+  "receipt": {
+    "path": ".research/nonchat-native-batch-20261008-evidence/selected/scrape-guest-native-a926890f-d536-490a-987c-3c4ff6fec372.json",
+    "sha256_expected_and_observed": "a11279eac13bd4985808bae03e4bbdec9d9063ee38a13ea9ce61a508dcee824c",
+    "status": "unverified",
+    "selection": "guest, normal width; panel viewport observed at 600 px",
+    "guest_identity": "guest observed; no access token and no user profile",
+    "artifact": {
+      "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+      "tree_sha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+      "ci_run_id": 37754055905,
+      "artifact_id": 11539827040,
+      "version": "0.2.407"
+    }
+  },
+  "current_journals": [
+    {
+      "path": ".research/nonchat-native-batch-20261008-evidence/selected/hosted-package-37755458660-1.jsonl",
+      "sha256_expected_and_observed": "1169516ed1c563325680f57c5cebee00856d5e4089d3f178392d7098f849c400",
+      "final_decision": "valid",
+      "child_exit_code": 0,
+      "resource_invalid": false,
+      "admitted": true
+    },
+    {
+      "path": ".research/nonchat-native-batch-20261008-evidence/selected/hosted-browser-37755458660-1.jsonl",
+      "sha256_expected_and_observed": "364acbc4d4aed2789a884c4a237597c9a989f25b15f38eb72991aac10105a1d8",
+      "final_decision": "valid",
+      "child_exit_code": 0,
+      "resource_invalid": false,
+      "admitted": true
+    },
+    {
+      "path": ".research/nonchat-native-batch-20261008-evidence/selected/hosted-guest-37755458660-1.jsonl",
+      "sha256_expected_and_observed": "67d303774ba3ea03bcad1e1fdd2f7974d321d8608d2d0f3523f72509a1271baa",
+      "final_decision": "child_failed",
+      "child_exit_code": 1,
+      "resource_invalid": false,
+      "admitted": true,
+      "resource_envelope": "Admission and all watch samples report no reasons; available memory remains above the 4 GiB requirement; final child failure is distinct from resource invalidity."
+    }
+  ],
+  "evidence_verdict": {
+    "status": "BYTE_EXACT_EVIDENCE_CONFIRMED_BOUNDED_PARTIALS",
+    "finding": "The selected receipt and three current journals match the byte hashes recorded in the batch report. The receipt is for the selected frozen development artifact, guest identity, normal width, and 600 px viewport. It does not establish a full extension-reload lifecycle or a product defect.",
+    "reload_timeline": {
+      "old_panel_absent": true,
+      "old_worker_absent_from_final_target_snapshot": true,
+      "old_version_status": "redundant; final observed running_status stopped",
+      "replacement_worker_created_and_present": true,
+      "old_worker_destroyed_event_observed": false,
+      "old_host_execution_retired_observation": false,
+      "strict_final_predicate": false,
+      "interpretation": "Old target absence and a stopped/redundant old version are evidence of transition, but the receipt lacks the destroyed event and host execution-retired observation required by its strict predicate. The lifecycle remains unproven; the evidence does not distinguish a Chrome target-observation gap from an extension reload defect.",
+      "old_host_probe": "present, attached=false; execution-retired condition was not observed"
+    },
+    "warm_media_only": {
+      "EXT-F-1007-T10": "Three image rows were observed, removed sequentially to empty, and a synthetic image was added. No post-reload image control was observed.",
+      "EXT-F-1007-T11": "Blank source was rejected; a valid image was added; cancelling a draft cleared it. No post-reload validation/add/cancel control was observed.",
+      "EXT-F-1007-T12": "Video link open, copy feedback/clipboard equality, row removal and valid add were observed warm. Clipboard read initially returned NotAllowedError and after permission grant matched; no post-reload controls or link/clipboard outcome were observed."
+    }
+  },
+  "resource_verdict": {
+    "status": "VALID_ADMITTED_ENVELOPE_GUEST_CHILD_FAILED",
+    "phase_sequence": [
+      "package_valid_exit_0",
+      "browser_valid_exit_0",
+      "guest_admitted",
+      "guest_child_exit_1_resource_invalid_false"
+    ],
+    "failure_boundary": "extension_reload / native_extension_worker_retirement_unverified",
+    "interpretation": "The run was resource-admitted and failed its guest child at the reload proof boundary; this is not a resource rejection. No browser or T57 defect is inferred."
+  },
+  "case_outcomes": [
+    {
+      "case_id": "EXT-F-1007-T20",
+      "verdict": "partial",
+      "bounded_observation": "Initial empty state and active-tab navigation cleared previous content; lifecycle after full reload remains unverified."
+    },
+    {
+      "case_id": "EXT-F-1007-T01",
+      "verdict": "partial",
+      "bounded_observation": "Warm initial capture showed the fixture title and result panes; reload/post-reload capture remain unverified."
+    },
+    {
+      "case_id": "EXT-F-1007-T08",
+      "verdict": "partial",
+      "bounded_observation": "Warm result tabs showed matching article/images/videos/links/SEO/schema and empty image/video states; reload and member/admin modes remain unverified."
+    },
+    {
+      "case_id": "EXT-F-1007-T10",
+      "verdict": "partial",
+      "bounded_observation": "Warm image remove-to-empty and add worked; post-reload controls were not exercised."
+    },
+    {
+      "case_id": "EXT-F-1007-T11",
+      "verdict": "partial",
+      "bounded_observation": "Warm blank rejection, valid image add, and draft cancellation were observed; post-reload controls were not exercised."
+    },
+    {
+      "case_id": "EXT-F-1007-T12",
+      "verdict": "partial",
+      "bounded_observation": "Warm video remove/add, link open, and clipboard behavior were observed; post-reload controls were not exercised."
+    },
+    {
+      "case_id": "EXT-F-1007-T13",
+      "verdict": "partial",
+      "bounded_observation": "Warm link open/copy/remove, blank rejection, valid add, and cancel were observed; post-reload controls and member/admin modes remain unverified."
+    },
+    {
+      "case_id": "EXT-F-1007-T02",
+      "verdict": "partial",
+      "bounded_observation": "Warm deep capture showed lazy content in the browser and capture; deep-failure retry and post-reload capture remain unverified."
+    },
+    {
+      "case_id": "EXT-F-1007-T07",
+      "verdict": "partial",
+      "bounded_observation": "Warm article scroll synchronization states were observed; post-reload behavior remains unverified."
+    },
+    {
+      "case_id": "EXT-F-1007-T09",
+      "verdict": "partial",
+      "bounded_observation": "No full post-reload copy controls were observed; receipt keeps this case partial."
+    },
+    {
+      "case_id": "EXT-F-1007-T14",
+      "verdict": "partial",
+      "bounded_observation": "A natural browser failure was not obtained, so Reload page/Try again recovery remains unverified."
+    }
+  ],
+  "overall_case_claim": "No case passed in this receipt. Keep all eleven outcomes partial; warm-control observations do not promote post-reload controls or full lifecycle.",
+  "limits": [
+    "No native run, live call, source edit, or status promotion was performed during this review.",
+    "Root owns canonical inventory updates; this report makes no inventory changes."
+  ]
+}
