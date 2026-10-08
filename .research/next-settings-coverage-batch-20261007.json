@@ -24,6 +24,12 @@
     "focused_conclusion": "success",
     "scope": "Pre-cleanup-repair focused source checks only. Native runtime remained untested."
   },
+  "automatic_ci_after_repair": {
+    "head_sha": "ff548299f0c6b34541c0409ea8173e069f8d91a1",
+    "focused_run_id": 37722302031,
+    "focused_conclusion": "success",
+    "scope": "Automatic focused acceptance includes the runner-boundary test; native acceptance remains pending."
+  },
   "ci_handle": {
     "workflow": ".github/workflows/hosted-guest-acceptance.yml",
     "dispatch_input": "acceptance_case=settings-controls",
