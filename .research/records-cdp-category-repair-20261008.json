@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "scope": "Records fixture diagnostic transport category wiring",
+  "observation": {
+    "native_run_id": 37840973320,
+    "first_failure_phase": "records_fixture_recovery_list",
+    "first_failure_classification": "records_fixture_request_exception",
+    "request_method": "GET",
+    "http_status": null,
+    "journal_phase": "planned",
+    "limitation": "Prior receipt did not retain the existing harness CDP failure category. It cannot establish whether the request exception came from CDP or expression construction."
+  },
+  "repair": {
+    "path": "Existing native harness transportFailureClass callback passed through the actual Records exercisePanel to the fixture helper.",
+    "capture_boundary": "Snapshot when the fixture request throws, before cleanup changes the shared CDP category.",
+    "receipt_field": "transport_failure_class",
+    "disclosure": "Only fixed allowlisted categories, unrecognized, unavailable, or null; no arbitrary exception or response text."
+  },
+  "verification": {
+    "command": "TMPDIR=/Volumes/Samsung2TB/tmp node --test tests/browser/records-positive-fixture.test.mjs tests/browser/records-readonly-native-driver.test.mjs",
+    "result": "35 passed, 0 failed",
+    "boundary_test": "Actual Records callback and fixture helper distinguish protocol_error and command_timeout, suppress an unknown private-looking value, and retain the original category after cleanup changes it."
+  },
+  "native_replay": "not run",
+  "product_positive_reads": "C04 and C05 remain unverified"
+}

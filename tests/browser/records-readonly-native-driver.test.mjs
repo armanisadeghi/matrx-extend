@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { EventEmitter } from 'node:events';
-import { readFile } from 'node:fs/promises';
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import test from 'node:test';
 import ts from 'typescript';
 import {
@@ -13,6 +15,7 @@ import {
   retainRecordsFailure,
   signInRecordsAdmin,
 } from './records-readonly-native-proof.mjs';
+import { withRecordsPositiveFixture } from './records-positive-fixture.mjs';
 
 // Evaluate the callback the native acceptance actually passes to the shared harness.
 const source = await readFile(
@@ -57,6 +60,56 @@ test('fixture first failure remains the receipt classification when cleanup also
   retainRecordsFailure(report);
   assert.equal(report.failure_phase, 'records_fixture_recovery_list');
   assert.equal(report.failure_classification, 'records_fixture_recovery_list_failed');
+});
+
+test('actual Records callback snapshots the fixture CDP category before cleanup changes it', async () => {
+  for (const [atFailure, expected] of [
+    ['protocol_error', 'protocol_error'],
+    ['command_timeout', 'command_timeout'],
+    ['private transport detail', 'unrecognized'],
+  ]) {
+    const directory = await mkdtemp(join(tmpdir(), 'records-driver-cdp-'));
+    let category = atFailure;
+    try {
+      const scenario = runDriver({
+        transportFailureClass: () => category,
+        fixtureHelper: ({ onStage, ...options }) =>
+          withRecordsPositiveFixture({
+            ...options,
+            principalId: 'dbfb516a-c90a-4e35-a091-31f58805c13c',
+            journalPath: join(directory, 'fixture-journal.json'),
+            request: async () => {
+              throw new Error('owned_cdp_transport_failed');
+            },
+            onStage: (phase) => {
+              onStage(phase);
+              if (phase === 'records_fixture_cleanup') category = 'socket_error';
+            },
+            environment: {
+              GITHUB_ACTIONS: 'true',
+              RUNNER_ENVIRONMENT: 'github-hosted',
+              MATRX_HOSTED_ACCEPTANCE_CASE: 'records-readonly-admin',
+              MATRX_HOSTED_ACCEPTANCE_LANE: 'A',
+            },
+          }),
+      });
+      await assert.rejects(scenario.run(), /owned_cdp_transport_failed/);
+      assert.deepEqual(scenario.report.fixture_diagnostics, [
+        {
+          boundary: 'body',
+          phase: 'records_fixture_recovery_list',
+          classification: 'records_fixture_request_exception',
+          request_method: 'GET',
+          http_status: null,
+          transport_failure_class: expected,
+        },
+      ]);
+      assert.equal(scenario.stages.at(-1), 'records_fixture_cleanup');
+      assert.equal(JSON.stringify(scenario.report).includes('private transport detail'), false);
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  }
 });
 
 const organizationId = 'ba05beee-625e-43bb-931e-c2ea99d718d2';
@@ -189,6 +242,7 @@ function runDriver({
   cardReady = true,
   schemaReady = true,
   contractObservationFails = false,
+  transportFailureClass = () => 'none',
   fixtureHelper = async ({ exercise, onStage }) => {
     onStage('records_fixture_table_create');
     try {
@@ -210,6 +264,7 @@ function runDriver({
     negative_reads: [],
     positive_reads: [],
     fixture_cleanup: null,
+    fixture_diagnostics: [],
     invalid_input: null,
     reload: null,
     completion_diagnostics: [],
@@ -401,7 +456,8 @@ function runDriver({
     ...Object.values(bindings),
   );
   return {
-    run: () => driver({ page: {}, panel, resourceAction: (action) => action() }),
+    run: () =>
+      driver({ page: {}, panel, resourceAction: (action) => action(), transportFailureClass }),
     report,
     stages,
     active,

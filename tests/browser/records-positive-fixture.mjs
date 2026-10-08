@@ -7,6 +7,29 @@ const OWNED_NAME =
   /^EXT-F-4130-[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 export const RECORDS_FIXTURE_MARKER = 'matrx-extend-native-records-C04-C05-v1';
 const BROWSER_PREFLIGHT_STAGES = new Set(['token_read', 'token_digest']);
+const TRANSPORT_FAILURE_CLASSES = new Set([
+  'none',
+  'protocol_shape',
+  'unknown_response',
+  'protocol_error',
+  'response_shape',
+  'listener',
+  'socket_error',
+  'unexpected_close',
+  'send_after_close',
+  'command_timeout',
+  'send_exception',
+  'close_failure',
+]);
+function boundedTransportFailureClass(readFailureClass) {
+  if (typeof readFailureClass !== 'function') return null;
+  try {
+    const category = readFailureClass();
+    return TRANSPORT_FAILURE_CLASSES.has(category) ? category : 'unrecognized';
+  } catch {
+    return 'unavailable';
+  }
+}
 export function recordsFixtureMarker(principalId, orgId) {
   assert.match(principalId ?? '', UUID, 'records_fixture_principal_id_invalid');
   assert.match(orgId ?? '', UUID, 'records_fixture_org_id_invalid');
@@ -144,6 +167,7 @@ export async function withRecordsPositiveFixture({
   exercise,
   onStage = () => {},
   onFailure = () => {},
+  transportFailureClass,
   request = recordsFixtureRequest,
   id = randomUUID,
   maxArchiveAttempts = 3,
@@ -183,6 +207,9 @@ export async function withRecordsPositiveFixture({
           : 'records_fixture_unexpected_error'),
       request_method: lastRequest?.method ?? null,
       http_status: lastRequest?.status ?? null,
+      ...(lastRequest?.threw && {
+        transport_failure_class: lastRequest.transportFailureClass,
+      }),
       ...(lastRequest?.browserErrorStage && {
         browser_error_stage: lastRequest.browserErrorStage,
       }),
@@ -228,6 +255,8 @@ export async function withRecordsPositiveFixture({
       });
     } catch (error) {
       lastRequest.threw = true;
+      // Capture before cleanup can change the shared CDP failure category.
+      lastRequest.transportFailureClass = boundedTransportFailureClass(transportFailureClass);
       throw error;
     }
     lastRequest.status =

@@ -283,6 +283,7 @@ test('recovery GET browser exception reaches the receipt with a bounded cause an
           classification,
           request_method: 'GET',
           http_status: null,
+          transport_failure_class: null,
         },
       ]);
       assert.equal(JSON.parse(await readFile(journalPath, 'utf8')).phase, 'planned');
