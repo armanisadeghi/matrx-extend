@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "a27c4467",
+  "reviewed_record": ".research/guest-position-fix-live-retest-20261008.json",
+  "run_id": 37770686993,
+  "verdicts": {
+    "A_original_and_surrounding_behavior": {
+      "verdict": "not_proven",
+      "evidence_for_pass": [
+        "The receipt records three guest AI requests: opening and same-conversation follow-up share fingerprint 1d62a2ed0590c1b9; post-reload new conversation uses 0a5f0edbffea27fb.",
+        "Each turn's timeline ends terminal_answer; the post-reload turn records get_page_text completion, 23 continuation text chunks, complete end reason, and successful user-request outcome.",
+        "The three chat screenshots visibly show the guest UI and answers/fixture context; the post-reload screenshot shows the unpredictable fixture code and heading in the answer."
+      ],
+      "blocking_inconsistency": "The same receipt's failure_observation says answerMatchesPublicStages=false and answerStagesInOrder=false, while chat.answer_names_page_stages and chat.answer_stages_in_order are true. It supplies no attribution or timestamp to establish this is a stale baseline. This conflicts with the required all-three grounded-reply criterion.",
+      "scope_limit": "One pass cannot establish recurrence rate or broad service health."
+    },
+    "B_provenance_resources_privacy": {
+      "verdict": "pass_with_limits",
+      "evidence": [
+        "The record identifies published CRX v0.2.205, extension ID hnfolienncfklkgmdjjmhhegglimlamg, pinned CRX SHA-256 7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23, and unpacked tree SHA-256 08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8; it states the tree matches the original failing run and the artifact stayed unchanged.",
+        "The receipt and three current-run journal byte hashes match the retest record. All journals name run 37770686993, report child exit 0, admitted=true, resourceInvalid=false, decision=valid. Guest CPU pressure was pending but recovered before final valid decision.",
+        "Inspected all five screenshots. They show a synthetic public demo page and guest panel; no credentials or private account content were visible. The original receipt SHA-256 matches its recorded digest."
+      ],
+      "limits": [
+        "Evidence documents a published Store CRX loaded as an adapted unpacked extension; it does not demonstrate Chrome Web Store UI installation.",
+        "CRX and tree provenance are asserted by the receipt; the CRX bytes and an independent tree recomputation are not included in this evidence bundle.",
+        "The receipt says the CDP observer attached after panel load, so it cannot establish requests made before attachment."
+      ]
+    }
+  },
+  "original_sha256": {
+    "guest-chat.receipt.original.json": "0c303baf212947ef3c1fe0b78c65e0398ef4fdcab80a18d13c3bbcc6418d6c51",
+    "hosted-package-37770686993-1.jsonl": "c4b9ff47400c80191ed883004b8828a480114c0404f65fee98914026c26d44c1",
+    "hosted-browser-37770686993-1.jsonl": "430ef36f661d5f1c3f251c153d3f60b37efcdc49332183d7ac3ffaeccfedb946",
+    "hosted-guest-37770686993-1.jsonl": "c5ea399b37060796b084d3ecfdd22c35c7a94120ff7e37973ac3e298ba80d8b1",
+    "guest-chat-real-answer.png": "774af251c993c00f0bc838cd8cdb555106069a79b7a3239bf4ab330b5cd06482",
+    "guest-chat-real-followup-answer.png": "2bda573f9cc34470571a5eb825a3cf25e63c049cdb7ee441b8567f4e00ff4209",
+    "guest-chat-same-conversation-followup.png": "456d06a8a70a6178985f93c251f339ba61f07779388ee23a203d0a38295152fe",
+    "native-side-panel.png": "13933645ed5af2e7cd63f250583c9d943dce8e16b73794509138fc1729df5cab",
+    "normal-target-after-open.png": "f4af16553f5e732b1cc4a69842d1955a0c7dbea7a9e12ea9bdc80109d4e6e772"
+  },
+  "recommendation": "Do not close EXT-D-0172 on this bundle until the failure_observation contradiction is explained or a clean receipt records all three grounded answers consistently."
+}
