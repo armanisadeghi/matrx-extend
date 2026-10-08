@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "scope": "Read-only canonical organization contract and frozen T57 acceptance-driver diagnosis; no product, test, browser, or fixture mutation",
+  "evidence_revisions": {
+    "frozen_extension_source": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "active_organization_change": "d94faf7f8d7a6ae15ac4d592b8fe1f14d7717f03",
+    "common_docs_head_read": "ee9ed355b4e9cdc66b89368c354bdc9ea4bc59b7",
+    "canonical_org_decision_commit": "a160c7c0a5c299347bf7bff2b1790637e344bc59",
+    "native_receipt": ".research/t57-diagnostic-retry-20261008-originals/raw/receipt.raw.json.txt"
+  },
+  "canonical_intent": {
+    "organizations_state": {
+      "path": "../common-docs/systems/account/organizations/STATE.md",
+      "rules": [
+        "Rule 11 prohibits anything below a client's UI from reading a user default to decide where a request acts or row lands.",
+        "Rule 12, attributed to Arman on 2026-10-07, says the shell sets one active organization at load: account last active, then start-up setting, then first organization; every request carries that active organization and the server refuses absence.",
+        "Rule 14 says the saved last active and start-up columns only choose what the shell opens to; request execution carries the visible active organization."
+      ]
+    },
+    "extension_instruction": {
+      "path": "CLAUDE.md:99",
+      "quote": "this device's last choice → the account's last active organization → its start-up organization → the first organization, each only if a current membership",
+      "additional_rule": "The resolver alone reads account columns; a deliberate switch writes device choice and users.set_last_active_organization. There is no hold or mandatory startup picker; zero memberships refuses."
+    },
+    "access_ladder": {
+      "path": "../common-docs/policies/access-ladder.md:209",
+      "rule": "Every write and server call carries an explicit organization; the client shell has one active organization set at load. Reads are not filtered by it."
+    },
+    "no_db_assignment_plan": {
+      "path": "../common-docs/systems/architecture/database/projects/no-db-assigned-org/PLAN.md:43",
+      "distinction": "The plan forbids database, server, or write-time substitution of a missing organization. It does not ban the approved client-shell load ladder that sets the active context before requests."
+    },
+    "priority_resolution": "The current user-provided extension instructions and 2026-10-07 canonical owner-attributed decision both affirm the load ladder. A device-choice-only interpretation is inconsistent with those sources; no newer trusted owner decision reversing them was found in the read paths."
+  },
+  "frozen_implementation": {
+    "active_org_path": "src/lib/org/active-org.ts",
+    "load_resolution": "readStoredSelection validates the device choice against current membership; absent or stale choice proceeds to account last active, start-up, then first current membership. The ladder result is cached as viaLadder and deliberately not written into matrx.org.active; only selectActiveOrganization writes the device choice.",
+    "visible_picker": "src/hooks/use-active-organization.ts calls resolveActiveOrganization and SettingsView renders org.active.name in the Acting as control. Thus the picker can show a selected organization when matrx.org.active is absent.",
+    "request_header": "src/lib/api/client.ts buildHeaders obtains getActiveOrganizationId, which returns the cached or newly resolved ladder ID even without device storage; applyOrganizationContextHeader adds X-Organization-Id. rawRequest requires an active organization for authenticated non-exempt requests and refuses if none resolves.",
+    "positive_source_guard": "src/lib/api/client-organization-ladder.test.ts asserts an authenticated request carries the account last active ID while matrx.org.active remains absent, and also covers start-up, first-membership, and device-choice precedence. These tests express the intended code contract; they are not live evidence for this T57 run."
+  },
+  "t57_boundary": {
+    "observed": "Run 37756410153, frozen app 0.2.407: admin sign-in and rendered identity passed; Acting as picker had a selection matching the approved name; selection_required=false; matrx.org.active UUID and matching name were absent; native driver timed out at d87_required_organization_storage_not_observed before the T57 Network race.",
+    "driver_paths": [
+      "tests/browser/settings-native-auth-driver.mjs: selectRequiredSettingsOrganization",
+      "tests/browser/showcase-organization-checkpoint.mjs: runShowcaseOrganizationCheckpoint"
+    ],
+    "mismatch": "The driver treats the absence of the device-choice storage key as absence of an active organization even after it deliberately skips selection because the visible organization already matches. The approved ladder permits precisely this state.",
+    "product_claim_limit": "The receipt does not capture the outgoing X-Organization-Id or a canonical resolver result, so it does not prove that any product request used the expected organization. It also does not demonstrate a product organization failure."
+  },
+  "verdict": "The documented intent is clear: the client-shell load ladder is allowed and required, while per-request/database fallback is forbidden. The frozen T57 test driver has a stale storage-only checkpoint; no product-code violation or unresolved intent conflict is established by this receipt.",
+  "bounded_next_fix_proposal": "Change the native checkpoint to verify the visible approved organization together with the canonical resolved organization ID and an authenticated request's X-Organization-Id, without requiring a device-choice storage row when the load ladder supplied the active ID. If the test elects an explicit UI switch instead, require evidence that the switch actually fired and stored the selected ID; do not force a no-op reselect or accept the label alone. Keep admin role and exact organization lineage checks, and prove the old storage-only guard RED/new guard GREEN before another native run.",
+  "open_limit": "The current fixture names the approved organization but does not itself prove the UUID/header lineage in the failed run; a new guard must obtain that ID from verified membership or a real request observation without weakening the authorization or organization assertion."
+}
