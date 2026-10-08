@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "date": "2026-10-08",
+  "task": "Recover system-volume space for continuation preflight using only the supported disk-groom cleaner.",
+  "procedure": {
+    "skill": ".claude/skills/disk-groom/SKILL.md",
+    "register": "../matrx-common-docs/operations/disk-grooming.md",
+    "cleaner": "../matrx-common-docs/meta/scripts/disk-groom/groom.py",
+    "dry_run": "python3 ../matrx-common-docs/meta/scripts/disk-groom/groom.py daily",
+    "apply": "python3 ../matrx-common-docs/meta/scripts/disk-groom/groom.py daily --apply"
+  },
+  "initial_preflight": {
+    "run_id": "continuation-preflight-20261008-1417",
+    "system_free_gib": 15.981121063232422,
+    "required_floor_gib": 20,
+    "repo_free_gib": 1675.3233528137207,
+    "profile_free_gib": 1675.3233528137207,
+    "cpu_and_memory": "healthy"
+  },
+  "dry_run_findings": {
+    "stale_linked_worktrees": 0,
+    "eligible_worktree_cleanup": 0,
+    "eligible_next_cache_cleanup": 0,
+    "docker": "engine down; prune skipped",
+    "uv_cache": "0 B (20 GB cap)",
+    "npm_cache": "0 B (5 GB cap)",
+    "pnpm_cache": "119.6 MB (8 GB cap)",
+    "homebrew_old_downloads": "eligible for supported cleanup",
+    "xcode_simulator_cleanup": "unavailable"
+  },
+  "applied": {
+    "uv_cache_prune": "completed",
+    "homebrew_cleanup": "completed",
+    "simulator_cleanup": "unavailable",
+    "freed_reported_by_cleaner": "0 B",
+    "docker_or_worktree_actions": "none"
+  },
+  "post_apply_measurement": {
+    "source": "disk-groom daily --apply filesystem report",
+    "volume": "/System/Volumes/Data",
+    "size_gib_rounded": 228,
+    "available_gib_rounded": 16,
+    "capacity_percent": 92,
+    "still_below_floor": true
+  },
+  "result": "No safe reclaimable cache was available from the supported cleaner. Admission remains refused.",
+  "exact_next_action": "Recover at least 4.1 GiB of additional system-volume space using owner-selected cleanup, then rerun the existing continuation preflight. Current groomer-identified cleanup yielded 0 B; no broader deletion is justified by these measurements."
+}
