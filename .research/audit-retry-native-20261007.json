@@ -1,0 +1,289 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-D-0159",
+  "lane": "hosted-native-A original retry retest and EXT-F-1003 T27/T61/T62",
+  "scope": "One existing hosted TEST dispatch only. No build, release, deployment, version bump, code/product edit, or inventory coverage promotion.",
+  "source_repair": {
+    "fix_commit": "29b22795e6ff4a09b3f522e684b181fd7e8fe777",
+    "independent_source_peer_commit": "ab2464b0",
+    "peer_file": ".research/guest-audit-source-peer-20261007.json",
+    "peer_verdict": "SOURCE_READY_NATIVE_PENDING",
+    "focused_ci": [
+      {
+        "run_id": 37705126917,
+        "commit": "4443f8d9b88ba3a204fadefe30fb87d9d0aebe4f",
+        "conclusion": "success"
+      },
+      {
+        "run_id": 37705690477,
+        "commit": "67e7986ae8161dda6c72ba3c0faee1dbb20a930c",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "execution": {
+    "workflow_run_id": 37706132089,
+    "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37706132089",
+    "attempt": 1,
+    "checkout_sha": "e30ea476c869c9ee6127fab9ba4e801807f15aa5",
+    "runner_label": "macos-15",
+    "runner_name": "GitHub Actions 1000096798",
+    "concurrent_B_runner_name": "GitHub Actions 1000096795",
+    "started_at": "2026-10-08T00:08:15Z",
+    "terminal_at": "2026-10-08T00:15:22Z",
+    "run_conclusion": "failure",
+    "failed_step": "Exercise the selected Chrome side-panel case",
+    "case_child_exit_code": 0,
+    "resource_wrapper_exit_code": 3
+  },
+  "selected_artifact": {
+    "ci_run_id": 37698216289,
+    "ci_run_conclusion": "success",
+    "artifact_id": 11516342905,
+    "artifact_digest": "sha256:927854cfdda6e57d272277653e0b4c507720c29d74978da235d80c064c1017ee",
+    "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "source_version": "0.2.391",
+    "tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+    "runtime_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "native_receipt_run_id": 37698216289,
+    "eligibility": "Existing successful main-push CI development-test artifact, imported by the canonical hosted runner; receipt confirms exact source, version and tree hash. This evidence is limited to the frozen 0.2.391 artifact and is not transferred to current main, whose organization resolver differs."
+  },
+  "current_main": {
+    "workflow_checkout_sha": "e30ea476c869c9ee6127fab9ba4e801807f15aa5",
+    "previous_observed_sha": "c0254fbdfa5a6fe965e5a4550b87a471ba4c2d42",
+    "runner_and_acceptance_diff_since_previous_observed_sha": "none; intervening merge changed package metadata and generated catalog only",
+    "coverage_transfer": "none"
+  },
+  "resource_admission": {
+    "journals": [
+      {
+        "name": "hosted-package-37706132089-1.jsonl",
+        "path": ".research/audit-retry-native-evidence/run37706132089/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37706132089-1.jsonl",
+        "sha256": "681dc75b6e09877a4aa65c2a2447b5abe42eb2fb78c6f7a3ccdda46f8461bfec",
+        "admitted": true,
+        "resource_invalid": false,
+        "wrapper_exit_code": 0,
+        "child_exit_code": 0,
+        "decision": "valid",
+        "final_at": "2026-10-08T00:10:18.932Z",
+        "admission_sample": {
+          "pressureLevel": 1,
+          "availableMemoryGiB": 6.02,
+          "requiredMemoryGiB": 4,
+          "oneMinuteLoad": 24.5,
+          "logicalCpus": 3,
+          "cpuBusyFraction": 0.032857142857142856,
+          "swapUsedMiB": 0,
+          "repoFreeGiB": 43.30011749267578,
+          "profileFreeGiB": 43.30011749267578,
+          "safetyFreeGiB": 43.30011749267578,
+          "systemFreeGiB": 43.30011749267578
+        }
+      },
+      {
+        "name": "hosted-browser-37706132089-1.jsonl",
+        "path": ".research/audit-retry-native-evidence/run37706132089/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37706132089-1.jsonl",
+        "sha256": "e9bf4e7f5e55f070ee098c991e5dfd635438d4d3e33d5d60ca93775c6231d25b",
+        "admitted": true,
+        "resource_invalid": false,
+        "wrapper_exit_code": 0,
+        "child_exit_code": 0,
+        "decision": "valid",
+        "final_at": "2026-10-08T00:12:22.578Z",
+        "admission_sample": {
+          "pressureLevel": 1,
+          "availableMemoryGiB": 5.95,
+          "requiredMemoryGiB": 4,
+          "oneMinuteLoad": 4.86,
+          "logicalCpus": 3,
+          "cpuBusyFraction": 0.19714285714285715,
+          "swapUsedMiB": 0,
+          "repoFreeGiB": 43.29985427856445,
+          "profileFreeGiB": 43.29985427856445,
+          "safetyFreeGiB": 43.29985427856445,
+          "systemFreeGiB": 43.29985427856445
+        }
+      },
+      {
+        "name": "hosted-guest-37706132089-1.jsonl",
+        "path": ".research/audit-retry-native-evidence/run37706132089/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37706132089-1.jsonl",
+        "sha256": "cb41c94b1b5636f26dff1e6bc81082f01e641cc5b0b11cf504720957d71ae37e",
+        "admitted": true,
+        "resource_invalid": true,
+        "wrapper_exit_code": 3,
+        "child_exit_code": 0,
+        "decision": "invalid",
+        "final_at": "2026-10-08T00:15:02.031Z",
+        "admission_sample": {
+          "pressureLevel": 1,
+          "availableMemoryGiB": 5.88,
+          "requiredMemoryGiB": 4,
+          "oneMinuteLoad": 2.07,
+          "logicalCpus": 3,
+          "cpuBusyFraction": 0.048571428571428564,
+          "swapUsedMiB": 0,
+          "repoFreeGiB": 42.9924201965332,
+          "profileFreeGiB": 42.9924201965332,
+          "safetyFreeGiB": 42.9924201965332,
+          "systemFreeGiB": 42.9924201965332
+        }
+      }
+    ],
+    "acceptance_admission_sample": {
+      "at": "2026-10-08T00:14:09.384Z",
+      "available_memory_gib": 5.88,
+      "required_memory_gib": 4,
+      "one_minute_load": 2.07,
+      "logical_cpus": 3,
+      "cpu_busy_fraction": 0.048571428571428564,
+      "swap_used_mib": 0,
+      "admitted": true
+    },
+    "acceptance_watch_events": [
+      {
+        "code": "RESOURCE_WATCH_HEALTHY",
+        "at": "2026-10-08T00:14:25.610Z",
+        "cpu_busy_fraction": 0.7,
+        "one_minute_load": 1.83,
+        "reasons": []
+      },
+      {
+        "code": "RESOURCE_CPU_PENDING",
+        "at": "2026-10-08T00:14:41.834Z",
+        "available_memory_gib": 5.67,
+        "one_minute_load": 3.64,
+        "logical_cpus": 3,
+        "cpu_busy_fraction": 0.78,
+        "swap_used_mib": 0,
+        "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"]
+      },
+      {
+        "code": "RESOURCE_CPU_PENDING",
+        "at": "2026-10-08T00:14:58.035Z",
+        "available_memory_gib": 5.67,
+        "one_minute_load": 3.07,
+        "logical_cpus": 3,
+        "cpu_busy_fraction": 0.56,
+        "swap_used_mib": 0,
+        "reasons": []
+      }
+    ],
+    "process_attribution": {
+      "at": "2026-10-08T00:14:41.879Z",
+      "process_count": 25,
+      "top_cpu_percent": [
+        {"process": "Chromium Helper", "cpu_percent": 49.7},
+        {"process": "mobileassetd", "cpu_percent": 30.3},
+        {"process": "Chromium Helper", "cpu_percent": 26.7},
+        {"process": "provjobd10574592", "cpu_percent": 18.8},
+        {"process": "siriknowledged", "cpu_percent": 12.1},
+        {"process": "WindowServer", "cpu_percent": 11.5},
+        {"process": "Chromium", "cpu_percent": 8.0},
+        {"process": "node", "cpu_percent": 6.3}
+      ],
+      "interpretation": "Mixed browser/test and macOS background process load; attribution does not support a product failure or a browser-only cause."
+    },
+    "terminal_reason": "The wrapper observed the child exit with code 0 while cpuPending remained true. Only one post-pending sample had no unsafe reasons; policy requires three healthy samples to resume, so the wrapper exited 3 and finalized invalid-resource.",
+    "interpretation": "The guarded case child exited 0 after a CPU-pending interval, but the guard did not reach its required healthy-resume condition before exit and finalized resource_invalid=true / decision=invalid. The package and browser journals are valid. This invalidates native acceptance credit; it is not a product failure."
+  },
+  "native_receipt": {
+    "path": ".research/audit-retry-native-evidence/run37706132089/matrx-extend/matrx-extend/test-results/audit-key-native-75b66f3f-f60a-4f6b-8bf6-322595690347.json",
+    "sha256": "7adbaf75ed096c5a20642972be8b1b8e632bdefd618d44af77f41e22ed798ee0",
+    "status": "pass",
+    "failure_stage": null,
+    "failure_code": null,
+    "case_count": 10,
+    "case_results": [
+      {
+        "case_id": "T86",
+        "name": "T86 details read failure and read-only retry",
+        "status": "pass"
+      },
+      {
+        "case_id": "T60",
+        "name": "T60 export failure and retry",
+        "status": "pass"
+      },
+      {
+        "case_id": "T27",
+        "name": "T27 admin audit key fields and recent rows survive Settings reload",
+        "status": "pass"
+      },
+      {
+        "case_id": "T62",
+        "name": "T62 origin filters match visible rows counts and empty state",
+        "status": "pass"
+      },
+      {
+        "case_id": "T61",
+        "name": "T61 cancel preserves key then confirmation rotates",
+        "status": "pass"
+      },
+      {
+        "case_id": "T87",
+        "name": "T87 failed pre-mutation rotation needs fresh confirmation",
+        "status": "pass"
+      },
+      {
+        "case_id": "T88",
+        "name": "T88 successful rotation and failed refresh never re-rotates",
+        "status": "pass"
+      },
+      {
+        "case_id": "T89",
+        "name": "T89 uncertain active write blocks mutation until read",
+        "status": "pass"
+      },
+      {
+        "case_id": "T91",
+        "name": "T91 unsupported Web Locks blocks and read-only retry recovers",
+        "status": "pass"
+      },
+      {
+        "case_id": "T90",
+        "name": "T90 two same-origin activations retain and verify signed key history",
+        "status": "pass"
+      }
+    ]
+  },
+  "acceptance_mapping": {
+    "EXT-F-1003-T27": {
+      "receipt_status": "pass",
+      "resource_status": "invalid-resource",
+      "acceptance_verdict": "unverified; no acceptance credit",
+      "inventory_changed": false
+    },
+    "EXT-F-1003-T61": {
+      "receipt_status": "pass",
+      "resource_status": "invalid-resource",
+      "acceptance_verdict": "unverified; no acceptance credit",
+      "inventory_changed": false
+    },
+    "EXT-F-1003-T62": {
+      "receipt_status": "pass",
+      "resource_status": "invalid-resource",
+      "acceptance_verdict": "unverified; no acceptance credit",
+      "inventory_changed": false
+    },
+    "EXT-F-1003-T86": {
+      "receipt_status": "pass",
+      "resource_status": "invalid-resource",
+      "observed_active_key_writes": 0,
+      "direct_rotateDeviceKey_invocation_observed": false,
+      "acceptance_verdict": "partial; zero active-key writes do not prove the rotation function was never invoked",
+      "inventory_changed": false
+    }
+  },
+  "secret_cleanup": {
+    "names": [
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "deleted_immediately_after_terminal": true,
+    "both_names_absent_verified": true,
+    "values_recorded": false
+  },
+  "prior_native_results_unchanged": true,
+  "no_inventory_promotion": true,
+  "next_action": "Do not retry this invalid-resource run. Resume only after a fresh guarded admission reaches the required healthy state; then perform a separately authorized single native attempt. Preserve T86 direct rotate invocation as partial until invocation itself is observed."
+}
