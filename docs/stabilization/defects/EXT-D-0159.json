@@ -7,7 +7,7 @@
   "title": "Audit retry runner reads fault counters after deleting their owner",
   "severity": "S2: runner aborts before new case verdicts; product failure not established",
   "priority": "P1",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "root/audit_breadth_failure_diagnosis",
   "preconditions": [
     "Import frozen CI artifact 11516342905 from source 52487361 (v0.2.391).",
@@ -24,7 +24,8 @@
   "evidence": [
     ".research/audit-breadth-native-20261007.json",
     ".research/audit-selected-native-20261007.json",
-    ".research/audit-breadth-failure-diagnosis-20261007.json"
+    ".research/audit-breadth-failure-diagnosis-20261007.json",
+    ".research/audit-source-ci-20261007.json"
   ],
   "transition_history": [
     {
@@ -44,9 +45,15 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Narrow source repair drafted; resource guard refused local tests with RESOURCE_DISK_LOW."
+    },
+    {
+      "at": "2026-10-08T00:04:11.865486+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Independent source review plus exact automatic CI37705126917 focused step passed; native retest pending."
     }
   ],
   "closure_requirement": "Resource-admitted focused RED/GREEN and mutation tests, independent source review, then one resource-valid native original-boundary retest; T86 direct rotate invocation and T27/T61/T62 require separate case judgments.",
-  "next_action": "Restore resource admission without weakening policy, run focused tests, review source, and retest native runner before changing inventory statuses.",
+  "next_action": "Run guarded audit-key-admin on the unchanged eligible frozen artifact; verify original retry and T27/T61/T62, then independent native review. T86 direct no-rotation invocation remains separately unverified.",
   "fix_commits": []
 }

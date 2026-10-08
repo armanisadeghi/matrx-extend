@@ -7,7 +7,7 @@
   "title": "Picker listener tracker may throw on untracked event registration before replacement picker initializes",
   "severity": "S2: invalid test instrumentation blocks native reinjection verification; product failure not established",
   "priority": "P1",
-  "state": "fixed",
+  "state": "in-fix",
   "owner": "root/picker_reinject_escalation",
   "reproduction": [
     "Run showcase-stale-admin after enabling listener-tracking hook.",
@@ -21,7 +21,9 @@
     ".research/picker-lifecycle-native-20261007.json",
     ".research/picker-direct-probe-native-20261007.json",
     ".research/picker-reinject-escalation-20261007.json",
-    ".research/seo-picker-independent-peer-20261007.json"
+    ".research/seo-picker-independent-peer-20261007.json",
+    ".research/picker-tracker-fixed-native-20261007.json",
+    ".research/picker-native-checkpoint-peer-20261007.json"
   ],
   "transition_history": [
     {
@@ -47,10 +49,22 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Exactbundle selfverifiedGREEN and independent source RED/GREEN plus9focusedtests pass; native retest pending."
+    },
+    {
+      "at": "2026-10-08T00:02:50.455304+00:00",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Native37704706106 no longer shows old tracker exception, but full surrounding reinjection case fails its final boundary; peer435975bf accepts only partial evidence."
+    },
+    {
+      "at": "2026-10-08T00:02:50.455304+00:00",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Diagnose final detection-count boundary before another native attempt; source trace places missing teardown observation after Done, not proof of startup failure."
     }
   ],
   "closure_requirement": "Causal frozen-bundle red/green proof, fresh source review, then resource-valid native reinjection and surrounding scenarios; no globalD42closure.",
   "root_cause": "Optional chaining does not suppress false; capture classifier returned boolean instead of null for untracked events/options.",
   "fix_commits": ["eb9ee865"],
-  "next_action": "One guarded native original reinjection retest after auditA37703766572 terminal/secretcleanup. D42 remains separate and in-fix."
+  "next_action": "Finish bounded detection-count diagnosis, fresh source review and exact-artifact native retest; preserve D42/nonadmin remaining criteria."
 }
