@@ -33,6 +33,7 @@ test('hosted artifact upload preserves every routed showcase native receipt', ()
     'showcase-stale-admin',
     'showcase-d47-admin',
     'showcase-d47-public-admin',
+    'records-readonly-admin',
   ]) {
     const output = hostedShowcaseRoute(acceptanceCase, prepared, runner).env.MATRX_SHOWCASE_OUTPUT;
     assert.ok(
@@ -44,6 +45,53 @@ test('hosted artifact upload preserves every routed showcase native receipt', ()
       `${acceptanceCase} receipt ${output} is absent from hosted upload paths`,
     );
   }
+});
+
+test('Records read-only case keeps the exact CI artifact and native output route', () => {
+  const route = hostedShowcaseRoute('records-readonly-admin', prepared, runner);
+  assert.equal(route.driver, 'tests/browser/records-readonly-native-acceptance.mjs');
+  assert.equal(
+    route.env.MATRX_SHOWCASE_OUTPUT,
+    '/private/results/records-readonly-native-42-1.json',
+  );
+  assert.equal(route.env.MATRX_SHOWCASE_CI_SOURCE_SHA, prepared.sourceSha);
+  assert.equal(route.env.MATRX_SHOWCASE_RECEIPT, prepared.relocatedReceipt);
+  for (const change of [
+    { kind: 'published_store_zip_adapted' },
+    { sourceSha: '' },
+    { artifactId: 0 },
+  ]) {
+    assert.throws(() =>
+      hostedShowcaseRoute('records-readonly-admin', { ...prepared, ...change }, runner),
+    );
+  }
+});
+
+test('Records preflight requires approved organization ID and admin credentials', () => {
+  const base = {
+    GITHUB_ACTIONS: 'true',
+    MATRX_HOSTED_PHASE: 'preflight',
+    MATRX_HOSTED_ACCEPTANCE_CASE: 'records-readonly-admin',
+  };
+  const run = (env) =>
+    spawnSync(process.execPath, ['scripts/hosted-guest-acceptance.mjs'], {
+      env: { ...base, ...env },
+      encoding: 'utf8',
+    });
+  const withoutId = run(credentials);
+  assert.notEqual(withoutId.status, 0);
+  assert.match(withoutId.stderr, /hosted_profile_org_id_invalid/);
+  const approved = {
+    ...credentials,
+    MATRX_HOSTED_PROFILE_ORGANIZATION_JSON:
+      '{"approved_organization_name":"Matrx Org","approved_organization_id":"72336a38-f816-442f-ad48-18610128fb67"}',
+  };
+  const ready = run(approved);
+  assert.equal(ready.status, 0, ready.stderr);
+  assert.match(ready.stdout, /HOSTED_CREDENTIAL_PREFLIGHT_READY/);
+  const missingAdmin = { ...approved };
+  delete missingAdmin.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON;
+  assert.match(run(missingAdmin).stderr, /hosted_admin_secret_required/);
 });
 
 test('explicit stale case dispatches the native driver with opt-in and exact artifact identity', () => {

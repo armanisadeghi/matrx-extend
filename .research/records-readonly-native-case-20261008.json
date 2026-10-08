@@ -1,0 +1,30 @@
+{
+  "scope": "First executable read-only Records native acceptance case",
+  "inventory_linkage": {
+    "defect": "D91",
+    "control_case": "EXT-F-4130-C02",
+    "action": "table_list",
+    "source": ".research/records-control-procedures-20261008.json",
+    "driver": "tests/browser/records-readonly-native-acceptance.mjs",
+    "hosted_case": "records-readonly-admin"
+  },
+  "current_truth": "Scoped case and route checks are source-verified. No new hosted native Records execution has run; D91 remains open.",
+  "positive_oracle": "Real admin signs in through Settings, selects the private approved organization, opens the Records card in Tools, types {action:table_list,args:{organization_id,include_app_tables:true,limit:50}}, clicks Run with the native pointer, and requires exactly one authenticated /tools/test/execute POST with the exact envelope plus a visible successful output containing at least one real approved-organization table.",
+  "fixture_requirements": [
+    "Exact CI development extension artifact with matching source SHA, run ID, artifact ID and receipt tree hash",
+    "Existing hosted admin credentials and private approved organization name plus UUID fixture",
+    "Live /tools/test/list schema and /tools/test/execute endpoint with the current Records action contract",
+    "At least one real table visible to admin in the approved organization; no case-owned table or row is created"
+  ],
+  "safety_boundary": "Read-only table_list only. No network replacement, seeded auth state, injected headers, mocked result, record mutation, or secret content in the receipt.",
+  "validation": [
+    "node --test scripts/hosted-showcase-route.test.mjs: 15 passed",
+    "node --check tests/browser/records-readonly-native-acceptance.mjs: passed",
+    "git diff --check: passed"
+  ],
+  "limitations": [
+    "The fetched schema in run 37780192222 is a prerequisite checkpoint, not a Records action receipt.",
+    "The native case awaits a fresh hosted run against an exact current CI artifact and a live approved-organization table fixture.",
+    "This case does not establish the remaining 24 control actions or D91 closure."
+  ]
+}

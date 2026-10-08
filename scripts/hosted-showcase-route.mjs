@@ -14,6 +14,7 @@ export function hostedShowcaseRoute(
       'showcase-stale-admin',
       'showcase-d47-admin',
       'showcase-d47-public-admin',
+      'records-readonly-admin',
     ].includes(acceptanceCase)
   )
     return null;
@@ -36,11 +37,13 @@ export function hostedShowcaseRoute(
   assert.ok(runner.temp && runner.runId && runner.attempt, 'showcase_hosted_output_required');
   return {
     driver:
-      acceptanceCase === 'showcase-d47-admin'
-        ? 'tests/browser/showcase-d47-document-lifecycle.mjs'
-        : acceptanceCase === 'showcase-d47-public-admin'
-          ? 'tests/browser/showcase-d47-public-initial-load.mjs'
-          : 'tests/browser/showcase-picker-native-acceptance.mjs',
+      acceptanceCase === 'records-readonly-admin'
+        ? 'tests/browser/records-readonly-native-acceptance.mjs'
+        : acceptanceCase === 'showcase-d47-admin'
+          ? 'tests/browser/showcase-d47-document-lifecycle.mjs'
+          : acceptanceCase === 'showcase-d47-public-admin'
+            ? 'tests/browser/showcase-d47-public-initial-load.mjs'
+            : 'tests/browser/showcase-picker-native-acceptance.mjs',
     env: {
       MATRX_SHOWCASE_EXTENSION_DIR: prepared.extensionDir,
       MATRX_SHOWCASE_RECEIPT: prepared.relocatedReceipt,
@@ -49,7 +52,7 @@ export function hostedShowcaseRoute(
       MATRX_SHOWCASE_CI_ARTIFACT_ID: String(prepared.artifactId),
       MATRX_SHOWCASE_OUTPUT: join(
         runner.temp,
-        `${acceptanceCase === 'showcase-d47-admin' ? 'showcase-d47-native' : acceptanceCase === 'showcase-d47-public-admin' ? 'showcase-d47-public-native' : 'showcase-picker-native'}-${runner.runId}-${runner.attempt}.json`,
+        `${acceptanceCase === 'records-readonly-admin' ? 'records-readonly-native' : acceptanceCase === 'showcase-d47-admin' ? 'showcase-d47-native' : acceptanceCase === 'showcase-d47-public-admin' ? 'showcase-d47-public-native' : 'showcase-picker-native'}-${runner.runId}-${runner.attempt}.json`,
       ),
       MATRX_SHOWCASE_STALE_BOUNDARY: acceptanceCase === 'showcase-stale-admin' ? '1' : undefined,
       MATRX_D47_RESPONSE_ORDER:

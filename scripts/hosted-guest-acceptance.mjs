@@ -311,6 +311,7 @@ async function run(prepared, artifactMode) {
       'showcase-stale-admin',
       'showcase-d47-admin',
       'showcase-d47-public-admin',
+      'records-readonly-admin',
       'profile-admin',
       'profile-member',
     ].includes(acceptanceCase),
@@ -354,7 +355,11 @@ async function run(prepared, artifactMode) {
     process.env.MATRX_HOSTED_SEO_METADATA_FIXTURE ?? 'none',
   );
   const scrapeSelection = scrapeRoute ? scrapeNativeSelection(process.env) : null;
-  if (acceptanceCase === 'prepare-stale-results' || acceptanceCase.startsWith('showcase-'))
+  if (
+    acceptanceCase === 'prepare-stale-results' ||
+    acceptanceCase.startsWith('showcase-') ||
+    acceptanceCase === 'records-readonly-admin'
+  )
     assert.equal(kind, 'ci_development_test', 'Native case requires exact CI development receipt');
   if (acceptanceCase === 'profile-admin' || acceptanceCase === 'profile-member') {
     await runProfile(prepared, acceptanceCase);

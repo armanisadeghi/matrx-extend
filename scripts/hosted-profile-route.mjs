@@ -67,21 +67,30 @@ export function requireHostedAcceptanceCredential(acceptanceCase, env) {
       'showcase-stale-admin',
       'showcase-d47-admin',
       'showcase-d47-public-admin',
+      'records-readonly-admin',
       'profile-admin',
       'visibility-census-admin',
     ].includes(acceptanceCase) ||
     scrapeMode === 'admin'
   ) {
     assert.ok(env.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON, 'hosted_admin_secret_required');
-    if (scrapeMode === 'admin' || acceptanceCase.startsWith('showcase-'))
+    if (
+      scrapeMode === 'admin' ||
+      acceptanceCase.startsWith('showcase-') ||
+      acceptanceCase === 'records-readonly-admin'
+    )
       requireSettingsCredential('admin', env.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON);
   }
   if (
     acceptanceCase === 'profile-admin' ||
     acceptanceCase.startsWith('showcase-') ||
+    acceptanceCase === 'records-readonly-admin' ||
     scrapeMode === 'admin'
   )
-    profileOrganizationConfig(env, acceptanceCase === 'showcase-picker-admin');
+    profileOrganizationConfig(
+      env,
+      acceptanceCase === 'showcase-picker-admin' || acceptanceCase === 'records-readonly-admin',
+    );
   // The native journal is private and fsynced, but its hosted VM is disposable.
   // A write cannot start until each intent is durably recoverable elsewhere.
   if (acceptanceCase === 'profile-admin' || acceptanceCase === 'profile-member')
