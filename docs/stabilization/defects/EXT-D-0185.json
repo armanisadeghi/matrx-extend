@@ -1,0 +1,58 @@
+{
+  "id": "EXT-D-0185",
+  "feature_id": "EXT-F-4130",
+  "case_ids": ["EXT-F-4130-T01"],
+  "surface": "Records hosted fixture cleanup",
+  "auth_mode": "admin",
+  "title": "Fixture cleanup requires marker absent from table-list projection",
+  "severity": "S2: owned test fixture cleanup fails; product Records actions still complete",
+  "priority": "P1: blocks reliable Records acceptance",
+  "state": "closed",
+  "reproduction": [
+    "Run guarded records-readonly-admin with owned fixture on frozen414; native37847790922 reproduces.",
+    "Read/aggregate complete, but list summary description is null; helper reports ownership ambiguous despite exact canonical detail marker."
+  ],
+  "expected": "Verify strict ownership using canonical metadata, archive only the exact owned fixture, then confirm absence.",
+  "actual": "Summary-only marker matching misses owned fixture and fails cleanup.",
+  "fix_commit": "f1ee59f65df95f1b6cda0b60a0ebfe34cef45ab9",
+  "evidence": [
+    ".research/records-lifecycle-native-20261008.json",
+    ".research/records-detail-cleanup-repair-20261008.json",
+    ".research/records-detail-cleanup-root-review-20261008.json",
+    ".research/records-detail-cleanup-native-20261008.json",
+    ".research/records-detail-cleanup-native-peer-20261008.json"
+  ],
+  "state_history": [
+    {
+      "state": "open",
+      "recorded_at": "2026-10-08T22:14:08.830206+00:00",
+      "basis": "Native37847790922 cleanup failure"
+    },
+    {
+      "state": "triaged",
+      "recorded_at": "2026-10-08T22:14:08.830206+00:00",
+      "basis": "List omits marker; canonical columns detail contains exact ownership metadata"
+    },
+    {
+      "state": "in-fix",
+      "recorded_at": "2026-10-08T22:14:08.830206+00:00",
+      "basis": "f1ee59f6 source repair"
+    },
+    {
+      "state": "fixed",
+      "recorded_at": "2026-10-08T22:14:08.830206+00:00",
+      "basis": "26 focused tests pass including red-first actual request regression and foreign refusals"
+    },
+    {
+      "state": "retest-pass",
+      "recorded_at": "2026-10-08T22:14:08.830206+00:00",
+      "basis": "Native37850891584 exact cleanup and surrounding C04/C05 pass"
+    },
+    {
+      "state": "closed",
+      "recorded_at": "2026-10-08T22:14:08.830206+00:00",
+      "basis": "Independent root raw/hash/resource review confirms bounded test-helper repair"
+    }
+  ],
+  "closure_scope": "Fixture helper only; EXT-D-0091 and full Records coverage remain open."
+}

@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "at": "2026-10-08T22:14:08.830206+00:00",
+  "reviewer": "root; independent of source and native execution",
+  "run_id": 37850891584,
+  "verdict_a": {
+    "status": "pass",
+    "scope": "C04/C05 visible completed owned matches and exact fixture archival/absence on frozen414artifact11556064167; full Records partial"
+  },
+  "verdict_b": {
+    "status": "pass",
+    "evidence": "Verified receipt/journal SHA256 against manifest, three exact-current resource journals valid/admitted/resourceInvalidfalse/exit0. Historical unrelated journals in artifact excluded. Fixture journal archived_verified and pending_write_unknownfalse. Root names-only secret check absent.",
+    "limitations": "Separate post-terminal authenticated read is operator evidence; root independently reviewed original native receipt, not authenticated replay. No Store/current-main acceptance."
+  }
+}
