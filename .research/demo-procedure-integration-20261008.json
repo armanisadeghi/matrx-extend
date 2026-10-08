@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "artifact_type": "canonical-demo-procedure-integration",
+  "task_id": "demo-procedure-integration-20261008",
+  "source_records": {
+    "proposal": ".research/demo-recording-procedures-20261008.json",
+    "final_peer": ".research/demo-recording-procedures-final-peer-20261008.json",
+    "source_inventory": "docs/stabilization/inventory.json"
+  },
+  "source_review": {
+    "peer_verdict": {
+      "A_procedure_completeness": "CONDITIONAL_PASS",
+      "B_source_quality": "PASS_WITH_MINOR_DUPLICATION"
+    },
+    "runtime_status": "UNVERIFIED",
+    "finding_resolution": {
+      "post_delete_read": "ADDRESSED: immediate describe_demo is explicitly a resurrection regression probe expecting no restoration; its absent result is not a cleanup oracle. A restored body is a failure and the owned ID remains retained.",
+      "local_vs_cloud_cleanup": "ADDRESSED: exact-ID list absence and exact local body-key absence are separate from authorized cloud tombstone evidence. The ID is retained until both are proven; a second delete is diagnostic only.",
+      "dry_run_navigation_and_scroll": "ADDRESSED: all start and recorded navigation URLs plus every scroll are bounded to the owned fixture. The procedure states dry_run still navigates/reloads and scrolls and is not side-effect-free.",
+      "missing_id_and_read_failure": "ADDRESSED: a fresh never-saved ID needs independent local, guidance, and exact-ID cloud absence checks before demo_not_found is accepted. Cloud read failure and demo_body_unavailable stay distinct.",
+      "recorder_realm_gap": "ADDRESSED: the side-panel/service-worker recorder-state boundary is classified NOT_EXECUTABLE on source evidence only, with no reproduced defect or runtime pass claim. All six proposed cases remain NOT_EXECUTABLE without owned fixtures and a matching build/resource receipt."
+    }
+  },
+  "selected_case_ids": [
+    "EXT-F-4131-T01",
+    "EXT-F-4132-T01",
+    "EXT-F-4133-T01",
+    "EXT-F-4134-T01",
+    "EXT-F-4135-T01",
+    "EXT-F-4136-T01"
+  ],
+  "integration": {
+    "changed_case_objects": [
+      "EXT-F-4131-T01",
+      "EXT-F-4132-T01",
+      "EXT-F-4133-T01",
+      "EXT-F-4134-T01",
+      "EXT-F-4135-T01",
+      "EXT-F-4136-T01"
+    ],
+    "changed_case_object_count": 6,
+    "protected_fields_unchanged": [
+      "id",
+      "control_ids",
+      "modes",
+      "dimensions",
+      "design_status",
+      "results"
+    ],
+    "all_selected_procedure_readiness": "NOT_EXECUTABLE",
+    "runtime_results_changed": false,
+    "inventory_results_or_status_values_changed": false,
+    "execution_or_fixture_setup_performed": false
+  },
+  "gap_counts_before": {
+    "total_cases": 769,
+    "selected_cases": 6,
+    "selected_with_empty_steps": 6,
+    "selected_with_empty_expected": 6,
+    "selected_not_executable_readiness": 0
+  },
+  "gap_counts_after": {
+    "total_cases": 769,
+    "selected_cases": 6,
+    "selected_with_empty_steps": 0,
+    "selected_with_empty_expected": 0,
+    "selected_not_executable_readiness": 6
+  },
+  "runtime_risks": [
+    "Recorder side-panel/service-worker state boundary remains source-indicated and runtime-unverified.",
+    "Delete/read resurrection race is source-supported only; immediate describe is a regression probe and never a cleanup oracle.",
+    "Owned demo/page/video fixtures, matching build/resource receipt, role-specific live runs, and cloud tombstone proof are absent."
+  ],
+  "validation": {
+    "assertions": "passed",
+    "semantic_scope": "Exactly six case objects changed. All feature and case counts remain unchanged; selected roles, control IDs, dimensions, design_status, and any result fields are unchanged.",
+    "generated_views": "Regenerated STATUS.md, STATUS.html, and CHECKLIST.md from canonical inventory."
+  }
+}
