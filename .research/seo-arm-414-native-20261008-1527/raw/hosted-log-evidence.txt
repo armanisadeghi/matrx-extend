@@ -1,0 +1,10 @@
+guest	Set up job	2026-10-08T15:27:21.5894240Z Image: macos-15-arm64
+guest	Require exactly one artifact provenance mode	2026-10-08T15:27:31.9387960Z [36;1mprintf 'HOSTED_RUNNER_PLATFORM label=%s runner_arch=%s machine=%s\n' "$RUNNER_LABEL" "$RUNNER_ARCH" "$(uname -m)"[0m
+guest	Require exactly one artifact provenance mode	2026-10-08T15:27:32.0060580Z HOSTED_RUNNER_PLATFORM label=macos-15 runner_arch=ARM64 machine=arm64
+guest	Prepare pinned browser driver under an owned permit	2026-10-08T15:29:15.2042660Z {"schema":1,"at":"2026-10-08T15:29:15.203Z","runId":"hosted-package-37800877872-1","admitted":true,"resourceInvalid":false,"exitCode":0,"decision":"valid","code":"RESOURCE_FINAL_DECISION"}
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T15:31:17.4560730Z HOSTED_BROWSER_READY 1194 browser
+guest	Prepare full Chromium under a fresh owned permit	2026-10-08T15:31:17.6401540Z {"schema":1,"at":"2026-10-08T15:31:17.637Z","runId":"hosted-browser-37800877872-1","admitted":true,"resourceInvalid":false,"exitCode":0,"decision":"valid","code":"RESOURCE_FINAL_DECISION"}
+guest	Exercise the selected Chrome side-panel case	2026-10-08T15:33:06.5151340Z HOSTED_BROWSER_READY 1194 acceptance
+guest	Exercise the selected Chrome side-panel case	2026-10-08T15:33:27.3527520Z DEVELOPMENT_TEST_IMPORTED /Users/runner/work/matrx-extend/matrx-extend/test-results/ci-artifacts/e7b7dc1ecae946369cebb482915faf7ef792c692/37790643945-1 exact_pushed_commit_only
+guest	Exercise the selected Chrome side-panel case	2026-10-08T15:33:28.7137260Z PREPARED_DEVELOPMENT e7b7dc1ecae946369cebb482915faf7ef792c692 550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046
+guest	Exercise the selected Chrome side-panel case	2026-10-08T15:33:54.6133410Z {"schema":1,"at":"2026-10-08T15:33:54.611Z","runId":"hosted-guest-37800877872-1","admitted":true,"resourceInvalid":false,"exitCode":0,"decision":"valid","code":"RESOURCE_FINAL_DECISION"}
