@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "reviewer_lane": "fresh independent source and focused-assertion review",
+  "reviewed_commits": ["a5c82404d21eebe0453c387fc7b342ffeaa7cd40", "70b65e934ad52035b7dcb2501d51e49997365768"],
+  "scope": "Recheck prior T28 visibility/cleanup and T40/T67 UI-storage restoration findings. No local tests, browser, or build run; no downstream capture or full-reload claim.",
+  "verdict_a": {
+    "status": "REPAIRS_PRESENT_WITH_T28_FAILURE_PATH_GAP",
+    "T28": "PARTIAL: observeSection measures content height and computed visibility; sectionMatches binds rendered state to expanded state. Both cleanup blocks waitFor that matcher against the recorded initial expansion. The focused normal path invokes the actual case runner and exercises restoration clicks. However, the injected visibility failure happens while Account is already expanded, so that failure test does not force cleanup to restore a changed section state. The driver check also does not detect opacity, clipping, or occlusion.",
+    "T40": "PASS_SOURCE_AND_FOCUSED_ASSERTION: cleanup detects baseline-visible/storage-drift, clicks away and back, waits for both values, reloads, and asserts both again. Focused test injects that drift after the actual case runner's write path and checks click count, restored values, and reload.",
+    "T67": "PASS_SOURCE_AND_FOCUSED_ASSERTION: cleanup detects baseline-label/storage-drift, selects alternate then baseline, waits for both values, reloads, and asserts both again. Focused test injects drift and checks selection order, restored values, and reload.",
+    "focused_evidence": "The focused tests call runGuestSectionsCase, runGuestAutoScrapeCase, and runGuestAutoScrapeModeCase through an injected driver seam. They are synthetic driver simulations, not native browser coverage. Preparation report cites hosted focused run 37835391727 on merge commit 70b65e93; this peer did not independently inspect the CI run.",
+    "native": "Unverified. No native run or live rendered behavior was independently observed.",
+    "scope_limits": ["T40 downstream page-load capture remains unverified.", "No full extension reload claim."]
+  },
+  "verdict_b": {
+    "status": "PARTIAL_ACCEPTANCE",
+    "finding_dispositions": [
+      {"prior_finding": "T28 never observed rendered visibility", "disposition": "ADDRESSED_IN_DRIVER; height and computed visibility/display are observed and matched to expanded state. Residual limits: clipping/opacity are not measured."},
+      {"prior_finding": "T28 cleanup did not verify the recorded initial state", "disposition": "ADDRESSED_IN_DRIVER_AND_NORMAL_FOCUSED_PATH; both cleanup blocks wait for the expanded/rendered matcher. Failure-injected test does not exercise restoration from a changed expansion state."},
+      {"prior_finding": "T40 cleanup skipped repair when UI matched baseline but storage differed", "disposition": "ADDRESSED_AND_EXERCISED_BY_FOCUSED_SIMULATION; it uses trusted driver clicks and verifies after reload."},
+      {"prior_finding": "T67 cleanup could choose an already-selected baseline and fail to write", "disposition": "ADDRESSED_AND_EXERCISED_BY_FOCUSED_SIMULATION; alternate then baseline selection is verified after reload."},
+      {"prior_finding": "Focused tests only checked synthetic matcher objects", "disposition": "IMPROVED; tests now invoke actual case runners, but all observations and click effects remain synthetic. Hosted focused pass is cited by the preparation report, not independently authenticated here."}
+    ],
+    "checks_run": [],
+    "commands_run": ["Read-only source inspection of the changed driver, focused tests, native acceptance caller, prior peer report, and preparation report."],
+    "limitations": ["No local tests, browser, build, or native run, per task instruction.", "T40 downstream capture behavior remains unverified; no full extension reload acceptance is claimed."]
+  }
+}
