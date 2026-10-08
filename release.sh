@@ -779,8 +779,19 @@ catch_up_matrx_packages() {
         git diff --quiet HEAD -- "$p" 2>/dev/null || paths+=("$p")
     done
     if [[ ${#paths[@]} -eq 0 ]]; then
-        finding "ERROR" "Packages" "pnpm update left package.json and pnpm-lock.yaml unchanged, so catch-up cannot move the candidate" "pnpm sync:matrx-packages"
-        return 1
+        # The committed lockfile was already at latest; only the INSTALL lagged
+        # it (a concurrent sync committed the lockfile, or another session
+        # installed from an older one). The update has now installed exactly
+        # what the candidate's lockfile names, so the same candidate is checked
+        # again from the first gate. Until 2026-10-07 this stopped the release
+        # ("pnpm update left package.json and pnpm-lock.yaml unchanged").
+        if ! ( cd "$REPO_ROOT" && bounded 300 pnpm -s check:matrx-packages ) >> "$RELEASE_LOG_FILE" 2>&1; then
+            finding "ERROR" "Packages" "pnpm update left package.json and pnpm-lock.yaml unchanged and the install is still not at npm latest" "pnpm sync:matrx-packages"
+            return 1
+        fi
+        log "catch-up: committed lockfile was already current; the install lagged it and now matches — rechecking the candidate"
+        unset 'FINDINGS[${#FINDINGS[@]}-1]'   # the gate's ERROR for the install this replaces
+        return 0
     fi
     if ! quiet git commit --only -m "chore(deps): catch up @ai-matrx packages to npm latest during release
 
