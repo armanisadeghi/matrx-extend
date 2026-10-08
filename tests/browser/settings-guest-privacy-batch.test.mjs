@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { GUEST_PRIVACY_SWITCHES, privacySwitchMatches } from './settings-guest-privacy-batch.mjs';
+import {
+  GUEST_PRIVACY_SWITCHES,
+  nextPrivacyRestoreClick,
+  privacySwitchMatches,
+} from './settings-guest-privacy-batch.mjs';
 
 test('guest Privacy switch evidence requires actual UI and storage agreement for both values', () => {
   for (const preference of GUEST_PRIVACY_SWITCHES) {
@@ -30,6 +34,19 @@ test('guest Privacy switch evidence requires actual UI and storage agreement for
       assert.equal(
         privacySwitchMatches({ ...valid, saveError: true }, preference, expected),
         false,
+      );
+      assert.equal(nextPrivacyRestoreClick(valid, preference, expected), null);
+      assert.equal(
+        nextPrivacyRestoreClick({ ...valid, checked: !expected }, preference, expected),
+        expected,
+      );
+      assert.equal(
+        nextPrivacyRestoreClick({ ...valid, stored: 'wrong' }, preference, expected),
+        !expected,
+      );
+      assert.throws(
+        () => nextPrivacyRestoreClick({ ...valid, checked: null }, preference, expected),
+        /cleanup_switch_unreadable/,
       );
     }
   }

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "source_ready_native_pending",
+  "status": "source_ready_native_pending_after_cleanup_repair",
   "feature_id": "EXT-F-1003",
   "mode": "guest",
   "case_ids": [
@@ -17,6 +17,13 @@
     "EXT-F-1003-T34": "On-page suggestion presentation on a supported site is unverified."
   },
   "runtime": "Not run in this source-only batch; no inventory result is promoted.",
+  "source_review_repair": "Initial UI and stored preference must agree before mutation. Cleanup re-enters a fresh Settings document even after reload failure, reconciles an unchanged UI with divergent storage using trusted pointer clicks, and verifies the original choice through a further reload. An unreadable switch or failed restore fails the case.",
+  "automatic_ci_before_repair": {
+    "head_sha": "ddaad4bf7b029a218406b2d32ada1f5c4983c242",
+    "focused_run_id": 37721978609,
+    "focused_conclusion": "success",
+    "scope": "Pre-cleanup-repair focused source checks only. Native runtime remained untested."
+  },
   "ci_handle": {
     "workflow": ".github/workflows/hosted-guest-acceptance.yml",
     "dispatch_input": "acceptance_case=settings-controls",
