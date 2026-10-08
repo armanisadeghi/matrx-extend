@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import {
+  captureGuestPreferenceBaselines,
   enforceFullExtensionRechecks,
   FULL_EXTENSION_RECHECK_IDS,
   initializeFullExtensionRechecks,
@@ -86,7 +87,8 @@ test('missing or failed full-extension rechecks force the individual case to fai
   assert.equal(missing.status, 'fail');
   assert.equal(failed.fullExtensionReload.status, 'fail');
   assert.equal(failed.status, 'fail');
-  assert.match(failed.fullExtensionReload.error, /injected_full_extension_failure/);
+  assert.equal(failed.fullExtensionReload.error, 'full_extension_recheck_exception');
+  assert.equal(JSON.stringify(failed).includes('injected_full_extension_failure'), false);
 });
 
 test('actual full-extension orchestration uses the replacement panel and restores T04/T10 baselines after failure', async () => {
@@ -151,6 +153,10 @@ test('actual full-extension orchestration uses the replacement panel and restore
   };
   const recordBaselineRestore = (panel, preference, baseline, record) =>
     restoreGuestPreferenceBaseline(panel, preference, baseline, record, driver);
+  const preExtensionBaselines = {
+    T04: preferenceBaseline({ ...themes }, GUEST_PREFERENCES[0]),
+    T10: preferenceBaseline({ ...modes }, GUEST_PREFERENCES[1]),
+  };
   for (const item of reportCases) snapshotPanelDocumentReload(item);
 
   await rerunGuestSettingsAfterExtensionReload({
@@ -182,6 +188,7 @@ test('actual full-extension orchestration uses the replacement panel and restore
     },
     observePreference: observe,
     preferenceBaseline,
+    preExtensionBaselines,
     restorePreferenceBaseline: recordBaselineRestore,
     runSectionsCase: async (panel, _reload, record) => {
       assert.equal(panel, replacementPanel);
@@ -214,13 +221,119 @@ test('actual full-extension orchestration uses the replacement panel and restore
     ['Act without asking', 'Ask before acting', 'Act without asking'],
   );
   assert.equal(reportCases[0].fullExtensionReload.status, 'fail');
-  assert.match(reportCases[0].fullExtensionReload.error, /injected_theme_case_failure/);
+  assert.equal(
+    reportCases[0].fullExtensionReload.error,
+    'full_extension_preference_or_restore_failed',
+  );
+  assert.equal(JSON.stringify(reportCases).includes('injected_theme_case_failure'), false);
   assert.equal(reportCases[1].fullExtensionReload.status, 'pass');
   assert.equal(reportCases[1].panelDocumentReload.status, 'pass');
   assert.equal(reportCases[0].panelDocumentReload.status, 'pass');
   assert.equal(reportCases[0].status, 'fail');
   assert.equal(reportCases[3].fullExtensionReload.downstreamCapture.status, 'unverified');
   assert.equal(reportCases[4].fullExtensionReload.downstreamCapture.status, 'unverified');
+});
+
+test('pre-extension baseline survives Chat failure, drift and failed restoration without private error text', async () => {
+  for (const mode of ['chat_failure', 'restore_failure', 'baseline_drift']) {
+    const reportCases = cases();
+    initializeFullExtensionRechecks(reportCases);
+    reportCases[2].criteria.push({ name: 'prior warm failure', status: 'fail', evidence: null });
+    const warmPanel = { role: 'warm' };
+    const replacementPanel = { role: 'replacement' };
+    const states = {
+      T04: {
+        activeSettings: true,
+        count: 1,
+        selected: 'System',
+        stored: 'system',
+        darkClass: false,
+        systemDark: false,
+        renderedBackgroundMatches: true,
+      },
+      T10: { activeSettings: true, count: 1, selected: 'Act without asking', stored: 'act' },
+    };
+    const events = [];
+    let settingsActive = true;
+    const preExtensionBaselines = await captureGuestPreferenceBaselines({
+      panel: warmPanel,
+      preferences: GUEST_PREFERENCES,
+      settings: async (panel) => assert.equal(panel, warmPanel),
+      openSection: async (panel) => assert.equal(panel, warmPanel),
+      observePreference: async (panel, preference) => {
+        assert.equal(panel, warmPanel);
+        return states[preference.caseId];
+      },
+      preferenceBaseline,
+    });
+    if (mode === 'baseline_drift') {
+      states.T10.selected = 'Ask before acting';
+      states.T10.stored = 'ask';
+    }
+    await rerunGuestSettingsAfterExtensionReload({
+      panel: replacementPanel,
+      cases: reportCases,
+      preferences: GUEST_PREFERENCES,
+      preExtensionBaselines,
+      settings: async (panel) => {
+        assert.equal(panel, replacementPanel);
+        events.push('settings');
+        settingsActive = true;
+      },
+      openSection: async () => {},
+      reloadSettings: async () => {},
+      observeNewChatDefault: async () => ({}),
+      observePreference: async (panel, preference) => {
+        assert.equal(panel, replacementPanel);
+        return states[preference.caseId];
+      },
+      preferenceBaseline,
+      runPreferenceCase: async (_panel, _reload, preference, record) => {
+        events.push(`${preference.caseId}_run`);
+        if (preference.caseId === 'T10' && mode !== 'baseline_drift') {
+          states.T10.selected = 'Ask before acting';
+          states.T10.stored = 'ask';
+          settingsActive = false;
+          throw new Error('private Patient preview token=must-not-leak');
+        }
+        record('choice remained available', states[preference.caseId], true);
+      },
+      restorePreferenceBaseline: async (_panel, preference, baseline, record) => {
+        events.push(`${preference.caseId}_restore`);
+        assert.equal(settingsActive, true, 'Settings must be reopened before restoration');
+        if (preference.caseId === 'T10' && mode === 'restore_failure')
+          throw new Error('private restoration token=must-not-leak');
+        states[preference.caseId].selected = baseline.label;
+        states[preference.caseId].stored = baseline.value;
+        record('restored', states[preference.caseId], true);
+      },
+      runSectionsCase: async (_panel, _reload, record) => record('sections', 'warm', {}, true),
+      runAutoScrapeCase: async (_panel, _reload, record) => record('switch', 'warm', {}, true),
+      runAutoScrapeModeCase: async (_panel, _reload, record) => record('mode', 'warm', {}, true),
+    });
+    enforceFullExtensionRechecks(reportCases);
+    assert.deepEqual(
+      events.filter((value) => value.endsWith('_run')),
+      ['T04_run', 'T10_run'],
+    );
+    assert.equal(reportCases[1].status, 'fail');
+    assert.equal(reportCases[2].fullExtensionReload.status, 'pass');
+    assert.equal(reportCases[2].status, 'fail');
+    assert.equal(JSON.stringify(reportCases).includes('must-not-leak'), false);
+    if (mode === 'baseline_drift') {
+      assert.equal(reportCases[1].fullExtensionReload.criteria[0].status, 'fail');
+      assert.equal(states.T10.stored, 'act');
+    } else {
+      const restoreIndex = events.indexOf('T10_restore');
+      assert.equal(events[restoreIndex - 1], 'settings');
+      if (mode === 'chat_failure') assert.equal(states.T10.stored, 'act');
+      else
+        assert.equal(
+          reportCases[1].fullExtensionReload.criteria.some((entry) => entry.status === 'fail'),
+          true,
+        );
+    }
+  }
 });
 
 test('native callback invokes tested orchestration after replacement Settings opens and enforces its result', async () => {
@@ -232,12 +345,20 @@ test('native callback invokes tested orchestration after replacement Settings op
     await readFile(new URL('../../package.json', import.meta.url), 'utf8'),
   );
   const boundary = source.indexOf("status: 'settings_opened'");
+  const capture = source.indexOf('await captureGuestPreferenceBaselines({');
+  const reload = source.indexOf('const replacement = await reloadExtension()', capture);
   const recheck = source.indexOf('await rerunGuestSettingsAfterExtensionReload({');
   const reloadCatch = source.indexOf('report.guestStageFailed = guestStage', boundary);
-  assert.ok(boundary >= 0 && recheck > boundary && reloadCatch > recheck);
+  assert.ok(
+    capture >= 0 &&
+      reload > capture &&
+      boundary > reload &&
+      recheck > boundary &&
+      reloadCatch > recheck,
+  );
   assert.match(
     source.slice(recheck, reloadCatch),
-    /panel: replacement\.panel,[\s\S]*cases: report\.cases,[\s\S]*restorePreferenceBaseline: restoreGuestPreferenceBaseline/,
+    /panel: replacement\.panel,[\s\S]*cases: report\.cases,[\s\S]*preExtensionBaselines,[\s\S]*restorePreferenceBaseline: restoreGuestPreferenceBaseline/,
   );
   assert.match(source, /enforceFullExtensionRechecks\(report\.cases\)/);
   assert.match(

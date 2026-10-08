@@ -37,11 +37,34 @@ export async function runFullExtensionRecheck(item, execute) {
     if (result.status !== 'pass') result.error = 'full_extension_recheck_not_all_passed';
   } catch (error) {
     result.status = 'fail';
-    result.error = String(error?.message ?? error);
+    result.error =
+      error?.safeCategory === 'full_extension_preference_or_restore_failed'
+        ? error.safeCategory
+        : 'full_extension_recheck_exception';
     record('full extension reload recheck completed', 'fail', result.error);
   }
 
   return result;
+}
+
+export async function captureGuestPreferenceBaselines({
+  panel,
+  preferences,
+  settings,
+  openSection,
+  observePreference,
+  preferenceBaseline,
+}) {
+  const baselines = {};
+  await settings(panel);
+  for (const preference of preferences.filter((item) => ['T04', 'T10'].includes(item.caseId))) {
+    await openSection(panel, preference.section);
+    baselines[preference.caseId] = preferenceBaseline(
+      await observePreference(panel, preference),
+      preference,
+    );
+  }
+  return baselines;
 }
 
 export function enforceFullExtensionRechecks(cases) {
@@ -77,6 +100,7 @@ export async function rerunGuestSettingsAfterExtensionReload({
   runPreferenceCase,
   observePreference,
   preferenceBaseline,
+  preExtensionBaselines,
   restorePreferenceBaseline,
   runSectionsCase,
   runAutoScrapeCase,
@@ -86,11 +110,16 @@ export async function rerunGuestSettingsAfterExtensionReload({
     const item = cases.find((candidate) => candidate.id.endsWith(preference.caseId));
     await runFullExtensionRecheck(item, async (record) => {
       const before = await observePreference(panel, preference);
-      const baseline = preferenceBaseline(before, preference);
+      const observed = preferenceBaseline(before, preference);
+      const baseline = preExtensionBaselines?.[preference.caseId];
+      const baselineMatched =
+        baseline?.matched === true &&
+        observed.matched === true &&
+        observed.value === baseline.value;
       record(
         `pre-run ${preference.label} matches saved baseline`,
-        baseline.matched ? 'pass' : 'fail',
-        baseline,
+        baselineMatched ? 'pass' : 'fail',
+        { before, expectedValue: baseline?.value ?? null, expectedLabel: baseline?.label ?? null },
       );
 
       let preferenceError;
@@ -116,8 +145,9 @@ export async function rerunGuestSettingsAfterExtensionReload({
       } catch (error) {
         preferenceError = error;
       } finally {
-        if (baseline.value) {
+        if (baseline?.value) {
           try {
+            await settings(panel);
             await restorePreferenceBaseline(
               panel,
               preference,
@@ -126,28 +156,21 @@ export async function rerunGuestSettingsAfterExtensionReload({
             );
           } catch (error) {
             restoreError = error;
-            record(
-              `original ${preference.label} preference restoration verified`,
-              'fail',
-              String(error?.message ?? error),
-            );
+            record(`original ${preference.label} preference restoration verified`, 'fail', {
+              category: 'full_extension_restore_failed',
+            });
           }
         } else {
           restoreError = new Error(`${preference.caseId}_full_extension_baseline_unavailable`);
-          record(
-            `original ${preference.label} preference restoration verified`,
-            'fail',
-            String(restoreError.message),
-          );
+          record(`original ${preference.label} preference restoration verified`, 'fail', {
+            category: 'full_extension_baseline_unavailable',
+          });
         }
       }
       if (preferenceError || restoreError)
-        throw new Error(
-          [preferenceError, restoreError]
-            .filter(Boolean)
-            .map((error) => String(error?.message ?? error))
-            .join('; '),
-        );
+        throw Object.assign(new Error('full_extension_preference_or_restore_failed'), {
+          safeCategory: 'full_extension_preference_or_restore_failed',
+        });
     });
   }
 

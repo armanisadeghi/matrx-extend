@@ -27,6 +27,7 @@ import {
   runGuestSectionsCase,
 } from './settings-guest-scrape-controls.mjs';
 import {
+  captureGuestPreferenceBaselines,
   enforceFullExtensionRechecks,
   FULL_EXTENSION_RECHECK_IDS,
   initializeFullExtensionRechecks,
@@ -1051,6 +1052,14 @@ try {
         const warmGuest = await observeGuestIdentityAndOrganization(panel);
         recordGuestPhase('warm', warmGuest);
         await recordGuestAdvancedDenial('warm', panel, warmGuest);
+        const preExtensionBaselines = await captureGuestPreferenceBaselines({
+          panel,
+          preferences: GUEST_PREFERENCES,
+          settings,
+          openSection,
+          observePreference: observeGuestPreference,
+          preferenceBaseline,
+        });
         guestStage = 'extension_reload';
         const replacement = await reloadExtension();
         report.guestExtensionReload = {
@@ -1096,6 +1105,7 @@ try {
           runPreferenceCase: runGuestPreferenceCase,
           observePreference: observeGuestPreference,
           preferenceBaseline,
+          preExtensionBaselines,
           restorePreferenceBaseline: restoreGuestPreferenceBaseline,
           runSectionsCase: runGuestSectionsCase,
           runAutoScrapeCase: runGuestAutoScrapeCase,
