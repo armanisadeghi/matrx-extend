@@ -1,16 +1,18 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { EventEmitter } from 'node:events';
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 import ts from 'typescript';
+import { runOwnedApprovalCreate } from './records-approval-lifecycle.mjs';
 import { withRecordsPositiveFixture } from './records-positive-fixture.mjs';
 import {
   assertRecordsVisibleCompletion,
   enterRecordsInput,
   observeRecordsExecution,
+  recordsApprovalCleanupVerdict,
   recordsCompletionShape,
   recordsVisibleShape,
   retainRecordsFailure,
@@ -60,6 +62,32 @@ test('fixture first failure remains the receipt classification when cleanup also
   retainRecordsFailure(report);
   assert.equal(report.failure_phase, 'records_fixture_recovery_list');
   assert.equal(report.failure_classification, 'records_fixture_recovery_list_failed');
+});
+
+test('C06 cleanup receipt exposes unresolved uncertainty without identifiers or arbitrary text', () => {
+  const uncertain = recordsApprovalCleanupVerdict({
+    schema_version: 1,
+    approval_id: 'private-approval-id',
+    row_name: 'private-row',
+    pending_write_unknown: true,
+    table_cleanup_verified: true,
+    approval_decision_unknown: false,
+    error: 'secret arbitrary error',
+  });
+  assert.equal(uncertain.unresolved, true);
+  assert.equal(uncertain.approval_id_known, true);
+  assert.equal(JSON.stringify(uncertain).includes('private-'), false);
+  assert.equal(JSON.stringify(uncertain).includes('secret arbitrary'), false);
+  const settled = recordsApprovalCleanupVerdict({
+    schema_version: 1,
+    approval_id: 'private-approval-id',
+    table_cleanup_verified: true,
+    approval_terminal_state: 'approved',
+    pending_write_unknown: false,
+    approval_decision_unknown: false,
+  });
+  assert.equal(settled.unresolved, false);
+  assert.equal(settled.approval_terminal_state, 'approved');
 });
 
 test('actual Records callback snapshots the fixture CDP category before cleanup changes it', async () => {
@@ -177,7 +205,7 @@ const negativeResult = (field) => ({
 });
 const fixtureTableId = '3b80fd38-4db8-4cc9-8629-f8b751d5b337';
 const fixtureRowId = '6cf44320-25a4-4fa9-9107-254cf18d6f88';
-const fixtureTableName = 'EXT-F-4130-owned';
+const fixtureTableName = 'EXT-F-4130-70374922-d0c2-47e7-b6f8-7bca44583599';
 const fixtureRowName = `${fixtureTableName}-row`;
 const c06RowId = '483f8d2c-bdc0-4b8c-85d5-5b7837e575f7';
 const c06ApprovalId = 'daef0892-4337-44b7-a793-829d12d94cab';
@@ -358,7 +386,11 @@ function runDriver({
   responseMode = 'normal',
   conversationId = testConversationId,
   httpStatus = 200,
-  reloadedProfile = 'admin-id',
+  profileId = 'admin-id',
+  reloadedProfile = profileId,
+  outputPath = '/tmp/records-driver-test-report.json',
+  approvalSession,
+  approvalLifecycle,
   driverSource = callback,
   inputHelper = enterRecordsInput,
   serverSchema = tableListSchema(),
@@ -532,7 +564,7 @@ function runDriver({
     signInRecordsAdmin: (options) =>
       signInRecordsAdmin(options, async ({ onStage }) => {
         onStage('admin_authenticated');
-        return { admin_role: true, email: 'admin@admin.com', profileId: 'admin-id' };
+        return { admin_role: true, email: 'admin@admin.com', profileId };
       }),
     runShowcaseOrganizationCheckpoint: async () => {},
     waitFor,
@@ -562,47 +594,45 @@ function runDriver({
     assertRecordsVisibleCompletion,
     enterRecordsInput: inputHelper,
     withRecordsPositiveFixture: fixtureHelper,
-    openRecordsC06Approvals: async ({ principalId, expectedEmail }) => {
-      assert.equal(principalId, 'admin-id');
-      assert.equal(expectedEmail, 'admin@admin.com');
-      return {
-        readApproval: async () => ({}),
-        decideInUi: async () => ({ surface: '/approvals', rowMatched: true, confirmed: true }),
-        close: async () => {},
-      };
-    },
-    runOwnedApprovalCreate: async ({
-      conversationId,
-      dispatchCreate,
-      readRecord,
-      cleanupTable,
-      owner,
-      approveInUi,
-    }) => {
-      assert.equal(conversationId, testConversationId);
-      const held = await dispatchCreate({
-        tableId: owner.tableId,
-        rowName: owner.rowName,
-        conversationId,
-      });
-      assert.equal(held.approval_id, c06ApprovalId, 'records_c06_approval_id_mismatch');
-      const click = await approveInUi({
-        approvalId: c06ApprovalId,
-        organizationId,
-        tableId: owner.tableId,
-      });
-      assert.equal(click.confirmed, true);
-      const read = await readRecord(c06RowId, organizationId);
-      assert.equal(read.id, c06RowId, 'records_c06_readback_id_mismatch');
-      const cleaned = await cleanupTable({
-        tableId: owner.tableId,
-        organizationId,
-        principalId: 'admin-id',
-      });
-      assert.equal(cleaned.archived_verified, true);
-      return { approved_and_read_back: true };
-    },
-    output: '/tmp/records-driver-test-report.json',
+    openRecordsC06Approvals:
+      approvalSession ??
+      (async ({ principalId, expectedEmail }) => {
+        assert.equal(principalId, profileId);
+        assert.equal(expectedEmail, 'admin@admin.com');
+        return {
+          readApproval: async () => ({}),
+          decideInUi: async () => ({ surface: '/approvals', rowMatched: true, confirmed: true }),
+          close: async () => {},
+        };
+      }),
+    runOwnedApprovalCreate:
+      approvalLifecycle ??
+      (async ({ conversationId, dispatchCreate, readRecord, cleanupTable, owner, approveInUi }) => {
+        assert.equal(conversationId, testConversationId);
+        const held = await dispatchCreate({
+          tableId: owner.tableId,
+          rowName: owner.rowName,
+          conversationId,
+        });
+        assert.equal(held.approval_id, c06ApprovalId, 'records_c06_approval_id_mismatch');
+        const click = await approveInUi({
+          approvalId: c06ApprovalId,
+          organizationId,
+          tableId: owner.tableId,
+        });
+        assert.equal(click.confirmed, true);
+        const read = await readRecord(c06RowId, organizationId);
+        assert.equal(read.id, c06RowId, 'records_c06_readback_id_mismatch');
+        const cleaned = await cleanupTable({
+          tableId: owner.tableId,
+          organizationId,
+          principalId: profileId,
+        });
+        assert.equal(cleaned.archived_verified, true);
+        return { approved_and_read_back: true };
+      }),
+    output: outputPath,
+    readFile,
     assert,
   };
   const driver = new Function(...Object.keys(bindings), `return ${driverSource};`)(
@@ -1153,6 +1183,106 @@ test('C06 refuses a different held approval or a different returned readback row
     const scenario = runDriver({ completions });
     await assert.rejects(scenario.run(), expected);
     assert.deepEqual(scenario.report.positive_mutations, []);
+  }
+});
+
+test('actual callback and real lifecycle settle a lost approve response after owned cleanup without credit', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'records-c06-lost-approve-'));
+  const profileId = 'b326b48b-3e0d-4b1d-903e-a9f6b0635682';
+  let decisions = 0;
+  let approvedState = false;
+  try {
+    const outputPath = join(directory, 'native.json');
+    const scenario = runDriver({
+      profileId,
+      outputPath,
+      approvalLifecycle: runOwnedApprovalCreate,
+      approvalSession: async () => ({
+        readApproval: async () => ({
+          approval_id: c06ApprovalId,
+          subject_id: fixtureTableId,
+          requested_by: profileId,
+          conversation_id: testConversationId,
+          origin: 'agent',
+          change: { kind: 'record_add', rows: [{ name: `${fixtureTableName}-approval-row` }] },
+          state: approvedState ? 'approved' : 'pending',
+          ...(approvedState && { applied_record_ids: [c06RowId] }),
+        }),
+        decideInUi: async () => {
+          decisions += 1;
+          approvedState = true;
+          throw new Error('decision_response_lost');
+        },
+        close: async () => {},
+      }),
+    });
+    await assert.rejects(scenario.run(), /decision_response_lost/);
+    const journal = JSON.parse(await readFile(`${outputPath}.c06-approval-journal.json`, 'utf8'));
+    assert.equal(decisions, 1);
+    assert.equal(journal.table_cleanup_verified, true);
+    assert.equal(journal.approval_terminal_state, 'approved');
+    assert.equal(journal.approval_decision_unknown, false);
+    assert.equal(journal.row_id, c06RowId);
+    assert.deepEqual(scenario.report.positive_mutations, []);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('actual callback refuses an unresolved prior C06 journal before new fixture writes', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'records-c06-prior-journal-'));
+  try {
+    const outputPath = join(directory, 'native.json');
+    await writeFile(
+      `${outputPath}.c06-approval-journal.json`,
+      JSON.stringify({
+        schema_version: 1,
+        phase: 'dispatch_unknown',
+        pending_write_unknown: true,
+      }),
+    );
+    const scenario = runDriver({ outputPath });
+    await assert.rejects(scenario.run(), /records_c06_prior_journal_present/);
+    assert.equal(scenario.stages.includes('records_fixture_table_create'), false);
+    assert.deepEqual(scenario.report.positive_mutations, []);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('actual callback retains unknown create dispatch with no approval ID as unresolved after cleanup', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'records-c06-lost-create-'));
+  try {
+    const outputPath = join(directory, 'native.json');
+    const completions = [...defaultCompletions];
+    completions[completions.length - 2] = {
+      success: false,
+      output: { action: 'record_write', applied: false },
+    };
+    const scenario = runDriver({
+      profileId: 'b326b48b-3e0d-4b1d-903e-a9f6b0635682',
+      outputPath,
+      completions,
+      approvalLifecycle: runOwnedApprovalCreate,
+      approvalSession: async () => ({
+        readApproval: async () => {
+          throw new Error('unowned_read');
+        },
+        decideInUi: async () => {
+          throw new Error('unowned_decision');
+        },
+        close: async () => {},
+      }),
+    });
+    await assert.rejects(scenario.run(), /records_c06_write_refused/);
+    const journal = JSON.parse(await readFile(`${outputPath}.c06-approval-journal.json`, 'utf8'));
+    assert.equal(journal.approval_id, null);
+    assert.equal(journal.pending_write_unknown, true);
+    assert.equal(journal.table_cleanup_verified, true);
+    assert.equal(recordsApprovalCleanupVerdict(journal).unresolved, true);
+    assert.deepEqual(scenario.report.positive_mutations, []);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
   }
 });
 

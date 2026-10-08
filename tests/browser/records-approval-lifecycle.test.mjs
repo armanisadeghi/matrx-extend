@@ -108,6 +108,7 @@ test('held create is journaled before dispatch, approved through UI, read back, 
     'approval_read',
     'row_read',
     'cleanup',
+    'approval_read',
   ]);
   assert.equal((await s.journal()).phase, 'archived_verified');
   assert.equal((await s.journal()).pending_write_unknown, false);
@@ -269,7 +270,8 @@ test('lost approve response settles from authoritative approved state without a 
     },
   });
   await assert.rejects(runOwnedApprovalCreate(s.adapters), /click_response_lost/);
-  assert.equal((await s.journal()).approval_decision_unknown, true);
+  assert.equal((await s.journal()).approval_decision_unknown, false);
+  assert.equal((await s.journal()).approval_terminal_state, 'approved');
   let clicks = 0;
   const recovered = await recoverOwnedApprovalCreate({
     journalPath: s.adapters.journalPath,
@@ -325,6 +327,7 @@ test('lost decision still pending remains unknown after cleanup', async () => {
     approveInUi: async () => {
       throw new Error('click_response_lost');
     },
+    readApproval: async () => approval('pending'),
   });
   await assert.rejects(runOwnedApprovalCreate(s.adapters), /click_response_lost/);
   const recovered = await recoverOwnedApprovalCreate({
@@ -349,6 +352,7 @@ test('archive withdrawal settles a lost pending decision only after authoritativ
     approveInUi: async () => {
       throw new Error('click_response_lost');
     },
+    readApproval: async () => approval('pending'),
   });
   await assert.rejects(runOwnedApprovalCreate(s.adapters), /click_response_lost/);
   let reads = 0;
