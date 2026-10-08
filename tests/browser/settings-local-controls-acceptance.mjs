@@ -21,8 +21,8 @@ import {
   GUEST_PREFERENCES,
   observeGuestNewChatDefault,
   observeGuestPreference,
+  preferenceMatches,
   preferenceBaseline,
-  restoreGuestPreferenceBaseline,
   runGuestPreferenceCase,
 } from './settings-guest-preference-batch.mjs';
 import {
@@ -1102,14 +1102,14 @@ try {
           settings,
           openSection,
           observeNewChatDefault: observeGuestNewChatDefault,
-          runPreferenceCase: runGuestPreferenceCase,
           observePreference: observeGuestPreference,
           preferenceBaseline,
           preExtensionBaselines,
-          restorePreferenceBaseline: restoreGuestPreferenceBaseline,
           runSectionsCase: runGuestSectionsCase,
           runAutoScrapeCase: runGuestAutoScrapeCase,
-          runAutoScrapeModeCase: runGuestAutoScrapeModeCase,
+          reloadExtension,
+          acquireLivePanel,
+          preferenceMatches,
         });
       } catch (error) {
         report.guestStageFailed = guestStage;

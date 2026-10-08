@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T22:19:00.163369+00:00",
+  "updated_at": "2026-10-08T22:32:30.447806+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -4954,7 +4954,7 @@
               "scope": "Guest frozen artifact11568846736. Workflow success; overall receiptunverified. No Store/current-main acceptance."
             }
           },
-          "linked_defects": ["EXT-D-0087"],
+          "linked_defects": ["EXT-D-0087", "EXT-D-0186"],
           "result_history": [
             {
               "mode": "guest",
@@ -5326,7 +5326,7 @@
               "scope": "Guest frozen artifact11568846736. Workflow success; overall receiptunverified. No Store/current-main acceptance."
             }
           },
-          "linked_defects": ["EXT-D-0087"],
+          "linked_defects": ["EXT-D-0087", "EXT-D-0186"],
           "result_history": [
             {
               "mode": "guest",
@@ -8930,7 +8930,7 @@
               "scope": "Guest frozen artifact11568846736. Workflow success; overall receiptunverified. No Store/current-main acceptance."
             }
           },
-          "linked_defects": ["EXT-D-0087"],
+          "linked_defects": ["EXT-D-0087", "EXT-D-0186"],
           "preparation_history": [
             {
               "source_commit": "dbfbb0dc",
@@ -10407,7 +10407,8 @@
             "EXT-D-0086",
             "EXT-D-0087",
             "EXT-D-0155",
-            "EXT-D-0157"
+            "EXT-D-0157",
+            "EXT-D-0186"
           ],
           "run_ids": [
             "guest-local-001",

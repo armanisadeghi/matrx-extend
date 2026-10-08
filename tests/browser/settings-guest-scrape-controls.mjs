@@ -24,6 +24,12 @@ export const AUTO_SCRAPE_MODE_FAILURE_STAGES = Object.freeze([
   'restore_observe_after_reload',
   'restore_verify',
   'restore_record',
+  'initial_baseline',
+  'choice_select',
+  'extension_reload',
+  'restore_panel',
+  'restore_choice',
+  'restore_extension_reload',
 ]);
 const SECTIONS = [
   'Account',
@@ -84,6 +90,10 @@ async function observeScrape(panel, driver = nativeDriver) {
         stored: ['capture', 'scroll-capture'].includes(stored.scrapeAutoMode) ? stored.scrapeAutoMode : null } };
   })()`,
   );
+}
+
+export async function observeGuestAutoScrapeMode(panel, driver = nativeDriver) {
+  return observeScrape(panel, driver);
 }
 
 export async function runGuestAutoScrapeCase(panel, reloadSettings, record, driver = nativeDriver) {

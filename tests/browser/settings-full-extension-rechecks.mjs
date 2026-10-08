@@ -1,4 +1,9 @@
 import { AUTO_SCRAPE_MODE_FAILURE_STAGES } from './settings-guest-scrape-controls.mjs';
+import {
+  observeGuestAutoScrapeMode,
+  scrapeModeMatches,
+} from './settings-guest-scrape-controls.mjs';
+import { runGuestChoicesAcrossExtensionRestarts } from './settings-guest-extension-rechecks.mjs';
 
 export const FULL_EXTENSION_RECHECK_IDS = ['T04', 'T10', 'T28', 'T40', 'T67'];
 
@@ -122,99 +127,131 @@ export async function rerunGuestSettingsAfterExtensionReload({
   observePreference,
   preferenceBaseline,
   preExtensionBaselines,
-  restorePreferenceBaseline,
   runSectionsCase,
   runAutoScrapeCase,
-  runAutoScrapeModeCase,
+  reloadExtension,
+  acquireLivePanel,
+  preferenceMatches,
+  choiceDriver,
+  observeAutoScrapeMode = observeGuestAutoScrapeMode,
 }) {
-  for (const preference of preferences.filter((item) => ['T04', 'T10'].includes(item.caseId))) {
-    const item = cases.find((candidate) => candidate.id.endsWith(preference.caseId));
-    await runFullExtensionRecheck(item, async (record) => {
-      const before = await observePreference(panel, preference);
-      const observed = preferenceBaseline(before, preference);
-      const baseline = preExtensionBaselines?.[preference.caseId];
-      const baselineMatched =
-        baseline?.matched === true &&
-        observed.matched === true &&
-        observed.value === baseline.value;
-      record(
-        `pre-run ${preference.label} matches saved baseline`,
-        baselineMatched ? 'pass' : 'fail',
-        { before, expectedValue: baseline?.value ?? null, expectedLabel: baseline?.label ?? null },
-      );
-
-      let preferenceError;
-      let restoreError;
-      try {
-        await runPreferenceCase(
-          panel,
-          reloadSettings,
-          preference,
-          (name, observation, passed) => record(name, passed ? 'pass' : 'fail', observation),
-          async ({ value, label }) => {
-            if (preference.caseId !== 'T10') return;
-            const chat = await observeNewChatDefault(panel, value, label);
-            record(
-              `new chat inherits ${label}`,
-              chat.modeLabel === label && chat.modeIcon === value ? 'pass' : 'fail',
-              chat,
-            );
-            await settings(panel);
-            await openSection(panel, preference.section);
+  let activePanel = panel;
+  try {
+    for (const preference of preferences.filter((item) => ['T04', 'T10'].includes(item.caseId))) {
+      const item = cases.find((candidate) => candidate.id.endsWith(preference.caseId));
+      await runFullExtensionRecheck(item, async (record) => {
+        const before = await observePreference(activePanel, preference);
+        const observed = preferenceBaseline(before, preference);
+        const baseline = preExtensionBaselines?.[preference.caseId];
+        const baselineMatched =
+          baseline?.matched === true &&
+          observed.matched === true &&
+          observed.value === baseline.value;
+        record(
+          `pre-run ${preference.label} matches saved baseline`,
+          baselineMatched ? 'pass' : 'fail',
+          {
+            before,
+            expectedValue: baseline?.value ?? null,
+            expectedLabel: baseline?.label ?? null,
           },
         );
-      } catch (error) {
-        preferenceError = error;
-      } finally {
-        if (baseline?.value) {
-          try {
-            await settings(panel);
-            await restorePreferenceBaseline(
-              panel,
-              preference,
-              baseline,
-              (name, observation, passed) => record(name, passed ? 'pass' : 'fail', observation),
-            );
-          } catch (error) {
-            restoreError = error;
-            record(`original ${preference.label} preference restoration verified`, 'fail', {
-              category: 'full_extension_restore_failed',
-            });
-          }
-        } else {
-          restoreError = new Error(`${preference.caseId}_full_extension_baseline_unavailable`);
-          record(`original ${preference.label} preference restoration verified`, 'fail', {
-            category: 'full_extension_baseline_unavailable',
+
+        try {
+          activePanel = await runGuestChoicesAcrossExtensionRestarts({
+            panel: activePanel,
+            section: preference.section,
+            controlLabel: preference.label,
+            choices: preference.choices,
+            baseline,
+            settings,
+            openSection,
+            read: (target) => observePreference(target, preference),
+            matches: (state, value, label) => preferenceMatches(state, preference, value, label),
+            reloadExtension,
+            acquireLivePanel,
+            onPanelChanged: (target) => {
+              activePanel = target;
+            },
+            record,
+            ...(choiceDriver && { driver: choiceDriver }),
+            ...(preference.caseId === 'T10' && {
+              afterReload: async ({ panel: target, value, label }) => {
+                const chat = await observeNewChatDefault(target, value, label);
+                record(
+                  `new chat inherits ${label} after extension reload`,
+                  chat.modeLabel === label && chat.modeIcon === value ? 'pass' : 'fail',
+                  chat,
+                );
+                await settings(target);
+                await openSection(target, preference.section);
+              },
+            }),
+          });
+        } catch {
+          throw Object.assign(new Error('full_extension_preference_or_restore_failed'), {
+            safeCategory: 'full_extension_preference_or_restore_failed',
           });
         }
-      }
-      if (preferenceError || restoreError)
-        throw Object.assign(new Error('full_extension_preference_or_restore_failed'), {
-          safeCategory: 'full_extension_preference_or_restore_failed',
-        });
-    });
-  }
+      });
+    }
 
-  for (const [id, runner] of [
-    ['T28', runSectionsCase],
-    ['T40', runAutoScrapeCase],
-    ['T67', runAutoScrapeModeCase],
-  ]) {
-    const item = cases.find((candidate) => candidate.id.endsWith(id));
-    await runFullExtensionRecheck(item, async (record, result) => {
-      await runner(panel, reloadSettings, (phase, action, observation, passed) =>
-        record(`${phase}: ${action}`, passed ? 'pass' : 'fail', observation),
-      );
-      if (id === 'T40')
-        result.downstreamCapture = {
-          status: 'unverified',
-          evidence: 'A page-load/background capture was not exercised.',
-        };
-      if (id === 'T67')
-        result.downstreamCapture = {
-          status: 'unverified',
-          evidence: 'The selected capture mode was checked; downstream capture was not exercised.',
-        };
+    for (const [id, runner] of [
+      ['T28', runSectionsCase],
+      ['T40', runAutoScrapeCase],
+    ]) {
+      const item = cases.find((candidate) => candidate.id.endsWith(id));
+      await runFullExtensionRecheck(item, async (record, result) => {
+        await runner(activePanel, reloadSettings, (phase, action, observation, passed) =>
+          record(`${phase}: ${action}`, passed ? 'pass' : 'fail', observation),
+        );
+        if (id === 'T40')
+          result.downstreamCapture = {
+            status: 'unverified',
+            evidence: 'A page-load/background capture was not exercised.',
+          };
+      });
+    }
+
+    const modeCase = cases.find((candidate) => candidate.id.endsWith('T67'));
+    await runFullExtensionRecheck(modeCase, async (record, result) => {
+      const initial = await observeAutoScrapeMode(activePanel);
+      const labels = { capture: 'Capture', 'scroll-capture': 'Scroll & capture' };
+      await runGuestChoicesAcrossExtensionRestarts({
+        panel: activePanel,
+        section: 'Scrape',
+        controlLabel: 'Auto-scrape mode',
+        choices: [
+          ['capture', 'Capture'],
+          ['scroll-capture', 'Scroll & capture'],
+        ],
+        baseline: {
+          value: initial.mode?.stored,
+          label: labels[initial.mode?.stored] ?? null,
+        },
+        settings,
+        openSection,
+        read: async (target) => {
+          const state = await observeAutoScrapeMode(target);
+          return { ...state.mode, active: state.active, sectionOpen: state.sectionOpen };
+        },
+        matches: (state, value, label) => scrapeModeMatches(state, value, label),
+        reloadExtension,
+        acquireLivePanel,
+        onPanelChanged: (target) => {
+          activePanel = target;
+        },
+        record,
+        failureCategory: 'auto_scrape_mode_recheck_failed',
+        safeStages: AUTO_SCRAPE_MODE_FAILURE_STAGES,
+        ...(choiceDriver && { driver: choiceDriver }),
+      });
+      result.downstreamCapture = {
+        status: 'unverified',
+        evidence: 'The selected capture mode was checked; downstream capture was not exercised.',
+      };
     });
+  } finally {
+    if (activePanel !== panel) await activePanel.detach?.();
   }
 }

@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "reviewer": "root; zero code authorship; fresh seat unavailable ENOSPC",
+  "source_commit": "f24e494e",
+  "verdict_a": {
+    "source": "pass",
+    "native": "unverified",
+    "scope": "Each theme/default-mode/capture-mode choice followed by own full extension lifecycle; baseline restored through another restart. New Chat inherits each restarted default mode."
+  },
+  "verdict_b": {
+    "status": "pass",
+    "verification": [
+      "Inspected controller target advancement, management/retirement/worker/panel proof, current-panel recovery and native callback wiring",
+      "Review caught false restore-before failure and same-selection storage drift; revised source/tests address both",
+      "Independently executed14 tests including actual orchestration, skipped choices, wrong persistence, baseline drift, failed restoration, Chat failure, panel-only rejection",
+      "Each new test file included in focused hosted gate; no credential changes"
+    ]
+  },
+  "remaining": "Matching focused hosted gate then native B. EXT-D-0186 sourcefixed only; no product or cleanup-cause closure."
+}

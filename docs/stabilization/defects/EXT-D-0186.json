@@ -1,0 +1,46 @@
+{
+  "id": "EXT-D-0186",
+  "feature_id": "EXT-F-1003",
+  "case_ids": ["EXT-F-1003-T04", "EXT-F-1003-T10", "EXT-F-1003-T67"],
+  "surface": "Owned native extension reload controller",
+  "auth_mode": "guest (shared harness affects all modes)",
+  "title": "Repeated extension reload retains original panel target",
+  "severity": "S2: test harness cannot verify choices through successive full extension restarts; product impact unproven",
+  "priority": "P1: blocks required reload coverage",
+  "state": "fixed",
+  "reproduction": [
+    "Use the actual owned extension reload callback twice in one session.",
+    "First replacement changes panel target; original callback still passes initial panel ID to next reload and fails live-target precondition.",
+    "Focused controller mutant retaining initial target reproduces failed second-target-chain assertion."
+  ],
+  "expected": "Every subsequent reload uses the immediate verified replacement panel, while panel-only reload cannot satisfy extension lifecycle proof.",
+  "actual": "Original callback closed over initial panel target throughout session.",
+  "fix_commit": "f24e494e1804a1bc6b0d78ca536ec291e71e2fa9",
+  "evidence": [
+    ".research/settings-per-choice-extension-preparation-20261008.json",
+    ".research/settings-per-choice-extension-root-review-20261008.json"
+  ],
+  "state_history": [
+    {
+      "state": "open",
+      "recorded_at": "2026-10-08T22:32:30.447806+00:00",
+      "basis": "Source repeated-reload precondition failure"
+    },
+    {
+      "state": "triaged",
+      "recorded_at": "2026-10-08T22:32:30.447806+00:00",
+      "basis": "Callback captures initial target rather than current replacement"
+    },
+    {
+      "state": "in-fix",
+      "recorded_at": "2026-10-08T22:32:30.447806+00:00",
+      "basis": "Owned reload controller and native wiring"
+    },
+    {
+      "state": "fixed",
+      "recorded_at": "2026-10-08T22:32:30.447806+00:00",
+      "basis": "Red mutant,14 green focused tests and independent source review; native pending"
+    }
+  ],
+  "retest": "pending real repeated replacement-worker/panel proof"
+}
