@@ -1,0 +1,188 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-08T16:10:00Z",
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "lane": "A",
+  "scope": "One original public T57 response-order native attempt on hosted macos-15 ARM using the exact successful frozen development414 artifact. No source, harness, build, release, or deployment changes; one attempt only.",
+  "source_review": {
+    "fresh_diagnostic_check": "21738282",
+    "reviewed_commit": "32d526ebb69bff3a1386f4b93e7ff30d5f4f2ce4",
+    "independent_review": ".research/t57-counter-final-peer-20261008.json",
+    "verdict": "DONE_WITH_NATIVE_LIMIT; diagnostic taxonomy reviewed, native behavior pending",
+    "review_scope": "Wrong-frame identity and target/non-target continuation-rejection counters; unchanged response release and acceptance gates."
+  },
+  "frozen_artifact": {
+    "ci_run_id": 37790643945,
+    "ci_conclusion": "success",
+    "artifact_id": 11556064167,
+    "artifact_name": "matrx-extend-development-test-e7b7dc1ecae946369cebb482915faf7ef792c692-37790643945-1",
+    "artifact_digest": "sha256:7a93776a9322c27973756ddb542fd2e8580d900c356d28a0ad1504928edf3964",
+    "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+    "tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046",
+    "version": "0.2.414",
+    "native_receipt_provenance_matches": true
+  },
+  "run": {
+    "id": 37804469749,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37804469749",
+    "workflow": "Hosted guest side-panel acceptance",
+    "status": "completed",
+    "conclusion": "failure",
+    "attempt": 1,
+    "workflow_head_sha": "6c1d38be6a1f14fc3ecfd60304751209e28a9f9f",
+    "acceptance_lane": "A",
+    "acceptance_case": "showcase-d47-public-admin",
+    "d47_public_race_preflight": true,
+    "runner_label": "macos-15",
+    "runner_arch": "ARM64",
+    "runner_machine": "arm64",
+    "created_at": "2026-10-08T15:53:43Z",
+    "started_at": "2026-10-08T15:53:43Z",
+    "completed_at": "2026-10-08T16:03:03Z",
+    "native_step": "Exercise the selected Chrome side-panel case",
+    "native_step_conclusion": "failure"
+  },
+  "native_receipt": {
+    "status": "unverified",
+    "stage": "public_race_release",
+    "failure_code": "public_current_binding_packet_not_observed",
+    "native_stage": "exercise_panel",
+    "auth_stage": "admin_rendered_identity",
+    "identity_checkpoint": {
+      "admin_role_verified": true,
+      "rendered_email_matches": true,
+      "rendered_role_matches": true,
+      "rendered_organization_matches": true,
+      "product_request_observed": true,
+      "product_request_duplicate": false,
+      "product_response_finished": true,
+      "product_response_success": true,
+      "product_header_matches": true,
+      "product_principal_matches": true,
+      "observer_cleanup_success": true
+    },
+    "public_race": {
+      "old_response_paused_before_replay": true,
+      "paused_target_response_count": 2,
+      "paused_responses": [
+        {
+          "status": 200,
+          "lifecycle": "failed"
+        },
+        {
+          "status": 200,
+          "lifecycle": "finished"
+        }
+      ],
+      "both_paused_responses_share_loader": true,
+      "extension_capture_at_current_pause": false,
+      "current_binding_matches_response": false,
+      "release_attempts": [
+        {
+          "step": "old",
+          "outcome": "cdp_rejected",
+          "error_category": "other_cdp_failure"
+        },
+        {
+          "step": "current",
+          "outcome": "continued"
+        }
+      ],
+      "unmatched_target_count": 1,
+      "network_event_count": 38,
+      "fetch_event_count": 3,
+      "pause_rejections": {
+        "non_target": 0,
+        "target_without_response": 0,
+        "target_without_network": 0,
+        "target_outside_main_frame": 0,
+        "target_unexpected_status_or_extra": 1,
+        "target_body_unavailable": 0
+      },
+      "continuation_rejections": {
+        "non_target": 0,
+        "target": 0
+      },
+      "cleanup": "disabled_detached",
+      "capture_probe_cleanup": "removed_detached",
+      "terminal_outcome": "unverified",
+      "saved_result_observed": false
+    },
+    "owned_recipe": {
+      "creation": "observed_in_patterns",
+      "native_ui_cleanup": "unverified",
+      "source_of_record_check": "read-only Supabase MCP query on extend.wbx_pattern by exact receipt-generated name and hn.algolia.com domain; includes active and soft-deleted rows",
+      "exact_name_rows": 0,
+      "active_exact_name_rows": 0,
+      "soft_deleted_exact_name_rows": 0,
+      "database_mutation_needed": false
+    },
+    "claim_limit": "The real admin and approved organization request passed, and an actual old-page response was paused. The two paused candidates share the old loader; the corrected counter identifies one additional target as unexpected or extra. No current-page extension binding packet was observed, the old continuation was CDP-rejected, the current continuation completed, and there is no saved result. This is an unverified native race, not product acceptance or a confirmed product defect."
+  },
+  "resource_phases": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "run_id": "hosted-package-37804469749-1"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "run_id": "hosted-browser-37804469749-1"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed",
+      "run_id": "hosted-guest-37804469749-1",
+      "healthy_samples_after_recovery": true
+    }
+  },
+  "secret_lifecycle": {
+    "temporary_secret_names": [
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "staged_via_stdin": true,
+    "staging_values_printed": false,
+    "deleted_after_terminal": true,
+    "independent_name_listing_absent": true,
+    "local_0600_admin_and_org_tempfiles_removed": true,
+    "owned_external_download_cleanup_complete": true
+  },
+  "dotenv_handling_event": {
+    "initial_method": "Shell source was attempted and failed on a dotenv value; no file write or secret staging occurred in that command.",
+    "sanitized_classification": "unclassified dotenv fragment; not confirmed to be an authentication value",
+    "destination": "local shell/tool error output in this active task",
+    "failed_attempt_persisted_or_staged_secret": false,
+    "corrective_method": "A parser selected only AI_ADMIN_USERNAME and AI_ADMIN_PASSWORD privately, validated the resulting admin JSON and approved organization fixture, and wrote temporary files mode 0600. No values were printed.",
+    "value_or_fragment_recorded": false
+  },
+  "resource_and_artifacts": {
+    "native_artifact_id": 11562671725,
+    "native_artifact_digest": "sha256:7f70a55d14957245efe7cfde1f47486d07f82cf391ab299c9a8355269f89572f",
+    "native_artifact_size_bytes": 68680,
+    "receipt_sha256": "788dab303c58130908241f3fec8441a73ff3b6be74d7e0fc72da7bcc242f8cb8",
+    "tracked_raw_directory": ".research/t57-arm-414-native-20261008-1552-originals/raw",
+    "private_download": "removed after copying the native receipt and exact current-run journals to tracked raw evidence",
+    "raw_sha256": {
+      "artifacts.raw.json": "57c8ae132fa195bf1538ab7de8ca1ce69e9cbf749424a6c758d941d43f57ebce",
+      "hosted-browser-37804469749-1.jsonl": "296dab117e7d48fe83baa5ac88ce41431bdb959f776e585973101ece101c5b82",
+      "hosted-guest-37804469749-1.jsonl": "92f762b6d51b5b238d33356975f2c01b6498d2a349b0763efdfd19c2bb1e9e74",
+      "hosted-package-37804469749-1.jsonl": "a5d8add31d50d3d61e13c063a2d91336a8fdc4719ceb3d61c0a3a9cb707dc231",
+      "jobs.raw.json": "46c75b6a7e1ee91ae9474ec5c95493c57d1ede8d11dceb3b27dd3a3b4c072079",
+      "receipt.raw.json": "788dab303c58130908241f3fec8441a73ff3b6be74d7e0fc72da7bcc242f8cb8",
+      "run.raw.json": "3caf8bf0b6e9be84cebcdd9945a6643386fede88dcc42b46bb59bf5b7498d21d",
+      "source-artifacts.raw.json": "9e4d6e339829b6ff2af38829f19bf1128a25b1840d02dff4c5e04d43bf1dafe7",
+      "source-run.raw.json": "14dfccbb6c8f542a9526acc6b8d1bb282e474a74e46120e39ffce8e391635c49"
+    },
+    "attempt_count": 1
+  },
+  "next_action": "No retry. Root diagnosis should reconcile the exact shared-old-loader and extra-target evidence with the current binding gap before any separate authorization. Temporary secrets and owned recipe state are verified absent."
+}
