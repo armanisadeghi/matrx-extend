@@ -21,9 +21,10 @@
   },
   "verification": {
     "source": "Driver now observes rendered section height and executes restoration checks; focused tests call the actual T28/T40/T67 case runners through an injected driver seam, including failure and cleanup paths. Node syntax checks and Biome formatting passed.",
-    "focused_test": "Pending automatic hosted focused-acceptance result for the pushed commit. No local test was run.",
+    "focused_test": "PASS: automatic hosted Focused acceptance run 37835391727 on pushed source commit 70b65e934ad52035b7dcb2501d51e49997365768. The test invokes the actual T28/T40/T67 case runners with controlled driver observations, including rendered-visibility and storage-drift failure paths.",
     "native": "Unverified until a hosted native run executes this driver. Existing product blobs may be reused only when their frozen artifact identity and tree hash match; these harness-only changes do not themselves require rebuilding product binaries.",
-    "resource_limit": "No local tests, browser, or build, as instructed for low system disk."
+    "resource_limit": "No local tests, browser, or build, as instructed for low system disk.",
+    "focused_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37835391727"
   },
   "source_files": [
     "package.json",
