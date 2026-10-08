@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T12:39:39.400809+00:00",
+  "updated_at": "2026-10-08T12:41:34.937862+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -16295,7 +16295,7 @@
               "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114"
             }
           ],
-          "defect_ids": ["EXT-D-0175"]
+          "defect_ids": ["EXT-D-0175", "EXT-D-0178"]
         },
         {
           "id": "EXT-F-1007-T09",

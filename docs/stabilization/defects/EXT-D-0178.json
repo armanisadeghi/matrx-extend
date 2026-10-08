@@ -1,0 +1,48 @@
+{
+  "id": "EXT-D-0178",
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T08"],
+  "surface": "Hosted Scrape recapture acceptance",
+  "auth_mode": "guest",
+  "title": "Native recapture procedure omits visible discard-edits confirmation",
+  "severity": "S2: test harness stops before recapture; product confirmation is expected",
+  "priority": "P1",
+  "state": "in-fix",
+  "owner": "root/scrape_postreload_visibility_fix",
+  "preconditions": [
+    "Frozen407 Scrape view, existing owned test capture with media edits and edited=true.",
+    "Final native recapture step follows those edits."
+  ],
+  "reproduction": [
+    "Edit media in the owned test capture.",
+    "Activate Capture through the actual UI.",
+    "The product asks to discard unsaved edits; current native procedure instead waits for new article content without confirming the dialog."
+  ],
+  "expected": "The procedure exercises the specific visible confirmation for its owned test edits, then verifies new capture and actual visible article content.",
+  "actual": "Native37776576395 delivered Capture but later observed ready/title match with article unselected/invisible and text absent. Source diagnosis identifies the expected confirmation omitted by the procedure; uninstrumented retest remains required.",
+  "evidence": [
+    ".research/scrape-optin-diagnostic-native-20261008.json",
+    ".research/native-diagnostics-peer-20261008.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-08T12:40:54.804309+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Native post-reload capture did not expose expected article."
+    },
+    {
+      "at": "2026-10-08T12:40:54.804309+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Source path after owned media edits triggers visible unsaved-edit confirmation; native procedure skips it."
+    },
+    {
+      "at": "2026-10-08T12:40:54.804309+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Fixer owns trusted specific confirmation interaction and causal guard, retaining fresh-capture content proof."
+    }
+  ],
+  "closure_requirement": "Fresh independent source review and actual uninstrumented native recapture confirms only owned edits then shows newly captured fixture article; surrounding cancel/confirmation semantics retained."
+}
