@@ -2,8 +2,7 @@ import { CopyMenu } from '@/components/CopyMenu';
 import { rowsToTsv, stringifyJson, wrapJsonForAgent } from '@/lib/clipboard/copy';
 import { sanitizePageSourceUrl } from '@/lib/credentials/network-urls';
 import { cn } from '@/lib/utils';
-import { useChatStore } from '@/state/chat';
-import { useSidepanelTabStore } from '@/state/sidepanel-tab';
+import { putTextInChatDraft } from '@/lib/chat-target';
 import { Button } from '@ai-matrx/design-system';
 import { Bot, Braces, Table2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -39,9 +38,6 @@ export function ResultPreview({
   description = 'extracted rows from a webpage',
 }: ResultPreviewProps) {
   const [view, setView] = useState<View>('table');
-  const setDraft = useChatStore((s) => s.setDraft);
-  const draft = useChatStore((s) => s.draft);
-  const setSidepanelTab = useSidepanelTabStore((s) => s.setTab);
   // Keep page hash routes and ordinary query keys while masking recognized
   // credential keys in either the query or the fragment.
   const copySource = useMemo(
@@ -68,8 +64,7 @@ export function ResultPreview({
           : {}),
       },
     });
-    setDraft(draft ? `${draft}\n\n${payload}` : payload);
-    setSidepanelTab('chat');
+    void putTextInChatDraft(payload);
   };
 
   const copyOptions = useMemo(

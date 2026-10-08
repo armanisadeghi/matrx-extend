@@ -16,8 +16,7 @@
 import { log } from '@/lib/debug/log';
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import { useChatStore } from '@/state/chat';
-import { useSidepanelTabStore } from '@/state/sidepanel-tab';
+import { putTextInChatDraft } from '@/lib/chat-target';
 import { useEffect } from 'react';
 
 const PENDING_DRAFT_KEY = 'matrx.chat.pending_draft';
@@ -40,11 +39,9 @@ export function useContextMenuListener(): void {
 function applySelection(text: string): void {
   const trimmed = text.trim();
   if (!trimmed) return;
-  const chat = useChatStore.getState();
-  const existing = chat.draft;
-  const next = existing.length > 0 ? `${existing}\n\n${trimmed}` : trimmed;
-  chat.setDraft(next);
-  useSidepanelTabStore.getState().setTab('chat');
+  void putTextInChatDraft(trimmed).catch((err: unknown) =>
+    log.warn('sys', 'context-menu: could not put the selection in the chat draft', err),
+  );
 }
 
 async function drainPendingDraft(): Promise<void> {

@@ -1,7 +1,7 @@
 import { ENV } from '@/config/env';
 import { useAuth } from '@/hooks/use-auth';
 import type { ScreenshotRow } from '@/lib/supabase/queries';
-import { useChatStore } from '@/state/chat';
+import { currentChatConversationId, useChatConversationId } from '@/lib/chat-target';
 import { Badge, Button, BasicInput as Input } from '@ai-matrx/design-system';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ai-matrx/design-system';
 import { formatFileSize } from '@ai-matrx/kit/format';
@@ -39,7 +39,7 @@ const GRAPH_PAGE_SIZE = 100;
 
 export function FilesView() {
   const { user } = useAuth();
-  const conversationId = useChatStore((state) => state.selectedConversationId);
+  const conversationId = useChatConversationId();
   const [tab, setTab] = useState<InventoryTab>('library');
   const [files, setFiles] = useState<FileInventoryItem[]>([]);
   const [captures, setCaptures] = useState<ScreenshotRow[]>([]);
@@ -126,7 +126,7 @@ export function FilesView() {
         } else {
           await attachFileToConversation(fileId, conversationId, name);
         }
-        if (useChatStore.getState().selectedConversationId !== conversationId) return;
+        if ((await currentChatConversationId()) !== conversationId) return;
         // Reflect the committed mutation immediately. The reload below remains
         // authoritative, but a reconciliation failure must not display the
         // inverse of a mutation that already succeeded.
@@ -144,7 +144,7 @@ export function FilesView() {
         }
         await reload();
       } catch (cause) {
-        if (useChatStore.getState().selectedConversationId === conversationId) {
+        if ((await currentChatConversationId()) === conversationId) {
           setError(cause instanceof Error ? cause.message : 'Could not update the attachment.');
         }
       } finally {

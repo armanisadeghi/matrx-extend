@@ -34,8 +34,7 @@ import type { ConversationListsSummary, Task, UserTodo } from '@/lib/lists/types
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { cn } from '@/lib/utils';
-import { useChatStore } from '@/state/chat';
-import { useSidepanelTabStore } from '@/state/sidepanel-tab';
+import { openConversationInChat } from '@/lib/chat-target';
 import { ConfirmDialog } from '@ai-matrx/design-system';
 import { Badge, Button } from '@ai-matrx/design-system';
 import { ScrollArea } from '@ai-matrx/design-system';
@@ -259,8 +258,7 @@ function ExpandedView({
             size="sm"
             className="h-6 px-2 text-xs"
             onClick={() => {
-              useChatStore.getState().setConversation(detail.conversationId);
-              useSidepanelTabStore.getState().setTab('chat');
+              void openConversationInChat(detail.conversationId);
             }}
           >
             Open in chat

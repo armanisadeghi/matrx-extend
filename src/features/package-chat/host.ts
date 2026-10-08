@@ -9,6 +9,7 @@
 import { STORAGE_KEYS } from '@/config/env';
 import { SpeakerButton } from '@/features/chat/SpeakerButton';
 import { buildHeaders, getApiBaseUrl } from '@/lib/api/client';
+import { requestMicrophoneGrant } from '@/lib/audio/mic-grant';
 import { send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import {
@@ -16,6 +17,7 @@ import {
   listMemberOrganizations,
   requireActiveOrganizationId,
 } from '@/lib/org/active-org';
+import { DEFAULT_CHAT_MANDATE_KEY } from '@/lib/mandates';
 import { getSupabase } from '@/lib/supabase/client';
 import type {
   ChatDeviceToolInvocation,
@@ -108,7 +110,12 @@ export async function createExtensionChatHost(): Promise<ChatHost> {
     db: getSupabase(),
     accessToken: readBearer,
     sourceApp: 'matrx-extend',
-    app: { sourceApp: 'matrx-extend', sourceFeature: 'browser_chat' },
+    app: {
+      sourceApp: 'matrx-extend',
+      sourceFeature: 'browser_chat',
+      // The mandate the extension's own chat runs: a new package chat resolves it, not the web's default.
+      defaultChatMandateKey: DEFAULT_CHAT_MANDATE_KEY,
+    },
     org,
     server: {
       baseUrl: () => baseUrl,
@@ -122,5 +129,7 @@ export async function createExtensionChatHost(): Promise<ChatHost> {
       openExternal: (href) => void chrome.tabs.create({ url: href }),
     }),
     deviceTools: { invoke: invokeDeviceTool },
+    // Chrome cannot prompt inside a side panel: the grant is asked in the mic-grant popup.
+    microphone: { requestPermission: () => requestMicrophoneGrant() },
   };
 }
