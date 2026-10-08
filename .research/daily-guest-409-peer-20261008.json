@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "reviewed_at_utc": "2026-10-08",
+  "scope": "Independent read-only peer review of hosted public guest Chat run 37748038743; no native rerun or source fix.",
+  "verdict_a_observed_behavior": {
+    "result": "FAIL_BOUNDED_POST_RELOAD_TURN",
+    "opening": "PASS: the signed-out guest sent a new conversation, received HTTP 200, and reached a terminal assistant answer containing the unpredictable opening code and ordered page stages.",
+    "same_conversation_followup": "PASS: is_new=false with the opening conversation fingerprint; HTTP 200 and a separate terminal reply contained the follow-up code and fixture heading.",
+    "post_reload_new_conversation": "FAIL: a new panel document and distinct is_new=true conversation were observed. The initial Chat POST returned HTTP 200; get_page_text completed with the fixture URL, opening code, follow-up code, and heading. The continuation stream then emitted HTTP 409 with no classified code. After the driver's 180-second bound, the panel had zero assistant replies and no terminal answer.",
+    "failure_boundary": "Between successful delegated get_page_text completion and a terminal assistant reply from the resumed stream. The continuation response body, backend request state, and exact 409 cause were not captured; assigning a server-only or client-only root cause would exceed this evidence.",
+    "classification": "Observed product-path failure on this published artifact/server pair, not a mere missing fixture or resource rejection. Harness influence and recurrence are not ruled out by one run."
+  },
+  "verdict_b_evidence_quality": {
+    "result": "PASS_FOR_BOUNDED_FAILURE_WITH_CAUSAL_LIMITS",
+    "run_provenance": "GitHub run 37748038743 is completed/failure at head 3ab075f80468a407bb44b246771289a98d75d086; local driver hash matches that checkout. The original receipt and three journals match the hashes recorded in the primary report.",
+    "artifact_and_server": "Receipt identifies public Store CRX 0.2.205, adapted and unpacked, tree SHA-256 08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8. Health/version before and after the run, plus this peer spot-check, show server SHA 53aec906f047b524495ff0d93bae8e67eb55537f.",
+    "resources": "Package and browser jobs exited zero with valid resource decisions. Guest was admitted, watched as healthy throughout, then exited one with resourceInvalid=false and decision=child_failed. Resource pressure does not explain the observed assertion failure.",
+    "oracle_and_driver": "The driver installs a stream collector before each send, verifies an actual new panel document after reload, checks fixture readability and active tab, and calls the same composer send UI. Its terminal oracle requires a rendered assistant answer beyond the prior reply count; the post-reload failure screenshot independently shows the question and extracted-text tool row without a reply.",
+    "comparison": "Run 37649504416 passed all three turns with the same Store artifact tree on server 8fe201b44e7a4c8fe3bf726b77546ad533926a60. This is a useful working sibling, but the two hosted runs do not isolate a server change because timing, state, and execution also differ.",
+    "limits": [
+      "The CRX was adapted and loaded unpacked; installation through Chrome Web Store UI was not tested.",
+      "The CDP observer attached after panel load. It recorded the three initial Chat POSTs, not the continuation HTTP exchange; the latter status comes from the panel stream trace.",
+      "The stream trace has HTTP 409 with code=null. That is not evidence for a specific protocol reason such as resume_conflict or outstanding_delegated_calls.",
+      "One failed run proves the bounded failure, not its frequency or root cause. No native rerun was performed in this independent review."
+    ]
+  },
+  "next_diagnostic_evidence": [
+    "At the failed turn, correlate the guest Chat conversation fingerprint, user_request/run identifiers, delegated get_page_text call, posted tool result, and the /resume request on both client and server. Record only safe structured metadata, not secrets or page text.",
+    "Capture the continuation endpoint, response status and structured refusal code, server request snapshot/trace, and whether the tool result was accepted before resume; identify the first boundary where the expected continuation ceased.",
+    "Run one pinned reproduction on the same CRX/server pair with that capture, then vary only the server SHA or a single continuation condition against the passing sibling."
+  ],
+  "sources": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37748038743",
+    ".research/daily-guest-20261008-run37748038743/raw/guest-chat.receipt.original.json",
+    ".research/daily-guest-20261008-run37748038743/raw/hosted-guest-37748038743-1.jsonl",
+    ".research/daily-guest-20261008-run37748038743/raw/hosted-browser-37748038743-1.jsonl",
+    ".research/daily-guest-20261008-run37748038743/raw/hosted-package-37748038743-1.jsonl",
+    "tests/browser/guest-chat-store-acceptance.mjs",
+    "tests/browser/guest-chat-completion-oracle.mjs",
+    "tests/browser/guest-chat-transport-observer.mjs",
+    ".research/daily-guest-20261007-run37649504416/raw/guest-chat.receipt.json"
+  ]
+}
