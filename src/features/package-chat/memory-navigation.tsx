@@ -85,7 +85,15 @@ function useAddress(): string {
   return useSyncExternalStore(subscribe, () => address);
 }
 
-function Link({ href, children, onClick, prefetch: _p, replace, scroll: _s, ...rest }: ChatLinkProps) {
+function Link({
+  href,
+  children,
+  onClick,
+  prefetch: _p,
+  replace,
+  scroll: _s,
+  ...rest
+}: ChatLinkProps) {
   const target = href;
   return (
     <a

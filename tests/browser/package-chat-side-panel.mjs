@@ -58,7 +58,11 @@ const context = await chromium.launchPersistentContext('', {
   executablePath,
   headless: false,
   viewport: { width: 420, height: 900 },
-  args: ['--headless=new', `--disable-extensions-except=${EXTENSION_DIR}`, `--load-extension=${EXTENSION_DIR}`],
+  args: [
+    '--headless=new',
+    `--disable-extensions-except=${EXTENSION_DIR}`,
+    `--load-extension=${EXTENSION_DIR}`,
+  ],
 });
 const results = [];
 const check = (name, ok, detail = '') => {
@@ -72,7 +76,7 @@ try {
   const page = await context.newPage();
   const errors = [];
   page.on('pageerror', (e) => errors.push(String(e)));
-  await page.goto(`chrome-extension://${extensionId}/sidepanel.html`);
+  await page.goto(`chrome-extension://${extensionId}/sidepanel.html?chat=package`);
   await page.evaluate(
     async ([accessToken, expiresIn, user, org]) => {
       await chrome.storage.local.set({
@@ -82,7 +86,12 @@ try {
         'matrx.org.active': org,
       });
     },
-    [session.access_token, session.expires_in ?? 3600, session.user, { id: ORGANIZATION_ID, name: "Admin's Workspace" }],
+    [
+      session.access_token,
+      session.expires_in ?? 3600,
+      session.user,
+      { id: ORGANIZATION_ID, name: "Admin's Workspace" },
+    ],
   );
   await page.reload();
   const root = page.locator('[data-package-chat]');
@@ -94,15 +103,27 @@ try {
   await page.screenshot({ path: join(SHOTS, '1-new-chat.png') });
 
   await page.getByRole('button', { name: 'Conversations' }).click();
-  const row = page.locator('[data-package-chat] [data-conversation-id], [data-package-chat] [role="option"], [data-package-chat] li button').first();
+  const row = page
+    .locator(
+      '[data-package-chat] [data-conversation-id], [data-package-chat] [role="option"], [data-package-chat] li button',
+    )
+    .first();
   await row.waitFor({ timeout: 45_000 }).catch(() => undefined);
   const rows = await row.count();
   check('history loads', rows > 0);
+  const standIns = await page
+    .locator('[data-package-chat] [data-chat-slot-fallback]')
+    .evaluateAll((els) => [...new Set(els.map((e) => e.getAttribute('data-chat-slot-fallback')))]);
+  check('no host-slot stand-ins in history', standIns.length === 0, standIns.join(', '));
   await page.screenshot({ path: join(SHOTS, '2-history.png') });
   if (rows > 0) {
     await row.click();
     await page.waitForTimeout(6000);
-    const messages = await page.locator('[data-package-chat] [data-message-id], [data-package-chat] [data-role="user"], [data-package-chat] [data-role="assistant"]').count();
+    const messages = await page
+      .locator(
+        '[data-package-chat] [data-message-id], [data-package-chat] [data-role="user"], [data-package-chat] [data-role="assistant"]',
+      )
+      .count();
     check('a past conversation opens', messages > 0, `${messages} message nodes`);
     await page.screenshot({ path: join(SHOTS, '3-conversation.png') });
   }
