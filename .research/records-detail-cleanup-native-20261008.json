@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "run_id": 37850891584,
+  "run_head_sha": "8b5941096dde08a2b2b29b7f0fd844df9e1ce4c2",
+  "conclusion": "success",
+  "created_at_utc": "2026-10-08T22:02:28Z",
+  "terminal_at_utc": "2026-10-08T22:11:42Z",
+  "focused_source_gate": {
+    "run_id": 37850594117,
+    "conclusion": "success",
+    "head_sha": "8269c7492753b529b9ea24e65b8fad5e2eaebf4d",
+    "helper_blob_matched": true,
+    "test_blob_matched": true,
+    "native_acceptance_blob_matched": true
+  },
+  "frozen_product": {
+    "ci_run_id": 37790643945,
+    "artifact_id": 11556064167,
+    "version": "0.2.414",
+    "digest": "sha256:7a93776a9322c27973756ddb542fd2e8580d900c356d28a0ad1504928edf3964"
+  },
+  "native_artifact": {
+    "id": 11583105209,
+    "digest": "sha256:fffbbf1f7cee36375a2b15a3c050edd13730a77a19350deb1d3e2606104a3795",
+    "receipt_sha256": "a78cde8617ecfc825207aad61d1d314f7500329bd350f290f95d7597bd5455ae",
+    "fixture_journal_sha256": "e975d7c0b7f73f45d6d0ada744cce1e88c96af7e4c42e68841bb1828bc4560f6",
+    "browser_journal_sha256": "58d5c09e978edf3051dfd8f200e0fc570755c437be0e9472f830c2bb6e996a74",
+    "guest_journal_sha256": "9c60431f284c8209962a121962dc558f82e163b19e18c8d77d36aa5ab3a83714",
+    "package_journal_sha256": "175344066b4d913016c1445f98b4fe0b7cddc56bdb118171599eb16d36fa5185"
+  },
+  "runner": "macos-15",
+  "resource_journals": "Package, browser, and guest final decisions valid.",
+  "native_receipt": {
+    "status": "passed",
+    "failure_code": null,
+    "fixture_diagnostics_count": 0,
+    "negative_refusals": ["EXT-F-4130-C03", "EXT-F-4130-C04", "EXT-F-4130-C05"],
+    "c04_record_read": {
+      "http_status": 200,
+      "completion_observed": true,
+      "visible": true,
+      "owned_fixture_matched": true
+    },
+    "c05_record_aggregate": {
+      "http_status": 200,
+      "completion_observed": true,
+      "visible": true,
+      "owned_fixture_matched": true
+    },
+    "fixture_cleanup": {
+      "archived_verified": true,
+      "same_principal": true,
+      "table_invisible": true,
+      "journal_phase": "archived_verified",
+      "pending_write_unknown": false
+    }
+  },
+  "independent_post_terminal_read": {
+    "same_principal_auth_status": 200,
+    "list_status": 200,
+    "list_complete": true,
+    "exact_table_id_absent": true,
+    "exact_table_name_absent": true
+  },
+  "credential_cleanup": {
+    "temporary_secret_names_deleted": true,
+    "names_only_absence_verified": true,
+    "private_staging_payload_removed": true
+  },
+  "github_step_durations_seconds": {
+    "package_readiness": 33,
+    "pinned_browser_driver_preparation": 83,
+    "browser_readiness": 33,
+    "full_chromium_preparation": 83,
+    "acceptance_readiness": 49,
+    "selected_native_case": 245,
+    "setup_before_native_case": 292,
+    "whole_workflow_from_creation_to_terminal": 554
+  },
+  "claim_boundary": "The frozen 0.2.414 product completed visible C04 and C05 reads and the hosted fixture cleanup passed. Independent raw review remains with root before inventory acceptance; no release or Store claim follows from this run.",
+  "raw_evidence": ".research/records-detail-cleanup-native-20261008/raw contains byte-exact receipt, fixture journal, screenshots, and resource journals."
+}
