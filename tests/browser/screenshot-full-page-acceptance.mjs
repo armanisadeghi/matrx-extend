@@ -207,7 +207,15 @@ async function approvedOrganization() {
   const name = JSON.parse(await readFile(PRIVATE_CONFIG, 'utf8'))?.approved_organization_name;
   if (typeof name !== 'string' || !name.trim() || name !== name.trim())
     fail('approved_organization_missing');
-  return name;
+  const fixture = JSON.parse(
+    await readFile(join(REPO, 'test-results', 'files-saved-private-config.json'), 'utf8'),
+  );
+  if (
+    fixture.approved_organization_name !== name ||
+    typeof fixture.approved_organization_id !== 'string'
+  )
+    fail('approved_organization_identity_missing');
+  return { name, id: fixture.approved_organization_id };
 }
 async function signIn(page, panel) {
   stage = 'admin_signin';
@@ -248,7 +256,39 @@ async function signIn(page, panel) {
     await web.close();
   }
 }
-async function selectOrganization(panel, approved) {
+async function organizationObservation(panel, approved) {
+  return evaluate(
+    panel,
+    `(async () => {
+    const hash=async value=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',
+      new TextEncoder().encode(String(value??''))))].map(byte=>byte.toString(16).padStart(2,'0')).join('');
+    const labels=[...document.querySelectorAll('span')].filter(el=>el.textContent.trim()==='Acting as');
+    const row=labels[0];
+    const buttons=[...(row?.parentElement?.parentElement?.querySelectorAll('button[role="combobox"]')??[])];
+    const sectionButton=[...document.querySelectorAll('button[aria-expanded]')]
+      .find(el=>el.textContent.trim()==='Organization');
+    const section=sectionButton?.parentElement?.nextElementSibling;
+    const scopedLabels=[...(section?.querySelectorAll('span')??[])]
+      .filter(el=>el.textContent.trim()==='Acting as');
+    const scopedButtons=scopedLabels.flatMap(el=>[...el.parentElement.parentElement.querySelectorAll('button[role="combobox"]')]);
+    const active=(await chrome.storage.local.get('matrx.org.active'))['matrx.org.active'];
+    const alerts=[...document.querySelectorAll('[role="alert"], [data-sonner-toast][data-type="error"]')];
+    return {globalActingAsLabelCount:labels.length, originalComboboxCount:buttons.length,
+      originalPickerMatchesApproved:buttons[0]?.textContent.trim()===${JSON.stringify(approved.name)},
+      originalPickerTextSha256:await hash(buttons[0]?.textContent.trim()),
+      organizationSectionPresent:!!section, scopedActingAsLabelCount:scopedLabels.length,
+      scopedComboboxCount:scopedButtons.length,
+      scopedPickerMatchesApproved:scopedButtons[0]?.textContent.trim()===${JSON.stringify(approved.name)},
+      persistedNameMatchesApproved:active?.name===${JSON.stringify(approved.name)},
+      persistedNamePresent:typeof active?.name==='string', persistedIdPresent:typeof active?.id==='string',
+      persistedIdMatchesApproved:active?.id===${JSON.stringify(approved.id)},
+      persistedNameSha256:await hash(active?.name), persistedIdSha256:await hash(active?.id),
+      uiErrorCount:alerts.length, uiErrorTextSha256:await Promise.all(alerts.map(el=>hash(el.textContent.trim())))};
+  })()`,
+  );
+}
+async function selectOrganization(panel, approvedIdentity) {
+  const approved = approvedIdentity.name;
   stage = 'select_approved_organization';
   await click(panel, 'title', 'Settings');
   const account = await evaluate(
@@ -278,22 +318,43 @@ async function selectOrganization(panel, approved) {
   );
   if (choices !== 1) fail('approved_option_not_unique');
   await click(panel, 'option', approved);
-  await waitFor(
-    'approved_organization_selected',
-    () =>
-      evaluate(
-        panel,
-        `(async () => {
+  try {
+    await waitFor(
+      'approved_organization_selected',
+      () =>
+        evaluate(
+          panel,
+          `(async () => {
     const row=[...document.querySelectorAll('span')].find(el => el.textContent.trim()==='Acting as');
     const buttons=[...(row?.parentElement?.parentElement?.querySelectorAll('button[role="combobox"]')??[])];
     const active=(await chrome.storage.local.get('matrx.org.active'))['matrx.org.active'];
     return buttons.length===1 && buttons[0].textContent.trim()===${JSON.stringify(approved)} &&
       active?.name===${JSON.stringify(approved)} && typeof active?.id==='string';
   })()`,
-      ),
-    (value) => value === true,
-    30_000,
-  );
+        ),
+      (value) => value === true,
+      30_000,
+    );
+  } catch (error) {
+    report.organizationSelection = await organizationObservation(panel, approvedIdentity).catch(
+      () => ({ observationUnavailable: true }),
+    );
+    try {
+      const { data } = await panel.send('Page.captureScreenshot', { format: 'png' });
+      const bytes = Buffer.from(data, 'base64');
+      await writeFile(OUTPUT.replace(/\.json$/, '.organization-selection.private.png'), bytes, {
+        mode: 0o600,
+        flag: 'wx',
+      });
+      report.organizationSelection.privateScreenshot = {
+        sha256: createHash('sha256').update(bytes).digest('hex'),
+        byteCount: bytes.length,
+      };
+    } catch {
+      report.organizationSelection.privateScreenshotUnavailable = true;
+    }
+    throw error;
+  }
 }
 function watchRows(panel, expectedCanonical) {
   const requests = new Map();
