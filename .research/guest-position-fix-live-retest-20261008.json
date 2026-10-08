@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0172",
+  "case_id": "EXT-F-2013-T10",
+  "lane": "B_public_no_login_guest_chat",
+  "observed_at_utc": "2026-10-08T11:39:16Z",
+  "run": {
+    "id": 37770686993,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37770686993",
+    "workflow": "hosted-guest-acceptance.yml",
+    "event": "workflow_dispatch",
+    "runner": "macos-15 ARM64",
+    "checkout_sha": "f224976a0c63df367568013f4130f90fe2f70478",
+    "started_at_utc": "2026-10-08T11:32:17Z",
+    "completed_at_utc": "2026-10-08T11:39:15Z",
+    "conclusion": "success",
+    "artifact_id": 11547922074,
+    "artifact_name": "hosted-guest-37770686993-1",
+    "artifact_zip_sha256": "2288184522ec49abe943e59c605d215196c8a56f73b909786f24a23f1a6a22c6"
+  },
+  "verdict": {
+    "bounded_original_reproduction": "pass",
+    "resource_validity": "valid",
+    "overall_product_health": "not_established",
+    "reason": "Opening, same-conversation follow-up, and a distinct new conversation after full panel reload all produced visible page-grounded terminal assistant answers. The post-reload get_page_text result contained the correct fixture code and heading; its continuation opened and ended complete/success."
+  },
+  "server": {
+    "endpoint": "https://server.app.matrxserver.com/health/version",
+    "method": "GET with User-Agent matrx-deployed-schema-guard/1.0 and Accept application/json",
+    "before_git_sha": "32f3a398789e0a56b590089ff47b90aff6abe159",
+    "after_git_sha": "32f3a398789e0a56b590089ff47b90aff6abe159",
+    "post_run_spot_check_git_sha": "32f3a398789e0a56b590089ff47b90aff6abe159",
+    "stable_during_and_after_run": true,
+    "repair_commit": "7ec6c76205f8625bcbd0a70a9f40b417c20a84af",
+    "repair_is_ancestor_of_live_sha": true,
+    "ancestry_method": "git merge-base --is-ancestor in aidream checkout exited 0"
+  },
+  "published_store_artifact": {
+    "kind": "published_store_crx_unpacked",
+    "version": "0.2.205",
+    "extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "pinned_public_crx_sha256": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23",
+    "tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "matches_original_failing_run_tree": true,
+    "artifact_unchanged_during_acceptance": true,
+    "public_download_sha256_matched_pinned_crx": true,
+    "unpacked_copy_adapted_for_chrome_identity": true
+  },
+  "source_comparison": {
+    "original_failing_run_head": "3ab075f80468a407bb44b246771289a98d75d086",
+    "guest_driver_sha256_both_runs": "4061408721291640117e4c679f8ce22b9b502d8bb024f28b0b84f9a276738032",
+    "hosted_runner_script_sha256_both_runs": "923a82922e654b983fe0587132932a290c95745763392e2a74cff5433fbbcff7"
+  },
+  "guest_chat": {
+    "opening": {"terminal_verdict": "terminal_answer", "http_status": 200, "is_new": true, "conversation_fingerprint": "1d62a2ed0590c1b9", "grounded_page_code": true, "stage_names_in_order": true},
+    "same_conversation_followup": {"terminal_verdict": "terminal_answer", "http_status": 200, "is_new": false, "conversation_fingerprint": "1d62a2ed0590c1b9", "grounded_page_code": true, "conversation_identity_verified": true},
+    "post_reload_new_conversation": {
+      "terminal_verdict": "terminal_answer",
+      "initial_http_status": 200,
+      "is_new": true,
+      "conversation_fingerprint": "0a5f0edbffea27fb",
+      "page_text_tool_completed_on_fixture": true,
+      "page_text_result_includes_followup_code_and_heading": true,
+      "continuation_opened": true,
+      "continuation_end_reason": "complete",
+      "continuation_user_request_outcome": "success",
+      "continuation_text_chunks": 23,
+      "visible_assistant_reply_count": 1,
+      "answer_contains_unpredictable_followup_code": true,
+      "answer_names_fixture_heading": true
+    }
+  },
+  "resources": {
+    "journals": {
+      "package": {"path": "raw/hosted-package-37770686993-1.jsonl", "admitted": true, "child_exit_code": 0, "final_decision": "valid", "resource_invalid": false, "sha256": "c4b9ff47400c80191ed883004b8828a480114c0404f65fee98914026c26d44c1"},
+      "browser": {"path": "raw/hosted-browser-37770686993-1.jsonl", "admitted": true, "child_exit_code": 0, "final_decision": "valid", "resource_invalid": false, "sha256": "430ef36f661d5f1c3f251c153d3f60b37efcdc49332183d7ac3ffaeccfedb946"},
+      "guest": {"path": "raw/hosted-guest-37770686993-1.jsonl", "admitted": true, "child_exit_code": 0, "final_decision": "valid", "resource_invalid": false, "sha256": "c5ea399b37060796b084d3ecfdd22c35c7a94120ff7e37973ac3e298ba80d8b1"}
+    },
+    "stale_journals_from_upload_excluded": true,
+    "excluded_stale_run_ids": [37105304739, 37724762467]
+  },
+  "evidence": {
+    "directory": ".research/guest-position-fix-live-retest-20261008-run37770686993/raw",
+    "original_receipt": "raw/guest-chat.receipt.original.json",
+    "original_receipt_sha256": "0c303baf212947ef3c1fe0b78c65e0398ef4fdcab80a18d13c3bbcc6418d6c51",
+    "post_reload_answer_screenshot": "raw/guest-chat-real-followup-answer.png",
+    "post_reload_answer_screenshot_sha256": "2bda573f9cc34470571a5eb825a3cf25e63c049cdb7ee441b8567f4e00ff4209",
+    "originals_byte_exact": true,
+    "reviewed_for_private_content": "Receipt, current-run journals and five screenshots inspected; synthetic public demo and guest panel only, no credentials or private account content observed."
+  },
+  "limits": [
+    "The method loads the public CRX as an adapted unpacked extension; it does not prove installation through Chrome Web Store UI.",
+    "One resource-valid pass on this server/artifact pair does not establish broad service health or recurrence rate.",
+    "Independent peer verification and defect/inventory transition are owned by the root task."
+  ],
+  "next_action": "Independent native evidence review of this exact run, then root-owned EXT-D-0172 state and case inventory reconciliation."
+}

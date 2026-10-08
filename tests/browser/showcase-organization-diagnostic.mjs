@@ -10,6 +10,19 @@ const SUBSTAGES = new Set([
   'organization_identity_read',
   'organization_identity_compare',
   'organization_product_request',
+  'organization_bearer_read',
+  'organization_observer_request',
+  'organization_observer_response',
+  'organization_observer_finished',
+  'organization_observer_failed',
+  'organization_observer_enable',
+  'organization_tools_gate',
+  'organization_tools_click',
+  'organization_records_gate',
+  'organization_records_click',
+  'organization_request_wait',
+  'organization_request_validate',
+  'organization_observer_cleanup',
 ]);
 const OBSERVATIONS = new Set([
   'admin_role_verified',
@@ -23,6 +36,11 @@ const OBSERVATIONS = new Set([
   'rendered_profile_matches',
   'rendered_organization_matches',
   'product_request_observed',
+  'product_request_duplicate',
+  'product_response_observed',
+  'product_response_finished',
+  'product_loading_failed',
+  'observer_cleanup_success',
   'product_response_success',
   'product_header_matches',
   'product_principal_matches',
@@ -35,6 +53,9 @@ const OBSERVATIONS = new Set([
   'archive_filter',
 ]);
 const KNOWN_FAILURES = new Set([
+  ...[...SUBSTAGES].map((stage) => `${stage}_failed`),
+  'showcase_organization_pointer_failed',
+  'organization_resource_boundary_failed',
   'Organization_section_ready_not_observed',
   'Organization_expanded_not_observed',
   'd87_required_organization_picker_not_observed',
@@ -52,6 +73,9 @@ const KNOWN_FAILURES = new Set([
   'showcase_authenticated_token_unavailable',
 ]);
 const POINTER_FAILURES = new Set([
+  'pointer_initial_evaluation_failed',
+  'pointer_press_dispatch_failed',
+  'pointer_release_dispatch_failed',
   'pointer_target_not_unique',
   'pointer_stable_hit_not_observed',
   'pointer_followup_evaluation_failed',
@@ -103,6 +127,15 @@ export function safeShowcaseOrganizationFailure(error) {
   if (message.startsWith('NATIVE_RESOURCE_BOUNDARY_REFUSED:')) {
     return 'organization_resource_boundary_refused';
   }
-  const code = message.split(':', 1)[0];
+  const code = message.split(/[:\n]/, 1)[0];
   return KNOWN_FAILURES.has(code) ? code : 'organization_unclassified_failure';
+}
+
+// The fallback is selected from our fixed stage vocabulary, never an external error string.
+export function recordShowcaseOrganizationFailure(diagnostic, error) {
+  const known = safeShowcaseOrganizationFailure(error);
+  diagnostic.failure_code =
+    known === 'organization_unclassified_failure'
+      ? `${SUBSTAGES.has(diagnostic.substage) ? diagnostic.substage : 'organization_product_request'}_failed`
+      : known;
 }

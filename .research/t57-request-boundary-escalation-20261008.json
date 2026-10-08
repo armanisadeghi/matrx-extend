@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-08",
+  "case_id": "EXT-F-1012-T57",
+  "status": "diagnostic_implemented_tested_pushed_native_unverified",
+  "code_commit": "f6197c1a92113bcf40b5f5c34ee91221d0d64171",
+  "source_run": 37769779267,
+  "evidence_inspected": [
+    ".research/t57-uuid-wiring-native-20261008.json",
+    ".research/d47-org-handoff-final-peer-20261008.json",
+    "Private downloaded source receipt, bounded log stack census and native-side-panel screenshot"
+  ],
+  "grounded_findings": [
+    "The source receipt ends at organization_product_request with no request observation and unclassified Error.",
+    "The private log contains only hosted wrapper stack frames; the inspected screenshot is the initial guest surface, not the failing request boundary.",
+    "The checkpoint registered observers outside its try and recorded network evidence only after successful completion; setup and click failures lacked distinct receipt checkpoints.",
+    "Known Node assertion messages include multiline details, so colon-only failure parsing discarded the existing fixed mismatch code."
+  ],
+  "hypotheses_remaining": [
+    "Observer registration or Network.enable failure",
+    "Tools or records native click failure or resource refusal",
+    "No qualifying request, duplicate request, unfinished response, or invalid request identity/response"
+  ],
+  "implemented": [
+    "Fixed substages for bearer read, four observer registrations, observer enable, Tools and records resource gates/clicks, request wait/validation and cleanup.",
+    "Safe fixed failure_code retained in organization_diagnostic; public driver gets bounded fixed codes instead of raw CDP text.",
+    "Request present/duplicate, response present/finished/success, loading failure, header/principal comparison survive timeout or click failure.",
+    "Partial observer registration cleanup and all-listener cleanup preserve the primary failure.",
+    "Multiline assertion parsing preserves only the known fixed first-line failure code."
+  ],
+  "preserved_acceptance": [
+    "Verified approved UUID and current admin bearer hash must match the actual product GET /tools/test/list headers.",
+    "Exactly one request, HTTP200 and loadingFinished remain mandatory.",
+    "Existing explicit device choice must match approved organization; no session/header/organization injection.",
+    "No timeout increase, native attempt, build, install, deployment, secret staging, or other guest interaction."
+  ],
+  "validation": {
+    "baseline_red": "New guard against original HEAD checkpoint in isolated temporary module: exit1, 13 assertion failures; temporary files removed.",
+    "final_green": "node --test tests/browser/showcase-request-boundary.test.mjs tests/browser/showcase-organization-diagnostic.test.mjs tests/browser/showcase-d47-organization-handoff.test.mjs tests/browser/showcase-d47-driver-evidence.test.mjs:47/47",
+    "boundary_cases": "14 injected failures plus successful ladder selection; absent request distinguished from unfinished response; registered listeners removed; private error/token/organization values excluded.",
+    "format": "Biome check on three changed source/test paths passed; git diff --check passed."
+  },
+  "limits": [
+    "CDP dependencies are controlled in focused guards; no real browser request or live product success was observed in this lane.",
+    "No product organization defect established; original source-run failure cause remains unknown.",
+    "Original public Network race, capture and saved replay remain unverified.",
+    "Independent review belongs to root; no review acceptance claimed here."
+  ],
+  "next_action": "Independent peer review of the published diagnostic unit; only then root decides whether one separately authorized native measurement is warranted."
+}

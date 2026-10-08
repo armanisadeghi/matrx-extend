@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T11:20:44+00:00",
+  "updated_at": "2026-10-08T11:41:53+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -23543,6 +23543,22 @@
                 "https://github.com/armanisadeghi/matrx-extend/actions/runs/37767661089"
               ],
               "detail": "Admin rendered identity reached the organization resource gate, but the D47 driver omitted the required approved organization UUID; no product organization request, capture, saved result, or T57 acceptance was observed. The guest resource journal was invalid (resource_invalid=true, exit 3). Independent review classifies this as a harness wiring failure, with no product organization defect established."
+            },
+            {
+              "at": "2026-10-08",
+              "mode": "admin",
+              "run_id": "37769779267",
+              "status": "unverified",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/t57-uuid-wiring-native-20261008.json",
+                ".research/t57-request-boundary-peer-20261008.json",
+                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37769779267"
+              ],
+              "detail": "Admin sign-in and visible approved organization checks passed, and the required organization UUID reached the checkpoint. The run failed at organization_product_request before recording a completed product request or proving its X-Organization-Id header; the sanitized error does not establish whether a request was sent. No product attribution, T57 Network race, capture, saved replay, or new acceptance credit. Resource journals were valid."
             }
           ]
         },

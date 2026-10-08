@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-08",
+  "case_id": "EXT-F-1012-T57",
+  "reviewed_code_commit": "f6197c1a92113bcf40b5f5c34ee91221d0d64171",
+  "verdict_A_diagnostic_readiness": "PASS_FOR_NEXT_NATIVE_DIAGNOSTIC_ONLY; native product acceptance remains unverified",
+  "verdict_B_guard_privacy_quality": "PASS; no actionable finding in reviewed diff",
+  "proofs": [
+    "Real CDP session wrapper returns synchronous listener removers; checkpoint registers four events before Network.enable and releases every acquired listener after setup or action failure.",
+    "Fixed substages distinguish bearer read, each registration, enable, resource gate, click, request wait, validation and cleanup; failed waits retain bounded request/response/header/principal observations.",
+    "Public error is rebuilt from allowlisted fixed codes; assertion first-line codes survive multiline Node messages. No original CDP error, bearer, or organization value is included in tested receipt.",
+    "Acceptance still requires the actual GET /tools/test/list, exactly one request, approved organization header, current bearer hash, HTTP 200 and loadingFinished.",
+    "Independent node --test on four focused files passed 47/47; Biome on three changed files and git diff --check passed."
+  ],
+  "remaining_limits": [
+    "No native run, browser request or public race/capture/replay was performed in this peer lane; the cause of hosted run 37769779267 remains unknown.",
+    "Injected CDP failures and an in-memory panel cover the boundary, so this verdict authorizes diagnosis readiness rather than T57 acceptance."
+  ]
+}
