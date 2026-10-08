@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "task_id": "settings-local397-peer-20261008",
+  "role": "fresh independent read-only native/evidence review",
+  "reviewed_curator_commit": "a248737f",
+  "verdict_A_native_outcome": {
+    "result": "PARTIAL_BOUNDED_GUEST_ACCEPTANCE; D168_CLOSURE_GATE_SATISFIED; D167_FULL_CLOSURE_PENDING",
+    "scope": "One valid local ARM Chrome-for-Testing run in an owned disposable profile against frozen development 0.2.397/source cedcec02a3fb4e52a3f63ebfda8728809eff418a/CI 37724859892/artifact 11527132614. This is guest Settings acceptance, not member/admin, current-main, Store, or whole-feature acceptance.",
+    "case_counts": { "pass": 9, "unverified": 7, "fail": 0 },
+    "cases": {
+      "EXT-F-1003-T04": "PASS: Dark, Light, and System each changed UI, stored value, applied appearance, and survived panel reload; no full-extension reload for this preference.",
+      "EXT-F-1003-T10": "PARTIAL: Ask/Act UI and storage survived panel reload; new-chat inheritance unexercised.",
+      "EXT-F-1003-T13": "PASS: Thinking/Fast UI and stored choice survived panel reload.",
+      "EXT-F-1003-T16": "PARTIAL: share-page-identity off/on UI and storage survived panel reload; downstream browser/agent behavior unexercised.",
+      "EXT-F-1003-T19": "PARTIAL: save-login offer off/on UI and storage survived panel reload; post-login consumer unexercised.",
+      "EXT-F-1003-T22": "PASS: guest admin section and controls absent warm and after panel reload.",
+      "EXT-F-1003-T31": "PARTIAL: saved-login offer off/on UI and storage survived panel reload; supported-form consumer unexercised.",
+      "EXT-F-1003-T34": "PARTIAL: password-suggestion presentation on_page and quiet UI/storage each survived panel reload. Original baseline was held inside the source-controlled helper and successful completion implies its final restoration assertions passed; the receipt does not separately serialize the baseline or final cleanup sample. On-page consumer unexercised.",
+      "EXT-F-1003-T37": "PASS: coming-soon hint, switch state, and panel-reload persistence observed within this guest scope.",
+      "EXT-F-1003-T46": "PASS: port 65001 save and worker rediscovery, boundary ports 1/65535, invalid-range feedback, clear, and panel-reload persistence. Initial and final override null recorded.",
+      "EXT-F-1003-T63": "PARTIAL: guest admin actions absent warm and after full extension reload; ordinary-member denial unexercised.",
+      "EXT-F-1003-T64": "PASS: two disposable loopback origins shown and stored, selected removal spared the other across panel reload, last removal emptied and hid list across panel reload. No live external account state exercised.",
+      "EXT-F-1003-T70": "PARTIAL: runtime/manifest/receipt identity and password API readiness observed; real browser update returned no update; unavailable, update-available, throttled, and error branches unexercised.",
+      "EXT-F-1003-T73": "PASS: guest Account unavailable, no name/role, and Sign in footer warm and after full extension reload.",
+      "EXT-F-1003-T76": "PASS: guest organization guidance, no archive filter/choice/read warm and after full extension reload.",
+      "EXT-F-1003-T92": "PASS: guest archived membership and restoration controls absent warm and after full extension reload; member/admin paths outside this guest scope."
+    },
+    "reload_boundary": "The receipt records management reload clicked, old targets retired, replacement worker and panel, then exactly one visible active Settings tab in the replacement panel. This full-extension boundary applies to T63/T73/T76/T92; the other case reloads are panel-document reloads.",
+    "restoration_and_surroundings": "T34's first on action implies original quiet under the helper's [!original, original] sequence; final quiet appears in the receipt, and the source-controlled finally block independently requires original UI/storage then reload persistence before the case returns. This is credible restoration through successful driver control flow, but weaker than a byte-exact baseline/final receipt. T64's raw receipt directly shows fixture list 2->1->0 and zero after reload. No full initial/final storage snapshot exists for other settings.",
+    "defect_ruling": "D168's documented closure requirement combines causal RED/controlled GREEN, independent source review, and an exact resource-valid original Settings native retest. Prior resource-completion-final-peer records source/control success; this valid native run supplies the missing integration retest. D168 may close as an infrastructure repair with an explicit limit: no real CPU-pending completion or recovery occurred here, so real-host recovery is not proven. D167's diagnostic-only source repair met its native no-recurrence check and T64 fixture now works; its underlying original missing-Settings cause was not reproduced or confirmed, and its on-page consumer remains untested. Its full closure requirement is therefore unmet. Prior resource-invalid runs receive no retrospective credit.",
+    "evidence": [
+      ".research/settings-local397-native-20261008-originals/settings-local-controls-acceptance.json",
+      ".research/settings-local397-native-20261008-originals/resource-native.jsonl",
+      "tests/browser/settings-guest-privacy-batch.mjs:87-154",
+      "tests/browser/settings-guest-unrecorded-cases.mjs:60-146",
+      "tests/browser/settings-local-controls-acceptance.mjs:995-1058",
+      "docs/stabilization/defects/EXT-D-0167.json",
+      "docs/stabilization/defects/EXT-D-0168.json",
+      ".research/resource-completion-final-peer-20261008.json"
+    ]
+  },
+  "verdict_B_evidence_quality": {
+    "result": "PASS_WITH_EXPLICIT_LIMITS",
+    "positive_evidence": "All nine curator-listed original files are present with byte counts and SHA-256 matching the curator manifest. CI receipt, artifact import, local development receipt, and native build receipt agree on source SHA, run 37724859892 attempt 1, version 0.2.397, extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml, and tree SHA-256 1035cd28ce5a63ac6233626f35102f016f7c7e7e0ef0717d259a3ec40fc856ed. Raw preflight and run journals show admission, two healthy watches, child exit 0, and final valid exit 0; no pending/unsafe CPU event. Native receipt has no setup error, 16 case records, and nine/ seven/zero statuses. No evidence that this artifact was published.",
+    "limits": [
+      "No byte-exact standalone native stdout/stderr console log was retained. Panel-context-ready and post-run process/lease cleanup claims appear in the curator narrative, not an original console or ps/lease receipt; guard finalization itself is directly journaled.",
+      "The two PNGs support native setup/guest appearance, not switch behavior. Case-level behavior rests on the original browser receipt and source-controlled driver.",
+      "The imported artifact's GitHub digest and exact pushed-source assertion are recorded by import-status; this review did not re-download the artifact independently.",
+      "This healthy run has no RESOURCE_CPU_PENDING, RESOURCE_COMPLETION_RECOVERY_PENDING, RESOURCE_CPU_RECOVERED, or RESOURCE_PROCESS_ATTRIBUTION event. It cannot establish actual CPU recovery or process attribution.",
+      "Successful T34 return exercises cleanup assertions but does not provide an independently serialized baseline/final sample. Do not upgrade that evidence to direct raw restoration proof."
+    ],
+    "evidence": [
+      ".research/settings-local397-native-20261008.json",
+      ".research/settings-local397-native-20261008-originals/provenance.json",
+      ".research/settings-local397-native-20261008-originals/import-status.json",
+      ".research/settings-local397-native-20261008-originals/ci-receipt.json",
+      ".research/settings-local397-native-20261008-originals/local-dev-receipt.json",
+      ".research/settings-local397-native-20261008-originals/resource-preflight.jsonl",
+      ".research/settings-local397-native-20261008-originals/resource-native.jsonl"
+    ]
+  },
+  "review_method": "Read exact curator commit and nine originals; recomputed nine file hashes and raw case counts; compared source-controlled helper, frozen driver history, D167/D168 closure rules, and prior independent peers. No browser, native run, build, heavy test, source, inventory, threshold, or release edit; no child agents."
+}
