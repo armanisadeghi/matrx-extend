@@ -50,6 +50,8 @@ async function scenario(options = {}) {
       };
     }
     if (input.method === 'POST' && input.path === '') {
+      if (options.onCreateDispatch)
+        await options.onCreateDispatch(await readFile(journalPath, 'utf8'));
       if (options.createRejectedNoWrite)
         return { token_matches: true, status: 422, done: false, created: false };
       tableExists = true;
@@ -376,6 +378,82 @@ test('lost create response is recovered by owned name and archived without creat
   }
 });
 
+test('crash at create dispatch keeps the durable unknown write through empty and late recovery', async () => {
+  let dispatchJournal;
+  const s = await scenario({
+    onCreateDispatch: async (serialized) => {
+      dispatchJournal = serialized;
+    },
+  });
+  const directory = await mkdtemp(join(tmpdir(), 'records-crash-recovery-'));
+  const journalPath = join(directory, 'journal.json');
+  const environment = {
+    GITHUB_ACTIONS: 'true',
+    RUNNER_ENVIRONMENT: 'github-hosted',
+    MATRX_HOSTED_ACCEPTANCE_CASE: 'records-readonly-admin',
+    MATRX_HOSTED_ACCEPTANCE_LANE: 'A',
+  };
+  let visible = false;
+  let archived = false;
+  const methods = [];
+  try {
+    await s.run();
+    const atDispatch = JSON.parse(dispatchJournal);
+    assert.equal(atDispatch.phase, 'create_sent');
+    assert.equal(atDispatch.table_id, null);
+    assert.equal(atDispatch.pending_write_unknown, true);
+    await writeFile(journalPath, dispatchJournal, { mode: 0o600 });
+    const request = async (_panel, _evaluate, input) => {
+      methods.push(input.method);
+      const found = visible && !archived ? [{ id: tableId, name: atDispatch.name }] : [];
+      if (input.method === 'GET')
+        return {
+          token_matches: true,
+          status: 200,
+          list_complete: true,
+          tables: found.filter((item) => item.name === input.name),
+          owned_tables: input.path.includes('search=EXT-F-4130-') ? found : [],
+        };
+      assert.equal(input.method, 'DELETE');
+      assert.equal(input.path, `/${tableId}`);
+      archived = true;
+      return {
+        token_matches: true,
+        status: 200,
+        done: true,
+        archived: true,
+        org_matches: true,
+        id: tableId,
+      };
+    };
+    const recover = () =>
+      withRecordsPositiveFixture({
+        panel: {},
+        evaluate: async () => assert.fail('no page evaluation'),
+        orgId,
+        principalId,
+        bearerHash: 'a'.repeat(64),
+        journalPath,
+        exercise: async () => assert.fail('recovery must not create or read'),
+        request,
+        environment,
+      });
+    await assert.rejects(recover(), /records_fixture_cleanup_unverified/);
+    assert.deepEqual(methods, ['GET', 'GET', 'GET']);
+    assert.equal(JSON.parse(await readFile(journalPath, 'utf8')).pending_write_unknown, true);
+    visible = true;
+    await assert.rejects(recover(), /records_fixture_recovery_cleanup_only/);
+    assert.equal(archived, true);
+    assert.equal(methods.includes('POST'), false);
+    const recovered = JSON.parse(await readFile(journalPath, 'utf8'));
+    assert.equal(recovered.phase, 'archived_verified');
+    assert.equal(recovered.pending_write_unknown, false);
+  } finally {
+    await s.cleanup();
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
 test('existing table or wrong principal refuses before fixture writes', async () => {
   for (const options of [{ notCreated: true }, { principalMismatch: true }]) {
     const s = await scenario(options);
@@ -433,12 +511,19 @@ test('created=false only archives an exact marked fixture and leaves an unmarked
   for (const marked of [true, false]) {
     const s = await scenario({ notCreated: true, notCreatedMarked: marked });
     try {
-      await assert.rejects(s.run(), /records_fixture_table_not_created/);
+      await assert.rejects(
+        s.run(),
+        marked ? /records_fixture_table_not_created/ : /records_fixture_cleanup_unverified/,
+      );
       assert.equal(s.archived, marked);
       const state = JSON.parse(await readFile(s.journalPath, 'utf8'));
-      assert.equal(state.phase, marked ? 'archived_verified' : 'no_owned_fixture_found');
+      assert.equal(state.phase, marked ? 'archived_verified' : 'ownership_unverified');
+      assert.equal(state.pending_write_unknown, !marked);
       const writes = s.calls.filter(({ method }) => method === 'POST').length;
-      await assert.rejects(s.run(), /records_fixture_recovery_cleanup_only/);
+      await assert.rejects(
+        s.run(),
+        marked ? /records_fixture_recovery_cleanup_only/ : /records_fixture_cleanup_unverified/,
+      );
       assert.equal(s.calls.filter(({ method }) => method === 'POST').length, writes);
     } finally {
       await s.cleanup();

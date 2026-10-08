@@ -412,6 +412,9 @@ export async function withRecordsPositiveFixture({
     if (!state.table_id) {
       mark('records_fixture_table_create');
       state.phase = 'create_sent';
+      // A process can stop after the POST leaves the browser but before any
+      // response or catch. The durable journal must already own that ambiguity.
+      state.pending_write_unknown = true;
       await journal(journalPath, state);
       const made = await call('POST', '', {
         name: state.name,
@@ -422,6 +425,11 @@ export async function withRecordsPositiveFixture({
           { name: 'Amount', type: 'number' },
         ],
       });
+      if (made.status === 422 && made.created === false && made.done === false) {
+        state.phase = 'no_fixture_created';
+        state.pending_write_unknown = false;
+        await journal(journalPath, state);
+      }
       assert.equal(made.status, 200, 'records_fixture_table_create_failed');
       assert.equal(made.done, true, 'records_fixture_table_not_done');
       if (!made.created || !made.org_matches) {
@@ -433,6 +441,7 @@ export async function withRecordsPositiveFixture({
       assert.match(made.id ?? '', UUID, 'records_fixture_table_id_missing');
       state.table_id = made.id;
       state.phase = 'table_owned';
+      state.pending_write_unknown = false;
       await journal(journalPath, state);
     }
     mark('records_fixture_row_create');
@@ -504,6 +513,7 @@ export async function withRecordsPositiveFixture({
           assert.equal(after.list_complete, true, 'records_fixture_verify_list_incomplete');
           assert.equal(after.tables.length, 0, 'records_fixture_still_visible');
           state.phase = 'archived_verified';
+          state.pending_write_unknown = false;
           await journal(journalPath, state);
         }
       }
