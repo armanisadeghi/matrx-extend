@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "case_id": "EXT-F-1012-T57",
+  "attempt_count": 1,
+  "run": {
+    "id": 37755803603,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37755803603",
+    "workflow": "Hosted guest side-panel acceptance",
+    "conclusion": "failure",
+    "checkout_sha": "c10823181171d1061a81dec019d972a7650a21c2",
+    "checkout_includes_diagnostic_source": "1f165644fa736a85971aebb06082ea2fbca445f6 is an ancestor of dispatched main",
+    "lane": "A",
+    "runner": "macos-15 ARM",
+    "case": "showcase-d47-public-admin",
+    "d47_public_race_preflight": true,
+    "failed_step": "Disable indexing on the disposable hosted VM",
+    "native_browser_started": false,
+    "resource_admission_reached": false,
+    "product_verdict": "unverified"
+  },
+  "frozen_artifact": {
+    "ci_run_id": 37754055905,
+    "ci_conclusion": "success",
+    "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "artifact_id": 11539827040,
+    "artifact_digest": "sha256:1b883fc212351a6ef30e3b6cc43f9cb1a03c8584affaf3ffecdf679c59087893",
+    "artifact_expired": false,
+    "import_reached": false
+  },
+  "credential_lifecycle": {
+    "private_preflight": "requireHostedAcceptanceCredential('showcase-d47-public-admin') passed in a private child using existing admin and approved organization fixtures; no values printed",
+    "temporary_secret_names": [
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "staged_only_for_run": true,
+    "deleted_after_terminal": true,
+    "independent_name_listing_absent": true,
+    "credential_values_retained": false
+  },
+  "exact_failure": {
+    "source_step": "sudo /usr/bin/mdutil -a -i off succeeded, then status=$(mdutil -a -s) exited 1 under set -e",
+    "stdout": "Root and /System/Volumes/Data reported Indexing disabled.; /System/Volumes/Preboot reported invalid operation and unexpected indexing state kMDConfigSearchLevelTransitioning.",
+    "boundary": "The workflow failed on an irrelevant Preboot all-volume status error before package/browser/resource/native work. This says nothing about the extension or T57 Network race.",
+    "hosted_diagnostic_artifact_id": 11540047519,
+    "hosted_diagnostic_artifact_digest": "sha256:4c449c13c6b03a36c9f8ccfcd2cb96a89c11517461fca6c23dd71ba367a9ad42"
+  },
+  "bounded_workflow_repair": {
+    "source": ".github/workflows/hosted-guest-acceptance.yml",
+    "change": "Retain sudo mdutil -a -i off; verify explicit root and Data volume statuses separately, requiring both commands to succeed and both to report Indexing disabled. Preboot status does not decide the work-volume guard.",
+    "guard": "scripts/test-hosted-indexing-step.mjs extracts the actual workflow shell step and substitutes only mdutil/sudo boundaries; old workflow is RED on Preboot transition, current workflow GREEN, and relevant volume enabled or status failure remains RED.",
+    "native_retest_after_repair": "not dispatched; independent review and separate run decision pending"
+  },
+  "raw_evidence": {
+    "directory": ".research/t57-diagnostic-native-20261008-originals",
+    "failed_step_log": {
+      "path": ".research/t57-diagnostic-native-20261008-originals/failed-step.raw.log",
+      "sha256": "0b277691265ccae86f7cb57643c3a08bb3a9365a5e44f8ad95496a0bb5019965"
+    },
+    "run_metadata": {
+      "path": ".research/t57-diagnostic-native-20261008-originals/run.raw.json",
+      "sha256": "094fc66cb1e1d4e0f0aa13c20d634526e983fb27a9cde620184cc1e0ed1f5ed0"
+    },
+    "artifact_metadata": {
+      "path": ".research/t57-diagnostic-native-20261008-originals/artifacts.raw.json",
+      "sha256": "67ff3235c29378ed44f20960c18efd26c6a5637eed696dacb9bab69d556c2c7e"
+    }
+  },
+  "claim_limit": "One dispatched attempt; it ended before native execution, so no rendered-identity diagnostic or T57 product result exists. The setup repair has a source-level guard only and has not been exercised on a hosted runner."
+}

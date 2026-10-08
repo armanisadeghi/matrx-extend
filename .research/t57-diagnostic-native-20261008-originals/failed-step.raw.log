@@ -1,0 +1,22 @@
+guest	Disable indexing on the disposable hosted VM	﻿2026-10-08T09:19:19.3328870Z ##[group]Run set -euo pipefail
+guest	Disable indexing on the disposable hosted VM	2026-10-08T09:19:19.3329160Z [36;1mset -euo pipefail[0m
+guest	Disable indexing on the disposable hosted VM	2026-10-08T09:19:19.3329520Z [36;1m[[ "$RUNNER_ENVIRONMENT" == github-hosted && "$RUNNER_OS" == macOS ]] || exit 1[0m
+guest	Disable indexing on the disposable hosted VM	2026-10-08T09:19:19.3329960Z [36;1msudo /usr/bin/mdutil -a -i off[0m
+guest	Disable indexing on the disposable hosted VM	2026-10-08T09:19:19.3330260Z [36;1mstatus="$(/usr/bin/mdutil -a -s)"[0m
+guest	Disable indexing on the disposable hosted VM	2026-10-08T09:19:19.3330530Z [36;1mprintf '%s\n' "$status"[0m
+guest	Disable indexing on the disposable hosted VM	2026-10-08T09:19:19.3330880Z [36;1m[[ "$status" == *"Indexing disabled."* ]] || exit 1[0m
+guest	Disable indexing on the disposable hosted VM	2026-10-08T09:19:19.3331210Z [36;1m[[ "$status" != *"Indexing enabled."* ]] || exit 1[0m
+guest	Disable indexing on the disposable hosted VM	2026-10-08T09:19:19.3360910Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+guest	Disable indexing on the disposable hosted VM	2026-10-08T09:19:19.3361180Z env:
+guest	Disable indexing on the disposable hosted VM	2026-10-08T09:19:19.3363030Z   GH_TOKEN: ***
+guest	Disable indexing on the disposable hosted VM	2026-10-08T09:19:19.3363210Z ##[endgroup]
+guest	Disable indexing on the disposable hosted VM	2026-10-08T09:19:19.3718480Z 2026-10-08 09:19:19.371 mdutil[1400:6927] mdutil disabling Spotlight: / -> kMDConfigSearchLevelFSSearchOnly
+guest	Disable indexing on the disposable hosted VM	2026-10-08T09:19:19.4153030Z 2026-10-08 09:19:19.415 mdutil[1400:6927] mdutil disabling Spotlight: /System/Volumes/Data -> kMDConfigSearchLevelFSSearchOnly
+guest	Disable indexing on the disposable hosted VM	2026-10-08T09:19:19.5096790Z /:
+guest	Disable indexing on the disposable hosted VM	2026-10-08T09:19:19.5100770Z 	Indexing disabled.
+guest	Disable indexing on the disposable hosted VM	2026-10-08T09:19:19.5101360Z /System/Volumes/Data:
+guest	Disable indexing on the disposable hosted VM	2026-10-08T09:19:19.5101630Z 	Indexing disabled.
+guest	Disable indexing on the disposable hosted VM	2026-10-08T09:19:19.5101910Z /System/Volumes/Preboot:
+guest	Disable indexing on the disposable hosted VM	2026-10-08T09:19:19.5102170Z Error: invalid operation.
+guest	Disable indexing on the disposable hosted VM	2026-10-08T09:19:19.5102540Z 	Error: unexpected indexing state.  kMDConfigSearchLevelTransitioning
+guest	Disable indexing on the disposable hosted VM	2026-10-08T09:19:19.5109960Z ##[error]Process completed with exit code 1.

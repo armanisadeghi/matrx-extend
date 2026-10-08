@@ -282,10 +282,11 @@ jobs:
           set -euo pipefail
           [[ "$RUNNER_ENVIRONMENT" == github-hosted && "$RUNNER_OS" == macOS ]] || exit 1
           sudo /usr/bin/mdutil -a -i off
-          status="$(/usr/bin/mdutil -a -s)"
-          printf '%s\n' "$status"
-          [[ "$status" == *"Indexing disabled."* ]] || exit 1
-          [[ "$status" != *"Indexing enabled."* ]] || exit 1
+          root_status="$(/usr/bin/mdutil -s /)"
+          data_status="$(/usr/bin/mdutil -s /System/Volumes/Data)"
+          printf '%s\n%s\n' "$root_status" "$data_status"
+          [[ "$root_status" == *"Indexing disabled."* ]] || exit 1
+          [[ "$data_status" == *"Indexing disabled."* ]] || exit 1
 
       - name: Wait for measured package readiness
         run: node scripts/hosted-resource-readiness.mjs
