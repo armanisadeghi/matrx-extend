@@ -225,6 +225,25 @@ try {
   } else {
     check('a past conversation exists to open', false);
   }
+  // NEW CHAT RESOLVES THE EXTENSION'S MANDATE: send from a fresh chat; the run request is aborted
+  // by the route above (zero AI spend) and its target is asserted from the captured request.
+  await page.evaluate(
+    async () => chrome.storage.session.set({ 'matrx-extend:chat-address': '/chat' }),
+  );
+  await page.reload();
+  const newComposer = page.locator('[data-package-chat] textarea').first();
+  await newComposer.waitFor({ timeout: 45_000 }).catch(() => undefined);
+  blockedPosts.length = 0;
+  await newComposer.fill('ping');
+  await newComposer.press('Enter');
+  await page.waitForTimeout(8000);
+  const run = blockedPosts.find((p) => /\/ai\/(mandates|agents)\//.test(p.url));
+  check(
+    'a new chat runs the extension mandate (captured request, not sent)',
+    Boolean(run && /\/mandates\/extend\.browser_chat/.test(run.url)),
+    run ? new URL(run.url).pathname : `no run request among ${blockedPosts.length} blocked POSTs`,
+  );
+  await page.screenshot({ path: join(SHOTS, '5-new-chat-send-blocked.png') });
   if (errors.length) console.log(`  page errors: ${errors.slice(0, 5).join(' | ')}`);
 } finally {
   await context.close();
