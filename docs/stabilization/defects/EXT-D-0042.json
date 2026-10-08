@@ -32,11 +32,13 @@
     ".research/picker-lifecycle-final-peer-20261007.json",
     ".research/picker-lifecycle-native-20261007.json",
     ".research/picker-reinject-diagnosis-20261007.json",
-    ".research/lifecycle-desktop-final-review-20261007.json"
+    ".research/lifecycle-desktop-final-review-20261007.json",
+    ".research/picker-stamped-native-retest-20261007.json",
+    ".research/picker-stamped-native-peer-20261007.json"
   ],
   "severity": "S2: a superseded picker may overwrite the current extraction definition or terminate the current pick",
   "priority": "P1: Showcase reliable detection and extraction lifecycle",
-  "state": "in-fix",
+  "state": "closed",
   "reproduction_status": "boundary-red-confirmed",
   "transition_history": [
     {
@@ -56,17 +58,34 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Source repair and19/19 focused pass exist; subsequent combined compile exposed test helper compatibility, corrected without product changes. Final reruns refused before launch; no fixed/closed claim."
+    },
+    {
+      "at": "2026-10-08T02:27:10.888219+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Recorded source repair and causal regression guards are present in frozen52487361/0.2.391; current native independent review confirms repaired behavior."
+    },
+    {
+      "at": "2026-10-08T02:27:10.888219+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Original native37716987249 passes twelve named scenarios with all three resource journals valid; fresh f2bbdc9e independently accepts recorded defect closure requirement."
+    },
+    {
+      "at": "2026-10-08T02:27:10.888219+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Closure limited to recorded defect on frozen0.2.391: stale-channel isolation, delayed cancellation/installation, reinjection stamped count1, extraction3rows, listeners1/1 during pick then0, ordinary click+1. Broader T24/T51 and signed-in nonadmin remain incomplete."
     }
   ],
   "closure_requirement": "Prove the delayed old-session boundary red before repair, then prove current-session detection and extraction plus old-session rejection green. Check identity through every SW relay, delayed cancellation, pending injection, and cross-context listener teardown. Run changed types and obtain independent installed-extension verification against real page data before closure.",
-  "verification_status": "Native37700751092 on frozen0.2.391/source52487361 passed stale event channels and new delayed cancellation/deferred installation with B extraction3rows. Reinjection failed distinct start/teardown identity, before reinjected B extraction/cleanup; resource guard valid, childfailed. Independent peer f5f4ef72 accepts bounded observations. D42 stays in-fix; nonadmin unverified.",
-  "next_action": "Run one guarded native retest with reviewed direct injection-callback diagnostic890da805 (peerf5f4ef72); distinguish actual execution in observed world from missing/different-world execution, then repair demonstrated cause and verify reinjection lifecycle. Nonadmin remains separate.",
+  "verification_status": "Independent native PASS at original frozen0.2.391/source52487361, run37716987249, peerf2bbdc9e. Current-main/Store/whole-feature behavior not inferred.",
+  "next_action": "Defect closed at tested artifact scope. Continue broader T24/T51 cases and signed-in nonadmin coverage; revalidate changed/current release candidate before shipping.",
   "latest_retest": {
-    "run_id": "37700751092",
-    "status": "partial-child-failed",
+    "run_id": "37716987249",
+    "status": "pass-bounded-defect",
     "resource_invalid": false,
-    "failed_target": "lifecycle_reinject",
     "root_temporary_secret_name_count_after_terminal": 0,
-    "observed_at": "2026-10-07T23:27:33.885597+00:00"
+    "observed_at": "2026-10-08T02:27:10.888219+00:00"
   }
 }

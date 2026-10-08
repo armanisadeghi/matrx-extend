@@ -7,7 +7,7 @@
   "title": "Picker listener tracker may throw on untracked event registration before replacement picker initializes",
   "severity": "S2: invalid test instrumentation blocks native reinjection verification; product failure not established",
   "priority": "P1",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root/picker_reinject_escalation",
   "reproduction": [
     "Run showcase-stale-admin after enabling listener-tracking hook.",
@@ -29,7 +29,9 @@
     ".research/picker-auth-recovery-native-20261007.json",
     ".research/picker-auth-recovery-native-peer-20261007.json",
     ".research/picker-reinjection-count-escalation-20261007.json",
-    ".research/picker-stamped-count-peer-20261007.json"
+    ".research/picker-stamped-count-peer-20261007.json",
+    ".research/picker-stamped-native-retest-20261007.json",
+    ".research/picker-stamped-native-peer-20261007.json"
   ],
   "transition_history": [
     {
@@ -73,10 +75,30 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Fresh escalation confirmed driver combines raw producer and stamped broadcast observations;6d7b299e selects authoritative stamped delivery without deduplicating. Exact focusedCI37716254653 and fresh4e98e3dc source peer pass. Historical two-event split remains unknown; native retest pending."
+    },
+    {
+      "at": "2026-10-08T02:27:10.888219+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Original native37716987249 passes twelve named scenarios with all three resource journals valid; fresh f2bbdc9e independently accepts recorded defect closure requirement."
+    },
+    {
+      "at": "2026-10-08T02:27:10.888219+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Closure limited to recorded defect on frozen0.2.391: stale-channel isolation, delayed cancellation/installation, reinjection stamped count1, extraction3rows, listeners1/1 during pick then0, ordinary click+1. Broader T24/T51 and signed-in nonadmin remain incomplete."
     }
   ],
   "closure_requirement": "Causal frozen-bundle red/green proof, fresh source review, then resource-valid native reinjection and surrounding scenarios; no globalD42closure.",
   "root_cause": "Optional chaining does not suppress false; capture classifier returned boolean instead of null for untracked events/options.",
   "fix_commits": ["eb9ee865", "6d7b299e"],
-  "next_action": "One original391 guarded A retest with stamped/unstamped discriminant after GitHub API quota recovers. No secrets staged; safe prior owner picker_auth_setup_recovery retains future admission. D42/nonadmin and actual native closure remain open."
+  "next_action": "Defect closed at tested artifact scope. Continue broader T24/T51 cases and signed-in nonadmin coverage; revalidate changed/current release candidate before shipping.",
+  "verification_status": "Independent native PASS at original frozen0.2.391/source52487361, run37716987249, peerf2bbdc9e. Current-main/Store/whole-feature behavior not inferred.",
+  "latest_retest": {
+    "run_id": "37716987249",
+    "status": "pass-bounded-defect",
+    "resource_invalid": false,
+    "root_temporary_secret_name_count_after_terminal": 0,
+    "observed_at": "2026-10-08T02:27:10.888219+00:00"
+  }
 }

@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "scope": "Fresh independent read-only review of original-0.2.391 hosted native run 37716987249, retained receipt and exact current journals, stamped selector, D42/D158 defect requirements, and T24/T51 inventory. No browser, native run, build, release, credential access, or product edit.",
+  "reviewed_run": 37716987249,
+  "reviewed_report": ".research/picker-stamped-native-retest-20261007.json",
+  "verdict_A_requested_behavior": {
+    "D158_instrumentation_defect": "PASS for its recorded closure requirement: the prior exact-bundle causal RED/GREEN and independent source review are recorded in D158; this resource-valid native run passed the formerly blocked reinjection, exact one stamped detection, B three-row extraction, listener 1/1 during pick and 0 after Done, and ordinary click +1. This is a D158 driver-instrumentation conclusion, not a claim about all picker behavior.",
+    "D42_recorded_admin_defect": "PASS for the D42 closure requirement as written: prior boundary RED is recorded; this installed original 0.2.391 run passed held stale A EXIT, ITEM_DETECTED, and RESULT rebroadcast after B starts, with current B detection, field Done, and three-row extraction. Delayed A cancellation and pending A installation each left B usable with three rows. Reinjection showed two installations, a fresh context, exactly one stamped detection, one click and one hover listener while picking, zero after Done, and a successful ordinary page click. The three channels and delayed scenarios were named pass cases, not inferred from workflow conclusion alone. Formal defect-state transition belongs to the owner.",
+    "T24_full_case": "PARTIAL: the bounded admin Done, extraction, repick/cancel, and ordinary click passed, but the inventory's full warm/reload/auth-transition/service-error dimensions and separate Restart expectations are not established by this run.",
+    "T51_full_case": "PARTIAL: card and title extraction passed; Doctor-seeded add-fields preservation, alternate nested scope extraction, actual electronic.vegas page, and page-change behavior remain unverified.",
+    "signed_in_nonadmin": "UNVERIFIED: guest Showcase absence is a useful gate control, not a signed-in member/nonadmin test. This is a separate feature/role criterion, not an added D42 admin reproduction prerequisite.",
+    "closure_scope": "The evidence supports D158 instrumentation-defect and D42 recorded admin-defect closure requirements on the exact frozen 0.2.391 artifact. It does not promote EXT-F-1012-T24 or T51, establish signed-in nonadmin behavior, or prove current Store/release equivalence."
+  },
+  "verdict_B_evidence_quality_privacy": {
+    "overall": "PASS for bounded native evidence and retained text privacy, with the stated causal and artifact limits.",
+    "receipt_identity": "GitHub reports successful CI run 37698216289 at source 52487361b1b6a8663b958dbb2196cbcc9b1af31c and artifact 11516342905 named for that source/run. Native receipt repeats source, artifact, version 0.2.391, and tree SHA256 04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793. Hosted workflow run 37716987249 succeeded at later harness head c47e0081a2030e075c03850a4602f5e0e9e659e7; that head is not the imported product source. The original archive was not independently rehashed in this review.",
+    "resource_verdicts": "The exact current hosted-package, hosted-browser, and hosted-guest run37716987249-1 journals each end RESOURCE_FINAL_DECISION with admitted=true, resourceInvalid=false, exitCode=0, decision=valid. The receipt is passed_bounded with 12/12 named cases passed and no failure code.",
+    "stamped_count_quality": "Reviewed 6d7b299e selector requires integer tab_id and nonempty document_id, counts all stamped ITEM_DETECTED deliveries from the post-start window without session filtering or deduplication, then requires exactly one. The selected B event and B result also require the expected session and matching tab/document. Raw producer copies remain in the observer/diagnostic. The successful receipt exposes the final stamped detection count of one, but no raw or unstamped counts; the exact historical two-combined-observation split remains unproven, so this run should not be used to claim its cause.",
+    "privacy": "The five retained text evidence files were pattern-scanned for email addresses, URLs, and credential/token/password terms; none matched. No credential value was accessed by this reviewer. Temporary-secret staging/deletion is reported by the runner and was not independently rechecked here. Screenshot pixels were outside this text-evidence review.",
+    "sha256": {
+      "native_receipt": "51943a6680d37b4dc99835ce5b3d11eff876e84cbc4902274eedadbdb663c84b",
+      "package_journal": "754391c53747b9ed655ccd345726cf5e84bc157ee51229953abc1767fec00c42",
+      "browser_journal": "bdde17db4164989f3efa76adaff65eba3cae2ece58dc8b377c5157c484d9b41b",
+      "acceptance_journal": "66b2290bb8ba9fdd41a7b2e1d6cd907ee2a983d536b042207b2c84f393138e04",
+      "terminal": "be81ccdb699b849ba6a91cbc60951732f3fe05bbeb3772d2898869bd6e34dc6d"
+    }
+  },
+  "remaining_limits": [
+    "Formal D158/D42 state transitions and inventory updates were not made in this reviewer lane.",
+    "T24/T51 full inventory dimensions and signed-in nonadmin behavior remain open.",
+    "Only the original 0.2.391 imported artifact and one native admin run were verified; newer product builds and Store behavior were not."
+  ]
+}

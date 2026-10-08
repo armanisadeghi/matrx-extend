@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "lane": "settings-reload-resource-peer",
+  "status": "review_complete_native_acceptance_rejected",
+  "scope": "Independent terminal evidence review of the curated 37716001386 guest Settings retest and worker summary. No browser, new test, build, release, or secret access.",
+  "verdict_a_native_target": {
+    "result": "REJECT_ACCEPTANCE_CREDIT",
+    "behavior_observation": "The driver records a completed extension management Reload, retirement of old targets, replacement worker and panel, and then a sampled replacement panel with matching runtime id, document ready, visible, exactly one Settings tab and one active Settings tab. This is evidence that Settings opened after extension reload in this run.",
+    "resource_validity": "The current guest journal ends RESOURCE_FINAL_DECISION with admitted=true, resourceInvalid=true, exitCode=3 and decision=invalid. The earlier 0.65 cpuBusyFraction sample is RESOURCE_CPU_HIGH_LOAD_BUSY. A later RESOURCE_CPU_PENDING record with no reasons does not alter the final decision.",
+    "disposition": "Retain the Settings-open observation for diagnosis. The run is resource-invalid, so it earns no native acceptance credit and does not satisfy EXT-D-0162's resource-valid native closure requirement. This is not a product failure finding.",
+    "cases": {
+      "EXT-F-1003-T63": "Guest admin/optional controls were absent in warm and reload observations, but the ordinary-member denial criterion is explicitly unverified; no case credit.",
+      "EXT-F-1003-T64": "Five criteria are marked pass by the driver; no credit from this resource-invalid run.",
+      "EXT-F-1003-T73": "Two criteria are marked pass by the driver; no credit from this resource-invalid run.",
+      "EXT-F-1003-T76": "Two criteria are marked pass by the driver; no credit from this resource-invalid run.",
+      "EXT-F-1003-T92": "Two guest-negative-access criteria are marked pass by the driver; no credit from this resource-invalid run. Member/admin scope remains separate.",
+      "surrounding_settings_controls": "T04, T13, T22, T37, T46 are observed pass; T10 and T70 remain partial. None receive credit from this invalid run."
+    },
+    "prior_failure_comparison": "The preceding frozen-artifact receipt reported settings_open_failed at before_click with zero matched/visible targets, while a same-panel probe found one inactive Settings tab. The new receipt's settings_opened state is a meaningful diagnostic change, but resource invalidation prevents promotion."
+  },
+  "verdict_b_evidence_quality": {
+    "result": "PASS_FOR_BOUNDED_DIAGNOSTIC_REPORTING",
+    "evidence": "All three current-run resource journals identify 37716001386 and their final decisions match the worker summary: package valid (exit 0), browser valid (exit 0), guest invalid (exit 3). Locally curated SHA-256 values match the report for all three journals, the CI receipt, provenance, and native driver receipt. Receipt and provenance identify the frozen 0.2.391 artifact, source SHA 52487361b1b6a8663b958dbb2196cbcc9b1af31c, extension id cihdmkcdjjckfhjpgoedmgfpoljebaml, and tree hash 04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793. The driver JSON uses the same identity and reports status unverified.",
+    "scope_limit": "The worker's GitHub archive digest was not independently recomputed from the archive in this terminal review; source/artifact identity is cross-checked against the curated CI receipt and provenance, not a fresh archive download. These checks establish evidence consistency, not resource-valid native acceptance."
+  },
+  "worker_summary_disposition": {
+    "result": "ACCEPT_WITH_LIMITS",
+    "accepted": "Resource-invalid, no acceptance credit; Settings opened after replacement; T63 ordinary-member denial unknown; no browser fallback or retry.",
+    "limits": [
+      "Keep EXT-D-0162's native closure requirement open until a resource-valid original frozen-artifact retest is reviewed.",
+      "Do not update inventory or claim guest/member, current-main, Store, or feature-wide health from this run.",
+      "T64 and T73/T76/T92 pass labels describe driver observations only in this invalid run."
+    ]
+  },
+  "evidence": {
+    "worker_report": ".research/settings-reload-native-retest-20261007.json",
+    "driver_receipt": ".research/settings-reload-native-retest-20261007/evidence/raw/settings-local-controls-acceptance.json",
+    "ci_receipt": ".research/settings-reload-native-retest-20261007/evidence/raw/ci-build-receipt.json",
+    "ci_provenance": ".research/settings-reload-native-retest-20261007/evidence/raw/ci-build-provenance.json",
+    "resource_journals": [
+      ".research/settings-reload-native-retest-20261007/evidence/resource-journals/hosted-package-37716001386-1.jsonl",
+      ".research/settings-reload-native-retest-20261007/evidence/resource-journals/hosted-browser-37716001386-1.jsonl",
+      ".research/settings-reload-native-retest-20261007/evidence/resource-journals/hosted-guest-37716001386-1.jsonl"
+    ],
+    "previous_driver_receipt": ".research/settings-unrecorded-native-20261007/evidence/raw/settings-local-controls-acceptance.json",
+    "defect_record": "docs/stabilization/defects/EXT-D-0162.json"
+  }
+}

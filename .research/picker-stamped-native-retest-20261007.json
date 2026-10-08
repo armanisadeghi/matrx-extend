@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "task_id": "picker-stamped-native-retest-20261007",
+  "status": "passed_bounded_original_artifact_native",
+  "scope": "One native A showcase-stale-admin retest against original 0.2.391 after stamped relay count driver repair; no retry, product edit, account change, build, or release.",
+  "reviewed_source": {
+    "repair_commit": "6d7b299e5bdd52a9f37ab93522a2be2197128074",
+    "peer_report": ".research/picker-stamped-count-peer-20261007.json",
+    "peer_verdict": "PASS_FOR_RETEST_ONLY",
+    "focused_ci_run_id": 37716254653,
+    "focused_ci_conclusion": "success"
+  },
+  "run": {
+    "id": 37716987249,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37716987249",
+    "lane": "A",
+    "runner": "macos-15 ARM",
+    "workflow_head_sha": "c47e0081a2030e075c03850a4602f5e0e9e659e7",
+    "status": "completed",
+    "conclusion": "success",
+    "receipt_status": "passed_bounded"
+  },
+  "exact_imported_artifact": {
+    "ci_run_id": 37698216289,
+    "artifact_id": 11516342905,
+    "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "version": "0.2.391",
+    "tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793"
+  },
+  "native_observation": {
+    "passed_case_count": 12,
+    "failed_case_count": 0,
+    "admin_signin_and_device_organization": "pass",
+    "stale_A_EXIT_ITEM_DETECTED_RESULT": "pass in named cases",
+    "delayed_A_cancel_and_install": "pass in named cases",
+    "B_field_done_extract": "pass",
+    "reinjection": {
+      "named_case": "genuine_reinjection_single_detection_and_page_click",
+      "status": "pass",
+      "installation_count": 2,
+      "detection_count": 1,
+      "detection_count_meaning": "The repaired driver counts fully stamped relay deliveries, per reviewed source. The success receipt does not expose raw or unstamped counts.",
+      "B_rows": 3,
+      "ordinary_click_delta": 1,
+      "active_click_listeners_during_pick": 1,
+      "active_hover_listeners_during_pick": 1,
+      "active_listeners_after_done": 0
+    },
+    "completion_boundaries": "All 10 named Done, extract, repick, cancel, and ordinary-page-click boundaries passed.",
+    "nonadmin_role_gating": "unverified, as explicitly listed in the receipt",
+    "historical_duplicate_cause": "The earlier run counted two combined current-session observations while the producer counted one; this success distinguishes stamped deliveries by source logic, but does not directly quantify unstamped observations."
+  },
+  "resource_admission": {
+    "package": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "browser": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "acceptance": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" }
+  },
+  "credential_handling": {
+    "canonical_preflight": "passed using only named admin dotenv fields, the approved 0600 fixture, and requireHostedAcceptanceCredential",
+    "pre_dispatch": "After the endpoint rate-limit reset, both temporary names were confirmed absent and no active A run existed; then both names were staged through stdin and verified before dispatch.",
+    "cleanup": "both names deleted immediately after authoritative completed/success terminal and absence verified",
+    "credential_sources_modified": false,
+    "credential_values_recorded": false
+  },
+  "evidence": {
+    "directory": ".research/picker-stamped-native-retest-evidence/run37716987249",
+    "terminal": ".research/picker-stamped-native-retest-evidence/run37716987249/terminal.json",
+    "native_receipt": ".research/picker-stamped-native-retest-evidence/run37716987249/native-receipt.json",
+    "package_journal": ".research/picker-stamped-native-retest-evidence/run37716987249/package.jsonl",
+    "browser_journal": ".research/picker-stamped-native-retest-evidence/run37716987249/browser.jsonl",
+    "acceptance_journal": ".research/picker-stamped-native-retest-evidence/run37716987249/acceptance.jsonl"
+  },
+  "interpretation": {
+    "EXT-D-0158": "The original-artifact bounded picker retest reached and passed reinjection and the named surrounding listener and ordinary-click checks; broader closure is outside this run.",
+    "EXT-D-0042": "Twelve named native cases passed, but nonadmin role gating remains unverified; no full-defect closure claim.",
+    "product_or_store_equivalence": "unverified outside the exact imported 0.2.391 build and this native case"
+  }
+}
