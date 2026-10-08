@@ -1,0 +1,56 @@
+{
+  "task": "nonchat-native-batch-20261008",
+  "status": "not_launched_external_admission_blocked",
+  "checked_at_utc": "2026-10-08 09:12:16 UTC",
+  "owned_lane": "B",
+  "intended_host": "isolated macos-15 ARM GitHub-hosted runner",
+  "intended_case": {
+    "workflow": "hosted-guest-acceptance.yml",
+    "acceptance_case": "guest-scrape-development",
+    "scrape_auth_mode": "guest",
+    "scrape_width_mode": "normal",
+    "scrape_normal_width_px": "600",
+    "registered_cases": [
+      "EXT-F-1007-T10",
+      "EXT-F-1007-T11",
+      "EXT-F-1007-T12"
+    ],
+    "why_this_adds_coverage": "The registered Scrape media cases exercise warm and post-full-extension-reload image/video actions in the existing driver. Earlier accepted guest Scrape coverage was narrow 360px; the generated inventory and peer evidence retain normal-width as unverified. This selection would add normal-width guest evidence without repeating the already accepted narrow bounded cases. The normal-width route requires an observed >=600px side-panel viewport.",
+    "known_limits": "T12 requires native link/clipboard outcomes; member/admin modes and broader Scrape remain separate. A workflow success alone would not promote every case."
+  },
+  "admission": {
+    "local_workflow_checkout_sha": "1685fda2434ada12252729cac54d3b7766dac044",
+    "local_workflow_tree_sha": "0123a995260f1637e6d17a19f1ea6fb410012370",
+    "frozen_development_run_id": null,
+    "frozen_development_artifact_id": null,
+    "frozen_artifact_source_sha": null,
+    "frozen_artifact_tree_hash": null,
+    "artifact_verified": false,
+    "github_operation": "gh run list --workflow hosted-guest-acceptance.yml --limit 1 --json databaseId,status,conclusion,headSha,createdAt",
+    "github_result": "HTTP 403 API rate limit exceeded for user ID 132974515, timestamp 2026-10-08 09:12:16 UTC; the exact workflow query was refused.",
+    "decision": "No workflow dispatch. The API refusal prevents verification of the latest successful CI development artifact and the exact hosted run admission; the separate rate_limit endpoint's reported allowance is not accepted as evidence that Actions workflow operations work. No blind retry or duplicate job was attempted."
+  },
+  "native_run": {
+    "run_id": null,
+    "attempt": null,
+    "artifact_id": null,
+    "actual_guest_identity": "unobserved; no browser launched",
+    "resource_verdict": "unmeasured; no host or three guarded phases launched",
+    "package_journal": null,
+    "browser_journal": null,
+    "guest_journal": null,
+    "case_verdicts": "unverified",
+    "product_defect_claim": false
+  },
+  "resume_condition": "GitHub Actions workflow queries and dispatch must work, then identify and verify one exact successful CI development run/artifact. Admit one lane-B ARM job under the existing package/browser/guest resource guard and follow its single run handle to terminal; preserve its selected receipt and three current journals byte-exact before assigning any case result.",
+  "sources": [
+    "docs/stabilization/PLAN.md",
+    "docs/stabilization/COORDINATOR.md",
+    ".github/workflows/hosted-guest-acceptance.yml",
+    "tests/browser/scrape-native-selection.mjs",
+    "tests/browser/scrape-guest-native-acceptance.mjs",
+    "docs/stabilization/inventory.json",
+    ".research/native-batch-evidence-peer-20261007.json",
+    "docs/stabilization/defects/EXT-D-0167.json"
+  ]
+}
