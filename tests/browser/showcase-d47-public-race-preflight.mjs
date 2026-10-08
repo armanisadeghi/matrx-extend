@@ -239,6 +239,7 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
       target_unexpected_status_or_extra: 0,
       target_body_unavailable: 0,
     },
+    continuation_rejections: { non_target: 0, target: 0 },
     cleanup: 'pending',
     old_paused_before_replay: false,
     extension_capture_at_current_pause: false,
@@ -258,8 +259,13 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
   const onRequest = (event) => {
     if (closed) return;
     facts.network_event_count++;
-    if (event.requestId && event.frameId === mainFrame)
-      requests.set(event.requestId, { frame_id: event.frameId, loader_id: event.loaderId });
+    if (event.requestId)
+      requests.set(
+        event.requestId,
+        event.frameId === mainFrame
+          ? { frame_id: mainFrame, loader_id: event.loaderId }
+          : { frame_id: null, loader_id: null },
+      );
   };
   const onContext = ({ context }) => {
     if (closed) return;
@@ -283,9 +289,10 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
     };
   const onFinished = onTerminal('finished');
   const onFailed = onTerminal('failed');
-  const continueUnmatched = (requestId) => {
+  const continueUnmatched = (requestId, target) => {
     const pending = cdp.send('Fetch.continueRequest', { requestId }).catch(() => {
-      if (!closed) facts.unmatched_target_count++;
+      if (closed) return;
+      facts.continuation_rejections[target ? 'target' : 'non_target']++;
     });
     passthrough.add(pending);
     void pending.finally(() => passthrough.delete(pending));
@@ -313,7 +320,7 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
       if (target) facts.unmatched_target_count++;
       // Fetch pauses every Algolia response matching the domain pattern. Every
       // non-target must be resumed immediately, without modifying it.
-      continueUnmatched(event.requestId);
+      continueUnmatched(event.requestId, target);
       return;
     }
     const item = {
@@ -327,7 +334,7 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
     if (facts.paused.length >= 2 || item.status !== 200) {
       facts.pause_rejections.target_unexpected_status_or_extra++;
       facts.unmatched_target_count++;
-      continueUnmatched(event.requestId);
+      continueUnmatched(event.requestId, target);
       return;
     }
     held.set(event.requestId, item);
@@ -349,7 +356,7 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
       facts.pause_rejections.target_body_unavailable++;
       facts.unmatched_target_count++;
       held.delete(event.requestId);
-      continueUnmatched(event.requestId);
+      continueUnmatched(event.requestId, target);
     }
   };
   cdp.on('Network.requestWillBeSent', onRequest);

@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "scope": "Public race preflight diagnostic taxonomy only",
+  "peer_findings_repaired": [
+    "An observed Network identity from a child frame now reaches target_outside_main_frame; the controller retains only null frame membership for that identity and does not serialize frame IDs or request details.",
+    "Failed Fetch.continueRequest on an unmatched pause now increments a fixed continuation_rejections target/non_target counter. unmatched_target_count counts target pauses once, even when continuation rejects."
+  ],
+  "red_green": {
+    "red": "Two focused controller tests failed before the controller edit: wrong-frame count was 0 rather than 1, and continuation_rejections was absent.",
+    "green": "node --test tests/browser/showcase-d47-public-race-preflight.test.mjs: 13 passed, 0 failed",
+    "format": "pnpm exec biome check on both touched harness files: passed"
+  },
+  "limits": "No native race run was performed. The earlier native receipt remains unclassified until a fresh resource-valid original race runs. Existing two-response release and acceptance predicates are unchanged."
+}
