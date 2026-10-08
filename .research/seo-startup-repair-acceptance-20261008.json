@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0107 native lane A guest SEO/Airbnb acceptance after startup repair",
+  "verdict": "INVALID_RESOURCE_ZERO_SEO_ACCEPTANCE",
+  "attempt": {
+    "workflow_run_id": 37787701142,
+    "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37787701142",
+    "workflow": "Hosted guest side-panel acceptance",
+    "lane": "A",
+    "runner": "macos-15-intel",
+    "case": "guest-seo",
+    "seo_scope": "full",
+    "metadata_fixture": "airbnb",
+    "seo_resource_diagnostic": false,
+    "other_diagnostic_flags": "off",
+    "started_at": "2026-10-08T13:51:37Z",
+    "terminal_at": "2026-10-08T13:58:37Z",
+    "checkout_sha": "64b756a5332073c4e9d2d594507f0a4430d6af81"
+  },
+  "frozen_app": {
+    "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "development_workflow_run": 37754055905,
+    "development_artifact_id": 11539827040,
+    "artifact_present_nonexpired": true,
+    "artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1",
+    "prepared_tree_sha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+    "startup_repair_source": "37ca7d888269e9a780fc671c73d5eafb4bc3f7a2",
+    "repair_native_source_files_unchanged_in_frozen_app": true,
+    "focused_acceptance_run": 37787030446,
+    "focused_acceptance_sha": "37ca7d888269e9a780fc671c73d5eafb4bc3f7a2",
+    "focused_acceptance_conclusion": "success"
+  },
+  "execution": {
+    "package_and_browser_preparation_journals": "resource-valid; exit code 0",
+    "guest_journal": "docs/stabilization/resource-journals/hosted-guest-37787701142-1.jsonl",
+    "resource_invalid": true,
+    "final_resource_decision": "invalid",
+    "reason": "RESOURCE_CPU_BUSY; watchdog requested safe-boundary stop and SIGTERM",
+    "resource_stop_at": "2026-10-08T13:58:28Z",
+    "relevant_measurement": "84% then 81% sampled CPU busy on 4 logical CPUs; journal records high Chromium Helper CPU and unrelated system processes",
+    "product_targets_exercised": 0,
+    "acceptance_credit": "none"
+  },
+  "bounded_observation": {
+    "startup": "BROWSER_PANEL_CONTEXT_READY appeared at 2026-10-08T13:58:12Z: exactly one side-panel context and one expected extension URL; screenshot shows the guest panel. The repaired native startup path reached the expected panel context.",
+    "late_start_closure": "not established: no endpoint-appearance timestamp or explicit late-start attribution was retained in the uploaded result",
+    "seo_case_coverage": "none: watchdog stopped the run before a result JSON or any SEO/Airbnb target outcome was retained",
+    "resource_invalid_zero_acceptance_applied": true
+  },
+  "raw_artifact_dir": ".research/raw-seo-startup-repair-acceptance-20261008-run37787701142",
+  "raw_evidence_sha256": {
+    "hosted_guest_journal": "319e7f03cab7376294e750829e46516124908f0fdc82816beca82bd3fe5b6ba0",
+    "hosted_browser_journal": "70a95dd0604750f9fe88150dd3b5519fa51ea8b80bfcc0061e26325a07be28a7",
+    "hosted_package_journal": "9aa5aa9db069d24b170db13ad1478c97b3a2afba27e1990883a5741a7c0739bf",
+    "native_side_panel_screenshot": "1d63139057f53ee3ac982ae29568b45d67ea403a3e151bad798d84a8c3d27f1a",
+    "normal_target_after_open_screenshot": "60d95c01c8bf5fa8f0807e1aed08d2adb43b4a5532190ae0eadd54c5e3aef79c"
+  },
+  "polling": "One run only. Initial gh run watch returned HTTP 500; same handle was retained and watched at 60-second intervals to authoritative terminal failure.",
+  "limitations": [
+    "The uploaded archive also contains older hosted resource journals because the workflow upload glob collects existing matching files; only the three journals named above belong to this run.",
+    "Current full CI run 37787448900 was in progress and was not used as the focused repair gate or product evidence."
+  ]
+}
