@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "reviewed_at_utc": "2026-10-08T15:29:00Z",
+  "reviewer_scope": "Independent read-only peer review of the Records native result and input-driver repair. No browser/job/build/source rerun or source edits.",
+  "verdict_a_live_outcome": {
+    "status": "PASS_BOUNDED",
+    "acceptance": "EXT-F-4130-C02 table_list only; not T01 and not other Records actions.",
+    "evidence": [
+      "GitHub run 37799435980 is attempt 1, workflow_dispatch on main at workflow head c00a53429dbe1fea23805ad8d605cd84ab76c29a; the exact guest job and native step completed successfully.",
+      "Hosted artifact 11560830342 is named hosted-guest-37799435980-1, belongs to run 37799435980, and is unexpired. Its extracted receipt SHA-256 is ff7e09fafc2dd013aae477d5bf555fb3b82a04f1983d8a18ed2a0b6af3b6bec4, matching the retained raw receipt exactly.",
+      "Receipt pins the unpacked extension to development artifact 11556064167, CI run 37790643945, source e7b7dc1ecae946369cebb482915faf7ef792c692, version 0.2.414, and tree SHA-256 550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046. GitHub API confirms that artifact belongs to that source run and remains unexpired.",
+      "The driver checked visible textarea equality with the expected JSON, exactly one finished POST, exact deep equality of that request body, matching organization and bearer hash, HTTP 200, exactly one correlated tool_execution completion on that same request ID, and visible output JSON equality to that completion. It then asserted successful table_list output and coverage of the approved organization.",
+      "The original run 37795653439 used the same extension artifact but stopped at records_input with no execute request or visible result. Its recorded substep is unknown; it establishes the failure boundary, not the exact failed input operation.",
+      "Input-repair evidence is coherent: commit 04ba190910b8824e97fb82c4d43d3cbfe9ae7477 changed the native driver to use Command+A on macOS, assert full selection, and mark focus/selection/insertion/visible-input stages; the reported focused guard is red before repair and green after, with a mutation check. Focused CI run 37797807542 is successful at that exact commit. The successful native run used the changed driver from its workflow head, while reusing the same product artifact as the original failure."
+    ],
+    "limits": [
+      "The output establishes one successful bounded control action; it does not close D91/T01 or demonstrate other Records controls.",
+      "The raw receipt intentionally omits the actual request body and response contents. Confidence comes from the exact assertions in the driver source plus the terminal successful run and matching downloaded receipt, rather than independently inspectable payload bytes.",
+      "Backend /health/version was sampled immediately after the terminal at SHA 88fbdae6fb22e43d7bef8c4641d54372ca7af4a3; no before/after bracket surrounds the request, so exact backend source during execution is unverified."
+    ]
+  },
+  "verdict_b_driver_and_evidence_quality": {
+    "status": "PARTIAL",
+    "findings": [
+      {
+        "severity": "Important",
+        "location": "tests/browser/records-readonly-native-acceptance.mjs and .research/records-native-retest-20261008/raw/hosted-guest-37799435980-1/records-readonly-native-37799435980-1.json",
+        "finding": "The producer assertions are strong and were checked: request body is exact; completion is parsed from that same Network request ID; rendered output is deep-equal to full_result; an incorrect stage throws and prevents passed status. However, retained evidence stores only booleans/counts, not a digest of the canonical request body or completion, so a later reviewer cannot independently recompute the correlation from the receipt.",
+        "why_it_matters": "The run is credible bounded live evidence, but retained evidence is not independently replayable at the payload/result level. Preserve privacy while retaining stable digests and correlation identifiers if the acceptance needs stronger archival evidence."
+      },
+      {
+        "severity": "Minor",
+        "location": ".research/records-native-retest-20261008.json backend_health_version and secret_lifecycle",
+        "finding": "The post-run backend SHA is not a bracketed deployed-source identity. A fresh read-only GitHub secret-name listing independently confirms MATRX_PREPARE_ADMIN_CREDENTIALS_JSON and MATRX_PROFILE_APPROVED_ORGANIZATION_JSON are absent now; this cannot prove their pre-run absence or deletion timing. Secret values were not read.",
+        "why_it_matters": "Do not elevate these fields into claims about exact backend revision or complete secret lifecycle chronology."
+      }
+    ],
+    "source_scope": "The repair changes test-driver behavior and its guard; product extension source did not change. This verifies the test input path against the pinned extension artifact, not a newly built product artifact."
+  },
+  "independent_checks": {
+    "raw_receipt_matches_github_download": true,
+    "github_run_attempt_head_and_job_checked": true,
+    "github_artifact_run_ownership_and_expiry_checked": true,
+    "temporary_secret_names_absent_at_review_time": [
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "secret_values_read": false,
+    "files_changed_except_this_report": false
+  }
+}
