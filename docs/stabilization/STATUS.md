@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-08 18:29 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T18:29:01Z. 205 features · 769 cases · 1358 controls · 184 linked defect records.
+Generated 2026-10-08 18:48 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T18:48:21.432135+00:00. 205 features · 769 cases · 1358 controls · 184 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -3477,7 +3477,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 **Recorded case details and evidence:**
 
 - EXT-F-4130-T01 · admin: Partial.
-  Evidence / build / date recorded: 37806859039, ['.research/records-validation-reload-native-20261008-1614.json', '.research/records-validation-live-peer-20261008-1625.json']
+  Evidence / build / date recorded: 37825307247, ['.research/records-card-native-retest-20261008.json', '.research/records-card-diagnostics-peer-20261008.json']
 
 **Other remaining work:** Author concrete fixture-specific server procedures before this tool is executed; gated/negative permission cases required; Current source identifies a server capability, absent from the local generated executor catalog. Imported input schema and live DB binding need fresh reconciliation.
 

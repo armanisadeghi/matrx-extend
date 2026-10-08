@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T18:29:01Z",
+  "updated_at": "2026-10-08T18:48:21.432135+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -17209,7 +17209,20 @@
               "source_commit": "1e2b9b24",
               "evidence": ".research/scrape-empty-article-preparation-20261008.json",
               "status": "source-ready-independent-review-and-native-pending",
-              "detail": "Real blank-page pipeline and populated comparator focused test pass; native warm/reload fallback and captureinvariance assertions prepared. Hostedfocused37825726316 passes. Current laneB37825316724 uses earlier source and cannot prove this new Article dimension."
+              "detail": "Real blank-page pipeline and populated comparator focused test pass; native warm/reload fallback and captureinvariance assertions prepared. Hostedfocused37825726316 passes. Current laneB37825316724 uses earlier source and cannot prove this new Article dimension.",
+              "independent_review": "af6175c8",
+              "review_evidence": ".research/scrape-empty-article-peer-20261008.json"
+            }
+          ],
+          "revalidation_history": [
+            {
+              "run_id": "37825316724",
+              "mode": "guest",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": true,
+              "evidence": [".research/scrape-empty-links-native-20261008.json"],
+              "detail": "Warm emptyLinks zero rows/count, Add link and full-export invariance verified. Extension reload failed before replacementpanel, so postreload Links unverified. Earlierhistoricalresults preserved; no Article or fullcasepass."
             }
           ]
         },
@@ -64802,29 +64815,40 @@
                 ".research/records-card-native-peer-20261008.json"
               ],
               "detail": "No table_list action. Failed within card/schema/currentcontract interval before completiondiagnostics. Stable sampledbackend40750ce2; both temporarycredentials absent. Earlierboundedhistoryretained, no productverdict."
+            },
+            {
+              "run_id": "37825307247",
+              "mode": "admin",
+              "status": "partial",
+              "new_acceptance_credit": true,
+              "resource_valid": true,
+              "evidence": [".research/records-card-native-retest-20261008.json"],
+              "detail": "New bounded C03 positive search plus current C02/reload revalidation; prior intermittent failures not causally explained."
             }
           ],
           "results": {
             "admin": {
               "status": "partial",
-              "passed_subtargets": [
-                "C02 real table_list include_app_tables=true with exact input/request and correlated visible successful completion",
-                "C02 malformed limit produces correlated finished invalid_arguments failure naming limit and matching visible error",
-                "Full Page.reload restores admin identity/organization and a subsequent correlated successful table_list read"
-              ],
-              "unverified_dimensions": [
-                "C02 owned-created-table visibility",
-                "non-admin mode",
-                "remaining Records controls C01 and C03-C25"
-              ],
-              "run_id": "37806859039",
+              "run_id": "37825307247",
               "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
               "build_version": "0.2.414",
               "evidence": [
-                ".research/records-validation-reload-native-20261008-1614.json",
-                ".research/records-validation-live-peer-20261008-1625.json"
+                ".research/records-card-native-retest-20261008.json",
+                ".research/records-card-diagnostics-peer-20261008.json"
               ],
-              "release_scope": "Bounded admin C02 acceptance on frozen development0.2.414; workflow38ec4a2a differs from product sourcee7b7dc1e. All three current resource journals valid. Backend8924a396 sampled before/after only, not bound per request. No member, other-action, latest-main or Store acceptance."
+              "passed_subtargets": [
+                "C02 current include_platform_tables contract and correlated successful table_list",
+                "C02 malformed limit produces correlated visible invalid_arguments refusal naming limit",
+                "Full panel Page.reload restores admin/org and subsequent correlated successful table_list",
+                "C03 metadata_search query from returned table name yields same table ID/name/approved org in correlated completed visible output"
+              ],
+              "unverified_dimensions": [
+                "C02 owned-created-table visibility",
+                "C03 negative input and controlled owned-created-table search criteria",
+                "non-admin modes",
+                "remaining Records controls C01 and C04-C25"
+              ],
+              "release_scope": "Frozen unpublished artifact11556064167/sourcee7b7dc1e; workflowb0344e84. Zero-author source reviewer/native executor separate from implementation. Three currentjournals valid. Backend40750ce2 sampled before/after only. No full feature, Store or currentmain claim."
             }
           },
           "result_history": [
@@ -64849,6 +64873,28 @@
                 ".research/records-live-peer-20261008-1529.json"
               ],
               "release_scope": "One authenticated native read on frozen development414. Backend SHA88fbdae6fb22e43d7bef8c4641d54372ca7af4a3 sampled after run only; no request-time deployed-source binding. Not full case, latest-main or Store acceptance."
+            },
+            {
+              "mode": "admin",
+              "status": "partial",
+              "passed_subtargets": [
+                "C02 real table_list include_app_tables=true with exact input/request and correlated visible successful completion",
+                "C02 malformed limit produces correlated finished invalid_arguments failure naming limit and matching visible error",
+                "Full Page.reload restores admin identity/organization and a subsequent correlated successful table_list read"
+              ],
+              "unverified_dimensions": [
+                "C02 owned-created-table visibility",
+                "non-admin mode",
+                "remaining Records controls C01 and C03-C25"
+              ],
+              "run_id": "37806859039",
+              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/records-validation-reload-native-20261008-1614.json",
+                ".research/records-validation-live-peer-20261008-1625.json"
+              ],
+              "release_scope": "Bounded admin C02 acceptance on frozen development0.2.414; workflow38ec4a2a differs from product sourcee7b7dc1e. All three current resource journals valid. Backend8924a396 sampled before/after only, not bound per request. No member, other-action, latest-main or Store acceptance."
             }
           ],
           "native_preparation": {
@@ -64860,7 +64906,7 @@
               ".research/records-contract-fresh-peer-20261008.json"
             ],
             "scope": "C03 metadata_search via actual Tools UI, query from prior post-reload table_list result, require same table ID/name/approved organization in correlated finished visible response. Existing C02 malformed-input/reload guards retained. Current optional flag schema checked before running.",
-            "remaining": "Diagnose completion/visible-output correlation boundary from37819517326 before another attempt. C03 remains unverified; controlled owned-created-table/search criteria, negative input, all other actions and non-admin modes unchanged."
+            "remaining": "Positive C03 verified by37825307247; owned-controlled-table and negative search criteria, other controls and roles remain."
           }
         },
         {
