@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "lane": "settings397-resource-peer",
+  "date": "2026-10-07",
+  "workflow": {
+    "run_id": 37726731642,
+    "job_id": 113146494940,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37726731642",
+    "head_sha": "bd64e8cf64bd35168f70218131ddee6735840856",
+    "branch": "main",
+    "event": "workflow_dispatch",
+    "status": "completed",
+    "conclusion": "failure",
+    "runner": "macos-15-intel / X64",
+    "live_metadata_verified": true,
+    "live_artifact": {
+      "id": 11528207653,
+      "name": "hosted-guest-37726731642-1",
+      "digest": "sha256:06147861a78daf2fe7a75f87a4f8443e209e540cc7475207665a64bea3330aad"
+    }
+  },
+  "verdict_a_behavior": {
+    "verdict": "UNVERIFIED",
+    "acceptance_credit": 0,
+    "scope": "16 guest settings cases: EXT-F-1003-T04, T10, T13, T16, T19, T22, T31, T34, T37, T46, T63, T64, T70, T73, T76, and T92.",
+    "evidence": "Nested receipt settings-local-controls-acceptance.json lists all 16 as unverified with empty steps; each only records setup completed=unverified and owned_cdp_endpoint_timeout. The job failed at 'Exercise the selected Chrome side-panel case'; no side panel was reached. Settings replacement, Privacy toggle behavior/storage and downstream consumers, reload, baseline restoration, extension reload, and guest-denial behavior were not exercised.",
+    "interpretation": "This is a failed acceptance attempt caused by setup failure, not evidence of a product behavior failure or pass. No product case verdict can be inferred."
+  },
+  "verdict_b_evidence_quality": {
+    "verdict": "PASS_FOR_PROVENANCE_AND_RESOURCE_GATE; LIMITED_FOR_CAUSAL_ATTRIBUTION",
+    "receipt_sha256": "06f7d4eb3ae3217f7de71253bbb41aade7b3152af47f246031263bf4f91b01d4",
+    "driver_at_head_sha256": "0b5963f4af06970aaf3428a1c7f78f33b4af1f27da7765cff317a137551c49b9",
+    "workflow_at_head_sha256": "7d53dcc41676c898b21eb504f0a4d4623c18edced97c375cb9980aed6a7573f3",
+    "current_run_journals": [
+      {
+        "file": ".research/settings397-native-20261007-originals/resource-journals/hosted-package-37726731642-1.jsonl",
+        "sha256": "bcafc5a4b828220bc44990bbe24b1c79ddf9334613af744cd0e2ae3b49630128",
+        "events": 4,
+        "decision": "valid"
+      },
+      {
+        "file": ".research/settings397-native-20261007-originals/resource-journals/hosted-browser-37726731642-1.jsonl",
+        "sha256": "bc90b17448c1c99885258dbfde5d44e2c8ed51dc1c5e875bf12bc9f572f05a0f",
+        "events": 4,
+        "decision": "valid"
+      },
+      {
+        "file": ".research/settings397-native-20261007-originals/resource-journals/hosted-guest-37726731642-1.jsonl",
+        "sha256": "e278db5a724e84a795aa68db8206b9cae72c674678ede085300b37f564d12681",
+        "events": 6,
+        "decision": "invalid",
+        "child_exit_code": 1,
+        "wrapper_exit_code": 3
+      }
+    ],
+    "resource_attribution": "Guest journal first admitted the run (12.6 GiB available, load 1.17, CPU busy 0.0129), then recorded RESOURCE_CPU_PENDING at 98% busy and one-minute load 11.58 on four logical CPUs. Its process snapshot shows Chromium at 84.8%, Chromium helpers at 40.1%, 17%, 15.2%, plus system processes including duetexpertd at 28.4%, lsd at 17.8% and 16.8%, usernoted at 13.5%, and mds at 13.3%. Chromium was a material contributor in this snapshot, but the snapshot is aggregate/instantaneous and includes unrelated system load. It does not prove CPU pressure caused the earlier owned_cdp_endpoint_timeout.",
+    "hash_method": "SHA-256 recomputed over the extracted nested receipt and all three extracted current-run journals. Driver and workflow hashes recomputed from the run's exact head commit. Live GitHub run/job metadata and artifact ID/name/digest were queried read-only; artifact digest matches the recorded downloaded ZIP digest."
+  },
+  "distinctions": {
+    "setup": "CDP endpoint timeout before interaction; setup failure, not product behavior failure.",
+    "resource": "Guest resource gate finalized invalid after admission; independent reason to invalidate this acceptance evidence.",
+    "product": "Unverified; neither pass nor fail established.",
+    "acceptance": "Failed run receives zero acceptance credit regardless of causal uncertainty about the setup timeout."
+  },
+  "limits": [
+    "No native retry, build, browser, tests, or source edits were performed.",
+    "Artifact contents were reviewed from the extracted originals already present in the repository; artifact provenance was cross-checked against live GitHub metadata and matching digest.",
+    "No claim is made about overall product or project health."
+  ]
+}
