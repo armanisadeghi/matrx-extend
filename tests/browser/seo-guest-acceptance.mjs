@@ -14,6 +14,7 @@ import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs
 import { withClipboardReadPermission } from './clipboard-observation.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { verifyGuestCopy } from './seo-guest-clipboard.mjs';
+import { verifyManualRecapture, verifySocialClipboard } from './seo-new-coverage-oracle.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '..', '..');
@@ -42,7 +43,7 @@ const report = {
   targets: [],
   deferred: [
     { case: 'T01', part: 'one audit per URL and slow-old-result race' },
-    { case: 'T02', part: 'fresh capture and stale advice replacement after re-audit' },
+    { case: 'T02', part: 'stale advice replacement and failure report after re-audit' },
     { case: 'T03', part: 'unreachable HTTP(S), other restricted schemes, and reload dimension' },
     { case: 'T04-T06,T08', part: 'database save, history, and diff flows' },
     {
@@ -53,7 +54,8 @@ const report = {
       case: 'T09',
       part: 'broken social preview image and detail controls beyond the bounded next batch; optional hreflang/schema doors remain unverified when their live source data is absent',
     },
-    { case: 'T10-T14', part: 'recommendations, Chat staging, and social snippet actions' },
+    { case: 'T10-T13', part: 'recommendations and Chat staging' },
+    { case: 'T14', part: 'social snippet behavior beyond the two controlled public page states' },
     { case: 'all', part: 'member and admin modes' },
   ],
   last_safe_stage: 'before_owned_profile',
@@ -264,6 +266,86 @@ async function pageEvidence(page) {
     title: document.title.trim(),
     heading: document.querySelector('h1')?.textContent?.trim() ?? null,
   }));
+}
+
+async function publicSocialSource(page) {
+  return page.evaluate(() => {
+    const meta = (selector) =>
+      document.querySelector(selector)?.getAttribute('content')?.trim() || null;
+    return {
+      url: location.href,
+      title: document.title.trim(),
+      description: meta('meta[name="description"]'),
+      canonical: document.querySelector('link[rel~="canonical"]')?.href ?? null,
+      social: {
+        title: !!meta('meta[property="og:title"]'),
+        description: !!meta('meta[property="og:description"]'),
+        url: !!meta('meta[property="og:url"]'),
+        type: !!meta('meta[property="og:type"]'),
+        card: !!meta('meta[name="twitter:card"]'),
+        image: !!meta('meta[property="og:image"]'),
+      },
+    };
+  });
+}
+
+async function socialCopyState(panel) {
+  return evaluate(
+    panel,
+    `(() => {
+    ${SEO_SCOPE}
+    const buttons = [...(pane?.querySelectorAll('button[title="Copy the meta tags this page is missing"]') ?? [])];
+    return { scopeValid: linked && tab?.getAttribute('aria-selected') === 'true',
+      buttonCount: buttons.length,
+      visible: buttons.length === 1 && buttons[0].getBoundingClientRect().width > 0 };
+  })()`,
+  );
+}
+
+async function copySocialTags({ panel, browserSession, panelTarget }, source, phase) {
+  const state = await observe(`social_${phase}_copy_preflight`, () => socialCopyState(panel));
+  assert.deepEqual(
+    { scopeValid: state.scopeValid, buttonCount: state.buttonCount, visible: state.visible },
+    { scopeValid: true, buttonCount: 1, visible: true },
+    'social snippet has one visible action in active SEO pane',
+  );
+  enter(`social_${phase}_trusted_copy_click`);
+  await click(panel, 'title', 'Copy the meta tags this page is missing');
+  await waitObserved(
+    `social_${phase}_copy_feedback`,
+    () =>
+      evaluate(
+        panel,
+        `(() => {
+    ${SEO_SCOPE}
+    const button = pane?.querySelector('button[title="Copy the meta tags this page is missing"]');
+    return linked && !!button?.querySelector('svg.lucide-check');
+  })()`,
+      ),
+    (copied) => copied === true,
+  );
+  await panel.send('Page.bringToFront');
+  const clipboardObservation = {};
+  const actual = await withClipboardReadPermission({
+    browserSession,
+    panel,
+    panelUrl: panelTarget.url,
+    evidence: clipboardObservation,
+    read: () => evaluate(panel, 'navigator.clipboard.readText()'),
+  });
+  assert.equal(
+    clipboardObservation.clipboardObservationPermissionRestored,
+    true,
+    'clipboard observation permission restored',
+  );
+  const verified = verifySocialClipboard(actual, source);
+  target('T14', `guest_social_missing_tags_clipboard_${phase}`, {
+    ...verified,
+    trustedCopyClick: true,
+    sourceTitleMatches: actual.includes(source.title),
+    clipboardReadback: true,
+    observationPermissionRestored: true,
+  });
 }
 
 // Expected detail values come from the public tab's DOM, independently of the
@@ -1361,6 +1443,92 @@ try {
         sourceUrl: NEXT_DETAIL_PAGE,
         doorStatus: report.targets.at(-1).status,
       });
+
+      // A controlled DOM edit in the owned public tab gives re-audit a
+      // different, independently observable answer without stubbing capture.
+      // Restore the page before leaving, including if a native assertion fails.
+      enter('controlled_public_page_navigation');
+      await page.goto(PAGES[0], { waitUntil: 'load' });
+      const originalSocial = await observe('controlled_public_social_source', () =>
+        publicSocialSource(page),
+      );
+      await waitObserved(
+        'controlled_public_audit_wait',
+        () => seoContent(panel),
+        (state) =>
+          state?.scopeValid &&
+          state.title === originalSocial.title &&
+          state.reAudit &&
+          !state.error,
+        30000,
+      );
+      let mutation = null;
+      try {
+        await copySocialTags(
+          { panel, browserSession, panelTarget },
+          originalSocial,
+          'before_reaudit',
+        );
+        mutation = await page.evaluate(() => {
+          const title = document.title;
+          const existing = document.querySelector('meta[name="description"]');
+          const description = existing?.getAttribute('content') ?? null;
+          const created = !existing;
+          const node = existing ?? document.createElement('meta');
+          if (created) {
+            node.setAttribute('name', 'description');
+            document.head.append(node);
+          }
+          document.title = `${title} — updated`;
+          node.setAttribute('content', `${title} updated page description`);
+          return { title, description, created };
+        });
+        const changedSocial = await observe('controlled_public_changed_source', () =>
+          publicSocialSource(page),
+        );
+        const stale = await observe('controlled_public_before_reaudit', () => seoContent(panel));
+        assert.equal(stale.title, originalSocial.title, 'old native audit remains before Re-audit');
+        enter('controlled_public_trusted_reaudit_click');
+        await click(panel, 'button', 'Re-audit');
+        const refreshed = await waitObserved(
+          'controlled_public_reaudit_result',
+          () => seoContent(panel),
+          (state) =>
+            state?.scopeValid &&
+            state.title === changedSocial.title &&
+            state.reAudit &&
+            !state.error,
+          30000,
+        );
+        const recapture = verifyManualRecapture(originalSocial, changedSocial, stale, refreshed);
+        target('T02', 'guest_reaudit_captures_changed_page_metadata', {
+          ...recapture,
+          trustedReauditClick: true,
+        });
+        await copySocialTags(
+          { panel, browserSession, panelTarget },
+          changedSocial,
+          'after_reaudit',
+        );
+      } finally {
+        if (mutation && page.url() === originalSocial.url) {
+          await page.evaluate(({ title, description, created }) => {
+            document.title = title;
+            const node = document.querySelector('meta[name="description"]');
+            if (created) node?.remove();
+            else if (description === null) node?.removeAttribute('content');
+            else node?.setAttribute('content', description);
+          }, mutation);
+        }
+      }
+      const restoredSocial = await observe('controlled_public_source_restored', () =>
+        publicSocialSource(page),
+      );
+      assert.deepEqual(
+        restoredSocial,
+        originalSocial,
+        'owned public DOM restored after SEO acceptance',
+      );
 
       // Optional bounded continuation for public sources whose HTTP markup
       // exposes both metadata groups. The default Wikipedia run is unchanged.

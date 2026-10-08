@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "status": "READY_FOR_FRESH_PEER_AND_NATIVE_DISPATCH",
+  "scope": "Guest native SEO acceptance increment on the owned public tab; no inventory or product status is changed by source preparation.",
+  "baseline": {
+    "native_run": "37731560399",
+    "existing_passed_subtargets": 19,
+    "existing_cases": ["T01", "T02", "T03", "T07", "T09"],
+    "peer": ".research/seo397-native-peer-20261007.json"
+  },
+  "new_executable_criteria": [
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "guest_reaudit_captures_changed_page_metadata",
+      "oracle": "Read title and description from the owned public tab, alter both in its live DOM, prove the old title is still shown before a trusted native Re-audit click, then require the native SEO title to become the changed title with the action settled and no error. The changed description is independently checked through the T14 clipboard after re-audit.",
+      "fixture": "https://example.org/ in the owned tab; its original title and description are restored in finally."
+    },
+    {
+      "case_id": "EXT-F-1008-T14",
+      "subtargets": [
+        "guest_social_missing_tags_clipboard_before_reaudit",
+        "guest_social_missing_tags_clipboard_after_reaudit"
+      ],
+      "oracle": "On each of two distinct source states, require one visible social copy action in the active SEO pane, click it through native pointer input, observe copy feedback, read the actual clipboard under a temporary permission that is restored, and compare every copied meta line to the independently read public DOM. A stale pre-change snippet must fail the post-change state.",
+      "fixture": "The same public tab before and after the controlled title and description change."
+    }
+  ],
+  "source_validation": {
+    "green": "node --test tests/browser/seo-new-coverage-oracle.test.mjs: 2 pass, 0 fail; node --check tests/browser/seo-guest-acceptance.mjs passed; biome check on the four edited source/package files passed after formatting.",
+    "red": [
+      "Scratch-copy mutant replacing expected social tags with a constant: exit 1, social clipboard test failed.",
+      "Scratch-copy mutant removing changed-title assertion: exit 1, manual recapture test failed."
+    ],
+    "automatic_ci": "The new oracle test is included in package.json test:focused-acceptance, which existing focused-acceptance and ci workflows execute on tests/** changes."
+  },
+  "native_execution": "PENDING_ROOT_REVIEW_AND_DISPATCH",
+  "limitations": [
+    "Source green and scratch mutants do not prove that the extension passed the new criteria; only a native run can add observed subtargets.",
+    "Controlled in-tab DOM mutation verifies the live capture path but does not verify server-controlled page changes or stale AI advice.",
+    "Guest only. Member/admin, full T02 and T14 cases, and full SEO feature remain unverified.",
+    "The existing hosted guest route already points to this driver; no native run has been dispatched for this increment."
+  ],
+  "owned_paths": [
+    "tests/browser/seo-guest-acceptance.mjs",
+    "tests/browser/seo-new-coverage-oracle.mjs",
+    "tests/browser/seo-new-coverage-oracle.test.mjs",
+    "package.json",
+    ".research/seo-new-coverage-20261008.json"
+  ]
+}
