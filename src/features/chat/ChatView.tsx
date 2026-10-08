@@ -4,7 +4,8 @@ import { RenderBlockView } from '@/components/kinds/RenderBlockView';
 import { Markdown } from '@/components/markdown';
 import { AgentApprovalCard } from '@/features/chat/AgentApprovalCard';
 import { AgentAskUserCard } from '@/features/chat/AgentAskUserCard';
-import { AgentCaptureCredentialCard } from '@/features/chat/AgentCaptureCredentialCard';
+import { CredentialCaptureCard } from '@ai-matrx/chat/agents/ui-first-tools/ui/CredentialCaptureCard';
+import { captureSpec, dismissCapture, saveCapture } from '@/lib/credentials/capture-card-host';
 import { AgentVariablesPanel } from '@/features/chat/AgentVariablesPanel';
 import { ContextRulesComposerChip } from '@/features/chat/ContextRulesComposerChip';
 import { CopyConversationButton } from '@/features/chat/CopyConversationButton';
@@ -665,7 +666,12 @@ export function ChatView() {
             ))}
 
             {pendingCaptures.map((req) => (
-              <AgentCaptureCredentialCard key={req.callId} req={req} />
+              <CredentialCaptureCard
+                key={req.callId}
+                spec={captureSpec(req)}
+                save={(values) => saveCapture(req, values)}
+                dismiss={(reason) => dismissCapture(req, reason)}
+              />
             ))}
           </div>
         )}
