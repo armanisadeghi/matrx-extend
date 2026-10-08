@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-08 00:48 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T00:48:26.547746+00:00. 205 features · 769 cases · 1351 controls · 160 linked defect records.
+Generated 2026-10-08 01:30 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T01:30:07.304264+00:00. 205 features · 769 cases · 1351 controls · 160 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -1652,8 +1652,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 - EXT-F-2013-T02 · member: Partial. Hosted local-development-ZIP 0.2.205 nonadmin sign-in, saved organization presence and one real composer answer pass. Queue, interrupt, Stop, voice, keyboard variations and reload dimensions remain unverified; this does not pass the full case.
   Evidence / build / date recorded: 37182939504, .research/hosted-member205-final.json
-- EXT-F-2013-T10 · guest: Pass. Bounded public0.2.205 adaptedunpackedCRX: opening, SAME-conversation follow-up and post-reload newconversation all actualHTTP200, distinctgrounded terminal_answer; wire samefingerprint/is_new=false then newfingerprint/is_new=true. Before/afterserver624b0cee540b8d6d957ac008af8773cd285bd29c stable; exactartifactunchanged and all3journalsvalid. Rootreadoriginalreceipt,alljournals,followupscreenshot. Not actualStoreinstalled/returningallowance or wholeChat.
-  Evidence / build / date recorded: 37356729984, .research/guest-turn-boundary-native.json
+- EXT-F-2013-T10 · guest: Pass. Independent bounded PASS: fresh signed-out publicCRX unpacked in actual native sidepanel; three distinct grounded terminal answers, HTTP200 each. Same-conversation follow-up keeps wire fingerprint/is_new=false; new conversation after panel reload changes fingerprint/is_new=true. Runtime extension ID observed, exacttree unchanged, server before/after stable, all3 current resource journals valid. Observer starts after panel load. Not StoreUI installation, returning allowance remedy, member, or wholeChat.
+  Evidence / build / date recorded: 37712132094, ['.research/public-guest-arm-retest-20261007.json', '.research/public-arm-acceptance-peer-20261007.json']
 - EXT-F-2013-T12 · guest: Fail. Historical Store-installed176 failed genericerror/Retry at liveHTTP402. Exact205candidate passed fresh/returning exhaustedguest remedy/noRetry;205 is now published. Public205CRX fresh/reload answers passed37267858358 but this did not exercise allowance402 or actualStoreinstalledprofile; retain open installed-acceptance requirement.
   Evidence / build / date recorded: urgent-live-guest-20261004-01, .research/urgent-live-guest-20261004.json
 

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T00:48:26.547746+00:00",
+  "updated_at": "2026-10-08T01:30:07.304264+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -29857,9 +29857,15 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "37356729984",
-              "evidence": ".research/guest-turn-boundary-native.json",
-              "detail": "Bounded public0.2.205 adaptedunpackedCRX: opening, SAME-conversation follow-up and post-reload newconversation all actualHTTP200, distinctgrounded terminal_answer; wire samefingerprint/is_new=false then newfingerprint/is_new=true. Before/afterserver624b0cee540b8d6d957ac008af8773cd285bd29c stable; exactartifactunchanged and all3journalsvalid. Rootreadoriginalreceipt,alljournals,followupscreenshot. Not actualStoreinstalled/returningallowance or wholeChat."
+              "run_id": "37712132094",
+              "build_version": "0.2.205",
+              "build_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+              "server_sha": "1d535d990e3d85eaa24e526a531e49951cfacd07",
+              "evidence": [
+                ".research/public-guest-arm-retest-20261007.json",
+                ".research/public-arm-acceptance-peer-20261007.json"
+              ],
+              "detail": "Independent bounded PASS: fresh signed-out publicCRX unpacked in actual native sidepanel; three distinct grounded terminal answers, HTTP200 each. Same-conversation follow-up keeps wire fingerprint/is_new=false; new conversation after panel reload changes fingerprint/is_new=true. Runtime extension ID observed, exacttree unchanged, server before/after stable, all3 current resource journals valid. Observer starts after panel load. Not StoreUI installation, returning allowance remedy, member, or wholeChat."
             }
           },
           "defect_verification": {
@@ -29929,6 +29935,17 @@
                 "detail": "Google public0.2.205 CRX, verified hash/identity and immutable adapted unpacked tree, completed fresh signed-out and post-panel-reload grounded answers; both realHTTP200; all3resourcejournals valid with zero unsafeevents. Headless nativeSIDE_PANEL; not actualStoreinstalled lifecycle or exhaustiveChat. Same-conversation follow-up and current-backend pair explicitly remain unverified; source7f0a02d2 awaits fresh independent review/full CI/guarded browser run. Existing first+reload proof retained, no new pass."
               },
               "superseded_at": "2026-10-05T18:43:31.038094+00:00"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "37356729984",
+                "evidence": ".research/guest-turn-boundary-native.json",
+                "detail": "Bounded public0.2.205 adaptedunpackedCRX: opening, SAME-conversation follow-up and post-reload newconversation all actualHTTP200, distinctgrounded terminal_answer; wire samefingerprint/is_new=false then newfingerprint/is_new=true. Before/afterserver624b0cee540b8d6d957ac008af8773cd285bd29c stable; exactartifactunchanged and all3journalsvalid. Rootreadoriginalreceipt,alljournals,followupscreenshot. Not actualStoreinstalled/returningallowance or wholeChat."
+              },
+              "superseded_at": "2026-10-08T01:30:07.304264+00:00",
+              "reason": "Fresh independently reviewed publicCRX three-turn browser check on current observed live server revision."
             }
           ]
         },
