@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T03:03:29.534526+00:00",
+  "updated_at": "2026-10-08T03:08:32.579245+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -14902,7 +14902,8 @@
           ],
           "steps": ["Toggle Sync scroll with live page while article pane scrolls."],
           "expected": ["On state follows live page scroll; toggle off stops synchronization."],
-          "dimensions": ["warm", "reload"]
+          "dimensions": ["warm", "reload"],
+          "linked_defects": ["EXT-D-0163"]
         },
         {
           "id": "EXT-F-1007-T08",

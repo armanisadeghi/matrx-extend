@@ -1,0 +1,36 @@
+{
+  "id": "EXT-D-0163",
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T07"],
+  "surface": "Scrape / Article scroll synchronization",
+  "auth_mode": "guest",
+  "title": "Native scroll-sync off check loses both sync controls and resets article position",
+  "severity": "S2: recorded scroll-sync procedure fails and blocks remaining batch; product versus driver impact under investigation",
+  "priority": "P1",
+  "state": "open",
+  "owner": "root/scrape_scroll_native_diagnosis",
+  "preconditions": [
+    "Use original frozen development CI37698216289/artifact11516342905/source52487361/version0.2.391 with current reviewed guest Scrape driver.",
+    "Owned disposable guest profile, narrow360px panel, ARM macos-15, valid resource permits and owned intake/referrals fixture."
+  ],
+  "reproduction": [
+    "Run hosted guest-scrape-development, laneA, guest, with the stated development run/artifact IDs; original workflow checkoutf79fbe75/run37720057690.",
+    "Open Article and enable Sync scroll with live page; trusted page wheel yields pageY650 and article scrollTop310.",
+    "Disable synchronization through the native control, then reverse page wheel.",
+    "Observe pageY0 and article scrollTop0 with neither sync control found; driver fails scrape_guest_scroll_sync_mismatch before T09 starts."
+  ],
+  "expected": "After synchronization is disabled, page scroll changes do not move the article pane; controls and actual Scrape context remain available.",
+  "actual": "Article position changed to0 and both control queries were absent after the off/reverse sequence. Underlying product versus driver/context cause is unknown.",
+  "evidence": [".research/scrape-guest-new-native-20261007.json"],
+  "resource_verdict": "All three current journals valid; acceptance child1/resourceInvalidfalse. Not resource exhaustion.",
+  "transition_history": [
+    {
+      "at": "2026-10-08T03:08:32.579245+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "New native warm T07 mismatch; independent evidence review and causal diagnosis assigned."
+    }
+  ],
+  "closure_requirement": "Establish cause without weakening T07; causal source guard, independent review, then resource-valid original warm and reload native on/off proof plus surrounding independent Scrape copy checks.",
+  "next_action": "Independent native review and source/context diagnosis; preserve T09 as not-run, and isolate independent cases only after restoring proven guest/Scrape preconditions."
+}
