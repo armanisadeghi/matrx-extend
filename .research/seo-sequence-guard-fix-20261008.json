@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0170",
+  "review_addressed": ".research/seo-sequence-peer-20261008.json",
+  "status": "review_ready_source_guard",
+  "finding": "The first causal test exercised runSeoCaseSequence with synthetic callbacks but did not constrain the native driver's invocation. A callback reversal or helper bypass in the driver could remain green.",
+  "change": {
+    "file": "tests/browser/seo-driver-sequence.test.mjs",
+    "boundary": "The parsed exercisePanel callback passed to the actual runNativeSidepanelQa invocation in tests/browser/seo-guest-acceptance.mjs",
+    "assertions": [
+      "Exactly one awaited runSeoCaseSequence invocation is a direct statement in the native panel callback.",
+      "Its first executable callback owns the controlled social copy and changed-metadata recapture work.",
+      "Its second executable callback owns the manual public source-stability assertion and T09 detail targets.",
+      "The panel callback contains one copy/recapture sequence, two social-copy calls and one manual source-stability assertion, so duplicate early work is not hidden outside the ordered phases."
+    ],
+    "mutation_proof": {
+      "reversed_callbacks": "Rejected by the controlled-phase assertion.",
+      "bypassed_sequence": "Rejected because the native panel callback no longer contains the required awaited sequence.",
+      "untouched_driver": "Accepted."
+    }
+  },
+  "verification": {
+    "focused": "node --test tests/browser/seo-driver-sequence.test.mjs tests/browser/seo-new-coverage-oracle.test.mjs tests/browser/clipboard-observation.test.mjs: passed",
+    "syntax": "node --check tests/browser/seo-driver-sequence.test.mjs: passed",
+    "format": "pnpm exec biome check on the new guard: passed",
+    "limits": "This is a source-boundary regression guard. No native/browser or product behavior is claimed. The existing EXT-D-0170 native and D169 product verification limits remain."
+  }
+}
