@@ -53,6 +53,7 @@ function runDriver({
   completionResult = tableResult('appointments'),
   visibleChangesAfterWait = false,
   driverSource = callback,
+  platform = 'darwin',
 } = {}) {
   const events = new EventEmitter();
   const active = new Set();
@@ -62,6 +63,8 @@ function runDriver({
     action: 'table_list',
     args: { organization_id: organizationId, include_app_tables: true, limit: 50 },
   };
+  const expectedText = JSON.stringify(expectedInput);
+  const editor = { value: '{"action":"old"}', focused: false, start: 0, end: 0 };
   const panel = {
     on(name, listener) {
       events.on(name, listener);
@@ -72,12 +75,27 @@ function runDriver({
       };
     },
     async send(name, options = {}) {
-      if (
-        name === 'Network.enable' ||
-        name === 'Input.dispatchKeyEvent' ||
-        name === 'Input.insertText'
-      )
+      if (name === 'Network.enable') return {};
+      if (name === 'Input.dispatchKeyEvent') {
+        if (
+          options.type === 'keyDown' &&
+          options.key === 'a' &&
+          options.modifiers === (platform === 'darwin' ? 4 : 2) &&
+          options.commands?.includes('selectAll') &&
+          editor.focused
+        ) {
+          editor.start = 0;
+          editor.end = editor.value.length;
+        }
         return {};
+      }
+      if (name === 'Input.insertText') {
+        assert.equal(editor.focused, true, 'trusted input requires focus');
+        editor.value =
+          editor.value.slice(0, editor.start) + options.text + editor.value.slice(editor.end);
+        editor.start = editor.end = editor.value.length;
+        return {};
+      }
       if (name === 'Network.getResponseBody') {
         assert.equal(options.requestId, 'records-execute');
         return {
@@ -97,14 +115,17 @@ function runDriver({
   };
   const outputState = async () => ({ visible: true, raw: JSON.stringify(visibleResult) });
   const evaluate = async (_panel, script) => {
-    if (
-      script.includes('document.activeElement===t') ||
-      script.includes("querySelector('textarea')?.value")
-    )
+    if (script.includes('t.focus()')) {
+      editor.focused = true;
       return true;
+    }
+    if (script.includes('selectionStart'))
+      return editor.focused && editor.start === 0 && editor.end === editor.value.length;
+    if (script.includes("querySelector('textarea')?.value")) return editor.value === expectedText;
     return true;
   };
   const click = async () => {
+    assert.equal(editor.value, expectedText, 'Run requires the trusted Records input');
     const requestId = 'records-execute';
     events.emit('Network.requestWillBeSent', {
       requestId,
@@ -128,7 +149,7 @@ function runDriver({
     report,
     approved,
     REPO: '/repo',
-    process: { env: {} },
+    process: { env: {}, platform },
     signInRecordsAdmin: signIn,
     runShowcaseOrganizationCheckpoint: async () => {},
     waitFor,
@@ -173,6 +194,21 @@ test('actual Records driver forwards sign-in stages and accepts a correlated req
   });
   assert.equal(scenario.active.size, 0, 'CDP listeners must be removed');
   assert.doesNotMatch(JSON.stringify(scenario.report), /admin-session|appointments|Bearer/);
+});
+
+test('Records input replaces the existing draft through trusted selection on Linux', async () => {
+  const scenario = runDriver({ platform: 'linux' });
+  await scenario.run();
+  assert.equal(scenario.report.result?.action, 'table_list');
+});
+
+test('Records input rejects an unselected draft before inserting or running', async () => {
+  const changed = callback.replace("commands: ['selectAll'],", '');
+  assert.notEqual(changed, callback);
+  const scenario = runDriver({ driverSource: changed });
+  await assert.rejects(scenario.run(), /records_input_selection_missing/);
+  assert.equal(scenario.report.request, null);
+  assert.equal(scenario.report.result, null);
 });
 
 test('actual Records driver refuses a different execute bearer and cleans up listeners', async () => {
