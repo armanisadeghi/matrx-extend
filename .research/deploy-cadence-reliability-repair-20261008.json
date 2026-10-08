@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-08T10:06:17Z",
+  "scope": "Repair two independent findings against the aidream deploy-cadence watch; no real workflow dispatch, build, release, deployment, or product-health observation",
+  "reviewed_finding_source": ".research/deploy-cadence-reliability-peer-20261008.json",
+  "aidream_commit": "441b5e4b8c750ab984a8bdb73cafbddd40902c31",
+  "owned_aidream_paths": [
+    ".github/workflows/deploy-cadence-watch.yml",
+    "tests/test_deploy_cadence_watch.py",
+    "scripts/FEATURE.md"
+  ],
+  "repairs": {
+    "test_only_classification": "Both main push paths-ignore and Git runtime pathspec now exclude root and nested conftest.py. The existing schedule, 45-minute breach, no-active-deploy check, immutable release_ref, and watch concurrency remain unchanged.",
+    "behavioral_guard": "The test extracts and runs the workflow's actual shell run body in a temporary Git repository with only date and gh as external doubles. It covers healthy recent dispatch, older code than last deploy start, active deploy, dry-run, eligible breach, immutable selected SHA, new issue, and existing-issue comment instead of duplicate issue creation. No GitHub endpoint is contacted.",
+    "documentation": "The owning feature document now distinguishes deploy-workflow start cadence from production movement."
+  },
+  "red_green": {
+    "old_classifier": "Both new classification checks fail against the previous workflow: conftest.py is absent from push exclusions and the Git pathspec selects it as latest runtime commit.",
+    "wrong_branch_mutant": "A scratch copy replacing only the real breach condition with `if true; then` produced 2 failures (healthy and stale-code) and 4 passes in the six-scenario actual-shell guard. Shared source was untouched.",
+    "restored": "Focused pytest: 10 passed; ruff check and format check passed; git diff --check passed."
+  },
+  "bounded_limit": "The watch reads newest deploy.yml startedAt without dispatch inputs. GitHub CLI run-list fields and REST workflow-run metadata expose event/title/jobs but not trusted workflow_dispatch input values; verify-only, candidate-report-only, and browser-image-only runs can reset this clock. A job/step inspection cannot prove ECS movement at run start, so this repair preserves the existing dispatch-start policy and explicitly documents that live deployed SHA and health must be checked separately. A newly dispatched run may also take time to appear in run-list; the active-run guard and workflow serialization are retained but are not a transactional deduplication proof.",
+  "primary_sources": [
+    "https://cli.github.com/manual/gh_run_list",
+    "https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2026-03-10"
+  ],
+  "verdict": "SOURCE_CANDIDATE_READY_FOR_FRESH_PEER; LIVE_WAKE_AND_DEPLOY_UNVERIFIED"
+}
