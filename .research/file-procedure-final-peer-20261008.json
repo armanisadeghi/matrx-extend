@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "artifact_type": "source-procedure-final-peer-review",
+  "reviewed_commit": "c25190e6",
+  "reviewed_file": ".research/file-tool-procedures-20261008.json",
+  "prior_review": ".research/file-procedure-peer-20261008.json",
+  "scope": "Independent source and contract review only. No runtime, browser, build, test, inventory, or source changes.",
+  "verdicts": {
+    "A_procedure_accuracy_executability": "ADDRESSED. All four original procedure defects are corrected in the proposal. The procedures remain not_executable where required fixtures or exact cleanup proof are absent; no runtime success is claimed.",
+    "B_provenance_limits": "ADDRESSED. Existing case/control IDs, modes, and dimensions are retained. Source-derived/manual-handler evidence is separated from runtime behavior and dispatcher permissions; permission dimensions remain explicitly unverified. No executable fixture is invented."
+  },
+  "findings": [
+    {
+      "case": "EXT-F-4070-T01",
+      "finding": "ADDRESSED",
+      "source_proof": "ToolsView initializes surface to canonical (src/features/tools/ToolsView.tsx:125) and filters internal handlers from that view (:142); file_upload is an internal form action, while upload_file is canonical (src/lib/tools/categories.ts:459-480; src/lib/tools/handlers/forms.ts:408-470). The revised step switches to Internal or All before searching. The local form-controls fixture has no file input (tests/browser/fixtures/form-controls.html).",
+      "executability": "Correctly remains not_executable until an owned file-input fixture with observable events and reset exists. The synthetic base64 payload decodes to the asserted 26 bytes."
+    },
+    {
+      "case": "EXT-F-4157-T01",
+      "finding": "ADDRESSED",
+      "source_proof": "upload_file requires tab_id/ref/file_ids, activates the tab, and rejects a missing/non-file input before setting files (src/lib/tools/handlers/canonical.ts:812-867). The revised proposal requires an existing exact owned MediaRef and cleanup path; it does not claim the handler creates one.",
+      "executability": "Correctly remains not_executable without the owned ref fixture, known MediaRef, and verified exact-ID cleanup."
+    },
+    {
+      "case": "EXT-F-4158-T01",
+      "finding": "ADDRESSED",
+      "source_proof": "drop_file returns No drop target only when the selector/coordinate resolves to a non-HTMLElement; any present HTMLElement receives synthetic events and yields ok:true without listener-acceptance checking (src/lib/tools/handlers/canonical.ts:923-954). Revised negative branch uses a run-unique ref verified absent from the fixture DOM and expects no-target refusal.",
+      "executability": "Correctly remains not_executable pending an event-observing drop-zone fixture, owned MediaRef, and exact cleanup path."
+    },
+    {
+      "case": "EXT-F-4159-T01",
+      "finding": "ADDRESSED",
+      "source_proof": "The tab_id path uploads before extraction; its catch returns only an error, while successful output includes file_id (src/lib/tools/handlers/canonical.ts:983-1029; upload route src/lib/api/routes/files.ts:109-167). Revised procedure requires at least three pages, limits each role/build to one ingestion, uses its returned file_id for page-range and past-last-page calls, and blocks ingestion until independent owner-scoped enumeration and exact cleanup include failure cases.",
+      "executability": "Correctly remains not_executable absent a qualifying PDF fixture and demonstrated enumeration/cleanup route. Range refusal remains explicitly unverified."
+    },
+    {
+      "case": "all four",
+      "finding": "ADDRESSED",
+      "source_proof": "ToolsView's manual Run path directly calls handler.run with permissionMode act (src/features/tools/ToolsView.tsx:453-463), bypassing normal dispatcher authorization. The revised proposal retains original dimensions and adds permission_dimension_status=unverified for each case; member/admin manual runs do not receive permission credit. Inventory case/control/mode/dimension metadata matches the original entries in docs/stabilization/inventory.json."
+    }
+  ],
+  "limits": [
+    "No browser/backend execution, runtime outcome, role result, permission result, upload enumeration, or cleanup was observed.",
+    "The source procedure cannot establish whether the required external fixture or exact cleanup capability exists at run time; the proposal correctly makes those explicit prerequisites."
+  ]
+}
