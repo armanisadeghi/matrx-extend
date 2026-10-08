@@ -51,7 +51,7 @@
     "receipt_failure": {
       "stage": "extension_reload",
       "code": "native_extension_worker_retirement_unverified",
-      "observed": "Old panel absent, old worker absent from final target snapshot, replacement worker created and present, old version stopped/redundant; strict old-worker retirement predicate stayed false because destroyed event and old host execution-retired observation were not obtained. Full reload lifecycle is unproven."
+      "observed": "Old panel and worker absent from final target snapshot, replacement target created and present, and correlated old version stopped/redundant. The replacement version was last observed starting/new, not running/activated, so the combined execution-retirement predicate correctly remained false. A missing TargetDestroyed event alone is not a blocker. Full reload lifecycle is unproven."
     },
     "case_verdicts": {
       "EXT-F-1007-T10": "partial: warm image remove/add observed; post-reload controls unverified",
@@ -60,7 +60,7 @@
       "other_receipt_cases": "T20,T01,T08,T13,T02,T07,T09,T14 partial; no case passed"
     },
     "product_defect_claim": false,
-    "classification": "Valid resource envelope; native case failed at reload proof boundary. This receipt cannot distinguish a Chrome target-observation gap from an extension reload defect."
+    "classification": "Valid resource envelope; native case failed at replacement execution-activation proof boundary. This receipt cannot distinguish genuine replacement nonactivation from a missed final ServiceWorker version event."
   },
   "byte_exact_evidence": {
     "receipt": {
@@ -80,7 +80,7 @@
       "sha256": "67d303774ba3ea03bcad1e1fdd2f7974d321d8608d2d0f3523f72509a1271baa"
     }
   },
-  "next_condition": "Independent owner should inspect the reload lifecycle guard against the receipt's version/target timeline and prove a correction before another normal-width native run. Do not promote partial media observations or rerun unchanged blindly.",
+  "next_condition": "Before another independently warranted normal-width native run or any predicate change, obtain an independent current replacement-version status and worker-execution observation at the failed boundary. Preserve the old stopped/redundant identity and all panel/case checks. Do not promote partial media observations or rerun unchanged blindly.",
   "sources": [
     "docs/stabilization/PLAN.md",
     "docs/stabilization/COORDINATOR.md",
@@ -89,6 +89,7 @@
     "tests/browser/scrape-native-selection.mjs",
     "docs/stabilization/inventory.json",
     ".research/native-batch-evidence-peer-20261007.json",
-    "docs/stabilization/defects/EXT-D-0167.json"
+    "docs/stabilization/defects/EXT-D-0167.json",
+    ".research/scrape-reload-boundary-20261008.json"
   ]
 }
