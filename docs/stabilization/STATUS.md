@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-08 13:36 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T13:06:16.462844+00:00. 205 features · 769 cases · 1351 controls · 180 linked defect records.
+Generated 2026-10-08 13:38 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T13:06:16.462844+00:00. 205 features · 769 cases · 1356 controls · 180 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -8,7 +8,7 @@ A feature is fully verified for a role only when every applicable case explicitl
 
 Applicable case-by-role slots: **1230** — Pass: 90 · Partial: 89 · Fail: 2 · Unverified: 1048 · N/A: 1.
 Unverified splits into **132 explicitly marked unverified** and **916 with no result record**.
-Full feature-role pairs: **0/396**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 9 without control links.
+Full feature-role pairs: **0/396**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 4 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
 ## Tab and surface overview
@@ -1593,7 +1593,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Manage saved credentials and vault items (EXT-F-2011)
 
-**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 11. **Controls:** 54.
+**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 11. **Controls:** 55.
 
 **Next:** Add cases for 12 uncovered control(s), then verify them in the extension.
 
@@ -1603,7 +1603,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-2011-T02 Current-page credential use | N/A | Unverified | Unverified | EXT-F-2011-C07, EXT-F-2011-C08, EXT-F-2011-C31, EXT-F-2011-C32, EXT-F-2011-C33 |
 | EXT-F-2011-T03 Create and edit a login | N/A | Unverified | Unverified | EXT-F-2011-C17, EXT-F-2011-C18, EXT-F-2011-C19, EXT-F-2011-C20, EXT-F-2011-C21, EXT-F-2011-C22, EXT-F-2011-C25, EXT-F-2011-C26, EXT-F-2011-C27, EXT-F-2011-C28, EXT-F-2011-C29, EXT-F-2011-C30, EXT-F-2011-C34, EXT-F-2011-C35, EXT-F-2011-C36, EXT-F-2011-C37, EXT-F-2011-C38, EXT-F-2011-C39, EXT-F-2011-C40, EXT-F-2011-C41, EXT-F-2011-C42, EXT-F-2011-C43, EXT-F-2011-C44 |
 | EXT-F-2011-T04 Pending capture decisions | N/A | Unverified | Unverified | EXT-F-2011-C45, EXT-F-2011-C46, EXT-F-2011-C47, EXT-F-2011-C48, EXT-F-2011-C49, EXT-F-2011-C50 |
-| EXT-F-2011-T05 Guest cannot open Vault | N/A | N/A | N/A | No control mapped |
+| EXT-F-2011-T05 Guest cannot open Vault | N/A | N/A | N/A | EXT-F-2011-C55 |
 | EXT-F-2011-T06 Reject stale credential offers after organization switch | N/A | Unverified | Unverified | EXT-F-2011-C45, EXT-F-2011-C49, EXT-F-2011-C50 |
 | EXT-F-2011-T07 Vault list can be freshly read after browser restart | N/A | Unverified | Unverified | EXT-F-2011-C01, EXT-F-2011-C04 |
 | EXT-F-2011-T08 Distinguish failed site-login lookup from no matches and retry | N/A | Unverified | Unverified | EXT-F-2011-C51 |
@@ -1620,7 +1620,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Browse and manually run extension tools (EXT-F-2012)
 
-**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 3. **Controls:** 35.
+**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 3. **Controls:** 36.
 
 **Next:** Add cases for 9 uncovered control(s), then verify them in the extension.
 
@@ -1628,7 +1628,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | --- | --- | --- | --- | --- |
 | EXT-F-2012-T01 Catalog filters and manual runner | N/A | Unverified | Unverified | EXT-F-2012-C01, EXT-F-2012-C02, EXT-F-2012-C03, EXT-F-2012-C04, EXT-F-2012-C05, EXT-F-2012-C07, EXT-F-2012-C08, EXT-F-2012-C09, EXT-F-2012-C12, EXT-F-2012-C13, EXT-F-2012-C14, EXT-F-2012-C15, EXT-F-2012-C16, EXT-F-2012-C17, EXT-F-2012-C18, EXT-F-2012-C19, EXT-F-2012-C20, EXT-F-2012-C21, EXT-F-2012-C22, EXT-F-2012-C23, EXT-F-2012-C26, EXT-F-2012-C27, EXT-F-2012-C28, EXT-F-2012-C29, EXT-F-2012-C30, EXT-F-2012-C35 |
 | EXT-F-2012-T02 Smart tests and Recorder | N/A | Unverified | Unverified | No control mapped |
-| EXT-F-2012-T03 Guest cannot open Tools | N/A | N/A | N/A | No control mapped |
+| EXT-F-2012-T03 Guest cannot open Tools | N/A | N/A | N/A | EXT-F-2012-C37 |
 
 **Controls without a mapped case:** EXT-F-2012-C06 Copy tool name/schema/args/error/result; EXT-F-2012-C11 Tab capture dialog controls; EXT-F-2012-C24 Inspect optional permission badge; EXT-F-2012-C25 Inspect admin badge; EXT-F-2012-C31 Copy tool schema JSON; EXT-F-2012-C32 Copy tool arguments JSON; EXT-F-2012-C33 Copy tool name; EXT-F-2012-C34 Copy tool error; EXT-F-2012-C36 Use sample tool arguments
 
@@ -1701,7 +1701,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Run built-in browser AI scenarios (EXT-F-2015)
 
-**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 5. **Controls:** 26.
+**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 5. **Controls:** 27.
 
 **Next:** Run the remaining role cases in the extension and attach a result.
 
@@ -1711,7 +1711,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-2015-T02 Extract and translate page text | N/A | Unverified | Unverified | EXT-F-2015-C09, EXT-F-2015-C10, EXT-F-2015-C11, EXT-F-2015-C12, EXT-F-2015-C13, EXT-F-2015-C14, EXT-F-2015-C24 |
 | EXT-F-2015-T03 Detect, proofread, scan and describe | N/A | Unverified | Unverified | EXT-F-2015-C15, EXT-F-2015-C16, EXT-F-2015-C17, EXT-F-2015-C18, EXT-F-2015-C19, EXT-F-2015-C20, EXT-F-2015-C21, EXT-F-2015-C22, EXT-F-2015-C23 |
 | EXT-F-2015-T04 Inspect and copy model inputs | N/A | Unverified | Unverified | EXT-F-2015-C24, EXT-F-2015-C25, EXT-F-2015-C26 |
-| EXT-F-2015-T05 Guest cannot open Tools Smart tests | N/A | N/A | N/A | No control mapped |
+| EXT-F-2015-T05 Guest cannot open Tools Smart tests | N/A | N/A | N/A | EXT-F-2015-C27 |
 
 **Other remaining work:** No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel.
 
@@ -1720,7 +1720,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Record active browser tab (EXT-F-2016)
 
-**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 5. **Controls:** 18.
+**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 5. **Controls:** 19.
 
 **Next:** Run the remaining role cases in the extension and attach a result.
 
@@ -1729,7 +1729,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-2016-T01 Record current tab with and without audio | N/A | Unverified | Unverified | EXT-F-2016-C01, EXT-F-2016-C02, EXT-F-2016-C03, EXT-F-2016-C04 |
 | EXT-F-2016-T02 Recover from permission rejection | N/A | Unverified | Unverified | EXT-F-2016-C03, EXT-F-2016-C05, EXT-F-2016-C06, EXT-F-2016-C07, EXT-F-2016-C08, EXT-F-2016-C09, EXT-F-2016-C10 |
 | EXT-F-2016-T03 Manage saved recording index | N/A | Unverified | Unverified | EXT-F-2016-C11, EXT-F-2016-C12, EXT-F-2016-C13, EXT-F-2016-C14, EXT-F-2016-C15, EXT-F-2016-C16, EXT-F-2016-C17 |
-| EXT-F-2016-T04 Guest cannot open Tools Recorder | N/A | N/A | N/A | No control mapped |
+| EXT-F-2016-T04 Guest cannot open Tools Recorder | N/A | N/A | N/A | EXT-F-2016-C19 |
 | EXT-F-2016-T05 Open saved recording file | N/A | Unverified | Unverified | EXT-F-2016-C18 |
 
 **Other remaining work:** No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel.
@@ -1739,7 +1739,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Generate and use credentials (EXT-F-2017)
 
-**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 4. **Controls:** 22.
+**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 4. **Controls:** 23.
 
 **Next:** Run the remaining role cases in the extension and attach a result.
 
@@ -1748,7 +1748,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-2017-T01 Generate password options | N/A | Unverified | Unverified | EXT-F-2017-C01, EXT-F-2017-C02, EXT-F-2017-C03, EXT-F-2017-C05, EXT-F-2017-C06, EXT-F-2017-C07, EXT-F-2017-C08, EXT-F-2017-C09, EXT-F-2017-C10, EXT-F-2017-C15, EXT-F-2017-C16, EXT-F-2017-C17, EXT-F-2017-C18, EXT-F-2017-C19, EXT-F-2017-C20 |
 | EXT-F-2017-T02 Generate passphrase options | N/A | Unverified | Unverified | EXT-F-2017-C04, EXT-F-2017-C11, EXT-F-2017-C12, EXT-F-2017-C13, EXT-F-2017-C14, EXT-F-2017-C15, EXT-F-2017-C16, EXT-F-2017-C17, EXT-F-2017-C18, EXT-F-2017-C19, EXT-F-2017-C20 |
 | EXT-F-2017-T03 Use generated candidate on page | N/A | Unverified | Unverified | EXT-F-2017-C21, EXT-F-2017-C22 |
-| EXT-F-2017-T04 Guest cannot open Vault password generator | N/A | N/A | N/A | No control mapped |
+| EXT-F-2017-T04 Guest cannot open Vault password generator | N/A | N/A | N/A | EXT-F-2017-C23 |
 
 **Other remaining work:** No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel.; 21 component checks and independent typecheck establish bounded option/offer routing only; native role, clipboard, field-fill/no-submit, stale-target and reload outcomes remain unverified.
 

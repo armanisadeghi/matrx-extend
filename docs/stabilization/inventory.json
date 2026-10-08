@@ -30620,6 +30620,14 @@
           "id": "EXT-F-2011-C54",
           "label": "Approve this browser for filling with passkey",
           "action": "Open the account passkey approval page, return to the extension, claim approval with I approved it, and verify recoverable failure or enabled status."
+        },
+        {
+          "id": "EXT-F-2011-C55",
+          "label": "Guest cannot open Vault tab",
+          "action": "In a signed-out side panel, verify Vault navigation and content are unavailable, including a stale/programmatic Vault selection; an available sign-in path remains. Confirm a signed-in user can open Vault.",
+          "source_anchor": "src/config/sidepanel-visibility.ts:34; src/entrypoints/sidepanel/App.tsx:229-234,486-489,676-681",
+          "modes": ["guest"],
+          "test_design_status": "unverified"
         }
       ],
       "source_anchors": [
@@ -30823,13 +30831,13 @@
             "The signed-in tab/content is absent or denied with an honest sign-in path."
           ],
           "dimensions": ["warm", "reload"],
-          "control_ids": [],
+          "control_ids": ["EXT-F-2011-C55"],
           "mapping_provenance": {
-            "proposal": ".research/remaining-control-links-20261008.json",
-            "independent_review": ".research/remaining-control-links-peer-20261008.json",
-            "review_verdict": "preserve_unmapped"
+            "proposal": ".research/remaining-control-link-check-20261008.json",
+            "independent_review": ".research/audience-control-mapping-peer-20261008.json",
+            "review_verdict": "accepted_existing_audience_control"
           },
-          "mapping_notes": "Independent source review found no existing control to link; this case remains unmapped. Unmapped reason: Guest Vault exclusion is an access/audience gate; existing Vault controls cover individual Vault actions and do not specify the guest visibility boundary. It needs a dedicated access control."
+          "mapping_notes": "Dedicated existing side-panel audience boundary; source mapping only, no runtime acceptance. Underlying tools/routes and direct child APIs are not covered by this boundary. Existing saved-deep-link step remains unverified: current tab store is in-memory and no actual persisted/URL selection route was established. Do not manufacture that route or claim it tested."
         },
         {
           "id": "EXT-F-2011-T06",
@@ -31323,6 +31331,14 @@
           "source_anchor": "src/features/tools/ToolsView.tsx",
           "test_design_status": "unverified",
           "test_design_item": "Verify Use sample tool arguments (Reset argument editor to generated example) on Tools/manual runner in source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2012-C37",
+          "label": "Guest cannot open Tools tab",
+          "action": "In a signed-out side panel, verify Tools navigation and content are unavailable, including a stale/programmatic Tools selection; an available sign-in path remains. Confirm a signed-in user can open Tools.",
+          "source_anchor": "src/config/sidepanel-visibility.ts:35; src/entrypoints/sidepanel/App.tsx:229-234,491-495,683-688",
+          "modes": ["guest"],
+          "test_design_status": "unverified"
         }
       ],
       "source_anchors": [
@@ -31445,13 +31461,13 @@
             "The signed-in tab/content is absent or denied with an honest sign-in path."
           ],
           "dimensions": ["warm", "reload"],
-          "control_ids": [],
+          "control_ids": ["EXT-F-2012-C37"],
           "mapping_provenance": {
-            "proposal": ".research/remaining-control-links-20261008.json",
-            "independent_review": ".research/remaining-control-links-peer-20261008.json",
-            "review_verdict": "preserve_unmapped"
+            "proposal": ".research/remaining-control-link-check-20261008.json",
+            "independent_review": ".research/audience-control-mapping-peer-20261008.json",
+            "review_verdict": "accepted_existing_audience_control"
           },
-          "mapping_notes": "Independent source review found no existing control to link; this case remains unmapped. Unmapped reason: Guest Tools exclusion is an access/audience gate with no corresponding control in the owning Tools feature; tab selection controls do not establish guest denial."
+          "mapping_notes": "Dedicated existing side-panel audience boundary; source mapping only, no runtime acceptance. Underlying tools/routes and direct child APIs are not covered by this boundary. Existing saved-deep-link step remains unverified: current tab store is in-memory and no actual persisted/URL selection route was established. Do not manufacture that route or claim it tested."
         }
       ],
       "cells": {
@@ -34333,6 +34349,14 @@
           "source_anchor": "src/features/tools/SmartTestsView.tsx",
           "test_design_status": "unverified",
           "test_design_item": "Verify Copy scenario result (Copy returned output) on Tools Smart tests in source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2015-C27",
+          "label": "Guest cannot open Tools Smart tests",
+          "action": "In a signed-out side panel, verify the Tools parent tab is unavailable, so Smart tests and its Run controls cannot be reached through visible navigation; an available sign-in path remains. Confirm signed-in navigation reaches Smart tests.",
+          "source_anchor": "src/config/sidepanel-visibility.ts:35; src/entrypoints/sidepanel/App.tsx:491-495,683-688; src/features/tools/ToolsView.tsx:87-98",
+          "modes": ["guest"],
+          "test_design_status": "unverified"
         }
       ],
       "source_anchors": ["src/features/tools/SmartTestsView.tsx:1"],
@@ -34501,13 +34525,13 @@
             "Signed-in Tools and nested Smart tests content are unavailable to guest; the panel shows its honest sign-in path. No Smart Tests Run control is reachable."
           ],
           "dimensions": ["warm", "reload"],
-          "control_ids": [],
+          "control_ids": ["EXT-F-2015-C27"],
           "mapping_provenance": {
-            "proposal": ".research/remaining-control-links-20261008.json",
-            "independent_review": ".research/remaining-control-links-peer-20261008.json",
-            "review_verdict": "preserve_unmapped"
+            "proposal": ".research/remaining-control-link-check-20261008.json",
+            "independent_review": ".research/audience-control-mapping-peer-20261008.json",
+            "review_verdict": "accepted_existing_audience_control"
           },
-          "mapping_notes": "Independent source review found no existing control to link; this case remains unmapped. Unmapped reason: Guest denial of the Tools/Smart tests surface is an audience gate, while the existing controls cover signed-in Smart Tests actions. It needs a dedicated guest-access control."
+          "mapping_notes": "Dedicated existing side-panel audience boundary; source mapping only, no runtime acceptance. Underlying tools/routes and direct child APIs are not covered by this boundary."
         }
       ],
       "cells": {
@@ -34684,6 +34708,14 @@
           "action": "Follow Open link in a new tab when the row has fileUrl.",
           "source_anchor": "src/features/tools/RecorderPane.tsx:366",
           "modes": ["member", "admin"]
+        },
+        {
+          "id": "EXT-F-2016-C19",
+          "label": "Guest cannot open Tools Recorder",
+          "action": "In a signed-out side panel, verify the Tools parent tab is unavailable, so Recorder, Record, and list management cannot be reached through visible navigation; an available sign-in path remains. Confirm signed-in navigation reaches Recorder.",
+          "source_anchor": "src/config/sidepanel-visibility.ts:35; src/entrypoints/sidepanel/App.tsx:491-495,683-688; src/features/tools/ToolsView.tsx:87-102",
+          "modes": ["guest"],
+          "test_design_status": "unverified"
         }
       ],
       "source_anchors": ["src/features/tools/RecorderPane.tsx:1"],
@@ -34813,13 +34845,13 @@
             "Signed-in Tools and nested Recorder content are unavailable to guest; a visible sign-in path remains. No Record or list-management control is reachable."
           ],
           "dimensions": ["warm", "reload"],
-          "control_ids": [],
+          "control_ids": ["EXT-F-2016-C19"],
           "mapping_provenance": {
-            "proposal": ".research/remaining-control-links-20261008.json",
-            "independent_review": ".research/remaining-control-links-peer-20261008.json",
-            "review_verdict": "preserve_unmapped"
+            "proposal": ".research/remaining-control-link-check-20261008.json",
+            "independent_review": ".research/audience-control-mapping-peer-20261008.json",
+            "review_verdict": "accepted_existing_audience_control"
           },
-          "mapping_notes": "Independent source review found no existing control to link; this case remains unmapped. Unmapped reason: Guest denial of Tools/Recorder is an audience gate; existing Recorder controls cover recording and local row actions, not visibility/authorization."
+          "mapping_notes": "Dedicated existing side-panel audience boundary; source mapping only, no runtime acceptance. Underlying tools/routes and direct child APIs are not covered by this boundary."
         },
         {
           "id": "EXT-F-2016-T05",
@@ -34868,7 +34900,7 @@
       "id": "EXT-F-2017",
       "name": "Generate and use credentials",
       "surface": "Vault password generator",
-      "entry_points": ["Tools tab \u2192 Vault password generator"],
+      "entry_points": ["Vault tab \u2192 password generator"],
       "controls": [
         {
           "id": "EXT-F-2017-C01",
@@ -35045,6 +35077,14 @@
           "source_anchor": "src/features/vault/PasswordGenerator.tsx",
           "test_design_status": "unverified",
           "test_design_item": "Verify Use generated value (Fill selected page password field) on Vault password generator in source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2017-C23",
+          "label": "Guest cannot open Vault password generator",
+          "action": "In a signed-out side panel, verify Vault is unavailable, so generator controls are unreachable; an available sign-in path remains. After sign-in, confirm Vault and its generator can be reached.",
+          "source_anchor": "src/config/sidepanel-visibility.ts:34; src/entrypoints/sidepanel/App.tsx:486-489,676-681; src/features/vault/VaultView.tsx:248",
+          "modes": ["guest"],
+          "test_design_status": "unverified"
         }
       ],
       "source_anchors": ["src/features/vault/PasswordGenerator.tsx:1"],
@@ -35199,13 +35239,13 @@
             ".research/password-generator-review-repair.json",
             ".research/password-generator-type-final-peer.json"
           ],
-          "control_ids": [],
+          "control_ids": ["EXT-F-2017-C23"],
           "mapping_provenance": {
-            "proposal": ".research/remaining-control-links-20261008.json",
-            "independent_review": ".research/remaining-control-links-peer-20261008.json",
-            "review_verdict": "preserve_unmapped"
+            "proposal": ".research/remaining-control-link-check-20261008.json",
+            "independent_review": ".research/audience-control-mapping-peer-20261008.json",
+            "review_verdict": "accepted_existing_audience_control"
           },
-          "mapping_notes": "Independent source review found no existing control to link; this case remains unmapped. Unmapped reason: Guest denial of Vault and its password generator is an access/audience gate; the generator controls describe signed-in generator interactions and do not establish guest exclusion."
+          "mapping_notes": "Dedicated existing side-panel audience boundary; source mapping only, no runtime acceptance. Underlying tools/routes and direct child APIs are not covered by this boundary."
         }
       ],
       "cells": {
