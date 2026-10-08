@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T15:04:58.405733+00:00",
+  "updated_at": "2026-10-08T15:21:34.749399+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -1228,6 +1228,11 @@
           "label": "Main CI run concurrency",
           "kind": "automation",
           "source": ".github/workflows/ci.yml"
+        },
+        {
+          "id": "EXT-F-0003-C12",
+          "label": "Reject stale @ai-matrx package graph before expensive validation",
+          "action": "Check package graph freshness first on each candidate; stop before unit/build/publication when stale."
         }
       ],
       "source_anchors": ["release.sh", "scripts/test-release-ship-path.sh"],
@@ -1571,13 +1576,17 @@
               "detail": "Auth-independent release pipeline acceptance; exact source/case evidence and limitations in owner adjudication."
             }
           },
-          "control_ids": [],
+          "control_ids": ["EXT-F-0003-C12", "EXT-F-0003-C03"],
           "mapping_provenance": {
             "proposal": ".research/remaining-control-links-20261008.json",
             "independent_review": ".research/remaining-control-links-peer-20261008.json",
             "review_verdict": "preserve_unmapped"
           },
-          "mapping_notes": "Independent source review found no existing control to link; this case remains unmapped. Unmapped reason: Existing release controls cover fetch/reconciliation, red candidate refusal, validation, and remote races, but none specifically asserts stale shared dependency-graph refusal before expensive validation. Linking C02/C03 would broaden those controls beyond their stated behavior."
+          "mapping_notes": "Independent source review found no existing control to link; this case remains unmapped. Unmapped reason: Existing release controls cover fetch/reconciliation, red candidate refusal, validation, and remote races, but none specifically asserts stale shared dependency-graph refusal before expensive validation. Linking C02/C03 would broaden those controls beyond their stated behavior.",
+          "control_mapping_evidence": [
+            ".research/remaining-control-links-20261008.json",
+            ".research/remaining-control-links-peer-20261008-1518.json"
+          ]
         },
         {
           "id": "EXT-F-0003-T08",
@@ -1668,7 +1677,8 @@
             "independent_review": ".research/remaining-control-links-peer-20261008.json",
             "review_verdict": "preserve_unmapped"
           },
-          "mapping_notes": "Independent source review found no existing control to link; this case remains unmapped. Unmapped reason: This is a test-harness lifecycle/unhandled-import check. The owning release controls govern candidate validation/publication and CI concurrency, not popup-test teardown behavior."
+          "mapping_notes": "Independent source review found no existing control to link; this case remains unmapped. Unmapped reason: This is a test-harness lifecycle/unhandled-import check. The owning release controls govern candidate validation/publication and CI concurrency, not popup-test teardown behavior.",
+          "control_mapping_limit": "Non-product popup test-harness teardown invariant; no UI control invented. Remains explicitly unmapped."
         },
         {
           "id": "EXT-F-0003-T11",
@@ -24865,6 +24875,11 @@
           "id": "EXT-F-1015-C20",
           "label": "Organization archive filter in Settings and required-choice dialog",
           "action": "Use shared Active only, All and Archived only controls; view archived memberships and restore remedy while preserving actual active organization."
+        },
+        {
+          "id": "EXT-F-1015-C21",
+          "label": "Revalidate the admin gate across contexts and storage failures",
+          "action": "Serialize role-gate writes by auth generation, revalidate current identity and role, and surface storage/read failures without leaving an authorized stale gate."
         }
       ],
       "source_anchors": [
@@ -25577,7 +25592,7 @@
           "id": "EXT-F-1015-T39",
           "title": "Persisted admin gate across contexts and storage outages",
           "modes": ["guest", "member", "admin"],
-          "control_ids": [],
+          "control_ids": ["EXT-F-1015-C21"],
           "preconditions": [
             "Fresh receipt-verified development build in owned profile; separate extension contexts; controlled storage failure fixture without changing shared account roles."
           ],
@@ -25610,7 +25625,11 @@
             "independent_review": ".research/remaining-control-links-peer-20261008.json",
             "review_verdict": "preserve_unmapped"
           },
-          "mapping_notes": "Independent source review found no existing control to link; this case remains unmapped. Unmapped reason: This cross-context persisted-admin execution gate and storage-outage race is not represented by the existing organization picker, sign-out, or retry-auth controls. It needs a dedicated auth-gate control."
+          "mapping_notes": "Independent source review found no existing control to link; this case remains unmapped. Unmapped reason: This cross-context persisted-admin execution gate and storage-outage race is not represented by the existing organization picker, sign-out, or retry-auth controls. It needs a dedicated auth-gate control.",
+          "control_mapping_evidence": [
+            ".research/remaining-control-links-20261008.json",
+            ".research/remaining-control-links-peer-20261008-1518.json"
+          ]
         },
         {
           "id": "EXT-F-1015-T40",
@@ -31495,13 +31514,17 @@
             "saved recording row actions performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state."
           ],
           "dimensions": ["warm", "reload"],
-          "control_ids": [],
+          "control_ids": ["EXT-F-2012-C11", "EXT-F-2012-C13", "EXT-F-2012-C14"],
           "mapping_provenance": {
             "proposal": ".research/remaining-control-links-20261008.json",
             "independent_review": ".research/remaining-control-links-peer-20261008.json",
             "review_verdict": "preserve_unmapped"
           },
-          "mapping_notes": "Independent source review found no existing control to link; this case remains unmapped. Unmapped reason: This umbrella case combines Smart tests and Recorder behavior. The owning Tools controls are fine-grained filters/manual-runner controls; detailed Smart test and recording behaviors belong to EXT-F-2015/2016. No existing EXT-F-2012 control represents the umbrella case."
+          "mapping_notes": "Independent source review found no existing control to link; this case remains unmapped. Unmapped reason: This umbrella case combines Smart tests and Recorder behavior. The owning Tools controls are fine-grained filters/manual-runner controls; detailed Smart test and recording behaviors belong to EXT-F-2015/2016. No existing EXT-F-2012 control represents the umbrella case.",
+          "control_mapping_evidence": [
+            ".research/remaining-control-links-20261008.json",
+            ".research/remaining-control-links-peer-20261008-1518.json"
+          ]
         },
         {
           "id": "EXT-F-2012-T03",

@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-08 15:14 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T15:04:58.405733+00:00. 205 features · 769 cases · 1356 controls · 183 linked defect records.
+Generated 2026-10-08 15:21 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T15:21:34.749399+00:00. 205 features · 769 cases · 1358 controls · 183 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -8,7 +8,7 @@ A feature is fully verified for a role only when every applicable case explicitl
 
 Applicable case-by-role slots: **1230** — Pass: 90 · Partial: 89 · Fail: 2 · Unverified: 1048 · N/A: 1.
 Unverified splits into **132 explicitly marked unverified** and **916 with no result record**.
-Full feature-role pairs: **0/396**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 4 without control links.
+Full feature-role pairs: **0/396**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
 ## Tab and surface overview
@@ -192,7 +192,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Validate and publish exact release candidate (EXT-F-0003)
 
-**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 11. **Controls:** 7.
+**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 11. **Controls:** 8.
 
 **Next:** Run the remaining role cases in the extension and attach a result.
 
@@ -206,7 +206,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-0003-T04 Revalidate after remote race | Pass | Pass | Pass | EXT-F-0003-C04 |
 | EXT-F-0003-T05 Serialize checks/build and promote unpacked output | Pass | Pass | Pass | EXT-F-0003-C05 |
 | EXT-F-0003-T06 Match commit, tag, zips and bundle receipt | Pass | Pass | Pass | EXT-F-0003-C06 |
-| EXT-F-0003-T07 Refuse stale dependency graph before expensive validation | Pass | Pass | Pass | No control mapped |
+| EXT-F-0003-T07 Refuse stale dependency graph before expensive validation | Pass | Pass | Pass | EXT-F-0003-C12, EXT-F-0003-C03 |
 | EXT-F-0003-T08 Refuse a CI lint-red release candidate | Pass | Pass | Pass | EXT-F-0003-C03 |
 | EXT-F-0003-T09 Await asynchronous UI readiness in integration assertions | Unverified | Unverified | Unverified | EXT-F-0003-C03 |
 | EXT-F-0003-T10 Settle sidepanel lazy imports before test teardown | Unverified | Unverified | Unverified | No control mapped |
@@ -1284,7 +1284,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Authentication and active organization selection (EXT-F-1015)
 
-**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 41. **Controls:** 20.
+**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 41. **Controls:** 21.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0069
 
@@ -1330,7 +1330,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1015-T36 Safari sign-in completes through its owned authorization tab | Unverified | N/A | N/A | EXT-F-1015-C15 |
 | EXT-F-1015-T37 Safari sign-in cancellation and callback failures remain recoverable | Unverified | N/A | N/A | EXT-F-1015-C14, EXT-F-1015-C16, EXT-F-1015-C17 |
 | EXT-F-1015-T38 Organization-required notice retires after selection | N/A | Unverified | Unverified | EXT-F-1015-C18 |
-| EXT-F-1015-T39 Persisted admin gate across contexts and storage outages | Unverified | Unverified | Unverified | No control mapped |
+| EXT-F-1015-T39 Persisted admin gate across contexts and storage outages | Unverified | Unverified | Unverified | EXT-F-1015-C21 |
 | EXT-F-1015-T40 Archived organization cannot be a work target and stale choice requires explicit recovery | N/A | Unverified | Unverified | EXT-F-1015-C03, EXT-F-1015-C09, EXT-F-1015-C19 |
 | EXT-F-1015-T41 Archive discovery stays separate from active organization selection | N/A | Unverified | Unverified | EXT-F-1015-C01, EXT-F-1015-C09, EXT-F-1015-C20 |
 
@@ -1622,15 +1622,15 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 3. **Controls:** 36.
 
-**Next:** Add cases for 9 uncovered control(s), then verify them in the extension.
+**Next:** Add cases for 8 uncovered control(s), then verify them in the extension.
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
 | EXT-F-2012-T01 Catalog filters and manual runner | N/A | Unverified | Unverified | EXT-F-2012-C01, EXT-F-2012-C02, EXT-F-2012-C03, EXT-F-2012-C04, EXT-F-2012-C05, EXT-F-2012-C07, EXT-F-2012-C08, EXT-F-2012-C09, EXT-F-2012-C12, EXT-F-2012-C13, EXT-F-2012-C14, EXT-F-2012-C15, EXT-F-2012-C16, EXT-F-2012-C17, EXT-F-2012-C18, EXT-F-2012-C19, EXT-F-2012-C20, EXT-F-2012-C21, EXT-F-2012-C22, EXT-F-2012-C23, EXT-F-2012-C26, EXT-F-2012-C27, EXT-F-2012-C28, EXT-F-2012-C29, EXT-F-2012-C30, EXT-F-2012-C35 |
-| EXT-F-2012-T02 Smart tests and Recorder | N/A | Unverified | Unverified | No control mapped |
+| EXT-F-2012-T02 Smart tests and Recorder | N/A | Unverified | Unverified | EXT-F-2012-C11, EXT-F-2012-C13, EXT-F-2012-C14 |
 | EXT-F-2012-T03 Guest cannot open Tools | N/A | N/A | N/A | EXT-F-2012-C37 |
 
-**Controls without a mapped case:** EXT-F-2012-C06 Copy tool name/schema/args/error/result; EXT-F-2012-C11 Tab capture dialog controls; EXT-F-2012-C24 Inspect optional permission badge; EXT-F-2012-C25 Inspect admin badge; EXT-F-2012-C31 Copy tool schema JSON; EXT-F-2012-C32 Copy tool arguments JSON; EXT-F-2012-C33 Copy tool name; EXT-F-2012-C34 Copy tool error; EXT-F-2012-C36 Use sample tool arguments
+**Controls without a mapped case:** EXT-F-2012-C06 Copy tool name/schema/args/error/result; EXT-F-2012-C24 Inspect optional permission badge; EXT-F-2012-C25 Inspect admin badge; EXT-F-2012-C31 Copy tool schema JSON; EXT-F-2012-C32 Copy tool arguments JSON; EXT-F-2012-C33 Copy tool name; EXT-F-2012-C34 Copy tool error; EXT-F-2012-C36 Use sample tool arguments
 
 **Other remaining work:** No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel.
 
